@@ -1,0 +1,28 @@
+/// Grid Modu'nda sütun kriteri olarak kullanılacak, oyuncu sayısı
+/// yeterince yüksek büyük futbol ülkeleri.
+const List<String> gridCountryPool = [
+  'Brazil',
+  'Argentina',
+  'France',
+  'Germany',
+  'Spain',
+  'England',
+  'Italy',
+  'Portugal',
+  'Netherlands',
+  'Belgium',
+  'Croatia',
+  'Uruguay',
+  'Colombia',
+  'Nigeria',
+  'Senegal',
+  'Morocco',
+  'Türkiye',
+  'Serbia',
+  'Poland',
+  'Sweden',
+  'Denmark',
+  'Switzerland',
+  'Austria',
+  'Wales',
+];
