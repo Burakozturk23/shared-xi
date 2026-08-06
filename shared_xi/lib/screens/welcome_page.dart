@@ -6,7 +6,6 @@ import 'endless_mode_selection_page.dart';
 import 'chain_page.dart';
 import 'grid_mode_selection_page.dart';
 import 'random_five_page.dart';
-import 'guess_the_player_page.dart';
 import 'mystery_player_page.dart';
 import 'odd_club_mode_selection_page.dart';
 import 'blind_ranking_page.dart';
@@ -161,19 +160,6 @@ _ModeCard(
               ),
               const SizedBox(height: 16),
 
-_ModeCard(
-  title: "GUESS THE PLAYER",
-  subtitle: "Kulüpte oynamış oyuncuyu tahmin et",
-  icon: Icons.person_search,
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const GuessThePlayerPage(),
-      ),
-    );
-  },
-),
 const SizedBox(height: 16),
 
 _ModeCard(

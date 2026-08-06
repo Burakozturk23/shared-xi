@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../controllers/blind_ranking_controller.dart';
 import '../models/blind_ranking_state.dart';
-import '../models/player.dart';
 
 class BlindRankingPage extends StatefulWidget {
   const BlindRankingPage({super.key});

@@ -4,6 +4,9 @@ import 'derby_day_country_page.dart';
 import 'ucl_moments_page.dart';
 import 'turkish_nostalgia_page.dart';
 import 'international_glory_page.dart';
+import 'dynasties_page.dart';
+import 'football_docu_series_part_selection_page.dart';
+import 'what_if_selection_page.dart';
 class StorySubMode {
   final String title;
   final String subtitle;
@@ -23,9 +26,9 @@ const List<StorySubMode> storySubModes = [
     icon: Icons.route,
   ),
   StorySubMode(
-    title: 'Derby Day',
-    subtitle: 'Tarihi rekabetlerin içine gir',
-    icon: Icons.sports_kabaddi,
+    title: 'WHAT IF',
+    subtitle: 'Futbol tarihinin en büyük "Ya şöyle olsaydı?" kırılma anları',
+    icon: Icons.swap_horizontal_circle_sharp,
   ),
   StorySubMode(
     title: 'UCL Moments',
@@ -53,9 +56,9 @@ const List<StorySubMode> storySubModes = [
     icon: Icons.movie_creation,
   ),
   StorySubMode(
-    title: 'WHAT IF',
-    subtitle: 'Futbol tarihinin en büyük "Ya şöyle olsaydı?" kırılma anları',
-    icon: Icons.swap_horizontal_circle_sharp,
+    title: 'Derby Day',
+    subtitle: 'Tarihi rekabetlerin içine gir',
+    icon: Icons.sports_kabaddi,
   ),
 ];
 
@@ -83,11 +86,6 @@ class StoryModeSelectionPage extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   const SizedBox(width: 6),
-                  // index == 0 değilse kilit göster, 0 ise gösterme
-if (index != 0 && index != 2 && index != 3 && index != 4 && index != 7) ...[
-  const SizedBox(width: 6),
-  const Icon(Icons.lock, size: 14, color: Colors.grey),
-],
                 ],
               ),
               subtitle: Text(mode.subtitle),
@@ -100,6 +98,13 @@ if (index != 0 && index != 2 && index != 3 && index != 4 && index != 7) ...[
     );
     return;
   }
+  if (index == 1) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const LegendsPathPartSelectionPage()),
+  );
+  return;
+}
   if (index == 2) {
     Navigator.push(
       context,
@@ -125,6 +130,20 @@ if (index == 4) {
   Navigator.push(
     context,
     MaterialPageRoute(builder: (_) => const InternationalGloryPage()),
+  );
+  return;
+}
+if (index == 5) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const DynastiesPage()),
+  );
+  return;
+}
+if (index == 6) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const FootballDocuSeriesPartSelectionPage()),
   );
   return;
 }

@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import '../models/career_puzzle_state.dart';
 import '../models/career_stop.dart';
 import '../models/club.dart';
-import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
 

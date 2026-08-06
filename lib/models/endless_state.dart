@@ -21,6 +21,9 @@ class EndlessState {
   final Set<int> foundPlayerIds;
   final Set<String> wrongAttempts;
 
+  /// Survival modunda ekranda görünen ipuçları (örn. "R ile başlıyor")
+  final List<String> activeHints;
+
   final String? feedback;
   final bool feedbackIsSuccess;
 
@@ -29,7 +32,7 @@ class EndlessState {
     this.score = 0,
     this.bestScore = 0,
     this.lives = 5,
-    this.secondsLeft = 60,
+    this.secondsLeft = 30,
     this.skipsLeft = 2,
     this.isLoading = true,
     this.isGameOver = false,
@@ -40,6 +43,7 @@ class EndlessState {
     this.foundPlayers = const [],
     this.foundPlayerIds = const {},
     this.wrongAttempts = const {},
+    this.activeHints = const [],
     this.feedback,
     this.feedbackIsSuccess = true,
   });
@@ -62,6 +66,7 @@ class EndlessState {
     List<Player>? foundPlayers,
     Set<int>? foundPlayerIds,
     Set<String>? wrongAttempts,
+    List<String>? activeHints,
     String? feedback,
     bool? feedbackIsSuccess,
   }) {
@@ -81,6 +86,7 @@ class EndlessState {
       foundPlayers: foundPlayers ?? this.foundPlayers,
       foundPlayerIds: foundPlayerIds ?? this.foundPlayerIds,
       wrongAttempts: wrongAttempts ?? this.wrongAttempts,
+      activeHints: activeHints ?? this.activeHints,
       feedback: feedback,
       feedbackIsSuccess: feedbackIsSuccess ?? this.feedbackIsSuccess,
     );

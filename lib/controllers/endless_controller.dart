@@ -11,19 +11,27 @@ import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/high_score_service.dart';
 
-const String _endlessHighScoreKey = 'endless_high_score';
+enum EndlessMatchMode { clubClub, clubCountry }
 
-enum EndlessMatchMode { clubClub, clubCountry, random }
+/// Blitz: 30 sn / tur, sonsuz can, skor odaklı
+/// Survival: süre yok, 5 can, ipucu = -1 can
+enum EndlessGameStyle { blitz, survival }
 
 class EndlessController extends ChangeNotifier {
   static const int _minPlayersPerRound = 3;
   static const int _maxPickAttempts = 40;
-  static const int _roundSeconds = 60;
+  static const int _blitzRoundSeconds = 30;
+  static const int _survivalLives = 5;
+  static const int _initialSkips = 2;
 
   final EndlessMatchMode matchMode;
+  final EndlessGameStyle gameStyle;
   final Random _random = Random();
 
-  EndlessController({required this.matchMode});
+  EndlessController({
+    required this.matchMode,
+    required this.gameStyle,
+  });
 
   EndlessState _state = const EndlessState();
   EndlessState get state => _state;
@@ -32,12 +40,22 @@ class EndlessController extends ChangeNotifier {
   Timer? _roundTransitionTimer;
   Timer? _clockTimer;
 
-  Future<void> initialize() async {
-    final bestScore = await HighScoreService.getHighScore(
-      key: _endlessHighScoreKey,
-    );
+  bool get isBlitz => gameStyle == EndlessGameStyle.blitz;
+  bool get isSurvival => gameStyle == EndlessGameStyle.survival;
 
-    _state = _state.copyWith(bestScore: bestScore);
+  String get _highScoreKey => isBlitz
+      ? 'endless_blitz_high_score'
+      : 'endless_survival_high_score';
+
+  Future<void> initialize() async {
+    final bestScore = await HighScoreService.getHighScore(key: _highScoreKey);
+
+    _state = _state.copyWith(
+      bestScore: bestScore,
+      lives: isSurvival ? _survivalLives : 999,
+      secondsLeft: isBlitz ? _blitzRoundSeconds : 0,
+      skipsLeft: _initialSkips,
+    );
 
     _startNewRound();
   }
@@ -47,7 +65,18 @@ class EndlessController extends ChangeNotifier {
     _feedbackTimer?.cancel();
     _roundTransitionTimer?.cancel();
     _clockTimer?.cancel();
+    if (isBlitz && !_state.isGameOver && _state.score > 0) {
+      HighScoreService.saveHighScore(
+        _state.score.round(),
+        key: _highScoreKey,
+      );
+    }
     super.dispose();
+  }
+
+  Future<void> endGame() async {
+    if (_state.isGameOver) return;
+    await _finishGame();
   }
 
   ({MatchEntity entity1, MatchEntity entity2, List<Player> matching})
@@ -65,18 +94,7 @@ class EndlessController extends ChangeNotifier {
       final club1 = clubs[_random.nextInt(clubs.length)];
       final entity1 = MatchEntity.club(club1);
 
-      final bool useCountry;
-      switch (matchMode) {
-        case EndlessMatchMode.clubClub:
-          useCountry = false;
-          break;
-        case EndlessMatchMode.clubCountry:
-          useCountry = true;
-          break;
-        case EndlessMatchMode.random:
-          useCountry = _random.nextBool();
-          break;
-      }
+      final useCountry = matchMode == EndlessMatchMode.clubCountry;
 
       final MatchEntity entity2;
       if (useCountry && countries.isNotEmpty) {
@@ -127,11 +145,17 @@ class EndlessController extends ChangeNotifier {
       foundPlayerIds: const {},
       wrongAttempts: const {},
       suggestions: const [],
-      secondsLeft: _roundSeconds,
+      activeHints: const [],
+      secondsLeft: isBlitz ? _blitzRoundSeconds : 0,
     );
 
     notifyListeners();
-    _startClock();
+
+    if (isBlitz) {
+      _startClock();
+    } else {
+      _clockTimer?.cancel();
+    }
   }
 
   void _startClock() {
@@ -153,19 +177,12 @@ class EndlessController extends ChangeNotifier {
   void _timeExpired() {
     _clockTimer?.cancel();
 
-    final lives = _state.lives - 1;
+    _state = _state.copyWith(streak: 0, suggestions: const []);
+    _feedback('Süre doldu! Yeni tur geliyor...', false);
 
-    _state = _state.copyWith(lives: lives, streak: 0, suggestions: const []);
-
-    _feedback('Süre doldu! (-1 can)', false);
-
-    if (lives <= 0) {
-      _finishGame();
-    } else {
-      _roundTransitionTimer?.cancel();
-      _roundTransitionTimer =
-          Timer(const Duration(milliseconds: 900), _startNewRound);
-    }
+    _roundTransitionTimer?.cancel();
+    _roundTransitionTimer =
+        Timer(const Duration(milliseconds: 900), _startNewRound);
   }
 
   void updateSuggestions(String query) {
@@ -203,7 +220,7 @@ class EndlessController extends ChangeNotifier {
     final bestScore =
         finalScore > _state.bestScore ? finalScore : _state.bestScore;
 
-    await HighScoreService.saveHighScore(finalScore, key: _endlessHighScoreKey);
+    await HighScoreService.saveHighScore(finalScore, key: _highScoreKey);
 
     _state = _state.copyWith(isGameOver: true, bestScore: bestScore);
     notifyListeners();
@@ -270,6 +287,17 @@ class EndlessController extends ChangeNotifier {
 
   void _wrongAnswer(String answer) {
     final attempts = Set<String>.from(_state.wrongAttempts)..add(answer);
+
+    if (isBlitz) {
+      _state = _state.copyWith(
+        wrongAttempts: attempts,
+        suggestions: const [],
+        streak: 0,
+      );
+      _feedback('Yanlış cevap.', false);
+      return;
+    }
+
     final lives = _state.lives - 1;
 
     _state = _state.copyWith(
@@ -279,7 +307,7 @@ class EndlessController extends ChangeNotifier {
       streak: 0,
     );
 
-    _feedback('Yanlış cevap.', false);
+    _feedback('Yanlış cevap. (-1 can)', false);
 
     if (lives <= 0) {
       _finishGame();
@@ -295,20 +323,35 @@ class EndlessController extends ChangeNotifier {
       foundIds: _state.foundPlayerIds,
     );
 
-    final lives = _state.lives - 1;
-
     if (player == null) {
-      _state = _state.copyWith(lives: lives, streak: 0);
-      _feedback('Gösterilecek oyuncu kalmadı ama can gitti.', false);
-    } else {
-      final firstLetter =
-          player.name.trim().isNotEmpty ? player.name.trim()[0] : '?';
-      _state = _state.copyWith(lives: lives, streak: 0);
-      _feedback('İpucu: $firstLetter ile başlıyor. (-1 can)', true);
+      _feedback('Gösterilecek oyuncu kalmadı.', false);
+      return;
     }
 
-    if (lives <= 0) {
-      _finishGame();
+    final firstLetter =
+        player.name.trim().isNotEmpty ? player.name.trim()[0].toUpperCase() : '?';
+    final hintText = '$firstLetter ile başlıyor';
+
+    final hints = List<String>.from(_state.activeHints);
+    if (!hints.contains(hintText)) {
+      hints.add(hintText);
+    }
+
+    if (isSurvival) {
+      final lives = _state.lives - 1;
+      _state = _state.copyWith(
+        lives: lives,
+        streak: 0,
+        activeHints: hints,
+      );
+      _feedback('İpucu: $hintText (-1 can)', true);
+
+      if (lives <= 0) {
+        _finishGame();
+      }
+    } else {
+      _state = _state.copyWith(activeHints: hints, streak: 0);
+      _feedback('İpucu: $hintText', true);
     }
   }
 

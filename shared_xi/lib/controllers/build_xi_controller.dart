@@ -4,7 +4,6 @@ import '../data/build_xi_formations.dart';
 import '../data/build_xi_themes.dart';
 import '../data/continents.dart';
 import '../models/build_xi_state.dart';
-import '../models/club.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';

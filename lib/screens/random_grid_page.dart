@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../controllers/random_grid_controller.dart';
 import '../models/club.dart';
 import '../models/grid_state.dart';
-import '../models/player.dart';
 import '../models/random_grid_state.dart';
 
 const Map<int, String> _anchorLabels = {

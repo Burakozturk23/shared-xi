@@ -2,73 +2,75 @@ import 'package:flutter/material.dart';
 
 import '../controllers/endless_controller.dart';
 import '../theme/app_theme.dart';
-import 'endless_match_type_page.dart';
+import 'endless_page.dart';
 
-/// 1. adım: Blitz veya Survival seç
-class EndlessModeSelectionPage extends StatelessWidget {
-  const EndlessModeSelectionPage({super.key});
+/// 2. adım: Eşleşme türü seç (Kulüp-Kulüp / Kulüp-Ülke)
+class EndlessMatchTypePage extends StatelessWidget {
+  final EndlessGameStyle gameStyle;
+
+  const EndlessMatchTypePage({super.key, required this.gameStyle});
 
   @override
   Widget build(BuildContext context) {
+    final styleLabel =
+        gameStyle == EndlessGameStyle.blitz ? 'Blitz' : 'Survival';
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Seri Modu'),
+        title: Text('$styleLabel · Eşleşme'),
         centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
-            'Oyun tarzını seç',
+            'Eşleşme türünü seç',
             style: TextStyle(
               fontSize: 15,
               color: AppTheme.hintColor,
             ),
           ),
           const SizedBox(height: 16),
-          _StyleCard(
-            icon: Icons.flash_on_rounded,
-            accent: const Color(0xFFFFB300),
-            title: 'Blitz Mode',
-            subtitle:
-                'Her tur 30 saniye · Sonsuz can\nEn yüksek skoru hedefle · Pas hakkı var',
-            onTap: () => _goMatchType(context, EndlessGameStyle.blitz),
+          _TypeCard(
+            icon: Icons.shield_rounded,
+            title: 'Kulüp – Kulüp',
+            subtitle: 'Her turda iki rastgele kulüp',
+            onTap: () => _start(context, EndlessMatchMode.clubClub),
           ),
           const SizedBox(height: 12),
-          _StyleCard(
-            icon: Icons.favorite_rounded,
-            accent: const Color(0xFFE53935),
-            title: 'Survival Mode',
-            subtitle:
-                'Süre yok · 5 can\nİpucu = −1 can · Yanlış yapana kadar devam',
-            onTap: () => _goMatchType(context, EndlessGameStyle.survival),
+          _TypeCard(
+            icon: Icons.public_rounded,
+            title: 'Kulüp – Ülke',
+            subtitle: 'Her turda bir kulüp + bir ülke',
+            onTap: () => _start(context, EndlessMatchMode.clubCountry),
           ),
         ],
       ),
     );
   }
 
-  void _goMatchType(BuildContext context, EndlessGameStyle style) {
+  void _start(BuildContext context, EndlessMatchMode mode) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => EndlessMatchTypePage(gameStyle: style),
+        builder: (_) => EndlessPage(
+          matchMode: mode,
+          gameStyle: gameStyle,
+        ),
       ),
     );
   }
 }
 
-class _StyleCard extends StatelessWidget {
+class _TypeCard extends StatelessWidget {
   final IconData icon;
-  final Color accent;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
-  const _StyleCard({
+  const _TypeCard({
     required this.icon,
-    required this.accent,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -90,10 +92,10 @@ class _StyleCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.15),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: accent, size: 26),
+                child: Icon(icon, color: AppTheme.primaryColor, size: 26),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -103,18 +105,17 @@ class _StyleCard extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 17,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: AppTheme.textColor,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle,
                       style: const TextStyle(
                         fontSize: 13,
                         color: AppTheme.hintColor,
-                        height: 1.35,
                       ),
                     ),
                   ],

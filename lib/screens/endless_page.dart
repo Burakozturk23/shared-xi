@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import '../controllers/endless_controller.dart';
 import '../models/endless_state.dart';
 import '../models/match_entity.dart';
+import '../theme/app_theme.dart';
 
 class EndlessPage extends StatefulWidget {
   final EndlessMatchMode matchMode;
+  final EndlessGameStyle gameStyle;
 
-  const EndlessPage({super.key, required this.matchMode});
+  const EndlessPage({
+    super.key,
+    required this.matchMode,
+    required this.gameStyle,
+  });
 
   @override
   State<EndlessPage> createState() => _EndlessPageState();
@@ -17,12 +23,17 @@ class _EndlessPageState extends State<EndlessPage> {
   late final EndlessController _controller;
   final TextEditingController _answerController = TextEditingController();
 
+  bool get _isBlitz => widget.gameStyle == EndlessGameStyle.blitz;
+
   @override
   void initState() {
     super.initState();
 
-    _controller = EndlessController(matchMode: widget.matchMode)
-      ..addListener(_onControllerChanged);
+    _controller = EndlessController(
+      matchMode: widget.matchMode,
+      gameStyle: widget.gameStyle,
+    )..addListener(_onControllerChanged);
+
     _controller.initialize();
   }
 
@@ -51,18 +62,24 @@ class _EndlessPageState extends State<EndlessPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => EndlessPage(matchMode: widget.matchMode),
+        builder: (_) => EndlessPage(
+          matchMode: widget.matchMode,
+          gameStyle: widget.gameStyle,
+        ),
       ),
     );
   }
+
+  String get _title => _isBlitz ? 'Blitz Mode' : 'Survival Mode';
 
   @override
   Widget build(BuildContext context) {
     final state = _controller.state;
 
     if (state.isLoading || state.entity1 == null || state.entity2 == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -71,8 +88,9 @@ class _EndlessPageState extends State<EndlessPage> {
     }
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Seri Modu'),
+        title: Text(_title),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -82,15 +100,21 @@ class _EndlessPageState extends State<EndlessPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildMatchHeader(state),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               _buildStatsCard(state),
-              const SizedBox(height: 16),
-              _buildInputCard(),             
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
+              if (state.activeHints.isNotEmpty) ...[
+                _buildHintsCard(state),
+                const SizedBox(height: 14),
+              ],
+              _buildInputCard(),
+              const SizedBox(height: 14),
               _buildActionsRow(state),
-              const SizedBox(height: 16),
-              if (state.feedback != null) _buildFeedbackCard(state),
-              const SizedBox(height: 16),
+              if (state.feedback != null) ...[
+                const SizedBox(height: 14),
+                _buildFeedbackCard(state),
+              ],
+              const SizedBox(height: 14),
               _buildFoundPlayersCard(state),
             ],
           ),
@@ -101,6 +125,7 @@ class _EndlessPageState extends State<EndlessPage> {
 
   Widget _buildMatchHeader(EndlessState state) {
     return Card(
+      color: AppTheme.cardColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -108,8 +133,14 @@ class _EndlessPageState extends State<EndlessPage> {
             Expanded(child: _EntityTile(entity: state.entity1!)),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text('VS',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              child: Text(
+                'VS',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.hintColor,
+                ),
+              ),
             ),
             Expanded(child: _EntityTile(entity: state.entity2!)),
           ],
@@ -120,23 +151,34 @@ class _EndlessPageState extends State<EndlessPage> {
 
   Widget _buildStatsCard(EndlessState state) {
     return Card(
+      color: AppTheme.cardColor,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Skor: ${state.score.round()}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600)),
-                Text('Can: ${state.lives}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600)),
-                Text('Süre: ${state.secondsLeft}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600)),
+                _StatChip(
+                  label: 'Skor',
+                  value: '${state.score.round()}',
+                ),
+                if (_isBlitz)
+                  _StatChip(
+                    label: 'Süre',
+                    value: '${state.secondsLeft}s',
+                    highlight: state.secondsLeft <= 10,
+                  )
+                else
+                  _StatChip(
+                    label: 'Can',
+                    value: '${state.lives}',
+                    highlight: state.lives <= 2,
+                  ),
+                _StatChip(
+                  label: 'Seri',
+                  value: '${state.streak}',
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -144,12 +186,58 @@ class _EndlessPageState extends State<EndlessPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Seri: ${state.streak}  •  Çarpan: x${state.multiplier.toStringAsFixed(1)}',
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  'Çarpan: x${state.multiplier.toStringAsFixed(1)}',
+                  style: const TextStyle(fontSize: 12, color: AppTheme.hintColor),
                 ),
-                Text('Rekor: ${state.bestScore}',
-                    style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                Text(
+                  'Rekor: ${state.bestScore}',
+                  style: const TextStyle(fontSize: 12, color: AppTheme.hintColor),
+                ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHintsCard(EndlessState state) {
+    return Card(
+      color: const Color(0xFFFFB300).withValues(alpha: 0.1),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.lightbulb_outline, size: 18, color: Color(0xFFFFB300)),
+                SizedBox(width: 6),
+                Text(
+                  'İpuçları',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFFFB300),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: state.activeHints
+                  .map(
+                    (h) => Chip(
+                      label: Text(h, style: const TextStyle(fontSize: 13)),
+                      backgroundColor: AppTheme.cardColor,
+                      side: BorderSide(
+                        color: const Color(0xFFFFB300).withValues(alpha: 0.4),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  )
+                  .toList(),
             ),
           ],
         ),
@@ -159,18 +247,19 @@ class _EndlessPageState extends State<EndlessPage> {
 
   Widget _buildInputCard() {
     return Card(
+      color: AppTheme.cardColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
-              controller: _answerController,             
+              controller: _answerController,
               onSubmitted: (_) => _submitAnswer(),
               textInputAction: TextInputAction.done,
+              style: const TextStyle(color: AppTheme.textColor),
               decoration: const InputDecoration(
                 labelText: 'Oyuncu adı',
                 hintText: 'Örn. Luis Suarez',
-                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -179,8 +268,10 @@ class _EndlessPageState extends State<EndlessPage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: _submitAnswer,
-                child: const Text('GÖNDER',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'GÖNDER',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
@@ -189,28 +280,70 @@ class _EndlessPageState extends State<EndlessPage> {
     );
   }
 
-  
-
   Widget _buildActionsRow(EndlessState state) {
-    final canHint = state.foundPlayerIds.length < state.matchingPlayers.length;
+    final canHint =
+        state.foundPlayerIds.length < state.matchingPlayers.length;
 
-    return Row(
+    final hintLabel = _isBlitz ? 'İpucu' : 'İpucu (−1 can)';
+
+    return Column(
       children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: canHint ? _controller.useHint : null,
-            icon: const Icon(Icons.lightbulb_outline),
-            label: const Text('İpucu (-1 can)'),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: canHint ? _controller.useHint : null,
+                icon: const Icon(Icons.lightbulb_outline, size: 18),
+                label: Text(hintLabel, style: const TextStyle(fontSize: 13)),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: state.skipsLeft > 0 ? _controller.skipRound : null,
+                icon: const Icon(Icons.skip_next, size: 18),
+                label: Text(
+                  'Pas (${state.skipsLeft})',
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: state.skipsLeft > 0 ? _controller.skipRound : null,
-            icon: const Icon(Icons.skip_next),
-            label: Text('Pas (${state.skipsLeft})'),
+        if (_isBlitz) ...[
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: TextButton.icon(
+              onPressed: () async {
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Oyunu bitir?'),
+                    content: Text(
+                      'Skorun kaydedilecek: ${state.score.round()}',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text('Devam et'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text('Bitir'),
+                      ),
+                    ],
+                  ),
+                );
+                if (ok == true) {
+                  await _controller.endGame();
+                }
+              },
+              icon: const Icon(Icons.flag_rounded, size: 18),
+              label: const Text('Skoru kaydet & bitir'),
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -233,6 +366,7 @@ class _EndlessPageState extends State<EndlessPage> {
 
   Widget _buildFoundPlayersCard(EndlessState state) {
     return Card(
+      color: AppTheme.cardColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -241,12 +375,17 @@ class _EndlessPageState extends State<EndlessPage> {
             Text(
               'Bu turda bulunanlar (${state.foundPlayers.length}/${state.matchingPlayers.length})',
               style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w600),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textColor,
+              ),
             ),
             const SizedBox(height: 12),
             if (state.foundPlayers.isEmpty)
-              const Text('Henüz oyuncu bulmadın.',
-                  style: TextStyle(color: Colors.grey))
+              const Text(
+                'Henüz oyuncu bulmadın.',
+                style: TextStyle(color: AppTheme.hintColor),
+              )
             else
               Wrap(
                 spacing: 8,
@@ -266,24 +405,32 @@ class _EndlessPageState extends State<EndlessPage> {
     final isNewRecord = finalScore >= state.bestScore && finalScore > 0;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Seri Bitti')),
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(title: Text('$_title Bitti')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.bolt, size: 64, color: Colors.amber),
+              Icon(
+                _isBlitz ? Icons.flash_on_rounded : Icons.favorite_rounded,
+                size: 64,
+                color: _isBlitz ? const Color(0xFFFFB300) : Colors.redAccent,
+              ),
               const SizedBox(height: 16),
               Text(
                 'Skor: $finalScore',
                 style: const TextStyle(
-                    fontSize: 28, fontWeight: FontWeight.bold),
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textColor,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 isNewRecord ? 'Yeni rekor! 🎉' : 'Rekor: ${state.bestScore}',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                style: const TextStyle(fontSize: 16, color: AppTheme.hintColor),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -291,8 +438,10 @@ class _EndlessPageState extends State<EndlessPage> {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: _playAgain,
-                  child: const Text('TEKRAR OYNA',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'TEKRAR OYNA',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -309,6 +458,41 @@ class _EndlessPageState extends State<EndlessPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool highlight;
+
+  const _StatChip({
+    required this.label,
+    required this.value,
+    this.highlight = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = highlight ? Colors.redAccent : AppTheme.textColor;
+
+    return Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: AppTheme.hintColor),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -335,7 +519,8 @@ class _EntityTile extends StatelessWidget {
                   height: 52,
                   width: 52,
                   child: Center(
-                      child: CircularProgressIndicator(strokeWidth: 2)),
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 );
               },
               errorBuilder: (context, error, stackTrace) {
@@ -351,7 +536,10 @@ class _EntityTile extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textColor,
+          ),
         ),
       ],
     );
