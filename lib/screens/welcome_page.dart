@@ -5,8 +5,6 @@ import 'daily_challenge_page.dart';
 import 'match_type_selection_page.dart';
 import 'endless_mode_selection_page.dart';
 import 'chain_page.dart';
-import 'grid_mode_selection_page.dart';
-import 'random_five_page.dart';
 import 'mystery_player_page.dart';
 import 'odd_club_mode_selection_page.dart';
 import 'blind_ranking_page.dart';
@@ -15,7 +13,7 @@ import 'higher_lower_mode_selection_page.dart';
 import 'transfer_detective_page.dart';
 import 'build_xi_theme_selection_page.dart';
 import 'story_mode_selection_page.dart';
-import 'vs_bot_club_selection_page.dart';
+import 'vs_bot_mode_selection_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -85,11 +83,11 @@ class WelcomePage extends StatelessWidget {
             _sectionHeader('Klasik modlar'),
             _sliverModeList(const [
               _ModeItem(
-                title: 'Bot’a Karşı',
-                subtitle: 'Takımını seç, bot ile ortak oyuncu yarışı',
-               icon: Icons.smart_toy_rounded,
-               accent: Color(0xFFE91E63),
-               page: VsBotClubSelectionPage(),
+              title: 'Bot’a Karşı',
+              subtitle: 'Takım yarışı · Grid · Çinko · Beşler',
+              icon: Icons.smart_toy_rounded,
+              accent: const Color(0xFFE91E63),
+              page: VsBotModeSelectionPage(),
               ),
               _ModeItem(
                 title: 'Seri Modu',
@@ -103,18 +101,7 @@ class WelcomePage extends StatelessWidget {
                 icon: Icons.link_rounded,
                 page: ChainPage(),
               ),
-              _ModeItem(
-                title: 'Grid',
-                subtitle: '3×3 futbol bulmacası',
-                icon: Icons.grid_view_rounded,
-                page: GridModeSelectionPage(),
-              ),
-              _ModeItem(
-                title: 'Rastgele Beşler',
-                subtitle: '5 kulüp, ortak oyuncuları bul',
-                icon: Icons.style_rounded,
-                page: RandomFivePage(),
-              ),
+          
               _ModeItem(
                 title: 'Sahte Kulüp',
                 subtitle: 'Oynamadığı kulübü bul',

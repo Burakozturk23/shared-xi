@@ -39,7 +39,7 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(height: 12),
 
               const Text(
-                "SHARED XI",
+                "LINKBALL",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 34,
@@ -51,7 +51,7 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(height: 6),
 
               const Text(
-                "Ortak Oyuncu Evreni",
+                "Hafızanla Bağla, Oyunu Çöz",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white54,
