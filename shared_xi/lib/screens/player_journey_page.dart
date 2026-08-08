@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/player_journey_controller.dart';
+import '../models/player.dart';
 import '../models/player_journey.dart';
 import '../models/player_journey_state.dart';
 
@@ -131,7 +132,7 @@ class _PlayerJourneyPageState extends State<PlayerJourneyPage> {
     );
   }
 
-  Widget _buildNarrativeCard(stage, int index) {
+  Widget _buildNarrativeCard(PlayerJourneyStage stage, int index) {
     return Card(
       color: Colors.amber.withValues(alpha: 0.08),
       child: Padding(
@@ -152,7 +153,7 @@ class _PlayerJourneyPageState extends State<PlayerJourneyPage> {
     );
   }
 
-  Widget _buildTaskCard(stage, List foundThisStage) {
+  Widget _buildTaskCard(PlayerJourneyStage stage, List<Player> foundThisStage) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),

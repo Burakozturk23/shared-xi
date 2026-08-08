@@ -86,7 +86,7 @@ class WelcomePage extends StatelessWidget {
               title: 'Bot’a Karşı',
               subtitle: 'Takım yarışı · Grid · Çinko · Beşler',
               icon: Icons.smart_toy_rounded,
-              accent: const Color(0xFFE91E63),
+              accent:Color(0xFFE91E63),
               page: VsBotModeSelectionPage(),
               ),
               _ModeItem(

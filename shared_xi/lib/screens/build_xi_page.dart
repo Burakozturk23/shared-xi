@@ -4,7 +4,7 @@ import '../controllers/build_xi_controller.dart';
 import '../data/build_xi_formations.dart';
 import '../data/build_xi_themes.dart';
 import '../models/build_xi_state.dart';
-import '../models/player.dart';
+
 
 class BuildXiPage extends StatefulWidget {
   final BuildXiTheme theme;

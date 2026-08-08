@@ -46,7 +46,7 @@ class BlindRankingState {
       final player = slots[i];
       if (player == null) continue;
       final diff = (trueRankOf(player) - (i + 1)).abs();
-      sum += (10 - diff).clamp(0, 10) as int;
+      sum += sum += (10 - diff).clamp(0, 10);
     }
     return sum;
   }
