@@ -7,6 +7,7 @@ import '../models/match_entity.dart';
 import '../models/streak_state.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
+import '../services/search_service.dart';
 import '../services/high_score_service.dart';
 
 class StreakController extends ChangeNotifier {
@@ -116,10 +117,9 @@ class StreakController extends ChangeNotifier {
   }
 
   void updateSuggestions(String query) {
-    final suggestions = GameService.suggestions(
-      matchingPlayers: _state.matchingPlayers,
+    final suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
       query: query,
-      foundIds: const {},
     );
 
     _state = _state.copyWith(suggestions: suggestions);
@@ -141,12 +141,18 @@ class StreakController extends ChangeNotifier {
   void submitAnswer(String answer) {
     if (_state.isGameOver) return;
 
-    final player = GameService.findPlayer(
-      matchingPlayers: _state.matchingPlayers,
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
       answer: answer,
     );
 
-    if (player == null) {
+    if (resolved.status == ResolveStatus.ambiguous) {
+      _feedback(resolved.message, false);
+      return;
+    }
+
+    if (!resolved.isFound ||
+        !_state.matchingPlayers.any((p) => p.id == resolved.player!.id)) {
       if (_state.wrongAttempts.contains(answer)) {
         _feedback("Bu tahmini zaten yaptın.", false);
         return;
@@ -169,9 +175,11 @@ class StreakController extends ChangeNotifier {
       return;
     }
 
+    final player = resolved.player!;
+
     final streak = _state.streak + 1;
     _state = _state.copyWith(streak: streak);
-    _feedback("Doğru! Seri: $streak", true);
+    _feedback("Doğru! ${player.name} — Seri: $streak", true);
     _nextRound();
   }
 

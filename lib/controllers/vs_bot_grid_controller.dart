@@ -42,6 +42,7 @@ class VsBotGridController extends ChangeNotifier {
     _disposed = true;
     _botTimer?.cancel();
     _feedbackTimer?.cancel();
+    grid.dispose();
     super.dispose();
   }
 
@@ -64,28 +65,47 @@ class VsBotGridController extends ChangeNotifier {
 
     final player = grid.submitGuess(index, answer);
     if (player == null) {
-      _setFeedback('Yanlış veya uymuyor.', false);
       grid.closeCell();
+      feedback = 'Yanlış veya uymuyor.';
+      feedbackOk = false;
       _safeNotify();
-      Future.delayed(const Duration(milliseconds: 100), _passToBot);
+      _scheduleFeedbackClear();
+      _schedulePassToBot();
       return false;
     }
 
     grid.assignPlayer(index, player);
     owners[index] = 1;
     userScore++;
-    _setFeedback('Doğru! +1', true);
     grid.closeCell();
-    _safeNotify();
+    feedback = 'Doğru! +1';
+    feedbackOk = true;
 
     if (_boardFull()) {
       turn = VsBotGridTurn.gameOver;
       _safeNotify();
+      _scheduleFeedbackClear();
       return true;
     }
 
-    Future.delayed(const Duration(milliseconds: 100), _passToBot);
+    _safeNotify();
+    _scheduleFeedbackClear();
+    _schedulePassToBot();
     return true;
+  }
+
+  void _schedulePassToBot() {
+    _botTimer?.cancel();
+    _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);
+  }
+
+  void _scheduleFeedbackClear() {
+    _feedbackTimer?.cancel();
+    _feedbackTimer = Timer(const Duration(seconds: 2), () {
+      if (_disposed) return;
+      feedback = null;
+      _safeNotify();
+    });
   }
 
   void _passToBot() {
@@ -170,14 +190,9 @@ class VsBotGridController extends ChangeNotifier {
 
   void _setFeedback(String msg, bool ok) {
     if (_disposed) return;
-    _feedbackTimer?.cancel();
     feedback = msg;
     feedbackOk = ok;
     _safeNotify();
-    _feedbackTimer = Timer(const Duration(seconds: 2), () {
-      if (_disposed) return;
-      feedback = null;
-      _safeNotify();
-    });
+    _scheduleFeedbackClear();
   }
 }

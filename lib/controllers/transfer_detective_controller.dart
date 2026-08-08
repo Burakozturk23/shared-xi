@@ -58,7 +58,12 @@ class TransferDetectiveController extends ChangeNotifier {
     if (target == null || _state.isSolved || _state.isFailed) return;
     if (answer.trim().isEmpty) return;
 
-    if (SearchService.matches(target, answer)) {
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: answer,
+    );
+
+    if (resolved.isFound && resolved.player!.id == target.id) {
       _state = _state.copyWith(isSolved: true);
       notifyListeners();
       return;

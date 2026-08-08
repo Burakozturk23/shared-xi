@@ -59,16 +59,23 @@ class RandomFiveController extends ChangeNotifier {
   void submitGuess(String answer) {
     if (answer.trim().isEmpty) return;
 
-    final used = _state.usedPlayerIds;
-    final candidates =
-        Repository.instance.players.where((p) => !used.contains(p.id)).toList();
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: answer,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
 
-    final player = SearchService.findExactPlayer(players: candidates, answer: answer);
+    if (resolved.status == ResolveStatus.ambiguous) {
+      _feedback(resolved.message, false);
+      return;
+    }
 
-    if (player == null) {
+    if (!resolved.isFound) {
       _feedback('Böyle bir oyuncu bulunamadı.', false);
       return;
     }
+
+    final player = resolved.player!;
 
     final matched =
         _state.clubs.where((c) => player.clubs.contains(c.id)).toList();
@@ -84,6 +91,9 @@ class RandomFiveController extends ChangeNotifier {
 
     _state = _state.copyWith(history: newHistory, usedPlayerIds: newUsed);
 
-    _feedback('${player.name}: ${matched.length} kulüp! (+${matched.length} puan)', true);
+    _feedback(
+      '${player.name}: ${matched.length} kulüp! (+${matched.length} puan)',
+      true,
+    );
   }
 }

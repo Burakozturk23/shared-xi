@@ -24,28 +24,46 @@ class GameService {
     }).toList();
   }
 
+  /// Submit: esnek isim çözümü (sadece bu çiftin adayları arasında).
+  static ResolveResult resolvePlayer({
+    required List<Player> matchingPlayers,
+    required String answer,
+    Set<int> foundIds = const {},
+  }) {
+    return SearchService.resolve(
+      players: matchingPlayers,
+      answer: answer,
+      excludedPlayerIds: foundIds,
+    );
+  }
+
+  /// Eski API — resolve sonucu Player?
   static Player? findPlayer({
     required List<Player> matchingPlayers,
     required String answer,
+    Set<int> foundIds = const {},
   }) {
-    for (final player in matchingPlayers) {
-      if (SearchService.matches(player, answer)) {
-        return player;
-      }
-    }
-
-    return null;
+    final r = resolvePlayer(
+      matchingPlayers: matchingPlayers,
+      answer: answer,
+      foundIds: foundIds,
+    );
+    return r.isFound ? r.player : null;
   }
 
+  /// Autocomplete: matchingPlayers DEĞİL — çağıran tüm oyuncuları vermeli.
+  /// Spoiler olmaması için GameController global pool kullanır.
   static List<Player> suggestions({
-    required List<Player> matchingPlayers,
+    required List<Player> players,
     required String query,
     required Set<int> foundIds,
+    int limit = 8,
   }) {
     return SearchService.suggestions(
-      players: matchingPlayers,
+      players: players,
       query: query,
       excludedPlayerIds: foundIds,
+      limit: limit,
     );
   }
 
@@ -58,7 +76,6 @@ class GameService {
         return player;
       }
     }
-
     return null;
   }
 

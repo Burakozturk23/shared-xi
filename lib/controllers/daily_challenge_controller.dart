@@ -7,6 +7,7 @@ import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/daily_challenge_service.dart';
 import '../services/game_service.dart';
+import '../services/search_service.dart';
 
 class DailyChallengeController extends ChangeNotifier {
   static const int _roundSeconds = 90;
@@ -64,10 +65,10 @@ class DailyChallengeController extends ChangeNotifier {
   }
 
   void updateSuggestions(String query) {
-    final suggestions = GameService.suggestions(
-      matchingPlayers: _state.matchingPlayers,
+    final suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
       query: query,
-      foundIds: _state.foundPlayerIds,
+      excludedPlayerIds: _state.foundPlayerIds,
     );
 
     _state = _state.copyWith(suggestions: suggestions);
@@ -94,12 +95,18 @@ class DailyChallengeController extends ChangeNotifier {
   void submitAnswer(String answer) {
     if (_state.isFinished) return;
 
-    final player = GameService.findPlayer(
-      matchingPlayers: _state.matchingPlayers,
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
       answer: answer,
+      excludedPlayerIds: _state.foundPlayerIds,
     );
 
-    if (player == null) {
+    if (resolved.status == ResolveStatus.ambiguous) {
+      _feedback(resolved.message, false);
+      return;
+    }
+
+    if (!resolved.isFound) {
       if (_alreadyTried(answer)) {
         _feedback('Bu tahmini zaten yaptın.', false);
         return;
@@ -109,6 +116,20 @@ class DailyChallengeController extends ChangeNotifier {
       _state =
           _state.copyWith(wrongAttempts: attempts, suggestions: const []);
       _feedback('Yanlış cevap.', false);
+      return;
+    }
+
+    final player = resolved.player!;
+
+    if (!_state.matchingPlayers.any((p) => p.id == player.id)) {
+      if (_alreadyTried(answer)) {
+        _feedback('Bu tahmini zaten yaptın.', false);
+        return;
+      }
+      final attempts = Set<String>.from(_state.wrongAttempts)..add(answer);
+      _state =
+          _state.copyWith(wrongAttempts: attempts, suggestions: const []);
+      _feedback('${player.name} bu eşleşmeye uymuyor.', false);
       return;
     }
 

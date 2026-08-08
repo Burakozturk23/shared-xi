@@ -40,6 +40,7 @@ class VsBotReverseGridController extends ChangeNotifier {
     _disposed = true;
     _botTimer?.cancel();
     _feedbackTimer?.cancel();
+    grid.dispose();
     super.dispose();
   }
 
@@ -71,14 +72,19 @@ class VsBotReverseGridController extends ChangeNotifier {
         _safeNotify();
         return true;
       }
-      Future.delayed(const Duration(milliseconds: 100), _passToBot);
+      _schedulePassToBot();
       return true;
     }
 
     _setFeedback('Yanlış.', false);
     _safeNotify();
-    Future.delayed(const Duration(milliseconds: 100), _passToBot);
+    _schedulePassToBot();
     return false;
+  }
+
+  void _schedulePassToBot() {
+    _botTimer?.cancel();
+    _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);
   }
 
   void _passToBot() {

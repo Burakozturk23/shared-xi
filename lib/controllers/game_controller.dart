@@ -7,6 +7,7 @@ import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
+import '../services/search_service.dart';
 
 class GameController extends ChangeNotifier {
   final MatchEntity entity1;
@@ -49,22 +50,22 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Autocomplete: TÜM oyuncular (spoiler yok). Sadece yazım yardımı.
   void updateSuggestions(String query) {
-    final suggestions = GameService.suggestions(
-      matchingPlayers: _state.matchingPlayers,
+    final suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
       query: query,
-      foundIds: _state.foundPlayerIds,
+      excludedPlayerIds: _state.foundPlayerIds,
     );
 
     _state = _state.copyWith(suggestions: suggestions);
     notifyListeners();
   }
 
-  Player? findPlayer(String answer) {
-    return GameService.findPlayer(
-      matchingPlayers: _state.matchingPlayers,
-      answer: answer,
-    );
+  void clearSuggestions() {
+    if (_state.suggestions.isEmpty) return;
+    _state = _state.copyWith(suggestions: const []);
+    notifyListeners();
   }
 
   bool _alreadyFound(Player player) {
@@ -101,10 +102,10 @@ class GameController extends ChangeNotifier {
       isCompleted: completed,
     );
 
-    _feedback(completed ? "Tüm oyuncular bulundu! 🎉" : "Doğru!", true);
+    _feedback(completed ? 'Tüm oyuncular bulundu! 🎉' : 'Doğru!', true);
   }
 
-  void _wrongAnswer(String answer) {
+  void _wrongAnswer(String answer, {String? message}) {
     final attempts = Set<String>.from(_state.wrongAttempts)..add(answer);
 
     _state = _state.copyWith(
@@ -112,24 +113,52 @@ class GameController extends ChangeNotifier {
       suggestions: const [],
     );
 
-    _feedback("Yanlış cevap.", false);
+    _feedback(message ?? 'Yanlış cevap.', false);
   }
 
   void submitAnswer(String answer) {
-    final player = findPlayer(answer);
+    final trimmed = answer.trim();
+    if (trimmed.isEmpty) return;
 
-    if (player == null) {
-      if (_alreadyTried(answer)) {
-        _feedback("Bu tahmini zaten yaptın.", false);
+    // 1) Önce global çöz (Suarez → Luis Suárez)
+    final global = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: trimmed,
+      excludedPlayerIds: _state.foundPlayerIds,
+    );
+
+    if (global.status == ResolveStatus.ambiguous) {
+      _feedback(global.message, false);
+      return;
+    }
+
+    if (global.status == ResolveStatus.notFound) {
+      if (_alreadyTried(trimmed)) {
+        _feedback('Bu tahmini zaten yaptın.', false);
         return;
       }
+      _wrongAnswer(trimmed, message: 'Böyle bir oyuncu bulunamadı.');
+      return;
+    }
 
-      _wrongAnswer(answer);
+    final player = global.player!;
+
+    // 2) Bu çiftte geçerli mi?
+    final isMatch = _state.matchingPlayers.any((p) => p.id == player.id);
+    if (!isMatch) {
+      if (_alreadyTried(trimmed)) {
+        _feedback('Bu tahmini zaten yaptın.', false);
+        return;
+      }
+      _wrongAnswer(
+        trimmed,
+        message: '${player.name} bu eşleşmeye uymuyor.',
+      );
       return;
     }
 
     if (_alreadyFound(player)) {
-      _feedback("Bu oyuncuyu zaten buldun.", false);
+      _feedback('Bu oyuncuyu zaten buldun.', false);
       return;
     }
 

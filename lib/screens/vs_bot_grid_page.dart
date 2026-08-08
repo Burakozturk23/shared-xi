@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../controllers/vs_bot_grid_controller.dart';
 import '../theme/app_theme.dart';
 
+/// Bot'a karşı klasik 3×3 grid.
+/// Tahmin bottom sheet DEĞİL, sayfa içinde yapılır — route dispose race'ini önler.
 class VsBotGridPage extends StatefulWidget {
   const VsBotGridPage({super.key});
 
@@ -12,118 +14,76 @@ class VsBotGridPage extends StatefulWidget {
 
 class _VsBotGridPageState extends State<VsBotGridPage> {
   late final VsBotGridController _c;
+  final TextEditingController _answerController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  /// Seçili boş hücre; null ise input gizli.
+  int? _selectedIndex;
 
   @override
-void initState() {
-  super.initState();
-  _c = VsBotGridController()..addListener(_onChanged); // isim page’e göre
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted) _c.initialize();
-  });
-}
+  void initState() {
+    super.initState();
+    _c = VsBotGridController()..addListener(_onChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _c.initialize();
+    });
+  }
 
   void _onChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    // Bot sırasındayken seçimi temizle
+    if (_c.turn != VsBotGridTurn.user && _selectedIndex != null) {
+      _selectedIndex = null;
+      _answerController.clear();
+    }
+    setState(() {});
   }
 
   @override
   void dispose() {
     _c.removeListener(_onChanged);
     _c.dispose();
+    _answerController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _onCellTap(int index) {
     if (_c.turn != VsBotGridTurn.user) return;
     if (_c.owners[index] != 0) return;
+
+    setState(() {
+      _selectedIndex = index;
+      _answerController.clear();
+    });
     _c.selectCell(index);
-    _showGuessSheet(index);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
   }
 
-  void _showGuessSheet(int index) {
-    final answerController = TextEditingController();
-    String? error;
-    final row = _c.puzzle.rowCriteria[index ~/ 3];
-    final col = _c.puzzle.colCriteria[index % 3];
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppTheme.cardColor,
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 16,
-          ),
-          child: StatefulBuilder(
-            builder: (context, setSheet) {
-              void submit() {
-  final text = answerController.text;
-  Navigator.pop(ctx);
-  Future.microtask(() => _c.submitUserGuess(index, text));
-}
-
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    '${row.label} × ${col.label}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: answerController,
-                    autofocus: true,
-                    style: const TextStyle(color: AppTheme.textColor),
-                    onSubmitted: (_) => submit(),
-                    decoration: const InputDecoration(
-                      hintText: 'Oyuncu adını yaz...',
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                  ),
-                  if (error != null) ...[
-                    const SizedBox(height: 8),
-                    Text(error!, style: const TextStyle(color: Colors.red)),
-                  ],
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: submit,
-                      child: const Text(
-                        'ONAYLA',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {
-                      _c.cancelCell();
-                      Navigator.pop(ctx);
-                    },
-                    child: const Text('İptal'),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              );
-            },
-          ),
-        );
-      },
-    ).whenComplete(() {
-      answerController.dispose();
-      _c.cancelCell();
+  void _cancelSelection() {
+    _c.cancelCell();
+    setState(() {
+      _selectedIndex = null;
+      _answerController.clear();
     });
+    _focusNode.unfocus();
+  }
+
+  void _submit() {
+    final index = _selectedIndex;
+    if (index == null) return;
+    if (_c.turn != VsBotGridTurn.user) return;
+
+    final text = _answerController.text;
+    _answerController.clear();
+    _selectedIndex = null;
+    _focusNode.unfocus();
+
+    // State güncellemesi sheet/route yokken — crash olmaz
+    _c.submitUserGuess(index, text);
   }
 
   @override
@@ -141,6 +101,7 @@ void initState() {
 
     final rows = _c.puzzle.rowCriteria;
     final cols = _c.puzzle.colCriteria;
+    final selected = _selectedIndex;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
@@ -197,7 +158,18 @@ void initState() {
                   ),
                 ),
               ],
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
+              if (selected != null && _c.turn == VsBotGridTurn.user) ...[
+                _GuessBar(
+                  label:
+                      '${rows[selected ~/ 3].label} × ${cols[selected % 3].label}',
+                  controller: _answerController,
+                  focusNode: _focusNode,
+                  onSubmit: _submit,
+                  onCancel: _cancelSelection,
+                ),
+                const SizedBox(height: 8),
+              ],
               Expanded(
                 child: Column(
                   children: [
@@ -261,6 +233,7 @@ void initState() {
     final cell = _c.puzzle.cells[index];
     final isBotTurn = _c.turn == VsBotGridTurn.bot;
     final canTap = _c.turn == VsBotGridTurn.user && owner == 0;
+    final isSelected = _selectedIndex == index;
 
     Color border;
     Color bg;
@@ -270,6 +243,9 @@ void initState() {
     } else if (owner == 2) {
       border = Colors.redAccent;
       bg = Colors.redAccent.withValues(alpha: 0.2);
+    } else if (isSelected) {
+      border = AppTheme.primaryColor;
+      bg = AppTheme.primaryColor.withValues(alpha: 0.12);
     } else {
       border = AppTheme.borderColor;
       bg = AppTheme.cardColor;
@@ -286,7 +262,10 @@ void initState() {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: border, width: 1.5),
+              border: Border.all(
+                color: border,
+                width: isSelected ? 2.5 : 1.5,
+              ),
             ),
             alignment: Alignment.center,
             padding: const EdgeInsets.all(4),
@@ -305,8 +284,12 @@ void initState() {
                     ),
                   )
                 : Icon(
-                    isBotTurn ? Icons.hourglass_top : Icons.add,
-                    color: AppTheme.hintColor,
+                    isBotTurn
+                        ? Icons.hourglass_top
+                        : (isSelected ? Icons.edit : Icons.add),
+                    color: isSelected
+                        ? AppTheme.primaryColor
+                        : AppTheme.hintColor,
                     size: 20,
                   ),
           ),
@@ -375,6 +358,81 @@ void initState() {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GuessBar extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final VoidCallback onSubmit;
+  final VoidCallback onCancel;
+
+  const _GuessBar({
+    required this.label,
+    required this.controller,
+    required this.focusNode,
+    required this.onSubmit,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppTheme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                color: AppTheme.textColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: controller,
+              focusNode: focusNode,
+              autofocus: true,
+              style: const TextStyle(color: AppTheme.textColor),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => onSubmit(),
+              decoration: const InputDecoration(
+                hintText: 'Oyuncu adını yaz...',
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onCancel,
+                    child: const Text('İptal'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: onSubmit,
+                    child: const Text(
+                      'ONAYLA',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

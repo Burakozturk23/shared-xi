@@ -85,7 +85,15 @@ class RandomGridController extends ChangeNotifier {
         .where((p) => p.clubs.contains(a.id) && p.clubs.contains(b.id))
         .toList();
 
-    return SearchService.findExactPlayer(players: candidates, answer: answer);
+    final r = SearchService.resolve(
+  players: Repository.instance.players,
+  answer: answer,
+  excludedPlayerIds: used,
+);
+if (!r.isFound) return null;
+final player = r.player!;
+if (!candidates.any((p) => p.id == player.id)) return null;
+return player;
   }
 
   void confirmPendingPlayer(Player player) {
@@ -142,7 +150,15 @@ class RandomGridController extends ChangeNotifier {
         .where((p) => p.clubs.contains(row.id) && p.clubs.contains(col.id))
         .toList();
 
-    return SearchService.findExactPlayer(players: candidates, answer: answer);
+    final r = SearchService.resolve(
+  players: Repository.instance.players,
+  answer: answer,
+  excludedPlayerIds: used,
+);
+if (!r.isFound) return null;
+final player = r.player!;
+if (!candidates.any((p) => p.id == player.id)) return null;
+return player;
   }
 
   void assignPlayer(int index, Player player) {

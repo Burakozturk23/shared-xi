@@ -171,6 +171,7 @@ class _CareerPuzzlePageState extends State<CareerPuzzlePage> {
         Expanded(
           child: ReorderableListView.builder(
             itemCount: state.displayClubs.length,
+            // ignore: deprecated_member_use
             onReorder: _controller.reorder,
             itemBuilder: (context, index) {
               final club = state.displayClubs[index];

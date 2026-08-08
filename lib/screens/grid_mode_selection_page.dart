@@ -59,14 +59,12 @@ class _ModeTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final bool locked;
   final VoidCallback onTap;
 
   const _ModeTile({
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.locked = false,
     required this.onTap,
   });
 
@@ -76,16 +74,8 @@ class _ModeTile extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: Icon(icon, size: 32),
-        title: Row(
-          children: [
-            Text(title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            if (locked) ...[
-              const SizedBox(width: 6),
-              const Icon(Icons.lock, size: 14, color: Colors.grey),
-            ],
-          ],
-        ),
+        title: Text(title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,

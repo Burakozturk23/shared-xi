@@ -4,6 +4,7 @@ import '../controllers/vs_bot_random_grid_controller.dart';
 import '../models/club.dart';
 import '../theme/app_theme.dart';
 
+/// Bot'a karşı rastgele grid — sheet yok, sayfa içi input.
 class VsBotRandomGridPage extends StatefulWidget {
   const VsBotRandomGridPage({super.key});
 
@@ -13,23 +14,106 @@ class VsBotRandomGridPage extends StatefulWidget {
 
 class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
   late final VsBotRandomGridController _c;
+  final TextEditingController _pendingNameCtrl = TextEditingController();
+  final TextEditingController _cellNameCtrl = TextEditingController();
+  final FocusNode _pendingFocus = FocusNode();
+  final FocusNode _cellFocus = FocusNode();
+
+  int? _selectedCell;
+  int? _pendingAnchor;
+  Club? _pendingA;
+  Club? _pendingB;
 
   @override
   void initState() {
     super.initState();
-    _c = VsBotRandomGridController()..addListener(_refresh);
+    _c = VsBotRandomGridController()..addListener(_onChanged);
     _c.initialize();
   }
 
-  void _refresh() {
-    if (mounted) setState(() {});
+  void _onChanged() {
+    if (!mounted) return;
+    if (_c.turn != VsBotRandomTurn.user) {
+      _selectedCell = null;
+      _pendingAnchor = null;
+      _pendingA = null;
+      _pendingB = null;
+      _cellNameCtrl.clear();
+      _pendingNameCtrl.clear();
+    }
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _c.removeListener(_refresh);
+    _c.removeListener(_onChanged);
     _c.dispose();
+    _pendingNameCtrl.dispose();
+    _cellNameCtrl.dispose();
+    _pendingFocus.dispose();
+    _cellFocus.dispose();
     super.dispose();
+  }
+
+  void _selectCell(int index) {
+    if (_c.turn != VsBotRandomTurn.user) return;
+    if (_c.owners[index] != 0) return;
+    final row = _c.puzzle.rowClubs[index ~/ 3];
+    final col = _c.puzzle.colClubs[index % 3];
+    if (row == null || col == null) return;
+
+    setState(() {
+      _selectedCell = index;
+      _pendingAnchor = null;
+      _cellNameCtrl.clear();
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _cellFocus.requestFocus();
+    });
+  }
+
+  void _submitCell() {
+    final index = _selectedCell;
+    if (index == null) return;
+    final text = _cellNameCtrl.text;
+    _cellNameCtrl.clear();
+    _selectedCell = null;
+    _cellFocus.unfocus();
+    _c.userSubmitCell(index, text);
+  }
+
+  void _cancelCell() {
+    setState(() {
+      _selectedCell = null;
+      _cellNameCtrl.clear();
+    });
+    _cellFocus.unfocus();
+  }
+
+  void _submitPendingPlayer() {
+    final text = _pendingNameCtrl.text;
+    _pendingNameCtrl.clear();
+    _c.userSubmitPendingPlayer(text);
+  }
+
+  void _startAnchorPick(int anchor, Club a, Club b) {
+    setState(() {
+      _pendingAnchor = anchor;
+      _pendingA = a;
+      _pendingB = b;
+      _selectedCell = null;
+    });
+  }
+
+  void _confirmOrientation({required Club row, required Club col}) {
+    final anchor = _pendingAnchor;
+    if (anchor == null) return;
+    setState(() {
+      _pendingAnchor = null;
+      _pendingA = null;
+      _pendingB = null;
+    });
+    _c.userPlaceAtAnchor(anchor, rowClub: row, colClub: col);
   }
 
   @override
@@ -105,6 +189,12 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   ),
                 ),
               if (s.hasPendingPair) _pendingPanel(),
+              if (_pendingAnchor != null &&
+                  _pendingA != null &&
+                  _pendingB != null)
+                _orientationPanel(_pendingA!, _pendingB!),
+              if (_selectedCell != null && _c.turn == VsBotRandomTurn.user)
+                _cellGuessBar(),
               const SizedBox(height: 8),
               Expanded(child: _board()),
             ],
@@ -118,7 +208,6 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
     final s = _c.puzzle;
     final a = s.pendingClubA!;
     final b = s.pendingClubB!;
-    final nameCtrl = TextEditingController();
 
     if (s.hasPendingPlayer) {
       return Card(
@@ -143,13 +232,16 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                 spacing: 8,
                 children: s.availableAnchors.map((anchor) {
                   return ElevatedButton(
-                    onPressed: () => _pickOrientation(anchor, a, b),
+                    onPressed: () => _startAnchorPick(anchor, a, b),
                     child: Text('Çapa ${anchor + 1}'),
                   );
                 }).toList(),
               ),
               TextButton(
-                onPressed: _c.userCancelPending,
+                onPressed: () {
+                  _c.userCancelPending();
+                  _pendingNameCtrl.clear();
+                },
                 child: const Text('İptal'),
               ),
             ],
@@ -169,28 +261,30 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                     fontWeight: FontWeight.bold, color: AppTheme.textColor)),
             const SizedBox(height: 8),
             TextField(
-              controller: nameCtrl,
+              controller: _pendingNameCtrl,
+              focusNode: _pendingFocus,
               style: const TextStyle(color: AppTheme.textColor),
+              textInputAction: TextInputAction.done,
               decoration:
                   const InputDecoration(hintText: 'Ortak oyuncu adı'),
-              onSubmitted: (v) {
-                _c.userSubmitPendingPlayer(v);
-              },
+              onSubmitted: (_) => _submitPendingPlayer(),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: _c.userCancelPending,
+                    onPressed: () {
+                      _c.userCancelPending();
+                      _pendingNameCtrl.clear();
+                    },
                     child: const Text('İptal'),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () =>
-                        _c.userSubmitPendingPlayer(nameCtrl.text),
+                    onPressed: _submitPendingPlayer,
                     child: const Text('ONAYLA'),
                   ),
                 ),
@@ -202,29 +296,98 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
     );
   }
 
-  void _pickOrientation(int anchor, Club a, Club b) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppTheme.cardColor,
-      builder: (ctx) => SafeArea(
+  Widget _orientationPanel(Club a, Club b) {
+    return Card(
+      color: AppTheme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ListTile(
-              title: Text('Satır: ${a.name} / Sütun: ${b.name}',
-                  style: const TextStyle(color: AppTheme.textColor)),
-              onTap: () {
-                Navigator.pop(ctx);
-                _c.userPlaceAtAnchor(anchor, rowClub: a, colClub: b);
-              },
+            const Text(
+              'Yön seç',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textColor,
+              ),
             ),
-            ListTile(
-              title: Text('Satır: ${b.name} / Sütun: ${a.name}',
-                  style: const TextStyle(color: AppTheme.textColor)),
-              onTap: () {
-                Navigator.pop(ctx);
-                _c.userPlaceAtAnchor(anchor, rowClub: b, colClub: a);
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () => _confirmOrientation(row: a, col: b),
+              child: Text('Satır: ${a.name} / Sütun: ${b.name}'),
+            ),
+            const SizedBox(height: 6),
+            ElevatedButton(
+              onPressed: () => _confirmOrientation(row: b, col: a),
+              child: Text('Satır: ${b.name} / Sütun: ${a.name}'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _pendingAnchor = null;
+                  _pendingA = null;
+                  _pendingB = null;
+                });
               },
+              child: const Text('Vazgeç'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _cellGuessBar() {
+    final index = _selectedCell!;
+    final row = _c.puzzle.rowClubs[index ~/ 3];
+    final col = _c.puzzle.colClubs[index % 3];
+    return Card(
+      color: AppTheme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              '${row?.name ?? '?'} × ${col?.name ?? '?'}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _cellNameCtrl,
+              focusNode: _cellFocus,
+              autofocus: true,
+              style: const TextStyle(color: AppTheme.textColor),
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(hintText: 'Oyuncu adı'),
+              onSubmitted: (_) => _submitCell(),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _cancelCell,
+                    child: const Text('İptal'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: _submitCell,
+                    child: const Text(
+                      'ONAYLA',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -288,6 +451,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
         owner == 0 &&
         row != null &&
         col != null;
+    final selected = _selectedCell == index;
 
     Color border = AppTheme.borderColor;
     Color bg = AppTheme.cardColor;
@@ -297,6 +461,9 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
     } else if (owner == 2) {
       border = Colors.redAccent;
       bg = Colors.redAccent.withValues(alpha: 0.2);
+    } else if (selected) {
+      border = AppTheme.primaryColor;
+      bg = AppTheme.primaryColor.withValues(alpha: 0.12);
     }
 
     return Padding(
@@ -306,11 +473,14 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
         borderRadius: BorderRadius.circular(10),
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
-          onTap: canFill ? () => _guessCell(index) : null,
+          onTap: canFill ? () => _selectCell(index) : null,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: border),
+              border: Border.all(
+                color: border,
+                width: selected ? 2.5 : 1,
+              ),
             ),
             alignment: Alignment.center,
             padding: const EdgeInsets.all(4),
@@ -329,59 +499,18 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                     ),
                   )
                 : Icon(
-                    canFill ? Icons.add : Icons.remove,
+                    canFill
+                        ? (selected ? Icons.edit : Icons.add)
+                        : Icons.remove,
                     size: 18,
-                    color: AppTheme.hintColor,
+                    color: selected
+                        ? AppTheme.primaryColor
+                        : AppTheme.hintColor,
                   ),
           ),
         ),
       ),
     );
-  }
-
-  void _guessCell(int index) {
-    final ctrl = TextEditingController();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppTheme.cardColor,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: ctrl,
-              autofocus: true,
-              style: const TextStyle(color: AppTheme.textColor),
-              decoration: const InputDecoration(hintText: 'Oyuncu adı'),
-              onSubmitted: (v) {
-                Navigator.pop(ctx);
-                _c.userSubmitCell(index, v);
-              },
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _c.userSubmitCell(index, ctrl.text);
-                },
-                child: const Text('ONAYLA'),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    ).whenComplete(ctrl.dispose);
   }
 
   Widget _chip(String label, int score, Color color) {

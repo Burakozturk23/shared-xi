@@ -9,6 +9,7 @@ import '../models/player.dart';
 import '../models/vs_bot_state.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
+import '../services/search_service.dart';
 
 enum VsBotDifficulty {
   easy,
@@ -192,13 +193,26 @@ class VsBotController extends ChangeNotifier {
   void submitAnswer(String answer) {
     if (_state.phase != VsBotPhase.racing) return;
 
-    final player = GameService.findPlayer(
-      matchingPlayers: _state.matchingPlayers,
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
       answer: answer,
+      excludedPlayerIds: _state.allFoundIds,
     );
 
-    if (player == null) {
+    if (resolved.status == ResolveStatus.ambiguous) {
+      _feedback(resolved.message, false);
+      return;
+    }
+
+    if (!resolved.isFound) {
       _feedback('Yanlış veya geçersiz.', false);
+      return;
+    }
+
+    final player = resolved.player!;
+
+    if (!_state.matchingPlayers.any((p) => p.id == player.id)) {
+      _feedback('${player.name} bu eşleşmeye uymuyor.', false);
       return;
     }
 

@@ -124,17 +124,24 @@ class GridController extends ChangeNotifier {
   /// Girilen ismi, o hücrenin kriterlerine uyan ve henüz kullanılmamış
   /// oyuncular arasında arar. Bulursa oyuncuyu döner, bulamazsa null.
   Player? submitGuess(int index, String answer) {
-    final row = _state.rowCriteria[index ~/ 3];
-    final col = _state.colCriteria[index % 3];
-    final used = _state.usedPlayerIds;
+  final row = _state.rowCriteria[index ~/ 3];
+  final col = _state.colCriteria[index % 3];
+  final used = _state.usedPlayerIds;
 
-    final candidates = Repository.instance.players
-        .where((p) => !used.contains(p.id))
-        .where((p) => row.matches(p) && col.matches(p))
-        .toList();
+  final resolved = SearchService.resolve(
+    players: Repository.instance.players,
+    answer: answer,
+    excludedPlayerIds: used,
+  );
+  if (!resolved.isFound) return null;
 
-    return SearchService.findExactPlayer(players: candidates, answer: answer);
-  }
+  final player = resolved.player!;
+
+  // Hücre kriterine uyuyor mu?
+  if (!row.matches(player) || !col.matches(player)) return null;
+
+  return player;
+}
 
   void assignPlayer(int index, Player player) {
     final newCells = List<GridCellState>.from(_state.cells);

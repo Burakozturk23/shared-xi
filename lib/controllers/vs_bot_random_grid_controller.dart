@@ -43,6 +43,7 @@ class VsBotRandomGridController extends ChangeNotifier {
     _disposed = true;
     _botTimer?.cancel();
     _feedbackTimer?.cancel();
+    grid.dispose();
     super.dispose();
   }
 
@@ -59,7 +60,7 @@ class VsBotRandomGridController extends ChangeNotifier {
       _setFeedback('Oyuncu uymuyor.', false);
       grid.cancelPending();
       _safeNotify();
-      Future.delayed(const Duration(milliseconds: 100), _passToBot);
+      _schedulePassToBot();
       return false;
     }
     grid.confirmPendingPlayer(player);
@@ -81,7 +82,7 @@ class VsBotRandomGridController extends ChangeNotifier {
       _safeNotify();
       return;
     }
-    Future.delayed(const Duration(milliseconds: 100), _passToBot);
+    _schedulePassToBot();
   }
 
   bool userSubmitCell(int index, String answer) {
@@ -92,7 +93,7 @@ class VsBotRandomGridController extends ChangeNotifier {
     if (player == null) {
       _setFeedback('Yanlış.', false);
       _safeNotify();
-      Future.delayed(const Duration(milliseconds: 100), _passToBot);
+      _schedulePassToBot();
       return false;
     }
     grid.assignPlayer(index, player);
@@ -105,7 +106,7 @@ class VsBotRandomGridController extends ChangeNotifier {
       _safeNotify();
       return true;
     }
-    Future.delayed(const Duration(milliseconds: 100), _passToBot);
+    _schedulePassToBot();
     return true;
   }
 
@@ -113,6 +114,11 @@ class VsBotRandomGridController extends ChangeNotifier {
     if (_disposed) return;
     grid.cancelPending();
     _safeNotify();
+  }
+
+  void _schedulePassToBot() {
+    _botTimer?.cancel();
+    _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);
   }
 
   void _passToBot() {

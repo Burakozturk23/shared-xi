@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
-import '../controllers/cinko_controller.dart';
+import '../controllers/vs_bot_cinko_controller.dart';
 import '../models/cinko_models.dart';
 import '../models/cinko_state.dart';
 import '../theme/app_theme.dart';
 
-class CinkoPage extends StatefulWidget {
+class VsBotCinkoPage extends StatefulWidget {
   final int gridSize;
 
-  const CinkoPage({super.key, this.gridSize = 5});
+  const VsBotCinkoPage({super.key, this.gridSize = 5});
 
   @override
-  State<CinkoPage> createState() => _CinkoPageState();
+  State<VsBotCinkoPage> createState() => _VsBotCinkoPageState();
 }
 
-class _CinkoPageState extends State<CinkoPage> {
-  late final CinkoController _controller;
+class _VsBotCinkoPageState extends State<VsBotCinkoPage> {
+  late final VsBotCinkoController _controller;
   final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = CinkoController(gridSize: widget.gridSize)
+    _controller = VsBotCinkoController(gridSize: widget.gridSize)
       ..addListener(_onChanged);
     _controller.initialize();
   }
@@ -49,35 +49,57 @@ class _CinkoPageState extends State<CinkoPage> {
       );
     }
 
-    if (s.phase == CinkoPhase.gameOver) {
-      return _buildGameOver(s);
+    if (_controller.turn == VsBotCinkoTurn.gameOver ||
+        s.phase == CinkoPhase.gameOver) {
+      return _buildGameOver();
     }
+
+    final isBot = _controller.turn == VsBotCinkoTurn.bot;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Futbol Çinko'),
+        title: const Text('Bot · Futbol Çinko'),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: Text(
-                'Skor: ${s.score}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _ScoreBox(
+                      title: 'Sen',
+                      score: _controller.userScore,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      isBot ? 'Bot…' : 'Sıra sende',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: isBot
+                            ? Colors.orangeAccent
+                            : AppTheme.primaryColor,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: _ScoreBox(
+                      title: 'Bot',
+                      score: _controller.botScore,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -92,11 +114,19 @@ class _CinkoPageState extends State<CinkoPage> {
                         fontWeight: FontWeight.w700,
                         color: AppTheme.primaryColor,
                       ),
+                    )
+                  else if (_controller.lastBotInfo != null)
+                    Text(
+                      _controller.lastBotInfo!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.redAccent,
+                      ),
                     ),
                 ],
               ),
             ),
-            Expanded(child: _buildGrid(s)),
+            Expanded(child: _buildGrid(s, interactive: !isBot)),
             if (s.feedback != null)
               Padding(
                 padding:
@@ -112,32 +142,59 @@ class _CinkoPageState extends State<CinkoPage> {
                   ),
                 ),
               ),
-            _buildBottomPanel(s),
+            if (!isBot) _buildBottomPanel(s) else _botWaitingPanel(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGrid(CinkoState s) {
+  Widget _botWaitingPanel() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      decoration: const BoxDecoration(
+        color: AppTheme.cardColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          SizedBox(width: 12),
+          Text(
+            'Bot oynuyor…',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppTheme.hintColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGrid(CinkoState s, {required bool interactive}) {
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: s.cells.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: s.gridSize,
-              crossAxisSpacing: 4,
-              mainAxisSpacing: 4,
-            ),
-            itemBuilder: (context, index) {
-              return _CellTile(
-                cell: s.cells[index],
-                onTap: () => _controller.toggleCell(index),
-              );
-            },
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: s.cells.length,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: s.gridSize,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+        ),
+        itemBuilder: (context, index) {
+          return _CellTile(
+            cell: s.cells[index],
+            onTap: interactive
+                ? () => _controller.toggleCell(index)
+                : () {},
           );
         },
       ),
@@ -193,7 +250,7 @@ class _CinkoPageState extends State<CinkoPage> {
           ],
           if (selecting) ...[
             const Text(
-              'Bağlantılı kutuları seç, sonra onayla',
+              'Komşu kutuları seç (yan / üst-alt, L olur; çapraz yok)',
               style: TextStyle(color: AppTheme.hintColor, fontSize: 13),
             ),
             const SizedBox(height: 10),
@@ -226,7 +283,13 @@ class _CinkoPageState extends State<CinkoPage> {
     );
   }
 
-  Widget _buildGameOver(CinkoState s) {
+  Widget _buildGameOver() {
+    final userWon = _controller.userScore > _controller.botScore;
+    final draw = _controller.userScore == _controller.botScore;
+    final title = draw
+        ? 'Berabere'
+        : (userWon ? 'Kazandın! 🏆' : 'Bot Kazandı');
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(title: const Text('Çinko Bitti')),
@@ -236,20 +299,23 @@ class _CinkoPageState extends State<CinkoPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.grid_on, size: 64, color: AppTheme.primaryColor),
-              const SizedBox(height: 16),
               Text(
-                'Skor: ${s.score}',
+                title,
                 style: const TextStyle(
-                  fontSize: 32,
+                  fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: AppTheme.textColor,
                 ),
               ),
+              const SizedBox(height: 12),
+              Text(
+                'Sen ${_controller.userScore}  –  Bot ${_controller.botScore}',
+                style: const TextStyle(fontSize: 20, color: AppTheme.hintColor),
+              ),
               const SizedBox(height: 8),
-              const Text(
-                'Tüm kutular boyandı!',
-                style: TextStyle(color: AppTheme.hintColor),
+              Text(
+                'Boya: ${_controller.state.paintedCount}/${_controller.state.totalCells}',
+                style: const TextStyle(color: AppTheme.hintColor),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -281,6 +347,40 @@ class _CinkoPageState extends State<CinkoPage> {
   }
 }
 
+class _ScoreBox extends StatelessWidget {
+  final String title;
+  final int score;
+  final Color color;
+
+  const _ScoreBox({
+    required this.title,
+    required this.score,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        children: [
+          Text(title,
+              style: TextStyle(
+                  color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+          Text('$score',
+              style: TextStyle(
+                  color: color, fontWeight: FontWeight.w800, fontSize: 22)),
+        ],
+      ),
+    );
+  }
+}
+
 class _CellTile extends StatelessWidget {
   final CinkoCell cell;
   final VoidCallback onTap;
@@ -301,8 +401,14 @@ class _CellTile extends StatelessWidget {
         border = AppTheme.primaryColor;
         break;
       case CinkoCellStatus.correct:
-        bg = Colors.green.withValues(alpha: 0.35);
-        border = Colors.green;
+        // Kullanıcı = mavi/primary, Bot = kırmızı
+        if (cell.owner == 2) {
+          bg = Colors.redAccent.withValues(alpha: 0.30);
+          border = Colors.redAccent;
+        } else {
+          bg = AppTheme.primaryColor.withValues(alpha: 0.30);
+          border = AppTheme.primaryColor;
+        }
         break;
       case CinkoCellStatus.wrongFlash:
         bg = Colors.red.withValues(alpha: 0.35);

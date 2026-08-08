@@ -79,7 +79,17 @@ class CareerPuzzleController extends ChangeNotifier {
     final target = _state.target;
     if (target == null) return;
 
-    if (SearchService.matches(target, answer)) {
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: answer,
+    );
+
+    if (resolved.status == ResolveStatus.ambiguous) {
+      _feedback(resolved.message, false);
+      return;
+    }
+
+    if (resolved.isFound && resolved.player!.id == target.id) {
       _state = _state.copyWith(phase: CareerPuzzlePhase.orderingCareer);
       notifyListeners();
     } else {

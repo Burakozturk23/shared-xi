@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../controllers/vs_bot_reverse_grid_controller.dart';
 import '../theme/app_theme.dart';
 
+/// Bot'a karşı tersten grid — tahmin sayfa içinde (bottom sheet yok).
 class VsBotReverseGridPage extends StatefulWidget {
   const VsBotReverseGridPage({super.key});
 
@@ -12,89 +13,68 @@ class VsBotReverseGridPage extends StatefulWidget {
 
 class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
   late final VsBotReverseGridController _c;
+  final TextEditingController _answerController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  /// 0-2 satır, 3-5 sütun
+  int? _selectedAxis;
 
   @override
-void initState() {
-  super.initState();
-  _c = VsBotGridController()..addListener(_onChanged); // isim page’e göre
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted) _c.initialize();
-  });
-}
+  void initState() {
+    super.initState();
+    _c = VsBotReverseGridController()..addListener(_onChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _c.initialize();
+    });
+  }
 
-  void _refresh() {
-    if (mounted) setState(() {});
+  void _onChanged() {
+    if (!mounted) return;
+    if (_c.turn != VsBotReverseTurn.user && _selectedAxis != null) {
+      _selectedAxis = null;
+      _answerController.clear();
+    }
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _c.removeListener(_refresh);
+    _c.removeListener(_onChanged);
     _c.dispose();
+    _answerController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  void _guessAxis(int axis, {required bool isRow}) {
+  void _selectAxis(int axis) {
     if (_c.turn != VsBotReverseTurn.user || !_c.isAxisOpen(axis)) return;
+    setState(() {
+      _selectedAxis = axis;
+      _answerController.clear();
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
+  }
 
-    final controller = TextEditingController();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppTheme.cardColor,
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                isRow
-                    ? 'Satır ${axis + 1} ortak noktası'
-                    : 'Sütun ${axis - 2} ortak noktası',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: AppTheme.textColor,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: controller,
-                autofocus: true,
-                style: const TextStyle(color: AppTheme.textColor),
-                decoration: const InputDecoration(
-                  hintText: 'Kulüp / ülke / mevki / gol...',
-                ),
-                onSubmitted: (v) {
-  Navigator.pop(ctx);
-  Future.microtask(() => _c.submitUserGuess(axis, v));
-},
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                 onPressed: () {
-  final text = controller.text;
-  Navigator.pop(ctx);
-  Future.microtask(() => _c.submitUserGuess(axis, text));
-},
-                  child: const Text('ONAYLA',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    ).whenComplete(controller.dispose);
+  void _cancelSelection() {
+    setState(() {
+      _selectedAxis = null;
+      _answerController.clear();
+    });
+    _focusNode.unfocus();
+  }
+
+  void _submit() {
+    final axis = _selectedAxis;
+    if (axis == null) return;
+    if (_c.turn != VsBotReverseTurn.user) return;
+
+    final text = _answerController.text;
+    _answerController.clear();
+    _selectedAxis = null;
+    _focusNode.unfocus();
+    _c.submitUserGuess(axis, text);
   }
 
   @override
@@ -112,10 +92,24 @@ void initState() {
 
     final s = _c.puzzle;
     if (s.cellPlayers.length < 9) {
-      return const Scaffold(
-        body: Center(child: Text('Grid üretilemedi, geri dönüp tekrar dene.')),
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        appBar: AppBar(title: const Text('Bot · Tersten Grid')),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              'Grid üretilemedi, geri dönüp tekrar dene.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppTheme.textColor),
+            ),
+          ),
+        ),
       );
     }
+
+    final axis = _selectedAxis;
+    final isRow = axis != null && axis < 3;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
@@ -142,6 +136,19 @@ void initState() {
                     ),
                   ),
                 ),
+              if (axis != null && _c.turn == VsBotReverseTurn.user) ...[
+                const SizedBox(height: 8),
+                _GuessBar(
+                  label: isRow
+                      ? 'Satır ${axis + 1} ortak noktası'
+                      : 'Sütun ${axis - 2} ortak noktası',
+                  hint: 'Kulüp / ülke / mevki / gol...',
+                  controller: _answerController,
+                  focusNode: _focusNode,
+                  onSubmit: _submit,
+                  onCancel: _cancelSelection,
+                ),
+              ],
               const SizedBox(height: 10),
               Expanded(child: _board()),
             ],
@@ -154,9 +161,7 @@ void initState() {
   Widget _scoreBar() {
     return Row(
       children: [
-        Expanded(
-          child: _chip('Sen', _c.userScore, AppTheme.primaryColor),
-        ),
+        Expanded(child: _chip('Sen', _c.userScore, AppTheme.primaryColor)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
@@ -169,9 +174,7 @@ void initState() {
             ),
           ),
         ),
-        Expanded(
-          child: _chip('Bot', _c.botScore, Colors.redAccent),
-        ),
+        Expanded(child: _chip('Bot', _c.botScore, Colors.redAccent)),
       ],
     );
   }
@@ -273,16 +276,25 @@ void initState() {
     final open = owner == 0;
     final color = _ownerColor(owner);
     final canTap = _c.turn == VsBotReverseTurn.user && open;
+    final selected = _selectedAxis == axis;
 
     return Material(
-      color: owner == 0 ? AppTheme.cardColor : color.withValues(alpha: 0.2),
+      color: selected
+          ? AppTheme.primaryColor.withValues(alpha: 0.2)
+          : (owner == 0 ? AppTheme.cardColor : color.withValues(alpha: 0.2)),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: canTap ? () => _guessAxis(axis, isRow: axis < 3) : null,
+        onTap: canTap ? () => _selectAxis(axis) : null,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: selected
+                ? Border.all(color: AppTheme.primaryColor, width: 2)
+                : null,
+          ),
           child: Text(
             label,
             textAlign: TextAlign.center,
@@ -291,7 +303,7 @@ void initState() {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: color,
+              color: selected ? AppTheme.primaryColor : color,
             ),
           ),
         ),
@@ -349,6 +361,80 @@ void initState() {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GuessBar extends StatelessWidget {
+  final String label;
+  final String hint;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final VoidCallback onSubmit;
+  final VoidCallback onCancel;
+
+  const _GuessBar({
+    required this.label,
+    required this.hint,
+    required this.controller,
+    required this.focusNode,
+    required this.onSubmit,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppTheme.cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                color: AppTheme.textColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: controller,
+              focusNode: focusNode,
+              autofocus: true,
+              style: const TextStyle(color: AppTheme.textColor),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => onSubmit(),
+              decoration: InputDecoration(hintText: hint),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onCancel,
+                    child: const Text('İptal'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: onSubmit,
+                    child: const Text(
+                      'ONAYLA',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

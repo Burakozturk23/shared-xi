@@ -137,7 +137,7 @@ class _BlindRankingPageState extends State<BlindRankingPage> {
                 ),
                 Expanded(
                   child: Text(
-                    filled ? player!.name : 'Boş - dokun ve yerleştir',
+                    filled ? player.name : 'Boş - dokun ve yerleştir',
                     style: TextStyle(
                       fontWeight: filled ? FontWeight.w600 : FontWeight.normal,
                       color: filled ? null : Colors.white38,

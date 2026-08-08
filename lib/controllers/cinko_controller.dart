@@ -147,18 +147,22 @@ class CinkoController extends ChangeNotifier {
     final name = raw.trim();
     if (name.isEmpty) return;
 
-    Player? found;
-    for (final p in Repository.instance.players) {
-      if (SearchService.matches(p, name)) {
-        found = p;
-        break;
-      }
-    }
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: name,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
 
-    if (found == null) {
+    if (resolved.status == ResolveStatus.ambiguous) {
+      _feedback(resolved.message, false);
+      return;
+    }
+    if (!resolved.isFound) {
       _feedback('Oyuncu bulunamadı.', false);
       return;
     }
+
+    final found = resolved.player!;
 
     if (_state.usedPlayerIds.contains(found.id)) {
       _feedback('Bu oyuncu daha önce kullanıldı.', false);
@@ -167,7 +171,7 @@ class CinkoController extends ChangeNotifier {
 
     final hasMatch = _state.cells.any(
       (c) =>
-          c.status == CinkoCellStatus.open && _playerMatchesCell(found!, c),
+          c.status == CinkoCellStatus.open && _playerMatchesCell(found, c),
     );
     if (!hasMatch) {
       _feedback('Bu oyuncunun bu ızgarada eşleşen kutusu yok.', false);

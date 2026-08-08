@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
-import 'cinko_page.dart';
-import 'random_five_page.dart';
+import 'vs_bot_cinko_page.dart';
 import 'vs_bot_club_selection_page.dart';
 import 'vs_bot_grid_mode_selection_page.dart';
+import 'vs_bot_random_five_page.dart';
 
 class VsBotModeSelectionPage extends StatelessWidget {
   const VsBotModeSelectionPage({super.key});
@@ -25,14 +25,11 @@ class VsBotModeSelectionPage extends StatelessWidget {
             style: TextStyle(fontSize: 16, color: AppTheme.hintColor),
           ),
           const SizedBox(height: 20),
-
-          // 1) Takım Yarışı (bot)
           _ModeCard(
             icon: Icons.smart_toy_rounded,
             accent: const Color(0xFFE91E63),
             title: 'Takım Yarışı',
-            subtitle:
-                'Takımını seç, bot ile ortak oyuncu bul',
+            subtitle: 'Takımını seç, bot ile ortak oyuncu bul',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -41,47 +38,41 @@ class VsBotModeSelectionPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-
-          // 2) 3×3 Grid (mevcut)
           _ModeCard(
             icon: Icons.grid_view_rounded,
             accent: const Color(0xFF3F51B5),
             title: '3×3 Grid',
             subtitle: 'Klasik · Tersten · Rastgele Eşleşme',
             onTap: () => Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => const VsBotGridModeSelectionPage(),
-  ),
-),
-          ),
-          const SizedBox(height: 14),
-
-          // 3) Futbol Çinko
-          _ModeCard(
-            icon: Icons.grid_on_rounded,
-            accent: const Color(0xFF00BCD4),
-            title: 'Futbol Çinko',
-            subtitle: 'Izgara boya, kariyer bağlantılarını bul',
-            onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const CinkoPage(),
+                builder: (_) => const VsBotGridModeSelectionPage(),
               ),
             ),
           ),
           const SizedBox(height: 14),
-
-          // 4) Rastgele Beşler (mevcut)
+          _ModeCard(
+            icon: Icons.grid_on_rounded,
+            accent: const Color(0xFF00BCD4),
+            title: 'Futbol Çinko',
+            subtitle: 'Bot ile sırayla ızgarayı boya',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const VsBotCinkoPage(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
           _ModeCard(
             icon: Icons.casino_rounded,
             accent: const Color(0xFFFF9800),
             title: 'Rastgele Beşler',
-            subtitle: '5 rastgele kulüp, mümkün olduğunca çok oyuncu bul',
+            subtitle: 'Aynı 5 kulüp · 5’er tur bot ile yarış',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const RandomFivePage(),
+                builder: (_) => const VsBotRandomFivePage(),
               ),
             ),
           ),
