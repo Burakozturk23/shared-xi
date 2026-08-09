@@ -78,7 +78,7 @@ final List<StoryChapter> dynastiesChapters = [
   ),
   StoryChapter(
     number: 6,
-    title: "Avrupa'nın İlk Krallığı: Di Stéfano'nun Real Madrid'i",
+    title: "Beyaz Bale",
     matchLabel: '1956 - 1960',
     narrative:
         "Şampiyon Kulüpler Kupası'nın kurulduğu ilk yıldan itibaren kupaya tam ambargo! Real Madrid, organizasyonun ilk 5 turnuvasını da (1956, 1957, 1958, 1959, 1960) kazanarak kırılması imkansız bir rekor kırdı.",
@@ -213,4 +213,44 @@ final List<StoryChapter> dynastiesChapters = [
       ),
     ],
   ),
+  // Bayern Münih (1974–1976)
+  StoryChapter(
+  number: 15,
+  title: "Alman Panzeri",
+  matchLabel: '1974 - 1976',
+  narrative:
+    "Alman futbolunun yükseliş dönemi! Bayern Münih, 1974, 1975 ve 1976 yıllarında Şampiyon Kulüpler Kupası'nı üst üste 3 kez müzesine götürerek Avrupa futboluna tam anlamıyla ambargo koydu.",
+  scenes: [
+    StoryScene.namedAnswer(
+      title: 'Der Kaiser & Der Bomber',
+      taskDescription:
+        "Bu efsanevi dönemin savunmadaki lideri 'Der Kaiser' lakaplı libero ile rekorları altüst eden golcü santraforu tahmin et.",
+      correctAnswers: ['Franz Beckenbauer', 'Gerd Müller'],
+    ), // StoryScene.namedAnswer
+  ],
+), // StoryChapter
+
+// Liverpool (1977–1984)
+  StoryChapter(
+  number: 16,
+  title: "Kırmızı Domination",
+  matchLabel: '1977 - 1984',
+  narrative:
+    "Bob Paisley ve Joe Fagan yönetimindeki Liverpool, 8 yıl içinde 4 Şampiyon Kulüpler Kupası kazanarak İngiliz futbolunun Avrupa'daki en büyük hegemonyasını kurdu.",
+  scenes: [
+    StoryScene.namedAnswer(
+      title: 'Anfield Efsaneleri',
+      taskDescription:
+        "Liverpool'un bu altın çağında 'King' lakabıyla tarihe geçen İskoç efsaneyi ve kulüp tarihinin en golcü oyuncusunu tahmin et.",
+      correctAnswers: ['Kenny Dalglish', 'Ian Rush'],
+    ), // StoryScene.namedAnswer
+  ], 
+),
+ 
+// StoryChapter
 ];
+final List<StoryChapter> dynastiesPart1Chapters =
+    dynastiesChapters.sublist(0, 8);
+
+final List<StoryChapter> dynastiesPart2Chapters =
+    dynastiesChapters.sublist(8);

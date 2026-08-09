@@ -189,7 +189,7 @@ const List<UclMoment> uclMoments = [
     clubIdB: 418,
   ),
   UclMoment(
-    year: '',
+    year: '2016',
     title: 'Beşiktaş - Benfica Gol Şöleni',
     narrative:
         "İki takımın karşılaşmasında toplam 6 gol görüldüğü çekişmeli bir maç yaşandı.",
@@ -198,7 +198,7 @@ const List<UclMoment> uclMoments = [
     clubIdB: 294,
   ),
   UclMoment(
-    year: '',
+    year: '1996',
     title: 'Fenerbahçe\'nin Old Trafford Sürprizi',
     narrative:
         "Fenerbahçe, İngiliz devi Manchester United'ı deplasmanda mağlup ederek büyük bir sürpriz gerçekleştirdi.",
