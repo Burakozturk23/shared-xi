@@ -8,6 +8,7 @@ import '../models/player_journey.dart';
 import '../models/player_journey_state.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/player_journey_progress_service.dart';
 
 class PlayerJourneyController extends ChangeNotifier {
   final PlayerJourneyDefinition journey;
@@ -209,6 +210,7 @@ class PlayerJourneyController extends ChangeNotifier {
         hintsUsed: clearHint ? 0 : _state.hintsUsed,
         clearHintTarget: clearHint,
       );
+      PlayerJourneyProgressService.markCompleted(journey.id);
       _feedback('${found.name} doğru! Hikaye tamamlandı! 🎉', true);
     } else if (stageComplete) {
       _state = _state.copyWith(

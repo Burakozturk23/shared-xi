@@ -6,7 +6,9 @@ import 'repositories/repository.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Repository.instance.initialize();
+  debugPrint('INIT start');
+await Repository.instance.initialize();
+debugPrint('INIT done');
 
   runApp(const SharedXIApp());
 }

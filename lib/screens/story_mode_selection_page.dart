@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'player_journey_list_page.dart';
+import 'player_journey_chapter_list_page.dart';
 import 'derby_day_country_page.dart';
 import 'ucl_moments_page.dart';
 import 'turkish_nostalgia_page.dart';
@@ -94,7 +94,7 @@ class StoryModeSelectionPage extends StatelessWidget {
   if (index == 0) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const PlayerJourneyListPage()),
+      MaterialPageRoute(builder: (_) => const PlayerJourneyChapterListPage()),
     );
     return;
   }
