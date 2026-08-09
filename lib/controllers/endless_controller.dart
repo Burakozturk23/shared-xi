@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
+import '../data/chain_pool.dart';
 import '../models/club.dart';
 import '../models/endless_state.dart';
 import '../models/match_entity.dart';
@@ -80,9 +81,20 @@ class EndlessController extends ChangeNotifier {
     await _finishGame();
   }
 
+  List<Club> _quizClubs() {
+    final list = chainClubPool
+        .map((id) => Repository.instance.clubById(id))
+        .whereType<Club>()
+        .toList();
+    if (list.length < 2) {
+      return List<Club>.from(Repository.instance.clubs);
+    }
+    return list;
+  }
+
   ({MatchEntity entity1, MatchEntity entity2, List<Player> matching})
       _generatePair() {
-    final clubs = Repository.instance.clubs;
+    final clubs = _quizClubs();
     final countries = Repository.instance.countries;
     final players = Repository.instance.players;
 

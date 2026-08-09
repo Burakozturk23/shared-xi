@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 
 import '../models/match_entity.dart';
 import '../models/streak_state.dart';
+import '../data/chain_pool.dart';
+import '../models/club.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
@@ -31,13 +33,28 @@ class StreakController extends ChangeNotifier {
     _feedbackTimer?.cancel();
   }
 
+  static const int _minSharedPlayers = 3;
+
+  /// Bilinen kulüpler (chain pool). DB silinmez; sadece soru filtresi.
+  List<Club> _quizClubs() {
+    final list = chainClubPool
+        .map((id) => Repository.instance.clubById(id))
+        .whereType<Club>()
+        .toList();
+    // Havuz boşsa (veri yüklenemediyse) tüm listeye düş
+    if (list.length < 2) {
+      return List<Club>.from(Repository.instance.clubs);
+    }
+    return list;
+  }
+
   void _nextRound({bool resetLivesAndStreak = false}) {
-    final clubs = Repository.instance.clubs;
+    final clubs = _quizClubs();
     final players = Repository.instance.players;
 
     var attempts = 0;
 
-    while (attempts < 300) {
+    while (attempts < 400) {
       attempts++;
 
       final club1 = clubs[_random.nextInt(clubs.length)];
@@ -54,7 +71,8 @@ class StreakController extends ChangeNotifier {
         entity2: entity2,
       );
 
-      if (found.isNotEmpty) {
+      // En az 3 ortak oyuncu → "imkânsız tek isim" turları azalır
+      if (found.length >= _minSharedPlayers) {
         _timer?.cancel();
 
         _state = _state.copyWith(

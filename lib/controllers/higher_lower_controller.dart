@@ -19,33 +19,72 @@ class HigherLowerController extends ChangeNotifier {
 
   Timer? _nextTimer;
 
-  late final List<Player> _pool;
+  /// final DEĞİL — restart initialize'ı tekrar çağırabilsin diye.
+  late List<Player> _pool;
+  bool _poolReady = false;
 
   String get _highScoreKey => criterion == HigherLowerCriterion.marketValue
       ? 'higher_lower_value_best'
       : 'higher_lower_goals_best';
 
+  /// Tanınır oyuncu eşiği.
+  /// Piyasa: zirve değer ≥ 20M € (~1500 isim)
+  /// Gol: kariyer ≥ 80 gol (~4500 isim)
+  static const double _minPeakValue = 20000000;
+  static const int _minCareerGoals = 80;
+
   Future<void> initialize() async {
-    _pool = Repository.instance.players.where((p) {
-      final v = criterion == HigherLowerCriterion.marketValue
-          ? p.peakMarketValue
-          : p.careerGoals.toDouble();
-      return v > 0;
-    }).toList();
+    if (!_poolReady) {
+      _pool = Repository.instance.players.where((p) {
+        if (criterion == HigherLowerCriterion.marketValue) {
+          return p.peakMarketValue >= _minPeakValue;
+        }
+        return p.careerGoals >= _minCareerGoals;
+      }).toList();
+
+      // Aşırı daralırsa eşiği gevşet
+      if (_pool.length < 80) {
+        _pool = Repository.instance.players.where((p) {
+          if (criterion == HigherLowerCriterion.marketValue) {
+            return p.peakMarketValue >= 10000000;
+          }
+          return p.careerGoals >= 50;
+        }).toList();
+      }
+
+      // Hâlâ boşsa en azından değeri/golü olanlar
+      if (_pool.isEmpty) {
+        _pool = Repository.instance.players.where((p) {
+          final v = criterion == HigherLowerCriterion.marketValue
+              ? p.peakMarketValue
+              : p.careerGoals.toDouble();
+          return v > 0;
+        }).toList();
+      }
+
+      _poolReady = true;
+    }
 
     final bestStreak = await HighScoreService.getHighScore(key: _highScoreKey);
+    _startNewGame(bestStreak: bestStreak);
+  }
+
+  void _startNewGame({required int bestStreak}) {
+    _nextTimer?.cancel();
 
     final first = _pool[_random.nextInt(_pool.length)];
     final next = _pickNext(exclude: first);
 
     _state = HigherLowerState(
       isLoading: false,
+      isGameOver: false,
       criterion: criterion,
       currentPlayer: first,
       nextPlayer: next,
+      streak: 0,
       bestStreak: bestStreak,
+      answered: false,
     );
-
     notifyListeners();
   }
 
@@ -59,12 +98,12 @@ class HigherLowerController extends ChangeNotifier {
     Player candidate;
     do {
       candidate = _pool[_random.nextInt(_pool.length)];
-    } while (candidate.id == exclude.id);
+    } while (candidate.id == exclude.id && _pool.length > 1);
     return candidate;
   }
 
   void guess(bool guessedHigher) {
-    if (_state.answered) return;
+    if (_state.answered || _state.isGameOver) return;
 
     final current = _state.currentPlayer!;
     final next = _state.nextPlayer!;
@@ -117,7 +156,9 @@ class HigherLowerController extends ChangeNotifier {
     });
   }
 
+  /// Tekrar dene — pool'u yeniden atamaz, sadece yeni maç başlatır.
   void restart() {
-    initialize();
+    _nextTimer?.cancel();
+    _startNewGame(bestStreak: _state.bestStreak);
   }
 }

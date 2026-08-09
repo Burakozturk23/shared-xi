@@ -40,7 +40,7 @@ class OddClubModeSelectionPage extends StatelessWidget {
                 leading: const Icon(Icons.timer, size: 32),
                 title: const Text('Süreli Mod',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                subtitle: const Text('Her soru için 5 saniye, adrenalin yüksek'),
+                subtitle: const Text('Her soru için 10 saniye, adrenalin yüksek'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
                   context,

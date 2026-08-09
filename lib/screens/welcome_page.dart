@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 import 'daily_challenge_page.dart';
 import 'match_type_selection_page.dart';
 import 'endless_mode_selection_page.dart';
-import 'chain_page.dart';
+import 'chain_mode_selection_page.dart';
 import 'mystery_player_page.dart';
 import 'odd_club_mode_selection_page.dart';
 import 'blind_ranking_page.dart';
@@ -99,7 +99,7 @@ class WelcomePage extends StatelessWidget {
                 title: 'Zincir',
                 subtitle: 'Kulüpler arasında oyuncu zinciri kur',
                 icon: Icons.link_rounded,
-                page: ChainPage(),
+                page:  ChainModeSelectionPage(),
               ),
           
               _ModeItem(

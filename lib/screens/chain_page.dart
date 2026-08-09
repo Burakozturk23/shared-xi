@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../controllers/chain_controller.dart';
 import '../models/chain_state.dart';
+import '../models/club.dart';
+
 
 class ChainPage extends StatefulWidget {
-  const ChainPage({super.key});
+  final ChainGameMode mode;
+
+  const ChainPage({super.key, this.mode = ChainGameMode.mastermind});
 
   @override
   State<ChainPage> createState() => _ChainPageState();
@@ -12,12 +16,12 @@ class ChainPage extends StatefulWidget {
 
 class _ChainPageState extends State<ChainPage> {
   late final ChainController _controller;
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _search = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = ChainController()..addListener(_onChanged);
+    _controller = ChainController(mode: widget.mode)..addListener(_onChanged);
     _controller.initialize();
   }
 
@@ -29,200 +33,230 @@ class _ChainPageState extends State<ChainPage> {
   @override
   void dispose() {
     _controller.removeListener(_onChanged);
-    _controller.dispose();
-    _searchController.dispose();
+    _controller.disposeController();
+    _search.dispose();
     super.dispose();
-  }
-
-  void _restart() {
-    _searchController.clear();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const ChainPage()),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = _controller.state;
-
-    if (state.isLoading || state.startClub == null || state.targetClub == null) {
+    final s = _controller.state;
+    if (s.isLoading || s.startClub == null || s.targetClub == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (state.isSolved) return _buildResult(state, success: true);
-    if (state.isFailed) return _buildResult(state, success: false);
+    if (s.isSolved || s.isFailed) {
+      return _result(s);
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zincir Modu'),
+        title: const Text('Kariyer Zinciri'),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: ListView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildTargetCard(state),
-              const SizedBox(height: 16),
-              _buildChainVisual(state),
-              const SizedBox(height: 16),
+          children: [
+            _header(s),
+            const SizedBox(height: 12),
+            _path(s),
+            const SizedBox(height: 12),
+            if (s.bridgeHint != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text('💡 ${s.bridgeHint}',
+                    style: const TextStyle(color: Colors.amber)),
+              ),
+            if (s.phase == ChainPhase.pickingPlayer) _playerSearch(s),
+            if (s.phase == ChainPhase.pickingNextClub) _clubPicker(s),
+            const SizedBox(height: 12),
+            _jokers(s),
+            if (s.feedback != null) ...[
+              const SizedBox(height: 8),
               Text(
-                'Hamle: ${state.moves} / ${ChainState.maxMoves}',
+                s.feedback!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              if (state.phase == ChainPhase.pickingPlayer)
-                _buildPlayerPicker(state)
-              else
-                _buildClubPicker(state),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTargetCard(ChainState state) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  const Text('Başlangıç',
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  const SizedBox(height: 4),
-                  Text(state.startClub!.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward),
-            Expanded(
-              child: Column(
-                children: [
-                  const Text('Hedef',
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  const SizedBox(height: 4),
-                  Text(state.targetClub!.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.amber)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChainVisual(ChainState state) {
-    final nodes = <Widget>[
-      _ChainNodeChip(label: state.startClub!.name, isClub: true),
-    ];
-
-    for (final link in state.links) {
-      nodes.add(const _ChainConnector());
-      nodes.add(_ChainNodeChip(label: link.player.name, isClub: false));
-      nodes.add(const _ChainConnector());
-      nodes.add(_ChainNodeChip(label: link.toClub.name, isClub: true));
-    }
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: nodes,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlayerPicker(ChainState state) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              '${state.currentClub!.name} formasını giymiş bir oyuncu ara',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _searchController,
-              onChanged: _controller.updatePlayerQuery,
-              decoration: const InputDecoration(
-                hintText: 'Oyuncu adı yaz...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (state.playerCandidates.isNotEmpty)
-              ...state.playerCandidates.map(
-                (player) => ListTile(
-                  dense: true,
-                  title: Text(player.name),
-                  subtitle: Text('${player.position} • ${player.countryLabel}'),
-                  onTap: () {
-                    _controller.selectPlayer(player);
-                    _searchController.clear();
-                  },
+                style: TextStyle(
+                  color: s.feedbackSuccess ? Colors.greenAccent : Colors.orange,
                 ),
-              )
-            else if (state.playerQuery.trim().isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text('Sonuç yok, başka bir isim dene.',
-                    style: TextStyle(color: Colors.grey)),
               ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildClubPicker(ChainState state) {
+  Widget _header(ChainState s) {
+    final modeLabel =
+        s.mode == ChainGameMode.blitz ? 'Blitz' : 'Mastermind';
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    '${state.selectedPlayer!.name} hangi kulübe geçsin?',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-                TextButton(
-                  onPressed: _controller.cancelPlayerSelection,
-                  child: const Text('Geri'),
-                ),
+                Text('🧠 $modeLabel',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                const Spacer(),
+                if (s.mode == ChainGameMode.blitz)
+                  Text('⏱️ ${s.secondsLeft}s')
+                else
+                  Text('Par: ${s.par}  |  Hamle: ${s.moves}'),
+                const SizedBox(width: 10),
+                Text('🪙 ${s.coins}'),
               ],
             ),
-            const SizedBox(height: 12),
-            ...state.nextClubOptions.map(
-              (club) => ListTile(
-                title: Text(club.name),
-                subtitle: Text(club.league),
-                trailing: club.id == state.targetClub!.id
-                    ? const Icon(Icons.flag, color: Colors.amber)
-                    : null,
-                onTap: () => _controller.selectNextClub(club),
+            const SizedBox(height: 6),
+            Text(
+              'Hedef: en kısa yoldan bağla',
+              style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+            ),
+            Text('Puan: ${s.sessionScore}  •  Seri: ${s.streak}'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _clubChip(Club club, {bool highlight = false}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (club.logo.isNotEmpty)
+          Image.network(
+            club.logo,
+            width: 22,
+            height: 22,
+            errorBuilder: (c, e, st) => const Icon(Icons.circle, size: 12),
+          )
+        else
+          Icon(Icons.circle,
+              size: 12, color: highlight ? Colors.amber : Colors.redAccent),
+        const SizedBox(width: 6),
+        Text(club.name,
+            style: TextStyle(
+              fontWeight: highlight ? FontWeight.bold : FontWeight.w500,
+            )),
+      ],
+    );
+  }
+
+  Widget _path(ChainState s) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _clubChip(s.startClub!, highlight: true),
+            for (final link in s.links) ...[
+              const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text('|', style: TextStyle(color: Colors.grey)),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Text('👤 ${link.player.name}',
+                    style: const TextStyle(color: Colors.lightBlueAccent)),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text('|', style: TextStyle(color: Colors.grey)),
+              ),
+              _clubChip(link.toClub),
+            ],
+            if (s.currentClub?.id != s.targetClub?.id) ...[
+              const Padding(
+                padding: EdgeInsets.only(left: 8, top: 4),
+                child: Text('↓', style: TextStyle(color: Colors.grey)),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Text('? Köprü → ', style: TextStyle(color: Colors.grey)),
+                  _clubChip(s.targetClub!, highlight: true),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _playerSearch(ChainState s) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Şu an: ${s.currentClub?.name} — oyuncu seç',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            if (s.nationalWildcardActive)
+              const Text('🌐 Milli joker aktif',
+                  style: TextStyle(color: Colors.amber, fontSize: 12)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _search,
+              onChanged: (q) {
+                _controller.updatePlayerQuery(q);
+              },
+              decoration: const InputDecoration(
+                hintText: 'Oyuncu ara...',
+                border: OutlineInputBorder(),
+                isDense: true,
+              ),
+            ),
+            if (s.playerCandidates.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              ...s.playerCandidates.map(
+                (p) => ListTile(
+                  dense: true,
+                  title: Text(p.name),
+                  onTap: () {
+                    _search.clear();
+                    _controller.selectPlayer(p);
+                  },
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _clubPicker(ChainState s) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              '${s.selectedPlayer?.name} → hangi kulüp?',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            TextButton(
+              onPressed: _controller.cancelPlayerSelection,
+              child: const Text('Oyuncu seçimini iptal'),
+            ),
+            ...s.nextClubOptions.map(
+              (c) => ListTile(
+                leading: c.logo.isNotEmpty
+                    ? Image.network(c.logo, width: 28, height: 28,
+                        errorBuilder: (a, b, c) => const Icon(Icons.shield))
+                    : const Icon(Icons.shield),
+                title: Text(c.name),
+                subtitle: Text(c.league.isNotEmpty ? c.league : c.country),
+                onTap: () => _controller.selectNextClub(c),
               ),
             ),
           ],
@@ -231,133 +265,66 @@ class _ChainPageState extends State<ChainPage> {
     );
   }
 
-  Widget _buildResult(ChainState state, {required bool success}) {
+  Widget _jokers(ChainState s) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.center,
+      children: [
+        OutlinedButton.icon(
+          onPressed: _controller.useBridgeHint,
+          icon: const Icon(Icons.lightbulb_outline, size: 16),
+          label: const Text('İpucu (10🪙)'),
+        ),
+        OutlinedButton.icon(
+          onPressed: _controller.undo,
+          icon: const Icon(Icons.undo, size: 16),
+          label: const Text('Geri Al'),
+        ),
+        OutlinedButton.icon(
+          onPressed: _controller.useNationalWildcard,
+          icon: const Icon(Icons.public, size: 16),
+          label: const Text('Milli (15🪙)'),
+        ),
+      ],
+    );
+  }
+
+  Widget _result(ChainState s) {
+    final ok = s.isSolved;
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(success ? 'Hedefe Ulaştın!' : 'Hamle Bitti'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Kariyer Zinciri')),
       body: Center(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Card(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    success ? Icons.emoji_events : Icons.close,
-                    size: 64,
-                    color: success ? Colors.amber : Colors.redAccent,
-                  ),
-                  const SizedBox(height: 16),
-                  if (success) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(3, (i) {
-                        return Icon(
-                          i < state.stars ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                          size: 32,
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 16),
-                    Text('${state.moves} hamlede tamamlandı',
-                        style: const TextStyle(fontSize: 16)),
-                    const SizedBox(height: 8),
-                    Text('Skor: ${state.totalScore}',
-                        style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text(
-                      '(Baz: ${state.basePoints} + Nadirlik bonusu: ${state.rarityBonusTotal})',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ] else ...[
-                    Text(
-                      '${ChainState.maxMoves} hamle içinde ${state.targetClub!.name}\'e ulaşamadın.',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                  const SizedBox(height: 28),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _restart,
-                      child: const Text('YENİ ZİNCİR',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton(
-                      onPressed: () =>
-                          Navigator.popUntil(context, (r) => r.isFirst),
-                      child: const Text('ANA MENÜ'),
-                    ),
-                  ),
-                ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(ok ? Icons.emoji_events : Icons.timer_off,
+                  size: 56, color: ok ? Colors.amber : Colors.grey),
+              const SizedBox(height: 12),
+              Text(ok ? 'Tamamlandı!' : 'Bitti',
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold)),
+              Text('${s.startClub?.name} → ${s.targetClub?.name}'),
+              Text('Hamle: ${s.moves}  •  Par: ${s.par}'),
+              Text('Oturum puanı: ${s.sessionScore}'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  _search.clear();
+                  _controller.newPuzzle();
+                },
+                child: const Text('YENİ ZİNCİR'),
               ),
-            ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('ANA MENÜ'),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ChainNodeChip extends StatelessWidget {
-  final String label;
-  final bool isClub;
-
-  const _ChainNodeChip({required this.label, required this.isClub});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: isClub
-            ? Colors.blue.withValues(alpha: 0.15)
-            : Colors.green.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isClub ? Colors.blue : Colors.green,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isClub ? Icons.shield : Icons.person,
-            size: 16,
-            color: isClub ? Colors.blue : Colors.green,
-          ),
-          const SizedBox(width: 6),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChainConnector extends StatelessWidget {
-  const _ChainConnector();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
-      child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
     );
   }
 }
