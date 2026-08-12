@@ -57,7 +57,12 @@ class Player {
       position: json['position']?.toString() ?? '',
       detailedPosition: json['detailedPosition']?.toString() ?? '',
 
-      clubs: clubsJson.map((e) => (e as num).toInt()).toList(),
+      // clubs + careerTimeline birleşimi (eksik kulüp ID kaybını önler)
+      clubs: {
+        for (final e in clubsJson) (e as num).toInt(),
+        for (final e in timelineJson)
+          if (e is Map && e['clubId'] != null) (e['clubId'] as num).toInt(),
+      }.toList(),
       nationalTeams: nationalJson.map((e) => (e as num).toInt()).toList(),
       primaryNationalTeamId: (json['primaryNationalTeamId'] as num?)?.toInt(),
 

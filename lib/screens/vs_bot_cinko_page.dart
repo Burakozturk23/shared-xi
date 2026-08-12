@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/network_logo.dart';
 
 import '../widgets/country_badge.dart';
 import '../widgets/league_badge.dart';
@@ -466,10 +467,11 @@ class _CellTile extends StatelessWidget {
                 LeagueBadge(league: cell.label, size: 28)
               else if (cell.logoUrl != null && cell.logoUrl!.isNotEmpty)
                 Expanded(
-                  child: Image.network(
-                    cell.logoUrl!,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Icon(
+                  child: NetworkLogo(
+                    url: cell.logoUrl,
+                    width: 36,
+                    height: 36,
+                    fallback: Icon(
                       _typeIcon(cell.type),
                       size: 22,
                       color: AppTheme.hintColor,

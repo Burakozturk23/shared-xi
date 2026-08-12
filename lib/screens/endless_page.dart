@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/network_logo.dart';
 
 import '../widgets/country_badge.dart';
 
@@ -534,26 +535,13 @@ class _EntityTile extends StatelessWidget {
     return Column(
       children: [
         if (entity.type == MatchEntityType.club)
-          ClipOval(
-            child: Image.network(
-              entity.logoUrl ?? '',
-              height: 52,
-              width: 52,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return const SizedBox(
-                  height: 52,
-                  width: 52,
-                  child: Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.sports_soccer, size: 52);
-              },
-            ),
+          NetworkLogo(
+            url: entity.logoUrl,
+            width: 52,
+            height: 52,
+            fit: BoxFit.cover,
+            circular: true,
+            fallback: const Icon(Icons.sports_soccer, size: 52),
           )
         else if (entity.type == MatchEntityType.country)
           CountryBadge(

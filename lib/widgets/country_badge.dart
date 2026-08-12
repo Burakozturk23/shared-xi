@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../data/country_codes.dart';
 import '../data/country_flags.dart';
 
-/// Ülke bayrağı: flagcdn görseli → emoji yedek.
+/// Ülke bayrağı: flagcdn (cache) → emoji yedek.
 class CountryBadge extends StatelessWidget {
   final String country;
   final double width;
@@ -25,27 +26,25 @@ class CountryBadge extends StatelessWidget {
     final flag = url != null
         ? ClipRRect(
             borderRadius: BorderRadius.circular(3),
-            child: Image.network(
-              url,
+            child: CachedNetworkImage(
+              imageUrl: url,
               width: width,
               height: height,
               fit: BoxFit.cover,
-              filterQuality: FilterQuality.medium,
-              errorBuilder: (_, __, ___) => _emojiFallback(),
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return SizedBox(
-                  width: width,
-                  height: height,
-                  child: Center(
-                    child: SizedBox(
-                      width: width * 0.4,
-                      height: width * 0.4,
-                      child: const CircularProgressIndicator(strokeWidth: 1.5),
-                    ),
+              memCacheWidth: (width * 3).round().clamp(48, 320),
+              fadeInDuration: const Duration(milliseconds: 120),
+              placeholder: (_, __) => SizedBox(
+                width: width,
+                height: height,
+                child: Center(
+                  child: SizedBox(
+                    width: width * 0.35,
+                    height: width * 0.35,
+                    child: const CircularProgressIndicator(strokeWidth: 1.2),
                   ),
-                );
-              },
+                ),
+              ),
+              errorWidget: (_, __, ___) => _emojiFallback(),
             ),
           )
         : _emojiFallback();

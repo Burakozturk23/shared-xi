@@ -2,6 +2,7 @@ import '../models/club.dart';
 import '../models/famous_transfer.dart';
 import '../models/player.dart';
 import '../services/database_service.dart';
+import '../services/search_service.dart';
 
 class Repository {
   Repository._();
@@ -29,6 +30,7 @@ class Repository {
     _players = results[1] as List<Player>;
     _famousTransfers = results[2] as List<FamousTransfer>;
 
+    SearchService.buildIndex(_players);
     _initialized = true;
   }
 

@@ -70,6 +70,13 @@ const List<BuildXiTheme> buildXiThemes = [
     leagueName: 'Ligue 1',
   ),
   BuildXiTheme(
+    id: 'super_lig',
+    name: 'Türkiye Süper Lig',
+    description: 'Süper Lig\'de oynamış oyunculardan 11\'ini kur',
+    poolType: BuildXiPoolType.league,
+    leagueName: 'Süper Lig',
+  ),
+  BuildXiTheme(
     id: 'south_america',
     name: 'Güney Amerika',
     description: 'Sadece Güney Amerikalı oyuncular',
@@ -96,20 +103,6 @@ const List<BuildXiTheme> buildXiThemes = [
     description: 'Bu iki kulüpte oynamış oyunculardan kur',
     poolType: BuildXiPoolType.clubPair,
     clubPairIds: [5, 46],
-  ),
-  BuildXiTheme(
-    id: 'istanbul_derby',
-    name: 'İstanbul: Fenerbahçe - Beşiktaş',
-    description: 'Bu iki kulüpte oynamış oyunculardan kur',
-    poolType: BuildXiPoolType.clubPair,
-    clubPairIds: [36, 114],
-  ),
-  BuildXiTheme(
-    id: 'karadeniz_derby',
-    name: 'Trabzonspor - Beşiktaş',
-    description: 'Bu iki kulüpte oynamış oyunculardan kur',
-    poolType: BuildXiPoolType.clubPair,
-    clubPairIds: [449, 114],
   ),
   BuildXiTheme(
     id: 'napoli_juve',

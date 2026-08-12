@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/network_logo.dart';
 import '../repositories/repository.dart';
 import '../models/player.dart';
 
@@ -529,12 +530,11 @@ class _CriterionHeader extends StatelessWidget {
       final club = Repository.instance.clubById(criterion.clubId!);
       final logo = club?.logo.trim() ?? '';
       if (logo.isNotEmpty) {
-        leading = Image.network(
-          logo,
+        leading = NetworkLogo(
+          url: logo,
           width: 28,
           height: 28,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => const Icon(Icons.shield, size: 20),
+          fallback: const Icon(Icons.shield, size: 20),
         );
       } else {
         leading = const Icon(Icons.shield, size: 20, color: AppTheme.hintColor);

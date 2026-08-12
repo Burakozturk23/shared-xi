@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/club.dart';
 import '../theme/app_theme.dart';
+import 'network_logo.dart';
 
 /// Kulüp logosu + isim (Beşler, listeler vb.).
 class ClubBadge extends StatelessWidget {
@@ -18,18 +19,25 @@ class ClubBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logo = club.logo.trim().isNotEmpty
-        ? ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: Image.network(
-              club.logo,
-              width: logoSize,
-              height: logoSize,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => _shield(),
-            ),
-          )
-        : _shield();
+    final logo = NetworkLogo(
+      url: club.logo,
+      width: logoSize,
+      height: logoSize,
+      borderRadius: BorderRadius.circular(6),
+      fallback: Container(
+        width: logoSize,
+        height: logoSize,
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Icon(
+          Icons.shield,
+          size: logoSize * 0.55,
+          color: AppTheme.primaryColor,
+        ),
+      ),
+    );
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -61,22 +69,6 @@ class ClubBadge extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _shield() {
-    return Container(
-      width: logoSize,
-      height: logoSize,
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Icon(
-        Icons.shield,
-        size: logoSize * 0.55,
-        color: AppTheme.primaryColor,
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/network_logo.dart';
 
 import '../widgets/country_badge.dart';
 import '../widgets/club_badge.dart';
@@ -83,11 +84,11 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage> {
                     _selectedClub!.logo.trim().isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(right: 6),
-                    child: Image.network(
-                      _selectedClub!.logo,
+                    child: NetworkLogo(
+                      url: _selectedClub!.logo,
                       width: 22,
                       height: 22,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      fallback: const SizedBox.shrink(),
                     ),
                   ),
                 Flexible(
@@ -136,15 +137,12 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage> {
                                 selected: selected,
                                 selectedTileColor:
                                     Colors.blue.withValues(alpha: 0.15),
-                                leading: club.logo.trim().isNotEmpty
-                                    ? Image.network(
-                                        club.logo,
-                                        width: 28,
-                                        height: 28,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(Icons.shield, size: 22),
-                                      )
-                                    : const Icon(Icons.shield, size: 22),
+                                leading: NetworkLogo(
+                                  url: club.logo,
+                                  width: 28,
+                                  height: 28,
+                                  fallback: const Icon(Icons.shield, size: 22),
+                                ),
                                 title: Text(club.name),
                                 subtitle: Text(club.league),
                                 onTap: () =>
