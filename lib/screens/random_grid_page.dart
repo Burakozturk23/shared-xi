@@ -262,7 +262,7 @@ class _RandomGridPageState extends State<RandomGridPage> {
                   child: ElevatedButton.icon(
                     onPressed: _controller.generatePair,
                     icon: const Icon(Icons.shuffle),
-                    label: const Text('RASTGELE EŞLEŞME'),
+                    label: const Text('Takım Cek'),
                   ),
                 ),
               const SizedBox(height: 16),

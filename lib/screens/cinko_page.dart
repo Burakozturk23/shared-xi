@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/country_badge.dart';
+import '../widgets/league_badge.dart';
+
 import '../controllers/cinko_controller.dart';
 import '../models/cinko_models.dart';
 import '../models/cinko_state.dart';
@@ -325,7 +328,11 @@ class _CellTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (cell.logoUrl != null && cell.logoUrl!.isNotEmpty)
+              if (cell.type == CinkoCellType.country)
+                CountryBadge(country: cell.label, width: 36, height: 24)
+              else if (cell.type == CinkoCellType.league)
+                LeagueBadge(league: cell.label, size: 28)
+              else if (cell.logoUrl != null && cell.logoUrl!.isNotEmpty)
                 Expanded(
                   child: Image.network(
                     cell.logoUrl!,

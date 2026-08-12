@@ -47,7 +47,59 @@ class VsBotRandomGridController extends ChangeNotifier {
     super.dispose();
   }
 
-  void userGeneratePair() {
+  
+  List<Player> get suggestions => grid.suggestions;
+
+  void updateSuggestions(String query) {
+    if (_disposed || turn != VsBotRandomTurn.user) {
+      grid.clearSuggestions();
+      _safeNotify();
+      return;
+    }
+    grid.updateSuggestions(query);
+    _safeNotify();
+  }
+
+  void clearSuggestions() {
+    grid.clearSuggestions();
+    _safeNotify();
+  }
+
+  bool userSubmitPendingPlayerObj(Player player) {
+    if (_disposed || turn != VsBotRandomTurn.user) return false;
+    // pending pair doğrula isim üzerinden
+    final ok = userSubmitPendingPlayer(player.name);
+    clearSuggestions();
+    return ok;
+  }
+
+  bool userSubmitCellPlayer(int index, Player player) {
+    if (_disposed || turn != VsBotRandomTurn.user) return false;
+    if (owners[index] != 0) return false;
+    final resolved = grid.submitGuess(index, player.name);
+    if (resolved == null) {
+      _setFeedback('Yanlış.', false);
+      clearSuggestions();
+      _safeNotify();
+      _schedulePassToBot();
+      return false;
+    }
+    grid.assignPlayer(index, resolved);
+    owners[index] = 1;
+    userScore++;
+    clearSuggestions();
+    _setFeedback('Doğru! +1', true);
+    _safeNotify();
+    if (_boardFull()) {
+      turn = VsBotRandomTurn.gameOver;
+      _safeNotify();
+      return true;
+    }
+    _schedulePassToBot();
+    return true;
+  }
+
+void userGeneratePair() {
     if (_disposed || turn != VsBotRandomTurn.user) return;
     grid.generatePair();
     _safeNotify();

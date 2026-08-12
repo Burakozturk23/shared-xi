@@ -34,6 +34,35 @@ class _RandomFivePageState extends State<RandomFivePage> {
     super.dispose();
   }
 
+  
+  Widget _buildSuggestions() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Öneriler',
+                style: TextStyle(fontWeight: FontWeight.w600)),
+            ..._controller.suggestions.map(
+              (p) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(p.name),
+                subtitle: Text('${p.position} • ${p.countryLabel}'),
+                onTap: () {
+                  _controller.submitPlayer(p);
+                  _answerController.clear();
+                  _controller.clearSuggestions();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _submit() {
     final input = _answerController.text.trim();
     if (input.isEmpty) return;
@@ -105,6 +134,7 @@ class _RandomFivePageState extends State<RandomFivePage> {
               const SizedBox(height: 16),
               _buildInputCard(),
               const SizedBox(height: 12),
+              if (_controller.suggestions.isNotEmpty) _buildSuggestions(),
               if (state.feedback != null) _buildFeedbackCard(state),
               const SizedBox(height: 16),
               _buildHistoryCard(state),
@@ -175,6 +205,7 @@ class _RandomFivePageState extends State<RandomFivePage> {
           children: [
             TextField(
               controller: _answerController,
+              onChanged: _controller.updateSuggestions,
               onSubmitted: (_) => _submit(),
               textInputAction: TextInputAction.done,
               decoration: const InputDecoration(

@@ -8,6 +8,8 @@ class StoryJourneyState {
   final List<Player> foundThisScene;
   final Set<String> matchedAnswersThisScene;
 
+  final List<Player> suggestions;
+
   final bool isComplete;
 
   final String? feedback;
@@ -19,6 +21,7 @@ class StoryJourneyState {
     this.currentSceneIndex = 0,
     this.foundThisScene = const [],
     this.matchedAnswersThisScene = const {},
+    this.suggestions = const [],
     this.isComplete = false,
     this.feedback,
     this.feedbackSuccess = true,
@@ -30,6 +33,7 @@ class StoryJourneyState {
     int? currentSceneIndex,
     List<Player>? foundThisScene,
     Set<String>? matchedAnswersThisScene,
+    List<Player>? suggestions,
     bool? isComplete,
     String? feedback,
     bool? feedbackSuccess,
@@ -41,6 +45,7 @@ class StoryJourneyState {
       foundThisScene: foundThisScene ?? this.foundThisScene,
       matchedAnswersThisScene:
           matchedAnswersThisScene ?? this.matchedAnswersThisScene,
+      suggestions: suggestions ?? this.suggestions,
       isComplete: isComplete ?? this.isComplete,
       feedback: feedback,
       feedbackSuccess: feedbackSuccess ?? this.feedbackSuccess,

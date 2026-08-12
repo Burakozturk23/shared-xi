@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/country_badge.dart';
+import '../widgets/league_badge.dart';
+
 import '../controllers/vs_bot_cinko_controller.dart';
 import '../models/cinko_models.dart';
 import '../models/cinko_state.dart';
@@ -218,6 +221,7 @@ class _VsBotCinkoPageState extends State<VsBotCinkoPage> {
           if (entering || revealing) ...[
             TextField(
               controller: _nameController,
+              onChanged: _controller.updateSuggestions,
               enabled: entering,
               textInputAction: TextInputAction.done,
               style: const TextStyle(color: AppTheme.textColor),
@@ -228,8 +232,33 @@ class _VsBotCinkoPageState extends State<VsBotCinkoPage> {
               onSubmitted: (v) {
                 _controller.submitPlayerName(v);
                 _nameController.clear();
+                _controller.clearSuggestions();
               },
             ),
+            if (_controller.suggestions.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 150),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _controller.suggestions.length,
+                  itemBuilder: (context, i) {
+                    final p = _controller.suggestions[i];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(p.name),
+                      subtitle: Text('${p.position} • ${p.countryLabel}'),
+                      onTap: () {
+                        _controller.submitResolvedPlayer(p);
+                        _nameController.clear();
+                        _controller.clearSuggestions();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
@@ -431,7 +460,11 @@ class _CellTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (cell.logoUrl != null && cell.logoUrl!.isNotEmpty)
+              if (cell.type == CinkoCellType.country)
+                CountryBadge(country: cell.label, width: 36, height: 24)
+              else if (cell.type == CinkoCellType.league)
+                LeagueBadge(league: cell.label, size: 28)
+              else if (cell.logoUrl != null && cell.logoUrl!.isNotEmpty)
                 Expanded(
                   child: Image.network(
                     cell.logoUrl!,

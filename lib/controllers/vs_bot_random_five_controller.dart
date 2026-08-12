@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/chain_pool.dart';
+import '../data/popular_clubs_pool.dart';
 import '../models/club.dart';
 import '../models/player.dart';
 import '../models/random_five_state.dart';
@@ -20,6 +20,7 @@ class VsBotRandomFiveController extends ChangeNotifier {
 
   List<Club> clubs = const [];
   final Set<int> usedPlayerIds = {};
+  List<Player> suggestions = const [];
   final List<RandomFiveEntry> userHistory = [];
   final List<RandomFiveEntry> botHistory = [];
 
@@ -80,10 +81,7 @@ class VsBotRandomFiveController extends ChangeNotifier {
   /// 3–4 kulüp örtüşmesi bol, 5 nadir olacak şekilde set üretir.
   /// Tohum = havuzda 3+ kulübü olan bir oyuncu; onun kulüpleri çekirdek alınır.
   List<Club> _selectConnectedClubs({required Set<int> excludeIds}) {
-    final pool = chainClubPool
-        .map((id) => Repository.instance.clubById(id))
-        .whereType<Club>()
-        .toList();
+    final pool = PopularClubs.resolveAll();
 
     if (pool.length <= _targetClubCount) {
       return List<Club>.from(pool)..shuffle(_random);
@@ -240,8 +238,12 @@ class VsBotRandomFiveController extends ChangeNotifier {
     }
 
     if (ids == null) {
-      final fallback = List<Club>.from(pool)..shuffle(_random);
-      return fallback.take(_targetClubCount).toList();
+      return PopularClubs.pickDiverse(
+        count: _targetClubCount,
+        maxPerLeague: 1,
+        maxPerCountry: 2,
+        random: _random,
+      );
     }
 
     return ids.map(clubById).whereType<Club>().toList();
@@ -255,7 +257,69 @@ class VsBotRandomFiveController extends ChangeNotifier {
     _pickNewClubs();
   }
 
-  void submitGuess(String answer) {
+  
+  void updateSuggestions(String query) {
+    if (_disposed || turn != VsBotRandomFiveTurn.user) {
+      suggestions = const [];
+      _safeNotify();
+      return;
+    }
+    suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
+      query: query,
+      excludedPlayerIds: usedPlayerIds,
+    );
+    _safeNotify();
+  }
+
+  void clearSuggestions() {
+    if (suggestions.isEmpty) return;
+    suggestions = const [];
+    _safeNotify();
+  }
+
+  void submitPlayer(Player player) {
+    if (_disposed || turn != VsBotRandomFiveTurn.user) return;
+    if (userTurns >= maxTurnsEach) return;
+    if (usedPlayerIds.contains(player.id)) {
+      feedback = 'Bu oyuncuyu zaten kullandın.';
+      feedbackSuccess = false;
+      _safeNotify();
+      _scheduleFeedbackClear();
+      return;
+    }
+    final matched = clubs.where((c) => player.clubs.contains(c.id)).toList();
+    if (matched.isEmpty) {
+      feedback = '${player.name} bu 5 kulübün hiçbirinde oynamamış.';
+      feedbackSuccess = false;
+      _safeNotify();
+      _scheduleFeedbackClear();
+      return;
+    }
+    final entry = RandomFiveEntry(player: player, matchedClubs: matched);
+    userHistory.add(entry);
+    usedPlayerIds.add(player.id);
+    userTurns++;
+    suggestions = const [];
+    feedback = '${player.name}: ${entry.score} kulüp! (+${entry.score})';
+    feedbackSuccess = true;
+    _safeNotify();
+    _scheduleFeedbackClear();
+    if (_isMatchOver()) {
+      turn = VsBotRandomFiveTurn.gameOver;
+      _safeNotify();
+      return;
+    }
+    turn = VsBotRandomFiveTurn.bot;
+    _safeNotify();
+    _botTimer?.cancel();
+    _botTimer = Timer(
+      Duration(milliseconds: 700 + _random.nextInt(800)),
+      _botPlay,
+    );
+  }
+
+void submitGuess(String answer) {
     if (_disposed || turn != VsBotRandomFiveTurn.user) return;
     if (userTurns >= maxTurnsEach) return;
     if (answer.trim().isEmpty) return;

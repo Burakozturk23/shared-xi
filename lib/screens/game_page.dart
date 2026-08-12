@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/country_badge.dart';
+
 import '../controllers/game_controller.dart';
 import '../models/game_state.dart';
 import '../models/match_entity.dart';
@@ -320,6 +322,12 @@ class _EntityHeaderTile extends StatelessWidget {
                 return const Icon(Icons.sports_soccer, size: 52);
               },
             ),
+          )
+        else if (entity.type == MatchEntityType.country)
+          CountryBadge(
+            country: entity.countryName ?? entity.displayName,
+            width: 56,
+            height: 40,
           )
         else
           const Icon(Icons.public, size: 52),

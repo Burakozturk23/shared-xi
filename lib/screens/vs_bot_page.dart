@@ -208,6 +208,7 @@ class _VsBotPageState extends State<VsBotPage> {
                     children: [
                       TextField(
                         controller: _answerController,
+                        onChanged: (q) => _controller.updateSuggestions(q),
                         onSubmitted: (_) => _submit(),
                         textInputAction: TextInputAction.done,
                         style: const TextStyle(color: AppTheme.textColor),
@@ -216,6 +217,29 @@ class _VsBotPageState extends State<VsBotPage> {
                           hintText: 'Ortak oyuncuyu yaz...',
                         ),
                       ),
+                      if (_controller.suggestions.isNotEmpty)
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 150),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _controller.suggestions.length,
+                            itemBuilder: (context, i) {
+                              final p = _controller.suggestions[i];
+                              return ListTile(
+                                dense: true,
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(p.name),
+                                subtitle:
+                                    Text('${p.position} • ${p.countryLabel}'),
+                                onTap: () {
+                                  _controller.submitPlayer(p);
+                                  _answerController.clear();
+                                  _controller.clearSuggestions();
+                                },
+                              );
+                            },
+                          ),
+                        ),
                       const SizedBox(height: 10),
                       SizedBox(
                         width: double.infinity,

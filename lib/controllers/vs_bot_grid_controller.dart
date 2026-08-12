@@ -94,6 +94,42 @@ class VsBotGridController extends ChangeNotifier {
     return true;
   }
 
+
+  bool submitUserPlayer(int index, Player player) {
+    if (_disposed || turn != VsBotGridTurn.user) return false;
+    if (owners[index] != 0) return false;
+
+    final resolved = grid.submitPlayer(index, player);
+    if (resolved == null) {
+      grid.closeCell();
+      feedback = 'Yanlış veya uymuyor.';
+      feedbackOk = false;
+      _safeNotify();
+      _scheduleFeedbackClear();
+      _schedulePassToBot();
+      return false;
+    }
+
+    grid.assignPlayer(index, resolved);
+    owners[index] = 1;
+    userScore++;
+    grid.closeCell();
+    feedback = 'Doğru! +1';
+    feedbackOk = true;
+
+    if (_boardFull()) {
+      turn = VsBotGridTurn.gameOver;
+      _safeNotify();
+      _scheduleFeedbackClear();
+      return true;
+    }
+
+    _safeNotify();
+    _scheduleFeedbackClear();
+    _schedulePassToBot();
+    return true;
+  }
+
   void _schedulePassToBot() {
     _botTimer?.cancel();
     _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);

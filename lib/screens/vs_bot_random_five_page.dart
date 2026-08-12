@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/club_badge.dart';
+
 import '../controllers/vs_bot_random_five_controller.dart';
 import '../models/random_five_state.dart';
 import '../theme/app_theme.dart';
@@ -121,10 +123,7 @@ class _VsBotRandomFivePageState extends State<VsBotRandomFivePage> {
                         runSpacing: 8,
                         alignment: WrapAlignment.center,
                         children: _c.clubs
-                            .map((c) => Chip(
-                                  label: Text(c.name),
-                                  backgroundColor: AppTheme.backgroundColor,
-                                ))
+                            .map((c) => ClubBadge(club: c, logoSize: 26))
                             .toList(),
                       ),
                     ],
@@ -141,6 +140,7 @@ class _VsBotRandomFivePageState extends State<VsBotRandomFivePage> {
                       children: [
                         TextField(
                           controller: _answerController,
+                          onChanged: (q) => _c.updateSuggestions(q),
                           onSubmitted: (_) => _submit(),
                           textInputAction: TextInputAction.done,
                           style: const TextStyle(color: AppTheme.textColor),
@@ -149,6 +149,30 @@ class _VsBotRandomFivePageState extends State<VsBotRandomFivePage> {
                             hintText: 'Örn. Burak Yılmaz',
                           ),
                         ),
+                        if (_c.suggestions.isNotEmpty)
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 150),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _c.suggestions.length,
+                              itemBuilder: (context, i) {
+                                final p = _c.suggestions[i];
+                                return ListTile(
+                                  dense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(p.name),
+                                  subtitle:
+                                      Text('${p.position} • ${p.countryLabel}'),
+                                  onTap: () {
+                                    _c.submitPlayer(p);
+                                    _answerController.clear();
+                                    _c.clearSuggestions();
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+
                         const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,

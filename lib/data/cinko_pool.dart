@@ -1,78 +1,10 @@
-import 'chain_pool.dart';
+import 'popular_clubs_pool.dart';
 
-/// Çinko için bilinen kulüpler (zincir havuzu).
-List<int> get cinkoFamousClubIds => chainClubPool;
+/// Çinko için bilinen kulüpler.
+List<int> get cinkoFamousClubIds => popularClubIds;
 
-/// Büyük ligler — obscure ligler elenir.
-const List<String> cinkoFamousLeagues = [
-  'Premier League',
-  'LaLiga',
-  'Serie A',
-  'Bundesliga',
-  'Ligue 1',
-  'Süper Lig',
-  'Eredivisie',
-  'Liga Portugal',
-  'Primeira Liga',
-  'Championship',
-  'Serie B',
-  '2. Bundesliga',
-  'Ligue 2',
-  'LaLiga2',
-  'Belgian Pro League',
-  'Scottish Premiership',
-  'Super League',
-];
+/// Büyük ligler — obscure / alt ligler elenir.
+const List<String> cinkoFamousLeagues = popularLeagues;
 
 /// Bilinen milli takım ülkeleri.
-const List<String> cinkoFamousCountries = [
-  'Turkey',
-  'Türkiye',
-  'Brazil',
-  'Argentina',
-  'France',
-  'Germany',
-  'Spain',
-  'Italy',
-  'England',
-  'Portugal',
-  'Netherlands',
-  'Belgium',
-  'Croatia',
-  'Uruguay',
-  'Colombia',
-  'Mexico',
-  'USA',
-  'United States',
-  'Japan',
-  'South Korea',
-  'Morocco',
-  'Senegal',
-  'Nigeria',
-  'Egypt',
-  'Poland',
-  'Denmark',
-  'Sweden',
-  'Switzerland',
-  'Austria',
-  'Serbia',
-  'Ukraine',
-  'Wales',
-  'Scotland',
-  'Ireland',
-  'Norway',
-  'Chile',
-  'Peru',
-  'Ecuador',
-  'Ghana',
-  'Ivory Coast',
-  'Cameroon',
-  'Algeria',
-  'Tunisia',
-  'Russia',
-  'Czech Republic',
-  'Czechia',
-  'Greece',
-  'Romania',
-  'Hungary',
-];
+const List<String> cinkoFamousCountries = popularCountries;

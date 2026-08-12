@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../models/grid_criterion.dart';
+import '../widgets/country_badge.dart';
+
 import '../controllers/grid_controller.dart';
 import '../models/grid_state.dart';
 
@@ -171,7 +174,7 @@ class _GridPageState extends State<GridPage> {
           children: [
             const Expanded(flex: 2, child: SizedBox()),
             ...state.colCriteria.map(
-              (col) => Expanded(flex: 3, child: _HeaderCell(label: col.label)),
+              (col) => Expanded(flex: 3, child: _HeaderCell(criterion: col)),
             ),
           ],
         ),
@@ -182,7 +185,7 @@ class _GridPageState extends State<GridPage> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: _HeaderCell(label: state.rowCriteria[row].label),
+                  child: _HeaderCell(criterion: state.rowCriteria[row]),
                 ),
                 for (var col = 0; col < 3; col++)
                   Expanded(
@@ -256,21 +259,31 @@ class _GridPageState extends State<GridPage> {
 }
 
 class _HeaderCell extends StatelessWidget {
-  final String label;
+  final GridCriterion criterion;
 
-  const _HeaderCell({required this.label});
+  const _HeaderCell({required this.criterion});
 
   @override
   Widget build(BuildContext context) {
+    final isCountry = criterion.type == GridCriterionType.country;
     return Container(
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(4),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isCountry) ...[
+            CountryBadge(country: criterion.label, width: 32, height: 22),
+            const SizedBox(height: 4),
+          ],
+          Text(
+            criterion.label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
     );
   }

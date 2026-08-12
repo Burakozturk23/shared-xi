@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import '../repositories/repository.dart';
+import '../models/player.dart';
+
+import '../models/grid_criterion.dart';
+import '../widgets/country_badge.dart';
 
 import '../controllers/vs_bot_grid_controller.dart';
 import '../theme/app_theme.dart';
@@ -165,8 +170,24 @@ class _VsBotGridPageState extends State<VsBotGridPage> {
                       '${rows[selected ~/ 3].label} × ${cols[selected % 3].label}',
                   controller: _answerController,
                   focusNode: _focusNode,
+                  suggestions: _c.grid.suggestions,
+                  onChanged: (q) {
+                    _c.grid.updateSuggestions(q);
+                    setState(() {});
+                  },
+                  onSelectPlayer: (p) {
+                    final index = selected;
+                    if (index == null) return;
+                    _answerController.clear();
+                    _c.grid.clearSuggestions();
+                    _c.submitUserPlayer(index, p);
+                    setState(() {});
+                  },
                   onSubmit: _submit,
-                  onCancel: _cancelSelection,
+                  onCancel: () {
+                    _c.grid.clearSuggestions();
+                    _cancelSelection();
+                  },
                 ),
                 const SizedBox(height: 8),
               ],
@@ -180,17 +201,7 @@ class _VsBotGridPageState extends State<VsBotGridPage> {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.all(2),
-                              child: Text(
-                                col.label,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.hintColor,
-                                ),
-                              ),
+                              child: _CriterionHeader(criterion: col),
                             ),
                           ),
                       ],
@@ -202,16 +213,7 @@ class _VsBotGridPageState extends State<VsBotGridPage> {
                           children: [
                             SizedBox(
                               width: 72,
-                              child: Text(
-                                rows[r].label,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.hintColor,
-                                ),
-                              ),
+                              child: _CriterionHeader(criterion: rows[r]),
                             ),
                             for (var c = 0; c < 3; c++)
                               Expanded(child: _buildCell(r * 3 + c)),
@@ -368,6 +370,9 @@ class _GuessBar extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final FocusNode focusNode;
+  final List<Player> suggestions;
+  final ValueChanged<String> onChanged;
+  final ValueChanged<Player> onSelectPlayer;
   final VoidCallback onSubmit;
   final VoidCallback onCancel;
 
@@ -375,6 +380,9 @@ class _GuessBar extends StatelessWidget {
     required this.label,
     required this.controller,
     required this.focusNode,
+    required this.suggestions,
+    required this.onChanged,
+    required this.onSelectPlayer,
     required this.onSubmit,
     required this.onCancel,
   });
@@ -404,12 +412,33 @@ class _GuessBar extends StatelessWidget {
               autofocus: true,
               style: const TextStyle(color: AppTheme.textColor),
               textInputAction: TextInputAction.done,
+              onChanged: onChanged,
               onSubmitted: (_) => onSubmit(),
               decoration: const InputDecoration(
                 hintText: 'Oyuncu adını yaz...',
                 prefixIcon: Icon(Icons.search),
               ),
             ),
+            if (suggestions.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 160),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: suggestions.length,
+                  itemBuilder: (context, i) {
+                    final p = suggestions[i];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(p.name),
+                      subtitle: Text('${p.position} • ${p.countryLabel}'),
+                      onTap: () => onSelectPlayer(p),
+                    );
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             Row(
               children: [
@@ -479,6 +508,58 @@ class _ScoreChip extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+class _CriterionHeader extends StatelessWidget {
+  final GridCriterion criterion;
+  const _CriterionHeader({required this.criterion});
+
+  @override
+  Widget build(BuildContext context) {
+    final isCountry = criterion.type == GridCriterionType.country;
+    final isClub = criterion.type == GridCriterionType.club;
+
+    Widget? leading;
+    if (isCountry) {
+      leading = CountryBadge(country: criterion.label, width: 28, height: 18);
+    } else if (isClub && criterion.clubId != null) {
+      final club = Repository.instance.clubById(criterion.clubId!);
+      final logo = club?.logo.trim() ?? '';
+      if (logo.isNotEmpty) {
+        leading = Image.network(
+          logo,
+          width: 28,
+          height: 28,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Icon(Icons.shield, size: 20),
+        );
+      } else {
+        leading = const Icon(Icons.shield, size: 20, color: AppTheme.hintColor);
+      }
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (leading != null) ...[
+          leading,
+          const SizedBox(height: 2),
+        ],
+        Text(
+          criterion.label,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.hintColor,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -34,6 +34,8 @@ class VsBotController extends ChangeNotifier {
   VsBotState _state = const VsBotState();
   VsBotState get state => _state;
 
+  List<Player> suggestions = const [];
+
   Timer? _countdownTimer;
   Timer? _botTimer;
   Timer? _feedbackTimer;
@@ -190,7 +192,35 @@ class VsBotController extends ChangeNotifier {
     }
   }
 
-  void submitAnswer(String answer) {
+  
+  void updateSuggestions(String query) {
+    if (_state.phase != VsBotPhase.racing) {
+      suggestions = const [];
+      notifyListeners();
+      return;
+    }
+    suggestions = SearchService.suggestions(
+      players: _state.matchingPlayers.isNotEmpty
+          ? _state.matchingPlayers
+          : Repository.instance.players,
+      query: query,
+      excludedPlayerIds: _state.allFoundIds,
+    );
+    notifyListeners();
+  }
+
+  void clearSuggestions() {
+    if (suggestions.isEmpty) return;
+    suggestions = const [];
+    notifyListeners();
+  }
+
+  void submitPlayer(Player player) {
+    suggestions = const [];
+    submitAnswer(player.name);
+  }
+
+void submitAnswer(String answer) {
     if (_state.phase != VsBotPhase.racing) return;
 
     final resolved = SearchService.resolve(

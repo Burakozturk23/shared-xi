@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/chain_pool.dart';
+import '../data/popular_clubs_pool.dart';
 import '../models/club.dart';
 import '../models/endless_state.dart';
 import '../models/match_entity.dart';
@@ -82,20 +82,30 @@ class EndlessController extends ChangeNotifier {
   }
 
   List<Club> _quizClubs() {
-    final list = chainClubPool
-        .map((id) => Repository.instance.clubById(id))
-        .whereType<Club>()
-        .toList();
+    // Bilinen kulüpler — Championship / alt lig yığılmaz
+    final list = PopularClubs.resolveAll();
     if (list.length < 2) {
       return List<Club>.from(Repository.instance.clubs);
     }
     return list;
   }
 
+  List<String> _quizCountries() {
+    final db = {
+      for (final c in Repository.instance.countries) c.toLowerCase(): c,
+    };
+    final out = <String>[];
+    for (final want in popularCountries) {
+      final real = db[want.toLowerCase()];
+      if (real != null) out.add(real);
+    }
+    return out.isNotEmpty ? out : Repository.instance.countries;
+  }
+
   ({MatchEntity entity1, MatchEntity entity2, List<Player> matching})
       _generatePair() {
     final clubs = _quizClubs();
-    final countries = Repository.instance.countries;
+    final countries = _quizCountries();
     final players = Repository.instance.players;
 
     var bestEntity1 = MatchEntity.club(clubs[0]);
@@ -115,10 +125,18 @@ class EndlessController extends ChangeNotifier {
           countries[_random.nextInt(countries.length)],
         );
       } else {
-        Club club2;
-        do {
-          club2 = clubs[_random.nextInt(clubs.length)];
-        } while (club2.id == club1.id);
+        Club? club2;
+        final others = clubs.where((c) => c.id != club1.id).toList()..shuffle(_random);
+        // Önce farklı lig
+        for (final c in others) {
+          if (c.league.trim().isNotEmpty &&
+              club1.league.trim().isNotEmpty &&
+              c.league != club1.league) {
+            club2 = c;
+            break;
+          }
+        }
+        club2 ??= others.isNotEmpty ? others.first : club1;
         entity2 = MatchEntity.club(club2);
       }
 
@@ -199,13 +217,30 @@ class EndlessController extends ChangeNotifier {
   }
 
   void updateSuggestions(String query) {
+    // Önce bu turdaki eşleşenlerden, yoksa genel havuzdan
+    final pool = _state.matchingPlayers.isNotEmpty
+        ? _state.matchingPlayers
+        : Repository.instance.players;
     final suggestions = SearchService.suggestions(
-      players: Repository.instance.players,
+      players: pool,
       query: query,
       excludedPlayerIds: _state.foundPlayerIds,
     );
-
-    _state = _state.copyWith(suggestions: suggestions);
+    // Az sonuçsa genişlet
+    final merged = List<Player>.from(suggestions);
+    if (merged.length < 5 && query.trim().length >= 2) {
+      final extra = SearchService.suggestions(
+        players: Repository.instance.players,
+        query: query,
+        excludedPlayerIds: _state.foundPlayerIds,
+      );
+      final seen = {for (final p in merged) p.id};
+      for (final p in extra) {
+        if (seen.add(p.id)) merged.add(p);
+        if (merged.length >= 8) break;
+      }
+    }
+    _state = _state.copyWith(suggestions: merged);
     notifyListeners();
   }
 
@@ -239,7 +274,22 @@ class EndlessController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void submitAnswer(String answer) {
+  
+  void submitPlayer(Player player) {
+    if (_state.isGameOver) return;
+    if (_alreadyFound(player)) {
+      _feedback('Bu oyuncuyu zaten buldun.', false);
+      return;
+    }
+    if (!_state.matchingPlayers.any((p) => p.id == player.id)) {
+      _wrongAnswer(player.name);
+      return;
+    }
+    _state = _state.copyWith(suggestions: const []);
+    _correctAnswer(player);
+  }
+
+void submitAnswer(String answer) {
     if (_state.isGameOver) return;
 
     final resolved = SearchService.resolve(

@@ -14,12 +14,18 @@ class GameService {
     }
   }
 
+  /// Boş isimli / bozuk dataset kayıtlarını ele.
+  static bool _isUsablePlayer(Player player) {
+    return player.name.trim().isNotEmpty;
+  }
+
   static List<Player> matchingPlayers({
     required List<Player> players,
     required MatchEntity entity1,
     required MatchEntity entity2,
   }) {
     return players.where((player) {
+      if (!_isUsablePlayer(player)) return false;
       return _belongsTo(player, entity1) && _belongsTo(player, entity2);
     }).toList();
   }
@@ -60,7 +66,7 @@ class GameService {
     int limit = 8,
   }) {
     return SearchService.suggestions(
-      players: players,
+      players: players.where(_isUsablePlayer).toList(),
       query: query,
       excludedPlayerIds: foundIds,
       limit: limit,
@@ -72,7 +78,7 @@ class GameService {
     required Set<int> foundIds,
   }) {
     for (final player in matchingPlayers) {
-      if (!foundIds.contains(player.id)) {
+      if (!foundIds.contains(player.id) && _isUsablePlayer(player)) {
         return player;
       }
     }
@@ -84,7 +90,7 @@ class GameService {
     required Set<int> foundIds,
   }) {
     return matchingPlayers.where((player) {
-      return !foundIds.contains(player.id);
+      return !foundIds.contains(player.id) && _isUsablePlayer(player);
     }).toList();
   }
 }

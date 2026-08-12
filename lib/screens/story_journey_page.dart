@@ -51,6 +51,7 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
 
     _controller.submitGuess(input);
     _answerController.clear();
+    _controller.clearSuggestions();
   }
 
   @override
@@ -84,6 +85,8 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
               const SizedBox(height: 16),
               _buildInputCard(),
               const SizedBox(height: 12),
+              if (state.suggestions.isNotEmpty) _buildSuggestionsCard(state),
+              const SizedBox(height: 12),
               if (state.feedback != null) _buildFeedbackCard(state),
             ],
           ),
@@ -111,16 +114,21 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
                     shape: BoxShape.circle,
                     color: isDone
                         ? Colors.green
-                        : (isCurrent ? Colors.amber : Colors.white.withValues(alpha: 0.08)),
+                        : (isCurrent
+                            ? Colors.amber
+                            : Colors.white.withValues(alpha: 0.08)),
                   ),
                   child: Icon(
-                    isDone ? Icons.check : (isLocked ? Icons.lock : Icons.play_arrow),
+                    isDone
+                        ? Icons.check
+                        : (isLocked ? Icons.lock : Icons.play_arrow),
                     size: 13,
                     color: isLocked ? Colors.white38 : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text('${i + 1}', style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                Text('${i + 1}',
+                    style: const TextStyle(fontSize: 9, color: Colors.grey)),
               ],
             ),
           ),
@@ -138,15 +146,20 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('📌 BÖLÜM ${chapter.number}: ${chapter.title}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
             if (chapter.matchLabel != null) ...[
               const SizedBox(height: 4),
               Text(chapter.matchLabel!,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600)),
             ],
             const SizedBox(height: 10),
             Text('"${chapter.narrative}"',
-                style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 13)),
+                style:
+                    const TextStyle(fontStyle: FontStyle.italic, fontSize: 13)),
           ],
         ),
       ),
@@ -155,8 +168,11 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
 
   Widget _buildSceneCard(StoryJourneyState state, StoryScene scene) {
     final isCommon = scene.type == StorySceneType.commonPlayers;
-    final progress = isCommon ? state.foundThisScene.length : state.matchedAnswersThisScene.length;
-    final total = isCommon ? scene.requiredFinds : scene.correctAnswers.length;
+    final progress = isCommon
+        ? state.foundThisScene.length
+        : state.matchedAnswersThisScene.length;
+    final total =
+        isCommon ? scene.requiredFinds : scene.correctAnswers.length;
 
     return Card(
       child: Padding(
@@ -164,25 +180,32 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🎮 ${scene.title}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('🎮 ${scene.title}',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             if (scene.matchLabel != null) ...[
               const SizedBox(height: 4),
               Text(scene.matchLabel!,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600)),
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600)),
             ],
             if (scene.sceneNarrative != null) ...[
               const SizedBox(height: 8),
               Text('"${scene.sceneNarrative!}"',
-                  style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                  style: const TextStyle(
+                      fontSize: 12, fontStyle: FontStyle.italic)),
             ],
             const SizedBox(height: 10),
             Text(scene.taskDescription, style: const TextStyle(fontSize: 13)),
             const SizedBox(height: 12),
-            Text('$progress / $total bulundu', style: const TextStyle(fontSize: 13, color: Colors.grey)),
+            Text('$progress / $total bulundu',
+                style: const TextStyle(fontSize: 13, color: Colors.grey)),
             const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(value: total == 0 ? 0 : progress / total, minHeight: 8),
+              child: LinearProgressIndicator(
+                  value: total == 0 ? 0 : progress / total, minHeight: 8),
             ),
             if (isCommon && state.foundThisScene.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -192,7 +215,8 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
                 children: state.foundThisScene
                     .map((p) => Chip(
                           label: Text(p.name),
-                          avatar: const Icon(Icons.check, size: 16, color: Colors.green),
+                          avatar: const Icon(Icons.check,
+                              size: 16, color: Colors.green),
                         ))
                     .toList(),
               ),
@@ -205,7 +229,8 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
                 children: state.matchedAnswersThisScene
                     .map((name) => Chip(
                           label: Text(name),
-                          avatar: const Icon(Icons.check, size: 16, color: Colors.green),
+                          avatar: const Icon(Icons.check,
+                              size: 16, color: Colors.green),
                         ))
                     .toList(),
               ),
@@ -224,9 +249,12 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
           children: [
             TextField(
               controller: _answerController,
+              onChanged: _controller.updateSuggestions,
               onSubmitted: (_) => _submit(),
+              textInputAction: TextInputAction.done,
               decoration: const InputDecoration(
-                labelText: 'Cevabın',
+                labelText: 'Oyuncu adı',
+                hintText: 'Örn. Luis Suarez',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -236,7 +264,36 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: _submit,
-                child: const Text('GÖNDER', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text('GÖNDER',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionsCard(StoryJourneyState state) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Öneriler',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            ...state.suggestions.map(
+              (player) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(player.name),
+                subtitle: Text('${player.position} • ${player.countryLabel}'),
+                onTap: () {
+                  _controller.submitPlayer(player);
+                  _answerController.clear();
+                },
               ),
             ),
           ],
@@ -263,13 +320,17 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
 
   Widget _buildComplete() {
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false, title: const Text('Hikaye Tamamlandı'), centerTitle: true),
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text('Hikaye Tamamlandı'),
+          centerTitle: true),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -278,7 +339,8 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
                   Text(
                     widget.completionText,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 28),
                   SizedBox(
@@ -286,7 +348,8 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('GERİ DÖN', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text('GERİ DÖN',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

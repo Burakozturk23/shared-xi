@@ -7,6 +7,8 @@ import '../models/cinko_models.dart';
 import '../models/cinko_state.dart';
 import '../models/club.dart';
 import '../models/player.dart';
+import '../data/cinko_pool.dart';
+import '../data/popular_clubs_pool.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
 
@@ -21,6 +23,8 @@ class CinkoController extends ChangeNotifier {
 
   CinkoState _state = const CinkoState();
   CinkoState get state => _state;
+
+  List<Player> suggestions = const [];
 
   Timer? _revealTimer;
   Timer? _feedbackTimer;
@@ -46,13 +50,10 @@ class CinkoController extends ChangeNotifier {
 
   List<CinkoCell> _buildGrid() {
     final n = gridSize * gridSize;
-    final clubs = List<Club>.from(Repository.instance.clubs);
-    final countries = List<String>.from(Repository.instance.countries);
-    final leagues = clubs
-        .map((c) => c.league)
-        .where((l) => l.trim().isNotEmpty)
-        .toSet()
-        .toList();
+    // Sadece bilinen kulüp / lig / ülke — alt seviye elenir
+    final clubs = PopularClubs.resolveAll();
+    final countries = List<String>.from(cinkoFamousCountries);
+    final leagues = List<String>.from(cinkoFamousLeagues);
 
     clubs.shuffle(_random);
     countries.shuffle(_random);
@@ -141,7 +142,33 @@ class CinkoController extends ChangeNotifier {
     }
   }
 
-  void submitPlayerName(String raw) {
+  
+  void updateSuggestions(String query) {
+    if (_state.phase != CinkoPhase.enterPlayer) {
+      suggestions = const [];
+      notifyListeners();
+      return;
+    }
+    suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
+      query: query,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
+    notifyListeners();
+  }
+
+  void clearSuggestions() {
+    if (suggestions.isEmpty) return;
+    suggestions = const [];
+    notifyListeners();
+  }
+
+  void submitResolvedPlayer(Player player) {
+    suggestions = const [];
+    submitPlayerName(player.name);
+  }
+
+void submitPlayerName(String raw) {
     if (_state.phase != CinkoPhase.enterPlayer) return;
 
     final name = raw.trim();

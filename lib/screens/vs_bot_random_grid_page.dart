@@ -262,6 +262,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
             const SizedBox(height: 8),
             TextField(
               controller: _pendingNameCtrl,
+              onChanged: (q) => _c.updateSuggestions(q),
               focusNode: _pendingFocus,
               style: const TextStyle(color: AppTheme.textColor),
               textInputAction: TextInputAction.done,
@@ -269,6 +270,30 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   const InputDecoration(hintText: 'Ortak oyuncu adı'),
               onSubmitted: (_) => _submitPendingPlayer(),
             ),
+
+            if (_c.suggestions.isNotEmpty)
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 140),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _c.suggestions.length,
+                  itemBuilder: (context, i) {
+                    final p = _c.suggestions[i];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(p.name),
+                      subtitle: Text('${p.position} • ${p.countryLabel}'),
+                      onTap: () {
+                        _c.userSubmitPendingPlayerObj(p);
+                        _pendingNameCtrl.clear();
+                        _c.clearSuggestions();
+                        setState(() {});
+                      },
+                    );
+                  },
+                ),
+              ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -360,6 +385,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
             const SizedBox(height: 8),
             TextField(
               controller: _cellNameCtrl,
+              onChanged: (q) => _c.updateSuggestions(q),
               focusNode: _cellFocus,
               autofocus: true,
               style: const TextStyle(color: AppTheme.textColor),
@@ -367,6 +393,32 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
               decoration: const InputDecoration(hintText: 'Oyuncu adı'),
               onSubmitted: (_) => _submitCell(),
             ),
+
+            if (_c.suggestions.isNotEmpty)
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 140),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _c.suggestions.length,
+                  itemBuilder: (context, i) {
+                    final p = _c.suggestions[i];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(p.name),
+                      subtitle: Text('${p.position} • ${p.countryLabel}'),
+                      onTap: () {
+                        final idx = _selectedCell;
+                        if (idx == null) return;
+                        _c.userSubmitCellPlayer(idx, p);
+                        _cellNameCtrl.clear();
+                        _c.clearSuggestions();
+                        setState(() {});
+                      },
+                    );
+                  },
+                ),
+              ),
             const SizedBox(height: 8),
             Row(
               children: [

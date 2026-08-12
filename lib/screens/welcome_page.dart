@@ -14,6 +14,7 @@ import 'transfer_detective_page.dart';
 import 'build_xi_theme_selection_page.dart';
 import 'story_mode_selection_page.dart';
 import 'vs_bot_mode_selection_page.dart';
+import 'football_calendar_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -72,12 +73,12 @@ class WelcomePage extends StatelessWidget {
             _sectionHeader('Öne çıkan'),
             _sliverModeList(const [
               _ModeItem(
-                title: 'Günün Mücadelesi',
-                subtitle: 'Her gün yeni futbol bulmacası',
-                icon: Icons.calendar_today_rounded,
-                accent: Color(0xFFFFB300),
-                page: DailyChallengePage(),
-              ),
+              title: 'Günün Mücadelesi',
+              subtitle: 'Her gün yeni futbol bulmacası',
+              icon: Icons.calendar_today_rounded,
+              accent: Color(0xFFFFB300),
+              page: FootballCalendarPage(),  // yeni hub
+),
             ]),
 
             _sectionHeader('Klasik modlar'),
@@ -257,11 +258,11 @@ class _ModeCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => item.page),
-          );
-        },
+         Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => item.page),
+           );
+           },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(

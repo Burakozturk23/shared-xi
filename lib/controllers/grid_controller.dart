@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/chain_pool.dart';
+import '../data/popular_clubs_pool.dart';
 import '../data/grid_country_pool.dart';
 import '../models/club.dart';
 import '../models/grid_criterion.dart';
@@ -19,13 +19,12 @@ class GridController extends ChangeNotifier {
   GridPuzzleState _state = const GridPuzzleState();
   GridPuzzleState get state => _state;
 
+  List<Player> suggestions = const [];
+
   void initialize() {
     final players = Repository.instance.players;
 
-    final clubs = chainClubPool
-        .map((id) => Repository.instance.clubById(id))
-        .whereType<Club>()
-        .toList();
+    final clubs = PopularClubs.resolveAll();
 
     for (var attempt = 0; attempt < _maxGenerationAttempts; attempt++) {
       final shuffledClubs = List<Club>.from(clubs)..shuffle(_random);
@@ -75,7 +74,7 @@ class GridController extends ChangeNotifier {
   }
 
   List<GridCriterion> _generateColumnCriteria(List<Club> availableClubs) {
-    final countries = List<String>.from(gridCountryPool)..shuffle(_random);
+    final countries = List<String>.from(popularCountries)..shuffle(_random);
     final goals = List<int>.from(gridGoalThresholds)..shuffle(_random);
     final positions = List.from(gridPositions)..shuffle(_random);
 
@@ -123,7 +122,29 @@ class GridController extends ChangeNotifier {
 
   /// Girilen ismi, o hücrenin kriterlerine uyan ve henüz kullanılmamış
   /// oyuncular arasında arar. Bulursa oyuncuyu döner, bulamazsa null.
-  Player? submitGuess(int index, String answer) {
+  
+  void updateSuggestions(String query) {
+    suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
+      query: query,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
+    notifyListeners();
+  }
+
+  void clearSuggestions() {
+    if (suggestions.isEmpty) return;
+    suggestions = const [];
+    notifyListeners();
+  }
+
+  Player? submitPlayer(int index, Player player) {
+    suggestions = const [];
+    // mevcut submitGuess yoluna isimle
+    return submitGuess(index, player.name);
+  }
+
+Player? submitGuess(int index, String answer) {
   final row = _state.rowCriteria[index ~/ 3];
   final col = _state.colCriteria[index % 3];
   final used = _state.usedPlayerIds;

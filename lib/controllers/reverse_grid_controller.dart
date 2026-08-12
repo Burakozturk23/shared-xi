@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/chain_pool.dart';
+import '../data/popular_clubs_pool.dart';
 import '../data/grid_country_pool.dart';
 import '../models/club.dart';
 import '../models/grid_criterion.dart';
@@ -22,17 +22,26 @@ class ReverseGridController extends ChangeNotifier {
   void initialize() {
     final players = Repository.instance.players;
 
-    final clubs = chainClubPool
-        .map((id) => Repository.instance.clubById(id))
-        .whereType<Club>()
-        .toList();
+    final clubs = PopularClubs.resolveAll();
+
+    // Tanınır isimler önce gelsin
+    double fame(Player p) =>
+        p.careerGoals * 50.0 + p.peakMarketValue + p.marketValue * 0.5;
+    final ranked = List<Player>.from(players)
+      ..sort((a, b) => fame(b).compareTo(fame(a)));
 
     for (var attempt = 0; attempt < _maxAttempts; attempt++) {
-      final shuffledClubs = List<Club>.from(clubs)..shuffle(_random);
-      final rowClubs = shuffledClubs.take(3).toList();
+      final diverse = PopularClubs.pickDiverse(
+        count: 8,
+        maxPerLeague: 2,
+        maxPerCountry: 3,
+        random: _random,
+      );
+      final pool = diverse.isNotEmpty ? diverse : List<Club>.from(clubs)..shuffle(_random);
+      final rowClubs = pool.take(3).toList();
       final rows = rowClubs.map(GridCriterion.club).toList();
 
-      final remaining = shuffledClubs.skip(3).toList()..shuffle(_random);
+      final remaining = pool.skip(3).toList()..shuffle(_random);
       final cols = _generateColumnCriteria(remaining);
 
       final usedIds = <int>{};
@@ -42,7 +51,8 @@ class ReverseGridController extends ChangeNotifier {
       for (final row in rows) {
         for (final col in cols) {
           Player? found;
-          for (final p in players) {
+          for (final p in ranked) {
+            if (p.name.trim().isEmpty) continue;
             if (!usedIds.contains(p.id) && row.matches(p) && col.matches(p)) {
               found = p;
               break;
@@ -75,7 +85,7 @@ class ReverseGridController extends ChangeNotifier {
   }
 
   List<GridCriterion> _generateColumnCriteria(List<Club> availableClubs) {
-    final countries = List<String>.from(gridCountryPool)..shuffle(_random);
+    final countries = List<String>.from(popularCountries)..shuffle(_random);
     final goals = List<int>.from(gridGoalThresholds)..shuffle(_random);
     final positions = List.from(gridPositions)..shuffle(_random);
 

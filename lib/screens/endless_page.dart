@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/country_badge.dart';
+
 import '../controllers/endless_controller.dart';
 import '../models/endless_state.dart';
 import '../models/match_entity.dart';
@@ -246,6 +248,7 @@ class _EndlessPageState extends State<EndlessPage> {
   }
 
   Widget _buildInputCard() {
+    final suggestions = _controller.state.suggestions;
     return Card(
       color: AppTheme.cardColor,
       child: Padding(
@@ -254,6 +257,7 @@ class _EndlessPageState extends State<EndlessPage> {
           children: [
             TextField(
               controller: _answerController,
+              onChanged: _controller.updateSuggestions,
               onSubmitted: (_) => _submitAnswer(),
               textInputAction: TextInputAction.done,
               style: const TextStyle(color: AppTheme.textColor),
@@ -262,6 +266,29 @@ class _EndlessPageState extends State<EndlessPage> {
                 hintText: 'Örn. Luis Suarez',
               ),
             ),
+            if (suggestions.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 160),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: suggestions.length,
+                  itemBuilder: (context, i) {
+                    final p = suggestions[i];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(p.name),
+                      subtitle: Text('${p.position} • ${p.countryLabel}'),
+                      onTap: () {
+                        _controller.submitPlayer(p);
+                        _answerController.clear();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
@@ -527,6 +554,12 @@ class _EntityTile extends StatelessWidget {
                 return const Icon(Icons.sports_soccer, size: 52);
               },
             ),
+          )
+        else if (entity.type == MatchEntityType.country)
+          CountryBadge(
+            country: entity.countryName ?? entity.displayName,
+            width: 56,
+            height: 40,
           )
         else
           const Icon(Icons.public, size: 52),

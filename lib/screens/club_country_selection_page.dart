@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/country_badge.dart';
+import '../widgets/club_badge.dart';
+
 import '../data/popular_matchups.dart';
 import '../models/club.dart';
 import '../models/match_entity.dart';
@@ -73,10 +76,37 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage> {
           children: [
             _buildPopularMatchups(),
             const SizedBox(height: 16),
-            Text(
-              'Kulüp: ${_selectedClub?.name ?? "-"}   •   Ülke: ${_selectedCountry ?? "-"}',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_selectedClub != null &&
+                    _selectedClub!.logo.trim().isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Image.network(
+                      _selectedClub!.logo,
+                      width: 22,
+                      height: 22,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                Flexible(
+                  child: Text(
+                    'Kulüp: ${_selectedClub?.name ?? "-"}   •   Ülke: ${_selectedCountry ?? "-"}',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                if (_selectedCountry != null)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: CountryBadge(
+                      country: _selectedCountry!,
+                      width: 28,
+                      height: 18,
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -106,6 +136,15 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage> {
                                 selected: selected,
                                 selectedTileColor:
                                     Colors.blue.withValues(alpha: 0.15),
+                                leading: club.logo.trim().isNotEmpty
+                                    ? Image.network(
+                                        club.logo,
+                                        width: 28,
+                                        height: 28,
+                                        errorBuilder: (_, __, ___) =>
+                                            const Icon(Icons.shield, size: 22),
+                                      )
+                                    : const Icon(Icons.shield, size: 22),
                                 title: Text(club.name),
                                 subtitle: Text(club.league),
                                 onTap: () =>
@@ -142,6 +181,11 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage> {
                                 selected: selected,
                                 selectedTileColor:
                                     Colors.green.withValues(alpha: 0.15),
+                                leading: CountryBadge(
+                                  country: country,
+                                  width: 32,
+                                  height: 22,
+                                ),
                                 title: Text(country),
                                 onTap: () =>
                                     setState(() => _selectedCountry = country),

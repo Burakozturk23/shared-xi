@@ -26,6 +26,8 @@ class VsBotCinkoController extends ChangeNotifier {
   CinkoState _state = const CinkoState();
   CinkoState get state => _state;
 
+  List<Player> suggestions = const [];
+
   VsBotCinkoTurn turn = VsBotCinkoTurn.user;
   int userScore = 0;
   int botScore = 0;
@@ -265,7 +267,33 @@ class VsBotCinkoController extends ChangeNotifier {
     return best;
   }
 
-  void submitPlayerName(String raw) {
+  
+  void updateSuggestions(String query) {
+    if (_disposed || turn != VsBotCinkoTurn.user) {
+      suggestions = const [];
+      _safeNotify();
+      return;
+    }
+    suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
+      query: query,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
+    _safeNotify();
+  }
+
+  void clearSuggestions() {
+    if (suggestions.isEmpty) return;
+    suggestions = const [];
+    _safeNotify();
+  }
+
+  void submitResolvedPlayer(Player player) {
+    suggestions = const [];
+    submitPlayerName(player.name);
+  }
+
+void submitPlayerName(String raw) {
   if (_disposed || turn != VsBotCinkoTurn.user) return;
   if (_state.phase != CinkoPhase.enterPlayer) return;
 

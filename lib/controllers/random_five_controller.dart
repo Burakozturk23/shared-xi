@@ -3,8 +3,9 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/chain_pool.dart';
+import '../data/popular_clubs_pool.dart';
 import '../models/club.dart';
+import '../models/player.dart';
 import '../models/random_five_state.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
@@ -14,6 +15,8 @@ class RandomFiveController extends ChangeNotifier {
 
   RandomFiveState _state = const RandomFiveState();
   RandomFiveState get state => _state;
+
+  List<Player> suggestions = const [];
 
   Timer? _feedbackTimer;
 
@@ -28,15 +31,21 @@ class RandomFiveController extends ChangeNotifier {
   }
 
   void _pickNewClubs() {
-    final pool = chainClubPool
-        .map((id) => Repository.instance.clubById(id))
-        .whereType<Club>()
-        .toList()
-      ..shuffle(_random);
+    // Farklı liglerden popüler kulüpler (aynı lig kümelenmesi yok)
+    final clubs = PopularClubs.pickDiverse(
+      count: 5,
+      maxPerLeague: 1,
+      maxPerCountry: 2,
+      random: _random,
+    );
 
-    final clubs = pool.take(5).toList();
-
-    _state = _state.copyWith(isLoading: false, clubs: clubs);
+    suggestions = const [];
+    _state = _state.copyWith(
+      isLoading: false,
+      clubs: clubs,
+      history: const [],
+      usedPlayerIds: const {},
+    );
     notifyListeners();
   }
 
@@ -44,38 +53,36 @@ class RandomFiveController extends ChangeNotifier {
     _pickNewClubs();
   }
 
+  void updateSuggestions(String query) {
+    suggestions = SearchService.suggestions(
+      players: Repository.instance.players,
+      query: query,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
+    notifyListeners();
+  }
+
+  void clearSuggestions() {
+    if (suggestions.isEmpty) return;
+    suggestions = const [];
+    notifyListeners();
+  }
+
   void _feedback(String message, bool success) {
     _feedbackTimer?.cancel();
-
     _state = _state.copyWith(feedback: message, feedbackSuccess: success);
     notifyListeners();
-
     _feedbackTimer = Timer(const Duration(seconds: 2), () {
       _state = _state.copyWith(feedback: null);
       notifyListeners();
     });
   }
 
-  void submitGuess(String answer) {
-    if (answer.trim().isEmpty) return;
-
-    final resolved = SearchService.resolve(
-      players: Repository.instance.players,
-      answer: answer,
-      excludedPlayerIds: _state.usedPlayerIds,
-    );
-
-    if (resolved.status == ResolveStatus.ambiguous) {
-      _feedback(resolved.message, false);
+  void submitPlayer(Player player) {
+    if (_state.usedPlayerIds.contains(player.id)) {
+      _feedback('Bu oyuncuyu zaten kullandın.', false);
       return;
     }
-
-    if (!resolved.isFound) {
-      _feedback('Böyle bir oyuncu bulunamadı.', false);
-      return;
-    }
-
-    final player = resolved.player!;
 
     final matched =
         _state.clubs.where((c) => player.clubs.contains(c.id)).toList();
@@ -89,11 +96,35 @@ class RandomFiveController extends ChangeNotifier {
     final newHistory = List<RandomFiveEntry>.from(_state.history)..add(entry);
     final newUsed = Set<int>.from(_state.usedPlayerIds)..add(player.id);
 
+    suggestions = const [];
     _state = _state.copyWith(history: newHistory, usedPlayerIds: newUsed);
 
     _feedback(
       '${player.name}: ${matched.length} kulüp! (+${matched.length} puan)',
       true,
     );
+  }
+
+  void submitGuess(String answer) {
+    if (answer.trim().isEmpty) return;
+
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: answer,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
+
+    if (resolved.status == ResolveStatus.ambiguous) {
+      suggestions = resolved.candidates;
+      _feedback('Birden fazla oyuncu. Listeden seç.', false);
+      return;
+    }
+
+    if (!resolved.isFound) {
+      _feedback('Böyle bir oyuncu bulunamadı.', false);
+      return;
+    }
+
+    submitPlayer(resolved.player!);
   }
 }
