@@ -7,9 +7,10 @@ import '../theme/app_theme.dart';
 
 /// Ortak oyuncu isim alanı.
 ///
-/// - Autocomplete: tüm oyuncu havuzu (spoiler yok)
-/// - En az 3 harf sonrası öneri
-/// - onSubmitted / buton ile dışarıya ham metin verir; çözüm controller'da
+/// - Autocomplete: tüm oyuncu havuzu
+/// - Öneriye tıklanınca: [onPlayerSelected] varsa Player ile,
+///   yoksa [onSubmitted] ile isim gönderilir (otomatik submit)
+/// - Enter / done: [onSubmitted] ham metin
 class PlayerNameField extends StatefulWidget {
   final TextEditingController? controller;
   final String? labelText;
@@ -17,8 +18,10 @@ class PlayerNameField extends StatefulWidget {
   final bool enabled;
   final ValueChanged<String>? onSubmitted;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<Player>? onPlayerSelected;
   final Set<int> excludedPlayerIds;
   final bool showSuggestions;
+  final bool submitOnSuggestionTap;
 
   const PlayerNameField({
     super.key,
@@ -28,8 +31,10 @@ class PlayerNameField extends StatefulWidget {
     this.enabled = true,
     this.onSubmitted,
     this.onChanged,
+    this.onPlayerSelected,
     this.excludedPlayerIds = const {},
     this.showSuggestions = true,
+    this.submitOnSuggestionTap = true,
   });
 
   @override
@@ -81,12 +86,20 @@ class _PlayerNameFieldState extends State<PlayerNameField> {
   }
 
   void _pick(Player player) {
-    // Seçim sadece yazım yardımı: kutuya ismi yazar, otomatik submit etmez
-    // (istersen onSubmitted da çağırılabilir — şimdilik sadece doldur)
     _controller.text = player.name;
-    _controller.selection = TextSelection.collapsed(offset: player.name.length);
+    _controller.selection =
+        TextSelection.collapsed(offset: player.name.length);
     setState(() => _suggestions = const []);
     widget.onChanged?.call(player.name);
+
+    if (!widget.submitOnSuggestionTap) return;
+
+    if (widget.onPlayerSelected != null) {
+      widget.onPlayerSelected!(player);
+      return;
+    }
+
+    widget.onSubmitted?.call(player.name);
   }
 
   @override

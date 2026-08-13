@@ -436,6 +436,170 @@ for _, row in players_df.iterrows():
 
 
 # ==========================================================
+# MANUAL / SUPPLEMENTARY PLAYERS
+# ==========================================================
+# These players are added only when they are not already present
+# in the imported dataset. Club IDs are resolved from the same
+# clubs dictionary that is used to create clubs.json, so we do not
+# hard-code potentially wrong club IDs.
+
+MANUAL_PLAYERS = [
+    ("Raúl Meireles", "Portugal", "Midfield", "Central Midfield", ["Boavista", "FC Porto", "Liverpool FC", "Chelsea FC", "Fenerbahce"]),
+    ("Miroslav Stoch", "Slovakia", "Attack", "Left Winger", ["Chelsea FC", "FC Twente", "Fenerbahce", "PAOK", "Slavia Prague", "Sparta Prague"]),
+    ("Klaas-Jan Huntelaar", "Netherlands", "Attack", "Centre-Forward", ["PSV Eindhoven", "De Graafschap", "AGOVV Apeldoorn", "SC Heerenveen", "Ajax Amsterdam", "Real Madrid", "AC Milan", "Schalke 04"]),
+    ("Mikel John Obi", "Nigeria", "Midfield", "Defensive Midfield", ["Lyn", "Chelsea FC", "Tianjin TEDA", "Middlesbrough", "Stoke City", "Trabzonspor"]),
+    ("Cristian Chivu", "Romania", "Defender", "Centre-Back", ["Universitatea Craiova", "Ajax Amsterdam", "AS Roma", "Inter"]),
+    ("Antonio Cassano", "Italy", "Attack", "Second Striker", ["Bari", "AS Roma", "Real Madrid", "Sampdoria", "AC Milan", "Inter", "Parma", "Hellas Verona"]),
+    ("Adrian Mutu", "Romania", "Attack", "Second Striker", ["Dinamo Bucuresti", "Inter", "Hellas Verona", "Parma", "Chelsea FC", "Juventus FC", "Fiorentina", "Ajaccio", "Petrolul Ploiesti"]),
+    ("Florent Malouda", "France", "Attack", "Left Winger", ["Chateauroux", "Guingamp", "Lyon", "Chelsea FC", "Trabzonspor", "Metz"]),
+    ("Moussa Sow", "Senegal", "Attack", "Centre-Forward", ["Rennes", "Sedan", "Lille", "Fenerbahce", "Al Ahli", "Bursaspor", "Gaziantep"]),
+    ("Çağlar Söyüncü", "Turkey", "Defender", "Centre-Back", ["Altinordu", "SC Freiburg", "Leicester City", "Atletico Madrid", "Fenerbahce"]),
+    ("Diego Milito", "Argentina", "Attack", "Centre-Forward", ["Racing Club", "Genoa", "Real Zaragoza", "Inter"]),
+    ("Medhi Benatia", "Morocco", "Defender", "Centre-Back", ["Clermont Foot", "Udinese", "AS Roma", "Bayern Munich", "Juventus FC", "Al-Duhail"]),
+    ("Luca Toni", "Italy", "Attack", "Centre-Forward", ["Palermo", "Fiorentina", "Bayern Munich", "AS Roma", "Genoa", "Juventus FC", "Hellas Verona"]),
+    ("Alberto Gilardino", "Italy", "Attack", "Centre-Forward", ["Parma", "AC Milan", "Fiorentina", "Genoa", "Bologna", "Palermo", "Empoli", "Pescara"]),
+    ("Fernando Gago", "Argentina", "Midfield", "Defensive Midfield", ["Boca Juniors", "Real Madrid", "AS Roma", "Valencia", "Velez Sarsfield"]),
+    ("Miloš Krasić", "Serbia", "Attack", "Right Winger", ["Vojvodina", "CSKA Moscow", "Juventus FC", "Fenerbahce", "Lechia Gdansk"]),
+    ("Mamadou Niang", "Senegal", "Attack", "Centre-Forward", ["Troyes", "Metz", "Strasbourg", "Marseille", "Fenerbahce", "Al-Sadd"]),
+    ("Dennis Bergkamp", "Netherlands", "Attack", "Second Striker", ["Ajax Amsterdam", "Inter", "Arsenal FC"]),
+    ("Alex de Souza", "Brazil", "Midfield", "Attacking Midfield", ["Coritiba", "Palmeiras", "Parma", "Flamengo", "Fenerbahce"]),
+    ("Mark van Bommel", "Netherlands", "Midfield", "Defensive Midfield", ["Fortuna Sittard", "PSV Eindhoven", "Barcelona", "Bayern Munich", "AC Milan"]),
+    ("Daniel Van Buyten", "Belgium", "Defender", "Centre-Back", ["Charleroi", "Standard Liege", "Hamburger SV", "Manchester City", "Marseille", "Bayern Munich"]),
+    ("Ludovic Giuly", "France", "Attack", "Right Winger", ["Lyon", "Monaco", "Barcelona", "AS Roma", "Paris Saint-Germain", "Lorient"]),
+    ("Jean Makoun", "Cameroon", "Midfield", "Defensive Midfield", ["Lille", "Lyon", "Aston Villa", "Olympiacos", "Rennes", "Antalyaspor"]),
+    ("Papiss Cissé", "Senegal", "Attack", "Centre-Forward", ["Metz", "Freiburg", "Newcastle United", "Fenerbahce", "Alanyaspor", "Rizespor"]),
+    ("Marcos Rojo", "Argentina", "Defender", "Centre-Back", ["Estudiantes", "Spartak Moscow", "Sporting CP", "Manchester United", "Boca Juniors"]),
+    ("Raúl Albiol", "Spain", "Defender", "Centre-Back", ["Valencia", "Real Madrid", "Napoli", "Villarreal"]),
+    ("Jefferson Farfán", "Peru", "Attack", "Right Winger", ["Alianza Lima", "PSV Eindhoven", "Schalke 04", "Lokomotiv Moscow", "Alianza Lima"]),
+    ("Jakub Błaszczykowski", "Poland", "Attack", "Right Winger", ["Wisla Krakow", "Borussia Dortmund", "Fiorentina", "Wolfsburg"]),
+    ("Yoann Gourcuff", "France", "Midfield", "Attacking Midfield", ["Rennes", "AC Milan", "Bordeaux", "Lyon", "Dijon"]),
+    ("Yacine Brahimi", "Algeria", "Attack", "Left Winger", ["Rennes", "Clermont Foot", "Granada", "FC Porto", "Al-Rayyan", "Al-Gharafa"]),
+    ("Theo Hernández", "France", "Defender", "Left-Back", ["Atletico Madrid", "Deportivo Alaves", "Real Madrid", "Real Sociedad", "AC Milan"]),
+    ("Sergej Milinković-Savić", "Serbia", "Midfield", "Central Midfield", ["Vojvodina", "Genk", "Lazio", "Al-Hilal"]),
+    ("Alessio Romagnoli", "Italy", "Defender", "Centre-Back", ["AS Roma", "Sampdoria", "AC Milan", "Lazio"]),
+    ("Gerard Moreno", "Spain", "Attack", "Centre-Forward", ["Villarreal", "Mallorca", "Espanyol"]),
+    ("Vitor Roque", "Brazil", "Attack", "Centre-Forward", ["Cruzeiro", "Athletico Paranaense", "Barcelona", "Real Betis"]),
+    ("Wilfried Bony", "Ivory Coast", "Attack", "Centre-Forward", ["Sparta Prague", "Vitesse", "Swansea City", "Manchester City", "Stoke City", "Al-Arabi"]),
+    ("Seydou Doumbia", "Ivory Coast", "Attack", "Centre-Forward", ["Young Boys", "CSKA Moscow", "Roma", "Newcastle United", "Sporting CP", "Basel", "Girona"]),
+    ("Yann M'Vila", "France", "Midfield", "Defensive Midfield", ["Rennes", "Rubin Kazan", "Sunderland", "Saint-Etienne", "Olympiacos", "West Bromwich Albion"]),
+    ("Jayden Oosterwolde", "Netherlands", "Defender", "Left-Back", ["FC Twente", "Parma", "Fenerbahce"]),
+    ("Nicolas N'Koulou", "Cameroon", "Defender", "Centre-Back", ["Monaco", "Marseille", "Lyon", "Torino", "Watford", "Aris"]),
+    ("Lucas Biglia", "Argentina", "Midfield", "Defensive Midfield", ["Independiente", "Anderlecht", "Lazio", "AC Milan", "Fatih Karagumruk", "Istanbul Basaksehir"]),
+    ("Álex Baena", "Spain", "Midfield", "Attacking Midfield", ["Villarreal", "Girona", "Atletico Madrid"]),
+    ("Franco Mastantuono", "Argentina", "Attack", "Right Winger", ["River Plate", "Real Madrid"]),
+    ("Moussa Marega", "Mali", "Attack", "Centre-Forward", ["Maritimo", "Vitoria Guimaraes", "FC Porto", "Al-Hilal", "Sharjah FC"]),
+]
+
+# Common naming differences between the manual list and team_details.csv.
+CLUB_ALIASES = {
+    "fenerbahce": "Fenerbahce",
+    "barcelona": "FC Barcelona",
+    "roma": "AS Roma",
+    "marseille": "Olympique de Marseille",
+    "monaco": "AS Monaco",
+    "lyon": "Olympique Lyon",
+    "atleticomadrid": "Atletico Madrid",
+    "villarreal": "Villarreal CF",
+    "parma": "Parma Calcio 1913",
+    "bayernmunich": "Bayern Munich",
+    "schalke04": "FC Schalke 04",
+    "psveindhoven": "PSV Eindhoven",
+    "juventusfc": "Juventus FC",
+    "manchesterunited": "Manchester United",
+    "manchestercity": "Manchester City",
+    "realmadrid": "Real Madrid",
+    "acmilan": "AC Milan",
+    "liverpoolfc": "Liverpool FC",
+    "chelseafc": "Chelsea FC",
+    "fcporto": "FC Porto",
+    "ajaxamsterdam": "Ajax Amsterdam",
+    "arsenal": "Arsenal FC",
+    "arsenalfc": "Arsenal FC",
+    "riversplate": "CA River Plate",
+    "riverplate": "CA River Plate",
+    "istanbulbasaksehir": "Istanbul Basaksehir",
+}
+
+
+def resolve_manual_clubs(names):
+    """Resolve club names against the exact clubs dictionary used by this script."""
+    normalized = {}
+    for cid, club in clubs.items():
+        normalized[normalize(club["name"])] = cid
+
+    result = []
+    unresolved = []
+
+    for name in names:
+        key = normalize(name)
+        key = normalize(CLUB_ALIASES.get(key, name))
+
+        club_id = normalized.get(key)
+
+        if club_id is None:
+            # Conservative fallback: only accept a unique normalized prefix/contains match.
+            candidates = [
+                cid for cname, cid in normalized.items()
+                if cname.startswith(key) or key.startswith(cname)
+            ]
+            if len(candidates) == 1:
+                club_id = candidates[0]
+
+        if club_id is not None:
+            result.append(int(club_id))
+        else:
+            unresolved.append(name)
+
+    if unresolved:
+        print(f"[MANUAL PLAYER] Clubs not found: {', '.join(unresolved)}")
+
+    return sorted(set(result))
+
+
+existing_player_names = {
+    normalize(p["name"])
+    for p in players_json
+    if p.get("name")
+}
+
+# Negative IDs are deliberate: they cannot collide with the imported dataset's
+# player IDs, and these records are clearly identifiable as manual additions.
+next_manual_id = -1
+manual_added = 0
+
+for name, country, position, detailed_position, club_names in MANUAL_PLAYERS:
+    normalized_name = normalize(name)
+
+    # Never duplicate a player that is already present in the imported dataset.
+    if normalized_name in existing_player_names:
+        continue
+
+    players_json.append({
+        "id": next_manual_id,
+        "name": name,
+        "countries": [country],
+        "position": position,
+        "detailedPosition": detailed_position,
+        "clubs": resolve_manual_clubs(club_names),
+        "nationalTeams": [],
+        "primaryNationalTeamId": None,
+        "aliases": [name],
+        "normalizedName": normalized_name,
+        "normalizedAliases": [normalized_name],
+        "marketValue": 0,
+        "peakMarketValue": 0,
+        "careerGoals": 0,
+        "careerTimeline": [],
+    })
+
+    existing_player_names.add(normalized_name)
+    next_manual_id -= 1
+    manual_added += 1
+
+print(f"Manual players added : {manual_added}")
+
+
+# ==========================================================
 # SAVE PLAYERS
 # ==========================================================
 

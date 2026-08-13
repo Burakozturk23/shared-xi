@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'screens/welcome_page.dart';
 import 'theme/app_theme.dart';
 import 'repositories/repository.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  debugPrint('INIT start');
-await Repository.instance.initialize();
-debugPrint('INIT done');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Kulüp + oyuncu verisini yükle (zorunlu)
+  await Repository.instance.initialize();
 
-  runApp(const SharedXIApp());
+  runApp(const SharedXIApp()); // kendi widget adın neyse o
 }
 
 class SharedXIApp extends StatelessWidget {

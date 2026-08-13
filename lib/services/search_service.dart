@@ -41,7 +41,6 @@ class SearchService {
   static const int minQueryLengthForSuggest = 2;
   static const int minTokenLengthForPartial = 4;
 
-  /// normalizedName / alias ilk 2 karakter → oyuncu listesi (bir kez kurulur).
   static Map<String, List<Player>>? _prefixIndex;
 
   static void buildIndex(List<Player> players) {
@@ -51,8 +50,11 @@ class SearchService {
       final keys = <String>{};
       void addKey(String raw) {
         final n = normalize(raw);
+        final c = compact(n);
         if (n.length >= 2) keys.add(n.substring(0, 2));
         if (n.length >= 1) keys.add(n.substring(0, 1));
+        if (c.length >= 2) keys.add(c.substring(0, 2));
+        if (c.length >= 1) keys.add(c.substring(0, 1));
       }
 
       if (p.normalizedName.isNotEmpty) {
@@ -66,7 +68,7 @@ class SearchService {
       for (final a in p.aliases) {
         addKey(a);
       }
-      // soyadı
+      addKey(p.name);
       final parts = p.name.trim().split(RegExp(r'\s+'));
       if (parts.length >= 2) addKey(parts.last);
 
@@ -82,7 +84,7 @@ class SearchService {
   static String normalize(String input) {
     var s = input.trim().toLowerCase();
     const from = 'áàäâãåāăąéèëêēėęíìïîīįóòöôõøōúùüûūųýÿçćčñńňşšśžźżđ';
-    const to   = 'aaaaaaaaaeeeeeeeiiiiiiioooooouuuuuuyycccnnnssszzzd';
+    const to = 'aaaaaaaaaeeeeeeeiiiiiiioooooouuuuuuyycccnnnssszzzd';
     final buf = StringBuffer();
     for (final code in s.runes) {
       final ch = String.fromCharCode(code);
@@ -105,57 +107,116 @@ class SearchService {
         buf.write(ch);
       }
     }
-    // noktalama / fazla boşluk
     s = buf.toString().replaceAll(RegExp(r'[^a-z0-9\s]'), ' ');
     s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
     return s;
   }
 
-  static bool equals(String a, String b) => normalize(a) == normalize(b);
+  static String compact(String input) =>
+      normalize(input).replaceAll(RegExp(r'\s+'), '');
+
+  static bool equals(String a, String b) =>
+      normalize(a) == normalize(b) || compact(a) == compact(b);
 
   static bool contains(String text, String query) {
     final q = normalize(query);
     if (q.isEmpty) return true;
-    return normalize(text).contains(q);
+    final n = normalize(text);
+    if (n.contains(q)) return true;
+    return compact(text).contains(compact(query));
   }
 
   static List<String> _labels(Player player) {
-    if (player.aliases.isNotEmpty) return player.aliases;
-    return [player.name];
+    final out = <String>{};
+    if (player.name.trim().isNotEmpty) out.add(player.name);
+    out.addAll(player.aliases.where((a) => a.trim().isNotEmpty));
+    return out.toList();
   }
 
   static List<String> _normalizedLabels(Player player) {
-    if (player.normalizedAliases.isNotEmpty) {
-      return player.normalizedAliases;
+    final out = <String>{};
+
+    void addRaw(String raw) {
+      if (raw.trim().isEmpty) return;
+      final n = normalize(raw);
+      if (n.isNotEmpty) out.add(n);
+      final c = compact(raw);
+      if (c.isNotEmpty) out.add(c);
     }
-    if (player.normalizedName.isNotEmpty) {
-      return [player.normalizedName];
+
+    if (player.normalizedName.isNotEmpty) addRaw(player.normalizedName);
+    for (final a in player.normalizedAliases) {
+      addRaw(a);
     }
-    return _labels(player).map(normalize).toList();
+    addRaw(player.name);
+    for (final a in player.aliases) {
+      addRaw(a);
+    }
+
+    if (out.isEmpty && player.name.trim().isNotEmpty) {
+      addRaw(player.name);
+    }
+    return out.toList();
   }
 
   static bool matches(Player player, String answer) {
     final q = normalize(answer);
     if (q.isEmpty) return false;
-    return _normalizedLabels(player).any((n) => n == q);
+    final qc = compact(answer);
+    return _normalizedLabels(player).any((n) => n == q || n == qc);
   }
 
   static bool matchesLastName(Player player, String answer) {
     final q = normalize(answer);
     if (q.length < 3) return false;
+    final qc = compact(answer);
     for (final label in _labels(player)) {
       final parts = label.trim().split(RegExp(r'\s+'));
       if (parts.isEmpty) continue;
       final last = normalize(parts.last);
-      if (last == q) return true;
+      final lastC = compact(parts.last);
+      if (last == q || lastC == qc || last == qc || lastC == q) return true;
     }
     return false;
   }
 
   static bool matchesPartial(Player player, String answer) {
     final q = normalize(answer);
-    if (q.length < minTokenLengthForPartial) return false;
-    return _normalizedLabels(player).any((n) => n.contains(q));
+    final qc = compact(answer);
+    if (q.length < minTokenLengthForPartial &&
+        qc.length < minTokenLengthForPartial) {
+      return false;
+    }
+    return _normalizedLabels(player).any((n) {
+      if (q.isNotEmpty && n.contains(q)) return true;
+      if (qc.isNotEmpty && n.contains(qc)) return true;
+      return false;
+    });
+  }
+
+  static bool _matchesTokens(String label, String query) {
+    final tokens =
+        normalize(query).split(' ').where((t) => t.isNotEmpty).toList();
+    if (tokens.isEmpty) return false;
+    if (tokens.length == 1) {
+      final t = tokens.first;
+      final c = compact(label);
+      return label.startsWith(t) ||
+          label.contains(t) ||
+          c.startsWith(t) ||
+          c.contains(t) ||
+          label.split(' ').any((p) => p.startsWith(t));
+    }
+    final cLabel = compact(label);
+    final cQuery = compact(query);
+    if (cLabel.contains(cQuery) || cLabel.startsWith(cQuery)) return true;
+    for (final t in tokens) {
+      final ok = label.contains(t) ||
+          cLabel.contains(t) ||
+          label.split(' ').any((p) => p.startsWith(t));
+      if (!ok) return false;
+    }
+    return true;
   }
 
   static Player? findExactPlayer({
@@ -177,7 +238,8 @@ class SearchService {
     if (trimmed.isEmpty) return ResolveResult.notFound();
 
     final pool = players
-        .where((p) => !excludedPlayerIds.contains(p.id) && p.name.trim().isNotEmpty)
+        .where(
+            (p) => !excludedPlayerIds.contains(p.id) && p.name.trim().isNotEmpty)
         .toList();
 
     final exact = <Player>[];
@@ -219,7 +281,6 @@ class SearchService {
     return r.isFound ? r.player : null;
   }
 
-  /// Hızlı autocomplete: önek indeksi + erken çıkış.
   static List<Player> suggestions({
     required List<Player> players,
     required String query,
@@ -228,16 +289,19 @@ class SearchService {
   }) {
     final q = normalize(query);
     if (q.length < minQueryLengthForSuggest) return const [];
+    final qc = compact(query);
 
-    // Aday kümesi: indeks varsa daralt, yoksa verilen liste
     Iterable<Player> pool;
     final index = _prefixIndex;
     if (index != null && q.isNotEmpty) {
-      final key2 = q.length >= 2 ? q.substring(0, 2) : q.substring(0, 1);
-      final key1 = q.substring(0, 1);
+      final firstToken =
+          q.split(' ').firstWhere((t) => t.isNotEmpty, orElse: () => q);
+      final keySrc = firstToken.length >= 2 ? firstToken : qc;
+      final key2 =
+          keySrc.length >= 2 ? keySrc.substring(0, 2) : keySrc.substring(0, 1);
+      final key1 = keySrc.substring(0, 1);
       final a = index[key2] ?? const <Player>[];
       final b = index[key1] ?? const <Player>[];
-      // key2 daha dar — önce onu kullan
       pool = a.isNotEmpty ? a : b;
       if (pool is List && (pool as List).isEmpty) {
         pool = players;
@@ -258,24 +322,45 @@ class SearchService {
       var best = -1;
 
       for (final n in labels) {
-        if (n.startsWith(q)) {
+        if (n.startsWith(q) || (qc.isNotEmpty && n.startsWith(qc))) {
           best = 2;
           break;
         }
-        // token (soyadı vb.)
         for (final part in n.split(' ')) {
-          if (part.startsWith(q)) {
+          if (part.startsWith(q) || (qc.isNotEmpty && part.startsWith(qc))) {
             best = 2;
             break;
           }
         }
         if (best == 2) break;
-        if (best < 1 && n.contains(q)) best = 1;
+
+        if (_matchesTokens(n, q)) {
+          best = 2;
+          break;
+        }
+
+        if (best < 1) {
+          if (n.contains(q) || (qc.isNotEmpty && n.contains(qc))) {
+            best = 1;
+          }
+        }
+      }
+
+      if (best < 2) {
+        final display = normalize(player.name);
+        if (_matchesTokens(display, q) ||
+            display.startsWith(q) ||
+            compact(player.name).startsWith(qc)) {
+          best = 2;
+        } else if (best < 1 &&
+            (display.contains(q) || compact(player.name).contains(qc))) {
+          best = 1;
+        }
       }
 
       if (best == 2) {
         starts.add(player);
-        if (starts.length >= limit) break; // yeter
+        if (starts.length >= limit) break;
       } else if (best == 1) {
         middles.add(player);
       }

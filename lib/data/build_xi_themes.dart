@@ -32,7 +32,14 @@ const List<String> balkanCountries = [
   'North Macedonia', 'Montenegro', 'Slovenia', 'Kosovo',
   'Bulgaria', 'Romania',
 ];
+const List<String> scandinaviaCountries = [
+  'Denmark', 'Sweden', 'Norway', 'Finland', 'Iceland',
+];
 
+const List<String> africanCountries = [
+  'Senegal', 'Nigeria', 'Morocco', 'Cameroon', 'Ivory Coast',
+  'Ghana', 'Egypt', 'Mali', 'Algeria', 'Tunisia',
+];
 const List<BuildXiTheme> buildXiThemes = [
   BuildXiTheme(
     id: 'premier_league',
@@ -77,6 +84,34 @@ const List<BuildXiTheme> buildXiThemes = [
     leagueName: 'Süper Lig',
   ),
   BuildXiTheme(
+  id: 'eredivisie',
+  name: 'Eredivisie',
+  description: 'Eredivisie\'de oynamış oyunculardan 11 kur',
+  poolType: BuildXiPoolType.league,
+  leagueName: 'Eredivisie',
+),
+BuildXiTheme(
+  id: 'liga_portugal',
+  name: 'Liga Portugal',
+  description: 'Portekiz liginde oynamış oyunculardan 11 kur',
+  poolType: BuildXiPoolType.league,
+  leagueName: 'Liga Portugal', // veya 'Primeira Liga' – veride hangisi varsa
+),
+BuildXiTheme(
+  id: 'scandinavia',
+  name: 'İskandinav Rüzgarı',
+  description: 'Sadece İskandinav ülkelerinden oyuncular',
+  poolType: BuildXiPoolType.region,
+  countries: scandinaviaCountries,
+),
+BuildXiTheme(
+  id: 'africa',
+  name: 'Afrika Gücü',
+  description: 'Sadece Afrikalı oyunculardan 11 kur',
+  poolType: BuildXiPoolType.region,
+  countries: africanCountries,
+),
+  BuildXiTheme(
     id: 'south_america',
     name: 'Güney Amerika',
     description: 'Sadece Güney Amerikalı oyuncular',
@@ -97,6 +132,48 @@ const List<BuildXiTheme> buildXiThemes = [
     poolType: BuildXiPoolType.all,
     uniqueNationalityRule: true,
   ),
+  BuildXiTheme(
+  id: 'el_clasico',
+  name: 'El Clásico: Real Madrid – Barcelona',
+  description: 'Bu iki kulüpte oynamış oyunculardan kur',
+  poolType: BuildXiPoolType.clubPair,
+  clubPairIds: [418, 131],
+),
+BuildXiTheme(
+  id: 'manchester_derby',
+  name: 'Manchester Derbisi: United – City',
+  description: 'Bu iki kulüpte oynamış oyunculardan kur',
+  poolType: BuildXiPoolType.clubPair,
+  clubPairIds: [985, 281],
+),
+BuildXiTheme(
+  id: 'north_london',
+  name: 'Kuzey Londra: Arsenal – Tottenham',
+  description: 'Bu iki kulüpte oynamış oyunculardan kur',
+  poolType: BuildXiPoolType.clubPair,
+  clubPairIds: [11, 148],
+),
+BuildXiTheme(
+  id: 'le_classique',
+  name: 'Le Classique: PSG – Marseille',
+  description: 'Bu iki kulüpte oynamış oyunculardan kur',
+  poolType: BuildXiPoolType.clubPair,
+  clubPairIds: [583, 244],
+),
+BuildXiTheme(
+  id: 'der_klassiker',
+  name: 'Der Klassiker: Bayern – Dortmund',
+  description: 'Bu iki kulüpte oynamış oyunculardan kur',
+  poolType: BuildXiPoolType.clubPair,
+  clubPairIds: [27, 16],
+),
+BuildXiTheme(
+  id: 'roma_lazio',
+  name: 'Derby della Capitale: Roma – Lazio',
+  description: 'Bu iki kulüpte oynamış oyunculardan kur',
+  poolType: BuildXiPoolType.clubPair,
+  clubPairIds: [12, 398],
+),
   BuildXiTheme(
     id: 'milan_derby',
     name: 'Milano: Milan - Inter',

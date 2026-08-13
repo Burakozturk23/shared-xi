@@ -120,9 +120,6 @@ class GridController extends ChangeNotifier {
     return 0;
   }
 
-  /// Girilen ismi, o hücrenin kriterlerine uyan ve henüz kullanılmamış
-  /// oyuncular arasında arar. Bulursa oyuncuyu döner, bulamazsa null.
-  
   void updateSuggestions(String query) {
     suggestions = SearchService.suggestions(
       players: Repository.instance.players,
@@ -138,31 +135,43 @@ class GridController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Listeden seçilen oyuncuyu doğrudan doğrular (isimle tekrar aramaz).
   Player? submitPlayer(int index, Player player) {
     suggestions = const [];
-    // mevcut submitGuess yoluna isimle
-    return submitGuess(index, player.name);
+
+    if (index < 0 || index >= 9) return null;
+    if (_state.rowCriteria.length < 3 || _state.colCriteria.length < 3) {
+      return null;
+    }
+
+    final row = _state.rowCriteria[index ~/ 3];
+    final col = _state.colCriteria[index % 3];
+    final used = _state.usedPlayerIds;
+
+    if (used.contains(player.id)) return null;
+    if (!row.matches(player) || !col.matches(player)) return null;
+
+    return player;
   }
 
-Player? submitGuess(int index, String answer) {
-  final row = _state.rowCriteria[index ~/ 3];
-  final col = _state.colCriteria[index % 3];
-  final used = _state.usedPlayerIds;
+  Player? submitGuess(int index, String answer) {
+    final row = _state.rowCriteria[index ~/ 3];
+    final col = _state.colCriteria[index % 3];
+    final used = _state.usedPlayerIds;
 
-  final resolved = SearchService.resolve(
-    players: Repository.instance.players,
-    answer: answer,
-    excludedPlayerIds: used,
-  );
-  if (!resolved.isFound) return null;
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: answer,
+      excludedPlayerIds: used,
+    );
+    if (!resolved.isFound) return null;
 
-  final player = resolved.player!;
+    final player = resolved.player!;
 
-  // Hücre kriterine uyuyor mu?
-  if (!row.matches(player) || !col.matches(player)) return null;
+    if (!row.matches(player) || !col.matches(player)) return null;
 
-  return player;
-}
+    return player;
+  }
 
   void assignPlayer(int index, Player player) {
     final newCells = List<GridCellState>.from(_state.cells);

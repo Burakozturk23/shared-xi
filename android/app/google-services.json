@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "702685230752",
+    "project_id": "sharedix",
+    "storage_bucket": "sharedix.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702685230752:android:64fa1e34523b7b5677fbc5",
+        "android_client_info": {
+          "package_name": "com.example.shared_xi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj5Z5tPCsX8oQV1Lp_9Umvyn9lKZrX-vY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

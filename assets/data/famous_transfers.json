@@ -133,6 +133,13 @@
     "toClubId": 631
   },
   {
+    "playerId": 602105,
+    "year": 2022,
+    "fee": 95000000.0,
+    "fromClubId": 610,
+    "toClubId": 985
+  },
+  {
     "playerId": 709726,
     "year": 2025,
     "fee": 95000000.0,
@@ -152,13 +159,6 @@
     "fee": 95000000.0,
     "fromClubId": 24,
     "toClubId": 583
-  },
-  {
-    "playerId": 602105,
-    "year": 2022,
-    "fee": 95000000.0,
-    "fromClubId": 610,
-    "toClubId": 985
   },
   {
     "playerId": 8198,
@@ -210,18 +210,18 @@
     "toClubId": 506
   },
   {
-    "playerId": 401173,
-    "year": 2021,
-    "fee": 85000000.0,
-    "fromClubId": 16,
-    "toClubId": 985
-  },
-  {
     "playerId": 546543,
     "year": 2022,
     "fee": 85000000.0,
     "fromClubId": 294,
     "toClubId": 31
+  },
+  {
+    "playerId": 401173,
+    "year": 2021,
+    "fee": 85000000.0,
+    "fromClubId": 16,
+    "toClubId": 985
   },
   {
     "playerId": 96341,
@@ -273,13 +273,6 @@
     "toClubId": 631
   },
   {
-    "playerId": 343052,
-    "year": 2019,
-    "fee": 80000000.0,
-    "fromClubId": 1082,
-    "toClubId": 11
-  },
-  {
     "playerId": 281963,
     "year": 2019,
     "fee": 80000000.0,
@@ -292,6 +285,13 @@
     "fee": 80000000.0,
     "fromClubId": 162,
     "toClubId": 418
+  },
+  {
+    "playerId": 343052,
+    "year": 2019,
+    "fee": 80000000.0,
+    "fromClubId": 1082,
+    "toClubId": 11
   },
   {
     "playerId": 401923,
@@ -336,18 +336,11 @@
     "toClubId": 281
   },
   {
-    "playerId": 455661,
-    "year": 2025,
+    "playerId": 576024,
+    "year": 2024,
     "fee": 75000000.0,
-    "fromClubId": 79,
-    "toClubId": 762
-  },
-  {
-    "playerId": 88103,
-    "year": 2014,
-    "fee": 75000000.0,
-    "fromClubId": 162,
-    "toClubId": 418
+    "fromClubId": 281,
+    "toClubId": 13
   },
   {
     "playerId": 309400,
@@ -357,6 +350,13 @@
     "toClubId": 11
   },
   {
+    "playerId": 401923,
+    "year": 2025,
+    "fee": 75000000.0,
+    "fromClubId": 6195,
+    "toClubId": 141
+  },
+  {
     "playerId": 413039,
     "year": 2025,
     "fee": 75000000.0,
@@ -364,18 +364,18 @@
     "toClubId": 985
   },
   {
-    "playerId": 576024,
-    "year": 2024,
-    "fee": 75000000.0,
-    "fromClubId": 281,
-    "toClubId": 13
-  },
-  {
-    "playerId": 401923,
+    "playerId": 445939,
     "year": 2025,
     "fee": 75000000.0,
-    "fromClubId": 6195,
-    "toClubId": 141
+    "fromClubId": 24,
+    "toClubId": 281
+  },
+  {
+    "playerId": 455661,
+    "year": 2025,
+    "fee": 75000000.0,
+    "fromClubId": 79,
+    "toClubId": 762
   },
   {
     "playerId": 45320,
@@ -385,11 +385,11 @@
     "toClubId": 985
   },
   {
-    "playerId": 445939,
-    "year": 2025,
+    "playerId": 88103,
+    "year": 2014,
     "fee": 75000000.0,
-    "fromClubId": 24,
-    "toClubId": 281
+    "fromClubId": 162,
+    "toClubId": 418
   },
   {
     "playerId": 517894,
@@ -441,13 +441,6 @@
     "toClubId": 631
   },
   {
-    "playerId": 423440,
-    "year": 2025,
-    "fee": 70000000.0,
-    "fromClubId": 681,
-    "toClubId": 11
-  },
-  {
     "playerId": 357565,
     "year": 2019,
     "fee": 70000000.0,
@@ -455,11 +448,11 @@
     "toClubId": 281
   },
   {
-    "playerId": 502670,
+    "playerId": 423440,
     "year": 2025,
     "fee": 70000000.0,
-    "fromClubId": 6195,
-    "toClubId": 583
+    "fromClubId": 681,
+    "toClubId": 11
   },
   {
     "playerId": 451276,
@@ -467,6 +460,13 @@
     "fee": 70000000.0,
     "fromClubId": 23826,
     "toClubId": 31
+  },
+  {
+    "playerId": 502670,
+    "year": 2025,
+    "fee": 70000000.0,
+    "fromClubId": 6195,
+    "toClubId": 583
   },
   {
     "playerId": 480692,
@@ -511,18 +511,18 @@
     "toClubId": 985
   },
   {
-    "playerId": 326031,
-    "year": 2022,
-    "fee": 67000000.0,
-    "fromClubId": 506,
-    "toClubId": 27
-  },
-  {
     "playerId": 3366,
     "year": 2009,
     "fee": 67000000.0,
     "fromClubId": 5,
     "toClubId": 418
+  },
+  {
+    "playerId": 326031,
+    "year": 2022,
+    "fee": 67000000.0,
+    "fromClubId": 506,
+    "toClubId": 27
   },
   {
     "playerId": 128223,
@@ -544,13 +544,6 @@
     "fee": 65300000.0,
     "fromClubId": 1237,
     "toClubId": 631
-  },
-  {
-    "playerId": 550550,
-    "year": 2024,
-    "fee": 65000000.0,
-    "fromClubId": 294,
-    "toClubId": 583
   },
   {
     "playerId": 176553,
@@ -579,6 +572,13 @@
     "fee": 65000000.0,
     "fromClubId": 506,
     "toClubId": 281
+  },
+  {
+    "playerId": 550550,
+    "year": 2024,
+    "fee": 65000000.0,
+    "fromClubId": 294,
+    "toClubId": 583
   },
   {
     "playerId": 48280,
@@ -616,13 +616,6 @@
     "toClubId": 11
   },
   {
-    "playerId": 626724,
-    "year": 2025,
-    "fee": 63700000.0,
-    "fromClubId": 1237,
-    "toClubId": 631
-  },
-  {
     "playerId": 134425,
     "year": 2015,
     "fee": 63700000.0,
@@ -630,11 +623,11 @@
     "toClubId": 281
   },
   {
-    "playerId": 45320,
-    "year": 2015,
-    "fee": 63000000.0,
-    "fromClubId": 985,
-    "toClubId": 583
+    "playerId": 626724,
+    "year": 2025,
+    "fee": 63700000.0,
+    "fromClubId": 1237,
+    "toClubId": 631
   },
   {
     "playerId": 257462,
@@ -648,6 +641,13 @@
     "year": 2025,
     "fee": 63000000.0,
     "fromClubId": 989,
+    "toClubId": 583
+  },
+  {
+    "playerId": 45320,
+    "year": 2015,
+    "fee": 63000000.0,
+    "fromClubId": 985,
     "toClubId": 583
   },
   {
@@ -665,13 +665,6 @@
     "toClubId": 631
   },
   {
-    "playerId": 601883,
-    "year": 2023,
-    "fee": 62000000.0,
-    "fromClubId": 543,
-    "toClubId": 281
-  },
-  {
     "playerId": 923831,
     "year": 2024,
     "fee": 62000000.0,
@@ -686,6 +679,13 @@
     "toClubId": 148
   },
   {
+    "playerId": 601883,
+    "year": 2023,
+    "fee": 62000000.0,
+    "fromClubId": 543,
+    "toClubId": 281
+  },
+  {
     "playerId": 583189,
     "year": 2025,
     "fee": 61400000.0,
@@ -693,60 +693,11 @@
     "toClubId": 762
   },
   {
-    "playerId": 85314,
-    "year": 2017,
+    "playerId": 3446,
+    "year": 2000,
     "fee": 60000000.0,
-    "fromClubId": 631,
-    "toClubId": 27190
-  },
-  {
-    "playerId": 344381,
-    "year": 2023,
-    "fee": 60000000.0,
-    "fromClubId": 23826,
-    "toClubId": 631
-  },
-  {
-    "playerId": 44779,
-    "year": 2018,
-    "fee": 60000000.0,
-    "fromClubId": 631,
-    "toClubId": 13
-  },
-  {
-    "playerId": 466805,
-    "year": 2025,
-    "fee": 60000000.0,
-    "fromClubId": 720,
-    "toClubId": 281
-  },
-  {
-    "playerId": 486049,
-    "year": 2023,
-    "fee": 60000000.0,
-    "fromClubId": 273,
-    "toClubId": 281
-  },
-  {
-    "playerId": 487465,
-    "year": 2024,
-    "fee": 60000000.0,
-    "fromClubId": 543,
-    "toClubId": 631
-  },
-  {
-    "playerId": 44162,
-    "year": 2020,
-    "fee": 60000000.0,
-    "fromClubId": 506,
-    "toClubId": 131
-  },
-  {
-    "playerId": 476701,
-    "year": 2023,
-    "fee": 60000000.0,
-    "fromClubId": 336,
-    "toClubId": 583
+    "fromClubId": 131,
+    "toClubId": 418
   },
   {
     "playerId": 182877,
@@ -756,11 +707,18 @@
     "toClubId": 985
   },
   {
-    "playerId": 302215,
-    "year": 2018,
+    "playerId": 85314,
+    "year": 2017,
     "fee": 60000000.0,
-    "fromClubId": 23826,
-    "toClubId": 31
+    "fromClubId": 631,
+    "toClubId": 27190
+  },
+  {
+    "playerId": 44162,
+    "year": 2020,
+    "fee": 60000000.0,
+    "fromClubId": 506,
+    "toClubId": 131
   },
   {
     "playerId": 418560,
@@ -770,11 +728,53 @@
     "toClubId": 281
   },
   {
-    "playerId": 3446,
-    "year": 2000,
+    "playerId": 476701,
+    "year": 2023,
     "fee": 60000000.0,
-    "fromClubId": 131,
-    "toClubId": 418
+    "fromClubId": 336,
+    "toClubId": 583
+  },
+  {
+    "playerId": 466805,
+    "year": 2025,
+    "fee": 60000000.0,
+    "fromClubId": 720,
+    "toClubId": 281
+  },
+  {
+    "playerId": 44779,
+    "year": 2018,
+    "fee": 60000000.0,
+    "fromClubId": 631,
+    "toClubId": 13
+  },
+  {
+    "playerId": 344381,
+    "year": 2023,
+    "fee": 60000000.0,
+    "fromClubId": 23826,
+    "toClubId": 631
+  },
+  {
+    "playerId": 487465,
+    "year": 2024,
+    "fee": 60000000.0,
+    "fromClubId": 543,
+    "toClubId": 631
+  },
+  {
+    "playerId": 302215,
+    "year": 2018,
+    "fee": 60000000.0,
+    "fromClubId": 23826,
+    "toClubId": 31
+  },
+  {
+    "playerId": 486049,
+    "year": 2023,
+    "fee": 60000000.0,
+    "fromClubId": 273,
+    "toClubId": 281
   },
   {
     "playerId": 670681,
@@ -805,18 +805,18 @@
     "toClubId": 762
   },
   {
-    "playerId": 7767,
-    "year": 2011,
-    "fee": 58500000.0,
-    "fromClubId": 31,
-    "toClubId": 631
-  },
-  {
     "playerId": 335721,
     "year": 2021,
     "fee": 58500000.0,
     "fromClubId": 1237,
     "toClubId": 11
+  },
+  {
+    "playerId": 7767,
+    "year": 2011,
+    "fee": 58500000.0,
+    "fromClubId": 31,
+    "toClubId": 631
   },
   {
     "playerId": 360518,
@@ -826,18 +826,18 @@
     "toClubId": 506
   },
   {
-    "playerId": 411295,
-    "year": 2022,
-    "fee": 58000000.0,
-    "fromClubId": 399,
-    "toClubId": 131
-  },
-  {
     "playerId": 378710,
     "year": 2022,
     "fee": 58000000.0,
     "fromClubId": 29,
     "toClubId": 148
+  },
+  {
+    "playerId": 411295,
+    "year": 2022,
+    "fee": 58000000.0,
+    "fromClubId": 399,
+    "toClubId": 131
   },
   {
     "playerId": 388165,
@@ -882,18 +882,18 @@
     "toClubId": 631
   },
   {
-    "playerId": 80562,
-    "year": 2016,
-    "fee": 56000000.0,
-    "fromClubId": 964,
-    "toClubId": 27190
-  },
-  {
     "playerId": 503987,
     "year": 2025,
     "fee": 56000000.0,
     "fromClubId": 631,
     "toClubId": 11
+  },
+  {
+    "playerId": 80562,
+    "year": 2016,
+    "fee": 56000000.0,
+    "fromClubId": 964,
+    "toClubId": 27190
   },
   {
     "playerId": 670882,
@@ -910,25 +910,18 @@
     "toClubId": 281
   },
   {
-    "playerId": 460939,
-    "year": 2025,
-    "fee": 55000000.0,
-    "fromClubId": 5,
-    "toClubId": 281
-  },
-  {
-    "playerId": 395516,
-    "year": 2023,
-    "fee": 55000000.0,
-    "fromClubId": 15,
-    "toClubId": 405
-  },
-  {
     "playerId": 477758,
     "year": 2019,
     "fee": 55000000.0,
     "fromClubId": 873,
     "toClubId": 985
+  },
+  {
+    "playerId": 470607,
+    "year": 2023,
+    "fee": 55000000.0,
+    "fromClubId": 703,
+    "toClubId": 148
   },
   {
     "playerId": 293385,
@@ -938,6 +931,13 @@
     "toClubId": 131
   },
   {
+    "playerId": 460939,
+    "year": 2025,
+    "fee": 55000000.0,
+    "fromClubId": 5,
+    "toClubId": 281
+  },
+  {
     "playerId": 398184,
     "year": 2022,
     "fee": 55000000.0,
@@ -945,11 +945,11 @@
     "toClubId": 131
   },
   {
-    "playerId": 470607,
+    "playerId": 395516,
     "year": 2023,
     "fee": 55000000.0,
-    "fromClubId": 703,
-    "toClubId": 148
+    "fromClubId": 15,
+    "toClubId": 405
   },
   {
     "playerId": 125781,
@@ -966,18 +966,18 @@
     "toClubId": 631
   },
   {
-    "playerId": 93720,
-    "year": 2017,
-    "fee": 53000000.0,
-    "fromClubId": 1041,
-    "toClubId": 11
-  },
-  {
     "playerId": 566723,
     "year": 2024,
     "fee": 53000000.0,
     "fromClubId": 873,
     "toClubId": 27
+  },
+  {
+    "playerId": 93720,
+    "year": 2017,
+    "fee": 53000000.0,
+    "fromClubId": 1041,
+    "toClubId": 11
   },
   {
     "playerId": 5023,
@@ -1015,18 +1015,18 @@
     "toClubId": 281
   },
   {
-    "playerId": 659813,
-    "year": 2026,
-    "fee": 52000000.0,
-    "fromClubId": 15,
-    "toClubId": 11
-  },
-  {
     "playerId": 462250,
     "year": 2024,
     "fee": 52000000.0,
     "fromClubId": 13,
     "toClubId": 631
+  },
+  {
+    "playerId": 659813,
+    "year": 2026,
+    "fee": 52000000.0,
+    "fromClubId": 15,
+    "toClubId": 11
   },
   {
     "playerId": 447661,
@@ -1064,39 +1064,11 @@
     "toClubId": 631
   },
   {
-    "playerId": 401530,
-    "year": 2019,
+    "playerId": 914562,
+    "year": 2024,
     "fee": 50000000.0,
-    "fromClubId": 720,
-    "toClubId": 418
-  },
-  {
-    "playerId": 517894,
-    "year": 2023,
-    "fee": 50000000.0,
-    "fromClubId": 13,
-    "toClubId": 543
-  },
-  {
-    "playerId": 411975,
-    "year": 2022,
-    "fee": 50000000.0,
-    "fromClubId": 368,
-    "toClubId": 131
-  },
-  {
-    "playerId": 288230,
-    "year": 2023,
-    "fee": 50000000.0,
-    "fromClubId": 131,
+    "fromClubId": 273,
     "toClubId": 583
-  },
-  {
-    "playerId": 181375,
-    "year": 2019,
-    "fee": 50000000.0,
-    "fromClubId": 24,
-    "toClubId": 379
   },
   {
     "playerId": 316889,
@@ -1106,25 +1078,25 @@
     "toClubId": 6195
   },
   {
-    "playerId": 811778,
-    "year": 2025,
-    "fee": 50000000.0,
-    "fromClubId": 294,
-    "toClubId": 418
-  },
-  {
-    "playerId": 66515,
-    "year": 2016,
-    "fee": 50000000.0,
-    "fromClubId": 660,
-    "toClubId": 22219
-  },
-  {
-    "playerId": 230784,
-    "year": 2020,
+    "playerId": 517894,
+    "year": 2023,
     "fee": 50000000.0,
     "fromClubId": 13,
-    "toClubId": 11
+    "toClubId": 543
+  },
+  {
+    "playerId": 181375,
+    "year": 2019,
+    "fee": 50000000.0,
+    "fromClubId": 24,
+    "toClubId": 379
+  },
+  {
+    "playerId": 288230,
+    "year": 2023,
+    "fee": 50000000.0,
+    "fromClubId": 131,
+    "toClubId": 583
   },
   {
     "playerId": 68863,
@@ -1134,25 +1106,25 @@
     "toClubId": 583
   },
   {
-    "playerId": 566931,
+    "playerId": 411975,
+    "year": 2022,
+    "fee": 50000000.0,
+    "fromClubId": 368,
+    "toClubId": 131
+  },
+  {
+    "playerId": 66515,
+    "year": 2016,
+    "fee": 50000000.0,
+    "fromClubId": 660,
+    "toClubId": 22219
+  },
+  {
+    "playerId": 811778,
     "year": 2025,
     "fee": 50000000.0,
-    "fromClubId": 583,
-    "toClubId": 23826
-  },
-  {
-    "playerId": 476701,
-    "year": 2024,
-    "fee": 50000000.0,
-    "fromClubId": 583,
-    "toClubId": 985
-  },
-  {
-    "playerId": 914562,
-    "year": 2024,
-    "fee": 50000000.0,
-    "fromClubId": 273,
-    "toClubId": 583
+    "fromClubId": 294,
+    "toClubId": 418
   },
   {
     "playerId": 241641,
@@ -1162,11 +1134,32 @@
     "toClubId": 281
   },
   {
-    "playerId": 357164,
+    "playerId": 476701,
+    "year": 2024,
+    "fee": 50000000.0,
+    "fromClubId": 583,
+    "toClubId": 985
+  },
+  {
+    "playerId": 566931,
+    "year": 2025,
+    "fee": 50000000.0,
+    "fromClubId": 583,
+    "toClubId": 23826
+  },
+  {
+    "playerId": 230784,
+    "year": 2020,
+    "fee": 50000000.0,
+    "fromClubId": 13,
+    "toClubId": 11
+  },
+  {
+    "playerId": 401530,
     "year": 2019,
-    "fee": 49500000.0,
-    "fromClubId": 1082,
-    "toClubId": 5
+    "fee": 50000000.0,
+    "fromClubId": 720,
+    "toClubId": 418
   },
   {
     "playerId": 46741,
@@ -1176,18 +1169,18 @@
     "toClubId": 583
   },
   {
+    "playerId": 357164,
+    "year": 2019,
+    "fee": 49500000.0,
+    "fromClubId": 1082,
+    "toClubId": 5
+  },
+  {
     "playerId": 90466,
     "year": 2017,
     "fee": 49400000.0,
     "fromClubId": 2288,
     "toClubId": 29
-  },
-  {
-    "playerId": 480692,
-    "year": 2022,
-    "fee": 49000000.0,
-    "fromClubId": 720,
-    "toClubId": 31
   },
   {
     "playerId": 192565,
@@ -1202,6 +1195,13 @@
     "fee": 49000000.0,
     "fromClubId": 399,
     "toClubId": 281
+  },
+  {
+    "playerId": 480692,
+    "year": 2022,
+    "fee": 49000000.0,
+    "fromClubId": 720,
+    "toClubId": 31
   },
   {
     "playerId": 291417,
@@ -1232,18 +1232,18 @@
     "toClubId": 543
   },
   {
-    "playerId": 35664,
-    "year": 2013,
-    "fee": 47000000.0,
-    "fromClubId": 418,
-    "toClubId": 11
-  },
-  {
     "playerId": 568177,
     "year": 2023,
     "fee": 47000000.0,
     "fromClubId": 281,
     "toClubId": 631
+  },
+  {
+    "playerId": 35664,
+    "year": 2013,
+    "fee": 47000000.0,
+    "fromClubId": 418,
+    "toClubId": 11
   },
   {
     "playerId": 730861,
@@ -1323,18 +1323,11 @@
     "toClubId": 762
   },
   {
-    "playerId": 326031,
-    "year": 2024,
+    "playerId": 111455,
+    "year": 2016,
     "fee": 45000000.0,
-    "fromClubId": 27,
-    "toClubId": 985
-  },
-  {
-    "playerId": 102558,
-    "year": 2023,
-    "fee": 45000000.0,
-    "fromClubId": 583,
-    "toClubId": 1230
+    "fromClubId": 18,
+    "toClubId": 11
   },
   {
     "playerId": 281963,
@@ -1344,39 +1337,11 @@
     "toClubId": 583
   },
   {
-    "playerId": 386047,
-    "year": 2023,
-    "fee": 45000000.0,
-    "fromClubId": 162,
-    "toClubId": 631
-  },
-  {
-    "playerId": 249565,
+    "playerId": 51471,
     "year": 2019,
     "fee": 45000000.0,
-    "fromClubId": 162,
-    "toClubId": 1003
-  },
-  {
-    "playerId": 111455,
-    "year": 2016,
-    "fee": 45000000.0,
-    "fromClubId": 18,
-    "toClubId": 11
-  },
-  {
-    "playerId": 225693,
-    "year": 2018,
-    "fee": 45000000.0,
-    "fromClubId": 162,
-    "toClubId": 31
-  },
-  {
-    "playerId": 371998,
-    "year": 2018,
-    "fee": 45000000.0,
-    "fromClubId": 614,
-    "toClubId": 418
+    "fromClubId": 418,
+    "toClubId": 631
   },
   {
     "playerId": 3603,
@@ -1386,20 +1351,6 @@
     "toClubId": 506
   },
   {
-    "playerId": 708265,
-    "year": 2023,
-    "fee": 45000000.0,
-    "fromClubId": 1041,
-    "toClubId": 583
-  },
-  {
-    "playerId": 90681,
-    "year": 2014,
-    "fee": 45000000.0,
-    "fromClubId": 720,
-    "toClubId": 281
-  },
-  {
     "playerId": 88103,
     "year": 2013,
     "fee": 45000000.0,
@@ -1407,18 +1358,60 @@
     "toClubId": 162
   },
   {
-    "playerId": 38253,
-    "year": 2022,
+    "playerId": 225693,
+    "year": 2018,
     "fee": 45000000.0,
-    "fromClubId": 27,
-    "toClubId": 131
+    "fromClubId": 162,
+    "toClubId": 31
   },
   {
-    "playerId": 51471,
+    "playerId": 708265,
+    "year": 2023,
+    "fee": 45000000.0,
+    "fromClubId": 1041,
+    "toClubId": 583
+  },
+  {
+    "playerId": 371998,
+    "year": 2018,
+    "fee": 45000000.0,
+    "fromClubId": 614,
+    "toClubId": 418
+  },
+  {
+    "playerId": 102558,
+    "year": 2023,
+    "fee": 45000000.0,
+    "fromClubId": 583,
+    "toClubId": 1230
+  },
+  {
+    "playerId": 386047,
+    "year": 2023,
+    "fee": 45000000.0,
+    "fromClubId": 162,
+    "toClubId": 631
+  },
+  {
+    "playerId": 3140,
+    "year": 2002,
+    "fee": 45000000.0,
+    "fromClubId": 46,
+    "toClubId": 418
+  },
+  {
+    "playerId": 249565,
     "year": 2019,
     "fee": 45000000.0,
-    "fromClubId": 418,
-    "toClubId": 631
+    "fromClubId": 162,
+    "toClubId": 1003
+  },
+  {
+    "playerId": 326031,
+    "year": 2024,
+    "fee": 45000000.0,
+    "fromClubId": 27,
+    "toClubId": 985
   },
   {
     "playerId": 502821,
@@ -1428,6 +1421,13 @@
     "toClubId": 11
   },
   {
+    "playerId": 90681,
+    "year": 2014,
+    "fee": 45000000.0,
+    "fromClubId": 720,
+    "toClubId": 281
+  },
+  {
     "playerId": 412363,
     "year": 2019,
     "fee": 45000000.0,
@@ -1435,11 +1435,11 @@
     "toClubId": 418
   },
   {
-    "playerId": 3140,
-    "year": 2002,
+    "playerId": 38253,
+    "year": 2022,
     "fee": 45000000.0,
-    "fromClubId": 46,
-    "toClubId": 418
+    "fromClubId": 27,
+    "toClubId": 131
   },
   {
     "playerId": 149729,
@@ -1540,13 +1540,6 @@
     "toClubId": 703
   },
   {
-    "playerId": 543499,
-    "year": 2023,
-    "fee": 43000000.0,
-    "fromClubId": 610,
-    "toClubId": 379
-  },
-  {
     "playerId": 15511,
     "year": 2008,
     "fee": 43000000.0,
@@ -1554,11 +1547,18 @@
     "toClubId": 281
   },
   {
-    "playerId": 39152,
-    "year": 2013,
+    "playerId": 543499,
+    "year": 2023,
     "fee": 43000000.0,
-    "fromClubId": 13,
-    "toClubId": 162
+    "fromClubId": 610,
+    "toClubId": 379
+  },
+  {
+    "playerId": 85148,
+    "year": 2015,
+    "fee": 43000000.0,
+    "fromClubId": 33,
+    "toClubId": 82
   },
   {
     "playerId": 398073,
@@ -1568,11 +1568,11 @@
     "toClubId": 46
   },
   {
-    "playerId": 85148,
-    "year": 2015,
+    "playerId": 39152,
+    "year": 2013,
     "fee": 43000000.0,
-    "fromClubId": 33,
-    "toClubId": 82
+    "fromClubId": 13,
+    "toClubId": 162
   },
   {
     "playerId": 444523,
@@ -1596,18 +1596,18 @@
     "toClubId": 985
   },
   {
-    "playerId": 435648,
-    "year": 2024,
-    "fee": 42500000.0,
-    "fromClubId": 1025,
-    "toClubId": 985
-  },
-  {
     "playerId": 40433,
     "year": 2014,
     "fee": 42500000.0,
     "fromClubId": 131,
     "toClubId": 11
+  },
+  {
+    "playerId": 435648,
+    "year": 2024,
+    "fee": 42500000.0,
+    "fromClubId": 1025,
+    "toClubId": 985
   },
   {
     "playerId": 344695,
@@ -1628,6 +1628,48 @@
     "year": 2019,
     "fee": 42000000.0,
     "fromClubId": 131,
+    "toClubId": 10948
+  },
+  {
+    "playerId": 29241,
+    "year": 2012,
+    "fee": 42000000.0,
+    "fromClubId": 5,
+    "toClubId": 583
+  },
+  {
+    "playerId": 148455,
+    "year": 2017,
+    "fee": 42000000.0,
+    "fromClubId": 12,
+    "toClubId": 31
+  },
+  {
+    "playerId": 503482,
+    "year": 2023,
+    "fee": 42000000.0,
+    "fromClubId": 6195,
+    "toClubId": 27
+  },
+  {
+    "playerId": 39983,
+    "year": 2017,
+    "fee": 42000000.0,
+    "fromClubId": 506,
+    "toClubId": 5
+  },
+  {
+    "playerId": 488362,
+    "year": 2024,
+    "fee": 42000000.0,
+    "fromClubId": 631,
+    "toClubId": 13
+  },
+  {
+    "playerId": 74418,
+    "year": 2016,
+    "fee": 42000000.0,
+    "fromClubId": 13,
     "toClubId": 10948
   },
   {
@@ -1652,20 +1694,6 @@
     "toClubId": 31
   },
   {
-    "playerId": 74418,
-    "year": 2016,
-    "fee": 42000000.0,
-    "fromClubId": 13,
-    "toClubId": 10948
-  },
-  {
-    "playerId": 55735,
-    "year": 2016,
-    "fee": 42000000.0,
-    "fromClubId": 16,
-    "toClubId": 985
-  },
-  {
     "playerId": 242086,
     "year": 2018,
     "fee": 42000000.0,
@@ -1673,18 +1701,11 @@
     "toClubId": 12
   },
   {
-    "playerId": 488362,
-    "year": 2024,
+    "playerId": 55735,
+    "year": 2016,
     "fee": 42000000.0,
-    "fromClubId": 631,
-    "toClubId": 13
-  },
-  {
-    "playerId": 148455,
-    "year": 2017,
-    "fee": 42000000.0,
-    "fromClubId": 12,
-    "toClubId": 31
+    "fromClubId": 16,
+    "toClubId": 985
   },
   {
     "playerId": 365108,
@@ -1701,39 +1722,11 @@
     "toClubId": 31
   },
   {
-    "playerId": 503482,
-    "year": 2023,
-    "fee": 42000000.0,
-    "fromClubId": 6195,
-    "toClubId": 27
-  },
-  {
-    "playerId": 29241,
-    "year": 2012,
-    "fee": 42000000.0,
-    "fromClubId": 5,
-    "toClubId": 583
-  },
-  {
-    "playerId": 39983,
-    "year": 2017,
-    "fee": 42000000.0,
-    "fromClubId": 506,
-    "toClubId": 5
-  },
-  {
     "playerId": 93128,
     "year": 2022,
     "fee": 41900000.0,
     "fromClubId": 6195,
     "toClubId": 631
-  },
-  {
-    "playerId": 323704,
-    "year": 2019,
-    "fee": 41500000.0,
-    "fromClubId": 131,
-    "toClubId": 964
   },
   {
     "playerId": 487469,
@@ -1748,6 +1741,13 @@
     "fee": 41500000.0,
     "fromClubId": 1041,
     "toClubId": 27
+  },
+  {
+    "playerId": 323704,
+    "year": 2019,
+    "fee": 41500000.0,
+    "fromClubId": 131,
+    "toClubId": 964
   },
   {
     "playerId": 3624,
@@ -1785,6 +1785,13 @@
     "toClubId": 11
   },
   {
+    "playerId": 206050,
+    "year": 2015,
+    "fee": 41000000.0,
+    "fromClubId": 458,
+    "toClubId": 506
+  },
+  {
     "playerId": 331726,
     "year": 2021,
     "fee": 41000000.0,
@@ -1797,13 +1804,6 @@
     "fee": 41000000.0,
     "fromClubId": 762,
     "toClubId": 31
-  },
-  {
-    "playerId": 206050,
-    "year": 2015,
-    "fee": 41000000.0,
-    "fromClubId": 458,
-    "toClubId": 506
   },
   {
     "playerId": 323704,
@@ -1820,18 +1820,18 @@
     "toClubId": 31
   },
   {
-    "playerId": 538977,
-    "year": 2023,
-    "fee": 40500000.0,
-    "fromClubId": 533,
-    "toClubId": 399
-  },
-  {
     "playerId": 866655,
     "year": 2025,
     "fee": 40500000.0,
     "fromClubId": 180,
     "toClubId": 29
+  },
+  {
+    "playerId": 538977,
+    "year": 2023,
+    "fee": 40500000.0,
+    "fromClubId": 533,
+    "toClubId": 399
   },
   {
     "playerId": 182712,
@@ -1841,116 +1841,11 @@
     "toClubId": 506
   },
   {
-    "playerId": 35047,
-    "year": 2012,
-    "fee": 40000000.0,
-    "fromClubId": 294,
-    "toClubId": 964
-  },
-  {
-    "playerId": 553875,
-    "year": 2023,
-    "fee": 40000000.0,
-    "fromClubId": 336,
-    "toClubId": 148
-  },
-  {
-    "playerId": 164770,
-    "year": 2021,
-    "fee": 40000000.0,
-    "fromClubId": 418,
-    "toClubId": 985
-  },
-  {
-    "playerId": 166237,
-    "year": 2019,
-    "fee": 40000000.0,
-    "fromClubId": 964,
-    "toClubId": 583
-  },
-  {
-    "playerId": 661171,
-    "year": 2024,
-    "fee": 40000000.0,
-    "fromClubId": 24,
-    "toClubId": 583
-  },
-  {
-    "playerId": 900195,
-    "year": 2025,
-    "fee": 40000000.0,
-    "fromClubId": 660,
-    "toClubId": 931
-  },
-  {
-    "playerId": 197300,
+    "playerId": 182618,
     "year": 2017,
     "fee": 40000000.0,
-    "fromClubId": 430,
-    "toClubId": 506
-  },
-  {
-    "playerId": 127048,
-    "year": 2018,
-    "fee": 40000000.0,
-    "fromClubId": 1050,
-    "toClubId": 3176
-  },
-  {
-    "playerId": 57229,
-    "year": 2017,
-    "fee": 40000000.0,
-    "fromClubId": 10948,
-    "toClubId": 131
-  },
-  {
-    "playerId": 225122,
-    "year": 2018,
-    "fee": 40000000.0,
-    "fromClubId": 583,
-    "toClubId": 1049
-  },
-  {
-    "playerId": 357119,
-    "year": 2021,
-    "fee": 40000000.0,
-    "fromClubId": 23826,
-    "toClubId": 31
-  },
-  {
-    "playerId": 505653,
-    "year": 2020,
-    "fee": 40000000.0,
-    "fromClubId": 720,
-    "toClubId": 543
-  },
-  {
-    "playerId": 44017,
-    "year": 2012,
-    "fee": 40000000.0,
-    "fromClubId": 621,
-    "toClubId": 27
-  },
-  {
-    "playerId": 26399,
-    "year": 2011,
-    "fee": 40000000.0,
-    "fromClubId": 13,
-    "toClubId": 281
-  },
-  {
-    "playerId": 80562,
-    "year": 2012,
-    "fee": 40000000.0,
-    "fromClubId": 720,
-    "toClubId": 964
-  },
-  {
-    "playerId": 75615,
-    "year": 2018,
-    "fee": 40000000.0,
-    "fromClubId": 27,
-    "toClubId": 506
+    "fromClubId": 162,
+    "toClubId": 631
   },
   {
     "playerId": 420243,
@@ -1960,32 +1855,53 @@
     "toClubId": 11
   },
   {
-    "playerId": 39152,
-    "year": 2011,
+    "playerId": 26267,
+    "year": 2013,
     "fee": 40000000.0,
-    "fromClubId": 720,
-    "toClubId": 13
+    "fromClubId": 660,
+    "toClubId": 281
   },
   {
-    "playerId": 605184,
-    "year": 2025,
-    "fee": 40000000.0,
-    "fromClubId": 417,
-    "toClubId": 379
-  },
-  {
-    "playerId": 182618,
+    "playerId": 57229,
     "year": 2017,
     "fee": 40000000.0,
-    "fromClubId": 162,
-    "toClubId": 631
+    "fromClubId": 10948,
+    "toClubId": 131
   },
   {
-    "playerId": 146854,
-    "year": 2019,
+    "playerId": 505653,
+    "year": 2020,
     "fee": 40000000.0,
-    "fromClubId": 368,
-    "toClubId": 162
+    "fromClubId": 720,
+    "toClubId": 543
+  },
+  {
+    "playerId": 900195,
+    "year": 2025,
+    "fee": 40000000.0,
+    "fromClubId": 660,
+    "toClubId": 931
+  },
+  {
+    "playerId": 661171,
+    "year": 2024,
+    "fee": 40000000.0,
+    "fromClubId": 24,
+    "toClubId": 583
+  },
+  {
+    "playerId": 75615,
+    "year": 2018,
+    "fee": 40000000.0,
+    "fromClubId": 27,
+    "toClubId": 506
+  },
+  {
+    "playerId": 238223,
+    "year": 2017,
+    "fee": 40000000.0,
+    "fromClubId": 294,
+    "toClubId": 281
   },
   {
     "playerId": 478573,
@@ -1995,39 +1911,25 @@
     "toClubId": 31
   },
   {
-    "playerId": 3410,
-    "year": 2002,
+    "playerId": 146854,
+    "year": 2019,
     "fee": 40000000.0,
-    "fromClubId": 398,
-    "toClubId": 46
+    "fromClubId": 368,
+    "toClubId": 162
   },
   {
-    "playerId": 368887,
-    "year": 2023,
+    "playerId": 80562,
+    "year": 2012,
     "fee": 40000000.0,
-    "fromClubId": 826,
-    "toClubId": 23826
+    "fromClubId": 720,
+    "toClubId": 964
   },
   {
-    "playerId": 484547,
-    "year": 2025,
+    "playerId": 26399,
+    "year": 2011,
     "fee": 40000000.0,
-    "fromClubId": 15,
-    "toClubId": 31
-  },
-  {
-    "playerId": 463600,
-    "year": 2025,
-    "fee": 40000000.0,
-    "fromClubId": 1082,
-    "toClubId": 583
-  },
-  {
-    "playerId": 7980,
-    "year": 2010,
-    "fee": 40000000.0,
-    "fromClubId": 1049,
-    "toClubId": 131
+    "fromClubId": 13,
+    "toClubId": 281
   },
   {
     "playerId": 763079,
@@ -2037,6 +1939,13 @@
     "toClubId": 281
   },
   {
+    "playerId": 7980,
+    "year": 2010,
+    "fee": 40000000.0,
+    "fromClubId": 1049,
+    "toClubId": 131
+  },
+  {
     "playerId": 77100,
     "year": 2013,
     "fee": 40000000.0,
@@ -2044,11 +1953,11 @@
     "toClubId": 583
   },
   {
-    "playerId": 26267,
-    "year": 2013,
+    "playerId": 484547,
+    "year": 2025,
     "fee": 40000000.0,
-    "fromClubId": 660,
-    "toClubId": 281
+    "fromClubId": 15,
+    "toClubId": 31
   },
   {
     "playerId": 557459,
@@ -2065,11 +1974,102 @@
     "toClubId": 631
   },
   {
-    "playerId": 238223,
-    "year": 2017,
+    "playerId": 164770,
+    "year": 2021,
+    "fee": 40000000.0,
+    "fromClubId": 418,
+    "toClubId": 985
+  },
+  {
+    "playerId": 166237,
+    "year": 2019,
+    "fee": 40000000.0,
+    "fromClubId": 964,
+    "toClubId": 583
+  },
+  {
+    "playerId": 463600,
+    "year": 2025,
+    "fee": 40000000.0,
+    "fromClubId": 1082,
+    "toClubId": 583
+  },
+  {
+    "playerId": 35047,
+    "year": 2012,
     "fee": 40000000.0,
     "fromClubId": 294,
-    "toClubId": 281
+    "toClubId": 964
+  },
+  {
+    "playerId": 225122,
+    "year": 2018,
+    "fee": 40000000.0,
+    "fromClubId": 583,
+    "toClubId": 1049
+  },
+  {
+    "playerId": 3410,
+    "year": 2002,
+    "fee": 40000000.0,
+    "fromClubId": 398,
+    "toClubId": 46
+  },
+  {
+    "playerId": 357119,
+    "year": 2021,
+    "fee": 40000000.0,
+    "fromClubId": 23826,
+    "toClubId": 31
+  },
+  {
+    "playerId": 553875,
+    "year": 2023,
+    "fee": 40000000.0,
+    "fromClubId": 336,
+    "toClubId": 148
+  },
+  {
+    "playerId": 44017,
+    "year": 2012,
+    "fee": 40000000.0,
+    "fromClubId": 621,
+    "toClubId": 27
+  },
+  {
+    "playerId": 127048,
+    "year": 2018,
+    "fee": 40000000.0,
+    "fromClubId": 1050,
+    "toClubId": 3176
+  },
+  {
+    "playerId": 605184,
+    "year": 2025,
+    "fee": 40000000.0,
+    "fromClubId": 417,
+    "toClubId": 379
+  },
+  {
+    "playerId": 197300,
+    "year": 2017,
+    "fee": 40000000.0,
+    "fromClubId": 430,
+    "toClubId": 506
+  },
+  {
+    "playerId": 368887,
+    "year": 2023,
+    "fee": 40000000.0,
+    "fromClubId": 826,
+    "toClubId": 23826
+  },
+  {
+    "playerId": 39152,
+    "year": 2011,
+    "fee": 40000000.0,
+    "fromClubId": 720,
+    "toClubId": 13
   },
   {
     "playerId": 485706,
@@ -2093,18 +2093,18 @@
     "toClubId": 29
   },
   {
+    "playerId": 431755,
+    "year": 2020,
+    "fee": 39000000.0,
+    "fromClubId": 800,
+    "toClubId": 506
+  },
+  {
     "playerId": 39153,
     "year": 2013,
     "fee": 39000000.0,
     "fromClubId": 418,
     "toClubId": 6195
-  },
-  {
-    "playerId": 179184,
-    "year": 2016,
-    "fee": 39000000.0,
-    "fromClubId": 244,
-    "toClubId": 631
   },
   {
     "playerId": 288255,
@@ -2114,11 +2114,11 @@
     "toClubId": 985
   },
   {
-    "playerId": 431755,
-    "year": 2020,
+    "playerId": 179184,
+    "year": 2016,
     "fee": 39000000.0,
-    "fromClubId": 800,
-    "toClubId": 506
+    "fromClubId": 244,
+    "toClubId": 631
   },
   {
     "playerId": 315867,
@@ -2149,11 +2149,18 @@
     "toClubId": 5
   },
   {
-    "playerId": 5588,
-    "year": 2005,
+    "playerId": 65,
+    "year": 2008,
     "fee": 38000000.0,
-    "fromClubId": 1041,
-    "toClubId": 631
+    "fromClubId": 148,
+    "toClubId": 985
+  },
+  {
+    "playerId": 198008,
+    "year": 2017,
+    "fee": 38000000.0,
+    "fromClubId": 720,
+    "toClubId": 5
   },
   {
     "playerId": 206040,
@@ -2163,18 +2170,18 @@
     "toClubId": 543
   },
   {
-    "playerId": 286384,
-    "year": 2016,
+    "playerId": 616341,
+    "year": 2022,
     "fee": 38000000.0,
-    "fromClubId": 1050,
-    "toClubId": 985
+    "fromClubId": 336,
+    "toClubId": 583
   },
   {
-    "playerId": 401356,
-    "year": 2023,
+    "playerId": 41982,
+    "year": 2018,
     "fee": 38000000.0,
-    "fromClubId": 610,
-    "toClubId": 379
+    "fromClubId": 12,
+    "toClubId": 46
   },
   {
     "playerId": 44779,
@@ -2184,13 +2191,6 @@
     "toClubId": 631
   },
   {
-    "playerId": 7767,
-    "year": 2007,
-    "fee": 38000000.0,
-    "fromClubId": 13,
-    "toClubId": 31
-  },
-  {
     "playerId": 159372,
     "year": 2018,
     "fee": 38000000.0,
@@ -2198,11 +2198,11 @@
     "toClubId": 379
   },
   {
-    "playerId": 616341,
-    "year": 2022,
+    "playerId": 5588,
+    "year": 2005,
     "fee": 38000000.0,
-    "fromClubId": 336,
-    "toClubId": 583
+    "fromClubId": 1041,
+    "toClubId": 631
   },
   {
     "playerId": 463603,
@@ -2219,6 +2219,13 @@
     "toClubId": 418
   },
   {
+    "playerId": 286384,
+    "year": 2016,
+    "fee": 38000000.0,
+    "fromClubId": 1050,
+    "toClubId": 985
+  },
+  {
     "playerId": 143424,
     "year": 2017,
     "fee": 38000000.0,
@@ -2226,25 +2233,18 @@
     "toClubId": 31
   },
   {
-    "playerId": 41982,
-    "year": 2018,
+    "playerId": 7767,
+    "year": 2007,
     "fee": 38000000.0,
-    "fromClubId": 12,
-    "toClubId": 46
+    "fromClubId": 13,
+    "toClubId": 31
   },
   {
-    "playerId": 198008,
-    "year": 2017,
+    "playerId": 401356,
+    "year": 2023,
     "fee": 38000000.0,
-    "fromClubId": 720,
-    "toClubId": 5
-  },
-  {
-    "playerId": 65,
-    "year": 2008,
-    "fee": 38000000.0,
-    "fromClubId": 148,
-    "toClubId": 985
+    "fromClubId": 610,
+    "toClubId": 379
   },
   {
     "playerId": 73491,
@@ -2268,18 +2268,18 @@
     "toClubId": 985
   },
   {
-    "playerId": 435772,
-    "year": 2022,
-    "fee": 37500000.0,
-    "fromClubId": 2282,
-    "toClubId": 5
-  },
-  {
     "playerId": 3139,
     "year": 2003,
     "fee": 37500000.0,
     "fromClubId": 985,
     "toClubId": 418
+  },
+  {
+    "playerId": 435772,
+    "year": 2022,
+    "fee": 37500000.0,
+    "fromClubId": 2282,
+    "toClubId": 5
   },
   {
     "playerId": 503981,
@@ -2289,11 +2289,18 @@
     "toClubId": 762
   },
   {
-    "playerId": 361093,
-    "year": 2022,
+    "playerId": 711337,
+    "year": 2024,
     "fee": 37000000.0,
-    "fromClubId": 1082,
-    "toClubId": 762
+    "fromClubId": 720,
+    "toClubId": 989
+  },
+  {
+    "playerId": 221025,
+    "year": 2016,
+    "fee": 37000000.0,
+    "fromClubId": 1049,
+    "toClubId": 131
   },
   {
     "playerId": 74842,
@@ -2303,10 +2310,38 @@
     "toClubId": 27
   },
   {
-    "playerId": 28396,
-    "year": 2011,
+    "playerId": 3332,
+    "year": 2004,
     "fee": 37000000.0,
-    "fromClubId": 82,
+    "fromClubId": 29,
+    "toClubId": 985
+  },
+  {
+    "playerId": 344381,
+    "year": 2025,
+    "fee": 37000000.0,
+    "fromClubId": 631,
+    "toClubId": 5
+  },
+  {
+    "playerId": 228948,
+    "year": 2018,
+    "fee": 37000000.0,
+    "fromClubId": 33,
+    "toClubId": 583
+  },
+  {
+    "playerId": 361093,
+    "year": 2022,
+    "fee": 37000000.0,
+    "fromClubId": 1082,
+    "toClubId": 762
+  },
+  {
+    "playerId": 1005575,
+    "year": 2025,
+    "fee": 37000000.0,
+    "fromClubId": 1023,
     "toClubId": 281
   },
   {
@@ -2317,38 +2352,10 @@
     "toClubId": 506
   },
   {
-    "playerId": 3332,
-    "year": 2004,
+    "playerId": 28396,
+    "year": 2011,
     "fee": 37000000.0,
-    "fromClubId": 29,
-    "toClubId": 985
-  },
-  {
-    "playerId": 228948,
-    "year": 2018,
-    "fee": 37000000.0,
-    "fromClubId": 33,
-    "toClubId": 583
-  },
-  {
-    "playerId": 344381,
-    "year": 2025,
-    "fee": 37000000.0,
-    "fromClubId": 631,
-    "toClubId": 5
-  },
-  {
-    "playerId": 711337,
-    "year": 2024,
-    "fee": 37000000.0,
-    "fromClubId": 720,
-    "toClubId": 989
-  },
-  {
-    "playerId": 1005575,
-    "year": 2025,
-    "fee": 37000000.0,
-    "fromClubId": 1023,
+    "fromClubId": 82,
     "toClubId": 281
   },
   {
@@ -2357,13 +2364,6 @@
     "fee": 37000000.0,
     "fromClubId": 1050,
     "toClubId": 631
-  },
-  {
-    "playerId": 221025,
-    "year": 2016,
-    "fee": 37000000.0,
-    "fromClubId": 1049,
-    "toClubId": 131
   },
   {
     "playerId": 475959,
@@ -2394,13 +2394,6 @@
     "toClubId": 506
   },
   {
-    "playerId": 3521,
-    "year": 2001,
-    "fee": 36150000.0,
-    "fromClubId": 130,
-    "toClubId": 506
-  },
-  {
     "playerId": 5821,
     "year": 2001,
     "fee": 36150000.0,
@@ -2408,39 +2401,11 @@
     "toClubId": 5
   },
   {
-    "playerId": 451276,
-    "year": 2021,
-    "fee": 36000000.0,
-    "fromClubId": 409,
-    "toClubId": 23826
-  },
-  {
-    "playerId": 85148,
-    "year": 2017,
-    "fee": 36000000.0,
-    "fromClubId": 82,
-    "toClubId": 583
-  },
-  {
-    "playerId": 608172,
-    "year": 2025,
-    "fee": 36000000.0,
-    "fromClubId": 2282,
-    "toClubId": 5
-  },
-  {
-    "playerId": 127189,
-    "year": 2015,
-    "fee": 36000000.0,
-    "fromClubId": 162,
-    "toClubId": 46
-  },
-  {
-    "playerId": 99343,
-    "year": 2014,
-    "fee": 36000000.0,
-    "fromClubId": 621,
-    "toClubId": 985
+    "playerId": 3521,
+    "year": 2001,
+    "fee": 36150000.0,
+    "fromClubId": 130,
+    "toClubId": 506
   },
   {
     "playerId": 104752,
@@ -2450,17 +2415,52 @@
     "toClubId": 6195
   },
   {
-    "playerId": 7611,
-    "year": 2001,
-    "fee": 35900000.0,
-    "fromClubId": 209,
-    "toClubId": 131
+    "playerId": 99343,
+    "year": 2014,
+    "fee": 36000000.0,
+    "fromClubId": 621,
+    "toClubId": 985
+  },
+  {
+    "playerId": 451276,
+    "year": 2021,
+    "fee": 36000000.0,
+    "fromClubId": 409,
+    "toClubId": 23826
+  },
+  {
+    "playerId": 608172,
+    "year": 2025,
+    "fee": 36000000.0,
+    "fromClubId": 2282,
+    "toClubId": 5
+  },
+  {
+    "playerId": 85148,
+    "year": 2017,
+    "fee": 36000000.0,
+    "fromClubId": 82,
+    "toClubId": 583
+  },
+  {
+    "playerId": 127189,
+    "year": 2015,
+    "fee": 36000000.0,
+    "fromClubId": 162,
+    "toClubId": 46
   },
   {
     "playerId": 182904,
     "year": 2018,
     "fee": 35900000.0,
     "fromClubId": 368,
+    "toClubId": 131
+  },
+  {
+    "playerId": 7611,
+    "year": 2001,
+    "fee": 35900000.0,
+    "fromClubId": 209,
     "toClubId": 131
   },
   {
@@ -2485,13 +2485,6 @@
     "toClubId": 13
   },
   {
-    "playerId": 52769,
-    "year": 2013,
-    "fee": 35500000.0,
-    "fromClubId": 2700,
-    "toClubId": 631
-  },
-  {
     "playerId": 610849,
     "year": 2025,
     "fee": 35500000.0,
@@ -2504,6 +2497,13 @@
     "fee": 35500000.0,
     "fromClubId": 368,
     "toClubId": 131
+  },
+  {
+    "playerId": 52769,
+    "year": 2013,
+    "fee": 35500000.0,
+    "fromClubId": 2700,
+    "toClubId": 631
   },
   {
     "playerId": 475188,
@@ -2527,11 +2527,18 @@
     "toClubId": 5
   },
   {
-    "playerId": 146227,
-    "year": 2019,
+    "playerId": 108390,
+    "year": 2018,
     "fee": 35000000.0,
-    "fromClubId": 131,
-    "toClubId": 1049
+    "fromClubId": 631,
+    "toClubId": 418
+  },
+  {
+    "playerId": 258027,
+    "year": 2016,
+    "fee": 35000000.0,
+    "fromClubId": 294,
+    "toClubId": 27
   },
   {
     "playerId": 632349,
@@ -2541,60 +2548,18 @@
     "toClubId": 15
   },
   {
-    "playerId": 18922,
-    "year": 2009,
-    "fee": 35000000.0,
-    "fromClubId": 1041,
-    "toClubId": 418
-  },
-  {
-    "playerId": 255901,
-    "year": 2021,
-    "fee": 35000000.0,
-    "fromClubId": 410,
-    "toClubId": 13
-  },
-  {
-    "playerId": 361914,
-    "year": 2022,
-    "fee": 35000000.0,
-    "fromClubId": 273,
-    "toClubId": 379
-  },
-  {
-    "playerId": 128223,
-    "year": 2020,
-    "fee": 35000000.0,
-    "fromClubId": 631,
-    "toClubId": 13
-  },
-  {
-    "playerId": 108390,
-    "year": 2018,
-    "fee": 35000000.0,
-    "fromClubId": 631,
-    "toClubId": 418
-  },
-  {
-    "playerId": 288230,
-    "year": 2016,
-    "fee": 35000000.0,
-    "fromClubId": 273,
-    "toClubId": 16
-  },
-  {
-    "playerId": 74418,
-    "year": 2015,
-    "fee": 35000000.0,
-    "fromClubId": 720,
-    "toClubId": 13
-  },
-  {
     "playerId": 353366,
     "year": 2019,
     "fee": 35000000.0,
     "fromClubId": 79,
     "toClubId": 27
+  },
+  {
+    "playerId": 50202,
+    "year": 2012,
+    "fee": 35000000.0,
+    "fromClubId": 1082,
+    "toClubId": 631
   },
   {
     "playerId": 1012534,
@@ -2604,6 +2569,69 @@
     "toClubId": 1237
   },
   {
+    "playerId": 27992,
+    "year": 2012,
+    "fee": 35000000.0,
+    "fromClubId": 148,
+    "toClubId": 418
+  },
+  {
+    "playerId": 475411,
+    "year": 2020,
+    "fee": 35000000.0,
+    "fromClubId": 618,
+    "toClubId": 1003
+  },
+  {
+    "playerId": 3226,
+    "year": 1999,
+    "fee": 35000000.0,
+    "fromClubId": 11,
+    "toClubId": 418
+  },
+  {
+    "playerId": 146227,
+    "year": 2019,
+    "fee": 35000000.0,
+    "fromClubId": 131,
+    "toClubId": 1049
+  },
+  {
+    "playerId": 327757,
+    "year": 2019,
+    "fee": 35000000.0,
+    "fromClubId": 252,
+    "toClubId": 5
+  },
+  {
+    "playerId": 503987,
+    "year": 2023,
+    "fee": 35000000.0,
+    "fromClubId": 383,
+    "toClubId": 631
+  },
+  {
+    "playerId": 1060087,
+    "year": 2025,
+    "fee": 35000000.0,
+    "fromClubId": 683,
+    "toClubId": 1237
+  },
+  {
+    "playerId": 316264,
+    "year": 2021,
+    "fee": 35000000.0,
+    "fromClubId": 418,
+    "toClubId": 11
+  },
+  {
+    "playerId": 255901,
+    "year": 2021,
+    "fee": 35000000.0,
+    "fromClubId": 410,
+    "toClubId": 13
+  },
+  {
     "playerId": 521964,
     "year": 2025,
     "fee": 35000000.0,
@@ -2611,10 +2639,24 @@
     "toClubId": 762
   },
   {
-    "playerId": 4360,
-    "year": 2007,
+    "playerId": 517894,
+    "year": 2021,
     "fee": 35000000.0,
-    "fromClubId": 631,
+    "fromClubId": 44,
+    "toClubId": 13
+  },
+  {
+    "playerId": 801734,
+    "year": 2025,
+    "fee": 35000000.0,
+    "fromClubId": 27,
+    "toClubId": 148
+  },
+  {
+    "playerId": 18922,
+    "year": 2009,
+    "fee": 35000000.0,
+    "fromClubId": 1041,
     "toClubId": 418
   },
   {
@@ -2625,25 +2667,18 @@
     "toClubId": 985
   },
   {
-    "playerId": 50202,
-    "year": 2012,
+    "playerId": 288230,
+    "year": 2016,
     "fee": 35000000.0,
-    "fromClubId": 1082,
-    "toClubId": 631
+    "fromClubId": 273,
+    "toClubId": 16
   },
   {
-    "playerId": 411975,
-    "year": 2019,
+    "playerId": 128223,
+    "year": 2020,
     "fee": 35000000.0,
-    "fromClubId": 40,
-    "toClubId": 368
-  },
-  {
-    "playerId": 386446,
-    "year": 2024,
-    "fee": 35000000.0,
-    "fromClubId": 416,
-    "toClubId": 6195
+    "fromClubId": 631,
+    "toClubId": 13
   },
   {
     "playerId": 39728,
@@ -2653,87 +2688,17 @@
     "toClubId": 27
   },
   {
-    "playerId": 1060087,
-    "year": 2025,
-    "fee": 35000000.0,
-    "fromClubId": 683,
-    "toClubId": 1237
-  },
-  {
-    "playerId": 188911,
+    "playerId": 411975,
     "year": 2019,
     "fee": 35000000.0,
-    "fromClubId": 7378,
-    "toClubId": 26091
+    "fromClubId": 40,
+    "toClubId": 368
   },
   {
-    "playerId": 540664,
-    "year": 2025,
+    "playerId": 86202,
+    "year": 2017,
     "fee": 35000000.0,
-    "fromClubId": 667,
-    "toClubId": 703
-  },
-  {
-    "playerId": 517894,
-    "year": 2021,
-    "fee": 35000000.0,
-    "fromClubId": 44,
-    "toClubId": 13
-  },
-  {
-    "playerId": 537598,
-    "year": 2022,
-    "fee": 35000000.0,
-    "fromClubId": 720,
-    "toClubId": 11
-  },
-  {
-    "playerId": 52769,
-    "year": 2013,
-    "fee": 35000000.0,
-    "fromClubId": 660,
-    "toClubId": 2700
-  },
-  {
-    "playerId": 39983,
-    "year": 2018,
-    "fee": 35000000.0,
-    "fromClubId": 5,
-    "toClubId": 506
-  },
-  {
-    "playerId": 3226,
-    "year": 1999,
-    "fee": 35000000.0,
-    "fromClubId": 11,
-    "toClubId": 418
-  },
-  {
-    "playerId": 157509,
-    "year": 2021,
-    "fee": 35000000.0,
-    "fromClubId": 631,
-    "toClubId": 379
-  },
-  {
-    "playerId": 316264,
-    "year": 2021,
-    "fee": 35000000.0,
-    "fromClubId": 418,
-    "toClubId": 11
-  },
-  {
-    "playerId": 27992,
-    "year": 2012,
-    "fee": 35000000.0,
-    "fromClubId": 148,
-    "toClubId": 418
-  },
-  {
-    "playerId": 503987,
-    "year": 2023,
-    "fee": 35000000.0,
-    "fromClubId": 383,
+    "fromClubId": 12,
     "toClubId": 631
   },
   {
@@ -2744,53 +2709,32 @@
     "toClubId": 11
   },
   {
-    "playerId": 56818,
-    "year": 2015,
+    "playerId": 361914,
+    "year": 2022,
     "fee": 35000000.0,
-    "fromClubId": 180,
-    "toClubId": 985
+    "fromClubId": 273,
+    "toClubId": 379
   },
   {
-    "playerId": 327757,
+    "playerId": 386446,
+    "year": 2024,
+    "fee": 35000000.0,
+    "fromClubId": 416,
+    "toClubId": 6195
+  },
+  {
+    "playerId": 39983,
+    "year": 2018,
+    "fee": 35000000.0,
+    "fromClubId": 5,
+    "toClubId": 506
+  },
+  {
+    "playerId": 188911,
     "year": 2019,
     "fee": 35000000.0,
-    "fromClubId": 252,
-    "toClubId": 5
-  },
-  {
-    "playerId": 463605,
-    "year": 2025,
-    "fee": 35000000.0,
-    "fromClubId": 1082,
-    "toClubId": 989
-  },
-  {
-    "playerId": 467437,
-    "year": 2025,
-    "fee": 35000000.0,
-    "fromClubId": 383,
-    "toClubId": 15
-  },
-  {
-    "playerId": 46741,
-    "year": 2016,
-    "fee": 35000000.0,
-    "fromClubId": 583,
-    "toClubId": 631
-  },
-  {
-    "playerId": 258027,
-    "year": 2016,
-    "fee": 35000000.0,
-    "fromClubId": 294,
-    "toClubId": 27
-  },
-  {
-    "playerId": 46001,
-    "year": 2016,
-    "fee": 35000000.0,
-    "fromClubId": 762,
-    "toClubId": 148
+    "fromClubId": 7378,
+    "toClubId": 26091
   },
   {
     "playerId": 375885,
@@ -2800,25 +2744,81 @@
     "toClubId": 703
   },
   {
-    "playerId": 801734,
+    "playerId": 52769,
+    "year": 2013,
+    "fee": 35000000.0,
+    "fromClubId": 660,
+    "toClubId": 2700
+  },
+  {
+    "playerId": 540664,
     "year": 2025,
     "fee": 35000000.0,
-    "fromClubId": 27,
+    "fromClubId": 667,
+    "toClubId": 703
+  },
+  {
+    "playerId": 74418,
+    "year": 2015,
+    "fee": 35000000.0,
+    "fromClubId": 720,
+    "toClubId": 13
+  },
+  {
+    "playerId": 537598,
+    "year": 2022,
+    "fee": 35000000.0,
+    "fromClubId": 720,
+    "toClubId": 11
+  },
+  {
+    "playerId": 467437,
+    "year": 2025,
+    "fee": 35000000.0,
+    "fromClubId": 383,
+    "toClubId": 15
+  },
+  {
+    "playerId": 56818,
+    "year": 2015,
+    "fee": 35000000.0,
+    "fromClubId": 180,
+    "toClubId": 985
+  },
+  {
+    "playerId": 46001,
+    "year": 2016,
+    "fee": 35000000.0,
+    "fromClubId": 762,
     "toClubId": 148
   },
   {
-    "playerId": 86202,
-    "year": 2017,
+    "playerId": 4360,
+    "year": 2007,
     "fee": 35000000.0,
-    "fromClubId": 12,
+    "fromClubId": 631,
+    "toClubId": 418
+  },
+  {
+    "playerId": 46741,
+    "year": 2016,
+    "fee": 35000000.0,
+    "fromClubId": 583,
     "toClubId": 631
   },
   {
-    "playerId": 475411,
-    "year": 2020,
+    "playerId": 463605,
+    "year": 2025,
     "fee": 35000000.0,
-    "fromClubId": 618,
-    "toClubId": 1003
+    "fromClubId": 1082,
+    "toClubId": 989
+  },
+  {
+    "playerId": 157509,
+    "year": 2021,
+    "fee": 35000000.0,
+    "fromClubId": 631,
+    "toClubId": 379
   },
   {
     "playerId": 181579,
@@ -2863,11 +2863,11 @@
     "toClubId": 1237
   },
   {
-    "playerId": 167850,
-    "year": 2015,
+    "playerId": 546543,
+    "year": 2020,
     "fee": 34000000.0,
-    "fromClubId": 383,
-    "toClubId": 985
+    "fromClubId": 3302,
+    "toClubId": 294
   },
   {
     "playerId": 55735,
@@ -2875,6 +2875,34 @@
     "fee": 34000000.0,
     "fromClubId": 985,
     "toClubId": 11
+  },
+  {
+    "playerId": 21369,
+    "year": 2015,
+    "fee": 34000000.0,
+    "fromClubId": 13,
+    "toClubId": 131
+  },
+  {
+    "playerId": 324358,
+    "year": 2020,
+    "fee": 34000000.0,
+    "fromClubId": 1148,
+    "toClubId": 405
+  },
+  {
+    "playerId": 1056993,
+    "year": 2025,
+    "fee": 34000000.0,
+    "fromClubId": 1023,
+    "toClubId": 631
+  },
+  {
+    "playerId": 167850,
+    "year": 2015,
+    "fee": 34000000.0,
+    "fromClubId": 383,
+    "toClubId": 985
   },
   {
     "playerId": 8806,
@@ -2889,34 +2917,6 @@
     "fee": 34000000.0,
     "fromClubId": 11,
     "toClubId": 985
-  },
-  {
-    "playerId": 21369,
-    "year": 2015,
-    "fee": 34000000.0,
-    "fromClubId": 13,
-    "toClubId": 131
-  },
-  {
-    "playerId": 1056993,
-    "year": 2025,
-    "fee": 34000000.0,
-    "fromClubId": 1023,
-    "toClubId": 631
-  },
-  {
-    "playerId": 546543,
-    "year": 2020,
-    "fee": 34000000.0,
-    "fromClubId": 3302,
-    "toClubId": 294
-  },
-  {
-    "playerId": 324358,
-    "year": 2020,
-    "fee": 34000000.0,
-    "fromClubId": 1148,
-    "toClubId": 405
   },
   {
     "playerId": 204069,
@@ -2947,18 +2947,11 @@
     "toClubId": 5
   },
   {
-    "playerId": 8806,
-    "year": 2014,
+    "playerId": 45320,
+    "year": 2010,
     "fee": 33000000.0,
-    "fromClubId": 131,
-    "toClubId": 631
-  },
-  {
-    "playerId": 800175,
-    "year": 2025,
-    "fee": 33000000.0,
-    "fromClubId": 537,
-    "toClubId": 964
+    "fromClubId": 294,
+    "toClubId": 418
   },
   {
     "playerId": 670858,
@@ -2975,11 +2968,18 @@
     "toClubId": 405
   },
   {
-    "playerId": 45320,
-    "year": 2010,
+    "playerId": 800175,
+    "year": 2025,
     "fee": 33000000.0,
-    "fromClubId": 294,
-    "toClubId": 418
+    "fromClubId": 537,
+    "toClubId": 964
+  },
+  {
+    "playerId": 8806,
+    "year": 2014,
+    "fee": 33000000.0,
+    "fromClubId": 131,
+    "toClubId": 631
   },
   {
     "playerId": 739443,
@@ -3024,116 +3024,11 @@
     "toClubId": 131
   },
   {
-    "playerId": 191891,
-    "year": 2016,
-    "fee": 32000000.0,
-    "fromClubId": 610,
-    "toClubId": 6195
-  },
-  {
-    "playerId": 415381,
-    "year": 2024,
-    "fee": 32000000.0,
-    "fromClubId": 234,
-    "toClubId": 1237
-  },
-  {
-    "playerId": 125858,
-    "year": 2019,
-    "fee": 32000000.0,
-    "fromClubId": 533,
-    "toClubId": 15
-  },
-  {
     "playerId": 991268,
     "year": 2024,
     "fee": 32000000.0,
     "fromClubId": 13,
     "toClubId": 720
-  },
-  {
-    "playerId": 59344,
-    "year": 2013,
-    "fee": 32000000.0,
-    "fromClubId": 681,
-    "toClubId": 418
-  },
-  {
-    "playerId": 810895,
-    "year": 2025,
-    "fee": 32000000.0,
-    "fromClubId": 162,
-    "toClubId": 15
-  },
-  {
-    "playerId": 294808,
-    "year": 2019,
-    "fee": 32000000.0,
-    "fromClubId": 800,
-    "toClubId": 5
-  },
-  {
-    "playerId": 348795,
-    "year": 2020,
-    "fee": 32000000.0,
-    "fromClubId": 150,
-    "toClubId": 148
-  },
-  {
-    "playerId": 363205,
-    "year": 2017,
-    "fee": 32000000.0,
-    "fromClubId": 1023,
-    "toClubId": 281
-  },
-  {
-    "playerId": 487474,
-    "year": 2025,
-    "fee": 32000000.0,
-    "fromClubId": 720,
-    "toClubId": 506
-  },
-  {
-    "playerId": 586853,
-    "year": 2023,
-    "fee": 32000000.0,
-    "fromClubId": 1075,
-    "toClubId": 244
-  },
-  {
-    "playerId": 158863,
-    "year": 2018,
-    "fee": 32000000.0,
-    "fromClubId": 681,
-    "toClubId": 621
-  },
-  {
-    "playerId": 27389,
-    "year": 2016,
-    "fee": 32000000.0,
-    "fromClubId": 368,
-    "toClubId": 13
-  },
-  {
-    "playerId": 552955,
-    "year": 2025,
-    "fee": 32000000.0,
-    "fromClubId": 234,
-    "toClubId": 5
-  },
-  {
-    "playerId": 338424,
-    "year": 2024,
-    "fee": 32000000.0,
-    "fromClubId": 681,
-    "toClubId": 11
-  },
-  {
-    "playerId": 58205,
-    "year": 2015,
-    "fee": 32000000.0,
-    "fromClubId": 631,
-    "toClubId": 82
   },
   {
     "playerId": 387626,
@@ -3143,6 +3038,27 @@
     "toClubId": 405
   },
   {
+    "playerId": 415381,
+    "year": 2024,
+    "fee": 32000000.0,
+    "fromClubId": 234,
+    "toClubId": 1237
+  },
+  {
+    "playerId": 85314,
+    "year": 2012,
+    "fee": 32000000.0,
+    "fromClubId": 6600,
+    "toClubId": 631
+  },
+  {
+    "playerId": 294808,
+    "year": 2019,
+    "fee": 32000000.0,
+    "fromClubId": 800,
+    "toClubId": 5
+  },
+  {
     "playerId": 200512,
     "year": 2022,
     "fee": 32000000.0,
@@ -3150,11 +3066,18 @@
     "toClubId": 27
   },
   {
-    "playerId": 238407,
-    "year": 2024,
+    "playerId": 552955,
+    "year": 2025,
     "fee": 32000000.0,
-    "fromClubId": 1050,
-    "toClubId": 13
+    "fromClubId": 234,
+    "toClubId": 5
+  },
+  {
+    "playerId": 191891,
+    "year": 2016,
+    "fee": 32000000.0,
+    "fromClubId": 610,
+    "toClubId": 6195
   },
   {
     "playerId": 44162,
@@ -3162,6 +3085,13 @@
     "fee": 32000000.0,
     "fromClubId": 12,
     "toClubId": 506
+  },
+  {
+    "playerId": 338424,
+    "year": 2024,
+    "fee": 32000000.0,
+    "fromClubId": 681,
+    "toClubId": 11
   },
   {
     "playerId": 231572,
@@ -3178,15 +3108,85 @@
     "toClubId": 583
   },
   {
-    "playerId": 85314,
-    "year": 2012,
+    "playerId": 363205,
+    "year": 2017,
     "fee": 32000000.0,
-    "fromClubId": 6600,
-    "toClubId": 631
+    "fromClubId": 1023,
+    "toClubId": 281
+  },
+  {
+    "playerId": 125858,
+    "year": 2019,
+    "fee": 32000000.0,
+    "fromClubId": 533,
+    "toClubId": 15
+  },
+  {
+    "playerId": 158863,
+    "year": 2018,
+    "fee": 32000000.0,
+    "fromClubId": 681,
+    "toClubId": 621
+  },
+  {
+    "playerId": 348795,
+    "year": 2020,
+    "fee": 32000000.0,
+    "fromClubId": 150,
+    "toClubId": 148
+  },
+  {
+    "playerId": 810895,
+    "year": 2025,
+    "fee": 32000000.0,
+    "fromClubId": 162,
+    "toClubId": 15
+  },
+  {
+    "playerId": 238407,
+    "year": 2024,
+    "fee": 32000000.0,
+    "fromClubId": 1050,
+    "toClubId": 13
+  },
+  {
+    "playerId": 487474,
+    "year": 2025,
+    "fee": 32000000.0,
+    "fromClubId": 720,
+    "toClubId": 506
+  },
+  {
+    "playerId": 27389,
+    "year": 2016,
+    "fee": 32000000.0,
+    "fromClubId": 368,
+    "toClubId": 13
   },
   {
     "playerId": 280730,
     "year": 2018,
+    "fee": 32000000.0,
+    "fromClubId": 681,
+    "toClubId": 418
+  },
+  {
+    "playerId": 58205,
+    "year": 2015,
+    "fee": 32000000.0,
+    "fromClubId": 631,
+    "toClubId": 82
+  },
+  {
+    "playerId": 586853,
+    "year": 2023,
+    "fee": 32000000.0,
+    "fromClubId": 1075,
+    "toClubId": 244
+  },
+  {
+    "playerId": 59344,
+    "year": 2013,
     "fee": 32000000.0,
     "fromClubId": 681,
     "toClubId": 418
@@ -3220,39 +3220,11 @@
     "toClubId": 23826
   },
   {
-    "playerId": 3467,
-    "year": 2005,
+    "playerId": 700106,
+    "year": 2024,
     "fee": 31500000.0,
-    "fromClubId": 281,
-    "toClubId": 631
-  },
-  {
-    "playerId": 145707,
-    "year": 2015,
-    "fee": 31500000.0,
-    "fromClubId": 720,
-    "toClubId": 418
-  },
-  {
-    "playerId": 31645,
-    "year": 2007,
-    "fee": 31500000.0,
-    "fromClubId": 720,
-    "toClubId": 985
-  },
-  {
-    "playerId": 355915,
-    "year": 2019,
-    "fee": 31500000.0,
-    "fromClubId": 252,
-    "toClubId": 506
-  },
-  {
-    "playerId": 876631,
-    "year": 2025,
-    "fee": 31500000.0,
-    "fromClubId": 667,
-    "toClubId": 289
+    "fromClubId": 39,
+    "toClubId": 1237
   },
   {
     "playerId": 709726,
@@ -3262,18 +3234,39 @@
     "toClubId": 24
   },
   {
-    "playerId": 700106,
-    "year": 2024,
+    "playerId": 3467,
+    "year": 2005,
     "fee": 31500000.0,
-    "fromClubId": 39,
-    "toClubId": 1237
+    "fromClubId": 281,
+    "toClubId": 631
   },
   {
-    "playerId": 394300,
-    "year": 2024,
-    "fee": 31400000.0,
-    "fromClubId": 6574,
-    "toClubId": 46
+    "playerId": 355915,
+    "year": 2019,
+    "fee": 31500000.0,
+    "fromClubId": 252,
+    "toClubId": 506
+  },
+  {
+    "playerId": 145707,
+    "year": 2015,
+    "fee": 31500000.0,
+    "fromClubId": 720,
+    "toClubId": 418
+  },
+  {
+    "playerId": 876631,
+    "year": 2025,
+    "fee": 31500000.0,
+    "fromClubId": 667,
+    "toClubId": 289
+  },
+  {
+    "playerId": 31645,
+    "year": 2007,
+    "fee": 31500000.0,
+    "fromClubId": 720,
+    "toClubId": 985
   },
   {
     "playerId": 181767,
@@ -3287,6 +3280,13 @@
     "year": 2023,
     "fee": 31400000.0,
     "fromClubId": 27,
+    "toClubId": 46
+  },
+  {
+    "playerId": 394300,
+    "year": 2024,
+    "fee": 31400000.0,
+    "fromClubId": 6574,
     "toClubId": 46
   },
   {
@@ -3318,39 +3318,11 @@
     "toClubId": 46
   },
   {
-    "playerId": 433984,
-    "year": 2025,
+    "playerId": 43530,
+    "year": 2014,
     "fee": 31000000.0,
-    "fromClubId": 1025,
-    "toClubId": 6195
-  },
-  {
-    "playerId": 362842,
-    "year": 2018,
-    "fee": 31000000.0,
-    "fromClubId": 210,
-    "toClubId": 131
-  },
-  {
-    "playerId": 729814,
-    "year": 2025,
-    "fee": 31000000.0,
-    "fromClubId": 1041,
-    "toClubId": 1050
-  },
-  {
-    "playerId": 640428,
-    "year": 2021,
-    "fee": 31000000.0,
-    "fromClubId": 273,
-    "toClubId": 418
-  },
-  {
-    "playerId": 91970,
-    "year": 2015,
-    "fee": 31000000.0,
-    "fromClubId": 430,
-    "toClubId": 631
+    "fromClubId": 180,
+    "toClubId": 31
   },
   {
     "playerId": 1086619,
@@ -3360,18 +3332,18 @@
     "toClubId": 31
   },
   {
-    "playerId": 4171,
-    "year": 2002,
+    "playerId": 91970,
+    "year": 2015,
     "fee": 31000000.0,
-    "fromClubId": 398,
-    "toClubId": 5
+    "fromClubId": 430,
+    "toClubId": 631
   },
   {
-    "playerId": 181375,
-    "year": 2022,
+    "playerId": 729814,
+    "year": 2025,
     "fee": 31000000.0,
-    "fromClubId": 610,
-    "toClubId": 16
+    "fromClubId": 1041,
+    "toClubId": 1050
   },
   {
     "playerId": 174915,
@@ -3388,11 +3360,39 @@
     "toClubId": 405
   },
   {
-    "playerId": 43530,
-    "year": 2014,
+    "playerId": 4171,
+    "year": 2002,
     "fee": 31000000.0,
-    "fromClubId": 180,
-    "toClubId": 31
+    "fromClubId": 398,
+    "toClubId": 5
+  },
+  {
+    "playerId": 362842,
+    "year": 2018,
+    "fee": 31000000.0,
+    "fromClubId": 210,
+    "toClubId": 131
+  },
+  {
+    "playerId": 433984,
+    "year": 2025,
+    "fee": 31000000.0,
+    "fromClubId": 1025,
+    "toClubId": 6195
+  },
+  {
+    "playerId": 181375,
+    "year": 2022,
+    "fee": 31000000.0,
+    "fromClubId": 610,
+    "toClubId": 16
+  },
+  {
+    "playerId": 640428,
+    "year": 2021,
+    "fee": 31000000.0,
+    "fromClubId": 273,
+    "toClubId": 418
   },
   {
     "playerId": 412669,
@@ -3430,13 +3430,6 @@
     "toClubId": 12
   },
   {
-    "playerId": 343537,
-    "year": 2024,
-    "fee": 30500000.0,
-    "fromClubId": 12321,
-    "toClubId": 12
-  },
-  {
     "playerId": 39728,
     "year": 2019,
     "fee": 30500000.0,
@@ -3456,6 +3449,13 @@
     "fee": 30500000.0,
     "fromClubId": 3368,
     "toClubId": 989
+  },
+  {
+    "playerId": 343537,
+    "year": 2024,
+    "fee": 30500000.0,
+    "fromClubId": 12321,
+    "toClubId": 12
   },
   {
     "playerId": 315969,
@@ -3493,116 +3493,18 @@
     "toClubId": 16
   },
   {
-    "playerId": 126716,
-    "year": 2016,
-    "fee": 30000000.0,
-    "fromClubId": 1049,
-    "toClubId": 131
-  },
-  {
-    "playerId": 13091,
-    "year": 2010,
-    "fee": 30000000.0,
-    "fromClubId": 131,
-    "toClubId": 281
-  },
-  {
-    "playerId": 131505,
-    "year": 2020,
-    "fee": 30000000.0,
-    "fromClubId": 1049,
-    "toClubId": 399
-  },
-  {
-    "playerId": 131505,
-    "year": 2015,
-    "fee": 30000000.0,
-    "fromClubId": 294,
-    "toClubId": 1049
-  },
-  {
-    "playerId": 126664,
-    "year": 2022,
-    "fee": 30000000.0,
-    "fromClubId": 29,
-    "toClubId": 405
-  },
-  {
-    "playerId": 369316,
+    "playerId": 475413,
     "year": 2024,
     "fee": 30000000.0,
-    "fromClubId": 36,
-    "toClubId": 1237
-  },
-  {
-    "playerId": 350219,
-    "year": 2018,
-    "fee": 30000000.0,
-    "fromClubId": 150,
-    "toClubId": 6195
-  },
-  {
-    "playerId": 9828,
-    "year": 2004,
-    "fee": 30000000.0,
-    "fromClubId": 720,
-    "toClubId": 631
-  },
-  {
-    "playerId": 585959,
-    "year": 2025,
-    "fee": 30000000.0,
-    "fromClubId": 273,
-    "toClubId": 703
-  },
-  {
-    "playerId": 75615,
-    "year": 2015,
-    "fee": 30000000.0,
-    "fromClubId": 660,
+    "fromClubId": 141,
     "toClubId": 27
   },
   {
-    "playerId": 293200,
-    "year": 2021,
-    "fee": 30000000.0,
-    "fromClubId": 2410,
-    "toClubId": 379
-  },
-  {
-    "playerId": 410225,
-    "year": 2019,
-    "fee": 30000000.0,
-    "fromClubId": 273,
-    "toClubId": 1010
-  },
-  {
-    "playerId": 500689,
-    "year": 2025,
-    "fee": 30000000.0,
-    "fromClubId": 417,
-    "toClubId": 405
-  },
-  {
-    "playerId": 406640,
-    "year": 2023,
-    "fee": 30000000.0,
-    "fromClubId": 82,
-    "toClubId": 16
-  },
-  {
-    "playerId": 17259,
+    "playerId": 33648,
     "year": 2011,
     "fee": 30000000.0,
-    "fromClubId": 33,
-    "toClubId": 27
-  },
-  {
-    "playerId": 503770,
-    "year": 2023,
-    "fee": 30000000.0,
-    "fromClubId": 11,
-    "toClubId": 162
+    "fromClubId": 294,
+    "toClubId": 418
   },
   {
     "playerId": 263918,
@@ -3612,88 +3514,18 @@
     "toClubId": 162
   },
   {
-    "playerId": 257448,
-    "year": 2019,
+    "playerId": 58205,
+    "year": 2016,
     "fee": 30000000.0,
-    "fromClubId": 13,
-    "toClubId": 162
-  },
-  {
-    "playerId": 502676,
-    "year": 2024,
-    "fee": 30000000.0,
-    "fromClubId": 1049,
-    "toClubId": 31
-  },
-  {
-    "playerId": 178614,
-    "year": 2018,
-    "fee": 30000000.0,
-    "fromClubId": 417,
-    "toClubId": 931
-  },
-  {
-    "playerId": 495666,
-    "year": 2019,
-    "fee": 30000000.0,
-    "fromClubId": 618,
-    "toClubId": 11
-  },
-  {
-    "playerId": 513245,
-    "year": 2023,
-    "fee": 30000000.0,
-    "fromClubId": 24,
-    "toClubId": 6195
-  },
-  {
-    "playerId": 496094,
-    "year": 2022,
-    "fee": 30000000.0,
-    "fromClubId": 409,
+    "fromClubId": 82,
     "toClubId": 16
   },
   {
-    "playerId": 108725,
-    "year": 2022,
+    "playerId": 111630,
+    "year": 2013,
     "fee": 30000000.0,
-    "fromClubId": 1132,
-    "toClubId": 762
-  },
-  {
-    "playerId": 937941,
-    "year": 2025,
-    "fee": 30000000.0,
-    "fromClubId": 1050,
-    "toClubId": 29
-  },
-  {
-    "playerId": 282411,
-    "year": 2019,
-    "fee": 30000000.0,
-    "fromClubId": 418,
-    "toClubId": 13
-  },
-  {
-    "playerId": 282429,
-    "year": 2020,
-    "fee": 30000000.0,
-    "fromClubId": 418,
+    "fromClubId": 12,
     "toClubId": 148
-  },
-  {
-    "playerId": 284165,
-    "year": 2020,
-    "fee": 30000000.0,
-    "fromClubId": 383,
-    "toClubId": 148
-  },
-  {
-    "playerId": 3143,
-    "year": 1999,
-    "fee": 30000000.0,
-    "fromClubId": 130,
-    "toClubId": 398
   },
   {
     "playerId": 620322,
@@ -3710,6 +3542,125 @@
     "toClubId": 6195
   },
   {
+    "playerId": 108725,
+    "year": 2022,
+    "fee": 30000000.0,
+    "fromClubId": 1132,
+    "toClubId": 762
+  },
+  {
+    "playerId": 937941,
+    "year": 2025,
+    "fee": 30000000.0,
+    "fromClubId": 1050,
+    "toClubId": 29
+  },
+  {
+    "playerId": 9828,
+    "year": 2004,
+    "fee": 30000000.0,
+    "fromClubId": 720,
+    "toClubId": 631
+  },
+  {
+    "playerId": 618472,
+    "year": 2023,
+    "fee": 30000000.0,
+    "fromClubId": 1041,
+    "toClubId": 23826
+  },
+  {
+    "playerId": 585959,
+    "year": 2025,
+    "fee": 30000000.0,
+    "fromClubId": 273,
+    "toClubId": 703
+  },
+  {
+    "playerId": 495666,
+    "year": 2019,
+    "fee": 30000000.0,
+    "fromClubId": 618,
+    "toClubId": 11
+  },
+  {
+    "playerId": 284165,
+    "year": 2020,
+    "fee": 30000000.0,
+    "fromClubId": 383,
+    "toClubId": 148
+  },
+  {
+    "playerId": 326029,
+    "year": 2021,
+    "fee": 30000000.0,
+    "fromClubId": 383,
+    "toClubId": 16
+  },
+  {
+    "playerId": 75615,
+    "year": 2015,
+    "fee": 30000000.0,
+    "fromClubId": 660,
+    "toClubId": 27
+  },
+  {
+    "playerId": 126716,
+    "year": 2016,
+    "fee": 30000000.0,
+    "fromClubId": 1049,
+    "toClubId": 131
+  },
+  {
+    "playerId": 22068,
+    "year": 2007,
+    "fee": 30000000.0,
+    "fromClubId": 244,
+    "toClubId": 27
+  },
+  {
+    "playerId": 293200,
+    "year": 2021,
+    "fee": 30000000.0,
+    "fromClubId": 2410,
+    "toClubId": 379
+  },
+  {
+    "playerId": 17259,
+    "year": 2011,
+    "fee": 30000000.0,
+    "fromClubId": 33,
+    "toClubId": 27
+  },
+  {
+    "playerId": 364135,
+    "year": 2023,
+    "fee": 30000000.0,
+    "fromClubId": 29,
+    "toClubId": 506
+  },
+  {
+    "playerId": 257448,
+    "year": 2019,
+    "fee": 30000000.0,
+    "fromClubId": 13,
+    "toClubId": 162
+  },
+  {
+    "playerId": 431755,
+    "year": 2023,
+    "fee": 30000000.0,
+    "fromClubId": 506,
+    "toClubId": 148
+  },
+  {
+    "playerId": 14132,
+    "year": 2007,
+    "fee": 30000000.0,
+    "fromClubId": 720,
+    "toClubId": 418
+  },
+  {
     "playerId": 140776,
     "year": 2018,
     "fee": 30000000.0,
@@ -3717,52 +3668,17 @@
     "toClubId": 33304
   },
   {
-    "playerId": 475413,
-    "year": 2024,
+    "playerId": 659542,
+    "year": 2023,
     "fee": 30000000.0,
-    "fromClubId": 141,
-    "toClubId": 27
+    "fromClubId": 969,
+    "toClubId": 826
   },
   {
-    "playerId": 365172,
-    "year": 2021,
+    "playerId": 13091,
+    "year": 2010,
     "fee": 30000000.0,
-    "fromClubId": 409,
-    "toClubId": 1003
-  },
-  {
-    "playerId": 34870,
-    "year": 2013,
-    "fee": 30000000.0,
-    "fromClubId": 1049,
-    "toClubId": 148
-  },
-  {
-    "playerId": 111630,
-    "year": 2013,
-    "fee": 30000000.0,
-    "fromClubId": 12,
-    "toClubId": 148
-  },
-  {
-    "playerId": 126665,
-    "year": 2019,
-    "fee": 30000000.0,
-    "fromClubId": 29,
-    "toClubId": 583
-  },
-  {
-    "playerId": 238752,
-    "year": 2017,
-    "fee": 30000000.0,
-    "fromClubId": 398,
-    "toClubId": 162
-  },
-  {
-    "playerId": 145707,
-    "year": 2017,
-    "fee": 30000000.0,
-    "fromClubId": 418,
+    "fromClubId": 131,
     "toClubId": 281
   },
   {
@@ -3773,115 +3689,10 @@
     "toClubId": 418
   },
   {
-    "playerId": 225122,
-    "year": 2017,
-    "fee": 30000000.0,
-    "fromClubId": 294,
-    "toClubId": 583
-  },
-  {
-    "playerId": 653610,
-    "year": 2025,
-    "fee": 30000000.0,
-    "fromClubId": 234,
-    "toClubId": 244
-  },
-  {
-    "playerId": 91845,
-    "year": 2015,
-    "fee": 30000000.0,
-    "fromClubId": 15,
-    "toClubId": 148
-  },
-  {
-    "playerId": 58205,
-    "year": 2016,
-    "fee": 30000000.0,
-    "fromClubId": 82,
-    "toClubId": 16
-  },
-  {
-    "playerId": 364135,
-    "year": 2023,
+    "playerId": 126665,
+    "year": 2019,
     "fee": 30000000.0,
     "fromClubId": 29,
-    "toClubId": 506
-  },
-  {
-    "playerId": 14132,
-    "year": 2007,
-    "fee": 30000000.0,
-    "fromClubId": 720,
-    "toClubId": 418
-  },
-  {
-    "playerId": 627226,
-    "year": 2020,
-    "fee": 30000000.0,
-    "fromClubId": 614,
-    "toClubId": 418
-  },
-  {
-    "playerId": 33648,
-    "year": 2011,
-    "fee": 30000000.0,
-    "fromClubId": 294,
-    "toClubId": 418
-  },
-  {
-    "playerId": 618472,
-    "year": 2023,
-    "fee": 30000000.0,
-    "fromClubId": 1041,
-    "toClubId": 23826
-  },
-  {
-    "playerId": 326029,
-    "year": 2021,
-    "fee": 30000000.0,
-    "fromClubId": 383,
-    "toClubId": 16
-  },
-  {
-    "playerId": 85288,
-    "year": 2013,
-    "fee": 30000000.0,
-    "fromClubId": 1084,
-    "toClubId": 418
-  },
-  {
-    "playerId": 568157,
-    "year": 2025,
-    "fee": 30000000.0,
-    "fromClubId": 1050,
-    "toClubId": 873
-  },
-  {
-    "playerId": 22068,
-    "year": 2007,
-    "fee": 30000000.0,
-    "fromClubId": 244,
-    "toClubId": 27
-  },
-  {
-    "playerId": 431755,
-    "year": 2023,
-    "fee": 30000000.0,
-    "fromClubId": 506,
-    "toClubId": 148
-  },
-  {
-    "playerId": 659542,
-    "year": 2023,
-    "fee": 30000000.0,
-    "fromClubId": 969,
-    "toClubId": 826
-  },
-  {
-    "playerId": 50570,
-    "year": 2012,
-    "fee": 30000000.0,
-    "fromClubId": 6195,
     "toClubId": 583
   },
   {
@@ -3892,11 +3703,74 @@
     "toClubId": 281
   },
   {
-    "playerId": 926952,
+    "playerId": 350219,
+    "year": 2018,
+    "fee": 30000000.0,
+    "fromClubId": 150,
+    "toClubId": 6195
+  },
+  {
+    "playerId": 34870,
+    "year": 2013,
+    "fee": 30000000.0,
+    "fromClubId": 1049,
+    "toClubId": 148
+  },
+  {
+    "playerId": 178614,
+    "year": 2018,
+    "fee": 30000000.0,
+    "fromClubId": 417,
+    "toClubId": 931
+  },
+  {
+    "playerId": 126664,
+    "year": 2022,
+    "fee": 30000000.0,
+    "fromClubId": 29,
+    "toClubId": 405
+  },
+  {
+    "playerId": 406640,
+    "year": 2023,
+    "fee": 30000000.0,
+    "fromClubId": 82,
+    "toClubId": 16
+  },
+  {
+    "playerId": 410225,
+    "year": 2019,
+    "fee": 30000000.0,
+    "fromClubId": 273,
+    "toClubId": 1010
+  },
+  {
+    "playerId": 282411,
+    "year": 2019,
+    "fee": 30000000.0,
+    "fromClubId": 418,
+    "toClubId": 13
+  },
+  {
+    "playerId": 282429,
+    "year": 2020,
+    "fee": 30000000.0,
+    "fromClubId": 418,
+    "toClubId": 148
+  },
+  {
+    "playerId": 568157,
     "year": 2025,
     "fee": 30000000.0,
-    "fromClubId": 1005,
-    "toClubId": 985
+    "fromClubId": 1050,
+    "toClubId": 873
+  },
+  {
+    "playerId": 627226,
+    "year": 2020,
+    "fee": 30000000.0,
+    "fromClubId": 614,
+    "toClubId": 418
   },
   {
     "playerId": 6288,
@@ -3906,18 +3780,137 @@
     "toClubId": 27
   },
   {
+    "playerId": 369316,
+    "year": 2024,
+    "fee": 30000000.0,
+    "fromClubId": 36,
+    "toClubId": 1237
+  },
+  {
+    "playerId": 85288,
+    "year": 2013,
+    "fee": 30000000.0,
+    "fromClubId": 1084,
+    "toClubId": 418
+  },
+  {
+    "playerId": 365172,
+    "year": 2021,
+    "fee": 30000000.0,
+    "fromClubId": 409,
+    "toClubId": 1003
+  },
+  {
+    "playerId": 91845,
+    "year": 2015,
+    "fee": 30000000.0,
+    "fromClubId": 15,
+    "toClubId": 148
+  },
+  {
+    "playerId": 926952,
+    "year": 2025,
+    "fee": 30000000.0,
+    "fromClubId": 1005,
+    "toClubId": 985
+  },
+  {
+    "playerId": 3143,
+    "year": 1999,
+    "fee": 30000000.0,
+    "fromClubId": 130,
+    "toClubId": 398
+  },
+  {
+    "playerId": 225122,
+    "year": 2017,
+    "fee": 30000000.0,
+    "fromClubId": 294,
+    "toClubId": 583
+  },
+  {
+    "playerId": 238752,
+    "year": 2017,
+    "fee": 30000000.0,
+    "fromClubId": 398,
+    "toClubId": 162
+  },
+  {
+    "playerId": 131505,
+    "year": 2015,
+    "fee": 30000000.0,
+    "fromClubId": 294,
+    "toClubId": 1049
+  },
+  {
+    "playerId": 496094,
+    "year": 2022,
+    "fee": 30000000.0,
+    "fromClubId": 409,
+    "toClubId": 16
+  },
+  {
+    "playerId": 500689,
+    "year": 2025,
+    "fee": 30000000.0,
+    "fromClubId": 417,
+    "toClubId": 405
+  },
+  {
+    "playerId": 502676,
+    "year": 2024,
+    "fee": 30000000.0,
+    "fromClubId": 1049,
+    "toClubId": 31
+  },
+  {
+    "playerId": 503770,
+    "year": 2023,
+    "fee": 30000000.0,
+    "fromClubId": 11,
+    "toClubId": 162
+  },
+  {
+    "playerId": 145707,
+    "year": 2017,
+    "fee": 30000000.0,
+    "fromClubId": 418,
+    "toClubId": 281
+  },
+  {
+    "playerId": 131505,
+    "year": 2020,
+    "fee": 30000000.0,
+    "fromClubId": 1049,
+    "toClubId": 399
+  },
+  {
+    "playerId": 50570,
+    "year": 2012,
+    "fee": 30000000.0,
+    "fromClubId": 6195,
+    "toClubId": 583
+  },
+  {
+    "playerId": 513245,
+    "year": 2023,
+    "fee": 30000000.0,
+    "fromClubId": 24,
+    "toClubId": 6195
+  },
+  {
+    "playerId": 653610,
+    "year": 2025,
+    "fee": 30000000.0,
+    "fromClubId": 234,
+    "toClubId": 244
+  },
+  {
     "playerId": 302215,
     "year": 2016,
     "fee": 29750000.0,
     "fromClubId": 409,
     "toClubId": 23826
-  },
-  {
-    "playerId": 454567,
-    "year": 2023,
-    "fee": 29700000.0,
-    "fromClubId": 234,
-    "toClubId": 294
   },
   {
     "playerId": 340324,
@@ -3927,18 +3920,18 @@
     "toClubId": 873
   },
   {
-    "playerId": 244275,
-    "year": 2016,
-    "fee": 29500000.0,
-    "fromClubId": 221,
-    "toClubId": 46
+    "playerId": 454567,
+    "year": 2023,
+    "fee": 29700000.0,
+    "fromClubId": 234,
+    "toClubId": 294
   },
   {
-    "playerId": 429014,
-    "year": 2022,
+    "playerId": 118689,
+    "year": 2019,
     "fee": 29500000.0,
-    "fromClubId": 543,
-    "toClubId": 703
+    "fromClubId": 506,
+    "toClubId": 12
   },
   {
     "playerId": 406634,
@@ -3955,11 +3948,25 @@
     "toClubId": 281
   },
   {
+    "playerId": 429014,
+    "year": 2022,
+    "fee": 29500000.0,
+    "fromClubId": 543,
+    "toClubId": 703
+  },
+  {
     "playerId": 260827,
     "year": 2024,
     "fee": 29500000.0,
     "fromClubId": 873,
     "toClubId": 931
+  },
+  {
+    "playerId": 244275,
+    "year": 2016,
+    "fee": 29500000.0,
+    "fromClubId": 221,
+    "toClubId": 46
   },
   {
     "playerId": 649317,
@@ -3969,25 +3976,11 @@
     "toClubId": 405
   },
   {
-    "playerId": 118689,
-    "year": 2019,
-    "fee": 29500000.0,
-    "fromClubId": 506,
-    "toClubId": 12
-  },
-  {
     "playerId": 134294,
     "year": 2021,
     "fee": 29400000.0,
     "fromClubId": 180,
     "toClubId": 405
-  },
-  {
-    "playerId": 205940,
-    "year": 2016,
-    "fee": 29400000.0,
-    "fromClubId": 419,
-    "toClubId": 506
   },
   {
     "playerId": 340329,
@@ -3997,11 +3990,11 @@
     "toClubId": 762
   },
   {
-    "playerId": 743498,
-    "year": 2024,
-    "fee": 29300000.0,
-    "fromClubId": 1132,
-    "toClubId": 148
+    "playerId": 205940,
+    "year": 2016,
+    "fee": 29400000.0,
+    "fromClubId": 419,
+    "toClubId": 506
   },
   {
     "playerId": 474701,
@@ -4018,11 +4011,25 @@
     "toClubId": 244
   },
   {
+    "playerId": 743498,
+    "year": 2024,
+    "fee": 29300000.0,
+    "fromClubId": 1132,
+    "toClubId": 148
+  },
+  {
     "playerId": 410425,
     "year": 2022,
     "fee": 29200000.0,
     "fromClubId": 1237,
     "toClubId": 148
+  },
+  {
+    "playerId": 51471,
+    "year": 2023,
+    "fee": 29100000.0,
+    "fromClubId": 631,
+    "toClubId": 281
   },
   {
     "playerId": 319301,
@@ -4032,10 +4039,10 @@
     "toClubId": 399
   },
   {
-    "playerId": 51471,
-    "year": 2023,
-    "fee": 29100000.0,
-    "fromClubId": 631,
+    "playerId": 4276,
+    "year": 2009,
+    "fee": 29000000.0,
+    "fromClubId": 379,
     "toClubId": 281
   },
   {
@@ -4046,13 +4053,6 @@
     "toClubId": 33714
   },
   {
-    "playerId": 4276,
-    "year": 2009,
-    "fee": 29000000.0,
-    "fromClubId": 379,
-    "toClubId": 281
-  },
-  {
     "playerId": 8883,
     "year": 2009,
     "fee": 29000000.0,
@@ -4060,18 +4060,18 @@
     "toClubId": 281
   },
   {
-    "playerId": 75471,
-    "year": 2016,
-    "fee": 28900000.0,
-    "fromClubId": 873,
-    "toClubId": 29
-  },
-  {
     "playerId": 465555,
     "year": 2025,
     "fee": 28900000.0,
     "fromClubId": 631,
     "toClubId": 989
+  },
+  {
+    "playerId": 75471,
+    "year": 2016,
+    "fee": 28900000.0,
+    "fromClubId": 873,
+    "toClubId": 29
   },
   {
     "playerId": 35518,
@@ -4102,11 +4102,11 @@
     "toClubId": 29
   },
   {
-    "playerId": 130164,
-    "year": 2017,
+    "playerId": 955070,
+    "year": 2024,
     "fee": 28500000.0,
-    "fromClubId": 289,
-    "toClubId": 29
+    "fromClubId": 54189,
+    "toClubId": 1041
   },
   {
     "playerId": 3407,
@@ -4116,18 +4116,11 @@
     "toClubId": 985
   },
   {
-    "playerId": 118534,
+    "playerId": 130164,
     "year": 2017,
     "fee": 28500000.0,
-    "fromClubId": 1132,
+    "fromClubId": 289,
     "toClubId": 29
-  },
-  {
-    "playerId": 955070,
-    "year": 2024,
-    "fee": 28500000.0,
-    "fromClubId": 54189,
-    "toClubId": 1041
   },
   {
     "playerId": 709726,
@@ -4142,6 +4135,13 @@
     "fee": 28500000.0,
     "fromClubId": 533,
     "toClubId": 16
+  },
+  {
+    "playerId": 118534,
+    "year": 2017,
+    "fee": 28500000.0,
+    "fromClubId": 1132,
+    "toClubId": 29
   },
   {
     "playerId": 5797,
@@ -4172,13 +4172,6 @@
     "toClubId": 506
   },
   {
-    "playerId": 79960,
-    "year": 2015,
-    "fee": 28000000.0,
-    "fromClubId": 720,
-    "toClubId": 506
-  },
-  {
     "playerId": 18644,
     "year": 2015,
     "fee": 28000000.0,
@@ -4186,17 +4179,24 @@
     "toClubId": 1049
   },
   {
-    "playerId": 54170,
-    "year": 2016,
+    "playerId": 418659,
+    "year": 2022,
     "fee": 28000000.0,
-    "fromClubId": 631,
-    "toClubId": 22219
+    "fromClubId": 417,
+    "toClubId": 273
   },
   {
-    "playerId": 469822,
-    "year": 2024,
+    "playerId": 357885,
+    "year": 2019,
     "fee": 28000000.0,
-    "fromClubId": 294,
-    "toClubId": 6195
+    "fromClubId": 1050,
+    "toClubId": 379
+  },
+  {
+    "playerId": 315867,
+    "year": 2023,
+    "fee": 28000000.0,
+    "fromClubId": 379,
+    "toClubId": 800
   }
 ]
