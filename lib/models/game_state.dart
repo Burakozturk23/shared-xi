@@ -5,9 +5,15 @@ import 'player.dart';
 @immutable
 class GameState {
   final int score;
+  final int opponentScore;
+  final int remainingSeconds;
+  final int lives;
 
   final bool isLoading;
   final bool isCompleted;
+  final bool gameOver;
+  final String? gameOverReason;
+  final String? finalWinner;
 
   final List<Player> matchingPlayers;
   final List<Player> suggestions;
@@ -20,8 +26,14 @@ class GameState {
 
   const GameState({
     this.score = 0,
+    this.opponentScore = 0,
+    this.remainingSeconds = 60,
+    this.lives = 3,
     this.isLoading = true,
     this.isCompleted = false,
+    this.gameOver = false,
+    this.gameOverReason,
+    this.finalWinner,
     this.matchingPlayers = const [],
     this.suggestions = const [],
     this.foundPlayers = const [],
@@ -33,8 +45,14 @@ class GameState {
 
   GameState copyWith({
     int? score,
+    int? opponentScore,
+    int? remainingSeconds,
+    int? lives,
     bool? isLoading,
     bool? isCompleted,
+    bool? gameOver,
+    String? gameOverReason,
+    String? finalWinner,
     List<Player>? matchingPlayers,
     List<Player>? suggestions,
     List<Player>? foundPlayers,
@@ -45,15 +63,28 @@ class GameState {
   }) {
     return GameState(
       score: score ?? this.score,
+      opponentScore: opponentScore ?? this.opponentScore,
+      remainingSeconds:
+          remainingSeconds ?? this.remainingSeconds,
+      lives: lives ?? this.lives,
       isLoading: isLoading ?? this.isLoading,
       isCompleted: isCompleted ?? this.isCompleted,
-      matchingPlayers: matchingPlayers ?? this.matchingPlayers,
+      gameOver: gameOver ?? this.gameOver,
+      gameOverReason:
+          gameOverReason ?? this.gameOverReason,
+      finalWinner: finalWinner ?? this.finalWinner,
+      matchingPlayers:
+          matchingPlayers ?? this.matchingPlayers,
       suggestions: suggestions ?? this.suggestions,
-      foundPlayers: foundPlayers ?? this.foundPlayers,
-      foundPlayerIds: foundPlayerIds ?? this.foundPlayerIds,
-      wrongAttempts: wrongAttempts ?? this.wrongAttempts,
-      feedback: feedback,
-      feedbackIsSuccess: feedbackIsSuccess ?? this.feedbackIsSuccess,
+      foundPlayers:
+          foundPlayers ?? this.foundPlayers,
+      foundPlayerIds:
+          foundPlayerIds ?? this.foundPlayerIds,
+      wrongAttempts:
+          wrongAttempts ?? this.wrongAttempts,
+      feedback: feedback ?? this.feedback,
+      feedbackIsSuccess:
+          feedbackIsSuccess ?? this.feedbackIsSuccess,
     );
   }
 }

@@ -15,6 +15,7 @@ import 'build_xi_theme_selection_page.dart';
 import 'story_mode_selection_page.dart';
 import 'vs_bot_mode_selection_page.dart';
 import 'football_calendar_page.dart';
+import '../online/online_lobby_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -80,6 +81,16 @@ class WelcomePage extends StatelessWidget {
               page: FootballCalendarPage(),  // yeni hub
 ),
             ]),
+            _sectionHeader('Online'),
+_sliverModeList(const [
+  _ModeItem(
+    title: 'Arkadaşlarınla Oyna',
+    subtitle: 'Oda oluştur veya arkadaşının odasına katıl',
+    icon: Icons.people_alt_rounded,
+    accent: AppTheme.primaryColor,
+    page: OnlineLobbyPage(),
+  ),
+]),
 
             _sectionHeader('Klasik modlar'),
             _sliverModeList(const [
