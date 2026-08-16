@@ -1,26 +1,30 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
-
 import 'package:flutter/foundation.dart';
 
 import '../models/game_state.dart';
 import '../models/match_entity.dart';
 import '../models/player.dart';
+import '../online/room_service.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
-import '../online/room_service.dart';
 
 class GameController extends ChangeNotifier {
   final MatchEntity entity1;
   final MatchEntity entity2;
   final String? roomCode;
   final String? playerName;
+
   StreamSubscription<DatabaseEvent>? _gameSubscription;
   StreamSubscription<DatabaseEvent>? _playersSubscription;
+
   Timer? _gameTimer;
+  Timer? _feedbackTimer;
+
   int _serverTimeOffsetMs = 0;
+  bool _finishRequestSent = false;
 
   GameController({
     required this.entity1,
@@ -32,8 +36,6 @@ class GameController extends ChangeNotifier {
   GameState _state = const GameState();
 
   GameState get state => _state;
-
-  Timer? _feedbackTimer;
 
   Future<void> initialize() async {
     final players = Repository.instance.players;
@@ -48,90 +50,104 @@ class GameController extends ChangeNotifier {
       isLoading: false,
       matchingPlayers: matchingPlayers,
     );
+    notifyListeners();
 
-    if (roomCode != null && playerName != null) {
-      _serverTimeOffsetMs = await RoomService.getServerTimeOffset();
-      await RoomService.initializeGameForRoom(roomCode!);
+    if (roomCode == null || playerName == null) return;
 
-      _gameSubscription = RoomService.watchGame(roomCode!).listen((event) {
-        final value = event.snapshot.value;
-        if (value == null || value is! Map) return;
+    _serverTimeOffsetMs =
+        await RoomService.getServerTimeOffset();
 
-        final data = Map<String, dynamic>.from(value);
+    await RoomService.initializeGameForRoom(roomCode!);
 
-        final rawFoundIds = data['foundPlayerIds'];
-        final foundIds = <int>{};
+    _gameSubscription =
+        RoomService.watchGame(roomCode!).listen(_handleGameEvent);
 
-        if (rawFoundIds is Map) {
-          for (final key in rawFoundIds.keys) {
-            final id = int.tryParse(key.toString());
-            if (id != null) {
-              foundIds.add(id);
-            }
-          }
-        }
+    _playersSubscription =
+        RoomService.watchPlayers(roomCode!)
+            .listen(_handlePlayersEvent);
+  }
 
-        final foundPlayers = _state.matchingPlayers
-            .where((player) => foundIds.contains(player.id))
-            .toList();
+  void _handleGameEvent(DatabaseEvent event) {
+    final value = event.snapshot.value;
+    if (value == null || value is! Map) return;
 
-        final gameOver = data['gameOver'] == true;
-        final gameOverReason = data['gameOverReason']?.toString();
-        final finalWinner = data['winner']?.toString();
+    final data = Map<String, dynamic>.from(value);
 
-        final startedAt = int.tryParse(
-          data['startedAt']?.toString() ?? '',
-        );
-        final durationSeconds = int.tryParse(
-              data['durationSeconds']?.toString() ?? '',
-            ) ??
-            60;
+    final foundIds = <int>{};
+    final rawFoundIds = data['foundPlayerIds'];
 
-        _state = _state.copyWith(
-          foundPlayerIds: foundIds,
-          foundPlayers: foundPlayers,
-          gameOver: gameOver,
-          gameOverReason: gameOverReason,
-          finalWinner: finalWinner,
-        );
+    if (rawFoundIds is Map) {
+      for (final key in rawFoundIds.keys) {
+        final id = int.tryParse(key.toString());
+        if (id != null) foundIds.add(id);
+      }
+    }
 
-        if (startedAt != null && !gameOver) {
-          _startSharedTimer(
-            startedAtMs: startedAt,
-            durationSeconds: durationSeconds,
-          );
-        } else if (gameOver) {
-          _gameTimer?.cancel();
-        }
+    final foundPlayers = _state.matchingPlayers
+        .where((player) => foundIds.contains(player.id))
+        .toList();
 
-        _updateOnlineScoresFromFoundBy(data['foundBy']);
+    _updateScoresFromFoundBy(data['foundBy']);
 
-        notifyListeners();
-      });
+    final gameOver = data['gameOver'] == true;
 
-      _playersSubscription =
-          RoomService.watchPlayers(roomCode!).listen((event) {
-        final value = event.snapshot.value;
-        if (value == null || value is! Map) return;
+    _state = _state.copyWith(
+      foundPlayerIds: foundIds,
+      foundPlayers: foundPlayers,
+      totalFoundCount: foundIds.length,
+      gameOver: gameOver,
+      gameOverReason:
+          data['gameOverReason']?.toString(),
+      finalWinner: data['winner']?.toString(),
+    );
 
-        final players = Map<String, dynamic>.from(value);
-        final myData = players[playerName];
+    if (gameOver) {
+      _gameTimer?.cancel();
+      notifyListeners();
+      return;
+    }
 
-        int lives = 3;
+    final startedAt = _toInt(data['startedAt']);
+    final duration =
+        _toInt(data['durationSeconds']) ?? 60;
 
-        if (myData is Map) {
-          lives = int.tryParse(
-                myData['lives']?.toString() ?? '',
-              ) ??
-              3;
-        }
-
-        _state = _state.copyWith(lives: lives);
-        notifyListeners();
-      });
+    if (startedAt != null) {
+      _startSharedTimer(
+        startedAtMs: startedAt,
+        durationSeconds: duration,
+      );
     }
 
     notifyListeners();
+
+    if (foundIds.length >=
+            _state.matchingPlayers.length &&
+        _state.matchingPlayers.isNotEmpty) {
+      finishOnlineGame('all_found');
+    }
+  }
+
+  void _handlePlayersEvent(DatabaseEvent event) {
+    final value = event.snapshot.value;
+    if (value == null || value is! Map || playerName == null) {
+      return;
+    }
+
+    final players =
+        Map<String, dynamic>.from(value);
+
+    final myData = players[playerName!];
+
+    final lives = myData is Map
+        ? (_toInt(myData['lives']) ?? 3)
+        : 3;
+
+    _state = _state.copyWith(lives: lives);
+    notifyListeners();
+
+    if (lives <= 0) {
+      finishOnlineGame('lives');
+    }
   }
 
   void _startSharedTimer({
@@ -141,8 +157,9 @@ class GameController extends ChangeNotifier {
     _gameTimer?.cancel();
 
     void tick() {
-      final nowMs =
-          DateTime.now().millisecondsSinceEpoch + _serverTimeOffsetMs;
+      final nowMs = DateTime.now()
+              .millisecondsSinceEpoch +
+          _serverTimeOffsetMs;
 
       final elapsedMs = nowMs - startedAtMs;
       final remaining =
@@ -160,12 +177,7 @@ class GameController extends ChangeNotifier {
 
       if (clamped <= 0) {
         _gameTimer?.cancel();
-
-        if (roomCode != null &&
-            playerName != null &&
-            !_state.gameOver) {
-          finishOnlineGame('timeout');
-        }
+        finishOnlineGame('timeout');
       }
     }
 
@@ -177,54 +189,77 @@ class GameController extends ChangeNotifier {
     );
   }
 
-  void _updateOnlineScoresFromFoundBy(dynamic rawFoundBy) {
-    int myScore = 0;
-    int opponentScore = 0;
+  void _updateScoresFromFoundBy(
+    dynamic rawFoundBy,
+  ) {
+    int mine = 0;
+    int opponent = 0;
 
     if (rawFoundBy is Map) {
-      for (final owner in rawFoundBy.values) {
-        final ownerName = owner?.toString();
+      for (final value in rawFoundBy.values) {
+        final owner = value?.toString();
 
-        if (ownerName == playerName) {
-          myScore++;
-        } else if (ownerName != null && ownerName.isNotEmpty) {
-          opponentScore++;
+        if (owner == playerName) {
+          mine++;
+        } else if (owner != null && owner.isNotEmpty) {
+          opponent++;
         }
       }
     }
 
     _state = _state.copyWith(
-      score: myScore,
-      opponentScore: opponentScore,
+      score: mine,
+      opponentScore: opponent,
     );
   }
 
+  int? _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '');
+  }
+
   void disposeController() {
-    _feedbackTimer?.cancel();
     _gameTimer?.cancel();
+    _feedbackTimer?.cancel();
     _gameSubscription?.cancel();
     _playersSubscription?.cancel();
   }
 
   void finishManually() {
-    _state = _state.copyWith(isCompleted: true);
+    if (_state.gameOver) return;
+
+    if (roomCode != null) {
+      finishOnlineGame('manual');
+      return;
+    }
+
+    _state = _state.copyWith(
+      isCompleted: true,
+    );
     notifyListeners();
   }
 
   void updateSuggestions(String query) {
     final suggestions = SearchService.suggestions(
-      players: Repository.instance.players,
+      players: _state.matchingPlayers,
       query: query,
-      excludedPlayerIds: _state.foundPlayerIds,
+      excludedPlayerIds:
+          _state.foundPlayerIds,
+      limit: 8,
     );
 
-    _state = _state.copyWith(suggestions: suggestions);
+    _state = _state.copyWith(
+      suggestions: suggestions,
+    );
     notifyListeners();
   }
 
   void clearSuggestions() {
     if (_state.suggestions.isEmpty) return;
-    _state = _state.copyWith(suggestions: const []);
+
+    _state = _state.copyWith(
+      suggestions: const [],
+    );
     notifyListeners();
   }
 
@@ -232,49 +267,140 @@ class GameController extends ChangeNotifier {
     return _state.foundPlayerIds.contains(player.id);
   }
 
-  bool _alreadyTried(String answer) {
-    return _state.wrongAttempts.contains(answer);
-  }
-
   bool _isValidMatch(Player player) {
-    return _state.matchingPlayers.any((p) => p.id == player.id);
+    return _state.matchingPlayers
+        .any((p) => p.id == player.id);
   }
 
-  void _feedback(String message, bool success) {
+  void _feedback(
+    String message,
+    bool success,
+  ) {
     _feedbackTimer?.cancel();
 
-    _state = _state.copyWith(feedback: message, feedbackIsSuccess: success);
+    _state = _state.copyWith(
+      feedback: message,
+      feedbackIsSuccess: success,
+    );
     notifyListeners();
 
-    _feedbackTimer = Timer(const Duration(seconds: 2), () {
-      _state = _state.copyWith(feedback: null);
-      notifyListeners();
-    });
+    _feedbackTimer = Timer(
+      const Duration(seconds: 2),
+      () {
+        _state = _state.copyWith(
+          feedback: null,
+        );
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> _correctAnswer(Player player) async {
-    if (roomCode != null && playerName != null) {
-      final added = await RoomService.addFoundPlayer(roomCode: roomCode!, playerName: playerName!, playerId: player.id);
-      _feedback(added ? 'Doğru!' : 'Bu oyuncuyu diğer oyuncu zaten buldu.', added);
+    if (_alreadyFound(player)) {
+      _feedback(
+        'Bu oyuncuyu diğer oyuncu zaten buldu.',
+        false,
+      );
       return;
     }
-    final foundPlayers = List<Player>.from(_state.foundPlayers)..add(player);
-    final ids = Set<int>.from(_state.foundPlayerIds)..add(player.id);
-    final completed = ids.length >= _state.matchingPlayers.length;
-    _state = _state.copyWith(score: _state.score + 1, foundPlayers: foundPlayers, foundPlayerIds: ids, suggestions: const [], isCompleted: completed);
-    _feedback(completed ? 'Tüm oyuncular bulundu! 🎉' : 'Doğru!', true);
+
+    if (!_isValidMatch(player)) {
+      await _wrongAnswer(
+        player.name,
+        message:
+            '${player.name} bu eşleşmeye uymuyor.',
+      );
+      return;
+    }
+
+    if (roomCode != null &&
+        playerName != null) {
+      final added =
+          await RoomService.addFoundPlayer(
+        roomCode: roomCode!,
+        playerName: playerName!,
+        playerId: player.id,
+      );
+
+      if (!added) {
+        _feedback(
+          'Bu oyuncuyu diğer oyuncu zaten buldu.',
+          false,
+        );
+        return;
+      }
+
+      // Firebase listener kısa süre gecikirse bile
+      // kendi ekranımız anında güncellensin.
+      final ids =
+          Set<int>.from(_state.foundPlayerIds)
+            ..add(player.id);
+
+      final found = List<Player>.from(
+        _state.foundPlayers,
+      )..add(player);
+
+      _state = _state.copyWith(
+        foundPlayerIds: ids,
+        foundPlayers: found,
+        totalFoundCount: ids.length,
+        suggestions: const [],
+      );
+
+      _feedback('Doğru! ✅', true);
+      return;
+    }
+
+    final ids =
+        Set<int>.from(_state.foundPlayerIds)
+          ..add(player.id);
+
+    final found =
+        List<Player>.from(_state.foundPlayers)
+          ..add(player);
+
+    final completed =
+        ids.length >= _state.matchingPlayers.length;
+
+    _state = _state.copyWith(
+      score: _state.score + 1,
+      foundPlayers: found,
+      foundPlayerIds: ids,
+      suggestions: const [],
+      isCompleted: completed,
+    );
+
+    _feedback(
+      completed
+          ? 'Tüm oyuncular bulundu! 🎉'
+          : 'Doğru!',
+      true,
+    );
   }
 
-  Future<void> _wrongAnswer(String answer, {String? message}) async {
-    if (_state.lives <= 0) {
-      _feedback('Canların bitti.', false);
+  Future<void> _wrongAnswer(
+    String answer, {
+    String? message,
+  }) async {
+    final key =
+        SearchService.compact(answer);
+
+    if (_state.wrongAttempts.contains(key)) {
+      _feedback(
+        'Bu tahmini zaten yaptın.',
+        false,
+      );
       return;
     }
 
-    final attempts = Set<String>.from(_state.wrongAttempts)..add(answer);
+    final attempts =
+        Set<String>.from(_state.wrongAttempts)
+          ..add(key);
 
-    if (roomCode != null && playerName != null) {
-      final newLives = await RoomService.decrementPlayerLife(
+    if (roomCode != null &&
+        playerName != null) {
+      final newLives =
+          await RoomService.decrementPlayerLife(
         roomCode: roomCode!,
         playerName: playerName!,
       );
@@ -284,163 +410,120 @@ class GameController extends ChangeNotifier {
         wrongAttempts: attempts,
         suggestions: const [],
       );
+
       notifyListeners();
 
       _feedback(
         newLives > 0
-            ? '${message ?? 'Yanlış cevap.'} • Kalan can: $newLives'
+            ? '${message ?? 'Yanlış cevap.'} • '
+              'Kalan can: $newLives'
             : 'Yanlış cevap. Canların bitti.',
         false,
       );
 
-      if (newLives <= 0) {
-        await finishOnlineGame('lives');
-      }
-
       return;
     }
 
-    final newLives = (_state.lives - 1).clamp(0, 3);
+    final newLives =
+        (_state.lives - 1).clamp(0, 3);
 
     _state = _state.copyWith(
       lives: newLives,
       wrongAttempts: attempts,
       suggestions: const [],
     );
+
     notifyListeners();
 
     _feedback(
       newLives > 0
-          ? '${message ?? 'Yanlış cevap.'} • Kalan can: $newLives'
+          ? '${message ?? 'Yanlış cevap.'} • '
+            'Kalan can: $newLives'
           : 'Yanlış cevap. Canların bitti.',
       false,
     );
   }
 
-  /// Öneri listesinden tıklanınca: ID ile doğrula.
   Future<void> submitPlayer(Player player) async {
-    if (_state.lives <= 0) {
-      _feedback('Canların bitti.', false);
+    if (_state.gameOver ||
+        _state.lives <= 0) {
       return;
     }
 
     if (player.name.trim().isEmpty) {
-      _feedback('Geçersiz oyuncu kaydı.', false);
-      return;
-    }
-
-    if (_alreadyFound(player)) {
-      _feedback('Bu oyuncuyu zaten buldun.', false);
-      return;
-    }
-
-    if (!_isValidMatch(player)) {
-      await _wrongAnswer(
-        player.name,
-        message: '${player.name} (${player.countryLabel}) bu eşleşmeye uymuyor.',
+      _feedback(
+        'Geçersiz oyuncu kaydı.',
+        false,
       );
       return;
     }
 
-    _correctAnswer(player);
+    await _correctAnswer(player);
   }
 
-  Future<void> submitAnswer(String answer) async {
-    if (_state.lives <= 0) {
-      _feedback('Canların bitti.', false);
+  Future<void> submitAnswer(
+    String answer,
+  ) async {
+    if (_state.gameOver ||
+        _state.lives <= 0) {
       return;
     }
 
     final trimmed = answer.trim();
     if (trimmed.isEmpty) return;
 
-    // ── 1) ÖNCE bu maçın aday havuzunda çöz ──────────────────────────
-    // "Ronaldo" yazınca globalde 20 kişi çıkar; burada sadece
-    // Real Madrid ∩ Barcelona içindeki Ronaldo (Fenômeno) kalır.
-    final local = SearchService.resolve(
+    // Online oyunda sadece bu maçın ortak oyuncu
+    // havuzunu kullanıyoruz. Global havuza düşmüyoruz.
+    final result = SearchService.resolve(
       players: _state.matchingPlayers,
       answer: trimmed,
-      excludedPlayerIds: _state.foundPlayerIds,
+      excludedPlayerIds:
+          _state.foundPlayerIds,
     );
 
-    if (local.isFound) {
-      _correctAnswer(local.player!);
+    if (result.isFound) {
+      await _correctAnswer(result.player!);
       return;
     }
 
-    if (local.status == ResolveStatus.ambiguous) {
-      _state = _state.copyWith(suggestions: local.candidates);
-      final labels = local.candidates
-          .map((p) => '${p.name} (${p.position} · ${p.countryLabel})')
-          .join(', ');
-      _feedback('Birden fazla oyuncu uyuyor: $labels. Listeden seç.', false);
-      return;
-    }
+    if (result.status ==
+        ResolveStatus.ambiguous) {
+      _state = _state.copyWith(
+        suggestions: result.candidates,
+      );
 
-    // ── 2) Global çöz — oyuncu var mı, yoksa yanlış kulüp mü? ───────
-    final global = SearchService.resolve(
-      players: Repository.instance.players,
-      answer: trimmed,
-      excludedPlayerIds: _state.foundPlayerIds,
-    );
-
-    if (global.status == ResolveStatus.ambiguous) {
-      // Global ambiguous ama local'de yok → bu çifte uyan yok
-      // Yine de matching'e düşen var mı diye bak
-      final valid = global.candidates
-          .where((p) => _isValidMatch(p) && !_alreadyFound(p))
-          .toList();
-      if (valid.length == 1) {
-        _correctAnswer(valid.first);
-        return;
-      }
-      if (valid.length > 1) {
-        _state = _state.copyWith(suggestions: valid);
-        _feedback('Birden fazla oyuncu uyuyor. Listeden seç.', false);
-        return;
-      }
-      _feedback(global.message, false);
-      return;
-    }
-
-    if (global.status == ResolveStatus.notFound) {
-      if (_alreadyTried(trimmed)) {
-        _feedback('Bu tahmini zaten yaptın.', false);
-        return;
-      }
-      await _wrongAnswer(trimmed, message: 'Böyle bir oyuncu bulunamadı.');
-      return;
-    }
-
-    // Global'de tek kişi bulundu ama bu maça uymuyor
-    final player = global.player!;
-    if (_alreadyFound(player)) {
-      _feedback('Bu oyuncuyu zaten buldun.', false);
-      return;
-    }
-    if (!_isValidMatch(player)) {
-      if (_alreadyTried(trimmed)) {
-        _feedback('Bu tahmini zaten yaptın.', false);
-        return;
-      }
-      await _wrongAnswer(
-        trimmed,
-        message: '${player.name} bu eşleşmeye uymuyor.',
+      _feedback(
+        'Birden fazla oyuncu uyuyor. '
+        'Listeden seç.',
+        false,
       );
       return;
     }
 
-    _correctAnswer(player);
+    await _wrongAnswer(
+      trimmed,
+      message: 'Bu isim bu eşleşmedeki ortak '
+          'oyuncular arasında bulunamadı.',
+    );
   }
-  Future<void> finishOnlineGame(String reason) async {
-    if (roomCode == null || playerName == null || _state.gameOver) return;
 
-    final myScore = _state.score;
-    final opponentScore = _state.opponentScore;
+  Future<void> finishOnlineGame(
+    String reason,
+  ) async {
+    if (roomCode == null ||
+        playerName == null ||
+        _state.gameOver ||
+        _finishRequestSent) {
+      return;
+    }
 
-    final winner = myScore > opponentScore
+    _finishRequestSent = true;
+
+    final winner = _state.score >
+            _state.opponentScore
         ? playerName!
-        : opponentScore > myScore
+        : _state.opponentScore >
+                _state.score
             ? 'opponent'
             : 'draw';
 
@@ -449,24 +532,36 @@ class GameController extends ChangeNotifier {
       reason: reason,
       winner: winner,
     );
+
+    _state = _state.copyWith(
+      gameOver: true,
+      gameOverReason: reason,
+      finalWinner: winner,
+    );
+    _gameTimer?.cancel();
+    notifyListeners();
   }
 
   Future<void> restartOnlineGame() async {
-    if (roomCode == null || playerName == null) return;
+    if (roomCode == null ||
+        playerName == null) {
+      return;
+    }
+
+    _finishRequestSent = false;
 
     await RoomService.resetGame(roomCode!);
-
-    _gameTimer?.cancel();
 
     _state = _state.copyWith(
       score: 0,
       opponentScore: 0,
       remainingSeconds: 60,
       lives: 3,
-      foundPlayers: <Player>[],
-      foundPlayerIds: <int>{},
-      suggestions: const <Player>[],
-      wrongAttempts: <String>{},
+      foundPlayers: const [],
+      foundPlayerIds: const {},
+      totalFoundCount: 0,
+      wrongAttempts: const {},
+      suggestions: const [],
       gameOver: false,
       gameOverReason: null,
       finalWinner: null,
@@ -474,6 +569,4 @@ class GameController extends ChangeNotifier {
 
     notifyListeners();
   }
-
-
 }

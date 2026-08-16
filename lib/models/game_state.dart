@@ -8,10 +8,12 @@ class GameState {
   final int opponentScore;
   final int remainingSeconds;
   final int lives;
+  final int totalFoundCount;
 
   final bool isLoading;
   final bool isCompleted;
   final bool gameOver;
+
   final String? gameOverReason;
   final String? finalWinner;
 
@@ -29,6 +31,7 @@ class GameState {
     this.opponentScore = 0,
     this.remainingSeconds = 60,
     this.lives = 3,
+    this.totalFoundCount = 0,
     this.isLoading = true,
     this.isCompleted = false,
     this.gameOver = false,
@@ -48,6 +51,7 @@ class GameState {
     int? opponentScore,
     int? remainingSeconds,
     int? lives,
+    int? totalFoundCount,
     bool? isLoading,
     bool? isCompleted,
     bool? gameOver,
@@ -67,6 +71,7 @@ class GameState {
       remainingSeconds:
           remainingSeconds ?? this.remainingSeconds,
       lives: lives ?? this.lives,
+      totalFoundCount: totalFoundCount ?? this.totalFoundCount,
       isLoading: isLoading ?? this.isLoading,
       isCompleted: isCompleted ?? this.isCompleted,
       gameOver: gameOver ?? this.gameOver,
@@ -76,13 +81,12 @@ class GameState {
       matchingPlayers:
           matchingPlayers ?? this.matchingPlayers,
       suggestions: suggestions ?? this.suggestions,
-      foundPlayers:
-          foundPlayers ?? this.foundPlayers,
+      foundPlayers: foundPlayers ?? this.foundPlayers,
       foundPlayerIds:
           foundPlayerIds ?? this.foundPlayerIds,
       wrongAttempts:
           wrongAttempts ?? this.wrongAttempts,
-      feedback: feedback ?? this.feedback,
+      feedback: feedback,
       feedbackIsSuccess:
           feedbackIsSuccess ?? this.feedbackIsSuccess,
     );

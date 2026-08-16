@@ -16,6 +16,7 @@ import 'story_mode_selection_page.dart';
 import 'vs_bot_mode_selection_page.dart';
 import 'football_calendar_page.dart';
 import '../online/online_lobby_page.dart';
+import 'this_or_that_mode_selection_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -120,6 +121,13 @@ _sliverModeList(const [
                 icon: Icons.wrong_location_rounded,
                 page: OddClubModeSelectionPage(),
               ),
+              _ModeItem(
+  title: 'O mu Bu mu?',
+  subtitle: 'Futbolcu / takım zirve savaşları',
+  icon: Icons.balance_rounded,
+  accent: Color(0xFFFFB300),
+  page: ThisOrThatModeSelectionPage(),
+),
             ]),
 
             _sectionHeader('Zorlayıcı'),

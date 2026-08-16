@@ -28,7 +28,8 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   late final GameController _controller;
-  final TextEditingController _answerController = TextEditingController();
+  final TextEditingController _answerController =
+      TextEditingController();
 
   bool _navigatedToResults = false;
 
@@ -49,8 +50,8 @@ class _GamePageState extends State<GamePage> {
   void _onControllerChanged() {
     if (!mounted) return;
 
-    // Offline mode keeps the original result-page flow.
-    if (widget.roomCode == null && _controller.state.isCompleted) {
+    if (widget.roomCode == null &&
+        _controller.state.isCompleted) {
       _goToResults();
       return;
     }
@@ -66,11 +67,15 @@ class _GamePageState extends State<GamePage> {
     final state = _controller.state;
 
     final foundNames =
-        state.foundPlayers.map((player) => player.name).toList();
+        state.foundPlayers
+            .map((p) => p.name)
+            .toList();
 
     final missedNames = state.matchingPlayers
-        .where((player) => !state.foundPlayerIds.contains(player.id))
-        .map((player) => player.name)
+        .where(
+          (p) => !state.foundPlayerIds.contains(p.id),
+        )
+        .map((p) => p.name)
         .toList();
 
     Navigator.pushReplacement(
@@ -88,7 +93,9 @@ class _GamePageState extends State<GamePage> {
 
   @override
   void dispose() {
-    _controller.removeListener(_onControllerChanged);
+    _controller.removeListener(
+      _onControllerChanged,
+    );
     _controller.disposeController();
     _controller.dispose();
     _answerController.dispose();
@@ -96,27 +103,20 @@ class _GamePageState extends State<GamePage> {
   }
 
   Future<void> _submitAnswer() async {
-    final state = _controller.state;
+    final answer = _answerController.text.trim();
+    if (answer.isEmpty) return;
 
-    if (state.gameOver || state.lives <= 0) return;
-
-    final input = _answerController.text.trim();
-    if (input.isEmpty) return;
-
-    await _controller.submitAnswer(input);
+    await _controller.submitAnswer(answer);
     _answerController.clear();
   }
 
   Future<void> _repeatOnlineGame() async {
     await _controller.restartOnlineGame();
-
-    if (!mounted) return;
-
-    setState(() {});
   }
 
   Future<void> _leaveOnlineRoom() async {
-    if (widget.roomCode != null && widget.playerName != null) {
+    if (widget.roomCode != null &&
+        widget.playerName != null) {
       await RoomService.leaveRoom(
         roomCode: widget.roomCode!,
         playerName: widget.playerName!,
@@ -128,21 +128,30 @@ class _GamePageState extends State<GamePage> {
     Navigator.of(context).pop();
   }
 
-  Widget _buildOnlineResultOverlay(GameState state) {
-    final bool isDraw = state.finalWinner == 'draw';
-    final bool won = state.finalWinner == widget.playerName;
+  Widget _buildOnlineResultOverlay(
+    GameState state,
+  ) {
+    final isDraw =
+        state.finalWinner == 'draw';
 
-    final String resultTitle = isDraw
+    final won =
+        state.finalWinner == widget.playerName;
+
+    final title = isDraw
         ? 'BERABERE'
         : won
             ? 'KAZANDIN! 🎉'
             : 'KAYBETTİN';
 
-    final String reasonText = state.gameOverReason == 'timeout'
+    final reason = state.gameOverReason ==
+            'timeout'
         ? 'Süre doldu.'
         : state.gameOverReason == 'lives'
             ? 'Bir oyuncunun canı tükendi.'
-            : 'Oyun sona erdi.';
+            : state.gameOverReason ==
+                    'all_found'
+                ? 'Tüm ortak oyuncular bulundu.'
+                : 'Oyun sona erdi.';
 
     return Positioned.fill(
       child: ColoredBox(
@@ -158,7 +167,9 @@ class _GamePageState extends State<GamePage> {
                   children: [
                     const Text(
                       '🏆',
-                      style: TextStyle(fontSize: 50),
+                      style: TextStyle(
+                        fontSize: 50,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
@@ -169,18 +180,25 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(reasonText),
+                    Text(reason),
                     const SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
                       children: [
-                        _resultScoreCard('SEN', state.score),
-                        _resultScoreCard('RAKİP', state.opponentScore),
+                        _resultScoreCard(
+                          'SEN',
+                          state.score,
+                        ),
+                        _resultScoreCard(
+                          'RAKİP',
+                          state.opponentScore,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      resultTitle,
+                      title,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -188,23 +206,29 @@ class _GamePageState extends State<GamePage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Bulunan toplam oyuncu: '
-                      '${state.foundPlayerIds.length}',
+                      'Toplam bulunan oyuncu: '
+                      '${state.totalFoundCount}',
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _repeatOnlineGame,
-                        child: const Text('TEKRAR OYNA'),
+                        onPressed:
+                            _repeatOnlineGame,
+                        child: const Text(
+                          'TEKRAR OYNA',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: _leaveOnlineRoom,
-                        child: const Text('ODADAN ÇIK'),
+                        onPressed:
+                            _leaveOnlineRoom,
+                        child: const Text(
+                          'ODADAN ÇIK',
+                        ),
                       ),
                     ),
                   ],
@@ -217,22 +241,29 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Widget _resultScoreCard(String title, int score) {
+  Widget _resultScoreCard(
+    String title,
+    int score,
+  ) {
     return Container(
       width: 110,
-      padding: const EdgeInsets.symmetric(
+      padding:
+          const EdgeInsets.symmetric(
         vertical: 16,
         horizontal: 10,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius:
+            BorderRadius.circular(12),
         border: Border.all(),
       ),
       child: Column(
         children: [
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -259,13 +290,13 @@ class _GamePageState extends State<GamePage> {
       );
     }
 
-    final totalMatchingPlayers = state.matchingPlayers.length;
+    final total =
+        state.matchingPlayers.length;
 
-    final double progress = totalMatchingPlayers == 0
+    final progress = total == 0
         ? 0.0
-        : (state.foundPlayers.length / totalMatchingPlayers)
-            .clamp(0.0, 1.0)
-            .toDouble();
+        : (state.foundPlayers.length / total)
+            .clamp(0.0, 1.0);
 
     return Scaffold(
       appBar: AppBar(
@@ -276,9 +307,8 @@ class _GamePageState extends State<GamePage> {
         centerTitle: true,
         actions: [
           TextButton(
-            onPressed: widget.roomCode != null
-                ? _leaveOnlineRoom
-                : _controller.finishManually,
+            onPressed:
+                _controller.finishManually,
             child: const Text('Bitir'),
           ),
         ],
@@ -287,13 +317,19 @@ class _GamePageState extends State<GamePage> {
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding:
+                  const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment:
+                    CrossAxisAlignment.stretch,
                 children: [
                   _buildMatchHeader(),
                   const SizedBox(height: 16),
-                  _buildStatsCard(state, totalMatchingPlayers, progress),
+                  _buildStatsCard(
+                    state,
+                    total,
+                    progress,
+                  ),
                   const SizedBox(height: 16),
                   _buildInputCard(state),
                   const SizedBox(height: 12),
@@ -308,23 +344,32 @@ class _GamePageState extends State<GamePage> {
                       child: Padding(
                         padding: EdgeInsets.all(14),
                         child: Text(
-                          'Canların bitti. Oyuna devam edemezsin.',
-                          textAlign: TextAlign.center,
+                          'Canların bitti. '
+                          'Oyuna devam edemezsin.',
+                          textAlign:
+                              TextAlign.center,
                           style: TextStyle(
                             color: Colors.red,
-                            fontWeight: FontWeight.w700,
+                            fontWeight:
+                                FontWeight.w700,
                           ),
                         ),
                       ),
                     ),
                   ],
                   const SizedBox(height: 16),
-                  _buildFoundPlayersCard(state),
+                  _buildFoundPlayersCard(
+                    state,
+                    total,
+                  ),
                 ],
               ),
             ),
-            if (widget.roomCode != null && state.gameOver)
-              _buildOnlineResultOverlay(state),
+            if (widget.roomCode != null &&
+                state.gameOver)
+              _buildOnlineResultOverlay(
+                state,
+              ),
           ],
         ),
       ),
@@ -334,7 +379,8 @@ class _GamePageState extends State<GamePage> {
   Widget _buildMatchHeader() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding:
+            const EdgeInsets.all(16),
         child: Row(
           children: [
             Expanded(
@@ -343,12 +389,16 @@ class _GamePageState extends State<GamePage> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
+              padding:
+                  EdgeInsets.symmetric(
+                horizontal: 12,
+              ),
               child: Text(
                 'VS',
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontWeight:
+                      FontWeight.bold,
                 ),
               ),
             ),
@@ -365,25 +415,26 @@ class _GamePageState extends State<GamePage> {
 
   Widget _buildStatsCard(
     GameState state,
-    int totalMatchingPlayers,
+    int total,
     double progress,
   ) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding:
+            const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Bulunan: '
-                  '${state.foundPlayers.length}/'
-                  '$totalMatchingPlayers',
+                  '${state.foundPlayers.length}/$total',
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight:
+                        FontWeight.w600,
                   ),
                 ),
                 if (widget.roomCode != null)
@@ -392,7 +443,8 @@ class _GamePageState extends State<GamePage> {
                     'Rakip: ${state.opponentScore}',
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontWeight:
+                          FontWeight.w600,
                     ),
                   ),
               ],
@@ -400,25 +452,30 @@ class _GamePageState extends State<GamePage> {
             if (widget.roomCode != null) ...[
               const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Süre: ${state.remainingSeconds} sn',
+                    'Süre: '
+                    '${state.remainingSeconds} sn',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: state.remainingSeconds <= 10
-                          ? Colors.red
-                          : null,
+                      fontWeight:
+                          FontWeight.bold,
+                      color:
+                          state.remainingSeconds <=
+                                  10
+                              ? Colors.red
+                              : null,
                     ),
                   ),
                   const SizedBox(width: 20),
                   Text(
                     'Can: ${state.lives} ❤️',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: state.lives == 0 ? Colors.red : null,
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
                 ],
@@ -426,8 +483,10 @@ class _GamePageState extends State<GamePage> {
             ],
             const SizedBox(height: 12),
             ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(
+              borderRadius:
+                  BorderRadius.circular(999),
+              child:
+                  LinearProgressIndicator(
                 value: progress,
               ),
             ),
@@ -437,25 +496,37 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Widget _buildInputCard(GameState state) {
-    final bool canAnswer =
-        state.lives > 0 && !state.gameOver;
+  Widget _buildInputCard(
+    GameState state,
+  ) {
+    final canAnswer =
+        state.lives > 0 &&
+            !state.gameOver;
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding:
+            const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               enabled: canAnswer,
-              controller: _answerController,
-              onChanged: _controller.updateSuggestions,
-              onSubmitted: (_) => _submitAnswer(),
-              textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Oyuncu adı',
-                hintText: 'Örn. Luis Suarez',
-                border: OutlineInputBorder(),
+              controller:
+                  _answerController,
+              onChanged:
+                  _controller.updateSuggestions,
+              onSubmitted: (_) =>
+                  _submitAnswer(),
+              textInputAction:
+                  TextInputAction.done,
+              decoration:
+                  const InputDecoration(
+                labelText:
+                    'Oyuncu adı',
+                hintText:
+                    'Örn. Luis Suarez',
+                border:
+                    OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -463,11 +534,15 @@ class _GamePageState extends State<GamePage> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: canAnswer ? _submitAnswer : null,
+                onPressed:
+                    canAnswer
+                        ? _submitAnswer
+                        : null,
                 child: const Text(
                   'GÖNDER',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
               ),
@@ -478,35 +553,39 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Widget _buildSuggestionsCard(GameState state) {
+  Widget _buildSuggestionsCard(
+    GameState state,
+  ) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding:
+            const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
             const Text(
               'Öneriler',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight:
+                    FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
             ...state.suggestions.map(
               (player) => ListTile(
                 dense: true,
-                contentPadding: EdgeInsets.zero,
+                contentPadding:
+                    EdgeInsets.zero,
                 title: Text(player.name),
                 subtitle: Text(
                   '${player.position} • '
                   '${player.countryLabel}',
                 ),
                 onTap: () async {
-                  if (state.gameOver || state.lives <= 0) {
-                    return;
-                  }
-                  await _controller.submitPlayer(player);
+                  await _controller
+                      .submitPlayer(player);
                   _answerController.clear();
                 },
               ),
@@ -517,46 +596,62 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Widget _buildFeedbackCard(GameState state) {
+  Widget _buildFeedbackCard(
+    GameState state,
+  ) {
     final color =
-        state.feedbackIsSuccess ? Colors.green : Colors.red;
+        state.feedbackIsSuccess
+            ? Colors.green
+            : Colors.red;
 
     return Card(
-      color: color.withValues(alpha: 0.12),
+      color:
+          color.withValues(alpha: 0.12),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding:
+            const EdgeInsets.all(14),
         child: Text(
           state.feedback ?? '',
-          textAlign: TextAlign.center,
+          textAlign:
+              TextAlign.center,
           style: TextStyle(
             color: color,
-            fontWeight: FontWeight.w600,
+            fontWeight:
+                FontWeight.w600,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFoundPlayersCard(GameState state) {
+  Widget _buildFoundPlayersCard(
+    GameState state,
+    int total,
+  ) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding:
+            const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
             Text(
-              'Bulunan Oyuncular '
-              '(${state.foundPlayers.length})',
+              'TÜM BULUNAN OYUNCULAR '
+              '(${state.totalFoundCount}/$total)',
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontWeight:
+                    FontWeight.w600,
               ),
             ),
             const SizedBox(height: 12),
             if (state.foundPlayers.isEmpty)
               const Text(
-                'Henüz oyuncu bulmadın.',
-                style: TextStyle(color: Colors.grey),
+                'Henüz oyuncu bulunmadı.',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
               )
             else
               Wrap(
@@ -564,8 +659,11 @@ class _GamePageState extends State<GamePage> {
                 runSpacing: 8,
                 children: state.foundPlayers
                     .map(
-                      (player) =>
-                          Chip(label: Text(player.name)),
+                      (player) => Chip(
+                        label: Text(
+                          player.name,
+                        ),
+                      ),
                     )
                     .toList(),
               ),
@@ -576,7 +674,8 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-class _EntityHeaderTile extends StatelessWidget {
+class _EntityHeaderTile
+    extends StatelessWidget {
   final MatchEntity entity;
 
   const _EntityHeaderTile({
@@ -584,10 +683,13 @@ class _EntityHeaderTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Column(
       children: [
-        if (entity.type == MatchEntityType.club)
+        if (entity.type ==
+            MatchEntityType.club)
           NetworkLogo(
             url: entity.logoUrl,
             width: 52,
@@ -599,10 +701,11 @@ class _EntityHeaderTile extends StatelessWidget {
               size: 52,
             ),
           )
-        else if (entity.type == MatchEntityType.country)
+        else if (entity.type ==
+            MatchEntityType.country)
           CountryBadge(
-            country:
-                entity.countryName ?? entity.displayName,
+            country: entity.countryName ??
+                entity.displayName,
             width: 56,
             height: 40,
           )
@@ -614,11 +717,14 @@ class _EntityHeaderTile extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           entity.displayName,
-          textAlign: TextAlign.center,
+          textAlign:
+              TextAlign.center,
           maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+          overflow:
+              TextOverflow.ellipsis,
           style: const TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight:
+                FontWeight.w600,
           ),
         ),
       ],

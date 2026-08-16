@@ -5,7 +5,7 @@ import '../models/club.dart';
 import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../services/database_service.dart';
-import 'room_service.dart';
+import '../online/room_service.dart';
 import '../screens/game_page.dart';
 
 class OnlineLobbyPage extends StatefulWidget {
@@ -291,23 +291,11 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
     try {
       final players = await _getPlayers();
 
-      if (players == null || players.isEmpty) {
-        _showMessage('Oda bilgileri alınamadı.');
+      if (players == null || players.length != 2) {
+        _showMessage('Oyunun başlaması için 2 oyuncu gerekli.');
         return;
       }
 
-      // İlk oyuncu tek başına da hazır olabilir.
-      // Oyun ancak iki oyuncu da hazır olduğunda başlayacak.
-      if (players.length == 1) {
-        await RoomService.setReady(
-          roomCode: roomCode,
-          playerName: playerName,
-          ready: true,
-        );
-        return;
-      }
-
-      // İki oyuncu varsa diğer oyuncunun takımını kontrol et.
       int? otherTeamId;
 
       for (final entry in players.entries) {
@@ -343,7 +331,6 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
         ready: true,
       );
 
-      // RoomService yalnızca iki oyuncu da hazırsa starting yapacak.
       await RoomService.startRoom(roomCode);
     } catch (e) {
       _showMessage('Hazır durumu değiştirilemedi: $e');
@@ -430,7 +417,7 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
             entity1: MatchEntity.club(club1!),
             entity2: MatchEntity.club(club2!),
             roomCode: roomCode,
-            playerName: _currentPlayerName!,
+            playerName: _currentPlayerName,
           ),
         ),
       );
@@ -699,29 +686,16 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
 
                 const SizedBox(height: 20),
 
-                Builder(
-                  builder: (context) {
-                    final me = data[_currentPlayerName];
-                    final myData = me is Map
-                        ? Map<String, dynamic>.from(me)
-                        : <String, dynamic>{};
-                    final myReady = myData['ready'] == true;
-
-                    return ElevatedButton(
-                      onPressed: _selectedTeamId == null ||
-                              _gameStarting ||
-                              myReady
-                          ? null
-                          : _setReady,
-                      child: Text(
-                        _gameStarting
-                            ? 'OYUN BAŞLIYOR...'
-                            : myReady
-                                ? 'HAZIRSIN ✓'
-                                : 'HAZIR',
-                      ),
-                    );
-                  },
+                ElevatedButton(
+                  onPressed: _selectedTeamId == null ||
+                          _gameStarting
+                      ? null
+                      : _setReady,
+                  child: Text(
+                    _gameStarting
+                        ? 'OYUN BAŞLIYOR...'
+                        : 'HAZIR',
+                  ),
                 ),
               ],
             );
