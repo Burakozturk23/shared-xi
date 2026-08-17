@@ -214,4 +214,51 @@ class MatchService {
     }
     await _matchRef(matchId).child('status').set('ready');
   }
+
+  // ── Faz 2: Presence ──────────────────────────────────────────────
+
+  static const int reconnectWindowSeconds = 20;
+
+  static DatabaseReference _playerRef(String matchId, String playerUid) =>
+      _matchRef(matchId).child('players').child(playerUid);
+
+  static Future<void> markPlayerConnected({
+    required String matchId,
+    required String playerUid,
+  }) async {
+    final ref = _playerRef(matchId, playerUid);
+    await ref.update({
+      'connected': true,
+      'lastSeen': ServerValue.timestamp,
+      'disconnectedAt': null,
+    });
+    await ref.onDisconnect().update({
+      'connected': false,
+      'disconnectedAt': ServerValue.timestamp,
+    });
+  }
+
+  static Future<void> playerHeartbeat({
+    required String matchId,
+    required String playerUid,
+  }) async {
+    await _playerRef(matchId, playerUid).update({
+      'connected': true,
+      'lastSeen': ServerValue.timestamp,
+    });
+  }
+
+  static Future<void> markPlayerDisconnected({
+    required String matchId,
+    required String playerUid,
+  }) async {
+    try {
+      await _playerRef(matchId, playerUid).onDisconnect().cancel();
+    } catch (_) {}
+    await _playerRef(matchId, playerUid).update({
+      'connected': false,
+      'disconnectedAt': ServerValue.timestamp,
+    });
+  }
+
 }

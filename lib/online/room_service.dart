@@ -445,4 +445,52 @@ class RoomService {
       await _roomRef(roomCode).remove();
     }
   }
+
+  // ── Faz 2: Presence ──────────────────────────────────────────────
+
+  static const int reconnectWindowSeconds = 20;
+
+  static DatabaseReference _playerRef(String roomCode, String playerName) =>
+      _roomRef(roomCode).child('players').child(playerName);
+
+  /// Oyuncu maça girdi / yeniden bağlandı.
+  static Future<void> markPlayerConnected({
+    required String roomCode,
+    required String playerName,
+  }) async {
+    final ref = _playerRef(roomCode, playerName);
+    await ref.update({
+      'connected': true,
+      'lastSeen': ServerValue.timestamp,
+      'disconnectedAt': null,
+    });
+    await ref.onDisconnect().update({
+      'connected': false,
+      'disconnectedAt': ServerValue.timestamp,
+    });
+  }
+
+  static Future<void> playerHeartbeat({
+    required String roomCode,
+    required String playerName,
+  }) async {
+    await _playerRef(roomCode, playerName).update({
+      'connected': true,
+      'lastSeen': ServerValue.timestamp,
+    });
+  }
+
+  static Future<void> markPlayerDisconnected({
+    required String roomCode,
+    required String playerName,
+  }) async {
+    try {
+      await _playerRef(roomCode, playerName).onDisconnect().cancel();
+    } catch (_) {}
+    await _playerRef(roomCode, playerName).update({
+      'connected': false,
+      'disconnectedAt': ServerValue.timestamp,
+    });
+  }
+
 }

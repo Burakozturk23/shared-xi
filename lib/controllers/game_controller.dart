@@ -8,7 +8,6 @@ import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../online/room_service.dart';
 import '../services/online_session.dart';
-import '../services/match_service.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
@@ -25,9 +24,14 @@ class GameController extends ChangeNotifier {
 
   Timer? _gameTimer;
   Timer? _feedbackTimer;
+  Timer? _heartbeatTimer;
+  Timer? _reconnectTimer;
 
   int _serverTimeOffsetMs = 0;
   bool _finishRequestSent = false;
+
+  /// Son bilinen rakip adı (can / disconnect bitince kazanan yazmak için)
+  String? _opponentName;
 
   OnlineSession? _session;
 
@@ -52,9 +56,15 @@ class GameController extends ChangeNotifier {
       entity2: entity2,
     );
 
+    // Aynı id birden fazla gelmesin (UI'da çift chip / sayı +2 bug'ı)
+    final uniqueMatching = <int, Player>{};
+    for (final p in matchingPlayers) {
+      uniqueMatching[p.id] = p;
+    }
+
     _state = _state.copyWith(
       isLoading: false,
-      matchingPlayers: matchingPlayers,
+      matchingPlayers: uniqueMatching.values.toList(),
     );
     notifyListeners();
 
@@ -73,11 +83,28 @@ class GameController extends ChangeNotifier {
     _serverTimeOffsetMs = await _session!.getServerTimeOffset();
     await _session!.initializeGame();
 
+    // Faz 2: presence
+    await _session!.markConnected();
+    _startHeartbeat();
+
     _gameSubscription =
         _session!.watchGame().listen(_handleGameEvent);
 
     _playersSubscription =
         _session!.watchPlayers().listen(_handlePlayersEvent);
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) async {
+        if (_state.gameOver || _session == null) return;
+        try {
+          await _session!.heartbeat();
+        } catch (_) {}
+      },
+    );
   }
 
   void _handleGameEvent(DatabaseEvent event) {
@@ -96,9 +123,14 @@ class GameController extends ChangeNotifier {
       }
     }
 
-    final foundPlayers = _state.matchingPlayers
-        .where((player) => foundIds.contains(player.id))
-        .toList();
+    // matchingPlayers içinde aynı id birden fazla olsa bile tek göster
+    final seen = <int>{};
+    final foundPlayers = <Player>[];
+    for (final player in _state.matchingPlayers) {
+      if (foundIds.contains(player.id) && seen.add(player.id)) {
+        foundPlayers.add(player);
+      }
+    }
 
     _updateScoresFromFoundBy(data['foundBy']);
 
@@ -109,20 +141,20 @@ class GameController extends ChangeNotifier {
       foundPlayers: foundPlayers,
       totalFoundCount: foundIds.length,
       gameOver: gameOver,
-      gameOverReason:
-          data['gameOverReason']?.toString(),
+      gameOverReason: data['gameOverReason']?.toString(),
       finalWinner: data['winner']?.toString(),
     );
 
     if (gameOver) {
       _gameTimer?.cancel();
+      _reconnectTimer?.cancel();
+      _heartbeatTimer?.cancel();
       notifyListeners();
       return;
     }
 
     final startedAt = _toInt(data['startedAt']);
-    final duration =
-        _toInt(data['durationSeconds']) ?? 60;
+    final duration = _toInt(data['durationSeconds']) ?? 60;
 
     if (startedAt != null) {
       _startSharedTimer(
@@ -133,8 +165,7 @@ class GameController extends ChangeNotifier {
 
     notifyListeners();
 
-    if (foundIds.length >=
-            _state.matchingPlayers.length &&
+    if (foundIds.length >= _state.matchingPlayers.length &&
         _state.matchingPlayers.isNotEmpty) {
       finishOnlineGame('all_found');
     }
@@ -146,8 +177,7 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    final players =
-        Map<String, dynamic>.from(value);
+    final players = Map<String, dynamic>.from(value);
 
     final myData = players[playerName!];
 
@@ -155,12 +185,95 @@ class GameController extends ChangeNotifier {
         ? (_toInt(myData['lives']) ?? 3)
         : 3;
 
-    _state = _state.copyWith(lives: lives);
+    // Rakip bilgisi
+    String? opponentName;
+    Map<String, dynamic>? opponentData;
+    for (final key in players.keys) {
+      if (key != playerName) {
+        opponentName = key;
+        if (players[key] is Map) {
+          opponentData = Map<String, dynamic>.from(players[key] as Map);
+        }
+        break;
+      }
+    }
+    if (opponentName != null) _opponentName = opponentName;
+
+    // Presence
+    final opponentConnected = opponentData == null
+        ? true
+        : opponentData['connected'] != false;
+
+    _state = _state.copyWith(
+      lives: lives,
+      opponentConnected: opponentConnected,
+    );
+
+    // Reconnect penceresi yönetimi
+    if (!_state.gameOver) {
+      if (!opponentConnected) {
+        _startReconnectWindow();
+      } else {
+        _cancelReconnectWindow();
+      }
+    }
+
     notifyListeners();
 
-    if (lives <= 0) {
-      finishOnlineGame('lives');
+    if (lives <= 0 && !_state.gameOver && !_finishRequestSent) {
+      finishOnlineGame('lives', forcedWinner: _opponentName);
     }
+  }
+
+  void _startReconnectWindow() {
+    if (_state.waitingForOpponentReconnect || _state.gameOver) return;
+
+    _state = _state.copyWith(
+      waitingForOpponentReconnect: true,
+      reconnectSecondsLeft: OnlineSession.reconnectWindowSeconds,
+    );
+    notifyListeners();
+
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_state.gameOver) {
+        t.cancel();
+        return;
+      }
+
+      final left = _state.reconnectSecondsLeft - 1;
+      if (left <= 0) {
+        t.cancel();
+        _state = _state.copyWith(
+          waitingForOpponentReconnect: false,
+          reconnectSecondsLeft: 0,
+        );
+        notifyListeners();
+        // Pencere doldu → rakip kaybetti, sen kazandın
+        if (!_finishRequestSent && !_state.gameOver) {
+          finishOnlineGame(
+            'disconnect',
+            forcedWinner: playerName,
+          );
+        }
+        return;
+      }
+
+      _state = _state.copyWith(reconnectSecondsLeft: left);
+      notifyListeners();
+    });
+  }
+
+  void _cancelReconnectWindow() {
+    if (!_state.waitingForOpponentReconnect) return;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _state = _state.copyWith(
+      waitingForOpponentReconnect: false,
+      reconnectSecondsLeft: 0,
+      opponentConnected: true,
+    );
+    notifyListeners();
   }
 
   void _startSharedTimer({
@@ -170,16 +283,13 @@ class GameController extends ChangeNotifier {
     _gameTimer?.cancel();
 
     void tick() {
-      final nowMs = DateTime.now()
-              .millisecondsSinceEpoch +
-          _serverTimeOffsetMs;
+      final nowMs =
+          DateTime.now().millisecondsSinceEpoch + _serverTimeOffsetMs;
 
       final elapsedMs = nowMs - startedAtMs;
-      final remaining =
-          durationSeconds - (elapsedMs ~/ 1000);
+      final remaining = durationSeconds - (elapsedMs ~/ 1000);
 
-      final clamped =
-          remaining.clamp(0, durationSeconds).toInt();
+      final clamped = remaining.clamp(0, durationSeconds).toInt();
 
       if (_state.remainingSeconds != clamped) {
         _state = _state.copyWith(
@@ -234,8 +344,15 @@ class GameController extends ChangeNotifier {
   void disposeController() {
     _gameTimer?.cancel();
     _feedbackTimer?.cancel();
+    _heartbeatTimer?.cancel();
+    _reconnectTimer?.cancel();
     _gameSubscription?.cancel();
     _playersSubscription?.cancel();
+
+    // Bilerek çıkışta presence temizle (best-effort)
+    if (_session != null && !_state.gameOver) {
+      _session!.markDisconnected();
+    }
   }
 
   void finishManually() {
@@ -256,8 +373,7 @@ class GameController extends ChangeNotifier {
     final suggestions = SearchService.suggestions(
       players: _state.matchingPlayers,
       query: query,
-      excludedPlayerIds:
-          _state.foundPlayerIds,
+      excludedPlayerIds: _state.foundPlayerIds,
       limit: 8,
     );
 
@@ -281,8 +397,7 @@ class GameController extends ChangeNotifier {
   }
 
   bool _isValidMatch(Player player) {
-    return _state.matchingPlayers
-        .any((p) => p.id == player.id);
+    return _state.matchingPlayers.any((p) => p.id == player.id);
   }
 
   void _feedback(
@@ -320,14 +435,12 @@ class GameController extends ChangeNotifier {
     if (!_isValidMatch(player)) {
       await _wrongAnswer(
         player.name,
-        message:
-            '${player.name} bu eşleşmeye uymuyor.',
+        message: '${player.name} bu eşleşmeye uymuyor.',
       );
       return;
     }
 
-    if (roomCode != null &&
-        playerName != null) {
+    if (roomCode != null && playerName != null) {
       final added = await _session!.addFoundPlayer(player.id);
 
       if (!added) {
@@ -338,37 +451,28 @@ class GameController extends ChangeNotifier {
         return;
       }
 
-      // Firebase listener kısa süre gecikirse bile
-      // kendi ekranımız anında güncellensin.
-      final ids =
-          Set<int>.from(_state.foundPlayerIds)
-            ..add(player.id);
+      // Sadece henüz yoksa ekle (çift ekleme engeli)
+      if (!_state.foundPlayerIds.contains(player.id)) {
+        final ids = Set<int>.from(_state.foundPlayerIds)..add(player.id);
+        final found = List<Player>.from(_state.foundPlayers)..add(player);
 
-      final found = List<Player>.from(
-        _state.foundPlayers,
-      )..add(player);
-
-      _state = _state.copyWith(
-        foundPlayerIds: ids,
-        foundPlayers: found,
-        totalFoundCount: ids.length,
-        suggestions: const [],
-      );
+        _state = _state.copyWith(
+          foundPlayerIds: ids,
+          foundPlayers: found,
+          totalFoundCount: ids.length,
+          suggestions: const [],
+        );
+      }
 
       _feedback('Doğru! ✅', true);
       return;
     }
 
-    final ids =
-        Set<int>.from(_state.foundPlayerIds)
-          ..add(player.id);
+    final ids = Set<int>.from(_state.foundPlayerIds)..add(player.id);
 
-    final found =
-        List<Player>.from(_state.foundPlayers)
-          ..add(player);
+    final found = List<Player>.from(_state.foundPlayers)..add(player);
 
-    final completed =
-        ids.length >= _state.matchingPlayers.length;
+    final completed = ids.length >= _state.matchingPlayers.length;
 
     _state = _state.copyWith(
       score: _state.score + 1,
@@ -379,9 +483,7 @@ class GameController extends ChangeNotifier {
     );
 
     _feedback(
-      completed
-          ? 'Tüm oyuncular bulundu! 🎉'
-          : 'Doğru!',
+      completed ? 'Tüm oyuncular bulundu! 🎉' : 'Doğru!',
       true,
     );
   }
@@ -390,8 +492,7 @@ class GameController extends ChangeNotifier {
     String answer, {
     String? message,
   }) async {
-    final key =
-        SearchService.compact(answer);
+    final key = SearchService.compact(answer);
 
     if (_state.wrongAttempts.contains(key)) {
       _feedback(
@@ -401,12 +502,9 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    final attempts =
-        Set<String>.from(_state.wrongAttempts)
-          ..add(key);
+    final attempts = Set<String>.from(_state.wrongAttempts)..add(key);
 
-    if (roomCode != null &&
-        playerName != null) {
+    if (roomCode != null && playerName != null) {
       final newLives = await _session!.decrementLife();
 
       _state = _state.copyWith(
@@ -419,8 +517,7 @@ class GameController extends ChangeNotifier {
 
       _feedback(
         newLives > 0
-            ? '${message ?? 'Yanlış cevap.'} • '
-              'Kalan can: $newLives'
+            ? '${message ?? 'Yanlış cevap.'} • Kalan can: $newLives'
             : 'Yanlış cevap. Canların bitti.',
         false,
       );
@@ -428,8 +525,7 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    final newLives =
-        (_state.lives - 1).clamp(0, 3);
+    final newLives = (_state.lives - 1).clamp(0, 3);
 
     _state = _state.copyWith(
       lives: newLives,
@@ -441,16 +537,14 @@ class GameController extends ChangeNotifier {
 
     _feedback(
       newLives > 0
-          ? '${message ?? 'Yanlış cevap.'} • '
-            'Kalan can: $newLives'
+          ? '${message ?? 'Yanlış cevap.'} • Kalan can: $newLives'
           : 'Yanlış cevap. Canların bitti.',
       false,
     );
   }
 
   Future<void> submitPlayer(Player player) async {
-    if (_state.gameOver ||
-        _state.lives <= 0) {
+    if (_state.gameOver || _state.lives <= 0) {
       return;
     }
 
@@ -468,21 +562,17 @@ class GameController extends ChangeNotifier {
   Future<void> submitAnswer(
     String answer,
   ) async {
-    if (_state.gameOver ||
-        _state.lives <= 0) {
+    if (_state.gameOver || _state.lives <= 0) {
       return;
     }
 
     final trimmed = answer.trim();
     if (trimmed.isEmpty) return;
 
-    // Online oyunda sadece bu maçın ortak oyuncu
-    // havuzunu kullanıyoruz. Global havuza düşmüyoruz.
     final result = SearchService.resolve(
       players: _state.matchingPlayers,
       answer: trimmed,
-      excludedPlayerIds:
-          _state.foundPlayerIds,
+      excludedPlayerIds: _state.foundPlayerIds,
     );
 
     if (result.isFound) {
@@ -490,15 +580,13 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    if (result.status ==
-        ResolveStatus.ambiguous) {
+    if (result.status == ResolveStatus.ambiguous) {
       _state = _state.copyWith(
         suggestions: result.candidates,
       );
 
       _feedback(
-        'Birden fazla oyuncu uyuyor. '
-        'Listeden seç.',
+        'Birden fazla oyuncu uyuyor. Listeden seç.',
         false,
       );
       return;
@@ -506,14 +594,15 @@ class GameController extends ChangeNotifier {
 
     await _wrongAnswer(
       trimmed,
-      message: 'Bu isim bu eşleşmedeki ortak '
-          'oyuncular arasında bulunamadı.',
+      message:
+          'Bu isim bu eşleşmedeki ortak oyuncular arasında bulunamadı.',
     );
   }
 
   Future<void> finishOnlineGame(
-    String reason,
-  ) async {
+    String reason, {
+    String? forcedWinner,
+  }) async {
     if (roomCode == null ||
         playerName == null ||
         _state.gameOver ||
@@ -522,14 +611,29 @@ class GameController extends ChangeNotifier {
     }
 
     _finishRequestSent = true;
+    _reconnectTimer?.cancel();
+    _heartbeatTimer?.cancel();
 
-    final winner = _state.score >
-            _state.opponentScore
-        ? playerName!
-        : _state.opponentScore >
-                _state.score
-            ? 'opponent'
-            : 'draw';
+    late final String winner;
+
+    if (reason == 'lives' || reason == 'disconnect') {
+      // Can biten veya disconnect olan kaybeder → rakip / forcedWinner kazanır
+      if (forcedWinner != null && forcedWinner.isNotEmpty) {
+        winner = forcedWinner;
+      } else if (_opponentName != null && _opponentName!.isNotEmpty) {
+        winner = _opponentName!;
+      } else {
+        winner = playerName!;
+      }
+    } else if (_state.score > _state.opponentScore) {
+      winner = playerName!;
+    } else if (_state.opponentScore > _state.score) {
+      winner = (_opponentName != null && _opponentName!.isNotEmpty)
+          ? _opponentName!
+          : 'opponent';
+    } else {
+      winner = 'draw';
+    }
 
     await _session!.finishGame(
       reason: reason,
@@ -540,20 +644,25 @@ class GameController extends ChangeNotifier {
       gameOver: true,
       gameOverReason: reason,
       finalWinner: winner,
+      waitingForOpponentReconnect: false,
+      reconnectSecondsLeft: 0,
     );
     _gameTimer?.cancel();
     notifyListeners();
   }
 
   Future<void> restartOnlineGame() async {
-    if (roomCode == null ||
-        playerName == null) {
+    if (roomCode == null || playerName == null) {
       return;
     }
 
     _finishRequestSent = false;
+    _opponentName = null;
+    _reconnectTimer?.cancel();
 
     await _session!.resetGame();
+    await _session!.markConnected();
+    _startHeartbeat();
 
     final dur = _session?.durationSeconds ?? 90;
     _state = _state.copyWith(
@@ -569,6 +678,9 @@ class GameController extends ChangeNotifier {
       gameOver: false,
       gameOverReason: null,
       finalWinner: null,
+      opponentConnected: true,
+      waitingForOpponentReconnect: false,
+      reconnectSecondsLeft: 0,
     );
 
     notifyListeners();

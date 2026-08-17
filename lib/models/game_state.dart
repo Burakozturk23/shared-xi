@@ -26,6 +26,11 @@ class GameState {
   final String? feedback;
   final bool feedbackIsSuccess;
 
+  /// Faz 2 – presence / reconnect
+  final bool opponentConnected;
+  final bool waitingForOpponentReconnect;
+  final int reconnectSecondsLeft;
+
   const GameState({
     this.score = 0,
     this.opponentScore = 0,
@@ -44,6 +49,9 @@ class GameState {
     this.wrongAttempts = const {},
     this.feedback,
     this.feedbackIsSuccess = true,
+    this.opponentConnected = true,
+    this.waitingForOpponentReconnect = false,
+    this.reconnectSecondsLeft = 0,
   });
 
   GameState copyWith({
@@ -64,6 +72,9 @@ class GameState {
     Set<String>? wrongAttempts,
     String? feedback,
     bool? feedbackIsSuccess,
+    bool? opponentConnected,
+    bool? waitingForOpponentReconnect,
+    int? reconnectSecondsLeft,
     bool clearFeedback = false,
     bool clearGameOverReason = false,
     bool clearFinalWinner = false,
@@ -89,6 +100,10 @@ class GameState {
       wrongAttempts: wrongAttempts ?? this.wrongAttempts,
       feedback: clearFeedback ? null : (feedback ?? this.feedback),
       feedbackIsSuccess: feedbackIsSuccess ?? this.feedbackIsSuccess,
+      opponentConnected: opponentConnected ?? this.opponentConnected,
+      waitingForOpponentReconnect:
+          waitingForOpponentReconnect ?? this.waitingForOpponentReconnect,
+      reconnectSecondsLeft: reconnectSecondsLeft ?? this.reconnectSecondsLeft,
     );
   }
 }

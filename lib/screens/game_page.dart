@@ -7,6 +7,8 @@ import '../online/room_service.dart';
 import '../widgets/country_badge.dart';
 import '../widgets/network_logo.dart';
 import 'game_results_page.dart';
+import '../online/random_match_page.dart';
+import '../online/online_mode_hub_page.dart';
 
 class GamePage extends StatefulWidget {
   final MatchEntity entity1;
@@ -114,12 +116,23 @@ class _GamePageState extends State<GamePage> {
   }
 
   Future<void> _repeatOnlineGame() async {
+    // Arkadaş odası: aynı odada yeniden başlat
     await _controller.restartOnlineGame();
+  }
+
+  Future<void> _searchAgain() async {
+    // Ranked: hub üzerinden yeni arama
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const RandomMatchPage()),
+      (route) => route.isFirst,
+    );
   }
 
   Future<void> _leaveOnlineRoom() async {
     if (widget.roomCode != null &&
-        widget.playerName != null) {
+        widget.playerName != null &&
+        !widget.isRankedMatch) {
       await RoomService.leaveRoom(
         roomCode: widget.roomCode!,
         playerName: widget.playerName!,
@@ -128,7 +141,14 @@ class _GamePageState extends State<GamePage> {
 
     if (!mounted) return;
 
-    Navigator.of(context).pop();
+    if (widget.isRankedMatch) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const OnlineModeHubPage()),
+        (route) => route.isFirst,
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Widget _buildOnlineResultOverlay(
@@ -154,7 +174,10 @@ class _GamePageState extends State<GamePage> {
             : state.gameOverReason ==
                     'all_found'
                 ? 'Tüm ortak oyuncular bulundu.'
-                : 'Oyun sona erdi.';
+                : state.gameOverReason ==
+                        'disconnect'
+                    ? 'Rakip bağlantısı koptu.'
+                    : 'Oyun sona erdi.';
 
     return Positioned.fill(
       child: ColoredBox(
@@ -216,10 +239,13 @@ class _GamePageState extends State<GamePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed:
-                            _repeatOnlineGame,
-                        child: const Text(
-                          'TEKRAR OYNA',
+                        onPressed: widget.isRankedMatch
+                            ? _searchAgain
+                            : _repeatOnlineGame,
+                        child: Text(
+                          widget.isRankedMatch
+                              ? 'YENİDEN ARA'
+                              : 'TEKRAR OYNA',
                         ),
                       ),
                     ),
@@ -227,10 +253,11 @@ class _GamePageState extends State<GamePage> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed:
-                            _leaveOnlineRoom,
-                        child: const Text(
-                          'ODADAN ÇIK',
+                        onPressed: _leaveOnlineRoom,
+                        child: Text(
+                          widget.isRankedMatch
+                              ? "HUB'A DÖN"
+                              : 'ODADAN ÇIK',
                         ),
                       ),
                     ),
@@ -368,6 +395,11 @@ class _GamePageState extends State<GamePage> {
                 ],
               ),
             ),
+            // Faz 2: reconnect bekleme
+            if (widget.roomCode != null &&
+                state.waitingForOpponentReconnect &&
+                !state.gameOver)
+              _buildReconnectOverlay(state),
             if (widget.roomCode != null &&
                 state.gameOver)
               _buildOnlineResultOverlay(
@@ -675,6 +707,47 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+  Widget _buildReconnectOverlay(GameState state) {
+    return Positioned.fill(
+      child: ColoredBox(
+        color: Colors.black54,
+        child: Center(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.wifi_off,
+                    size: 48,
+                    color: Colors.orange,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Rakip bağlantısı koptu',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Yeniden bağlanması bekleniyor…\n${state.reconnectSecondsLeft} sn',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  const CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 }
 
 class _EntityHeaderTile

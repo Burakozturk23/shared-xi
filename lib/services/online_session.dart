@@ -88,4 +88,41 @@ class OnlineSession {
   int get durationSeconds => isRanked
       ? MatchService.defaultDurationSeconds
       : RoomService.defaultDurationSeconds;
+
+  // ── Faz 2: Presence ──────────────────────────────────────────────
+
+  /// Bağlandı: connected=true + onDisconnect ile otomatik false.
+  Future<void> markConnected() => isRanked
+      ? MatchService.markPlayerConnected(
+          matchId: sessionId,
+          playerUid: playerKey,
+        )
+      : RoomService.markPlayerConnected(
+          roomCode: sessionId,
+          playerName: playerKey,
+        );
+
+  /// Heartbeat (lastSeen güncelle).
+  Future<void> heartbeat() => isRanked
+      ? MatchService.playerHeartbeat(
+          matchId: sessionId,
+          playerUid: playerKey,
+        )
+      : RoomService.playerHeartbeat(
+          roomCode: sessionId,
+          playerName: playerKey,
+        );
+
+  /// Bilerek çıkış / forfeit öncesi connected=false.
+  Future<void> markDisconnected() => isRanked
+      ? MatchService.markPlayerDisconnected(
+          matchId: sessionId,
+          playerUid: playerKey,
+        )
+      : RoomService.markPlayerDisconnected(
+          roomCode: sessionId,
+          playerName: playerKey,
+        );
+
+  static const int reconnectWindowSeconds = 20;
 }
