@@ -64,31 +64,31 @@ class GameState {
     Set<String>? wrongAttempts,
     String? feedback,
     bool? feedbackIsSuccess,
+    bool clearFeedback = false,
+    bool clearGameOverReason = false,
+    bool clearFinalWinner = false,
   }) {
     return GameState(
       score: score ?? this.score,
       opponentScore: opponentScore ?? this.opponentScore,
-      remainingSeconds:
-          remainingSeconds ?? this.remainingSeconds,
+      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       lives: lives ?? this.lives,
       totalFoundCount: totalFoundCount ?? this.totalFoundCount,
       isLoading: isLoading ?? this.isLoading,
       isCompleted: isCompleted ?? this.isCompleted,
       gameOver: gameOver ?? this.gameOver,
-      gameOverReason:
-          gameOverReason ?? this.gameOverReason,
-      finalWinner: finalWinner ?? this.finalWinner,
-      matchingPlayers:
-          matchingPlayers ?? this.matchingPlayers,
+      gameOverReason: clearGameOverReason
+          ? null
+          : (gameOverReason ?? this.gameOverReason),
+      finalWinner:
+          clearFinalWinner ? null : (finalWinner ?? this.finalWinner),
+      matchingPlayers: matchingPlayers ?? this.matchingPlayers,
       suggestions: suggestions ?? this.suggestions,
       foundPlayers: foundPlayers ?? this.foundPlayers,
-      foundPlayerIds:
-          foundPlayerIds ?? this.foundPlayerIds,
-      wrongAttempts:
-          wrongAttempts ?? this.wrongAttempts,
-      feedback: feedback,
-      feedbackIsSuccess:
-          feedbackIsSuccess ?? this.feedbackIsSuccess,
+      foundPlayerIds: foundPlayerIds ?? this.foundPlayerIds,
+      wrongAttempts: wrongAttempts ?? this.wrongAttempts,
+      feedback: clearFeedback ? null : (feedback ?? this.feedback),
+      feedbackIsSuccess: feedbackIsSuccess ?? this.feedbackIsSuccess,
     );
   }
 }

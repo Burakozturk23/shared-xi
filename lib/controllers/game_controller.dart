@@ -7,6 +7,8 @@ import '../models/game_state.dart';
 import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../online/room_service.dart';
+import '../services/online_session.dart';
+import '../services/match_service.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
@@ -16,6 +18,7 @@ class GameController extends ChangeNotifier {
   final MatchEntity entity2;
   final String? roomCode;
   final String? playerName;
+  final bool isRankedMatch;
 
   StreamSubscription<DatabaseEvent>? _gameSubscription;
   StreamSubscription<DatabaseEvent>? _playersSubscription;
@@ -26,11 +29,14 @@ class GameController extends ChangeNotifier {
   int _serverTimeOffsetMs = 0;
   bool _finishRequestSent = false;
 
+  OnlineSession? _session;
+
   GameController({
     required this.entity1,
     required this.entity2,
     this.roomCode,
     this.playerName,
+    this.isRankedMatch = false,
   });
 
   GameState _state = const GameState();
@@ -54,17 +60,24 @@ class GameController extends ChangeNotifier {
 
     if (roomCode == null || playerName == null) return;
 
-    _serverTimeOffsetMs =
-        await RoomService.getServerTimeOffset();
+    _session = isRankedMatch
+        ? OnlineSession.ranked(
+            matchId: roomCode!,
+            playerUid: playerName!,
+          )
+        : OnlineSession.friend(
+            roomCode: roomCode!,
+            playerName: playerName!,
+          );
 
-    await RoomService.initializeGameForRoom(roomCode!);
+    _serverTimeOffsetMs = await _session!.getServerTimeOffset();
+    await _session!.initializeGame();
 
     _gameSubscription =
-        RoomService.watchGame(roomCode!).listen(_handleGameEvent);
+        _session!.watchGame().listen(_handleGameEvent);
 
     _playersSubscription =
-        RoomService.watchPlayers(roomCode!)
-            .listen(_handlePlayersEvent);
+        _session!.watchPlayers().listen(_handlePlayersEvent);
   }
 
   void _handleGameEvent(DatabaseEvent event) {
@@ -315,12 +328,7 @@ class GameController extends ChangeNotifier {
 
     if (roomCode != null &&
         playerName != null) {
-      final added =
-          await RoomService.addFoundPlayer(
-        roomCode: roomCode!,
-        playerName: playerName!,
-        playerId: player.id,
-      );
+      final added = await _session!.addFoundPlayer(player.id);
 
       if (!added) {
         _feedback(
@@ -399,11 +407,7 @@ class GameController extends ChangeNotifier {
 
     if (roomCode != null &&
         playerName != null) {
-      final newLives =
-          await RoomService.decrementPlayerLife(
-        roomCode: roomCode!,
-        playerName: playerName!,
-      );
+      final newLives = await _session!.decrementLife();
 
       _state = _state.copyWith(
         lives: newLives,
@@ -527,8 +531,7 @@ class GameController extends ChangeNotifier {
             ? 'opponent'
             : 'draw';
 
-    await RoomService.finishGame(
-      roomCode: roomCode!,
+    await _session!.finishGame(
       reason: reason,
       winner: winner,
     );
@@ -550,12 +553,13 @@ class GameController extends ChangeNotifier {
 
     _finishRequestSent = false;
 
-    await RoomService.resetGame(roomCode!);
+    await _session!.resetGame();
 
+    final dur = _session?.durationSeconds ?? 90;
     _state = _state.copyWith(
       score: 0,
       opponentScore: 0,
-      remainingSeconds: 60,
+      remainingSeconds: dur,
       lives: 3,
       foundPlayers: const [],
       foundPlayerIds: const {},

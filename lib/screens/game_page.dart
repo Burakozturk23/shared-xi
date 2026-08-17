@@ -13,6 +13,7 @@ class GamePage extends StatefulWidget {
   final MatchEntity entity2;
   final String? roomCode;
   final String? playerName;
+  final bool isRankedMatch;
 
   const GamePage({
     super.key,
@@ -20,6 +21,7 @@ class GamePage extends StatefulWidget {
     required this.entity2,
     this.roomCode,
     this.playerName,
+    this.isRankedMatch = false,
   });
 
   @override
@@ -42,6 +44,7 @@ class _GamePageState extends State<GamePage> {
       entity2: widget.entity2,
       roomCode: widget.roomCode,
       playerName: widget.playerName,
+      isRankedMatch: widget.isRankedMatch,
     )..addListener(_onControllerChanged);
 
     _controller.initialize();
