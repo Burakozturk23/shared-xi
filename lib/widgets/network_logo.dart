@@ -38,7 +38,7 @@ class NetworkLogo extends StatelessWidget {
       fadeOutDuration: const Duration(milliseconds: 100),
       memCacheWidth: (width * 3).round().clamp(48, 512),
       memCacheHeight: (height * 3).round().clamp(48, 512),
-      placeholder: (_, __) => SizedBox(
+      placeholder: (_, _) => SizedBox(
         width: width,
         height: height,
         child: Center(
@@ -49,7 +49,7 @@ class NetworkLogo extends StatelessWidget {
           ),
         ),
       ),
-      errorWidget: (_, __, ___) => _fallback(),
+      errorWidget: (_, _, _) => _fallback(),
     );
 
     if (circular) {

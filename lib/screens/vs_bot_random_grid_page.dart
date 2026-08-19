@@ -587,10 +587,18 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
   }
 
   Widget _result() {
-    final draw = _c.userScore == _c.botScore;
-    final title = draw
-        ? 'Berabere'
-        : (_c.userScore > _c.botScore ? 'Kazandın! 🏆' : 'Bot Kazandı');
+    final String title;
+    if (_c.lineWinner == 1) {
+      title = 'Üçlü! Kazandın 🏆';
+    } else if (_c.lineWinner == 2) {
+      title = 'Bot üçlü yaptı';
+    } else if (_c.userScore == _c.botScore) {
+      title = 'Berabere';
+    } else if (_c.userScore > _c.botScore) {
+      title = 'Kazandın! 🏆';
+    } else {
+      title = 'Bot Kazandı';
+    }
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(title: const Text('Rastgele Grid Bitti')),

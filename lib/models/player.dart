@@ -1,3 +1,4 @@
+import '../utils/country_names.dart';
 import 'career_stop.dart';
 
 class Player {
@@ -53,7 +54,9 @@ class Player {
     return Player(
       id: (json['id'] as num).toInt(),
       name: json['name']?.toString() ?? '',
-      countries: countriesJson.map((e) => e.toString()).toList(),
+      countries: CountryNames.canonicalList(
+        countriesJson.map((e) => e.toString()),
+      ),
       position: json['position']?.toString() ?? '',
       detailedPosition: json['detailedPosition']?.toString() ?? '',
 

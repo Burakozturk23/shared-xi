@@ -30,7 +30,7 @@ class LeagueBadge extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.contain,
-        errorBuilder: (_, error, __) {
+        errorBuilder: (_, error, _) {
           // Debug: asset yolu yanlış veya pubspec'te yok
           debugPrint('LeagueBadge asset fail: $asset for "$league" -> $error');
           return _fallback();

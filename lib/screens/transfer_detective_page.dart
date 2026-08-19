@@ -195,21 +195,39 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
               ],
             ),
             const SizedBox(height: 12),
+            // Ayrıldığı kulüp
             Row(
               children: [
-                _clubLogo(from, size: 32),
-                const SizedBox(width: 8),
+                _clubLogo(from, size: 40),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    '${from.league.isNotEmpty ? from.league : from.country}'
-                    '  →  '
-                    '${to.league.isNotEmpty ? to.league : to.country}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Ayrıldığı kulüp',
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      Text(
+                        from.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (from.league.isNotEmpty || from.country.isNotEmpty)
+                        Text(
+                          from.league.isNotEmpty ? from.league : from.country,
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
+            const Center(
+              child: Icon(Icons.arrow_downward, size: 18, color: Colors.grey),
+            ),
+            const SizedBox(height: 10),
+            // Gittiği kulüp
             Row(
               children: [
                 _clubLogo(to, size: 40),
@@ -218,8 +236,19 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Gittiği kulüp', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                      Text(to.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Gittiği kulüp',
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      Text(
+                        to.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (to.league.isNotEmpty || to.country.isNotEmpty)
+                        Text(
+                          to.league.isNotEmpty ? to.league : to.country,
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
                     ],
                   ),
                 ),

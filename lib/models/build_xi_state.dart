@@ -21,7 +21,7 @@ class BuildXiScoreBreakdown {
 }
 
 class BuildXiState {
-  static const int budgetLimit = 100;
+  static const int budgetLimit = 160;
 
   final bool isLoading;
   final BuildXiTheme? theme;

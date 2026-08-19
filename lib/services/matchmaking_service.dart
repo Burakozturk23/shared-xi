@@ -131,7 +131,7 @@ class MatchmakingService {
       await cancelSearch(silent: true);
       onUpdate(const MatchmakingState(
         status: MatchmakingStatus.timeout,
-        message: 'Rakip bulunamadı. Tekrar dene.',
+        message: 'Şu an uygun rakip yok. Tekrar deneyebilir veya arkadaşınla oynayabilirsin.',
       ));
     });
   }
@@ -256,7 +256,7 @@ class MatchmakingService {
       _matchedHandled = false;
       onUpdate(MatchmakingState(
         status: MatchmakingStatus.error,
-        message: 'Maç yüklenemedi. Tekrar dene.',
+        message: 'Maç yüklenemedi. Biraz bekleyip tekrar dene.',
         matchId: matchId,
       ));
       return;

@@ -4,6 +4,7 @@ import '../controllers/game_controller.dart';
 import '../models/game_state.dart';
 import '../models/match_entity.dart';
 import '../online/room_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/country_badge.dart';
 import '../widgets/network_logo.dart';
 import 'game_results_page.dart';
@@ -121,10 +122,18 @@ class _GamePageState extends State<GamePage> {
   }
 
   Future<void> _searchAgain() async {
-    // Ranked: hub üzerinden yeni arama
+    // Ranked: hemen yeni arama (isim sorulmadan autoStart)
     if (!mounted) return;
+
+    final displayName = AuthService.currentUser?.displayName;
+
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const RandomMatchPage()),
+      MaterialPageRoute(
+        builder: (_) => RandomMatchPage(
+          autoStart: true,
+          initialDisplayName: displayName,
+        ),
+      ),
       (route) => route.isFirst,
     );
   }
@@ -151,6 +160,43 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
+
+  /// Sonucu oyuncuya göre net açıkla (can / disconnect / süre).
+  String _resultReason(
+    GameState state, {
+    required bool won,
+    required bool isDraw,
+  }) {
+    switch (state.gameOverReason) {
+      case 'timeout':
+        if (isDraw) {
+          return 'Süre doldu — skorlar eşit, berabere.';
+        }
+        return won
+            ? 'Süre doldu — daha fazla doğru cevap verdin.'
+            : 'Süre doldu — rakip daha fazla buldu.';
+      case 'lives':
+        return won
+            ? 'Rakibin canı tükendi — sen kazandın.'
+            : 'Canların tükendi — maçı kaybettin.';
+      case 'disconnect':
+        return won
+            ? 'Rakip bağlantısı koptu — sen kazandın.'
+            : 'Bağlantın koptuğu için maç sona erdi.';
+      case 'all_found':
+        if (isDraw) {
+          return 'Tüm ortak oyuncular bulundu — berabere.';
+        }
+        return won
+            ? 'Tüm ortaklar bulundu — sen öndesin.'
+            : 'Tüm ortaklar bulundu — rakip önde.';
+      case 'manual':
+        return 'Oyun manuel olarak bitirildi.';
+      default:
+        return 'Oyun sona erdi.';
+    }
+  }
+
   Widget _buildOnlineResultOverlay(
     GameState state,
   ) {
@@ -166,18 +212,7 @@ class _GamePageState extends State<GamePage> {
             ? 'KAZANDIN! 🎉'
             : 'KAYBETTİN';
 
-    final reason = state.gameOverReason ==
-            'timeout'
-        ? 'Süre doldu.'
-        : state.gameOverReason == 'lives'
-            ? 'Bir oyuncunun canı tükendi.'
-            : state.gameOverReason ==
-                    'all_found'
-                ? 'Tüm ortak oyuncular bulundu.'
-                : state.gameOverReason ==
-                        'disconnect'
-                    ? 'Rakip bağlantısı koptu.'
-                    : 'Oyun sona erdi.';
+    final reason = _resultReason(state, won: won, isDraw: isDraw);
 
     return Positioned.fill(
       child: ColoredBox(
@@ -191,22 +226,33 @@ class _GamePageState extends State<GamePage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      '🏆',
-                      style: TextStyle(
-                        fontSize: 50,
-                      ),
+                    Text(
+                      isDraw
+                          ? '🤝'
+                          : won
+                              ? '🏆'
+                              : '💔',
+                      style: const TextStyle(fontSize: 50),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'OYUN BİTTİ',
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
+                        color: isDraw
+                            ? null
+                            : won
+                                ? Colors.greenAccent
+                                : Colors.redAccent,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(reason),
+                    Text(
+                      reason,
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment:
@@ -222,18 +268,10 @@ class _GamePageState extends State<GamePage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Toplam bulunan oyuncu: '
-                      '${state.totalFoundCount}',
+                      'Ortak bulunan: ${state.totalFoundCount}',
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
@@ -244,7 +282,7 @@ class _GamePageState extends State<GamePage> {
                             : _repeatOnlineGame,
                         child: Text(
                           widget.isRankedMatch
-                              ? 'YENİDEN ARA'
+                              ? 'YENİ RAKİP ARA'
                               : 'TEKRAR OYNA',
                         ),
                       ),
@@ -256,7 +294,7 @@ class _GamePageState extends State<GamePage> {
                         onPressed: _leaveOnlineRoom,
                         child: Text(
                           widget.isRankedMatch
-                              ? "HUB'A DÖN"
+                              ? 'ANA MENÜ'
                               : 'ODADAN ÇIK',
                         ),
                       ),
@@ -325,7 +363,7 @@ class _GamePageState extends State<GamePage> {
 
     final progress = total == 0
         ? 0.0
-        : (state.foundPlayers.length / total)
+        : (state.totalFoundCount / total)
             .clamp(0.0, 1.0);
 
     return Scaffold(
@@ -465,7 +503,7 @@ class _GamePageState extends State<GamePage> {
               children: [
                 Text(
                   'Bulunan: '
-                  '${state.foundPlayers.length}/$total',
+                  '${state.totalFoundCount}/$total',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight:

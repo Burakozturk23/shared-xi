@@ -6,6 +6,9 @@ import '../models/daily_challenge_state.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/daily_challenge_service.dart';
+import '../services/daily_share_helper.dart';
+import '../services/daily_leaderboard_service.dart';
+import '../services/auth_service.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
 
@@ -21,6 +24,10 @@ class DailyChallengeController extends ChangeNotifier {
   Timer? _clockTimer;
   Timer? _feedbackTimer;
 
+  /// Paylaşım / UI için son sıralama
+  int? lastRank;
+  int? lastTotalPlayers;
+
   DateTime get _day => playDate ?? DateTime.now();
 
   Future<void> initialize() async {
@@ -29,9 +36,7 @@ class DailyChallengeController extends ChangeNotifier {
     final already = await DailyChallengeService.isCompletedOn(_day);
     final streak = await DailyChallengeService.getStreak();
 
-    final players = Repository.instance.players;
-    final matchingPlayers = GameService.matchingPlayers(
-      players: players,
+    final matchingPlayers = DailyChallengeService.qualityMatchingPlayers(
       entity1: matchup.entity1,
       entity2: matchup.entity2,
     );
@@ -253,6 +258,23 @@ class DailyChallengeController extends ChangeNotifier {
       playDate: _day,
     );
 
+    try {
+      await DailyLeaderboardService.submitScore(
+        date: _day,
+        score: _state.score,
+        successRate: rate,
+        secondsLeft: _state.secondsLeft,
+        streak: result.streak,
+      );
+      final board = await DailyLeaderboardService.fetch(date: _day);
+      lastTotalPlayers = board.length;
+      final uid = AuthService.uid;
+      if (uid != null) {
+        final idx = board.indexWhere((e) => e.uid == uid);
+        lastRank = idx >= 0 ? idx + 1 : null;
+      }
+    } catch (_) {}
+
     _state = _state.copyWith(
       isFinished: true,
       streak: result.streak,
@@ -262,13 +284,20 @@ class DailyChallengeController extends ChangeNotifier {
   }
 
   String shareText() {
-    return DailyChallengeService.buildShareText(
-      label: _state.label.isNotEmpty
-          ? _state.label
-          : '${_state.entity1?.displayName} vs ${_state.entity2?.displayName}',
+    final label = _state.label.isNotEmpty
+        ? _state.label
+        : '${_state.entity1?.displayName} vs ${_state.entity2?.displayName}';
+    final target = _state.theme?.targetFinds ?? _state.matchingPlayers.length;
+    return DailyShareHelper.buildText(
+      label: label,
       score: _state.score,
+      target: target,
       successRate: _state.successRate,
       streak: _state.streak,
+      themeBadge: _state.theme?.badgeLabel,
+      rank: lastRank,
+      totalPlayers: lastTotalPlayers,
+      dateKey: DailyChallengeService.dateKeyFor(_day),
     );
   }
 }

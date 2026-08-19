@@ -35,9 +35,6 @@ class BracketDefinition {
     required this.seeds,
   });
 
-  /// 32 → 31, 64 → 63
   int get totalDecisions => seeds.length - 1;
-
-  /// 32 veya 64 (2'nin kuvveti olmalı)
   int get fieldSize => seeds.length;
 }

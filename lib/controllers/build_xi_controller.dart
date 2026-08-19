@@ -203,7 +203,7 @@ class BuildXiController extends ChangeNotifier {
     }
     final continentBonus = continents.length >= 3 ? 10 : 0;
 
-    final budgetBonus = _state.usedBudget <= 80 ? 15 : 0;
+    final budgetBonus = _state.usedBudget <= 120 ? 15 : 0;
 
     _state = _state.copyWith(
       isFinished: true,

@@ -19,7 +19,6 @@ class AuthService {
 
   static Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  /// Uygulama açılışında çağır. Giriş yoksa anonymous sign-in.
   static Future<User> ensureSignedIn({String? displayName}) async {
     final existing = _auth.currentUser;
     if (existing != null) {
@@ -41,10 +40,23 @@ class AuthService {
   }
 
   static Future<void> _upsertUserProfile(User user, String displayName) async {
-    await _db.ref('users/${user.uid}').update({
+    final ref = _db.ref('users/${user.uid}');
+    final snap = await ref.get();
+    if (snap.exists) {
+      await ref.update({
+        'displayName': displayName,
+        'updatedAt': ServerValue.timestamp,
+      });
+      return;
+    }
+    await ref.set({
       'displayName': displayName,
-      'updatedAt': ServerValue.timestamp,
+      'wins': 0,
+      'losses': 0,
+      'draws': 0,
+      'elo': 1000,
       'createdAt': ServerValue.timestamp,
+      'updatedAt': ServerValue.timestamp,
     });
   }
 

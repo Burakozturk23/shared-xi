@@ -18,6 +18,8 @@ class VsBotGridController extends ChangeNotifier {
   final List<int> owners = List.filled(9, 0);
   int userScore = 0;
   int botScore = 0;
+  /// 1 user, 2 bot, 0 none (skorla biter)
+  int lineWinner = 0;
   String? feedback;
   bool feedbackOk = true;
 
@@ -81,6 +83,15 @@ class VsBotGridController extends ChangeNotifier {
     feedback = 'Doğru! +1';
     feedbackOk = true;
 
+    if (_hasLine(1)) {
+      lineWinner = 1;
+      turn = VsBotGridTurn.gameOver;
+      feedback = 'Üçlü tamam! Kazandın 🏆';
+      _safeNotify();
+      _scheduleFeedbackClear();
+      return true;
+    }
+
     if (_boardFull()) {
       turn = VsBotGridTurn.gameOver;
       _safeNotify();
@@ -116,6 +127,15 @@ class VsBotGridController extends ChangeNotifier {
     grid.closeCell();
     feedback = 'Doğru! +1';
     feedbackOk = true;
+
+    if (_hasLine(1)) {
+      lineWinner = 1;
+      turn = VsBotGridTurn.gameOver;
+      feedback = 'Üçlü tamam! Kazandın 🏆';
+      _safeNotify();
+      _scheduleFeedbackClear();
+      return true;
+    }
 
     if (_boardFull()) {
       turn = VsBotGridTurn.gameOver;
@@ -170,17 +190,46 @@ class VsBotGridController extends ChangeNotifier {
   void _botMove(List<int> emptyIndexes) {
     if (_disposed || turn != VsBotGridTurn.bot) return;
 
-    final shuffled = emptyIndexes..shuffle(_random);
     int? chosenIndex;
     Player? chosenPlayer;
 
-    for (final index in shuffled) {
+    // 1) Kazanabilecek hücre
+    for (final index in emptyIndexes) {
       if (owners[index] != 0) continue;
+      if (!_wouldCompleteLine(index, 2)) continue;
       final player = _findAnyMatch(index);
       if (player != null) {
         chosenIndex = index;
         chosenPlayer = player;
         break;
+      }
+    }
+
+    // 2) Kullanıcının üçlüsünü engelle
+    if (chosenIndex == null) {
+      for (final index in emptyIndexes) {
+        if (owners[index] != 0) continue;
+        if (!_wouldCompleteLine(index, 1)) continue;
+        final player = _findAnyMatch(index);
+        if (player != null) {
+          chosenIndex = index;
+          chosenPlayer = player;
+          break;
+        }
+      }
+    }
+
+    // 3) Rastgele uygun hücre
+    if (chosenIndex == null) {
+      final shuffled = List<int>.from(emptyIndexes)..shuffle(_random);
+      for (final index in shuffled) {
+        if (owners[index] != 0) continue;
+        final player = _findAnyMatch(index);
+        if (player != null) {
+          chosenIndex = index;
+          chosenPlayer = player;
+          break;
+        }
       }
     }
 
@@ -194,6 +243,15 @@ class VsBotGridController extends ChangeNotifier {
     grid.assignPlayer(chosenIndex, chosenPlayer);
     owners[chosenIndex] = 2;
     botScore++;
+
+    if (_hasLine(2)) {
+      lineWinner = 2;
+      turn = VsBotGridTurn.gameOver;
+      _setFeedback('Bot üçlü yaptı: ${chosenPlayer.name}', false);
+      _safeNotify();
+      return;
+    }
+
     _setFeedback('Bot doldurdu: ${chosenPlayer.name}', false);
 
     if (_boardFull()) {
@@ -220,6 +278,43 @@ class VsBotGridController extends ChangeNotifier {
 
     if (candidates.isEmpty) return null;
     return candidates[_random.nextInt(candidates.length)];
+  }
+
+  static const List<List<int>> _lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  bool _hasLine(int owner) {
+    for (final line in _lines) {
+      if (line.every((i) => owners[i] == owner)) return true;
+    }
+    return false;
+  }
+
+  /// index boş varsayılır; owner oraya konursa üçlü olur mu?
+  bool _wouldCompleteLine(int index, int owner) {
+    for (final line in _lines) {
+      if (!line.contains(index)) continue;
+      var count = 0;
+      for (final i in line) {
+        if (i == index) continue;
+        if (owners[i] == owner) {
+          count++;
+        } else if (owners[i] != 0) {
+          count = -99;
+          break;
+        }
+      }
+      if (count == 2) return true;
+    }
+    return false;
   }
 
   bool _boardFull() => owners.every((o) => o != 0);

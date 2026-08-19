@@ -6,7 +6,7 @@ const Map<String, Continent> countryContinents = {
   'Netherlands': Continent.europe, 'Belgium': Continent.europe, 'Croatia': Continent.europe,
   'Serbia': Continent.europe, 'Poland': Continent.europe, 'Sweden': Continent.europe,
   'Denmark': Continent.europe, 'Switzerland': Continent.europe, 'Austria': Continent.europe,
-  'Wales': Continent.europe, 'Scotland': Continent.europe, 'Türkiye': Continent.europe,
+  'Wales': Continent.europe, 'Scotland': Continent.europe, 'Turkey': Continent.europe, 'Türkiye': Continent.europe,
   'Ukraine': Continent.europe, 'Russia': Continent.europe, 'Norway': Continent.europe,
   'Bosnia-Herzegovina': Continent.europe, 'Albania': Continent.europe,
   'North Macedonia': Continent.europe, 'Montenegro': Continent.europe,

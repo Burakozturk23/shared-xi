@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'online_lobby_page.dart';
-import 'random_match_page.dart';
+import '../services/auth_service.dart';
+import '../services/profile_service.dart';
+import 'online_friends_mode_page.dart';
+import 'online_ranked_mode_page.dart';
 
-/// Online ana seçim: Arkadaş / Rastgele
+/// Online ana menü: 2 yol + profil.
 class OnlineModeHubPage extends StatelessWidget {
   const OnlineModeHubPage({super.key});
 
@@ -14,16 +16,18 @@ class OnlineModeHubPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          const _ProfileCard(),
+          const SizedBox(height: 24),
           _card(
             context,
-            icon: Icons.casino_outlined,
+            icon: Icons.public,
             color: const Color(0xFFFFB300),
-            title: 'Rastgele Maç',
-            subtitle: 'Otomatik rakip bul · takımlar sistem seçer',
+            title: 'Rastgele eşleş',
+            subtitle: 'Mod seç · otomatik rakip · Elo sayılır',
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const RandomMatchPage()),
+                MaterialPageRoute(builder: (_) => const OnlineRankedModePage()),
               );
             },
           ),
@@ -32,12 +36,12 @@ class OnlineModeHubPage extends StatelessWidget {
             context,
             icon: Icons.group_outlined,
             color: const Color(0xFF26C6DA),
-            title: 'Arkadaşlarınla Oyna',
-            subtitle: 'Oda kodu ile özel maç',
+            title: 'Arkadaşlarınla oyna',
+            subtitle: 'Mod seç · oda kodu · Elo sayılmaz',
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const OnlineLobbyPage()),
+                MaterialPageRoute(builder: (_) => const OnlineFriendsModePage()),
               );
             },
           ),
@@ -59,7 +63,7 @@ class OnlineModeHubPage extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Row(
@@ -81,20 +85,202 @@ class OnlineModeHubPage extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w700,
                         fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: const TextStyle(fontSize: 13)),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right),
+              Icon(Icons.chevron_right, color: Theme.of(context).hintColor),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileCard extends StatelessWidget {
+  const _ProfileCard();
+
+  Future<void> _editName(BuildContext context, String current) async {
+    final controller = TextEditingController(text: current);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Görünen ad'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Adın',
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (_) => Navigator.pop(ctx, true),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Kaydet'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await AuthService.setDisplayName(controller.text);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<UserProfile?>(
+      stream: ProfileService.watchMyProfile(),
+      builder: (context, snap) {
+        final p = snap.data;
+        final name = p?.displayName ?? '…';
+        final w = p?.wins ?? 0;
+        final l = p?.losses ?? 0;
+        final d = p?.draws ?? 0;
+        final history = p?.recentMatches ?? const <MatchHistoryEntry>[];
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 22,
+                      child: Icon(Icons.person),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            'Elo ${p?.elo ?? 1000}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(context).hintColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'İsmi düzenle',
+                      onPressed: () => _editName(context, name),
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _stat('G', w, Colors.greenAccent),
+                    _stat('M', l, Colors.redAccent),
+                    _stat('B', d, Colors.amber),
+                  ],
+                ),
+                if (history.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Son maçlar',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                  const SizedBox(height: 6),
+                  ...history.take(5).map((e) {
+                    final delta = e.eloDelta;
+                    final deltaStr = delta == null
+                        ? ''
+                        : (delta >= 0 ? '  +$delta' : '  $delta');
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 24,
+                            child: Text(
+                              e.resultLabel,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: e.result == RankedResult.win
+                                    ? Colors.greenAccent
+                                    : (e.result == RankedResult.loss
+                                        ? Colors.redAccent
+                                        : Colors.amber),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              e.opponentName ?? 'Rakip',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (e.myScore != null && e.opponentScore != null)
+                            Text('${e.myScore}-${e.opponentScore}  '),
+                          Text(
+                            deltaStr,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: (delta ?? 0) >= 0
+                                  ? Colors.greenAccent
+                                  : Colors.redAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _stat(String label, int value, Color color) {
+    return Column(
+      children: [
+        Text(
+          '$value',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: color,
+          ),
+        ),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
     );
   }
 }

@@ -96,39 +96,39 @@ _sliverModeList(const [
             _sectionHeader('Klasik modlar'),
             _sliverModeList(const [
               _ModeItem(
-              title: 'Bot’a Karşı',
+              title: 'Vs Bot',
               subtitle: 'Takım yarışı · Grid · Çinko · Beşler',
               icon: Icons.smart_toy_rounded,
               accent:Color(0xFFE91E63),
               page: VsBotModeSelectionPage(),
               ),
               _ModeItem(
-                title: 'Seri Modu',
+                title: 'Burst',
                 subtitle: 'Oyuncu bilgini farklı modlarla test et',
                 icon: Icons.bolt_rounded,
                 page: EndlessModeSelectionPage(),
               ),
               _ModeItem(
-                title: 'Zincir',
+                title: 'Chain',
                 subtitle: 'Kulüpler arasında oyuncu zinciri kur',
                 icon: Icons.link_rounded,
                 page:  ChainModeSelectionPage(),
               ),
           
               _ModeItem(
-                title: 'Sahte Kulüp',
+                title: 'Fake Club',
                 subtitle: 'Oynamadığı kulübü bul',
                 icon: Icons.wrong_location_rounded,
                 page: OddClubModeSelectionPage(),
               ),
               _ModeItem(
-  title: 'O mu Bu mu?',
-  subtitle: 'Futbolcu / takım zirve savaşları',
-  icon: Icons.balance_rounded,
-  accent: Color(0xFFFFB300),
-  page: ThisOrThatModeSelectionPage(),
-),
-            ]),
+               title: 'This or That?',
+                subtitle: 'Futbolcu / takım zirve savaşları',
+                icon: Icons.balance_rounded,
+                accent: Color(0xFFFFB300),
+                page: ThisOrThatModeSelectionPage(),
+                ),
+               ]),
 
             _sectionHeader('Zorlayıcı'),
             _sliverModeList(const [
@@ -145,7 +145,7 @@ _sliverModeList(const [
                 page: CareerPuzzlePage(),
               ),
               _ModeItem(
-                title: 'Körlemesine Sıralama',
+                title: 'Blind Ranking',
                 subtitle: 'Gelen oyuncuyu anında sırala',
                 icon: Icons.leaderboard_rounded,
                 page: BlindRankingPage(),
@@ -164,7 +164,7 @@ _sliverModeList(const [
               ),
               _ModeItem(
                 title: 'Build XI',
-                subtitle: 'Tema seç, 100 puanla kadro kur',
+                subtitle: 'Tema seç,kadro kur',
                 icon: Icons.groups_rounded,
                 page: BuildXiThemeSelectionPage(),
               ),

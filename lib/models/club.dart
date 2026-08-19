@@ -1,3 +1,4 @@
+import '../utils/country_names.dart';
 class Club {
   final int id;
   final String name;
@@ -18,7 +19,7 @@ class Club {
       id: (json['id'] as num).toInt(),
       name: json['name']?.toString() ?? '',
       league: json['league']?.toString() ?? '',
-      country: json['country']?.toString() ?? '',
+      country: CountryNames.canonical(json['country']?.toString() ?? ''),
       logo: json['logo']?.toString() ?? '',
     );
   }

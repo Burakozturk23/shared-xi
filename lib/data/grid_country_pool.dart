@@ -17,7 +17,7 @@ const List<String> gridCountryPool = [
   'Nigeria',
   'Senegal',
   'Morocco',
-  'Türkiye',
+  'Turkey',
   'Serbia',
   'Poland',
   'Sweden',

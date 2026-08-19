@@ -19,6 +19,7 @@ class VsBotRandomGridController extends ChangeNotifier {
   final List<int> owners = List.filled(9, 0);
   int userScore = 0;
   int botScore = 0;
+  int lineWinner = 0;
   String? feedback;
   bool feedbackOk = true;
 
@@ -87,6 +88,14 @@ class VsBotRandomGridController extends ChangeNotifier {
     grid.assignPlayer(index, resolved);
     owners[index] = 1;
     userScore++;
+    if (_hasLine(1)) {
+      lineWinner = 1;
+      turn = VsBotRandomTurn.gameOver;
+      feedback = 'Üçlü tamam! Kazandın 🏆';
+      feedbackOk = true;
+      _safeNotify();
+      return true;
+    }
     clearSuggestions();
     _setFeedback('Doğru! +1', true);
     _safeNotify();
@@ -127,6 +136,14 @@ void userGeneratePair() {
     grid.placeAtAnchor(anchorIndex, rowClub: rowClub, colClub: colClub);
     owners[anchorIndex] = 1;
     userScore++;
+    if (_hasLine(1)) {
+      lineWinner = 1;
+      turn = VsBotRandomTurn.gameOver;
+      feedback = 'Üçlü tamam! Kazandın 🏆';
+      feedbackOk = true;
+      _safeNotify();
+      return;
+    }
     _setFeedback('Yerleştirildi! +1', true);
     _safeNotify();
     if (_boardFull()) {
@@ -151,6 +168,14 @@ void userGeneratePair() {
     grid.assignPlayer(index, player);
     owners[index] = 1;
     userScore++;
+    if (_hasLine(1)) {
+      lineWinner = 1;
+      turn = VsBotRandomTurn.gameOver;
+      feedback = 'Üçlü tamam! Kazandın 🏆';
+      feedbackOk = true;
+      _safeNotify();
+      return true;
+    }
     _setFeedback('Doğru! +1', true);
     _safeNotify();
     if (_boardFull()) {
@@ -199,6 +224,13 @@ void userGeneratePair() {
         grid.assignPlayer(i, player);
         owners[i] = 2;
         botScore++;
+        if (_hasLine(2)) {
+          lineWinner = 2;
+          turn = VsBotRandomTurn.gameOver;
+          _setFeedback('Bot üçlü yaptı: ${player.name}', false);
+          _safeNotify();
+          return;
+        }
         _setFeedback('Bot doldurdu: ${player.name}', false);
         _finishBotTurn();
         return;
@@ -251,6 +283,38 @@ void userGeneratePair() {
         .toList();
     if (list.isEmpty) return null;
     return list[_random.nextInt(list.length)];
+  }
+
+
+  static const _lines = <List<int>>[
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6],
+  ];
+
+  bool _hasLine(int owner) {
+    for (final line in _lines) {
+      if (line.every((i) => owners[i] == owner)) return true;
+    }
+    return false;
+  }
+
+  bool _wouldCompleteLine(int index, int owner) {
+    for (final line in _lines) {
+      if (!line.contains(index)) continue;
+      var count = 0;
+      for (final i in line) {
+        if (i == index) continue;
+        if (owners[i] == owner) {
+          count++;
+        } else if (owners[i] != 0) {
+          count = -99;
+          break;
+        }
+      }
+      if (count == 2) return true;
+    }
+    return false;
   }
 
   bool _boardFull() => owners.every((o) => o != 0) || puzzle.isFinished;

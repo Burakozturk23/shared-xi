@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/daily_challenge_service.dart';
+import '../widgets/daily_share_card.dart';
+import '../widgets/daily_share_sheet.dart';
+import 'daily_leaderboard_page.dart';
+import 'package:flutter/services.dart';
 
 import '../controllers/daily_challenge_controller.dart';
 import '../models/daily_challenge_state.dart';
@@ -382,6 +387,17 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                           .toList(),
                     ),
                   const SizedBox(height: 24),
+                  if (_controller.lastRank != null) ...[
+                    Text(
+                      'Sıralama: #${_controller.lastRank}'
+                      '${_controller.lastTotalPlayers != null ? ' / ${_controller.lastTotalPlayers}' : ''}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -389,17 +405,46 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                       icon: const Icon(Icons.share),
                       label: const Text('SONUCU PAYLAŞ'),
                       onPressed: () async {
+                        final st = _controller.state;
                         final text = _controller.shareText();
-                        await Clipboard.setData(ClipboardData(text: text));
-                        if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Paylaşım metni panoya kopyalandı.'),
+                        final target = st.theme?.targetFinds ??
+                            st.matchingPlayers.length;
+                        await showDailyShareSheet(
+                          context,
+                          shareText: text,
+                          card: DailyShareCard(
+                            label: st.label.isNotEmpty
+                                ? st.label
+                                : '${st.entity1?.displayName} vs ${st.entity2?.displayName}',
+                            themeBadge: st.theme?.badgeLabel ?? 'GÜNÜN',
+                            score: st.score,
+                            target: target,
+                            successRate: st.successRate,
+                            streak: st.streak,
+                            rank: _controller.lastRank,
+                            totalPlayers: _controller.lastTotalPlayers,
+                            dateKey: DailyChallengeService.dateKeyFor(
+                              widget.playDate ?? DateTime.now(),
+                            ),
                           ),
                         );
                       },
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DailyLeaderboardPage(
+                            date: widget.playDate,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.leaderboard_outlined),
+                    label: const Text('Günün sıralaması'),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(

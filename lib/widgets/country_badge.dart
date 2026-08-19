@@ -33,7 +33,7 @@ class CountryBadge extends StatelessWidget {
               fit: BoxFit.cover,
               memCacheWidth: (width * 3).round().clamp(48, 320),
               fadeInDuration: const Duration(milliseconds: 120),
-              placeholder: (_, __) => SizedBox(
+              placeholder: (_, _) => SizedBox(
                 width: width,
                 height: height,
                 child: Center(
@@ -44,7 +44,7 @@ class CountryBadge extends StatelessWidget {
                   ),
                 ),
               ),
-              errorWidget: (_, __, ___) => _emojiFallback(),
+              errorWidget: (_, _, _) => _emojiFallback(),
             ),
           )
         : _emojiFallback();

@@ -93,7 +93,6 @@ const List<String> popularCountries = [
   'Croatia',
   'Uruguay',
   'Colombia',
-  'Türkiye',
   'Turkey',
   'Poland',
   'Denmark',

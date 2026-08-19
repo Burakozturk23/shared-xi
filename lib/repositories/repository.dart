@@ -1,6 +1,7 @@
 import '../models/club.dart';
 import '../models/famous_transfer.dart';
 import '../models/player.dart';
+import '../utils/country_names.dart';
 import '../services/database_service.dart';
 import '../services/search_service.dart';
 
@@ -47,7 +48,7 @@ class Repository {
 
     final set = <String>{};
     for (final player in _players) {
-      set.addAll(player.countries);
+      set.addAll(CountryNames.canonicalList(player.countries));
     }
 
     final list = set.toList()..sort();

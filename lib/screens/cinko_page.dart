@@ -172,11 +172,39 @@ class _CinkoPageState extends State<CinkoPage> {
                 labelText: 'Oyuncu adı',
                 hintText: 'Örn. Luka Modric',
               ),
+              onChanged: (v) {
+                if (entering) _controller.updateSuggestions(v);
+              },
               onSubmitted: (v) {
                 _controller.submitPlayerName(v);
                 _nameController.clear();
+                _controller.clearSuggestions();
               },
             ),
+            if (_controller.suggestions.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 160),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _controller.suggestions.length,
+                  itemBuilder: (context, i) {
+                    final p = _controller.suggestions[i];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(p.name),
+                      subtitle: Text('${p.position} • ${p.countryLabel}'),
+                      onTap: () {
+                        _controller.submitResolvedPlayer(p);
+                        _nameController.clear();
+                        _controller.clearSuggestions();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
@@ -186,6 +214,7 @@ class _CinkoPageState extends State<CinkoPage> {
                     ? () {
                         _controller.submitPlayerName(_nameController.text);
                         _nameController.clear();
+                        _controller.clearSuggestions();
                       }
                     : null,
                 child: const Text(

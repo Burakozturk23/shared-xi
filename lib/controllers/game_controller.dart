@@ -8,6 +8,7 @@ import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../online/room_service.dart';
 import '../services/online_session.dart';
+import '../services/profile_service.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
@@ -32,6 +33,7 @@ class GameController extends ChangeNotifier {
 
   /// Son bilinen rakip adı (can / disconnect bitince kazanan yazmak için)
   String? _opponentName;
+  String? _opponentUid;
 
   OnlineSession? _session;
 
@@ -149,6 +151,26 @@ class GameController extends ChangeNotifier {
       _gameTimer?.cancel();
       _reconnectTimer?.cancel();
       _heartbeatTimer?.cancel();
+      if (isRankedMatch && roomCode != null && !_finishRequestSent) {
+        _finishRequestSent = true;
+        final w = data['winner']?.toString();
+        RankedResult rr;
+        if (w == 'draw') {
+          rr = RankedResult.draw;
+        } else if (w == playerName) {
+          rr = RankedResult.win;
+        } else {
+          rr = RankedResult.loss;
+        }
+        ProfileService.recordMatchResult(
+          matchId: roomCode!,
+          result: rr,
+          opponentName: _opponentName,
+          opponentUid: isRankedMatch ? _opponentUid : null,
+          myScore: _state.score,
+          opponentScore: _state.opponentScore,
+        );
+      }
       notifyListeners();
       return;
     }
@@ -178,6 +200,15 @@ class GameController extends ChangeNotifier {
     }
 
     final players = Map<String, dynamic>.from(value);
+
+    if (isRankedMatch && playerName != null) {
+      for (final key in players.keys) {
+        if (key != playerName) {
+          _opponentUid = key;
+          break;
+        }
+      }
+    }
 
     final myData = players[playerName!];
 
@@ -640,6 +671,28 @@ class GameController extends ChangeNotifier {
       winner: winner,
     );
 
+    // Ranked W/L (aynı matchId iki kez sayılmaz)
+    if (isRankedMatch && roomCode != null) {
+      final RankedResult rr;
+      if (winner == 'draw') {
+        rr = RankedResult.draw;
+      } else if (winner == playerName) {
+        rr = RankedResult.win;
+      } else {
+        rr = RankedResult.loss;
+      }
+      try {
+        await ProfileService.recordMatchResult(
+          matchId: roomCode!,
+          result: rr,
+          opponentName: _opponentName,
+          opponentUid: isRankedMatch ? _opponentUid : null,
+          myScore: _state.score,
+          opponentScore: _state.opponentScore,
+        );
+      } catch (_) {}
+    }
+
     _state = _state.copyWith(
       gameOver: true,
       gameOverReason: reason,
@@ -658,6 +711,7 @@ class GameController extends ChangeNotifier {
 
     _finishRequestSent = false;
     _opponentName = null;
+    _opponentUid = null;
     _reconnectTimer?.cancel();
 
     await _session!.resetGame();

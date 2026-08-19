@@ -163,12 +163,13 @@ class CinkoController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Listeden seçilen oyuncu — isimle yeniden arama YAPMA (Luis Suárez vb.).
   void submitResolvedPlayer(Player player) {
     suggestions = const [];
-    submitPlayerName(player.name);
+    _acceptPlayer(player);
   }
 
-void submitPlayerName(String raw) {
+  void submitPlayerName(String raw) {
     if (_state.phase != CinkoPhase.enterPlayer) return;
 
     final name = raw.trim();
@@ -181,15 +182,23 @@ void submitPlayerName(String raw) {
     );
 
     if (resolved.status == ResolveStatus.ambiguous) {
+      suggestions = resolved.candidates;
       _feedback(resolved.message, false);
+      notifyListeners();
       return;
     }
     if (!resolved.isFound) {
+      suggestions = const [];
       _feedback('Oyuncu bulunamadı.', false);
       return;
     }
 
-    final found = resolved.player!;
+    suggestions = const [];
+    _acceptPlayer(resolved.player!);
+  }
+
+  void _acceptPlayer(Player found) {
+    if (_state.phase != CinkoPhase.enterPlayer) return;
 
     if (_state.usedPlayerIds.contains(found.id)) {
       _feedback('Bu oyuncu daha önce kullanıldı.', false);

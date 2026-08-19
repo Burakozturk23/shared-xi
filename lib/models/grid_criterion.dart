@@ -58,6 +58,32 @@ class GridCriterion {
         return player.careerGoals >= (minGoals ?? 0);
     }
   }
+
+  Map<String, dynamic> toMap() => {
+        'type': type.name,
+        'label': label,
+        if (clubId != null) 'clubId': clubId,
+        if (countryName != null) 'countryName': countryName,
+        if (position != null) 'position': position,
+        if (minGoals != null) 'minGoals': minGoals,
+      };
+
+  factory GridCriterion.fromMap(Map<String, dynamic> m) {
+    final typeName = m['type']?.toString() ?? 'club';
+    final type = GridCriterionType.values.firstWhere(
+      (e) => e.name == typeName,
+      orElse: () => GridCriterionType.club,
+    );
+    final label = m['label']?.toString() ?? '';
+    return GridCriterion._(
+      type: type,
+      label: label,
+      clubId: (m['clubId'] as num?)?.toInt(),
+      countryName: m['countryName']?.toString(),
+      position: m['position']?.toString(),
+      minGoals: (m['minGoals'] as num?)?.toInt(),
+    );
+  }
 }
 
 const List<({String value, String label})> gridPositions = [

@@ -288,58 +288,66 @@ class VsBotCinkoController extends ChangeNotifier {
     _safeNotify();
   }
 
+  /// Listeden seçilen oyuncu — isimle tekrar resolve etme.
   void submitResolvedPlayer(Player player) {
     suggestions = const [];
-    submitPlayerName(player.name);
+    _acceptPlayer(player);
   }
 
-void submitPlayerName(String raw) {
-  if (_disposed || turn != VsBotCinkoTurn.user) return;
-  if (_state.phase != CinkoPhase.enterPlayer) return;
+  void submitPlayerName(String raw) {
+    if (_disposed || turn != VsBotCinkoTurn.user) return;
+    if (_state.phase != CinkoPhase.enterPlayer) return;
 
-  final name = raw.trim();
-  if (name.isEmpty) return;
+    final name = raw.trim();
+    if (name.isEmpty) return;
 
-  // YENİ: esnek çözüm
-  final resolved = SearchService.resolve(
-    players: Repository.instance.players,
-    answer: name,
-    excludedPlayerIds: _state.usedPlayerIds,
-  );
+    final resolved = SearchService.resolve(
+      players: Repository.instance.players,
+      answer: name,
+      excludedPlayerIds: _state.usedPlayerIds,
+    );
 
-  if (resolved.status == ResolveStatus.ambiguous) {
-    _feedback(resolved.message, false);
-    return;
-  }
-  if (!resolved.isFound) {
-    _feedback('Oyuncu bulunamadı.', false);
-    return;
-  }
+    if (resolved.status == ResolveStatus.ambiguous) {
+      suggestions = resolved.candidates;
+      _feedback(resolved.message, false);
+      _safeNotify();
+      return;
+    }
+    if (!resolved.isFound) {
+      suggestions = const [];
+      _feedback('Oyuncu bulunamadı.', false);
+      return;
+    }
 
-  final found = resolved.player!;
-
-  // Aşağısı AYNI (used + hasMatch + phase)
-  if (_state.usedPlayerIds.contains(found.id)) {
-    _feedback('Bu oyuncu daha önce kullanıldı.', false);
-    return;
+    suggestions = const [];
+    _acceptPlayer(resolved.player!);
   }
 
-  final hasMatch = _state.cells.any(
-    (c) =>
-        c.status == CinkoCellStatus.open && _playerMatchesCell(found, c),
-  );
-  if (!hasMatch) {
-    _feedback('Bu oyuncunun bu ızgarada eşleşen kutusu yok.', false);
-    return;
-  }
+  void _acceptPlayer(Player found) {
+    if (_disposed || turn != VsBotCinkoTurn.user) return;
+    if (_state.phase != CinkoPhase.enterPlayer) return;
 
-  _state = _state.copyWith(
-    currentPlayer: found,
-    phase: CinkoPhase.selecting,
-    clearFeedback: true,
-  );
-  _safeNotify();
-}
+    if (_state.usedPlayerIds.contains(found.id)) {
+      _feedback('Bu oyuncu daha önce kullanıldı.', false);
+      return;
+    }
+
+    final hasMatch = _state.cells.any(
+      (c) =>
+          c.status == CinkoCellStatus.open && _playerMatchesCell(found, c),
+    );
+    if (!hasMatch) {
+      _feedback('Bu oyuncunun bu ızgarada eşleşen kutusu yok.', false);
+      return;
+    }
+
+    _state = _state.copyWith(
+      currentPlayer: found,
+      phase: CinkoPhase.selecting,
+      clearFeedback: true,
+    );
+    _safeNotify();
+  }
 
   void toggleCell(int index) {
     if (_disposed || turn != VsBotCinkoTurn.user) return;

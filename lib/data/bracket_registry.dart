@@ -12,7 +12,7 @@ import 'ucl_dynasties_64_data.dart';
 class BracketRegistry {
   BracketRegistry._();
 
-  static const List<BracketDefinition> playerBrackets = [
+  static final List<BracketDefinition> playerBrackets = [
     PrimeBattles32Data.definition,
     EraClash64Data.definition,
     PositionRivalry64Data.definition,
@@ -20,7 +20,7 @@ class BracketRegistry {
   ];
 
   /// Kulüp vs Kulüp bracket'leri.
-  static const List<BracketDefinition> clubBrackets = [
+  static final List<BracketDefinition> clubBrackets = [
     UclDynasties64Data.definition,
     HistoricalSeasonKings64Data.definition,
     TurkishPeakSquads64Data.definition,

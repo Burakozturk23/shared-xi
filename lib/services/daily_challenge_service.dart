@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/popular_clubs_pool.dart';
 import '../data/popular_matchups.dart';
 import '../models/football_calendar_theme.dart';
 import '../models/match_entity.dart';
+import '../models/player.dart';
 import '../repositories/repository.dart';
+import 'game_service.dart';
 
 class DailyChallengeService {
   DailyChallengeService._();
@@ -15,14 +20,14 @@ class DailyChallengeService {
   static const _badgesKey = 'daily_badges';
   static const _lastSuccessRateKey = 'daily_last_success_rate';
   static const _pointsKey = 'daily_points';
-  static const _completedDatesKey = 'daily_completed_dates'; // "yyyy-MM-dd:score,..."
-  static const _unlockedDatesKey = 'daily_unlocked_dates'; // "yyyy-MM-dd,..."
+  static const _completedDatesKey = 'daily_completed_dates';
+  static const _unlockedDatesKey = 'daily_unlocked_dates';
 
-  /// Telafi: geçmiş günü açmak için puan maliyeti.
   static const int unlockCost = 100;
-
-  /// Mücadele bitince verilen taban puan.
   static const int basePointsReward = 25;
+
+  /// Ortak oyuncu kalite eşiği.
+  static const int minQualityCommons = 5;
 
   static String dateKeyFor(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -33,21 +38,154 @@ class DailyChallengeService {
     return date.difference(start).inDays;
   }
 
+  static Random _rngFor(DateTime date) {
+    final seed = date.year * 10000 + date.month * 100 + date.day;
+    return Random(seed);
+  }
+
   static FootballCalendarTheme themeFor([DateTime? date]) =>
       FootballCalendarTheme.forDate(date ?? DateTime.now());
 
-  /// Belirli bir günün eşleşmesi (bugün veya geçmiş arşiv).
   static ({MatchEntity entity1, MatchEntity entity2, String label})
       getMatchupForDate(DateTime date) {
     final theme = themeFor(date);
-    final pool = _poolForTheme(theme.kind);
+    final need = max(minQualityCommons, theme.targetFinds);
+    final rng = _rngFor(date);
 
-    if (pool.isEmpty) {
-      return _fromGlobalPool(date);
+    final themed = _poolForTheme(theme.kind);
+    final themedPick = _bestFromCandidates(themed, need, rng);
+    if (themedPick != null) return themedPick;
+
+    final allPopular = <({MatchEntity entity1, MatchEntity entity2, String label})>[];
+    for (final m in popularClubClubMatchups) {
+      final a = Repository.instance.clubById(m.clubId1);
+      final b = Repository.instance.clubById(m.clubId2);
+      if (a != null && b != null) {
+        allPopular.add((
+          entity1: MatchEntity.club(a),
+          entity2: MatchEntity.club(b),
+          label: m.label,
+        ));
+      }
+    }
+    final popularPick = _bestFromCandidates(allPopular, need, rng);
+    if (popularPick != null) return popularPick;
+
+    final dynamicPick = _pickDynamicPair(need, rng);
+    if (dynamicPick != null) return dynamicPick;
+
+    return _fromGlobalPool(date);
+  }
+
+  static ({MatchEntity entity1, MatchEntity entity2, String label})?
+      _bestFromCandidates(
+    List<({MatchEntity entity1, MatchEntity entity2, String label})> pool,
+    int need,
+    Random rng,
+  ) {
+    if (pool.isEmpty) return null;
+
+    final scored = <({
+      MatchEntity entity1,
+      MatchEntity entity2,
+      String label,
+      int quality,
+    })>[];
+
+    for (final m in pool) {
+      final q = _qualityCount(m.entity1, m.entity2);
+      if (q >= need) {
+        scored.add((
+          entity1: m.entity1,
+          entity2: m.entity2,
+          label: m.label,
+          quality: q,
+        ));
+      }
     }
 
-    final index = (date.year * 1000 + _dayOfYear(date)) % pool.length;
-    return pool[index];
+    if (scored.isEmpty) {
+      final relaxed = (need * 0.6).ceil().clamp(3, need);
+      for (final m in pool) {
+        final q = _qualityCount(m.entity1, m.entity2);
+        if (q >= relaxed) {
+          scored.add((
+            entity1: m.entity1,
+            entity2: m.entity2,
+            label: m.label,
+            quality: q,
+          ));
+        }
+      }
+    }
+
+    if (scored.isEmpty) return null;
+
+    scored.sort((a, b) => b.quality.compareTo(a.quality));
+    final top = scored.take(min(12, scored.length)).toList();
+    final pick = top[rng.nextInt(top.length)];
+    return (entity1: pick.entity1, entity2: pick.entity2, label: pick.label);
+  }
+
+  static int _qualityCount(MatchEntity a, MatchEntity b) {
+    var n = 0;
+    for (final p in Repository.instance.players) {
+      if (!_isQualityPlayer(p)) continue;
+      if (!_belongs(p, a) || !_belongs(p, b)) continue;
+      n++;
+    }
+    return n;
+  }
+
+  static bool _belongs(Player p, MatchEntity e) {
+    switch (e.type) {
+      case MatchEntityType.club:
+        return p.clubs.contains(e.clubId);
+      case MatchEntityType.country:
+        return p.countries.contains(e.countryName);
+    }
+  }
+
+  static bool _isQualityPlayer(Player p) {
+    if (p.name.trim().isEmpty) return false;
+    if (p.careerGoals >= 10) return true;
+    if (p.peakMarketValue >= 2000000) return true;
+    if (p.marketValue >= 1000000) return true;
+    return p.name.trim().split(RegExp(r'\s+')).length >= 2;
+  }
+
+  static ({MatchEntity entity1, MatchEntity entity2, String label})?
+      _pickDynamicPair(int need, Random rng) {
+    final clubs = PopularClubs.resolveAll();
+    if (clubs.length < 2) return null;
+
+    final shuffled = List.of(clubs)..shuffle(rng);
+    final limit = min(40, shuffled.length);
+
+    ({MatchEntity entity1, MatchEntity entity2, String label, int q})? best;
+
+    for (var i = 0; i < limit; i++) {
+      for (var j = i + 1; j < limit; j++) {
+        final a = shuffled[i];
+        final b = shuffled[j];
+        if (a.id == b.id) continue;
+        final e1 = MatchEntity.club(a);
+        final e2 = MatchEntity.club(b);
+        final q = _qualityCount(e1, e2);
+        if (q < need) continue;
+        if (best == null || q > best.q) {
+          best = (
+            entity1: e1,
+            entity2: e2,
+            label: '${a.name} × ${b.name}',
+            q: q,
+          );
+        }
+      }
+    }
+
+    if (best == null) return null;
+    return (entity1: best.entity1, entity2: best.entity2, label: best.label);
   }
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})
@@ -67,59 +205,61 @@ class DailyChallengeService {
           return l.contains('madrid') ||
               l.contains('barcelona') ||
               l.contains('bayern') ||
-              l.contains('liverpool') ||
-              l.contains('milan') ||
               l.contains('juventus') ||
-              l.contains('psg') ||
-              l.contains('city') ||
+              l.contains('milan') ||
+              l.contains('inter') ||
+              l.contains('liverpool') ||
               l.contains('chelsea') ||
               l.contains('arsenal') ||
-              l.contains('inter') ||
-              l.contains('dortmund');
+              l.contains('manchester') ||
+              l.contains('psg') ||
+              l.contains('paris') ||
+              l.contains('dortmund') ||
+              l.contains('ajax') ||
+              l.contains('porto') ||
+              l.contains('benfica') ||
+              l.contains('atletico') ||
+              l.contains('napoli') ||
+              l.contains('roma');
         });
-        break;
       case CalendarThemeKind.derbyCountdown:
       case CalendarThemeKind.derbyDay:
         source = popularClubClubMatchups.where((m) {
           final l = m.label.toLowerCase();
-          return l.contains('derbi') ||
-              l.contains('derby') ||
-              l.contains('fener') ||
-              l.contains('galata') ||
+          return l.contains('galatasaray') ||
+              l.contains('fenerbahçe') ||
+              l.contains('fenerbahce') ||
               l.contains('beşiktaş') ||
               l.contains('besiktas') ||
+              l.contains('trabzon') ||
               l.contains('madrid') ||
+              l.contains('barcelona') ||
               l.contains('milan') ||
-              l.contains('manchester') ||
-              l.contains('liverpool') ||
-              l.contains('arsenal') ||
               l.contains('inter') ||
-              l.contains('roma');
+              l.contains('liverpool') ||
+              l.contains('everton') ||
+              l.contains('arsenal') ||
+              l.contains('tottenham') ||
+              l.contains('manchester') ||
+              l.contains('roma') ||
+              l.contains('lazio') ||
+              l.contains('dortmund') ||
+              l.contains('schalke') ||
+              l.contains('celtic') ||
+              l.contains('rangers');
         });
-        break;
       case CalendarThemeKind.weekSummary:
-        for (final m in popularClubCountryMatchups) {
-          final club = Repository.instance.clubById(m.clubId);
-          if (club != null) {
-            out.add((
-              label: m.label,
-              entity1: MatchEntity.club(club),
-              entity2: MatchEntity.country(m.country),
-            ));
-          }
-        }
         source = popularClubClubMatchups;
-        break;
     }
 
     for (final m in source) {
-      final a = Repository.instance.clubById(m.clubId1);
-      final b = Repository.instance.clubById(m.clubId2);
+      final a = Repository.instance.clubById(m.clubId1 as int);
+      final b = Repository.instance.clubById(m.clubId2 as int);
       if (a != null && b != null) {
         out.add((
-          label: m.label,
           entity1: MatchEntity.club(a),
           entity2: MatchEntity.club(b),
+          label: m.label as String,
         ));
       }
     }
@@ -128,24 +268,64 @@ class DailyChallengeService {
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})
       _fromGlobalPool(DateTime date) {
-    final pool =
-        <({String label, MatchEntity entity1, MatchEntity entity2})>[];
-
-    for (final m in popularClubClubMatchups) {
-      final a = Repository.instance.clubById(m.clubId1);
-      final b = Repository.instance.clubById(m.clubId2);
-      if (a != null && b != null) {
-        pool.add((
-          label: m.label,
-          entity1: MatchEntity.club(a),
-          entity2: MatchEntity.club(b),
-        ));
+    final clubs = PopularClubs.resolveAll();
+    if (clubs.length >= 2) {
+      final rng = _rngFor(date);
+      final a = clubs[rng.nextInt(clubs.length)];
+      var b = clubs[rng.nextInt(clubs.length)];
+      var guard = 0;
+      while (b.id == a.id && guard < 20) {
+        b = clubs[rng.nextInt(clubs.length)];
+        guard++;
       }
+      return (
+        entity1: MatchEntity.club(a),
+        entity2: MatchEntity.club(b),
+        label: '${a.name} × ${b.name}',
+      );
     }
-    final index = (date.year * 1000 + _dayOfYear(date)) % pool.length;
-    final c = pool[index];
-    return (entity1: c.entity1, entity2: c.entity2, label: c.label);
+
+    final all = Repository.instance.clubs;
+    if (all.isEmpty) {
+      throw StateError('No clubs in repository');
+    }
+    if (all.length < 2) {
+      return (
+        entity1: MatchEntity.club(all.first),
+        entity2: MatchEntity.club(all.first),
+        label: all.first.name,
+      );
+    }
+    final i = (date.year * 1000 + _dayOfYear(date)) % all.length;
+    final j = (i + 7 + _dayOfYear(date)) % all.length;
+    final jj = j == i ? (j + 1) % all.length : j;
+    return (
+      entity1: MatchEntity.club(all[i]),
+      entity2: MatchEntity.club(all[jj]),
+      label: '${all[i].name} × ${all[jj].name}',
+    );
   }
+
+  /// Ortak oyuncular — kaliteli isimler önde.
+  static List<Player> qualityMatchingPlayers({
+    required MatchEntity entity1,
+    required MatchEntity entity2,
+  }) {
+    final raw = GameService.matchingPlayers(
+      players: Repository.instance.players,
+      entity1: entity1,
+      entity2: entity2,
+    );
+    final quality = raw.where(_isQualityPlayer).toList();
+    quality.sort((a, b) {
+      final ga = a.careerGoals;
+      final gb = b.careerGoals;
+      if (gb != ga) return gb.compareTo(ga);
+      return b.peakMarketValue.compareTo(a.peakMarketValue);
+    });
+    return quality.isNotEmpty ? quality : raw;
+  }
+
 
   // ── Persistence helpers ──────────────────────────────────────────
 

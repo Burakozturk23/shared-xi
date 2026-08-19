@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/daily_challenge_service.dart';
 import 'daily_challenge_game_page.dart';
+import 'daily_leaderboard_page.dart';
 
 class DailyChallengePage extends StatefulWidget {
   const DailyChallengePage({super.key});
@@ -98,6 +99,19 @@ class _DailyChallengePageState extends State<DailyChallengePage> {
                             'Yarın yeni bir mücadele seni bekliyor.',
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 13, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 16),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const DailyLeaderboardPage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.leaderboard_outlined),
+                            label: const Text('Günün sıralaması'),
                           ),
                         ] else ...[
                           const Text(
