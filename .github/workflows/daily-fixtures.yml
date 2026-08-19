@@ -1,0 +1,39 @@
+# Her gun 00:30 UTC (~03:30 Turkiye) bugun+yarin fiksturlerini RTDB'ye yazar.
+name: Sync Daily Fixtures
+
+on:
+  schedule:
+    # UTC 00:30 = yazin 03:30 TR, kisin 03:30 TR (UTC+3)
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Opsiyonel tek gun YYYY-MM-DD (bos = bugun+yarin)"
+        required: false
+        default: ""
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install script deps
+        run: |
+          cd scripts
+          npm init -y
+          npm install firebase-admin@^13
+
+      - name: Run sync
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          FIXTURE_DATE: ${{ github.event.inputs.date }}
+        run: node scripts/sync-daily-fixtures.js
