@@ -6,6 +6,9 @@ import 'online_lobby_page.dart';
 import 'online_grid_lobby_page.dart';
 import 'online_five_lobby_page.dart';
 import 'online_cinko_lobby_page.dart';
+import 'club_manager_online_lobby_page.dart';
+// Loto lobby dosyanın adı farklıysa düzelt:
+// import 'online_loto_lobby_page.dart';
 
 /// Arkadaş: önce mod seç, sonra oda kur / katıl.
 class OnlineFriendsModePage extends StatelessWidget {
@@ -15,6 +18,8 @@ class OnlineFriendsModePage extends StatelessWidget {
     final Widget page;
     switch (mode) {
       case OnlinePlayMode.sharedXi:
+      case OnlinePlayMode.clubCountry:
+        // Shared XI lobby çoğu projede her iki modu da karşılar
         page = const OnlineLobbyPage();
       case OnlinePlayMode.gridClassic:
         page = const OnlineGridLobbyPage(initialSubType: GridSubType.classic);
@@ -26,6 +31,11 @@ class OnlineFriendsModePage extends StatelessWidget {
         page = const OnlineFiveLobbyPage();
       case OnlinePlayMode.cinko:
         page = const OnlineCinkoLobbyPage();
+      case OnlinePlayMode.loto:
+        // Kendi loto lobby import’unu bağla; yoksa geçici olarak lobby
+        page = const OnlineLobbyPage();
+      case OnlinePlayMode.clubManager:
+        page = const ClubManagerOnlineLobbyPage();
     }
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
   }

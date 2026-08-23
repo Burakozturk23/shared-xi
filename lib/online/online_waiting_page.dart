@@ -4,19 +4,21 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'online_mode_catalog.dart';
 import 'room_service.dart';
 import 'online_setup_page.dart';
 
 /// Host: oda kodu + 2. oyuncu bekleniyor.
-/// 2 kişi olunca setup sayfasına geçer.
 class OnlineWaitingPage extends StatefulWidget {
   final String roomCode;
   final String playerName;
+  final OnlinePlayMode mode;
 
   const OnlineWaitingPage({
     super.key,
     required this.roomCode,
     required this.playerName,
+    this.mode = OnlinePlayMode.sharedXi,
   });
 
   @override
@@ -49,6 +51,7 @@ class _OnlineWaitingPageState extends State<OnlineWaitingPage> {
         builder: (_) => OnlineSetupPage(
           roomCode: widget.roomCode,
           playerName: widget.playerName,
+          mode: widget.mode,
         ),
       ),
     );
@@ -86,10 +89,10 @@ class _OnlineWaitingPageState extends State<OnlineWaitingPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 24),
-            const Text(
-              'Oda kodunu arkadaşınla paylaş',
+            Text(
+              'Mod: ${widget.mode.title}\nOda kodunu arkadaşınla paylaş',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
             Container(
@@ -128,7 +131,7 @@ class _OnlineWaitingPageState extends State<OnlineWaitingPage> {
             const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 16),
             const Text(
-              '2. oyuncu katılınca takım seçimine geçilecek…',
+              '2. oyuncu katılınca seçim ekranına geçilecek…',
               textAlign: TextAlign.center,
             ),
             const Spacer(),

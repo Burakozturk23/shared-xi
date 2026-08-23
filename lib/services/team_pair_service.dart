@@ -47,8 +47,12 @@ class TeamPairService {
     'celtic', 'rangers', 'andorlecht', 'club brugge',
   ];
 
-  static bool _isPopular(Club c) {
-    final n = c.name.toLowerCase()
+  static bool isPopular(Club c) => _isPopularPublic(c);
+
+  /// ClubCountryPairService için.
+  static bool _isPopularPublic(Club c) {
+    final n = c.name
+        .toLowerCase()
         .replaceAll('ı', 'i')
         .replaceAll('ş', 's')
         .replaceAll('ğ', 'g')
@@ -77,10 +81,9 @@ class TeamPairService {
     final players = Repository.instance.players;
     if (clubs.length < 2) return null;
 
-    final popular = clubs.where(_isPopular).toList();
+    final popular = clubs.where(_isPopularPublic).toList();
     final pool = popular.length >= 8 ? popular : List<Club>.from(clubs);
 
-    // Önceden ortak sayısı hesabı pahalı; deneme ile
     TeamPair? best;
     var bestCount = 0;
 
@@ -109,7 +112,6 @@ class TeamPairService {
       }
     }
 
-    // minCommon bulunamadıysa eşiği düşür
     if (best != null) return best;
 
     for (var attempt = 0; attempt < 100; attempt++) {

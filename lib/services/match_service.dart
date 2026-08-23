@@ -30,6 +30,8 @@ class MatchService {
     required int team2Id,
     required String team2Name,
     required List<int> commonPlayerIds,
+    String matchType = 'club_club',
+    bool entity2IsCountry = false,
   }) async {
     final existing = await _matchRef(matchId).get();
     if (existing.exists) return;
@@ -47,6 +49,8 @@ class MatchService {
       'team2Id': team2Id,
       'team1Name': team1Name,
       'team2Name': team2Name,
+      'matchType': matchType,
+      'entity2IsCountry': entity2IsCountry,
       'commonPlayerIds': commonMap,
       'status': 'ready',
       'createdAt': ServerValue.timestamp,

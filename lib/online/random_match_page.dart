@@ -8,17 +8,19 @@ import '../screens/game_page.dart';
 import '../services/auth_service.dart';
 import '../services/matchmaking_service.dart';
 import 'online_lobby_page.dart';
+import 'online_mode_catalog.dart';
 
 /// Rastgele rakip ara → maça gir.
-/// [autoStart] true ise isim sorulmadan hemen arama başlar.
 class RandomMatchPage extends StatefulWidget {
   final bool autoStart;
   final String? initialDisplayName;
+  final OnlinePlayMode mode;
 
   const RandomMatchPage({
     super.key,
     this.autoStart = false,
     this.initialDisplayName,
+    this.mode = OnlinePlayMode.sharedXi,
   });
 
   @override
@@ -103,6 +105,7 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
 
     await MatchmakingService.startSearch(
       displayName: name,
+      mode: widget.mode,
       onUpdate: (s) {
         if (!mounted) return;
         if (s.status != MatchmakingStatus.searching) {
@@ -125,22 +128,57 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
     await Future.delayed(const Duration(milliseconds: 700));
     if (!mounted) return;
 
+    final isCountry = s.entity2IsCountry ||
+        s.matchType == 'club_country' ||
+        widget.mode == OnlinePlayMode.clubCountry;
+
     Club? c1;
-    Club? c2;
     for (final c in Repository.instance.clubs) {
       if (c.id == s.team1Id) c1 = c;
-      if (c.id == s.team2Id) c2 = c;
     }
 
-    if (c1 == null || c2 == null) {
+    if (c1 == null) {
       setState(() {
         _openingMatch = false;
         _state = _state.copyWith(
           status: MatchmakingStatus.error,
-          message: 'Takımlar yüklenemedi. Tekrar dene.',
+          message: 'Takım yüklenemedi. Tekrar dene.',
         );
       });
       return;
+    }
+
+    final MatchEntity entity1 = MatchEntity.club(c1);
+    final MatchEntity entity2;
+    if (isCountry) {
+      final country = s.team2Name?.trim() ?? '';
+      if (country.isEmpty) {
+        setState(() {
+          _openingMatch = false;
+          _state = _state.copyWith(
+            status: MatchmakingStatus.error,
+            message: 'Ülke bilgisi eksik. Tekrar dene.',
+          );
+        });
+        return;
+      }
+      entity2 = MatchEntity.country(country);
+    } else {
+      Club? c2;
+      for (final c in Repository.instance.clubs) {
+        if (c.id == s.team2Id) c2 = c;
+      }
+      if (c2 == null) {
+        setState(() {
+          _openingMatch = false;
+          _state = _state.copyWith(
+            status: MatchmakingStatus.error,
+            message: 'Takımlar yüklenemedi. Tekrar dene.',
+          );
+        });
+        return;
+      }
+      entity2 = MatchEntity.club(c2);
     }
 
     final uid = AuthService.uid;
@@ -160,8 +198,8 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
       context,
       MaterialPageRoute(
         builder: (_) => GamePage(
-          entity1: MatchEntity.club(c1!),
-          entity2: MatchEntity.club(c2!),
+          entity1: entity1,
+          entity2: entity2,
           roomCode: s.matchId,
           playerName: uid,
           isRankedMatch: true,
@@ -199,10 +237,11 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
   Widget build(BuildContext context) {
     final searching = _state.status == MatchmakingStatus.searching;
     final matched = _state.status == MatchmakingStatus.matched;
+    final modeTitle = widget.mode.title;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rastgele Maç'),
+        title: Text('Rastgele · $modeTitle'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () async {
@@ -217,9 +256,10 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (!_started) ...[
-              const Text(
-                'Dünyadan bir rakiple eşleş.\n'
-                'Takımlar otomatik seçilir (ortak oyuncu garantili).',
+              Text(
+                widget.mode == OnlinePlayMode.clubCountry
+                    ? 'Kulüp × ülke eşleşmesi.\nOrtak oyuncu garantili çift seçilir.'
+                    : 'Dünyadan bir rakiple eşleş.\nTakımlar otomatik seçilir (ortak oyuncu garantili).',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -257,7 +297,8 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
               if (_state.status == MatchmakingStatus.timeout)
                 const Icon(Icons.person_search, size: 56, color: Colors.orange),
               if (_state.status == MatchmakingStatus.error)
-                const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
+                const Icon(Icons.error_outline,
+                    size: 56, color: Colors.redAccent),
               const SizedBox(height: 16),
               Text(
                 _state.message ?? '',
@@ -277,7 +318,7 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
               if (_state.team1Name != null && _state.team2Name != null) ...[
                 const SizedBox(height: 12),
                 Text(
-                  '${_state.team1Name}  vs  ${_state.team2Name}',
+                  '${_state.team1Name}  ×  ${_state.team2Name}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 16),
                 ),
@@ -287,14 +328,6 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
                 const Text(
                   'Uygun rakip bulununca maç otomatik başlar.\n'
                   'Şu an az oyuncu varsa biraz sürebilir.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
-                ),
-              ],
-              if (_state.status == MatchmakingStatus.timeout) ...[
-                const SizedBox(height: 12),
-                const Text(
-                  'İpucu: Arkadaşınla oda koduyla hemen oynayabilirsin.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey),
                 ),
@@ -317,16 +350,6 @@ class _RandomMatchPageState extends State<RandomMatchPage> {
                   onPressed: _goFriends,
                   icon: const Icon(Icons.group_outlined),
                   label: const Text('Arkadaşınla oyna'),
-                ),
-                const SizedBox(height: 6),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _started = false;
-                      _state = const MatchmakingState();
-                    });
-                  },
-                  child: const Text('İsmi değiştir'),
                 ),
               ],
             ],

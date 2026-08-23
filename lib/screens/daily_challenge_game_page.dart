@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import '../services/daily_challenge_service.dart';
-import '../widgets/daily_share_card.dart';
-import '../widgets/daily_share_sheet.dart';
-import 'daily_leaderboard_page.dart';
-import 'package:flutter/services.dart';
 
 import '../controllers/daily_challenge_controller.dart';
 import '../models/daily_challenge_state.dart';
 import '../models/football_calendar_theme.dart';
 import '../models/match_entity.dart';
+import '../services/daily_challenge_service.dart';
+import '../services/daily_playable_matches.dart';
+import '../widgets/daily_share_card.dart';
+import '../widgets/daily_share_sheet.dart';
+import 'daily_leaderboard_page.dart';
 
 class DailyChallengeGamePage extends StatefulWidget {
   /// null = bugün
   final DateTime? playDate;
+  final PlayableDailyMatch? match;
 
-  const DailyChallengeGamePage({super.key, this.playDate});
+  const DailyChallengeGamePage({super.key, this.playDate, this.match});
 
   @override
   State<DailyChallengeGamePage> createState() =>
@@ -29,9 +29,10 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
   @override
   void initState() {
     super.initState();
-    _controller =
-        DailyChallengeController(playDate: widget.playDate)
-          ..addListener(_onChanged);
+    _controller = DailyChallengeController(
+      playDate: widget.playDate,
+      presetMatch: widget.match,
+    )..addListener(_onChanged);
     _controller.initialize();
   }
 

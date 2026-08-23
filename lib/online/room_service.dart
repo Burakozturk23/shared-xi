@@ -32,6 +32,7 @@ class RoomService {
 
   static Future<String> createRoom({
     required String playerName,
+    String matchType = 'club_club',
   }) async {
     final name = playerName.trim();
     if (name.isEmpty) {
@@ -46,10 +47,13 @@ class RoomService {
     await _roomsRef.child(roomCode).set({
       'host': name,
       'status': 'waiting',
+      'matchType': matchType,
       'createdAt': ServerValue.timestamp,
       'players': {
         name: {
           'teamId': null,
+          'pickType': null,
+          'countryName': null,
           'score': 0,
           'lives': 3,
           'ready': false,
@@ -92,6 +96,8 @@ class RoomService {
 
     await _roomsRef.child(code).child('players').child(name).set({
       'teamId': null,
+      'pickType': null,
+      'countryName': null,
       'score': 0,
       'lives': 3,
       'ready': false,
@@ -328,6 +334,24 @@ class RoomService {
   }) async {
     await _roomRef(roomCode).child('players').child(playerName).update({
       'teamId': teamId,
+      'pickType': 'club',
+      'countryName': null,
+      'ready': false,
+    });
+  }
+
+  /// Kulüp × Ülke seçimi.
+  static Future<void> setPlayerPick({
+    required String roomCode,
+    required String playerName,
+    required String pickType, // 'club' | 'country'
+    int? teamId,
+    String? countryName,
+  }) async {
+    await _roomRef(roomCode).child('players').child(playerName).update({
+      'pickType': pickType,
+      'teamId': teamId,
+      'countryName': countryName,
       'ready': false,
     });
   }
@@ -343,11 +367,18 @@ class RoomService {
       if (player is! Map) return false;
       final playerData = Map<String, dynamic>.from(player);
       if (playerData['ready'] != true) return false;
-      if (playerData['teamId'] == null) return false;
+
+      final pickType = playerData['pickType']?.toString();
+      if (pickType == 'country') {
+        final cn = playerData['countryName']?.toString();
+        if (cn == null || cn.isEmpty) return false;
+      } else {
+        // club veya eski kulüp-kulüp (pickType null)
+        if (playerData['teamId'] == null) return false;
+      }
     }
     return true;
   }
-
 
   /// Yeniden oyna isteği (aynı oda, yeni takımlar).
   static Future<void> requestRematch({
@@ -379,7 +410,6 @@ class RoomService {
     if (!await areAllRematchReady(roomCode)) return false;
 
     final statusSnap = await _roomRef(roomCode).child('status').get();
-    // finished veya starting sonrası yeniden
     final status = statusSnap.value?.toString();
     if (status != 'finished' && status != 'starting') {
       // zaten waiting ise yine de temizle
@@ -392,6 +422,8 @@ class RoomService {
     for (final name in players.keys) {
       await _roomRef(roomCode).child('players').child(name).update({
         'teamId': null,
+        'pickType': null,
+        'countryName': null,
         'score': 0,
         'lives': 3,
         'ready': false,
@@ -492,5 +524,4 @@ class RoomService {
       'disconnectedAt': ServerValue.timestamp,
     });
   }
-
 }

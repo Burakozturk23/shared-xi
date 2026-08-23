@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
-import 'daily_challenge_page.dart';
 import 'match_type_selection_page.dart';
 import 'endless_mode_selection_page.dart';
 import 'chain_mode_selection_page.dart';
@@ -15,9 +14,14 @@ import 'build_xi_theme_selection_page.dart';
 import 'story_mode_selection_page.dart';
 import 'vs_bot_mode_selection_page.dart';
 import 'football_calendar_page.dart';
-import '../online/online_lobby_page.dart';
 import 'this_or_that_mode_selection_page.dart';
 import '../online/online_mode_hub_page.dart';
+import 'passaparola_page.dart';
+import 'pyramid_page.dart';
+import 'match_pair_page.dart';
+import 'harf11_page.dart';
+import 'loto_page.dart';
+import 'club_manager_hub_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -76,32 +80,39 @@ class WelcomePage extends StatelessWidget {
             _sectionHeader('Öne çıkan'),
             _sliverModeList(const [
               _ModeItem(
-              title: 'Günün Mücadelesi',
-              subtitle: 'Her gün yeni futbol bulmacası',
-              icon: Icons.calendar_today_rounded,
-              accent: Color(0xFFFFB300),
-              page: FootballCalendarPage(),  // yeni hub
-),
+                title: 'Günün Mücadelesi',
+                subtitle: 'Her gün yeni futbol bulmacası',
+                icon: Icons.calendar_today_rounded,
+                accent: Color(0xFFFFB300),
+                page: FootballCalendarPage(),
+              ),
             ]),
+
             _sectionHeader('Online'),
-_sliverModeList(const [
-  _ModeItem(
-  title: 'Online',
-  subtitle: 'Rastgele maç veya arkadaşlarınla oyna',
-  icon: Icons.public,
-  page: OnlineModeHubPage(),
-),
-]),
+            _sliverModeList(const [
+              _ModeItem(
+                title: 'Online',
+                subtitle: 'Rastgele maç veya arkadaşlarınla oyna',
+                icon: Icons.public,
+                page: OnlineModeHubPage(),
+              ),
+            ]),
 
             _sectionHeader('Klasik modlar'),
             _sliverModeList(const [
               _ModeItem(
-              title: 'Vs Bot',
-              subtitle: 'Takım yarışı · Grid · Çinko · Beşler',
-              icon: Icons.smart_toy_rounded,
-              accent:Color(0xFFE91E63),
-              page: VsBotModeSelectionPage(),
-              ),
+  title: 'Club Manager',
+  subtitle: 'Bütçeni kur · 25’li havuz · maçı yönet',
+  icon: Icons.emoji_events_rounded,
+  accent: Color(0xFF00E676),
+  page: ClubManagerHubPage(),
+),
+              _ModeItem(
+  title: 'Vs Bot',
+  subtitle: 'Loto · Grid · Çinko · Beşler',
+  icon: Icons.smart_toy_outlined,
+  page: VsBotModeSelectionPage(),
+),
               _ModeItem(
                 title: 'Burst',
                 subtitle: 'Oyuncu bilgini farklı modlarla test et',
@@ -112,9 +123,8 @@ _sliverModeList(const [
                 title: 'Chain',
                 subtitle: 'Kulüpler arasında oyuncu zinciri kur',
                 icon: Icons.link_rounded,
-                page:  ChainModeSelectionPage(),
+                page: ChainModeSelectionPage(),
               ),
-          
               _ModeItem(
                 title: 'Fake Club',
                 subtitle: 'Oynamadığı kulübü bul',
@@ -122,13 +132,50 @@ _sliverModeList(const [
                 page: OddClubModeSelectionPage(),
               ),
               _ModeItem(
-               title: 'This or That?',
+                title: 'This or That?',
                 subtitle: 'Futbolcu / takım zirve savaşları',
                 icon: Icons.balance_rounded,
                 accent: Color(0xFFFFB300),
                 page: ThisOrThatModeSelectionPage(),
-                ),
-               ]),
+              ),
+            ]),
+
+            _sectionHeader('Yeni modlar'),
+            _sliverModeList(const [
+              _ModeItem(
+                title: 'Passaparola',
+                subtitle: '29 harf · futbol soruları · PAS',
+                icon: Icons.abc_rounded,
+                accent: Color(0xFF42A5F5),
+                page: PassaparolaPage(),
+              ),
+              _ModeItem(
+                title: 'Pyramid',
+                subtitle: 'Bağlantı kur, tepeye ulaş',
+                icon: Icons.account_tree_rounded,
+                accent: Color(0xFFAB47BC),
+                page: PyramidPage(),
+              ),
+              _ModeItem(
+  title: 'Eşleştirme',
+  subtitle: 'Kulüp ve oyuncuyu eşleştir',
+  icon: Icons.grid_view_rounded,
+  page: MatchPairPage(),
+),
+_ModeItem(
+  title: 'Harf 11',
+  subtitle: '11 harf, 11 oyuncu',
+  icon: Icons.filter_1,
+  page: Harf11Page(),
+),
+//_ModeItem(
+//  title: 'Football Loto',
+//  subtitle: '4x4 kriter ızgarası',
+//  icon: Icons.grid_on,
+//  page: LotoPage(),
+//),
+//
+            ]),
 
             _sectionHeader('Zorlayıcı'),
             _sliverModeList(const [
@@ -235,7 +282,8 @@ _sliverModeList(const [
           (context, index) {
             final item = items[index];
             return Padding(
-              padding: EdgeInsets.only(bottom: index == items.length - 1 ? 0 : 10),
+              padding:
+                  EdgeInsets.only(bottom: index == items.length - 1 ? 0 : 10),
               child: _ModeCard(item: item),
             );
           },
@@ -277,11 +325,11 @@ class _ModeCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => item.page),
-           );
-           },
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => item.page),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(

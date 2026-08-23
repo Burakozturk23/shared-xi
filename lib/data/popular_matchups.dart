@@ -20,9 +20,9 @@ const List<PopularClubClubMatchup> popularClubClubMatchups = [
   PopularClubClubMatchup(27, 506, 'Bayern - Juventus'),
   PopularClubClubMatchup(583, 281, 'PSG - Man City'),
   PopularClubClubMatchup(631, 11, 'Chelsea - Arsenal'),
-  PopularClubClubMatchup(5, 46, 'Milano Derbisi'),
-  PopularClubClubMatchup(13, 418, 'Madrid Derbisi'),
-  PopularClubClubMatchup(16, 27, 'Der Klassiker'),
+  PopularClubClubMatchup(5, 46, 'Inter - Mılan "Milano Derbisi"'),
+  PopularClubClubMatchup(13, 418, 'Real Madrid - Atletico "Madrid Derbisi"'),
+  PopularClubClubMatchup(16, 27, ' Bayern - Dortmund Der Klassiker'),
 ];
 
 const List<PopularClubCountryMatchup> popularClubCountryMatchups = [

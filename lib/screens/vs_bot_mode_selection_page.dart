@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import 'loto_bot_page.dart';
 import 'vs_bot_cinko_page.dart';
 import 'vs_bot_club_selection_page.dart';
 import 'vs_bot_grid_mode_selection_page.dart';
@@ -25,6 +26,19 @@ class VsBotModeSelectionPage extends StatelessWidget {
             style: TextStyle(fontSize: 16, color: AppTheme.hintColor),
           ),
           const SizedBox(height: 20),
+          _ModeCard(
+            icon: Icons.grid_view_rounded,
+            accent: const Color(0xFF00E676),
+            title: 'Football Loto',
+            subtitle: '4×4 kriter · 16 oyuncu · bota karşı',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const LotoBotPage(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
           _ModeCard(
             icon: Icons.smart_toy_rounded,
             accent: const Color(0xFFE91E63),
@@ -105,22 +119,18 @@ class _ModeCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: accent.withValues(alpha: 0.35)),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(14),
+                  color: accent.withOpacity(0.14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: accent, size: 28),
+                child: Icon(icon, color: accent),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -130,24 +140,27 @@ class _ModeCard extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w700,
                         fontSize: 16,
+                        fontWeight: FontWeight.w700,
                         color: AppTheme.textColor,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle,
                       style: const TextStyle(
                         fontSize: 13,
                         color: AppTheme.hintColor,
-                        height: 1.3,
+                        height: 1.25,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppTheme.hintColor),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppTheme.hintColor.withOpacity(0.6),
+              ),
             ],
           ),
         ),

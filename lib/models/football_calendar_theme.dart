@@ -72,4 +72,55 @@ class FootballCalendarTheme {
         );
     }
   }
+    /// Gerçek fikstürden tema (derbi / UCL / normal günün maçı).
+  static FootballCalendarTheme fromFixture({
+    required bool isDerby,
+    required int? leagueId,
+    required String label,
+  }) {
+    // UCL
+    if (leagueId == 2) {
+      return FootballCalendarTheme(
+        kind: CalendarThemeKind.europeNight,
+        title: 'Avrupa Gecesi',
+        subtitle: label,
+        badgeLabel: 'UCL · $label',
+        roundSeconds: 60,
+        maxLives: 3,
+        targetFinds: 5,
+      );
+    }
+    // UEL / UECL
+    if (leagueId == 3 || leagueId == 848) {
+      return FootballCalendarTheme(
+        kind: CalendarThemeKind.europeNight,
+        title: 'Avrupa Gecesi',
+        subtitle: label,
+        badgeLabel: 'AVRUPA · $label',
+        roundSeconds: 60,
+        maxLives: 3,
+        targetFinds: 5,
+      );
+    }
+    if (isDerby) {
+      return FootballCalendarTheme(
+        kind: CalendarThemeKind.derbyDay,
+        title: 'Derbi Günü',
+        subtitle: label,
+        badgeLabel: 'DERBİ · $label',
+        roundSeconds: 60,
+        maxLives: 3,
+        targetFinds: 5,
+      );
+    }
+    return FootballCalendarTheme(
+      kind: CalendarThemeKind.weekSummary,
+      title: 'Günün Maçı',
+      subtitle: label,
+      badgeLabel: label,
+      roundSeconds: 90,
+      maxLives: 5,
+      targetFinds: 6,
+    );
+  }
 }

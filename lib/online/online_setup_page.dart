@@ -4,20 +4,24 @@ import 'package:flutter/material.dart';
 import '../models/club.dart';
 import '../models/match_entity.dart';
 import '../models/player.dart';
-import 'room_service.dart';
 import '../repositories/repository.dart';
 import '../screens/game_page.dart';
 import '../services/database_service.dart';
+import '../utils/country_names.dart';
+import 'online_mode_catalog.dart';
+import 'room_service.dart';
 
-/// Takım seçimi + hazır. Rakibin takımı GÖRÜNMEZ.
+/// Takım / ülke seçimi + hazır. Rakibin seçimi GÖRÜNMEZ.
 class OnlineSetupPage extends StatefulWidget {
   final String roomCode;
   final String playerName;
+  final OnlinePlayMode mode;
 
   const OnlineSetupPage({
     super.key,
     required this.roomCode,
     required this.playerName,
+    this.mode = OnlinePlayMode.sharedXi,
   });
 
   @override
@@ -27,11 +31,17 @@ class OnlineSetupPage extends StatefulWidget {
 class _OnlineSetupPageState extends State<OnlineSetupPage> {
   List<Club> _clubs = [];
   List<Player> _players = [];
+  List<String> _countries = [];
   bool _loading = true;
   int? _selectedTeamId;
+  String? _selectedCountry;
+  /// club | country  (clubCountry modunda)
+  String _pickSide = 'club';
   String _search = '';
   bool _gameStarting = false;
   bool _iAmReady = false;
+
+  bool get _isClubCountry => widget.mode == OnlinePlayMode.clubCountry;
 
   @override
   void initState() {
@@ -43,21 +53,13 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
     try {
       final clubs = List<Club>.from(Repository.instance.clubs);
       final players = List<Player>.from(Repository.instance.players);
-      setState(() {
-        _clubs = clubs;
-        _players = players;
-        _loading = false;
-      });
+      _applyData(clubs, players);
     } catch (_) {
       try {
         final clubs = await DatabaseService.loadClubs();
         final players = await DatabaseService.loadPlayers();
         if (!mounted) return;
-        setState(() {
-          _clubs = clubs;
-          _players = players;
-          _loading = false;
-        });
+        _applyData(clubs, players);
       } catch (e) {
         if (!mounted) return;
         setState(() => _loading = false);
@@ -66,15 +68,41 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
     }
   }
 
+  void _applyData(List<Club> clubs, List<Player> players) {
+    final countrySet = <String>{};
+    for (final p in players) {
+      for (final c in p.countries) {
+        final n = CountryNames.canonical(c);
+        if (n.isNotEmpty) countrySet.add(n);
+      }
+    }
+    final countries = countrySet.toList()..sort();
+    setState(() {
+      _clubs = clubs;
+      _players = players;
+      _countries = countries;
+      _loading = false;
+    });
+  }
+
   void _msg(String m) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
   }
 
-  bool _hasCommon(int a, int b) {
+  bool _hasClubClubCommon(int a, int b) {
     if (a == b) return false;
     for (final p in _players) {
       if (p.clubs.contains(a) && p.clubs.contains(b)) return true;
+    }
+    return false;
+  }
+
+  bool _hasClubCountryCommon(int clubId, String country) {
+    final c = CountryNames.canonical(country);
+    for (final p in _players) {
+      if (!p.clubs.contains(clubId)) continue;
+      if (p.countries.any((x) => CountryNames.canonical(x) == c)) return true;
     }
     return false;
   }
@@ -85,45 +113,116 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
     return Map<String, dynamic>.from(room['players'] as Map);
   }
 
-  Future<void> _selectTeam(int teamId) async {
+  Future<void> _selectClub(int teamId) async {
     final players = await _playersMap();
     if (players != null) {
       for (final e in players.entries) {
         if (e.key == widget.playerName) continue;
         final data = Map<String, dynamic>.from(e.value as Map);
-        final otherId = int.tryParse(data['teamId']?.toString() ?? '');
-        if (otherId == null) continue;
-        if (otherId == teamId) {
-          _msg('Bu takım dolu (rakip seçmiş olabilir). Başka takım dene.');
+        if (_isClubCountry) {
+          final otherType = data['pickType']?.toString();
+          if (otherType == 'club') {
+            _msg('Rakip de kulüp seçmiş. Sen ülke seçmelisin.');
+            return;
+          }
+          final otherCountry = data['countryName']?.toString();
+          if (otherCountry != null &&
+              otherCountry.isNotEmpty &&
+              !_hasClubCountryCommon(teamId, otherCountry)) {
+            _msg('Bu kulübün rakibin ülkesiyle ortak oyuncusu yok.');
+            return;
+          }
+        } else {
+          final otherId = int.tryParse(data['teamId']?.toString() ?? '');
+          if (otherId == null) continue;
+          if (otherId == teamId) {
+            _msg('Bu takım dolu. Başka takım dene.');
+            return;
+          }
+          if (!_hasClubClubCommon(teamId, otherId)) {
+            _msg('Bu takımın rakibin seçimiyle ortak oyuncusu yok.');
+            return;
+          }
+        }
+      }
+    }
+
+    try {
+      if (_isClubCountry) {
+        await RoomService.setPlayerPick(
+          roomCode: widget.roomCode,
+          playerName: widget.playerName,
+          pickType: 'club',
+          teamId: teamId,
+          countryName: null,
+        );
+      } else {
+        await RoomService.setPlayerTeam(
+          roomCode: widget.roomCode,
+          playerName: widget.playerName,
+          teamId: teamId,
+        );
+      }
+      if (!mounted) return;
+      setState(() {
+        _selectedTeamId = teamId;
+        _selectedCountry = null;
+        _pickSide = 'club';
+        _iAmReady = false;
+      });
+    } catch (e) {
+      _msg('Seçilemedi: $e');
+    }
+  }
+
+  Future<void> _selectCountry(String country) async {
+    final players = await _playersMap();
+    if (players != null) {
+      for (final e in players.entries) {
+        if (e.key == widget.playerName) continue;
+        final data = Map<String, dynamic>.from(e.value as Map);
+        final otherType = data['pickType']?.toString();
+        if (otherType == 'country') {
+          _msg('Rakip de ülke seçmiş. Sen kulüp seçmelisin.');
           return;
         }
-        if (!_hasCommon(teamId, otherId)) {
-          _msg(
-            'Bu takımın rakibin seçimiyle ortak oyuncusu yok. Başka takım seç.',
-          );
+        final otherClub = int.tryParse(data['teamId']?.toString() ?? '');
+        if (otherClub != null &&
+            !_hasClubCountryCommon(otherClub, country)) {
+          _msg('Bu ülkenin rakibin kulübüyle ortak oyuncusu yok.');
           return;
         }
       }
     }
 
     try {
-      await RoomService.setPlayerTeam(
+      await RoomService.setPlayerPick(
         roomCode: widget.roomCode,
         playerName: widget.playerName,
-        teamId: teamId,
+        pickType: 'country',
+        teamId: null,
+        countryName: country,
       );
       if (!mounted) return;
       setState(() {
-        _selectedTeamId = teamId;
+        _selectedCountry = country;
+        _selectedTeamId = null;
+        _pickSide = 'country';
         _iAmReady = false;
       });
     } catch (e) {
-      _msg('Takım seçilemedi: $e');
+      _msg('Seçilemedi: $e');
     }
   }
 
   Future<void> _setReady() async {
-    if (_selectedTeamId == null) {
+    if (_isClubCountry) {
+      if (_selectedTeamId == null &&
+          (_selectedCountry == null || _selectedCountry!.isEmpty)) {
+        _msg('Önce kulüp veya ülke seç.');
+        return;
+      }
+    } else if (_selectedTeamId == null) {
       _msg('Önce takım seç.');
       return;
     }
@@ -134,22 +233,53 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
       return;
     }
 
-    int? otherTeamId;
+    Map<String, dynamic>? other;
     for (final e in players.entries) {
       if (e.key == widget.playerName) continue;
-      final data = Map<String, dynamic>.from(e.value as Map);
-      otherTeamId = int.tryParse(data['teamId']?.toString() ?? '');
+      other = Map<String, dynamic>.from(e.value as Map);
       break;
     }
-
-    if (otherTeamId == null) {
-      _msg('Rakip henüz takım seçmedi.');
+    if (other == null) {
+      _msg('Rakip bulunamadı.');
       return;
     }
 
-    if (!_hasCommon(_selectedTeamId!, otherTeamId)) {
-      _msg('Takımlarınız arasında ortak oyuncu yok. Takım değiştir.');
-      return;
+    if (_isClubCountry) {
+      final myClub = _selectedTeamId;
+      final myCountry = _selectedCountry;
+      final oType = other['pickType']?.toString();
+      final oClub = int.tryParse(other['teamId']?.toString() ?? '');
+      final oCountry = other['countryName']?.toString();
+
+      if (myClub != null) {
+        if (oType != 'country' || oCountry == null || oCountry.isEmpty) {
+          _msg('Rakip henüz ülke seçmedi.');
+          return;
+        }
+        if (!_hasClubCountryCommon(myClub, oCountry)) {
+          _msg('Kesişimde ortak oyuncu yok. Seçimi değiştir.');
+          return;
+        }
+      } else if (myCountry != null) {
+        if (oType != 'club' || oClub == null) {
+          _msg('Rakip henüz kulüp seçmedi.');
+          return;
+        }
+        if (!_hasClubCountryCommon(oClub, myCountry)) {
+          _msg('Kesişimde ortak oyuncu yok. Seçimi değiştir.');
+          return;
+        }
+      }
+    } else {
+      final otherTeamId = int.tryParse(other['teamId']?.toString() ?? '');
+      if (otherTeamId == null) {
+        _msg('Rakip henüz takım seçmedi.');
+        return;
+      }
+      if (!_hasClubClubCommon(_selectedTeamId!, otherTeamId)) {
+        _msg('Takımlarınız arasında ortak oyuncu yok.');
+        return;
+      }
     }
 
     try {
@@ -177,32 +307,60 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
       final players = Map<String, dynamic>.from(room['players'] as Map);
       if (players.length != 2) throw Exception('2 oyuncu gerekli');
 
-      final teamIds = <int>[];
-      for (final e in players.entries) {
-        final data = Map<String, dynamic>.from(e.value as Map);
-        final tid = int.tryParse(data['teamId']?.toString() ?? '');
-        if (tid == null) throw Exception('Takım seçimleri eksik');
-        teamIds.add(tid);
-      }
-      if (teamIds[0] == teamIds[1]) {
-        throw Exception('Aynı takım seçilemez');
-      }
+      MatchEntity e1;
+      MatchEntity e2;
 
-      Club? c1;
-      Club? c2;
-      for (final c in _clubs) {
-        if (c.id == teamIds[0]) c1 = c;
-        if (c.id == teamIds[1]) c2 = c;
+      if (_isClubCountry) {
+        int? clubId;
+        String? country;
+        for (final e in players.entries) {
+          final data = Map<String, dynamic>.from(e.value as Map);
+          final t = data['pickType']?.toString();
+          if (t == 'club') {
+            clubId = int.tryParse(data['teamId']?.toString() ?? '');
+          } else if (t == 'country') {
+            country = data['countryName']?.toString();
+          }
+        }
+        if (clubId == null || country == null || country.isEmpty) {
+          throw Exception('Kulüp / ülke seçimleri eksik');
+        }
+        Club? club;
+        for (final c in _clubs) {
+          if (c.id == clubId) club = c;
+        }
+        if (club == null) throw Exception('Kulüp bulunamadı');
+        e1 = MatchEntity.club(club);
+        e2 = MatchEntity.country(country);
+      } else {
+        final teamIds = <int>[];
+        for (final e in players.entries) {
+          final data = Map<String, dynamic>.from(e.value as Map);
+          final tid = int.tryParse(data['teamId']?.toString() ?? '');
+          if (tid == null) throw Exception('Takım seçimleri eksik');
+          teamIds.add(tid);
+        }
+        if (teamIds[0] == teamIds[1]) {
+          throw Exception('Aynı takım seçilemez');
+        }
+        Club? c1;
+        Club? c2;
+        for (final c in _clubs) {
+          if (c.id == teamIds[0]) c1 = c;
+          if (c.id == teamIds[1]) c2 = c;
+        }
+        if (c1 == null || c2 == null) throw Exception('Takım bulunamadı');
+        e1 = MatchEntity.club(c1);
+        e2 = MatchEntity.club(c2);
       }
-      if (c1 == null || c2 == null) throw Exception('Takım bulunamadı');
 
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => GamePage(
-            entity1: MatchEntity.club(c1!),
-            entity2: MatchEntity.club(c2!),
+            entity1: e1,
+            entity2: e2,
             roomCode: widget.roomCode,
             playerName: widget.playerName,
           ),
@@ -225,17 +383,23 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
     Navigator.pop(context);
   }
 
-  List<Club> get _filtered {
+  List<Club> get _filteredClubs {
     final q = _search.trim().toLowerCase();
     if (q.isEmpty) return _clubs;
     return _clubs.where((c) => c.name.toLowerCase().contains(q)).toList();
+  }
+
+  List<String> get _filteredCountries {
+    final q = _search.trim().toLowerCase();
+    if (q.isEmpty) return _countries;
+    return _countries.where((c) => c.toLowerCase().contains(q)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hazırlık • ${widget.roomCode}'),
+        title: Text('Hazırlık · ${widget.mode.title}'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: _leave,
@@ -246,7 +410,6 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Status stream — rakip takım ADI gösterilmez
                 StreamBuilder<DatabaseEvent>(
                   stream: RoomService.watchRoomStatus(widget.roomCode),
                   builder: (context, snap) {
@@ -285,32 +448,56 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                           final pdata =
                               Map<String, dynamic>.from(e.value as Map);
                           final isMe = name == widget.playerName;
-                          final hasTeam = pdata['teamId'] != null;
                           final ready = pdata['ready'] == true;
+                          final hasPick = _isClubCountry
+                              ? (pdata['pickType'] != null)
+                              : pdata['teamId'] != null;
 
-                          // Kendi takımını göster, rakibinkini gizle
                           String subtitle;
                           if (isMe) {
-                            final tid = int.tryParse(
-                              pdata['teamId']?.toString() ?? '',
-                            );
-                            String teamName = 'Takım seçilmedi';
-                            if (tid != null) {
-                              for (final c in _clubs) {
-                                if (c.id == tid) {
-                                  teamName = c.name;
-                                  break;
+                            if (_isClubCountry) {
+                              final t = pdata['pickType']?.toString();
+                              if (t == 'club') {
+                                final tid = int.tryParse(
+                                    pdata['teamId']?.toString() ?? '');
+                                String teamName = 'Kulüp';
+                                if (tid != null) {
+                                  for (final c in _clubs) {
+                                    if (c.id == tid) {
+                                      teamName = c.name;
+                                      break;
+                                    }
+                                  }
+                                }
+                                subtitle =
+                                    'Kulüp: $teamName · ${ready ? 'Hazır' : 'Hazır değil'}';
+                              } else if (t == 'country') {
+                                subtitle =
+                                    'Ülke: ${pdata['countryName'] ?? '—'} · ${ready ? 'Hazır' : 'Hazır değil'}';
+                              } else {
+                                subtitle = 'Seçim yok';
+                              }
+                            } else {
+                              final tid = int.tryParse(
+                                  pdata['teamId']?.toString() ?? '');
+                              String teamName = 'Takım seçilmedi';
+                              if (tid != null) {
+                                for (final c in _clubs) {
+                                  if (c.id == tid) {
+                                    teamName = c.name;
+                                    break;
+                                  }
                                 }
                               }
+                              subtitle =
+                                  '$teamName · ${ready ? 'Hazır' : 'Hazır değil'}';
                             }
-                            subtitle =
-                                '$teamName • ${ready ? 'Hazır' : 'Hazır değil'}';
                           } else {
-                            subtitle = hasTeam
+                            subtitle = hasPick
                                 ? (ready
-                                    ? 'Takım seçti • Hazır'
-                                    : 'Takım seçti • Hazır değil')
-                                : 'Takım seçmedi';
+                                    ? 'Seçti · Hazır'
+                                    : 'Seçti · Hazır değil')
+                                : 'Seçmedi';
                           }
 
                           return Card(
@@ -334,17 +521,44 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Takımını seç (rakip görmez)',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
+                if (_isClubCountry) ...[
+                  const Text(
+                    'Sen ne seçeceksin?',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: 'club', label: Text('Kulüp')),
+                      ButtonSegment(value: 'country', label: Text('Ülke')),
+                    ],
+                    selected: {_pickSide},
+                    onSelectionChanged: _gameStarting || _iAmReady
+                        ? null
+                        : (s) {
+                            setState(() {
+                              _pickSide = s.first;
+                              _search = '';
+                            });
+                          },
+                  ),
+                  const SizedBox(height: 12),
+                ] else
+                  const Text(
+                    'Takımını seç (rakip görmez)',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 const SizedBox(height: 8),
                 TextField(
                   onChanged: (v) => setState(() => _search = v),
-                  decoration: const InputDecoration(
-                    labelText: 'Takım ara',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: _isClubCountry && _pickSide == 'country'
+                        ? 'Ülke ara'
+                        : 'Takım ara',
+                    prefixIcon: const Icon(Icons.search),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -354,44 +568,56 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _filtered.length,
-                    itemBuilder: (_, i) {
-                      final club = _filtered[i];
-                      final sel = club.id == _selectedTeamId;
-                      return ListTile(
-                        dense: true,
-                        title: Text(club.name),
-                        trailing: sel ? const Icon(Icons.check_circle) : null,
-                        selected: sel,
-                        onTap: _gameStarting || _iAmReady
-                            ? null
-                            : () => _selectTeam(club.id),
-                      );
-                    },
-                  ),
+                  child: _isClubCountry && _pickSide == 'country'
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _filteredCountries.length,
+                          itemBuilder: (_, i) {
+                            final country = _filteredCountries[i];
+                            final sel = country == _selectedCountry;
+                            return ListTile(
+                              dense: true,
+                              title: Text(country),
+                              trailing:
+                                  sel ? const Icon(Icons.check_circle) : null,
+                              selected: sel,
+                              onTap: _gameStarting || _iAmReady
+                                  ? null
+                                  : () => _selectCountry(country),
+                            );
+                          },
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _filteredClubs.length,
+                          itemBuilder: (_, i) {
+                            final club = _filteredClubs[i];
+                            final sel = club.id == _selectedTeamId;
+                            return ListTile(
+                              dense: true,
+                              title: Text(club.name),
+                              trailing:
+                                  sel ? const Icon(Icons.check_circle) : null,
+                              selected: sel,
+                              onTap: _gameStarting || _iAmReady
+                                  ? null
+                                  : () => _selectClub(club.id),
+                            );
+                          },
+                        ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Rakibin takımı gizli tutulur. İkiniz de hazır olunca maç başlar.',
+                Text(
+                  _isClubCountry
+                      ? 'Biri kulüp, diğeri ülke seçmeli. Ortak oyuncu zorunlu.'
+                      : 'Rakibin takımı gizli tutulur. İkiniz de hazır olunca maç başlar.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: (_selectedTeamId == null ||
-                          _gameStarting ||
-                          _iAmReady)
-                      ? null
-                      : _setReady,
-                  child: Text(
-                    _gameStarting
-                        ? 'OYUN BAŞLIYOR…'
-                        : _iAmReady
-                            ? 'HAZIR — rakip bekleniyor'
-                            : 'HAZIRIM',
-                  ),
+                  onPressed: _gameStarting || _iAmReady ? null : _setReady,
+                  child: Text(_iAmReady ? 'Hazırsın…' : 'HAZIR'),
                 ),
               ],
             ),

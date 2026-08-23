@@ -3,20 +3,23 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../models/daily_challenge_state.dart';
+import '../models/football_calendar_theme.dart';
+import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
-import '../services/daily_challenge_service.dart';
-import '../services/daily_share_helper.dart';
-import '../services/daily_leaderboard_service.dart';
 import '../services/auth_service.dart';
-import '../services/game_service.dart';
+import '../services/daily_challenge_service.dart';
+import '../services/daily_leaderboard_service.dart';
+import '../services/daily_playable_matches.dart';
+import '../services/daily_share_helper.dart';
 import '../services/search_service.dart';
 
 class DailyChallengeController extends ChangeNotifier {
   /// null = bugün
   final DateTime? playDate;
+  final PlayableDailyMatch? presetMatch;
 
-  DailyChallengeController({this.playDate});
+  DailyChallengeController({this.playDate, this.presetMatch});
 
   DailyChallengeState _state = const DailyChallengeState();
   DailyChallengeState get state => _state;
@@ -31,21 +34,38 @@ class DailyChallengeController extends ChangeNotifier {
   DateTime get _day => playDate ?? DateTime.now();
 
   Future<void> initialize() async {
-    final theme = DailyChallengeService.themeFor(_day);
-    final matchup = DailyChallengeService.getMatchupForDate(_day);
+    final MatchEntity entity1;
+    final MatchEntity entity2;
+    final String label;
+    final FootballCalendarTheme theme;
+
+    if (presetMatch != null) {
+      entity1 = presetMatch!.entity1;
+      entity2 = presetMatch!.entity2;
+      label = presetMatch!.label;
+      theme = presetMatch!.theme;
+    } else {
+      final matchup =
+          await DailyChallengeService.getMatchupForDateAsync(_day);
+      entity1 = matchup.entity1;
+      entity2 = matchup.entity2;
+      label = matchup.label;
+      theme = matchup.theme;
+    }
+
     final already = await DailyChallengeService.isCompletedOn(_day);
     final streak = await DailyChallengeService.getStreak();
 
     final matchingPlayers = DailyChallengeService.qualityMatchingPlayers(
-      entity1: matchup.entity1,
-      entity2: matchup.entity2,
+      entity1: entity1,
+      entity2: entity2,
     );
 
     _state = _state.copyWith(
       isLoading: false,
-      entity1: matchup.entity1,
-      entity2: matchup.entity2,
-      label: matchup.label,
+      entity1: entity1,
+      entity2: entity2,
+      label: label,
       theme: theme,
       matchingPlayers: matchingPlayers,
       secondsLeft: theme.roundSeconds,
@@ -56,7 +76,8 @@ class DailyChallengeController extends ChangeNotifier {
 
     notifyListeners();
 
-    if (already) {
+    // Liste modelinde preset maç varken "bugün bitti" diye kilitleme
+    if (already && presetMatch == null) {
       final lastScore = await DailyChallengeService.getLastScore();
       _state = _state.copyWith(isFinished: true, score: lastScore);
       notifyListeners();

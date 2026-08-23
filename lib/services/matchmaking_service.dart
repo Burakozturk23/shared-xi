@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import '../online/online_mode_catalog.dart';
 import 'auth_service.dart';
+import 'club_country_pair_service.dart';
 import 'match_service.dart';
 import 'team_pair_service.dart';
 
@@ -26,6 +27,9 @@ class MatchmakingState {
   final String? team1Name;
   final String? team2Name;
   final String? opponentName;
+  /// club_club | club_country
+  final String? matchType;
+  final bool entity2IsCountry;
 
   const MatchmakingState({
     this.status = MatchmakingStatus.idle,
@@ -36,6 +40,8 @@ class MatchmakingState {
     this.team1Name,
     this.team2Name,
     this.opponentName,
+    this.matchType,
+    this.entity2IsCountry = false,
   });
 
   MatchmakingState copyWith({
@@ -47,6 +53,8 @@ class MatchmakingState {
     String? team1Name,
     String? team2Name,
     String? opponentName,
+    String? matchType,
+    bool? entity2IsCountry,
   }) {
     return MatchmakingState(
       status: status ?? this.status,
@@ -57,6 +65,8 @@ class MatchmakingState {
       team1Name: team1Name ?? this.team1Name,
       team2Name: team2Name ?? this.team2Name,
       opponentName: opponentName ?? this.opponentName,
+      matchType: matchType ?? this.matchType,
+      entity2IsCountry: entity2IsCountry ?? this.entity2IsCountry,
     );
   }
 }
@@ -81,28 +91,33 @@ class MatchmakingService {
   static bool _claimInFlight = false;
   static bool _matchedHandled = false;
   static String? _activeUid;
+  static String _activeMode = 'club_club';
 
   static Future<void> startSearch({
     required void Function(MatchmakingState state) onUpdate,
     String? displayName,
+    OnlinePlayMode mode = OnlinePlayMode.sharedXi,
   }) async {
     await cancelSearch(silent: true);
     _matchedHandled = false;
+    _activeMode = mode.wireName;
 
     final user = await AuthService.ensureSignedIn(displayName: displayName);
     final uid = user.uid;
     _activeUid = uid;
     final name = user.displayName ?? displayName ?? 'Oyuncu';
 
-    onUpdate(const MatchmakingState(
+    onUpdate(MatchmakingState(
       status: MatchmakingStatus.searching,
       message: 'Rakip aranıyor…',
+      matchType: _activeMode,
     ));
 
     await _queueRef.child(uid).set({
       'uid': uid,
       'displayName': name,
       'status': 'waiting',
+      'mode': _activeMode,
       'joinedAt': ServerValue.timestamp,
       'matchId': null,
     });
@@ -131,7 +146,8 @@ class MatchmakingService {
       await cancelSearch(silent: true);
       onUpdate(const MatchmakingState(
         status: MatchmakingStatus.timeout,
-        message: 'Şu an uygun rakip yok. Tekrar deneyebilir veya arkadaşınla oynayabilirsin.',
+        message:
+            'Şu an uygun rakip yok. Tekrar deneyebilir veya arkadaşınla oynayabilirsin.',
       ));
     });
   }
@@ -163,6 +179,9 @@ class MatchmakingService {
         if (entry.value is! Map) continue;
         final o = Map<String, dynamic>.from(entry.value as Map);
         if (o['status'] != 'waiting') continue;
+        // Aynı mod
+        final oMode = o['mode']?.toString() ?? 'club_club';
+        if (oMode != _activeMode) continue;
         final joined = int.tryParse(o['joinedAt']?.toString() ?? '') ?? 0;
         if (bestJoined == null || joined < bestJoined) {
           bestJoined = joined;
@@ -172,40 +191,62 @@ class MatchmakingService {
       }
 
       if (bestUid == null) return;
+      if (uid.compareTo(bestUid) < 0) return;
 
-      // Deterministik: sadece lexicographically büyük uid claim eder.
-      // Böylece iki taraf aynı anda claim etmez.
-      if (uid.compareTo(bestUid) < 0) {
-        return;
+      int team1Id;
+      String team1Name;
+      int team2Id;
+      String team2Name;
+      List<int> commonIds;
+      final isCountry = _activeMode == 'club_country';
+
+      if (isCountry) {
+        final pair = ClubCountryPairService.pickValidPair();
+        if (pair == null) {
+          onUpdate(const MatchmakingState(
+            status: MatchmakingStatus.error,
+            message: 'Geçerli kulüp×ülke çifti bulunamadı.',
+          ));
+          return;
+        }
+        team1Id = pair.club.id;
+        team1Name = pair.club.name;
+        team2Id = 0;
+        team2Name = pair.country;
+        commonIds = pair.commonPlayerIds;
+      } else {
+        final pair = TeamPairService.pickValidPair();
+        if (pair == null) {
+          onUpdate(const MatchmakingState(
+            status: MatchmakingStatus.error,
+            message: 'Geçerli takım çifti bulunamadı.',
+          ));
+          return;
+        }
+        team1Id = pair.team1.id;
+        team1Name = pair.team1.name;
+        team2Id = pair.team2.id;
+        team2Name = pair.team2.name;
+        commonIds = pair.commonPlayerIds;
       }
 
-      final pair = TeamPairService.pickValidPair();
-      if (pair == null) {
-        onUpdate(const MatchmakingState(
-          status: MatchmakingStatus.error,
-          message: 'Geçerli takım çifti bulunamadı.',
-        ));
-        return;
-      }
-
-      // Sabit matchId (random yok) → iki taraf aynı id'yi görür
       final matchId = _stableMatchId(uid, bestUid);
 
-      // 1) ÖNCE maç dokümanını yaz (rakip dinleyicisi null görmesin)
       await MatchService.createMatch(
         matchId: matchId,
         player1Uid: uid,
         player1Name: displayName,
         player2Uid: bestUid,
         player2Name: opponentName,
-        team1Id: pair.team1.id,
-        team1Name: pair.team1.name,
-        team2Id: pair.team2.id,
-        team2Name: pair.team2.name,
-        commonPlayerIds: pair.commonPlayerIds,
+        team1Id: team1Id,
+        team1Name: team1Name,
+        team2Id: team2Id,
+        team2Name: team2Name,
+        commonPlayerIds: commonIds,
+        matchType: _activeMode,
+        entity2IsCountry: isCountry,
       );
 
-      // 2) Rakibi claim et
       final claim = await _queueRef.child(bestUid).runTransaction((current) {
         if (current is! Map) return Transaction.abort();
         final data = Map<String, dynamic>.from(current);
@@ -216,12 +257,8 @@ class MatchmakingService {
         return Transaction.success(data);
       });
 
-      if (!claim.committed) {
-        // Rakip kaçtı / başkası aldı — maçı silmeye gerek yok, orphan kalabilir
-        return;
-      }
+      if (!claim.committed) return;
 
-      // 3) Kendini matched yap
       await _queueRef.child(uid).update({
         'status': 'matched',
         'matchId': matchId,
@@ -229,7 +266,6 @@ class MatchmakingService {
 
       await _onMatched(matchId: matchId, onUpdate: onUpdate);
     } catch (_) {
-      // bir sonraki poll
     } finally {
       _claimInFlight = false;
     }
@@ -244,7 +280,6 @@ class MatchmakingService {
     _pollTimer?.cancel();
     _timeoutTimer?.cancel();
 
-    // Maç dokümanı gecikmeli yazılmış olabilir → retry
     Map<String, dynamic>? match;
     for (var i = 0; i < 15; i++) {
       match = await MatchService.getMatch(matchId);
@@ -262,6 +297,9 @@ class MatchmakingService {
       return;
     }
 
+    final entity2IsCountry = match['entity2IsCountry'] == true ||
+        match['matchType']?.toString() == 'club_country';
+
     onUpdate(MatchmakingState(
       status: MatchmakingStatus.matched,
       matchId: matchId,
@@ -271,9 +309,10 @@ class MatchmakingService {
       team1Name: match['team1Name']?.toString(),
       team2Name: match['team2Name']?.toString(),
       opponentName: _opponentName(match),
+      matchType: match['matchType']?.toString() ?? _activeMode,
+      entity2IsCountry: entity2IsCountry,
     ));
 
-    // Kuyruk kaydını temizle (opsiyonel)
     final uid = _activeUid;
     if (uid != null) {
       try {
@@ -289,7 +328,6 @@ class MatchmakingService {
     return match['player1Name']?.toString();
   }
 
-  /// Random yok — aynı iki uid her zaman aynı prefix.
   static String _stableMatchId(String a, String b) {
     final sorted = [a, b]..sort();
     final t = DateTime.now().millisecondsSinceEpoch.toRadixString(16);

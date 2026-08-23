@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'online_mode_catalog.dart';
 import 'room_service.dart';
 import 'online_setup_page.dart';
 import 'online_waiting_page.dart';
 
 /// Sadece oda oluştur / katıl. Takım seçimi ayrı sayfada.
 class OnlineLobbyPage extends StatefulWidget {
-  const OnlineLobbyPage({super.key});
+  final OnlinePlayMode mode;
+
+  const OnlineLobbyPage({
+    super.key,
+    this.mode = OnlinePlayMode.sharedXi,
+  });
 
   @override
   State<OnlineLobbyPage> createState() => _OnlineLobbyPageState();
@@ -42,7 +48,10 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
 
     setState(() => _isCreating = true);
     try {
-      final code = await RoomService.createRoom(playerName: name);
+      final code = await RoomService.createRoom(
+        playerName: name,
+        matchType: widget.mode.wireName,
+      );
       if (!mounted) return;
       setState(() => _isCreating = false);
 
@@ -52,6 +61,7 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
           builder: (_) => OnlineWaitingPage(
             roomCode: code,
             playerName: name,
+            mode: widget.mode,
           ),
         ),
       );
@@ -89,13 +99,19 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
         return;
       }
 
-      // 2. oyuncu → direkt hazırlık sayfası
+      // Oda modunu oku (host ne seçtiyse)
+      final room = await RoomService.getRoom(code);
+      final wire = room?['matchType']?.toString();
+      final mode = OnlinePlayModeX.fromWire(wire) ?? widget.mode;
+
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => OnlineSetupPage(
             roomCode: code,
             playerName: name,
+            mode: mode,
           ),
         ),
       );
@@ -109,7 +125,7 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Arkadaşlarınla Oyna')),
+      appBar: AppBar(title: Text('Arkadaş · ${widget.mode.title}')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -163,10 +179,12 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
             child: Text(_isJoining ? 'Katılınıyor…' : 'Katıl'),
           ),
           const SizedBox(height: 24),
-          const Text(
-            '2 kişi olunca takım seçimi açılır. Rakibin takımı gizli kalır. Süre: 90 sn.',
+          Text(
+            widget.mode == OnlinePlayMode.clubCountry
+                ? 'Kulüp × Ülke: biri kulüp, diğeri ülke seçer. Ortak oyuncu gerekir.'
+                : '2 kişi olunca takım seçimi açılır. Rakibin takımı gizli kalır. Süre: 90 sn.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, fontSize: 13),
+            style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
         ],
       ),

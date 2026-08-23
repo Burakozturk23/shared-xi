@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../models/football_calendar_theme.dart';
 import '../services/daily_challenge_service.dart';
+import '../services/daily_playable_matches.dart';
 import 'daily_challenge_game_page.dart';
 
 class FootballCalendarPage extends StatefulWidget {
@@ -22,6 +22,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
   Set<String> _badges = {};
   final Map<String, bool> _unlockedCache = {};
   final Map<String, bool> _completedCache = {};
+  List<PlayableDailyMatch> _playable = [];
+  bool _loadingMatches = true;
 
   @override
   void initState() {
@@ -47,6 +49,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
       _completedCache[key] = await DailyChallengeService.isCompletedOn(day);
     }
 
+    final playable = await DailyPlayableMatches.forDate(DateTime.now());
+
     if (!mounted) return;
     setState(() {
       _streak = streak;
@@ -55,7 +59,13 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
       _playedToday = played;
       _lastRate = rate;
       _badges = badges;
-      _theme = DailyChallengeService.themeFor();
+      _playable = playable;
+      _loadingMatches = false;
+      if (playable.isNotEmpty) {
+        _theme = playable.first.theme;
+      } else {
+        _theme = DailyChallengeService.themeFor();
+      }
     });
   }
 
@@ -84,28 +94,69 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
     }
 
     if (d == t) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const DailyChallengeGamePage()),
-      );
-      _loadMeta();
+      // Bugün: liste zaten ekranda; ekstra bir şey yapma
       return;
     }
 
-    // Geçmiş gün
     final unlocked = await DailyChallengeService.isUnlocked(d);
     if (unlocked) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => DailyChallengeGamePage(playDate: d),
-        ),
-      );
+      final list = await DailyPlayableMatches.forDate(d);
+      if (!mounted) return;
+      if (list.isEmpty) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DailyChallengeGamePage(playDate: d),
+          ),
+        );
+      } else if (list.length == 1) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DailyChallengeGamePage(playDate: d, match: list.first),
+          ),
+        );
+      } else {
+        await showModalBottomSheet<void>(
+          context: context,
+          builder: (ctx) => SafeArea(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const ListTile(
+                  title: Text('Maç seç',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+                ...list.map(
+                  (m) => ListTile(
+                    title: Text(m.label),
+                    subtitle: Text(m.leagueName),
+                    trailing: const Icon(Icons.play_arrow),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DailyChallengeGamePage(
+                            playDate: d,
+                            match: m,
+                          ),
+                        ),
+                      ).then((_) => _loadMeta());
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+        _loadMeta();
+        return;
+      }
       _loadMeta();
       return;
     }
 
-    // Telafi dialog
     final points = await DailyChallengeService.getPoints();
     if (!mounted) return;
     final confirm = await showDialog<bool>(
@@ -137,13 +188,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
       SnackBar(content: Text(result.message)),
     );
     if (result.ok) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => DailyChallengeGamePage(playDate: d),
-        ),
-      );
-      _loadMeta();
+      await _onDayTap(d);
     } else {
       _loadMeta();
     }
@@ -166,7 +211,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
             const SizedBox(height: 16),
             _buildStatsRow(),
             const SizedBox(height: 16),
-            _buildTodayCard(),
+            _buildMatchList(),
             const SizedBox(height: 16),
             _buildWeekStrip(now),
             const SizedBox(height: 16),
@@ -174,7 +219,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
             const SizedBox(height: 12),
             Text(
               'Geçmiş günlere dokun → ${DailyChallengeService.unlockCost} puanla telafi.\n'
-              'Fikstür API, push ve canlı skor sonraki fazda.',
+              'Bugünün eşleşmeleri gerçek fikstürden seçilir. İstediğin kadar oyna.',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
           ],
@@ -211,8 +256,12 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
                 style: const TextStyle(
                     fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(_theme.subtitle,
-                style: const TextStyle(fontSize: 13, color: Colors.grey)),
+            Text(
+              _playable.isNotEmpty
+                  ? '${_playable.length} oynanabilir maç'
+                  : _theme.subtitle,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+            ),
           ],
         ),
       ),
@@ -256,50 +305,66 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
     );
   }
 
-  Widget _buildTodayCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              _playedToday
-                  ? 'Bugünkü mücadele tamamlandı'
-                  : 'Bugünün Mücadelesi',
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${_theme.roundSeconds}s · ${_theme.maxLives} can · hedef ${_theme.targetFinds} oyuncu',
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
-            ),
-            const SizedBox(height: 14),
-            SizedBox(
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _accent.withValues(alpha: 0.85),
-                ),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const DailyChallengeGamePage(),
-                    ),
-                  );
-                  _loadMeta();
-                },
-                child: Text(
-                  _playedToday ? 'SONUCU GÖR' : 'MÜCADELEYE BAŞLA',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
+  Widget _buildMatchList() {
+    if (_loadingMatches) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(child: CircularProgressIndicator()),
         ),
-      ),
+      );
+    }
+    if (_playable.isEmpty) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('Bugün oynanabilir maç bulunamadı.'),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Bugünün Maçları',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'İstediğin maçı seç, istediğin kadar oyna.',
+          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+        ),
+        const SizedBox(height: 12),
+        ..._playable.map(
+          (m) => Card(
+            child: ListTile(
+              title: Text(
+                m.label,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                [
+                  if (m.leagueName.isNotEmpty) m.leagueName,
+                  if (m.isDerby) 'Derbi',
+                  '${m.theme.roundSeconds}s',
+                  '${m.theme.maxLives} can',
+                  'hedef ${m.theme.targetFinds}',
+                ].join(' · '),
+              ),
+              trailing: const Icon(Icons.play_arrow),
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DailyChallengeGamePage(match: m),
+                  ),
+                );
+                _loadMeta();
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -326,7 +391,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
                 final key = DailyChallengeService.dateKeyFor(day);
                 final unlocked = _unlockedCache[key] ?? isToday;
                 final completed = _completedCache[key] ?? false;
-                final isFuture = day.isAfter(DateTime(now.year, now.month, now.day));
+                final isFuture = day.isAfter(
+                    DateTime(now.year, now.month, now.day));
 
                 final icon = switch (theme.kind) {
                   CalendarThemeKind.europeNight => '⭐',

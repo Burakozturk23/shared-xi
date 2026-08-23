@@ -9,6 +9,9 @@ import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import 'game_service.dart';
+import 'daily_fixture_service.dart';
+import 'club_name_resolver.dart';
+
 
 class DailyChallengeService {
   DailyChallengeService._();
@@ -76,6 +79,75 @@ class DailyChallengeService {
 
     return _fromGlobalPool(date);
   }
+    /// Önce RTDB daily_fixtures; olmazsa eski algoritma.
+  static Future<
+      ({
+        MatchEntity entity1,
+        MatchEntity entity2,
+        String label,
+        FootballCalendarTheme theme,
+      })> getMatchupForDateAsync(DateTime date) async {
+    final day = await DailyFixtureService.fetchDay(date);
+    final top = day?.topMatch;
+
+    if (top != null) {
+      final home = ClubNameResolver.resolve(top.homeName);
+      final away = ClubNameResolver.resolve(top.awayName);
+      if (home != null && away != null && home.id != away.id) {
+        final q = _qualityCount(
+          MatchEntity.club(home),
+          MatchEntity.club(away),
+        );
+        if (q >= 3) {
+          final label = top.isDerby
+              ? '${home.name} 🆚 ${away.name}'
+              : '${home.name} × ${away.name}';
+          final theme = FootballCalendarTheme.fromFixture(
+            isDerby: top.isDerby,
+            leagueId: top.leagueId,
+            label: label,
+          );
+          return (
+            entity1: MatchEntity.club(home),
+            entity2: MatchEntity.club(away),
+            label: label,
+            theme: theme,
+          );
+        }
+      }
+
+      // top uymazsa listedeki diğer maçlara bak
+      for (final m in day!.matches) {
+        final h = ClubNameResolver.resolve(m.homeName);
+        final a = ClubNameResolver.resolve(m.awayName);
+        if (h == null || a == null || h.id == a.id) continue;
+        final q = _qualityCount(MatchEntity.club(h), MatchEntity.club(a));
+        if (q < 3) continue;
+        final label =
+            m.isDerby ? '${h.name} 🆚 ${a.name}' : '${h.name} × ${a.name}';
+        final theme = FootballCalendarTheme.fromFixture(
+          isDerby: m.isDerby,
+          leagueId: m.leagueId,
+          label: label,
+        );
+        return (
+          entity1: MatchEntity.club(h),
+          entity2: MatchEntity.club(a),
+          label: label,
+          theme: theme,
+        );
+      }
+    }
+
+    // Fallback
+    final fb = getMatchupForDate(date);
+    return (
+      entity1: fb.entity1,
+      entity2: fb.entity2,
+      label: fb.label,
+      theme: FootballCalendarTheme.forDate(date),
+    );
+  }
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})?
       _bestFromCandidates(
@@ -136,6 +208,8 @@ class DailyChallengeService {
     }
     return n;
   }
+    static int qualityCountPublic(MatchEntity a, MatchEntity b) =>
+      _qualityCount(a, b);
 
   static bool _belongs(Player p, MatchEntity e) {
     switch (e.type) {
