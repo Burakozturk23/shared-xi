@@ -6,9 +6,8 @@ import 'online_lobby_page.dart';
 import 'online_grid_lobby_page.dart';
 import 'online_five_lobby_page.dart';
 import 'online_cinko_lobby_page.dart';
+import 'online_loto_lobby_page.dart';
 import 'club_manager_online_lobby_page.dart';
-// Loto lobby dosyanın adı farklıysa düzelt:
-// import 'online_loto_lobby_page.dart';
 
 /// Arkadaş: önce mod seç, sonra oda kur / katıl.
 class OnlineFriendsModePage extends StatelessWidget {
@@ -32,8 +31,7 @@ class OnlineFriendsModePage extends StatelessWidget {
       case OnlinePlayMode.cinko:
         page = const OnlineCinkoLobbyPage();
       case OnlinePlayMode.loto:
-        // Kendi loto lobby import’unu bağla; yoksa geçici olarak lobby
-        page = const OnlineLobbyPage();
+        page = const OnlineLotoLobbyPage();
       case OnlinePlayMode.clubManager:
         page = const ClubManagerOnlineLobbyPage();
     }

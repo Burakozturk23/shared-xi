@@ -21,7 +21,6 @@ class BuildXiController extends ChangeNotifier {
 
   void initialize() {
     _pool = _buildPool();
-
     final costs = _computeCosts(_pool);
 
     _state = BuildXiState(
@@ -55,14 +54,28 @@ class BuildXiController extends ChangeNotifier {
             .toList();
 
       case BuildXiPoolType.clubPair:
+        // Eski mantık (artık kullanılmıyor, tutuyoruz)
         final a = theme.clubPairIds![0];
         final b = theme.clubPairIds![1];
         return players
             .where((p) => p.clubs.contains(a) && p.clubs.contains(b))
             .toList();
 
+      case BuildXiPoolType.clubUnion:
+        // Yeni: A veya B
+        final a = theme.clubPairIds![0];
+        final b = theme.clubPairIds![1];
+        return players
+            .where((p) => p.clubs.contains(a) || p.clubs.contains(b))
+            .toList();
+
       case BuildXiPoolType.all:
-        return players;
+        var list = players;
+        // Wanderers filtresi
+        if (theme.minClubs != null) {
+          list = list.where((p) => p.clubs.length >= theme.minClubs!).toList();
+        }
+        return list;
     }
   }
 
@@ -118,13 +131,16 @@ class BuildXiController extends ChangeNotifier {
   List<Player> eligiblePlayersFor(int slotIndex, String query) {
     final slot = _state.formation!.slots[slotIndex];
     final used = _usedPlayerIds;
-    final usedCountries = theme.uniqueNationalityRule ? _usedCountries : <String>{};
+    final usedCountries =
+        theme.uniqueNationalityRule ? _usedCountries : <String>{};
 
     var candidates = _pool.where((p) {
       if (used.contains(p.id)) return false;
 
-      final positionMatch = slot.acceptedDetailedPositions.contains(p.detailedPosition) ||
-          p.position == slot.fallbackBroadPosition;
+      // Sadece detaylı pozisyon eşleşmesi (RB ↔ CB karışmasın)
+      final detailed = p.detailedPosition.trim();
+      final positionMatch = detailed.isNotEmpty &&
+          slot.acceptedDetailedPositions.contains(detailed);
       if (!positionMatch) return false;
 
       if (theme.uniqueNationalityRule &&
@@ -139,7 +155,8 @@ class BuildXiController extends ChangeNotifier {
     }).toList();
 
     if (query.trim().isNotEmpty) {
-      candidates = candidates.where((p) => SearchService.contains(p.name, query)).toList();
+      candidates =
+          candidates.where((p) => SearchService.contains(p.name, query)).toList();
     }
 
     candidates.sort((a, b) => _state.costOf(b).compareTo(_state.costOf(a)));
@@ -166,17 +183,23 @@ class BuildXiController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void finish() {
-    if (!_state.isComplete) return;
+  /// Anlık skor önizlemesi (eksik slotlarla da çalışır)
+  BuildXiScoreBreakdown previewBreakdown() {
+    final players = _state.slotPlayers.whereType<Player>().toList();
+    if (players.isEmpty) {
+      return const BuildXiScoreBreakdown();
+    }
 
-    final players = _state.slotPlayers.cast<Player>();
-    final adjacency = _state.formation!.adjacency;
-
+    final adjacency = formation.adjacency;
     var chemistry = 0;
-    for (var i = 0; i < players.length; i++) {
+    for (var i = 0; i < _state.slotPlayers.length; i++) {
+      final pi = _state.slotPlayers[i];
+      if (pi == null) continue;
       for (final j in adjacency[i]) {
         if (j <= i) continue;
-        final common = players[i].clubs.toSet().intersection(players[j].clubs.toSet());
+        final pj = _state.slotPlayers[j];
+        if (pj == null) continue;
+        final common = pi.clubs.toSet().intersection(pj.clubs.toSet());
         if (common.isNotEmpty) chemistry += 2;
       }
     }
@@ -190,7 +213,9 @@ class BuildXiController extends ChangeNotifier {
     final sharedClubIds = <int>{};
     for (var i = 0; i < players.length; i++) {
       for (var j = i + 1; j < players.length; j++) {
-        sharedClubIds.addAll(players[i].clubs.toSet().intersection(players[j].clubs.toSet()));
+        sharedClubIds.addAll(
+          players[i].clubs.toSet().intersection(players[j].clubs.toSet()),
+        );
       }
     }
     final clubBonus = sharedClubIds.length >= 6 ? 15 : 0;
@@ -205,15 +230,64 @@ class BuildXiController extends ChangeNotifier {
 
     final budgetBonus = _state.usedBudget <= 120 ? 15 : 0;
 
+    return BuildXiScoreBreakdown(
+      chemistry: chemistry,
+      countryBonus: countryBonus,
+      clubBonus: clubBonus,
+      continentBonus: continentBonus,
+      budgetBonus: budgetBonus,
+    );
+  }
+
+  /// Canlı sayaçlar (UI chip'leri için)
+  Map<String, int> previewStats() {
+    final players = _state.slotPlayers.whereType<Player>().toList();
+    final countries = <String>{};
+    for (final p in players) {
+      countries.addAll(p.countries);
+    }
+
+    final sharedClubIds = <int>{};
+    for (var i = 0; i < players.length; i++) {
+      for (var j = i + 1; j < players.length; j++) {
+        sharedClubIds.addAll(
+          players[i].clubs.toSet().intersection(players[j].clubs.toSet()),
+        );
+      }
+    }
+
+    final continents = <Continent>{};
+    for (final p in players) {
+      if (p.countries.isEmpty) continue;
+      final c = continentOf(p.countries.first);
+      if (c != null) continents.add(c);
+    }
+
+    final bd = previewBreakdown();
+    return {
+      'chemistry': bd.chemistry,
+      'countries': countries.length,
+      'clubLinks': sharedClubIds.length,
+      'continents': continents.length,
+      'total': bd.total,
+    };
+  }
+
+  static int starsFromScore(int total) {
+    if (total >= 95) return 3;
+    if (total >= 80) return 2;
+    if (total >= 60) return 1;
+    return 0;
+  }
+
+  void finish() {
+    if (!_state.isComplete) return;
+
+    final breakdown = previewBreakdown();
+
     _state = _state.copyWith(
       isFinished: true,
-      breakdown: BuildXiScoreBreakdown(
-        chemistry: chemistry,
-        countryBonus: countryBonus,
-        clubBonus: clubBonus,
-        continentBonus: continentBonus,
-        budgetBonus: budgetBonus,
-      ),
+      breakdown: breakdown,
     );
 
     notifyListeners();

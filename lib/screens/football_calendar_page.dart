@@ -348,7 +348,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage> {
                   if (m.isDerby) 'Derbi',
                   '${m.theme.roundSeconds}s',
                   '${m.theme.maxLives} can',
-                  'hedef ${m.theme.targetFinds}',
+                  '${m.sharedCount} ortak',
                 ].join(' · '),
               ),
               trailing: const Icon(Icons.play_arrow),

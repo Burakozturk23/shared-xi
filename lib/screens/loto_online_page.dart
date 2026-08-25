@@ -71,34 +71,40 @@ class _LotoOnlinePageState extends State<LotoOnlinePage> {
             'placements': {},
             'queueIndex': 0,
             'finished': false,
+            'score': 0,
+            'correct': 0,
           },
         },
       });
     } else {
-      final snap = await _gameRef.get();
-      if (snap.exists && snap.value is Map) {
-        final data = Map<String, dynamic>.from(snap.value as Map);
-        final boardMap = Map<String, dynamic>.from(data['board'] as Map);
-        final board = LotoVersusController.boardFromWire(boardMap);
-        _c.start(
-          vsBot: false,
-          matchTimer: true,
-          matchSeconds: (data['matchSeconds'] as int?) ?? 180,
-          fixedBoard: board,
-          difficulty: board.difficulty,
-          leagueFilter: board.leagueFilter,
-        );
+      final boardReady =
+          await _waitForBoard(timeout: const Duration(seconds: 12));
+      if (!boardReady) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tahta yüklenemedi. Odaya yeniden katıl.'),
+            ),
+          );
+          Navigator.pop(context);
+        }
+        return;
       }
     }
 
     _sub = _gameRef.onValue.listen((event) {
       if (!event.snapshot.exists || event.snapshot.value is! Map) return;
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = Map<String, dynamic>.from(
+        (event.snapshot.value as Map).map((k, v) => MapEntry('$k', v)),
+      );
       final players = data['players'];
       if (players is! Map) return;
       for (final e in players.entries) {
-        if (e.key == widget.playerName) continue;
-        final p = Map<String, dynamic>.from(e.value as Map);
+        if ('${e.key}' == widget.playerName) continue;
+        if (e.value is! Map) continue;
+        final p = Map<String, dynamic>.from(
+          (e.value as Map).map((k, v) => MapEntry('$k', v)),
+        );
         final rawPl = p['placements'];
         final placements = <int, int>{};
         if (rawPl is Map) {
@@ -110,13 +116,70 @@ class _LotoOnlinePageState extends State<LotoOnlinePage> {
         }
         _c.applyOpponentRemote(
           placements: placements,
-          queueIndex: p['queueIndex'] as int? ?? 0,
+          queueIndex: (p['queueIndex'] as num?)?.toInt() ?? 0,
           finished: p['finished'] as bool? ?? false,
         );
       }
     });
 
+    // Misafir / host: kendi slotunu güvenceye al
+    await _gameRef.child('players').child(widget.playerName).update({
+      'placements': {},
+      'queueIndex': 0,
+      'finished': false,
+      'score': 0,
+      'correct': 0,
+    });
+
     if (mounted) setState(() => _ready = true);
+  }
+
+  /// Misafir: host tahtayı yazana kadar bekle.
+  Future<bool> _waitForBoard({required Duration timeout}) async {
+    final completer = Completer<bool>();
+    StreamSubscription<DatabaseEvent>? sub;
+    Timer? timer;
+
+    void tryParse(Object? value) {
+      if (value is! Map) return;
+      final data = Map<String, dynamic>.from(
+        value.map((k, v) => MapEntry('$k', v)),
+      );
+      final boardRaw = data['board'];
+      if (boardRaw is! Map) return;
+      try {
+        final boardMap = Map<String, dynamic>.from(
+          boardRaw.map((k, v) => MapEntry('$k', v)),
+        );
+        final board = LotoVersusController.boardFromWire(boardMap);
+        _c.start(
+          vsBot: false,
+          matchTimer: true,
+          matchSeconds: (data['matchSeconds'] as num?)?.toInt() ?? 180,
+          fixedBoard: board,
+          difficulty: board.difficulty,
+          leagueFilter: board.leagueFilter,
+        );
+        if (!completer.isCompleted) completer.complete(true);
+      } catch (_) {}
+    }
+
+    final snap = await _gameRef.get();
+    if (snap.exists) tryParse(snap.value);
+
+    if (!completer.isCompleted) {
+      sub = _gameRef.onValue.listen((e) {
+        if (e.snapshot.exists) tryParse(e.snapshot.value);
+      });
+      timer = Timer(timeout, () {
+        if (!completer.isCompleted) completer.complete(false);
+      });
+    }
+
+    final ok = await completer.future;
+    timer?.cancel();
+    await sub?.cancel();
+    return ok;
   }
 
   void _onCtrl() {

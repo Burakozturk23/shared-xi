@@ -53,7 +53,7 @@ class WelcomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     const Text(
-                      'SHARED XI',
+                      'LINKBALL',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 32,
@@ -80,7 +80,7 @@ class WelcomePage extends StatelessWidget {
             _sectionHeader('Öne çıkan'),
             _sliverModeList(const [
               _ModeItem(
-                title: 'Günün Mücadelesi',
+                title: 'Daily Matches',
                 subtitle: 'Her gün yeni futbol bulmacası',
                 icon: Icons.calendar_today_rounded,
                 accent: Color(0xFFFFB300),
@@ -157,13 +157,13 @@ class WelcomePage extends StatelessWidget {
                 page: PyramidPage(),
               ),
               _ModeItem(
-  title: 'Eşleştirme',
+  title: 'Matching',
   subtitle: 'Kulüp ve oyuncuyu eşleştir',
   icon: Icons.grid_view_rounded,
   page: MatchPairPage(),
 ),
 _ModeItem(
-  title: 'Harf 11',
+  title: 'Letter 11',
   subtitle: '11 harf, 11 oyuncu',
   icon: Icons.filter_1,
   page: Harf11Page(),
@@ -210,7 +210,7 @@ _ModeItem(
                 page: HigherLowerModeSelectionPage(),
               ),
               _ModeItem(
-                title: 'Build XI',
+                title: 'Squad Challenge',
                 subtitle: 'Tema seç,kadro kur',
                 icon: Icons.groups_rounded,
                 page: BuildXiThemeSelectionPage(),
@@ -230,8 +230,8 @@ _ModeItem(
             _sectionHeader('Keşfet'),
             _sliverModeList(const [
               _ModeItem(
-                title: 'Veritabanı',
-                subtitle: 'Kulüp · Milli takım · Lig',
+                title: 'Ortak Oyuncu Keşfi',
+                subtitle: 'İki taraf seç, ortakları gör',
                 icon: Icons.storage_rounded,
                 accent: AppTheme.secondaryColor,
                 page: MatchTypeSelectionPage(),

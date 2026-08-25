@@ -50,14 +50,27 @@ class PassaparolaQuestion {
   });
 
   /// Cevap eşleştirme (normalize + alternatifler).
+  /// Soyad eşleşmesinde kelime, soru harfiyle uyumlu olmalı
+  /// (B harfinde Guardiola gibi hataları engeller).
   bool matchesAnswer(String input) {
     final n = normalizeAnswer(input);
     if (n.isEmpty) return false;
+    final letterN = normalizeAnswer(letter);
+    if (letterN.isEmpty) return false;
+
     for (final a in answers) {
-      if (normalizeAnswer(a) == n) return true;
-      // Soyad / kısa form: cevabın son kelimesi
-      final parts = normalizeAnswer(a).split(' ');
-      if (parts.length > 1 && parts.last == n) return true;
+      final na = normalizeAnswer(a);
+      if (na == n) return true;
+
+      final parts = na.split(' ');
+      if (parts.length > 1 && parts.last == n) {
+        // Soyad kabulü: soyad harfle başlamalı
+        if (parts.last.startsWith(letterN)) return true;
+      }
+      // Tek kelimelik giriş, cevabın herhangi bir kelimesine eşit + harf uyumu
+      for (final p in parts) {
+        if (p == n && p.startsWith(letterN)) return true;
+      }
     }
     return false;
   }

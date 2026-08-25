@@ -14,6 +14,8 @@ class PlayableDailyMatch {
   final bool isDerby;
   final int importance;
   final String leagueName;
+  /// Bu iki kulübün gerçek ortak (kaliteli) oyuncu sayısı
+  final int sharedCount;
 
   const PlayableDailyMatch({
     required this.id,
@@ -24,6 +26,7 @@ class PlayableDailyMatch {
     required this.isDerby,
     required this.importance,
     required this.leagueName,
+    this.sharedCount = 0,
   });
 }
 
@@ -37,6 +40,7 @@ class DailyPlayableMatches {
       // Fallback: tek klasik eslesme
       final fb = DailyChallengeService.getMatchupForDate(date);
       final theme = FootballCalendarTheme.forDate(date);
+      final q = DailyChallengeService.qualityCountPublic(fb.entity1, fb.entity2);
       return [
         PlayableDailyMatch(
           id: 'fallback-${DailyChallengeService.dateKeyFor(date)}',
@@ -48,6 +52,7 @@ class DailyPlayableMatches {
               theme.kind == CalendarThemeKind.derbyCountdown,
           importance: 0,
           leagueName: '',
+          sharedCount: q,
         ),
       ];
     }
@@ -89,6 +94,7 @@ class DailyPlayableMatches {
           isDerby: m.isDerby,
           importance: m.importance,
           leagueName: m.leagueName,
+          sharedCount: q,
         ),
       );
     }
@@ -99,6 +105,7 @@ class DailyPlayableMatches {
     if (out.isEmpty) {
       final fb = DailyChallengeService.getMatchupForDate(date);
       final theme = FootballCalendarTheme.forDate(date);
+      final q = DailyChallengeService.qualityCountPublic(fb.entity1, fb.entity2);
       return [
         PlayableDailyMatch(
           id: 'fallback-${DailyChallengeService.dateKeyFor(date)}',
@@ -109,6 +116,7 @@ class DailyPlayableMatches {
           isDerby: false,
           importance: 0,
           leagueName: '',
+          sharedCount: q,
         ),
       ];
     }

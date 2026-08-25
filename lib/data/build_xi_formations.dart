@@ -30,17 +30,22 @@ class Formation {
   });
 }
 
-const _cbPos = ['Defender - Centre-Back', 'Defender - Sweeper', 'Defender'];
-const _lbPos = ['Defender - Left-Back', 'Defender'];
-const _rbPos = ['Defender - Right-Back', 'Defender'];
-const _cdmPos = ['Midfield - Defensive Midfield', 'Midfield'];
-const _cmPos = ['Midfield - Central Midfield', 'Midfield'];
-const _camPos = ['Midfield - Attacking Midfield', 'Midfield'];
-const _lmPos = ['Midfield - Left Midfield', 'Attack - Left Winger', 'Midfield'];
-const _rmPos = ['Midfield - Right Midfield', 'Attack - Right Winger', 'Midfield'];
-const _lwPos = ['Attack - Left Winger', 'Midfield - Left Midfield', 'Attack'];
-const _rwPos = ['Attack - Right Winger', 'Midfield - Right Midfield', 'Attack'];
-const _stPos = ['Attack - Centre-Forward', 'Attack - Second Striker', 'Attack'];
+// Sıkı pozisyon: RB'ye CB / CB'ye RB gelmez
+const _cbPos = ['Defender - Centre-Back', 'Defender - Sweeper'];
+const _lbPos = ['Defender - Left-Back'];
+const _rbPos = ['Defender - Right-Back'];
+const _cdmPos = ['Midfield - Defensive Midfield'];
+const _cmPos = [
+  'Midfield - Central Midfield',
+  'Midfield - Defensive Midfield',
+  'Midfield - Attacking Midfield',
+];
+const _camPos = ['Midfield - Attacking Midfield'];
+const _lmPos = ['Midfield - Left Midfield', 'Attack - Left Winger'];
+const _rmPos = ['Midfield - Right Midfield', 'Attack - Right Winger'];
+const _lwPos = ['Attack - Left Winger', 'Midfield - Left Midfield'];
+const _rwPos = ['Attack - Right Winger', 'Midfield - Right Midfield'];
+const _stPos = ['Attack - Centre-Forward', 'Attack - Second Striker'];
 
 // GK üstte → takım aşağı bakıyor → sol = ekranın sağı (x yüksek)
 

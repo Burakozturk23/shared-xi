@@ -6,6 +6,7 @@ import 'random_match_page.dart';
 import 'random_grid_match_page.dart';
 import 'random_five_match_page.dart';
 import 'random_cinko_match_page.dart';
+import 'random_loto_match_page.dart';
 import 'club_manager_online_lobby_page.dart';
 
 /// Ranked: önce mod seç, sonra eşleş.
@@ -29,11 +30,7 @@ class OnlineRankedModePage extends StatelessWidget {
       case OnlinePlayMode.cinko:
         page = const RandomCinkoMatchPage();
       case OnlinePlayMode.loto:
-        // Loto ranked sayfan varsa onu koy; şimdilik friends tarzı uyarı
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Loto ranked yakında / friends kullan')),
-        );
-        return;
+        page = const RandomLotoMatchPage();
       case OnlinePlayMode.clubManager:
         // Ranked matchmaking yok — oda lobisine yönlendir
         page = const ClubManagerOnlineLobbyPage();

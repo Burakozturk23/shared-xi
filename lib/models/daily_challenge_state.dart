@@ -46,11 +46,12 @@ class DailyChallengeState {
     this.feedbackIsSuccess = true,
   });
 
+  /// Gerçek ortak havuz boyutu (sabit hedef yok)
+  int get totalShared => matchingPlayers.length;
+
   double get successRate {
     if (matchingPlayers.isEmpty) return 0;
-    final target = theme?.targetFinds ?? matchingPlayers.length;
-    final denom = target.clamp(1, matchingPlayers.length);
-    return (foundPlayers.length / denom).clamp(0.0, 1.0);
+    return (foundPlayers.length / matchingPlayers.length).clamp(0.0, 1.0);
   }
 
   bool get earnedDerbyBadge => successRate >= 0.80;

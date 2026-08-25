@@ -224,25 +224,29 @@ class DailyChallengeController extends ChangeNotifier {
     _onWrong(trimmed, message: 'Böyle bir oyuncu bulunamadı.');
   }
 
+  static const int pointsPerFind = 10;
+
   void _onCorrect(Player player) {
     final found = List<Player>.from(_state.foundPlayers)..add(player);
     final ids = Set<int>.from(_state.foundPlayerIds)..add(player.id);
-    final target = _state.theme?.targetFinds ?? _state.matchingPlayers.length;
-    final done =
-        found.length >= target.clamp(1, _state.matchingPlayers.length);
+    // Tüm ortaklar bulunursa biter; aksi halde süre/can ile devam
+    final done = found.length >= _state.matchingPlayers.length;
 
     _state = _state.copyWith(
-      score: _state.score + 1,
+      score: _state.score + pointsPerFind,
       foundPlayers: found,
       foundPlayerIds: ids,
       suggestions: const [],
     );
 
     if (done) {
-      _feedback('${player.name} doğru! Tamamlandı! 🎉', true);
+      _feedback(
+        '${player.name} doğru! +$pointsPerFind · Hepsi bulundu! 🎉',
+        true,
+      );
       _finish();
     } else {
-      _feedback('${player.name} doğru!', true);
+      _feedback('${player.name} doğru! +$pointsPerFind', true);
       notifyListeners();
     }
   }
@@ -308,7 +312,7 @@ class DailyChallengeController extends ChangeNotifier {
     final label = _state.label.isNotEmpty
         ? _state.label
         : '${_state.entity1?.displayName} vs ${_state.entity2?.displayName}';
-    final target = _state.theme?.targetFinds ?? _state.matchingPlayers.length;
+    final target = _state.matchingPlayers.length;
     return DailyShareHelper.buildText(
       label: label,
       score: _state.score,

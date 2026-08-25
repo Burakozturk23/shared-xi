@@ -165,10 +165,9 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
   }
 
   Widget _buildHud(DailyChallengeState state, Color accent) {
-    final target =
-        state.theme?.targetFinds ?? state.matchingPlayers.length;
+    final total = state.totalShared.clamp(1, 999);
     final progress =
-        (state.foundPlayers.length / target.clamp(1, 999)).clamp(0.0, 1.0);
+        (state.foundPlayers.length / total).clamp(0.0, 1.0);
 
     return Card(
       child: Padding(
@@ -188,9 +187,14 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                 Text('❤️ ${state.livesLeft}',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600)),
-                Text('${state.foundPlayers.length}/$target',
+                Text('${state.foundPlayers.length}/$total',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600)),
+                Text('${state.score}p',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: accent)),
               ],
             ),
             const SizedBox(height: 10),
@@ -364,8 +368,13 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '${state.score} doğru · ${state.streak} günlük seri 🔥',
+                    '${state.foundPlayers.length}/${state.totalShared} bulundu · ${state.score} puan',
                     style: const TextStyle(fontSize: 15),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${state.streak} günlük seri 🔥',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   if (derbyBadge) ...[
                     const SizedBox(height: 12),
