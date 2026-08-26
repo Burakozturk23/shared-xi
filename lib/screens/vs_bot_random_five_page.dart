@@ -123,7 +123,7 @@ class _VsBotRandomFivePageState extends State<VsBotRandomFivePage> {
                         runSpacing: 8,
                         alignment: WrapAlignment.center,
                         children: _c.clubs
-                            .map((c) => ClubBadge(club: c, logoSize: 26))
+                            .map((c) => ClubBadge(club: c, size: 26))
                             .toList(),
                       ),
                     ],

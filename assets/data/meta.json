@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "dataVersion": "2026-08-26",
+  "playerCount": 173842,
+  "clubCount": 3123,
+  "coachCount": 5275,
+  "preferMin": true,
+  "notes": "Built by tools/build_dataset/build.py"
+}
