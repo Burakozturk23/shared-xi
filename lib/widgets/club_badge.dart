@@ -25,7 +25,8 @@ class ClubBadge extends StatelessWidget {
 
   Widget _monogram() {
     final letters = _initials(club.name);
-    final bg = club.color != null ? Color(club.color!) : const Color(0xFF30363D);
+    final bg =
+        club.color != null ? Color(club.color!) : const Color(0xFF30363D);
     return Container(
       width: size,
       height: size,
@@ -48,7 +49,10 @@ class ClubBadge extends StatelessWidget {
 
   static String _initials(String name) {
     final parts = name
-        .replaceAll(RegExp(r'\b(FC|CF|SC|FK|SK|AC|AS|SS|RC|CD)\b', caseSensitive: false), '')
+        .replaceAll(
+          RegExp(r'\b(FC|CF|SC|FK|SK|AC|AS|SS|RC|CD)\b', caseSensitive: false),
+          '',
+        )
         .trim()
         .split(RegExp(r'\s+'))
         .where((p) => p.isNotEmpty)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/club.dart';
+import 'club_badge.dart';
 
 class ClubCard extends StatelessWidget {
   final Club club;
@@ -22,7 +23,7 @@ class ClubCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.blue.withValues(alpha:0.25)
+              ? Colors.blue.withValues(alpha: 0.25)
               : const Color(0xFF161B22),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -33,21 +34,8 @@ class ClubCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-  club.logo,
-  height: 60,
-  width: 60,
-  errorBuilder: (context, error, stackTrace) {
-    return const Icon(
-      Icons.sports_soccer,
-      size: 60,
-      color: Colors.white54,
-    );
-  },
-),
-
+            ClubBadge(club: club, size: 60),
             const SizedBox(height: 12),
-
             Text(
               club.name,
               textAlign: TextAlign.center,

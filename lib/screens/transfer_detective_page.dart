@@ -4,7 +4,7 @@ import '../controllers/transfer_detective_controller.dart';
 import '../models/club.dart';
 import '../models/player.dart';
 import '../models/transfer_detective_state.dart';
-
+import '../widgets/club_badge.dart';
 class TransferDetectivePage extends StatefulWidget {
   const TransferDetectivePage({super.key});
 
@@ -161,19 +161,9 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
     );
   }
 
-  Widget _clubLogo(Club club, {double size = 36}) {
-    if (club.logo.isEmpty) {
-      return Icon(Icons.shield, size: size);
-    }
-    return Image.network(
-      club.logo,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) =>
-          Icon(Icons.shield, size: size),
-    );
-  }
+Widget _clubLogo(Club club, {double size = 36}) {
+  return ClubBadge(club: club, size: size);
+}
 
   Widget _transferCard(TransferDetectiveState state) {
     final t = state.transfer!;
@@ -277,18 +267,8 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      if (hint.logoUrl != null) ...[
-                        Image.network(
-                          hint.logoUrl!,
-                          width: 24,
-                          height: 24,
-                          errorBuilder: (c, e, s) => const Icon(Icons.shield, size: 20),
-                        ),
-                        const SizedBox(width: 8),
-                      ] else ...[
-                        const Icon(Icons.lightbulb, size: 18, color: Colors.amber),
-                        const SizedBox(width: 8),
-                      ],
+                      const Icon(Icons.lightbulb, size: 18, color: Colors.amber),
+const SizedBox(width: 8),
                       Expanded(child: Text('${hint.title}: ${hint.text}')),
                     ],
                   ),

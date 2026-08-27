@@ -1,4 +1,5 @@
 import '../models/passaparola_question.dart';
+
 /// Passaparola soru bankası — harf-cevap uyumlu, genişletilmiş.
 class PassaparolaSeed {
   PassaparolaSeed._();
@@ -656,5 +657,96 @@ class PassaparolaSeed {
       answers: ['Bulent', 'Bülent', 'Bulent Korkmaz', 'Bülent Korkmaz'],
       difficulty: 2,
     ),
-  ];
+  PassaparolaQuestion(
+    id: 'mgr_guardiola',
+    letter: 'G',
+    category: PassaparolaCategory.manager,
+    question:
+        'Barcelona, Bayern ve Manchester City\'yi çalıştıran İspanyol teknik direktör (soyad)?',
+    answers: ['Guardiola', 'Pep Guardiola'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_mourinho',
+    letter: 'M',
+    category: PassaparolaCategory.manager,
+    question:
+        'Porto, Chelsea, Inter ve Real Madrid\'de şampiyonluk yaşayan Portekizli TD (soyad)?',
+    answers: ['Mourinho', 'Jose Mourinho', 'José Mourinho'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_klopp',
+    letter: 'K',
+    category: PassaparolaCategory.manager,
+    question:
+        'Dortmund ve Liverpool\'u çalıştıran Alman teknik direktör (soyad)?',
+    answers: ['Klopp', 'Jurgen Klopp', 'Jürgen Klopp'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_ancelotti',
+    letter: 'A',
+    category: PassaparolaCategory.manager,
+    question:
+        'Milan, Chelsea, Bayern ve Real Madrid\'de kupa kazanan İtalyan TD (soyad)?',
+    answers: ['Ancelotti', 'Carlo Ancelotti'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_terim',
+    letter: 'T',
+    category: PassaparolaCategory.manager,
+    question:
+        'Galatasaray efsanesi, "İmparator" lakaplı Türk teknik direktör (soyad)?',
+    answers: ['Terim', 'Fatih Terim'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_ferguson',
+    letter: 'F',
+    category: PassaparolaCategory.manager,
+    question:
+        'Manchester United\'ı yıllarca çalıştıran İskoç efsane (soyad)?',
+    answers: ['Ferguson', 'Alex Ferguson', 'Sir Alex Ferguson'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_wenger',
+    letter: 'W',
+    category: PassaparolaCategory.manager,
+    question:
+        'Arsenal\'i uzun yıllar çalıştıran Fransız teknik direktör (soyad)?',
+    answers: ['Wenger', 'Arsene Wenger', 'Arsène Wenger'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_simeone',
+    letter: 'S',
+    category: PassaparolaCategory.manager,
+    question:
+        'Atlético Madrid\'i uzun süredir çalıştıran Arjantinli TD (soyad)?',
+    answers: ['Simeone', 'Diego Simeone'],
+    difficulty: 1,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_conte',
+    letter: 'C',
+    category: PassaparolaCategory.manager,
+    question:
+        'Juventus, Chelsea ve Inter\'de şampiyonluk yaşayan İtalyan TD (soyad)?',
+    answers: ['Conte', 'Antonio Conte'],
+    difficulty: 2,
+  ),
+  PassaparolaQuestion(
+    id: 'mgr_zidane',
+    letter: 'Z',
+    category: PassaparolaCategory.manager,
+    question:
+        'Real Madrid\'de oyuncu ve teknik direktör olarak ŞL kazanan Fransız (soyad)?',
+    answers: ['Zidane', 'Zinedine Zidane'],
+    difficulty: 1,
+  ),
+];
+
 }

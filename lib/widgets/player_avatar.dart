@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/player.dart';
 
-/// Foto URL kullanmaz. avatarKey asset varsa gosterir; yoksa bas harf siluet.
+/// Foto URL kullanmaz. avatarKey asset varsa gosterir; yoksa bas harf.
 class PlayerAvatar extends StatelessWidget {
   final Player player;
   final double size;

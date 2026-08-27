@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import '../repositories/repository.dart';
 import 'match_type_selection_page.dart';
 import 'endless_mode_selection_page.dart';
 import 'chain_mode_selection_page.dart';
@@ -20,8 +21,8 @@ import 'passaparola_page.dart';
 import 'pyramid_page.dart';
 import 'match_pair_page.dart';
 import 'harf11_page.dart';
-import 'loto_page.dart';
 import 'club_manager_hub_page.dart';
+import 'coach_xi_difficulty_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -69,7 +70,6 @@ class WelcomePage extends StatelessWidget {
                       style: TextStyle(
                         color: AppTheme.hintColor,
                         fontSize: 14,
-                        letterSpacing: 0.3,
                       ),
                     ),
                   ],
@@ -77,125 +77,73 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
 
-            _sectionHeader('Öne çıkan'),
+            // —— 1. Hemen oyna ——
+            _sectionHeader('Hemen oyna'),
             _sliverModeList(const [
               _ModeItem(
-                title: 'Daily Matches',
-                subtitle: 'Her gün yeni futbol bulmacası',
-                icon: Icons.calendar_today_rounded,
-                accent: Color(0xFFFFB300),
+                title: 'Günün maçları',
+                subtitle: 'Her gün yeni ortak oyuncu bulmacası',
+                icon: Icons.today_rounded,
                 page: FootballCalendarPage(),
               ),
-            ]),
-
-            _sectionHeader('Online'),
-            _sliverModeList(const [
               _ModeItem(
                 title: 'Online',
-                subtitle: 'Rastgele maç veya arkadaşlarınla oyna',
-                icon: Icons.public,
+                subtitle: 'Rastgele eşleş veya arkadaşlarınla oyna',
+                icon: Icons.wifi_rounded,
                 page: OnlineModeHubPage(),
+              ),
+              _ModeItem(
+                title: 'Ortak Oyuncu Keşfi',
+                subtitle: 'İki taraf seç, ortakları gör',
+                icon: Icons.travel_explore_rounded,
+                accent: AppTheme.secondaryColor,
+                page: MatchTypeSelectionPage(),
               ),
             ]),
 
-            _sectionHeader('Klasik modlar'),
+            // —— 2. Solo ——
+            _sectionHeader('Solo'),
             _sliverModeList(const [
               _ModeItem(
-  title: 'Club Manager',
-  subtitle: 'Bütçeni kur · 25’li havuz · maçı yönet',
-  icon: Icons.emoji_events_rounded,
-  accent: Color(0xFF00E676),
-  page: ClubManagerHubPage(),
-),
+                title: 'Vs Bot',
+                subtitle: 'Loto · Grid · Çinko · Beşler',
+                icon: Icons.smart_toy_rounded,
+                page: VsBotModeSelectionPage(),
+              ),
               _ModeItem(
-  title: 'Vs Bot',
-  subtitle: 'Loto · Grid · Çinko · Beşler',
-  icon: Icons.smart_toy_outlined,
-  page: VsBotModeSelectionPage(),
-),
+                title: 'Club Manager',
+                subtitle: 'Bütçe · kadro · maç yönetimi',
+                icon: Icons.badge_rounded,
+                page: ClubManagerHubPage(),
+              ),
+              _ModeItem(
+                title: 'Squad Challenge',
+                subtitle: 'Tema seç, kadro kur, yıldız kazan',
+                icon: Icons.groups_rounded,
+                page: BuildXiThemeSelectionPage(),
+              ),
               _ModeItem(
                 title: 'Burst',
-                subtitle: 'Oyuncu bilgini farklı modlarla test et',
+                subtitle: 'Hızlı bilgi modları',
                 icon: Icons.bolt_rounded,
                 page: EndlessModeSelectionPage(),
               ),
               _ModeItem(
-                title: 'Chain',
-                subtitle: 'Kulüpler arasında oyuncu zinciri kur',
-                icon: Icons.link_rounded,
-                page: ChainModeSelectionPage(),
-              ),
-              _ModeItem(
-                title: 'Fake Club',
-                subtitle: 'Oynamadığı kulübü bul',
-                icon: Icons.wrong_location_rounded,
-                page: OddClubModeSelectionPage(),
-              ),
-              _ModeItem(
-                title: 'This or That?',
-                subtitle: 'Futbolcu / takım zirve savaşları',
-                icon: Icons.balance_rounded,
-                accent: Color(0xFFFFB300),
-                page: ThisOrThatModeSelectionPage(),
-              ),
+  title: 'Teknik Direktör XI',
+  subtitle: 'TD seç, onun kulüplerinden 11 kur',
+  icon: Icons.sports_outlined,
+  page: CoachXiDifficultyPage(),
+),
             ]),
 
-            _sectionHeader('Yeni modlar'),
+            // —— 3. Bulmaca ——
+            _sectionHeader('Bulmaca'),
             _sliverModeList(const [
-              _ModeItem(
-                title: 'Passaparola',
-                subtitle: '29 harf · futbol soruları · PAS',
-                icon: Icons.abc_rounded,
-                accent: Color(0xFF42A5F5),
-                page: PassaparolaPage(),
-              ),
-              _ModeItem(
-                title: 'Pyramid',
-                subtitle: 'Bağlantı kur, tepeye ulaş',
-                icon: Icons.account_tree_rounded,
-                accent: Color(0xFFAB47BC),
-                page: PyramidPage(),
-              ),
-              _ModeItem(
-  title: 'Matching',
-  subtitle: 'Kulüp ve oyuncuyu eşleştir',
-  icon: Icons.grid_view_rounded,
-  page: MatchPairPage(),
-),
-_ModeItem(
-  title: 'Letter 11',
-  subtitle: '11 harf, 11 oyuncu',
-  icon: Icons.filter_1,
-  page: Harf11Page(),
-),
-//_ModeItem(
-//  title: 'Football Loto',
-//  subtitle: '4x4 kriter ızgarası',
-//  icon: Icons.grid_on,
-//  page: LotoPage(),
-//),
-//
-            ]),
-
-            _sectionHeader('Zorlayıcı'),
-            _sliverModeList(const [
-              _ModeItem(
-                title: 'Mystery Player',
-                subtitle: 'İpuçlarından gizemli oyuncuyu bul',
-                icon: Icons.help_outline_rounded,
-                page: MysteryPlayerPage(),
-              ),
               _ModeItem(
                 title: 'Career Puzzle',
                 subtitle: 'Kariyer rotasını doğru sırala',
                 icon: Icons.route_rounded,
                 page: CareerPuzzlePage(),
-              ),
-              _ModeItem(
-                title: 'Blind Ranking',
-                subtitle: 'Gelen oyuncuyu anında sırala',
-                icon: Icons.leaderboard_rounded,
-                page: BlindRankingPage(),
               ),
               _ModeItem(
                 title: 'Transfer Detective',
@@ -204,37 +152,85 @@ _ModeItem(
                 page: TransferDetectivePage(),
               ),
               _ModeItem(
+                title: 'Mystery Player',
+                subtitle: 'İpuçlarından gizemli oyuncuyu bul',
+                icon: Icons.help_outline_rounded,
+                page: MysteryPlayerPage(),
+              ),
+              _ModeItem(
                 title: 'Higher or Lower',
-                subtitle: 'Piyasa değeri veya gol — kim daha yüksek?',
+                subtitle: 'Piyasa değeri veya gol',
                 icon: Icons.compare_arrows_rounded,
                 page: HigherLowerModeSelectionPage(),
               ),
               _ModeItem(
-                title: 'Squad Challenge',
-                subtitle: 'Tema seç,kadro kur',
-                icon: Icons.groups_rounded,
-                page: BuildXiThemeSelectionPage(),
+                title: 'Blind Ranking',
+                subtitle: 'Gelen oyuncuyu anında sırala',
+                icon: Icons.leaderboard_rounded,
+                page: BlindRankingPage(),
               ),
             ]),
 
+            // —— 4. Klasik / zincir ——
+            _sectionHeader('Klasik'),
+            _sliverModeList(const [
+              _ModeItem(
+                title: 'Chain',
+                subtitle: 'Kulüpler arasında oyuncu zinciri',
+                icon: Icons.link_rounded,
+                page: ChainModeSelectionPage(),
+              ),
+              _ModeItem(
+                title: 'Fake Club',
+                subtitle: 'Oynamadığı kulübü bul',
+                icon: Icons.dangerous_rounded,
+                page: OddClubModeSelectionPage(),
+              ),
+              _ModeItem(
+                title: 'This or That?',
+                subtitle: 'Futbolcu / takım zirve savaşları',
+                icon: Icons.swap_horiz_rounded,
+                page: ThisOrThatModeSelectionPage(),
+              ),
+              _ModeItem(
+                title: 'Matching',
+                subtitle: 'Kulüp ve oyuncuyu eşleştir',
+                icon: Icons.grid_view_rounded,
+                page: MatchPairPage(),
+              ),
+            ]),
+
+            // —— 5. Harf / kelime ——
+            _sectionHeader('Harf & kelime'),
+            _sliverModeList(const [
+              _ModeItem(
+                title: 'Passaparola',
+                subtitle: '29 harf · futbol soruları',
+                icon: Icons.abc_rounded,
+                page: PassaparolaPage(),
+              ),
+              _ModeItem(
+                title: 'Letter 11',
+                subtitle: '11 harf, 11 oyuncu',
+                icon: Icons.pin_rounded,
+                page: Harf11Page(),
+              ),
+              _ModeItem(
+                title: 'Pyramid',
+                subtitle: 'Bağlantı kur, tepeye ulaş',
+                icon: Icons.account_tree_rounded,
+                page: PyramidPage(),
+              ),
+            ]),
+
+            // —— 6. Hikaye ——
             _sectionHeader('Hikaye'),
             _sliverModeList(const [
               _ModeItem(
                 title: 'Story Mode',
-                subtitle: 'Oyuncu yolculuğu, UCL, nostalji ve daha fazlası',
+                subtitle: 'Oyuncu yolculuğu, UCL, nostalji',
                 icon: Icons.auto_stories_rounded,
                 page: StoryModeSelectionPage(),
-              ),
-            ]),
-
-            _sectionHeader('Keşfet'),
-            _sliverModeList(const [
-              _ModeItem(
-                title: 'Ortak Oyuncu Keşfi',
-                subtitle: 'İki taraf seç, ortakları gör',
-                icon: Icons.storage_rounded,
-                accent: AppTheme.secondaryColor,
-                page: MatchTypeSelectionPage(),
               ),
             ]),
 
@@ -242,10 +238,11 @@ _ModeItem(
             SliverToBoxAdapter(
               child: Center(
                 child: Text(
-                  'v1.0.0',
+                  _footerLabel(),
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppTheme.hintColor.withValues(alpha: 0.5),
-                    fontSize: 12,
+                    color: AppTheme.hintColor.withValues(alpha: 0.55),
+                    fontSize: 11,
                   ),
                 ),
               ),
@@ -256,6 +253,16 @@ _ModeItem(
       ),
     );
   }
+    static String _footerLabel() {
+    try {
+      final r = Repository.instance;
+      if (!r.isInitialized) return 'Linkball';
+      return 'Veri ${r.dataVersion} · ${r.playerCount} oyuncu';
+    } catch (_) {
+      return 'Linkball';
+    }
+  }
+
 
   static Widget _sectionHeader(String title) {
     return SliverToBoxAdapter(

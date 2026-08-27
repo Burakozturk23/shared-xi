@@ -4,6 +4,7 @@ import '../controllers/career_puzzle_controller.dart';
 import '../models/career_puzzle_state.dart';
 import '../models/club.dart';
 import '../models/player.dart';
+import '../widgets/club_badge.dart';
 
 class CareerPuzzlePage extends StatefulWidget {
   final CareerPuzzleDifficulty difficulty;
@@ -208,17 +209,8 @@ class _CareerPuzzlePageState extends State<CareerPuzzlePage> {
   }
 
   Widget _clubLogo(Club club, {double size = 40}) {
-    if (club.logo.isEmpty) {
-      return Icon(Icons.shield, size: size * 0.7);
-    }
-    return Image.network(
-      club.logo,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      errorBuilder: (c, e, s) => Icon(Icons.shield, size: size * 0.7),
-    );
-  }
+  return ClubBadge(club: club, size: size);
+}
 
   Widget _clubsSection(CareerPuzzleState state, {required bool canReorder}) {
     return Card(

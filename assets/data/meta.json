@@ -1,9 +1,10 @@
 {
-  "schemaVersion": 1,
-  "dataVersion": "2026-08-26",
-  "playerCount": 173842,
+  "schemaVersion": 2,
+  "dataVersion": "2026-08-27",
+  "playerCount": 173797,
   "clubCount": 3123,
   "coachCount": 5275,
+  "famousTransferCount": 2790,
   "preferMin": true,
-  "notes": "Built by tools/build_dataset/build.py"
+  "notes": "timeline+valuations+famous_transfers"
 }

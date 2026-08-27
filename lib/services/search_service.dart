@@ -1,4 +1,5 @@
 import '../models/player.dart';
+import '../utils/player_dedupe.dart';
 
 enum ResolveStatus { found, notFound, ambiguous }
 
@@ -366,13 +367,15 @@ class SearchService {
       }
     }
 
-    if (starts.length >= limit) return starts.sublist(0, limit);
+    if (starts.length >= limit) {
+      return PlayerDedupe.dedupe(starts).take(limit).toList();
+    }
 
     final result = <Player>[...starts];
     for (final p in middles) {
-      if (result.length >= limit) break;
+      if (result.length >= limit * 2) break;
       result.add(p);
     }
-    return result;
+    return PlayerDedupe.dedupe(result).take(limit).toList();
   }
 }
