@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'auth_service.dart';
@@ -41,6 +42,12 @@ class DailyLeaderboardEntry {
 class DailyLeaderboardService {
   DailyLeaderboardService._();
 
+  static final FirebaseFunctions _functions =
+      FirebaseFunctions.instanceFor(
+    app: Firebase.app(),
+    region: 'europe-west1',
+  );
+
   static final FirebaseDatabase _db = FirebaseDatabase.instanceFor(
     app: Firebase.app(),
     databaseURL:
@@ -51,6 +58,24 @@ class DailyLeaderboardService {
       _db.ref('dailyLeaderboard/$dateKey');
 
   /// Skoru yazar. Aynı gün daha yüksek skor gelirse günceller.
+  static Future<bool> startSession({
+    required DateTime date,
+    String? displayName,
+  }) async {
+    await AuthService.ensureSignedIn(displayName: displayName);
+    final dateKey = DailyChallengeService.dateKeyFor(date);
+    try {
+      final callable = _functions.httpsCallable('startDailyScoreSession');
+      final response = await callable.call(<String, dynamic>{
+        'dateKey': dateKey,
+      });
+      final data = response.data;
+      return data is Map && data['ok'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> submitScore({
     required DateTime date,
     required int score,
@@ -58,32 +83,29 @@ class DailyLeaderboardService {
     int? secondsLeft,
     int? streak,
     String? displayName,
+    int? foundCount,
+    int? targetCount,
+    int? wrongCount,
   }) async {
-    final user = await AuthService.ensureSignedIn(displayName: displayName);
+    await AuthService.ensureSignedIn(displayName: displayName);
     final dateKey = DailyChallengeService.dateKeyFor(date);
-    final ref = _dayRef(dateKey).child(user.uid);
-
-    final existing = await ref.get();
-    if (existing.exists && existing.value is Map) {
-      final old = Map<String, dynamic>.from(existing.value as Map);
-      final oldScore = int.tryParse('${old['score'] ?? 0}') ?? 0;
-      // Daha düşük skoru üzerine yazma
-      if (score < oldScore) return;
-      if (score == oldScore) {
-        final oldLeft = int.tryParse('${old['secondsLeft'] ?? -1}') ?? -1;
-        if (secondsLeft != null && oldLeft >= 0 && secondsLeft <= oldLeft) {
-          return; // aynı skor, daha yavaş / eşit süre
-        }
+    final safeFound = foundCount ?? (score ~/ 10).clamp(0, 80);
+    var safeTarget = targetCount;
+    if (safeTarget == null || safeTarget <= 0) {
+      if (successRate > 0 && safeFound > 0) {
+        safeTarget = (safeFound / successRate).round();
+      } else {
+        safeTarget = safeFound > 0 ? safeFound : 1;
       }
     }
-
-    await ref.set({
-      'displayName': user.displayName ?? displayName ?? 'Oyuncu',
-      'score': score,
-      'successRate': successRate,
-      'secondsLeft': secondsLeft,
-      'streak': streak,
-      'finishedAt': ServerValue.timestamp,
+    safeTarget = safeTarget.clamp(safeFound, 80);
+    final safeWrong = (wrongCount ?? 0).clamp(0, 10);
+    final callable = _functions.httpsCallable('submitDailyScore');
+    await callable.call(<String, dynamic>{
+      'dateKey': dateKey,
+      'foundCount': safeFound,
+      'targetCount': safeTarget,
+      'wrongCount': safeWrong,
     });
   }
 

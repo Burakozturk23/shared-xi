@@ -14,6 +14,8 @@ class BlindRankingState {
   final bool isFinished;
 
   final List<Player> players; // sunuluş sırası (rastgele)
+  /// Runtime V3 Linkball Rank sırası. Boşsa legacy careerScore kullanılır.
+  final List<int> trueOrderPlayerIds;
   final int currentIndex;
   final List<Player?> slots; // 0 = 1. sıra ... 9 = 10. sıra
 
@@ -21,6 +23,7 @@ class BlindRankingState {
     this.isLoading = true,
     this.isFinished = false,
     this.players = const [],
+    this.trueOrderPlayerIds = const [],
     this.currentIndex = 0,
     this.slots = const [
       null, null, null, null, null,
@@ -32,6 +35,14 @@ class BlindRankingState {
       currentIndex < players.length ? players[currentIndex] : null;
 
   List<Player> get trueOrder {
+    if (trueOrderPlayerIds.isNotEmpty) {
+      final byId = {for (final p in players) p.id: p};
+      return trueOrderPlayerIds
+          .map((id) => byId[id])
+          .whereType<Player>()
+          .toList();
+    }
+
     final sorted = List<Player>.from(players)
       ..sort((a, b) => careerScore(b).compareTo(careerScore(a)));
     return sorted;
@@ -64,6 +75,7 @@ class BlindRankingState {
     bool? isLoading,
     bool? isFinished,
     List<Player>? players,
+    List<int>? trueOrderPlayerIds,
     int? currentIndex,
     List<Player?>? slots,
   }) {
@@ -71,6 +83,8 @@ class BlindRankingState {
       isLoading: isLoading ?? this.isLoading,
       isFinished: isFinished ?? this.isFinished,
       players: players ?? this.players,
+      trueOrderPlayerIds:
+          trueOrderPlayerIds ?? this.trueOrderPlayerIds,
       currentIndex: currentIndex ?? this.currentIndex,
       slots: slots ?? this.slots,
     );

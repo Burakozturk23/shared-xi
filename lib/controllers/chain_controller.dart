@@ -10,6 +10,7 @@ import '../models/club.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_chain_graph_service.dart';
 
 class ChainController extends ChangeNotifier {
   final ChainGameMode mode;
@@ -26,8 +27,32 @@ class ChainController extends ChangeNotifier {
   /// Kulüp id -> o kulüpte oynamış oyuncular (lazy cache).
   Map<int, List<Player>>? _playersByClub;
 
+  /// 04.2B canonical SQLite graph snapshot.
+  HybridChainGraphSnapshot? _runtimeGraph;
+
   void initialize() {
-    _buildIndexIfNeeded();
+    // Chain screen API remains synchronous. Graph bootstrap is async because
+    // SQLite is async; ChainState is already loading by default.
+    unawaited(_initializeHybridGraph());
+  }
+
+  Future<void> _initializeHybridGraph() async {
+    final snapshot = await HybridChainGraphService.instance.load();
+
+    if (snapshot != null) {
+      _runtimeGraph = snapshot;
+      _playersByClub = snapshot.playersByClub;
+      debugPrint(
+        '[HybridV3] Chain SQLite enabled '
+        'players=${snapshot.players.length} '
+        'clubs=${snapshot.playersByClub.length}',
+      );
+    } else {
+      _runtimeGraph = null;
+      _buildIndexIfNeeded();
+      debugPrint('[HybridV3] Chain legacy JSON graph active');
+    }
+
     _startPuzzle(keepSession: false);
   }
 
@@ -81,6 +106,10 @@ class ChainController extends ChangeNotifier {
   ];
 
   List<Club> _quizClubs() {
+    final runtime = _runtimeGraph;
+    if (runtime != null && runtime.quizClubs.length >= 2) {
+      return List<Club>.from(runtime.quizClubs);
+    }
     var list = _eliteClubIds
         .map((id) => Repository.instance.clubById(id))
         .whereType<Club>()
@@ -97,13 +126,25 @@ class ChainController extends ChangeNotifier {
     return list;
   }
 
+  List<int> _clubIdsForPlayer(Player player) {
+    return _runtimeGraph?.clubIdsByPlayer[player.id] ?? player.clubs;
+  }
+
+  Iterable<Player> _graphPlayers() {
+    return _runtimeGraph?.players ?? Repository.instance.players;
+  }
+
+  Set<int> _graphFamousClubIds() {
+    return _runtimeGraph?.graphClubIds ?? chainClubPool.toSet();
+  }
+
   /// BFS: start → target en az kaç oyuncu (hamle).
   int _computePar(int startId, int targetId) {
     if (startId == targetId) return 0;
     final byClub = _playersByClub!;
     final queue = Queue<int>()..add(startId);
     final dist = <int, int>{startId: 0};
-    final famous = chainClubPool.toSet();
+    final famous = _graphFamousClubIds();
 
     while (queue.isNotEmpty) {
       final club = queue.removeFirst();
@@ -112,7 +153,7 @@ class ChainController extends ChangeNotifier {
 
       final players = byClub[club] ?? const [];
       for (final p in players) {
-        for (final next in p.clubs) {
+        for (final next in _clubIdsForPlayer(p)) {
           if (dist.containsKey(next)) continue;
           // Grafı biraz daralt: hedef/start veya bilinen kulüp / oyuncunun başka kulübü
           if (next != targetId &&
@@ -214,11 +255,18 @@ class ChainController extends ChangeNotifier {
     }
 
     final pool = _playersByClub?[currentId] ?? const <Player>[];
-    final candidates = pool
+    var candidates = pool
         .where((p) => SearchService.contains(p.name, q))
-        .where((p) => p.peakMarketValue >= 3000000 || p.clubs.length >= 3)
-        .toList()
-      ..sort((a, b) => b.peakMarketValue.compareTo(a.peakMarketValue));
+        .toList();
+
+    if (_runtimeGraph == null) {
+      // Legacy fallback only. Runtime V3 uses selection-rank ordered pool.
+      candidates = candidates
+          .where((p) => p.peakMarketValue >= 3000000 || p.clubs.length >= 3)
+          .toList()
+        ..sort((a, b) => b.peakMarketValue.compareTo(a.peakMarketValue));
+    }
+
     final limited = candidates.take(15).toList();
 
     _state = _state.copyWith(
@@ -238,11 +286,11 @@ class ChainController extends ChangeNotifier {
     if (_state.nationalWildcardActive) {
       // Milli joker: aynı ülkeden oyuncunun kulüpleri + kendi kulüpleri
       final countries = player.countries.toSet();
-      final clubIds = <int>{...player.clubs};
-      for (final p in Repository.instance.players) {
+      final clubIds = <int>{..._clubIdsForPlayer(player)};
+      for (final p in _graphPlayers()) {
         if (p.id == player.id) continue;
         if (!p.countries.any(countries.contains)) continue;
-        clubIds.addAll(p.clubs);
+        clubIds.addAll(_clubIdsForPlayer(p));
       }
       options = clubIds
           .where((id) => id != currentId)
@@ -252,7 +300,7 @@ class ChainController extends ChangeNotifier {
           .take(30)
           .toList();
     } else {
-      options = player.clubs
+      options = _clubIdsForPlayer(player)
           .where((id) => id != currentId)
           .where((id) => !_state.visitedClubIds.contains(id))
           .map((id) => Repository.instance.clubById(id))
@@ -397,7 +445,7 @@ class ChainController extends ChangeNotifier {
     final byClub = _playersByClub!;
     Player? bridge;
     for (final p in byClub[currentId] ?? const <Player>[]) {
-      if (p.clubs.contains(targetId)) {
+      if (_clubIdsForPlayer(p).contains(targetId)) {
         bridge = p;
         break;
       }

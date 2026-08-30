@@ -38,10 +38,20 @@ class _HigherLowerPageState extends State<HigherLowerPage> {
 
   String _formatValue(HigherLowerState state, Player p) {
     final v = state.valueOf(p);
+
+    if (state.runtimeV3) {
+      return state.criterion == HigherLowerCriterion.marketValue
+          ? '${v.toInt()} maç'
+          : '${v.toInt()} gol';
+    }
+
     if (state.criterion == HigherLowerCriterion.marketValue) {
-      if (v >= 1000000) return '€${(v / 1000000).toStringAsFixed(1)}M';
+      if (v >= 1000000) {
+        return '€${(v / 1000000).toStringAsFixed(1)}M';
+      }
       return '€${(v / 1000).toStringAsFixed(0)}K';
     }
+
     return '${v.toInt()} gol';
   }
 

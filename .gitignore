@@ -44,3 +44,22 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 dataset/player_performances.csv
+reports/production/05c/app_check_debug_token.local.txt
+
+# Linkball local/generated security exclusions (STEP 07B.3.4.2)
+android/key.properties
+android/local.properties
+*.jks
+*.keystore
+.env
+.env.*
+functions/node_modules/
+node_modules/
+build/
+coverage/
+reports/production/
+reports/data_platform_v3/
+*.bak
+
+# Linkball generated data audit reports
+reports/data_audit/

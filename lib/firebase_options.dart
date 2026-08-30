@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDj5Z5tPCsX8oQV1Lp_9Umvyn9lKZrX-vY',
-    appId: '1:702685230752:android:64fa1e34523b7b5677fbc5',
+    appId: '1:702685230752:android:eb1967852eaa080877fbc5',
     messagingSenderId: '702685230752',
     projectId: 'sharedix',
     storageBucket: 'sharedix.firebasestorage.app',

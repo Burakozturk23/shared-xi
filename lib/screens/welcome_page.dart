@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../repositories/repository.dart';
+import '../services/auth_service.dart';
 import 'match_type_selection_page.dart';
 import 'endless_mode_selection_page.dart';
 import 'chain_mode_selection_page.dart';
@@ -67,10 +68,7 @@ class WelcomePage extends StatelessWidget {
                     Text(
                       'Ortak oyuncu evreni',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppTheme.hintColor,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: AppTheme.hintColor, fontSize: 14),
                     ),
                   ],
                 ),
@@ -83,12 +81,14 @@ class WelcomePage extends StatelessWidget {
               _ModeItem(
                 title: 'Günün maçları',
                 subtitle: 'Her gün yeni ortak oyuncu bulmacası',
+                requiresAuth: true,
                 icon: Icons.today_rounded,
                 page: FootballCalendarPage(),
               ),
               _ModeItem(
                 title: 'Online',
                 subtitle: 'Rastgele eşleş veya arkadaşlarınla oyna',
+                requiresAuth: true,
                 icon: Icons.wifi_rounded,
                 page: OnlineModeHubPage(),
               ),
@@ -129,11 +129,11 @@ class WelcomePage extends StatelessWidget {
                 page: EndlessModeSelectionPage(),
               ),
               _ModeItem(
-  title: 'Teknik Direktör XI',
-  subtitle: 'TD seç, onun kulüplerinden 11 kur',
-  icon: Icons.sports_outlined,
-  page: CoachXiDifficultyPage(),
-),
+                title: 'Teknik Direktör XI',
+                subtitle: 'TD seç, onun kulüplerinden 11 kur',
+                icon: Icons.sports_outlined,
+                page: CoachXiDifficultyPage(),
+              ),
             ]),
 
             // —— 3. Bulmaca ——
@@ -253,7 +253,8 @@ class WelcomePage extends StatelessWidget {
       ),
     );
   }
-    static String _footerLabel() {
+
+  static String _footerLabel() {
     try {
       final r = Repository.instance;
       if (!r.isInitialized) return 'Linkball';
@@ -262,7 +263,6 @@ class WelcomePage extends StatelessWidget {
       return 'Linkball';
     }
   }
-
 
   static Widget _sectionHeader(String title) {
     return SliverToBoxAdapter(
@@ -285,17 +285,15 @@ class WelcomePage extends StatelessWidget {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final item = items[index];
-            return Padding(
-              padding:
-                  EdgeInsets.only(bottom: index == items.length - 1 ? 0 : 10),
-              child: _ModeCard(item: item),
-            );
-          },
-          childCount: items.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final item = items[index];
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: index == items.length - 1 ? 0 : 10,
+            ),
+            child: _ModeCard(item: item),
+          );
+        }, childCount: items.length),
       ),
     );
   }
@@ -308,17 +306,24 @@ class _ModeItem {
   final Color? accent;
   final Widget page;
 
+  /// STEP 07A.9.2: auth-required modes authenticate on demand.
+  final bool requiresAuth;
+
   const _ModeItem({
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.page,
     this.accent,
+    this.requiresAuth = false,
   });
 }
 
 class _ModeCard extends StatelessWidget {
   final _ModeItem item;
+
+  // STEP 07A.8: gate mode navigation on Repository readiness.
+  static bool _navigationLocked = false;
 
   const _ModeCard({required this.item});
 
@@ -331,11 +336,70 @@ class _ModeCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => item.page),
-          );
+        onTap: () async {
+          if (_navigationLocked) return;
+          _navigationLocked = true;
+
+          final messenger = ScaffoldMessenger.of(context);
+
+          try {
+            final waits = <Future<void>>[];
+            final needsRepository = !Repository.instance.isInitialized;
+
+            if (needsRepository) {
+              waits.add(Repository.instance.initialize());
+            }
+
+            if (item.requiresAuth) {
+              waits.add(AuthService.ensureSignedIn());
+            }
+
+            if (waits.isNotEmpty) {
+              final label = item.requiresAuth && needsRepository
+                  ? 'Veri ve oturum hazırlanıyor…'
+                  : item.requiresAuth
+                  ? 'Oturum hazırlanıyor…'
+                  : 'Oyuncu verisi hazırlanıyor…';
+
+              messenger.showSnackBar(
+                SnackBar(
+                  duration: const Duration(minutes: 1),
+                  content: Row(
+                    children: [
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text(label)),
+                    ],
+                  ),
+                ),
+              );
+
+              await Future.wait(waits);
+
+              if (!context.mounted) return;
+              messenger.hideCurrentSnackBar();
+            }
+
+            if (!context.mounted) return;
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => item.page),
+            );
+          } catch (e) {
+            if (!context.mounted) return;
+
+            messenger.hideCurrentSnackBar();
+            messenger.showSnackBar(
+              SnackBar(content: Text('Veri hazırlanamadı: $e')),
+            );
+          } finally {
+            _navigationLocked = false;
+          }
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

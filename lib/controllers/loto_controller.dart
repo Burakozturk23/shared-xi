@@ -77,18 +77,45 @@ class LotoController extends ChangeNotifier {
     String? leagueFilter,
     LotoDifficulty difficulty = LotoDifficulty.medium,
   }) {
+    unawaited(
+      _startAsync(
+        leagueFilter: leagueFilter,
+        difficulty: difficulty,
+      ),
+    );
+  }
+
+  Future<void> _startAsync({
+    String? leagueFilter,
+    required LotoDifficulty difficulty,
+  }) async {
     _timer?.cancel();
     _lastLeague = leagueFilter;
     _lastDiff = difficulty;
-    final board = LotoGenerator.generate(
+
+    var board = await LotoGenerator.generateRuntime(
       leagueFilter: leagueFilter,
       difficulty: difficulty,
     );
+
+    if (board != null) {
+      debugPrint(
+        '[HybridV3] Loto controller runtime board active '
+        'cells=${board.cells.length}',
+      );
+    } else {
+      board = LotoGenerator.generate(
+        leagueFilter: leagueFilter,
+        difficulty: difficulty,
+      );
+    }
+
     _state = LotoState(
       board: board,
       remainingSeconds: difficulty.secondsPerPlayer,
       isPlaying: true,
     );
+
     notifyListeners();
     _armTimer();
   }
@@ -158,9 +185,10 @@ class LotoController extends ChangeNotifier {
     for (final e in _state.placements.entries) {
       final cellIndex = e.key;
       final playerId = e.value;
-      final player = Repository.instance.playerById(playerId);
-      final cell = board.cells[cellIndex];
-      if (player != null && LotoGenerator.matches(player, cell)) {
+      final validCells =
+          board.validCellsForPlayer[playerId] ?? const <int>{};
+
+      if (validCells.contains(cellIndex)) {
         correct++;
       } else {
         wrong++;

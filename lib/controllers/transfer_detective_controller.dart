@@ -5,9 +5,11 @@ import 'package:flutter/foundation.dart';
 
 import '../data/chain_pool.dart';
 import '../models/player.dart';
+import '../models/famous_transfer.dart';
 import '../models/transfer_detective_state.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class TransferDetectiveController extends ChangeNotifier {
   final Random _random = Random();
@@ -17,12 +19,96 @@ class TransferDetectiveController extends ChangeNotifier {
 
   Timer? _feedbackTimer;
 
+  bool _usingRuntimeV3 = false;
+  List<Map<String, Object?>> _runtimeEvents = const [];
+  Map<int, Map<String, Object?>> _runtimeFactsByPlayer = const {};
+
   void initialize() {
-    _startRound(keepSession: false);
+    unawaited(_initializeHybrid());
   }
 
   void restart() {
-    _startRound(keepSession: true);
+    if (_usingRuntimeV3) {
+      _startRoundRuntime(keepSession: true);
+    } else {
+      _startRound(keepSession: true);
+    }
+  }
+
+  Future<void> _initializeHybrid() async {
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+    if (_usingRuntimeV3) {
+      _runtimeEvents = await hybrid.transferDetectiveEvents();
+      _runtimeFactsByPlayer = await hybrid.playerFactsForPool('transfer_detective_normal');
+      if (_runtimeEvents.length < 1000) {
+        debugPrint('[HybridV3] TransferDetective SQLite event pool too small; legacy fallback.');
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint('[HybridV3] TransferDetective SQLite events=${_runtimeEvents.length} facts=${_runtimeFactsByPlayer.length}');
+      }
+    }
+    if (_usingRuntimeV3) {
+      _startRoundRuntime(keepSession: false);
+    } else {
+      _startRound(keepSession: false);
+    }
+  }
+
+  void _startRoundRuntime({required bool keepSession}) {
+    if (_runtimeEvents.isEmpty) {
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
+      return;
+    }
+    final envelopeSize = _runtimeEvents.length.clamp(1000, 12000);
+    final source = _runtimeEvents.take(envelopeSize).toList()..shuffle(_random);
+    for (final row in source.take(200)) {
+      final playerId = (row['player_id'] as num?)?.toInt();
+      final year = (row['transfer_year'] as num?)?.toInt();
+      final fromClubId = (row['from_club_id'] as num?)?.toInt();
+      final toClubId = (row['to_club_id'] as num?)?.toInt();
+      if (playerId == null || year == null || fromClubId == null || toClubId == null) continue;
+      final target = Repository.instance.playerById(playerId);
+      final fromClub = Repository.instance.clubById(fromClubId);
+      final toClub = Repository.instance.clubById(toClubId);
+      if (target == null || fromClub == null || toClub == null) continue;
+      final transfer = FamousTransfer(playerId: playerId, year: year, fee: 0, fromClubId: fromClubId, toClubId: toClubId);
+      final hints = _buildHints(target, fromClub);
+      _state = TransferDetectiveState(
+        isLoading: false,
+        target: target,
+        transfer: transfer,
+        fromClub: fromClub,
+        toClub: toClub,
+        hints: hints,
+        lives: keepSession ? _state.lives : TransferDetectiveState.maxLives,
+        streak: keepSession ? _state.streak : 0,
+        sessionScore: keepSession ? _state.sessionScore : 0,
+        coins: keepSession ? _state.coins : TransferDetectiveState.startingCoins,
+        roundPoints: TransferDetectiveState.baseRoundPoints,
+        isSolved: false,
+        isFailed: false,
+        wrongGuesses: const [],
+        revealedLetterIndexes: const {},
+      );
+      notifyListeners();
+      return;
+    }
+    _state = _state.copyWith(isLoading: false);
+    notifyListeners();
+  }
+
+  String _runtimeStatsHint(Player player) {
+    final facts = _runtimeFactsByPlayer[player.id];
+    if (facts == null) return 'İstatistik verisi sınırlı';
+    final apps = (facts['appearances'] as num?)?.toInt() ?? 0;
+    final goals = (facts['goals'] as num?)?.toInt() ?? 0;
+    final assists = (facts['assists'] as num?)?.toInt() ?? 0;
+    final first = (facts['coverage_first_year'] as num?)?.toInt() ?? 0;
+    final last = (facts['coverage_last_year'] as num?)?.toInt() ?? 0;
+    final prefix = first > 0 && last > 0 ? '$first-$last kapsanan veri: ' : '';
+    return '$prefix$apps maç • $goals gol • $assists asist';
   }
 
   void disposeController() {
@@ -144,7 +230,9 @@ class TransferDetectiveController extends ChangeNotifier {
       TransferHint(
         kind: TransferHintKind.careerGoals,
         title: 'Kariyer golü',
-        text: '${target.careerGoals} gol',
+        text: _usingRuntimeV3
+            ? _runtimeStatsHint(target)
+            : '${target.careerGoals} gol',
         cost: 20,
       ),
     ];
@@ -288,6 +376,7 @@ class TransferDetectiveController extends ChangeNotifier {
   }
 
   String formatFee() {
+    if (_usingRuntimeV3) return '—';
     final fee = _state.transfer?.fee ?? 0;
     return _formatFee(fee);
   }

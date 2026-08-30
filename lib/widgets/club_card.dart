@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../models/club.dart';
+import '../theme/app_theme.dart';
+import '../theme/design_tokens.dart';
 import 'club_badge.dart';
+import 'linkball_card.dart';
 
 class ClubCard extends StatelessWidget {
   final Club club;
@@ -16,36 +20,43 @@ class ClubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return LinkballCard(
+      selected: isSelected,
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Colors.blue.withValues(alpha: 0.25)
-              : const Color(0xFF161B22),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? Colors.blue : Colors.white24,
-            width: 2,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.md,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ClubBadge(club: club, size: AppSizes.clubBadge),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            club.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppTheme.textColor,
+              fontWeight: FontWeight.w800,
+              height: 1.1,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ClubBadge(club: club, size: 60),
-            const SizedBox(height: 12),
+          if (club.country.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xxs),
             Text(
-              club.name,
-              textAlign: TextAlign.center,
+              club.country,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                color: AppTheme.hintColor,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }

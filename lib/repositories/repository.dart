@@ -14,6 +14,9 @@ class Repository {
 
   bool _initialized = false;
 
+  // STEP 07A.8: concurrency-safe repository initialization.
+  Future<void>? _initializeFuture;
+
   late final List<Club> _clubs;
   late final List<Player> _players;
   late final List<Coach> _coaches;
@@ -28,6 +31,25 @@ class Repository {
   Future<void> initialize() async {
     if (_initialized) return;
 
+    final inFlight = _initializeFuture;
+    if (inFlight != null) {
+      await inFlight;
+      return;
+    }
+
+    final future = _initializeInternal();
+    _initializeFuture = future;
+
+    try {
+      await future;
+    } finally {
+      if (identical(_initializeFuture, future)) {
+        _initializeFuture = null;
+      }
+    }
+  }
+
+  Future<void> _initializeInternal() async {
     final meta = await DatabaseService.loadMeta();
     _dataVersion = meta['dataVersion']?.toString() ?? 'legacy';
 
@@ -53,6 +75,7 @@ class Repository {
   }
 
   bool get isInitialized => _initialized;
+  bool get isInitializing => _initializeFuture != null;
   String get dataVersion => _dataVersion;
   int get playerCount => _initialized ? _players.length : 0;
   int get rawPlayerCount => _initialized ? _rawPlayerCount : 0;

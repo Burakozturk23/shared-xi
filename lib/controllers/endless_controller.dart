@@ -12,6 +12,7 @@ import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
 import '../services/high_score_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 enum EndlessMatchMode { clubClub, clubCountry }
 
@@ -42,15 +43,69 @@ class EndlessController extends ChangeNotifier {
   Timer? _roundTransitionTimer;
   Timer? _clockTimer;
 
+  bool _usingRuntimeV3 = false;
+  List<Club> _runtimeQuizClubs = const [];
+  List<Player> _runtimeAnswerPlayers = const [];
+  Map<int, List<int>> _runtimeClubIdsByPlayer = const {};
+  Map<int, List<Player>> _runtimePlayersByClub = const {};
+
+
   bool get isBlitz => gameStyle == EndlessGameStyle.blitz;
   bool get isSurvival => gameStyle == EndlessGameStyle.survival;
 
-  String get _highScoreKey => isBlitz
-      ? 'endless_blitz_high_score'
-      : 'endless_survival_high_score';
+  String get _highScoreKey {
+    if (_usingRuntimeV3) {
+      return 'endless_${matchMode.name}_${gameStyle.name}_v3_best';
+    }
+
+    return isBlitz
+        ? 'endless_blitz_high_score'
+        : 'endless_survival_high_score';
+  }
 
   Future<void> initialize() async {
-    final bestScore = await HighScoreService.getHighScore(key: _highScoreKey);
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      _runtimeQuizClubs = await hybrid.topGameplayClubs(limit: 120);
+      _runtimeAnswerPlayers =
+          await hybrid.playersInPool('shared_xi_answer');
+      _runtimeClubIdsByPlayer =
+          await hybrid.playerClubIdsForPool('shared_xi_answer');
+
+      final byClub = <int, List<Player>>{};
+      for (final player in _runtimeAnswerPlayers) {
+        final clubIds =
+            _runtimeClubIdsByPlayer[player.id] ?? const <int>[];
+        for (final clubId in clubIds) {
+          byClub.putIfAbsent(clubId, () => <Player>[]).add(player);
+        }
+      }
+      _runtimePlayersByClub = {
+        for (final e in byClub.entries)
+          e.key: List<Player>.unmodifiable(e.value),
+      };
+
+      if (_runtimeQuizClubs.length < 20 ||
+          _runtimeAnswerPlayers.length < 5000 ||
+          _runtimePlayersByClub.length < 100) {
+        debugPrint(
+          '[HybridV3] Endless SQLite pool too small; legacy fallback.',
+        );
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint(
+          '[HybridV3] Endless SQLite '
+          'mode=${matchMode.name} style=${gameStyle.name} '
+          'clubs=${_runtimeQuizClubs.length} '
+          'answers=${_runtimeAnswerPlayers.length}',
+        );
+      }
+    }
+
+    final bestScore =
+        await HighScoreService.getHighScore(key: _highScoreKey);
 
     _state = _state.copyWith(
       bestScore: bestScore,
@@ -82,6 +137,9 @@ class EndlessController extends ChangeNotifier {
   }
 
   List<Club> _quizClubs() {
+    if (_usingRuntimeV3 && _runtimeQuizClubs.length >= 2) {
+      return List<Club>.from(_runtimeQuizClubs);
+    }
     // Bilinen kulüpler — Championship / alt lig yığılmaz
     final list = PopularClubs.resolveAll();
     if (list.length < 2) {
@@ -102,8 +160,112 @@ class EndlessController extends ChangeNotifier {
     return out.isNotEmpty ? out : Repository.instance.countries;
   }
 
+  bool _runtimeMatchesEntity(
+    Player player,
+    MatchEntity entity,
+  ) {
+    switch (entity.type) {
+      case MatchEntityType.club:
+        final ids =
+            _runtimeClubIdsByPlayer[player.id] ?? const <int>[];
+        return entity.clubId != null && ids.contains(entity.clubId);
+      case MatchEntityType.country:
+        return entity.countryName != null &&
+            player.countries.contains(entity.countryName);
+    }
+  }
+
+  List<Player> _runtimeMatches(
+    MatchEntity entity1,
+    MatchEntity entity2,
+  ) {
+    Iterable<Player> source = _runtimeAnswerPlayers;
+
+    if (entity1.type == MatchEntityType.club &&
+        entity1.clubId != null) {
+      source =
+          _runtimePlayersByClub[entity1.clubId] ?? const <Player>[];
+    } else if (entity2.type == MatchEntityType.club &&
+        entity2.clubId != null) {
+      source =
+          _runtimePlayersByClub[entity2.clubId] ?? const <Player>[];
+    }
+
+    return source
+        .where((p) => _runtimeMatchesEntity(p, entity1))
+        .where((p) => _runtimeMatchesEntity(p, entity2))
+        .toList();
+  }
+
+  ({MatchEntity entity1, MatchEntity entity2, List<Player> matching})
+      _generateRuntimePair() {
+    final clubs = _quizClubs();
+    final countries = _quizCountries();
+
+    var bestEntity1 = MatchEntity.club(clubs[0]);
+    var bestEntity2 =
+        MatchEntity.club(clubs.length > 1 ? clubs[1] : clubs[0]);
+    var bestMatching = <Player>[];
+
+    for (var attempt = 0; attempt < _maxPickAttempts; attempt++) {
+      final club1 = clubs[_random.nextInt(clubs.length)];
+      final entity1 = MatchEntity.club(club1);
+
+      final useCountry = matchMode == EndlessMatchMode.clubCountry;
+      final MatchEntity entity2;
+
+      if (useCountry && countries.isNotEmpty) {
+        entity2 = MatchEntity.country(
+          countries[_random.nextInt(countries.length)],
+        );
+      } else {
+        final others = clubs
+            .where((c) => c.id != club1.id)
+            .toList()
+          ..shuffle(_random);
+
+        Club? club2;
+        for (final c in others) {
+          if (c.league.trim().isNotEmpty &&
+              club1.league.trim().isNotEmpty &&
+              c.league != club1.league) {
+            club2 = c;
+            break;
+          }
+        }
+        club2 ??= others.isNotEmpty ? others.first : club1;
+        entity2 = MatchEntity.club(club2);
+      }
+
+      final matching = _runtimeMatches(entity1, entity2);
+
+      if (matching.length > bestMatching.length) {
+        bestEntity1 = entity1;
+        bestEntity2 = entity2;
+        bestMatching = matching;
+      }
+
+      if (matching.length >= _minPlayersPerRound) {
+        return (
+          entity1: entity1,
+          entity2: entity2,
+          matching: matching,
+        );
+      }
+    }
+
+    return (
+      entity1: bestEntity1,
+      entity2: bestEntity2,
+      matching: bestMatching,
+    );
+  }
+
   ({MatchEntity entity1, MatchEntity entity2, List<Player> matching})
       _generatePair() {
+    if (_usingRuntimeV3) {
+      return _generateRuntimePair();
+    }
     final clubs = _quizClubs();
     final countries = _quizCountries();
     final players = Repository.instance.players;
@@ -230,7 +392,9 @@ class EndlessController extends ChangeNotifier {
     final merged = List<Player>.from(suggestions);
     if (merged.length < 5 && query.trim().length >= 2) {
       final extra = SearchService.suggestions(
-        players: Repository.instance.players,
+        players: _usingRuntimeV3
+            ? _runtimeAnswerPlayers
+            : Repository.instance.players,
         query: query,
         excludedPlayerIds: _state.foundPlayerIds,
       );
@@ -293,7 +457,9 @@ void submitAnswer(String answer) {
     if (_state.isGameOver) return;
 
     final resolved = SearchService.resolve(
-      players: Repository.instance.players,
+      players: _usingRuntimeV3
+          ? _runtimeAnswerPlayers
+          : Repository.instance.players,
       answer: answer,
       excludedPlayerIds: _state.foundPlayerIds,
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/pyramid_models.dart';
@@ -79,25 +81,49 @@ class PyramidController extends ChangeNotifier {
   }
 
   void startNew() {
+    unawaited(_startNewAsync());
+  }
+
+  Future<void> _startNewAsync() async {
     try {
       _state = const PyramidState(isLoading: true);
       notifyListeners();
 
-      final board = PyramidGenerator.generate(difficulty: _difficulty);
+      var board = await PyramidGenerator.generateRuntime(
+        difficulty: _difficulty,
+      );
+
+      if (board != null) {
+        debugPrint(
+          '[HybridV3] Pyramid controller runtime board active '
+          'difficulty=${_difficulty.name} '
+          'answers=${board.answerPool.length}',
+        );
+      } else {
+        board = PyramidGenerator.generate(
+          difficulty: _difficulty,
+        );
+      }
+
       _state = PyramidState(
         board: board,
-        filled: Map<int, PyramidEntity>.from(board.initialFilled),
+        filled: Map<int, PyramidEntity>.from(
+          board.initialFilled,
+        ),
         lives: board.lives,
         score: 0,
         isLoading: false,
       );
+
       notifyListeners();
     } catch (e, st) {
       debugPrint('Pyramid start error: $e\n$st');
+
       _state = PyramidState(
         isLoading: false,
         error: 'Tahta üretilemedi: $e',
       );
+
       notifyListeners();
     }
   }

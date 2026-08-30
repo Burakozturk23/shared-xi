@@ -8,6 +8,10 @@ class HigherLowerState {
 
   final HigherLowerCriterion criterion;
 
+  /// True when values come from Runtime V3 factual player_stats.
+  final bool runtimeV3;
+  final Map<int, double> runtimeValues;
+
   final Player? currentPlayer;
   final Player? nextPlayer;
 
@@ -22,6 +26,8 @@ class HigherLowerState {
     this.isLoading = true,
     this.isGameOver = false,
     this.criterion = HigherLowerCriterion.marketValue,
+    this.runtimeV3 = false,
+    this.runtimeValues = const {},
     this.currentPlayer,
     this.nextPlayer,
     this.selectedGuessIsHigher,
@@ -32,19 +38,33 @@ class HigherLowerState {
   });
 
   double valueOf(Player p) {
+    if (runtimeV3) {
+      return runtimeValues[p.id] ?? 0;
+    }
+
     return criterion == HigherLowerCriterion.marketValue
         ? p.peakMarketValue
         : p.careerGoals.toDouble();
   }
 
-  String get criterionLabel => criterion == HigherLowerCriterion.marketValue
-      ? 'Zirve Piyasa Değeri'
-      : 'Kariyer Golü';
+  String get criterionLabel {
+    if (runtimeV3) {
+      return criterion == HigherLowerCriterion.marketValue
+          ? 'Kapsanan Resmi Maç'
+          : 'Kapsanan Gol';
+    }
+
+    return criterion == HigherLowerCriterion.marketValue
+        ? 'Zirve Piyasa Değeri'
+        : 'Kariyer Golü';
+  }
 
   HigherLowerState copyWith({
     bool? isLoading,
     bool? isGameOver,
     HigherLowerCriterion? criterion,
+    bool? runtimeV3,
+    Map<int, double>? runtimeValues,
     Player? currentPlayer,
     Player? nextPlayer,
     int? selectedGuessIsHigher,
@@ -59,6 +79,8 @@ class HigherLowerState {
       isLoading: isLoading ?? this.isLoading,
       isGameOver: isGameOver ?? this.isGameOver,
       criterion: criterion ?? this.criterion,
+      runtimeV3: runtimeV3 ?? this.runtimeV3,
+      runtimeValues: runtimeValues ?? this.runtimeValues,
       currentPlayer: currentPlayer ?? this.currentPlayer,
       nextPlayer: nextPlayer ?? this.nextPlayer,
       selectedGuessIsHigher: clearSelected

@@ -1,10 +1,30 @@
 {
   "project_info": {
     "project_number": "702685230752",
+    "firebase_url": "https://sharedix-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "sharedix",
     "storage_bucket": "sharedix.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702685230752:android:eb1967852eaa080877fbc5",
+        "android_client_info": {
+          "package_name": "com.burakozturk.linkball"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj5Z5tPCsX8oQV1Lp_9Umvyn9lKZrX-vY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:702685230752:android:64fa1e34523b7b5677fbc5",

@@ -1,0 +1,16 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": false,
+    "daily_fixtures": { ".read": true, ".write": false },
+    "dailyLeaderboard": { ".read": true, ".write": false },
+    "dailyScoreSessions": { ".read": false, ".write": false },
+    "users": { "$uid": { ".write": "auth != null && auth.uid == $uid" } },
+    "matchmaking": { ".write": "auth != null" },
+    "matches": { ".write": "auth != null" },
+    "rooms": { ".write": "auth != null" },
+    "gridMatches": { ".write": "auth != null" },
+    "cinkoMatches": { ".write": "auth != null" },
+    "fiveMatches": { ".write": "auth != null" }
+  }
+}

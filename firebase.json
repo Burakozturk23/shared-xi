@@ -38,5 +38,8 @@
         "npm --prefix functions run lint"
       ]
     }
-  ]
+  ],
+  "database": {
+    "rules": "database.rules.json"
+  }
 }

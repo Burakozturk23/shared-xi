@@ -10,6 +10,7 @@ import '../models/club.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class CareerPuzzleController extends ChangeNotifier {
   final CareerPuzzleDifficulty difficulty;
@@ -21,6 +22,9 @@ class CareerPuzzleController extends ChangeNotifier {
   CareerPuzzleState get state => _state;
 
   Timer? _feedbackTimer;
+
+  bool _usingRuntimeV3 = false;
+  List<Player> _runtimeCandidatePool = const [];
 
   (int minStops, int maxStops) get _stopRange {
     switch (difficulty) {
@@ -34,11 +38,109 @@ class CareerPuzzleController extends ChangeNotifier {
   }
 
   void initialize() {
-    _startRound(keepSession: false);
+    unawaited(_initializeHybrid());
   }
 
   void restart() {
-    _startRound(keepSession: true);
+    if (_usingRuntimeV3) {
+      unawaited(_startRoundRuntime(keepSession: true));
+    } else {
+      _startRound(keepSession: true);
+    }
+  }
+
+  String get _runtimePoolName {
+    switch (difficulty) {
+      case CareerPuzzleDifficulty.beginner:
+        return 'career_preview_beginner';
+      case CareerPuzzleDifficulty.normal:
+        return 'career_preview_normal';
+      case CareerPuzzleDifficulty.legend:
+        return 'career_preview_legend';
+    }
+  }
+
+  Future<void> _initializeHybrid() async {
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+    if (_usingRuntimeV3) {
+      _runtimeCandidatePool = await hybrid.playersInPool(_runtimePoolName);
+      if (_runtimeCandidatePool.length < 100) {
+        debugPrint('[HybridV3] CareerPuzzle SQLite pool too small; legacy fallback.');
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint('[HybridV3] CareerPuzzle SQLite difficulty=${difficulty.name} players=${_runtimeCandidatePool.length}');
+      }
+    }
+    if (_usingRuntimeV3) {
+      await _startRoundRuntime(keepSession: false);
+    } else {
+      _startRound(keepSession: false);
+    }
+  }
+
+  Future<List<CareerStop>> _runtimeTimelineFor(Player player) async {
+    final rows = await HybridGameplayDataService.instance.careerTimeline(player.id);
+    final seen = <int>{};
+    final result = <CareerStop>[];
+    for (final row in rows) {
+      final clubId = (row['exposed_club_id'] as num?)?.toInt();
+      if (clubId == null || clubId <= 0) continue;
+      if (Repository.instance.clubById(clubId) == null) continue;
+      if (!seen.add(clubId)) continue;
+      final startDate = row['start_date']?.toString() ?? '';
+      final endDate = row['end_date']?.toString() ?? '';
+      final startYear = int.tryParse(startDate.length >= 4 ? startDate.substring(0, 4) : '');
+      if (startYear == null) continue;
+      final endYear = int.tryParse(endDate.length >= 4 ? endDate.substring(0, 4) : '');
+      result.add(CareerStop(clubId: clubId, startYear: startYear, endYear: endYear));
+    }
+    return result;
+  }
+
+  Future<void> _startRoundRuntime({required bool keepSession}) async {
+    final (minS, maxS) = _stopRange;
+    if (_runtimeCandidatePool.isEmpty) {
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
+      return;
+    }
+    final envelopeSize = _runtimeCandidatePool.length.clamp(100, 1800);
+    final candidates = _runtimeCandidatePool.take(envelopeSize).toList()..shuffle(_random);
+    for (final target in candidates.take(120)) {
+      final uniqueStops = await _runtimeTimelineFor(target);
+      if (uniqueStops.length < minS) continue;
+      if (difficulty == CareerPuzzleDifficulty.beginner && uniqueStops.length > maxS + 3) continue;
+      final desired = minS + (maxS > minS ? _random.nextInt(maxS - minS + 1) : 0);
+      final take = desired.clamp(minS, uniqueStops.length);
+      final maxStart = uniqueStops.length - take;
+      final startIndex = maxStart > 0 ? _random.nextInt(maxStart + 1) : 0;
+      final chosenStops = uniqueStops.skip(startIndex).take(take).toList();
+      final displayClubs = chosenStops.map((s) => Repository.instance.clubById(s.clubId)).whereType<Club>().toList()..shuffle(_random);
+      if (displayClubs.length != chosenStops.length) continue;
+      _state = CareerPuzzleState(
+        isLoading: false,
+        phase: CareerPuzzlePhase.guessingPlayer,
+        difficulty: difficulty,
+        target: target,
+        correctStops: chosenStops,
+        displayClubs: displayClubs,
+        lives: keepSession ? _state.lives : CareerPuzzleState.maxLives,
+        coins: keepSession ? _state.coins : CareerPuzzleState.startingCoins,
+        sessionScore: keepSession ? _state.sessionScore : 0,
+        roundScore: 0,
+        playerGuessed: false,
+        orderUntouched: true,
+        orderCheckedOnce: false,
+        revealedEraIndexes: const {},
+        shortStayMarkedClubIds: const {},
+        connectedPairs: const [],
+      );
+      notifyListeners();
+      return;
+    }
+    debugPrint('[HybridV3] CareerPuzzle no compatible existing-club timeline; legacy fallback for this round.');
+    _startRound(keepSession: keepSession);
   }
 
   void disposeController() {

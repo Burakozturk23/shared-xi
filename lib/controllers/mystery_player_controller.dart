@@ -8,6 +8,7 @@ import '../models/mystery_player_state.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class MysteryPlayerController extends ChangeNotifier {
   final Random _random = Random();
@@ -17,12 +18,180 @@ class MysteryPlayerController extends ChangeNotifier {
 
   Timer? _feedbackTimer;
 
+  bool _usingRuntimeV3 = false;
+  List<Player> _runtimePlayers = const [];
+  Map<int, List<int>> _runtimeClubIdsByPlayer = const {};
+  Map<int, Map<String, Object?>> _runtimeFactsByPlayer = const {};
+  Map<int, String> _runtimeClubNameById = const {};
+  Map<int, String> _runtimeLeagueByClubId = const {};
+
+
   void initialize() {
-    _startRound(keepSession: false);
+    unawaited(_initializeHybrid());
   }
 
   void newRound() {
-    _startRound(keepSession: true);
+    if (_usingRuntimeV3) {
+      unawaited(_startRoundRuntime(keepSession: true));
+    } else {
+      _startRound(keepSession: true);
+    }
+  }
+
+  Future<void> _initializeHybrid() async {
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      _runtimePlayers = await hybrid.playersInPool('normal_v3');
+      _runtimeClubIdsByPlayer =
+          await hybrid.playerClubIdsForPool('normal_v3');
+      _runtimeFactsByPlayer =
+          await hybrid.playerFactsForPool('normal_v3');
+
+      final clubRows = await hybrid.existingGameplayClubMetadata();
+
+      _runtimeClubNameById = {
+        for (final row in clubRows)
+          if ((row['exposed_club_id'] as num?) != null)
+            (row['exposed_club_id'] as num).toInt():
+                (row['name']?.toString().trim() ?? ''),
+      };
+
+      _runtimeLeagueByClubId = {
+        for (final row in clubRows)
+          if ((row['exposed_club_id'] as num?) != null)
+            (row['exposed_club_id'] as num).toInt():
+                (row['competition']?.toString().trim() ?? ''),
+      };
+
+      if (_runtimePlayers.length < 1000 ||
+          _runtimeClubIdsByPlayer.length < 1000 ||
+          _runtimeFactsByPlayer.length < 1000 ||
+          _runtimeClubNameById.length < 100) {
+        debugPrint(
+          '[HybridV3] MysteryPlayer SQLite source too small; '
+          'legacy fallback.',
+        );
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint(
+          '[HybridV3] MysteryPlayer SQLite '
+          'players=${_runtimePlayers.length} '
+          'facts=${_runtimeFactsByPlayer.length} '
+          'clubs=${_runtimeClubNameById.length}',
+        );
+      }
+    }
+
+    if (_usingRuntimeV3) {
+      await _startRoundRuntime(keepSession: false);
+    } else {
+      _startRound(keepSession: false);
+    }
+  }
+
+  List<int> _clubIdsForPlayer(Player player) {
+    return _usingRuntimeV3
+        ? (_runtimeClubIdsByPlayer[player.id] ?? const <int>[])
+        : player.clubs;
+  }
+
+  String _runtimePositionRaw(Player player) {
+    if (!_usingRuntimeV3) return player.position;
+
+    final row = _runtimeFactsByPlayer[player.id];
+    final raw =
+        row?['position_group']?.toString().trim() ?? '';
+
+    return raw.isNotEmpty ? raw : player.position;
+  }
+
+  String _runtimeStatsHint(Player player) {
+    if (!_usingRuntimeV3) {
+      return 'Kariyer golü: ${player.careerGoals}';
+    }
+
+    final row = _runtimeFactsByPlayer[player.id];
+    if (row == null) return 'Kapsanan istatistik sınırlı';
+
+    final apps = (row['appearances'] as num?)?.toInt() ?? 0;
+    final goals = (row['goals'] as num?)?.toInt() ?? 0;
+    final assists = (row['assists'] as num?)?.toInt() ?? 0;
+
+    return 'Kapsanan veri: $apps maç • $goals gol • $assists asist';
+  }
+
+  String _runtimeCoverageHint(Player player) {
+    if (!_usingRuntimeV3) {
+      final value = player.peakMarketValue > 0
+          ? player.peakMarketValue
+          : player.marketValue;
+      return 'Piyasa değeri: ${_valueBucket(value)}';
+    }
+
+    final row = _runtimeFactsByPlayer[player.id];
+    final first =
+        (row?['coverage_first_year'] as num?)?.toInt() ?? 0;
+    final last =
+        (row?['coverage_last_year'] as num?)?.toInt() ?? 0;
+
+    if (first <= 0 || last <= 0) {
+      return 'Veri dönemi sınırlı';
+    }
+
+    return 'Kapsanan veri dönemi: $first-$last';
+  }
+
+  Future<void> _startRoundRuntime({
+    required bool keepSession,
+  }) async {
+    final existingClubIds = _runtimeClubNameById.keys.toSet();
+
+    final eligible = _runtimePlayers.where((player) {
+      final clubs = _clubIdsForPlayer(player)
+          .where(existingClubIds.contains)
+          .toSet();
+      return clubs.length >= 2;
+    }).take(2200).toList();
+
+    if (eligible.length < 100) {
+      debugPrint(
+        '[HybridV3] MysteryPlayer eligible pool too small; '
+        'legacy fallback for round.',
+      );
+      _startRound(keepSession: keepSession);
+      return;
+    }
+
+    final envelope =
+        eligible.take(1600).toList()..shuffle(_random);
+    final target = envelope[_random.nextInt(envelope.length)];
+
+    final hints = _buildHints(target);
+    final withFirst = List<MysteryHint>.from(hints);
+
+    if (withFirst.isNotEmpty) {
+      withFirst[0] = withFirst[0].copyWith(unlocked: true);
+    }
+
+    _state = MysteryPlayerState(
+      isLoading: false,
+      target: target,
+      hints: withFirst,
+      lives: keepSession ? _state.lives : MysteryPlayerState.maxLives,
+      streak: keepSession ? _state.streak : 0,
+      sessionScore: keepSession ? _state.sessionScore : 0,
+      coins: keepSession ? _state.coins : MysteryPlayerState.startingCoins,
+      roundPoints: MysteryPlayerState.baseRoundPoints,
+      isSolved: false,
+      isFailed: false,
+      wrongGuesses: const [],
+      revealedLetterIndexes: const {},
+      roundStartedAt: DateTime.now(),
+    );
+
+    notifyListeners();
   }
 
   void disposeController() {
@@ -122,34 +291,65 @@ class MysteryPlayerController extends ChangeNotifier {
 
   List<String> _leagueNamesFor(Player p) {
     final names = <String>{};
-    for (final id in p.clubs) {
-      final club = Repository.instance.clubById(id);
-      final league = club?.league;
-      if (league != null && league.trim().isNotEmpty) {
+
+    for (final id in _clubIdsForPlayer(p)) {
+      final league = _usingRuntimeV3
+          ? (_runtimeLeagueByClubId[id] ?? '')
+          : (Repository.instance.clubById(id)?.league ?? '');
+
+      if (league.trim().isNotEmpty) {
         names.add(league.trim());
       }
     }
+
     final list = names.toList()..sort();
     return list.take(4).toList();
   }
 
   String? _starTeammateName(Player target) {
+    if (_usingRuntimeV3) {
+      final clubSet = _clubIdsForPlayer(target).toSet();
+      if (clubSet.isEmpty) return null;
+
+      // normal_v3 is selectionRankV3 ordered.
+      for (final player in _runtimePlayers) {
+        if (player.id == target.id) continue;
+
+        final clubs = _clubIdsForPlayer(player);
+        if (clubs.any(clubSet.contains)) {
+          return player.name;
+        }
+      }
+
+      return null;
+    }
+
     final clubSet = target.clubs.toSet();
     Player? best;
+
     for (final p in Repository.instance.players) {
       if (p.id == target.id) continue;
       if (!p.clubs.any(clubSet.contains)) continue;
-      if (best == null || p.peakMarketValue > best.peakMarketValue) {
+
+      if (best == null ||
+          p.peakMarketValue > best.peakMarketValue) {
         best = p;
       }
     }
+
     return best?.name;
   }
 
   List<MysteryHint> _buildHints(Player p) {
-    final clubNames = p.clubs
-        .map((id) => Repository.instance.clubById(id)?.name)
-        .whereType<String>()
+    final clubIds = _clubIdsForPlayer(p);
+
+    final clubNames = clubIds
+        .map(
+          (id) => _usingRuntimeV3
+              ? (_runtimeClubNameById[id] ?? '')
+              : (Repository.instance.clubById(id)?.name ?? ''),
+        )
+        .where((name) => name.isNotEmpty)
         .toList();
     final revealedClub = clubNames.isNotEmpty
         ? clubNames[_random.nextInt(clubNames.length)]
@@ -173,13 +373,13 @@ class MysteryPlayerController extends ChangeNotifier {
       MysteryHint(
         kind: MysteryHintKind.position,
         title: 'Mevki',
-        text: _positionLabel(p.position),
+        text: _positionLabel(_runtimePositionRaw(p)),
         cost: 10,
       ),
       MysteryHint(
         kind: MysteryHintKind.clubCount,
         title: 'Kariyer',
-        text: '${p.clubs.length} farklı kulüpte forma giymiş',
+        text: '${clubIds.toSet().length} farklı kulüpte forma giymiş',
         cost: 10,
       ),
       MysteryHint(
@@ -191,7 +391,7 @@ class MysteryPlayerController extends ChangeNotifier {
       MysteryHint(
         kind: MysteryHintKind.careerStats,
         title: 'İstatistik',
-        text: 'Kariyer golü: ${p.careerGoals}',
+        text: _runtimeStatsHint(p),
         cost: 20,
       ),
       MysteryHint(
@@ -202,8 +402,8 @@ class MysteryPlayerController extends ChangeNotifier {
       ),
       MysteryHint(
         kind: MysteryHintKind.marketValue,
-        title: 'Piyasa',
-        text: 'Piyasa değeri: ${_valueBucket(p.peakMarketValue > 0 ? p.peakMarketValue : p.marketValue)}',
+        title: _usingRuntimeV3 ? 'Veri dönemi' : 'Piyasa',
+        text: _runtimeCoverageHint(p),
         cost: 15,
       ),
     ];
@@ -283,7 +483,12 @@ class MysteryPlayerController extends ChangeNotifier {
 
     _state = _state.copyWith(streak: 0);
     _feedback('Pas geçildi — seri sıfırlandı.', false);
-    _startRound(keepSession: true);
+
+    if (_usingRuntimeV3) {
+      unawaited(_startRoundRuntime(keepSession: true));
+    } else {
+      _startRound(keepSession: true);
+    }
   }
 
   void submitGuess(String answer) {
@@ -292,7 +497,9 @@ class MysteryPlayerController extends ChangeNotifier {
     if (answer.trim().isEmpty) return;
 
     final resolved = SearchService.resolve(
-      players: Repository.instance.players,
+      players: _usingRuntimeV3
+          ? _runtimePlayers
+          : Repository.instance.players,
       answer: answer,
     );
 
@@ -341,7 +548,9 @@ class MysteryPlayerController extends ChangeNotifier {
 
   List<Player> suggestions(String query) {
     return SearchService.suggestions(
-      players: Repository.instance.players,
+      players: _usingRuntimeV3
+          ? _runtimePlayers
+          : Repository.instance.players,
       query: query,
     );
   }

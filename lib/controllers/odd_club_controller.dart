@@ -9,6 +9,7 @@ import '../models/odd_club_state.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/high_score_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class OddClubController extends ChangeNotifier {
   final bool timed;
@@ -30,7 +31,71 @@ class OddClubController extends ChangeNotifier {
   late List<Club> _clubPool;
   bool _ready = false;
 
+  bool _usingRuntimeV3 = false;
+  Map<int, List<int>> _runtimeClubIdsByPlayer = const {};
+
+
+  String get _effectiveHighScoreKey =>
+      _usingRuntimeV3 ? '${_highScoreKey}_v3' : _highScoreKey;
+
+
   Future<void> initialize() async {
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      _clubPool = await hybrid.topGameplayClubs(limit: 120);
+
+      final orderedPlayers = await hybrid.playersInPool('normal_v3');
+      _runtimeClubIdsByPlayer =
+          await hybrid.playerClubIdsForPool('normal_v3');
+
+      final poolClubIds = _clubPool.map((c) => c.id).toSet();
+
+      // normal_v3 is selectionRankV3 ordered. Keep players that have enough
+      // canonical top-club history for 3 real clubs + 1 fake-club gameplay.
+      _pool = orderedPlayers.where((p) {
+        final realCount = (_runtimeClubIdsByPlayer[p.id] ?? const <int>[])
+            .where(poolClubIds.contains)
+            .toSet()
+            .length;
+        return realCount >= 3;
+      }).take(1800).toList();
+
+      if (_clubPool.length < 20 ||
+          _runtimeClubIdsByPlayer.length < 5000 ||
+          _pool.length < 120) {
+        debugPrint(
+          '[HybridV3] OddClub SQLite pool too small; legacy fallback.',
+        );
+        _usingRuntimeV3 = false;
+        await _initializeLegacy();
+        return;
+      }
+
+      final best = await HighScoreService.getHighScore(
+        key: _effectiveHighScoreKey,
+      );
+
+      _ready = true;
+      _state = _state.copyWith(
+        isLoading: false,
+        bestStreak: best,
+      );
+
+      debugPrint(
+        '[HybridV3] OddClub SQLite '
+        'timed=$timed players=${_pool.length} clubs=${_clubPool.length}',
+      );
+
+      _nextQuestion(resetLives: true);
+      return;
+    }
+
+    await _initializeLegacy();
+  }
+
+  Future<void> _initializeLegacy() async {
     _clubPool = chainClubPool
         .map((id) => Repository.instance.clubById(id))
         .whereType<Club>()
@@ -62,6 +127,13 @@ class OddClubController extends ChangeNotifier {
     _ready = true;
     _state = _state.copyWith(isLoading: false, bestStreak: best);
     _nextQuestion(resetLives: true);
+  
+  }
+
+  List<int> _clubIdsForPlayer(Player player) {
+    return _usingRuntimeV3
+        ? (_runtimeClubIdsByPlayer[player.id] ?? const <int>[])
+        : player.clubs;
   }
 
   @override
@@ -126,7 +198,10 @@ class OddClubController extends ChangeNotifier {
     final topN = _pool.take((_pool.length * 0.5).ceil().clamp(40, _pool.length)).toList();
     final player = topN[_random.nextInt(topN.length)];
 
-    final realIds = player.clubs.toSet().intersection(poolClubIds).toList()
+    final realIds = _clubIdsForPlayer(player)
+        .toSet()
+        .intersection(poolClubIds)
+        .toList()
       ..shuffle(_random);
     final realClubs = realIds
         .take(3)
@@ -247,7 +322,10 @@ class OddClubController extends ChangeNotifier {
     _clockTimer?.cancel();
     final best =
         _state.streak > _state.bestStreak ? _state.streak : _state.bestStreak;
-    await HighScoreService.saveHighScore(_state.score, key: _highScoreKey);
+    await HighScoreService.saveHighScore(
+      _state.score,
+      key: _effectiveHighScoreKey,
+    );
     _state = _state.copyWith(isGameOver: true, bestStreak: best);
     notifyListeners();
   }

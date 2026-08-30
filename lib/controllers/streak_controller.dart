@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../models/match_entity.dart';
+import '../models/player.dart';
 import '../models/streak_state.dart';
 import '../data/chain_pool.dart';
 import '../models/club.dart';
@@ -11,6 +12,7 @@ import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
 import '../services/high_score_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class StreakController extends ChangeNotifier {
   static const int _roundSeconds = 20;
@@ -24,8 +26,38 @@ class StreakController extends ChangeNotifier {
   Timer? _timer;
   Timer? _feedbackTimer;
 
+  bool _usingRuntimeV3 = false;
+  List<Club> _runtimeQuizClubs = const [];
+  int _roundGenerationToken = 0;
+
+
   void initialize() {
-    _nextRound(resetLivesAndStreak: true);
+    unawaited(_initializeHybrid());
+  }
+
+  Future<void> _initializeHybrid() async {
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      _runtimeQuizClubs = await hybrid.topGameplayClubs(limit: 120);
+      if (_runtimeQuizClubs.length < 20) {
+        debugPrint(
+          '[HybridV3] Streak SQLite club pool too small; legacy fallback.',
+        );
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint(
+          '[HybridV3] Streak SQLite clubs=${_runtimeQuizClubs.length}',
+        );
+      }
+    }
+
+    if (_usingRuntimeV3) {
+      unawaited(_nextRoundRuntime(resetLivesAndStreak: true));
+    } else {
+      _nextRound(resetLivesAndStreak: true);
+    }
   }
 
   void disposeController() {
@@ -46,6 +78,77 @@ class StreakController extends ChangeNotifier {
       return List<Club>.from(Repository.instance.clubs);
     }
     return list;
+  }
+
+  Future<void> _nextRoundRuntime({
+    bool resetLivesAndStreak = false,
+  }) async {
+    final token = ++_roundGenerationToken;
+    final clubs = _runtimeQuizClubs;
+
+    if (clubs.length < 2) {
+      _usingRuntimeV3 = false;
+      _nextRound(resetLivesAndStreak: resetLivesAndStreak);
+      return;
+    }
+
+    for (var attempts = 0; attempts < 180; attempts++) {
+      final club1 = clubs[_random.nextInt(clubs.length)];
+      final club2 = clubs[_random.nextInt(clubs.length)];
+      if (club1.id == club2.id) continue;
+
+      final ids =
+          await HybridGameplayDataService.instance.sharedXiAnswerIds(
+        club1.id,
+        club2.id,
+        playerPool: 'shared_xi_answer',
+      );
+
+      if (token != _roundGenerationToken) return;
+      if (ids.length < _minSharedPlayers) continue;
+
+      final found = <Player>[];
+      for (final id in ids) {
+        final player = Repository.instance.playerById(id);
+        if (player != null) found.add(player);
+      }
+      if (found.length < _minSharedPlayers) continue;
+
+      final entity1 = MatchEntity.club(club1);
+      final entity2 = MatchEntity.club(club2);
+
+      _timer?.cancel();
+      _state = _state.copyWith(
+        isLoading: false,
+        streak: resetLivesAndStreak ? 0 : _state.streak,
+        lives: resetLivesAndStreak ? 3 : _state.lives,
+        hintsLeft: resetLivesAndStreak ? 3 : _state.hintsLeft,
+        isGameOver: false,
+        entity1: entity1,
+        entity2: entity2,
+        matchingPlayers: found,
+        suggestions: const [],
+        wrongAttempts: const {},
+        secondsLeft: _roundSeconds,
+      );
+      _startTimer();
+      notifyListeners();
+      return;
+    }
+
+    debugPrint(
+      '[HybridV3] Streak could not find valid SQLite pair; '
+      'legacy fallback for round.',
+    );
+    _nextRound(resetLivesAndStreak: resetLivesAndStreak);
+  }
+
+  void _advanceRound() {
+    if (_usingRuntimeV3) {
+      unawaited(_nextRoundRuntime());
+    } else {
+      _nextRound();
+    }
   }
 
   void _nextRound({bool resetLivesAndStreak = false}) {
@@ -122,7 +225,7 @@ class StreakController extends ChangeNotifier {
     }
 
     _feedback("Süre doldu!", false);
-    _nextRound();
+    _advanceRound();
   }
 
   Future<void> _finishGame() async {
@@ -198,7 +301,7 @@ class StreakController extends ChangeNotifier {
     final streak = _state.streak + 1;
     _state = _state.copyWith(streak: streak);
     _feedback("Doğru! ${player.name} — Seri: $streak", true);
-    _nextRound();
+    _advanceRound();
   }
 
   void useHint() {

@@ -13,6 +13,7 @@ import '../services/daily_leaderboard_service.dart';
 import '../services/daily_playable_matches.dart';
 import '../services/daily_share_helper.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class DailyChallengeController extends ChangeNotifier {
   /// null = bugün
@@ -27,11 +28,45 @@ class DailyChallengeController extends ChangeNotifier {
   Timer? _clockTimer;
   Timer? _feedbackTimer;
 
+  bool _usingRuntimeV3 = false;
+  Map<int, List<int>> _runtimeClubIdsByPlayer = const {};
+
+
   /// Paylaşım / UI için son sıralama
   int? lastRank;
   int? lastTotalPlayers;
 
   DateTime get _day => playDate ?? DateTime.now();
+
+  bool _runtimeMatchesEntity(
+    Player player,
+    MatchEntity entity,
+  ) {
+    switch (entity.type) {
+      case MatchEntityType.club:
+        final ids =
+            _runtimeClubIdsByPlayer[player.id] ?? const <int>[];
+        return entity.clubId != null && ids.contains(entity.clubId);
+      case MatchEntityType.country:
+        return entity.countryName != null &&
+            player.countries.contains(entity.countryName);
+    }
+  }
+
+  Future<List<Player>> _runtimeMatchingPlayers(
+    MatchEntity entity1,
+    MatchEntity entity2,
+  ) async {
+    final hybrid = HybridGameplayDataService.instance;
+    final players = await hybrid.playersInPool('shared_xi_answer');
+    _runtimeClubIdsByPlayer =
+        await hybrid.playerClubIdsForPool('shared_xi_answer');
+
+    return players
+        .where((p) => _runtimeMatchesEntity(p, entity1))
+        .where((p) => _runtimeMatchesEntity(p, entity2))
+        .toList();
+  }
 
   Future<void> initialize() async {
     final MatchEntity entity1;
@@ -56,10 +91,34 @@ class DailyChallengeController extends ChangeNotifier {
     final already = await DailyChallengeService.isCompletedOn(_day);
     final streak = await DailyChallengeService.getStreak();
 
-    final matchingPlayers = DailyChallengeService.qualityMatchingPlayers(
+    var matchingPlayers =
+        DailyChallengeService.qualityMatchingPlayers(
       entity1: entity1,
       entity2: entity2,
     );
+
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      final runtimeMatches =
+          await _runtimeMatchingPlayers(entity1, entity2);
+
+      if (runtimeMatches.length >= 3) {
+        matchingPlayers = runtimeMatches;
+        debugPrint(
+          '[HybridV3] DailyChallenge SQLite '
+          'answers=${matchingPlayers.length} '
+          'pair=${entity1.displayName} x ${entity2.displayName}',
+        );
+      } else {
+        _usingRuntimeV3 = false;
+        debugPrint(
+          '[HybridV3] DailyChallenge canonical answers too small '
+          '(${runtimeMatches.length}); legacy fallback for fixture.',
+        );
+      }
+    }
 
     _state = _state.copyWith(
       isLoading: false,
@@ -82,6 +141,13 @@ class DailyChallengeController extends ChangeNotifier {
       _state = _state.copyWith(isFinished: true, score: lastScore);
       notifyListeners();
     } else {
+      final sessionReady =
+          await DailyLeaderboardService.startSession(date: _day);
+      if (!sessionReady) {
+        debugPrint(
+          '[Security05B] Daily server session unavailable; gameplay continues.',
+        );
+      }
       _startClock();
     }
   }
@@ -290,6 +356,9 @@ class DailyChallengeController extends ChangeNotifier {
         successRate: rate,
         secondsLeft: _state.secondsLeft,
         streak: result.streak,
+        foundCount: _state.foundPlayerIds.length,
+        targetCount: _state.matchingPlayers.length,
+        wrongCount: _state.wrongAttempts.length,
       );
       final board = await DailyLeaderboardService.fetch(date: _day);
       lastTotalPlayers = board.length;

@@ -7,6 +7,7 @@ import '../models/higher_lower_state.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/high_score_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class HigherLowerController extends ChangeNotifier {
   final HigherLowerCriterion criterion;
@@ -22,10 +23,20 @@ class HigherLowerController extends ChangeNotifier {
   /// final DEĞİL — restart initialize'ı tekrar çağırabilsin diye.
   late List<Player> _pool;
   bool _poolReady = false;
+  bool _usingRuntimeV3 = false;
+  Map<int, double> _runtimeValues = const {};
 
-  String get _highScoreKey => criterion == HigherLowerCriterion.marketValue
-      ? 'higher_lower_value_best'
-      : 'higher_lower_goals_best';
+  String get _highScoreKey {
+    if (_usingRuntimeV3) {
+      return criterion == HigherLowerCriterion.marketValue
+          ? 'higher_lower_apps_v3_best'
+          : 'higher_lower_goals_v3_best';
+    }
+
+    return criterion == HigherLowerCriterion.marketValue
+        ? 'higher_lower_value_best'
+        : 'higher_lower_goals_best';
+  }
 
   /// Tanınır oyuncu eşiği.
   /// Piyasa: zirve değer ≥ 20M € (~1500 isim)
@@ -35,38 +46,96 @@ class HigherLowerController extends ChangeNotifier {
 
   Future<void> initialize() async {
     if (!_poolReady) {
-      _pool = Repository.instance.players.where((p) {
-        if (criterion == HigherLowerCriterion.marketValue) {
-          return p.peakMarketValue >= _minPeakValue;
+      final hybrid = HybridGameplayDataService.instance;
+      _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+      if (_usingRuntimeV3) {
+        final players = await hybrid.playersInPool('normal_v3');
+        final facts = await hybrid.playerFactsForPool('normal_v3');
+
+        final values = <int, double>{};
+        final eligible = <Player>[];
+
+        for (final player in players) {
+          final row = facts[player.id];
+          if (row == null) continue;
+
+          final raw = criterion == HigherLowerCriterion.marketValue
+              ? (row['appearances'] as num?)?.toDouble()
+              : (row['goals'] as num?)?.toDouble();
+
+          if (raw == null || raw <= 0) continue;
+
+          values[player.id] = raw;
+          eligible.add(player);
         }
-        return p.careerGoals >= _minCareerGoals;
-      }).toList();
 
-      // Aşırı daralırsa eşiği gevşet
-      if (_pool.length < 80) {
-        _pool = Repository.instance.players.where((p) {
-          if (criterion == HigherLowerCriterion.marketValue) {
-            return p.peakMarketValue >= 10000000;
-          }
-          return p.careerGoals >= 50;
-        }).toList();
-      }
+        // `players` is already selectionRankV3 ordered. Keep a broad,
+        // recognizable envelope without market-value thresholds.
+        final limit = criterion == HigherLowerCriterion.marketValue
+            ? 3500
+            : 3200;
 
-      // Hâlâ boşsa en azından değeri/golü olanlar
-      if (_pool.isEmpty) {
-        _pool = Repository.instance.players.where((p) {
-          final v = criterion == HigherLowerCriterion.marketValue
-              ? p.peakMarketValue
-              : p.careerGoals.toDouble();
-          return v > 0;
-        }).toList();
+        _pool = eligible.take(limit).toList();
+        _runtimeValues = {
+          for (final p in _pool) p.id: values[p.id]!,
+        };
+
+        if (_pool.length < 500) {
+          debugPrint(
+            '[HybridV3] HigherLower factual pool too small; '
+            'legacy fallback.',
+          );
+          _usingRuntimeV3 = false;
+          _runtimeValues = const {};
+          _initializeLegacyPool();
+        } else {
+          final metric = criterion == HigherLowerCriterion.marketValue
+              ? 'appearances'
+              : 'goals';
+
+          debugPrint(
+            '[HybridV3] HigherLower SQLite '
+            'metric=$metric players=${_pool.length}',
+          );
+        }
+      } else {
+        _initializeLegacyPool();
       }
 
       _poolReady = true;
     }
 
-    final bestStreak = await HighScoreService.getHighScore(key: _highScoreKey);
+    final bestStreak =
+        await HighScoreService.getHighScore(key: _highScoreKey);
     _startNewGame(bestStreak: bestStreak);
+  }
+
+  void _initializeLegacyPool() {
+    _pool = Repository.instance.players.where((p) {
+      if (criterion == HigherLowerCriterion.marketValue) {
+        return p.peakMarketValue >= _minPeakValue;
+      }
+      return p.careerGoals >= _minCareerGoals;
+    }).toList();
+
+    if (_pool.length < 80) {
+      _pool = Repository.instance.players.where((p) {
+        if (criterion == HigherLowerCriterion.marketValue) {
+          return p.peakMarketValue >= 10000000;
+        }
+        return p.careerGoals >= 50;
+      }).toList();
+    }
+
+    if (_pool.isEmpty) {
+      _pool = Repository.instance.players.where((p) {
+        final v = criterion == HigherLowerCriterion.marketValue
+            ? p.peakMarketValue
+            : p.careerGoals.toDouble();
+        return v > 0;
+      }).toList();
+    }
   }
 
   void _startNewGame({required int bestStreak}) {
@@ -79,6 +148,8 @@ class HigherLowerController extends ChangeNotifier {
       isLoading: false,
       isGameOver: false,
       criterion: criterion,
+      runtimeV3: _usingRuntimeV3,
+      runtimeValues: _runtimeValues,
       currentPlayer: first,
       nextPlayer: next,
       streak: 0,

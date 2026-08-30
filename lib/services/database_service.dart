@@ -36,39 +36,22 @@ class DatabaseService {
   static String get dataVersion =>
       _metaCache?['dataVersion']?.toString() ?? '—';
 
-  static Future<bool> _useMin() async {
-    final meta = await loadMeta();
-    return meta['preferMin'] == true;
-  }
-
   static Future<List<Club>> loadClubs() async {
     if (_clubsCache != null) return _clubsCache!;
-    final preferMin = await _useMin();
-    final path = preferMin
-        ? 'assets/data/clubs_min.json'
-        : 'assets/data/clubs.json';
-    String raw;
-    try {
-      raw = await rootBundle.loadString(path);
-    } catch (_) {
-      raw = await rootBundle.loadString('assets/data/clubs_min.json');
-    }
+
+    // STEP 07A.10C: production runtime ships min JSON only.
+    // Full clubs.json is intentionally excluded from APK/AAB.
+    final raw = await rootBundle.loadString('assets/data/clubs_min.json');
     _clubsCache = await compute(_parseClubs, raw);
     return _clubsCache!;
   }
 
   static Future<List<Player>> loadPlayers() async {
     if (_playersCache != null) return _playersCache!;
-    final preferMin = await _useMin();
-    final path = preferMin
-        ? 'assets/data/players_min.json'
-        : 'assets/data/players.json';
-    String raw;
-    try {
-      raw = await rootBundle.loadString(path);
-    } catch (_) {
-      raw = await rootBundle.loadString('assets/data/players_min.json');
-    }
+
+    // STEP 07A.10C: production runtime ships min JSON only.
+    // Full players.json is intentionally excluded from APK/AAB.
+    final raw = await rootBundle.loadString('assets/data/players_min.json');
     _playersCache = await compute(_parsePlayers, raw);
     return _playersCache!;
   }
@@ -87,8 +70,9 @@ class DatabaseService {
   static Future<List<FamousTransfer>> loadFamousTransfers() async {
     if (_famousTransfersCache != null) return _famousTransfersCache!;
     try {
-      final raw =
-          await rootBundle.loadString('assets/data/famous_transfers.json');
+      final raw = await rootBundle.loadString(
+        'assets/data/famous_transfers.json',
+      );
       _famousTransfersCache = await compute(_parseFamous, raw);
     } catch (_) {
       _famousTransfersCache = const [];

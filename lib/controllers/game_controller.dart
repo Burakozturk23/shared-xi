@@ -12,6 +12,7 @@ import '../services/profile_service.dart';
 import '../repositories/repository.dart';
 import '../services/game_service.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class GameController extends ChangeNotifier {
   final MatchEntity entity1;
@@ -50,12 +51,13 @@ class GameController extends ChangeNotifier {
   GameState get state => _state;
 
   Future<void> initialize() async {
-    final players = Repository.instance.players;
-
-    final matchingPlayers = GameService.matchingPlayers(
-      players: players,
+    // 04.2A: only OFFLINE club-vs-club Shared XI uses SQLite.
+    // Online/ranked and country criteria remain JSON for now.
+    final matchingPlayers =
+        await HybridGameplayDataService.instance.sharedXiMatchingPlayers(
       entity1: entity1,
       entity2: entity2,
+      allowSqlite: roomCode == null,
     );
 
     // Aynı id birden fazla gelmesin (UI'da çift chip / sayı +2 bug'ı)

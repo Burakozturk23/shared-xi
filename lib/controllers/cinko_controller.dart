@@ -11,6 +11,7 @@ import '../data/cinko_pool.dart';
 import '../data/popular_clubs_pool.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class CinkoController extends ChangeNotifier {
   static const int defaultGrid = 5; // 5x5 = 25
@@ -29,9 +30,53 @@ class CinkoController extends ChangeNotifier {
   Timer? _revealTimer;
   Timer? _feedbackTimer;
 
+  bool _usingRuntimeV3 = false;
+  List<Club> _runtimeClubPool = const [];
+  Map<int, List<int>> _runtimeClubIdsByPlayer = const {};
+  Set<int> _runtimeAnswerPlayerIds = const {};
+  Map<int, String> _runtimeLeagueByClubId = const {};
+
+
   Future<void> initialize() async {
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
+
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      _runtimeClubPool = await hybrid.topGameplayClubs(limit: 160);
+
+      final answerPlayers = await hybrid.playersInPool('grid_answer');
+      _runtimeAnswerPlayerIds = answerPlayers.map((p) => p.id).toSet();
+
+      _runtimeClubIdsByPlayer =
+          await hybrid.playerClubIdsForPool('grid_answer');
+
+      final clubRows = await hybrid.existingGameplayClubMetadata();
+      _runtimeLeagueByClubId = {
+        for (final row in clubRows)
+          if ((row['exposed_club_id'] as num?) != null)
+            (row['exposed_club_id'] as num).toInt():
+                (row['competition']?.toString().trim() ?? ''),
+      };
+
+      if (_runtimeClubPool.length < 25 ||
+          _runtimeAnswerPlayerIds.length < 5000 ||
+          _runtimeClubIdsByPlayer.length < 5000) {
+        debugPrint(
+          '[HybridV3] Cinko SQLite pool too small; legacy fallback.',
+        );
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint(
+          '[HybridV3] Cinko SQLite '
+          'clubs=${_runtimeClubPool.length} '
+          'answers=${_runtimeAnswerPlayerIds.length}',
+        );
+      }
+    }
+
     final cells = _buildGrid();
     _state = _state.copyWith(
       cells: cells,
@@ -50,10 +95,19 @@ class CinkoController extends ChangeNotifier {
 
   List<CinkoCell> _buildGrid() {
     final n = gridSize * gridSize;
-    // Sadece bilinen kulüp / lig / ülke — alt seviye elenir
-    final clubs = PopularClubs.resolveAll();
+
+    final clubs = _usingRuntimeV3
+        ? List<Club>.from(_runtimeClubPool)
+        : PopularClubs.resolveAll();
+
     final countries = List<String>.from(cinkoFamousCountries);
-    final leagues = List<String>.from(cinkoFamousLeagues);
+
+    final leagues = _usingRuntimeV3
+        ? _runtimeLeagueByClubId.values
+            .where((name) => name.isNotEmpty)
+            .toSet()
+            .toList()
+        : List<String>.from(cinkoFamousLeagues);
 
     clubs.shuffle(_random);
     countries.shuffle(_random);
@@ -122,19 +176,28 @@ class CinkoController extends ChangeNotifier {
     return cells.take(n).toList();
   }
 
+  List<int> _clubIdsForPlayer(Player player) {
+    return _usingRuntimeV3
+        ? (_runtimeClubIdsByPlayer[player.id] ?? const <int>[])
+        : player.clubs;
+  }
+
   bool _playerMatchesCell(Player player, CinkoCell cell) {
     switch (cell.type) {
       case CinkoCellType.club:
-        return cell.clubId != null && player.clubs.contains(cell.clubId);
+        return cell.clubId != null &&
+            _clubIdsForPlayer(player).contains(cell.clubId);
       case CinkoCellType.country:
         return player.countries.any(
           (c) => c.toLowerCase() == cell.label.toLowerCase(),
         );
       case CinkoCellType.league:
-        for (final clubId in player.clubs) {
-          final club = Repository.instance.clubById(clubId);
-          if (club != null &&
-              club.league.toLowerCase() == cell.label.toLowerCase()) {
+        for (final clubId in _clubIdsForPlayer(player)) {
+          final league = _usingRuntimeV3
+              ? (_runtimeLeagueByClubId[clubId] ?? '')
+              : (Repository.instance.clubById(clubId)?.league ?? '');
+
+          if (league.toLowerCase() == cell.label.toLowerCase()) {
             return true;
           }
         }
@@ -149,8 +212,14 @@ class CinkoController extends ChangeNotifier {
       notifyListeners();
       return;
     }
+    final source = _usingRuntimeV3
+        ? Repository.instance.players
+            .where((p) => _runtimeAnswerPlayerIds.contains(p.id))
+            .toList()
+        : Repository.instance.players;
+
     suggestions = SearchService.suggestions(
-      players: Repository.instance.players,
+      players: source,
       query: query,
       excludedPlayerIds: _state.usedPlayerIds,
     );
@@ -175,8 +244,14 @@ class CinkoController extends ChangeNotifier {
     final name = raw.trim();
     if (name.isEmpty) return;
 
+    final source = _usingRuntimeV3
+        ? Repository.instance.players
+            .where((p) => _runtimeAnswerPlayerIds.contains(p.id))
+            .toList()
+        : Repository.instance.players;
+
     final resolved = SearchService.resolve(
-      players: Repository.instance.players,
+      players: source,
       answer: name,
       excludedPlayerIds: _state.usedPlayerIds,
     );
@@ -199,6 +274,12 @@ class CinkoController extends ChangeNotifier {
 
   void _acceptPlayer(Player found) {
     if (_state.phase != CinkoPhase.enterPlayer) return;
+
+    if (_usingRuntimeV3 &&
+        !_runtimeAnswerPlayerIds.contains(found.id)) {
+      _feedback('Bu oyuncu Çinko cevap havuzunda değil.', false);
+      return;
+    }
 
     if (_state.usedPlayerIds.contains(found.id)) {
       _feedback('Bu oyuncu daha önce kullanıldı.', false);

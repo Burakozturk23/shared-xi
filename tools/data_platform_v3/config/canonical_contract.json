@@ -1,0 +1,70 @@
+{
+  "contractVersion": "3.0-draft-03b",
+  "principles": {
+    "runtimeSource": "compiled_only",
+    "rawSourcesInAppBundle": false,
+    "canonicalBeforeGameplay": true,
+    "unresolvedEntitiesNeverQuestionCandidates": true,
+    "marketValueFields": "legacy_quarantine",
+    "imagesSeparatedFromFootballData": true
+  },
+  "idPolicy": {
+    "player": "Preserve current production player id during migration; add sourceRefs for future source IDs.",
+    "club": "Do not create tens of thousands of Club {id} canonical rows. Existing resolved production club IDs may remain canonical; missing/legacy IDs must first map through club_source_refs.",
+    "competition": "Stable string IDs such as GB1, ES1, IT1, TR1, CL, EL, WC when a trusted source ID exists."
+  },
+  "entities": {
+    "player": {
+      "required": ["id", "name", "countries", "positionGroup", "aliases", "qualityState"],
+      "optional": ["detailedPosition", "birthYear", "foot", "heightCm", "careerStartYear", "careerEndYear", "eras", "popularity", "difficulty", "sourceRefs"]
+    },
+    "club": {
+      "required": ["id", "name", "qualityState"],
+      "optional": ["country", "competitionId", "city", "foundedYear", "popularity", "sourceRefs"]
+    },
+    "club_source_ref": {
+      "required": ["source", "sourceClubId", "canonicalClubId", "confidence", "method"]
+    },
+    "player_club_spell": {
+      "required": ["playerId", "clubId"],
+      "optional": ["startYear", "endYear", "spellType", "source", "confidence"]
+    },
+    "competition": {
+      "required": ["id", "name", "type"],
+      "optional": ["country", "level", "confederation"]
+    },
+    "player_stats": {
+      "required": ["playerId"],
+      "optional": ["apps", "goals", "assists", "minutes", "clubStats", "competitionStats"]
+    },
+    "national_stats": {
+      "required": ["playerId"],
+      "optional": ["nationalTeamId", "caps", "goals"]
+    },
+    "game_pool_flags": {
+      "required": ["playerId", "databaseEligible", "playableEligible", "questionCandidate"],
+      "optional": ["reasons", "difficulty", "popularity"]
+    }
+  },
+  "fieldPriority": {
+    "name": ["players_min", "players_full"],
+    "countries": ["players_min", "players_full_if_missing"],
+    "positionGroup": ["players_min", "players_full_if_missing"],
+    "detailedPosition": ["players_full", "future_enrichment"],
+    "aliases": ["players_min", "players_full_if_present"],
+    "clubMembership": ["players_min_clubIds_as_legacy_refs", "careerTimeline_after_club_mapping"],
+    "careerTimeline": ["best_validated_timeline_after_club_mapping"],
+    "nationalTeams": ["players_full", "future_national_source"],
+    "birthYear": ["future_factual_source"],
+    "foot": ["future_factual_source"],
+    "heightCm": ["future_factual_source"],
+    "marketValue": ["legacy_only_do_not_export_to_new_core"],
+    "peakMarketValue": ["legacy_only_do_not_export_to_new_core"]
+  },
+  "qualityStates": {
+    "valid": "Safe for runtime and question generation when game requirements are met.",
+    "partial": "May be used for relationship validation but not automatically as a question candidate.",
+    "unresolved": "Preserve source reference only; never surface as a generated question entity.",
+    "quarantined": "Conflicting or implausible data pending review."
+  }
+}

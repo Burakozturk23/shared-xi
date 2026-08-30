@@ -8,6 +8,7 @@ import '../models/player.dart';
 import '../repositories/repository.dart';
 import '../services/harf11_letter.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 enum Harf11Phase { spinning, playing, finished }
 
@@ -82,6 +83,12 @@ class Harf11Controller extends ChangeNotifier {
   final _rng = Random();
   String? _preChosen;
 
+  bool _usingRuntimeV3 = false;
+  bool _runtimeReady = false;
+  List<Player> _runtimePlayers = const [];
+  Map<int, Map<String, Object?>> _runtimeFactsByPlayer = const {};
+
+
   void resetToSpin() {
     _spinTimer?.cancel();
     _preChosen = null;
@@ -90,37 +97,162 @@ class Harf11Controller extends ChangeNotifier {
   }
 
   void spinLetter() {
+    if (!_runtimeReady) {
+      unawaited(_initializeRuntimeAndSpin());
+      return;
+    }
+    _spinLetterNow();
+  }
+
+  Future<void> _initializeRuntimeAndSpin() async {
+    final hybrid = HybridGameplayDataService.instance;
+    _usingRuntimeV3 = hybrid.isGameplayEnabled;
+
+    if (_usingRuntimeV3) {
+      _runtimePlayers =
+          await hybrid.playersInPool('build_xi_preview');
+      _runtimeFactsByPlayer =
+          await hybrid.playerFactsForPool('build_xi_preview');
+
+      if (_runtimePlayers.length < 5000 ||
+          _runtimeFactsByPlayer.length < 5000) {
+        debugPrint(
+          '[HybridV3] Harf11 SQLite pool too small; legacy fallback.',
+        );
+        _usingRuntimeV3 = false;
+      } else {
+        debugPrint(
+          '[HybridV3] Harf11 SQLite '
+          'players=${_runtimePlayers.length} '
+          'facts=${_runtimeFactsByPlayer.length}',
+        );
+      }
+    }
+
+    _runtimeReady = true;
+    _spinLetterNow();
+  }
+
+  String _positionGroup(Player player) {
+    if (_usingRuntimeV3) {
+      final facts = _runtimeFactsByPlayer[player.id];
+      final factual =
+          facts?['position_group']?.toString().trim().toUpperCase() ?? '';
+
+      if (factual == 'GOALKEEPER' || factual == 'GK') return 'GK';
+      if (factual == 'DEFENDER' || factual == 'DEF') return 'DEF';
+
+      if (factual == 'MIDFIELD' ||
+          factual == 'MIDFIELDER' ||
+          factual == 'MID') {
+        return 'MID';
+      }
+
+      if (factual == 'ATTACK' ||
+          factual == 'ATTACKER' ||
+          factual == 'FORWARD' ||
+          factual == 'FWD') {
+        return 'FWD';
+      }
+    }
+
+    return Harf11Letter.positionGroup(player);
+  }
+
+  bool _fitsPosition(Player player, String slotLabel) {
+    return _positionGroup(player) == slotLabel.toUpperCase();
+  }
+
+  List<String> _runtimePlayableLetters() {
+    if (!_usingRuntimeV3) {
+      return Harf11Letter.playableLetters();
+    }
+
+    final counts = <String, Map<String, int>>{};
+
+    for (final player in _runtimePlayers) {
+      final group = _positionGroup(player);
+      final seen = <String>{};
+
+      for (final part in player.name.trim().split(RegExp(r'\s+'))) {
+        if (part.isEmpty) continue;
+
+        final letter = Harf11Letter.normalizeLetter(part);
+        if (!Harf11Letter.letters.contains(letter)) continue;
+        if (!seen.add(letter)) continue;
+
+        final byPosition =
+            counts.putIfAbsent(letter, () => <String, int>{});
+        byPosition[group] = (byPosition[group] ?? 0) + 1;
+      }
+    }
+
+    final viable = <String>[];
+
+    for (final letter in Harf11Letter.letters) {
+      final c = counts[letter] ?? const <String, int>{};
+
+      // Maximum requirement among all current formations:
+      // GK=1, DEF=4, MID=5, FWD=3.
+      if ((c['GK'] ?? 0) >= 1 &&
+          (c['DEF'] ?? 0) >= 4 &&
+          (c['MID'] ?? 0) >= 5 &&
+          (c['FWD'] ?? 0) >= 3) {
+        viable.add(letter);
+      }
+    }
+
+    return viable.isNotEmpty
+        ? viable
+        : Harf11Letter.playableLetters();
+  }
+
+  void _spinLetterNow() {
     _spinTimer?.cancel();
-    _preChosen = Harf11Letter.pickPlayableLetter();
+
+    final letters = _runtimePlayableLetters();
+    _preChosen = letters[_rng.nextInt(letters.length)];
+
     var ticks = 0;
     const total = 20;
-    _state = _state.copyWith(phase: Harf11Phase.spinning, spinDisplay: _preChosen);
+
+    _state = _state.copyWith(
+      phase: Harf11Phase.spinning,
+      spinDisplay: _preChosen,
+    );
     notifyListeners();
 
-    _spinTimer = Timer.periodic(const Duration(milliseconds: 70), (t) {
-      ticks++;
-      if (ticks >= total) {
-        t.cancel();
-        final chosen = _preChosen!;
-        _state = Harf11State(
-          phase: Harf11Phase.playing,
-          letter: chosen,
-          spinDisplay: chosen,
-          formationId: _state.formationId,
-        );
+    _spinTimer = Timer.periodic(
+      const Duration(milliseconds: 70),
+      (t) {
+        ticks++;
+
+        if (ticks >= total) {
+          t.cancel();
+          final chosen = _preChosen!;
+
+          _state = Harf11State(
+            phase: Harf11Phase.playing,
+            letter: chosen,
+            spinDisplay: chosen,
+            formationId: _state.formationId,
+          );
+          notifyListeners();
+          return;
+        }
+
+        if (ticks >= total - 3) {
+          _state = _state.copyWith(spinDisplay: _preChosen);
+        } else {
+          _state = _state.copyWith(
+            spinDisplay: Harf11Letter.letters[
+                _rng.nextInt(Harf11Letter.letters.length)],
+          );
+        }
+
         notifyListeners();
-        return;
-      }
-      if (ticks >= total - 3) {
-        _state = _state.copyWith(spinDisplay: _preChosen);
-      } else {
-        _state = _state.copyWith(
-          spinDisplay: Harf11Letter
-              .letters[_rng.nextInt(Harf11Letter.letters.length)],
-        );
-      }
-      notifyListeners();
-    });
+      },
+    );
   }
 
   void setFormation(String id) {
@@ -174,7 +306,9 @@ class Harf11Controller extends ChangeNotifier {
 
     // Önce genel arama (index), sonra harf + pozisyon filtrele
     var list = SearchService.suggestions(
-      players: Repository.instance.players,
+      players: _usingRuntimeV3
+          ? _runtimePlayers
+          : Repository.instance.players,
       query: q,
       excludedPlayerIds: used,
       limit: 24,
@@ -182,7 +316,7 @@ class Harf11Controller extends ChangeNotifier {
 
     list = list.where((p) {
       if (!Harf11Letter.nameMatchesLetter(p.name, letter)) return false;
-      if (slotLabel != null && !Harf11Letter.fitsPosition(p, slotLabel)) {
+      if (slotLabel != null && !_fitsPosition(p, slotLabel)) {
         return false;
       }
       return true;
@@ -218,9 +352,9 @@ class Harf11Controller extends ChangeNotifier {
     }
 
     final slotLabel = _state.selectedSlotLabel;
-    if (slotLabel != null && !Harf11Letter.fitsPosition(player, slotLabel)) {
+    if (slotLabel != null && !_fitsPosition(player, slotLabel)) {
       final need = _posTr(slotLabel);
-      final got = _posTr(Harf11Letter.positionGroup(player));
+      final got = _posTr(_positionGroup(player));
       _state = _state.copyWith(
         feedback: 'Bu slot $need — seçilen oyuncu $got.',
         feedbackOk: false,
@@ -264,7 +398,9 @@ class Harf11Controller extends ChangeNotifier {
     final used = _state.picks.values.map((p) => p.playerId).toSet();
     final slotLabel = _state.selectedSlotLabel;
 
-    var pool = Repository.instance.players;
+    var pool = _usingRuntimeV3
+        ? List<Player>.from(_runtimePlayers)
+        : Repository.instance.players;
     if (letter != null) {
       pool = pool
           .where((p) => Harf11Letter.nameMatchesLetter(p.name, letter))
@@ -272,7 +408,7 @@ class Harf11Controller extends ChangeNotifier {
     }
     if (slotLabel != null) {
       pool = pool
-          .where((p) => Harf11Letter.fitsPosition(p, slotLabel))
+          .where((p) => _fitsPosition(p, slotLabel))
           .toList();
     }
 

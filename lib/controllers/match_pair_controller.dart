@@ -79,7 +79,19 @@ class MatchPairController extends ChangeNotifier {
     try {
       // Bir frame nefes al
       await Future<void>.delayed(Duration.zero);
-      final board = MatchPairGenerator.generate(difficulty: difficulty);
+      var board = await MatchPairGenerator.generateRuntime(
+        difficulty: difficulty,
+      );
+
+      if (board != null) {
+        debugPrint(
+          '[HybridV3] MatchPair controller runtime board active '
+          'pairs=${board.pairCount} difficulty=${difficulty.name}',
+        );
+      } else {
+        board = MatchPairGenerator.generate(difficulty: difficulty);
+      }
+
       _state = MatchPairState(board: board, isLoading: false);
       notifyListeners();
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
