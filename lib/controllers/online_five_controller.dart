@@ -238,6 +238,7 @@ class OnlineFiveController extends ChangeNotifier {
     try {
       await ProfileService.recordMatchResult(
         matchId: matchId,
+        mode: 'five',
         result: rr,
         opponentName: opponentName,
         opponentUid: opponentUid,

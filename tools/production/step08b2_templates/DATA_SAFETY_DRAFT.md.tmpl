@@ -1,0 +1,55 @@
+# Linkball — Google Play Data Safety Draft
+
+> Bu dosya Play Console formunu doldurmak için teknik evidence taslağıdır.
+> Son beyan, uygulamanın yayımlanan sürümü ve Google Play'in güncel veri
+> kategorileriyle karşılaştırılarak geliştirici tarafından onaylanmalıdır.
+
+## Temel güvenlik / kullanıcı kontrolü
+
+| Soru | Taslak cevap | Evidence |
+|---|---|---|
+| Uygulama kullanıcı verisi topluyor mu? | Evet | Firebase Auth/RTDB, Analytics, Crashlytics |
+| Veri aktarımda şifreleniyor mu? | Evet | Firebase HTTPS/TLS altyapısı |
+| Kullanıcı hesap silme talebi verebiliyor mu? | Evet | In-app `Gizlilik & Hesap` + __DELETE_URL__ |
+| Veriler satılıyor mu? | Hayır | Linkball uygulama politikası |
+
+## Muhtemel Data Safety veri kategorileri
+
+| Play veri türü | Kaynak | Amaç | Not |
+|---|---|---|---|
+| User IDs | Anonim Firebase UID | Account management, app functionality | Linkball kullanıcı hesabı |
+| Name | Kullanıcının seçtiği görünen ad | App functionality, online play | Online rakiplere/skor tablosuna gösterilebilir |
+| App interactions | Analytics + oyun olayları | Analytics, app functionality | Firebase Analytics otomatik olaylarını da kontrol et |
+| Crash logs | Crashlytics | App functionality / diagnostics | Otomatik crash/non-fatal/ANR raporları |
+| Diagnostics | Crashlytics / Firebase Sessions | App functionality / diagnostics | Uygulama ve cihaz durum bilgileri |
+| Device or other IDs | Firebase Installations / Analytics / Crashlytics | Analytics, diagnostics, security | Firebase SDK veri açıklamasıyla doğrula |
+| Other gameplay/account data | RTDB | App functionality | Elo, skor, maç geçmişi, oda/eşleştirme durumu |
+
+## “Shared” işaretlemesi için dikkat
+
+Firebase'in bir hizmet sağlayıcı olarak işlediği verilerin Google Play
+Data Safety tanımında “shared” sayılıp sayılmadığını Google Play'in güncel
+istisnalarıyla kontrol et. Kullanıcının açıkça başlattığı online oyun sırasında
+diğer oyunculara gösterilen görünen ad/skor için de “user-initiated action”
+istisnasını güncel form açıklamalarıyla doğrula.
+
+## Firebase SDK kontrol listesi
+
+Yayımdan hemen önce şu güncel Firebase kaynağıyla tekrar karşılaştır:
+
+https://firebase.google.com/docs/android/play-data-disclosure
+
+Özellikle:
+- Firebase Analytics
+- Firebase Crashlytics
+- Firebase Installations
+- Firebase Sessions
+- Firebase Authentication
+- Firebase Realtime Database
+- Firebase App Check
+
+## Play Console alanları
+
+- Privacy policy URL: __PRIVACY_URL__
+- Account deletion URL: __DELETE_URL__
+- App package: `com.burakozturk.linkball`

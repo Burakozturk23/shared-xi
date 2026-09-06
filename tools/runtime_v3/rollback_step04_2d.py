@@ -1,0 +1,20 @@
+from pathlib import Path
+import shutil
+
+ROOT = Path(__file__).resolve().parents[2]
+files = [
+    "lib/services/runtime_v3/runtime_v3_platform_base.dart",
+    "lib/services/runtime_v3/runtime_v3_platform_stub.dart",
+    "lib/services/runtime_v3/runtime_v3_platform_io.dart",
+    "lib/services/runtime_v3/runtime_v3_database.dart",
+    "lib/services/runtime_v3/hybrid_gameplay_data_service.dart",
+    "lib/controllers/mystery_player_controller.dart",
+]
+for rel in files:
+    p = ROOT / rel
+    bak = p.with_suffix(p.suffix + ".step04_2d.bak")
+    if bak.exists():
+        shutil.copy2(bak, p)
+        print(f"[RESTORED] {rel}")
+    else:
+        print(f"[SKIP] backup yok: {rel}")

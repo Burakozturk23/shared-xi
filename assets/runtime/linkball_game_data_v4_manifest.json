@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "4",
+  "dataVersion": "v4",
+  "compilerStep": "08D.8A",
+  "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
+  "database": {
+    "asset": "assets/runtime/linkball_game_data_v4.sqlite",
+    "bytes": 36917248,
+    "sizeMB": 35.21,
+    "sha256": "c749fe3163cdc36f0ffc61222bf4b6ae90d2215463461636f6fbc11984a0d54f"
+  },
+  "counts": {
+    "players": 30135,
+    "unique_player_ids": 30135,
+    "shadow_players": 0,
+    "players_with_clubs": 30135,
+    "clubs": 4311,
+    "career_players": 6962,
+    "transfer_players": 4586,
+    "search_players": 30135,
+    "coaches": 5275
+  },
+  "pruning": {
+    "step": "08D.7O",
+    "policy": "transfer_only_development_v1",
+    "clubs_removed": 3091,
+    "transfer_rows_removed": 13250,
+    "clubs_remaining": 4311,
+    "transfers_remaining": 33993
+  },
+  "contracts": {
+    "playerUniverse": 30135,
+    "clubIdNamespace": {
+      "existing": "source ID unchanged",
+      "tm": "1_000_000_000 + source ID",
+      "fallback": "2_000_000_000 + V3 internal ID"
+    },
+    "playerClubPolicy": "V3 primary; normalized RAW fallback for exactly 33 players",
+    "careerPolicy": "Normalized V3 career_spells only",
+    "legacyPoolsCopied": false,
+    "runtimeJsonRequired": false
+  }
+}

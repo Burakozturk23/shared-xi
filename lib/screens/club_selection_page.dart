@@ -4,8 +4,8 @@ import '../data/popular_clubs.dart';
 import '../data/popular_matchups.dart';
 import '../models/club.dart';
 import '../models/match_entity.dart';
-import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 import 'shared_players_result_page.dart';
 
 /// Hafif kulüp–kulüp keşif seçimi: logo grid yok, sabit yükseklikli liste.
@@ -23,32 +23,64 @@ class _ClubSelectionPageState extends State<ClubSelectionPage> {
   Club? club1;
   Club? club2;
 
-  late final List<Club> _sortedClubs;
-  late final Map<int, Club> _byId;
-  late final List<(String, Club, Club)> _popularPairs;
-  late final List<Club> _popularClubs;
+  List<Club> _sortedClubs = const <Club>[];
+  List<(String, Club, Club)> _popularPairs = const [];
+  List<Club> _popularClubs = const <Club>[];
+  bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    final clubs = Repository.instance.clubs;
-    _byId = {for (final c in clubs) c.id: c};
-    _sortedClubs = List<Club>.from(clubs)
-      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-
-    _popularPairs = [];
-    for (final m in popularClubClubMatchups) {
-      final a = _byId[m.clubId1];
-      final b = _byId[m.clubId2];
-      if (a != null && b != null) _popularPairs.add((m.label, a, b));
-    }
-
-    _popularClubs = [
-      for (final id in popularClubIds)
-        if (_byId[id] != null) _byId[id]!,
-    ];
-
     if (widget.prefillClub != null) club1 = widget.prefillClub;
+    _loadCatalog();
+  }
+
+  Future<void> _loadCatalog() async {
+    try {
+      final forcedClubIds = <int>{
+        ...popularClubIds,
+        for (final matchup in popularClubClubMatchups) matchup.clubId1,
+        for (final matchup in popularClubClubMatchups) matchup.clubId2,
+        if (widget.prefillClub != null) widget.prefillClub!.id,
+      };
+
+      final clubs = await GameDataV4QueryService.instance.sharedXiClubCatalog(
+        includeIds: forcedClubIds,
+      );
+      final byId = {for (final club in clubs) club.id: club};
+      final sorted = List<Club>.from(clubs)
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+      final popularPairs = <(String, Club, Club)>[];
+      for (final matchup in popularClubClubMatchups) {
+        final a = byId[matchup.clubId1];
+        final b = byId[matchup.clubId2];
+        if (a != null && b != null) {
+          popularPairs.add((matchup.label, a, b));
+        }
+      }
+
+      final popularClubs = <Club>[
+        for (final id in popularClubIds)
+          if (byId[id] != null) byId[id]!,
+      ];
+
+      if (!mounted) return;
+      setState(() {
+        _sortedClubs = sorted;
+        _popularPairs = popularPairs;
+        _popularClubs = popularClubs;
+        _loading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString();
+      });
+    }
   }
 
   @override
@@ -97,6 +129,55 @@ class _ClubSelectionPageState extends State<ClubSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0F14),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Kulüp – Kulüp'),
+          centerTitle: true,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0F14),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Kulüp – Kulüp'),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Kulüp verisi açılamadı\n$_error',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    setState(() {
+                      _loading = true;
+                      _error = null;
+                    });
+                    _loadCatalog();
+                  },
+                  child: const Text('Tekrar dene'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final list = _visibleClubs();
     final canShow = club1 != null && club2 != null;
 

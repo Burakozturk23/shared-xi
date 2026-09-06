@@ -52,6 +52,7 @@ class MatchService {
       'matchType': matchType,
       'entity2IsCountry': entity2IsCountry,
       'commonPlayerIds': commonMap,
+      'ranked': true,
       'status': 'ready',
       'createdAt': ServerValue.timestamp,
       'players': {

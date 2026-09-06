@@ -24,7 +24,7 @@ class PlayerAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _fallback(),
+          errorBuilder: (_, _, _) => _fallback(),
         ),
       );
     }
@@ -49,10 +49,7 @@ class PlayerAvatar extends StatelessWidget {
     return _frame(
       CustomPaint(
         size: Size.square(size),
-        painter: _GenericPortraitPainter(
-          seed: player.id,
-          accent: accent,
-        ),
+        painter: _GenericPortraitPainter(seed: player.id, accent: accent),
       ),
     );
   }
@@ -86,10 +83,7 @@ class _GenericPortraitPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          accent.withValues(alpha: 0.52),
-          AppTheme.mutedSurfaceColor,
-        ],
+        colors: [accent.withValues(alpha: 0.52), AppTheme.mutedSurfaceColor],
       ).createShader(Offset.zero & size);
     canvas.drawRect(Offset.zero & size, background);
 

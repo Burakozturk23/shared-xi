@@ -8,32 +8,45 @@ import 'daily_challenge_service.dart';
 class DailyLeaderboardEntry {
   final String uid;
   final String displayName;
+  final String? normalizedName;
+  final String? avatarId;
   final int score;
   final double successRate;
   final int? secondsLeft;
   final int? finishedAtMs;
   final int? streak;
+  final bool serverValidated;
+  final int validationVersion;
 
   const DailyLeaderboardEntry({
     required this.uid,
     required this.displayName,
+    this.normalizedName,
+    this.avatarId,
     required this.score,
     this.successRate = 0,
     this.secondsLeft,
     this.finishedAtMs,
     this.streak,
+    required this.serverValidated,
+    required this.validationVersion,
   });
 
   factory DailyLeaderboardEntry.fromMap(String uid, Map data) {
     return DailyLeaderboardEntry(
       uid: uid,
       displayName: data['displayName']?.toString() ?? 'Oyuncu',
+      normalizedName: data['normalizedName']?.toString(),
+      avatarId: data['avatarId']?.toString(),
       score: int.tryParse('${data['score'] ?? 0}') ?? 0,
       successRate:
           double.tryParse('${data['successRate'] ?? 0}') ?? 0,
       secondsLeft: int.tryParse('${data['secondsLeft'] ?? ''}'),
       finishedAtMs: int.tryParse('${data['finishedAt'] ?? ''}'),
       streak: int.tryParse('${data['streak'] ?? ''}'),
+      serverValidated: data['serverValidated'] == true,
+      validationVersion:
+          int.tryParse('${data['validationVersion'] ?? 0}') ?? 0,
     );
   }
 }
@@ -109,6 +122,60 @@ class DailyLeaderboardService {
     });
   }
 
+  static int _compareEntries(
+    DailyLeaderboardEntry a,
+    DailyLeaderboardEntry b,
+  ) {
+    if (b.score != a.score) return b.score.compareTo(a.score);
+
+    final sa = a.secondsLeft ?? -1;
+    final sb = b.secondsLeft ?? -1;
+    if (sb != sa) return sb.compareTo(sa);
+
+    final fa = a.finishedAtMs ?? 1 << 62;
+    final fb = b.finishedAtMs ?? 1 << 62;
+    return fa.compareTo(fb);
+  }
+
+  static List<DailyLeaderboardEntry> _decodeBoard(
+    Object? value, {
+    required int limit,
+  }) {
+    if (value is! Map) return const [];
+
+    final map = Map<String, dynamic>.from(value);
+    final list = <DailyLeaderboardEntry>[];
+
+    for (final entry in map.entries) {
+      if (entry.value is! Map) continue;
+
+      final decoded = DailyLeaderboardEntry.fromMap(
+        entry.key,
+        Map<String, dynamic>.from(entry.value as Map),
+      );
+
+      // Only rows created by the trusted submitDailyScore callable are
+      // eligible for the canonical leaderboard. Historical/untrusted rows are
+      // intentionally excluded instead of being silently mixed in.
+      if (!decoded.serverValidated || decoded.validationVersion < 1) {
+        continue;
+      }
+
+      list.add(decoded);
+    }
+
+    list.sort(_compareEntries);
+
+    final safeLimit = limit.clamp(1, 100).toInt();
+    if (list.length > safeLimit) {
+      return List<DailyLeaderboardEntry>.unmodifiable(
+        list.take(safeLimit),
+      );
+    }
+
+    return List<DailyLeaderboardEntry>.unmodifiable(list);
+  }
+
   /// Bugün / verilen gün sıralaması (skor ↓, kalan süre ↑).
   static Future<List<DailyLeaderboardEntry>> fetch({
     DateTime? date,
@@ -117,32 +184,12 @@ class DailyLeaderboardService {
     final dateKey =
         DailyChallengeService.dateKeyFor(date ?? DateTime.now());
     final snap = await _dayRef(dateKey).get();
-    if (!snap.exists || snap.value is! Map) return const [];
+    if (!snap.exists) return const [];
 
-    final map = Map<String, dynamic>.from(snap.value as Map);
-    final list = <DailyLeaderboardEntry>[];
-    for (final e in map.entries) {
-      if (e.value is! Map) continue;
-      list.add(
-        DailyLeaderboardEntry.fromMap(
-          e.key,
-          Map<String, dynamic>.from(e.value as Map),
-        ),
-      );
-    }
-
-    list.sort((a, b) {
-      if (b.score != a.score) return b.score.compareTo(a.score);
-      final sa = a.secondsLeft ?? -1;
-      final sb = b.secondsLeft ?? -1;
-      if (sb != sa) return sb.compareTo(sa); // daha çok kalan süre = daha hızlı
-      final fa = a.finishedAtMs ?? 1 << 62;
-      final fb = b.finishedAtMs ?? 1 << 62;
-      return fa.compareTo(fb);
-    });
-
-    if (list.length > limit) return list.sublist(0, limit);
-    return list;
+    return _decodeBoard(
+      snap.value,
+      limit: limit,
+    );
   }
 
   static Stream<List<DailyLeaderboardEntry>> watch({
@@ -151,31 +198,11 @@ class DailyLeaderboardService {
   }) {
     final dateKey =
         DailyChallengeService.dateKeyFor(date ?? DateTime.now());
-    return _dayRef(dateKey).onValue.map((event) {
-      final v = event.snapshot.value;
-      if (v is! Map) return <DailyLeaderboardEntry>[];
-      final map = Map<String, dynamic>.from(v);
-      final list = <DailyLeaderboardEntry>[];
-      for (final e in map.entries) {
-        if (e.value is! Map) continue;
-        list.add(
-          DailyLeaderboardEntry.fromMap(
-            e.key,
-            Map<String, dynamic>.from(e.value as Map),
-          ),
-        );
-      }
-      list.sort((a, b) {
-        if (b.score != a.score) return b.score.compareTo(a.score);
-        final sa = a.secondsLeft ?? -1;
-        final sb = b.secondsLeft ?? -1;
-        if (sb != sa) return sb.compareTo(sa);
-        final fa = a.finishedAtMs ?? 1 << 62;
-        final fb = b.finishedAtMs ?? 1 << 62;
-        return fa.compareTo(fb);
-      });
-      if (list.length > limit) return list.sublist(0, limit);
-      return list;
-    });
+    return _dayRef(dateKey).onValue.map(
+      (event) => _decodeBoard(
+        event.snapshot.value,
+        limit: limit,
+      ),
+    );
   }
 }

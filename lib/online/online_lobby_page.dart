@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/auth_service.dart';
+
 import 'online_mode_catalog.dart';
 import 'room_service.dart';
 import 'online_setup_page.dart';
@@ -51,6 +53,7 @@ class _OnlineLobbyPageState extends State<OnlineLobbyPage> {
       final code = await RoomService.createRoom(
         playerName: name,
         matchType: widget.mode.wireName,
+        hostUid: AuthService.uid,
       );
       if (!mounted) return;
       setState(() => _isCreating = false);

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <title>Linkball Gizlilik Politikası</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;line-height:1.65;color:#17202a;background:#fff}
+    h1,h2{line-height:1.25} h1{margin-bottom:.2rem} h2{margin-top:2rem}
+    .meta{color:#566573}.box{background:#f6f8fa;border:1px solid #e5e7eb;border-radius:12px;padding:16px}
+    a{color:#0969da} code{background:#f6f8fa;padding:2px 5px;border-radius:5px}
+    footer{margin-top:40px;padding-top:20px;border-top:1px solid #e5e7eb;color:#566573}
+  </style>
+</head>
+<body>
+  <h1>Linkball Gizlilik Politikası</h1>
+  <p class="meta"><strong>Son güncelleme:</strong> 1 Eylül 2026<br>
+  <strong>Uygulama:</strong> Linkball<br>
+  <strong>Paket:</strong> <code>com.burakozturk.linkball</code><br>
+  <strong>Gizlilik iletişimi:</strong> <a href="mailto:burakozturk1315@gmail.com">burakozturk1315@gmail.com</a></p>
+
+  <div class="box">
+    Linkball kişisel verileri satmaz. Çevrim içi özellikleri, güvenliği,
+    Analytics ve hata tanılamayı sağlamak için Google Firebase hizmetleri kullanır.
+  </div>
+
+  <h2>İşlenen hesap ve oyun verileri</h2>
+  <ul>
+    <li>Anonim Firebase kullanıcı kimliği (UID) ve kullanıcının seçtiği görünen ad.</li>
+    <li>Galibiyet, mağlubiyet, beraberlik, Elo ve maç geçmişi gibi profil istatistikleri.</li>
+    <li>Günlük meydan okuma skorları ve skor oturumu verileri.</li>
+    <li>Çevrim içi eşleştirme kuyruğu, oda/maç durumu ve oyun sonuçları.</li>
+  </ul>
+
+  <h2>Firebase tarafından işlenen teknik veriler</h2>
+  <p>Firebase Authentication ve Realtime Database; güvenlik, kötüye kullanımı
+  önleme ve hizmet işletimi için IP adresi, user-agent bilgileri ve Firebase
+  uygulama tanımlayıcıları gibi teknik verileri işleyebilir. Kimliği doğrulanmış
+  Realtime Database istekleri ilgili Firebase UID'sini içerir.</p>
+
+  <h2>Google Analytics for Firebase</h2>
+  <p>Release Android sürümünde Analytics etkin olduğunda uygulama açılışı,
+  oturum ve uygulama etkileşimi olayları işlenir. Analytics ayrıca app-instance
+  ID, cihaz/uygulama bilgileri, maskelenmiş IP'den türetilen yaklaşık coğrafi
+  konum ve Android Advertising ID kullanılabilir olduğu/yapılandırmada
+  kapatılmadığı durumlarda bu kimliği işleyebilir. Linkball Firebase UID'sini
+  Analytics user ID olarak bağlamaz.</p>
+
+  <h2>Crashlytics, Installations ve Sessions</h2>
+  <p>Crashlytics; crash/ANR, stack trace, ilgili uygulama durumu, cihaz meta
+  verileri ve Crashlytics installation UUID gibi tanılama bilgilerini
+  işleyebilir. Firebase Installations ve Sessions ayrıca Firebase Installation
+  ID, uygulama/cihaz meta verileri, ağ bağlantı türü ve oturum bilgileri
+  işleyebilir. Linkball Firebase UID'sini Crashlytics user ID olarak bağlamaz.</p>
+
+  <h2>App Check / Play Integrity</h2>
+  <p>App Check ve production Android sürümünde Google Play Integrity,
+  uygulama/istek bütünlüğünü doğrulamak ve kötüye kullanımı azaltmak için
+  integrity/attestation token ve teknik sinyalleri işleyebilir.</p>
+
+  <h2>Kullanım amaçları</h2>
+  <ul>
+    <li>Oyunu, hesabı, eşleştirmeyi, odaları ve skor tablolarını sunmak.</li>
+    <li>Hile, bot ve yetkisiz istekleri azaltmak.</li>
+    <li>Çökme, ANR ve teknik sorunları teşhis etmek.</li>
+    <li>Uygulama kullanım ve kararlılık kalitesini ölçmek.</li>
+  </ul>
+
+  <h2>Paylaşım</h2>
+  <p>Linkball kişisel verileri satmaz. Google Firebase/Google Analytics
+  altyapı ve hizmet sağlayıcı olarak kullanılır. Kullanıcı çevrim içi oyunu
+  başlattığında görünen ad, skor ve gerekli oyun bilgileri rakibe veya skor
+  tablosuna gösterilebilir.</p>
+
+  <h2>Güvenlik</h2>
+  <p>Firebase bağlantıları HTTPS/TLS üzerinden gerçekleştirilir. Production
+  Realtime Database kuralları deny-by-default yapılandırılmıştır ve kullanıcı
+  verileri için gerekli kimlik doğrulama kuralları uygulanır. App Check /
+  Play Integrity ek bütünlük kontrolü sağlar.</p>
+
+  <h2>Saklama ve hesap silme</h2>
+  <p>Hesap ve oyun verileri hizmeti sunmak için gerekli olduğu sürece veya
+  kullanıcı hesap silme isteği verene kadar tutulabilir. Hesap silmede Firebase
+  Authentication hesabı, Linkball profil/istatistik verileri, günlük skor/oturum
+  verileri ve eşleştirme kuyruğu referansları silinir. Paylaşılan maç/oda
+  kayıtlarındaki kullanıcı kimliği ve görünen ad alanları anonimleştirilir.</p>
+  <p>Kimliği kaldırılmış kayıtlar ile Analytics/Crashlytics gibi hizmetlerin
+  teknik saklama sürelerine tabi ölçüm/tanılama verileri ilgili hizmetlerin
+  politikaları kapsamında bir süre daha tutulabilir.</p>
+
+  <h2>Hesabını ve verilerini silme</h2>
+  <p>Uygulama içinde <strong>Gizlilik &amp; Hesap → Hesabımı ve verilerimi sil</strong>
+  yolunu kullanabilirsin. Uygulamaya erişemiyorsan
+  <a href="/account-deletion.html">hesap silme sayfasından</a> talep başlatabilirsin.</p>
+
+  <h2>İletişim</h2>
+  <p>Gizlilik, veri veya hesap silme soruları:
+  <a href="mailto:burakozturk1315@gmail.com">burakozturk1315@gmail.com</a></p>
+
+  <footer>Bu politika uygulamadaki veri işleme veya SDK yapılandırması önemli
+  ölçüde değiştiğinde güncellenir.</footer>
+</body>
+</html>

@@ -2,21 +2,131 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
+import '../screens/sign_in_page.dart';
+import '../screens/player_profile_page.dart';
+import '../screens/friends_page.dart';
+import '../screens/leaderboard_page.dart';
+import '../models/leaderboard_models.dart';
+import '../widgets/user_avatar_badge.dart';
 import 'online_friends_mode_page.dart';
 import 'online_ranked_mode_page.dart';
 
-/// Online ana menü: 2 yol + profil.
-class OnlineModeHubPage extends StatelessWidget {
+/// Online ana menü: persistent Linkball hesabı + 2 yol + profil.
+class OnlineModeHubPage extends StatefulWidget {
   const OnlineModeHubPage({super.key});
 
   @override
+  State<OnlineModeHubPage> createState() => _OnlineModeHubPageState();
+}
+
+class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
+  Future<void> _connectGoogle() async {
+    final signedIn = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const LinkballSignInPage(allowSkip: false),
+      ),
+    );
+
+    if (!mounted || signedIn != true) return;
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!AuthService.hasPersistentAccount) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Online')),
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 460),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.lock_person_outlined, size: 50),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Online için kalıcı hesap gerekli',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Online maçlar, kupa ve ilerideki arkadaş sistemi '
+                        'Google hesabına bağlı Linkball profilinde tutulur.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).hintColor,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _connectGoogle,
+                          icon: const Icon(Icons.login_rounded),
+                          label: const Text('Google ile Giriş Yap'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Online')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const _ProfileCard(),
+          const SizedBox(height: 14),
+          _card(
+            context,
+            icon: Icons.people_alt_rounded,
+            color: const Color(0xFF26C6DA),
+            title: 'Arkadaşlar',
+            subtitle: 'Ara · istekler · arkadaş listesi',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FriendsPage(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+          _card(
+            context,
+            icon: Icons.emoji_events_rounded,
+            color: const Color(0xFFFFB300),
+            title: 'Liderlik Tablosu',
+            subtitle: 'Bugün · Bu Hafta · Global Elo',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const LeaderboardPage(
+                    initialScope: LeaderboardScope.global,
+                  ),
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 24),
           _card(
             context,
@@ -112,175 +222,78 @@ class OnlineModeHubPage extends StatelessWidget {
 class _ProfileCard extends StatelessWidget {
   const _ProfileCard();
 
-  Future<void> _editName(BuildContext context, String current) async {
-    final controller = TextEditingController(text: current);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Görünen ad'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Adın',
-            border: OutlineInputBorder(),
-          ),
-          onSubmitted: (_) => Navigator.pop(ctx, true),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('İptal'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Kaydet'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) {
-      await AuthService.setDisplayName(controller.text);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<UserProfile?>(
       stream: ProfileService.watchMyProfile(),
-      builder: (context, snap) {
-        final p = snap.data;
-        final name = p?.displayName ?? '…';
-        final w = p?.wins ?? 0;
-        final l = p?.losses ?? 0;
-        final d = p?.draws ?? 0;
-        final history = p?.recentMatches ?? const <MatchHistoryEntry>[];
+      builder: (context, snapshot) {
+        final profile = snapshot.data;
 
         return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 22,
-                      child: Icon(Icons.person),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Text(
-                            'Elo ${p?.elo ?? 1000}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Theme.of(context).hintColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'İsmi düzenle',
-                      onPressed: () => _editName(context, name),
-                      icon: const Icon(Icons.edit_outlined),
-                    ),
-                  ],
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PlayerProfilePage(),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _stat('G', w, Colors.greenAccent),
-                    _stat('M', l, Colors.redAccent),
-                    _stat('B', d, Colors.amber),
-                  ],
-                ),
-                if (history.isNotEmpty) ...[
-                  const SizedBox(height: 14),
-                  const Text(
-                    'Son maçlar',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Row(
+                children: [
+                  UserAvatarBadge(
+                    avatarId: profile?.avatarId ?? 'starter_ball',
+                    radius: 27,
                   ),
-                  const SizedBox(height: 6),
-                  ...history.take(5).map((e) {
-                    final delta = e.eloDelta;
-                    final deltaStr = delta == null
-                        ? ''
-                        : (delta >= 0 ? '  +$delta' : '  $delta');
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 24,
-                            child: Text(
-                              e.resultLabel,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: e.result == RankedResult.win
-                                    ? Colors.greenAccent
-                                    : (e.result == RankedResult.loss
-                                        ? Colors.redAccent
-                                        : Colors.amber),
-                              ),
-                            ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile?.displayName ?? 'Profil yükleniyor…',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
                           ),
-                          Expanded(
-                            child: Text(
-                              e.opponentName ?? 'Rakip',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'Elo ${profile?.elo ?? 1000} · '
+                          '${profile?.played ?? 0} maç',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Theme.of(context).hintColor,
+                            fontWeight: FontWeight.w600,
                           ),
-                          if (e.myScore != null && e.opponentScore != null)
-                            Text('${e.myScore}-${e.opponentScore}  '),
-                          Text(
-                            deltaStr,
+                        ),
+                        if (profile?.nicknameNeedsSetup == true) ...[
+                          const SizedBox(height: 5),
+                          const Text(
+                            'Takma adını tamamla',
                             style: TextStyle(
                               fontSize: 12,
-                              color: (delta ?? 0) >= 0
-                                  ? Colors.greenAccent
-                                  : Colors.redAccent,
+                              color: Colors.amber,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ],
-                      ),
-                    );
-                  }),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.chevron_right_rounded),
                 ],
-              ],
+              ),
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _stat(String label, int value, Color color) {
-    return Column(
-      children: [
-        Text(
-          '$value',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: color,
-          ),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12)),
-      ],
     );
   }
 }

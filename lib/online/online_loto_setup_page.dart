@@ -7,6 +7,8 @@ import '../models/loto_models.dart';
 import '../screens/loto_online_page.dart';
 import '../services/loto_generator.dart';
 import 'room_service.dart';
+import 'online_mode_catalog.dart';
+import '../widgets/friend_match_invite_button.dart';
 
 class OnlineLotoSetupPage extends StatefulWidget {
   final String roomCode;
@@ -118,6 +120,12 @@ class _OnlineLotoSetupPageState extends State<OnlineLotoSetupPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Loto · ${widget.roomCode}'),
+        actions: [
+          FriendMatchInviteButton(
+            mode: OnlinePlayMode.loto,
+            roomCode: widget.roomCode,
+          ),
+        ],
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: _leave,

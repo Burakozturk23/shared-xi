@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <title>Linkball Hesap ve Veri Silme</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:760px;margin:0 auto;padding:32px 20px;line-height:1.65;color:#17202a;background:#fff}
+    h1,h2{line-height:1.25}.box{background:#f6f8fa;border:1px solid #e5e7eb;border-radius:12px;padding:16px}
+    .danger{border-left:4px solid #cf222e}a{color:#0969da}code{background:#f6f8fa;padding:2px 5px;border-radius:5px}
+  </style>
+</head>
+<body>
+  <h1>Linkball — Hesap ve Veri Silme</h1>
+  <p><strong>Uygulama:</strong> Linkball<br>
+  <strong>Paket:</strong> <code>com.burakozturk.linkball</code></p>
+
+  <div class="box">
+    Linkball hesabını uygulama içinden doğrudan silebilirsin. Uygulamaya
+    erişemiyorsan bu sayfadaki e-posta yoluyla silme talebi başlatabilirsin.
+  </div>
+
+  <h2>Uygulama içinden</h2>
+  <ol>
+    <li>Linkball'ı aç.</li>
+    <li><strong>Gizlilik &amp; Hesap</strong> ekranına gir.</li>
+    <li><strong>Hesabımı ve verilerimi sil</strong> seçeneğini kullan.</li>
+    <li>İstenen onayı tamamla.</li>
+  </ol>
+
+  <h2>Uygulamaya erişemiyorsan</h2>
+  <p><a href="mailto:burakozturk1315@gmail.com?subject=Linkball%20hesap%20silme%20talebi">burakozturk1315@gmail.com</a>
+  adresine <strong>Linkball hesap silme talebi</strong> konusuyla e-posta gönder.</p>
+  <p>Talebin doğru hesaba uygulanabilmesi için mümkünse uygulamada görünen hesap
+  kimliğini (UID) veya görünen adını belirt. Parola, ödeme bilgisi veya başka
+  hassas kimlik doğrulama bilgileri gönderme.</p>
+
+  <h2>Neler silinir?</h2>
+  <ul>
+    <li>Firebase Authentication hesabı.</li>
+    <li>Linkball profil ve istatistik verileri.</li>
+    <li>Günlük skor ve skor oturumu kayıtları.</li>
+    <li>Eşleştirme kuyruğundaki hesap referansları.</li>
+  </ul>
+
+  <h2>Paylaşılan maç kayıtları</h2>
+  <p>Başka kullanıcılarla ortak olan maç/oda kayıtlarının tamamını kaldırmak
+  diğer kullanıcıların kayıtlarını bozabileceği için bu kayıtlardaki sana ait
+  UID ve görünen ad gibi tanımlayıcı alanlar anonimleştirilir
+  (<em>Silinmiş oyuncu</em> gibi).</p>
+
+  <h2>Saklanabilecek teknik veriler</h2>
+  <p>Artık doğrudan Linkball hesabına bağlı olmayan anonimleştirilmiş kayıtlar
+  ile Google Firebase Analytics/Crashlytics gibi hizmetlerin kendi teknik
+  saklama sürelerine tabi ölçüm ve tanılama verileri bir süre daha tutulabilir.</p>
+
+  <div class="box danger">
+    Hesap silme işlemi kalıcıdır. Daha sonra çevrim içi bir Linkball özelliğini
+    yeniden kullanırsan uygulama yeni bir anonim Firebase hesabı oluşturabilir.
+  </div>
+
+  <p><a href="/privacy.html">Linkball Gizlilik Politikası</a></p>
+</body>
+</html>

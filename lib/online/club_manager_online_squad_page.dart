@@ -14,6 +14,8 @@ import '../services/manager_match_service.dart';
 import '../services/manager_pool_service.dart';
 import '../services/manager_rating_service.dart';
 import 'club_manager_online_match_page.dart';
+import 'online_mode_catalog.dart';
+import '../widgets/friend_match_invite_button.dart';
 import 'club_manager_online_service.dart';
 
 class ClubManagerOnlineSquadPage extends StatefulWidget {
@@ -298,6 +300,11 @@ class _ClubManagerOnlineSquadPageState extends State<ClubManagerOnlineSquadPage>
         title: Text('Oda ${widget.roomCode}',
             style: const TextStyle(color: Colors.white)),
         actions: [
+          if (widget.isHost && (_players?.length ?? 0) < 2)
+            FriendMatchInviteButton(
+              mode: OnlinePlayMode.clubManager,
+              roomCode: widget.roomCode,
+            ),
           IconButton(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: widget.roomCode));

@@ -262,6 +262,7 @@ class OnlineGridController extends ChangeNotifier {
     try {
       await ProfileService.recordMatchResult(
         matchId: matchId,
+        mode: 'grid',
         result: rr,
         opponentName: opponentName,
         opponentUid: opponentUid,

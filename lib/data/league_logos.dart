@@ -1,4 +1,5 @@
-/// Lig adı → asset. Eşleşme normalize + alias ile yapılır.
+/// Lig adı → gerçekten paketlenmiş asset. Eşleşme normalize + alias ile yapılır.
+/// Asset'i olmayan ligler null döner ve LeagueBadge fallback kullanır.
 const Map<String, String> _leagueLogoByKey = {
   'premier league': 'assets/logos/leagues/premier_league.png',
   'epl': 'assets/logos/leagues/premier_league.png',
@@ -29,11 +30,8 @@ const Map<String, String> _leagueLogoByKey = {
   'laliga hypermotion': 'assets/logos/leagues/laliga2.png',
   'mls': 'assets/logos/leagues/mls.png',
   'major league soccer': 'assets/logos/leagues/mls.png',
-  'saudi pro league': 'assets/logos/leagues/saudi_pro_league.png',
   'uefa champions league': 'assets/logos/leagues/ucl.png',
   'champions league': 'assets/logos/leagues/ucl.png',
-  'uefa europa league': 'assets/logos/leagues/uel.png',
-  'europa league': 'assets/logos/leagues/uel.png',
 };
 
 String _normLeague(String s) {

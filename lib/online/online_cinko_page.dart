@@ -5,6 +5,8 @@ import '../controllers/online_cinko_controller.dart';
 import '../theme/app_theme.dart';
 import 'random_cinko_match_page.dart';
 import 'online_cinko_lobby_page.dart';
+import 'online_mode_catalog.dart';
+import '../widgets/friend_match_invite_button.dart';
 
 class OnlineCinkoPage extends StatefulWidget {
   final String matchId;
@@ -55,6 +57,11 @@ class _OnlineCinkoPageState extends State<OnlineCinkoPage> {
       appBar: AppBar(
         title: Text('Çinko · ${_c.matchId}'),
         actions: [
+          if (_c.status == 'waiting')
+            FriendMatchInviteButton(
+              mode: OnlinePlayMode.cinko,
+              roomCode: widget.matchId,
+            ),
           IconButton(
             icon: const Icon(Icons.copy),
             onPressed: () {

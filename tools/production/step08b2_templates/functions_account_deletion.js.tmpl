@@ -1,0 +1,211 @@
+// LINKBALL_08B_ACCOUNT_DELETION_START
+
+const LB_ACCOUNT_SHARED_COLLECTIONS = [
+  "matches",
+  "rooms",
+  "gridMatches",
+  "cinkoMatches",
+  "fiveMatches",
+];
+
+const LB_ACCOUNT_QUEUE_PATHS = [
+  "matchmaking/queue",
+  "matchmaking/gridQueue",
+  "matchmaking/cinkoQueue",
+  "matchmaking/fiveQueue",
+  "matchmaking/lotoQueue",
+];
+
+/**
+ * @param {*} value
+ * @param {string} uid
+ * @return {boolean}
+ */
+function lbAccountContainsUid(value, uid) {
+  if (value === uid) return true;
+  if (Array.isArray(value)) {
+    return value.some((item) => lbAccountContainsUid(item, uid));
+  }
+  if (!value || typeof value !== "object") return false;
+  if (Object.prototype.hasOwnProperty.call(value, uid)) return true;
+  return Object.values(value).some(
+      (item) => lbAccountContainsUid(item, uid),
+  );
+}
+
+/**
+ * @param {*} value
+ * @param {string} uid
+ * @return {*}
+ */
+function lbAccountScrubUid(value, uid) {
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (item === uid) return "";
+      return lbAccountScrubUid(item, uid);
+    });
+  }
+
+  if (!value || typeof value !== "object") {
+    return value === uid ? null : value;
+  }
+
+  const out = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (key === uid) continue;
+    out[key] = lbAccountScrubUid(child, uid);
+  }
+
+  const identityPairs = [
+    ["player1Uid", "player1Name"],
+    ["player2Uid", "player2Name"],
+    ["hostUid", "hostName"],
+    ["ownerUid", "ownerName"],
+    ["uid", "displayName"],
+  ];
+
+  for (const pair of identityPairs) {
+    const uidField = pair[0];
+    const nameField = pair[1];
+    if (value[uidField] !== uid) continue;
+    out[uidField] = null;
+    if (Object.prototype.hasOwnProperty.call(out, nameField)) {
+      out[nameField] = "Silinmiş oyuncu";
+    }
+  }
+
+  return out;
+}
+
+/**
+ * @param {Object} db
+ * @param {string} uid
+ * @return {Promise<Object>}
+ */
+async function lbBuildAccountDeletionUpdates(db, uid) {
+  const updates = {};
+  const affectedMatchIds = new Set();
+  let leaderboardEntriesRemoved = 0;
+  let sharedRecordsScrubbed = 0;
+
+  updates["users/" + uid] = null;
+  updates["dailyScoreSessions/" + uid] = null;
+
+  for (const queuePath of LB_ACCOUNT_QUEUE_PATHS) {
+    const snap = await db.ref(queuePath).get();
+    if (!snap.exists() || !snap.val()) continue;
+    const raw = snap.val();
+    if (!lbAccountContainsUid(raw, uid)) continue;
+
+    const scrubbed = lbAccountScrubUid(raw, uid);
+    updates[queuePath] = scrubbed;
+  }
+
+  const leaderboardSnap = await db.ref("dailyLeaderboard").get();
+  if (leaderboardSnap.exists() && leaderboardSnap.val()) {
+    const days = leaderboardSnap.val();
+    for (const dateKey of Object.keys(days)) {
+      const day = days[dateKey];
+      if (!day || typeof day !== "object") continue;
+      if (!Object.prototype.hasOwnProperty.call(day, uid)) continue;
+      updates["dailyLeaderboard/" + dateKey + "/" + uid] = null;
+      leaderboardEntriesRemoved += 1;
+    }
+  }
+
+  for (const collection of LB_ACCOUNT_SHARED_COLLECTIONS) {
+    const snap = await db.ref(collection).get();
+    if (!snap.exists() || !snap.val()) continue;
+    const records = snap.val();
+
+    for (const [recordId, record] of Object.entries(records)) {
+      if (!lbAccountContainsUid(record, uid)) continue;
+      affectedMatchIds.add(recordId);
+      updates[collection + "/" + recordId] =
+        lbAccountScrubUid(record, uid);
+      sharedRecordsScrubbed += 1;
+    }
+  }
+
+  if (affectedMatchIds.size > 0) {
+    const usersSnap = await db.ref("users").get();
+    if (usersSnap.exists() && usersSnap.val()) {
+      const users = usersSnap.val();
+
+      for (const [otherUid, profile] of Object.entries(users)) {
+        if (otherUid === uid) continue;
+        if (!profile || typeof profile !== "object") continue;
+        const history = profile.matchHistory;
+
+        if (!history || typeof history !== "object") continue;
+        for (const matchId of affectedMatchIds) {
+          if (!Object.prototype.hasOwnProperty.call(history, matchId)) {
+            continue;
+          }
+          updates[
+              "users/" + otherUid + "/matchHistory/" +
+              matchId + "/opponentName"
+          ] = "Silinmiş oyuncu";
+        }
+      }
+    }
+  }
+
+  return {
+    updates: updates,
+    leaderboardEntriesRemoved: leaderboardEntriesRemoved,
+    sharedRecordsScrubbed: sharedRecordsScrubbed,
+  };
+}
+
+exports.deleteMyAccount = httpsV2.onCall(
+    {
+      region: "europe-west1",
+      maxInstances: 10,
+    },
+    async (request) => {
+      if (!request.auth || !request.auth.uid) {
+        throw new httpsV2.HttpsError(
+            "unauthenticated",
+            "Authentication is required.",
+        );
+      }
+
+      const uid = request.auth.uid;
+      const db = admin.database();
+
+      try {
+        const plan = await lbBuildAccountDeletionUpdates(db, uid);
+        await db.ref().update(plan.updates);
+
+        try {
+          await admin.auth().deleteUser(uid);
+        } catch (error) {
+          if (error && error.code !== "auth/user-not-found") {
+            throw error;
+          }
+        }
+
+        logger.info("Linkball account deletion completed", {
+          leaderboardEntriesRemoved: plan.leaderboardEntriesRemoved,
+          sharedRecordsScrubbed: plan.sharedRecordsScrubbed,
+        });
+
+        return {
+          ok: true,
+          leaderboardEntriesRemoved: plan.leaderboardEntriesRemoved,
+          sharedRecordsScrubbed: plan.sharedRecordsScrubbed,
+        };
+      } catch (error) {
+        logger.error("Linkball account deletion failed", {
+          error: String(error),
+        });
+        throw new httpsV2.HttpsError(
+            "internal",
+            "Account deletion could not be completed.",
+        );
+      }
+    },
+);
+
+// LINKBALL_08B_ACCOUNT_DELETION_END

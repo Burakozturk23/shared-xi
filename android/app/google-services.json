@@ -13,7 +13,20 @@
           "package_name": "com.burakozturk.linkball"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "702685230752-rlvp372itdr783jlled0hjveivqims5n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burakozturk.linkball",
+            "certificate_hash": "be60600e6aa871dad8aebfd2f4c3c1915d5bd6ea"
+          }
+        },
+        {
+          "client_id": "702685230752-q7var0b54c83c99h39rcg8ilomo0lcfq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDj5Z5tPCsX8oQV1Lp_9Umvyn9lKZrX-vY"
@@ -21,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "702685230752-q7var0b54c83c99h39rcg8ilomo0lcfq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "702685230752-ki5hfdd7ejciikrs8ab5glo67bsgkk95.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sharedXi"
+              }
+            }
+          ]
         }
       }
     },
@@ -32,7 +57,12 @@
           "package_name": "com.example.shared_xi"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "702685230752-q7var0b54c83c99h39rcg8ilomo0lcfq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDj5Z5tPCsX8oQV1Lp_9Umvyn9lKZrX-vY"
@@ -40,7 +70,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "702685230752-q7var0b54c83c99h39rcg8ilomo0lcfq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "702685230752-ki5hfdd7ejciikrs8ab5glo67bsgkk95.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sharedXi"
+              }
+            }
+          ]
         }
       }
     }

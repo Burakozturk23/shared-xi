@@ -1,5 +1,0 @@
-*.zip
-*.csv
-*.json
-!README.txt
-!.gitignore

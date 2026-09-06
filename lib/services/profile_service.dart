@@ -3,7 +3,13 @@ import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import '../models/linkball_profile_schema.dart';
+import '../models/user_avatar_catalog.dart';
+
 import 'auth_service.dart';
+import 'avatar_service.dart';
+import 'nickname_service.dart';
+import 'ranked_settlement_service.dart';
 
 enum RankedResult { win, loss, draw }
 
@@ -45,6 +51,14 @@ class MatchHistoryEntry {
 class UserProfile {
   final String uid;
   final String displayName;
+  final String? normalizedName;
+  final bool nicknameNeedsSetup;
+  final String avatarId;
+  final Set<String> ownedAvatarIds;
+  final String accountType;
+  final int profileVersion;
+  final int? createdAtMs;
+  final int? updatedAtMs;
   final int wins;
   final int losses;
   final int draws;
@@ -54,6 +68,14 @@ class UserProfile {
   const UserProfile({
     required this.uid,
     required this.displayName,
+    this.normalizedName,
+    this.nicknameNeedsSetup = false,
+    this.avatarId = LinkballProfileSchema.defaultAvatarId,
+    this.ownedAvatarIds = const {},
+    this.accountType = LinkballProfileSchema.guestAccountType,
+    this.profileVersion = LinkballProfileSchema.version,
+    this.createdAtMs,
+    this.updatedAtMs,
     this.wins = 0,
     this.losses = 0,
     this.draws = 0,
@@ -62,6 +84,11 @@ class UserProfile {
   });
 
   int get played => wins + losses + draws;
+
+  bool get isGuest => accountType == LinkballProfileSchema.guestAccountType;
+
+  bool get isPersistent =>
+      accountType == LinkballProfileSchema.googleAccountType;
 
   double get winRate {
     if (played == 0) return 0;
@@ -97,9 +124,42 @@ class UserProfile {
       history.sort((a, b) => (b.playedAtMs ?? 0).compareTo(a.playedAtMs ?? 0));
     }
 
+    final rawAvatarId = data['avatarId']?.toString().trim();
+    final avatarId =
+        rawAvatarId != null &&
+            LinkballProfileSchema.isValidAvatarId(rawAvatarId)
+        ? rawAvatarId
+        : LinkballProfileSchema.defaultAvatarId;
+
+    final ownedAvatarIds = <String>{};
+    final rawOwnedAvatars = data['ownedAvatars'];
+    if (rawOwnedAvatars is Map) {
+      for (final entry in rawOwnedAvatars.entries) {
+        final id = entry.key.toString();
+        if (entry.value == true && UserAvatarCatalog.contains(id)) {
+          ownedAvatarIds.add(id);
+        }
+      }
+    }
+
+    final rawAccountType = data['accountType']?.toString();
+    final accountType =
+        rawAccountType == LinkballProfileSchema.googleAccountType
+        ? LinkballProfileSchema.googleAccountType
+        : LinkballProfileSchema.guestAccountType;
+
     return UserProfile(
       uid: uid,
       displayName: data['displayName']?.toString() ?? 'Oyuncu',
+      normalizedName: data['normalizedName']?.toString(),
+      nicknameNeedsSetup: data['nicknameNeedsSetup'] == true,
+      avatarId: avatarId,
+      ownedAvatarIds: Set<String>.unmodifiable(ownedAvatarIds),
+      accountType: accountType,
+      profileVersion:
+          _toInt(data['profileVersion']) ?? LinkballProfileSchema.version,
+      createdAtMs: _toInt(data['createdAt']),
+      updatedAtMs: _toInt(data['updatedAt']),
       wins: _toInt(data['wins']) ?? 0,
       losses: _toInt(data['losses']) ?? 0,
       draws: _toInt(data['draws']) ?? 0,
@@ -130,6 +190,80 @@ class ProfileService {
 
   static DatabaseReference _userRef(String uid) => _db.ref('users/$uid');
 
+  /// Backfills only missing profile-identity fields.
+  ///
+  /// Existing Elo/match history/results are never reset.
+  static Future<void> ensureCanonicalProfile() async {
+    final user = AuthService.currentUser;
+    if (user == null) return;
+
+    final ref = _userRef(user.uid);
+    await ref.runTransaction((current) {
+      final data = current is Map
+          ? Map<String, dynamic>.from(current)
+          : <String, dynamic>{};
+
+      var changed = false;
+
+      // Nickname identity is server-authoritative from Phase 16.11C.
+      // Missing/legacy nickname state is repaired by NicknameService below.
+
+      final rawOwnedAvatars = data['ownedAvatars'];
+      final ownedAvatars = rawOwnedAvatars is Map
+          ? Map<String, dynamic>.from(rawOwnedAvatars)
+          : <String, dynamic>{};
+
+      for (final starterId in UserAvatarCatalog.starterIds) {
+        if (ownedAvatars[starterId] != true) {
+          ownedAvatars[starterId] = true;
+          changed = true;
+        }
+      }
+      data['ownedAvatars'] = ownedAvatars;
+
+      final avatarId = data['avatarId']?.toString().trim();
+      final selectedKnown =
+          avatarId != null && UserAvatarCatalog.contains(avatarId);
+      final selectedOwned = avatarId != null && ownedAvatars[avatarId] == true;
+
+      if (!selectedKnown || !selectedOwned) {
+        data['avatarId'] = LinkballProfileSchema.defaultAvatarId;
+        changed = true;
+      }
+
+      final expectedAccountType = AuthService.isGoogleAccount
+          ? LinkballProfileSchema.googleAccountType
+          : LinkballProfileSchema.guestAccountType;
+
+      if (data['accountType']?.toString() != expectedAccountType) {
+        data['accountType'] = expectedAccountType;
+        changed = true;
+      }
+
+      if (UserProfile._toInt(data['profileVersion']) !=
+          LinkballProfileSchema.version) {
+        data['profileVersion'] = LinkballProfileSchema.version;
+        changed = true;
+      }
+
+      if (!data.containsKey('createdAt')) {
+        data['createdAt'] = ServerValue.timestamp;
+        changed = true;
+      }
+
+      if (!changed) return Transaction.abort();
+
+      data['updatedAt'] = ServerValue.timestamp;
+      return Transaction.success(data);
+    });
+
+    await NicknameService.ensureCurrentNicknameIndex();
+    await AvatarService.ensureCurrentAvatarState();
+  }
+
+  static Future<void> setAvatarId(String avatarId) =>
+      AvatarService.selectAvatar(avatarId);
+
   /// Beklenen skor (0–1).
   static double expectedScore(int myElo, int opponentElo) {
     return 1.0 / (1.0 + math.pow(10, (opponentElo - myElo) / 400.0));
@@ -150,14 +284,11 @@ class ProfileService {
     return (myElo + kFactor * (score - exp)).round();
   }
 
-  static Future<int> _readElo(String uid) async {
-    final snap = await _userRef(uid).child('elo').get();
-    return UserProfile._toInt(snap.value) ?? defaultElo;
-  }
-
   static Future<UserProfile?> fetchMyProfile() async {
     final uid = AuthService.uid;
     if (uid == null) return null;
+
+    await ensureCanonicalProfile();
     final snap = await _userRef(uid).get();
     if (!snap.exists || snap.value is! Map) {
       return UserProfile(
@@ -186,7 +317,10 @@ class ProfileService {
     });
   }
 
-  /// Ranked sonuç + Elo. opponentUid verilirse gerçek rakip Elo’su kullanılır.
+  /// Ranked result attestation + trusted server settlement.
+  ///
+  /// A missing opponent UID or score means this is not a complete ranked
+  /// result and must never reach the competitive settlement backend.
   static Future<void> recordMatchResult({
     required String matchId,
     required RankedResult result,
@@ -194,78 +328,21 @@ class ProfileService {
     String? opponentUid,
     int? myScore,
     int? opponentScore,
+    String mode = 'shared_xi',
   }) async {
-    final uid = AuthService.uid;
-    if (uid == null || matchId.isEmpty) return;
+    if (matchId.trim().isEmpty) return;
 
-    final myEloBefore = await _readElo(uid);
-    final oppElo = (opponentUid != null && opponentUid.isNotEmpty)
-        ? await _readElo(opponentUid)
-        : defaultElo;
+    final peerUid = opponentUid?.trim();
+    if (peerUid == null || peerUid.isEmpty) return;
+    if (myScore == null || opponentScore == null) return;
 
-    final myEloAfter = nextElo(
-      myElo: myEloBefore,
-      opponentElo: oppElo,
-      result: result,
+    await RankedSettlementService.settle(
+      matchId: matchId,
+      mode: mode,
+      result: result.name,
+      opponentUid: peerUid,
+      myScore: myScore,
+      opponentScore: opponentScore,
     );
-    final delta = myEloAfter - myEloBefore;
-
-    await _userRef(uid).runTransaction((current) {
-      final data = current is Map
-          ? Map<String, dynamic>.from(current)
-          : <String, dynamic>{};
-
-      final recorded = data['recordedMatches'] is Map
-          ? Map<String, dynamic>.from(data['recordedMatches'] as Map)
-          : <String, dynamic>{};
-
-      if (recorded.containsKey(matchId)) {
-        return Transaction.abort();
-      }
-
-      recorded[matchId] = result.name;
-      if (recorded.length > 50) {
-        final keys = recorded.keys.toList()..sort();
-        for (var i = 0; i < recorded.length - 50; i++) {
-          recorded.remove(keys[i]);
-        }
-      }
-      data['recordedMatches'] = recorded;
-
-      final history = data['matchHistory'] is Map
-          ? Map<String, dynamic>.from(data['matchHistory'] as Map)
-          : <String, dynamic>{};
-
-      history[matchId] = {
-        'result': result.name,
-        'opponentName': opponentName,
-        'myScore': myScore,
-        'opponentScore': opponentScore,
-        'playedAt': ServerValue.timestamp,
-        'eloBefore': myEloBefore,
-        'eloAfter': myEloAfter,
-        'eloDelta': delta,
-      };
-
-      if (history.length > 15) {
-        final keys = history.keys.toList();
-        while (keys.length > 15) {
-          history.remove(keys.removeAt(0));
-        }
-      }
-      data['matchHistory'] = history;
-
-      data['wins'] = (int.tryParse(data['wins']?.toString() ?? '') ?? 0) +
-          (result == RankedResult.win ? 1 : 0);
-      data['losses'] = (int.tryParse(data['losses']?.toString() ?? '') ?? 0) +
-          (result == RankedResult.loss ? 1 : 0);
-      data['draws'] = (int.tryParse(data['draws']?.toString() ?? '') ?? 0) +
-          (result == RankedResult.draw ? 1 : 0);
-      data['elo'] = myEloAfter;
-      data['updatedAt'] = ServerValue.timestamp;
-
-      return Transaction.success(data);
-    });
-
   }
 }

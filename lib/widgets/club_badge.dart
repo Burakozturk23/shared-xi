@@ -21,7 +21,7 @@ class ClubBadge extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => _generatedBadge(),
+        errorBuilder: (_, _, _) => _generatedBadge(),
       );
     }
     return _generatedBadge();

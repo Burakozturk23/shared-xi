@@ -33,6 +33,7 @@ class RoomService {
   static Future<String> createRoom({
     required String playerName,
     String matchType = 'club_club',
+    String? hostUid,
   }) async {
     final name = playerName.trim();
     if (name.isEmpty) {
@@ -46,6 +47,8 @@ class RoomService {
 
     await _roomsRef.child(roomCode).set({
       'host': name,
+      if (hostUid != null && hostUid.trim().isNotEmpty)
+        'hostUid': hostUid.trim(),
       'status': 'waiting',
       'matchType': matchType,
       'createdAt': ServerValue.timestamp,

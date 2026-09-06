@@ -1,4 +1,4 @@
-# Miscellaneous
+﻿# Miscellaneous
 *.class
 *.log
 *.pyc
@@ -63,3 +63,37 @@ reports/data_platform_v3/
 
 # Linkball generated data audit reports
 reports/data_audit/
+
+# BEGIN LINKBALL GITHUB PUBLISH SAFETY
+# Local signing / credentials
+android/key.properties
+android/local.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+.env
+.env.*
+
+# Local build/cache
+.dart_tool/
+.firebase/
+build/
+coverage/
+functions/node_modules/
+node_modules/
+
+# Generated one-off snapshots
+*.step*.created
+*.bak
+*.orig
+
+# Large intermediate SQLite input; final runtime DB lives under assets/runtime/
+tools/data_platform_v4/input/*.sqlite
+
+# Local forensic bundles/reports
+/github_publish_preflight*_bundle.zip
+/root_analyzer_diagnostics_forensics*_bundle.zip
+# END LINKBALL GITHUB PUBLISH SAFETY
+

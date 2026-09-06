@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../models/manager_rating.dart';
+import '../services/auth_service.dart';
 import 'club_manager_online_service.dart';
 import 'club_manager_online_squad_page.dart';
 
@@ -48,6 +49,7 @@ class _ClubManagerOnlineLobbyPageState extends State<ClubManagerOnlineLobbyPage>
       final code = await ClubManagerOnlineService.instance.createRoom(
         playerName: name,
         budgetLink: _budget,
+        hostUid: AuthService.uid,
       );
       if (!mounted) return;
       Navigator.pushReplacement(

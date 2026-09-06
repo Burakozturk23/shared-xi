@@ -5,6 +5,8 @@ import '../controllers/online_five_controller.dart';
 import '../theme/app_theme.dart';
 import 'random_five_match_page.dart';
 import 'online_five_lobby_page.dart';
+import 'online_mode_catalog.dart';
+import '../widgets/friend_match_invite_button.dart';
 
 class OnlineFivePage extends StatefulWidget {
   final String matchId;
@@ -55,6 +57,11 @@ class _OnlineFivePageState extends State<OnlineFivePage> {
       appBar: AppBar(
         title: Text('Beş · ${_c.matchId}'),
         actions: [
+          if (_c.status == 'waiting')
+            FriendMatchInviteButton(
+              mode: OnlinePlayMode.randomFive,
+              roomCode: widget.matchId,
+            ),
           IconButton(
             icon: const Icon(Icons.copy),
             onPressed: () {

@@ -16,6 +16,7 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
   late final TransferDetectiveController _controller;
   final TextEditingController _answerController = TextEditingController();
   List<Player> _suggestions = const [];
+  int _suggestionGeneration = 0;
 
   @override
   void initState() {
@@ -37,16 +38,26 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
     super.dispose();
   }
 
-  void _onQueryChanged(String q) {
-    setState(() {
-      _suggestions = q.trim().length >= 3 ? _controller.suggestions(q) : const [];
-    });
+  Future<void> _onQueryChanged(String q) async {
+    final generation = ++_suggestionGeneration;
+    final trimmed = q.trim();
+
+    if (trimmed.length < 3) {
+      if (mounted) setState(() => _suggestions = const []);
+      return;
+    }
+
+    final suggestions = await _controller.suggestions(trimmed);
+    if (!mounted || generation != _suggestionGeneration) return;
+
+    setState(() => _suggestions = suggestions);
   }
 
   void _submit([String? forced]) {
     final input = (forced ?? _answerController.text).trim();
     if (input.isEmpty) return;
     _controller.submitGuess(input);
+    _suggestionGeneration++;
     _answerController.clear();
     setState(() => _suggestions = const []);
   }

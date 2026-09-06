@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../models/player.dart';
 import '../utils/player_dedupe.dart';
 
@@ -36,51 +38,119 @@ class ResolveResult {
       );
 }
 
+class _PreparedQuery {
+  final String normalized;
+  final String compact;
+  final List<String> tokens;
+
+  const _PreparedQuery({
+    required this.normalized,
+    required this.compact,
+    required this.tokens,
+  });
+}
+
+class _SearchDocument {
+  final Player player;
+  final List<String> normalizedLabels;
+  final Set<String> lastNameKeys;
+  final String displayNormalized;
+  final String displayCompact;
+
+  const _SearchDocument({
+    required this.player,
+    required this.normalizedLabels,
+    required this.lastNameKeys,
+    required this.displayNormalized,
+    required this.displayCompact,
+  });
+}
+
 class SearchService {
   SearchService._();
 
   static const int minQueryLengthForSuggest = 2;
   static const int minTokenLengthForPartial = 4;
 
+  static final RegExp _nonSearchChars = RegExp(r'[^a-z0-9\s]');
+  static final RegExp _whitespace = RegExp(r'\s+');
+
   static Map<String, List<Player>>? _prefixIndex;
 
+  // Search metadata is warmed in small chunks after Repository initialization.
+  // This keeps startup responsive while preserving the fast submit path once
+  // the cache has warmed.
+  static final Map<int, _SearchDocument> _documentCache = {};
+  static const int _indexBuildChunkSize = 64;
+  static int _indexBuildGeneration = 0;
+
   static void buildIndex(List<Player> players) {
+    final generation = ++_indexBuildGeneration;
+    _prefixIndex = null;
+    _documentCache.clear();
+
+    // Do not block Repository._initializeInternal(). The previous optimized
+    // implementation prepared every search document synchronously here, which
+    // moved the submit cost to app startup and could trigger an Android ANR.
+    unawaited(_buildIndexChunked(players, generation));
+  }
+
+  static Future<void> _buildIndexChunked(
+    List<Player> players,
+    int generation,
+  ) async {
     final map = <String, List<Player>>{};
+
+    // Yield once immediately so buildIndex() returns before any heavy work.
+    await Future<void>.delayed(Duration.zero);
+
+    var processed = 0;
     for (final p in players) {
+      if (generation != _indexBuildGeneration) return;
       if (p.name.trim().isEmpty) continue;
+
+      final doc = _buildDocument(p);
+      _documentCache[p.id] = doc;
+
       final keys = <String>{};
-      void addKey(String raw) {
-        final n = normalize(raw);
-        final c = compact(n);
-        if (n.length >= 2) keys.add(n.substring(0, 2));
-        if (n.length >= 1) keys.add(n.substring(0, 1));
-        if (c.length >= 2) keys.add(c.substring(0, 2));
-        if (c.length >= 1) keys.add(c.substring(0, 1));
+
+      void addPreparedKey(String normalized) {
+        if (normalized.isEmpty) return;
+        final compactValue = _compactNormalized(normalized);
+        if (normalized.length >= 2) keys.add(normalized.substring(0, 2));
+        if (normalized.isNotEmpty) keys.add(normalized.substring(0, 1));
+        if (compactValue.length >= 2) keys.add(compactValue.substring(0, 2));
+        if (compactValue.isNotEmpty) keys.add(compactValue.substring(0, 1));
       }
 
-      if (p.normalizedName.isNotEmpty) {
-        addKey(p.normalizedName);
-      } else {
-        addKey(p.name);
+      for (final label in doc.normalizedLabels) {
+        addPreparedKey(label);
       }
-      for (final a in p.normalizedAliases) {
-        if (a.isNotEmpty) addKey(a);
+      final nameParts = p.name.trim().split(_whitespace);
+      if (nameParts.length >= 2) {
+        addPreparedKey(normalize(nameParts.last));
       }
-      for (final a in p.aliases) {
-        addKey(a);
-      }
-      addKey(p.name);
-      final parts = p.name.trim().split(RegExp(r'\s+'));
-      if (parts.length >= 2) addKey(parts.last);
 
       for (final k in keys) {
         (map[k] ??= []).add(p);
       }
+
+      processed++;
+      if (processed % _indexBuildChunkSize == 0) {
+        await Future<void>.delayed(Duration.zero);
+      }
     }
-    _prefixIndex = map;
+
+    if (generation == _indexBuildGeneration) {
+      _prefixIndex = map;
+    }
   }
 
-  static void clearIndex() => _prefixIndex = null;
+  static void clearIndex() {
+    _indexBuildGeneration++;
+    _prefixIndex = null;
+    _documentCache.clear();
+  }
 
   static String normalize(String input) {
     var s = input.trim().toLowerCase();
@@ -108,23 +178,38 @@ class SearchService {
         buf.write(ch);
       }
     }
-    s = buf.toString().replaceAll(RegExp(r'[^a-z0-9\s]'), ' ');
-    s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
+    s = buf.toString().replaceAll(_nonSearchChars, ' ');
+    s = s.replaceAll(_whitespace, ' ').trim();
     return s;
   }
 
-  static String compact(String input) =>
-      normalize(input).replaceAll(RegExp(r'\s+'), '');
+  static String _compactNormalized(String normalized) =>
+      normalized.replaceAll(' ', '');
 
-  static bool equals(String a, String b) =>
-      normalize(a) == normalize(b) || compact(a) == compact(b);
+  static String compact(String input) => _compactNormalized(normalize(input));
+
+  static _PreparedQuery _prepareQuery(String input) {
+    final q = normalize(input);
+    return _PreparedQuery(
+      normalized: q,
+      compact: _compactNormalized(q),
+      tokens: q.isEmpty ? const [] : q.split(' '),
+    );
+  }
+
+  static bool equals(String a, String b) {
+    final an = normalize(a);
+    final bn = normalize(b);
+    if (an == bn) return true;
+    return _compactNormalized(an) == _compactNormalized(bn);
+  }
 
   static bool contains(String text, String query) {
-    final q = normalize(query);
-    if (q.isEmpty) return true;
+    final prepared = _prepareQuery(query);
+    if (prepared.normalized.isEmpty) return true;
     final n = normalize(text);
-    if (n.contains(q)) return true;
-    return compact(text).contains(compact(query));
+    if (n.contains(prepared.normalized)) return true;
+    return _compactNormalized(n).contains(prepared.compact);
   }
 
   static List<String> _labels(Player player) {
@@ -134,15 +219,15 @@ class SearchService {
     return out.toList();
   }
 
-  static List<String> _normalizedLabels(Player player) {
-    final out = <String>{};
+  static _SearchDocument _buildDocument(Player player) {
+    final normalizedLabels = <String>{};
 
     void addRaw(String raw) {
       if (raw.trim().isEmpty) return;
       final n = normalize(raw);
-      if (n.isNotEmpty) out.add(n);
-      final c = compact(raw);
-      if (c.isNotEmpty) out.add(c);
+      if (n.isNotEmpty) normalizedLabels.add(n);
+      final c = _compactNormalized(n);
+      if (c.isNotEmpty) normalizedLabels.add(c);
     }
 
     if (player.normalizedName.isNotEmpty) addRaw(player.normalizedName);
@@ -154,63 +239,105 @@ class SearchService {
       addRaw(a);
     }
 
-    if (out.isEmpty && player.name.trim().isNotEmpty) {
+    if (normalizedLabels.isEmpty && player.name.trim().isNotEmpty) {
       addRaw(player.name);
     }
-    return out.toList();
-  }
 
-  static bool matches(Player player, String answer) {
-    final q = normalize(answer);
-    if (q.isEmpty) return false;
-    final qc = compact(answer);
-    return _normalizedLabels(player).any((n) => n == q || n == qc);
-  }
-
-  static bool matchesLastName(Player player, String answer) {
-    final q = normalize(answer);
-    if (q.length < 3) return false;
-    final qc = compact(answer);
+    final lastNameKeys = <String>{};
     for (final label in _labels(player)) {
-      final parts = label.trim().split(RegExp(r'\s+'));
+      final parts = label.trim().split(_whitespace);
       if (parts.isEmpty) continue;
       final last = normalize(parts.last);
-      final lastC = compact(parts.last);
-      if (last == q || lastC == qc || last == qc || lastC == q) return true;
+      if (last.isEmpty) continue;
+      lastNameKeys.add(last);
+      lastNameKeys.add(_compactNormalized(last));
     }
-    return false;
+
+    final displayNormalized = normalize(player.name);
+
+    return _SearchDocument(
+      player: player,
+      normalizedLabels: normalizedLabels.toList(growable: false),
+      lastNameKeys: lastNameKeys,
+      displayNormalized: displayNormalized,
+      displayCompact: _compactNormalized(displayNormalized),
+    );
   }
 
-  static bool matchesPartial(Player player, String answer) {
-    final q = normalize(answer);
-    final qc = compact(answer);
-    if (q.length < minTokenLengthForPartial &&
-        qc.length < minTokenLengthForPartial) {
+  static _SearchDocument _documentFor(Player player) {
+    final cached = _documentCache[player.id];
+    if (cached != null && identical(cached.player, player)) {
+      return cached;
+    }
+
+    final doc = _buildDocument(player);
+    _documentCache[player.id] = doc;
+    return doc;
+  }
+
+  static bool _matchesPrepared(_SearchDocument doc, _PreparedQuery query) {
+    if (query.normalized.isEmpty) return false;
+    return doc.normalizedLabels
+        .any((n) => n == query.normalized || n == query.compact);
+  }
+
+  static bool matches(Player player, String answer) =>
+      _matchesPrepared(_documentFor(player), _prepareQuery(answer));
+
+  static bool _matchesLastNamePrepared(
+    _SearchDocument doc,
+    _PreparedQuery query,
+  ) {
+    if (query.normalized.length < 3) return false;
+    return doc.lastNameKeys.contains(query.normalized) ||
+        doc.lastNameKeys.contains(query.compact);
+  }
+
+  static bool matchesLastName(Player player, String answer) =>
+      _matchesLastNamePrepared(_documentFor(player), _prepareQuery(answer));
+
+  static bool _matchesPartialPrepared(
+    _SearchDocument doc,
+    _PreparedQuery query,
+  ) {
+    if (query.normalized.length < minTokenLengthForPartial &&
+        query.compact.length < minTokenLengthForPartial) {
       return false;
     }
-    return _normalizedLabels(player).any((n) {
-      if (q.isNotEmpty && n.contains(q)) return true;
-      if (qc.isNotEmpty && n.contains(qc)) return true;
+
+    return doc.normalizedLabels.any((n) {
+      if (query.normalized.isNotEmpty && n.contains(query.normalized)) {
+        return true;
+      }
+      if (query.compact.isNotEmpty && n.contains(query.compact)) {
+        return true;
+      }
       return false;
     });
   }
 
-  static bool _matchesTokens(String label, String query) {
-    final tokens =
-        normalize(query).split(' ').where((t) => t.isNotEmpty).toList();
+  static bool matchesPartial(Player player, String answer) =>
+      _matchesPartialPrepared(_documentFor(player), _prepareQuery(answer));
+
+  static bool _matchesTokensPrepared(String label, _PreparedQuery query) {
+    final tokens = query.tokens;
     if (tokens.isEmpty) return false;
+
     if (tokens.length == 1) {
       final t = tokens.first;
-      final c = compact(label);
+      final c = _compactNormalized(label);
       return label.startsWith(t) ||
           label.contains(t) ||
           c.startsWith(t) ||
           c.contains(t) ||
           label.split(' ').any((p) => p.startsWith(t));
     }
-    final cLabel = compact(label);
-    final cQuery = compact(query);
-    if (cLabel.contains(cQuery) || cLabel.startsWith(cQuery)) return true;
+
+    final cLabel = _compactNormalized(label);
+    if (cLabel.contains(query.compact) || cLabel.startsWith(query.compact)) {
+      return true;
+    }
+
     for (final t in tokens) {
       final ok = label.contains(t) ||
           cLabel.contains(t) ||
@@ -224,8 +351,11 @@ class SearchService {
     required List<Player> players,
     required String answer,
   }) {
+    final query = _prepareQuery(answer);
+    if (query.normalized.isEmpty) return null;
+
     for (final player in players) {
-      if (matches(player, answer)) return player;
+      if (_matchesPrepared(_documentFor(player), query)) return player;
     }
     return null;
   }
@@ -235,32 +365,48 @@ class SearchService {
     required String answer,
     Set<int> excludedPlayerIds = const {},
   }) {
-    final trimmed = answer.trim();
-    if (trimmed.isEmpty) return ResolveResult.notFound();
+    final query = _prepareQuery(answer);
+    if (query.normalized.isEmpty) return ResolveResult.notFound();
 
-    final pool = players
-        .where(
-            (p) => !excludedPlayerIds.contains(p.id) && p.name.trim().isNotEmpty)
-        .toList();
-
+    // Important: the old implementation created a filtered list, then scanned
+    // that list three times. It also normalized the same query and player labels
+    // repeatedly inside each scan. Here we keep the exact same priority
+    // (exact > last name > partial) while doing one pass over the supplied pool
+    // and using precomputed player search metadata.
     final exact = <Player>[];
-    for (final p in pool) {
-      if (matches(p, trimmed)) exact.add(p);
+    final byLast = <Player>[];
+    final byPartial = <Player>[];
+
+    final allowLastName = query.normalized.length >= 3;
+    final allowPartial =
+        query.normalized.length >= minTokenLengthForPartial ||
+            query.compact.length >= minTokenLengthForPartial;
+
+    for (final p in players) {
+      if (excludedPlayerIds.contains(p.id) || p.name.trim().isEmpty) continue;
+
+      final doc = _documentFor(p);
+
+      if (_matchesPrepared(doc, query)) {
+        exact.add(p);
+        continue;
+      }
+
+      if (allowLastName && _matchesLastNamePrepared(doc, query)) {
+        byLast.add(p);
+      }
+
+      if (allowPartial && _matchesPartialPrepared(doc, query)) {
+        byPartial.add(p);
+      }
     }
+
     if (exact.length == 1) return ResolveResult.found(exact.first);
     if (exact.length > 1) return ResolveResult.ambiguous(exact);
 
-    final byLast = <Player>[];
-    for (final p in pool) {
-      if (matchesLastName(p, trimmed)) byLast.add(p);
-    }
     if (byLast.length == 1) return ResolveResult.found(byLast.first);
     if (byLast.length > 1) return ResolveResult.ambiguous(byLast);
 
-    final byPartial = <Player>[];
-    for (final p in pool) {
-      if (matchesPartial(p, trimmed)) byPartial.add(p);
-    }
     if (byPartial.length == 1) return ResolveResult.found(byPartial.first);
     if (byPartial.length > 1) {
       return ResolveResult.ambiguous(byPartial.take(12).toList());
@@ -288,15 +434,18 @@ class SearchService {
     Set<int> excludedPlayerIds = const {},
     int limit = 8,
   }) {
-    final q = normalize(query);
+    final prepared = _prepareQuery(query);
+    final q = prepared.normalized;
     if (q.length < minQueryLengthForSuggest) return const [];
-    final qc = compact(query);
+    final qc = prepared.compact;
 
     Iterable<Player> pool;
     final index = _prefixIndex;
     if (index != null && q.isNotEmpty) {
-      final firstToken =
-          q.split(' ').firstWhere((t) => t.isNotEmpty, orElse: () => q);
+      final firstToken = prepared.tokens.firstWhere(
+        (t) => t.isNotEmpty,
+        orElse: () => q,
+      );
       final keySrc = firstToken.length >= 2 ? firstToken : qc;
       final key2 =
           keySrc.length >= 2 ? keySrc.substring(0, 2) : keySrc.substring(0, 1);
@@ -319,7 +468,8 @@ class SearchService {
       if (excludedPlayerIds.contains(player.id)) continue;
       if (!seen.add(player.id)) continue;
 
-      final labels = _normalizedLabels(player);
+      final doc = _documentFor(player);
+      final labels = doc.normalizedLabels;
       var best = -1;
 
       for (final n in labels) {
@@ -335,7 +485,7 @@ class SearchService {
         }
         if (best == 2) break;
 
-        if (_matchesTokens(n, q)) {
+        if (_matchesTokensPrepared(n, prepared)) {
           best = 2;
           break;
         }
@@ -348,13 +498,13 @@ class SearchService {
       }
 
       if (best < 2) {
-        final display = normalize(player.name);
-        if (_matchesTokens(display, q) ||
+        final display = doc.displayNormalized;
+        if (_matchesTokensPrepared(display, prepared) ||
             display.startsWith(q) ||
-            compact(player.name).startsWith(qc)) {
+            doc.displayCompact.startsWith(qc)) {
           best = 2;
         } else if (best < 1 &&
-            (display.contains(q) || compact(player.name).contains(qc))) {
+            (display.contains(q) || doc.displayCompact.contains(qc))) {
           best = 1;
         }
       }

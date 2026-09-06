@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/auth_service.dart';
+
 import 'room_service.dart';
 import 'online_loto_setup_page.dart';
 
@@ -39,7 +41,11 @@ class _OnlineLotoLobbyPageState extends State<OnlineLotoLobbyPage> {
     }
     setState(() => _isCreating = true);
     try {
-      final code = await RoomService.createRoom(playerName: name);
+      final code = await RoomService.createRoom(
+        playerName: name,
+        matchType: 'loto',
+        hostUid: AuthService.uid,
+      );
       if (!mounted) return;
       setState(() => _isCreating = false);
       Navigator.push(

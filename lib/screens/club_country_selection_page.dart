@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../data/popular_matchups.dart';
 import '../models/club.dart';
 import '../models/match_entity.dart';
-import '../repositories/repository.dart';
 import '../services/search_service.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 import 'shared_players_result_page.dart';
 
 class ClubCountrySelectionPage extends StatefulWidget {
@@ -24,15 +24,45 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage>
   String _countryQ = '';
   Club? _club;
   String? _country;
-  late final List<Club> _clubs;
-  late final List<String> _countries;
+  List<Club> _clubs = const <Club>[];
+  List<String> _countries = const <String>[];
+  bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     _tab = TabController(length: 2, vsync: this);
-    _clubs = Repository.instance.clubs;
-    _countries = Repository.instance.countries;
+    _loadCatalog();
+  }
+
+  Future<void> _loadCatalog() async {
+    try {
+      final service = GameDataV4QueryService.instance;
+      final forcedClubIds = <int>{
+        for (final matchup in popularClubCountryMatchups) matchup.clubId,
+      };
+      final clubsFuture = service.sharedXiClubCatalog(
+        includeIds: forcedClubIds,
+      );
+      final countriesFuture = service.countries();
+      final clubs = await clubsFuture;
+      final countries = await countriesFuture;
+
+      if (!mounted) return;
+      setState(() {
+        _clubs = clubs;
+        _countries = countries;
+        _loading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString();
+      });
+    }
   }
 
   @override
@@ -57,15 +87,65 @@ class _ClubCountrySelectionPageState extends State<ClubCountrySelectionPage>
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0F14),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Kulüp – Ülke'),
+          centerTitle: true,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0F14),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Kulüp – Ülke'),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'V4 katalog açılamadı\n$_error',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    setState(() {
+                      _loading = true;
+                      _error = null;
+                    });
+                    _loadCatalog();
+                  },
+                  child: const Text('Tekrar dene'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final filteredClubs =
         _clubs.where((c) => SearchService.contains(c.name, _clubQ)).toList();
     final filteredCountries = _countries
         .where((c) => SearchService.contains(c, _countryQ))
         .toList();
 
+    final byId = {for (final club in _clubs) club.id: club};
     final popular = <(String, Club, String)>[];
     for (final m in popularClubCountryMatchups) {
-      final club = Repository.instance.clubById(m.clubId);
+      final club = byId[m.clubId];
       if (club != null) popular.add((m.label, club, m.country));
     }
 

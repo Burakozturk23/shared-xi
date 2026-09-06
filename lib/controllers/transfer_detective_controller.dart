@@ -10,6 +10,7 @@ import '../models/transfer_detective_state.dart';
 import '../repositories/repository.dart';
 import '../services/search_service.dart';
 import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 
 class TransferDetectiveController extends ChangeNotifier {
   final Random _random = Random();
@@ -19,17 +20,16 @@ class TransferDetectiveController extends ChangeNotifier {
 
   Timer? _feedbackTimer;
 
-  bool _usingRuntimeV3 = false;
+  bool _usingV4 = false;
   List<Map<String, Object?>> _runtimeEvents = const [];
-  Map<int, Map<String, Object?>> _runtimeFactsByPlayer = const {};
 
   void initialize() {
     unawaited(_initializeHybrid());
   }
 
   void restart() {
-    if (_usingRuntimeV3) {
-      _startRoundRuntime(keepSession: true);
+    if (_usingV4) {
+      unawaited(_startRoundV4(keepSession: true));
     } else {
       _startRound(keepSession: true);
     }
@@ -37,44 +37,112 @@ class TransferDetectiveController extends ChangeNotifier {
 
   Future<void> _initializeHybrid() async {
     final hybrid = HybridGameplayDataService.instance;
-    _usingRuntimeV3 = hybrid.isGameplayEnabled;
-    if (_usingRuntimeV3) {
-      _runtimeEvents = await hybrid.transferDetectiveEvents();
-      _runtimeFactsByPlayer = await hybrid.playerFactsForPool('transfer_detective_normal');
-      if (_runtimeEvents.length < 1000) {
-        debugPrint('[HybridV3] TransferDetective SQLite event pool too small; legacy fallback.');
-        _usingRuntimeV3 = false;
-      } else {
-        debugPrint('[HybridV3] TransferDetective SQLite events=${_runtimeEvents.length} facts=${_runtimeFactsByPlayer.length}');
+
+    try {
+      final rawEvents = await hybrid.transferDetectiveEvents();
+      final knownClubs = chainClubPool.toSet();
+
+      final bothKnownEvents = rawEvents.where((row) {
+        final fromClubId = (row['from_club_id'] as num?)?.toInt();
+        final toClubId = (row['to_club_id'] as num?)?.toInt();
+        return fromClubId != null &&
+            toClubId != null &&
+            knownClubs.contains(fromClubId) &&
+            knownClubs.contains(toClubId);
+      }).toList();
+
+      final oneKnownEvents = rawEvents.where((row) {
+        final fromClubId = (row['from_club_id'] as num?)?.toInt();
+        final toClubId = (row['to_club_id'] as num?)?.toInt();
+        return (fromClubId != null && knownClubs.contains(fromClubId)) ||
+            (toClubId != null && knownClubs.contains(toClubId));
+      }).toList();
+
+      // Transfer Detective should feel globally recognizable rather than like
+      // a scouting database. Prefer transfers where BOTH clubs belong to the
+      // curated senior-club universe. Keep the one-known-club envelope only as
+      // a safety fallback so question quality wins over raw event volume.
+      _runtimeEvents = bothKnownEvents.length >= 400
+          ? bothKnownEvents
+          : oneKnownEvents.length >= 250
+              ? oneKnownEvents
+              : rawEvents;
+
+      if (_runtimeEvents.length < 250) {
+        throw StateError(
+          'TransferDetective curated V4 pool too small: ${_runtimeEvents.length}',
+        );
       }
+
+      _usingV4 = true;
+
+      if (kDebugMode) {
+        debugPrint(
+          '[HybridV4] TransferDetective events=${_runtimeEvents.length} '
+          'bothKnown=${bothKnownEvents.length} '
+          'oneKnown=${oneKnownEvents.length} raw=${rawEvents.length}',
+        );
+      }
+
+      await _startRoundV4(keepSession: false);
+      return;
+    } catch (e) {
+      debugPrint('[HybridV4] TransferDetective fallback: $e');
+      _usingV4 = false;
     }
-    if (_usingRuntimeV3) {
-      _startRoundRuntime(keepSession: false);
-    } else {
-      _startRound(keepSession: false);
-    }
+
+    // Safety fallback only. The normal V4 path never hydrates the complete
+    // Repository player universe.
+    await Repository.instance.initialize();
+    _startRound(keepSession: false);
   }
 
-  void _startRoundRuntime({required bool keepSession}) {
+  Future<void> _startRoundV4({required bool keepSession}) async {
     if (_runtimeEvents.isEmpty) {
       _state = _state.copyWith(isLoading: false);
       notifyListeners();
       return;
     }
+
     final envelopeSize = _runtimeEvents.length.clamp(1000, 12000);
     final source = _runtimeEvents.take(envelopeSize).toList()..shuffle(_random);
+    final query = GameDataV4QueryService.instance;
+
     for (final row in source.take(200)) {
       final playerId = (row['player_id'] as num?)?.toInt();
       final year = (row['transfer_year'] as num?)?.toInt();
       final fromClubId = (row['from_club_id'] as num?)?.toInt();
       final toClubId = (row['to_club_id'] as num?)?.toInt();
-      if (playerId == null || year == null || fromClubId == null || toClubId == null) continue;
-      final target = Repository.instance.playerById(playerId);
-      final fromClub = Repository.instance.clubById(fromClubId);
-      final toClub = Repository.instance.clubById(toClubId);
-      if (target == null || fromClub == null || toClub == null) continue;
-      final transfer = FamousTransfer(playerId: playerId, year: year, fee: 0, fromClubId: fromClubId, toClubId: toClubId);
+
+      if (playerId == null ||
+          year == null ||
+          fromClubId == null ||
+          toClubId == null) {
+        continue;
+      }
+
+      final players = await query.playersByIds(<int>[playerId]);
+      final clubs = await query.clubsByIds(<int>[fromClubId, toClubId]);
+
+      if (players.isEmpty || clubs.length < 2) continue;
+
+      final target = players.first;
+      final clubById = {for (final club in clubs) club.id: club};
+      final fromClub = clubById[fromClubId];
+      final toClub = clubById[toClubId];
+
+      if (fromClub == null || toClub == null) continue;
+
+      final transfer = FamousTransfer(
+        playerId: playerId,
+        year: year,
+        fee: 0,
+        fromClubId: fromClubId,
+        toClubId: toClubId,
+      );
+
       final hints = _buildHints(target, fromClub);
+
       _state = TransferDetectiveState(
         isLoading: false,
         target: target,
@@ -92,23 +160,13 @@ class TransferDetectiveController extends ChangeNotifier {
         wrongGuesses: const [],
         revealedLetterIndexes: const {},
       );
+
       notifyListeners();
       return;
     }
+
     _state = _state.copyWith(isLoading: false);
     notifyListeners();
-  }
-
-  String _runtimeStatsHint(Player player) {
-    final facts = _runtimeFactsByPlayer[player.id];
-    if (facts == null) return 'İstatistik verisi sınırlı';
-    final apps = (facts['appearances'] as num?)?.toInt() ?? 0;
-    final goals = (facts['goals'] as num?)?.toInt() ?? 0;
-    final assists = (facts['assists'] as num?)?.toInt() ?? 0;
-    final first = (facts['coverage_first_year'] as num?)?.toInt() ?? 0;
-    final last = (facts['coverage_last_year'] as num?)?.toInt() ?? 0;
-    final prefix = first > 0 && last > 0 ? '$first-$last kapsanan veri: ' : '';
-    return '$prefix$apps maç • $goals gol • $assists asist';
   }
 
   void disposeController() {
@@ -230,9 +288,7 @@ class TransferDetectiveController extends ChangeNotifier {
       TransferHint(
         kind: TransferHintKind.careerGoals,
         title: 'Kariyer golü',
-        text: _usingRuntimeV3
-            ? _runtimeStatsHint(target)
-            : '${target.careerGoals} gol',
+        text: '${target.careerGoals} gol',
         cost: 20,
       ),
     ];
@@ -302,7 +358,11 @@ class TransferDetectiveController extends ChangeNotifier {
     if (_state.isSolved || _state.isFailed) return;
     _state = _state.copyWith(streak: 0);
     _feedback('Pas geçildi — seri sıfırlandı.', false);
-    _startRound(keepSession: true);
+    if (_usingV4) {
+      unawaited(_startRoundV4(keepSession: true));
+    } else {
+      _startRound(keepSession: true);
+    }
   }
 
   void submitGuess(String answer) {
@@ -310,17 +370,24 @@ class TransferDetectiveController extends ChangeNotifier {
     if (target == null || _state.isSolved || _state.isFailed) return;
     if (answer.trim().isEmpty) return;
 
-    final resolved = SearchService.resolve(
-      players: Repository.instance.players,
-      answer: answer,
-    );
+    final normalized = SearchService.normalize(answer);
+    final labels = <String>{
+      target.name,
+      target.normalizedName,
+      ...target.aliases,
+      ...target.normalizedAliases,
+    };
+    final accepted = <String>{};
+    for (final label in labels) {
+      final normalizedLabel = SearchService.normalize(label);
+      if (normalizedLabel.isEmpty) continue;
+      accepted.add(normalizedLabel);
 
-    if (resolved.status == ResolveStatus.ambiguous) {
-      _feedback(resolved.message, false);
-      return;
+      final parts = normalizedLabel.split(' ').where((part) => part.isNotEmpty).toList();
+      if (parts.length >= 2) accepted.add(parts.last);
     }
 
-    if (resolved.isFound && resolved.player!.id == target.id) {
+    if (accepted.contains(normalized)) {
       final earned = (_state.roundPoints * _state.streakMultiplier).round();
       final newStreak = _state.streak + 1;
       _state = _state.copyWith(
@@ -350,9 +417,21 @@ class TransferDetectiveController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Player> suggestions(String query) {
+  Future<List<Player>> suggestions(String query) async {
+    if (!_usingV4) {
+      return SearchService.suggestions(
+        players: Repository.instance.players,
+        query: query,
+      );
+    }
+
+    final candidates = await GameDataV4QueryService.instance.searchPlayers(
+      query,
+      limit: 30,
+    );
+
     return SearchService.suggestions(
-      players: Repository.instance.players,
+      players: candidates,
       query: query,
     );
   }
@@ -376,7 +455,7 @@ class TransferDetectiveController extends ChangeNotifier {
   }
 
   String formatFee() {
-    if (_usingRuntimeV3) return '—';
+    if (_usingV4) return '—';
     final fee = _state.transfer?.fee ?? 0;
     return _formatFee(fee);
   }

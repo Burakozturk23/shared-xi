@@ -9,6 +9,13 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# Historical production templates are source-generation inputs, not standalone
+# Flutter library files. Their relative imports are only valid after templating,
+# so they must not participate in the app's analyzer graph.
+analyzer:
+  exclude:
+    - tools/production/step08b26_templates/**
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

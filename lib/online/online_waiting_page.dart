@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'online_mode_catalog.dart';
 import 'room_service.dart';
 import 'online_setup_page.dart';
+import '../widgets/friend_match_invite_button.dart';
 
 /// Host: oda kodu + 2. oyuncu bekleniyor.
 class OnlineWaitingPage extends StatefulWidget {
@@ -78,6 +79,12 @@ class _OnlineWaitingPageState extends State<OnlineWaitingPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Oda bekleniyor'),
+        actions: [
+          FriendMatchInviteButton(
+            mode: widget.mode,
+            roomCode: widget.roomCode,
+          ),
+        ],
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: _leave,

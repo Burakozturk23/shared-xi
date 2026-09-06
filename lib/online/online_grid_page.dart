@@ -7,6 +7,8 @@ import '../repositories/repository.dart';
 import '../theme/app_theme.dart';
 import 'random_grid_match_page.dart';
 import 'online_grid_lobby_page.dart';
+import 'online_mode_catalog.dart';
+import '../widgets/friend_match_invite_button.dart';
 
 class OnlineGridPage extends StatefulWidget {
   final String matchId;
@@ -57,6 +59,15 @@ class _OnlineGridPageState extends State<OnlineGridPage> {
       appBar: AppBar(
         title: Text('${_c.subType.titleTr} · ${_c.matchId}'),
         actions: [
+          if (_c.status == 'waiting')
+            FriendMatchInviteButton(
+              mode: switch (_c.subType) {
+                GridSubType.classic => OnlinePlayMode.gridClassic,
+                GridSubType.random => OnlinePlayMode.gridRandom,
+                GridSubType.reverse => OnlinePlayMode.gridReverse,
+              },
+              roomCode: widget.matchId,
+            ),
           IconButton(
             icon: const Icon(Icons.copy),
             onPressed: () {

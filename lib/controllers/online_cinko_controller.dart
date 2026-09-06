@@ -167,6 +167,7 @@ class OnlineCinkoController extends ChangeNotifier {
     try {
       await ProfileService.recordMatchResult(
         matchId: matchId,
+        mode: 'cinko',
         result: rr,
         opponentName: opponentName,
         opponentUid: opponentUid,

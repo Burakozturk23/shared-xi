@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/match_entity.dart';
 import '../models/player.dart';
-import '../repositories/repository.dart';
-import '../services/game_service.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 
 /// Ortak oyuncu keşfi — sonuç listesi (oyun yok).
 class SharedPlayersResultPage extends StatefulWidget {
@@ -24,21 +23,53 @@ class SharedPlayersResultPage extends StatefulWidget {
 }
 
 class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
-  late List<Player> _all;
+  List<Player> _all = const <Player>[];
+  Map<int, String> _clubNamesById = const <int, String>{};
   String _query = '';
   String _positionFilter = 'Tümü';
+  bool _loading = true;
+  String? _error;
 
   static const _positions = ['Tümü', 'Goalkeeper', 'Defender', 'Midfield', 'Attack'];
 
   @override
   void initState() {
     super.initState();
-    _all = GameService.matchingPlayers(
-      players: Repository.instance.players,
-      entity1: widget.entity1,
-      entity2: widget.entity2,
-    );
-    _all.sort((a, b) => a.name.compareTo(b.name));
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final service = GameDataV4QueryService.instance;
+      final players = await service.matchingPlayers(
+        entity1: widget.entity1,
+        entity2: widget.entity2,
+      );
+      players.sort((a, b) => a.name.compareTo(b.name));
+
+      final clubIds = <int>{};
+      for (final player in players) {
+        clubIds.addAll(player.clubs);
+      }
+      final clubs = await service.clubsByIds(clubIds);
+      final clubNames = <int, String>{
+        for (final club in clubs) club.id: club.name,
+      };
+
+      if (!mounted) return;
+      setState(() {
+        _all = players;
+        _clubNamesById = clubNames;
+        _loading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString();
+      });
+    }
   }
 
   List<Player> get _filtered {
@@ -71,15 +102,8 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
   }
 
   void _showPlayer(Player p) {
-    final clubs = Repository.instance.clubs;
     final clubNames = p.clubs
-        .map((id) {
-          try {
-            return clubs.firstWhere((c) => c.id == id).name;
-          } catch (_) {
-            return null;
-          }
-        })
+        .map((id) => _clubNamesById[id])
         .whereType<String>()
         .toList();
 
@@ -170,6 +194,55 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0F14),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Ortak oyuncular'),
+          centerTitle: true,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0F14),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Ortak oyuncular'),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Ortak oyuncular yüklenemedi\n$_error',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    setState(() {
+                      _loading = true;
+                      _error = null;
+                    });
+                    _load();
+                  },
+                  child: const Text('Tekrar dene'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final list = _filtered;
     return Scaffold(
       backgroundColor: const Color(0xFF0B0F14),

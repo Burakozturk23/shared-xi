@@ -1,4 +1,4 @@
-import java.io.FileInputStream
+﻿import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -34,6 +34,17 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = 36
+
+        // PHASE 15 App Check environment policy:
+        // - Interactive debug/profile builds use Firebase's local debug token.
+        // - Android instrumentation running in CI may receive a dedicated token
+        //   from the CI secret store. The token value is never committed.
+        val appCheckDebugSecret =
+            System.getenv("LINKBALL_APP_CHECK_DEBUG_TOKEN")?.trim().orEmpty()
+        if (appCheckDebugSecret.isNotEmpty()) {
+            testInstrumentationRunnerArguments["firebaseAppCheckDebugSecret"] =
+                appCheckDebugSecret
+        }
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -67,3 +78,4 @@ kotlin {
 flutter {
     source = "../.."
 }
+

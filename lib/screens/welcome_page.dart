@@ -24,6 +24,13 @@ import 'match_pair_page.dart';
 import 'harf11_page.dart';
 import 'club_manager_hub_page.dart';
 import 'coach_xi_difficulty_page.dart';
+import 'privacy_account_page.dart';
+import 'player_profile_page.dart';
+import 'leaderboard_page.dart';
+import 'sign_in_page.dart';
+import 'store_page.dart';
+import 'community_center_page.dart';
+import 'progression_center_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -70,6 +77,81 @@ class WelcomePage extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppTheme.hintColor, fontSize: 14),
                     ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 4,
+                      runSpacing: 2,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PlayerProfilePage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.person_outline_rounded,
+                            size: 18,
+                          ),
+                          label: const Text('Profilim'),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push<void>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const StorePage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.storefront_outlined, size: 18),
+                          label: const Text('Mağaza'),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push<void>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ProgressionCenterPage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.task_alt_rounded, size: 18),
+                          label: const Text('Görevler'),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push<void>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const CommunityCenterPage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.forum_outlined, size: 18),
+                          label: const Text('Topluluk'),
+                        ),
+                        // LINKBALL_08B_PRIVACY_ENTRY
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PrivacyAccountPage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.privacy_tip_outlined,
+                            size: 18,
+                          ),
+                          label: const Text('Gizlilik & Hesap'),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -88,15 +170,24 @@ class WelcomePage extends StatelessWidget {
               _ModeItem(
                 title: 'Online',
                 subtitle: 'Rastgele eşleş veya arkadaşlarınla oyna',
-                requiresAuth: true,
+                requiresPersistentAccount: true,
                 icon: Icons.wifi_rounded,
                 page: OnlineModeHubPage(),
+              ),
+              _ModeItem(
+                title: 'Liderlik Tablosu',
+                subtitle: 'Bugün · Bu Hafta · Global Elo',
+                requiresAuth: true,
+                requiresRepository: false,
+                icon: Icons.emoji_events_rounded,
+                page: LeaderboardPage(),
               ),
               _ModeItem(
                 title: 'Ortak Oyuncu Keşfi',
                 subtitle: 'İki taraf seç, ortakları gör',
                 icon: Icons.travel_explore_rounded,
                 accent: AppTheme.secondaryColor,
+                requiresRepository: false,
                 page: MatchTypeSelectionPage(),
               ),
             ]),
@@ -149,6 +240,7 @@ class WelcomePage extends StatelessWidget {
                 title: 'Transfer Detective',
                 subtitle: 'İpuçlarından transferi çöz',
                 icon: Icons.search_rounded,
+                requiresRepository: false,
                 page: TransferDetectivePage(),
               ),
               _ModeItem(
@@ -306,8 +398,13 @@ class _ModeItem {
   final Color? accent;
   final Widget page;
 
-  /// STEP 07A.9.2: auth-required modes authenticate on demand.
+  /// Guest Firebase auth is enough for legacy/daily flows.
   final bool requiresAuth;
+
+  /// Competitive/social features require a persistent Google-backed account.
+  final bool requiresPersistentAccount;
+
+  final bool requiresRepository;
 
   const _ModeItem({
     required this.title,
@@ -316,6 +413,8 @@ class _ModeItem {
     required this.page,
     this.accent,
     this.requiresAuth = false,
+    this.requiresPersistentAccount = false,
+    this.requiresRepository = true,
   });
 }
 
@@ -343,8 +442,24 @@ class _ModeCard extends StatelessWidget {
           final messenger = ScaffoldMessenger.of(context);
 
           try {
+            if (item.requiresPersistentAccount &&
+                !AuthService.hasPersistentAccount) {
+              final signedIn = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const LinkballSignInPage(allowSkip: false),
+                ),
+              );
+
+              if (!context.mounted) return;
+              if (signedIn != true || !AuthService.hasPersistentAccount) {
+                return;
+              }
+            }
+
             final waits = <Future<void>>[];
-            final needsRepository = !Repository.instance.isInitialized;
+            final needsRepository =
+                item.requiresRepository && !Repository.instance.isInitialized;
 
             if (needsRepository) {
               waits.add(Repository.instance.initialize());

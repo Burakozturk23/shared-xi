@@ -29,6 +29,7 @@ class ClubManagerOnlineService {
   Future<String> createRoom({
     required String playerName,
     required int budgetLink,
+    String? hostUid,
   }) async {
     final name = playerName.trim();
     if (name.isEmpty) throw ArgumentError('İsim boş');
@@ -42,6 +43,8 @@ class ClubManagerOnlineService {
 
     await _room(code).set({
       'host': name,
+      if (hostUid != null && hostUid.trim().isNotEmpty)
+        'hostUid': hostUid.trim(),
       'status': 'waiting',
       'mode': 'clubManager',
       'createdAt': ServerValue.timestamp,

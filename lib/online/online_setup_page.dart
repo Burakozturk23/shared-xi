@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../models/club.dart';
 import '../models/match_entity.dart';
-import '../models/player.dart';
-import '../repositories/repository.dart';
 import '../screens/game_page.dart';
-import '../services/database_service.dart';
-import '../utils/country_names.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 import 'online_mode_catalog.dart';
 import 'room_service.dart';
 
@@ -30,11 +27,11 @@ class OnlineSetupPage extends StatefulWidget {
 
 class _OnlineSetupPageState extends State<OnlineSetupPage> {
   List<Club> _clubs = [];
-  List<Player> _players = [];
   List<String> _countries = [];
   bool _loading = true;
   int? _selectedTeamId;
   String? _selectedCountry;
+
   /// club | country  (clubCountry modunda)
   String _pickSide = 'club';
   String _search = '';
@@ -51,35 +48,24 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
 
   Future<void> _load() async {
     try {
-      final clubs = List<Club>.from(Repository.instance.clubs);
-      final players = List<Player>.from(Repository.instance.players);
-      _applyData(clubs, players);
-    } catch (_) {
-      try {
-        final clubs = await DatabaseService.loadClubs();
-        final players = await DatabaseService.loadPlayers();
-        if (!mounted) return;
-        _applyData(clubs, players);
-      } catch (e) {
-        if (!mounted) return;
-        setState(() => _loading = false);
-        _msg('Veri yüklenemedi: $e');
-      }
+      final query = GameDataV4QueryService.instance;
+      final results = await Future.wait<Object>([
+        query.allClubs(),
+        query.countries(),
+      ]);
+
+      if (!mounted) return;
+      _applyData(results[0] as List<Club>, results[1] as List<String>);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      _msg('Veri yüklenemedi: $e');
     }
   }
 
-  void _applyData(List<Club> clubs, List<Player> players) {
-    final countrySet = <String>{};
-    for (final p in players) {
-      for (final c in p.countries) {
-        final n = CountryNames.canonical(c);
-        if (n.isNotEmpty) countrySet.add(n);
-      }
-    }
-    final countries = countrySet.toList()..sort();
+  void _applyData(List<Club> clubs, List<String> countries) {
     setState(() {
       _clubs = clubs;
-      _players = players;
       _countries = countries;
       _loading = false;
     });
@@ -90,21 +76,13 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
   }
 
-  bool _hasClubClubCommon(int a, int b) {
+  Future<bool> _hasClubClubCommon(int a, int b) async {
     if (a == b) return false;
-    for (final p in _players) {
-      if (p.clubs.contains(a) && p.clubs.contains(b)) return true;
-    }
-    return false;
+    return GameDataV4QueryService.instance.hasClubClubMatch(a, b);
   }
 
-  bool _hasClubCountryCommon(int clubId, String country) {
-    final c = CountryNames.canonical(country);
-    for (final p in _players) {
-      if (!p.clubs.contains(clubId)) continue;
-      if (p.countries.any((x) => CountryNames.canonical(x) == c)) return true;
-    }
-    return false;
+  Future<bool> _hasClubCountryCommon(int clubId, String country) {
+    return GameDataV4QueryService.instance.hasClubCountryMatch(clubId, country);
   }
 
   Future<Map<String, dynamic>?> _playersMap() async {
@@ -128,7 +106,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
           final otherCountry = data['countryName']?.toString();
           if (otherCountry != null &&
               otherCountry.isNotEmpty &&
-              !_hasClubCountryCommon(teamId, otherCountry)) {
+              !await _hasClubCountryCommon(teamId, otherCountry)) {
             _msg('Bu kulübün rakibin ülkesiyle ortak oyuncusu yok.');
             return;
           }
@@ -139,7 +117,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
             _msg('Bu takım dolu. Başka takım dene.');
             return;
           }
-          if (!_hasClubClubCommon(teamId, otherId)) {
+          if (!await _hasClubClubCommon(teamId, otherId)) {
             _msg('Bu takımın rakibin seçimiyle ortak oyuncusu yok.');
             return;
           }
@@ -188,7 +166,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
         }
         final otherClub = int.tryParse(data['teamId']?.toString() ?? '');
         if (otherClub != null &&
-            !_hasClubCountryCommon(otherClub, country)) {
+            !await _hasClubCountryCommon(otherClub, country)) {
           _msg('Bu ülkenin rakibin kulübüyle ortak oyuncusu yok.');
           return;
         }
@@ -256,7 +234,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
           _msg('Rakip henüz ülke seçmedi.');
           return;
         }
-        if (!_hasClubCountryCommon(myClub, oCountry)) {
+        if (!await _hasClubCountryCommon(myClub, oCountry)) {
           _msg('Kesişimde ortak oyuncu yok. Seçimi değiştir.');
           return;
         }
@@ -265,7 +243,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
           _msg('Rakip henüz kulüp seçmedi.');
           return;
         }
-        if (!_hasClubCountryCommon(oClub, myCountry)) {
+        if (!await _hasClubCountryCommon(oClub, myCountry)) {
           _msg('Kesişimde ortak oyuncu yok. Seçimi değiştir.');
           return;
         }
@@ -276,7 +254,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
         _msg('Rakip henüz takım seçmedi.');
         return;
       }
-      if (!_hasClubClubCommon(_selectedTeamId!, otherTeamId)) {
+      if (!await _hasClubClubCommon(_selectedTeamId!, otherTeamId)) {
         _msg('Takımlarınız arasında ortak oyuncu yok.');
         return;
       }
@@ -400,10 +378,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Hazırlık · ${widget.mode.title}'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: _leave,
-        ),
+        leading: IconButton(icon: const Icon(Icons.close), onPressed: _leave),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -445,8 +420,9 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                         const SizedBox(height: 8),
                         ...data.entries.map((e) {
                           final name = e.key;
-                          final pdata =
-                              Map<String, dynamic>.from(e.value as Map);
+                          final pdata = Map<String, dynamic>.from(
+                            e.value as Map,
+                          );
                           final isMe = name == widget.playerName;
                           final ready = pdata['ready'] == true;
                           final hasPick = _isClubCountry
@@ -459,7 +435,8 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                               final t = pdata['pickType']?.toString();
                               if (t == 'club') {
                                 final tid = int.tryParse(
-                                    pdata['teamId']?.toString() ?? '');
+                                  pdata['teamId']?.toString() ?? '',
+                                );
                                 String teamName = 'Kulüp';
                                 if (tid != null) {
                                   for (final c in _clubs) {
@@ -479,7 +456,8 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                               }
                             } else {
                               final tid = int.tryParse(
-                                  pdata['teamId']?.toString() ?? '');
+                                pdata['teamId']?.toString() ?? '',
+                              );
                               String teamName = 'Takım seçilmedi';
                               if (tid != null) {
                                 for (final c in _clubs) {
@@ -495,8 +473,8 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                           } else {
                             subtitle = hasPick
                                 ? (ready
-                                    ? 'Seçti · Hazır'
-                                    : 'Seçti · Hazır değil')
+                                      ? 'Seçti · Hazır'
+                                      : 'Seçti · Hazır değil')
                                 : 'Seçmedi';
                           }
 
@@ -524,8 +502,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                 if (_isClubCountry) ...[
                   const Text(
                     'Sen ne seçeceksin?',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
                   SegmentedButton<String>(
@@ -547,8 +524,7 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                 ] else
                   const Text(
                     'Takımını seç (rakip görmez)',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 const SizedBox(height: 8),
                 TextField(
@@ -578,8 +554,9 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                             return ListTile(
                               dense: true,
                               title: Text(country),
-                              trailing:
-                                  sel ? const Icon(Icons.check_circle) : null,
+                              trailing: sel
+                                  ? const Icon(Icons.check_circle)
+                                  : null,
                               selected: sel,
                               onTap: _gameStarting || _iAmReady
                                   ? null
@@ -596,8 +573,9 @@ class _OnlineSetupPageState extends State<OnlineSetupPage> {
                             return ListTile(
                               dense: true,
                               title: Text(club.name),
-                              trailing:
-                                  sel ? const Icon(Icons.check_circle) : null,
+                              trailing: sel
+                                  ? const Icon(Icons.check_circle)
+                                  : null,
                               selected: sel,
                               onTap: _gameStarting || _iAmReady
                                   ? null

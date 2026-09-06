@@ -1,0 +1,68 @@
+"use strict";
+
+// STEP 08B.2.1 - source-contract checks for account deletion.
+
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const source = fs.readFileSync(
+    path.join(__dirname, "..", "index.js"),
+    "utf8",
+);
+
+function deletionBlock() {
+  const start = source.indexOf(
+      "// LINKBALL_08B_ACCOUNT_DELETION_START",
+  );
+  const end = source.indexOf(
+      "// LINKBALL_08B_ACCOUNT_DELETION_END",
+  );
+
+  assert.notEqual(start, -1);
+  assert.notEqual(end, -1);
+  return source.slice(start, end);
+}
+
+test("deleteMyAccount requires Firebase authentication", () => {
+  const block = deletionBlock();
+
+  assert.ok(block.includes("exports.deleteMyAccount"));
+  assert.ok(
+      block.includes("if (!request.auth || !request.auth.uid)"),
+  );
+});
+
+test("deleteMyAccount removes direct Linkball account data", () => {
+  const block = deletionBlock();
+
+  assert.ok(block.includes('updates["users/" + uid] = null'));
+  assert.ok(
+      block.includes(
+          'updates["dailyScoreSessions/" + uid] = null',
+      ),
+  );
+  assert.ok(
+      block.includes(
+          '"dailyLeaderboard/" + dateKey + "/" + uid',
+      ),
+  );
+  assert.ok(block.includes("LB_ACCOUNT_QUEUE_PATHS"));
+});
+
+test("deleteMyAccount de-identifies shared match records", () => {
+  const block = deletionBlock();
+
+  assert.ok(block.includes("LB_ACCOUNT_SHARED_COLLECTIONS"));
+  assert.ok(block.includes("lbAccountScrubUid"));
+  assert.ok(block.includes('"Silinmiş oyuncu"'));
+  assert.ok(block.includes('"/opponentName"'));
+});
+
+test("deleteMyAccount deletes the Firebase Auth user", () => {
+  const block = deletionBlock();
+
+  assert.ok(block.includes("admin.auth().deleteUser(uid)"));
+  assert.ok(block.includes("auth/user-not-found"));
+});

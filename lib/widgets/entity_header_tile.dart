@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/match_entity.dart';
+import 'club_identity_badge.dart';
+import 'country_badge.dart';
 
 class EntityHeaderTile extends StatelessWidget {
   final MatchEntity entity;
@@ -12,29 +14,17 @@ class EntityHeaderTile extends StatelessWidget {
     return Column(
       children: [
         if (entity.type == MatchEntityType.club)
-          ClipOval(
-            child: Image.network(
-              entity.logoUrl ?? '',
-              height: 52,
-              width: 52,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return const SizedBox(
-                  height: 52,
-                  width: 52,
-                  child: Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.sports_soccer, size: 52);
-              },
-            ),
+          ClubIdentityBadge(
+            clubId: entity.clubId ?? 0,
+            clubName: entity.displayName,
+            size: 52,
           )
         else
-          const Icon(Icons.public, size: 52),
+          CountryBadge(
+            country: entity.countryName ?? entity.displayName,
+            width: 52,
+            height: 34,
+          ),
         const SizedBox(height: 8),
         Text(
           entity.displayName,

@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   cached_network_image: ^3.4.1
   firebase_auth: 6.5.7
+  google_sign_in: ^7.2.0
   cloud_functions: ^6.3.6
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.3
@@ -21,6 +22,7 @@ dependencies:
   firebase_core: 4.13.0
   firebase_database: ^12.4.7
   firebase_app_check: 0.4.6
+  in_app_purchase: 3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -33,15 +35,14 @@ flutter:
   uses-material-design: true
 
   assets:
-    # STEP 07A.10C: explicit production data assets.
-    # Full players.json/clubs.json remain in repo but are excluded
-    # from APK/AAB to avoid shipping redundant full datasets.
-    - assets/data/clubs_min.json
+    # Canonical player/club runtime data is V4 SQLite only.
+    # Small coach/transfer/meta JSON assets remain for legacy side-data.
     - assets/data/coaches_min.json
     - assets/data/famous_transfers.json
     - assets/data/meta.json
-    - assets/data/players_min.json
-    - assets/runtime/
+    - assets/runtime/linkball_game_data_v4.sqlite
+    - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/
     - assets/avatars/
     - assets/badges/
+
