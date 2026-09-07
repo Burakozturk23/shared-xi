@@ -22,6 +22,7 @@ import 'passaparola_page.dart';
 import 'pyramid_page.dart';
 import 'match_pair_page.dart';
 import 'harf11_page.dart';
+import 'futbol_lingo_page.dart';
 import 'club_manager_hub_page.dart';
 import 'coach_xi_difficulty_page.dart';
 import 'privacy_account_page.dart';
@@ -31,6 +32,7 @@ import 'sign_in_page.dart';
 import 'store_page.dart';
 import 'community_center_page.dart';
 import 'progression_center_page.dart';
+import 'kadro_kasasi_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -237,6 +239,13 @@ class WelcomePage extends StatelessWidget {
                 page: CareerPuzzlePage(),
               ),
               _ModeItem(
+                title: 'Kadro Kasası',
+                subtitle: 'Bayrakları aç, gizli takımı çöz',
+                icon: Icons.lock_open_rounded,
+                requiresRepository: false,
+                page: KadroKasasiPage(),
+              ),
+              _ModeItem(
                 title: 'Transfer Detective',
                 subtitle: 'İpuçlarından transferi çöz',
                 icon: Icons.search_rounded,
@@ -295,6 +304,13 @@ class WelcomePage extends StatelessWidget {
             // —— 5. Harf / kelime ——
             _sectionHeader('Harf & kelime'),
             _sliverModeList(const [
+              _ModeItem(
+                title: 'Futbol Lingo',
+                subtitle: 'Kategori seç, futbol kelimesini çöz',
+                icon: Icons.text_fields_rounded,
+                requiresRepository: false,
+                page: FutbolLingoPage(),
+              ),
               _ModeItem(
                 title: 'Passaparola',
                 subtitle: '29 harf · futbol soruları',
