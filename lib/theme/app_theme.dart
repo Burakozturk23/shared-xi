@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'design_tokens.dart';
+import 'ortak_saha_theme.dart';
 
 class AppTheme {
+  static ThemeData get darkTheme => OrtakSahaTheme.dark;
+  static ThemeData get lightTheme => OrtakSahaTheme.light;
+
+  // Compatibility palette for mode interiors pending their 17C review.
+  // New app-shell screens use PitchColors.of(context), never these constants.
   // Brand
   static const Color primaryColor = Color(0xFF2F7BFF);
   static const Color primaryPressed = Color(0xFF1E63DB);
@@ -28,7 +34,7 @@ class AppTheme {
   static const Color dangerColor = Color(0xFFFF5D68);
   static const Color infoColor = Color(0xFF59A8FF);
 
-  static ThemeData get darkTheme {
+  static ThemeData get legacyDarkTheme {
     final scheme = const ColorScheme.dark(
       primary: primaryColor,
       secondary: secondaryColor,
@@ -60,21 +66,12 @@ class AppTheme {
           fontWeight: FontWeight.w800,
           letterSpacing: -0.35,
         ),
-        titleLarge: TextStyle(
-          color: textColor,
-          fontWeight: FontWeight.w700,
-        ),
-        titleMedium: TextStyle(
-          color: textColor,
-          fontWeight: FontWeight.w700,
-        ),
+        titleLarge: TextStyle(color: textColor, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(color: textColor, fontWeight: FontWeight.w700),
         bodyLarge: TextStyle(color: textColor),
         bodyMedium: TextStyle(color: secondaryTextColor),
         bodySmall: TextStyle(color: hintColor),
-        labelLarge: TextStyle(
-          color: textColor,
-          fontWeight: FontWeight.w700,
-        ),
+        labelLarge: TextStyle(color: textColor, fontWeight: FontWeight.w700),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: backgroundColor,

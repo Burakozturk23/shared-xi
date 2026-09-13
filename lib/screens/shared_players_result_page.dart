@@ -3,19 +3,27 @@ import 'package:flutter/material.dart';
 import '../models/match_entity.dart';
 import '../models/player.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
+import '../services/search_service.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/entity_header_tile.dart';
+import '../widgets/pitch_ui.dart';
 
-/// Ortak oyuncu keşfi — sonuç listesi (oyun yok).
+typedef SharedPlayersLoader =
+    Future<(List<Player>, Map<int, String>)> Function();
+
+/// Discovery remains read-only; country matching retains V4 nationality semantics.
 class SharedPlayersResultPage extends StatefulWidget {
-  final MatchEntity entity1;
-  final MatchEntity entity2;
-  final String? titleOverride;
-
   const SharedPlayersResultPage({
     super.key,
     required this.entity1,
     required this.entity2,
     this.titleOverride,
+    this.resultLoader,
   });
+  final MatchEntity entity1, entity2;
+  final String? titleOverride;
+  final SharedPlayersLoader? resultLoader;
 
   @override
   State<SharedPlayersResultPage> createState() =>
@@ -23,14 +31,18 @@ class SharedPlayersResultPage extends StatefulWidget {
 }
 
 class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
-  List<Player> _all = const <Player>[];
-  Map<int, String> _clubNamesById = const <int, String>{};
-  String _query = '';
-  String _positionFilter = 'Tümü';
-  bool _loading = true;
-  String? _error;
-
-  static const _positions = ['Tümü', 'Goalkeeper', 'Defender', 'Midfield', 'Attack'];
+  List<Player> _all = [];
+  Map<int, String> _clubNamesById = {};
+  final _search = TextEditingController();
+  String _position = 'Tümü';
+  bool _loading = true, _failed = false;
+  static const _positions = {
+    'Tümü': 'Tümü',
+    'Goalkeeper': 'Kaleci',
+    'Defender': 'Defans',
+    'Midfield': 'Orta saha',
+    'Attack': 'Hücum',
+  };
 
   @override
   void initState() {
@@ -38,342 +50,268 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
     _load();
   }
 
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  Future<(List<Player>, Map<int, String>)> _defaultLoad() async {
+    final service = GameDataV4QueryService.instance;
+    final players = await service.matchingPlayers(
+      entity1: widget.entity1,
+      entity2: widget.entity2,
+    );
+    final ids = <int>{for (final player in players) ...player.clubs};
+    final clubs = await service.clubsByIds(ids);
+    return (players, {for (final club in clubs) club.id: club.name});
+  }
+
   Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _failed = false;
+    });
     try {
-      final service = GameDataV4QueryService.instance;
-      final players = await service.matchingPlayers(
-        entity1: widget.entity1,
-        entity2: widget.entity2,
-      );
-      players.sort((a, b) => a.name.compareTo(b.name));
-
-      final clubIds = <int>{};
-      for (final player in players) {
-        clubIds.addAll(player.clubs);
+      final result = await (widget.resultLoader ?? _defaultLoad)();
+      final sorted = List<Player>.of(result.$1)
+        ..sort((a, b) => a.name.compareTo(b.name));
+      if (!mounted) return;
+      setState(() {
+        _all = sorted;
+        _clubNamesById = result.$2;
+        _loading = false;
+      });
+    } catch (error, stack) {
+      debugPrint('Shared players: $error\n$stack');
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _failed = true;
+        });
       }
-      final clubs = await service.clubsByIds(clubIds);
-      final clubNames = <int, String>{
-        for (final club in clubs) club.id: club.name,
-      };
-
-      if (!mounted) return;
-      setState(() {
-        _all = players;
-        _clubNamesById = clubNames;
-        _loading = false;
-        _error = null;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _error = e.toString();
-      });
     }
   }
 
-  List<Player> get _filtered {
-    var list = _all;
-    if (_positionFilter != 'Tümü') {
-      list = list
-          .where((p) =>
-              p.position.toLowerCase().contains(_positionFilter.toLowerCase()) ||
-              p.detailedPosition
-                  .toLowerCase()
-                  .contains(_positionFilter.toLowerCase()))
-          .toList();
-    }
-    if (_query.trim().isNotEmpty) {
-      final q = _query.trim().toLowerCase();
-      list = list
-          .where((p) =>
-              p.name.toLowerCase().contains(q) ||
-              p.countryLabel.toLowerCase().contains(q))
-          .toList();
-    }
-    return list;
-  }
+  List<Player> get _filtered => _all.where((p) {
+    final position =
+        _position == 'Tümü' ||
+        p.position.toLowerCase().contains(_position.toLowerCase()) ||
+        p.detailedPosition.toLowerCase().contains(_position.toLowerCase());
+    return position &&
+        (SearchService.contains(p.name, _search.text) ||
+            SearchService.contains(p.countryLabel, _search.text));
+  }).toList();
 
-  String get _header {
-    if (widget.titleOverride != null && widget.titleOverride!.isNotEmpty) {
-      return widget.titleOverride!;
-    }
-    return '${widget.entity1.displayName} × ${widget.entity2.displayName}';
-  }
+  String _positionLabel(Player p) =>
+      _positions[p.position] ??
+      (p.detailedPosition.isNotEmpty ? p.detailedPosition : p.position);
 
-  void _showPlayer(Player p) {
-    final clubNames = p.clubs
+  void _clearFilters() => setState(() {
+    _search.clear();
+    _position = 'Tümü';
+  });
+
+  void _showPlayer(Player player) {
+    final clubs = player.clubs
         .map((id) => _clubNamesById[id])
         .whereType<String>()
         .toList();
-
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
-      backgroundColor: const Color(0xFF12181F),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * .85,
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(99),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      player.name,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ),
-                ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Kapat',
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
               ),
+              const SizedBox(height: 8),
               Text(
-                p.name,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                ),
+                '${_positionLabel(player)} · ${player.countryLabel}',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-              const SizedBox(height: 6),
-              Text(
-                [
-                  if (p.detailedPosition.isNotEmpty)
-                    p.detailedPosition
-                  else
-                    p.position,
-                  p.countryLabel,
-                ].where((e) => e.trim().isNotEmpty).join(' · '),
-                style: const TextStyle(color: Colors.white54, fontSize: 13),
-              ),
-              if (p.careerGoals > 0 || p.peakMarketValue > 0) ...[
-                const SizedBox(height: 10),
+              if (player.careerGoals > 0 || player.peakMarketValue > 0) ...[
+                const SizedBox(height: 16),
                 Text(
                   [
-                    if (p.careerGoals > 0) '${p.careerGoals} kariyer golü',
-                    if (p.peakMarketValue > 0)
-                      'Peak: ${(p.peakMarketValue / 1e6).toStringAsFixed(1)}M',
-                  ].join(' · '),
-                  style: const TextStyle(color: Colors.amber, fontSize: 12),
+                    if (player.careerGoals > 0)
+                      '${player.careerGoals} kariyer golü',
+                    if (player.peakMarketValue > 0)
+                      'En yüksek piyasa değeri: ${(player.peakMarketValue / 1e6).toStringAsFixed(1)} M',
+                  ].join('\n'),
                 ),
               ],
-              if (clubNames.isNotEmpty) ...[
-                const SizedBox(height: 14),
-                const Text(
-                  'Kulüpler',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white70,
-                  ),
-                ),
-                const SizedBox(height: 8),
+              if (clubs.isNotEmpty) ...[
+                const PitchSectionTitle('Forma giydiği kulüpler'),
                 Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: clubNames
-                      .map(
-                        (n) => Chip(
-                          label: Text(n, style: const TextStyle(fontSize: 12)),
-                          backgroundColor: Colors.white10,
-                          side: BorderSide.none,
-                        ),
-                      )
-                      .toList(),
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [for (final club in clubs) Chip(label: Text(club))],
                 ),
               ],
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF0B0F14),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text('Ortak oyuncular'),
-          centerTitle: true,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_error != null) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF0B0F14),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text('Ortak oyuncular'),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Ortak oyuncular yüklenemedi\n$_error',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    setState(() {
-                      _loading = true;
-                      _error = null;
-                    });
-                    _load();
-                  },
-                  child: const Text('Tekrar dene'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
     final list = _filtered;
+    final p = PitchColors.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0F14),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text('Ortak oyuncular'),
-        centerTitle: true,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _header,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_all.length} ortak oyuncu',
-                  style: const TextStyle(
-                    color: Color(0xFF00E676),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'İsim veya ülke ara…',
-                    hintStyle: const TextStyle(color: Colors.white38),
-                    prefixIcon: const Icon(Icons.search, color: Colors.white54),
-                    filled: true,
-                    fillColor: Colors.white10,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _query = v),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 36,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (final pos in _positions) ...[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(
-                              pos == 'Goalkeeper'
-                                  ? 'GK'
-                                  : pos == 'Defender'
-                                      ? 'DEF'
-                                      : pos == 'Midfield'
-                                          ? 'MID'
-                                          : pos == 'Attack'
-                                              ? 'ATT'
-                                              : pos,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            selected: _positionFilter == pos,
-                            onSelected: (_) =>
-                                setState(() => _positionFilter = pos),
+      appBar: AppBar(title: const Text('Ortak oyuncular')),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _failed
+          ? EmptyState(
+              title: 'Oyuncular yüklenemedi',
+              icon: Icons.cloud_off_outlined,
+              message: 'Bir kez daha deneyebilirsin.',
+              actionLabel: 'Tekrar dene',
+              onAction: _load,
+            )
+          : CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        PitchPanel(
+                          child: Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: EntityHeaderTile(
+                                      entity: widget.entity1,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Icon(
+                                      Icons.join_inner_rounded,
+                                      color: p.accent,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: EntityHeaderTile(
+                                      entity: widget.entity2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                '${_all.length} ortak oyuncu',
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(color: p.accent),
+                              ),
+                              if (widget.titleOverride?.isNotEmpty ??
+                                  false) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.titleOverride!,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        TextField(
+                          controller: _search,
+                          onChanged: (_) => setState(() {}),
+                          decoration: const InputDecoration(
+                            hintText: 'İsim veya ülke ara',
+                            prefixIcon: Icon(Icons.search_rounded),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (final entry in _positions.entries)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: ChoiceChip(
+                                    label: Text(entry.value),
+                                    selected: _position == entry.key,
+                                    onSelected: (_) =>
+                                        setState(() => _position = entry.key),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ],
-                    ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: list.isEmpty
-                ? Center(
-                    child: Text(
-                      _all.isEmpty
-                          ? 'Bu eşleşmede kayıtlı ortak oyuncu yok.'
-                          : 'Filtreye uyan oyuncu yok.',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white54),
+                if (list.isEmpty)
+                  SliverToBoxAdapter(
+                    child: EmptyState(
+                      icon: Icons.person_search_outlined,
+                      title: _all.isEmpty
+                          ? 'Henüz ortak oyuncu yok'
+                          : 'Filtreye uyan oyuncu yok',
+                      message: _all.isEmpty
+                          ? 'Bu eşleşme için kayıtlı bir oyuncu bulunamadı. Başka iki taraf seçebilirsin.'
+                          : 'Aramayı veya mevki filtresini değiştir.',
+                      actionLabel: _all.isEmpty
+                          ? 'Eşleşmeyi değiştir'
+                          : 'Filtreleri temizle',
+                      onAction: _all.isEmpty
+                          ? () => Navigator.maybePop(context)
+                          : _clearFilters,
                     ),
                   )
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
-                    itemCount: list.length,
-                    separatorBuilder: (_, __) =>
-                        const Divider(height: 1, color: Colors.white10),
-                    itemBuilder: (context, i) {
-                      final p = list[i];
-                      final pos = p.detailedPosition.isNotEmpty
-                          ? p.detailedPosition
-                          : p.position;
-                      return ListTile(
-                        title: Text(
-                          p.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '$pos · ${p.countryLabel}',
-                          style: const TextStyle(
-                            color: Colors.white54,
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: const Icon(
-                          Icons.info_outline,
-                          color: Colors.white38,
-                          size: 20,
-                        ),
-                        onTap: () => _showPlayer(p),
-                      );
-                    },
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                    sliver: SliverList.separated(
+                      itemCount: list.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final player = list[index];
+                        return PitchRow(
+                          title: player.name,
+                          subtitle:
+                              '${_positionLabel(player)} · ${player.countryLabel}',
+                          icon: Icons.person_outline_rounded,
+                          onTap: () => _showPlayer(player),
+                        );
+                      },
+                    ),
                   ),
-          ),
-        ],
-      ),
+              ],
+            ),
     );
   }
 }

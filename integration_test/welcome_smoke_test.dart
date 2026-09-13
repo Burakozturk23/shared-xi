@@ -1,31 +1,26 @@
-// STEP 07B.3
-//
-// Device-level deterministic integration smoke.
-//
-// Production SharedXIApp boot intentionally includes Runtime V3 and platform
-// services. The release startup path is already covered by the dedicated
-// production smoke scripts. This CI integration baseline verifies that the
-// real WelcomePage renders correctly on an Android device/emulator without
-// introducing Firebase/network timing into the test.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-
 import 'package:shared_xi/screens/welcome_page.dart';
+import 'package:shared_xi/theme/app_theme.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
-  testWidgets('Linkball WelcomePage renders on Android device', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: WelcomePage()));
-    await tester.pump(const Duration(milliseconds: 250));
-
+  testWidgets('Linkball core navigation renders on Android', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const WelcomePage(observeAuth: false),
+      ),
+    );
+    await tester.pumpAndSettle();
     expect(find.text('LINKBALL'), findsOneWidget);
-    expect(find.text('Ortak oyuncu evreni'), findsOneWidget);
-    expect(find.text('HEMEN OYNA'), findsOneWidget);
-    expect(find.byIcon(Icons.sports_soccer), findsOneWidget);
+    expect(find.byType(NavigationDestination), findsNWidgets(4));
+    await tester.tap(find.text('Oyunlar').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'lingo');
+    await tester.pumpAndSettle();
+    expect(find.text('Futbol Lingo'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

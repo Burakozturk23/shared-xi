@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- System launch only: Flutter removes this at its first ready frame. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:statusBarColor">@color/linkball_splash_background</item>
+        <item name="android:navigationBarColor">@color/linkball_splash_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSplashScreenBackground">@color/linkball_splash_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/linkball_splash</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/linkball_branding</item>
+        <item name="android:windowSplashScreenBehavior">icon_preferred</item>
+    </style>
+</resources>

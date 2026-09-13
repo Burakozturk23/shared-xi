@@ -1,0 +1,14 @@
+Satoshi — Indian Type Foundry.
+Copyright 2017–2021 Indian Type Foundry. All rights reserved.
+Font sürümü: 2.000. Orijinal değişken font dosyası korunmuştur.
+
+Yayıncı ve asıl font sayfası:
+https://www.fontshare.com/fonts/satoshi
+Fontun kendi lisans bağlantısı:
+https://fontshare.com/terms
+
+Bu pakette kullanılan dosyanın erişilebilir kopyası:
+https://github.com/techblitzdev/TechBlitz/blob/main/src/app/styles/fonts/satoshi/Satoshi-Variable.ttf
+Git blob SHA: 976e85cb58307b184289e3cdb11ddfd3a530a3e3
+
+Satoshi, Inter için eklenen SIL OFL dosyasının kapsamına girmez. Satoshi ve Inter ayrı yayıncı ve lisans bilgilerine sahiptir.
