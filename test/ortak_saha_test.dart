@@ -213,7 +213,7 @@ void main() {
             const WelcomePage(observeAuth: false),
             OnboardingPage(onComplete: () {}),
             const AppSettingsPage(),
-            const GamesCatalogPage(),
+            const Scaffold(body: GamesCatalogPage()),
             GamesCatalogPage(group: GameCatalog.groups.first),
           ]) {
             await frame(tester, page, prefs, size: size, scale: scale);
@@ -400,7 +400,7 @@ void main() {
       final suffix = dark ? 'dark' : 'light';
       for (final (name, page) in <(String, Widget)>[
         ('home', const WelcomePage(observeAuth: false)),
-        ('games', const GamesCatalogPage()),
+        ('games', const Scaffold(body: GamesCatalogPage())),
         ('squad-group', GamesCatalogPage(group: GameCatalog.groups.first)),
         ('onboarding', OnboardingPage(onComplete: () {})),
         (

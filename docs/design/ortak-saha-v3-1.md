@@ -100,8 +100,8 @@ Firebase Functions and authentication identities are not migrated by this change
 
 ## Verification
 
-Initial integration result: **11 tests passed locally**; the repository's analyzer command passed with
-no errors (pre-existing warnings/info remain). Android resource XML was parsed
+Current local result: **15 tests passed**; the repository's analyzer command passed with
+no errors (97 pre-existing warnings/info remain). Android resource XML was parsed
 successfully; this is not a replacement for Android compilation or device review.
 
 | Dark home | Light home | Onboarding | Discovery |
