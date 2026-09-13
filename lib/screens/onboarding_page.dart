@@ -68,119 +68,127 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final p = PitchColors.of(context);
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 16, 0),
-              child: Row(
-                children: [
-                  const Expanded(child: BrandWordmark()),
-                  TextButton(
-                    onPressed: _saving ? null : _finish,
-                    child: const Text('Atla'),
-                  ),
-                ],
+    return PopScope(
+      canPop: _step == 0 && !_saving,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && !_saving && _step > 0) _go(_step - 1);
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 16, 0),
+                child: Row(
+                  children: [
+                    const Expanded(child: BrandWordmark()),
+                    TextButton(
+                      onPressed: _saving ? null : _finish,
+                      child: const Text('Atla'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pages,
-                itemCount: 4,
-                onPageChanged: (index) => setState(() => _step = index),
-                itemBuilder: (context, index) => SingleChildScrollView(
-                  key: ValueKey('onboarding-$index'),
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'FUTBOLUN ORTAK NOKTASI',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      const SizedBox(height: 24),
-                      _Illustration(step: index),
-                      const SizedBox(height: 32),
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          _titles[index],
-                          style: Theme.of(context).textTheme.headlineMedium,
+              Expanded(
+                child: PageView.builder(
+                  controller: _pages,
+                  itemCount: 4,
+                  onPageChanged: (index) => setState(() => _step = index),
+                  itemBuilder: (context, index) => SingleChildScrollView(
+                    key: ValueKey('onboarding-$index'),
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'FUTBOLUN ORTAK NOKTASI',
+                          style: Theme.of(context).textTheme.labelMedium,
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        _bodies[index],
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyLarge?.copyWith(color: p.muted),
-                      ),
-                    ],
+                        const SizedBox(height: 24),
+                        _Illustration(step: index),
+                        const SizedBox(height: 32),
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            _titles[index],
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          _bodies[index],
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(color: p.muted),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: _step > 0
-                        ? IconButton(
-                            tooltip: 'Önceki adım',
-                            onPressed: _saving ? null : () => _go(_step - 1),
-                            icon: const Icon(Icons.arrow_back_rounded),
-                          )
-                        : null,
-                  ),
-                  Expanded(
-                    child: Semantics(
-                      label: 'Tanıtım adımı',
-                      value: '${_step + 1} / 4',
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          for (var i = 0; i < 4; i++)
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              width: i == _step ? 16 : 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: i == _step ? p.accent : p.border,
-                                borderRadius: BorderRadius.circular(4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: _step > 0
+                          ? IconButton(
+                              tooltip: 'Önceki adım',
+                              onPressed: _saving ? null : () => _go(_step - 1),
+                              icon: const Icon(Icons.arrow_back_rounded),
+                            )
+                          : null,
+                    ),
+                    Expanded(
+                      child: Semantics(
+                        label: 'Tanıtım adımı',
+                        value: '${_step + 1} / 4',
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (var i = 0; i < 4; i++)
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                width: i == _step ? 16 : 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: i == _step ? p.accent : p.border,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
+                    const SizedBox(width: 48),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  PitchAction(
-                    label: _step == 3 ? 'Başlayalım' : 'Devam',
-                    busy: _saving,
-                    onPressed: _step == 3 ? _finish : () => _go(_step + 1),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Hesabını daha sonra bağlayabilirsin.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    PitchAction(
+                      label: _step == 3 ? 'Başlayalım' : 'Devam',
+                      busy: _saving,
+                      onPressed: _step == 3 ? _finish : () => _go(_step + 1),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Hesabını daha sonra bağlayabilirsin.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

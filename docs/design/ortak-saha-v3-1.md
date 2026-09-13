@@ -10,7 +10,10 @@ The approved Cyan Lime / Midnight Pitch direction is now implemented in Flutter'
 - Daily matches and shared-player discovery are the two primary home actions.
 - Four skippable onboarding steps: the common-player idea, daily games,
   club/country discovery, and the wider game catalog. Settings can replay them.
-- All 20 existing catalog entries remain available, with category and text search.
+  Android back revisits the previous step; on the first replay step it returns to
+  Settings. Back does not mark onboarding complete.
+- All 20 existing catalog entries remain available, with six group cards and
+  global/local text search. Vs Bot has a standalone card.
   Existing repository/authentication/persistent-account entry requirements remain.
 - A shared discovery flow handles club–club and club–country, searchable sheets,
   distinct club selection, popular pairs, player filters and career details.
@@ -22,6 +25,27 @@ The approved Cyan Lime / Midnight Pitch direction is now implemented in Flutter'
   Rejected or ambiguous input stays editable; a newly accepted answer clears it.
 - Profile statistics, nicknames, avatars, friends, missions, store, community,
   safety and privacy/account routes remain reachable.
+
+## Accepted game groups — 2026-09-13
+
+The following membership and order come from the user's explicit grouping.
+"Letter" refers to Letter 11 and "passa" to Passaparola. Group labels are the
+navigation copy; they do not change a game's mechanics or its access requirements.
+
+| Group | Games, in order |
+| --- | --- |
+| Kadro & Yönetim | Club Manager, Squad Challenge, Teknik Direktör XI, Kadro Kasası, Letter 11 |
+| Kariyer & Oyuncu | Career Puzzle, Transfer Detective, Mystery Player, Chain, Fake Club |
+| Harf & Kelime | Futbol Lingo, Passaparola |
+| Hız & Eşleştirme | Burst, Pyramid, Matching |
+| Seçim & Sıralama | This or That?, Higher or Lower, Blind Ranking |
+| Hikâye | Story Mode |
+| Standalone | Vs Bot |
+
+Oyunlar opens with Vs Bot and the six group cards. A group opens its own list;
+Android/app-bar back returns to the group overview. The overview search covers
+all 20 games, including Vs Bot; search within a group is limited to that group.
+The shell retains the catalog's search and scroll position between tab visits.
 
 ## Theme and brand
 
@@ -64,9 +88,19 @@ Returning to the shell restores the chosen theme. Core discovery, calendar,
 daily play, profile and settings use the new theme. Backend rules, game data,
 Firebase Functions and authentication identities are not migrated by this change.
 
+## 17B status
+
+- **Home visual smoke: PASS, user-confirmed on the Android emulator** on
+  2026-09-13. The approved mark, primary cards, palette and four destinations are
+  visible in the supplied screenshot.
+- Native cold-start appearance, live Google sign-in and live daily play still
+  need device verification; the home screenshot does not verify those paths.
+- Individual mode internals and their design migration remain **17C**, to begin
+  when the user asks to enter that phase.
+
 ## Verification
 
-Local result: **11 tests passed**; the repository's analyzer command passed with
+Initial integration result: **11 tests passed locally**; the repository's analyzer command passed with
 no errors (pre-existing warnings/info remain). Android resource XML was parsed
 successfully; this is not a replacement for Android compilation or device review.
 
@@ -78,7 +112,10 @@ The widget suite checks onboarding navigation/skip, preference persistence,
 catalog entry requirements, search/selection/error recovery, result filters,
 wrong-answer retention, route appearance inheritance and phone/landscape layouts
 at normal and 200% text size. Visual captures use controlled test data, not live
-fixtures or account statistics.
+fixtures or account statistics. Follow-up coverage checks the approved group
+membership/order, group-local/global search, Android back through groups and
+onboarding, live theme changes, and relaunch after completing onboarding. The
+latest result is reported by the integration pull request's CI checks.
 
 ```sh
 flutter pub get
@@ -92,7 +129,9 @@ Review captures are written to `.dart_tool/ortak_saha_qa/`. PR CI runs the exist
 Flutter/Functions quality gates, including Android debug compilation. CI workflows
 are unchanged; downloadable APK publishing is not part of this integration.
 The local verification runtime has Flutter 3.47.4 / Dart 3.13.3 and no
-Android SDK; Android compilation must be confirmed by CI. The four lockfile
+Android SDK; the initial Android debug build passed in
+[GitHub CI](https://github.com/Burakozturk23/shared-xi/actions/runs/34775112482).
+The four lockfile
 updates are Flutter's pinned test/support dependencies, not new product packages.
 
 Before release, verify native icon masks, light/dark cold starts, system bars and

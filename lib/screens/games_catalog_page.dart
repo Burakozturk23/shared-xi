@@ -2,39 +2,54 @@ import 'package:flutter/material.dart';
 
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
+import '../app/route_appearance.dart';
 import '../services/search_service.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/empty_state.dart';
 
 class GamesCatalogPage extends StatefulWidget {
-  const GamesCatalogPage({super.key});
+  const GamesCatalogPage({super.key, this.group});
+  final GameGroup? group;
+
   @override
   State<GamesCatalogPage> createState() => _GamesCatalogPageState();
 }
 
 class _GamesCatalogPageState extends State<GamesCatalogPage> {
   final _search = TextEditingController();
-  String _category = 'Tümü';
+
   @override
   void dispose() {
     _search.dispose();
     super.dispose();
   }
 
+  Widget _gameRow(GameEntry game) => PitchRow(
+    title: game.title,
+    subtitle: game.subtitle,
+    icon: game.icon,
+    highlight: true,
+    onTap: () => GameLauncher.open(context, game),
+  );
+
   @override
   Widget build(BuildContext context) {
-    final filtered = GameCatalog.games
+    final group = widget.group;
+    final query = _search.text.trim();
+    final entries = GameCatalog.games
+        .where((game) => group == null || game.category == group.title)
+        .toList();
+    final filtered = entries
         .where(
-          (g) =>
-              (_category == 'Tümü' || g.category == _category) &&
-              SearchService.contains(
-                '${g.title} ${g.subtitle} ${g.category}',
-                _search.text,
-              ),
+          (game) => SearchService.contains(
+            '${game.title} ${game.subtitle} ${game.category}',
+            query,
+          ),
         )
         .toList();
-    return CustomScrollView(
-      key: const PageStorageKey('games'),
+    final overview = group == null && query.isEmpty;
+    final content = CustomScrollView(
+      key: PageStorageKey('games-${group?.title ?? 'all'}'),
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
@@ -43,12 +58,14 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Futbolu bildiğin gibi oyna.',
+                  group?.subtitle ?? 'Futbolu bildiğin gibi oyna.',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Bulmacalar, kelimeler ve kendi kadron.',
+                  group == null
+                      ? 'Bir gruba göz at veya oyun ara.'
+                      : '${entries.length} oyun seni bekliyor.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 24),
@@ -56,7 +73,7 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                   controller: _search,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: 'Oyun ara',
+                    hintText: group == null ? 'Oyun ara' : 'Bu grupta ara',
                     prefixIcon: const Icon(Icons.search_rounded),
                     suffixIcon: _search.text.isEmpty
                         ? null
@@ -67,63 +84,74 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
               ],
             ),
           ),
         ),
-        SliverToBoxAdapter(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+        if (overview) ...[
+          SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              children: [
-                for (final category in GameCatalog.categories)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(category),
-                      selected: category == _category,
-                      onSelected: (_) => setState(() => _category = category),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _gameRow(GameCatalog.vsBot),
+                  const PitchSectionTitle('Oyun grupları'),
+                ],
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            sliver: SliverList.separated(
+              itemCount: GameCatalog.groups.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final group = GameCatalog.groups[index];
+                final count = GameCatalog.games
+                    .where((game) => game.category == group.title)
+                    .length;
+                return PitchRow(
+                  title: group.title,
+                  subtitle: '$count oyun · ${group.subtitle}',
+                  icon: group.icon,
+                  highlight: true,
+                  onTap: () => Navigator.of(context).push(
+                    LinkballRoute(
+                      builder: (_) => GamesCatalogPage(group: group),
                     ),
                   ),
-              ],
+                );
+              },
             ),
           ),
-        ),
-        if (filtered.isEmpty)
+        ] else if (filtered.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
             child: EmptyState(
               icon: Icons.search_off_rounded,
               title: 'Oyun bulunamadı',
-              message: 'Başka bir ad veya kategori deneyebilirsin.',
-              actionLabel: 'Tüm oyunları göster',
-              onAction: () => setState(() {
-                _search.clear();
-                _category = 'Tümü';
-              }),
+              message: 'Başka bir oyun adı deneyebilirsin.',
+              actionLabel: 'Aramayı temizle',
+              onAction: () => setState(_search.clear),
             ),
           )
         else
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             sliver: SliverList.separated(
               itemCount: filtered.length,
               separatorBuilder: (_, _) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final game = filtered[index];
-                return PitchRow(
-                  title: game.title,
-                  subtitle: game.subtitle,
-                  icon: game.icon,
-                  highlight: true,
-                  onTap: () => GameLauncher.open(context, game),
-                );
-              },
+              itemBuilder: (_, index) => _gameRow(filtered[index]),
             ),
           ),
       ],
+    );
+    if (group == null) return content;
+    return Scaffold(
+      appBar: AppBar(title: Text(group.title)),
+      body: SafeArea(top: false, child: content),
     );
   }
 }

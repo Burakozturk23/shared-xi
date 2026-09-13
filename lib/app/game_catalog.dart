@@ -45,6 +45,17 @@ class GameEntry {
       modern;
 }
 
+@immutable
+class GameGroup {
+  const GameGroup({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
+  final String title, subtitle;
+  final IconData icon;
+}
+
 class GameCatalog {
   static const daily = GameEntry(
     title: 'Günün Maçları',
@@ -62,72 +73,97 @@ class GameCatalog {
     requiresRepository: false,
     modern: true,
   );
-  static const categories = [
-    'Tümü',
-    'Solo',
-    'Bulmaca',
-    'Klasik',
-    'Harf & Kelime',
-    'Hikaye',
+  // User-approved groups, in their requested order. Vs Bot stands on its own.
+  static const groups = <GameGroup>[
+    GameGroup(
+      title: 'Kadro & Yönetim',
+      subtitle: 'Kadronu kur, takımları çöz.',
+      icon: Icons.groups_outlined,
+    ),
+    GameGroup(
+      title: 'Kariyer & Oyuncu',
+      subtitle: 'Futbolun kariyer izlerini takip et.',
+      icon: Icons.route_outlined,
+    ),
+    GameGroup(
+      title: 'Harf & Kelime',
+      subtitle: 'Futbol bilgini harflere dök.',
+      icon: Icons.text_fields_rounded,
+    ),
+    GameGroup(
+      title: 'Hız & Eşleştirme',
+      subtitle: 'Bağlantıları kur, eşleşmeleri bul.',
+      icon: Icons.bolt_outlined,
+    ),
+    GameGroup(
+      title: 'Seçim & Sıralama',
+      subtitle: 'Kararını ver, sıralamanı oluştur.',
+      icon: Icons.compare_arrows_rounded,
+    ),
+    GameGroup(
+      title: 'Hikâye',
+      subtitle: 'Futbolun unutulmaz anlarına katıl.',
+      icon: Icons.auto_stories_outlined,
+    ),
   ];
+  static const vsBot = GameEntry(
+    title: 'Vs Bot',
+    subtitle: 'Loto · Grid · Çinko · Beşler',
+    icon: Icons.smart_toy_outlined,
+    page: VsBotModeSelectionPage(),
+  );
   // Preserve the readiness/account contract of every pre-existing Welcome entry.
   static const games = <GameEntry>[
-    GameEntry(
-      title: 'Vs Bot',
-      subtitle: 'Loto · Grid · Çinko · Beşler',
-      icon: Icons.smart_toy_outlined,
-      page: VsBotModeSelectionPage(),
-      category: 'Solo',
-    ),
+    vsBot,
     GameEntry(
       title: 'Club Manager',
       subtitle: 'Bütçe, kadro ve maç yönetimi',
       icon: Icons.badge_outlined,
       page: ClubManagerHubPage(),
-      category: 'Solo',
+      category: 'Kadro & Yönetim',
     ),
     GameEntry(
       title: 'Squad Challenge',
       subtitle: 'Tema seç, kadro kur, yıldız kazan',
       icon: Icons.groups_outlined,
       page: BuildXiThemeSelectionPage(),
-      category: 'Solo',
-    ),
-    GameEntry(
-      title: 'Burst',
-      subtitle: 'Hızlı futbol bilgisi oyunları',
-      icon: Icons.bolt_outlined,
-      page: EndlessModeSelectionPage(),
-      category: 'Solo',
+      category: 'Kadro & Yönetim',
     ),
     GameEntry(
       title: 'Teknik Direktör XI',
       subtitle: 'TD seç, onun kulüplerinden 11 kur',
       icon: Icons.sports_outlined,
       page: CoachXiDifficultyPage(),
-      category: 'Solo',
-    ),
-    GameEntry(
-      title: 'Career Puzzle',
-      subtitle: 'Kariyer rotasını doğru sırala',
-      icon: Icons.route_outlined,
-      page: CareerPuzzlePage(),
-      category: 'Bulmaca',
+      category: 'Kadro & Yönetim',
     ),
     GameEntry(
       title: 'Kadro Kasası',
       subtitle: 'Bayrakları aç, gizli takımı çöz',
       icon: Icons.lock_open_outlined,
       page: KadroKasasiPage(),
-      category: 'Bulmaca',
+      category: 'Kadro & Yönetim',
       requiresRepository: false,
+    ),
+    GameEntry(
+      title: 'Letter 11',
+      subtitle: '11 harf, 11 oyuncu',
+      icon: Icons.pin_outlined,
+      page: Harf11Page(),
+      category: 'Kadro & Yönetim',
+    ),
+    GameEntry(
+      title: 'Career Puzzle',
+      subtitle: 'Kariyer rotasını doğru sırala',
+      icon: Icons.route_outlined,
+      page: CareerPuzzlePage(),
+      category: 'Kariyer & Oyuncu',
     ),
     GameEntry(
       title: 'Transfer Detective',
       subtitle: 'İpuçlarından transferi çöz',
       icon: Icons.search_rounded,
       page: TransferDetectivePage(),
-      category: 'Bulmaca',
+      category: 'Kariyer & Oyuncu',
       requiresRepository: false,
     ),
     GameEntry(
@@ -135,49 +171,21 @@ class GameCatalog {
       subtitle: 'İpuçlarından gizemli oyuncuyu bul',
       icon: Icons.help_outline_rounded,
       page: MysteryPlayerPage(),
-      category: 'Bulmaca',
-    ),
-    GameEntry(
-      title: 'Higher or Lower',
-      subtitle: 'Piyasa değeri veya gol',
-      icon: Icons.compare_arrows_rounded,
-      page: HigherLowerModeSelectionPage(),
-      category: 'Bulmaca',
-    ),
-    GameEntry(
-      title: 'Blind Ranking',
-      subtitle: 'Gelen oyuncuyu anında sırala',
-      icon: Icons.bar_chart_rounded,
-      page: BlindRankingPage(),
-      category: 'Bulmaca',
+      category: 'Kariyer & Oyuncu',
     ),
     GameEntry(
       title: 'Chain',
       subtitle: 'Kulüpler arasında oyuncu zinciri',
       icon: Icons.link_rounded,
       page: ChainModeSelectionPage(),
-      category: 'Klasik',
+      category: 'Kariyer & Oyuncu',
     ),
     GameEntry(
       title: 'Fake Club',
       subtitle: 'Oynamadığı kulübü bul',
       icon: Icons.shield_outlined,
       page: OddClubModeSelectionPage(),
-      category: 'Klasik',
-    ),
-    GameEntry(
-      title: 'This or That?',
-      subtitle: 'Futbolcu ve takım zirve savaşları',
-      icon: Icons.swap_horiz_rounded,
-      page: ThisOrThatModeSelectionPage(),
-      category: 'Klasik',
-    ),
-    GameEntry(
-      title: 'Matching',
-      subtitle: 'Kulüp ve oyuncuyu eşleştir',
-      icon: Icons.grid_view_outlined,
-      page: MatchPairPage(),
-      category: 'Klasik',
+      category: 'Kariyer & Oyuncu',
     ),
     GameEntry(
       title: 'Futbol Lingo',
@@ -195,25 +203,53 @@ class GameCatalog {
       category: 'Harf & Kelime',
     ),
     GameEntry(
-      title: 'Letter 11',
-      subtitle: '11 harf, 11 oyuncu',
-      icon: Icons.pin_outlined,
-      page: Harf11Page(),
-      category: 'Harf & Kelime',
+      title: 'Burst',
+      subtitle: 'Hızlı futbol bilgisi oyunları',
+      icon: Icons.bolt_outlined,
+      page: EndlessModeSelectionPage(),
+      category: 'Hız & Eşleştirme',
     ),
     GameEntry(
       title: 'Pyramid',
       subtitle: 'Bağlantı kur, tepeye ulaş',
       icon: Icons.account_tree_outlined,
       page: PyramidPage(),
-      category: 'Harf & Kelime',
+      category: 'Hız & Eşleştirme',
+    ),
+    GameEntry(
+      title: 'Matching',
+      subtitle: 'Kulüp ve oyuncuyu eşleştir',
+      icon: Icons.grid_view_outlined,
+      page: MatchPairPage(),
+      category: 'Hız & Eşleştirme',
+    ),
+    GameEntry(
+      title: 'This or That?',
+      subtitle: 'Futbolcu ve takım zirve savaşları',
+      icon: Icons.swap_horiz_rounded,
+      page: ThisOrThatModeSelectionPage(),
+      category: 'Seçim & Sıralama',
+    ),
+    GameEntry(
+      title: 'Higher or Lower',
+      subtitle: 'Piyasa değeri veya gol',
+      icon: Icons.compare_arrows_rounded,
+      page: HigherLowerModeSelectionPage(),
+      category: 'Seçim & Sıralama',
+    ),
+    GameEntry(
+      title: 'Blind Ranking',
+      subtitle: 'Gelen oyuncuyu anında sırala',
+      icon: Icons.bar_chart_rounded,
+      page: BlindRankingPage(),
+      category: 'Seçim & Sıralama',
     ),
     GameEntry(
       title: 'Story Mode',
       subtitle: 'Oyuncu yolculuğu, UCL, nostalji',
       icon: Icons.auto_stories_outlined,
       page: StoryModeSelectionPage(),
-      category: 'Hikaye',
+      category: 'Hikâye',
     ),
   ];
 }

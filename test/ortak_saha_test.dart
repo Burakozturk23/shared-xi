@@ -16,6 +16,7 @@ import 'package:shared_xi/models/player.dart';
 import 'package:shared_xi/screens/app_settings_page.dart';
 import 'package:shared_xi/screens/daily_challenge_game_page.dart';
 import 'package:shared_xi/screens/discovery_selection_page.dart';
+import 'package:shared_xi/screens/games_catalog_page.dart';
 import 'package:shared_xi/screens/onboarding_page.dart';
 import 'package:shared_xi/screens/shared_players_result_page.dart';
 import 'package:shared_xi/screens/welcome_page.dart';
@@ -212,6 +213,8 @@ void main() {
             const WelcomePage(observeAuth: false),
             OnboardingPage(onComplete: () {}),
             const AppSettingsPage(),
+            const GamesCatalogPage(),
+            GamesCatalogPage(group: GameCatalog.groups.first),
           ]) {
             await frame(tester, page, prefs, size: size, scale: scale);
             expect(
@@ -397,6 +400,8 @@ void main() {
       final suffix = dark ? 'dark' : 'light';
       for (final (name, page) in <(String, Widget)>[
         ('home', const WelcomePage(observeAuth: false)),
+        ('games', const GamesCatalogPage()),
+        ('squad-group', GamesCatalogPage(group: GameCatalog.groups.first)),
         ('onboarding', OnboardingPage(onComplete: () {})),
         (
           'discovery',
