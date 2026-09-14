@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/loto_bot_page.dart';
@@ -65,6 +66,8 @@ class BotGameCatalog {
       subtitle: 'İki kulübün ortak oyuncularını bottan önce bul.',
       icon: Icons.shield_outlined,
       page: VsBotClubSelectionPage(),
+      requiresRepository: false,
+      modern: true,
     ),
     tags: ['Ortak oyuncu', '3 tur galibiyeti'],
     goal: 'Üç tur kazanan maçı alır.',
@@ -82,7 +85,7 @@ class BotGameCatalog {
         'Ortak oyuncular tükenince daha çok oyuncu bulan turu kazanır. Berabere biten tur kimseye galibiyet yazmaz.',
       ),
     ],
-    scoring: 'Her doğru oyuncu +1. Üç tur galibiyetine ilk ulaşan maçı kazanır. Zorluk, botun cevap verme hızını değiştirir.',
+    scoring: 'Her doğru oyuncu +1. İlk üç tur galibiyetine ulaşan maçı kazanır. Zorluk, botun hızı ve isabet oranını değiştirir.',
     action: 'Takımını seç',
   );
 

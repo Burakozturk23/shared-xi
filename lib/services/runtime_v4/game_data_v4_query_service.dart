@@ -662,6 +662,53 @@ class GameDataV4QueryService {
     return rows.isNotEmpty;
   }
 
+  /// Returns clubs that share at least [minShared] ranked-core players with
+  /// [clubId]. Counts are calculated in SQLite so a mode can choose an
+  /// opponent without hydrating every candidate player first.
+  Future<List<MapEntry<int, int>>> sharedClubCandidates(
+    int clubId, {
+    int minShared = 3,
+    int limit = 48,
+  }) async {
+    if (clubId <= 0) return const <MapEntry<int, int>>[];
+
+    await initialize();
+
+    final safeMin = minShared.clamp(1, 50).toInt();
+    final safeLimit = limit.clamp(1, 120).toInt();
+    final rows = await _source.database.rawQuery(
+      '''
+      SELECT
+        b.club_id AS club_id,
+        COUNT(DISTINCT a.player_id) AS shared_count
+      FROM player_clubs a
+      JOIN player_clubs b
+        ON b.player_id = a.player_id
+      JOIN clubs c
+        ON c.id = b.club_id
+      JOIN players p
+        ON p.id = a.player_id
+      WHERE a.club_id = ?
+        AND b.club_id <> ?
+        AND TRIM(c.name) <> ''
+        AND p.selection_rank BETWEEN 1 AND 30000
+      GROUP BY b.club_id
+      HAVING COUNT(DISTINCT a.player_id) >= ?
+      ORDER BY shared_count DESC, c.popularity_seed DESC, c.name COLLATE NOCASE
+      LIMIT ?
+      ''',
+      <Object?>[clubId, clubId, safeMin, safeLimit],
+    );
+
+    return <MapEntry<int, int>>[
+      for (final row in rows)
+        MapEntry(
+          (row['club_id'] as num).toInt(),
+          (row['shared_count'] as num).toInt(),
+        ),
+    ];
+  }
+
   Future<bool> hasClubCountryMatch(int clubId, String country) async {
     if (clubId <= 0) return false;
 
