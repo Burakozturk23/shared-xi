@@ -9,7 +9,7 @@ import '../screens/vs_bot_random_grid_page.dart';
 import '../screens/vs_bot_reverse_grid_page.dart';
 import 'game_catalog.dart';
 
-/// Browsing needs no game data. Every play entry retains its repository gate.
+/// Browsing needs no game data. Migrated modes prepare their own V4 session.
 @immutable
 class BotGameDefinition {
   const BotGameDefinition({
@@ -36,6 +36,8 @@ class BotGameCatalog {
       subtitle: 'Gelen futbolcuyu doğru kritere yerleştir.',
       icon: Icons.dashboard_outlined,
       page: LotoBotPage(),
+      requiresRepository: false,
+      modern: true,
     ),
     tags: ['4×4 tahta', '16 oyuncu', 'Süreli'],
     goal: '16 oyuncuyu yerleştir, botun puanını geç.',
@@ -53,7 +55,7 @@ class BotGameCatalog {
         'Yerleştirmelerin oyun sonunda kontrol edilir. Pas geçersen veya süre dolarsa sıradaki oyuncu gelir.',
       ),
     ],
-    scoring: 'Doğru yerleştirme +10 puan. Sen ve bot aynı oyuncularla ayrı tahtalarda oynarsınız. Yüksek puan kazanır; eşit puan beraberliktir.',
+    scoring: 'Doğru yerleştirme +10 puan; yanlış, pas ve süre aşımı 0 puan. Sen ve bot aynı oyuncularla ayrı tahtalarda oynarsınız. Yüksek puan kazanır; eşit puan beraberliktir.',
     action: 'Lig ve zorluk seç',
   );
 
