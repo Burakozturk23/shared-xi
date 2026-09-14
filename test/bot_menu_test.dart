@@ -58,6 +58,7 @@ Finder get _verticalScroll => find.byWidgetPredicate(
 Future<void> _openCard(WidgetTester tester, String title) async {
   final card = find.widgetWithText(BotModeCard, title);
   await tester.scrollUntilVisible(card, 200, scrollable: _verticalScroll);
+  await tester.pumpAndSettle();
   await tester.tap(card);
   await tester.pumpAndSettle();
 }
@@ -211,6 +212,7 @@ void main() {
             200,
             scrollable: _verticalScroll,
           );
+          await tester.pumpAndSettle();
           expect(find.text('Skor ve kazanma').hitTestable(), findsOneWidget);
         } else {
           final lastTitle = page is VsBotModeSelectionPage
@@ -218,7 +220,9 @@ void main() {
               : BotGameCatalog.randomGrid.entry.title;
           final lastCard = find.widgetWithText(BotModeCard, lastTitle);
           await tester.scrollUntilVisible(lastCard, 200, scrollable: _verticalScroll);
-          expect(lastCard.hitTestable(), findsOneWidget);
+          await tester.pumpAndSettle();
+          expect(lastCard.hitTestable(), findsOneWidget,
+              reason: size.toString() + ' scale=' + scale.toString() + ' card=' + tester.getRect(lastCard).toString());
         }
         expect(tester.takeException(), isNull,
             reason: page.runtimeType.toString() + ' ' + size.toString() + ' scale=' + scale.toString());
