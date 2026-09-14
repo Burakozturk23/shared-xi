@@ -21,7 +21,10 @@ class CountryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final url = countryFlagUrl(country, width: (width * 3).round().clamp(48, 160));
+    final url = countryFlagUrl(
+      country,
+      width: (width * 3).round().clamp(48, 160),
+    );
 
     final flag = url != null
         ? ClipRRect(
@@ -33,17 +36,8 @@ class CountryBadge extends StatelessWidget {
               fit: BoxFit.cover,
               memCacheWidth: (width * 3).round().clamp(48, 320),
               fadeInDuration: const Duration(milliseconds: 120),
-              placeholder: (_, _) => SizedBox(
-                width: width,
-                height: height,
-                child: Center(
-                  child: SizedBox(
-                    width: width * 0.35,
-                    height: width * 0.35,
-                    child: const CircularProgressIndicator(strokeWidth: 1.2),
-                  ),
-                ),
-              ),
+              // A usable flag is visible immediately, including offline use.
+              placeholder: (_, _) => _emojiFallback(),
               errorWidget: (_, _, _) => _emojiFallback(),
             ),
           )
@@ -68,9 +62,16 @@ class CountryBadge extends StatelessWidget {
   }
 
   Widget _emojiFallback() {
-    return Text(
-      flagFor(country),
-      style: TextStyle(fontSize: height * 0.9),
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Center(
+        child: Text(
+          flagFor(country),
+          textScaler: TextScaler.noScaling,
+          style: TextStyle(fontSize: height * 0.9),
+        ),
+      ),
     );
   }
 }

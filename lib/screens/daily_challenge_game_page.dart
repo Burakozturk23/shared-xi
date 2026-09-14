@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import '../controllers/daily_challenge_controller.dart';
 import '../models/daily_challenge_state.dart';
 import '../models/football_calendar_theme.dart';
-import '../models/match_entity.dart';
+import '../app/app_feedback.dart';
+import '../app/route_appearance.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/entity_header_tile.dart';
+import '../widgets/pitch_ui.dart';
 import '../services/daily_challenge_service.dart';
 import '../services/daily_playable_matches.dart';
 import '../widgets/daily_share_card.dart';
@@ -15,25 +20,45 @@ class DailyChallengeGamePage extends StatefulWidget {
   final DateTime? playDate;
   final PlayableDailyMatch? match;
 
-  const DailyChallengeGamePage({super.key, this.playDate, this.match});
+  /// The page owns and disposes the controller produced by this factory.
+  final DailyChallengeController Function()? controllerFactory;
+  const DailyChallengeGamePage({
+    super.key,
+    this.playDate,
+    this.match,
+    this.controllerFactory,
+  });
 
   @override
-  State<DailyChallengeGamePage> createState() =>
-      _DailyChallengeGamePageState();
+  State<DailyChallengeGamePage> createState() => _DailyChallengeGamePageState();
 }
 
 class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
   late final DailyChallengeController _controller;
+  bool _loadError = false;
   final TextEditingController _answerController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = DailyChallengeController(
-      playDate: widget.playDate,
-      presetMatch: widget.match,
-    )..addListener(_onChanged);
-    _controller.initialize();
+    _controller =
+        widget.controllerFactory?.call() ??
+        DailyChallengeController(
+          playDate: widget.playDate,
+          presetMatch: widget.match,
+        );
+    _controller.addListener(_onChanged);
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    setState(() => _loadError = false);
+    try {
+      await _controller.initialize();
+    } catch (error, stack) {
+      debugPrint('Daily game: $error\n$stack');
+      if (mounted) setState(() => _loadError = true);
+    }
   }
 
   void _onChanged() {
@@ -52,31 +77,44 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
   void _submit() {
     final input = _answerController.text.trim();
     if (input.isEmpty) return;
-    _controller.submitAnswer(input);
-    _answerController.clear();
+    _acceptAnswer(() => _controller.submitAnswer(input));
   }
 
-  Color _accent(DailyChallengeState state) {
-    switch (state.theme?.kind) {
-      case CalendarThemeKind.europeNight:
-        return Colors.amber;
-      case CalendarThemeKind.derbyDay:
-      case CalendarThemeKind.derbyCountdown:
-        return Colors.redAccent;
-      case CalendarThemeKind.weekSummary:
-        return Colors.lightBlueAccent;
-      case null:
-        return Colors.lightBlueAccent;
+  void _acceptAnswer(VoidCallback submit) {
+    final before = _controller.state;
+    submit();
+    final after = _controller.state;
+    if (after.foundPlayerIds.length > before.foundPlayerIds.length) {
+      _answerController.clear();
+      _controller.clearSuggestions();
+      AppFeedback.answer(correct: true);
+    } else if (after.wrongAttempts.length > before.wrongAttempts.length) {
+      // Preserve rejected/ambiguous input so it can be corrected.
+      AppFeedback.answer(correct: false);
     }
   }
+
+  Color _accent(DailyChallengeState state) => PitchColors.of(context).accent;
 
   @override
   Widget build(BuildContext context) {
     final state = _controller.state;
 
+    if (_loadError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Günün maçı')),
+        body: EmptyState(
+          title: 'Oyun hazırlanamadı',
+          message: 'Tekrar deneyebilirsin.',
+          actionLabel: 'Tekrar dene',
+          onAction: _initialize,
+        ),
+      );
+    }
     if (state.isLoading || state.entity1 == null || state.entity2 == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        appBar: AppBar(title: const Text('Günün maçı')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -89,7 +127,7 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(state.theme?.badgeLabel ?? 'Günün Mücadelesi'),
-        centerTitle: true,
+        centerTitle: false,
         actions: [
           IconButton(
             tooltip: 'İpucu',
@@ -100,7 +138,7 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -150,14 +188,15 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Expanded(child: _EntityTile(entity: state.entity1!)),
+            Expanded(child: EntityHeaderTile(entity: state.entity1!)),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text('VS',
-                  style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text(
+                'VS',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
-            Expanded(child: _EntityTile(entity: state.entity2!)),
+            Expanded(child: EntityHeaderTile(entity: state.entity2!)),
           ],
         ),
       ),
@@ -166,35 +205,44 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
 
   Widget _buildHud(DailyChallengeState state, Color accent) {
     final total = state.totalShared.clamp(1, 999);
-    final progress =
-        (state.foundPlayers.length / total).clamp(0.0, 1.0);
+    final progress = (state.foundPlayers.length / total).clamp(0.0, 1.0);
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              spacing: 16,
+              runSpacing: 12,
+              alignment: WrapAlignment.spaceBetween,
               children: [
-                Text('⏱ ${state.secondsLeft}s',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: state.secondsLeft <= 10
-                            ? Colors.redAccent
-                            : null)),
-                Text('❤️ ${state.livesLeft}',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
-                Text('${state.foundPlayers.length}/$total',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
-                Text('${state.score}p',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: accent)),
+                _hudMetric(
+                  Icons.timer_outlined,
+                  '${state.secondsLeft} sn',
+                  'Kalan süre',
+                  state.secondsLeft <= 10
+                      ? PitchColors.of(context).error
+                      : PitchColors.of(context).text,
+                ),
+                _hudMetric(
+                  Icons.favorite_border_rounded,
+                  '${state.livesLeft} can',
+                  'Kalan can',
+                  PitchColors.of(context).text,
+                ),
+                _hudMetric(
+                  Icons.check_circle_outline_rounded,
+                  '${state.foundPlayers.length}/$total',
+                  'Bulunan oyuncu',
+                  PitchColors.of(context).text,
+                ),
+                _hudMetric(
+                  Icons.star_outline_rounded,
+                  '${state.score} puan',
+                  'Puan',
+                  accent,
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -208,9 +256,13 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
             ),
             if (state.label.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(state.label,
-                  style:
-                      const TextStyle(fontSize: 12, color: Colors.grey)),
+              Text(
+                state.label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: PitchColors.of(context).muted,
+                ),
+              ),
             ],
           ],
         ),
@@ -218,41 +270,45 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
     );
   }
 
-  Widget _buildInput(Color accent) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+  Widget _hudMetric(IconData icon, String value, String label, Color color) =>
+      Semantics(
+        label: label,
+        value: value,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _answerController,
-              onChanged: _controller.updateSuggestions,
-              onSubmitted: (_) => _submit(),
-              textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Oyuncu adı',
-                hintText: 'Örn. Luis Suarez',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accent.withValues(alpha: 0.85),
-                ),
-                onPressed: _submit,
-                child: const Text('GÖNDER',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: 8),
+            Text(
+              value,
+              style: TextStyle(fontWeight: FontWeight.w600, color: color),
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+
+  Widget _buildInput(Color accent) => PitchPanel(
+    child: Column(
+      children: [
+        TextField(
+          controller: _answerController,
+          onChanged: _controller.updateSuggestions,
+          onSubmitted: (_) => _submit(),
+          textInputAction: TextInputAction.done,
+          decoration: const InputDecoration(
+            labelText: 'Oyuncu adı',
+            hintText: 'Bir futbolcu yaz',
+          ),
+        ),
+        const SizedBox(height: 16),
+        PitchAction(
+          label: 'Yanıtı kontrol et',
+          onPressed: _submit,
+          icon: Icons.check_rounded,
+        ),
+      ],
+    ),
+  );
 
   Widget _buildSuggestions(DailyChallengeState state) {
     return Card(
@@ -261,17 +317,17 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Öneriler',
-                style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text(
+              'Öneriler',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
             ...state.suggestions.map(
               (p) => ListTile(
-                dense: true,
                 contentPadding: EdgeInsets.zero,
                 title: Text(p.name),
                 subtitle: Text('${p.position} • ${p.countryLabel}'),
                 onTap: () {
-                  _controller.submitPlayer(p);
-                  _answerController.clear();
+                  _acceptAnswer(() => _controller.submitPlayer(p));
                 },
               ),
             ),
@@ -282,15 +338,33 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
   }
 
   Widget _buildFeedback(DailyChallengeState state) {
-    final color = state.feedbackIsSuccess ? Colors.green : Colors.red;
-    return Card(
-      color: color.withValues(alpha: 0.12),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Text(
-          state.feedback ?? '',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: color, fontWeight: FontWeight.w600),
+    final p = PitchColors.of(context);
+    final color = state.feedbackIsSuccess ? p.success : p.error;
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              state.feedbackIsSuccess
+                  ? Icons.check_circle_outline_rounded
+                  : Icons.info_outline_rounded,
+              color: color,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                state.feedback ?? '',
+                style: TextStyle(color: color, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -303,12 +377,16 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Bulunan (${state.foundPlayers.length})',
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w600)),
+            Text(
+              'Bulunan (${state.foundPlayers.length})',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
             if (state.foundPlayers.isEmpty)
-              const Text('Henüz yok.', style: TextStyle(color: Colors.grey))
+              Text(
+                'İlk ortak futbolcuyu yaz.',
+                style: TextStyle(color: PitchColors.of(context).muted),
+              )
             else
               Wrap(
                 spacing: 8,
@@ -332,15 +410,14 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Mücadele Sonucu'),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Card(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -349,13 +426,15 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                     style: TextStyle(
                       fontSize: 56,
                       fontWeight: FontWeight.bold,
-                      color: pct >= 80 ? Colors.greenAccent : accent,
+                      color: pct >= 80
+                          ? PitchColors.of(context).success
+                          : accent,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     derbyBadge ? 'Derbi Uzmanı Başarısı' : 'Performans',
-                    style: const TextStyle(color: Colors.grey),
+                    style: TextStyle(color: PitchColors.of(context).muted),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -364,7 +443,9 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                         : '${state.entity1?.displayName} vs ${state.entity2?.displayName}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -374,7 +455,10 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                   const SizedBox(height: 4),
                   Text(
                     '${state.streak} günlük seri 🔥',
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: PitchColors.of(context).muted,
+                    ),
                   ),
                   if (derbyBadge) ...[
                     const SizedBox(height: 12),
@@ -390,10 +474,14 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                       runSpacing: 6,
                       alignment: WrapAlignment.center,
                       children: state.foundPlayers
-                          .map((p) => Chip(
-                                label: Text(p.name,
-                                    style: const TextStyle(fontSize: 12)),
-                              ))
+                          .map(
+                            (p) => Chip(
+                              label: Text(
+                                p.name,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          )
                           .toList(),
                     ),
                   const SizedBox(height: 24),
@@ -410,15 +498,14 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                   ],
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.share),
-                      label: const Text('SONUCU PAYLAŞ'),
+                      label: const Text('Sonucu paylaş'),
                       onPressed: () async {
                         final st = _controller.state;
                         final text = _controller.shareText();
-                        final target = st.theme?.targetFinds ??
-                            st.matchingPlayers.length;
+                        final target =
+                            st.theme?.targetFinds ?? st.matchingPlayers.length;
                         await showDailyShareSheet(
                           context,
                           shareText: text,
@@ -446,10 +533,10 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => DailyLeaderboardPage(
-                            date: widget.playDate,
-                          ),
+                        LinkballRoute(
+                          modern: false,
+                          builder: (_) =>
+                              DailyLeaderboardPage(date: widget.playDate),
                         ),
                       );
                     },
@@ -459,11 +546,12 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('TAMAM',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Maçlara dön',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
@@ -472,40 +560,6 @@ class _DailyChallengeGamePageState extends State<DailyChallengeGamePage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _EntityTile extends StatelessWidget {
-  final MatchEntity entity;
-  const _EntityTile({required this.entity});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (entity.type == MatchEntityType.club)
-          ClipOval(
-            child: Image.network(
-              entity.logoUrl ?? '',
-              height: 48,
-              width: 48,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.sports_soccer, size: 48),
-            ),
-          )
-        else
-          const Icon(Icons.public, size: 48),
-        const SizedBox(height: 6),
-        Text(
-          entity.displayName,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-        ),
-      ],
     );
   }
 }

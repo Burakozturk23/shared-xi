@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../app/route_appearance.dart';
+
 import '../models/achievement_catalog.dart';
 import '../models/achievement_models.dart';
 import '../screens/achievements_page.dart';
@@ -38,8 +40,7 @@ class _AchievementProfilePreviewCardState
     return StreamBuilder<Map<String, AchievementProgress>>(
       stream: AchievementService.watchProgress(),
       builder: (context, snapshot) {
-        final progress =
-            snapshot.data ?? const <String, AchievementProgress>{};
+        final progress = snapshot.data ?? const <String, AchievementProgress>{};
 
         final unlocked = AchievementCatalog.all
             .where((item) => progress[item.id]?.unlocked == true)
@@ -63,7 +64,8 @@ class _AchievementProfilePreviewCardState
                 onTap: () async {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    LinkballRoute(
+                      modern: false,
                       builder: (_) => const AchievementsPage(),
                     ),
                   );
@@ -108,9 +110,9 @@ class _AchievementProfilePreviewCardState
                                     child: Text(
                                       'YENİ $unseenCount',
                                       style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w900,
                                       ),
@@ -124,7 +126,7 @@ class _AchievementProfilePreviewCardState
                               unlocked.isEmpty
                                   ? 'İlk rozetine doğru ilerliyorsun'
                                   : '${unlocked.length} / '
-                                      '${AchievementCatalog.all.length} açıldı',
+                                        '${AchievementCatalog.all.length} açıldı',
                               style: TextStyle(
                                 color: Theme.of(context).hintColor,
                               ),

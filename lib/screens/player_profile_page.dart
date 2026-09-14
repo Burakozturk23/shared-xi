@@ -8,7 +8,10 @@ import '../services/profile_service.dart';
 import '../services/profile_runtime_audit_service.dart';
 import '../widgets/achievement_profile_preview_card.dart';
 import '../widgets/user_avatar_badge.dart';
-import '../theme/app_theme.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../app/route_appearance.dart';
+import '../widgets/empty_state.dart';
+import 'community_center_page.dart';
 import 'friends_page.dart';
 import 'sign_in_page.dart';
 import 'store_page.dart';
@@ -16,7 +19,8 @@ import 'progression_center_page.dart';
 import 'social_safety_center_page.dart';
 
 class PlayerProfilePage extends StatefulWidget {
-  const PlayerProfilePage({super.key});
+  const PlayerProfilePage({super.key, this.embedded = false});
+  final bool embedded;
 
   @override
   State<PlayerProfilePage> createState() => _PlayerProfilePageState();
@@ -38,7 +42,8 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
       await ProfileService.ensureCanonicalProfile();
       await ProfileRuntimeAuditService.auditCurrentProfile();
     } catch (error) {
-      _bootError = error.toString();
+      debugPrint('Profile bootstrap: $error');
+      _bootError = 'Profilin yüklenemedi. Bağlantını kontrol edip tekrar dene.';
     }
 
     if (!mounted) return;
@@ -195,7 +200,8 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                               if (!mounted) return;
                               await Navigator.push<void>(
                                 this.context,
-                                MaterialPageRoute(
+                                LinkballRoute(
+                                  modern: false,
                                   builder: (_) => const StorePage(),
                                 ),
                               );
@@ -287,7 +293,8 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
   Future<void> _upgradeToGoogle() async {
     final signedIn = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
+      LinkballRoute(
+        modern: false,
         builder: (_) => const LinkballSignInPage(allowSkip: false),
       ),
     );
@@ -301,7 +308,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profilim')),
+      appBar: widget.embedded ? null : AppBar(title: const Text('Profilim')),
       body: _booting
           ? const Center(child: CircularProgressIndicator())
           : _bootError != null
@@ -318,6 +325,20 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
           : StreamBuilder<UserProfile?>(
               stream: ProfileService.watchMyProfile(),
               builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return EmptyState(
+                    title: 'Profilin yüklenemedi',
+                    message: 'Tekrar deneyebilirsin.',
+                    actionLabel: 'Tekrar dene',
+                    onAction: () {
+                      setState(() {
+                        _booting = true;
+                        _bootError = null;
+                      });
+                      _bootstrap();
+                    },
+                  );
+                }
                 final profile = snapshot.data;
 
                 if (profile == null) {
@@ -328,7 +349,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                   onRefresh: ProfileService.ensureCanonicalProfile,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(18, 12, 18, 36),
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                     children: [
                       if (profile.nicknameNeedsSetup)
                         _NicknameSetupWarning(
@@ -341,69 +362,88 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                         onEditNickname: () => _editNickname(profile),
                         onEditAvatar: () => _openAvatarPicker(profile),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       if (!profile.isPersistent)
                         _GoogleUpgradeCard(onTap: _upgradeToGoogle),
-                      if (!profile.isPersistent) const SizedBox(height: 14),
+                      if (!profile.isPersistent) const SizedBox(height: 16),
                       _StatsCard(profile: profile),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       if (profile.isPersistent)
                         const AchievementProfilePreviewCard(),
-                      if (profile.isPersistent) const SizedBox(height: 14),
+                      if (profile.isPersistent) const SizedBox(height: 16),
                       if (profile.isPersistent)
                         _ProgressionShortcutCard(
                           onTap: () {
                             Navigator.push<void>(
                               context,
-                              MaterialPageRoute(
+                              LinkballRoute(
+                                modern: false,
                                 builder: (_) => const ProgressionCenterPage(),
                               ),
                             );
                           },
                         ),
-                      if (profile.isPersistent) const SizedBox(height: 14),
+                      if (profile.isPersistent) const SizedBox(height: 16),
                       if (profile.isPersistent)
                         _FriendsShortcutCard(
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              LinkballRoute(
+                                modern: false,
                                 builder: (_) => const FriendsPage(),
                               ),
                             );
                           },
                         ),
-                      if (profile.isPersistent) const SizedBox(height: 14),
+                      if (profile.isPersistent) const SizedBox(height: 16),
                       if (profile.isPersistent)
                         _SafetyShortcutCard(
                           onTap: () {
                             Navigator.push<void>(
                               context,
-                              MaterialPageRoute(
+                              LinkballRoute(
+                                modern: false,
                                 builder: (_) => const SocialSafetyCenterPage(),
                               ),
                             );
                           },
                         ),
-                      if (profile.isPersistent) const SizedBox(height: 14),
+                      if (profile.isPersistent) const SizedBox(height: 16),
                       _StoreShortcutCard(
                         isPersistent: profile.isPersistent,
                         onTap: () {
                           Navigator.push<void>(
                             context,
-                            MaterialPageRoute(
+                            LinkballRoute(
+                              modern: false,
                               builder: (_) => const StorePage(),
                             ),
                           );
                         },
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       _AvatarCollectionCard(
                         profile: profile,
                         onTap: () => _openAvatarPicker(profile),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       _RecentMatchesCard(profile: profile),
+                      const SizedBox(height: 16),
+                      Card(
+                        child: ListTile(
+                          title: const Text('Topluluk'),
+                          leading: const Icon(Icons.forum_outlined),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => Navigator.push(
+                            context,
+                            LinkballRoute(
+                              modern: false,
+                              builder: (_) => const CommunityCenterPage(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -444,12 +484,12 @@ class _ProfileHero extends StatelessWidget {
                     child: InkWell(
                       customBorder: const CircleBorder(),
                       onTap: onEditAvatar,
-                      child: const Padding(
-                        padding: EdgeInsets.all(8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
                         child: Icon(
                           Icons.edit_rounded,
                           size: 17,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),
@@ -491,8 +531,8 @@ class _ProfileHero extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
                 color: profile.isPersistent
-                    ? Colors.green.withValues(alpha: 0.14)
-                    : Colors.amber.withValues(alpha: 0.14),
+                    ? PitchColors.of(context).success.withValues(alpha: 0.14)
+                    : PitchColors.of(context).muted.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
@@ -501,8 +541,8 @@ class _ProfileHero extends StatelessWidget {
                     : 'Misafir profil · bu cihazla sınırlı',
                 style: TextStyle(
                   color: profile.isPersistent
-                      ? Colors.greenAccent
-                      : Colors.amber,
+                      ? PitchColors.of(context).success
+                      : PitchColors.of(context).muted,
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                 ),
@@ -526,7 +566,7 @@ class _StatsCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -535,45 +575,52 @@ class _StatsCard extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _StatTile(
-                    label: 'Elo',
-                    value: '${profile.elo}',
-                    icon: Icons.trending_up_rounded,
-                  ),
-                ),
-                Expanded(
-                  child: _StatTile(
-                    label: 'Maç',
-                    value: '${profile.played}',
-                    icon: Icons.sports_esports_outlined,
-                  ),
-                ),
-                Expanded(
-                  child: _StatTile(
-                    label: 'Galibiyet',
-                    value: '${profile.wins}',
-                    icon: Icons.emoji_events_outlined,
-                  ),
-                ),
-                Expanded(
-                  child: _StatTile(
-                    label: 'Oran',
-                    value: '%$winRate',
-                    icon: Icons.percent_rounded,
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns =
+                    constraints.maxWidth < 320 ||
+                        MediaQuery.textScalerOf(context).scale(16) > 24
+                    ? 2
+                    : 4;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 16,
+                  children: [
+                    for (final stat in [
+                      ('Elo', '${profile.elo}', Icons.trending_up_rounded),
+                      (
+                        'Maç',
+                        '${profile.played}',
+                        Icons.sports_esports_outlined,
+                      ),
+                      (
+                        'Galibiyet',
+                        '${profile.wins}',
+                        Icons.emoji_events_outlined,
+                      ),
+                      ('Oran', '%$winRate', Icons.percent_rounded),
+                    ])
+                      SizedBox(
+                        width:
+                            (constraints.maxWidth - (columns - 1) * 8) /
+                            columns,
+                        child: _StatTile(
+                          label: stat.$1,
+                          value: stat.$2,
+                          icon: stat.$3,
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
             const Divider(height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _ResultStat('G', profile.wins, Colors.greenAccent),
-                _ResultStat('M', profile.losses, Colors.redAccent),
-                _ResultStat('B', profile.draws, Colors.amber),
+                _ResultStat('G', profile.wins, PitchColors.of(context).success),
+                _ResultStat('M', profile.losses, PitchColors.of(context).error),
+                _ResultStat('B', profile.draws, PitchColors.of(context).muted),
               ],
             ),
           ],
@@ -598,7 +645,7 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, size: 19, color: Theme.of(context).colorScheme.primary),
+        Icon(icon, size: 24, color: PitchColors.of(context).accent),
         const SizedBox(height: 6),
         Text(
           value,
@@ -654,12 +701,12 @@ class _ProgressionShortcutCard extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.12),
+            color: PitchColors.of(context).accent.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(13),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.task_alt_rounded,
-            color: AppTheme.primaryColor,
+            color: PitchColors.of(context).accent,
           ),
         ),
         title: const Text(
@@ -729,7 +776,7 @@ class _AvatarCollectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               const Icon(Icons.face_retouching_natural_outlined, size: 30),
@@ -773,7 +820,7 @@ class _RecentMatchesCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -795,9 +842,9 @@ class _RecentMatchesCard extends StatelessWidget {
                     : (delta >= 0 ? '+$delta' : '$delta');
 
                 final resultColor = switch (match.result) {
-                  RankedResult.win => Colors.greenAccent,
-                  RankedResult.loss => Colors.redAccent,
-                  RankedResult.draw => Colors.amber,
+                  RankedResult.win => PitchColors.of(context).success,
+                  RankedResult.loss => PitchColors.of(context).error,
+                  RankedResult.draw => PitchColors.of(context).muted,
                 };
 
                 return Padding(
@@ -840,8 +887,8 @@ class _RecentMatchesCard extends StatelessWidget {
                           deltaText,
                           style: TextStyle(
                             color: (delta ?? 0) >= 0
-                                ? Colors.greenAccent
-                                : Colors.redAccent,
+                                ? PitchColors.of(context).success
+                                : PitchColors.of(context).error,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -865,9 +912,12 @@ class _NicknameSetupWarning extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.amber.withValues(alpha: 0.10),
+      color: PitchColors.of(context).muted.withValues(alpha: 0.10),
       child: ListTile(
-        leading: const Icon(Icons.warning_amber_rounded, color: Colors.amber),
+        leading: Icon(
+          Icons.warning_amber_rounded,
+          color: PitchColors.of(context).muted,
+        ),
         title: const Text(
           'Benzersiz takma ad gerekli',
           style: TextStyle(fontWeight: FontWeight.w800),
@@ -964,7 +1014,7 @@ class _GoogleUpgradeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Icon(

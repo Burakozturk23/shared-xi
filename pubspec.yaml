@@ -34,7 +34,16 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  fonts:
+    - family: Satoshi
+      fonts:
+        - asset: assets/fonts/Satoshi-Variable.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Body-Variable.ttf
+
   assets:
+    - assets/brand/
     # Canonical player/club runtime data is V4 SQLite only.
     # Small coach/transfer/meta JSON assets remain for legacy side-data.
     - assets/data/coaches_min.json
@@ -45,4 +54,3 @@ flutter:
     - assets/logos/leagues/
     - assets/avatars/
     - assets/badges/
-
