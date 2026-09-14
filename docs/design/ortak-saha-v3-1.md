@@ -42,10 +42,35 @@ navigation copy; they do not change a game's mechanics or its access requirement
 | Hikâye | Story Mode |
 | Standalone | Vs Bot |
 
-Oyunlar opens with Vs Bot and the six group cards. A group opens its own list;
+Oyunlar opens with the standalone **Botla oyna** (Vs Bot) card and the six group cards. A group opens its own list;
 Android/app-bar back returns to the group overview. The overview search covers
 all 20 games, including Vs Bot; search within a group is limited to that group.
 The shell retains the catalog's search and scroll position between tab visits.
+
+## Prototype layout refinement — 2026-09-14
+
+- Oyunlar uses a short introduction, search, one full-width bot card and a
+  two-column / three-row group overview. Group membership and ordering above are
+  retained. Compact captions and game counts keep the overview easy to scan.
+- Cards grow with wrapped text. Narrow screens or enlarged system text can use
+  one column; text is not truncated to maintain a fixed card aspect ratio.
+- Online has a prominent pre-match illustration, **Mod seç** primary action,
+  **Birlikte oyna** secondary action, and side-by-side friends/leaderboard cards.
+  Both play actions keep their existing persistent-account requirement.
+- Games/Online have larger page headings and circular settings buttons. A fine
+  divider separates content from the persistent four-destination navigation.
+- Global search accepts both "Vs Bot" and "Botla oyna". Group-local search,
+  selection persistence and Android back continue to use the existing routes.
+- Button typography uses Material-compatible resolved styles so opening/closing an
+  existing authentication route can animate the underlying buttons safely.
+
+| Games | Online |
+| --- | --- |
+| ![Games](previews/games-dark.png) | ![Online](previews/online-dark.png) |
+
+These Flutter-rendered previews include simulated Android safe-area insets;
+they are not captures from the user's emulator. Light-mode variants are in
+`previews/games-light.png` and `previews/online-light.png`.
 
 ## Theme and brand
 
@@ -100,7 +125,7 @@ Firebase Functions and authentication identities are not migrated by this change
 
 ## Verification
 
-Current local result: **15 tests passed**; the repository's analyzer command passed with
+Current local result: **17 tests passed**; the repository's analyzer command passed with
 no errors (97 pre-existing warnings/info remain). Android resource XML was parsed
 successfully; this is not a replacement for Android compilation or device review.
 
@@ -115,6 +140,9 @@ at normal and 200% text size. Visual captures use controlled test data, not live
 fixtures or account statistics. Follow-up coverage checks the approved group
 membership/order, group-local/global search, Android back through groups and
 onboarding, live theme changes, and relaunch after completing onboarding. The
+hub review covers 320–700 dp widths, portrait/landscape, normal/200% text and
+light/dark themes. Both online play actions are checked through the real app
+shell's account gate and back navigation. The
 latest result is reported by the integration pull request's CI checks.
 
 ```sh

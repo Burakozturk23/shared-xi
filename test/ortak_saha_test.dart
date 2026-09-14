@@ -21,6 +21,7 @@ import 'package:shared_xi/screens/onboarding_page.dart';
 import 'package:shared_xi/screens/shared_players_result_page.dart';
 import 'package:shared_xi/screens/welcome_page.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/pitch_tile.dart';
 
 const arsenal = Club(
   id: 11,
@@ -83,6 +84,7 @@ Future<void> frame(
   double scale = 1,
   bool dark = true,
   GlobalKey? capture,
+  EdgeInsets safeInsets = EdgeInsets.zero,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -95,6 +97,8 @@ Future<void> frame(
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(scale),
             disableAnimations: true,
+            padding: safeInsets,
+            viewPadding: safeInsets,
           ),
           child: RepaintBoundary(key: capture, child: child!),
         ),
@@ -393,6 +397,78 @@ void main() {
     },
   );
 
+  testWidgets('Hub layouts match the prototype and adapt to larger text', (
+    tester,
+  ) async {
+    final prefs = await AppPreferences.load();
+    final capture = GlobalKey();
+    for (final (size, scale, dark) in const [
+      (Size(360, 800), 1.0, true),
+      (Size(416, 896), 1.0, true),
+      (Size(416, 896), 1.0, false),
+      (Size(360, 640), 2.0, true),
+      (Size(320, 640), 1.0, true),
+      (Size(700, 400), 2.0, true),
+    ]) {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await frame(
+        tester,
+        const WelcomePage(observeAuth: false),
+        prefs,
+        size: size,
+        scale: scale,
+        dark: dark,
+        capture: capture,
+        safeInsets: const EdgeInsets.only(top: 24, bottom: 16),
+      );
+      for (final (tab, name, count) in const [
+        ('Oyunlar', 'games', 6),
+        ('Online', 'online', 2),
+      ]) {
+        await tester.tap(find.text(tab).last);
+        await tester.pumpAndSettle();
+        final tiles = find.byType(PitchTile);
+        if (tiles.evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.widgetWithText(
+              PitchTile,
+              tab == 'Online' ? 'Arkadaşlar' : GameCatalog.groups.first.title,
+            ),
+            300,
+            scrollable: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Scrollable &&
+                  widget.axisDirection == AxisDirection.down,
+            ),
+          );
+          await tester.pumpAndSettle();
+        }
+        expect(tiles, findsNWidgets(count), reason: '$tab $size scale=$scale');
+        final first = tester.getRect(tiles.at(0));
+        final second = tester.getRect(tiles.at(1));
+        if (size.width >= 360 && scale == 1) {
+          expect(first.top, moreOrLessEquals(second.top));
+          expect(first.right, lessThan(second.left));
+        } else if (size.width <= 360) {
+          expect(first.bottom, lessThan(second.top));
+          expect(first.left, moreOrLessEquals(second.left));
+        }
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: '$tab $size scale=$scale',
+        );
+        if (size.width == 416 && scale == 1) {
+          await screenshot(tester, capture, '$name-${dark ? 'dark' : 'light'}');
+        }
+        await tester.ensureVisible(tiles.last);
+        await tester.pumpAndSettle();
+        expect(tiles.last.hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: '$tab last card');
+      }
+    }
+  });
+
   testWidgets('Dark and light screen review', (tester) async {
     final prefs = await AppPreferences.load();
     final capture = GlobalKey();
@@ -400,7 +476,6 @@ void main() {
       final suffix = dark ? 'dark' : 'light';
       for (final (name, page) in <(String, Widget)>[
         ('home', const WelcomePage(observeAuth: false)),
-        ('games', const Scaffold(body: GamesCatalogPage())),
         ('squad-group', GamesCatalogPage(group: GameCatalog.groups.first)),
         ('onboarding', OnboardingPage(onComplete: () {})),
         (

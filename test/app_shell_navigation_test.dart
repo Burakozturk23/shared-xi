@@ -7,6 +7,8 @@ import 'package:shared_xi/main.dart';
 import 'package:shared_xi/screens/app_settings_page.dart';
 import 'package:shared_xi/screens/games_catalog_page.dart';
 import 'package:shared_xi/screens/onboarding_page.dart';
+import 'package:shared_xi/screens/sign_in_page.dart';
+import 'package:shared_xi/widgets/pitch_tile.dart';
 
 Future<AppPreferences> openApp(
   WidgetTester tester, {
@@ -108,7 +110,8 @@ void main() {
       await openApp(tester);
       await tester.tap(find.text('Oyunlar').last);
       await tester.pumpAndSettle();
-      expect(find.text('Vs Bot'), findsOneWidget);
+      expect(find.text('Botla oyna'), findsOneWidget);
+      expect(find.byType(PitchTile), findsNWidgets(6));
       expect(find.text('Club Manager'), findsNothing);
       await tester.tap(find.text('Kadro & Yönetim'));
       await tester.pumpAndSettle();
@@ -126,7 +129,8 @@ void main() {
       expect(find.text('Club Manager'), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
-      expect(find.text('Oyun grupları'), findsOneWidget);
+      expect(find.text('Botla oyna'), findsOneWidget);
+      expect(find.byType(PitchTile), findsNWidgets(6));
       await tester.enterText(find.byType(TextField), 'lingo');
       await tester.pumpAndSettle();
       expect(find.text('Futbol Lingo'), findsOneWidget);
@@ -146,9 +150,40 @@ void main() {
       await tester.enterText(find.byType(TextField), 'vs bot');
       await tester.pumpAndSettle();
       expect(find.text('Vs Bot'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'botla oyna');
+      await tester.pumpAndSettle();
+      expect(find.text('Vs Bot'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('Both online play actions retain the persistent-account gate', (
+    tester,
+  ) async {
+    await openApp(tester);
+    await tester.tap(find.text('Online').last);
+    await tester.pumpAndSettle();
+    for (final label in ['Mod seç', 'Birlikte oyna']) {
+      await tester.ensureVisible(find.text(label));
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+      expect(find.byType(LinkballSignInPage), findsOneWidget);
+      expect(
+        tester
+            .widget<LinkballSignInPage>(find.byType(LinkballSignInPage))
+            .allowSkip,
+        isFalse,
+      );
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(LinkballSignInPage), findsNothing);
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        2,
+      );
+      expect(tester.takeException(), isNull);
+    }
+  });
 
   testWidgets('Theme updates live and onboarding replay returns to settings', (
     tester,

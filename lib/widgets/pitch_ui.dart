@@ -101,12 +101,13 @@ class PitchAction extends StatefulWidget {
     required this.label,
     required this.onPressed,
     this.secondary = false,
+    this.neutral = false,
     this.busy = false,
     this.icon = Icons.arrow_forward_rounded,
   });
   final String label;
   final VoidCallback? onPressed;
-  final bool secondary, busy;
+  final bool secondary, neutral, busy;
   final IconData icon;
   @override
   State<PitchAction> createState() => _PitchActionState();
@@ -144,6 +145,12 @@ class _PitchActionState extends State<PitchAction> {
         duration: reduced ? Duration.zero : const Duration(milliseconds: 110),
         child: widget.secondary
             ? OutlinedButton(
+                style: widget.neutral
+                    ? OutlinedButton.styleFrom(
+                        foregroundColor: PitchColors.of(context).text,
+                        side: BorderSide(color: PitchColors.of(context).border),
+                      )
+                    : null,
                 onPressed: widget.busy || widget.onPressed == null ? null : tap,
                 child: child,
               )

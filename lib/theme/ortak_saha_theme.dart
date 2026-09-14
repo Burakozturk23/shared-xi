@@ -131,6 +131,11 @@ class OrtakSahaTheme {
       fontWeight: weight,
       color: color ?? p.text,
     );
+    // Button styles bypass TextTheme merging. Resolve their typography before
+    // animating between the shell and legacy authentication/game themes.
+    final buttonText = Typography.englishLike2021.labelLarge!.merge(
+      body(16, weight: FontWeight.w600),
+    );
     final scheme =
         ColorScheme.fromSeed(
           seedColor: p.accent,
@@ -162,7 +167,7 @@ class OrtakSahaTheme {
       minimumSize: const Size(48, 56),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       shape: shape,
-      textStyle: body(16, weight: FontWeight.w600),
+      textStyle: buttonText,
     );
     return ThemeData(
       useMaterial3: true,
@@ -224,7 +229,7 @@ class OrtakSahaTheme {
           shape: shape,
           minimumSize: const Size(48, 56),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          textStyle: body(16, weight: FontWeight.w600),
+          textStyle: buttonText,
         ),
       ),
       textButtonTheme: TextButtonThemeData(

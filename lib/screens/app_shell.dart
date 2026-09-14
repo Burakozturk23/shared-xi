@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -6,6 +7,7 @@ import '../app/app_feedback.dart';
 import '../app/route_appearance.dart';
 import '../services/auth_service.dart';
 import '../services/cloud_bootstrap.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../widgets/brand_mark.dart';
 import 'app_home_page.dart';
 import 'games_catalog_page.dart';
@@ -61,6 +63,8 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    final hubHeader = _index == 1 || _index == 2;
     final pages = <Widget>[
       AppHomePage(onGames: () => _select(1)),
       const GamesCatalogPage(),
@@ -74,22 +78,42 @@ class _AppShellState extends State<AppShell> {
       },
       child: Scaffold(
         appBar: AppBar(
+          titleSpacing: hubHeader ? 24 : null,
+          titleTextStyle: hubHeader
+              ? Theme.of(context).textTheme.headlineMedium
+              : null,
+          toolbarHeight: hubHeader
+              ? math.max(
+                  64,
+                  MediaQuery.textScalerOf(context).scale(30) * 1.2 + 16,
+                )
+              : null,
           title: _index == 0
               ? const BrandWordmark(size: 32)
               : Text(_labels[_index]),
           actions: [
-            IconButton(
-              tooltip: _index == 0 ? 'Profil' : 'Ayarlar',
-              icon: Icon(
-                _index == 0
-                    ? Icons.person_outline_rounded
-                    : Icons.settings_outlined,
+            Padding(
+              padding: EdgeInsets.only(right: hubHeader ? 24 : 8),
+              child: IconButton(
+                style: hubHeader
+                    ? IconButton.styleFrom(
+                        backgroundColor: p.surface,
+                        side: BorderSide(color: p.border),
+                        shape: const CircleBorder(),
+                      )
+                    : null,
+                tooltip: _index == 0 ? 'Profil' : 'Ayarlar',
+                icon: Icon(
+                  _index == 0
+                      ? Icons.person_outline_rounded
+                      : Icons.settings_outlined,
+                ),
+                onPressed: _index == 0
+                    ? () => _select(3)
+                    : () => Navigator.of(context).push(
+                        LinkballRoute(builder: (_) => const AppSettingsPage()),
+                      ),
               ),
-              onPressed: _index == 0
-                  ? () => _select(3)
-                  : () => Navigator.of(context).push(
-                      LinkballRoute(builder: (_) => const AppSettingsPage()),
-                    ),
             ),
           ],
         ),
@@ -104,26 +128,35 @@ class _AppShellState extends State<AppShell> {
             ],
           ),
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: _select,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Ana Sayfa',
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Divider(height: 1, thickness: 1, color: p.border),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.sports_esports_outlined),
-              label: 'Oyunlar',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.public_rounded),
-              label: 'Online',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              label: 'Profil',
+            NavigationBar(
+              selectedIndex: _index,
+              onDestinationSelected: _select,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_rounded),
+                  label: 'Ana Sayfa',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.sports_esports_outlined),
+                  label: 'Oyunlar',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.public_rounded),
+                  label: 'Online',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person_outline_rounded),
+                  label: 'Profil',
+                ),
+              ],
             ),
           ],
         ),

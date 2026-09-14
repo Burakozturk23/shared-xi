@@ -4,6 +4,8 @@ import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
 import '../services/search_service.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/pitch_tile.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/empty_state.dart';
 
@@ -42,7 +44,8 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
     final filtered = entries
         .where(
           (game) => SearchService.contains(
-            '${game.title} ${game.subtitle} ${game.category}',
+            '${game.title} ${game.subtitle} ${game.category} '
+            '${game == GameCatalog.vsBot ? GameCatalog.vsBotLabel : ''}',
             query,
           ),
         )
@@ -52,28 +55,34 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
       key: PageStorageKey('games-${group?.title ?? 'all'}'),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+          padding: EdgeInsets.fromLTRB(24, group == null ? 0 : 16, 24, 0),
           sliver: SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  group?.subtitle ?? 'Futbolu bildiğin gibi oyna.',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
+                if (group != null) ...[
+                  Text(
+                    group.subtitle,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 Text(
                   group == null
-                      ? 'Bir gruba göz at veya oyun ara.'
+                      ? 'Bugün ne oynamak istersin?'
                       : '${entries.length} oyun seni bekliyor.',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: PitchColors.of(context).muted,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _search,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: group == null ? 'Oyun ara' : 'Bu grupta ara',
+                    hintText: group == null
+                        ? 'Oyun veya kategori ara'
+                        : 'Bu grupta ara',
                     prefixIcon: const Icon(Icons.search_rounded),
                     suffixIcon: _search.text.isEmpty
                         ? null
@@ -84,7 +93,7 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -96,34 +105,64 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _gameRow(GameCatalog.vsBot),
-                  const PitchSectionTitle('Oyun grupları'),
+                  Semantics(
+                    button: true,
+                    child: PitchPanel(
+                      onTap: () =>
+                          GameLauncher.open(context, GameCatalog.vsBot),
+                      child: Row(
+                        children: [
+                          Icon(
+                            GameCatalog.vsBot.icon,
+                            color: PitchColors.of(context).accent,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  GameCatalog.vsBotLabel,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Kendi hızında antrenman yap.',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-            sliver: SliverList.separated(
-              itemCount: GameCatalog.groups.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final group = GameCatalog.groups[index];
-                final count = GameCatalog.games
-                    .where((game) => game.category == group.title)
-                    .length;
-                return PitchRow(
-                  title: group.title,
-                  subtitle: '$count oyun · ${group.subtitle}',
-                  icon: group.icon,
-                  highlight: true,
-                  onTap: () => Navigator.of(context).push(
-                    LinkballRoute(
-                      builder: (_) => GamesCatalogPage(group: group),
+            sliver: SliverToBoxAdapter(
+              child: PitchTileGrid(
+                children: [
+                  for (final group in GameCatalog.groups)
+                    PitchTile(
+                      title: group.title,
+                      caption: group.caption,
+                      countLabel:
+                          '${GameCatalog.games.where((game) => game.category == group.title).length} oyun',
+                      icon: group.icon,
+                      onTap: () => Navigator.of(context).push(
+                        LinkballRoute(
+                          builder: (_) => GamesCatalogPage(group: group),
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ] else if (filtered.isEmpty)

@@ -116,7 +116,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w800),
+          textStyle: Typography.englishLike2021.labelLarge!.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -128,7 +130,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          textStyle: Typography.englishLike2021.labelLarge!.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(

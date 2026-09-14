@@ -51,8 +51,9 @@ class GameGroup {
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.caption,
   });
-  final String title, subtitle;
+  final String title, subtitle, caption;
   final IconData icon;
 }
 
@@ -78,34 +79,41 @@ class GameCatalog {
     GameGroup(
       title: 'Kadro & Yönetim',
       subtitle: 'Kadronu kur, takımları çöz.',
+      caption: 'Takımını kur.',
       icon: Icons.groups_outlined,
     ),
     GameGroup(
       title: 'Kariyer & Oyuncu',
       subtitle: 'Futbolun kariyer izlerini takip et.',
+      caption: 'İpuçlarını çöz.',
       icon: Icons.route_outlined,
     ),
     GameGroup(
       title: 'Harf & Kelime',
       subtitle: 'Futbol bilgini harflere dök.',
+      caption: 'Kelimeleri keşfet.',
       icon: Icons.text_fields_rounded,
     ),
     GameGroup(
       title: 'Hız & Eşleştirme',
       subtitle: 'Bağlantıları kur, eşleşmeleri bul.',
+      caption: 'Bağlantıları bul.',
       icon: Icons.bolt_outlined,
     ),
     GameGroup(
       title: 'Seçim & Sıralama',
       subtitle: 'Kararını ver, sıralamanı oluştur.',
+      caption: 'Seç ve sırala.',
       icon: Icons.compare_arrows_rounded,
     ),
     GameGroup(
       title: 'Hikâye',
       subtitle: 'Futbolun unutulmaz anlarına katıl.',
+      caption: 'Yolculuğu takip et.',
       icon: Icons.auto_stories_outlined,
     ),
   ];
+  static const vsBotLabel = 'Botla oyna';
   static const vsBot = GameEntry(
     title: 'Vs Bot',
     subtitle: 'Loto · Grid · Çinko · Beşler',
