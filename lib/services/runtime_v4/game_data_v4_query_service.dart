@@ -770,6 +770,31 @@ class GameDataV4QueryService {
     return playersByIds(ids);
   }
 
+  /// Loads the ranked-core players who have appeared for one club. Modes use
+  /// this scoped pool for answer search instead of hydrating the full player
+  /// universe just to build a 3×3 puzzle.
+  Future<List<Player>> playersForClub(int clubId, {int limit = 1800}) async {
+    if (clubId <= 0) return const <Player>[];
+
+    await initialize();
+    final safeLimit = limit.clamp(1, 3000).toInt();
+    final rows = await _source.database.rawQuery(
+      '''
+      SELECT DISTINCT p.id
+      FROM players p
+      JOIN player_clubs pc
+        ON pc.player_id = p.id
+      WHERE pc.club_id = ?
+        AND TRIM(p.name) <> ''
+        AND p.selection_rank BETWEEN 1 AND 30000
+      ORDER BY p.selection_rank, p.id
+      LIMIT ?
+      ''',
+      <Object?>[clubId, safeLimit],
+    );
+    return playersByIds(rows.map((row) => (row['id'] as num).toInt()));
+  }
+
   String _entityPredicate(MatchEntity entity, int slot, List<Object?> args) {
     switch (entity.type) {
       case MatchEntityType.club:

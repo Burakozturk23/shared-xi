@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/loto_bot_page.dart';
+import '../screens/classic_grid_page.dart';
 import '../screens/vs_bot_cinko_page.dart';
 import '../screens/vs_bot_club_selection_page.dart';
-import '../screens/vs_bot_grid_page.dart';
 import '../screens/vs_bot_random_five_page.dart';
 import '../screens/vs_bot_random_grid_page.dart';
 import '../screens/vs_bot_reverse_grid_page.dart';
@@ -94,7 +94,9 @@ class BotGameCatalog {
       title: 'Klasik Grid',
       subtitle: 'İki kritere uyan futbolcuyla kutuyu kazan.',
       icon: Icons.grid_view_rounded,
-      page: VsBotGridPage(),
+      page: ClassicGridPage(),
+      requiresRepository: false,
+      modern: true,
     ),
     tags: ['3×3 tahta', 'Sıra tabanlı'],
     goal: 'Üç kutuyu bir çizgide tamamla.',
