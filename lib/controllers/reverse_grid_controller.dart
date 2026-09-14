@@ -14,6 +14,14 @@ import '../services/search_service.dart';
 import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class ReverseGridController extends ChangeNotifier {
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
   static const int _maxAttempts = 25;
 
   final Random _random = Random();
@@ -28,6 +36,7 @@ class ReverseGridController extends ChangeNotifier {
 
 
   void initialize() {
+    if (_disposed) return;
     unawaited(_initializeHybrid());
   }
 
@@ -57,6 +66,7 @@ class ReverseGridController extends ChangeNotifier {
       }
     }
 
+    if (_disposed) return;
     _buildPuzzle();
   }
 

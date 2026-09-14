@@ -14,6 +14,14 @@ import '../services/search_service.dart';
 import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class GridController extends ChangeNotifier {
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
   static const int _maxGenerationAttempts = 25;
 
   final Random _random = Random();
@@ -31,6 +39,7 @@ class GridController extends ChangeNotifier {
 
 
   void initialize() {
+    if (_disposed) return;
     unawaited(_initializeHybrid());
   }
 
@@ -65,6 +74,7 @@ class GridController extends ChangeNotifier {
       }
     }
 
+    if (_disposed) return;
     _buildPuzzle();
   }
 

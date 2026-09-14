@@ -12,7 +12,11 @@ import 'random_grid_controller.dart';
 enum VsBotRandomTurn { user, bot, gameOver }
 
 class VsBotRandomGridController extends ChangeNotifier {
-  final RandomGridController grid = RandomGridController();
+  VsBotRandomGridController({RandomGridController? grid}) : grid = grid ?? RandomGridController() {
+    this.grid.addListener(_safeNotify);
+  }
+
+  final RandomGridController grid;
   final Random _random = Random();
 
   VsBotRandomTurn turn = VsBotRandomTurn.user;
@@ -44,6 +48,7 @@ class VsBotRandomGridController extends ChangeNotifier {
     _disposed = true;
     _botTimer?.cancel();
     _feedbackTimer?.cancel();
+    grid.removeListener(_safeNotify);
     grid.dispose();
     super.dispose();
   }
@@ -194,6 +199,9 @@ void userGeneratePair() {
   }
 
   void _schedulePassToBot() {
+    // Lock input immediately; the delay is only for the visual handover.
+    turn = VsBotRandomTurn.bot;
+    _safeNotify();
     _botTimer?.cancel();
     _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);
   }

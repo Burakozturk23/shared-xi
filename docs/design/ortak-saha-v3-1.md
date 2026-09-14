@@ -106,8 +106,9 @@ platform click for accepted daily answers; haptics cover core selections and dai
 answer feedback. Notification delivery and OS permission requests are not wired:
 the preferences screen states this explicitly. Turkish is the available UI language.
 
-Per-mode interiors remain the subsequent **17C** pass. Many of those existing
-screens contain fixed dark surfaces, so `LinkballRoute(modern: false)` explicitly
+**17C** has started with the Botla Oyna menu, pre-game rules and Grid readiness/turn fixes.
+See [the Botla Oyna review](botla-oyna-17c.md). Full match screens are being
+reviewed mode by mode. Many of those existing screens contain fixed dark surfaces, so `LinkballRoute(modern: false)` explicitly
 keeps them in the legacy dark theme, including their nested setup routes/dialogs.
 Returning to the shell restores the chosen theme. Core discovery, calendar,
 daily play, profile and settings use the new theme. Backend rules, game data,
@@ -120,12 +121,12 @@ Firebase Functions and authentication identities are not migrated by this change
   visible in the supplied screenshot.
 - Native cold-start appearance, live Google sign-in and live daily play still
   need device verification; the home screenshot does not verify those paths.
-- Individual mode internals and their design migration remain **17C**, to begin
-  when the user asks to enter that phase.
+- The user authorized **17C** on 2026-09-14, starting with Botla Oyna. Its menu
+  and rules are the first increment; individual match screens remain in review.
 
 ## Verification
 
-Current local result: **17 tests passed**; the repository's analyzer command passed with
+The 17B hub refinement passed **17 local tests**; its analyzer command passed with
 no errors (97 pre-existing warnings/info remain). Android resource XML was parsed
 successfully; this is not a replacement for Android compilation or device review.
 

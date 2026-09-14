@@ -13,6 +13,14 @@ import '../services/search_service.dart';
 import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class RandomGridController extends ChangeNotifier {
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
   static const int _maxPairAttempts = 40;
 
   final Random _random = Random();
@@ -31,6 +39,7 @@ class RandomGridController extends ChangeNotifier {
 
 
   void initialize() {
+    if (_disposed) return;
     unawaited(_initializeHybrid());
   }
 
@@ -54,6 +63,7 @@ class RandomGridController extends ChangeNotifier {
       }
     }
 
+    if (_disposed) return;
     _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }

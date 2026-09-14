@@ -11,7 +11,11 @@ import 'grid_controller.dart';
 enum VsBotGridTurn { user, bot, gameOver }
 
 class VsBotGridController extends ChangeNotifier {
-  final GridController grid = GridController();
+  VsBotGridController({GridController? grid}) : grid = grid ?? GridController() {
+    this.grid.addListener(_safeNotify);
+  }
+
+  final GridController grid;
   final Random _random = Random();
 
   VsBotGridTurn turn = VsBotGridTurn.user;
@@ -44,6 +48,7 @@ class VsBotGridController extends ChangeNotifier {
     _disposed = true;
     _botTimer?.cancel();
     _feedbackTimer?.cancel();
+    grid.removeListener(_safeNotify);
     grid.dispose();
     super.dispose();
   }
@@ -151,6 +156,9 @@ class VsBotGridController extends ChangeNotifier {
   }
 
   void _schedulePassToBot() {
+    // Lock input immediately; the delay is only for the visual handover.
+    turn = VsBotGridTurn.bot;
+    _safeNotify();
     _botTimer?.cancel();
     _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);
   }

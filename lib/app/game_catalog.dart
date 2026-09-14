@@ -116,11 +116,13 @@ class GameCatalog {
   static const vsBotLabel = 'Botla oyna';
   static const vsBot = GameEntry(
     title: 'Vs Bot',
-    subtitle: 'Loto · Grid · Çinko · Beşler',
+    subtitle: 'Loto · Takım Yarışı · Grid · Çinko · Beşler',
     icon: Icons.smart_toy_outlined,
     page: VsBotModeSelectionPage(),
+    requiresRepository: false,
+    modern: true,
   );
-  // Preserve the readiness/account contract of every pre-existing Welcome entry.
+  // Gameplay keeps its readiness/account gates; menus may defer data loading.
   static const games = <GameEntry>[
     vsBot,
     GameEntry(
