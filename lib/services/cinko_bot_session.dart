@@ -102,9 +102,11 @@ class CinkoBotSession {
         Player.fromJson({
           'id': row['id'],
           'name': row['name'],
-          'countries': countries[row['id']] ?? [row['country'] ?? ''],
+          'countries':
+              countries[(row['id'] as num).toInt()] ??
+              [(row['country'] as String?) ?? ''],
           'position': row['position'],
-          'aliases': aliases[row['id']] ?? const <String>[],
+          'aliases': aliases[(row['id'] as num).toInt()] ?? const <String>[],
           'avatarKey': row['avatar_key'],
         }),
     ];
