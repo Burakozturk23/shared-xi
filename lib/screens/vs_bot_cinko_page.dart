@@ -217,7 +217,6 @@ class _VsBotCinkoPageState extends State<VsBotCinkoPage>
   Widget _game({bool ready = false}) {
     final p = PitchColors.of(context);
     return ListView(
-      key: const PageStorageKey('cinko-match'),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
         if (ready) ...[
@@ -786,6 +785,7 @@ class _VsBotCinkoPageState extends State<VsBotCinkoPage>
   }
 
   Widget _history() => ExpansionTile(
+    key: const PageStorageKey<String>('cinko-history'),
     tilePadding: EdgeInsets.zero,
     title: const Text('Hamle geçmişi'),
     subtitle: Text('${_c.moves.length} hamle'),
