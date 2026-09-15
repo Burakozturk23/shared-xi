@@ -78,3 +78,12 @@ This is the entry-flow increment, not closure of the whole bot category.
 
 Inspect and settle these one mode at a time before marking Botla Oyna complete.
 The other six catalog groups retain the user's approved membership and order.
+
+## Football Çinko follow-up — 2026-09-15
+
+The bot Çinko route now prepares its own V4 answer session and uses the Ortak
+Saha match interface. It adds explicit difficulty selection, pass, exhausted-board
+termination, connected-component bot decisions, pause/replay handling, readable
+zoomable cells and per-move feedback. See [the Çinko review](football-cinko-bot.md)
+for exact rules, data semantics and validation coverage. This does not close the
+remaining Grid variants or Rastgele Beşler review.

@@ -80,17 +80,19 @@ void main() {
     _gameStarts = 0;
   });
 
-  test('Bot menu defers data loading but all seven play entries require data', () {
+  test('Migrated bot entries prepare V4 sessions and preserve account gates', () {
     expect(GameCatalog.vsBot.modern, isTrue);
     expect(GameCatalog.vsBot.requiresRepository, isFalse);
     expect(GameCatalog.vsBot.requiresAuth, isFalse);
     expect(BotGameCatalog.all.length, 7);
     expect(BotGameCatalog.all.map((g) => g.entry.page.runtimeType).toSet().length, 7);
     for (final game in BotGameCatalog.all) {
-      expect(game.entry.requiresRepository, isTrue);
+      final migrated = [BotGameCatalog.loto, BotGameCatalog.teamRace,
+        BotGameCatalog.classicGrid, BotGameCatalog.cinko].contains(game);
+      expect(game.entry.requiresRepository, !migrated);
       expect(game.entry.requiresAuth, isFalse);
       expect(game.entry.requiresPersistentAccount, isFalse);
-      expect(game.entry.modern, isFalse);
+      expect(game.entry.modern, migrated);
     }
   });
 

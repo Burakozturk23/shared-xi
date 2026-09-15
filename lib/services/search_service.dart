@@ -433,6 +433,7 @@ class SearchService {
     required String query,
     Set<int> excludedPlayerIds = const {},
     int limit = 8,
+    bool useGlobalIndex = true,
   }) {
     final prepared = _prepareQuery(query);
     final q = prepared.normalized;
@@ -440,7 +441,7 @@ class SearchService {
     final qc = prepared.compact;
 
     Iterable<Player> pool;
-    final index = _prefixIndex;
+    final index = useGlobalIndex ? _prefixIndex : null;
     if (index != null && q.isNotEmpty) {
       final firstToken = prepared.tokens.firstWhere(
         (t) => t.isNotEmpty,

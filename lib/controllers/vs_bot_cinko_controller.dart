@@ -5,608 +5,469 @@ import 'package:flutter/foundation.dart';
 
 import '../models/cinko_models.dart';
 import '../models/cinko_state.dart';
-import '../models/club.dart';
 import '../models/player.dart';
-import '../repositories/repository.dart';
-import '../data/cinko_pool.dart';
+import '../services/cinko_bot_session.dart';
 import '../services/search_service.dart';
+import 'vs_bot_controller.dart';
 
 enum VsBotCinkoTurn { user, bot, gameOver }
 
-/// Ortak çinko tahtası; sıra sıra kullanıcı ve bot boyar.
+enum CinkoMatchPhase { loading, ready, playing, paused, finished, error }
+
+enum CinkoEndReason { boardCompleted, noMoves }
+
+class CinkoMove {
+  const CinkoMove({
+    required this.byUser,
+    this.player,
+    this.correct = const [],
+    this.wrong = const [],
+  });
+  final bool byUser;
+  final Player? player;
+  final List<int> correct, wrong;
+  bool get passed => player == null;
+  int get points => correct.length - wrong.length;
+}
+
+/// Human and bot share the same answer index, used-player set and connection rule.
 class VsBotCinkoController extends ChangeNotifier {
+  VsBotCinkoController({
+    this.gridSize = defaultGrid,
+    CinkoBotSessionLoader? loadSession,
+    Random? random,
+    this.difficulty = VsBotDifficulty.medium,
+  }) : assert(gridSize >= 2 && gridSize <= 6),
+       _loadSession = loadSession ?? CinkoBotSession.load,
+       _random = random ?? Random();
+
   static const int defaultGrid = 5;
-  static const int revealMs = 1000;
-
+  static const int revealMs = 1100;
   final int gridSize;
-  final Random _random = Random();
-
-  VsBotCinkoController({this.gridSize = defaultGrid});
-
+  final CinkoBotSessionLoader _loadSession;
+  final Random _random;
+  VsBotDifficulty difficulty;
+  CinkoBotSession? session;
+  CinkoMatchPhase phase = CinkoMatchPhase.loading;
+  CinkoEndReason? endReason;
+  String? errorMessage;
   CinkoState _state = const CinkoState();
   CinkoState get state => _state;
-
   List<Player> suggestions = const [];
-
   VsBotCinkoTurn turn = VsBotCinkoTurn.user;
-  int userScore = 0;
-  int botScore = 0;
-  String? lastBotInfo;
-
-  Timer? _revealTimer;
-  Timer? _feedbackTimer;
-  Timer? _botTimer;
+  int userScore = 0, botScore = 0;
+  final List<CinkoMove> _moves = [];
+  List<CinkoMove> get moves => List.unmodifiable(_moves);
+  CinkoMove? get lastMove => _moves.isEmpty ? null : _moves.last;
+  final Map<int, Player> claimedByPlayer = {};
+  Set<int> _playableCells = {};
+  Timer? _timer;
+  int _generation = 0;
   bool _disposed = false;
 
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
+  bool get isInMatch =>
+      phase == CinkoMatchPhase.playing || phase == CinkoMatchPhase.paused;
+  bool get canChoosePlayer =>
+      phase == CinkoMatchPhase.playing &&
+      turn == VsBotCinkoTurn.user &&
+      state.phase == CinkoPhase.enterPlayer;
+  bool get canSelect =>
+      phase == CinkoMatchPhase.playing &&
+      turn == VsBotCinkoTurn.user &&
+      state.phase == CinkoPhase.selecting;
+  bool get canPass => canChoosePlayer || canSelect;
+  int get remainingPlayableCells => _playableCells.length;
+  bool isCellPlayable(int index) => _playableCells.contains(index);
 
   Future<void> initialize() async {
-    _state = _state.copyWith(isLoading: true);
-    _safeNotify();
-    final cells = _buildGrid();
-    userScore = 0;
-    botScore = 0;
+    if (_disposed) return;
+    final generation = ++_generation;
+    _timer?.cancel();
+    phase = CinkoMatchPhase.loading;
+    endReason = null;
+    errorMessage = null;
+    session = null;
+    _state = const CinkoState();
     turn = VsBotCinkoTurn.user;
-    lastBotInfo = null;
-    _state = _state.copyWith(
-      cells: cells,
-      isLoading: false,
-      phase: CinkoPhase.enterPlayer,
-      score: 0,
-      usedPlayerIds: const {},
-      clearPlayer: true,
-      clearFeedback: true,
-    );
-    _safeNotify();
+    userScore = botScore = 0;
+    suggestions = const [];
+    _moves.clear();
+    claimedByPlayer.clear();
+    _playableCells = {};
+    notifyListeners();
+    try {
+      final loaded = await _loadSession(gridSize);
+      if (_disposed || generation != _generation) return;
+      if (!loaded.isPlayable(gridSize))
+        throw StateError('Eksik Çinko tahtası.');
+      session = loaded;
+      _state = CinkoState(cells: loaded.cells, isLoading: false);
+      _refreshPlayableCells();
+      phase = CinkoMatchPhase.ready;
+    } catch (error) {
+      if (_disposed || generation != _generation) return;
+      phase = CinkoMatchPhase.error;
+      _state = _state.copyWith(isLoading: false);
+      errorMessage = 'Tahta hazırlanamadı. Yeniden deneyebilirsin.';
+      if (kDebugMode) debugPrint('[Cinko] $error');
+    }
+    notifyListeners();
   }
 
-  @override
-  void dispose() {
-    _disposed = true;
-    _revealTimer?.cancel();
-    _feedbackTimer?.cancel();
-    _botTimer?.cancel();
-    super.dispose();
+  void setDifficulty(VsBotDifficulty value) {
+    if (_disposed || phase != CinkoMatchPhase.ready) return;
+    difficulty = value;
+    notifyListeners();
   }
 
-  List<CinkoCell> _buildGrid() {
-    final n = gridSize * gridSize;
-
-    // Sadece bilinen kulüpler (chain pool)
-    final clubs = cinkoFamousClubIds
-        .map((id) => Repository.instance.clubById(id))
-        .whereType<Club>()
-        .toList()
-      ..shuffle(_random);
-
-    // Ülkeler: bilinen milli takımlar ∩ veritabanı
-    final countrySet = {
-      for (final c in Repository.instance.countries) c.toLowerCase(),
-    };
-    final countries = cinkoFamousCountries
-        .where((c) => countrySet.contains(c.toLowerCase()))
-        .toList()
-      ..shuffle(_random);
-    // DB isimleriyle eşleşen gerçek label'ları kullan
-    final countryLabels = <String>[];
-    for (final want in countries) {
-      for (final real in Repository.instance.countries) {
-        if (real.toLowerCase() == want.toLowerCase()) {
-          countryLabels.add(real);
-          break;
-        }
-      }
-    }
-
-    // Ligler: sadece ünlü lig isimleri
-    final allLeagues = Repository.instance.clubs
-        .map((c) => c.league)
-        .where((l) => l.trim().isNotEmpty)
-        .toSet();
-    final leagues = <String>[];
-    for (final famous in cinkoFamousLeagues) {
-      for (final real in allLeagues) {
-        if (real.toLowerCase() == famous.toLowerCase() ||
-            real.toLowerCase().contains(famous.toLowerCase()) ||
-            famous.toLowerCase().contains(real.toLowerCase())) {
-          if (!leagues.contains(real)) leagues.add(real);
-        }
-      }
-    }
-    leagues.shuffle(_random);
-
-    // ~%70 kulüp, ~%15 ülke, ~%15 lig
-    final clubCount = (n * 0.70).round().clamp(1, clubs.length);
-    final countryCount =
-        (n * 0.15).round().clamp(0, countryLabels.length);
-    var leagueCount = n - clubCount - countryCount;
-    if (leagueCount > leagues.length) leagueCount = leagues.length;
-    if (leagueCount < 0) leagueCount = 0;
-
-    final cells = <CinkoCell>[];
-    final usedLabels = <String>{};
-
-    void addClub(Club c) {
-      final key = 'club_${c.id}';
-      if (usedLabels.contains(key)) return;
-      usedLabels.add(key);
-      cells.add(CinkoCell(
-        id: key,
-        type: CinkoCellType.club,
-        label: c.name,
-        logoUrl: c.logo,
-        clubId: c.id,
-      ));
-    }
-
-    void addCountry(String name) {
-      final key = 'country_$name';
-      if (usedLabels.contains(key)) return;
-      usedLabels.add(key);
-      cells.add(CinkoCell(
-        id: key,
-        type: CinkoCellType.country,
-        label: name,
-      ));
-    }
-
-    void addLeague(String name) {
-      final key = 'league_$name';
-      if (usedLabels.contains(key)) return;
-      usedLabels.add(key);
-      cells.add(CinkoCell(
-        id: key,
-        type: CinkoCellType.league,
-        label: name,
-      ));
-    }
-
-    for (var i = 0; i < clubCount && i < clubs.length; i++) {
-      addClub(clubs[i]);
-    }
-    for (var i = 0; i < countryCount && i < countryLabels.length; i++) {
-      addCountry(countryLabels[i]);
-    }
-    for (var i = 0; i < leagueCount && i < leagues.length; i++) {
-      addLeague(leagues[i]);
-    }
-
-    var ci = clubCount;
-    while (cells.length < n && ci < clubs.length) {
-      addClub(clubs[ci]);
-      ci++;
-    }
-
-    cells.shuffle(_random);
-    return cells.take(n).toList();
+  void begin() {
+    if (_disposed || phase != CinkoMatchPhase.ready) return;
+    phase = CinkoMatchPhase.playing;
+    notifyListeners();
   }
 
-  bool _playerMatchesCell(Player player, CinkoCell cell) {
-    switch (cell.type) {
-      case CinkoCellType.club:
-        return cell.clubId != null && player.clubs.contains(cell.clubId);
-      case CinkoCellType.country:
-        return player.countries.any(
-          (c) => c.toLowerCase() == cell.label.toLowerCase(),
-        );
-      case CinkoCellType.league:
-        for (final clubId in player.clubs) {
-          final club = Repository.instance.clubById(clubId);
-          if (club != null &&
-              club.league.toLowerCase() == cell.label.toLowerCase()) {
-            return true;
-          }
-        }
-        return false;
+  void pause() {
+    if (_disposed || phase != CinkoMatchPhase.playing) return;
+    _timer?.cancel();
+    phase = CinkoMatchPhase.paused;
+    notifyListeners();
+  }
+
+  void resume() {
+    if (_disposed || phase != CinkoMatchPhase.paused) return;
+    phase = CinkoMatchPhase.playing;
+    if (state.phase == CinkoPhase.revealing) {
+      _scheduleReveal();
+    } else if (turn == VsBotCinkoTurn.bot) {
+      _scheduleBot();
     }
+    notifyListeners();
   }
 
-
-  int get _gs => _state.gridSize;
-
-  List<int> _orthoNeighbors(int index) {
-    final size = _gs;
-    final r = index ~/ size;
-    final c = index % size;
-    final out = <int>[];
-    if (r > 0) out.add((r - 1) * size + c);
-    if (r < size - 1) out.add((r + 1) * size + c);
-    if (c > 0) out.add(r * size + (c - 1));
-    if (c < size - 1) out.add(r * size + (c + 1));
-    return out;
-  }
-
-  /// 4-yön bağlantı (çapraz yok). L şekli ve düz çizgi geçerli.
-  bool _isOrthoConnected(List<int> indexes) {
-    if (indexes.length <= 1) return true;
-    final set = indexes.toSet();
-    final visited = <int>{};
-    final queue = <int>[indexes.first];
-    visited.add(indexes.first);
-    while (queue.isNotEmpty) {
-      final i = queue.removeAt(0);
-      for (final n in _orthoNeighbors(i)) {
-        if (set.contains(n) && visited.add(n)) {
-          queue.add(n);
-        }
-      }
-    }
-    return visited.length == set.length;
-  }
-
-  List<int> _selectedIndexes() {
-    final out = <int>[];
-    for (var i = 0; i < _state.cells.length; i++) {
-      if (_state.cells[i].status == CinkoCellStatus.selected) out.add(i);
-    }
-    return out;
-  }
-
-  /// En büyük bağlı bileşeni bul (bot için).
-  List<int> _largestConnectedComponent(List<int> indexes) {
-    if (indexes.isEmpty) return const [];
-    final set = indexes.toSet();
-    final remaining = set.toSet();
-    List<int> best = const [];
-    while (remaining.isNotEmpty) {
-      final start = remaining.first;
-      final comp = <int>[];
-      final queue = <int>[start];
-      remaining.remove(start);
-      while (queue.isNotEmpty) {
-        final i = queue.removeAt(0);
-        comp.add(i);
-        for (final n in _orthoNeighbors(i)) {
-          if (remaining.remove(n)) queue.add(n);
-        }
-      }
-      if (comp.length > best.length) best = comp;
-    }
-    return best;
-  }
-
-  
   void updateSuggestions(String query) {
-    if (_disposed || turn != VsBotCinkoTurn.user) {
-      suggestions = const [];
-      _safeNotify();
-      return;
-    }
+    if (_disposed || !canChoosePlayer) return;
     suggestions = SearchService.suggestions(
-      players: Repository.instance.players,
+      players: session!.players,
       query: query,
-      excludedPlayerIds: _state.usedPlayerIds,
-    );
-    _safeNotify();
+      excludedPlayerIds: state.usedPlayerIds,
+      useGlobalIndex: false,
+    ).where((player) => session!.playersById.containsKey(player.id)).toList();
+    notifyListeners();
   }
 
-  void clearSuggestions() {
-    if (suggestions.isEmpty) return;
-    suggestions = const [];
-    _safeNotify();
-  }
-
-  /// Listeden seçilen oyuncu — isimle tekrar resolve etme.
-  void submitResolvedPlayer(Player player) {
-    suggestions = const [];
-    _acceptPlayer(player);
-  }
-
-  void submitPlayerName(String raw) {
-    if (_disposed || turn != VsBotCinkoTurn.user) return;
-    if (_state.phase != CinkoPhase.enterPlayer) return;
-
-    final name = raw.trim();
-    if (name.isEmpty) return;
-
+  bool submitPlayerName(String raw) {
+    if (_disposed || !canChoosePlayer || raw.trim().isEmpty) return false;
     final resolved = SearchService.resolve(
-      players: Repository.instance.players,
-      answer: name,
-      excludedPlayerIds: _state.usedPlayerIds,
+      players: session!.players,
+      answer: raw,
     );
-
-    if (resolved.status == ResolveStatus.ambiguous) {
-      suggestions = resolved.candidates;
-      _feedback(resolved.message, false);
-      _safeNotify();
-      return;
-    }
     if (!resolved.isFound) {
-      suggestions = const [];
-      _feedback('Oyuncu bulunamadı.', false);
-      return;
+      suggestions = resolved.status == ResolveStatus.ambiguous
+          ? resolved.candidates
+          : const [];
+      _feedback(
+        resolved.status == ResolveStatus.ambiguous
+            ? 'Birden fazla oyuncu var. Listeden seç.'
+            : 'Oyuncu bulunamadı. Adını düzenleyebilirsin.',
+        false,
+      );
+      return false;
     }
-
-    suggestions = const [];
-    _acceptPlayer(resolved.player!);
+    return submitResolvedPlayer(resolved.player!);
   }
 
-  void _acceptPlayer(Player found) {
-    if (_disposed || turn != VsBotCinkoTurn.user) return;
-    if (_state.phase != CinkoPhase.enterPlayer) return;
-
-    if (_state.usedPlayerIds.contains(found.id)) {
-      _feedback('Bu oyuncu daha önce kullanıldı.', false);
-      return;
+  bool submitResolvedPlayer(Player player) {
+    if (_disposed || !canChoosePlayer) return false;
+    // Resolve by ID; an injected object's club fields cannot alter validation.
+    final found = session!.playersById[player.id];
+    if (found == null) {
+      _feedback('Bu oyuncu kullanılamıyor.', false);
+      return false;
     }
-
-    final hasMatch = _state.cells.any(
-      (c) =>
-          c.status == CinkoCellStatus.open && _playerMatchesCell(found, c),
-    );
-    if (!hasMatch) {
-      _feedback('Bu oyuncunun bu ızgarada eşleşen kutusu yok.', false);
-      return;
+    if (state.usedPlayerIds.contains(found.id)) {
+      _feedback('Bu oyuncu bu maçta zaten kullanıldı.', false);
+      return false;
     }
-
-    _state = _state.copyWith(
+    if (!_playableCells.any((i) => _matches(found.id, i))) {
+      _feedback(
+        'Bu oyuncuya uyan açık kutu kalmadı. Başka bir oyuncu seç.',
+        false,
+      );
+      return false;
+    }
+    suggestions = const [];
+    _state = state.copyWith(
       currentPlayer: found,
       phase: CinkoPhase.selecting,
       clearFeedback: true,
     );
-    _safeNotify();
+    notifyListeners();
+    return true;
   }
 
-  void toggleCell(int index) {
-    if (_disposed || turn != VsBotCinkoTurn.user) return;
-    if (_state.phase != CinkoPhase.selecting) return;
-    if (index < 0 || index >= _state.cells.length) return;
-
-    final cell = _state.cells[index];
-    if (cell.status == CinkoCellStatus.correct) return;
-    if (cell.status == CinkoCellStatus.wrongFlash) return;
-
-    final cells = List<CinkoCell>.from(_state.cells);
+  bool toggleCell(int index) {
+    if (_disposed || !canSelect || index < 0 || index >= state.cells.length)
+      return false;
+    final cell = state.cells[index];
+    if (cell.status == CinkoCellStatus.correct ||
+        !_playableCells.contains(index))
+      return false;
+    final selected = selectedIndexes.toSet();
     if (cell.status == CinkoCellStatus.selected) {
-      // Kaldırınca kalan seçim bağlı kalmalı
-      cells[index] = cell.copyWith(status: CinkoCellStatus.open);
-      final remaining = <int>[];
-      for (var i = 0; i < cells.length; i++) {
-        if (cells[i].status == CinkoCellStatus.selected) remaining.add(i);
-      }
-      if (!_isOrthoConnected(remaining)) {
-        _feedback('Seçim bağlantısı bozulur, önce uçları kaldır.', false);
-        return;
-      }
-    } else if (cell.status == CinkoCellStatus.open) {
-      final selected = _selectedIndexes();
-      if (selected.isNotEmpty) {
-        final touches = selected.any((s) => _orthoNeighbors(s).contains(index));
-        if (!touches) {
-          _feedback(
-            'Kutu seçime komşu olmalı (yan / üst-alt). Çapraz yok.',
-            false,
-          );
-          return;
-        }
-      }
-      cells[index] = cell.copyWith(status: CinkoCellStatus.selected);
+      selected.remove(index);
+    } else {
+      selected.add(index);
     }
-
-    _state = _state.copyWith(cells: cells);
-    _safeNotify();
-  }
-
-  void cancelSelection() {
-    if (_disposed || turn != VsBotCinkoTurn.user) return;
-    if (_state.phase != CinkoPhase.selecting) return;
-
-    final cells = _state.cells.map((c) {
-      if (c.status == CinkoCellStatus.selected) {
-        return c.copyWith(status: CinkoCellStatus.open);
-      }
-      return c;
-    }).toList();
-
-    _state = _state.copyWith(
-      cells: cells,
-      phase: CinkoPhase.enterPlayer,
-      clearPlayer: true,
-      clearFeedback: true,
-    );
-    _safeNotify();
-  }
-
-  void confirmSelection() {
-    if (_disposed || turn != VsBotCinkoTurn.user) return;
-    if (_state.phase != CinkoPhase.selecting) return;
-    final player = _state.currentPlayer;
-    if (player == null) return;
-
-    final selectedIndexes = <int>[];
-    for (var i = 0; i < _state.cells.length; i++) {
-      if (_state.cells[i].status == CinkoCellStatus.selected) {
-        selectedIndexes.add(i);
-      }
-    }
-
-    if (selectedIndexes.isEmpty) {
-      _feedback('En az bir kutu seç.', false);
-      return;
-    }
-
-    if (!_isOrthoConnected(selectedIndexes)) {
+    if (selected.isNotEmpty &&
+        _largestComponent(selected).length != selected.length) {
       _feedback(
-        'Seçimler birbirine bağlı olmalı (yan / üst-alt, L olur; çapraz yok).',
+        'Kutular yan yana veya üst üste bağlı kalmalı. Çapraz bağlantı sayılmaz.',
         false,
       );
-      return;
+      return false;
     }
-
-    _applySelection(player, selectedIndexes, byUser: true);
-  }
-
-  void _applySelection(Player player, List<int> selectedIndexes,
-      {required bool byUser}) {
-    var delta = 0;
-    final cells = List<CinkoCell>.from(_state.cells);
-
-    for (final i in selectedIndexes) {
-      final cell = cells[i];
-      final ok = _playerMatchesCell(player, cell);
-      if (ok) {
-        cells[i] = cell.copyWith(
-          status: CinkoCellStatus.correct,
-          owner: byUser ? 1 : 2,
-        );
-        delta += 1;
-      } else {
-        cells[i] = cell.copyWith(status: CinkoCellStatus.wrongFlash);
-        delta -= 1;
-      }
-    }
-
-    final used = Set<int>.from(_state.usedPlayerIds)..add(player.id);
-
-    if (byUser) {
-      userScore += delta;
-    } else {
-      botScore += delta;
-      lastBotInfo = '${player.name}: ${delta >= 0 ? '+$delta' : '$delta'}';
-    }
-
-    final msg = byUser
-        ? (delta >= 0 ? '+$delta puan' : '$delta puan')
-        : 'Bot: ${player.name} (${delta >= 0 ? '+$delta' : '$delta'})';
-
-    _state = _state.copyWith(
-      cells: cells,
-      usedPlayerIds: used,
-      phase: CinkoPhase.revealing,
-      feedback: msg,
-      feedbackIsSuccess: delta >= 0,
-      clearPlayer: true,
+    final cells = List<CinkoCell>.of(state.cells);
+    cells[index] = cell.copyWith(
+      status: selected.contains(index)
+          ? CinkoCellStatus.selected
+          : CinkoCellStatus.open,
     );
-    _safeNotify();
-
-    _revealTimer?.cancel();
-    _revealTimer = Timer(const Duration(milliseconds: revealMs), () {
-      _finishReveal(byUser: byUser);
-    });
+    _state = state.copyWith(cells: cells, clearFeedback: true);
+    notifyListeners();
+    return true;
   }
 
-  void _finishReveal({required bool byUser}) {
-    if (_disposed) return;
+  List<int> get selectedIndexes => [
+    for (var i = 0; i < state.cells.length; i++)
+      if (state.cells[i].status == CinkoCellStatus.selected) i,
+  ];
 
-    final cells = _state.cells.map((c) {
-      if (c.status == CinkoCellStatus.wrongFlash) {
-        return c.copyWith(status: CinkoCellStatus.open);
-      }
-      return c;
-    }).toList();
+  void cancelSelection() {
+    if (_disposed || !canSelect) return;
+    _clearSelection();
+    notifyListeners();
+  }
 
-    final done = cells.every((c) => c.status == CinkoCellStatus.correct);
-
-    if (done) {
-      turn = VsBotCinkoTurn.gameOver;
-      _state = _state.copyWith(
-        cells: cells,
-        phase: CinkoPhase.gameOver,
-        clearFeedback: true,
-      );
-      _safeNotify();
-      return;
+  bool confirmSelection() {
+    if (_disposed || !canSelect || state.currentPlayer == null) return false;
+    final selected = selectedIndexes;
+    if (selected.isEmpty) {
+      _feedback('Önce en az bir kutu seç.', false);
+      return false;
     }
+    _applySelection(state.currentPlayer!, selected, byUser: true);
+    return true;
+  }
 
-    _state = _state.copyWith(
-      cells: cells,
+  void pass() {
+    if (_disposed || !canPass) return;
+    _clearSelection();
+    _moves.add(const CinkoMove(byUser: true));
+    turn = VsBotCinkoTurn.bot;
+    _state = state.copyWith(
+      feedback: 'Pas geçtin. Sıra botta.',
+      feedbackIsSuccess: true,
+    );
+    _scheduleBot();
+    notifyListeners();
+  }
+
+  void _clearSelection() {
+    suggestions = const [];
+    _state = state.copyWith(
+      cells: state.cells
+          .map(
+            (c) => c.status == CinkoCellStatus.selected
+                ? c.copyWith(status: CinkoCellStatus.open)
+                : c,
+          )
+          .toList(),
       phase: CinkoPhase.enterPlayer,
+      clearPlayer: true,
       clearFeedback: true,
     );
+  }
 
-    if (byUser) {
-      turn = VsBotCinkoTurn.bot;
-      _safeNotify();
-      _botTimer?.cancel();
-      _botTimer = Timer(
-        Duration(milliseconds: 800 + _random.nextInt(700)),
-        _botPlay,
+  bool _matches(int playerId, int cell) =>
+      session!.validPlayerIdsByCell[cell]?.contains(playerId) ?? false;
+
+  void _applySelection(
+    Player player,
+    List<int> indexes, {
+    required bool byUser,
+  }) {
+    final cells = List<CinkoCell>.of(state.cells);
+    final correct = <int>[], wrong = <int>[];
+    for (final index in indexes) {
+      final valid = _matches(player.id, index);
+      (valid ? correct : wrong).add(index);
+      cells[index] = cells[index].copyWith(
+        status: valid ? CinkoCellStatus.correct : CinkoCellStatus.wrongFlash,
+        owner: valid ? (byUser ? 1 : 2) : 0,
       );
-    } else {
-      turn = VsBotCinkoTurn.user;
-      lastBotInfo = null;
-      _safeNotify();
+      if (valid) claimedByPlayer[index] = player;
     }
+    final move = CinkoMove(
+      byUser: byUser,
+      player: player,
+      correct: List.unmodifiable(correct),
+      wrong: List.unmodifiable(wrong),
+    );
+    _moves.add(move);
+    if (byUser) {
+      userScore += move.points;
+    } else {
+      botScore += move.points;
+    }
+    // Lock before notifying listeners or scheduling a handover.
+    _state = state.copyWith(
+      cells: cells,
+      score: userScore,
+      phase: CinkoPhase.revealing,
+      usedPlayerIds: {...state.usedPlayerIds, player.id},
+      clearPlayer: true,
+      clearFeedback: true,
+    );
+    suggestions = const [];
+    _refreshPlayableCells();
+    _scheduleReveal();
+    notifyListeners();
+  }
+
+  void _scheduleReveal() {
+    _timer?.cancel();
+    _timer = Timer(const Duration(milliseconds: revealMs), _finishReveal);
+  }
+
+  void _finishReveal() {
+    if (_disposed ||
+        phase != CinkoMatchPhase.playing ||
+        state.phase != CinkoPhase.revealing)
+      return;
+    _state = state.copyWith(
+      cells: state.cells
+          .map(
+            (cell) => cell.status == CinkoCellStatus.wrongFlash
+                ? cell.copyWith(status: CinkoCellStatus.open)
+                : cell,
+          )
+          .toList(),
+      phase: CinkoPhase.enterPlayer,
+    );
+    if (_finishIfNoMoves()) return;
+    turn = lastMove!.byUser ? VsBotCinkoTurn.bot : VsBotCinkoTurn.user;
+    if (turn == VsBotCinkoTurn.bot) _scheduleBot();
+    notifyListeners();
+  }
+
+  void _refreshPlayableCells() {
+    _playableCells = {
+      for (var i = 0; i < state.cells.length; i++)
+        if (state.cells[i].status != CinkoCellStatus.correct &&
+            (session!.validPlayerIdsByCell[i] ?? const <int>{}).any(
+              (id) => !state.usedPlayerIds.contains(id),
+            ))
+          i,
+    };
+  }
+
+  bool _finishIfNoMoves() {
+    if (state.allPainted || _playableCells.isEmpty) {
+      _timer?.cancel();
+      endReason = state.allPainted
+          ? CinkoEndReason.boardCompleted
+          : CinkoEndReason.noMoves;
+      phase = CinkoMatchPhase.finished;
+      turn = VsBotCinkoTurn.gameOver;
+      _state = state.copyWith(phase: CinkoPhase.gameOver, clearFeedback: true);
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  void _scheduleBot() {
+    _timer?.cancel();
+    _timer = Timer(
+      Duration(milliseconds: 850 + _random.nextInt(450)),
+      _botPlay,
+    );
   }
 
   void _botPlay() {
-    if (_disposed || turn != VsBotCinkoTurn.bot) return;
-
-    final openIndexes = <int>[];
-    for (var i = 0; i < _state.cells.length; i++) {
-      if (_state.cells[i].status == CinkoCellStatus.open) openIndexes.add(i);
-    }
-    if (openIndexes.isEmpty) {
-      turn = VsBotCinkoTurn.gameOver;
-      _state = _state.copyWith(phase: CinkoPhase.gameOver);
-      _safeNotify();
+    if (_disposed ||
+        phase != CinkoMatchPhase.playing ||
+        turn != VsBotCinkoTurn.bot)
       return;
-    }
-
-    // En çok açık kutu boyayan oyuncuyu bul
-    Player? bestPlayer;
-    List<int> bestIndexes = [];
-    var bestCount = 0;
-
-    final used = _state.usedPlayerIds;
-    final candidates = Repository.instance.players
-        .where((p) => !used.contains(p.id))
-        .toList()
-      ..shuffle(_random);
-
-    // Performans: ilk 400 aday yeterli
-    final sample = candidates.take(400).toList();
-    for (final p in sample) {
-      final matches = <int>[];
-      for (final i in openIndexes) {
-        if (_playerMatchesCell(p, _state.cells[i])) matches.add(i);
-      }
-      if (matches.length > bestCount) {
-        bestCount = matches.length;
-        bestPlayer = p;
-        bestIndexes = matches;
-        if (bestCount >= 4) break;
+    if (_finishIfNoMoves()) return;
+    final matches = <int, Set<int>>{};
+    for (final cell in _playableCells) {
+      for (final id in session!.validPlayerIdsByCell[cell]!) {
+        if (!state.usedPlayerIds.contains(id)) {
+          matches.putIfAbsent(id, () => <int>{}).add(cell);
+        }
       }
     }
-
-    if (bestPlayer == null || bestIndexes.isEmpty) {
-      // Bot pas — kullanıcıya dön
-      turn = VsBotCinkoTurn.user;
-      lastBotInfo = 'Bot pas geçti';
-      _feedback('Bot pas geçti.', true);
-      return;
+    final cap = switch (difficulty) {
+      VsBotDifficulty.easy => 1,
+      VsBotDifficulty.medium => 3,
+      VsBotDifficulty.hard => state.totalCells,
+    };
+    Player? chosen;
+    List<int> best = [];
+    var ties = 0;
+    // Rank connected components, not the total number of scattered matches.
+    for (final entry in matches.entries) {
+      final connected = _largestComponent(entry.value).take(cap).toList();
+      if (connected.length > best.length) {
+        best = connected;
+        chosen = session!.playersById[entry.key];
+        ties = 1;
+      } else if (connected.length == best.length &&
+          _random.nextInt(++ties) == 0) {
+        best = connected;
+        chosen = session!.playersById[entry.key];
+      }
     }
-
-    // Bot da sadece bağlı (4-yön) bir küme boyar
-    final connected = _largestConnectedComponent(bestIndexes);
-    if (connected.isEmpty) {
-      turn = VsBotCinkoTurn.user;
-      lastBotInfo = 'Bot pas geçti';
-      _feedback('Bot pas geçti.', true);
-      return;
-    }
-
-    _applySelection(bestPlayer, connected, byUser: false);
+    if (chosen != null) _applySelection(chosen, best, byUser: false);
   }
 
-  void restart() {
-    _revealTimer?.cancel();
-    _botTimer?.cancel();
-    _feedbackTimer?.cancel();
-    _state = const CinkoState();
-    initialize();
+  Iterable<int> _neighbors(int index) sync* {
+    final row = index ~/ gridSize, col = index % gridSize;
+    if (row > 0) yield index - gridSize;
+    if (row < gridSize - 1) yield index + gridSize;
+    if (col > 0) yield index - 1;
+    if (col < gridSize - 1) yield index + 1;
+  }
+
+  List<int> _largestComponent(Set<int> indexes) {
+    final remaining = indexes.toSet();
+    List<int> best = [];
+    while (remaining.isNotEmpty) {
+      final component = [remaining.first];
+      remaining.remove(component.first);
+      for (var cursor = 0; cursor < component.length; cursor++) {
+        for (final neighbor in _neighbors(component[cursor])) {
+          if (remaining.remove(neighbor)) component.add(neighbor);
+        }
+      }
+      if (component.length > best.length) best = component;
+    }
+    return best;
   }
 
   void _feedback(String message, bool success) {
-    _feedbackTimer?.cancel();
-    _state = _state.copyWith(feedback: message, feedbackIsSuccess: success);
-    _safeNotify();
-    _feedbackTimer = Timer(const Duration(seconds: 2), () {
-      if (_disposed) return;
-      _state = _state.copyWith(clearFeedback: true);
-      _safeNotify();
-    });
+    _state = state.copyWith(feedback: message, feedbackIsSuccess: success);
+    notifyListeners();
+  }
+
+  void restart() => unawaited(initialize());
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _generation++;
+    _timer?.cancel();
+    super.dispose();
   }
 }

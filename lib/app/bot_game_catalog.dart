@@ -172,8 +172,10 @@ class BotGameCatalog {
       subtitle: 'Bir oyuncuyla birbirine bağlı kutuları boya.',
       icon: Icons.grid_on_rounded,
       page: VsBotCinkoPage(),
+      requiresRepository: false,
+      modern: true,
     ),
-    tags: ['5×5 tahta', 'Bağlı kutular'],
+    tags: ['5×5 tahta', 'Bağlı kutular', '3 bot seviyesi'],
     goal: 'Doğru kutuları birleştir, daha çok puan topla.',
     steps: [
       (
@@ -186,10 +188,10 @@ class BotGameCatalog {
       ),
       (
         'Seçimini onayla',
-        'Doğru kutular sana geçer. Sonra bot oynar. Kullanılan futbolcu yeniden seçilemez.',
+        'Doğru kutular sana geçer. Sonra bot oynar. Kullanılan futbolcu yeniden seçilemez. İstersen puan kaybetmeden pas geçebilirsin.',
       ),
     ],
-    scoring: 'Her doğru kutu +1, yanlış kutu −1 puan. Tahta tamamlandığında yüksek puan kazanır; eşitlik beraberliktir.',
+    scoring: 'Her doğru kutu +1, yanlış kutu −1, pas 0 puan. Tahta dolduğunda veya kullanılabilecek oyuncu kalmadığında yüksek puan kazanır; eşitlik beraberliktir. Bot kolayda 1, ortada en fazla 3, zorda en uzun bağlı kutu grubunu kazanır. Senin bağlantı uzunluğun sınırsız. Milliyet vatandaşlığı, lig ise veritabanındaki kariyer kulüplerinin ligini ifade eder.',
   );
 
   static const five = BotGameDefinition(
