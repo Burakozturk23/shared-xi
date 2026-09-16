@@ -3,327 +3,506 @@ import 'package:flutter/material.dart';
 import '../models/manager_formation.dart';
 import '../models/manager_rating.dart';
 import '../models/manager_season.dart';
+import '../models/manager_tactics.dart';
 import '../services/manager_career_store.dart';
-import '../services/manager_season_service.dart';
+import '../services/manager_roster_service.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/manager_ui.dart';
+import '../widgets/pitch_ui.dart';
 import 'club_manager_formation_page.dart';
 import 'club_manager_squad_page.dart';
 import 'club_manager_transfer_page.dart';
 
 class ClubManagerSeasonPage extends StatefulWidget {
+  const ClubManagerSeasonPage({
+    super.key,
+    required this.difficulty,
+    this.store,
+    this.loadRoster,
+  });
   final ManagerDifficulty difficulty;
-
-  const ClubManagerSeasonPage({super.key, required this.difficulty});
-
+  final ManagerCareerStore? store;
+  final ManagerRosterLoader? loadRoster;
   @override
   State<ClubManagerSeasonPage> createState() => _ClubManagerSeasonPageState();
 }
 
-class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage>
-    with SingleTickerProviderStateMixin {
+class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
+  ManagerCareerStore get _store => widget.store ?? ManagerCareerStore.instance;
   ManagerCareerState? _career;
-  bool _loading = true;
-  late TabController _tabs;
+  bool _loading = true, _busy = false;
+  String? _error;
+  int _leg = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 2, vsync: this);
     _load();
   }
 
-  @override
-  void dispose() {
-    _tabs.dispose();
-    super.dispose();
-  }
-
   Future<void> _load() async {
-    setState(() => _loading = true);
-    var c = await ManagerCareerStore.instance.startIfNeeded(widget.difficulty);
-    if (c.season == null) {
-      final season = ManagerSeasonService.instance.createSeason();
-      c = c.copyWith(season: season, started: true);
-      await ManagerCareerStore.instance.save(c);
-    }
     if (!mounted) return;
     setState(() {
-      _career = c;
-      _loading = false;
+      _loading = true;
+      _error = null;
     });
+    try {
+      _career = await _store.startIfNeeded(widget.difficulty);
+    } catch (e) {
+      _error = managerError(e);
+    }
+    if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _openTransfer() async {
-    final c = _career!;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ClubManagerTransferPage(
-          difficulty: widget.difficulty,
-          cash: c.budgetLink,
-          squadIds: c.squadPlayerIds,
-          benchIds: c.benchPlayerIds,
-        ),
-      ),
-    );
-    await _load();
+  Future<void> _act(Future<void> Function() action) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await action();
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(managerError(e))));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
-  Future<void> _continue() async {
+  Future<void> _squad({bool chooseFormation = false}) => _act(() async {
     final c = _career!;
-    if (c.hasSquad) {
-      final formation = ManagerFormations.all.firstWhere(
-        (f) => f.id == c.formationId,
-        orElse: () => ManagerFormations.all.first,
-      );
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ClubManagerSquadPage(
-            difficulty: widget.difficulty,
-            careerBudget: c.budgetLink,
-            formation: formation,
-            initialPlayerIds: c.squadPlayerIds,
-            manageMode: true,
-          ),
-        ),
-      );
-    } else {
-      await Navigator.push(
-        context,
+    ManagerFormation? formation;
+    for (final f in ManagerFormations.all) {
+      if (f.id == c.formationId) formation = f;
+    }
+    if (chooseFormation || formation == null) {
+      formation = await Navigator.of(context).push<ManagerFormation>(
         MaterialPageRoute(
           builder: (_) => ClubManagerFormationPage(
             difficulty: widget.difficulty,
             careerBudget: c.budgetLink,
+            selectedId: c.formationId,
           ),
         ),
       );
     }
+    if (!mounted || formation == null) return;
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => ClubManagerSquadPage(
+          difficulty: widget.difficulty,
+          formation: formation!,
+          store: _store,
+          loadRoster: widget.loadRoster,
+        ),
+      ),
+    );
     await _load();
-  }
+  });
+
+  Future<void> _transfer() => _act(() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ClubManagerTransferPage(
+          difficulty: widget.difficulty,
+          store: _store,
+          loadRoster: widget.loadRoster,
+        ),
+      ),
+    );
+    await _load();
+  });
+
+  Future<void> _nextSeason() => _act(() async {
+    await _store.nextSeason(widget.difficulty);
+    await _load();
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (_loading || _career?.season == null) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF0A0E14),
-        body: Center(child: CircularProgressIndicator()),
+    if (_loading || _error != null || _career?.season == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Sezon')),
+        body: ManagerMessage(
+          title: _error == null ? 'Lig hazırlanıyor' : 'Sezon açılamadı',
+          message: _error ?? '20 takım, 38 hafta. Fikstürün kaydediliyor.',
+          loading: _error == null,
+          onRetry: _error == null ? null : _load,
+        ),
       );
     }
-    final season = _career!.season!;
-    final next = season.nextFixture;
-    final rank = season.userRank();
-    final user = season.user;
-
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0E14),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white70,
-        title: Text('Sezon · ${widget.difficulty.label}',
-            style: const TextStyle(color: Colors.white)),
-        bottom: TabBar(
-          controller: _tabs,
-          tabs: const [
-            Tab(text: 'Fikstür'),
-            Tab(text: 'Puan durumu'),
-          ],
+    final c = _career!;
+    final season = c.season!;
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Sezon ${c.seasonNumber} · ${widget.difficulty.label}'),
+          bottom: const TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: [
+              Tab(text: 'Kulübüm'),
+              Tab(text: 'Fikstür'),
+              Tab(text: 'Puan durumu'),
+            ],
+          ),
+        ),
+        body: SafeArea(
+          top: false,
+          child: TabBarView(
+            children: [_overview(c, season), _fixtures(season), _table(season)],
+          ),
+        ),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          minimum: const EdgeInsets.all(12),
+          child: PitchAction(
+            label: season.isComplete
+                ? 'Yeni sezona başla'
+                : c.hasSquad
+                ? 'Maça hazırlan'
+                : 'Kadronu kur',
+            busy: _busy,
+            onPressed: season.isComplete ? _nextSeason : () => _squad(),
+          ),
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            color: const Color(0xFF121820),
+    );
+  }
+
+  Widget _overview(ManagerCareerState c, ManagerSeason season) {
+    final next = season.nextFixture;
+    final user = season.user;
+    final opponent = next == null
+        ? null
+        : season.clubs.firstWhere((club) => club.id == next.opponentId);
+    return ListView(
+      key: const PageStorageKey<String>('manager-overview'),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        if (c.formatUpgradeNotice) ...[
+          PitchPanel(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  season.isComplete
-                      ? 'Sezon bitti · Sıra $rank/19'
-                      : 'Hafta ${next!.week}/19 · Sıra $rank',
-                  style: const TextStyle(
-                      color: Color(0xFF00E676),
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16),
+                  'Yeni lig düzeni hazır',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Puan ${user.points} · ${user.won}G ${user.drawn}B ${user.lost}M · ${user.gf}:${user.ga}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                const SizedBox(height: 8),
+                const Text(
+                  'Eski sezonun arşivlendi. Kadron, kasan ve kariyer istatistiklerin '
+                  'korundu. Yeni sezon 20 takım ve 38 haftadan oluşuyor.',
                 ),
-                if (next != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Sıradaki: ${season.clubs.firstWhere((c) => c.id == next.opponentId).name}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                ],
+                TextButton(
+                  onPressed: _busy
+                      ? null
+                      : () => _act(() async {
+                          final updated = await _store.dismissUpgrade(
+                            widget.difficulty,
+                          );
+                          if (mounted) setState(() => _career = updated);
+                        }),
+                  child: const Text('Anladım'),
+                ),
               ],
             ),
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabs,
+          const SizedBox(height: 16),
+        ],
+        Text(
+          season.isComplete
+              ? season.userRank() == 1
+                    ? 'Şampiyon sensin!'
+                    : 'Sezon tamamlandı.'
+              : 'Hafta ${next!.week} / 38',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          season.isComplete
+              ? 'Ligi ${season.userRank()}. sırada bitirdin. Kadronla yeni bir hedef koy.'
+              : '19 rakip · İç saha ve deplasman',
+        ),
+        const SizedBox(height: 14),
+        LinearProgressIndicator(value: user.played / ManagerSeason.totalWeeks),
+        const SizedBox(height: 18),
+        ManagerMetrics(
+          values: [
+            (label: 'Sıralama', value: '${season.userRank()}/20'),
+            (label: 'Puan', value: '${user.points}'),
+            (label: 'Kasa', value: '${c.budgetLink} LINK'),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          '${user.played} maç · ${user.won}G ${user.drawn}B ${user.lost}M · '
+          'Goller ${user.gf}:${user.ga}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        if (next != null && opponent != null) ...[
+          const PitchSectionTitle('Sıradaki rakip'),
+          PitchPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _fixtures(season),
-                _table(season),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ManagerTag(
+                      next.isHome ? 'İç saha' : 'Deplasman',
+                      active: true,
+                    ),
+                    ManagerTag(next.week <= 19 ? 'İlk devre' : 'Rövanş'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  opponent.name,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${opponent.style.label} · Güç ${opponent.strength.round()}',
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  opponent.style.blurb,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
           ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: season.isComplete ? null : _openTransfer,
-                      child: const Text('TRANSFER'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00E676),
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(0, 48),
-                      ),
-                      onPressed: season.isComplete ? null : _continue,
-                      child: Text(
-                        season.isComplete
-                            ? 'BİTTİ'
-                            : (_career!.hasSquad ? 'HAFTAYA DEVAM' : 'KADRO KUR'),
-                        style: const TextStyle(fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                  ),
+          const PitchSectionTitle('Kulüp yönetimi'),
+          PitchRow(
+            title: 'Kadro & diziliş',
+            icon: Icons.groups_outlined,
+            subtitle:
+                '${c.squadPlayerIds.length}/11 ilk 11 · ${c.benchPlayerIds.length} yedek',
+            onTap: _busy ? null : () => _squad(),
+          ),
+          const SizedBox(height: 12),
+          PitchRow(
+            title: 'Dizilişi değiştir',
+            icon: Icons.account_tree_outlined,
+            subtitle: c.formationId == null
+                ? 'Oyun planını seç'
+                : 'Sistem ${c.formationId}',
+            onTap: _busy ? null : () => _squad(chooseFormation: true),
+          ),
+          const SizedBox(height: 12),
+          PitchRow(
+            title: 'Transfer piyasası',
+            icon: Icons.swap_horiz_rounded,
+            subtitle: 'Haftalık teklifler · Yedek satışı',
+            onTap: _busy ? null : _transfer,
+          ),
+        ],
+        if (user.played > 0) ...[
+          const PitchSectionTitle('Son haftanın maçları'),
+          for (final f in season.matchesInWeek(user.played))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: PitchPanel(
+                padding: const EdgeInsets.all(12),
+                child: _leagueScore(season, f),
+              ),
+            ),
+        ],
+        const SizedBox(height: 20),
+        PitchRow(
+          title: 'Sezon arşivi',
+          icon: Icons.history_rounded,
+          subtitle: '${c.archivedSeasons.length} kayıt',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => _ManagerArchivePage(seasons: c.archivedSeasons),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _leagueScore(ManagerSeason season, LeagueFixture f) {
+    String name(String id) => season.clubs.firstWhere((c) => c.id == id).name;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('${name(f.homeId)} – ${name(f.awayId)}'),
+        const SizedBox(height: 4),
+        Text(
+          '${f.homeGoals} – ${f.awayGoals}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      ],
+    );
+  }
+
+  Widget _fixtures(ManagerSeason season) => ListView(
+    key: const PageStorageKey<String>('manager-fixtures'),
+    padding: const EdgeInsets.all(16),
+    children: [
+      Text('38 maçlık yolculuk', style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: 8),
+      const Text('Her rakiple iki kez: bir maç evinde, bir maç deplasmanda.'),
+      const SizedBox(height: 12),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final (index, label) in ['Tümü', 'İlk devre', 'Rövanş'].indexed)
+            ChoiceChip(
+              label: Text(label),
+              selected: _leg == index,
+              onSelected: (_) => setState(() => _leg = index),
+            ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      for (final f in season.fixtures.where(
+        (f) => _leg == 0 || (_leg == 1 ? f.week <= 19 : f.week > 19),
+      ))
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _fixtureCard(context, season, f),
+        ),
+    ],
+  );
+
+  Widget _table(ManagerSeason season) => ListView(
+    key: const PageStorageKey<String>('manager-table'),
+    padding: const EdgeInsets.all(16),
+    children: [
+      Text(
+        '20 takım, tek hedef.',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'O: oynanan · G: galibiyet · B: beraberlik · M: mağlubiyet · '
+        'AV: averaj · P: puan. Tabloyu yana kaydırabilirsin.',
+      ),
+      const SizedBox(height: 16),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columnSpacing: 16,
+          horizontalMargin: 12,
+          dataRowMinHeight: 56,
+          dataRowMaxHeight: 140,
+          columns: [
+            for (final title in ['#', 'Takım', 'O', 'G', 'B', 'M', 'AV', 'P'])
+              DataColumn(label: Text(title), numeric: title != 'Takım'),
+          ],
+          rows: [
+            for (final (index, c) in season.table().indexed)
+              DataRow(
+                color: c.isUser
+                    ? WidgetStatePropertyAll(PitchColors.of(context).tint)
+                    : null,
+                cells: [
+                  DataCell(Text('${index + 1}')),
+                  DataCell(SizedBox(width: 190, child: Text(c.name))),
+                  for (final n in [
+                    c.played,
+                    c.won,
+                    c.drawn,
+                    c.lost,
+                    c.gd,
+                    c.points,
+                  ])
+                    DataCell(Text('$n')),
                 ],
               ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+Widget _fixtureCard(
+  BuildContext context,
+  ManagerSeason season,
+  SeasonFixture f,
+) {
+  final opponent = season.clubs.firstWhere((c) => c.id == f.opponentId);
+  final home = f.isHome ? season.user.name : opponent.name;
+  final away = f.isHome ? opponent.name : season.user.name;
+  final score = f.isHome
+      ? '${f.userGoals} – ${f.oppGoals}'
+      : '${f.oppGoals} – ${f.userGoals}';
+  return PitchPanel(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ManagerTag(
+              'Hafta ${f.week}',
+              active: season.nextFixture?.week == f.week,
+            ),
+            ManagerTag(f.isHome ? 'İç saha' : 'Deplasman'),
+            if (season.nextFixture?.week == f.week)
+              const ManagerTag('Sıradaki', active: true),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text('$home – $away', style: Theme.of(context).textTheme.titleSmall),
+        if (f.played) ...[
+          const SizedBox(height: 8),
+          Text(
+            score,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: f.userGoals! > f.oppGoals!
+                  ? PitchColors.of(context).success
+                  : f.userGoals! < f.oppGoals!
+                  ? PitchColors.of(context).error
+                  : PitchColors.of(context).accent,
             ),
           ),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
-  Widget _fixtures(ManagerSeason season) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: season.fixtures.length,
-      itemBuilder: (_, i) {
-        final f = season.fixtures[i];
-        final opp = season.clubs.firstWhere((c) => c.id == f.opponentId);
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: f.played
-                ? const Color(0xFF141A22)
-                : const Color(0xFF1B3D2F).withOpacity(0.35),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: !f.played
-                  ? const Color(0xFF00E676).withOpacity(0.4)
-                  : Colors.white10,
+class _ManagerArchivePage extends StatelessWidget {
+  const _ManagerArchivePage({required this.seasons});
+  final List<ManagerSeason> seasons;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Sezon arşivi')),
+    body: SafeArea(
+      top: false,
+      child: ListView(
+        key: const PageStorageKey<String>('manager-archive-list'),
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (seasons.isEmpty)
+            const Text('Tamamlanan sezonların burada görünecek.'),
+          for (final (index, season) in seasons.indexed)
+            ExpansionTile(
+              key: PageStorageKey<String>('manager-archive-season-$index'),
+              title: Text('Sezon ${index + 1} · ${season.user.points} puan'),
+              subtitle: Text(
+                '${season.user.played} maç · Sıra ${season.userRank()}/${season.clubs.length}'
+                '${season.isCurrentFormat ? '' : ' · Eski lig düzeni'}',
+              ),
+              children: [
+                for (final f in season.fixtures.where((f) => f.played))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _fixtureCard(context, season, f),
+                  ),
+              ],
             ),
-          ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 36,
-                child: Text('H${f.week}',
-                    style: const TextStyle(
-                        color: Colors.white38, fontWeight: FontWeight.w700)),
-              ),
-              Expanded(
-                child: Text(opp.name,
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600)),
-              ),
-              if (f.played)
-                Text(
-                  '${f.userGoals} - ${f.oppGoals}',
-                  style: TextStyle(
-                    color: (f.userGoals ?? 0) > (f.oppGoals ?? 0)
-                        ? const Color(0xFF00E676)
-                        : (f.userGoals == f.oppGoals)
-                            ? Colors.amber
-                            : Colors.redAccent,
-                    fontWeight: FontWeight.w900,
-                  ),
-                )
-              else
-                Text('${opp.strength.toStringAsFixed(0)} G',
-                    style: const TextStyle(color: Colors.white30, fontSize: 12)),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _table(ManagerSeason season) {
-    final table = season.table();
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: table.length,
-      itemBuilder: (_, i) {
-        final c = table[i];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: c.isUser
-                ? const Color(0xFF1B3D2F)
-                : const Color(0xFF141A22),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 24,
-                child: Text('${i + 1}',
-                    style: const TextStyle(
-                        color: Colors.white38, fontWeight: FontWeight.w700)),
-              ),
-              Expanded(
-                child: Text(
-                  c.name,
-                  style: TextStyle(
-                    color: c.isUser ? const Color(0xFF00E676) : Colors.white,
-                    fontWeight: c.isUser ? FontWeight.w800 : FontWeight.w500,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 28,
-                child: Text('${c.played}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white38, fontSize: 12)),
-              ),
-              SizedBox(
-                width: 36,
-                child: Text('${c.gd >= 0 ? '+' : ''}${c.gd}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white54, fontSize: 12)),
-              ),
-              SizedBox(
-                width: 28,
-                child: Text('${c.points}',
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 13)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+        ],
+      ),
+    ),
+  );
 }

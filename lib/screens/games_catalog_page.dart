@@ -71,29 +71,30 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                   group == null
                       ? 'Bugün ne oynamak istersin?'
                       : '${entries.length} oyun seni bekliyor.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: PitchColors.of(context).muted,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: PitchColors.of(context).muted),
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  controller: _search,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    hintText: group == null
-                        ? 'Oyun veya kategori ara'
-                        : 'Bu grupta ara',
-                    prefixIcon: const Icon(Icons.search_rounded),
-                    suffixIcon: _search.text.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: 'Aramayı temizle',
-                            onPressed: () => setState(_search.clear),
-                            icon: const Icon(Icons.close_rounded),
-                          ),
+                if (group?.title != 'Kadro & Yönetim')
+                  TextField(
+                    controller: _search,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: group == null
+                          ? 'Oyun veya kategori ara'
+                          : 'Bu grupta ara',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      suffixIcon: _search.text.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: 'Aramayı temizle',
+                              onPressed: () => setState(_search.clear),
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                if (group?.title != 'Kadro & Yönetim')
+                  const SizedBox(height: 16),
               ],
             ),
           ),

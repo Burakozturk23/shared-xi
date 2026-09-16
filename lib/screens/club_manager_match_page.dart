@@ -1,43 +1,47 @@
 import 'package:flutter/material.dart';
 
-import '../models/manager_formation.dart';
 import '../models/manager_match.dart';
 import '../models/manager_pool.dart';
 import '../models/manager_rating.dart';
+import '../models/manager_season.dart';
 import '../models/manager_tactics.dart';
 import '../services/manager_career_store.dart';
 import '../services/manager_match_service.dart';
-import 'club_manager_hub_page.dart';
-import 'club_manager_season_page.dart';
-import 'club_manager_squad_page.dart';
+import '../services/manager_roster_service.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/manager_ui.dart';
+import '../widgets/pitch_ui.dart';
 
 class ClubManagerMatchPage extends StatefulWidget {
-  final List<ManagerPoolPlayer> xi;
-  final ManagerDifficulty difficulty;
-  final int budgetLink;
-  final String formationId;
-  final ManagerTactics tactics;
-  final ManagerOpponent? opponent;
-  final String? seasonOpponentId;
-
   const ClubManagerMatchPage({
     super.key,
     required this.xi,
     required this.difficulty,
     required this.budgetLink,
     required this.formationId,
+    required this.opponent,
+    required this.seasonId,
+    required this.fixture,
     this.tactics = const ManagerTactics(),
-    this.opponent,
-    this.seasonOpponentId,
+    this.store,
   });
-
+  final List<ManagerPoolPlayer> xi;
+  final ManagerDifficulty difficulty;
+  final int budgetLink;
+  final String formationId, seasonId;
+  final ManagerTactics tactics;
+  final ManagerOpponent opponent;
+  final SeasonFixture fixture;
+  final ManagerCareerStore? store;
   @override
   State<ClubManagerMatchPage> createState() => _ClubManagerMatchPageState();
 }
 
 class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
   ManagerMatchResult? _result;
-  bool _running = true;
+  ManagerCareerState? _saved;
+  bool _running = true, _allowExit = false;
+  String? _error;
 
   @override
   void initState() {
@@ -46,173 +50,201 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
   }
 
   Future<void> _run() async {
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    final r = ManagerMatchService.instance.simulate(
-      xi: widget.xi,
-      difficulty: widget.difficulty,
-      budgetLink: widget.budgetLink,
-      tactics: widget.tactics,
-      opponent: widget.opponent,
-    );
-    await ManagerCareerStore.instance.applyMatchResult(
-      difficulty: widget.difficulty,
-      remainingBudget: r.remainingAfter,
-      isWin: r.isWin,
-      isDraw: r.isDraw,
-      squadPlayerIds: widget.xi.map((e) => e.playerId).toList(),
-      formationId: widget.formationId,
-      opponentId: widget.seasonOpponentId,
-      userGoals: r.stats.goalsHome,
-      oppGoals: r.stats.goalsAway,
-    );
     if (!mounted) return;
     setState(() {
-      _result = r;
-      _running = false;
+      _running = true;
+      _error = null;
+    });
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 350));
+      if (!mounted) return;
+      // Retain the same result if persistence needs a retry.
+      _result ??= ManagerMatchService.instance.simulate(
+        xi: widget.xi,
+        difficulty: widget.difficulty,
+        budgetLink: widget.budgetLink,
+        tactics: widget.tactics,
+        opponent: widget.opponent,
+        userIsHome: widget.fixture.isHome,
+        homeAdvantage: 3,
+        chargeSquadCost: false,
+        seed: ManagerRoster.seedFor(
+          '${widget.seasonId}:${widget.fixture.week}',
+        ),
+      );
+      _saved = await (widget.store ?? ManagerCareerStore.instance)
+          .applyMatchResult(
+            difficulty: widget.difficulty,
+            seasonId: widget.seasonId,
+            week: widget.fixture.week,
+            opponentId: widget.fixture.opponentId,
+            userGoals: _result!.userGoals,
+            oppGoals: _result!.opponentGoals,
+          );
+    } catch (e) {
+      _error = managerError(e);
+    }
+    if (mounted) setState(() => _running = false);
+  }
+
+  void _finish() {
+    if (_running || _allowExit) return;
+    setState(() => _allowExit = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.of(context).pop(_saved != null);
     });
   }
 
-  void _backToSquad() {
-    final formation = ManagerFormations.all.firstWhere(
-      (f) => f.id == widget.formationId,
-      orElse: () => ManagerFormations.all.first,
-    );
-    final r = _result!;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ClubManagerSquadPage(
-          difficulty: widget.difficulty,
-          careerBudget: r.remainingAfter,
-          formation: formation,
-          initialPlayerIds: widget.xi.map((e) => e.playerId).toList(),
-          manageMode: true,
-        ),
-      ),
-    );
-  }
-
-  void _toSeason() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ClubManagerSeasonPage(difficulty: widget.difficulty),
-      ),
-      (route) => route.isFirst,
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0E14),
+  Widget build(BuildContext context) => PopScope(
+    canPop: _allowExit,
+    onPopInvokedWithResult: (didPop, result) {
+      if (!didPop) _finish();
+    },
+    child: Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white70,
-        title: const Text('Maç', style: TextStyle(color: Colors.white)),
-        automaticallyImplyLeading: !_running,
+        title: Text('Hafta ${widget.fixture.week} · Maç'),
+        automaticallyImplyLeading: false,
+        leading: _running
+            ? null
+            : IconButton(
+                tooltip: 'Geri',
+                onPressed: _finish,
+                icon: const Icon(Icons.arrow_back),
+              ),
       ),
-      body: _running || _result == null
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF00E676)))
-          : _body(_result!),
-    );
-  }
+      body: SafeArea(
+        top: false,
+        child: _running || _error != null
+            ? ManagerMessage(
+                title: _error == null ? 'Maç oynanıyor' : 'Sonuç kaydedilemedi',
+                message: _error ?? 'Sahadaki planın sonucu ve ligin diğer maçları hazırlanıyor.',
+                loading: _error == null,
+                onRetry: _error == null ? null : _run,
+              )
+            : _body(_result!),
+      ),
+      bottomNavigationBar: _running
+          ? null
+          : SafeArea(
+              top: false,
+              minimum: const EdgeInsets.all(12),
+              child: PitchAction(
+                label: _saved == null ? 'Maç planına dön' : 'Sezona dön',
+                onPressed: _finish,
+              ),
+            ),
+    ),
+  );
 
   Widget _body(ManagerMatchResult r) {
-    final outcomeColor = r.isWin
-        ? const Color(0xFF00E676)
+    final color = r.isWin
+        ? PitchColors.of(context).success
         : r.isDraw
-            ? Colors.amber
-            : Colors.redAccent;
-
-    return Column(
+        ? PitchColors.of(context).accent
+        : PitchColors.of(context).error;
+    final stats = r.stats;
+    return ListView(
+      key: const PageStorageKey<String>('manager-match-result'),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-          color: const Color(0xFF121820),
+        Icon(
+          r.isWin ? Icons.emoji_events_outlined : Icons.sports_soccer,
+          color: color,
+          size: 48,
+        ),
+        const SizedBox(height: 14),
+        Text(
+          r.outcomeLabel,
+          style: Theme.of(context).textTheme.headlineMedium
+              ?.copyWith(color: color),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 18),
+        PitchPanel(
           child: Column(
             children: [
-              Text(r.outcomeLabel,
-                  style: TextStyle(
-                      color: outcomeColor,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900)),
-              const SizedBox(height: 12),
               Text(
-                '${r.homeName}  ${r.stats.goalsHome} - ${r.stats.goalsAway}  ${r.awayName}',
+                r.homeName,
+                style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
-                r.winBonus > 0
-                    ? '+${r.winBonus} LINK · Kasa ${r.remainingAfter}'
-                    : 'Kasa ${r.remainingAfter} LINK',
-                style: const TextStyle(color: Color(0xFF00E676), fontSize: 12),
+                '${stats.goalsHome} – ${stats.goalsAway}',
+                style: Theme.of(context).textTheme.displaySmall,
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00E676),
-                        foregroundColor: Colors.black,
-                      ),
-                      onPressed: _toSeason,
-                      child: const Text('PUAN DURUMU',
-                          style: TextStyle(fontWeight: FontWeight.w800)),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _backToSquad,
-                      child: const Text('KADRO'),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 10),
+              Text(
+                r.awayName,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const ClubManagerHubPage()),
-                    (r) => false,
-                  );
-                },
-                child: const Text('Mod seç',
-                    style: TextStyle(color: Colors.white38)),
-              ),
+              const SizedBox(height: 14),
+              ManagerTag(widget.fixture.isHome ? 'İç saha' : 'Deplasman'),
             ],
           ),
         ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(12),
-            itemCount: r.events.length,
-            itemBuilder: (_, i) {
-              final e = r.events[i];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text(
-                  "${e.minute}'  ${e.text}",
-                  style: TextStyle(
-                    color: e.isGoal ? Colors.white : Colors.white60,
-                    fontWeight: e.isGoal ? FontWeight.w700 : FontWeight.w400,
-                    fontSize: 12,
-                  ),
-                ),
-              );
-            },
-          ),
+        const SizedBox(height: 16),
+        ManagerMetrics(
+          values: [
+            (
+              label: 'Maç puanı',
+              value: r.isWin
+                  ? '+3'
+                  : r.isDraw
+                  ? '+1'
+                  : '+0',
+            ),
+            (label: 'Prim', value: '+${r.winBonus} LINK'),
+            (label: 'Kasa', value: '${_saved!.budgetLink} LINK'),
+          ],
         ),
+        const SizedBox(height: 12),
+        Text(
+          'Sonuç kaydedildi · ${_saved!.season!.user.played}/38 maç tamamlandı.',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const PitchSectionTitle('Maçın sayıları'),
+        const Text('İstatistikler ev sahibi – deplasman sırasıyla gösterilir.'),
+        const SizedBox(height: 12),
+        ManagerMetrics(
+          values: [
+            (label: 'Şut', value: '${stats.shotsHome} – ${stats.shotsAway}'),
+            (
+              label: 'İsabetli şut',
+              value: '${stats.shotsOnHome} – ${stats.shotsOnAway}',
+            ),
+            (
+              label: 'Topa sahip olma',
+              value:
+                  '%${stats.possessionHome.round()} – %${stats.possessionAway.round()}',
+            ),
+            (
+              label: 'Gol beklentisi',
+              value: '${stats.xgHome} – ${stats.xgAway}',
+            ),
+            (
+              label: 'Korner',
+              value: '${stats.cornersHome} – ${stats.cornersAway}',
+            ),
+            (label: 'Faul', value: '${stats.foulsHome} – ${stats.foulsAway}'),
+          ],
+        ),
+        const PitchSectionTitle('Maçın hikâyesi'),
+        for (final e in r.events)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: PitchPanel(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                "${e.minute}' · ${e.text}",
+                style: TextStyle(
+                  fontWeight: e.isGoal ? FontWeight.w700 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

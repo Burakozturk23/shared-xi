@@ -131,6 +131,8 @@ class GameCatalog {
       icon: Icons.badge_outlined,
       page: ClubManagerHubPage(),
       category: 'Kadro & Yönetim',
+      requiresRepository: false,
+      modern: true,
     ),
     GameEntry(
       title: 'Squad Challenge',

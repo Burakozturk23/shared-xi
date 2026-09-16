@@ -47,6 +47,7 @@ class ManagerMatchStats {
 }
 
 class ManagerMatchResult {
+  final bool userIsHome;
   final String homeName;
   final String awayName;
   final double homePower;
@@ -62,6 +63,7 @@ class ManagerMatchResult {
   final String? tacticsSummary;
 
   const ManagerMatchResult({
+    this.userIsHome = true,
     required this.homeName,
     required this.awayName,
     required this.homePower,
@@ -77,9 +79,11 @@ class ManagerMatchResult {
     this.tacticsSummary,
   });
 
-  bool get isWin => stats.goalsHome > stats.goalsAway;
+  int get userGoals => userIsHome ? stats.goalsHome : stats.goalsAway;
+  int get opponentGoals => userIsHome ? stats.goalsAway : stats.goalsHome;
+  bool get isWin => userGoals > opponentGoals;
   bool get isDraw => stats.goalsHome == stats.goalsAway;
-  bool get isLoss => stats.goalsHome < stats.goalsAway;
+  bool get isLoss => userGoals < opponentGoals;
 
   String get outcomeLabel {
     if (isWin) return 'GALİBİYET';
