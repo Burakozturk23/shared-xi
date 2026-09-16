@@ -173,6 +173,7 @@ void main() {
     );
     expect(c.state.cells[1].status, CinkoCellStatus.open);
     expect(c.turn, VsBotCinkoTurn.bot);
+    c.pause();
   });
 
   test(
@@ -219,6 +220,7 @@ void main() {
     expect(c.moves.length, 2);
     expect(c.moves.first.passed, isTrue);
     expect(c.moves.last.byUser, isFalse);
+    c.pause();
   });
 
   testWidgets('Bot ranks connected cells, not scattered matches', (
@@ -241,6 +243,7 @@ void main() {
     expect(c.lastMove!.player!.id, 11);
     expect(c.lastMove!.correct.toSet(), {0, 1, 3});
     expect(c.botScore, 3);
+    c.pause();
   });
 
   testWidgets('All difficulty caps keep selected bot cells connected', (

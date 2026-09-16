@@ -46,6 +46,7 @@ CinkoBotSession cinkoFixture({int size = 5, Map<int, Set<int>>? answers}) {
       Player.fromJson({
         'id': i + 1,
         'name': i < names.length ? names[i] : 'Oyuncu ${i + 1}',
+        'aliases': i == 3 || i == 6 ? ['Ronaldo'] : <String>[],
         'countries': ['France'],
         'position': 'Attack',
       }),

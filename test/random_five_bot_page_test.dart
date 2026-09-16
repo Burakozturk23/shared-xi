@@ -25,12 +25,17 @@ Future<void> capture(WidgetTester tester, String name) async {
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(captureKey),
   );
-  final image = await boundary.toImage(pixelRatio: 2);
-  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-  await Directory('.dart_tool/five_qa').create(recursive: true);
-  await File('.dart_tool/five_qa/$name.png')
-      .writeAsBytes(bytes!.buffer.asUint8List());
-  image.dispose();
+  await tester.runAsync(() async {
+    final image = await boundary.toImage(pixelRatio: 2);
+    try {
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      await Directory('.dart_tool/five_qa').create(recursive: true);
+      await File('.dart_tool/five_qa/$name.png')
+          .writeAsBytes(bytes!.buffer.asUint8List());
+    } finally {
+      image.dispose();
+    }
+  });
 }
 
 Future<VsBotRandomFiveController> open(
@@ -93,7 +98,6 @@ void main() {
       await (FontLoader(family)..addFont(rootBundle.load(path))).load();
     }
   });
-  setUp(() {});
 
   testWidgets(
     'Explicit start; rejected text stays editable and ambiguity is selectable',
@@ -225,7 +229,10 @@ void main() {
       await tester.pump(const Duration(seconds: 10));
       expect(c.history, isEmpty);
       await tester.tap(find.text('Oyuna dön'));
-      await tester.pumpAndSettle();
+      // Settle the dialog only; the bot's progress animation keeps scheduling
+      // frames until its turn ends, which pumpAndSettle would also advance.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(c.phase, FiveMatchPhase.playing);
       c.pause();
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);

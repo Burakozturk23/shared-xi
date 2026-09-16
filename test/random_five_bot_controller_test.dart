@@ -139,6 +139,7 @@ void main() {
     expect(c.userMove!.player!.name, 'Thierry Henry');
     expect(c.userMove!.score, 5);
     expect(c.userScore, 5);
+    c.pause();
   });
 
   testWidgets(
@@ -147,7 +148,7 @@ void main() {
       SearchService.buildIndex([
         Player.fromJson({'id': 9999, 'name': 'Thierry Other'}),
       ]);
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 1));
       final c = controller();
       addTearDown(c.dispose);
       await start(tester, c);
@@ -155,6 +156,7 @@ void main() {
       expect(c.suggestions.map((p) => p.id), [1]);
       expect(c.submitGuess('Ronaldo Nazario'), isTrue);
       expect(c.userMove!.player!.id, 3);
+      c.pause();
     },
   );
 
