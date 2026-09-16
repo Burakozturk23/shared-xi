@@ -87,3 +87,10 @@ termination, connected-component bot decisions, pause/replay handling, readable
 zoomable cells and per-move feedback. See [the Çinko review](football-cinko-bot.md)
 for exact rules, data semantics and validation coverage. This does not close the
 remaining Grid variants or Rastgele Beşler review.
+
+## Rastgele Beşler follow-up — 2026-09-16
+
+The bot Beşler route now prepares a V4 session, uses the Ortak Saha interface and
+adds difficulty selection, editable rejected answers, pass, explicit round review,
+replay and lifecycle-safe bot turns. Five rounds and +1 per matched club remain.
+See [the Beşler review](random-five-bot.md) for generation, fairness and tests.

@@ -88,7 +88,8 @@ void main() {
     expect(BotGameCatalog.all.map((g) => g.entry.page.runtimeType).toSet().length, 7);
     for (final game in BotGameCatalog.all) {
       final migrated = [BotGameCatalog.loto, BotGameCatalog.teamRace,
-        BotGameCatalog.classicGrid, BotGameCatalog.cinko].contains(game);
+        BotGameCatalog.classicGrid, BotGameCatalog.cinko,
+        BotGameCatalog.five].contains(game);
       expect(game.entry.requiresRepository, !migrated);
       expect(game.entry.requiresAuth, isFalse);
       expect(game.entry.requiresPersistentAccount, isFalse);

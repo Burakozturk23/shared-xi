@@ -200,24 +200,26 @@ class BotGameCatalog {
       subtitle: 'Beş kulübün mümkün olduğunca çoğunu bağla.',
       icon: Icons.filter_5_outlined,
       page: VsBotRandomFivePage(),
+      requiresRepository: false,
+      modern: true,
     ),
-    tags: ['5 tur', 'Yenilenen kulüpler'],
+    tags: ['5 tur', 'Yenilenen kulüpler', '3 bot seviyesi'],
     goal: 'Beş tur sonunda daha fazla bağlantı kur.',
     steps: [
       (
         'Beş kulübü incele',
-        'En az birinde oynamış bir futbolcu bul. Daha fazla kulübe uyan oyuncu daha çok puan getirir.',
+        'Botun seviyesini seç ve maça başla. Beş kulüpten en az birinde oynamış bir futbolcu bul; her eşleşme +1 puan.',
       ),
       (
         'Botla sırayla oyna',
-        'Önce sen, sonra bot aynı beş kulüp için cevap verir. Kullanılmış futbolcular tekrar seçilemez.',
+        'Önce sen, sonra bot aynı beş kulüp için cevap verir. Futbolcular maç boyunca tekrar kullanılamaz. Bulamazsan pas geçebilirsin.',
       ),
       (
         'Yeni tura geç',
-        'İkiniz de oynadıktan sonra yeni bir kulüp grubu seçilir. Her oyuncunun beş turu vardır.',
+        'İkinizin cevabını ve eşleşen kulüpleri incele; Sonraki tur ile yeni beşliye geç. Her oyuncunun beş cevap hakkı vardır.',
       ),
     ],
-    scoring: 'Oyuncunun uyduğu her kulüp +1 puan; bir cevap en fazla +5 getirir. Beş turun toplamında yüksek puan kazanır; eşitlik beraberliktir.',
+    scoring: 'Her eşleşen kulüp +1; bir cevap en fazla +5, bir maç en fazla 25 puan. Pas 0 puandır ve sırayı bota geçirir. Bulunamayan veya kulüplere uymayan cevap düzenlenebilir; sıranı tüketmez. Beş tur sonunda yüksek toplam puan kazanır; eşitlik beraberliktir. Kolay bot 1–2, orta bot en fazla 3 bağlantılı cevapları tercih eder; bu aralıkta seçenek yoksa en düşük puanlı cevabı seçer. Zor bot kalan en yüksek puanlı cevabı bulur.',
   );
 
   static const gridVariants = [classicGrid, reverseGrid, randomGrid];
