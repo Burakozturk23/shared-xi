@@ -22,6 +22,7 @@ class ClubManagerMatchPage extends StatefulWidget {
     required this.opponent,
     required this.seasonId,
     required this.fixture,
+    this.userName = 'Senin XI',
     this.tactics = const ManagerTactics(),
     this.store,
   });
@@ -29,6 +30,7 @@ class ClubManagerMatchPage extends StatefulWidget {
   final ManagerDifficulty difficulty;
   final int budgetLink;
   final String formationId, seasonId;
+  final String userName;
   final ManagerTactics tactics;
   final ManagerOpponent opponent;
   final SeasonFixture fixture;
@@ -65,6 +67,7 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
         budgetLink: widget.budgetLink,
         tactics: widget.tactics,
         opponent: widget.opponent,
+        homeName: widget.userName,
         userIsHome: widget.fixture.isHome,
         homeAdvantage: 3,
         chargeSquadCost: false,

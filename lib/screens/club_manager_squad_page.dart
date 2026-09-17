@@ -107,6 +107,7 @@ class _ClubManagerSquadPageState extends State<ClubManagerSquadPage> {
               formationId: widget.formation.id,
               fixedOpponent: ManagerSeasonService.instance.toOpponent(opponent),
               seasonId: career.season!.id,
+              userName: career.season!.user.name,
               fixture: fixture,
               store: _store,
             ),

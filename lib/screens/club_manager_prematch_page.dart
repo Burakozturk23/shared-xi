@@ -22,12 +22,14 @@ class ClubManagerPrematchPage extends StatefulWidget {
     required this.fixedOpponent,
     required this.seasonId,
     required this.fixture,
+    this.userName = 'Senin XI',
     this.store,
   });
   final List<ManagerPoolPlayer> xi;
   final ManagerDifficulty difficulty;
   final int budgetLink;
   final String formationId, seasonId;
+  final String userName;
   final ManagerOpponent fixedOpponent;
   final SeasonFixture fixture;
   final ManagerCareerStore? store;
@@ -53,6 +55,7 @@ class _ClubManagerPrematchPageState extends State<ClubManagerPrematchPage> {
           tactics: _tactics,
           opponent: widget.fixedOpponent,
           seasonId: widget.seasonId,
+          userName: widget.userName,
           fixture: widget.fixture,
           store: widget.store,
         ),
