@@ -275,7 +275,11 @@ void main() {
       final bought = await store.load(ManagerDifficulty.medium);
       expect(bought.budgetLink, 104);
       expect(bought.benchPlayerIds, [1001]);
+      // Let the temporary purchase notification leave the narrow viewport.
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
       await reveal(tester, find.text('Sat · +12 LINK'));
+      expect(find.text('Sat · +12 LINK').hitTestable(), findsOneWidget);
       await tester.tap(find.text('Sat · +12 LINK'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Vazgeç'));
@@ -320,6 +324,7 @@ void main() {
           difficulty: ManagerDifficulty.medium,
           budgetLink: career.budgetLink,
           formationId: formation.id,
+          userName: 'Kuzey XI',
           opponent: ManagerSeasonService.instance.toOpponent(opponent),
           seasonId: career.season!.id,
           fixture: fixture,
@@ -332,6 +337,7 @@ void main() {
       await tester.tap(find.text('Yeniden dene'));
       await tester.pumpAndSettle();
       expect(find.text('Sezona dön'), findsOneWidget);
+      expect(find.text('Kuzey XI'), findsOneWidget);
       expect(interrupted.attempts.length, 2);
       expect(interrupted.attempts.first, interrupted.attempts.last);
       final saved = await interrupted.load(ManagerDifficulty.medium);
