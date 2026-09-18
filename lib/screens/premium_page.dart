@@ -373,6 +373,15 @@ class _PremiumPageState extends State<PremiumPage> {
               ),
               const SizedBox(height: 10),
               const _BenefitCard(
+                icon: Icons.groups_outlined,
+                title: 'Squad Challenge: sınırsız deneme',
+                subtitle:
+                    'Günlük coin görevlerinde tekrar deneme sınırı kalkar. '
+                    'Kadro kuralları ve günlük coin ödülü sınırı herkes için aynıdır.',
+                status: 'HAZIR',
+              ),
+              const SizedBox(height: 10),
+              const _BenefitCard(
                 icon: Icons.auto_awesome_rounded,
                 title: 'Premium kozmetikler',
                 subtitle: 'Premium koleksiyonları ve özel görsel içerikler.',

@@ -1,0 +1,994 @@
+[
+  {
+    "mission": {
+      "id": "contract__premier_league",
+      "day": "2026-09-18",
+      "themeId": "premier_league",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      3677,
+      3598,
+      3053,
+      3860,
+      3393,
+      4108,
+      39938,
+      61830,
+      3997,
+      28491,
+      10011
+    ],
+    "score": {
+      "cost": 67,
+      "links": 14,
+      "countries": 12,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__super_lig",
+      "day": "2026-09-18",
+      "themeId": "super_lig",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      7125,
+      3826,
+      524473,
+      21722,
+      114859,
+      25451,
+      149668,
+      60562,
+      1081,
+      36244,
+      8186
+    ],
+    "score": {
+      "cost": 80,
+      "links": 14,
+      "countries": 13,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__laliga",
+      "day": "2026-09-18",
+      "themeId": "laliga",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      108507,
+      89449,
+      380365,
+      22409,
+      173062,
+      163443,
+      297661,
+      59716,
+      3091,
+      4952,
+      38412
+    ],
+    "score": {
+      "cost": 67,
+      "links": 14,
+      "countries": 15,
+      "score": 63
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__serie_a",
+      "day": "2026-09-18",
+      "themeId": "serie_a",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      59377,
+      164345,
+      3393,
+      61798,
+      13266,
+      163556,
+      84544,
+      45576,
+      279909,
+      201245,
+      4823
+    ],
+    "score": {
+      "cost": 65,
+      "links": 14,
+      "countries": 13,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__bundesliga",
+      "day": "2026-09-18",
+      "themeId": "bundesliga",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      78570,
+      807746,
+      91280,
+      2872,
+      21282,
+      422086,
+      3045,
+      427502,
+      73460,
+      293260,
+      450051
+    ],
+    "score": {
+      "cost": 54,
+      "links": 14,
+      "countries": 14,
+      "score": 53
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__ligue_1",
+      "day": "2026-09-18",
+      "themeId": "ligue_1",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      33934,
+      179792,
+      107395,
+      473251,
+      3154,
+      187958,
+      149389,
+      33324,
+      3489,
+      386046,
+      565060
+    ],
+    "score": {
+      "cost": 73,
+      "links": 14,
+      "countries": 12,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__eredivisie",
+      "day": "2026-09-18",
+      "themeId": "eredivisie",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      61831,
+      20043,
+      12641,
+      140096,
+      3813,
+      155769,
+      331638,
+      3358,
+      3091,
+      353468,
+      4430
+    ],
+    "score": {
+      "cost": 91,
+      "links": 14,
+      "countries": 15,
+      "score": 63
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__liga_portugal",
+      "day": "2026-09-18",
+      "themeId": "liga_portugal",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      258515,
+      173062,
+      118318,
+      35661,
+      83659,
+      3483,
+      7556,
+      12148,
+      20749,
+      35100,
+      194603
+    ],
+    "score": {
+      "cost": 79,
+      "links": 14,
+      "countries": 15,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__south_america",
+      "day": "2026-09-18",
+      "themeId": "south_america",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      934299,
+      69686,
+      25068,
+      167407,
+      435170,
+      271377,
+      25451,
+      283293,
+      789061,
+      4386,
+      55246
+    ],
+    "score": {
+      "cost": 45,
+      "links": 14,
+      "countries": 15,
+      "score": 63
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__balkan_power",
+      "day": "2026-09-18",
+      "themeId": "balkan_power",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      120619,
+      164195,
+      457710,
+      429245,
+      716668,
+      449884,
+      381673,
+      204291,
+      46743,
+      4677,
+      59881
+    ],
+    "score": {
+      "cost": 46,
+      "links": 14,
+      "countries": 16,
+      "score": 53
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__africa",
+      "day": "2026-09-18",
+      "themeId": "africa",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      70348,
+      3907,
+      594497,
+      272803,
+      113242,
+      801270,
+      239546,
+      3904,
+      28907,
+      565060,
+      63318
+    ],
+    "score": {
+      "cost": 59,
+      "links": 14,
+      "countries": 15,
+      "score": 63
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__scandinavia",
+      "day": "2026-09-18",
+      "themeId": "scandinavia",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      114803,
+      37572,
+      41250,
+      297483,
+      225217,
+      157985,
+      173594,
+      72273,
+      819327,
+      33189,
+      220550
+    ],
+    "score": {
+      "cost": 56,
+      "links": 14,
+      "countries": 14,
+      "score": 68
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__eastern_europe",
+      "day": "2026-09-18",
+      "themeId": "eastern_europe",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      494527,
+      225712,
+      242629,
+      21358,
+      57864,
+      51029,
+      210505,
+      92598,
+      287191,
+      256096,
+      123222
+    ],
+    "score": {
+      "cost": 50,
+      "links": 14,
+      "countries": 14,
+      "score": 53
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__el_clasico",
+      "day": "2026-09-18",
+      "themeId": "el_clasico",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      2995,
+      3152,
+      3359,
+      3113,
+      3508,
+      7521,
+      54164,
+      154592,
+      3207,
+      3140,
+      8062
+    ],
+    "score": {
+      "cost": 69,
+      "links": 14,
+      "countries": 9,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__manchester_derby",
+      "day": "2026-09-18",
+      "themeId": "manchester_derby",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      19948,
+      3302,
+      29581,
+      99452,
+      101041,
+      3904,
+      3488,
+      3231,
+      12063,
+      13644,
+      4080
+    ],
+    "score": {
+      "cost": 87,
+      "links": 14,
+      "countries": 13,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__north_london",
+      "day": "2026-09-18",
+      "themeId": "north_london",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      493513,
+      31313,
+      3193,
+      3200,
+      3191,
+      4047,
+      67426,
+      42352,
+      5571,
+      3133,
+      3094
+    ],
+    "score": {
+      "cost": 75,
+      "links": 14,
+      "countries": 12,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__milan_derby",
+      "day": "2026-09-18",
+      "themeId": "milan_derby",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      7825,
+      238955,
+      18511,
+      3532,
+      110968,
+      33324,
+      74257,
+      45576,
+      201245,
+      27003,
+      56634
+    ],
+    "score": {
+      "cost": 59,
+      "links": 14,
+      "countries": 16,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__der_klassiker",
+      "day": "2026-09-18",
+      "themeId": "der_klassiker",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      195778,
+      210,
+      208,
+      209,
+      468,
+      337,
+      199,
+      204,
+      3994,
+      305,
+      202
+    ],
+    "score": {
+      "cost": 65,
+      "links": 14,
+      "countries": 5,
+      "score": 63
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__le_classique",
+      "day": "2026-09-18",
+      "themeId": "le_classique",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      229604,
+      23935,
+      18730,
+      3907,
+      3113,
+      5815,
+      6631,
+      25976,
+      12060,
+      5572,
+      3571
+    ],
+    "score": {
+      "cost": 74,
+      "links": 14,
+      "countries": 9,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__roma_lazio",
+      "day": "2026-09-18",
+      "themeId": "roma_lazio",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      495722,
+      8189,
+      25043,
+      208,
+      5864,
+      21822,
+      257160,
+      28006,
+      41310,
+      25484,
+      4329
+    ],
+    "score": {
+      "cost": 68,
+      "links": 14,
+      "countries": 13,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__napoli_juve",
+      "day": "2026-09-18",
+      "themeId": "napoli_juve",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      256339,
+      6833,
+      62365,
+      6794,
+      24320,
+      34194,
+      3111,
+      369435,
+      5850,
+      138827,
+      3970
+    ],
+    "score": {
+      "cost": 80,
+      "links": 14,
+      "countries": 10,
+      "score": 68
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__old_firm",
+      "day": "2026-09-18",
+      "themeId": "old_firm",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      13788,
+      14214,
+      101132,
+      78951,
+      502442,
+      6846,
+      54164,
+      12733,
+      40330,
+      3094,
+      3988
+    ],
+    "score": {
+      "cost": 98,
+      "links": 14,
+      "countries": 10,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__superclasico",
+      "day": "2026-09-18",
+      "themeId": "superclasico",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      30685,
+      51354,
+      25068,
+      55183,
+      21828,
+      69388,
+      87840,
+      94487,
+      26457,
+      24463,
+      62596
+    ],
+    "score": {
+      "cost": 66,
+      "links": 14,
+      "countries": 8,
+      "score": 68
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__merseyside",
+      "day": "2026-09-18",
+      "themeId": "merseyside",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      502676,
+      4549,
+      3470,
+      3308,
+      3210,
+      3221,
+      49711,
+      4127,
+      3241,
+      3604,
+      91056
+    ],
+    "score": {
+      "cost": 89,
+      "links": 14,
+      "countries": 10,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__gs_fb",
+      "day": "2026-09-18",
+      "themeId": "gs_fb",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      2995,
+      38590,
+      6933,
+      102755,
+      10132,
+      3708,
+      7033,
+      729,
+      8186,
+      45000,
+      33552
+    ],
+    "score": {
+      "cost": 87,
+      "links": 14,
+      "countries": 8,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__bjk_gs",
+      "day": "2026-09-18",
+      "themeId": "bjk_gs",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      292199,
+      3826,
+      99854,
+      1419,
+      51817,
+      9802,
+      1260,
+      40979,
+      7174,
+      85663,
+      34156
+    ],
+    "score": {
+      "cost": 102,
+      "links": 14,
+      "countries": 8,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__bjk_fb",
+      "day": "2026-09-18",
+      "themeId": "bjk_fb",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      51894,
+      102313,
+      38590,
+      102755,
+      25477,
+      3708,
+      729,
+      35054,
+      5519,
+      15496,
+      7174
+    ],
+    "score": {
+      "cost": 102,
+      "links": 14,
+      "countries": 10,
+      "score": 63
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__ts_gs",
+      "day": "2026-09-18",
+      "themeId": "ts_gs",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      292199,
+      1419,
+      99854,
+      3826,
+      51817,
+      9802,
+      1260,
+      47642,
+      85663,
+      17447,
+      17389
+    ],
+    "score": {
+      "cost": 104,
+      "links": 14,
+      "countries": 7,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__ts_fb",
+      "day": "2026-09-18",
+      "themeId": "ts_fb",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      51894,
+      38590,
+      102755,
+      6933,
+      3504,
+      729,
+      7033,
+      3708,
+      5519,
+      7201,
+      45000
+    ],
+    "score": {
+      "cost": 105,
+      "links": 14,
+      "countries": 7,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__ts_bjk",
+      "day": "2026-09-18",
+      "themeId": "ts_bjk",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      6926,
+      6923,
+      10134,
+      12046,
+      8696,
+      7421,
+      635026,
+      22961,
+      29502,
+      7200,
+      7378
+    ],
+    "score": {
+      "cost": 103,
+      "links": 14,
+      "countries": 8,
+      "score": 78
+    }
+  },
+  {
+    "mission": {
+      "id": "contract__wanderers",
+      "day": "2026-09-18",
+      "themeId": "wanderers",
+      "formationId": "4-3-3",
+      "label": "Büyük görev",
+      "reward": 40,
+      "budget": 105,
+      "links": 8,
+      "countries": 5
+    },
+    "ids": [
+      3677,
+      45428,
+      155794,
+      461511,
+      333350,
+      1090267,
+      368681,
+      179758,
+      220550,
+      972920,
+      763520
+    ],
+    "score": {
+      "cost": 42,
+      "links": 14,
+      "countries": 18,
+      "score": 63
+    }
+  }
+]

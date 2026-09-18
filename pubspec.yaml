@@ -49,6 +49,7 @@ flutter:
     - assets/data/coaches_min.json
     - assets/data/famous_transfers.json
     - assets/data/meta.json
+    - assets/data/squad_challenge_catalog.json
     - assets/runtime/linkball_game_data_v4.sqlite
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/

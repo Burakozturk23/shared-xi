@@ -1,47 +1,42 @@
 import 'package:flutter/material.dart';
 
-import '../data/build_xi_formations.dart';
-import '../data/build_xi_themes.dart';
-import 'build_xi_page.dart';
+import '../models/squad_challenge.dart';
+import '../widgets/pitch_ui.dart';
 
 class BuildXiFormationSelectionPage extends StatelessWidget {
-  final BuildXiTheme theme;
-
-  const BuildXiFormationSelectionPage({super.key, required this.theme});
-
+  const BuildXiFormationSelectionPage({
+    super.key,
+    required this.theme,
+    required this.catalog,
+  });
+  final SquadTheme theme;
+  final SquadCatalog catalog;
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Formasyon · ${theme.name}'),
-        centerTitle: true,
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: allFormations.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          final formation = allFormations[index];
-          return Card(
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: const Icon(Icons.sports_soccer, size: 32),
-              title: Text(
-                formation.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      BuildXiPage(theme: theme, formation: formation),
-                ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Dizilişini seç')),
+    body: SafeArea(
+      top: false,
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(theme.name, style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 8),
+          const Text(
+            'Antrenman · 160 kadro kredisi · Süre ve deneme sınırı yok.',
+          ),
+          const SizedBox(height: 20),
+          for (final f in catalog.formations.values)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: PitchRow(
+                title: f.name,
+                subtitle: '11 oyuncu · Bağ kur, bütçeyi yönet',
+                icon: Icons.schema_outlined,
+                onTap: () => Navigator.of(context).pop(f),
               ),
             ),
-          );
-        },
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

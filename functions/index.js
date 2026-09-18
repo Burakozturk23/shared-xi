@@ -15,6 +15,7 @@ const httpsV2 = require("firebase-functions/v2/https");
 const {onValueWritten} = require("firebase-functions/v2/database");
 const crypto = require("node:crypto");
 const {GoogleAuth} = require("google-auth-library");
+const squadChallenge = require("./squad_challenge");
 
 admin.initializeApp();
 setGlobalOptions({maxInstances: 10});
@@ -5733,6 +5734,8 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
+      data.squadChallenge : {},
     createdAt: lbEconomyNumber(data.createdAt),
     updatedAt: lbEconomyNumber(data.updatedAt),
   };
@@ -8409,3 +8412,60 @@ exports.deleteMyAccount = httpsV2.onCall(
 );
 
 // LINKBALL_08B_ACCOUNT_DELETION_END
+
+// Squad Challenge shares the private canonical wallet. Keeping attempts,
+// receipts and currency in the same transaction prevents partial purchases.
+function squadCallable(action) {
+  return httpsV2.onCall({
+    region: "europe-west1",
+    maxInstances: 10,
+    enforceAppCheck: true,
+  }, async (request) => {
+    lbRequireGoogleLinked(request);
+    const input = request.data || {};
+    if (input.catalogVersion !== squadChallenge.catalog.version) {
+      throw new httpsV2.HttpsError("failed-precondition", "Görevler güncellendi. Uygulamanı güncelle.");
+    }
+    const uid = request.auth.uid;
+    const db = admin.database();
+    const now = Date.now();
+    const premiumSnap = await db.ref("premiumState/" + uid).get();
+    const premium = lbPremiumState(premiumSnap.val(), now).active;
+    let response;
+    let rejection;
+    try {
+      const tx = await db.ref("economyState/" + uid).transaction((current) => {
+        rejection = null;
+        response = null;
+        try {
+          const state = lbEconomyState(current);
+          response = squadChallenge.apply(state, action, input, now, premium);
+          return state;
+        } catch (error) {
+          if (!(error instanceof squadChallenge.SquadError)) throw error;
+          // An RTDB transaction may first see an empty local cache. Returning
+          // that unchanged value lets it retry against the real server state;
+          // throwing/aborting here would reject a valid existing run.
+          rejection = error;
+          return current;
+        }
+      });
+      if (!tx.committed) {
+        throw new httpsV2.HttpsError("aborted", "İşlem tamamlanamadı. Yeniden dene.");
+      }
+      if (rejection) throw rejection;
+      await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+      return response;
+    } catch (error) {
+      if (error instanceof squadChallenge.SquadError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+
+exports.getMySquadChallenge = squadCallable("status");
+exports.startSquadChallenge = squadCallable("start");
+exports.finishSquadChallenge = squadCallable("finish");
+exports.abandonSquadChallenge = squadCallable("abandon");

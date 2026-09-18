@@ -136,10 +136,12 @@ class GameCatalog {
     ),
     GameEntry(
       title: 'Squad Challenge',
-      subtitle: 'Tema seç, kadro kur, yıldız kazan',
+      subtitle: 'Günlük görev, kadro kur, coin kazan',
       icon: Icons.groups_outlined,
       page: BuildXiThemeSelectionPage(),
       category: 'Kadro & Yönetim',
+      requiresRepository: false,
+      modern: true,
     ),
     GameEntry(
       title: 'Teknik Direktör XI',

@@ -1,71 +1,49 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Squad Challenge progression (yıldız + unlock)
-/// SharedPreferences ile lokal saklanır.
+/// Local practice records only. Previous star saves stay intact as history;
+/// they never become client-authorized money or entitlements.
 class SquadChallengeProgressService {
-  SquadChallengeProgressService._();
-  static final SquadChallengeProgressService instance =
-      SquadChallengeProgressService._();
+  SquadChallengeProgressService();
+  static final instance = SquadChallengeProgressService();
+  static const _key = 'sc_practice_records_v2';
+  Future<void> _tail = Future.value();
 
-  static const _prefix = 'sc_stars_';
-  static const _totalKey = 'sc_total_stars';
-
-  SharedPreferences? _prefs;
-
-  Future<void> init() async {
-    _prefs ??= await SharedPreferences.getInstance();
+  Future<Map<String, int>> records() async {
+    await _tail;
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_key);
+    if (raw == null) return {};
+    return (jsonDecode(raw) as Map).map(
+      (k, v) => MapEntry(k as String, (v as num).toInt()),
+    );
   }
 
-  /// Tema için kaydedilmiş en yüksek yıldız (0-3)
-  Future<int> getStars(String themeId) async {
-    await init();
-    return _prefs!.getInt('$_prefix$themeId') ?? 0;
+  Future<int> legacyCompletedThemes() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs
+        .getKeys()
+        .where((k) => k.startsWith('sc_stars_') && (prefs.getInt(k) ?? 0) > 0)
+        .length;
   }
 
-  /// Toplam yıldız
-  Future<int> getTotalStars() async {
-    await init();
-    return _prefs!.getInt(_totalKey) ?? 0;
-  }
-
-  /// Yeni skordan yıldız hesapla ve kaydet (sadece daha yüksekse)
-  /// Dönüş: yeni yıldız sayısı (0-3)
-  Future<int> saveScore(String themeId, int totalScore) async {
-    await init();
-
-    int stars = 0;
-    if (totalScore >= 95) {
-      stars = 3;
-    } else if (totalScore >= 80) {
-      stars = 2;
-    } else if (totalScore >= 60) {
-      stars = 1;
-    }
-
-    final current = await getStars(themeId);
-    if (stars > current) {
-      // Farkı total'e ekle
-      final total = await getTotalStars();
-      await _prefs!.setInt(_totalKey, total + (stars - current));
-      await _prefs!.setInt('$_prefix$themeId', stars);
-    }
-
-    return stars;
-  }
-
-  /// Tema kilitli mi?
-  Future<bool> isUnlocked(int requiredStars) async {
-    if (requiredStars <= 0) return true;
-    final total = await getTotalStars();
-    return total >= requiredStars;
-  }
-
-  /// Debug / reset
-  Future<void> resetAll() async {
-    await init();
-    final keys = _prefs!.getKeys().where((k) => k.startsWith(_prefix) || k == _totalKey);
-    for (final k in keys) {
-      await _prefs!.remove(k);
-    }
+  Future<void> saveScore(String themeId, int score) {
+    final next = _tail.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_key);
+      final rows = raw == null
+          ? <String, int>{}
+          : (jsonDecode(raw) as Map).map(
+              (k, v) => MapEntry(k as String, (v as num).toInt()),
+            );
+      if (score > (rows[themeId] ?? -1)) {
+        rows[themeId] = score;
+        if (!await prefs.setString(_key, jsonEncode(rows)))
+          throw StateError('Rekor kaydedilemedi.');
+      }
+    });
+    _tail = next.then<void>((_) {}, onError: (Object _) {});
+    return next;
   }
 }
