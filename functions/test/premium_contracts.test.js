@@ -65,6 +65,14 @@ test("premium benefits are non-competitive", () => {
   }
 });
 
+test("Pro billing callables are App Check protected and sales default off", () => {
+  const block = premiumBlock();
+
+  assert.ok(block.includes("enforceAppCheck: true"));
+  assert.ok(block.includes("linkball_pro_sales_enabled"));
+  assert.ok(block.includes('defaultConfig: {linkball_pro_sales_enabled: "false"}'));
+});
+
 test("premium status is server-backed and owner-readable only", () => {
   const block = premiumBlock();
 
