@@ -55,6 +55,7 @@ const squadMission = SquadMission(
 /// UI orchestration fake only. Currency authority/concurrency use the actual
 /// callable and wallet normalizers in the Node suite.
 class FakeSquadGateway extends SquadGateway {
+  final List<int?> quotedPrices = [];
   @override
   String? userId = 'alice';
   int coins = 100, free = 3, loads = 0, starts = 0;
@@ -94,8 +95,10 @@ class FakeSquadGateway extends SquadGateway {
     String missionId,
     String requestId, {
     bool spendCoins = false,
+    int? expectedPriceCoins,
   }) async {
     starts++;
+    quotedPrices.add(expectedPriceCoins);
     requestIds.add(requestId);
     if (active == null) {
       if (!premium) {

@@ -26,49 +26,30 @@ function storeBlock() {
 }
 
 test("coin store exposes four canonical premium avatar offers", () => {
-  const block = storeBlock();
-
-  const offerIds = [
-    "avatar_speedster_bolt",
-    "avatar_tactician_board",
-    "avatar_night_owl",
-    "avatar_champion_cup",
-  ];
-  const avatarIds = [
-    "speedster_bolt",
-    "tactician_board",
-    "night_owl",
-    "champion_cup",
-  ];
-
-  for (const id of offerIds) {
-    assert.ok(block.includes(id));
-  }
-
-  for (const id of avatarIds) {
-    assert.ok(block.includes(`itemId: "${id}"`));
-  }
-
-  const prices = [...block.matchAll(/priceCoins: ([0-9]+),/g)]
-      .map((row) => Number(row[1]));
-
-  assert.equal(prices.length, 4);
-  assert.ok(prices.every((price) => price > 0));
+  const offers = require("../economy_config").defaults.sinks.cosmetics.offers;
+  assert.deepEqual(Object.keys(offers), [
+    "avatar_speedster_bolt", "avatar_tactician_board", "avatar_night_owl", "avatar_champion_cup",
+  ]);
+  assert.deepEqual(Object.values(offers).map((o) => o.itemId), [
+    "speedster_bolt", "tactician_board", "night_owl", "champion_cup",
+  ]);
+  assert.deepEqual(Object.values(offers).map((o) => o.priceCoins), [150, 250, 400, 600]);
+  assert.ok(storeBlock().includes("config.sinks.cosmetics.offers"));
 });
 
 test("store catalog is server-backed and returns wallet context", () => {
   assert.ok(source.includes("exports.getStoreCatalog"));
-  assert.ok(source.includes("await lbStoreCatalog(db)"));
+  assert.ok(source.includes("await lbStoreCatalog(db, config)"));
   assert.ok(source.includes("wallet: lbEconomyWalletProjection(state)"));
   assert.ok(source.includes("catalogVersion: LB_STORE_CATALOG_VERSION"));
 });
 
-test("purchase keeps private catalog support with builtin fallback", () => {
+test("purchase uses Remote Config prices and compares the displayed quote", () => {
   assert.ok(
-      source.includes("\"economyCatalog/offers/\" + offerId"),
+      source.includes("config.sinks.cosmetics.offers"),
   );
   assert.ok(source.includes("LB_STORE_COIN_OFFERS[offerId]"));
-  assert.ok(source.includes("lbStoreOffer(rawOffer, offerId)"));
+  assert.ok(source.includes("offer.expectedPriceCoins !== offer.priceCoins"));
   assert.equal(
       source.includes("(request.data || {}).priceCoins"),
       false,

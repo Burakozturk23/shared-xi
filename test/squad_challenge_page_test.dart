@@ -41,8 +41,9 @@ Future<void> open(
     MaterialApp(
       theme: dark ? OrtakSahaTheme.dark : OrtakSahaTheme.light,
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.linear(scale)),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(scale)),
         child: child!,
       ),
       home: page,
@@ -141,19 +142,20 @@ void main() {
           drafts: drafts,
         ),
       );
-      await reveal(tester, find.text('Başla · 20 coin'));
-      await tester.tap(find.text('Başla · 20 coin'));
+      await reveal(tester, find.text('Başla · 20 Link Coin'));
+      await tester.tap(find.text('Başla · 20 Link Coin'));
       await tester.pumpAndSettle();
-      expect(find.text('20 coinle ek deneme?'), findsOneWidget);
+      expect(find.text('20 Link Coinle ek deneme?'), findsOneWidget);
       await tester.tap(find.text('Vazgeç'));
       await tester.pumpAndSettle();
       expect(gateway.starts, 0);
       expect(gateway.coins, 100);
-      await tester.tap(find.text('Başla · 20 coin'));
+      await tester.tap(find.text('Başla · 20 Link Coin'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('20 coin kullan'));
+      await tester.tap(find.text('20 Link Coin kullan'));
       await tester.pumpAndSettle();
       expect(gateway.starts, 1);
+      expect(gateway.quotedPrices, [20]);
       expect(gateway.coins, 80);
       await select(tester, 0, 1);
       final runId = gateway.active!.id;
@@ -166,6 +168,7 @@ void main() {
       await reveal(tester, find.text('Futbolcu 1'));
       expect(find.text('Futbolcu 1'), findsOneWidget);
       expect(gateway.starts, 1);
+      expect(gateway.quotedPrices, [20]);
       expect(gateway.coins, 80);
       expect(tester.takeException(), isNull);
     },

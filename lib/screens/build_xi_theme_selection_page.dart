@@ -127,8 +127,9 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
       if (widget.onPremium != null) {
         await widget.onPremium!(context);
       } else {
-        await Navigator.of(context)
-            .push(MaterialPageRoute<void>(builder: (_) => const PremiumPage()));
+        await Navigator.of(
+          context,
+        ).push(MaterialPageRoute<void>(builder: (_) => const PremiumPage()));
       }
       await _refresh();
     } catch (e) {
@@ -145,8 +146,9 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
       if (widget.onStore != null) {
         await widget.onStore!(context);
       } else {
-        await Navigator.of(context)
-            .push(MaterialPageRoute<void>(builder: (_) => const StorePage()));
+        await Navigator.of(
+          context,
+        ).push(MaterialPageRoute<void>(builder: (_) => const StorePage()));
       }
       await _refresh();
     } catch (e) {
@@ -158,8 +160,9 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
 
   void _toast(Object error) {
     if (mounted)
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(managerError(error))));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(managerError(error))));
   }
 
   Future<void> _openRun(SquadRun run) async {
@@ -185,12 +188,18 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
     setState(() => _busy = true);
     try {
       final active = _hub!.active;
+      if (active == null && !_hub!.enabled) {
+        throw StateError(
+          'Günlük ödüllü görevler kapalı. Ücretsiz antrenman açık.',
+        );
+      }
       if (active != null) {
         if (active.mission.id != mission.id)
           throw StateError('Önce açık görevine dön veya onu bırak.');
         await _openRun(active);
       } else {
         var spend = false;
+        int? quotedPrice;
         if (!_hub!.premium && _hub!.freeRemaining == 0) {
           if (_hub!.extraRemaining == 0)
             throw StateError(
@@ -198,16 +207,17 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
             );
           if (_hub!.coins < _hub!.extraPrice)
             throw StateError(
-              'Coinin yetersiz. Yeni ücretsiz haklar 00.00’da gelir.',
+              'Link Coin’in yetersiz. Yeni ücretsiz haklar 00.00’da gelir.',
             );
           final price = _hub!.extraPrice;
+          quotedPrice = price;
           spend =
               await showDialog<bool>(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text('$price coinle ek deneme?'),
+                  title: Text('$price Link Coinle ek deneme?'),
                   content: Text(
-                    'Bu görevi başlatmak hesabından $price coin düşürür. '
+                    'Bu görevi başlatmak hesabından $price Link Coin düşürür. '
                     'Görevden çıkarsan aynı denemeye ücretsiz dönebilirsin.',
                   ),
                   actions: [
@@ -217,7 +227,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(ctx, true),
-                      child: Text('$price coin kullan'),
+                      child: Text('$price Link Coin kullan'),
                     ),
                   ],
                 ),
@@ -234,6 +244,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
           mission.id,
           request,
           spendCoins: spend,
+          expectedPriceCoins: spend ? quotedPrice : null,
         );
         _requests.remove(mission.id);
         if (!mounted) return;
@@ -260,7 +271,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
       builder: (ctx) => AlertDialog(
         title: const Text('Açık deneme bırakılsın mı?'),
         content: const Text(
-          'Bu deneme kapanır. Kullanılan hak veya coin geri verilmez. '
+          'Bu deneme kapanır. Kullanılan hak veya Link Coin geri verilmez. '
           'Kadronu kaybedip yeni deneme açmak yerine mevcut kadronu düzenlemeye devam edebilirsin.',
         ),
         actions: [
@@ -368,7 +379,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
           ),
           const SizedBox(height: 10),
           const Text(
-            'Her gün 3 görev. Hedefleri tamamla, coinlerini koleksiyonunda kullan.',
+            'Her gün 3 görev. Hedefleri tamamla, Link Coinlerini koleksiyonunda kullan.',
           ),
           const SizedBox(height: 18),
           if (_cloudLoading) const LinearProgressIndicator(),
@@ -383,7 +394,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Günlük 3 ücretsiz deneme ve coin görevleri için hesabını bağla. Antrenman için giriş gerekmez.',
+                    'Günlük 3 ücretsiz deneme ve Link Coin görevleri için hesabını bağla. Antrenman için giriş gerekmez.',
                   ),
                   const SizedBox(height: 14),
                   PitchAction(
@@ -427,7 +438,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
             ),
             const SizedBox(height: 12),
             const Text(
-              'Görevler ve ücretsiz haklar Türkiye saatiyle 00.00’da yenilenir. Her görevin coin ödülü bir kez alınır.',
+              'Görevler ve ücretsiz haklar Türkiye saatiyle 00.00’da yenilenir. Her görevin Link Coin ödülü bir kez alınır.',
             ),
             if (hub.active != null) ...[
               const SizedBox(height: 16),
@@ -472,12 +483,12 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Ücretsiz haklardan sonra ${hub.extraPrice} coinle ek deneme açabilirsin. '
+                      'Ücretsiz haklardan sonra ${hub.extraPrice} Link Coinle ek deneme açabilirsin. '
                       'Bugün ${hub.extraRemaining} ek deneme kaldı. Premium ile deneme sınırı kalkar.',
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Günlük coin ödülü sınırı ve kadro koşulları herkes için aynıdır.',
+                      'Günlük Link Coin ödülü sınırı ve kadro koşulları herkes için aynıdır.',
                     ),
                     const SizedBox(height: 12),
                     PitchAction(
@@ -494,7 +505,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
             const SizedBox(height: 14),
             PitchRow(
               title: 'Coin mağazası',
-              subtitle: 'Kazandığın coinlerle avatar koleksiyonunu büyüt',
+              subtitle: 'Kazandığın Link Coinlerle avatar koleksiyonunu büyüt',
               icon: Icons.storefront_outlined,
               onTap: _busy ? null : _store,
             ),
@@ -508,7 +519,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
           ),
           const SizedBox(height: 12),
           const Text(
-            'Antrenmanda tüm temalar açık. İnternet, coin veya deneme hakkı gerekmez.',
+            'Antrenmanda tüm temalar açık. İnternet, Link Coin veya deneme hakkı gerekmez.',
           ),
         ],
       ),
@@ -532,7 +543,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
         ? 'Başla · 1 ücretsiz deneme'
         : blocked
         ? 'Yeni haklar 00.00’da'
-        : 'Başla · ${hub.extraPrice} coin';
+        : 'Başla · ${hub.extraPrice} Link Coin';
     return PitchPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -543,7 +554,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
             children: [
               ManagerTag(m.label),
               ManagerTag(
-                m.completed ? 'Ödül alındı' : '+${m.reward} coin',
+                m.completed ? 'Ödül alındı' : '+${m.reward} Link Coin',
                 active: true,
               ),
             ],
@@ -586,7 +597,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
       ),
       const SizedBox(height: 10),
       const Text(
-        '32 tema, 7 diziliş. İstediğin kadar dene; en iyi kadro puanın burada kalsın. Antrenman coin kazandırmaz.',
+        '32 tema, 7 diziliş. İstediğin kadar dene; en iyi kadro puanın burada kalsın. Antrenman Link Coin kazandırmaz.',
       ),
       if (_legacy > 0) ...[
         const SizedBox(height: 12),

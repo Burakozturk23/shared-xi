@@ -60,7 +60,7 @@ test("Free attempts exhaust at three; paid entry is explicit, atomic in state an
   assert.equal(state.balances.coins, 0);
   assert.equal(state.lifetimeSpent, 60);
   assert.equal(Object.keys(state.purchases).length, 3);
-  assert.throws(() => start(state, 7, false, daily[0], now, "coins"), /ek denemeni/);
+  assert.throws(() => start(state, 7, false, daily[0], now, "coins"), /ek deneme limiti/);
 });
 
 test("Repeated starts resume one active run and never double-charge", () => {
@@ -110,7 +110,7 @@ test("Premium gives attempts, not extra rewards or weaker goals; expiry restores
   assert.equal(engine.status(state, now, true).dailyMaxCoins, 90);
   for (let i = 13; i <= 15; i++) abandon(state, start(state, i, false).run);
   assert.throws(() => start(state, 16), /ücretsiz/);
-  assert.throws(() => start(state, 17, false, daily[0], now, "coins"), /20 coin/);
+  assert.throws(() => start(state, 17, false, daily[0], now, "coins"), /Link Coin/);
 });
 
 test("Rollover restores free entries and preserves an unfinished paid-for draft", () => {

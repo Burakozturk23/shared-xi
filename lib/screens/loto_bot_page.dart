@@ -7,6 +7,7 @@ import '../services/loto_generator.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/loto_board_view.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/rewarded_coin_card.dart';
 import '../widgets/player_avatar.dart';
 
 class LotoBotPage extends StatefulWidget {
@@ -313,6 +314,7 @@ class _LotoBotPageState extends State<LotoBotPage> with WidgetsBindingObserver {
         const SizedBox(height: 12),
         PitchAction(label: 'Lig ve zorluğu değiştir', secondary: true,
           onPressed: _c.reset, icon: Icons.tune_rounded),
+        const RewardedCoinCard(placement: 'loto_result'),
         const PitchSectionTitle('Eşleşmeleri incele'),
         Wrap(spacing: 8, children: [
           ChoiceChip(label: const Text('Sen'), selected: !_reviewBot,

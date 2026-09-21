@@ -13,6 +13,7 @@ import '../widgets/club_badge.dart';
 import '../widgets/country_badge.dart';
 import '../widgets/league_badge.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/rewarded_coin_card.dart';
 import '../widgets/player_avatar.dart';
 
 class VsBotCinkoPage extends StatefulWidget {
@@ -858,6 +859,7 @@ class _VsBotCinkoPageState extends State<VsBotCinkoPage>
           onPressed: () => Navigator.of(context).pop(),
         ),
         const SizedBox(height: 16),
+        const RewardedCoinCard(placement: 'cinko_result'),
         _history(),
         const SizedBox(height: 12),
         _board(),

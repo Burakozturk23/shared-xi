@@ -6,15 +6,14 @@ const catalog = require("./data/squad_challenge_catalog.json");
 const players = new Map(catalog.players.map((p) => [p.id, p]));
 const themes = new Map(catalog.themes.map((t) => [t.id, t]));
 const formations = new Map(catalog.formations.map((f) => [f.id, f]));
-const DAILY_FREE = 3;
-const EXTRA_PRICE = 20;
-const MAX_PAID = 3;
+const {squadPolicy} = require("./economy_config");
+const DEFAULT_POLICY = squadPolicy();
 const DAY = 86400000;
 const RESET_OFFSET = 3 * 3600000;
 const levels = [
-  {label: "Isınma", reward: 20, budget: 135, links: 4, countries: 3},
-  {label: "Ustalık", reward: 30, budget: 120, links: 6, countries: 4},
-  {label: "Büyük görev", reward: 40, budget: 105, links: 8, countries: 5},
+  {label: "Isınma", budget: 135, links: 4, countries: 3},
+  {label: "Ustalık", budget: 120, links: 6, countries: 4},
+  {label: "Büyük görev", budget: 105, links: 8, countries: 5},
 ];
 
 class SquadError extends Error {
@@ -28,7 +27,7 @@ function dayKey(now) {
   return new Date(now + RESET_OFFSET).toISOString().slice(0, 10);
 }
 
-function missions(day) {
+function missions(day, policy = DEFAULT_POLICY) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
     throw new SquadError("invalid-argument", "Görev tarihi geçersiz.");
   }
@@ -41,6 +40,8 @@ function missions(day) {
     const theme = pool[((n + i * 11) % pool.length + pool.length) % pool.length];
     return {
       ...level,
+      reward: policy.rewards[i],
+      economyConfigId: policy.configId,
       id: day + "__" + i + "__" + theme.id,
       day: day,
       themeId: theme.id,
@@ -49,9 +50,9 @@ function missions(day) {
   });
 }
 
-function missionFor(id) {
+function missionFor(id, policy = DEFAULT_POLICY) {
   const day = String(id).slice(0, 10);
-  const found = missions(day).find((m) => m.id === id);
+  const found = missions(day, policy).find((m) => m.id === id);
   if (!found) throw new SquadError("invalid-argument", "Görev bulunamadı.");
   return found;
 }
@@ -107,6 +108,9 @@ function evaluate(themeId, formationId, ids, budget = 160) {
 function prepare(state, now) {
   const day = dayKey(now);
   const previous = state.squadChallenge || {};
+  if (previous.day && previous.day > day) {
+    throw new SquadError("failed-precondition", "Günlük görevler yenilendi. Tekrar dene.");
+  }
   const sameDay = previous.day === day;
   state.squadChallenge = {
     day: day,
@@ -132,30 +136,33 @@ function claimId(mission) {
   return "squad__" + mission.id;
 }
 
-function status(state, now, premium) {
+function status(state, now, premium, policy = DEFAULT_POLICY) {
   const progress = prepare(state, now);
   return {
     catalogVersion: catalog.version,
+    economyConfigId: policy.configId,
+    enabled: policy.enabled,
     day: progress.day,
     serverNow: now,
     resetsAt: Date.parse(progress.day + "T00:00:00Z") - RESET_OFFSET + DAY,
-    freeRemaining: Math.max(0, DAILY_FREE - progress.freeUsed),
-    freeTotal: DAILY_FREE,
-    extraPrice: EXTRA_PRICE,
-    extraRemaining: Math.max(0, MAX_PAID - progress.paidUsed),
+    freeRemaining: policy.enabled ? Math.max(0, policy.freeAttempts - progress.freeUsed) : 0,
+    freeTotal: policy.freeAttempts,
+    extraPrice: policy.extraPrice,
+    extraRemaining: policy.enabled && policy.extraEnabled ? Math.max(0, policy.maxPaid - progress.paidUsed) : 0,
     premium: premium,
     coins: state.balances.coins,
-    dailyMaxCoins: levels.reduce((sum, l) => sum + l.reward, 0),
+    dailyMaxCoins: policy.enabled ? policy.rewards.reduce((sum, r) => sum + r, 0) : 0,
     completedTotal: progress.completedTotal,
     bestByTheme: progress.bestByTheme,
     active: progress.active,
-    missions: missions(progress.day).map((m) => ({...m, completed: !!state.claims[claimId(m)]})),
+    missions: missions(progress.day, policy).map((m) => ({...m,
+      reward: state.claims[claimId(m)]?.amount ?? m.reward, completed: !!state.claims[claimId(m)]})),
   };
 }
 
-function start(state, input, now, premium) {
+function start(state, input, now, premium, policy) {
   const progress = prepare(state, now);
-  const mission = missionFor(input.missionId);
+  const mission = missionFor(input.missionId, policy);
   const id = input.requestId;
   if (typeof id !== "string" || !/^\d{4}-\d{2}-\d{2}__[a-f0-9]{32}$/.test(id) ||
       id.slice(0, 10) !== mission.day) {
@@ -177,29 +184,37 @@ function start(state, input, now, premium) {
   if (state.claims[claimId(mission)]) {
     throw new SquadError("already-exists", "Bu görevin ödülünü zaten aldın. Antrenmanda devam edebilirsin.");
   }
+  if (!policy.enabled) {
+    throw new SquadError("failed-precondition", "Günlük ödüllü görevler kapalı. Ücretsiz antrenman açık.");
+  }
   let payment = "premium";
   if (!premium) {
-    if (progress.freeUsed < DAILY_FREE) {
+    if (progress.freeUsed < policy.freeAttempts) {
       payment = "free";
       progress.freeUsed++;
     } else {
       if (input.payment !== "coins") {
         throw new SquadError("resource-exhausted", "Bugünkü ücretsiz denemelerin bitti.");
       }
-      if (progress.paidUsed >= MAX_PAID) {
-        throw new SquadError("resource-exhausted", "Bugünkü 3 ek denemeni kullandın.");
+      if (!policy.extraEnabled || progress.paidUsed >= policy.maxPaid) {
+        throw new SquadError("resource-exhausted", "Bugünkü ek deneme limiti doldu.");
       }
-      if (state.balances.coins < EXTRA_PRICE) {
-        throw new SquadError("failed-precondition", "Ek deneme için 20 coin gerekli.");
+      if ((input.expectedPriceCoins ?? DEFAULT_POLICY.extraPrice) !== policy.extraPrice) {
+        throw new SquadError("failed-precondition", "Ek deneme fiyatı değişti. Görevleri yenile.");
+      }
+      if (state.balances.coins < policy.extraPrice) {
+        throw new SquadError("failed-precondition", "Ek deneme için yeterli Link Coin yok.");
       }
       payment = "coins";
-      state.balances.coins -= EXTRA_PRICE;
-      state.lifetimeSpent += EXTRA_PRICE;
+      const balanceBefore = state.balances.coins;
+      state.balances.coins -= policy.extraPrice;
+      state.lifetimeSpent += policy.extraPrice;
       progress.paidUsed++;
       const txId = "squad_entry__" + id;
       state.purchases[txId] = {
         txId: txId, offerId: "squad_extra_attempt", itemId: id,
-        priceCoins: EXTRA_PRICE, balanceAfter: state.balances.coins,
+        priceCoins: policy.extraPrice, balanceBefore, balanceAfter: state.balances.coins,
+        sourceType: "squad_extra_attempt", sourceId: id, economyConfigId: policy.configId,
         purchasedAt: now,
       };
     }
@@ -230,11 +245,14 @@ function finish(state, input, now) {
   let reward = 0;
   if (won && !state.claims[key]) {
     reward = mission.reward;
+    const balanceBefore = state.balances.coins;
+    if (!Number.isSafeInteger(balanceBefore + reward)) throw new SquadError("out-of-range", "Balance overflow");
     state.balances.coins += reward;
     state.lifetimeEarned += reward;
     state.claims[key] = {
       txId: key, sourceType: "squad_challenge", sourceId: mission.id,
-      amount: reward, balanceAfter: state.balances.coins, claimedAt: now,
+      amount: reward, balanceBefore, balanceAfter: state.balances.coins, claimedAt: now,
+      economyConfigId: mission.economyConfigId || "legacy",
     };
     progress.completedTotal++;
   }
@@ -257,15 +275,15 @@ function abandon(state, input, now) {
   return result;
 }
 
-function apply(state, action, input, now, premium) {
+function apply(state, action, input, now, premium, policy = DEFAULT_POLICY) {
   let run = null;
-  if (action === "start") run = start(state, input, now, premium);
+  if (action === "start") run = start(state, input, now, premium, policy);
   else if (action === "finish") run = finish(state, input, now);
   else if (action === "abandon") run = abandon(state, input, now);
   else if (action !== "status") throw new SquadError("invalid-argument", "İşlem geçersiz.");
   state.createdAt = state.createdAt || now;
   state.updatedAt = now;
-  return {ok: true, run: run, hub: status(state, now, premium)};
+  return {ok: true, run: run, hub: status(state, now, premium, policy)};
 }
 
 module.exports = {apply, status, missions, missionFor, evaluate, positionFits, dayKey, catalog, SquadError};

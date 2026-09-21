@@ -22,6 +22,9 @@ class _AchievementsPageState extends State<AchievementsPage> {
   final Set<String> _claiming = <String>{};
 
   AchievementCategory? _category;
+  Map<String, int> _rewards = const {};
+  AchievementDefinition _priced(AchievementDefinition item) =>
+      item.withCoinReward(_rewards[item.id] ?? 0);
   bool _syncing = true;
   bool _presenting = false;
   String? _syncError;
@@ -42,9 +45,10 @@ class _AchievementsPageState extends State<AchievementsPage> {
       await Future.wait([
         AchievementService.syncMyAchievements(),
         EconomyService.syncMyWallet(),
+        EconomyService.achievementRewards().then((value) => _rewards = value),
       ]);
     } catch (_) {
-      _syncError = 'Rozet veya coin ilerlemesi şu anda eşitlenemedi.';
+      _syncError = 'Rozet veya Link Coin ilerlemesi şu anda eşitlenemedi.';
     } finally {
       if (mounted) {
         setState(() => _syncing = false);
@@ -60,19 +64,17 @@ class _AchievementsPageState extends State<AchievementsPage> {
     });
 
     try {
-      final result = await EconomyService.claimAchievementReward(
-        definition.id,
-      );
+      final result = await EconomyService.claimAchievementReward(definition.id);
 
       if (!mounted) return;
 
       final message = result.granted
-          ? '+${result.amount} coin hesabına eklendi.'
+          ? '+${result.amount} Link Coin hesabına eklendi.'
           : 'Bu başarım ödülü daha önce alınmış.';
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     } catch (_) {
       if (!mounted) return;
 
@@ -92,9 +94,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
     }
   }
 
-  Future<void> _presentNew(
-    Map<String, AchievementProgress> progress,
-  ) async {
+  Future<void> _presentNew(Map<String, AchievementProgress> progress) async {
     if (_presenting) return;
 
     final unlocked = AchievementCatalog.all
@@ -117,7 +117,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
 
         await showDialog<void>(
           context: context,
-          builder: (_) => _UnlockedDialog(definition: item),
+          builder: (_) => _UnlockedDialog(definition: _priced(item)),
         );
 
         await AchievementPresentationStore.markSeen(id);
@@ -196,35 +196,43 @@ class _AchievementsPageState extends State<AchievementsPage> {
                         final columns = width >= 900
                             ? 5
                             : width >= 650
-                                ? 4
-                                : width >= 430
-                                    ? 3
-                                    : 2;
+                            ? 4
+                            : width >= 430
+                            ? 3
+                            : 2;
 
                         return SliverGrid(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: columns,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.68,
-                          ),
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final item = definitions[index];
-                              final claimId =
-                                  EconomyService.achievementClaimId(item.id);
+                                crossAxisCount: columns,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 0.68,
+                              ),
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final definition = definitions[index];
+                            final receipt =
+                                claims[EconomyService.achievementClaimId(
+                                  definition.id,
+                                )];
+                            final item = receipt != null
+                                ? definition.withCoinReward(receipt.amount)
+                                : _priced(definition);
+                            final claimId = EconomyService.achievementClaimId(
+                              item.id,
+                            );
 
-                              return _BadgeTile(
-                                definition: item,
-                                progress: progress[item.id],
-                                claimed: claims.containsKey(claimId),
-                                claiming: _claiming.contains(item.id),
-                                onClaim: () => _claim(item),
-                              );
-                            },
-                            childCount: definitions.length,
-                          ),
+                            return _BadgeTile(
+                              definition: item,
+                              progress: progress[item.id],
+                              claimed: claims.containsKey(claimId),
+                              claiming: _claiming.contains(item.id),
+                              onClaim: () => _claim(item),
+                            );
+                          }, childCount: definitions.length),
                         );
                       },
                     ),
@@ -269,10 +277,9 @@ class _SummaryCard extends StatelessWidget {
                     width: 46,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha: 0.12),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Icon(
@@ -294,9 +301,7 @@ class _SummaryCard extends StatelessWidget {
                         ),
                         Text(
                           '$unlockedCount / $totalCount rozet açıldı',
-                          style: TextStyle(
-                            color: Theme.of(context).hintColor,
-                          ),
+                          style: TextStyle(color: Theme.of(context).hintColor),
                         ),
                       ],
                     ),
@@ -314,10 +319,7 @@ class _SummaryCard extends StatelessWidget {
               const SizedBox(height: 14),
               ClipRRect(
                 borderRadius: BorderRadius.circular(999),
-                child: LinearProgressIndicator(
-                  value: ratio,
-                  minHeight: 8,
-                ),
+                child: LinearProgressIndicator(value: ratio, minHeight: 8),
               ),
               if (error != null) ...[
                 const SizedBox(height: 10),
@@ -351,10 +353,7 @@ class _CategoryFilters extends StatelessWidget {
   final AchievementCategory? selected;
   final ValueChanged<AchievementCategory?> onChanged;
 
-  const _CategoryFilters({
-    required this.selected,
-    required this.onChanged,
-  });
+  const _CategoryFilters({required this.selected, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -450,7 +449,9 @@ class _BadgeTile extends StatelessWidget {
                 claimed
                     ? const _RewardClaimedPill()
                     : FilledButton.tonalIcon(
-                        onPressed: claiming ? null : onClaim,
+                        onPressed: claiming || definition.coinReward <= 0
+                            ? null
+                            : onClaim,
                         icon: claiming
                             ? const SizedBox(
                                 width: 14,
@@ -466,7 +467,9 @@ class _BadgeTile extends StatelessWidget {
                         label: Text(
                           claiming
                               ? 'Alınıyor'
-                              : 'Topla +${definition.coinReward}',
+                              : definition.coinReward > 0
+                              ? 'Topla +${definition.coinReward}'
+                              : 'Ödül bekleniyor',
                         ),
                       )
               else ...[
@@ -500,17 +503,12 @@ class _BadgeTile extends StatelessWidget {
 class _CoinRewardPill extends StatelessWidget {
   final int amount;
 
-  const _CoinRewardPill({
-    required this.amount,
-  });
+  const _CoinRewardPill({required this.amount});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 4,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: const Color(0xFFFFB300).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
@@ -525,11 +523,8 @@ class _CoinRewardPill extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            '+$amount',
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w900,
-            ),
+            amount > 0 ? '+$amount Link Coin' : '—',
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -543,15 +538,9 @@ class _RewardClaimedPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 9,
-        vertical: 5,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .primary
-            .withValues(alpha: 0.12),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
@@ -604,19 +593,13 @@ class _DetailsSheet extends StatelessWidget {
             Text(
               definition.title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             Text(
               definition.description,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Theme.of(context).hintColor,
-                height: 1.4,
-              ),
+              style: TextStyle(color: Theme.of(context).hintColor, height: 1.4),
             ),
             const SizedBox(height: 12),
             _CoinRewardPill(amount: definition.coinReward),
@@ -626,7 +609,7 @@ class _DetailsSheet extends StatelessWidget {
                 const _RewardClaimedPill()
               else
                 FilledButton.icon(
-                  onPressed: claiming
+                  onPressed: claiming || definition.coinReward <= 0
                       ? null
                       : () async {
                           await onClaim();
@@ -638,15 +621,15 @@ class _DetailsSheet extends StatelessWidget {
                       ? const SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.monetization_on_rounded),
                   label: Text(
                     claiming
                         ? 'Ödül alınıyor'
-                        : '+${definition.coinReward} coin topla',
+                        : definition.coinReward > 0
+                        ? '+${definition.coinReward} Link Coin topla'
+                        : 'Ödül kullanılamıyor',
                   ),
                 )
             else ...[
@@ -713,29 +696,21 @@ class _UnlockedDialog extends StatelessWidget {
           Text(
             definition.title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 23,
-              fontWeight: FontWeight.w900,
-            ),
+            style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 7),
           Text(
             definition.description,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).hintColor,
-            ),
+            style: TextStyle(color: Theme.of(context).hintColor),
           ),
           const SizedBox(height: 12),
           _CoinRewardPill(amount: definition.coinReward),
           const SizedBox(height: 8),
           Text(
-            'Coin ödülünü Rozetler ekranından toplayabilirsin.',
+            'Link Coin ödülünü Rozetler ekranından toplayabilirsin.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).hintColor,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: Theme.of(context).hintColor, fontSize: 12),
           ),
           const SizedBox(height: 18),
           FilledButton(

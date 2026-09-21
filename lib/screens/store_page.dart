@@ -66,7 +66,7 @@ class _StorePageState extends State<StorePage> {
 
       final message = result.alreadyOwned
           ? '${offer.title} zaten koleksiyonunda.'
-          : '${offer.title} açıldı. ${result.coins} coin kaldı.';
+          : '${offer.title} açıldı. ${result.coins} Link Coin kaldı.';
 
       ScaffoldMessenger.of(
         context,
@@ -79,6 +79,7 @@ class _StorePageState extends State<StorePage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(_purchaseErrorMessage(error))));
+      _reloadCatalog();
     } finally {
       if (mounted) {
         setState(() => _purchasingOfferIds.remove(offer.offerId));
@@ -89,10 +90,14 @@ class _StorePageState extends State<StorePage> {
   String _purchaseErrorMessage(Object error) {
     final raw = error.toString().toLowerCase();
 
+    if (raw.contains('fiyat'))
+      return 'Fiyat güncellendi. Yeni fiyatı kontrol edip tekrar dene.';
+    if (raw.contains('unavailable')) return 'Bu ürün şu anda satışta değil.';
+
     if (raw.contains('insufficient') ||
         raw.contains('yetersiz') ||
         raw.contains('balance')) {
-      return 'Bu teklif için yeterli coinin yok.';
+      return 'Bu teklif için yeterli Link Coin’in yok.';
     }
 
     if (raw.contains('already') || raw.contains('owned')) {
@@ -139,7 +144,7 @@ class _StorePageState extends State<StorePage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Coin bakiyen, satın aldığın avatarlar ve ilerideki '
+                    'Link Coin bakiyen, satın aldığın avatarlar ve ilerideki '
                     'premium hakların Google hesabına bağlı Linkball '
                     'profilinde korunur.',
                     textAlign: TextAlign.center,
@@ -325,12 +330,13 @@ class _StoreHeaderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Coin Mağazası',
+                    'Link Coin Mağazası',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '$offerCount aktif teklif · $coins coin kullanılabilir',
+                    '$offerCount aktif teklif · $coins Link Coin kullanılabilir\n'
+                    'Kozmetiklerini Link Coin ile aç. XP harcanmaz.',
                     style: TextStyle(color: Theme.of(context).hintColor),
                   ),
                 ],
@@ -506,8 +512,8 @@ class _StoreOfferCard extends StatelessWidget {
                         purchasing
                             ? 'Alınıyor...'
                             : (canAfford
-                                  ? '${offer.priceCoins} coin'
-                                  : 'Yetersiz coin'),
+                                  ? '${offer.priceCoins} Link Coin'
+                                  : 'Yetersiz Link Coin'),
                       ),
                     ),
             ),

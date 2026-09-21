@@ -11,9 +11,9 @@ class StoreService {
   StoreService._();
 
   static FirebaseFunctions get _functions => FirebaseFunctions.instanceFor(
-        app: Firebase.app(),
-        region: 'europe-west1',
-      );
+    app: Firebase.app(),
+    region: 'europe-west1',
+  );
 
   static Future<StoreCatalogSnapshot> fetchCatalog() async {
     await CloudBootstrap.ensureInitialized();
@@ -39,9 +39,7 @@ class StoreService {
     for (final raw in rawOffers) {
       if (raw is! Map) continue;
 
-      final offer = StoreOffer.fromMap(
-        Map<String, dynamic>.from(raw),
-      );
+      final offer = StoreOffer.fromMap(Map<String, dynamic>.from(raw));
 
       if (offer.offerId.isEmpty ||
           offer.itemId.isEmpty ||
@@ -61,18 +59,17 @@ class StoreService {
 
     return StoreCatalogSnapshot(
       catalogVersion: _int(data['catalogVersion'], fallback: 1),
-      wallet: EconomyWallet.fromMap(
-        Map<String, dynamic>.from(rawWallet),
-      ),
+      wallet: EconomyWallet.fromMap(Map<String, dynamic>.from(rawWallet)),
       offers: List<StoreOffer>.unmodifiable(offers),
     );
   }
 
-  static Future<EconomyPurchaseResult> purchase(
-    StoreOffer offer,
-  ) {
+  static Future<EconomyPurchaseResult> purchase(StoreOffer offer) {
     _requireGoogleAccount();
-    return EconomyService.purchaseOffer(offer.offerId);
+    return EconomyService.purchaseOffer(
+      offer.offerId,
+      expectedPriceCoins: offer.priceCoins,
+    );
   }
 
   static void _requireGoogleAccount() {

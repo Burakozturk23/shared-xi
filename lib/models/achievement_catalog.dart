@@ -14,7 +14,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'ranked_played',
       target: 1,
-      coinReward: 10,
       iconKey: 'first_whistle',
     ),
     AchievementDefinition(
@@ -25,7 +24,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'ranked_wins',
       target: 1,
-      coinReward: 15,
       iconKey: 'first_victory',
     ),
     AchievementDefinition(
@@ -36,7 +34,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'ranked_played',
       target: 10,
-      coinReward: 20,
       iconKey: 'challenger',
     ),
     AchievementDefinition(
@@ -47,7 +44,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'ranked_played',
       target: 50,
-      coinReward: 40,
       iconKey: 'loyal_rival',
     ),
     AchievementDefinition(
@@ -58,7 +54,6 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'ranked_played',
       target: 100,
-      coinReward: 75,
       iconKey: 'centurion',
     ),
     AchievementDefinition(
@@ -69,7 +64,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'ranked_wins',
       target: 10,
-      coinReward: 20,
       iconKey: 'form_days',
     ),
     AchievementDefinition(
@@ -80,7 +74,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'ranked_wins',
       target: 50,
-      coinReward: 50,
       iconKey: 'brave_heart',
     ),
     AchievementDefinition(
@@ -91,7 +84,6 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'ranked_wins',
       target: 100,
-      coinReward: 100,
       iconKey: 'victory_machine',
     ),
     AchievementDefinition(
@@ -102,7 +94,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'best_win_streak',
       target: 3,
-      coinReward: 15,
       iconKey: 'hot_streak',
     ),
     AchievementDefinition(
@@ -113,7 +104,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'best_win_streak',
       target: 5,
-      coinReward: 40,
       iconKey: 'streak_killer',
     ),
     AchievementDefinition(
@@ -124,7 +114,6 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'best_win_streak',
       target: 10,
-      coinReward: 75,
       iconKey: 'unchanged_champion',
     ),
     AchievementDefinition(
@@ -135,7 +124,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'peak_elo',
       target: 1100,
-      coinReward: 20,
       iconKey: 'rising_star',
     ),
     AchievementDefinition(
@@ -146,7 +134,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'peak_elo',
       target: 1250,
-      coinReward: 50,
       iconKey: 'tough_opponent',
     ),
     AchievementDefinition(
@@ -157,7 +144,6 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'peak_elo',
       target: 1400,
-      coinReward: 100,
       iconKey: 'ranking_beast',
     ),
     AchievementDefinition(
@@ -168,7 +154,6 @@ class AchievementCatalog {
       tier: AchievementTier.platinum,
       signal: 'peak_elo',
       target: 1600,
-      coinReward: 200,
       iconKey: 'legend',
     ),
     AchievementDefinition(
@@ -179,7 +164,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'ranked_shared_xi_wins',
       target: 10,
-      coinReward: 50,
       iconKey: 'shared_xi_master',
     ),
     AchievementDefinition(
@@ -190,7 +174,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'ranked_grid_wins',
       target: 10,
-      coinReward: 50,
       iconKey: 'grid_master',
     ),
     AchievementDefinition(
@@ -201,7 +184,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'ranked_cinko_wins',
       target: 10,
-      coinReward: 50,
       iconKey: 'cinko_master',
     ),
     AchievementDefinition(
@@ -212,7 +194,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'ranked_five_wins',
       target: 10,
-      coinReward: 50,
       iconKey: 'five_master',
     ),
     AchievementDefinition(
@@ -223,7 +204,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'daily_days',
       target: 1,
-      coinReward: 10,
       iconKey: 'calendar_rookie',
     ),
     AchievementDefinition(
@@ -234,7 +214,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'daily_days',
       target: 7,
-      coinReward: 25,
       iconKey: 'calendar_regular',
     ),
     AchievementDefinition(
@@ -245,7 +224,6 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'daily_days',
       target: 30,
-      coinReward: 75,
       iconKey: 'month_tactician',
     ),
     AchievementDefinition(
@@ -256,7 +234,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'best_daily_streak',
       target: 7,
-      coinReward: 40,
       iconKey: 'loyal_tactician',
     ),
     AchievementDefinition(
@@ -267,7 +244,6 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'perfect_daily_count',
       target: 1,
-      coinReward: 60,
       iconKey: 'perfectionist',
     ),
     AchievementDefinition(
@@ -278,7 +254,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'weekly_days',
       target: 5,
-      coinReward: 35,
       iconKey: 'week_warrior',
     ),
     AchievementDefinition(
@@ -289,7 +264,6 @@ class AchievementCatalog {
       tier: AchievementTier.bronze,
       signal: 'friend_count_peak',
       target: 1,
-      coinReward: 10,
       iconKey: 'team_spirit',
     ),
     AchievementDefinition(
@@ -300,7 +274,6 @@ class AchievementCatalog {
       tier: AchievementTier.silver,
       signal: 'friend_count_peak',
       target: 5,
-      coinReward: 30,
       iconKey: 'group_leader',
     ),
     AchievementDefinition(
@@ -311,19 +284,16 @@ class AchievementCatalog {
       tier: AchievementTier.gold,
       signal: 'friend_count_peak',
       target: 25,
-      coinReward: 100,
       iconKey: 'social_captain',
-    )
+    ),
   ];
 
   static final Map<String, AchievementDefinition> byId =
       <String, AchievementDefinition>{
-    for (final definition in all) definition.id: definition,
-  };
+        for (final definition in all) definition.id: definition,
+      };
 
-  static List<AchievementDefinition> forCategory(
-    AchievementCategory category,
-  ) {
+  static List<AchievementDefinition> forCategory(AchievementCategory category) {
     return all
         .where((definition) => definition.category == category)
         .toList(growable: false);

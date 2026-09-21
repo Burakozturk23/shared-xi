@@ -21,8 +21,11 @@ class SquadCatalogService {
       });
   static Future<SquadCatalog> _load() async => SquadCatalog.fromJson(
     jsonDecode(
-      await rootBundle.loadString('assets/data/squad_challenge_catalog.json'),
-    ) as Map<String, dynamic>,
+          await rootBundle.loadString(
+            'assets/data/squad_challenge_catalog.json',
+          ),
+        )
+        as Map<String, dynamic>,
   );
 }
 
@@ -34,6 +37,7 @@ abstract class SquadGateway {
     String missionId,
     String requestId, {
     bool spendCoins = false,
+    int? expectedPriceCoins,
   });
   Future<SquadResponse> finish(
     String version,
@@ -98,10 +102,12 @@ class FirebaseSquadGateway extends SquadGateway {
     String missionId,
     String requestId, {
     bool spendCoins = false,
+    int? expectedPriceCoins,
   }) => _call('startSquadChallenge', version, {
     'missionId': missionId,
     'requestId': requestId,
     'payment': spendCoins ? 'coins' : 'free',
+    if (expectedPriceCoins != null) 'expectedPriceCoins': expectedPriceCoins,
   });
   @override
   Future<SquadResponse> finish(

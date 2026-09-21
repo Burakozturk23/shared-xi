@@ -5,6 +5,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
+const defaults = require("../economy_config").defaults;
+
 const source = fs.readFileSync(
     path.join(__dirname, "..", "index.js"),
     "utf8",
@@ -72,28 +74,13 @@ test("wallet mutation prevents negative or client-defined reward amounts", () =>
   assert.ok(block.includes("LB_ACHIEVEMENT_COIN_REWARDS"));
   assert.ok(block.includes("Number.isInteger(amount)"));
   assert.ok(block.includes("amount <= 0"));
-  assert.ok(block.includes("state.balances.coins + amount"));
+  assert.ok(block.includes("balanceBefore + amount"));
 });
 
 test("first achievement reward schedule has 28 positive unique ids", () => {
-  const block = economyBlock();
-  const mapStart = block.indexOf(
-      "const LB_ACHIEVEMENT_COIN_REWARDS",
-  );
-  const mapEnd = block.indexOf("});", mapStart);
-
-  assert.notEqual(mapStart, -1);
-  assert.notEqual(mapEnd, -1);
-
-  const mapText = block.slice(mapStart, mapEnd);
-  const rows = [...mapText.matchAll(/^\s{2}([a-z0-9_]+): ([0-9]+),$/gm)];
-
-  assert.equal(rows.length, 28);
-  assert.equal(
-      new Set(rows.map((row) => row[1])).size,
-      rows.length,
-  );
-  assert.ok(rows.every((row) => Number(row[2]) > 0));
+  const rewards = defaults.sources.achievement.rewards;
+  assert.equal(Object.keys(rewards).length, 28);
+  assert.ok(Object.values(rewards).every((amount) => Number.isSafeInteger(amount) && amount > 0));
 });
 
 test("wallet sync repairs projections without granting currency", () => {
@@ -108,7 +95,7 @@ test("coin spend reads server-side offer data and never client price", () => {
   const block = economyBlock();
 
   assert.ok(block.includes("exports.purchaseEconomyOffer"));
-  assert.ok(block.includes("\"economyCatalog/offers/\" + offerId"));
+  assert.ok(block.includes("config.sinks.cosmetics.offers"));
   assert.ok(block.includes("offer.priceCoins"));
   assert.equal(
       block.includes("(request.data || {}).priceCoins"),
@@ -119,7 +106,7 @@ test("coin spend reads server-side offer data and never client price", () => {
 test("coin spend is atomic, non-negative, and one-time per item", () => {
   const block = transactionsBlock();
 
-  assert.ok(block.includes("ref.transaction((current) =>"));
+  assert.ok(block.includes("transaction((current) =>"));
   assert.ok(block.includes("state.inventory[offer.itemId]"));
   assert.ok(block.includes("state.balances.coins < offer.priceCoins"));
   assert.ok(
@@ -128,7 +115,7 @@ test("coin spend is atomic, non-negative, and one-time per item", () => {
       ),
   );
   assert.ok(block.includes("state.lifetimeSpent += offer.priceCoins"));
-  assert.ok(block.includes("alreadyOwned: true"));
+  assert.ok(block.includes("alreadyOwned: !purchased"));
 });
 
 test("spends are projected into ledger and canonical inventory", () => {

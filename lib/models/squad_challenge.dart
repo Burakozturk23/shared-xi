@@ -189,6 +189,7 @@ class SquadRun {
 
 class SquadHub {
   const SquadHub({
+    this.enabled = true,
     required this.version,
     required this.day,
     required this.coins,
@@ -213,11 +214,13 @@ class SquadHub {
       dailyMaxCoins,
       completedTotal,
       resetsAt;
+  final bool enabled;
   final bool premium;
   final SquadRun? active;
   final List<SquadMission> missions;
   final Map<String, int> bestByTheme;
   factory SquadHub.fromJson(Map<String, dynamic> j) => SquadHub(
+    enabled: j['enabled'] != false,
     version: j['catalogVersion'] as String,
     day: j['day'] as String,
     coins: squadInt(j['coins']),

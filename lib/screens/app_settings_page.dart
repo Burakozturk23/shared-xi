@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/app_preferences.dart';
 import '../app/route_appearance.dart';
 import '../widgets/pitch_ui.dart';
+import '../services/ads_consent_service.dart';
 import 'onboarding_page.dart';
 import 'privacy_account_page.dart';
 import 'social_safety_center_page.dart';
@@ -125,6 +126,17 @@ class AppSettingsPage extends StatelessWidget {
             ),
           ),
           const PitchSectionTitle('Hesap ve destek'),
+          ValueListenableBuilder<bool>(
+            valueListenable: AdsConsentService.privacyOptionsRequired,
+            builder: (context, privacyRequired, _) => privacyRequired
+                ? ListTile(
+                    leading: const Icon(Icons.privacy_tip_outlined),
+                    title: const Text('Reklam gizlilik tercihleri'),
+                    subtitle: const Text('Reklamlarla ilgili izinlerini yönet'),
+                    onTap: () => _save(context, AdsConsentService.showPrivacyOptions),
+                  )
+                : const SizedBox.shrink(),
+          ),
           PitchPanel(
             padding: EdgeInsets.zero,
             child: Column(

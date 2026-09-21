@@ -8,6 +8,7 @@ import 'app/app_preferences.dart';
 import 'app/app_feedback.dart';
 import 'app/route_appearance.dart';
 import 'services/cloud_bootstrap.dart';
+import 'services/ads_consent_service.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -25,6 +26,7 @@ Future<void> main() async {
   runApp(SharedXIApp(preferences: preferences));
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(AdsConsentService.refresh());
     debugPrint(
       '[Startup] Welcome first frame '
       '${startupWatch.elapsedMilliseconds}ms',

@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "revision": "launch-a-1",
+  "currency": "link_coin",
+  "resetTimeZone": "Europe/Istanbul",
+  "sources": {
+    "daily_reward": {
+      "enabled": true,
+      "coinsByDay": [
+        10,
+        12,
+        15,
+        18,
+        20,
+        25,
+        30
+      ],
+      "xp": 25,
+      "dailyLimit": 1
+    },
+    "daily_mission": {
+      "enabled": true,
+      "amount": 20,
+      "dailyLimit": 3
+    },
+    "general_mission": {
+      "enabled": true,
+      "rewards": {
+        "general_ranked_play_5": 10,
+        "general_ranked_play_25": 25,
+        "general_ranked_play_100": 60,
+        "general_ranked_play_250": 150,
+        "general_ranked_wins_3": 10,
+        "general_ranked_wins_10": 25,
+        "general_ranked_wins_50": 75,
+        "general_ranked_wins_100": 150,
+        "general_daily_days_3": 10,
+        "general_daily_days_7": 25,
+        "general_daily_days_30": 75,
+        "general_daily_days_100": 150
+      }
+    },
+    "achievement": {
+      "enabled": true,
+      "rewards": {
+        "first_whistle": 10,
+        "first_victory": 15,
+        "challenger_10": 20,
+        "loyal_rival_50": 40,
+        "centurion_100": 75,
+        "winner_10": 20,
+        "winner_50": 50,
+        "winner_100": 100,
+        "streak_3": 15,
+        "streak_5": 40,
+        "streak_10": 75,
+        "elo_1100": 20,
+        "elo_1250": 50,
+        "elo_1400": 100,
+        "elo_1600": 200,
+        "shared_xi_master": 50,
+        "grid_master": 50,
+        "cinko_master": 50,
+        "five_master": 50,
+        "daily_first": 10,
+        "daily_7": 25,
+        "daily_30": 75,
+        "daily_streak_7": 40,
+        "daily_perfect": 60,
+        "weekly_5": 35,
+        "first_friend": 10,
+        "friends_5": 30,
+        "friends_25": 100
+      }
+    },
+    "squad_challenge": {
+      "enabled": true,
+      "rewards": [
+        20,
+        30,
+        40
+      ],
+      "freeAttempts": 3,
+      "dailyLimit": 3
+    },
+    "rewarded_coin": {
+      "enabled": false,
+      "amount": 20,
+      "dailyLimit": 2
+    },
+    "casual_completion": {
+      "enabled": false,
+      "minCoins": 5,
+      "maxCoins": 10,
+      "cooldownSeconds": 300
+    },
+    "weekly_mission": {
+      "enabled": false,
+      "amount": 100,
+      "weeklyLimit": 1
+    },
+    "special_event": {
+      "enabled": false
+    }
+  },
+  "sinks": {
+    "cosmetics": {
+      "offers": {
+        "avatar_speedster_bolt": {
+          "title": "Şimşek",
+          "subtitle": "Hız tutkunları için premium avatar.",
+          "badge": "AVATAR",
+          "priceCoins": 150,
+          "itemId": "speedster_bolt",
+          "itemType": "avatar",
+          "oneTime": true,
+          "enabled": true,
+          "sortOrder": 10
+        },
+        "avatar_tactician_board": {
+          "title": "Taktisyen",
+          "subtitle": "Oyunu tahtada kazananlar için premium avatar.",
+          "badge": "AVATAR",
+          "priceCoins": 250,
+          "itemId": "tactician_board",
+          "itemType": "avatar",
+          "oneTime": true,
+          "enabled": true,
+          "sortOrder": 20
+        },
+        "avatar_night_owl": {
+          "title": "Gece Kuşu",
+          "subtitle": "Gece maçlarının vazgeçilmez premium avatarı.",
+          "badge": "AVATAR",
+          "priceCoins": 400,
+          "itemId": "night_owl",
+          "itemType": "avatar",
+          "oneTime": true,
+          "enabled": true,
+          "sortOrder": 30
+        },
+        "avatar_champion_cup": {
+          "title": "Şampiyon",
+          "subtitle": "Kupa koleksiyonunun premium avatarı.",
+          "badge": "AVATAR",
+          "priceCoins": 600,
+          "itemId": "champion_cup",
+          "itemType": "avatar",
+          "oneTime": true,
+          "enabled": true,
+          "sortOrder": 40
+        }
+      }
+    },
+    "squad_extra_attempt": {
+      "enabled": true,
+      "priceCoins": 20,
+      "dailyLimit": 3
+    }
+  }
+}

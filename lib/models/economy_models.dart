@@ -71,6 +71,9 @@ class EconomyLedgerEntry {
   final String currency;
   final int amount;
   final int balanceAfter;
+  final int? balanceBefore;
+  final String? idempotencyKey;
+  final String? economyConfigId;
   final String sourceType;
   final String sourceId;
   final String? itemId;
@@ -83,6 +86,9 @@ class EconomyLedgerEntry {
     required this.currency,
     required this.amount,
     required this.balanceAfter,
+    this.balanceBefore,
+    this.idempotencyKey,
+    this.economyConfigId,
     required this.sourceType,
     required this.sourceId,
     this.itemId,
@@ -90,10 +96,7 @@ class EconomyLedgerEntry {
     this.version = 1,
   });
 
-  factory EconomyLedgerEntry.fromMap(
-    String txId,
-    Map<String, dynamic> data,
-  ) {
+  factory EconomyLedgerEntry.fromMap(String txId, Map<String, dynamic> data) {
     final rawItemId = data['itemId']?.toString().trim();
 
     return EconomyLedgerEntry(
@@ -102,6 +105,11 @@ class EconomyLedgerEntry {
       currency: data['currency']?.toString() ?? '',
       amount: _economyInt(data['amount']),
       balanceAfter: _economyInt(data['balanceAfter']),
+      balanceBefore:
+          _economyNullableInt(data['balanceBefore']) ??
+          _economyInt(data['balanceAfter']) - _economyInt(data['amount']),
+      idempotencyKey: data['idempotencyKey']?.toString() ?? txId,
+      economyConfigId: data['economyConfigId']?.toString() ?? 'legacy',
       sourceType: data['sourceType']?.toString() ?? '',
       sourceId: data['sourceId']?.toString() ?? '',
       itemId: rawItemId == null || rawItemId.isEmpty ? null : rawItemId,

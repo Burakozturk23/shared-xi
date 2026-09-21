@@ -23,6 +23,7 @@ dependencies:
   firebase_database: ^12.4.7
   firebase_app_check: 0.4.6
   in_app_purchase: 3.2.3
+  google_mobile_ads: 9.1.0
 
 dev_dependencies:
   flutter_test:
@@ -43,6 +44,7 @@ flutter:
         - asset: assets/fonts/Inter-Body-Variable.ttf
 
   assets:
+    - assets/config/admob.json
     - assets/brand/
     # Canonical player/club runtime data is V4 SQLite only.
     # Small coach/transfer/meta JSON assets remain for legacy side-data.

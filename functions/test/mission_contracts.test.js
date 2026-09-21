@@ -67,7 +67,7 @@ test("daily missions use only trusted ranked and daily sources", () => {
   assert.equal(block.includes("recordSoloMission"), false);
 });
 
-test("daily catalog is three canonical ten-coin tasks", () => {
+test("daily catalog is three canonical twenty-coin tasks", () => {
   const block = missionBlock();
 
   for (const id of [
@@ -84,7 +84,7 @@ test("daily catalog is three canonical ten-coin tasks", () => {
   );
 
   assert.equal(
-      (dailySection.match(/rewardCoins: 10/g) || []).length,
+      (dailySection.match(/rewardCoins: economyConfig.defaults.sources.daily_mission.amount/g) || []).length,
       3,
   );
 });
@@ -110,8 +110,8 @@ test("general missions form ordered trusted progression chains", () => {
 test("mission reward claims are server-defined and idempotent", () => {
   const block = missionBlock();
 
-  assert.ok(block.includes("lbProgressionGrantCoins("));
-  assert.ok(block.includes("\"mission_reward__\" + periodKey"));
+  assert.ok(block.includes("lbSettlePendingRewards("));
+  assert.ok(block.includes("\"mission_reward__\" + sourceId"));
   assert.ok(block.includes("resolved.definition.rewardCoins"));
   assert.equal(block.includes("(request.data || {}).amount"), false);
   assert.equal(block.includes("(request.data || {}).progress"), false);

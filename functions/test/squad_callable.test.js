@@ -53,7 +53,12 @@ function harness(initial = wallet()) {
     }
   }
   const context = vm.createContext({
-    squadChallenge: engine,
+    require: (name) => {
+      assert.equal(name, "./squad_challenge");
+      return engine;
+    },
+    economyConfig: require("../economy_config"),
+    lbGetEconomyConfig: async () => require("../economy_config").DEFAULT_CONFIG,
     httpsV2: {HttpsError, onCall: (options, handler) => ({options, handler})},
     admin: {database: () => db},
     Date: {now: () => now},
