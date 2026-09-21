@@ -25,7 +25,7 @@ Satışı kapatmak geçmiş ödemelerin doğrulanmasını/kurtarılmasını durd
 - Sunucu `sha256('linkball-play:' + uid)` hesap bağını döndürür. İstemci bunu Play obfuscated account ID olarak geçirir.
 - Satın alma akışı uygulama seviyesinde dinlenir; mağazadan çıkmak teslimatı durdurmaz.
 - `buyConsumable(autoConsume:false)` kullanılır. İstemci coin vermez, otomatik tüketmez veya önceden acknowledge etmez.
-- `verifyCoinPurchase` paket adı, ürün, token, PURCHASED durumu, hesap bağı, quantity ve consumption kontrolünü Play Developer API üzerinden yapar.
+- `verifyCoinPurchase` tokenı güncel `purchases.productsv2.getproductpurchasev2` ile sorgular; PURCHASED durumu, hesap bağı, tek ürün/quantity=1 ve consumption bilgisini doğrular. Tüketim güvenli sunucuda `purchases.products.consume` ile yapılır.
 - Token hash'i özel RTDB kaydının anahtarıdır. Ham token yalnızca özel sunucu kaydında kurtarma içindir; istemci okunabilir veri ve loglarda bulunmaz.
 - `economyState/{uid}` içindeki claim + bakiye aynı transaction'da yazılır. Aynı token en fazla bir kez coin kazandırır.
 - Kalıcı cüzdan/projection yazıldıktan sonra sunucu Play `purchases.products.consume` çağrısını yapar; tüketim acknowledgement'ı da karşılar.
@@ -94,7 +94,7 @@ C kod/test teslimi bu cihaz testinin yerine geçmez. Bu tablo geçmeden C canlı
 ## Dayanaklar
 
 - https://developer.android.com/google/play/billing/security
-- https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.products
+- https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.productsv2/getproductpurchasev2
 - https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.products/consume
 - https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.voidedpurchases/list
 - https://pub.dev/packages/in_app_purchase
