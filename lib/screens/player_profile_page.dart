@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../models/premium_models.dart';
 import '../models/user_avatar_catalog.dart';
 import '../services/auth_service.dart';
 import '../services/avatar_service.dart';
 import '../services/nickname_service.dart';
 import '../services/profile_service.dart';
 import '../services/profile_runtime_audit_service.dart';
+import '../services/premium_service.dart';
 import '../widgets/achievement_profile_preview_card.dart';
 import '../widgets/user_avatar_badge.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -16,6 +18,7 @@ import 'friends_page.dart';
 import 'sign_in_page.dart';
 import 'store_page.dart';
 import 'progression_center_page.dart';
+import 'premium_page.dart';
 import 'social_safety_center_page.dart';
 
 class PlayerProfilePage extends StatefulWidget {
@@ -29,6 +32,7 @@ class PlayerProfilePage extends StatefulWidget {
 class _PlayerProfilePageState extends State<PlayerProfilePage> {
   bool _booting = true;
   String? _bootError;
+  Stream<PremiumEntitlement>? _premiumStream;
 
   @override
   void initState() {
@@ -41,6 +45,9 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
       await AuthService.ensureSignedIn();
       await ProfileService.ensureCanonicalProfile();
       await ProfileRuntimeAuditService.auditCurrentProfile();
+      if (AuthService.isGoogleAccount) {
+        _premiumStream = PremiumService.watchStatus();
+      }
     } catch (error) {
       debugPrint('Profile bootstrap: $error');
       _bootError = 'Profilin yüklenemedi. Bağlantını kontrol edip tekrar dene.';
@@ -301,7 +308,11 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
 
     if (signedIn == true) {
       await ProfileService.ensureCanonicalProfile();
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {
+          _premiumStream = PremiumService.watchStatus();
+        });
+      }
     }
   }
 
@@ -345,9 +356,24 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                return RefreshIndicator(
-                  onRefresh: ProfileService.ensureCanonicalProfile,
-                  child: ListView(
+                return StreamBuilder<PremiumEntitlement>(
+                  stream: profile.isPersistent
+                      ? (_premiumStream ??= PremiumService.watchStatus())
+                      : null,
+                  initialData: const PremiumEntitlement.inactive(),
+                  builder: (context, premiumSnapshot) {
+                    final premium = premiumSnapshot.data ??
+                        const PremiumEntitlement.inactive();
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        await ProfileService.ensureCanonicalProfile();
+                        if (AuthService.isGoogleAccount && mounted) {
+                          setState(() {
+                            _premiumStream = PremiumService.watchStatus();
+                          });
+                        }
+                      },
+                      child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                     children: [
@@ -359,6 +385,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                         const SizedBox(height: 12),
                       _ProfileHero(
                         profile: profile,
+                        proActive: premium.active,
                         onEditNickname: () => _editNickname(profile),
                         onEditAvatar: () => _openAvatarPicker(profile),
                       ),
@@ -368,6 +395,19 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                       if (!profile.isPersistent) const SizedBox(height: 16),
                       _StatsCard(profile: profile),
                       const SizedBox(height: 16),
+                      if (profile.isPersistent)
+                        _ProInsightsCard(
+                          profile: profile,
+                          entitlement: premium,
+                          onUpgrade: () => Navigator.push<void>(
+                            context,
+                            LinkballRoute(
+                              modern: false,
+                              builder: (_) => const PremiumPage(),
+                            ),
+                          ),
+                        ),
+                      if (profile.isPersistent) const SizedBox(height: 16),
                       if (profile.isPersistent)
                         const AchievementProfilePreviewCard(),
                       if (profile.isPersistent) const SizedBox(height: 16),
@@ -444,8 +484,10 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                        ],
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -455,11 +497,13 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
 
 class _ProfileHero extends StatelessWidget {
   final UserProfile profile;
+  final bool proActive;
   final VoidCallback onEditNickname;
   final VoidCallback onEditAvatar;
 
   const _ProfileHero({
     required this.profile,
+    required this.proActive,
     required this.onEditNickname,
     required this.onEditAvatar,
   });
@@ -474,7 +518,32 @@ class _ProfileHero extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                UserAvatarBadge(avatarId: profile.avatarId, radius: 48),
+                Container(
+                  padding: EdgeInsets.all(proActive ? 4 : 0),
+                  decoration: proActive
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: 0.28),
+                              blurRadius: 18,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        )
+                      : null,
+                  child: UserAvatarBadge(
+                    avatarId: profile.avatarId,
+                    radius: 48,
+                  ),
+                ),
                 Positioned(
                   right: -4,
                   bottom: -4,
@@ -526,6 +595,37 @@ class _ProfileHero extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+            if (proActive) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.36),
+                  ),
+                ),
+                child: Text(
+                  'LINKBALL PRO',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -625,6 +725,209 @@ class _StatsCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ProInsightsCard extends StatelessWidget {
+  final UserProfile profile;
+  final PremiumEntitlement entitlement;
+  final VoidCallback onUpgrade;
+
+  const _ProInsightsCard({
+    required this.profile,
+    required this.entitlement,
+    required this.onUpgrade,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!entitlement.active) {
+      return Card(
+        child: ListTile(
+          onTap: onUpgrade,
+          leading: const Icon(Icons.lock_outline_rounded),
+          title: const Text(
+            'Gelişmiş performans özeti · Linkball Pro',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
+          subtitle: const Text(
+            'Temel istatistiklerin ücretsiz kalır. Pro, son maç formunu ve '
+            'Elo/skor eğilimlerini tek yerde özetler.',
+          ),
+          trailing: const Icon(Icons.chevron_right_rounded),
+        ),
+      );
+    }
+
+    final matches = profile.recentMatches.take(8).toList();
+    final wins = matches.where((m) => m.result == RankedResult.win).length;
+    final draws = matches.where((m) => m.result == RankedResult.draw).length;
+    final form = matches.isEmpty
+        ? 0
+        : (((wins * 3 + draws) / (matches.length * 3)) * 100).round();
+    final eloDelta = matches.fold<int>(
+      0,
+      (sum, match) => sum + (match.eloDelta ?? 0),
+    );
+    var goalsFor = 0;
+    var goalsAgainst = 0;
+    var scoredMatches = 0;
+    for (final match in matches) {
+      if (match.myScore == null || match.opponentScore == null) continue;
+      goalsFor += match.myScore!;
+      goalsAgainst += match.opponentScore!;
+      scoredMatches += 1;
+    }
+    final goalDiff = scoredMatches == 0 ? null : goalsFor - goalsAgainst;
+    final formText = matches.isEmpty
+        ? 'Henüz dereceli maç verisi yok.'
+        : matches
+            .map((m) => switch (m.result) {
+                  RankedResult.win => 'G',
+                  RankedResult.loss => 'M',
+                  RankedResult.draw => 'B',
+                })
+            .join(' · ');
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.insights_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'Pro performans özeti',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    'PRO',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final width = (constraints.maxWidth - 12) / 2;
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _ProInsightTile(
+                      width: width,
+                      label: 'Son maçlar',
+                      value: '${matches.length}/8',
+                    ),
+                    _ProInsightTile(
+                      width: width,
+                      label: 'Form puanı',
+                      value: '%$form',
+                    ),
+                    _ProInsightTile(
+                      width: width,
+                      label: 'Elo hareketi',
+                      value: eloDelta >= 0 ? '+$eloDelta' : '$eloDelta',
+                    ),
+                    _ProInsightTile(
+                      width: width,
+                      label: 'Gol farkı',
+                      value: goalDiff == null
+                          ? '—'
+                          : (goalDiff >= 0 ? '+$goalDiff' : '$goalDiff'),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Form: $formText',
+              style: TextStyle(
+                color: Theme.of(context).hintColor,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProInsightTile extends StatelessWidget {
+  final double width;
+  final String label;
+  final String value;
+
+  const _ProInsightTile({
+    required this.width,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context)
+            .colorScheme
+            .primary
+            .withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            label,
+            style: TextStyle(
+              color: Theme.of(context).hintColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
