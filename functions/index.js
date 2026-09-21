@@ -5156,8 +5156,10 @@ function lbPremiumBenefits(active) {
   return {
     adFree: active,
     premiumCosmetics: active,
-    dailyRewardMultiplier: active ? 2 : 1,
-    streakProtection: active,
+    // Monetization D keeps progression rewards identical for Free and Pro.
+    // Rewarded-ad value is delivered through the dedicated no-ad Pro bonus.
+    dailyRewardMultiplier: 1,
+    streakProtection: false,
   };
 }
 
