@@ -9,7 +9,7 @@ import 'premium_service.dart';
 class PremiumBillingProductIds {
   PremiumBillingProductIds._();
 
-  // Canonical Google Play product ids for Linkball Premium.
+  // Canonical Google Play product ids for Linkball Pro.
   // Prices are NEVER hard-coded in the app; ProductDetails.price comes
   // from Google Play after these ids are created in Play Console.
   static const String monthly = 'linkball_pro_monthly';
@@ -122,10 +122,14 @@ class PremiumBillingService {
   static Future<bool> purchasePlan(PremiumPlan plan) async {
     await CloudBootstrap.ensureInitialized();
     _requireGoogleAccount();
+    await PremiumService.fetchStatus();
+    if (!PremiumService.salesEnabled) {
+      throw StateError('Linkball Pro satışları şu anda kapalı.');
+    }
 
     final productId = PremiumBillingProductIds.productIdFor(plan);
     if (productId == null) {
-      throw ArgumentError.value(plan, 'plan', 'Premium plan is not purchasable.');
+      throw ArgumentError.value(plan, 'plan', 'Linkball Pro planı satın alınabilir değil.');
     }
 
     var details = _detailsById[productId];
@@ -144,7 +148,7 @@ class PremiumBillingService {
 
     if (details == null) {
       throw StateError(
-        'Premium ürünü Google Play üzerinde bulunamadı: $productId',
+        'Linkball Pro ürünü Google Play üzerinde bulunamadı: $productId',
       );
     }
 
@@ -178,7 +182,7 @@ class PremiumBillingService {
   ) {
     if (!PremiumBillingProductIds.all.contains(purchase.productID)) {
       throw StateError(
-        'Unknown Premium product id: ${purchase.productID}',
+        'Bilinmeyen Linkball Pro ürün kimliği: ${purchase.productID}',
       );
     }
 
@@ -247,7 +251,7 @@ class PremiumBillingService {
   static void _requireGoogleAccount() {
     if (!AuthService.isGoogleAccount || AuthService.uid == null) {
       throw StateError(
-        'Premium satın alma için Google hesabına bağlı profil gerekli.',
+        'Linkball Pro satın alma için Google hesabına bağlı profil gerekli.',
       );
     }
   }
