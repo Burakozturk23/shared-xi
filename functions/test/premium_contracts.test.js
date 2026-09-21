@@ -29,7 +29,7 @@ function premiumBlock() {
   return source.slice(start, end);
 }
 
-test("premium foundation has monthly yearly and lifetime plans", () => {
+test("premium foundation keeps legacy lifetime state compatibility", () => {
   const block = premiumBlock();
 
   for (const plan of ["monthly", "yearly", "lifetime"]) {
@@ -52,8 +52,8 @@ test("premium benefits are non-competitive", () => {
 
   assert.ok(block.includes("adFree: active"));
   assert.ok(block.includes("premiumCosmetics: active"));
-  assert.ok(block.includes("dailyRewardMultiplier: active ? 2 : 1"));
-  assert.ok(block.includes("streakProtection: active"));
+  assert.ok(block.includes("dailyRewardMultiplier: 1"));
+  assert.ok(block.includes("streakProtection: false"));
 
   for (const forbidden of [
     "eloBoost",
