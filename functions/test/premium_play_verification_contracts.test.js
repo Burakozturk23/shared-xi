@@ -74,17 +74,17 @@ test("subscription lifecycle state is verified server-side", () => {
 test("purchase is cryptographically bound to the Linkball account", () => {
   const block = verificationBlock();
 
-  assert.ok(block.includes('"linkball-play:" + uid'));
+  assert.ok(block.includes("\"linkball-play:\" + uid"));
   assert.ok(block.includes("lbPlayAccountId(uid)"));
   assert.ok(block.includes("verified.result.accountId !== expectedAccountId"));
-  assert.ok(block.includes('"permission-denied"'));
+  assert.ok(block.includes("\"permission-denied\""));
 });
 
 test("subscription renewals and cancellations are reconciled from Play", () => {
   const block = verificationBlock();
 
   assert.ok(block.includes("exports.reconcilePremiumSubscriptions"));
-  assert.ok(block.includes('schedule: "every 30 minutes"'));
+  assert.ok(block.includes("schedule: \"every 30 minutes\""));
   assert.ok(block.includes("lbPremiumRefreshFromPlay"));
   assert.ok(block.includes("purchaseToken: purchaseToken"));
   assert.ok(block.includes("premiumPurchaseOwners"));
