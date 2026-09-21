@@ -61,15 +61,16 @@ test("daily reward schedule uses the configured seven-day 10 to 30 launch policy
   assert.ok(progressionBlock().includes("config.sources.daily_reward"));
 });
 
-test("premium only multiplies rewards and protects one missed day", () => {
-  const block = progressionBlock();
+test("Pro does not change daily progression economics", () => {
+  const premiumStart = source.indexOf("function lbPremiumBenefits(active)");
+  const premiumEnd = source.indexOf("/**", premiumStart + 1);
+  const premium = source.slice(premiumStart, premiumEnd);
 
-  assert.ok(block.includes("benefits.dailyRewardMultiplier"));
-  assert.ok(block.includes("benefits.streakProtection === true"));
-  assert.ok(block.includes("gap === 2"));
-  assert.ok(block.includes("streakProtected: next.streakProtected"));
-  assert.equal(block.includes("eloBoost"), false);
-  assert.equal(block.includes("matchPower"), false);
+  assert.ok(premium.includes("dailyRewardMultiplier: 1"));
+  assert.ok(premium.includes("streakProtection: false"));
+  assert.equal(premium.includes("active ? 2 : 1"), false);
+  assert.equal(progressionBlock().includes("eloBoost"), false);
+  assert.equal(progressionBlock().includes("matchPower"), false);
 });
 
 test("daily reward is idempotent across progression and economy state", () => {
