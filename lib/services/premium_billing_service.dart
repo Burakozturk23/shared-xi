@@ -12,14 +12,11 @@ class PremiumBillingProductIds {
   // Canonical Google Play product ids for Linkball Premium.
   // Prices are NEVER hard-coded in the app; ProductDetails.price comes
   // from Google Play after these ids are created in Play Console.
-  static const String monthly = 'linkball_premium_monthly';
-  static const String yearly = 'linkball_premium_yearly';
-  static const String lifetime = 'linkball_premium_lifetime';
-
+  static const String monthly = 'linkball_pro_monthly';
+  static const String yearly = 'linkball_pro_yearly';
   static const Set<String> all = <String>{
     monthly,
     yearly,
-    lifetime,
   };
 
   static PremiumPlan? planFor(String productId) {
@@ -28,8 +25,6 @@ class PremiumBillingProductIds {
         return PremiumPlan.monthly;
       case yearly:
         return PremiumPlan.yearly;
-      case lifetime:
-        return PremiumPlan.lifetime;
       default:
         return null;
     }
@@ -42,7 +37,6 @@ class PremiumBillingProductIds {
       case PremiumPlan.yearly:
         return yearly;
       case PremiumPlan.lifetime:
-        return lifetime;
       case PremiumPlan.none:
         return null;
     }
@@ -146,7 +140,11 @@ class PremiumBillingService {
       );
     }
 
-    final purchaseParam = PurchaseParam(productDetails: details);
+    final accountId = await PremiumService.purchaseAccountId();
+    final purchaseParam = PurchaseParam(
+      productDetails: details,
+      applicationUserName: accountId,
+    );
 
     // Subscriptions and the lifetime permanent upgrade are both
     // non-consumable from Linkball's point of view.
@@ -179,6 +177,9 @@ class PremiumBillingService {
     }
 
     final verification = purchase.verificationData;
+    if (verification.source != 'google_play') {
+      throw StateError('Google Play satın alması gerekli.');
+    }
     final serverData = verification.serverVerificationData.trim();
 
     if (serverData.isEmpty) {
