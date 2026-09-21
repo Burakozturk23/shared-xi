@@ -5206,6 +5206,7 @@ exports.getMyPremiumStatus = httpsV2.onCall(
     {
       region: "europe-west1",
       maxInstances: 20,
+      enforceAppCheck: true,
     },
     async (request) => {
       lbRequireGoogleLinked(request);
@@ -5438,7 +5439,7 @@ async function lbPlayClaimPurchaseToken(
       current &&
       typeof current === "object" &&
       current.uid &&
-      current.uid !== uid
+      (current.uid !== uid || current.productId !== productId)
     ) {
       return;
     }
@@ -5460,7 +5461,8 @@ async function lbPlayClaimPurchaseToken(
   if (
     !result.committed ||
     !owner ||
-    owner.uid !== uid
+    owner.uid !== uid ||
+    owner.productId !== productId
   ) {
     throw new httpsV2.HttpsError(
         "already-exists",
@@ -5726,6 +5728,7 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
     {
       region: "europe-west1",
       maxInstances: 20,
+      enforceAppCheck: true,
     },
     async (request) => {
       lbRequireGoogleLinked(request);
