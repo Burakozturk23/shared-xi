@@ -5209,7 +5209,7 @@ exports.getMyPremiumStatus = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const entitlement = await lbPremiumEnsureProjection(
+      const entitlement = await lbPremiumRefreshFromPlay(
           admin.database(),
           uid,
       );
@@ -5365,7 +5365,7 @@ function lbPlayNormalizeSubscription(purchase, productId, now) {
     startedAt: lbPlayTimestamp(data.startTime),
     expiresAt: expiresAt,
     autoRenewing: autoRenewing,
-    orderId: "",
+    orderId: lbPlayText(data.latestOrderId).slice(0, 160),
     purchaseState: state,
     acknowledgementState: lbPlayText(data.acknowledgementState),
     accountId: lbPlayText(
@@ -5373,37 +5373,6 @@ function lbPlayNormalizeSubscription(purchase, productId, now) {
         data.externalAccountIdentifiers.obfuscatedExternalAccountId,
     ),
     testPurchase: Boolean(data.testPurchase),
-  };
-}
-
-/**
- * @param {Object} purchase
- * @param {string} productId
- * @return {Object}
- */
-function lbPlayNormalizeLifetime(purchase, productId) {
-  const data = purchase && typeof purchase === "object" ? purchase : {};
-  const responseProductId = lbPlayText(data.productId);
-
-  if (responseProductId && responseProductId !== productId) {
-    throw new httpsV2.HttpsError(
-        "failed-precondition",
-        "Google Play product does not match.",
-    );
-  }
-
-  const purchaseState = Number(data.purchaseState);
-  const entitled = purchaseState === 0;
-
-  return {
-    entitled: entitled,
-    startedAt: lbPremiumNumber(data.purchaseTimeMillis),
-    expiresAt: 0,
-    autoRenewing: false,
-    orderId: lbPlayText(data.orderId).slice(0, 160),
-    purchaseState: String(purchaseState),
-    acknowledgementState: String(data.acknowledgementState ?? ""),
-    testPurchase: Number(data.purchaseType) === 0,
   };
 }
 
@@ -5416,20 +5385,6 @@ async function lbPlayVerifyWithGoogle(productId, purchaseToken) {
   const plan = lbPlayPremiumPlan(productId);
   const packageName = encodeURIComponent(LB_PLAY_PACKAGE_NAME);
   const token = encodeURIComponent(purchaseToken);
-
-  if (plan === "lifetime") {
-    const product = encodeURIComponent(productId);
-    const url =
-      "https://androidpublisher.googleapis.com/androidpublisher/v3/" +
-      "applications/" + packageName + "/purchases/products/" + product +
-      "/tokens/" + token;
-    const purchase = await lbPlayAuthorizedGet(url);
-    return {
-      plan: plan,
-      result: lbPlayNormalizeLifetime(purchase, productId),
-    };
-  }
-
   const url =
     "https://androidpublisher.googleapis.com/androidpublisher/v3/" +
     "applications/" + packageName +
@@ -5458,6 +5413,7 @@ async function lbPlayClaimPurchaseToken(
     uid,
     tokenHash,
     productId,
+    purchaseToken,
 ) {
   const ref = db.ref("premiumPurchaseOwners/" + tokenHash);
   const result = await ref.transaction((current) => {
@@ -5473,9 +5429,10 @@ async function lbPlayClaimPurchaseToken(
     return {
       uid: uid,
       productId: productId,
+      purchaseToken: purchaseToken,
       provider: "google_play",
       updatedAt: Date.now(),
-      version: 1,
+      version: 2,
     };
   });
 
@@ -5497,6 +5454,149 @@ async function lbPlayClaimPurchaseToken(
   await db.ref(
       "premiumPurchaseClaimsByUser/" + uid + "/" + tokenHash,
   ).set(true);
+}
+
+/**
+ * Writes a fresh Google Play subscription result to canonical private state and
+ * the owner-readable projection. Expired/revoked subscriptions remain verified
+ * records but project inactive.
+ *
+ * @param {Object} db
+ * @param {string} uid
+ * @param {string} productId
+ * @param {string} tokenHash
+ * @param {Object} verified
+ * @return {Promise<Object>}
+ */
+async function lbPremiumApplyPlayVerification(
+    db,
+    uid,
+    productId,
+    tokenHash,
+    verified,
+) {
+  const now = Date.now();
+  const expectedAccountId = lbPlayAccountId(uid);
+  const previousSnap = await db.ref("premiumState/" + uid).get();
+  const previous = previousSnap.exists() && previousSnap.val() &&
+      typeof previousSnap.val() === "object" ? previousSnap.val() : {};
+
+  if (verified.result.accountId !== expectedAccountId) {
+    const revokedState = {
+      ...previous,
+      version: LB_PREMIUM_VERSION,
+      plan: verified.plan,
+      provider: "google_play",
+      productId: productId,
+      verified: false,
+      purchaseTokenHash: tokenHash,
+      purchaseState: verified.result.purchaseState,
+      acknowledgementState: verified.result.acknowledgementState,
+      updatedAt: now,
+    };
+    const inactive = lbPremiumProjection(
+        lbPremiumState(revokedState, now),
+    );
+    await db.ref().update({
+      ["premiumState/" + uid]: revokedState,
+      ["premiumEntitlements/" + uid]: inactive,
+    });
+    throw new httpsV2.HttpsError(
+        "permission-denied",
+        "Google Play purchase is linked to another Linkball account.",
+    );
+  }
+
+  const state = {
+    version: LB_PREMIUM_VERSION,
+    plan: verified.plan,
+    provider: "google_play",
+    productId: productId,
+    startedAt: verified.result.startedAt ||
+      lbPremiumNumber(previous.startedAt) || now,
+    expiresAt: verified.result.expiresAt,
+    autoRenewing: verified.result.autoRenewing,
+    verified: true,
+    purchaseTokenHash: tokenHash,
+    orderId: verified.result.orderId,
+    purchaseState: verified.result.purchaseState,
+    acknowledgementState: verified.result.acknowledgementState,
+    testPurchase: verified.result.testPurchase,
+    updatedAt: now,
+  };
+  const entitlement = lbPremiumProjection(lbPremiumState(state, now));
+  await db.ref().update({
+    ["premiumState/" + uid]: state,
+    ["premiumEntitlements/" + uid]: entitlement,
+  });
+  return entitlement;
+}
+
+/**
+ * Refreshes one account from subscriptionsv2. Transient Play API errors retain
+ * the last verified state; they never manufacture or revoke entitlement.
+ *
+ * @param {Object} db
+ * @param {string} uid
+ * @param {boolean=} strict
+ * @return {Promise<Object>}
+ */
+async function lbPremiumRefreshFromPlay(db, uid, strict = false) {
+  const stateSnap = await db.ref("premiumState/" + uid).get();
+  const raw = stateSnap.exists() && stateSnap.val() &&
+      typeof stateSnap.val() === "object" ? stateSnap.val() : {};
+  const tokenHash = lbPlayText(raw.purchaseTokenHash);
+  const productId = lbPlayText(raw.productId);
+
+  if (raw.provider !== "google_play" ||
+      !/^[a-f0-9]{64}$/.test(tokenHash) ||
+      !LB_PLAY_PREMIUM_PRODUCTS.has(productId)) {
+    return lbPremiumEnsureProjection(db, uid);
+  }
+
+  const ownerSnap = await db.ref(
+      "premiumPurchaseOwners/" + tokenHash,
+  ).get();
+  const owner = ownerSnap.exists() && ownerSnap.val() &&
+      typeof ownerSnap.val() === "object" ? ownerSnap.val() : {};
+  const purchaseToken = lbPlayText(owner.purchaseToken);
+
+  if (owner.uid !== uid ||
+      owner.productId !== productId ||
+      purchaseToken.length < 16 ||
+      purchaseToken.length > 4096) {
+    logger.warn("Linkball Pro purchase owner record is incomplete", {
+      uid: uid,
+      tokenHash: tokenHash,
+    });
+    return lbPremiumEnsureProjection(db, uid);
+  }
+
+  try {
+    const verified = await lbPlayVerifyWithGoogle(
+        productId,
+        purchaseToken,
+    );
+    return await lbPremiumApplyPlayVerification(
+        db,
+        uid,
+        productId,
+        tokenHash,
+        verified,
+    );
+  } catch (error) {
+    if (error instanceof httpsV2.HttpsError &&
+        error.code === "permission-denied") {
+      throw error;
+    }
+    logger.warn("Linkball Pro lifecycle refresh deferred", {
+      uid: uid,
+      productId: productId,
+      reason: String(error && error.message || error),
+    });
+    if (strict) lbPlayThrowVerificationError(error);
+    return lbPremiumEnsureProjection(db, uid);
+  }
 }
 
 /**
@@ -5536,6 +5636,74 @@ function lbPlayThrowVerificationError(error) {
       "Premium purchase verification failed.",
   );
 }
+
+exports.reconcilePremiumSubscriptions = onSchedule(
+    {
+      schedule: "every 30 minutes",
+      region: "europe-west1",
+      timeZone: "Europe/Istanbul",
+      maxInstances: 1,
+    },
+    async () => {
+      const db = admin.database();
+      const ownersSnap = await db.ref("premiumPurchaseOwners").get();
+      const owners = ownersSnap.exists() && ownersSnap.val() &&
+          typeof ownersSnap.val() === "object" ? ownersSnap.val() : {};
+      let checked = 0;
+      let refreshed = 0;
+
+      for (const [tokenHash, raw] of Object.entries(owners)) {
+        if (checked >= 500) break;
+        const owner = raw && typeof raw === "object" ? raw : {};
+        const uid = lbPlayText(owner.uid);
+        const productId = lbPlayText(owner.productId);
+        const purchaseToken = lbPlayText(owner.purchaseToken);
+        if (!uid ||
+            !LB_PLAY_PREMIUM_PRODUCTS.has(productId) ||
+            purchaseToken.length < 16 ||
+            purchaseToken.length > 4096) {
+          continue;
+        }
+        checked += 1;
+        try {
+          const verified = await lbPlayVerifyWithGoogle(
+              productId,
+              purchaseToken,
+          );
+          const canonicalHash = lbPlayPurchaseTokenHash(
+              purchaseToken,
+          );
+          if (canonicalHash !== tokenHash) {
+            logger.warn("Linkball Pro token hash mismatch", {
+              uid: uid,
+              productId: productId,
+            });
+            continue;
+          }
+          await lbPremiumApplyPlayVerification(
+              db,
+              uid,
+              productId,
+              tokenHash,
+              verified,
+          );
+        } catch (error) {
+          logger.warn("Linkball Pro scheduled reconciliation deferred", {
+            uid: uid,
+            productId: productId,
+            reason: String(error && error.message || error),
+          });
+          continue;
+        }
+        refreshed += 1;
+      }
+
+      logger.info("Linkball Pro reconciliation complete", {
+        checked: checked,
+        refreshed: refreshed,
+      });
+    },
+);
 
 exports.verifyPremiumPurchase = httpsV2.onCall(
     {
@@ -5593,33 +5761,16 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
             uid,
             tokenHash,
             productId,
+            purchaseToken,
         );
 
-        const now = Date.now();
-        const state = {
-          version: LB_PREMIUM_VERSION,
-          plan: verified.plan,
-          provider: "google_play",
-          productId: productId,
-          startedAt: verified.result.startedAt || now,
-          expiresAt: verified.result.expiresAt,
-          autoRenewing: verified.result.autoRenewing,
-          verified: true,
-          purchaseTokenHash: tokenHash,
-          orderId: verified.result.orderId,
-          purchaseState: verified.result.purchaseState,
-          acknowledgementState:
-            verified.result.acknowledgementState,
-          testPurchase: verified.result.testPurchase,
-          updatedAt: now,
-        };
-        const normalized = lbPremiumState(state, now);
-        const entitlement = lbPremiumProjection(normalized);
-
-        await db.ref().update({
-          ["premiumState/" + uid]: state,
-          ["premiumEntitlements/" + uid]: entitlement,
-        });
+        const entitlement = await lbPremiumApplyPlayVerification(
+            db,
+            uid,
+            productId,
+            tokenHash,
+            verified,
+        );
 
         return {
           ok: true,
