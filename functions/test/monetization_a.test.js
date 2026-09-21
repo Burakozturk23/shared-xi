@@ -108,16 +108,16 @@ test("legacy progression migration settles an unpaid old receipt only once", asy
   assert.equal(h.read("progressionState/alice/lifetimeXp"), 25);
 });
 
-test("verified Premium preserves its multiplier and missed-day protection without changing XP", async () => {
+test("verified Pro does not multiply daily login rewards or protect missed days", async () => {
   const h = harness();
   h.seed("premiumState/alice", {plan: "monthly", verified: true, expiresAt: h.now + 10 * 86400000});
   const first = await h.call("claimDailyReward");
-  assert.equal(first.amount, 20);
+  assert.equal(first.amount, 10);
   assert.equal(first.xp, 25);
   h.setTime(h.now + 2 * 86400000);
   const next = await h.call("claimDailyReward");
-  assert.equal(next.amount, 24);
-  assert.equal(next.streakProtected, true);
+  assert.equal(next.amount, 10);
+  assert.equal(next.streakProtected, false);
 });
 
 test("missions require trusted progress; daily claims obey configured limits across concurrent requests", async () => {
