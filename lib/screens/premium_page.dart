@@ -223,11 +223,11 @@ class _PremiumPageState extends State<PremiumPage> {
 
       setState(() {
         _entitlementFuture = Future<PremiumEntitlement>.value(entitlement);
-        _purchaseStateMessage = 'Premium doğrulandı ve hesabına tanımlandı.';
+        _purchaseStateMessage = 'Linkball Pro doğrulandı ve hesabına tanımlandı.';
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Linkball Premium etkinleştirildi.')),
+        const SnackBar(content: Text('Linkball Pro etkinleştirildi.')),
       );
     } catch (error) {
       if (!mounted) return;
@@ -246,7 +246,7 @@ class _PremiumPageState extends State<PremiumPage> {
     if (raw.contains('bulunamadı') ||
         raw.contains('not found') ||
         raw.contains('product')) {
-      return 'Premium ürünleri Google Play üzerinde henüz etkin değil.';
+      return 'Linkball Pro ürünleri Google Play üzerinde henüz etkin değil.';
     }
 
     if (raw.contains('kullanılamıyor') ||
@@ -274,7 +274,7 @@ class _PremiumPageState extends State<PremiumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Linkball Premium')),
+      appBar: AppBar(title: const Text('Linkball Pro')),
       body: AuthService.isGoogleAccount
           ? _buildPersistentBody()
           : _buildAccountRequired(),
@@ -296,13 +296,13 @@ class _PremiumPageState extends State<PremiumPage> {
                   const Icon(Icons.workspace_premium_outlined, size: 54),
                   const SizedBox(height: 16),
                   const Text(
-                    'Premium için kalıcı profil gerekli',
+                    'Linkball Pro için kalıcı profil gerekli',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Premium üyeliğin ve satın alma geçmişin Google hesabına '
+                    'Linkball Pro üyeliğin ve satın alma geçmişin Google hesabına '
                     'bağlı Linkball profilinde korunur.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -367,53 +367,45 @@ class _PremiumPageState extends State<PremiumPage> {
               ],
               const SizedBox(height: 22),
               const _SectionTitle(
-                title: 'Premium avantajları',
+                title: 'Linkball Pro avantajları',
                 subtitle:
-                    'Rekabetçi oyun gücü vermez; üyelik ve koleksiyon '
-                    'avantajlarına odaklanır.',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.groups_outlined,
-                title: 'Squad Challenge: sınırsız deneme',
-                subtitle:
-                    'Günlük coin görevlerinde tekrar deneme sınırı kalkar. '
-                    'Kadro kuralları ve günlük coin ödülü sınırı herkes için aynıdır.',
-                status: 'HAZIR',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.auto_awesome_rounded,
-                title: 'Premium kozmetikler',
-                subtitle: 'Premium koleksiyonları ve özel görsel içerikler.',
-                status: 'HAZIR',
+                    'Temel oyun herkese açık kalır; Pro yalnızca reklamsızlık, '
+                    'kozmetik ve kişisel analiz avantajları sunar.',
               ),
               const SizedBox(height: 10),
               const _BenefitCard(
                 icon: Icons.block_rounded,
                 title: 'Reklamsız deneyim',
                 subtitle:
-                    'Reklam katmanı devreye girdiğinde Premium hesaplara '
-                    'otomatik uygulanacak.',
-                status: 'YAKINDA',
+                    'Rewarded bonuslarda reklam açılmaz; Pro günlük bonusunu '
+                    'doğrudan alırsın.',
+                status: 'HAZIR',
+              ),
+              const SizedBox(height: 10),
+              const _BenefitCard(
+                icon: Icons.auto_awesome_rounded,
+                title: 'Pro profil kozmetiği',
+                subtitle:
+                    'Profilinde Linkball Pro çerçevesi ve üyelik rozeti görünür.',
+                status: 'HAZIR',
+              ),
+              const SizedBox(height: 10),
+              const _BenefitCard(
+                icon: Icons.insights_rounded,
+                title: 'Gelişmiş istatistikler',
+                subtitle:
+                    'Son maç formun, Elo hareketin ve skor eğilimlerin yalnızca '
+                    'kendi profilinde özetlenir.',
+                status: 'HAZIR',
               ),
               const SizedBox(height: 10),
               const _BenefitCard(
                 icon: Icons.card_giftcard_rounded,
-                title: 'Günlük ödül bonusu',
+                title: 'Pro günlük bonusu',
                 subtitle:
-                    'Günlük ödül sistemi açıldığında Premium bonusu '
-                    'üyeliğe bağlanacak.',
-                status: 'YAKINDA',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.local_fire_department_outlined,
-                title: 'Seri koruması',
-                subtitle:
-                    'Streak sistemi açıldığında Premium seri koruması '
-                    'kullanılabilecek.',
-                status: 'YAKINDA',
+                    'Rewarded coin hakkını reklam izlemeden aynı günlük limit '
+                    'içinde alabilirsin.',
+                status: 'HAZIR',
               ),
               const SizedBox(height: 24),
               const _SectionTitle(
@@ -442,7 +434,7 @@ class _PremiumPageState extends State<PremiumPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Premium yalnızca Google Play satın alması Linkball '
+                'Linkball Pro yalnızca Google Play satın alması Linkball '
                 'sunucusunda doğrulandıktan sonra etkinleşir.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -495,7 +487,7 @@ class _PremiumPageState extends State<PremiumPage> {
         if (catalog.products.isEmpty) {
           return const _BillingUnavailableCard(
             message:
-                'Premium ürünleri Play Console üzerinde henüz etkin değil. '
+                'Linkball Pro ürünleri Play Console üzerinde henüz etkin değil. '
                 'Ürünler etkinleştirildiğinde yerel fiyatlar burada '
                 'otomatik görünecek.',
           );
@@ -506,7 +498,6 @@ class _PremiumPageState extends State<PremiumPage> {
             for (final plan in const <PremiumPlan>[
               PremiumPlan.monthly,
               PremiumPlan.yearly,
-              PremiumPlan.lifetime,
             ]) ...[
               _PremiumPlanCard(
                 plan: plan,
@@ -515,7 +506,7 @@ class _PremiumPageState extends State<PremiumPage> {
                 launching: _launchingPlan == plan,
                 onBuy: (product) => _buy(product),
               ),
-              if (plan != PremiumPlan.lifetime) const SizedBox(height: 10),
+              if (plan != PremiumPlan.yearly) const SizedBox(height: 10),
             ],
           ],
         );
@@ -574,7 +565,7 @@ class _PremiumHero extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        active ? 'Premium aktif' : 'Premiuma Geç',
+                        active ? 'Linkball Pro aktif' : 'Linkball Pro’ya Geç',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
@@ -607,6 +598,16 @@ class _PremiumHero extends StatelessWidget {
                       icon: Icons.autorenew_rounded,
                       label: 'Otomatik yenilenir',
                     ),
+                  if (entitlement.cancellationPending)
+                    const _StatusPill(
+                      icon: Icons.event_busy_outlined,
+                      label: 'Yenileme iptal edildi',
+                    ),
+                  if (entitlement.inGracePeriod)
+                    const _StatusPill(
+                      icon: Icons.payment_outlined,
+                      label: 'Ödeme ek süresinde',
+                    ),
                   if (entitlement.isLifetime)
                     const _StatusPill(
                       icon: Icons.all_inclusive_rounded,
@@ -623,18 +624,29 @@ class _PremiumHero extends StatelessWidget {
 
   static String _entitlementSubtitle(PremiumEntitlement entitlement) {
     if (entitlement.isLifetime) {
-      return 'Ömür boyu Premium üyeliğin hesabında aktif.';
+      return 'Ömür boyu Linkball Pro hakkın hesabında aktif.';
     }
 
     if (entitlement.expiresAt > 0) {
       final date = DateTime.fromMillisecondsSinceEpoch(
         entitlement.expiresAt,
       ).toLocal();
+      final formatted =
+          '${_two(date.day)}.${_two(date.month)}.${date.year}';
 
-      return 'Üyelik bitişi: ${_two(date.day)}.${_two(date.month)}.${date.year}';
+      if (entitlement.cancellationPending) {
+        return 'Yenileme iptal edildi. Pro erişimin $formatted tarihine kadar aktif.';
+      }
+      if (entitlement.inGracePeriod) {
+        return 'Ödeme yöntemi güncellenmeli. Pro erişimin ek süre boyunca devam ediyor.';
+      }
+      if (entitlement.autoRenewing) {
+        return 'Bir sonraki yenileme: $formatted';
+      }
+      return 'Mevcut Pro dönemi: $formatted tarihine kadar.';
     }
 
-    return 'Premium üyeliğin hesabında aktif.';
+    return 'Linkball Pro hesabında aktif.';
   }
 
   static String _two(int value) => value.toString().padLeft(2, '0');
