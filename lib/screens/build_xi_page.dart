@@ -370,6 +370,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
     final b = c.previewBreakdown();
     final m = widget.run?.mission;
     return ListView(
+      key: const PageStorageKey<String>('squad-play-body'),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
         Text(
@@ -623,6 +624,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
   }
 
   Widget _resultBody(SquadResult r) => ListView(
+    key: const PageStorageKey<String>('squad-result-body'),
     padding: const EdgeInsets.all(20),
     children: [
       Icon(

@@ -62,8 +62,12 @@ Future<void> select(WidgetTester tester, int slot, int player) async {
     'Futbolcu $player',
   );
   await tester.pumpAndSettle();
-  await reveal(tester, find.text('Futbolcu $player'));
-  await tester.tap(find.text('Futbolcu $player'));
+  // Match the result label, excluding the identical EditableText search value.
+  final candidate = find.byWidgetPredicate(
+    (widget) => widget is Text && widget.data == 'Futbolcu $player',
+  );
+  await reveal(tester, candidate);
+  await tester.tap(candidate);
   await tester.pumpAndSettle();
 }
 
@@ -103,6 +107,8 @@ void main() {
           dark: dark,
         );
         expect(gateway.loads, 0);
+        await tester.ensureVisible(find.text('Antrenman'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Antrenman'));
         await tester.pumpAndSettle();
         await reveal(tester, find.text('Deneme Ligi'));
@@ -140,6 +146,7 @@ void main() {
           gateway: gateway,
           loadCatalog: () async => catalog,
           drafts: drafts,
+          progress: SquadChallengeProgressService(),
         ),
       );
       await reveal(tester, find.text('Başla · 20 Link Coin'));
@@ -223,6 +230,7 @@ void main() {
         BuildXiThemeSelectionPage(
           gateway: gateway,
           loadCatalog: () async => catalog,
+          progress: SquadChallengeProgressService(),
         ),
       );
       await reveal(tester, find.text('Başla · 1 ücretsiz deneme'));
@@ -251,6 +259,7 @@ void main() {
           gateway: gateway,
           loadCatalog: () async => catalog,
           onPremium: (_) async => gateway.premium = true,
+          progress: SquadChallengeProgressService(),
         ),
       );
       await reveal(tester, find.text('Premium avantajını incele'));
@@ -266,6 +275,7 @@ void main() {
         BuildXiThemeSelectionPage(
           gateway: gateway,
           loadCatalog: () async => catalog,
+          progress: SquadChallengeProgressService(),
         ),
       );
       expect(find.text('Bağlantı kurulamadı.'), findsOneWidget);
