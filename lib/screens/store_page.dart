@@ -11,6 +11,7 @@ import '../widgets/user_avatar_badge.dart';
 import '../widgets/wallet_balance_chip.dart';
 import 'sign_in_page.dart';
 import 'premium_page.dart';
+import 'coin_packs_page.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
@@ -284,6 +285,17 @@ class _StorePageState extends State<StorePage> {
                                 }, childCount: catalog.offers.length),
                               ),
                             ),
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
+                              child: OutlinedButton.icon(
+                                onPressed: () => Navigator.push<void>(context,
+                                  MaterialPageRoute(builder: (_) => const CoinPacksPage())),
+                                icon: const Icon(Icons.toll_outlined),
+                                label: const Text('Link Coin paketlerini gör'),
+                              ),
+                            ),
+                          ),
                         ],
                       );
                     },

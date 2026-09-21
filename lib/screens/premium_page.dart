@@ -166,6 +166,7 @@ class _PremiumPageState extends State<PremiumPage> {
 
   Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
+      if (!PremiumBillingProductIds.all.contains(purchase.productID)) continue;
       if (!mounted) return;
 
       switch (purchase.status) {

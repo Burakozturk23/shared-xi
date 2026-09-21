@@ -9,6 +9,7 @@ import 'app/app_feedback.dart';
 import 'app/route_appearance.dart';
 import 'services/cloud_bootstrap.dart';
 import 'services/ads_consent_service.dart';
+import 'services/coin_billing_service.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -27,6 +28,7 @@ Future<void> main() async {
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
     unawaited(AdsConsentService.refresh());
+    unawaited(CoinBillingService.initialize());
     debugPrint(
       '[Startup] Welcome first frame '
       '${startupWatch.elapsedMilliseconds}ms',

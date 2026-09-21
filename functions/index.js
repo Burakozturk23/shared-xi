@@ -5642,7 +5642,8 @@ function lbEconomyState(raw) {
   return {
     version: LB_ECONOMY_VERSION,
     balances: {
-      coins: lbEconomyNumber(balances.coins),
+      // Refunds can create a deficit; subsequent grants repay it.
+      coins: Number.isSafeInteger(balances.coins) ? balances.coins : 0,
     },
     lifetimeEarned: lbEconomyNumber(data.lifetimeEarned),
     lifetimeSpent: lbEconomyNumber(data.lifetimeSpent),
@@ -5677,7 +5678,7 @@ function lbEconomyWalletProjection(state) {
 function lbEconomyLedgerProjection(claim) {
   return {
     txId: claim.txId,
-    type: "grant",
+    type: claim.sourceType === "google_play_refund" ? "refund" : "grant",
     currency: "coin",
     amount: claim.amount,
     balanceAfter: claim.balanceAfter,
@@ -7915,6 +7916,15 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["achievementProgress/" + uid] = null;
   updates["userAchievements/" + uid] = null;
 
+  // Retain an anonymous token tombstone to prevent replay after deletion.
+  const coinClaims = await db.ref("coinPurchaseByUser/" + uid).get();
+  for (const key of Object.keys(coinClaims.val() || {})) {
+    updates["coinPurchaseTokens/" + key] = {deleted: true};
+    updates["coinPurchaseWork/" + key] = null;
+  }
+  updates["coinPurchaseByUser/" + uid] = null;
+  updates["coinPurchaseRate/" + uid] = null;
+
   updates["economyState/" + uid] = null;
   updates["rewardedAdState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
@@ -8399,3 +8409,92 @@ exports.admobRewardCallback = httpsV2.onRequest({
     return response.status(503).send("Retry later");
   }
 });
+
+// MONETIZATION_C_COIN_PURCHASES_START
+const coinPurchases = require("./coin_purchases");
+const lbCoinPlayBase = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/" +
+  encodeURIComponent(LB_PLAY_PACKAGE_NAME) + "/purchases/";
+const lbCoinPlay = {
+  get: (productId, token) => lbPlayAuthorizedGet(lbCoinPlayBase + "products/" +
+    encodeURIComponent(productId) + "/tokens/" + encodeURIComponent(token)),
+  consume: async (productId, token) => {
+    const client = await lbPlayAuth().getClient();
+    await client.request({method: "POST", url: lbCoinPlayBase + "products/" +
+      encodeURIComponent(productId) + "/tokens/" + encodeURIComponent(token) + ":consume"});
+  },
+};
+function lbCoinService() {
+  return coinPurchases.createService({db: admin.database(), play: lbCoinPlay,
+    normalize: lbEconomyState, project: lbEconomyProject, ErrorType: httpsV2.HttpsError});
+}
+exports.getCoinPurchaseCatalog = httpsV2.onCall(
+    {region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+      lbRequireGoogleLinked(request);
+      // Explicit launch switch; unavailable configuration keeps new purchases off.
+      const template = await getRemoteConfig().getServerTemplate({
+        defaultConfig: {linkball_coin_sales_enabled: "false"},
+      });
+      const enabled = template.evaluate().getString("linkball_coin_sales_enabled") === "true";
+      return {ok: true, enabled, accountId: coinPurchases.accountId(request.auth.uid),
+        products: Object.entries(coinPurchases.PRODUCTS).map(([productId, coins]) => ({productId, coins}))};
+    });
+exports.verifyCoinPurchase = httpsV2.onCall(
+    {region: "europe-west1", maxInstances: 20, enforceAppCheck: true}, async (request) => {
+      lbRequireGoogleLinked(request);
+      try {
+        return await lbCoinService().verify(request.auth.uid, request.data?.productId, request.data?.purchaseToken);
+      } catch (error) {
+        if (error instanceof httpsV2.HttpsError) throw error;
+        // Never log Gaxios errors: their URL/config can include the purchase token.
+        logger.error("Coin purchase verification unavailable", {status: Number(error.response?.status) || 0});
+        throw new httpsV2.HttpsError("unavailable", "Satın alma doğrulaması bekliyor. Tekrar kontrol et.");
+      }
+    });
+async function lbReconcileCoinPurchases() {
+  const db = admin.database();
+  const service = lbCoinService();
+  // Rotate through pending work so a failing receipt cannot starve newer ones.
+  const cursor = (await db.ref("coinPurchaseWorker/cursor").get()).val();
+  let query = db.ref("coinPurchaseWork").orderByKey();
+  if (typeof cursor === "string" && cursor) query = query.startAfter(cursor);
+  const work = await query.limitToFirst(200).get();
+  const keys = Object.keys(work.val() || {}).sort();
+  let failures = 0;
+  for (const key of keys) {
+    try {
+      await service.retry(key);
+    } catch (_) {
+      failures++;
+    }
+  }
+  await db.ref("coinPurchaseWorker/cursor").set(keys.length === 200 ? keys.at(-1) : "");
+  if (failures) logger.error("Coin fulfillment requires retry", {count: failures});
+  // Rescan the Play retention window; never checkpoint past a failed refund.
+  let pageToken = "";
+  let pages = 0;
+  do {
+    const url = lbCoinPlayBase + "voidedpurchases?type=0&maxResults=1000" +
+      "&startTime=" + (Date.now() - 30 * 86400000 + 60000) +
+      (pageToken ? "&token=" + encodeURIComponent(pageToken) : "");
+    const response = await lbPlayAuthorizedGet(url);
+    for (const purchase of response.voidedPurchases || []) {
+      if (!purchase.purchaseToken) continue;
+      const key = coinPurchases.hash(purchase.purchaseToken);
+      // Other products have no coin record. Late canceled tokens fail Play verification.
+      if ((await db.ref("coinPurchaseTokens/" + key).get()).exists()) await service.revoke(key);
+    }
+    pageToken = response.tokenPagination?.nextPageToken || "";
+    if (++pages >= 100 && pageToken) throw new Error("Coin refund pagination exceeds budget.");
+  } while (pageToken);
+  await db.ref("coinPurchaseWorker/lastSuccessfulScanAt").set(Date.now());
+}
+exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "every 30 minutes",
+  timeoutSeconds: 540, maxInstances: 1}, async () => {
+  try {
+    await lbReconcileCoinPurchases();
+  } catch (_) {
+    // Do not let transport errors log receipt-bearing URLs or request headers.
+    throw new Error("Coin reconciliation failed; check Play API access and worker health.");
+  }
+});
+// MONETIZATION_C_COIN_PURCHASES_END
