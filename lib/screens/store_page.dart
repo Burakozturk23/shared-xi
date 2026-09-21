@@ -146,7 +146,7 @@ class _StorePageState extends State<StorePage> {
                   const SizedBox(height: 10),
                   Text(
                     'Link Coin bakiyen, satın aldığın avatarlar ve ilerideki '
-                    'premium hakların Google hesabına bağlı Linkball '
+                    'Pro hakların Google hesabına bağlı Linkball '
                     'profilinde korunur.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -405,7 +405,7 @@ class _PremiumStoreBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Linkball Premium',
+                      'Linkball Pro',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w900,
