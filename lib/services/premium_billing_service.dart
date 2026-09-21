@@ -57,6 +57,14 @@ class PremiumBillingService {
   static Future<PremiumBillingCatalog> queryCatalog() async {
     await CloudBootstrap.ensureInitialized();
     _requireGoogleAccount();
+    await PremiumService.fetchStatus();
+
+    if (!PremiumService.salesEnabled) {
+      return const PremiumBillingCatalog.unavailable(
+        errorMessage:
+            'Linkball Pro satışları henüz açılmadı. Mevcut üyeliklerini geri yükleyebilirsin.',
+      );
+    }
 
     final available = await _iap.isAvailable();
     if (!available) {
@@ -146,10 +154,8 @@ class PremiumBillingService {
       applicationUserName: accountId,
     );
 
-    // Subscriptions and the lifetime permanent upgrade are both
-    // non-consumable from Linkball's point of view.
-    //
-    // IMPORTANT: a successful store callback does NOT grant Premium.
+    // Linkball Pro launch products are Google Play subscriptions.
+    // IMPORTANT: a successful store callback does NOT grant Pro.
     // The purchase must first be verified by the trusted backend.
     return _iap.buyNonConsumable(
       purchaseParam: purchaseParam,
