@@ -70,7 +70,7 @@ test("Pro billing callables are App Check protected and sales default off", () =
 
   assert.ok(block.includes("enforceAppCheck: true"));
   assert.ok(block.includes("linkball_pro_sales_enabled"));
-  assert.ok(block.includes('defaultConfig: {linkball_pro_sales_enabled: "false"}'));
+  assert.ok(block.includes("defaultConfig: {linkball_pro_sales_enabled: \"false\"}"));
 });
 
 test("premium status is server-backed and owner-readable only", () => {
