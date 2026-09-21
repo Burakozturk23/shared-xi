@@ -199,7 +199,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
   Future<void> _pick(int index) async {
     if (_busy || _error != null) return;
     final c = _controller!;
-    final search = TextEditingController();
+    var query = '';
     var cheapest = false;
     final selected = await showModalBottomSheet<int>(
       context: context,
@@ -213,7 +213,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
             builder: (ctx, update) {
               final candidates = c.eligiblePlayersFor(
                 index,
-                search.text,
+                query,
                 cheapestFirst: cheapest,
               );
               return CustomScrollView(
@@ -235,8 +235,9 @@ class _BuildXiPageState extends State<BuildXiPage> {
                           const SizedBox(height: 12),
                           TextField(
                             key: const Key('squad-player-search'),
-                            controller: search,
-                            onChanged: (_) => update(() {}),
+                            // Let the field own its controller until the sheet
+                            // has finished its closing transition.
+                            onChanged: (value) => update(() => query = value),
                             decoration: const InputDecoration(
                               labelText: 'Oyuncu ara',
                               prefixIcon: Icon(Icons.search),
@@ -297,7 +298,6 @@ class _BuildXiPageState extends State<BuildXiPage> {
         ),
       ),
     );
-    search.dispose();
     if (selected == null || !mounted) return;
     try {
       if (selected == -1) {
