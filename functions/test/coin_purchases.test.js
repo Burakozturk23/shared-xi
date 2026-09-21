@@ -31,6 +31,53 @@ function setup() {
   }};
 }
 test("coin SKU contract", () => assert.deepEqual(Object.values(PRODUCTS), [500, 1400, 3200]));
+test("Play ProductPurchaseV2 is normalized fail-closed", () => {
+  const h = harness();
+  const normalizeV2 = vm.runInContext("lbNormalizeCoinPurchaseV2", h.context);
+  const base = {
+    purchaseStateContext: {purchaseState: "PURCHASED"},
+    testPurchaseContext: {fopType: "TEST"},
+    obfuscatedExternalAccountId: accountId("alice"),
+    productLineItem: [{
+      productId: sku,
+      productOfferDetails: {
+        quantity: 1,
+        consumptionState: "CONSUMPTION_STATE_YET_TO_BE_CONSUMED",
+      },
+    }],
+  };
+  const purchased = normalizeV2(base);
+  assert.equal(purchased.purchaseState, 0);
+  assert.equal(purchased.consumptionState, 0);
+  assert.equal(purchased.productId, sku);
+  assert.equal(purchased.quantity, 1);
+  assert.equal(purchased.purchaseType, 0);
+  assert.equal(purchased.obfuscatedExternalAccountId, accountId("alice"));
+
+  assert.equal(normalizeV2({
+    ...base,
+    purchaseStateContext: {purchaseState: "CANCELLED"},
+  }).purchaseState, 1);
+  assert.equal(normalizeV2({
+    ...base,
+    purchaseStateContext: {purchaseState: "PENDING"},
+  }).purchaseState, 2);
+  assert.equal(normalizeV2({
+    ...base,
+    purchaseStateContext: {purchaseState: "PURCHASE_STATE_UNSPECIFIED"},
+  }).purchaseState, -1);
+  assert.equal(normalizeV2({
+    ...base,
+    productLineItem: [],
+  }).consumptionState, -1);
+  assert.equal(normalizeV2({
+    ...base,
+    productLineItem: [
+      ...base.productLineItem,
+      {...base.productLineItem[0], productId: "unexpected"},
+    ],
+  }).quantity, 2);
+});
 test("verified purchase grants once across concurrent callbacks and later restore", async () => {
   const {h, service} = setup();
   await Promise.all(Array.from({length: 5}, () => service.verify("alice", sku, token)));
