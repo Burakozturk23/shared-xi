@@ -5073,7 +5073,7 @@ async function lbStoreCatalog(db, config) {
 
 // LINKBALL_16_7F_PREMIUM_ENTITLEMENT_FOUNDATION_START
 
-const LB_PREMIUM_VERSION = 1;
+const LB_PREMIUM_VERSION = 2;
 const LB_PREMIUM_PLANS = new Set([
   "monthly",
   "yearly",
@@ -5136,6 +5136,7 @@ function lbPremiumState(raw, now) {
     startedAt: active ? startedAt : 0,
     expiresAt: active && !lifetime ? expiresAt : 0,
     autoRenewing: active && !lifetime && data.autoRenewing === true,
+    subscriptionState: lbPremiumText(data.purchaseState, 80),
     verified: verified,
     updatedAt: lbPremiumNumber(data.updatedAt),
   };
@@ -5173,6 +5174,7 @@ function lbPremiumProjection(state) {
     startedAt: state.startedAt,
     expiresAt: state.expiresAt,
     autoRenewing: state.autoRenewing,
+    subscriptionState: state.subscriptionState,
     benefits: lbPremiumBenefits(state.active),
     updatedAt: state.updatedAt,
     version: LB_PREMIUM_VERSION,
@@ -5215,6 +5217,7 @@ exports.getMyPremiumStatus = httpsV2.onCall(
       return {
         ok: true,
         entitlement: entitlement,
+        accountId: lbPlayAccountId(uid),
         version: LB_PREMIUM_VERSION,
       };
     },
@@ -5228,9 +5231,8 @@ const LB_PLAY_PACKAGE_NAME = "com.burakozturk.linkball";
 const LB_PLAY_ANDROID_PUBLISHER_SCOPE =
   "https://www.googleapis.com/auth/androidpublisher";
 const LB_PLAY_PREMIUM_PRODUCTS = new Map([
-  ["linkball_premium_monthly", "monthly"],
-  ["linkball_premium_yearly", "yearly"],
-  ["linkball_premium_lifetime", "lifetime"],
+  ["linkball_pro_monthly", "monthly"],
+  ["linkball_pro_yearly", "yearly"],
 ]);
 const LB_PLAY_ACTIVE_SUBSCRIPTION_STATES = new Set([
   "SUBSCRIPTION_STATE_ACTIVE",
@@ -5277,6 +5279,18 @@ function lbPlayPremiumPlan(productId) {
  */
 function lbPlayPurchaseTokenHash(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+/**
+ * Stable opaque Play account binding shared with coin purchases.
+ *
+ * @param {string} uid
+ * @return {string}
+ */
+function lbPlayAccountId(uid) {
+  return crypto.createHash("sha256")
+      .update("linkball-play:" + uid)
+      .digest("hex");
 }
 
 /**
@@ -5354,6 +5368,10 @@ function lbPlayNormalizeSubscription(purchase, productId, now) {
     orderId: "",
     purchaseState: state,
     acknowledgementState: lbPlayText(data.acknowledgementState),
+    accountId: lbPlayText(
+        data.externalAccountIdentifiers &&
+        data.externalAccountIdentifiers.obfuscatedExternalAccountId,
+    ),
     testPurchase: Boolean(data.testPurchase),
   };
 }
@@ -5556,6 +5574,14 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
           throw new httpsV2.HttpsError(
               "failed-precondition",
               "Google Play purchase is not currently entitled.",
+          );
+        }
+
+        const expectedAccountId = lbPlayAccountId(uid);
+        if (verified.result.accountId !== expectedAccountId) {
+          throw new httpsV2.HttpsError(
+              "permission-denied",
+              "Google Play purchase is linked to another Linkball account.",
           );
         }
 
