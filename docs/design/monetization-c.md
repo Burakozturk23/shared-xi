@@ -57,6 +57,13 @@ Hesap silme coin token kaydındaki UID/ham token'ı ve kullanıcı indeksini sil
 yalnızca hash anahtarlı `deleted:true` tombstone tekrar kullanımını engellemek için kalır.
 Yeni RTDB yolları mevcut kök `read:false/write:false` kuralı nedeniyle istemciye kapalıdır.
 
+## Play Billing sürüm tabanı
+
+Android istemcisi `in_app_purchase 3.3.1` kullanır ve çözümlenmiş Android eklentisi
+`in_app_purchase_android 0.5.3` ile Google Play Billing Library 8 hattındadır.
+Proje Dart alt sınırı bu çözümle uyumlu olarak 3.12'dir. C sürümü Billing Library 7'ye
+geri düşürülmemelidir.
+
 ## Dağıtım sırası
 
 1. B.1/B.2 üzerine C kurucusu. Çinko dosyası C paketinin kapsamı dışındadır.
