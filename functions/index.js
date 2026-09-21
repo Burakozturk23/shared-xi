@@ -8414,9 +8414,28 @@ exports.admobRewardCallback = httpsV2.onRequest({
 const coinPurchases = require("./coin_purchases");
 const lbCoinPlayBase = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/" +
   encodeURIComponent(LB_PLAY_PACKAGE_NAME) + "/purchases/";
+const lbCoinPlayV2Base = lbCoinPlayBase + "productsv2/tokens/";
+function lbNormalizeCoinPurchaseV2(data) {
+  const items = Array.isArray(data?.productLineItem) ? data.productLineItem : [];
+  const item = items.length === 1 ? items[0] : null;
+  const offer = item?.productOfferDetails || {};
+  const state = data?.purchaseStateContext?.purchaseState;
+  const consumption = offer.consumptionState;
+  return {
+    purchaseState: state === "PURCHASED" ? 0 :
+      state === "CANCELLED" ? 1 :
+      state === "PENDING" ? 2 : -1,
+    consumptionState: consumption === "CONSUMPTION_STATE_CONSUMED" ? 1 :
+      consumption === "CONSUMPTION_STATE_YET_TO_BE_CONSUMED" ? 0 : -1,
+    obfuscatedExternalAccountId: data?.obfuscatedExternalAccountId,
+    productId: item?.productId,
+    quantity: items.length === 1 ? (offer.quantity ?? 1) : items.length,
+    purchaseType: data?.testPurchaseContext?.fopType === "TEST" ? 0 : undefined,
+  };
+}
 const lbCoinPlay = {
-  get: (productId, token) => lbPlayAuthorizedGet(lbCoinPlayBase + "products/" +
-    encodeURIComponent(productId) + "/tokens/" + encodeURIComponent(token)),
+  get: async (_productId, token) => lbNormalizeCoinPurchaseV2(
+      await lbPlayAuthorizedGet(lbCoinPlayV2Base + encodeURIComponent(token))),
   consume: async (productId, token) => {
     const client = await lbPlayAuth().getClient();
     await client.request({method: "POST", url: lbCoinPlayBase + "products/" +
