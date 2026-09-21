@@ -69,6 +69,11 @@ function createService({db, play, normalize, project, ErrorType, now = Date.now}
       fail("failed-precondition", "Satın alma iade edilmiş.");
     }
     if (current.purchaseState !== 0) fail("unavailable", "Ödeme onayı bekleniyor.");
+    if (current.obfuscatedExternalAccountId !== accountId(record.uid) ||
+        current.productId !== record.productId || current.quantity !== 1 ||
+        ![0, 1].includes(current.consumptionState)) {
+      fail("permission-denied", "Satın alma hesabı veya ürün eşleşmiyor.");
+    }
     if (current.consumptionState !== 1) await play.consume(record.productId, record.token);
     await db.ref("coinPurchaseTokens/" + tokenHash).transaction((value) => {
       if (!value) return value;
