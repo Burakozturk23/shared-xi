@@ -5216,10 +5216,25 @@ exports.getMyPremiumStatus = httpsV2.onCall(
           uid,
       );
 
+      let salesEnabled = false;
+      try {
+        const template = await getRemoteConfig().getServerTemplate({
+          defaultConfig: {linkball_pro_sales_enabled: "false"},
+        });
+        salesEnabled =
+          template.evaluate().getString("linkball_pro_sales_enabled") ===
+          "true";
+      } catch (error) {
+        logger.warn("Linkball Pro sales config unavailable; keeping sales off", {
+          reason: String(error && error.message || error),
+        });
+      }
+
       return {
         ok: true,
         entitlement: entitlement,
         accountId: lbPlayAccountId(uid),
+        salesEnabled: salesEnabled,
         version: LB_PREMIUM_VERSION,
       };
     },
