@@ -11,6 +11,9 @@ class PremiumService {
 
   static String? _purchaseAccountIdUid;
   static String? _purchaseAccountId;
+  static bool _salesEnabled = false;
+
+  static bool get salesEnabled => _salesEnabled;
 
   static FirebaseFunctions get _functions => FirebaseFunctions.instanceFor(
         app: Firebase.app(),
@@ -38,6 +41,7 @@ class PremiumService {
       throw StateError('Linkball Pro durumu yüklenemedi.');
     }
 
+    _salesEnabled = data['salesEnabled'] == true;
     final accountId = data['accountId']?.toString() ?? '';
     final uid = AuthService.uid;
     if (uid != null && RegExp(r'^[a-f0-9]{64}
