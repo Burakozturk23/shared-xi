@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -27,6 +29,7 @@ class _PremiumPageState extends State<PremiumPage> {
 
   PremiumPlan? _launchingPlan;
   bool _restoring = false;
+  bool _cancellationLogged = false;
   String? _purchaseStateMessage;
 
   @override
@@ -44,8 +47,17 @@ class _PremiumPageState extends State<PremiumPage> {
     super.dispose();
   }
 
+  Future<PremiumEntitlement> _loadEntitlement() async {
+    final entitlement = await PremiumService.fetchStatus();
+    if (entitlement.cancellationPending && !_cancellationLogged) {
+      _cancellationLogged = true;
+      unawaited(_event('premium_cancelled', entitlement.productId));
+    }
+    return entitlement;
+  }
+
   void _startPersistentSession() {
-    _entitlementFuture = PremiumService.fetchStatus();
+    _entitlementFuture = _loadEntitlement();
     _catalogFuture = PremiumBillingService.queryCatalog();
 
     _purchaseSubscription?.cancel();
@@ -64,7 +76,7 @@ class _PremiumPageState extends State<PremiumPage> {
   Future<void> _reload() async {
     if (!AuthService.isGoogleAccount) return;
 
-    final entitlement = PremiumService.fetchStatus();
+    final entitlement = _loadEntitlement();
     final catalog = PremiumBillingService.queryCatalog();
 
     setState(() {
@@ -109,6 +121,7 @@ class _PremiumPageState extends State<PremiumPage> {
     });
 
     try {
+      unawaited(_event('purchase_started', product.productId));
       final launched = await PremiumBillingService.purchasePlan(product.plan);
 
       if (!mounted) return;
@@ -218,6 +231,14 @@ class _PremiumPageState extends State<PremiumPage> {
       final entitlement = await PremiumBillingService.verifyAndComplete(
         purchase,
       );
+      unawaited(
+        _event(
+          purchase.status == PurchaseStatus.restored
+              ? 'purchase_restored'
+              : 'purchase_completed',
+          purchase.productID,
+        ),
+      );
 
       if (!mounted) return;
 
@@ -237,6 +258,18 @@ class _PremiumPageState extends State<PremiumPage> {
       });
     } finally {
       _verifyingPurchaseKeys.remove(key);
+    }
+  }
+
+  Future<void> _event(String name, String productId) async {
+    if (!kReleaseMode || productId.trim().isEmpty) return;
+    try {
+      await FirebaseAnalytics.instance.logEvent(
+        name: name,
+        parameters: <String, Object>{'product_id': productId},
+      );
+    } catch (_) {
+      // Billing and entitlement settlement never depends on telemetry.
     }
   }
 
@@ -329,8 +362,7 @@ class _PremiumPageState extends State<PremiumPage> {
   }
 
   Widget _buildPersistentBody() {
-    final entitlementFuture = _entitlementFuture ??=
-        PremiumService.fetchStatus();
+    final entitlementFuture = _entitlementFuture ??= _loadEntitlement();
 
     return FutureBuilder<PremiumEntitlement>(
       future: entitlementFuture,
