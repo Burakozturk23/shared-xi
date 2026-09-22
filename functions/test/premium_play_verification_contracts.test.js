@@ -90,6 +90,19 @@ test("subscription renewals and cancellations are reconciled from Play", () => {
   assert.ok(block.includes("premiumPurchaseOwners"));
 });
 
+test("new Pro subscriptions are acknowledged on the trusted backend", () => {
+  const block = verificationBlock();
+
+  assert.ok(block.includes("lbPlayAcknowledgeSubscription"));
+  assert.ok(block.includes("/purchases/subscriptions/"));
+  assert.ok(block.includes(":acknowledge"));
+  assert.ok(block.includes("ACKNOWLEDGEMENT_STATE_PENDING"));
+  assert.ok(block.includes("ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED"));
+  assert.ok(block.includes("externalAccountIds"));
+  assert.ok(block.includes("obfuscatedAccountId"));
+  assert.ok(block.includes("lbPremiumApplyAndAcknowledge"));
+});
+
 test("purchase token replay uses a private hash claim", () => {
   const block = verificationBlock();
 
