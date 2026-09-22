@@ -129,6 +129,21 @@ Profil:
 - Online/leaderboard sonuçları Pro'dan etkilenmez.
 - Hesap silme purchase owner claim'lerini temizler.
 
+## Abonelik uzlaştırma düzeltmeleri — 22 Eylül 2026
+
+- Eski veya süresi dolmuş bir token farklı bir aktif aboneliği kapatamaz.
+  Seçim hesap başına transaction içinde yapılır; birden fazla aktif token için
+  daha uzun erişim süresi korunur. Seçili tokenın iptal/hold/expiry bilgisi
+  erişimi yine kapatır.
+- Artan doğrulama revizyonu, geciken eski yanıtın kullanıcıya gösterilen yeni
+  üyelik durumunun üzerine yazmasını önler.
+- Zamanlanmış kontrol en fazla 500 kayıtlık sayfalar okur ve
+  `premiumReconciliation/cursor` üzerinden sonraki çalışmada devam eder.
+  Bozuk veya geçici hatalı tokenlar sonraki sayfaları engellemez; yeni tarama
+  turunda yeniden denenir. Süre bütçesine yaklaşınca son işlenen kayıt saklanır.
+- Bu düzeltmelerin canlıya geçmesi için ilgili Firebase Functions sürümü ayrıca
+  yayınlanmalıdır; GitHub ana dalına birleştirme üretim dağıtımı değildir.
+
 ## Resmî teknik referanslar
 
 - Google Play subscriptions v2:

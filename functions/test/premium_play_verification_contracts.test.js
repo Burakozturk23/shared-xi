@@ -122,7 +122,8 @@ test("verified Play purchase is the only source of premium activation", () => {
   assert.ok(block.includes("exports.verifyPremiumPurchase"));
   assert.ok(block.includes("verified: true"));
   assert.ok(block.includes("premiumState/"));
-  assert.ok(block.includes("premiumEntitlements/"));
+  assert.ok(block.includes("lbPremiumWriteProjection"));
+  assert.ok(source.includes("premiumEntitlements/"));
   assert.ok(block.includes("lbRequireGoogleLinked(request)"));
 });
 

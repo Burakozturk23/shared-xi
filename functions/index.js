@@ -5141,6 +5141,7 @@ function lbPremiumState(raw, now) {
     expiresAt: active && !lifetime ? expiresAt : 0,
     autoRenewing: active && !lifetime && data.autoRenewing === true,
     subscriptionState: lbPremiumText(data.purchaseState, 80),
+    verificationRevision: lbPremiumNumber(data.verificationRevision),
     verified: verified,
     updatedAt: lbPremiumNumber(data.updatedAt),
   };
@@ -5181,6 +5182,7 @@ function lbPremiumProjection(state) {
     expiresAt: state.expiresAt,
     autoRenewing: state.autoRenewing,
     subscriptionState: state.subscriptionState,
+    verificationRevision: state.verificationRevision,
     benefits: lbPremiumBenefits(state.active),
     updatedAt: state.updatedAt,
     version: LB_PREMIUM_VERSION,
@@ -5202,8 +5204,16 @@ async function lbPremiumEnsureProjection(db, uid) {
   );
   const projection = lbPremiumProjection(state);
 
-  await db.ref("premiumEntitlements/" + uid).set(projection);
-  return projection;
+  return lbPremiumWriteProjection(db, uid, projection);
+}
+
+async function lbPremiumWriteProjection(db, uid, projection) {
+  const tx = await db.ref("premiumEntitlements/" + uid).transaction((current) => {
+    // A slower earlier verification must not overwrite a newer projection.
+    if (lbPremiumNumber(current && current.verificationRevision) > projection.verificationRevision) return current;
+    return projection;
+  });
+  return tx.snapshot.val();
 }
 
 exports.getMyPremiumStatus = httpsV2.onCall(
@@ -5536,60 +5546,54 @@ async function lbPremiumApplyPlayVerification(
 ) {
   const now = Date.now();
   const expectedAccountId = lbPlayAccountId(uid);
-  const previousSnap = await db.ref("premiumState/" + uid).get();
-  const previous = previousSnap.exists() && previousSnap.val() &&
-      typeof previousSnap.val() === "object" ? previousSnap.val() : {};
-
-  if (verified.result.accountId !== expectedAccountId) {
-    const revokedState = {
-      ...previous,
+  const accountMismatch = verified.result.accountId !== expectedAccountId;
+  const ref = db.ref("premiumState/" + uid);
+  const tx = await ref.transaction((raw) => {
+    const previous = raw && typeof raw === "object" ? raw : {};
+    const state = {
       version: LB_PREMIUM_VERSION,
       plan: verified.plan,
       provider: "google_play",
       productId: productId,
-      verified: false,
-      entitled: false,
+      startedAt: verified.result.startedAt ||
+        lbPremiumNumber(previous.startedAt) || now,
+      expiresAt: verified.result.expiresAt,
+      autoRenewing: verified.result.autoRenewing,
+      verified: true,
+      entitled: verified.result.entitled === true,
       purchaseTokenHash: tokenHash,
+      orderId: verified.result.orderId,
       purchaseState: verified.result.purchaseState,
       acknowledgementState: verified.result.acknowledgementState,
+      testPurchase: verified.result.testPurchase,
+      verificationRevision: lbPremiumNumber(previous.verificationRevision) + 1,
       updatedAt: now,
     };
-    const inactive = lbPremiumProjection(
-        lbPremiumState(revokedState, now),
-    );
-    await db.ref().update({
-      ["premiumState/" + uid]: revokedState,
-      ["premiumEntitlements/" + uid]: inactive,
-    });
+    if (accountMismatch) {
+      state.verified = false;
+      state.entitled = false;
+    }
+    const current = lbPremiumState(previous, now);
+    const incoming = lbPremiumState(state, now);
+    const differentToken = previous.purchaseTokenHash && previous.purchaseTokenHash !== tokenHash;
+    // Old receipts are still reconciled, but must never revoke a different
+    // subscription. Concurrent workers make this choice on canonical state.
+    // For two entitled tokens keep the longer coverage, independent of order.
+    if (differentToken && (!incoming.active ||
+        (current.active && (current.plan === "lifetime" || current.expiresAt >= incoming.expiresAt)))) {
+      return previous;
+    }
+    return state;
+  });
+  const entitlement = await lbPremiumWriteProjection(
+      db, uid, lbPremiumProjection(lbPremiumState(tx.snapshot.val(), now)),
+  );
+  if (accountMismatch) {
     throw new httpsV2.HttpsError(
         "permission-denied",
         "Google Play purchase is linked to another Linkball account.",
     );
   }
-
-  const state = {
-    version: LB_PREMIUM_VERSION,
-    plan: verified.plan,
-    provider: "google_play",
-    productId: productId,
-    startedAt: verified.result.startedAt ||
-      lbPremiumNumber(previous.startedAt) || now,
-    expiresAt: verified.result.expiresAt,
-    autoRenewing: verified.result.autoRenewing,
-    verified: true,
-    entitled: verified.result.entitled === true,
-    purchaseTokenHash: tokenHash,
-    orderId: verified.result.orderId,
-    purchaseState: verified.result.purchaseState,
-    acknowledgementState: verified.result.acknowledgementState,
-    testPurchase: verified.result.testPurchase,
-    updatedAt: now,
-  };
-  const entitlement = lbPremiumProjection(lbPremiumState(state, now));
-  await db.ref().update({
-    ["premiumState/" + uid]: state,
-    ["premiumEntitlements/" + uid]: entitlement,
-  });
   return entitlement;
 }
 
@@ -5771,17 +5775,27 @@ exports.reconcilePremiumSubscriptions = onSchedule(
       region: "europe-west1",
       timeZone: "Europe/Istanbul",
       maxInstances: 1,
+      timeoutSeconds: 540,
     },
     async () => {
       const db = admin.database();
-      const ownersSnap = await db.ref("premiumPurchaseOwners").get();
+      const cursorRef = db.ref("premiumReconciliation/cursor");
+      const cursor = (await cursorRef.get()).val();
+      let query = db.ref("premiumPurchaseOwners").orderByKey();
+      if (typeof cursor === "string" && cursor) query = query.startAfter(cursor);
+      const ownersSnap = await query.limitToFirst(500).get();
       const owners = ownersSnap.exists() && ownersSnap.val() &&
           typeof ownersSnap.val() === "object" ? ownersSnap.val() : {};
       let checked = 0;
       let refreshed = 0;
 
-      for (const [tokenHash, raw] of Object.entries(owners)) {
-        if (checked >= 500) break;
+      const keys = Object.keys(owners).sort();
+      const scanStartedAt = Date.now();
+      let lastKey = "";
+      for (const tokenHash of keys) {
+        if (Date.now() - scanStartedAt >= 480000) break;
+        lastKey = tokenHash;
+        const raw = owners[tokenHash];
         const owner = raw && typeof raw === "object" ? raw : {};
         const uid = lbPlayText(owner.uid);
         const productId = lbPlayText(owner.productId);
@@ -5827,6 +5841,10 @@ exports.reconcilePremiumSubscriptions = onSchedule(
         refreshed += 1;
       }
 
+      // Advance even past invalid/temporarily failing receipts. They are
+      // retried on the next full sweep; a bad token cannot starve later pages.
+      const more = keys.length === 500 || (keys.length > 0 && lastKey !== keys.at(-1));
+      await cursorRef.set(more ? lastKey : "");
       logger.info("Linkball Pro reconciliation complete", {
         checked: checked,
         refreshed: refreshed,
