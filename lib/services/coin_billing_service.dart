@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'auth_service.dart';
 import 'cloud_bootstrap.dart';
+import 'monetization_analytics.dart';
 
 const coinProductAmounts = <String, int>{
   'linkball_coins_500': 500,
@@ -205,7 +205,12 @@ class CoinBillingService extends ChangeNotifier with WidgetsBindingObserver {
       return;
     }
     purchasing = true;
-    unawaited(_event('purchase_started', product.id));
+    unawaited(
+      MonetizationAnalytics.instance.purchaseStarted(
+        flow: 'coin_pack',
+        productId: product.id,
+      ),
+    );
     message = 'Google Play açılıyor…';
     _emit();
     try {
@@ -267,11 +272,10 @@ class CoinBillingService extends ChangeNotifier with WidgetsBindingObserver {
         await gateway.verify(purchase);
         _done.add(key);
         unawaited(
-          _event(
-            purchase.status == PurchaseStatus.restored
-                ? 'purchase_restored'
-                : 'purchase_completed',
-            purchase.productID,
+          MonetizationAnalytics.instance.purchaseCompleted(
+            flow: 'coin_pack',
+            productId: purchase.productID,
+            restored: purchase.status == PurchaseStatus.restored,
           ),
         );
         if (gateway.uid == uid) {
@@ -297,18 +301,6 @@ class CoinBillingService extends ChangeNotifier with WidgetsBindingObserver {
       purchasing = false;
       _emit();
       unawaited(restore());
-    }
-  }
-
-  Future<void> _event(String name, String productId) async {
-    if (!kReleaseMode) return;
-    try {
-      await FirebaseAnalytics.instance.logEvent(
-        name: name,
-        parameters: {'product_id': productId},
-      );
-    } catch (_) {
-      // Purchase settlement never depends on telemetry.
     }
   }
 

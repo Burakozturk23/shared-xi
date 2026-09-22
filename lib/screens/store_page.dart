@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../models/economy_models.dart';
@@ -5,6 +7,7 @@ import '../models/store_models.dart';
 import '../models/user_avatar_catalog.dart';
 import '../services/auth_service.dart';
 import '../services/economy_service.dart';
+import '../services/monetization_analytics.dart';
 import '../services/profile_service.dart';
 import '../services/store_service.dart';
 import '../widgets/user_avatar_badge.dart';
@@ -27,6 +30,9 @@ class _StorePageState extends State<StorePage> {
   @override
   void initState() {
     super.initState();
+    unawaited(
+      MonetizationAnalytics.instance.surfaceViewed('store'),
+    );
     if (AuthService.isGoogleAccount) {
       _catalogFuture = StoreService.fetchCatalog();
     }
@@ -59,6 +65,12 @@ class _StorePageState extends State<StorePage> {
     if (_purchasingOfferIds.contains(offer.offerId)) return;
 
     setState(() => _purchasingOfferIds.add(offer.offerId));
+    unawaited(
+      MonetizationAnalytics.instance.storeOfferStarted(
+        offerId: offer.offerId,
+        coinPrice: offer.priceCoins,
+      ),
+    );
 
     try {
       final result = await StoreService.purchase(offer);
@@ -68,6 +80,14 @@ class _StorePageState extends State<StorePage> {
       final message = result.alreadyOwned
           ? '${offer.title} zaten koleksiyonunda.'
           : '${offer.title} açıldı. ${result.coins} Link Coin kaldı.';
+      if (!result.alreadyOwned) {
+        unawaited(
+          MonetizationAnalytics.instance.storeOfferCompleted(
+            offerId: offer.offerId,
+            coinPrice: offer.priceCoins,
+          ),
+        );
+      }
 
       ScaffoldMessenger.of(
         context,

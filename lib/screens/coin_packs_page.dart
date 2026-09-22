@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import '../services/coin_billing_service.dart';
+import '../services/monetization_analytics.dart';
 import '../widgets/wallet_balance_chip.dart';
 
 class CoinPacksPage extends StatefulWidget {
@@ -20,6 +23,9 @@ class _CoinPacksPageState extends State<CoinPacksPage> {
   @override
   void initState() {
     super.initState();
+    unawaited(
+      MonetizationAnalytics.instance.surfaceViewed('coin_packs'),
+    );
     if (supported) service.refresh();
   }
 

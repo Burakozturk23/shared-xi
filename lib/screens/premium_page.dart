@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../models/premium_billing_models.dart';
 import '../models/premium_models.dart';
 import '../services/auth_service.dart';
+import '../services/monetization_analytics.dart';
 import '../services/premium_billing_service.dart';
 import '../services/premium_service.dart';
 import '../services/profile_service.dart';
@@ -35,6 +34,9 @@ class _PremiumPageState extends State<PremiumPage> {
   @override
   void initState() {
     super.initState();
+    unawaited(
+      MonetizationAnalytics.instance.surfaceViewed('linkball_pro'),
+    );
 
     if (AuthService.isGoogleAccount) {
       _startPersistentSession();
@@ -51,7 +53,11 @@ class _PremiumPageState extends State<PremiumPage> {
     final entitlement = await PremiumService.fetchStatus();
     if (entitlement.cancellationPending && !_cancellationLogged) {
       _cancellationLogged = true;
-      unawaited(_event('premium_cancelled', entitlement.productId));
+      unawaited(
+        MonetizationAnalytics.instance.premiumCancelled(
+          entitlement.productId,
+        ),
+      );
     }
     return entitlement;
   }
@@ -121,7 +127,12 @@ class _PremiumPageState extends State<PremiumPage> {
     });
 
     try {
-      unawaited(_event('purchase_started', product.productId));
+      unawaited(
+        MonetizationAnalytics.instance.purchaseStarted(
+          flow: 'pro',
+          productId: product.productId,
+        ),
+      );
       final launched = await PremiumBillingService.purchasePlan(product.plan);
 
       if (!mounted) return;
@@ -232,11 +243,10 @@ class _PremiumPageState extends State<PremiumPage> {
         purchase,
       );
       unawaited(
-        _event(
-          purchase.status == PurchaseStatus.restored
-              ? 'purchase_restored'
-              : 'purchase_completed',
-          purchase.productID,
+        MonetizationAnalytics.instance.purchaseCompleted(
+          flow: 'pro',
+          productId: purchase.productID,
+          restored: purchase.status == PurchaseStatus.restored,
         ),
       );
 
@@ -258,18 +268,6 @@ class _PremiumPageState extends State<PremiumPage> {
       });
     } finally {
       _verifyingPurchaseKeys.remove(key);
-    }
-  }
-
-  Future<void> _event(String name, String productId) async {
-    if (!kReleaseMode || productId.trim().isEmpty) return;
-    try {
-      await FirebaseAnalytics.instance.logEvent(
-        name: name,
-        parameters: <String, Object>{'product_id': productId},
-      );
-    } catch (_) {
-      // Billing and entitlement settlement never depends on telemetry.
     }
   }
 
