@@ -47,6 +47,8 @@ foreach ($marker in @(
   "exports.verifyPremiumPurchase",
   "exports.reconcilePremiumSubscriptions",
   "lbPlayAccountId(uid)",
+  "lbPlayAcknowledgeSubscription",
+  ":acknowledge",
   "linkball_pro_sales_enabled"
 )) {
   if (-not $index.Contains($marker)) {
