@@ -42,9 +42,15 @@ class PremiumService {
     }
 
     _salesEnabled = data['salesEnabled'] == true;
-    final accountId = data['accountId']?.toString() ?? '';
+
     final uid = AuthService.uid;
-    if (uid != null && RegExp(r'^[a-f0-9]{64}
+    final accountId = data['accountId']?.toString().trim() ?? '';
+    if (uid != null && RegExp(r'^[a-f0-9]{64}$').hasMatch(accountId)) {
+      _purchaseAccountIdUid = uid;
+      _purchaseAccountId = accountId;
+    }
+
+    return PremiumEntitlement.fromMap(
       Map<String, dynamic>.from(data['entitlement'] as Map),
     );
   }
@@ -72,7 +78,6 @@ class PremiumService {
       );
     });
   }
-
 
   static Future<String> purchaseAccountId() async {
     await CloudBootstrap.ensureInitialized();
@@ -82,259 +87,19 @@ class PremiumService {
     final cached = _purchaseAccountId;
     if (_purchaseAccountIdUid == uid &&
         cached != null &&
-        RegExp(r'^[a-f0-9]{64}
-    required String productId,
-    required String purchaseToken,
-  }) async {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final token = purchaseToken.trim();
-    if (productId.trim().isEmpty || token.isEmpty) {
-      throw ArgumentError('Google Play purchase data is incomplete.');
-    }
-
-    final callable = _functions.httpsCallable('verifyPremiumPurchase');
-    final response = await callable.call(<String, dynamic>{
-      'productId': productId.trim(),
-      'purchaseToken': token,
-    });
-    final data = _map(response.data);
-
-    if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static void _requireGoogleAccount() {
-    if (!AuthService.isGoogleAccount || AuthService.uid == null) {
-      throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
-      );
-    }
-  }
-
-  static Map<String, dynamic> _map(Object? value) {
-    if (value is Map) {
-      return Map<String, dynamic>.from(value);
-    }
-    return <String, dynamic>{};
-  }
-}
-).hasMatch(accountId)) {
-      _purchaseAccountIdUid = uid;
-      _purchaseAccountId = accountId;
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static Stream<PremiumEntitlement> watchStatus() async* {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final ref = _entitlementRef;
-    if (ref == null) {
-      yield const PremiumEntitlement.inactive();
-      return;
-    }
-
-    await fetchStatus();
-
-    yield* ref.onValue.map((event) {
-      final raw = event.snapshot.value;
-      if (raw is! Map) {
-        return const PremiumEntitlement.inactive();
-      }
-
-      return PremiumEntitlement.fromMap(
-        Map<String, dynamic>.from(raw),
-      );
-    });
-  }
-
-
-  static Future<PremiumEntitlement> verifyGooglePlayPurchase({
-    required String productId,
-    required String purchaseToken,
-  }) async {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final token = purchaseToken.trim();
-    if (productId.trim().isEmpty || token.isEmpty) {
-      throw ArgumentError('Google Play purchase data is incomplete.');
-    }
-
-    final callable = _functions.httpsCallable('verifyPremiumPurchase');
-    final response = await callable.call(<String, dynamic>{
-      'productId': productId.trim(),
-      'purchaseToken': token,
-    });
-    final data = _map(response.data);
-
-    if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static void _requireGoogleAccount() {
-    if (!AuthService.isGoogleAccount || AuthService.uid == null) {
-      throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
-      );
-    }
-  }
-
-  static Map<String, dynamic> _map(Object? value) {
-    if (value is Map) {
-      return Map<String, dynamic>.from(value);
-    }
-    return <String, dynamic>{};
-  }
-}
-).hasMatch(cached)) {
+        RegExp(r'^[a-f0-9]{64}$').hasMatch(cached)) {
       return cached;
     }
 
     await fetchStatus();
+
     final resolved = _purchaseAccountId;
     if (_purchaseAccountIdUid != uid ||
         resolved == null ||
-        !RegExp(r'^[a-f0-9]{64}
-    required String productId,
-    required String purchaseToken,
-  }) async {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final token = purchaseToken.trim();
-    if (productId.trim().isEmpty || token.isEmpty) {
-      throw ArgumentError('Google Play purchase data is incomplete.');
-    }
-
-    final callable = _functions.httpsCallable('verifyPremiumPurchase');
-    final response = await callable.call(<String, dynamic>{
-      'productId': productId.trim(),
-      'purchaseToken': token,
-    });
-    final data = _map(response.data);
-
-    if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static void _requireGoogleAccount() {
-    if (!AuthService.isGoogleAccount || AuthService.uid == null) {
-      throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
-      );
-    }
-  }
-
-  static Map<String, dynamic> _map(Object? value) {
-    if (value is Map) {
-      return Map<String, dynamic>.from(value);
-    }
-    return <String, dynamic>{};
-  }
-}
-).hasMatch(accountId)) {
-      _purchaseAccountIdUid = uid;
-      _purchaseAccountId = accountId;
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static Stream<PremiumEntitlement> watchStatus() async* {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final ref = _entitlementRef;
-    if (ref == null) {
-      yield const PremiumEntitlement.inactive();
-      return;
-    }
-
-    await fetchStatus();
-
-    yield* ref.onValue.map((event) {
-      final raw = event.snapshot.value;
-      if (raw is! Map) {
-        return const PremiumEntitlement.inactive();
-      }
-
-      return PremiumEntitlement.fromMap(
-        Map<String, dynamic>.from(raw),
-      );
-    });
-  }
-
-
-  static Future<PremiumEntitlement> verifyGooglePlayPurchase({
-    required String productId,
-    required String purchaseToken,
-  }) async {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final token = purchaseToken.trim();
-    if (productId.trim().isEmpty || token.isEmpty) {
-      throw ArgumentError('Google Play purchase data is incomplete.');
-    }
-
-    final callable = _functions.httpsCallable('verifyPremiumPurchase');
-    final response = await callable.call(<String, dynamic>{
-      'productId': productId.trim(),
-      'purchaseToken': token,
-    });
-    final data = _map(response.data);
-
-    if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static void _requireGoogleAccount() {
-    if (!AuthService.isGoogleAccount || AuthService.uid == null) {
-      throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
-      );
-    }
-  }
-
-  static Map<String, dynamic> _map(Object? value) {
-    if (value is Map) {
-      return Map<String, dynamic>.from(value);
-    }
-    return <String, dynamic>{};
-  }
-}
-).hasMatch(resolved)) {
+        !RegExp(r'^[a-f0-9]{64}$').hasMatch(resolved)) {
       throw StateError('Google Play hesap bağı hazırlanamadı.');
     }
+
     return resolved;
   }
 
@@ -358,7 +123,7 @@ class PremiumService {
     final data = _map(response.data);
 
     if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
+      throw StateError('Linkball Pro satın alma doğrulanamadı.');
     }
 
     return PremiumEntitlement.fromMap(
@@ -369,85 +134,7 @@ class PremiumService {
   static void _requireGoogleAccount() {
     if (!AuthService.isGoogleAccount || AuthService.uid == null) {
       throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
-      );
-    }
-  }
-
-  static Map<String, dynamic> _map(Object? value) {
-    if (value is Map) {
-      return Map<String, dynamic>.from(value);
-    }
-    return <String, dynamic>{};
-  }
-}
-).hasMatch(accountId)) {
-      _purchaseAccountIdUid = uid;
-      _purchaseAccountId = accountId;
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static Stream<PremiumEntitlement> watchStatus() async* {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final ref = _entitlementRef;
-    if (ref == null) {
-      yield const PremiumEntitlement.inactive();
-      return;
-    }
-
-    await fetchStatus();
-
-    yield* ref.onValue.map((event) {
-      final raw = event.snapshot.value;
-      if (raw is! Map) {
-        return const PremiumEntitlement.inactive();
-      }
-
-      return PremiumEntitlement.fromMap(
-        Map<String, dynamic>.from(raw),
-      );
-    });
-  }
-
-
-  static Future<PremiumEntitlement> verifyGooglePlayPurchase({
-    required String productId,
-    required String purchaseToken,
-  }) async {
-    await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
-
-    final token = purchaseToken.trim();
-    if (productId.trim().isEmpty || token.isEmpty) {
-      throw ArgumentError('Google Play purchase data is incomplete.');
-    }
-
-    final callable = _functions.httpsCallable('verifyPremiumPurchase');
-    final response = await callable.call(<String, dynamic>{
-      'productId': productId.trim(),
-      'purchaseToken': token,
-    });
-    final data = _map(response.data);
-
-    if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
-    }
-
-    return PremiumEntitlement.fromMap(
-      Map<String, dynamic>.from(data['entitlement'] as Map),
-    );
-  }
-
-  static void _requireGoogleAccount() {
-    if (!AuthService.isGoogleAccount || AuthService.uid == null) {
-      throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
+        'Linkball Pro için Google hesabına bağlı profil gerekli.',
       );
     }
   }
