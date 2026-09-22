@@ -5340,6 +5340,42 @@ async function lbPlayAuthorizedGet(url) {
 }
 
 /**
+ * Acknowledges a newly granted Google Play subscription on the trusted
+ * backend. This closes the window where the app could lose connectivity after
+ * entitlement was granted but before the client completes the purchase.
+ *
+ * @param {string} productId
+ * @param {string} purchaseToken
+ * @param {string} accountId
+ * @return {Promise<void>}
+ */
+async function lbPlayAcknowledgeSubscription(
+    productId,
+    purchaseToken,
+    accountId,
+) {
+  const client = await lbPlayAuth().getClient();
+  const packageName = encodeURIComponent(LB_PLAY_PACKAGE_NAME);
+  const subscriptionId = encodeURIComponent(productId);
+  const token = encodeURIComponent(purchaseToken);
+  const url =
+    "https://androidpublisher.googleapis.com/androidpublisher/v3/" +
+    "applications/" + packageName +
+    "/purchases/subscriptions/" + subscriptionId +
+    "/tokens/" + token + ":acknowledge";
+
+  await client.request({
+    method: "POST",
+    url: url,
+    data: {
+      externalAccountIds: {
+        obfuscatedAccountId: accountId,
+      },
+    },
+  });
+}
+
+/**
  * @param {Object} purchase
  * @param {string} productId
  * @param {number=} now
@@ -5552,6 +5588,72 @@ async function lbPremiumApplyPlayVerification(
 }
 
 /**
+ * Grants/revokes from the verified Play state, then acknowledges any newly
+ * granted subscription on the backend. A failed acknowledgement is retryable:
+ * the canonical entitlement remains server-verified and the next status
+ * refresh or scheduled reconciliation attempts acknowledgement again.
+ *
+ * @param {Object} db
+ * @param {string} uid
+ * @param {string} productId
+ * @param {string} tokenHash
+ * @param {string} purchaseToken
+ * @param {Object} verified
+ * @return {Promise<Object>}
+ */
+async function lbPremiumApplyAndAcknowledge(
+    db,
+    uid,
+    productId,
+    tokenHash,
+    purchaseToken,
+    verified,
+) {
+  const acknowledgementState = lbPlayText(
+      verified.result.acknowledgementState,
+  );
+
+  if (verified.result.entitled &&
+      acknowledgementState !== "ACKNOWLEDGEMENT_STATE_PENDING" &&
+      acknowledgementState !== "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED") {
+    throw new httpsV2.HttpsError(
+        "failed-precondition",
+        "Google Play acknowledgement state is invalid.",
+    );
+  }
+
+  let entitlement = await lbPremiumApplyPlayVerification(
+      db,
+      uid,
+      productId,
+      tokenHash,
+      verified,
+  );
+
+  if (!verified.result.entitled ||
+      acknowledgementState === "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED") {
+    return entitlement;
+  }
+
+  await lbPlayAcknowledgeSubscription(
+      productId,
+      purchaseToken,
+      lbPlayAccountId(uid),
+  );
+
+  verified.result.acknowledgementState =
+    "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED";
+  entitlement = await lbPremiumApplyPlayVerification(
+      db,
+      uid,
+      productId,
+      tokenHash,
+      verified,
+  );
+  return entitlement;
+}
+
+/**
  * Refreshes one account from subscriptionsv2. Transient Play API errors retain
  * the last verified state; they never manufacture or revoke entitlement.
  *
@@ -5596,11 +5698,12 @@ async function lbPremiumRefreshFromPlay(db, uid, strict = false) {
         productId,
         purchaseToken,
     );
-    return await lbPremiumApplyPlayVerification(
+    return await lbPremiumApplyAndAcknowledge(
         db,
         uid,
         productId,
         tokenHash,
+        purchaseToken,
         verified,
     );
   } catch (error) {
@@ -5699,11 +5802,12 @@ exports.reconcilePremiumSubscriptions = onSchedule(
             });
             continue;
           }
-          await lbPremiumApplyPlayVerification(
+          await lbPremiumApplyAndAcknowledge(
               db,
               uid,
               productId,
               tokenHash,
+              purchaseToken,
               verified,
           );
         } catch (error) {
@@ -5784,11 +5888,12 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
             purchaseToken,
         );
 
-        const entitlement = await lbPremiumApplyPlayVerification(
+        const entitlement = await lbPremiumApplyAndAcknowledge(
             db,
             uid,
             productId,
             tokenHash,
+            purchaseToken,
             verified,
         );
 
