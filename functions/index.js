@@ -5119,13 +5119,17 @@ function lbPremiumState(raw, now) {
   const rawPlan = lbPremiumText(data.plan, 24);
   const plan = LB_PREMIUM_PLANS.has(rawPlan) ? rawPlan : "none";
   const verified = data.verified === true;
+  // Legacy verified records predate the explicit entitled flag. Preserve their
+  // old behavior, while every D Play refresh writes an authoritative boolean.
+  const entitled = data.entitled !== false;
   const startedAt = lbPremiumNumber(data.startedAt);
   const expiresAt = lbPremiumNumber(data.expiresAt);
   const lifetime = plan === "lifetime";
   const subscriptionActive =
     (plan === "monthly" || plan === "yearly") &&
     expiresAt > currentTime;
-  const active = verified && (lifetime || subscriptionActive);
+  const active =
+    verified && entitled && (lifetime || subscriptionActive);
 
   return {
     version: LB_PREMIUM_VERSION,
@@ -5544,6 +5548,7 @@ async function lbPremiumApplyPlayVerification(
       provider: "google_play",
       productId: productId,
       verified: false,
+      entitled: false,
       purchaseTokenHash: tokenHash,
       purchaseState: verified.result.purchaseState,
       acknowledgementState: verified.result.acknowledgementState,
@@ -5572,6 +5577,7 @@ async function lbPremiumApplyPlayVerification(
     expiresAt: verified.result.expiresAt,
     autoRenewing: verified.result.autoRenewing,
     verified: true,
+    entitled: verified.result.entitled === true,
     purchaseTokenHash: tokenHash,
     orderId: verified.result.orderId,
     purchaseState: verified.result.purchaseState,
