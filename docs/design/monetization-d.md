@@ -54,7 +54,11 @@ Sezon bileti / premium sezon ödül yolu Aşama E kapsamındadır.
    `premiumPurchaseOwners` kaydında tutulur.
 10. Doğrulama sonrası `premiumState` ve owner-readable
     `premiumEntitlements` birlikte güncellenir.
-11. Client ancak server doğrulamasından sonra `completePurchase` çağırır.
+11. Yeni purchase `ACKNOWLEDGEMENT_STATE_PENDING` ise sunucu
+    `purchases.subscriptions.acknowledge` çağırır ve opaque Linkball account ID'yi
+    `externalAccountIds.obfuscatedAccountId` olarak tekrar bağlar.
+12. Client, server doğrulaması/acknowledgement tamamlandıktan sonra
+    `completePurchase` çağrısını yerel Billing akışını kapatmak için yine yapar.
 
 ## Abonelik yaşam döngüsü
 
@@ -129,6 +133,10 @@ Profil:
 
 - Google Play subscriptions v2:
   https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptionsv2/get
+- Google Play subscription acknowledge:
+  https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions/acknowledge
+- Google Play Billing security:
+  https://developer.android.com/google/play/billing/security
 - Google Play Billing integration:
   https://developer.android.com/google/play/billing/integrate
 - Flutter in_app_purchase:
