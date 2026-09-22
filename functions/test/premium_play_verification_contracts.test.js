@@ -69,6 +69,7 @@ test("subscription lifecycle state is verified server-side", () => {
   assert.ok(block.includes("SUBSCRIPTION_STATE_CANCELED"));
   assert.ok(block.includes("externalAccountIdentifiers"));
   assert.ok(block.includes("obfuscatedExternalAccountId"));
+  assert.ok(block.includes("entitled: verified.result.entitled === true"));
 });
 
 test("purchase is cryptographically bound to the Linkball account", () => {
