@@ -68,7 +68,7 @@ Google Play `subscriptionsv2` subscription state'i source of truth'tur.
 - IN_GRACE_PERIOD: erişim devam eder; UI ödeme ek süresini gösterir.
 - CANCELED + future expiry: otomatik yenileme kapalıdır, erişim mevcut
   dönemin sonuna kadar devam eder.
-- Expired/revoked/non-entitled: projection pasif olur.
+- Expired/revoked/non-entitled: `entitled=false` canonical state'e yazılır ve projection pasif olur; future expiry tek başına Pro erişimi vermez.
 
 `getMyPremiumStatus`, mevcut private token bulunduğunda Play'i yeniden
 sorgular. Ayrıca `reconcilePremiumSubscriptions` 30 dakikada bir en fazla
