@@ -41,7 +41,8 @@ test("premium is active only for trusted verified state", () => {
   const block = premiumBlock();
 
   assert.ok(block.includes("const verified = data.verified === true"));
-  assert.ok(block.includes("const active = verified"));
+  assert.ok(block.includes("const entitled = data.entitled !== false"));
+  assert.ok(block.includes("verified && entitled"));
   assert.ok(block.includes("expiresAt > currentTime"));
   assert.equal(block.includes("request.data.verified"), false);
   assert.equal(block.includes("(request.data || {}).plan"), false);
