@@ -54,26 +54,23 @@ test("progression callables are Google-linked and server-time based", () => {
   assert.equal(block.includes("(request.data || {}).amount"), false);
 });
 
-test("daily reward schedule is canonical seven-day 20 to 80 coins", () => {
-  const block = progressionBlock();
-
-  for (const amount of [20, 30, 40, 50, 60, 70, 80]) {
-    assert.ok(block.includes(`  ${amount},`), amount);
-  }
-
-  assert.ok(block.includes("((Math.max(1, nextStreak) - 1) % 7) + 1"));
-  assert.ok(block.includes("LB_PROGRESSION_DAILY_XP = 25"));
+test("daily reward schedule uses the configured seven-day 10 to 30 launch policy", () => {
+  const source = require("../economy_config").defaults.sources.daily_reward;
+  assert.deepEqual(source.coinsByDay, [10, 12, 15, 18, 20, 25, 30]);
+  assert.equal(source.xp, 25);
+  assert.ok(progressionBlock().includes("config.sources.daily_reward"));
 });
 
-test("premium only multiplies rewards and protects one missed day", () => {
-  const block = progressionBlock();
+test("Pro does not change daily progression economics", () => {
+  const premiumStart = source.indexOf("function lbPremiumBenefits(active)");
+  const premiumEnd = source.indexOf("/**", premiumStart + 1);
+  const premium = source.slice(premiumStart, premiumEnd);
 
-  assert.ok(block.includes("benefits.dailyRewardMultiplier"));
-  assert.ok(block.includes("benefits.streakProtection === true"));
-  assert.ok(block.includes("gap === 2"));
-  assert.ok(block.includes("streakProtected: streakProtected"));
-  assert.equal(block.includes("eloBoost"), false);
-  assert.equal(block.includes("matchPower"), false);
+  assert.ok(premium.includes("dailyRewardMultiplier: 1"));
+  assert.ok(premium.includes("streakProtection: false"));
+  assert.equal(premium.includes("active ? 2 : 1"), false);
+  assert.equal(progressionBlock().includes("eloBoost"), false);
+  assert.equal(progressionBlock().includes("matchPower"), false);
 });
 
 test("daily reward is idempotent across progression and economy state", () => {

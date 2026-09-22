@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
+  sdk: ">=3.12.0 <4.0.0"
 
 dependencies:
   firebase_analytics: 12.4.6
@@ -22,7 +22,8 @@ dependencies:
   firebase_core: 4.13.0
   firebase_database: ^12.4.7
   firebase_app_check: 0.4.6
-  in_app_purchase: 3.2.3
+  in_app_purchase: 3.3.1
+  google_mobile_ads: 9.1.0
 
 dev_dependencies:
   flutter_test:
@@ -34,15 +35,25 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  fonts:
+    - family: Satoshi
+      fonts:
+        - asset: assets/fonts/Satoshi-Variable.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Body-Variable.ttf
+
   assets:
+    - assets/config/admob.json
+    - assets/brand/
     # Canonical player/club runtime data is V4 SQLite only.
     # Small coach/transfer/meta JSON assets remain for legacy side-data.
     - assets/data/coaches_min.json
     - assets/data/famous_transfers.json
     - assets/data/meta.json
+    - assets/data/squad_challenge_catalog.json
     - assets/runtime/linkball_game_data_v4.sqlite
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/
     - assets/avatars/
     - assets/badges/
-

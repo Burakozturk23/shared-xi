@@ -1,448 +1,154 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 
 import '../data/build_xi_formations.dart';
-import '../data/build_xi_themes.dart';
-import '../data/continents.dart';
 import '../models/build_xi_state.dart';
-import '../models/player.dart';
-import '../repositories/repository.dart';
+import '../models/squad_challenge.dart';
 import '../services/search_service.dart';
-import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class BuildXiController extends ChangeNotifier {
-  final BuildXiTheme theme;
-  final Formation formation;
-
-  BuildXiController({required this.theme, required this.formation});
-
-  BuildXiState _state = const BuildXiState();
-  BuildXiState get state => _state;
-
-  late List<Player> _pool;
-
-  bool _usingRuntimeV3 = false;
-  List<Player> _runtimeBasePool = const [];
-  Map<int, List<int>> _runtimeClubIdsByPlayer = const {};
-  Map<int, Map<String, Object?>> _runtimeFactsByPlayer = const {};
-  Map<int, Map<String, Object?>> _runtimeClubMetaById = const {};
-  Map<int, int> _runtimeRankByPlayer = const {};
-
-
-  void initialize() {
-    unawaited(_initializeHybrid());
-  }
-
-  Future<void> _initializeHybrid() async {
-    final hybrid = HybridGameplayDataService.instance;
-    _usingRuntimeV3 = hybrid.isGameplayEnabled;
-
-    if (_usingRuntimeV3) {
-      _runtimeBasePool = await hybrid.playersInPool('build_xi_preview');
-      _runtimeClubIdsByPlayer =
-          await hybrid.playerClubIdsForPool('build_xi_preview');
-      _runtimeFactsByPlayer =
-          await hybrid.playerFactsForPool('build_xi_preview');
-
-      final clubRows = await hybrid.existingGameplayClubMetadata();
-      _runtimeClubMetaById = {
-        for (final row in clubRows)
-          if ((row['exposed_club_id'] as num?) != null)
-            (row['exposed_club_id'] as num).toInt():
-                Map<String, Object?>.from(row),
-      };
-
-      _runtimeRankByPlayer = {
-        for (var i = 0; i < _runtimeBasePool.length; i++)
-          _runtimeBasePool[i].id: i + 1,
-      };
-
-      if (_runtimeBasePool.length < 5000 ||
-          _runtimeClubIdsByPlayer.length < 5000 ||
-          _runtimeClubMetaById.length < 100) {
-        debugPrint(
-          '[HybridV3] BuildXI SQLite base pool too small; legacy fallback.',
-        );
-        _usingRuntimeV3 = false;
-      }
-    }
-
-    _pool = _usingRuntimeV3 ? _buildRuntimePool() : _buildPool();
-
-    if (_usingRuntimeV3 && _pool.length < 35) {
-      debugPrint(
-        '[HybridV3] BuildXI theme pool too small '
-        'theme=${theme.id} players=${_pool.length}; legacy fallback.',
-      );
-      _usingRuntimeV3 = false;
-      _pool = _buildPool();
-    }
-
-    final costs = _computeCosts(_pool);
-
+  BuildXiController({
+    required this.catalog,
+    required this.theme,
+    required this.formation,
+    this.mission,
+    List<int?>? draft,
+  }) {
     _state = BuildXiState(
-      isLoading: false,
-      theme: theme,
-      formation: formation,
-      slotPlayers: List<Player?>.filled(formation.slots.length, null),
-      costs: costs,
+      slotPlayers: List.filled(11, null),
+      costs: theme.costs,
+      budgetLimit: mission?.budget ?? 160,
     );
+    if (draft != null && draft.length == 11) {
+      for (var i = 0; i < 11; i++) {
+        final p = catalog.players[draft[i]];
+        if (p != null && canAssign(i, p)) {
+          final slots = List<SquadPlayer?>.from(_state.slotPlayers)..[i] = p;
+          _state = _state.copyWith(slotPlayers: slots);
+        }
+      }
+    }
+  }
+  final SquadCatalog catalog;
+  final SquadTheme theme;
+  final Formation formation;
+  final SquadMission? mission;
+  late BuildXiState _state;
+  BuildXiState get state => _state;
+  List<int?> get playerIds => state.slotPlayers.map((p) => p?.id).toList();
 
-    if (_usingRuntimeV3) {
-      debugPrint(
-        '[HybridV3] BuildXI SQLite '
-        'theme=${theme.id} players=${_pool.length}',
+  bool canAssign(int index, SquadPlayer p) {
+    if (state.isFinished ||
+        index < 0 ||
+        index >= 11 ||
+        !theme.costs.containsKey(p.id) ||
+        !p.fits(formation.slots[index]))
+      return false;
+    final others = [
+      for (var i = 0; i < 11; i++)
+        if (i != index && state.slotPlayers[i] != null) state.slotPlayers[i]!,
+    ];
+    if (others.any((other) => other.id == p.id)) return false;
+    if (theme.uniqueCountries) {
+      final used = others.expand((p) => p.countries).toSet();
+      if (p.countries.any(used.contains)) return false;
+    }
+    final currentCost = state.slotPlayers[index] == null
+        ? 0
+        : state.costOf(state.slotPlayers[index]!);
+    return state.usedBudget - currentCost + theme.costs[p.id]! <=
+        state.budgetLimit;
+  }
+
+  List<SquadPlayer> eligiblePlayersFor(
+    int index,
+    String query, {
+    bool cheapestFirst = false,
+  }) {
+    final list = [
+      for (final id in theme.playerIds)
+        if (canAssign(index, catalog.players[id]!) &&
+            (query.trim().isEmpty ||
+                SearchService.contains(catalog.players[id]!.name, query)))
+          catalog.players[id]!,
+    ];
+    list.sort((a, b) {
+      final price = cheapestFirst
+          ? state.costOf(a).compareTo(state.costOf(b))
+          : state.costOf(b).compareTo(state.costOf(a));
+      return price != 0 ? price : a.name.compareTo(b.name);
+    });
+    return list.take(80).toList();
+  }
+
+  void assignPlayer(int index, SquadPlayer player) {
+    final p = catalog.players[player.id];
+    if (p == null || !canAssign(index, p)) {
+      throw StateError(
+        'Bu oyuncu mevki, ülke veya kalan kredi koşuluna uymuyor.',
       );
     }
-
+    _state = state.copyWith(
+      slotPlayers: List<SquadPlayer?>.from(state.slotPlayers)..[index] = p,
+    );
     notifyListeners();
   }
 
-  List<int> _clubIdsForPlayer(Player player) {
-    return _usingRuntimeV3
-        ? (_runtimeClubIdsByPlayer[player.id] ?? const <int>[])
-        : player.clubs;
-  }
-
-  String _detailedPositionFor(Player player) {
-    if (!_usingRuntimeV3) return player.detailedPosition.trim();
-    final facts = _runtimeFactsByPlayer[player.id];
-    final factual = facts?['detailed_position']?.toString().trim() ?? '';
-    return factual.isNotEmpty ? factual : player.detailedPosition.trim();
-  }
-
-  String _broadPositionFor(Player player) {
-    if (!_usingRuntimeV3) return player.position.trim();
-    final facts = _runtimeFactsByPlayer[player.id];
-    final factual = facts?['position_group']?.toString().trim() ?? '';
-    return factual.isNotEmpty ? factual : player.position.trim();
-  }
-
-  List<Player> _buildRuntimePool() {
-    final players = _runtimeBasePool;
-
-    switch (theme.poolType) {
-      case BuildXiPoolType.league:
-        final leagueName = theme.leagueName ?? '';
-        final leagueClubIds = _runtimeClubMetaById.entries
-            .where(
-              (e) =>
-                  (e.value['competition']?.toString().trim() ?? '') ==
-                  leagueName,
-            )
-            .map((e) => e.key)
-            .toSet();
-        return players.where((p) {
-          return _clubIdsForPlayer(p).any(leagueClubIds.contains);
-        }).toList();
-
-      case BuildXiPoolType.region:
-        final countrySet = theme.countries!.toSet();
-        return players
-            .where((p) => p.countries.any(countrySet.contains))
-            .toList();
-
-      case BuildXiPoolType.clubPair:
-        final a = theme.clubPairIds![0];
-        final b = theme.clubPairIds![1];
-        return players.where((p) {
-          final ids = _clubIdsForPlayer(p);
-          return ids.contains(a) && ids.contains(b);
-        }).toList();
-
-      case BuildXiPoolType.clubUnion:
-        final a = theme.clubPairIds![0];
-        final b = theme.clubPairIds![1];
-        return players.where((p) {
-          final ids = _clubIdsForPlayer(p);
-          return ids.contains(a) || ids.contains(b);
-        }).toList();
-
-      case BuildXiPoolType.all:
-        var list = List<Player>.from(players);
-        if (theme.minClubs != null) {
-          list = list
-              .where(
-                (p) => _clubIdsForPlayer(p).length >= theme.minClubs!,
-              )
-              .toList();
-        }
-        return list;
-    }
-  }
-
-  List<Player> _buildPool() {
-    final players = Repository.instance.players;
-
-    switch (theme.poolType) {
-      case BuildXiPoolType.league:
-        final leagueClubIds = Repository.instance.clubs
-            .where((c) => c.league == theme.leagueName)
-            .map((c) => c.id)
-            .toSet();
-        return players
-            .where((p) => p.clubs.any(leagueClubIds.contains))
-            .toList();
-
-      case BuildXiPoolType.region:
-        final countrySet = theme.countries!.toSet();
-        return players
-            .where((p) => p.countries.any(countrySet.contains))
-            .toList();
-
-      case BuildXiPoolType.clubPair:
-        // Eski mantık (artık kullanılmıyor, tutuyoruz)
-        final a = theme.clubPairIds![0];
-        final b = theme.clubPairIds![1];
-        return players
-            .where((p) => p.clubs.contains(a) && p.clubs.contains(b))
-            .toList();
-
-      case BuildXiPoolType.clubUnion:
-        // Yeni: A veya B
-        final a = theme.clubPairIds![0];
-        final b = theme.clubPairIds![1];
-        return players
-            .where((p) => p.clubs.contains(a) || p.clubs.contains(b))
-            .toList();
-
-      case BuildXiPoolType.all:
-        var list = players;
-        // Wanderers filtresi
-        if (theme.minClubs != null) {
-          list = list.where((p) => p.clubs.length >= theme.minClubs!).toList();
-        }
-        return list;
-    }
-  }
-
-  Map<int, int> _computeCosts(List<Player> pool) {
-    final sorted = List<Player>.from(pool)
-      ..sort((a, b) {
-        if (_usingRuntimeV3) {
-          final ra = _runtimeRankByPlayer[a.id] ?? 999999;
-          final rb = _runtimeRankByPlayer[b.id] ?? 999999;
-          return ra.compareTo(rb);
-        }
-        return b.peakMarketValue.compareTo(a.peakMarketValue);
-      });
-    final n = sorted.length;
-    final costs = <int, int>{};
-
-    for (var i = 0; i < n; i++) {
-      final percentile = n <= 1 ? 0.0 : i / n;
-      int cost;
-      if (percentile < 0.05) {
-        final t = percentile / 0.05;
-        cost = (20 - (5 * t)).round().clamp(15, 20);
-      } else if (percentile < 0.20) {
-        final t = (percentile - 0.05) / 0.15;
-        cost = (14 - (4 * t)).round().clamp(10, 14);
-      } else if (percentile < 0.50) {
-        final t = (percentile - 0.20) / 0.30;
-        cost = (9 - (4 * t)).round().clamp(5, 9);
-      } else {
-        final t = (percentile - 0.50) / 0.50;
-        cost = (4 - (3 * t)).round().clamp(1, 4);
-      }
-      costs[sorted[i].id] = cost;
-    }
-
-    return costs;
-  }
-
-  void openSlot(int index) {
-    _state = _state.copyWith(activeSlotIndex: index);
+  void removePlayer(int index) {
+    if (state.isFinished || index < 0 || index >= 11) return;
+    _state = state.copyWith(
+      slotPlayers: List<SquadPlayer?>.from(state.slotPlayers)..[index] = null,
+    );
     notifyListeners();
   }
 
-  void closeSlot() {
-    _state = _state.copyWith(clearActiveSlot: true);
-    notifyListeners();
-  }
-
-  Set<int> get _usedPlayerIds =>
-      _state.slotPlayers.whereType<Player>().map((p) => p.id).toSet();
-
-  Set<String> get _usedCountries {
-    final set = <String>{};
-    for (final p in _state.slotPlayers.whereType<Player>()) {
-      set.addAll(p.countries);
-    }
-    return set;
-  }
-
-  List<Player> eligiblePlayersFor(int slotIndex, String query) {
-    final slot = _state.formation!.slots[slotIndex];
-    final used = _usedPlayerIds;
-    final usedCountries =
-        theme.uniqueNationalityRule ? _usedCountries : <String>{};
-
-    var candidates = _pool.where((p) {
-      if (used.contains(p.id)) return false;
-
-      // Runtime V3 factual detailed position kullanır. Detay yoksa
-      // yalnızca broad-position fallback'e izin verilir.
-      final detailed = _detailedPositionFor(p);
-      final positionMatch = detailed.isNotEmpty
-          ? slot.acceptedDetailedPositions.contains(detailed)
-          : _broadPositionFor(p) == slot.fallbackBroadPosition;
-      if (!positionMatch) return false;
-
-      if (theme.uniqueNationalityRule &&
-          p.countries.any(usedCountries.contains)) {
-        return false;
-      }
-
-      final cost = _state.costOf(p);
-      if (cost > _state.remainingBudget) return false;
-
-      return true;
-    }).toList();
-
-    if (query.trim().isNotEmpty) {
-      candidates =
-          candidates.where((p) => SearchService.contains(p.name, query)).toList();
-    }
-
-    candidates.sort((a, b) => _state.costOf(b).compareTo(_state.costOf(a)));
-
-    return candidates.take(40).toList();
-  }
-
-  void assignPlayer(int slotIndex, Player player) {
-    final cost = _state.costOf(player);
-    if (cost > _state.remainingBudget) return;
-
-    final newSlots = List<Player?>.from(_state.slotPlayers);
-    newSlots[slotIndex] = player;
-
-    _state = _state.copyWith(slotPlayers: newSlots, clearActiveSlot: true);
-    notifyListeners();
-  }
-
-  void removePlayer(int slotIndex) {
-    final newSlots = List<Player?>.from(_state.slotPlayers);
-    newSlots[slotIndex] = null;
-
-    _state = _state.copyWith(slotPlayers: newSlots);
-    notifyListeners();
-  }
-
-  /// Anlık skor önizlemesi (eksik slotlarla da çalışır)
   BuildXiScoreBreakdown previewBreakdown() {
-    final players = _state.slotPlayers.whereType<Player>().toList();
-    if (players.isEmpty) {
-      return const BuildXiScoreBreakdown();
-    }
-
-    final adjacency = formation.adjacency;
-    var chemistry = 0;
-    for (var i = 0; i < _state.slotPlayers.length; i++) {
-      final pi = _state.slotPlayers[i];
-      if (pi == null) continue;
-      for (final j in adjacency[i]) {
-        if (j <= i) continue;
-        final pj = _state.slotPlayers[j];
-        if (pj == null) continue;
-        final common = _clubIdsForPlayer(pi)
-            .toSet()
-            .intersection(_clubIdsForPlayer(pj).toSet());
-        if (common.isNotEmpty) chemistry += 2;
+    final players = state.slotPlayers.whereType<SquadPlayer>().toList();
+    if (players.isEmpty) return const BuildXiScoreBreakdown();
+    var links = 0;
+    for (var i = 0; i < 11; i++) {
+      final a = state.slotPlayers[i];
+      if (a == null) continue;
+      for (final j in formation.adjacency[i]) {
+        final b = state.slotPlayers[j];
+        if (j > i && b != null && a.clubs.any(b.clubs.contains)) links++;
       }
     }
-
-    final countries = <String>{};
-    for (final p in players) {
-      countries.addAll(p.countries);
-    }
-    final countryBonus = countries.length >= 5 ? 10 : 0;
-
-    final sharedClubIds = <int>{};
+    final countries = players.expand((p) => p.countries).toSet();
+    final shared = <int>{};
     for (var i = 0; i < players.length; i++) {
       for (var j = i + 1; j < players.length; j++) {
-        sharedClubIds.addAll(
-          _clubIdsForPlayer(players[i])
-              .toSet()
-              .intersection(_clubIdsForPlayer(players[j]).toSet()),
-        );
+        shared.addAll(players[i].clubs.where(players[j].clubs.contains));
       }
     }
-    final clubBonus = sharedClubIds.length >= 6 ? 15 : 0;
-
-    final continents = <Continent>{};
-    for (final p in players) {
-      if (p.countries.isEmpty) continue;
-      final c = continentOf(p.countries.first);
-      if (c != null) continents.add(c);
-    }
-    final continentBonus = continents.length >= 3 ? 10 : 0;
-
-    final budgetBonus = _state.usedBudget <= 120 ? 15 : 0;
-
+    final continents = {
+      for (final p in players)
+        if (p.countries.isNotEmpty &&
+            catalog.continents[p.countries.first] != null)
+          catalog.continents[p.countries.first]!,
+    };
     return BuildXiScoreBreakdown(
-      chemistry: chemistry,
-      countryBonus: countryBonus,
-      clubBonus: clubBonus,
-      continentBonus: continentBonus,
-      budgetBonus: budgetBonus,
+      chemistry: links * 2,
+      links: links,
+      countries: countries.length,
+      cost: state.usedBudget,
+      countryBonus: countries.length >= 5 ? 10 : 0,
+      clubBonus: shared.length >= 6 ? 15 : 0,
+      continentBonus: continents.length >= 3 ? 10 : 0,
+      budgetBonus: state.usedBudget <= 120 ? 15 : 0,
     );
   }
 
-  /// Canlı sayaçlar (UI chip'leri için)
-  Map<String, int> previewStats() {
-    final players = _state.slotPlayers.whereType<Player>().toList();
-    final countries = <String>{};
-    for (final p in players) {
-      countries.addAll(p.countries);
-    }
-
-    final sharedClubIds = <int>{};
-    for (var i = 0; i < players.length; i++) {
-      for (var j = i + 1; j < players.length; j++) {
-        sharedClubIds.addAll(
-          _clubIdsForPlayer(players[i])
-              .toSet()
-              .intersection(_clubIdsForPlayer(players[j]).toSet()),
-        );
-      }
-    }
-
-    final continents = <Continent>{};
-    for (final p in players) {
-      if (p.countries.isEmpty) continue;
-      final c = continentOf(p.countries.first);
-      if (c != null) continents.add(c);
-    }
-
-    final bd = previewBreakdown();
-    return {
-      'chemistry': bd.chemistry,
-      'countries': countries.length,
-      'clubLinks': sharedClubIds.length,
-      'continents': continents.length,
-      'total': bd.total,
-    };
-  }
-
-  static int starsFromScore(int total) {
-    if (total >= 95) return 3;
-    if (total >= 80) return 2;
-    if (total >= 60) return 1;
-    return 0;
+  bool get meetsGoal {
+    if (!state.isComplete) return false;
+    final score = previewBreakdown();
+    return mission == null ||
+        (score.links >= mission!.links &&
+            score.countries >= mission!.countries);
   }
 
   void finish() {
-    if (!_state.isComplete) return;
-
-    final breakdown = previewBreakdown();
-
-    _state = _state.copyWith(
-      isFinished: true,
-      breakdown: breakdown,
-    );
-
+    if (!state.isComplete || state.isFinished) return;
+    _state = state.copyWith(isFinished: true, breakdown: previewBreakdown());
     notifyListeners();
   }
 }

@@ -1,170 +1,66 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_theme.dart';
-import 'loto_bot_page.dart';
-import 'vs_bot_cinko_page.dart';
-import 'vs_bot_club_selection_page.dart';
+import '../app/app_feedback.dart';
+import '../app/bot_game_catalog.dart';
+import '../app/route_appearance.dart';
+import '../widgets/bot_mode_card.dart';
+import 'bot_game_detail_page.dart';
 import 'vs_bot_grid_mode_selection_page.dart';
-import 'vs_bot_random_five_page.dart';
 
 class VsBotModeSelectionPage extends StatelessWidget {
   const VsBotModeSelectionPage({super.key});
 
+  void _open(BuildContext context, Widget page) {
+    AppFeedback.selection();
+    Navigator.of(context).push(LinkballRoute(builder: (_) => page));
+  }
+
+  Widget _card(BuildContext context, BotGameDefinition game) => BotModeCard(
+    title: game.entry.title,
+    subtitle: game.entry.subtitle,
+    icon: game.entry.icon,
+    tags: game.tags,
+    onTap: () => _open(context, BotGameDetailPage(game: game)),
+  );
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: const Text('Bot’a Karşı'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Botla oyna')),
+    body: SafeArea(
+      child: ListView(
+        key: const PageStorageKey('bot-games'),
+        padding: const EdgeInsets.all(24),
         children: [
-          const Text(
-            'Nasıl oynamak istersin?',
-            style: TextStyle(fontSize: 16, color: AppTheme.hintColor),
+          Text(
+            'Rakibin hazır.',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: 20),
-          _ModeCard(
+          const SizedBox(height: 8),
+          Text(
+            'Bir oyun seç, kurallara göz at ve sahaya çık.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 24),
+          _card(context, BotGameCatalog.loto),
+          const SizedBox(height: 16),
+          _card(context, BotGameCatalog.teamRace),
+          const SizedBox(height: 16),
+          BotModeCard(
+            title: 'Grid',
+            subtitle: 'Klasik, Tersten veya Rastgele Grid ile yarış.',
             icon: Icons.grid_view_rounded,
-            accent: const Color(0xFF00E676),
-            title: 'Football Loto',
-            subtitle: '4×4 kriter · 16 oyuncu · bota karşı',
-            onTap: () => Navigator.push(
+            tags: const ['3 oyun türü', 'Sıra tabanlı'],
+            onTap: () => _open(
               context,
-              MaterialPageRoute(
-                builder: (_) => const LotoBotPage(),
-              ),
+              const VsBotGridModeSelectionPage(),
             ),
           ),
-          const SizedBox(height: 14),
-          _ModeCard(
-            icon: Icons.smart_toy_rounded,
-            accent: const Color(0xFFE91E63),
-            title: 'Takım Yarışı',
-            subtitle: 'Takımını seç, bot ile ortak oyuncu bul',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const VsBotClubSelectionPage(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          _ModeCard(
-            icon: Icons.grid_view_rounded,
-            accent: const Color(0xFF3F51B5),
-            title: '3×3 Grid',
-            subtitle: 'Klasik · Tersten · Rastgele Eşleşme',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const VsBotGridModeSelectionPage(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          _ModeCard(
-            icon: Icons.grid_on_rounded,
-            accent: const Color(0xFF00BCD4),
-            title: 'Futbol Çinko',
-            subtitle: 'Bot ile sırayla ızgarayı boya',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const VsBotCinkoPage(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          _ModeCard(
-            icon: Icons.casino_rounded,
-            accent: const Color(0xFFFF9800),
-            title: 'Rastgele Beşler',
-            subtitle: 'Aynı 5 kulüp · 5’er tur bot ile yarış',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const VsBotRandomFivePage(),
-              ),
-            ),
-          ),
+          const SizedBox(height: 16),
+          _card(context, BotGameCatalog.cinko),
+          const SizedBox(height: 16),
+          _card(context, BotGameCatalog.five),
         ],
       ),
-    );
-  }
-}
-
-class _ModeCard extends StatelessWidget {
-  final IconData icon;
-  final Color accent;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ModeCard({
-    required this.icon,
-    required this.accent,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppTheme.cardColor,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: accent.withOpacity(0.14),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: accent),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textColor,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppTheme.hintColor,
-                        height: 1.25,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppTheme.hintColor.withOpacity(0.6),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }

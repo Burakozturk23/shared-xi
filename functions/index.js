@@ -15,6 +15,17 @@ const httpsV2 = require("firebase-functions/v2/https");
 const {onValueWritten} = require("firebase-functions/v2/database");
 const crypto = require("node:crypto");
 const {GoogleAuth} = require("google-auth-library");
+const {getRemoteConfig} = require("firebase-admin/remote-config");
+const economyConfig = require("./economy_config");
+const lbGetEconomyConfig = economyConfig.createProvider({
+  fetch: async () => {
+    const template = await getRemoteConfig().getServerTemplate({
+      defaultConfig: {[economyConfig.PARAMETER]: JSON.stringify(economyConfig.defaults)},
+    });
+    return template.evaluate().getString(economyConfig.PARAMETER);
+  },
+  warn: (message, detail) => logger.warn(message, detail),
+});
 
 admin.initializeApp();
 setGlobalOptions({maxInstances: 10});
@@ -4983,87 +4994,13 @@ exports.syncMyAchievements = httpsV2.onCall(
 
 // LINKBALL_16_6B_ECONOMY_FOUNDATION_START
 
-const LB_ECONOMY_VERSION = 2;
-const LB_ACHIEVEMENT_COIN_REWARDS = Object.freeze({
-  first_whistle: 10,
-  first_victory: 15,
-  challenger_10: 20,
-  loyal_rival_50: 40,
-  centurion_100: 75,
-  winner_10: 20,
-  winner_50: 50,
-  winner_100: 100,
-  streak_3: 15,
-  streak_5: 40,
-  streak_10: 75,
-  elo_1100: 20,
-  elo_1250: 50,
-  elo_1400: 100,
-  elo_1600: 200,
-  shared_xi_master: 50,
-  grid_master: 50,
-  cinko_master: 50,
-  five_master: 50,
-  daily_first: 10,
-  daily_7: 25,
-  daily_30: 75,
-  daily_streak_7: 40,
-  daily_perfect: 60,
-  weekly_5: 35,
-  first_friend: 10,
-  friends_5: 30,
-  friends_25: 100,
-});
+const LB_ECONOMY_VERSION = 3;
+const LB_ACHIEVEMENT_COIN_REWARDS = economyConfig.defaults.sources.achievement.rewards;
 
 // LINKBALL_16_7B_COIN_STORE_FOUNDATION_START
 
 const LB_STORE_CATALOG_VERSION = 1;
-const LB_STORE_COIN_OFFERS = Object.freeze({
-  avatar_speedster_bolt: Object.freeze({
-    title: "Şimşek",
-    subtitle: "Hız tutkunları için premium avatar.",
-    badge: "AVATAR",
-    priceCoins: 150,
-    itemId: "speedster_bolt",
-    itemType: "avatar",
-    oneTime: true,
-    enabled: true,
-    sortOrder: 10,
-  }),
-  avatar_tactician_board: Object.freeze({
-    title: "Taktisyen",
-    subtitle: "Oyunu tahtada kazananlar için premium avatar.",
-    badge: "AVATAR",
-    priceCoins: 250,
-    itemId: "tactician_board",
-    itemType: "avatar",
-    oneTime: true,
-    enabled: true,
-    sortOrder: 20,
-  }),
-  avatar_night_owl: Object.freeze({
-    title: "Gece Kuşu",
-    subtitle: "Gece maçlarının vazgeçilmez premium avatarı.",
-    badge: "AVATAR",
-    priceCoins: 400,
-    itemId: "night_owl",
-    itemType: "avatar",
-    oneTime: true,
-    enabled: true,
-    sortOrder: 30,
-  }),
-  avatar_champion_cup: Object.freeze({
-    title: "Şampiyon",
-    subtitle: "Kupa koleksiyonunun premium avatarı.",
-    badge: "AVATAR",
-    priceCoins: 600,
-    itemId: "champion_cup",
-    itemType: "avatar",
-    oneTime: true,
-    enabled: true,
-    sortOrder: 40,
-  }),
-});
+const LB_STORE_COIN_OFFERS = economyConfig.defaults.sinks.cosmetics.offers;
 
 /**
  * @param {*} value
@@ -5124,40 +5061,19 @@ function lbStoreOfferProjection(offer) {
  * @param {Object} db
  * @return {Promise<Array<Object>>}
  */
-async function lbStoreCatalog(db) {
-  const snap = await db.ref("economyCatalog/offers").get();
-  const privateRows = snap.exists() && snap.val() ?
-    snap.val() : {};
-  const offers = [];
-
-  for (const [offerId, builtin] of Object.entries(
-      LB_STORE_COIN_OFFERS,
-  )) {
-    const override = privateRows &&
-      typeof privateRows === "object" ?
-      privateRows[offerId] : null;
-    const raw = override && typeof override === "object" ?
-      {...builtin, ...override} : builtin;
-    const offer = lbStoreOffer(raw, offerId);
-
-    if (offer) offers.push(lbStoreOfferProjection(offer));
-  }
-
-  offers.sort((a, b) => {
-    if (a.sortOrder !== b.sortOrder) {
-      return a.sortOrder - b.sortOrder;
-    }
-    return a.offerId.localeCompare(b.offerId);
-  });
-
-  return offers;
+async function lbStoreCatalog(db, config) {
+  config = config || await lbGetEconomyConfig();
+  return Object.entries(config.sinks.cosmetics.offers)
+      .map(([id, raw]) => lbStoreOffer(raw, id)).filter(Boolean)
+      .map((offer) => ({...lbStoreOfferProjection(offer), economyConfigId: config.configId}))
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.offerId.localeCompare(b.offerId));
 }
 
 // LINKBALL_16_7B_COIN_STORE_FOUNDATION_END
 
 // LINKBALL_16_7F_PREMIUM_ENTITLEMENT_FOUNDATION_START
 
-const LB_PREMIUM_VERSION = 1;
+const LB_PREMIUM_VERSION = 2;
 const LB_PREMIUM_PLANS = new Set([
   "monthly",
   "yearly",
@@ -5203,13 +5119,17 @@ function lbPremiumState(raw, now) {
   const rawPlan = lbPremiumText(data.plan, 24);
   const plan = LB_PREMIUM_PLANS.has(rawPlan) ? rawPlan : "none";
   const verified = data.verified === true;
+  // Legacy verified records predate the explicit entitled flag. Preserve their
+  // old behavior, while every D Play refresh writes an authoritative boolean.
+  const entitled = data.entitled !== false;
   const startedAt = lbPremiumNumber(data.startedAt);
   const expiresAt = lbPremiumNumber(data.expiresAt);
   const lifetime = plan === "lifetime";
   const subscriptionActive =
     (plan === "monthly" || plan === "yearly") &&
     expiresAt > currentTime;
-  const active = verified && (lifetime || subscriptionActive);
+  const active =
+    verified && entitled && (lifetime || subscriptionActive);
 
   return {
     version: LB_PREMIUM_VERSION,
@@ -5220,6 +5140,8 @@ function lbPremiumState(raw, now) {
     startedAt: active ? startedAt : 0,
     expiresAt: active && !lifetime ? expiresAt : 0,
     autoRenewing: active && !lifetime && data.autoRenewing === true,
+    subscriptionState: lbPremiumText(data.purchaseState, 80),
+    verificationRevision: lbPremiumNumber(data.verificationRevision),
     verified: verified,
     updatedAt: lbPremiumNumber(data.updatedAt),
   };
@@ -5239,8 +5161,10 @@ function lbPremiumBenefits(active) {
   return {
     adFree: active,
     premiumCosmetics: active,
-    dailyRewardMultiplier: active ? 2 : 1,
-    streakProtection: active,
+    // Monetization D keeps progression rewards identical for Free and Pro.
+    // Rewarded-ad value is delivered through the dedicated no-ad Pro bonus.
+    dailyRewardMultiplier: 1,
+    streakProtection: false,
   };
 }
 
@@ -5257,6 +5181,8 @@ function lbPremiumProjection(state) {
     startedAt: state.startedAt,
     expiresAt: state.expiresAt,
     autoRenewing: state.autoRenewing,
+    subscriptionState: state.subscriptionState,
+    verificationRevision: state.verificationRevision,
     benefits: lbPremiumBenefits(state.active),
     updatedAt: state.updatedAt,
     version: LB_PREMIUM_VERSION,
@@ -5278,27 +5204,52 @@ async function lbPremiumEnsureProjection(db, uid) {
   );
   const projection = lbPremiumProjection(state);
 
-  await db.ref("premiumEntitlements/" + uid).set(projection);
-  return projection;
+  return lbPremiumWriteProjection(db, uid, projection);
+}
+
+async function lbPremiumWriteProjection(db, uid, projection) {
+  const tx = await db.ref("premiumEntitlements/" + uid).transaction((current) => {
+    // A slower earlier verification must not overwrite a newer projection.
+    if (lbPremiumNumber(current && current.verificationRevision) > projection.verificationRevision) return current;
+    return projection;
+  });
+  return tx.snapshot.val();
 }
 
 exports.getMyPremiumStatus = httpsV2.onCall(
     {
       region: "europe-west1",
       maxInstances: 20,
+      enforceAppCheck: true,
     },
     async (request) => {
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const entitlement = await lbPremiumEnsureProjection(
+      const entitlement = await lbPremiumRefreshFromPlay(
           admin.database(),
           uid,
       );
 
+      let salesEnabled = false;
+      try {
+        const template = await getRemoteConfig().getServerTemplate({
+          defaultConfig: {linkball_pro_sales_enabled: "false"},
+        });
+        salesEnabled =
+          template.evaluate().getString("linkball_pro_sales_enabled") ===
+          "true";
+      } catch (error) {
+        logger.warn("Linkball Pro sales config unavailable; keeping sales off", {
+          reason: String(error && error.message || error),
+        });
+      }
+
       return {
         ok: true,
         entitlement: entitlement,
+        accountId: lbPlayAccountId(uid),
+        salesEnabled: salesEnabled,
         version: LB_PREMIUM_VERSION,
       };
     },
@@ -5312,9 +5263,8 @@ const LB_PLAY_PACKAGE_NAME = "com.burakozturk.linkball";
 const LB_PLAY_ANDROID_PUBLISHER_SCOPE =
   "https://www.googleapis.com/auth/androidpublisher";
 const LB_PLAY_PREMIUM_PRODUCTS = new Map([
-  ["linkball_premium_monthly", "monthly"],
-  ["linkball_premium_yearly", "yearly"],
-  ["linkball_premium_lifetime", "lifetime"],
+  ["linkball_pro_monthly", "monthly"],
+  ["linkball_pro_yearly", "yearly"],
 ]);
 const LB_PLAY_ACTIVE_SUBSCRIPTION_STATES = new Set([
   "SUBSCRIPTION_STATE_ACTIVE",
@@ -5364,6 +5314,18 @@ function lbPlayPurchaseTokenHash(token) {
 }
 
 /**
+ * Stable opaque Play account binding shared with coin purchases.
+ *
+ * @param {string} uid
+ * @return {string}
+ */
+function lbPlayAccountId(uid) {
+  return crypto.createHash("sha256")
+      .update("linkball-play:" + uid)
+      .digest("hex");
+}
+
+/**
  * @return {GoogleAuth}
  */
 function lbPlayAuth() {
@@ -5389,6 +5351,42 @@ async function lbPlayAuthorizedGet(url) {
   return response.data && typeof response.data === "object" ?
     response.data :
     {};
+}
+
+/**
+ * Acknowledges a newly granted Google Play subscription on the trusted
+ * backend. This closes the window where the app could lose connectivity after
+ * entitlement was granted but before the client completes the purchase.
+ *
+ * @param {string} productId
+ * @param {string} purchaseToken
+ * @param {string} accountId
+ * @return {Promise<void>}
+ */
+async function lbPlayAcknowledgeSubscription(
+    productId,
+    purchaseToken,
+    accountId,
+) {
+  const client = await lbPlayAuth().getClient();
+  const packageName = encodeURIComponent(LB_PLAY_PACKAGE_NAME);
+  const subscriptionId = encodeURIComponent(productId);
+  const token = encodeURIComponent(purchaseToken);
+  const url =
+    "https://androidpublisher.googleapis.com/androidpublisher/v3/" +
+    "applications/" + packageName +
+    "/purchases/subscriptions/" + subscriptionId +
+    "/tokens/" + token + ":acknowledge";
+
+  await client.request({
+    method: "POST",
+    url: url,
+    data: {
+      externalAccountIds: {
+        obfuscatedAccountId: accountId,
+      },
+    },
+  });
 }
 
 /**
@@ -5435,41 +5433,14 @@ function lbPlayNormalizeSubscription(purchase, productId, now) {
     startedAt: lbPlayTimestamp(data.startTime),
     expiresAt: expiresAt,
     autoRenewing: autoRenewing,
-    orderId: "",
+    orderId: lbPlayText(data.latestOrderId).slice(0, 160),
     purchaseState: state,
     acknowledgementState: lbPlayText(data.acknowledgementState),
+    accountId: lbPlayText(
+        data.externalAccountIdentifiers &&
+        data.externalAccountIdentifiers.obfuscatedExternalAccountId,
+    ),
     testPurchase: Boolean(data.testPurchase),
-  };
-}
-
-/**
- * @param {Object} purchase
- * @param {string} productId
- * @return {Object}
- */
-function lbPlayNormalizeLifetime(purchase, productId) {
-  const data = purchase && typeof purchase === "object" ? purchase : {};
-  const responseProductId = lbPlayText(data.productId);
-
-  if (responseProductId && responseProductId !== productId) {
-    throw new httpsV2.HttpsError(
-        "failed-precondition",
-        "Google Play product does not match.",
-    );
-  }
-
-  const purchaseState = Number(data.purchaseState);
-  const entitled = purchaseState === 0;
-
-  return {
-    entitled: entitled,
-    startedAt: lbPremiumNumber(data.purchaseTimeMillis),
-    expiresAt: 0,
-    autoRenewing: false,
-    orderId: lbPlayText(data.orderId).slice(0, 160),
-    purchaseState: String(purchaseState),
-    acknowledgementState: String(data.acknowledgementState ?? ""),
-    testPurchase: Number(data.purchaseType) === 0,
   };
 }
 
@@ -5482,20 +5453,6 @@ async function lbPlayVerifyWithGoogle(productId, purchaseToken) {
   const plan = lbPlayPremiumPlan(productId);
   const packageName = encodeURIComponent(LB_PLAY_PACKAGE_NAME);
   const token = encodeURIComponent(purchaseToken);
-
-  if (plan === "lifetime") {
-    const product = encodeURIComponent(productId);
-    const url =
-      "https://androidpublisher.googleapis.com/androidpublisher/v3/" +
-      "applications/" + packageName + "/purchases/products/" + product +
-      "/tokens/" + token;
-    const purchase = await lbPlayAuthorizedGet(url);
-    return {
-      plan: plan,
-      result: lbPlayNormalizeLifetime(purchase, productId),
-    };
-  }
-
   const url =
     "https://androidpublisher.googleapis.com/androidpublisher/v3/" +
     "applications/" + packageName +
@@ -5524,6 +5481,7 @@ async function lbPlayClaimPurchaseToken(
     uid,
     tokenHash,
     productId,
+    purchaseToken,
 ) {
   const ref = db.ref("premiumPurchaseOwners/" + tokenHash);
   const result = await ref.transaction((current) => {
@@ -5531,7 +5489,7 @@ async function lbPlayClaimPurchaseToken(
       current &&
       typeof current === "object" &&
       current.uid &&
-      current.uid !== uid
+      (current.uid !== uid || current.productId !== productId)
     ) {
       return;
     }
@@ -5539,9 +5497,10 @@ async function lbPlayClaimPurchaseToken(
     return {
       uid: uid,
       productId: productId,
+      purchaseToken: purchaseToken,
       provider: "google_play",
       updatedAt: Date.now(),
-      version: 1,
+      version: 2,
     };
   });
 
@@ -5552,7 +5511,8 @@ async function lbPlayClaimPurchaseToken(
   if (
     !result.committed ||
     !owner ||
-    owner.uid !== uid
+    owner.uid !== uid ||
+    owner.productId !== productId
   ) {
     throw new httpsV2.HttpsError(
         "already-exists",
@@ -5563,6 +5523,212 @@ async function lbPlayClaimPurchaseToken(
   await db.ref(
       "premiumPurchaseClaimsByUser/" + uid + "/" + tokenHash,
   ).set(true);
+}
+
+/**
+ * Writes a fresh Google Play subscription result to canonical private state and
+ * the owner-readable projection. Expired/revoked subscriptions remain verified
+ * records but project inactive.
+ *
+ * @param {Object} db
+ * @param {string} uid
+ * @param {string} productId
+ * @param {string} tokenHash
+ * @param {Object} verified
+ * @return {Promise<Object>}
+ */
+async function lbPremiumApplyPlayVerification(
+    db,
+    uid,
+    productId,
+    tokenHash,
+    verified,
+) {
+  const now = Date.now();
+  const expectedAccountId = lbPlayAccountId(uid);
+  const accountMismatch = verified.result.accountId !== expectedAccountId;
+  const ref = db.ref("premiumState/" + uid);
+  const tx = await ref.transaction((raw) => {
+    const previous = raw && typeof raw === "object" ? raw : {};
+    const state = {
+      version: LB_PREMIUM_VERSION,
+      plan: verified.plan,
+      provider: "google_play",
+      productId: productId,
+      startedAt: verified.result.startedAt ||
+        lbPremiumNumber(previous.startedAt) || now,
+      expiresAt: verified.result.expiresAt,
+      autoRenewing: verified.result.autoRenewing,
+      verified: true,
+      entitled: verified.result.entitled === true,
+      purchaseTokenHash: tokenHash,
+      orderId: verified.result.orderId,
+      purchaseState: verified.result.purchaseState,
+      acknowledgementState: verified.result.acknowledgementState,
+      testPurchase: verified.result.testPurchase,
+      verificationRevision: lbPremiumNumber(previous.verificationRevision) + 1,
+      updatedAt: now,
+    };
+    if (accountMismatch) {
+      state.verified = false;
+      state.entitled = false;
+    }
+    const current = lbPremiumState(previous, now);
+    const incoming = lbPremiumState(state, now);
+    const differentToken = previous.purchaseTokenHash && previous.purchaseTokenHash !== tokenHash;
+    // Old receipts are still reconciled, but must never revoke a different
+    // subscription. Concurrent workers make this choice on canonical state.
+    // For two entitled tokens keep the longer coverage, independent of order.
+    if (differentToken && (!incoming.active ||
+        (current.active && (current.plan === "lifetime" || current.expiresAt >= incoming.expiresAt)))) {
+      return previous;
+    }
+    return state;
+  });
+  const entitlement = await lbPremiumWriteProjection(
+      db, uid, lbPremiumProjection(lbPremiumState(tx.snapshot.val(), now)),
+  );
+  if (accountMismatch) {
+    throw new httpsV2.HttpsError(
+        "permission-denied",
+        "Google Play purchase is linked to another Linkball account.",
+    );
+  }
+  return entitlement;
+}
+
+/**
+ * Grants/revokes from the verified Play state, then acknowledges any newly
+ * granted subscription on the backend. A failed acknowledgement is retryable:
+ * the canonical entitlement remains server-verified and the next status
+ * refresh or scheduled reconciliation attempts acknowledgement again.
+ *
+ * @param {Object} db
+ * @param {string} uid
+ * @param {string} productId
+ * @param {string} tokenHash
+ * @param {string} purchaseToken
+ * @param {Object} verified
+ * @return {Promise<Object>}
+ */
+async function lbPremiumApplyAndAcknowledge(
+    db,
+    uid,
+    productId,
+    tokenHash,
+    purchaseToken,
+    verified,
+) {
+  const acknowledgementState = lbPlayText(
+      verified.result.acknowledgementState,
+  );
+
+  if (verified.result.entitled &&
+      acknowledgementState !== "ACKNOWLEDGEMENT_STATE_PENDING" &&
+      acknowledgementState !== "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED") {
+    throw new httpsV2.HttpsError(
+        "failed-precondition",
+        "Google Play acknowledgement state is invalid.",
+    );
+  }
+
+  let entitlement = await lbPremiumApplyPlayVerification(
+      db,
+      uid,
+      productId,
+      tokenHash,
+      verified,
+  );
+
+  if (!verified.result.entitled ||
+      acknowledgementState === "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED") {
+    return entitlement;
+  }
+
+  await lbPlayAcknowledgeSubscription(
+      productId,
+      purchaseToken,
+      lbPlayAccountId(uid),
+  );
+
+  verified.result.acknowledgementState =
+    "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED";
+  entitlement = await lbPremiumApplyPlayVerification(
+      db,
+      uid,
+      productId,
+      tokenHash,
+      verified,
+  );
+  return entitlement;
+}
+
+/**
+ * Refreshes one account from subscriptionsv2. Transient Play API errors retain
+ * the last verified state; they never manufacture or revoke entitlement.
+ *
+ * @param {Object} db
+ * @param {string} uid
+ * @param {boolean=} strict
+ * @return {Promise<Object>}
+ */
+async function lbPremiumRefreshFromPlay(db, uid, strict = false) {
+  const stateSnap = await db.ref("premiumState/" + uid).get();
+  const raw = stateSnap.exists() && stateSnap.val() &&
+      typeof stateSnap.val() === "object" ? stateSnap.val() : {};
+  const tokenHash = lbPlayText(raw.purchaseTokenHash);
+  const productId = lbPlayText(raw.productId);
+
+  if (raw.provider !== "google_play" ||
+      !/^[a-f0-9]{64}$/.test(tokenHash) ||
+      !LB_PLAY_PREMIUM_PRODUCTS.has(productId)) {
+    return lbPremiumEnsureProjection(db, uid);
+  }
+
+  const ownerSnap = await db.ref(
+      "premiumPurchaseOwners/" + tokenHash,
+  ).get();
+  const owner = ownerSnap.exists() && ownerSnap.val() &&
+      typeof ownerSnap.val() === "object" ? ownerSnap.val() : {};
+  const purchaseToken = lbPlayText(owner.purchaseToken);
+
+  if (owner.uid !== uid ||
+      owner.productId !== productId ||
+      purchaseToken.length < 16 ||
+      purchaseToken.length > 4096) {
+    logger.warn("Linkball Pro purchase owner record is incomplete", {
+      uid: uid,
+      tokenHash: tokenHash,
+    });
+    return lbPremiumEnsureProjection(db, uid);
+  }
+
+  try {
+    const verified = await lbPlayVerifyWithGoogle(
+        productId,
+        purchaseToken,
+    );
+    return await lbPremiumApplyAndAcknowledge(
+        db,
+        uid,
+        productId,
+        tokenHash,
+        purchaseToken,
+        verified,
+    );
+  } catch (error) {
+    if (error instanceof httpsV2.HttpsError &&
+        error.code === "permission-denied") {
+      throw error;
+    }
+    logger.warn("Linkball Pro lifecycle refresh deferred", {
+      uid: uid,
+      productId: productId,
+      reason: String(error && error.message || error),
+    });
+    if (strict) lbPlayThrowVerificationError(error);
+    return lbPremiumEnsureProjection(db, uid);
+  }
 }
 
 /**
@@ -5603,10 +5769,94 @@ function lbPlayThrowVerificationError(error) {
   );
 }
 
+exports.reconcilePremiumSubscriptions = onSchedule(
+    {
+      schedule: "every 30 minutes",
+      region: "europe-west1",
+      timeZone: "Europe/Istanbul",
+      maxInstances: 1,
+      timeoutSeconds: 540,
+    },
+    async () => {
+      const db = admin.database();
+      const cursorRef = db.ref("premiumReconciliation/cursor");
+      const cursor = (await cursorRef.get()).val();
+      let query = db.ref("premiumPurchaseOwners").orderByKey();
+      if (typeof cursor === "string" && cursor) query = query.startAfter(cursor);
+      const ownersSnap = await query.limitToFirst(500).get();
+      const owners = ownersSnap.exists() && ownersSnap.val() &&
+          typeof ownersSnap.val() === "object" ? ownersSnap.val() : {};
+      let checked = 0;
+      let refreshed = 0;
+
+      const keys = Object.keys(owners).sort();
+      const scanStartedAt = Date.now();
+      let lastKey = "";
+      for (const tokenHash of keys) {
+        if (Date.now() - scanStartedAt >= 480000) break;
+        lastKey = tokenHash;
+        const raw = owners[tokenHash];
+        const owner = raw && typeof raw === "object" ? raw : {};
+        const uid = lbPlayText(owner.uid);
+        const productId = lbPlayText(owner.productId);
+        const purchaseToken = lbPlayText(owner.purchaseToken);
+        if (!uid ||
+            !LB_PLAY_PREMIUM_PRODUCTS.has(productId) ||
+            purchaseToken.length < 16 ||
+            purchaseToken.length > 4096) {
+          continue;
+        }
+        checked += 1;
+        try {
+          const verified = await lbPlayVerifyWithGoogle(
+              productId,
+              purchaseToken,
+          );
+          const canonicalHash = lbPlayPurchaseTokenHash(
+              purchaseToken,
+          );
+          if (canonicalHash !== tokenHash) {
+            logger.warn("Linkball Pro token hash mismatch", {
+              uid: uid,
+              productId: productId,
+            });
+            continue;
+          }
+          await lbPremiumApplyAndAcknowledge(
+              db,
+              uid,
+              productId,
+              tokenHash,
+              purchaseToken,
+              verified,
+          );
+        } catch (error) {
+          logger.warn("Linkball Pro scheduled reconciliation deferred", {
+            uid: uid,
+            productId: productId,
+            reason: String(error && error.message || error),
+          });
+          continue;
+        }
+        refreshed += 1;
+      }
+
+      // Advance even past invalid/temporarily failing receipts. They are
+      // retried on the next full sweep; a bad token cannot starve later pages.
+      const more = keys.length === 500 || (keys.length > 0 && lastKey !== keys.at(-1));
+      await cursorRef.set(more ? lastKey : "");
+      logger.info("Linkball Pro reconciliation complete", {
+        checked: checked,
+        refreshed: refreshed,
+      });
+    },
+);
+
 exports.verifyPremiumPurchase = httpsV2.onCall(
     {
       region: "europe-west1",
       maxInstances: 20,
+      enforceAppCheck: true,
     },
     async (request) => {
       lbRequireGoogleLinked(request);
@@ -5643,6 +5893,14 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
           );
         }
 
+        const expectedAccountId = lbPlayAccountId(uid);
+        if (verified.result.accountId !== expectedAccountId) {
+          throw new httpsV2.HttpsError(
+              "permission-denied",
+              "Google Play purchase is linked to another Linkball account.",
+          );
+        }
+
         const db = admin.database();
         const tokenHash = lbPlayPurchaseTokenHash(purchaseToken);
 
@@ -5651,33 +5909,17 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
             uid,
             tokenHash,
             productId,
+            purchaseToken,
         );
 
-        const now = Date.now();
-        const state = {
-          version: LB_PREMIUM_VERSION,
-          plan: verified.plan,
-          provider: "google_play",
-          productId: productId,
-          startedAt: verified.result.startedAt || now,
-          expiresAt: verified.result.expiresAt,
-          autoRenewing: verified.result.autoRenewing,
-          verified: true,
-          purchaseTokenHash: tokenHash,
-          orderId: verified.result.orderId,
-          purchaseState: verified.result.purchaseState,
-          acknowledgementState:
-            verified.result.acknowledgementState,
-          testPurchase: verified.result.testPurchase,
-          updatedAt: now,
-        };
-        const normalized = lbPremiumState(state, now);
-        const entitlement = lbPremiumProjection(normalized);
-
-        await db.ref().update({
-          ["premiumState/" + uid]: state,
-          ["premiumEntitlements/" + uid]: entitlement,
-        });
+        const entitlement = await lbPremiumApplyAndAcknowledge(
+            db,
+            uid,
+            productId,
+            tokenHash,
+            purchaseToken,
+            verified,
+        );
 
         return {
           ok: true,
@@ -5726,13 +5968,16 @@ function lbEconomyState(raw) {
   return {
     version: LB_ECONOMY_VERSION,
     balances: {
-      coins: lbEconomyNumber(balances.coins),
+      // Refunds can create a deficit; subsequent grants repay it.
+      coins: Number.isSafeInteger(balances.coins) ? balances.coins : 0,
     },
     lifetimeEarned: lbEconomyNumber(data.lifetimeEarned),
     lifetimeSpent: lbEconomyNumber(data.lifetimeSpent),
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
+      data.squadChallenge : {},
     createdAt: lbEconomyNumber(data.createdAt),
     updatedAt: lbEconomyNumber(data.updatedAt),
   };
@@ -5759,10 +6004,13 @@ function lbEconomyWalletProjection(state) {
 function lbEconomyLedgerProjection(claim) {
   return {
     txId: claim.txId,
-    type: "grant",
+    type: claim.sourceType === "google_play_refund" ? "refund" : "grant",
     currency: "coin",
     amount: claim.amount,
     balanceAfter: claim.balanceAfter,
+    balanceBefore: claim.balanceBefore ?? claim.balanceAfter - claim.amount,
+    idempotencyKey: claim.txId,
+    economyConfigId: claim.economyConfigId || "legacy",
     sourceType: claim.sourceType,
     sourceId: claim.sourceId,
     createdAt: claim.claimedAt,
@@ -5781,8 +6029,11 @@ function lbEconomySpendLedgerProjection(purchase) {
     currency: "coin",
     amount: -purchase.priceCoins,
     balanceAfter: purchase.balanceAfter,
-    sourceType: "offer",
-    sourceId: purchase.offerId,
+    balanceBefore: purchase.balanceBefore ?? purchase.balanceAfter + purchase.priceCoins,
+    idempotencyKey: purchase.txId,
+    economyConfigId: purchase.economyConfigId || "legacy",
+    sourceType: purchase.sourceType || "offer",
+    sourceId: purchase.sourceId || purchase.offerId,
     itemId: purchase.itemId,
     createdAt: purchase.purchasedAt,
     version: LB_ECONOMY_VERSION,
@@ -5910,58 +6161,32 @@ async function lbEconomyEnsure(db, uid) {
  * @param {number} amount
  * @return {Promise<Object>}
  */
-async function lbEconomyClaimAchievement(
-    db,
-    uid,
-    achievementId,
-    amount,
-) {
+async function lbEconomyClaimAchievement(db, uid, achievementId, amount, config) {
   const claimId = "achievement__" + achievementId;
-  const ref = db.ref("economyState/" + uid);
   const now = Date.now();
-
-  const tx = await ref.transaction((current) => {
+  const nonce = crypto.randomUUID();
+  const tx = await db.ref("economyState/" + uid).transaction((current) => {
     const state = lbEconomyState(current);
-
-    if (state.claims[claimId]) {
-      return;
-    }
-
-    const balanceAfter = state.balances.coins + amount;
-
+    if (state.claims[claimId]) return;
+    if (!config.sources.achievement.enabled) return current;
+    const balanceBefore = state.balances.coins;
+    const balanceAfter = balanceBefore + amount;
+    if (!Number.isSafeInteger(balanceAfter)) throw new httpsV2.HttpsError("out-of-range", "Balance overflow");
     state.balances.coins = balanceAfter;
     state.lifetimeEarned += amount;
     state.claims[claimId] = {
-      txId: claimId,
-      sourceType: "achievement",
-      sourceId: achievementId,
-      amount: amount,
-      balanceAfter: balanceAfter,
-      claimedAt: now,
+      txId: claimId, sourceType: "achievement", sourceId: achievementId,
+      amount, balanceBefore, balanceAfter, claimedAt: now, nonce, economyConfigId: config.configId,
     };
-    state.createdAt = state.createdAt > 0 ? state.createdAt : now;
+    state.createdAt = state.createdAt || now;
     state.updatedAt = now;
-
     return state;
   });
-
   const state = lbEconomyState(tx.snapshot.val());
   const claim = state.claims[claimId];
-
-  if (!claim || typeof claim !== "object") {
-    throw new httpsV2.HttpsError(
-        "internal",
-        "Achievement reward claim could not be resolved.",
-    );
-  }
-
+  if (!claim) throw new httpsV2.HttpsError("failed-precondition", "Achievement rewards are paused.");
   await lbEconomyProject(db, uid, state);
-
-  return {
-    granted: tx.committed === true,
-    state: state,
-    claim: claim,
-  };
+  return {granted: claim.nonce === nonce, state, claim};
 }
 
 // LINKBALL_16_6C_ECONOMY_TRANSACTIONS_START
@@ -6000,95 +6225,53 @@ function lbEconomyOffer(raw, offerId) {
  * @return {Promise<Object>}
  */
 async function lbEconomyPurchaseOffer(db, uid, offer) {
-  const ref = db.ref("economyState/" + uid);
   const now = Date.now();
+  const nonce = crypto.randomUUID();
   const txId = "purchase__" + offer.itemId;
-
-  const tx = await ref.transaction((current) => {
+  const tx = await db.ref("economyState/" + uid).transaction((current) => {
     const state = lbEconomyState(current);
-
-    if (state.inventory[offer.itemId]) {
-      return;
-    }
-
-    if (state.balances.coins < offer.priceCoins) {
-      return;
-    }
-
-    const balanceAfter = state.balances.coins - offer.priceCoins;
-
+    if (state.inventory[offer.itemId]) return;
+    // Do not abort on a cold null cache; let RTDB retry on current server data.
+    if (!offer.enabled || offer.expectedPriceCoins !== offer.priceCoins ||
+        state.balances.coins < offer.priceCoins) return current;
+    const balanceBefore = state.balances.coins;
+    const balanceAfter = balanceBefore - offer.priceCoins;
     state.balances.coins = balanceAfter;
     state.lifetimeSpent += offer.priceCoins;
     state.purchases[offer.itemId] = {
-      txId: txId,
-      offerId: offer.offerId,
-      itemId: offer.itemId,
-      itemType: offer.itemType,
-      priceCoins: offer.priceCoins,
-      balanceAfter: balanceAfter,
-      purchasedAt: now,
+      txId, offerId: offer.offerId, itemId: offer.itemId, itemType: offer.itemType,
+      priceCoins: offer.priceCoins, balanceBefore, balanceAfter, purchasedAt: now,
+      nonce, economyConfigId: offer.economyConfigId,
     };
     state.inventory[offer.itemId] = {
-      itemId: offer.itemId,
-      itemType: offer.itemType,
-      sourceType: "purchase",
-      sourceId: offer.offerId,
-      acquiredAt: now,
+      itemId: offer.itemId, itemType: offer.itemType,
+      sourceType: "purchase", sourceId: offer.offerId, acquiredAt: now,
     };
-    state.createdAt = state.createdAt > 0 ? state.createdAt : now;
+    state.createdAt = state.createdAt || now;
     state.updatedAt = now;
-
     return state;
   });
-
   const state = lbEconomyState(tx.snapshot.val());
   const item = state.inventory[offer.itemId];
   const purchase = state.purchases[offer.itemId];
-
-  if (tx.committed !== true) {
-    await lbEconomyProject(db, uid, state);
-
-    if (item && typeof item === "object") {
-      return {
-        purchased: false,
-        alreadyOwned: true,
-        state: state,
-        item: item,
-      };
+  if (!item) {
+    if (!offer.enabled) throw new httpsV2.HttpsError("failed-precondition", "Offer is unavailable.");
+    if (offer.expectedPriceCoins !== offer.priceCoins) {
+      throw new httpsV2.HttpsError("failed-precondition", "Fiyat güncellendi. Mağazayı yenileyip tekrar dene.");
     }
-
-    if (state.balances.coins < offer.priceCoins) {
-      throw new httpsV2.HttpsError(
-          "failed-precondition",
-          "Insufficient coin balance.",
-      );
-    }
-
-    throw new httpsV2.HttpsError(
-        "aborted",
-        "Purchase could not be committed.",
-    );
+    throw new httpsV2.HttpsError("failed-precondition", "Insufficient coin balance.");
   }
-
-  if (!purchase || typeof purchase !== "object" ||
-      !item || typeof item !== "object") {
-    throw new httpsV2.HttpsError(
-        "internal",
-        "Purchase result could not be resolved.",
-    );
-  }
-
   await lbEconomyProject(db, uid, state);
-
-  return {
-    purchased: true,
-    alreadyOwned: false,
-    state: state,
-    item: item,
-  };
+  const purchased = !!purchase && purchase.nonce === nonce;
+  return {purchased, alreadyOwned: !purchased, state, item, priceCoins: purchase ? purchase.priceCoins : 0};
 }
 
 // LINKBALL_16_6C_ECONOMY_TRANSACTIONS_END
+
+exports.getEconomyContract = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return {ok: true, economy: economyConfig.publicContract(await lbGetEconomyConfig())};
+});
 
 exports.syncMyWallet = httpsV2.onCall(
     {
@@ -6100,6 +6283,7 @@ exports.syncMyWallet = httpsV2.onCall(
 
       const uid = request.auth.uid;
       const db = admin.database();
+      await lbRewardedService().settle(uid);
       const state = await lbEconomyEnsure(db, uid);
 
       return {
@@ -6122,7 +6306,8 @@ exports.claimAchievementReward = httpsV2.onCall(
       const achievementId = String(
           (request.data || {}).achievementId || "",
       ).trim();
-      const amount = LB_ACHIEVEMENT_COIN_REWARDS[achievementId];
+      const config = await lbGetEconomyConfig();
+      const amount = config.sources.achievement.rewards[achievementId];
 
       if (!achievementId ||
           !Object.prototype.hasOwnProperty.call(
@@ -6153,13 +6338,14 @@ exports.claimAchievementReward = httpsV2.onCall(
           uid,
           achievementId,
           amount,
+          config,
       );
 
       return {
         ok: true,
         granted: result.granted,
         alreadyClaimed: !result.granted,
-        amount: amount,
+        amount: result.claim.amount,
         coins: result.state.balances.coins,
         claim: lbEconomyClaimProjection(result.claim),
         version: LB_ECONOMY_VERSION,
@@ -6178,13 +6364,15 @@ exports.getStoreCatalog = httpsV2.onCall(
       const uid = request.auth.uid;
       const db = admin.database();
       const state = await lbEconomyEnsure(db, uid);
-      const offers = await lbStoreCatalog(db);
+      const config = await lbGetEconomyConfig();
+      const offers = await lbStoreCatalog(db, config);
 
       return {
         ok: true,
         catalogVersion: LB_STORE_CATALOG_VERSION,
         wallet: lbEconomyWalletProjection(state),
         offers: offers,
+        economy: economyConfig.publicContract(config),
       };
     },
 );
@@ -6210,30 +6398,14 @@ exports.purchaseEconomyOffer = httpsV2.onCall(
       }
 
       const db = admin.database();
-      const offerSnap = await db.ref(
-          "economyCatalog/offers/" + offerId,
-      ).get();
-      const builtin = LB_STORE_COIN_OFFERS[offerId] || null;
-      const privateOffer = offerSnap.exists() ?
-        offerSnap.val() : null;
-      const rawOffer = privateOffer &&
-        typeof privateOffer === "object" ?
-        {...builtin, ...privateOffer} : builtin;
-      const storeOffer = lbStoreOffer(rawOffer, offerId);
-      const offer = storeOffer ? {
-        offerId: storeOffer.offerId,
-        priceCoins: storeOffer.priceCoins,
-        itemId: storeOffer.itemId,
-        itemType: storeOffer.itemType,
-      } : null;
-
-      if (!offer) {
-        throw new httpsV2.HttpsError(
-            "not-found",
-            "Economy offer is unavailable.",
-        );
-      }
-
+      const config = await lbGetEconomyConfig();
+      const raw = Object.hasOwn(config.sinks.cosmetics.offers, offerId) ? config.sinks.cosmetics.offers[offerId] : null;
+      if (!raw) throw new httpsV2.HttpsError("not-found", "Unknown offer.");
+      const offer = {
+        ...raw, offerId, economyConfigId: config.configId,
+        // Legacy clients may only buy at the original published price.
+        expectedPriceCoins: (request.data || {}).expectedPriceCoins ?? LB_STORE_COIN_OFFERS[offerId].priceCoins,
+      };
       const result = await lbEconomyPurchaseOffer(
           db,
           uid,
@@ -6244,7 +6416,7 @@ exports.purchaseEconomyOffer = httpsV2.onCall(
         ok: true,
         purchased: result.purchased,
         alreadyOwned: result.alreadyOwned,
-        priceCoins: offer.priceCoins,
+        priceCoins: result.priceCoins,
         coins: result.state.balances.coins,
         item: lbEconomyInventoryProjection(result.item),
         version: LB_ECONOMY_VERSION,
@@ -6624,18 +6796,23 @@ exports.getMyCommunityRequests = httpsV2.onCall(
 
 // LINKBALL_16_10B_PROGRESSION_FOUNDATION_START
 
-const LB_PROGRESSION_VERSION = 1;
+// A durable outbox connects private progress and wallet transactions. If a
+// request stops between them, the next read/claim settles the original receipt
+// even after midnight or a Remote Config price change.
+function lbPendingReward(sourceType, sourceId, amount, configId) {
+  return {sourceType, sourceId, amount, economyConfigId: configId || "legacy"};
+}
+async function lbSettlePendingRewards(db, uid, statePath) {
+  const pending = (await db.ref(statePath + "/pendingRewards").get()).val() || {};
+  for (const [claimId, job] of Object.entries(pending)) {
+    await lbProgressionGrantCoins(db, uid, claimId, job.sourceType, job.sourceId, job.amount, job.economyConfigId);
+    await db.ref(statePath + "/pendingRewards/" + claimId).set(null);
+  }
+  return lbEconomyEnsure(db, uid);
+}
+
+const LB_PROGRESSION_VERSION = 2;
 const LB_PROGRESSION_TIME_ZONE = "Europe/Istanbul";
-const LB_PROGRESSION_DAILY_COINS = Object.freeze([
-  20,
-  30,
-  40,
-  50,
-  60,
-  70,
-  80,
-]);
-const LB_PROGRESSION_DAILY_XP = 25;
 const LB_PROGRESSION_LEVEL_CAP = 100;
 const LB_PROGRESSION_SEASON_LEVEL_CAP = 50;
 
@@ -6765,7 +6942,7 @@ function lbProgressionLevel(xp, cap) {
  * @return {Object}
  */
 function lbProgressionState(raw, now) {
-  const currentTime = lbProgressionNumber(now) || Date.now();
+  const currentTime = Math.max(lbProgressionNumber(now) || Date.now(), lbProgressionNumber(raw && raw.updatedAt));
   const dayKey = lbProgressionDateKey(currentTime);
   const currentSeason = lbProgressionSeason(dayKey);
   const data = raw && typeof raw === "object" ? raw : {};
@@ -6779,7 +6956,14 @@ function lbProgressionState(raw, now) {
   const sameSeason =
     lbProgressionText(rawSeason.id, 32) === currentSeason.id;
 
+  const pendingRewards = {...(data.pendingRewards || {})};
+  if (Number(data.version || 0) < 2 && rawLastClaim.dateKey && rawLastClaim.coins > 0) {
+    pendingRewards["daily_reward__" + rawLastClaim.dateKey] = lbPendingReward(
+        "daily_reward", rawLastClaim.dateKey, rawLastClaim.coins, rawLastClaim.economyConfigId,
+    );
+  }
   return {
+    pendingRewards,
     version: LB_PROGRESSION_VERSION,
     lifetimeXp: lbProgressionNumber(data.lifetimeXp),
     season: {
@@ -6803,6 +6987,7 @@ function lbProgressionState(raw, now) {
         streakProtected: rawLastClaim.streakProtected === true,
         claimedAt: lbProgressionNumber(rawLastClaim.claimedAt),
         nonce: lbProgressionText(rawLastClaim.nonce, 80),
+        economyConfigId: rawLastClaim.economyConfigId || "legacy",
       },
     },
     createdAt: lbProgressionNumber(data.createdAt),
@@ -6816,39 +7001,25 @@ function lbProgressionState(raw, now) {
  * @param {Object} benefits
  * @return {Object}
  */
-function lbProgressionNextDaily(state, dayKey, benefits) {
+function lbProgressionNextDaily(state, dayKey, benefits, config = economyConfig.DEFAULT_CONFIG) {
+  const source = config.sources.daily_reward;
   const lastDay = state.daily.lastClaimDay;
-  const currentStreak = state.daily.currentStreak;
-  const gap = lastDay ? lbProgressionDayDiff(lastDay, dayKey) : 0;
   const alreadyClaimed = lastDay === dayKey;
-  const streakProtected =
-    !alreadyClaimed &&
-    gap === 2 &&
-    benefits.streakProtection === true;
-  let nextStreak = 1;
-
-  if (alreadyClaimed) {
-    nextStreak = currentStreak;
-  } else if (gap === 1 || streakProtected) {
-    nextStreak = Math.max(1, currentStreak + 1);
-  }
-
+  const gap = lastDay ? lbProgressionDayDiff(lastDay, dayKey) : 0;
+  const streakProtected = !alreadyClaimed && gap === 2 && benefits.streakProtection === true;
+  const nextStreak = alreadyClaimed ? state.daily.currentStreak :
+    (gap === 1 || streakProtected ? Math.max(1, state.daily.currentStreak + 1) : 1);
   const dayIndex = ((Math.max(1, nextStreak) - 1) % 7) + 1;
-  const baseCoins = LB_PROGRESSION_DAILY_COINS[dayIndex - 1];
-  const multiplier = Math.max(
-      1,
-      lbProgressionNumber(benefits.dailyRewardMultiplier) || 1,
-  );
-
+  const multiplier = Math.min(2, Math.max(1, lbProgressionNumber(benefits.dailyRewardMultiplier)));
+  const receipt = state.daily.lastClaim;
   return {
-    canClaim: !alreadyClaimed,
-    nextStreak: nextStreak,
-    dayIndex: dayIndex,
-    baseCoins: baseCoins,
-    multiplier: multiplier,
-    coins: baseCoins * multiplier,
-    xp: LB_PROGRESSION_DAILY_XP,
-    streakProtected: streakProtected,
+    canClaim: source.enabled && (!lastDay || lastDay < dayKey),
+    nextStreak, dayIndex,
+    baseCoins: alreadyClaimed ? receipt.baseCoins : source.coinsByDay[dayIndex - 1],
+    multiplier: alreadyClaimed ? receipt.multiplier : multiplier,
+    coins: alreadyClaimed ? receipt.coins : source.coinsByDay[dayIndex - 1] * multiplier,
+    xp: alreadyClaimed ? receipt.xp : source.xp,
+    streakProtected: alreadyClaimed ? receipt.streakProtected : streakProtected,
   };
 }
 
@@ -6858,10 +7029,10 @@ function lbProgressionNextDaily(state, dayKey, benefits) {
  * @param {number=} now
  * @return {Object}
  */
-function lbProgressionProjection(state, benefits, now) {
+function lbProgressionProjection(state, benefits, now, config = economyConfig.DEFAULT_CONFIG) {
   const currentTime = lbProgressionNumber(now) || Date.now();
   const dayKey = lbProgressionDateKey(currentTime);
-  const next = lbProgressionNextDaily(state, dayKey, benefits);
+  const next = lbProgressionNextDaily(state, dayKey, benefits, config);
   const lifetimeLevel = lbProgressionLevel(
       state.lifetimeXp,
       LB_PROGRESSION_LEVEL_CAP,
@@ -6891,6 +7062,12 @@ function lbProgressionProjection(state, benefits, now) {
       levelCap: LB_PROGRESSION_SEASON_LEVEL_CAP,
     },
     dailyReward: {
+      enabled: config.sources.daily_reward.enabled,
+      resetTimeZone: config.resetTimeZone,
+      economyConfigId: config.configId,
+      scheduleCoins: config.sources.daily_reward.coinsByDay.map((coins, i) =>
+        state.daily.lastClaimDay === dayKey && i + 1 === next.dayIndex ? next.coins :
+          coins * Math.min(2, Math.max(1, lbProgressionNumber(benefits.dailyRewardMultiplier)))),
       dateKey: dayKey,
       canClaim: next.canClaim,
       currentStreak: state.daily.currentStreak,
@@ -6933,11 +7110,13 @@ async function lbProgressionPremiumBenefits(db, uid) {
  * @param {number=} now
  * @return {Promise<Object>}
  */
-async function lbProgressionProject(db, uid, state, benefits, now) {
+async function lbProgressionProject(db, uid, state, benefits, now, config) {
+  config = config || await lbGetEconomyConfig();
   const projection = lbProgressionProjection(
       state,
       benefits,
       now,
+      config,
   );
 
   await db.ref("progressionProfiles/" + uid).set(projection);
@@ -6989,8 +7168,9 @@ async function lbProgressionGrantCoins(
     sourceType,
     sourceId,
     amount,
+    configId = "legacy",
 ) {
-  if (!Number.isInteger(amount) || amount <= 0) {
+  if (!Number.isSafeInteger(amount) || amount <= 0) {
     throw new httpsV2.HttpsError(
         "internal",
         "Progression reward amount is invalid.",
@@ -7009,6 +7189,8 @@ async function lbProgressionGrantCoins(
 
     const balanceAfter = state.balances.coins + amount;
 
+    if (!Number.isSafeInteger(balanceAfter)) throw new httpsV2.HttpsError("out-of-range", "Balance overflow");
+    const balanceBefore = state.balances.coins;
     state.balances.coins = balanceAfter;
     state.lifetimeEarned += amount;
     state.claims[claimId] = {
@@ -7016,6 +7198,8 @@ async function lbProgressionGrantCoins(
       sourceType: sourceType,
       sourceId: sourceId,
       amount: amount,
+      balanceBefore,
+      economyConfigId: configId,
       balanceAfter: balanceAfter,
       claimedAt: now,
     };
@@ -7051,6 +7235,8 @@ async function lbProgressionGrantCoins(
  * @return {Promise<Object>}
  */
 async function lbProgressionClaimDaily(db, uid, benefits) {
+  const config = await lbGetEconomyConfig();
+  await lbProgressionEnsure(db, uid);
   const ref = db.ref("progressionState/" + uid);
   const now = Date.now();
   const dayKey = lbProgressionDateKey(now);
@@ -7059,7 +7245,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   const tx = await ref.transaction((current) => {
     const state = lbProgressionState(current, now);
 
-    if (state.daily.lastClaimDay === dayKey) {
+    if (state.daily.lastClaimDay >= dayKey) {
       return;
     }
 
@@ -7067,7 +7253,9 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
         state,
         dayKey,
         benefits,
+        config,
     );
+    if (!next.canClaim) return current;
 
     state.lifetimeXp += next.xp;
     state.season.xp += next.xp;
@@ -7087,7 +7275,11 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
       streakProtected: next.streakProtected,
       claimedAt: now,
       nonce: nonce,
+      economyConfigId: config.configId,
     };
+    state.pendingRewards["daily_reward__" + dayKey] = lbPendingReward(
+        "daily_reward", dayKey, next.coins, config.configId,
+    );
     state.createdAt = state.createdAt > 0 ? state.createdAt : now;
     state.updatedAt = now;
 
@@ -7099,25 +7291,19 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
 
   if (claim.dateKey !== dayKey || claim.coins <= 0) {
     throw new httpsV2.HttpsError(
-        "internal",
-        "Daily reward claim could not be resolved.",
+        "failed-precondition",
+        "Daily reward is unavailable. Refresh and try again.",
     );
   }
 
-  const economy = await lbProgressionGrantCoins(
-      db,
-      uid,
-      "daily_reward__" + dayKey,
-      "daily_reward",
-      dayKey,
-      claim.coins,
-  );
+  const economy = await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
   const profile = await lbProgressionProject(
       db,
       uid,
       state,
       benefits,
       now,
+      config,
   );
 
   return {
@@ -7128,7 +7314,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
     dayIndex: claim.dayIndex,
     multiplier: claim.multiplier,
     streakProtected: claim.streakProtected,
-    walletCoins: economy.state.balances.coins,
+    walletCoins: economy.balances.coins,
     profile: profile,
   };
 }
@@ -7144,6 +7330,7 @@ exports.getMyProgression = httpsV2.onCall(
       const uid = request.auth.uid;
       const db = admin.database();
       const state = await lbProgressionEnsure(db, uid);
+      await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
       const benefits = await lbProgressionPremiumBenefits(db, uid);
       const profile = await lbProgressionProject(
           db,
@@ -7198,7 +7385,7 @@ exports.claimDailyReward = httpsV2.onCall(
 
 // LINKBALL_16_10C_MISSION_ENGINE_START
 
-const LB_MISSION_VERSION = 1;
+const LB_MISSION_VERSION = 2;
 const LB_MISSION_DAILY_DEFINITIONS = Object.freeze([
   Object.freeze({
     id: "daily_ranked_play_3",
@@ -7206,7 +7393,7 @@ const LB_MISSION_DAILY_DEFINITIONS = Object.freeze([
     description: "Güvenilir sıralamalı maç sonuçlarından ilerler.",
     metric: "rankedPlayed",
     target: 3,
-    rewardCoins: 10,
+    rewardCoins: economyConfig.defaults.sources.daily_mission.amount,
   }),
   Object.freeze({
     id: "daily_ranked_win_1",
@@ -7214,7 +7401,7 @@ const LB_MISSION_DAILY_DEFINITIONS = Object.freeze([
     description: "Sunucuda doğrulanmış bir sıralamalı galibiyet kazan.",
     metric: "rankedWins",
     target: 1,
-    rewardCoins: 10,
+    rewardCoins: economyConfig.defaults.sources.daily_mission.amount,
   }),
   Object.freeze({
     id: "daily_challenge_1",
@@ -7222,7 +7409,7 @@ const LB_MISSION_DAILY_DEFINITIONS = Object.freeze([
     description: "Sunucuda doğrulanmış Günlük Mücadeleyi bitir.",
     metric: "dailyChallenge",
     target: 1,
-    rewardCoins: 10,
+    rewardCoins: economyConfig.defaults.sources.daily_mission.amount,
   }),
 ]);
 
@@ -7235,25 +7422,25 @@ const LB_MISSION_GENERAL_CHAINS = Object.freeze([
         id: "general_ranked_play_5",
         title: "5 sıralamalı maç oyna",
         target: 5,
-        rewardCoins: 10,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_play_5,
       }),
       Object.freeze({
         id: "general_ranked_play_25",
         title: "25 sıralamalı maç oyna",
         target: 25,
-        rewardCoins: 25,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_play_25,
       }),
       Object.freeze({
         id: "general_ranked_play_100",
         title: "100 sıralamalı maç oyna",
         target: 100,
-        rewardCoins: 60,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_play_100,
       }),
       Object.freeze({
         id: "general_ranked_play_250",
         title: "250 sıralamalı maç oyna",
         target: 250,
-        rewardCoins: 150,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_play_250,
       }),
     ]),
   }),
@@ -7265,25 +7452,25 @@ const LB_MISSION_GENERAL_CHAINS = Object.freeze([
         id: "general_ranked_wins_3",
         title: "3 sıralamalı maç kazan",
         target: 3,
-        rewardCoins: 10,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_wins_3,
       }),
       Object.freeze({
         id: "general_ranked_wins_10",
         title: "10 sıralamalı maç kazan",
         target: 10,
-        rewardCoins: 25,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_wins_10,
       }),
       Object.freeze({
         id: "general_ranked_wins_50",
         title: "50 sıralamalı maç kazan",
         target: 50,
-        rewardCoins: 75,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_wins_50,
       }),
       Object.freeze({
         id: "general_ranked_wins_100",
         title: "100 sıralamalı maç kazan",
         target: 100,
-        rewardCoins: 150,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_ranked_wins_100,
       }),
     ]),
   }),
@@ -7295,25 +7482,25 @@ const LB_MISSION_GENERAL_CHAINS = Object.freeze([
         id: "general_daily_days_3",
         title: "3 Günlük Mücadele tamamla",
         target: 3,
-        rewardCoins: 10,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_daily_days_3,
       }),
       Object.freeze({
         id: "general_daily_days_7",
         title: "7 Günlük Mücadele tamamla",
         target: 7,
-        rewardCoins: 25,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_daily_days_7,
       }),
       Object.freeze({
         id: "general_daily_days_30",
         title: "30 Günlük Mücadele tamamla",
         target: 30,
-        rewardCoins: 75,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_daily_days_30,
       }),
       Object.freeze({
         id: "general_daily_days_100",
         title: "100 Günlük Mücadele tamamla",
         target: 100,
-        rewardCoins: 150,
+        rewardCoins: economyConfig.defaults.sources.general_mission.rewards.general_daily_days_100,
       }),
     ]),
   }),
@@ -7326,10 +7513,11 @@ const LB_MISSION_GENERAL_CHAINS = Object.freeze([
  */
 function lbMissionState(raw, now) {
   const currentTime = lbProgressionNumber(now) || Date.now();
-  const dayKey = lbProgressionDateKey(currentTime);
+  let dayKey = lbProgressionDateKey(currentTime);
   const data = raw && typeof raw === "object" ? raw : {};
   const rawDaily = data.daily && typeof data.daily === "object" ?
     data.daily : {};
+  if (String(rawDaily.dateKey || "") > dayKey) dayKey = rawDaily.dateKey;
   const sameDay = String(rawDaily.dateKey || "") === dayKey;
   const rawCounters = sameDay &&
       rawDaily.counters &&
@@ -7347,7 +7535,21 @@ function lbMissionState(raw, now) {
     data.generalClaims && typeof data.generalClaims === "object" ?
       data.generalClaims : {};
 
+  const pendingRewards = {...(data.pendingRewards || {})};
+  if (Number(data.version || 0) < 2) {
+    for (const [period, claims] of [[rawDaily.dateKey, rawDaily.claims], ["general", rawGeneralClaims]]) {
+      if (!period || !claims) continue;
+      for (const [id, claim] of Object.entries(claims)) {
+        if (!claim || !Number.isSafeInteger(claim.rewardCoins) || claim.rewardCoins <= 0) continue;
+        const sourceId = period + "__" + id;
+        pendingRewards["mission_reward__" + sourceId] = lbPendingReward(
+            "mission_reward", sourceId, claim.rewardCoins, claim.economyConfigId,
+        );
+      }
+    }
+  }
   return {
+    pendingRewards,
     version: LB_MISSION_VERSION,
     daily: {
       dateKey: dayKey,
@@ -7403,6 +7605,12 @@ async function lbMissionTrustedTotals(db, uid) {
  * @param {number=} stageIndex
  * @return {Object}
  */
+function lbMissionRewardDefinition(definition, kind, config) {
+  const source = config.sources[kind === "daily" ? "daily_mission" : "general_mission"];
+  return {...definition, enabled: source.enabled,
+    rewardCoins: kind === "daily" ? source.amount : source.rewards[definition.id]};
+}
+
 function lbMissionProjectionItem(
     definition,
     state,
@@ -7410,7 +7618,9 @@ function lbMissionProjectionItem(
     kind,
     chain,
     stageIndex,
+    config = economyConfig.DEFAULT_CONFIG,
 ) {
+  definition = lbMissionRewardDefinition(definition, kind, config);
   const isDaily = kind === "daily";
   const progress = isDaily ?
     lbProgressionNumber(
@@ -7431,8 +7641,12 @@ function lbMissionProjectionItem(
     progress: Math.min(progress, target),
     rawProgress: progress,
     target: target,
-    rewardCoins: lbProgressionNumber(definition.rewardCoins),
-    claimable: !claimed && progress >= target,
+    rewardCoins: claimed ? lbProgressionNumber(claim.rewardCoins) : definition.rewardCoins,
+    enabled: definition.enabled,
+    limitReached: isDaily && !claimed &&
+      Object.keys(state.daily.claims).length >= config.sources.daily_mission.dailyLimit,
+    claimable: !claimed && definition.enabled && progress >= target &&
+      (!isDaily || Object.keys(state.daily.claims).length < config.sources.daily_mission.dailyLimit),
     claimed: claimed,
     claimedAt: claim && typeof claim === "object" ?
       lbProgressionNumber(claim.claimedAt) : 0,
@@ -7448,7 +7662,7 @@ function lbMissionProjectionItem(
  * @param {Object} totals
  * @return {Object}
  */
-function lbMissionGeneralProjection(chain, state, totals) {
+function lbMissionGeneralProjection(chain, state, totals, config) {
   let selectedIndex = chain.stages.length - 1;
 
   for (let i = 0; i < chain.stages.length; i += 1) {
@@ -7459,12 +7673,13 @@ function lbMissionGeneralProjection(chain, state, totals) {
   }
 
   return lbMissionProjectionItem(
-      chain.stages[selectedIndex],
+      {...chain.stages[selectedIndex], metric: chain.metric},
       state,
       totals,
       "general",
       chain,
       selectedIndex,
+      config,
   );
 }
 
@@ -7473,21 +7688,23 @@ function lbMissionGeneralProjection(chain, state, totals) {
  * @param {Object} totals
  * @return {Object}
  */
-function lbMissionProjection(state, totals) {
+function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFIG) {
   const daily = LB_MISSION_DAILY_DEFINITIONS.map(
       (definition) => lbMissionProjectionItem(
           definition,
           state,
           totals,
-          "daily",
+          "daily", null, 0, config,
       ),
   );
   const general = LB_MISSION_GENERAL_CHAINS.map(
-      (chain) => lbMissionGeneralProjection(chain, state, totals),
+      (chain) => lbMissionGeneralProjection(chain, state, totals, config),
   );
 
   return {
     dateKey: state.daily.dateKey,
+    economyConfigId: config.configId,
+    dailyClaimLimit: config.sources.daily_mission.dailyLimit,
     daily: daily,
     general: general,
     dailyCompletedCount: daily.filter(
@@ -7530,9 +7747,10 @@ async function lbMissionEnsure(db, uid) {
  * @param {Object} state
  * @return {Promise<Object>}
  */
-async function lbMissionProject(db, uid, state) {
+async function lbMissionProject(db, uid, state, config) {
+  config = config || await lbGetEconomyConfig();
   const totals = await lbMissionTrustedTotals(db, uid);
-  const projection = lbMissionProjection(state, totals);
+  const projection = lbMissionProjection(state, totals, config);
 
   await db.ref("missionProfiles/" + uid).set(projection);
   return projection;
@@ -7565,6 +7783,7 @@ async function lbMissionRecordRanked(
   const eventKey = "ranked__" + mode + "__" + matchId;
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
+    if (state.daily.dateKey !== currentDay) return current;
 
     if (state.daily.processed[eventKey]) {
       return;
@@ -7607,6 +7826,7 @@ async function lbMissionRecordDailyChallenge(db, uid, dateKey) {
   const eventKey = "daily_challenge__" + dateKey;
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
+    if (state.daily.dateKey !== dateKey) return current;
 
     if (state.daily.processed[eventKey]) {
       return;
@@ -7633,12 +7853,12 @@ async function lbMissionRecordDailyChallenge(db, uid, dateKey) {
  * @param {string} missionId
  * @return {Object|null}
  */
-function lbMissionDefinition(missionId) {
+function lbMissionDefinition(missionId, config = economyConfig.DEFAULT_CONFIG) {
   for (const definition of LB_MISSION_DAILY_DEFINITIONS) {
     if (definition.id === missionId) {
       return {
         kind: "daily",
-        definition: definition,
+        definition: lbMissionRewardDefinition(definition, "daily", config),
         chain: null,
         stageIndex: -1,
       };
@@ -7650,7 +7870,7 @@ function lbMissionDefinition(missionId) {
       if (chain.stages[i].id === missionId) {
         return {
           kind: "general",
-          definition: chain.stages[i],
+          definition: lbMissionRewardDefinition({...chain.stages[i], metric: chain.metric}, "general", config),
           chain: chain,
           stageIndex: i,
         };
@@ -7710,92 +7930,51 @@ function lbMissionRequirePreviousStages(resolved, state) {
  * @return {Promise<Object>}
  */
 async function lbMissionClaim(db, uid, missionId) {
-  const resolved = lbMissionDefinition(missionId);
-
-  if (!resolved) {
-    throw new httpsV2.HttpsError(
-        "invalid-argument",
-        "Unknown mission.",
-    );
-  }
-
+  const config = await lbGetEconomyConfig();
+  const resolved = lbMissionDefinition(missionId, config);
+  if (!resolved) throw new httpsV2.HttpsError("invalid-argument", "Unknown mission.");
+  await lbMissionEnsure(db, uid);
+  await lbSettlePendingRewards(db, uid, "missionState/" + uid);
   const now = Date.now();
+  const dayKey = lbProgressionDateKey(now);
+  const periodKey = resolved.kind === "daily" ? dayKey : "general";
+  const sourceId = periodKey + "__" + missionId;
   const totals = await lbMissionTrustedTotals(db, uid);
-  const ref = db.ref("missionState/" + uid);
   const nonce = crypto.randomUUID();
-
-  const tx = await ref.transaction((current) => {
+  const tx = await db.ref("missionState/" + uid).transaction((current) => {
     const state = lbMissionState(current, now);
-
-    lbMissionRequirePreviousStages(resolved, state);
-
-    const progress = lbMissionProgress(
-        resolved,
-        state,
-        totals,
-    );
-    const target = lbProgressionNumber(
-        resolved.definition.target,
-    );
-
-    if (progress < target) {
-      return;
+    if (state.daily.dateKey !== dayKey) return current;
+    const claims = resolved.kind === "daily" ? state.daily.claims : state.generalClaims;
+    if (claims[missionId]) return;
+    if (!resolved.definition.enabled || (resolved.kind === "daily" &&
+        Object.keys(claims).length >= config.sources.daily_mission.dailyLimit)) return current;
+    try {
+      lbMissionRequirePreviousStages(resolved, state);
+    } catch (error) {
+      return current;
     }
-
-    const claims = resolved.kind === "daily" ?
-      state.daily.claims : state.generalClaims;
-
-    if (claims[missionId]) {
-      return;
-    }
-
+    if (lbMissionProgress(resolved, state, totals) < resolved.definition.target) return current;
     claims[missionId] = {
-      claimedAt: now,
-      rewardCoins: resolved.definition.rewardCoins,
-      nonce: nonce,
+      claimedAt: now, rewardCoins: resolved.definition.rewardCoins, nonce, economyConfigId: config.configId,
     };
-    state.createdAt = state.createdAt > 0 ?
-      state.createdAt : now;
+    state.pendingRewards["mission_reward__" + sourceId] = lbPendingReward(
+        "mission_reward", sourceId, resolved.definition.rewardCoins, config.configId,
+    );
+    state.createdAt = state.createdAt || now;
     state.updatedAt = now;
-
     return state;
   });
-
   const state = lbMissionState(tx.snapshot.val(), now);
-  const claims = resolved.kind === "daily" ?
-    state.daily.claims : state.generalClaims;
+  const claims = resolved.kind === "daily" ? state.daily.claims : state.generalClaims;
   const claim = claims[missionId];
-
-  if (!claim || typeof claim !== "object") {
-    throw new httpsV2.HttpsError(
-        "failed-precondition",
-        "Mission is not complete yet.",
-    );
+  if (state.daily.dateKey !== dayKey || !claim) {
+    throw new httpsV2.HttpsError("failed-precondition", "Görev henüz tamamlanmadı veya günlük limit doldu. Yenile.");
   }
-
-  const periodKey = resolved.kind === "daily" ?
-    state.daily.dateKey : "general";
-  const amount = lbProgressionNumber(
-      resolved.definition.rewardCoins,
-  );
-  const economy = await lbProgressionGrantCoins(
-      db,
-      uid,
-      "mission_reward__" + periodKey + "__" + missionId,
-      "mission_reward",
-      periodKey + "__" + missionId,
-      amount,
-  );
-  const profile = await lbMissionProject(db, uid, state);
-
+  const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
+  const profile = await lbMissionProject(db, uid, state, config);
   return {
-    granted: economy.granted,
-    alreadyClaimed: !economy.granted,
-    amount: amount,
-    walletCoins: economy.state.balances.coins,
-    profile: profile,
-    missionId: missionId,
-    periodKey: periodKey,
+    granted: claim.nonce === nonce, alreadyClaimed: claim.nonce !== nonce,
+    amount: claim.rewardCoins, walletCoins: economy.balances.coins, profile, missionId, periodKey,
   };
 }
 
@@ -7893,6 +8072,7 @@ exports.getMyMissions = httpsV2.onCall(
       const uid = request.auth.uid;
       const db = admin.database();
       const state = await lbMissionEnsure(db, uid);
+      await lbSettlePendingRewards(db, uid, "missionState/" + uid);
       const profile = await lbMissionProject(
           db,
           uid,
@@ -8062,7 +8242,17 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["achievementProgress/" + uid] = null;
   updates["userAchievements/" + uid] = null;
 
+  // Retain an anonymous token tombstone to prevent replay after deletion.
+  const coinClaims = await db.ref("coinPurchaseByUser/" + uid).get();
+  for (const key of Object.keys(coinClaims.val() || {})) {
+    updates["coinPurchaseTokens/" + key] = {deleted: true};
+    updates["coinPurchaseWork/" + key] = null;
+  }
+  updates["coinPurchaseByUser/" + uid] = null;
+  updates["coinPurchaseRate/" + uid] = null;
+
   updates["economyState/" + uid] = null;
+  updates["rewardedAdState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -8409,3 +8599,247 @@ exports.deleteMyAccount = httpsV2.onCall(
 );
 
 // LINKBALL_08B_ACCOUNT_DELETION_END
+
+// Squad Challenge shares the private canonical wallet. Keeping attempts,
+// receipts and currency in the same transaction prevents partial purchases.
+function squadCallable(action) {
+  return httpsV2.onCall({
+    region: "europe-west1",
+    maxInstances: 10,
+    enforceAppCheck: true,
+  }, async (request) => {
+    // Keep the 580 KB Squad catalog out of Firebase CLI's global discovery
+    // phase. It is loaded once, on the first Squad Challenge request.
+    const engine = require("./squad_challenge");
+    lbRequireGoogleLinked(request);
+    const input = request.data || {};
+    if (input.catalogVersion !== engine.catalog.version) {
+      throw new httpsV2.HttpsError("failed-precondition", "Görevler güncellendi. Uygulamanı güncelle.");
+    }
+    const uid = request.auth.uid;
+    const db = admin.database();
+    const now = Date.now();
+    const premiumSnap = await db.ref("premiumState/" + uid).get();
+    const premium = lbPremiumState(premiumSnap.val(), now).active;
+    const policy = economyConfig.squadPolicy(await lbGetEconomyConfig());
+    let response;
+    let rejection;
+    try {
+      const tx = await db.ref("economyState/" + uid).transaction((current) => {
+        rejection = null;
+        response = null;
+        try {
+          const state = lbEconomyState(current);
+          response = engine.apply(state, action, input, now, premium, policy);
+          return state;
+        } catch (error) {
+          if (!(error instanceof engine.SquadError)) throw error;
+          // An RTDB transaction may first see an empty local cache. Returning
+          // that unchanged value lets it retry against the real server state;
+          // throwing/aborting here would reject a valid existing run.
+          rejection = error;
+          return current;
+        }
+      });
+      if (!tx.committed) {
+        throw new httpsV2.HttpsError("aborted", "İşlem tamamlanamadı. Yeniden dene.");
+      }
+      if (rejection) throw rejection;
+      await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+      return response;
+    } catch (error) {
+      if (error instanceof engine.SquadError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+
+exports.getMySquadChallenge = squadCallable("status");
+exports.startSquadChallenge = squadCallable("start");
+exports.finishSquadChallenge = squadCallable("finish");
+exports.abandonSquadChallenge = squadCallable("abandon");
+
+// Monetization B: optional rewarded ads. No network IO during discovery.
+let lbRewardedInstance;
+let lbAdmobKeys;
+function lbRewardedService() {
+  if (!lbRewardedInstance) {
+    const db = admin.database();
+    lbRewardedInstance = require("./rewarded_ads").createService({
+      db, getConfig: lbGetEconomyConfig,
+      units: require("./config/admob.units.json"),
+      now: () => Date.now(),
+      grantCoins: (uid, id, source, placement, amount, configId) =>
+        lbProgressionGrantCoins(db, uid, id, source, placement, amount, configId),
+      isLinked: async (uid) => {
+        try {
+          const user = await admin.auth().getUser(uid);
+          return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+        } catch (error) {
+          if (error.code === "auth/user-not-found") return false;
+          throw error;
+        }
+      },
+      isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
+    });
+  }
+  return lbRewardedInstance;
+}
+function lbRewardedCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    const {RewardError} = require("./rewarded_ads");
+    const input = request.data || {};
+    const uid = request.auth.uid;
+    const service = lbRewardedService();
+    try {
+      if (action === "prepare") return await service.prepare(uid, input.platform, input.placement, input.requestId);
+      if (action === "cancel") return await service.cancel(uid, input.ticketId);
+      if (!["android", "ios"].includes(input.platform)) {
+        throw new httpsV2.HttpsError("invalid-argument", "Desteklenmeyen platform.");
+      }
+      return await service.status(uid, input.platform, input.ticketId);
+    } catch (error) {
+      if (error instanceof RewardError) throw new httpsV2.HttpsError(error.code, error.message);
+      throw error;
+    }
+  });
+}
+exports.getRewardedAdStatus = lbRewardedCallable("status");
+exports.prepareRewardedAd = lbRewardedCallable("prepare");
+exports.cancelRewardedAd = lbRewardedCallable("cancel");
+exports.admobRewardCallback = httpsV2.onRequest({
+  region: "europe-west1", maxInstances: 10, timeoutSeconds: 30, cors: false, invoker: "public",
+}, async (request, response) => {
+  if (request.method !== "GET") return response.status(405).send("Method not allowed");
+  response.set("Cache-Control", "no-store");
+  const ssv = require("./admob_ssv");
+  const {RewardError} = require("./rewarded_ads");
+  try {
+    lbAdmobKeys ||= ssv.createKeyProvider();
+    const original = request.originalUrl || request.url || "";
+    const event = await ssv.verify(original.slice(original.indexOf("?") + 1), lbAdmobKeys);
+    const user = await admin.auth().getUser(event.user_id);
+    if (user.disabled) return response.status(403).send("Account unavailable");
+    await lbRewardedService().accept(event);
+    return response.status(200).send("OK");
+  } catch (error) {
+    if (error instanceof ssv.VerificationError) return response.status(400).send("Invalid verification");
+    if (error instanceof RewardError || error.code === "auth/user-not-found") {
+      logger.warn("Rewarded event rejected", {code: error.code});
+      return response.status(200).send("Ineligible");
+    }
+    logger.error("Rewarded verification temporarily unavailable", {code: error.code || "unavailable"});
+    return response.status(503).send("Retry later");
+  }
+});
+
+// MONETIZATION_C_COIN_PURCHASES_START
+const coinPurchases = require("./coin_purchases");
+const lbCoinPlayBase = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/" +
+  encodeURIComponent(LB_PLAY_PACKAGE_NAME) + "/purchases/";
+const lbCoinPlayV2Base = lbCoinPlayBase + "productsv2/tokens/";
+function lbNormalizeCoinPurchaseV2(data) {
+  const items = Array.isArray(data?.productLineItem) ? data.productLineItem : [];
+  const item = items.length === 1 ? items[0] : null;
+  const offer = item?.productOfferDetails || {};
+  const state = data?.purchaseStateContext?.purchaseState;
+  const consumption = offer.consumptionState;
+  return {
+    purchaseState: state === "PURCHASED" ? 0 :
+      state === "CANCELLED" ? 1 :
+      state === "PENDING" ? 2 : -1,
+    consumptionState: consumption === "CONSUMPTION_STATE_CONSUMED" ? 1 :
+      consumption === "CONSUMPTION_STATE_YET_TO_BE_CONSUMED" ? 0 : -1,
+    obfuscatedExternalAccountId: data?.obfuscatedExternalAccountId,
+    productId: item?.productId,
+    quantity: items.length === 1 ? (offer.quantity ?? 1) : items.length,
+    purchaseType: data?.testPurchaseContext?.fopType === "TEST" ? 0 : undefined,
+  };
+}
+const lbCoinPlay = {
+  get: async (_productId, token) => lbNormalizeCoinPurchaseV2(
+      await lbPlayAuthorizedGet(lbCoinPlayV2Base + encodeURIComponent(token))),
+  consume: async (productId, token) => {
+    const client = await lbPlayAuth().getClient();
+    await client.request({method: "POST", url: lbCoinPlayBase + "products/" +
+      encodeURIComponent(productId) + "/tokens/" + encodeURIComponent(token) + ":consume"});
+  },
+};
+function lbCoinService() {
+  return coinPurchases.createService({db: admin.database(), play: lbCoinPlay,
+    normalize: lbEconomyState, project: lbEconomyProject, ErrorType: httpsV2.HttpsError});
+}
+exports.getCoinPurchaseCatalog = httpsV2.onCall(
+    {region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+      lbRequireGoogleLinked(request);
+      // Explicit launch switch; unavailable configuration keeps new purchases off.
+      const template = await getRemoteConfig().getServerTemplate({
+        defaultConfig: {linkball_coin_sales_enabled: "false"},
+      });
+      const enabled = template.evaluate().getString("linkball_coin_sales_enabled") === "true";
+      return {ok: true, enabled, accountId: coinPurchases.accountId(request.auth.uid),
+        products: Object.entries(coinPurchases.PRODUCTS).map(([productId, coins]) => ({productId, coins}))};
+    });
+exports.verifyCoinPurchase = httpsV2.onCall(
+    {region: "europe-west1", maxInstances: 20, enforceAppCheck: true}, async (request) => {
+      lbRequireGoogleLinked(request);
+      try {
+        return await lbCoinService().verify(request.auth.uid, request.data?.productId, request.data?.purchaseToken);
+      } catch (error) {
+        if (error instanceof httpsV2.HttpsError) throw error;
+        // Never log Gaxios errors: their URL/config can include the purchase token.
+        logger.error("Coin purchase verification unavailable", {status: Number(error.response?.status) || 0});
+        throw new httpsV2.HttpsError("unavailable", "Satın alma doğrulaması bekliyor. Tekrar kontrol et.");
+      }
+    });
+async function lbReconcileCoinPurchases() {
+  const db = admin.database();
+  const service = lbCoinService();
+  // Rotate through pending work so a failing receipt cannot starve newer ones.
+  const cursor = (await db.ref("coinPurchaseWorker/cursor").get()).val();
+  let query = db.ref("coinPurchaseWork").orderByKey();
+  if (typeof cursor === "string" && cursor) query = query.startAfter(cursor);
+  const work = await query.limitToFirst(200).get();
+  const keys = Object.keys(work.val() || {}).sort();
+  let failures = 0;
+  for (const key of keys) {
+    try {
+      await service.retry(key);
+    } catch (_) {
+      failures++;
+    }
+  }
+  await db.ref("coinPurchaseWorker/cursor").set(keys.length === 200 ? keys.at(-1) : "");
+  if (failures) logger.error("Coin fulfillment requires retry", {count: failures});
+  // Rescan the Play retention window; never checkpoint past a failed refund.
+  let pageToken = "";
+  let pages = 0;
+  do {
+    const url = lbCoinPlayBase + "voidedpurchases?type=0&maxResults=1000" +
+      "&startTime=" + (Date.now() - 30 * 86400000 + 60000) +
+      (pageToken ? "&token=" + encodeURIComponent(pageToken) : "");
+    const response = await lbPlayAuthorizedGet(url);
+    for (const purchase of response.voidedPurchases || []) {
+      if (!purchase.purchaseToken) continue;
+      const key = coinPurchases.hash(purchase.purchaseToken);
+      // Other products have no coin record. Late canceled tokens fail Play verification.
+      if ((await db.ref("coinPurchaseTokens/" + key).get()).exists()) await service.revoke(key);
+    }
+    pageToken = response.tokenPagination?.nextPageToken || "";
+    if (++pages >= 100 && pageToken) throw new Error("Coin refund pagination exceeds budget.");
+  } while (pageToken);
+  await db.ref("coinPurchaseWorker/lastSuccessfulScanAt").set(Date.now());
+}
+exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "every 30 minutes",
+  timeoutSeconds: 540, maxInstances: 1}, async () => {
+  try {
+    await lbReconcileCoinPurchases();
+  } catch (_) {
+    // Do not let transport errors log receipt-bearing URLs or request headers.
+    throw new Error("Coin reconciliation failed; check Play API access and worker health.");
+  }
+});
+// MONETIZATION_C_COIN_PURCHASES_END

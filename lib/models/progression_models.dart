@@ -70,6 +70,8 @@ class ProgressionSeason {
 }
 
 class DailyRewardStatus {
+  final bool enabled;
+  final List<int> scheduleCoins;
   final String dateKey;
   final bool canClaim;
   final int currentStreak;
@@ -85,6 +87,8 @@ class DailyRewardStatus {
   final int? lastClaimedAtMs;
 
   const DailyRewardStatus({
+    this.enabled = true,
+    this.scheduleCoins = const <int>[],
     required this.dateKey,
     required this.canClaim,
     required this.currentStreak,
@@ -102,6 +106,12 @@ class DailyRewardStatus {
 
   factory DailyRewardStatus.fromMap(Map<String, dynamic> data) {
     return DailyRewardStatus(
+      enabled: data['enabled'] != false,
+      scheduleCoins: data['scheduleCoins'] is List
+          ? List<int>.unmodifiable(
+              (data['scheduleCoins'] as List).map(_progressionInt),
+            )
+          : const <int>[],
       dateKey: data['dateKey']?.toString() ?? '',
       canClaim: data['canClaim'] == true,
       currentStreak: _progressionInt(data['currentStreak']),
@@ -173,10 +183,10 @@ class ProgressionProfile {
               bestStreak: 0,
               nextStreak: 1,
               nextDayIndex: 1,
-              baseCoins: 20,
+              baseCoins: 0,
               multiplier: 1,
-              rewardCoins: 20,
-              xpReward: 25,
+              rewardCoins: 0,
+              xpReward: 0,
               streakProtectionAvailable: false,
               wouldUseStreakProtection: false,
             ),

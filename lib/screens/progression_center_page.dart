@@ -109,7 +109,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage> {
           content: Text(
             result.alreadyClaimed
                 ? 'Bugünün ödülünü zaten aldın.'
-                : '+${result.amount} Coin · +${result.xp} XP$extra$protection',
+                : '+${result.amount} Link Coin · +${result.xp} XP$extra$protection',
           ),
         ),
       );
@@ -141,7 +141,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage> {
           content: Text(
             result.alreadyClaimed
                 ? 'Bu görev ödülünü zaten aldın.'
-                : '+${result.amount} Coin · Cüzdan ${result.walletCoins}',
+                : '+${result.amount} Link Coin · Cüzdan ${result.walletCoins}',
           ),
         ),
       );
@@ -212,8 +212,15 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage> {
           _SectionTitle(
             icon: Icons.today_rounded,
             title: 'Günlük Görevler',
-            trailing:
-                '${missions.dailyCompletedCount}/${missions.daily.length}',
+            trailing: '${missions.dailyCompletedCount} alındı',
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Günde ${missions.dailyClaimLimit} görev ödülü · Türkiye saatiyle 00.00’da yenilenir.',
+            style: const TextStyle(
+              color: AppTheme.secondaryTextColor,
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 10),
           if (missions.daily.isEmpty)
@@ -361,7 +368,7 @@ class _ProgressionHero extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${profile.lifetimeXp} toplam XP',
+                        '${profile.lifetimeXp} toplam XP · Harcanmaz',
                         style: const TextStyle(
                           color: AppTheme.secondaryTextColor,
                         ),
@@ -447,8 +454,6 @@ class _ProgressionHero extends StatelessWidget {
 }
 
 class _DailyRewardCard extends StatelessWidget {
-  static const List<int> _baseSchedule = <int>[20, 30, 40, 50, 60, 70, 80];
-
   final DailyRewardStatus status;
   final bool claiming;
   final VoidCallback onClaim;
@@ -515,13 +520,13 @@ class _DailyRewardCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Row(
-              children: List.generate(_baseSchedule.length, (index) {
+              children: List.generate(status.scheduleCoins.length, (index) {
                 final day = index + 1;
                 final selected = day == nextIndex;
                 return Expanded(
                   child: Padding(
                     padding: EdgeInsets.only(
-                      right: index == _baseSchedule.length - 1 ? 0 : 5,
+                      right: index == status.scheduleCoins.length - 1 ? 0 : 5,
                     ),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 9),
@@ -549,7 +554,7 @@ class _DailyRewardCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '+${_baseSchedule[index]}',
+                            '+${status.scheduleCoins[index]}',
                             style: const TextStyle(
                               fontSize: 10,
                               color: AppTheme.hintColor,
@@ -564,6 +569,14 @@ class _DailyRewardCard extends StatelessWidget {
               }),
             ),
             const SizedBox(height: 14),
+            const Text(
+              'Link Coin harcanır; XP seviye ilerlemesini gösterir.',
+              style: TextStyle(
+                color: AppTheme.secondaryTextColor,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
@@ -573,7 +586,7 @@ class _DailyRewardCard extends StatelessWidget {
                     children: [
                       _MiniPill(
                         icon: Icons.monetization_on_rounded,
-                        text: '+${status.rewardCoins} Coin',
+                        text: '+${status.rewardCoins} Link Coin',
                         color: AppTheme.warningColor,
                       ),
                       _MiniPill(
@@ -615,6 +628,10 @@ class _DailyRewardCard extends StatelessWidget {
                       ? 'Alınıyor…'
                       : status.canClaim
                       ? 'Ödülü Topla'
+                      : !status.enabled
+                      ? 'Günlük ödül şu anda kapalı'
+                      : status.dateKey.isEmpty
+                      ? 'Ödül bilgisi yükleniyor'
                       : 'Bugünün ödülü alındı',
                 ),
               ),
@@ -761,6 +778,14 @@ class _MissionRewardAction extends StatelessWidget {
         icon: Icons.check_rounded,
         text: 'Alındı',
         color: AppTheme.successColor,
+      );
+    }
+
+    if (!mission.enabled || mission.limitReached) {
+      return _MiniPill(
+        icon: Icons.pause_circle_outline_rounded,
+        text: mission.limitReached ? 'Günlük limit' : 'Kapalı',
+        color: AppTheme.hintColor,
       );
     }
 

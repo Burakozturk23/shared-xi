@@ -47,6 +47,7 @@ class PremiumEntitlement {
   final int startedAt;
   final int expiresAt;
   final bool autoRenewing;
+  final String subscriptionState;
   final PremiumBenefits benefits;
   final int updatedAt;
   final int version;
@@ -59,6 +60,7 @@ class PremiumEntitlement {
     required this.startedAt,
     required this.expiresAt,
     required this.autoRenewing,
+    required this.subscriptionState,
     required this.benefits,
     required this.updatedAt,
     this.version = 1,
@@ -72,11 +74,21 @@ class PremiumEntitlement {
         startedAt = 0,
         expiresAt = 0,
         autoRenewing = false,
+        subscriptionState = '',
         benefits = const PremiumBenefits.inactive(),
         updatedAt = 0,
         version = 1;
 
   bool get isLifetime => active && plan == PremiumPlan.lifetime;
+  bool get isSubscription =>
+      active && (plan == PremiumPlan.monthly || plan == PremiumPlan.yearly);
+  bool get cancellationPending =>
+      isSubscription &&
+      !autoRenewing &&
+      subscriptionState == 'SUBSCRIPTION_STATE_CANCELED';
+  bool get inGracePeriod =>
+      isSubscription &&
+      subscriptionState == 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD';
 
   factory PremiumEntitlement.fromMap(Map<String, dynamic> data) {
     final active = data['active'] == true;
@@ -91,6 +103,7 @@ class PremiumEntitlement {
       startedAt: active ? _premiumInt(data['startedAt']) : 0,
       expiresAt: active ? _premiumInt(data['expiresAt']) : 0,
       autoRenewing: active && data['autoRenewing'] == true,
+      subscriptionState: data['subscriptionState']?.toString() ?? '',
       benefits: data['benefits'] is Map
           ? PremiumBenefits.fromMap(
               Map<String, dynamic>.from(data['benefits'] as Map),

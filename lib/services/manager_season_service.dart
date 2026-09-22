@@ -1,12 +1,13 @@
 import 'dart:math';
 
+import '../models/manager_rating.dart';
 import '../models/manager_season.dart';
 import '../models/manager_tactics.dart';
 
 class ManagerSeasonService {
-  ManagerSeasonService._();
-  static final ManagerSeasonService instance = ManagerSeasonService._();
-  static final _rng = Random();
+  ManagerSeasonService({Random? random}) : _rng = random ?? Random();
+  static final instance = ManagerSeasonService();
+  final Random _rng;
 
   static const _names = [
     'Northgate FC',
@@ -31,126 +32,162 @@ class ManagerSeasonService {
     'Old Dock FC',
   ];
 
-  static const _leagues = [
-    'Premier League tarzı',
-    'La Liga tarzı',
-    'Serie A tarzı',
-    'Bundesliga tarzı',
-    'Championship',
-    'Süper Lig temposu',
-    'Eredivisie',
-    'İkinci kademe Avrupa',
-  ];
-
-  /// 19 takım (sen + 18), 19 maç (18 rakip; biri çift fikstür).
-  ManagerSeason createSeason({String userName = 'SENİN XI'}) {
-    final styles = OpponentStyle.values;
+  ManagerSeason createSeason({
+    String userName = 'Senin XI',
+    ManagerDifficulty difficulty = ManagerDifficulty.medium,
+  }) {
     final names = List<String>.from(_names)..shuffle(_rng);
-    final opponents = <SeasonClub>[];
-
-    for (var i = 0; i < ManagerSeason.opponentCount; i++) {
-      final strength = 52 + _rng.nextDouble() * 38; // 52-90
-      opponents.add(SeasonClub(
-        id: 'opp_$i',
-        name: names[i % names.length],
-        leagueHint: _leagues[_rng.nextInt(_leagues.length)],
-        style: styles[_rng.nextInt(styles.length)],
-        strength: double.parse(strength.toStringAsFixed(0)),
-      ));
+    final offset = switch (difficulty) {
+      ManagerDifficulty.easy => -5.0,
+      ManagerDifficulty.medium => 0.0,
+      ManagerDifficulty.hard => 5.0,
+    };
+    final clubs = [
+      SeasonClub(
+        id: 'user',
+        name: userName,
+        leagueHint: 'Ortak Saha Ligi',
+        style: OpponentStyle.balanced,
+        strength: 70,
+        isUser: true,
+      ),
+      for (var i = 0; i < ManagerSeason.opponentCount; i++)
+        SeasonClub(
+          id: 'opp_$i',
+          name: names[i],
+          leagueHint: 'Ortak Saha Ligi',
+          style:
+              OpponentStyle.values[_rng.nextInt(OpponentStyle.values.length)],
+          strength: (55 + _rng.nextDouble() * 30 + offset).roundToDouble(),
+        ),
+    ];
+    // Circle method: 19 rounds, each unordered pair exactly once.
+    final rotation = clubs.map((c) => c.id).toList()..shuffle(_rng);
+    final firstLeg = <LeagueFixture>[];
+    for (var round = 0; round < ManagerSeason.opponentCount; round++) {
+      for (var pair = 0; pair < ManagerSeason.teamCount ~/ 2; pair++) {
+        final a = rotation[pair];
+        final b = rotation[rotation.length - 1 - pair];
+        final flip = pair == 0 ? round.isOdd : pair.isOdd;
+        firstLeg.add(
+          LeagueFixture(
+            week: round + 1,
+            homeId: flip ? b : a,
+            awayId: flip ? a : b,
+          ),
+        );
+      }
+      rotation.insert(1, rotation.removeLast());
     }
-
-    final user = SeasonClub(
-      id: 'user',
-      name: userName,
-      leagueHint: 'Club Manager',
-      style: OpponentStyle.balanced,
-      strength: 70,
-      isUser: true,
-    );
-
-    // 19 fikstür: 18 rakip + en güçlü rakiple rövanş (hafta 19)
-    final ordered = List<SeasonClub>.from(opponents)..shuffle(_rng);
-    final fixtures = <SeasonFixture>[];
-    for (var w = 1; w <= 18; w++) {
-      fixtures.add(SeasonFixture(week: w, opponentId: ordered[w - 1].id));
-    }
-    // Hafta 19: en yüksek strength
-    opponents.sort((a, b) => b.strength.compareTo(a.strength));
-    fixtures.add(SeasonFixture(week: 19, opponentId: opponents.first.id));
-
+    final matches = [
+      ...firstLeg,
+      for (final f in firstLeg)
+        LeagueFixture(
+          week: f.week + ManagerSeason.opponentCount,
+          homeId: f.awayId,
+          awayId: f.homeId,
+        ),
+    ];
+    final fixtures = [
+      for (final f in matches)
+        if (f.homeId == 'user' || f.awayId == 'user')
+          SeasonFixture(
+            week: f.week,
+            opponentId: f.homeId == 'user' ? f.awayId : f.homeId,
+            isHome: f.homeId == 'user',
+          ),
+    ];
     return ManagerSeason(
-      clubs: [user, ...opponents],
+      id: 'cm-${DateTime.now().microsecondsSinceEpoch}-${_rng.nextInt(1 << 30)}',
+      clubs: clubs,
       fixtures: fixtures,
-      currentWeek: 1,
+      leagueFixtures: matches,
     );
   }
 
-  /// Kullanıcı maç sonucu + diğer AI maçlarını simüle et.
   ManagerSeason applyUserResult(
     ManagerSeason season, {
     required String opponentId,
     required int userGoals,
     required int oppGoals,
+    int? expectedWeek,
   }) {
-    final clubs = season.clubs.map((c) {
-      // deep-ish copy via json
-      return SeasonClub.fromJson(c.toJson());
-    }).toList();
-
-    SeasonClub byId(String id) => clubs.firstWhere((c) => c.id == id);
-
-    final user = byId('user');
-    final opp = byId(opponentId);
-    _applyResult(user, opp, userGoals, oppGoals);
-
-    // Bu haftanın diğer maçları: kalan AI çiftleri rastgele
-    final weekFix = season.fixtures.firstWhere((f) => f.opponentId == opponentId && !f.played);
-    final idle = clubs
-        .where((c) => !c.isUser && c.id != opponentId)
-        .toList()
-      ..shuffle(_rng);
-    for (var i = 0; i + 1 < idle.length; i += 2) {
-      final a = idle[i];
-      final b = idle[i + 1];
-      final gA = _rng.nextInt(4);
-      final gB = _rng.nextInt(4);
-      // güç ağırlıklı
-      final adjA = gA + (a.strength > b.strength ? _rng.nextInt(2) : 0);
-      final adjB = gB + (b.strength > a.strength ? _rng.nextInt(2) : 0);
-      _applyResult(a, b, adjA, adjB);
+    final next = season.nextFixture;
+    if (!season.isCurrentFormat ||
+        next == null ||
+        next.opponentId != opponentId ||
+        (expectedWeek != null && next.week != expectedWeek)) {
+      throw StateError('Bu maç artık sıradaki maç değil.');
     }
-
-    final fixtures = season.fixtures.map((f) {
-      if (f.week == weekFix.week) {
-        return f.copyWith(
-          played: true,
-          userGoals: userGoals,
-          oppGoals: oppGoals,
-        );
+    if (userGoals < 0 || oppGoals < 0) {
+      throw ArgumentError('Gol sayısı negatif olamaz.');
+    }
+    final clubs = season.clubs
+        .map((c) => SeasonClub.fromJson(c.toJson()))
+        .toList();
+    final byId = {for (final c in clubs) c.id: c};
+    final matches = <LeagueFixture>[];
+    for (final f in season.leagueFixtures) {
+      if (f.week != next.week) {
+        matches.add(f);
+        continue;
       }
-      return f;
-    }).toList();
-
-    final nextWeek = (weekFix.week + 1).clamp(1, ManagerSeason.totalWeeks);
+      if (f.played) throw StateError('Bu haftanın sonucu zaten kaydedildi.');
+      final home = byId[f.homeId]!;
+      final away = byId[f.awayId]!;
+      final int h, a;
+      if (home.isUser) {
+        h = userGoals;
+        a = oppGoals;
+      } else if (away.isUser) {
+        h = oppGoals;
+        a = userGoals;
+      } else {
+        final diff = home.strength + 3 - away.strength;
+        h = _goals((1.35 + diff * .035).clamp(.25, 3.5));
+        a = _goals((1.15 - diff * .035).clamp(.25, 3.5));
+      }
+      _applyResult(home, away, h, a);
+      matches.add(f.withResult(h, a));
+    }
     return ManagerSeason(
+      id: season.id,
       clubs: clubs,
-      fixtures: fixtures,
-      currentWeek: nextWeek,
+      leagueFixtures: matches,
+      currentWeek: next.week + 1,
+      fixtures: [
+        for (final f in season.fixtures)
+          f.week == next.week
+              ? f.copyWith(
+                  played: true,
+                  userGoals: userGoals,
+                  oppGoals: oppGoals,
+                )
+              : f,
+      ],
     );
   }
 
-  void _applyResult(SeasonClub a, SeasonClub b, int gA, int gB) {
+  int _goals(double xg) {
+    var goals = 0;
+    for (var i = 0; i < 8; i++) {
+      if (_rng.nextDouble() < xg / 8) goals++;
+    }
+    return goals;
+  }
+
+  void _applyResult(SeasonClub a, SeasonClub b, int ga, int gb) {
     a.played++;
     b.played++;
-    a.gf += gA;
-    a.ga += gB;
-    b.gf += gB;
-    b.ga += gA;
-    if (gA > gB) {
+    a.gf += ga;
+    a.ga += gb;
+    b.gf += gb;
+    b.ga += ga;
+    if (ga > gb) {
       a.won++;
       a.points += 3;
       b.lost++;
-    } else if (gA < gB) {
+    } else if (ga < gb) {
       b.won++;
       b.points += 3;
       a.lost++;
@@ -162,12 +199,10 @@ class ManagerSeasonService {
     }
   }
 
-  ManagerOpponent toOpponent(SeasonClub c) {
-    return ManagerOpponent(
-      name: c.name,
-      leagueHint: c.leagueHint,
-      style: c.style,
-      basePower: c.strength,
-    );
-  }
+  ManagerOpponent toOpponent(SeasonClub c) => ManagerOpponent(
+    name: c.name,
+    leagueHint: c.leagueHint,
+    style: c.style,
+    basePower: c.strength,
+  );
 }

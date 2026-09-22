@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_theme.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../theme/design_tokens.dart';
 
 /// Shared card shell for player, club and game cards.
@@ -25,23 +25,20 @@ class LinkballCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = selected ? AppTheme.primaryColor : AppTheme.borderColor;
-    final background = selected
-        ? AppTheme.primaryColor.withValues(alpha: 0.10)
-        : AppTheme.cardColor;
+    final p = PitchColors.of(context);
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    final border = selected ? p.accent : p.border;
+    final background = selected ? p.tint : p.surface;
 
     return AnimatedOpacity(
-      duration: AppMotion.fast,
+      duration: reduced ? Duration.zero : AppMotion.fast,
       opacity: disabled ? 0.48 : 1,
       child: AnimatedContainer(
-        duration: AppMotion.normal,
+        duration: reduced ? Duration.zero : AppMotion.normal,
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(radius),
-          border: Border.all(
-            color: border,
-            width: selected ? 1.5 : 1,
-          ),
+          border: Border.all(color: border, width: selected ? 1.5 : 1),
           boxShadow: selected ? AppShadows.soft : const [],
         ),
         child: Material(
@@ -51,10 +48,7 @@ class LinkballCard extends StatelessWidget {
           child: InkWell(
             onTap: disabled ? null : onTap,
             borderRadius: BorderRadius.circular(radius),
-            child: Padding(
-              padding: padding,
-              child: child,
-            ),
+            child: Padding(padding: padding, child: child),
           ),
         ),
       ),

@@ -9,7 +9,11 @@ import 'reverse_grid_controller.dart';
 enum VsBotReverseTurn { user, bot, gameOver }
 
 class VsBotReverseGridController extends ChangeNotifier {
-  final ReverseGridController grid = ReverseGridController();
+  VsBotReverseGridController({ReverseGridController? grid}) : grid = grid ?? ReverseGridController() {
+    this.grid.addListener(_safeNotify);
+  }
+
+  final ReverseGridController grid;
   final Random _random = Random();
 
   VsBotReverseTurn turn = VsBotReverseTurn.user;
@@ -40,6 +44,7 @@ class VsBotReverseGridController extends ChangeNotifier {
     _disposed = true;
     _botTimer?.cancel();
     _feedbackTimer?.cancel();
+    grid.removeListener(_safeNotify);
     grid.dispose();
     super.dispose();
   }
@@ -83,6 +88,9 @@ class VsBotReverseGridController extends ChangeNotifier {
   }
 
   void _schedulePassToBot() {
+    // Lock input immediately; the delay is only for the visual handover.
+    turn = VsBotReverseTurn.bot;
+    _safeNotify();
     _botTimer?.cancel();
     _botTimer = Timer(const Duration(milliseconds: 250), _passToBot);
   }

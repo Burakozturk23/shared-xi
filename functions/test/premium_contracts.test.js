@@ -29,7 +29,7 @@ function premiumBlock() {
   return source.slice(start, end);
 }
 
-test("premium foundation has monthly yearly and lifetime plans", () => {
+test("premium foundation keeps legacy lifetime state compatibility", () => {
   const block = premiumBlock();
 
   for (const plan of ["monthly", "yearly", "lifetime"]) {
@@ -41,7 +41,8 @@ test("premium is active only for trusted verified state", () => {
   const block = premiumBlock();
 
   assert.ok(block.includes("const verified = data.verified === true"));
-  assert.ok(block.includes("const active = verified"));
+  assert.ok(block.includes("const entitled = data.entitled !== false"));
+  assert.ok(block.includes("verified && entitled"));
   assert.ok(block.includes("expiresAt > currentTime"));
   assert.equal(block.includes("request.data.verified"), false);
   assert.equal(block.includes("(request.data || {}).plan"), false);
@@ -52,8 +53,8 @@ test("premium benefits are non-competitive", () => {
 
   assert.ok(block.includes("adFree: active"));
   assert.ok(block.includes("premiumCosmetics: active"));
-  assert.ok(block.includes("dailyRewardMultiplier: active ? 2 : 1"));
-  assert.ok(block.includes("streakProtection: active"));
+  assert.ok(block.includes("dailyRewardMultiplier: 1"));
+  assert.ok(block.includes("streakProtection: false"));
 
   for (const forbidden of [
     "eloBoost",
@@ -63,6 +64,14 @@ test("premium benefits are non-competitive", () => {
   ]) {
     assert.equal(block.includes(forbidden), false);
   }
+});
+
+test("Pro billing callables are App Check protected and sales default off", () => {
+  const block = premiumBlock();
+
+  assert.ok(block.includes("enforceAppCheck: true"));
+  assert.ok(block.includes("linkball_pro_sales_enabled"));
+  assert.ok(block.includes("defaultConfig: {linkball_pro_sales_enabled: \"false\"}"));
 });
 
 test("premium status is server-backed and owner-readable only", () => {

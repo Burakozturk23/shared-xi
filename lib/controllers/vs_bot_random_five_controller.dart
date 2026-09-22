@@ -3,448 +3,313 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/popular_clubs_pool.dart';
 import '../models/club.dart';
 import '../models/player.dart';
-import '../models/random_five_state.dart';
-import '../repositories/repository.dart';
+import '../services/random_five_session.dart';
 import '../services/search_service.dart';
+import 'vs_bot_controller.dart' show VsBotDifficulty;
 
 enum VsBotRandomFiveTurn { user, bot, gameOver }
 
-/// Her tur farklı 5 kulüp; sıra sıra oyuncu bulma. Her biri [maxTurnsEach] tur.
+enum FiveMatchPhase {
+  loading,
+  ready,
+  playing,
+  roundResult,
+  paused,
+  finished,
+  error,
+}
+
+class FiveMove {
+  FiveMove({this.player, List<Club> matchedClubs = const []})
+    : matchedClubs = List.unmodifiable(matchedClubs);
+  final Player? player;
+  final List<Club> matchedClubs;
+  bool get passed => player == null;
+  int get score => matchedClubs.length;
+}
+
+class FiveRoundResult {
+  const FiveRoundResult({
+    required this.board,
+    required this.user,
+    required this.bot,
+  });
+  final FiveRound board;
+  final FiveMove user, bot;
+}
+
+/// Five shared boards, two turns per board and one canonical used-player set.
 class VsBotRandomFiveController extends ChangeNotifier {
-  static const int maxTurnsEach = 5;
+  VsBotRandomFiveController({
+    RandomFiveSessionLoader? loadSession,
+    Random? random,
+    this.difficulty = VsBotDifficulty.medium,
+  }) : _loadSession = loadSession ?? RandomFiveSession.load,
+       _random = random ?? Random();
 
-  final Random _random = Random();
-
-  List<Club> clubs = const [];
-  final Set<int> usedPlayerIds = {};
+  static const maxTurnsEach = 5;
+  final RandomFiveSessionLoader _loadSession;
+  final Random _random;
+  RandomFiveSession? session;
+  List<FiveRound> _rounds = const [];
+  final List<FiveRoundResult> _history = [];
+  final Set<int> _usedPlayerIds = {};
+  List<FiveRoundResult> get history => List.unmodifiable(_history);
+  Set<int> get usedPlayerIds => Set.unmodifiable(_usedPlayerIds);
   List<Player> suggestions = const [];
-  final List<RandomFiveEntry> userHistory = [];
-  final List<RandomFiveEntry> botHistory = [];
-
-  int userTurns = 0;
-  int botTurns = 0;
+  FiveMatchPhase phase = FiveMatchPhase.loading;
   VsBotRandomFiveTurn turn = VsBotRandomFiveTurn.user;
-  bool isLoading = true;
+  VsBotDifficulty difficulty;
+  int roundIndex = 0;
+  int get roundNumber => roundIndex + 1;
+  FiveRound? get board => _rounds.isEmpty ? null : _rounds[roundIndex];
+  List<Club> get clubs => board?.clubs ?? const [];
+  FiveMove? userMove, botMove;
   String? feedback;
   bool feedbackSuccess = true;
-
-  Timer? _feedbackTimer;
   Timer? _botTimer;
+  int _generation = 0;
   bool _disposed = false;
 
-  int get userScore => userHistory.fold(0, (s, e) => s + e.score);
-  int get botScore => botHistory.fold(0, (s, e) => s + e.score);
+  int get userScore =>
+      _history.fold<int>(0, (s, e) => s + e.user.score) +
+      (phase == FiveMatchPhase.roundResult || phase == FiveMatchPhase.finished
+          ? 0
+          : userMove?.score ?? 0);
+  int get botScore => _history.fold(0, (s, e) => s + e.bot.score);
+  bool get isInMatch =>
+      phase == FiveMatchPhase.playing ||
+      phase == FiveMatchPhase.paused ||
+      phase == FiveMatchPhase.roundResult;
+  bool get canAnswer =>
+      !_disposed &&
+      phase == FiveMatchPhase.playing &&
+      turn == VsBotRandomFiveTurn.user;
 
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
-
-  void initialize() {
-    _pickNewClubs();
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    _feedbackTimer?.cancel();
+  Future<void> initialize() async {
+    if (_disposed) return;
+    final generation = ++_generation;
     _botTimer?.cancel();
-    super.dispose();
-  }
-
-  static const int _targetClubCount = 5;
-  /// En az bu kadar oyuncu seçilen 5'ten **3+** kulübe uysun (asıl kolaylık buradan).
-  static const int _minPlayersTriple = 10;
-  /// Ek güvenlik: 2+ kulüp uyan oyuncu sayısı.
-  static const int _minPlayersDouble = 15;
-
-  void _pickNewClubs() {
-    clubs = _selectConnectedClubs(excludeIds: const {});
-    usedPlayerIds.clear();
-    userHistory.clear();
-    botHistory.clear();
-    userTurns = 0;
-    botTurns = 0;
-    turn = VsBotRandomFiveTurn.user;
-    isLoading = false;
+    phase = FiveMatchPhase.loading;
+    session = null;
+    _rounds = const [];
+    _history.clear();
+    _usedPlayerIds.clear();
+    suggestions = const [];
+    roundIndex = 0;
+    userMove = botMove = null;
     feedback = null;
-    _safeNotify();
+    feedbackSuccess = true;
+    turn = VsBotRandomFiveTurn.user;
+    notifyListeners();
+    try {
+      final loaded = await _loadSession();
+      if (_disposed || generation != _generation) return;
+      final rounds = <FiveRound>[];
+      for (var i = 0; i < maxTurnsEach; i++) {
+        rounds.add(
+          loaded.createRound(
+            random: _random,
+            previous: rounds.isEmpty
+                ? const {}
+                : rounds.last.clubs.map((c) => c.id).toSet(),
+          ),
+        );
+        // Yield between boards so loading and disposal remain responsive.
+        await Future<void>.delayed(Duration.zero);
+        if (_disposed || generation != _generation) return;
+      }
+      session = loaded;
+      _rounds = List.unmodifiable(rounds);
+      phase = FiveMatchPhase.ready;
+    } catch (error, stack) {
+      if (_disposed || generation != _generation) return;
+      phase = FiveMatchPhase.error;
+      feedback = 'Kulüpler hazırlanamadı. Yeniden deneyebilirsin.';
+      if (kDebugMode) debugPrint('[RandomFive] $error\n$stack');
+    }
+    notifyListeners();
   }
 
-  void _rotateClubs() {
-    final previousIds = clubs.map((c) => c.id).toSet();
-    clubs = _selectConnectedClubs(excludeIds: previousIds);
+  void setDifficulty(VsBotDifficulty value) {
+    if (_disposed || phase != FiveMatchPhase.ready) return;
+    difficulty = value;
+    notifyListeners();
   }
 
-  /// 3–4 kulüp örtüşmesi bol, 5 nadir olacak şekilde set üretir.
-  /// Tohum = havuzda 3+ kulübü olan bir oyuncu; onun kulüpleri çekirdek alınır.
-  List<Club> _selectConnectedClubs({required Set<int> excludeIds}) {
-    final pool = PopularClubs.resolveAll();
-
-    if (pool.length <= _targetClubCount) {
-      return List<Club>.from(pool)..shuffle(_random);
-    }
-
-    final poolIds = pool.map((c) => c.id).toSet();
-    final players = Repository.instance.players;
-
-    final playersOf = <int, Set<int>>{
-      for (final c in pool) c.id: <int>{},
-    };
-    // Havuz içinde 3+ kulübü olan oyuncular (tohum adayları)
-    final multiClubPlayers = <Player>[];
-
-    for (final p in players) {
-      final inPool = p.clubs.where(poolIds.contains).toList();
-      for (final cid in inPool) {
-        playersOf[cid]!.add(p.id);
-      }
-      if (inPool.length >= 3) {
-        multiClubPlayers.add(p);
-      }
-    }
-
-    Club? clubById(int id) {
-      for (final c in pool) {
-        if (c.id == id) return c;
-      }
-      return null;
-    }
-
-    ({int doubles, int triples}) overlapStats(List<int> clubIds) {
-      final countByPlayer = <int, int>{};
-      for (final cid in clubIds) {
-        for (final pid in playersOf[cid] ?? const <int>{}) {
-          countByPlayer[pid] = (countByPlayer[pid] ?? 0) + 1;
-        }
-      }
-      var doubles = 0;
-      var triples = 0;
-      for (final n in countByPlayer.values) {
-        if (n >= 2) doubles++;
-        if (n >= 3) triples++;
-      }
-      return (doubles: doubles, triples: triples);
-    }
-
-    /// Çekirdek: tohum oyuncunun 3–4 kulübü + bağlantılı doldurma.
-    List<int>? buildFromSeedPlayer(Player seed, {required bool avoidExclude}) {
-      final seedClubs = seed.clubs.where(poolIds.contains).toList()..shuffle(_random);
-      if (seedClubs.length < 3) return null;
-
-      // 3 veya 4 kulüp çekirdek (5'in hepsini tohumdan almak nadir kalsın)
-      final coreSize = seedClubs.length >= 4 && _random.nextDouble() < 0.55 ? 4 : 3;
-      final selected = seedClubs.take(coreSize).toList();
-      final selectedSet = selected.toSet();
-
-      if (avoidExclude && selected.any(excludeIds.contains)) {
-        // Çekirdekte exclude varsa bu tohumu atla
-        return null;
-      }
-
-      while (selected.length < _targetClubCount) {
-        // Adayları "eklenince 3+ örtüşme kaç artar?" ile sırala
-        final scored = <({int id, int tripleGain})>[];
-
-        for (final c in pool) {
-          if (selectedSet.contains(c.id)) continue;
-          if (avoidExclude && excludeIds.contains(c.id)) continue;
-
-          final mine = playersOf[c.id] ?? const <int>{};
-          // En az bir ortak şart
-          var shares = false;
-          for (final sid in selected) {
-            if (mine.any((playersOf[sid] ?? const <int>{}).contains)) {
-              shares = true;
-              break;
-            }
-          }
-          if (!shares) continue;
-
-          // Geçici sete ekleyip triple sayısına bak
-          final trial = [...selected, c.id];
-          final stats = overlapStats(trial);
-          scored.add((id: c.id, tripleGain: stats.triples));
-        }
-
-        if (scored.isEmpty) return null;
-
-        scored.sort((a, b) => b.tripleGain.compareTo(a.tripleGain));
-        // En iyi birkaç aday arasından rastgele (çeşitlilik)
-        final top = scored.take(5).toList()..shuffle(_random);
-        final next = top.first.id;
-        selected.add(next);
-        selectedSet.add(next);
-      }
-
-      final stats = overlapStats(selected);
-      if (stats.triples < _minPlayersTriple) return null;
-      if (stats.doubles < _minPlayersDouble) return null;
-      return selected;
-    }
-
-    List<int>? tryAll({required bool avoidExclude}) {
-      final seeds = List<Player>.from(multiClubPlayers)..shuffle(_random);
-      // Biraz daha "zengin" kariyerli oyuncuları öne al (4+ kulüp)
-      seeds.sort((a, b) {
-        final ac = a.clubs.where(poolIds.contains).length;
-        final bc = b.clubs.where(poolIds.contains).length;
-        return bc.compareTo(ac);
-      });
-      // Karışık sıra: ilk %40 zengin, sonra shuffle dilimler
-      final rich = seeds.where((p) => p.clubs.where(poolIds.contains).length >= 4).toList()
-        ..shuffle(_random);
-      final rest = seeds.where((p) => p.clubs.where(poolIds.contains).length == 3).toList()
-        ..shuffle(_random);
-      final order = [...rich, ...rest];
-
-      for (final seed in order.take(80)) {
-        final built = buildFromSeedPlayer(seed, avoidExclude: avoidExclude);
-        if (built != null) return built;
-      }
-      return null;
-    }
-
-    var ids = tryAll(avoidExclude: excludeIds.isNotEmpty);
-    ids ??= tryAll(avoidExclude: false);
-
-    // Son çare: eski greedy (en az 2+ bağlantı)
-    if (ids == null) {
-      final fallbackPool = List<Club>.from(pool)..shuffle(_random);
-      final selected = <int>[fallbackPool.first.id];
-      final selectedSet = selected.toSet();
-      while (selected.length < _targetClubCount) {
-        int? next;
-        var bestShare = -1;
-        for (final c in fallbackPool) {
-          if (selectedSet.contains(c.id)) continue;
-          final mine = playersOf[c.id] ?? const <int>{};
-          var shareCount = 0;
-          for (final sid in selected) {
-            shareCount += mine.intersection(playersOf[sid] ?? {}).length;
-          }
-          if (shareCount > bestShare) {
-            bestShare = shareCount;
-            next = c.id;
-          }
-        }
-        if (next == null) break;
-        selected.add(next);
-        selectedSet.add(next);
-      }
-      ids = selected.length == _targetClubCount ? selected : null;
-    }
-
-    if (ids == null) {
-      return PopularClubs.pickDiverse(
-        count: _targetClubCount,
-        maxPerLeague: 1,
-        maxPerCountry: 2,
-        random: _random,
-      );
-    }
-
-    return ids.map(clubById).whereType<Club>().toList();
+  void begin() {
+    if (_disposed || phase != FiveMatchPhase.ready) return;
+    phase = FiveMatchPhase.playing;
+    notifyListeners();
   }
 
-  void newMatch() {
-    _botTimer?.cancel();
-    _feedbackTimer?.cancel();
-    isLoading = true;
-    _safeNotify();
-    _pickNewClubs();
-  }
-
-  
   void updateSuggestions(String query) {
-    if (_disposed || turn != VsBotRandomFiveTurn.user) {
-      suggestions = const [];
-      _safeNotify();
-      return;
-    }
+    if (!canAnswer) return;
     suggestions = SearchService.suggestions(
-      players: Repository.instance.players,
+      players: session!.players,
       query: query,
-      excludedPlayerIds: usedPlayerIds,
+      excludedPlayerIds: _usedPlayerIds,
+      useGlobalIndex: false,
     );
-    _safeNotify();
+    feedback = null;
+    notifyListeners();
   }
 
-  void clearSuggestions() {
-    if (suggestions.isEmpty) return;
-    suggestions = const [];
-    _safeNotify();
-  }
-
-  void submitPlayer(Player player) {
-    if (_disposed || turn != VsBotRandomFiveTurn.user) return;
-    if (userTurns >= maxTurnsEach) return;
-    if (usedPlayerIds.contains(player.id)) {
-      feedback = 'Bu oyuncuyu zaten kullandın.';
-      feedbackSuccess = false;
-      _safeNotify();
-      _scheduleFeedbackClear();
-      return;
+  bool submitGuess(String answer) {
+    if (!canAnswer || answer.trim().isEmpty) return false;
+    final resolved = SearchService.resolve(
+      players: session!.players,
+      answer: answer,
+    );
+    if (!resolved.isFound) {
+      suggestions = resolved.status == ResolveStatus.ambiguous
+          ? resolved.candidates
+          : const [];
+      _reject(
+        resolved.status == ResolveStatus.ambiguous
+            ? 'Birden fazla oyuncu var. Listeden seç.'
+            : 'Oyuncu bulunamadı. Adını düzenleyebilirsin.',
+      );
+      return false;
     }
-    final matched = clubs.where((c) => player.clubs.contains(c.id)).toList();
+    return submitPlayer(resolved.player!);
+  }
+
+  bool submitPlayer(Player player) {
+    if (!canAnswer) return false;
+    final canonical = session!.playersById[player.id];
+    if (canonical == null) {
+      _reject('Bu oyuncu cevap havuzunda bulunamadı.');
+      return false;
+    }
+    if (_usedPlayerIds.contains(canonical.id)) {
+      _reject('Bu oyuncu bu maçta zaten kullanıldı. Başka bir isim seç.');
+      return false;
+    }
+    final matched = board!.matchedClubs(canonical.id);
     if (matched.isEmpty) {
-      feedback = '${player.name} bu 5 kulübün hiçbirinde oynamamış.';
-      feedbackSuccess = false;
-      _safeNotify();
-      _scheduleFeedbackClear();
-      return;
+      _reject(
+        '${canonical.name} bu beş kulübe uymuyor. Başka bir isim deneyebilirsin.',
+      );
+      return false;
     }
-    final entry = RandomFiveEntry(player: player, matchedClubs: matched);
-    userHistory.add(entry);
-    usedPlayerIds.add(player.id);
-    userTurns++;
-    suggestions = const [];
-    feedback = '${player.name}: ${entry.score} kulüp! (+${entry.score})';
-    feedbackSuccess = true;
-    _safeNotify();
-    _scheduleFeedbackClear();
-    if (_isMatchOver()) {
-      turn = VsBotRandomFiveTurn.gameOver;
-      _safeNotify();
-      return;
-    }
-    turn = VsBotRandomFiveTurn.bot;
-    _safeNotify();
-    _botTimer?.cancel();
-    _botTimer = Timer(
-      Duration(milliseconds: 700 + _random.nextInt(800)),
-      _botPlay,
-    );
+    _usedPlayerIds.add(canonical.id);
+    _finishUserTurn(FiveMove(player: canonical, matchedClubs: matched));
+    return true;
   }
 
-void submitGuess(String answer) {
-    if (_disposed || turn != VsBotRandomFiveTurn.user) return;
-    if (userTurns >= maxTurnsEach) return;
-    if (answer.trim().isEmpty) return;
+  void _reject(String message) {
+    feedback = message;
+    feedbackSuccess = false;
+    notifyListeners();
+  }
 
-    final entry = _evaluate(answer);
-    if (entry == null) return;
+  bool pass() {
+    if (!canAnswer) return false;
+    _finishUserTurn(FiveMove());
+    return true;
+  }
 
-    userHistory.add(entry);
-    usedPlayerIds.add(entry.player.id);
-    userTurns++;
-    feedback =
-        '${entry.player.name}: ${entry.score} kulüp! (+${entry.score})';
-    feedbackSuccess = true;
-    _safeNotify();
-    _scheduleFeedbackClear();
-
-    if (_isMatchOver()) {
-      turn = VsBotRandomFiveTurn.gameOver;
-      _safeNotify();
-      return;
-    }
-
+  void _finishUserTurn(FiveMove move) {
+    // Lock before notifying: a listener or double tap cannot spend another turn.
     turn = VsBotRandomFiveTurn.bot;
-    _safeNotify();
+    userMove = move;
+    suggestions = const [];
+    feedback = null;
+    feedbackSuccess = true;
+    _scheduleBot();
+    notifyListeners();
+  }
+
+  void _scheduleBot() {
     _botTimer?.cancel();
     _botTimer = Timer(
-      Duration(milliseconds: 700 + _random.nextInt(800)),
+      Duration(milliseconds: 900 + _random.nextInt(500)),
       _botPlay,
     );
   }
 
   void _botPlay() {
-    if (_disposed || turn != VsBotRandomFiveTurn.bot) return;
-
-    final pick = _bestBotPlayer();
-    if (pick == null) {
-      feedback = 'Bot pas geçti.';
-      feedbackSuccess = true;
-      botTurns++;
-      if (_isMatchOver()) {
-        turn = VsBotRandomFiveTurn.gameOver;
-      } else {
-        _rotateClubs();
-        turn = VsBotRandomFiveTurn.user;
-      }
-      _safeNotify();
-      _scheduleFeedbackClear();
+    if (_disposed ||
+        phase != FiveMatchPhase.playing ||
+        turn != VsBotRandomFiveTurn.bot)
       return;
+    final candidates = board!.matches.keys
+        .where((id) => !_usedPlayerIds.contains(id))
+        .toList();
+    final preferredLimit = switch (difficulty) {
+      VsBotDifficulty.easy => 2,
+      VsBotDifficulty.medium => 3,
+      VsBotDifficulty.hard => 5,
+    };
+    final preferred = candidates
+        .where((id) => board!.matches[id]!.length <= preferredLimit)
+        .toList();
+    // Count every real match, never truncate a player's earned points.
+    final available = preferred.isNotEmpty ? preferred : candidates;
+    if (available.isEmpty) {
+      botMove = FiveMove();
+    } else {
+      final scores = available.map((id) => board!.matches[id]!.length);
+      final target = preferred.isNotEmpty
+          ? scores.reduce(max)
+          : scores.reduce(min);
+      final tied = available
+          .where((id) => board!.matches[id]!.length == target)
+          .toList();
+      final id = tied[_random.nextInt(tied.length)];
+      botMove = FiveMove(
+        player: session!.playersById[id]!,
+        matchedClubs: board!.matchedClubs(id),
+      );
+      _usedPlayerIds.add(id);
     }
+    _history.add(
+      FiveRoundResult(board: board!, user: userMove!, bot: botMove!),
+    );
+    phase = FiveMatchPhase.roundResult;
+    notifyListeners();
+  }
 
-    final matched = clubs.where((c) => pick.clubs.contains(c.id)).toList();
-    final entry = RandomFiveEntry(player: pick, matchedClubs: matched);
-    botHistory.add(entry);
-    usedPlayerIds.add(pick.id);
-    botTurns++;
-    feedback = 'Bot: ${pick.name} (+${entry.score})';
-    feedbackSuccess = false;
-    if (_isMatchOver()) {
+  void nextRound() {
+    if (_disposed || phase != FiveMatchPhase.roundResult) return;
+    if (_history.length == maxTurnsEach) {
+      phase = FiveMatchPhase.finished;
       turn = VsBotRandomFiveTurn.gameOver;
     } else {
-      _rotateClubs();
+      roundIndex++;
+      userMove = botMove = null;
+      feedback = null;
+      suggestions = const [];
+      phase = FiveMatchPhase.playing;
       turn = VsBotRandomFiveTurn.user;
     }
-    _safeNotify();
-    _scheduleFeedbackClear();
+    notifyListeners();
   }
 
-  Player? _bestBotPlayer() {
-    final candidates = Repository.instance.players
-        .where((p) => !usedPlayerIds.contains(p.id))
-        .toList()
-      ..shuffle(_random);
-
-    Player? best;
-    var bestScore = 0;
-    for (final p in candidates.take(500)) {
-      final score = clubs.where((c) => p.clubs.contains(c.id)).length;
-      if (score > bestScore) {
-        bestScore = score;
-        best = p;
-        if (bestScore >= 3) break;
-      }
-    }
-    if (bestScore == 0) return null;
-    return best;
+  void pause() {
+    if (_disposed || phase != FiveMatchPhase.playing) return;
+    _botTimer?.cancel();
+    phase = FiveMatchPhase.paused;
+    notifyListeners();
   }
 
-  RandomFiveEntry? _evaluate(String answer) {
-    final candidates = Repository.instance.players
-        .where((p) => !usedPlayerIds.contains(p.id))
-        .toList();
-
-    final player =
-        SearchService.findExactPlayer(players: candidates, answer: answer);
-
-    if (player == null) {
-      feedback = 'Böyle bir oyuncu bulunamadı.';
-      feedbackSuccess = false;
-      _safeNotify();
-      _scheduleFeedbackClear();
-      return null;
-    }
-
-    final matched = clubs.where((c) => player.clubs.contains(c.id)).toList();
-
-    if (matched.isEmpty) {
-      feedback = '${player.name} bu 5 kulübün hiçbirinde oynamamış.';
-      feedbackSuccess = false;
-      _safeNotify();
-      _scheduleFeedbackClear();
-      return null;
-    }
-
-    return RandomFiveEntry(player: player, matchedClubs: matched);
+  void resume() {
+    if (_disposed || phase != FiveMatchPhase.paused) return;
+    phase = FiveMatchPhase.playing;
+    if (turn == VsBotRandomFiveTurn.bot) _scheduleBot();
+    notifyListeners();
   }
 
-  bool _isMatchOver() =>
-      userTurns >= maxTurnsEach && botTurns >= maxTurnsEach;
+  void newMatch() => unawaited(initialize());
 
-  void _scheduleFeedbackClear() {
-    _feedbackTimer?.cancel();
-    _feedbackTimer = Timer(const Duration(seconds: 2), () {
-      if (_disposed) return;
-      feedback = null;
-      _safeNotify();
-    });
+  @override
+  void dispose() {
+    _disposed = true;
+    _generation++;
+    _botTimer?.cancel();
+    super.dispose();
   }
 }

@@ -662,6 +662,53 @@ class GameDataV4QueryService {
     return rows.isNotEmpty;
   }
 
+  /// Returns clubs that share at least [minShared] ranked-core players with
+  /// [clubId]. Counts are calculated in SQLite so a mode can choose an
+  /// opponent without hydrating every candidate player first.
+  Future<List<MapEntry<int, int>>> sharedClubCandidates(
+    int clubId, {
+    int minShared = 3,
+    int limit = 48,
+  }) async {
+    if (clubId <= 0) return const <MapEntry<int, int>>[];
+
+    await initialize();
+
+    final safeMin = minShared.clamp(1, 50).toInt();
+    final safeLimit = limit.clamp(1, 120).toInt();
+    final rows = await _source.database.rawQuery(
+      '''
+      SELECT
+        b.club_id AS club_id,
+        COUNT(DISTINCT a.player_id) AS shared_count
+      FROM player_clubs a
+      JOIN player_clubs b
+        ON b.player_id = a.player_id
+      JOIN clubs c
+        ON c.id = b.club_id
+      JOIN players p
+        ON p.id = a.player_id
+      WHERE a.club_id = ?
+        AND b.club_id <> ?
+        AND TRIM(c.name) <> ''
+        AND p.selection_rank BETWEEN 1 AND 30000
+      GROUP BY b.club_id
+      HAVING COUNT(DISTINCT a.player_id) >= ?
+      ORDER BY shared_count DESC, c.popularity_seed DESC, c.name COLLATE NOCASE
+      LIMIT ?
+      ''',
+      <Object?>[clubId, clubId, safeMin, safeLimit],
+    );
+
+    return <MapEntry<int, int>>[
+      for (final row in rows)
+        MapEntry(
+          (row['club_id'] as num).toInt(),
+          (row['shared_count'] as num).toInt(),
+        ),
+    ];
+  }
+
   Future<bool> hasClubCountryMatch(int clubId, String country) async {
     if (clubId <= 0) return false;
 
@@ -721,6 +768,31 @@ class GameDataV4QueryService {
         .toList(growable: false);
 
     return playersByIds(ids);
+  }
+
+  /// Loads the ranked-core players who have appeared for one club. Modes use
+  /// this scoped pool for answer search instead of hydrating the full player
+  /// universe just to build a 3×3 puzzle.
+  Future<List<Player>> playersForClub(int clubId, {int limit = 1800}) async {
+    if (clubId <= 0) return const <Player>[];
+
+    await initialize();
+    final safeLimit = limit.clamp(1, 3000).toInt();
+    final rows = await _source.database.rawQuery(
+      '''
+      SELECT DISTINCT p.id
+      FROM players p
+      JOIN player_clubs pc
+        ON pc.player_id = p.id
+      WHERE pc.club_id = ?
+        AND TRIM(p.name) <> ''
+        AND p.selection_rank BETWEEN 1 AND 30000
+      ORDER BY p.selection_rank, p.id
+      LIMIT ?
+      ''',
+      <Object?>[clubId, safeLimit],
+    );
+    return playersByIds(rows.map((row) => (row['id'] as num).toInt()));
   }
 
   String _entityPredicate(MatchEntity entity, int slot, List<Object?> args) {

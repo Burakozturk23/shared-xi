@@ -19,6 +19,7 @@ class ManagerMatchService {
     final avg = xi.fold<double>(0, (s, p) => s + p.overall) / xi.length;
     final players = <Player>[];
     for (final p in xi) {
+      if (!Repository.instance.isInitialized) break;
       final pl = Repository.instance.playerById(p.playerId);
       if (pl != null) players.add(pl);
     }
@@ -41,12 +42,19 @@ class ManagerMatchService {
     ManagerOpponent? opponent,
     String homeName = 'SENİN XI',
     int? seed,
+    bool userIsHome = true,
+    double homeAdvantage = 0,
+    bool chargeSquadCost = true,
   }) {
+    if (xi.length != 11 || xi.map((p) => p.playerId).toSet().length != 11) {
+      throw ArgumentError('Maç için 11 farklı oyuncu gerekli.');
+    }
     if (seed != null) {
       _rng = Random(seed);
     }
     final homeBase = powerOf(xi, tactics: tactics);
-    final opp = opponent ??
+    final opp =
+        opponent ??
         ManagerOpponentService.instance.generate(
           homePower: homeBase,
           difficulty: difficulty,
@@ -55,8 +63,12 @@ class ManagerMatchService {
     final matchup = ManagerOpponentService.instance
         .matchupMultiplier(tactics, opp.style)
         .clamp(0.88, 1.14);
-    final homePower = (homeBase * matchup).clamp(40.0, 99.0);
-    final awayPower = opp.basePower;
+    final homePower = (homeBase * matchup + (userIsHome ? homeAdvantage : 0))
+        .clamp(40.0, 99.0);
+    final awayPower = (opp.basePower + (userIsHome ? 0 : homeAdvantage)).clamp(
+      40.0,
+      99.0,
+    );
 
     final diff = homePower - awayPower;
     double xgH = 1.1 + diff * 0.045 + _rng.nextDouble() * 0.6;
@@ -70,14 +82,27 @@ class ManagerMatchService {
     final goalsH = _goalsFromXg(xgH);
     final goalsA = _goalsFromXg(xgA);
 
-    final shotsH = (xgH * 4.2 + _rng.nextInt(5)).round().clamp(3, 22);
-    final shotsA = (xgA * 4.2 + _rng.nextInt(5)).round().clamp(3, 22);
-    final onH =
-        (shotsH * (0.35 + _rng.nextDouble() * 0.25)).round().clamp(1, shotsH);
-    final onA =
-        (shotsA * (0.35 + _rng.nextDouble() * 0.25)).round().clamp(1, shotsA);
+    final shotsH = max(
+      goalsH,
+      (xgH * 4.2 + _rng.nextInt(5)).round().clamp(3, 22),
+    );
+    final shotsA = max(
+      goalsA,
+      (xgA * 4.2 + _rng.nextInt(5)).round().clamp(3, 22),
+    );
+    final onH = max(
+      goalsH,
+      (shotsH * (0.35 + _rng.nextDouble() * 0.25)).round().clamp(1, shotsH),
+    );
+    final onA = max(
+      goalsA,
+      (shotsA * (0.35 + _rng.nextDouble() * 0.25)).round().clamp(1, shotsA),
+    );
     final possH =
-        (50 + diff * 0.7 + (tactics.tempo - 0.5) * 4 + (_rng.nextDouble() - 0.5) * 8)
+        (50 +
+                diff * 0.7 +
+                (tactics.tempo - 0.5) * 4 +
+                (_rng.nextDouble() - 0.5) * 8)
             .clamp(28.0, 72.0);
 
     final events = _buildEvents(
@@ -89,7 +114,7 @@ class ManagerMatchService {
       style: opp.style,
     );
 
-    final stats = ManagerMatchStats(
+    var stats = ManagerMatchStats(
       goalsHome: goalsH,
       goalsAway: goalsA,
       shotsHome: shotsH,
@@ -105,18 +130,46 @@ class ManagerMatchService {
       foulsAway: 6 + _rng.nextInt(8),
     );
 
-    final spent = xi.fold<int>(0, (s, p) => s + p.costLink);
+    if (!userIsHome) {
+      stats = ManagerMatchStats(
+        goalsHome: stats.goalsAway,
+        goalsAway: stats.goalsHome,
+        shotsHome: stats.shotsAway,
+        shotsAway: stats.shotsHome,
+        shotsOnHome: stats.shotsOnAway,
+        shotsOnAway: stats.shotsOnHome,
+        possessionHome: stats.possessionAway,
+        xgHome: stats.xgAway,
+        xgAway: stats.xgHome,
+        cornersHome: stats.cornersAway,
+        cornersAway: stats.cornersHome,
+        foulsHome: stats.foulsAway,
+        foulsAway: stats.foulsHome,
+      );
+    }
+    final spent = chargeSquadCost
+        ? xi.fold<int>(0, (s, p) => s + p.costLink)
+        : 0;
     final win = goalsH > goalsA;
     final bonus = win ? difficulty.winBonusLink : 0;
     final remaining = budgetLink - spent + bonus;
 
     return ManagerMatchResult(
-      homeName: homeName,
-      awayName: opp.name,
-      homePower: double.parse(homePower.toStringAsFixed(0)),
-      awayPower: double.parse(awayPower.toStringAsFixed(0)),
+      userIsHome: userIsHome,
+      homeName: userIsHome ? homeName : opp.name,
+      awayName: userIsHome ? opp.name : homeName,
+      homePower: (userIsHome ? homePower : awayPower).roundToDouble(),
+      awayPower: (userIsHome ? awayPower : homePower).roundToDouble(),
       stats: stats,
-      events: events,
+      events: [
+        for (final e in events)
+          ManagerMatchEvent(
+            minute: e.minute,
+            text: e.text,
+            isGoal: e.isGoal,
+            isHome: userIsHome ? e.isHome : !e.isHome,
+          ),
+      ],
       budgetBefore: budgetLink,
       spentOnXi: spent,
       winBonus: bonus,
@@ -164,21 +217,25 @@ class ManagerMatchService {
     for (var i = 0; i < goalsH; i++) {
       final scorer = attackers[_rng.nextInt(attackers.length)].name;
       final m = uniqueMinute();
-      events.add(ManagerMatchEvent(
-        minute: m,
-        text: 'GOL! $scorer net bir fırsatı gole çevirdi.',
-        isGoal: true,
-        isHome: true,
-      ));
+      events.add(
+        ManagerMatchEvent(
+          minute: m,
+          text: 'GOL! $scorer net bir fırsatı gole çevirdi.',
+          isGoal: true,
+          isHome: true,
+        ),
+      );
     }
     for (var i = 0; i < goalsA; i++) {
       final m = uniqueMinute();
-      events.add(ManagerMatchEvent(
-        minute: m,
-        text: 'GOL! $awayName hücumu skoru değiştirdi.',
-        isGoal: true,
-        isHome: false,
-      ));
+      events.add(
+        ManagerMatchEvent(
+          minute: m,
+          text: 'GOL! $awayName hücumu skoru değiştirdi.',
+          isGoal: true,
+          isHome: false,
+        ),
+      );
     }
 
     // Taktik / tarzdan renkli dolgu
@@ -191,11 +248,9 @@ class ManagerMatchService {
       if (tactics.width < 0.35) 'Dar alanda kısa pas denemeleri.',
     ];
     for (final line in styleLines) {
-      events.add(ManagerMatchEvent(
-        minute: uniqueMinute(),
-        text: line,
-        isHome: true,
-      ));
+      events.add(
+        ManagerMatchEvent(minute: uniqueMinute(), text: line, isHome: true),
+      );
     }
 
     final fillers = [
@@ -206,14 +261,16 @@ class ManagerMatchService {
     ];
     for (var i = 0; i < 5; i++) {
       final n = xi[_rng.nextInt(xi.length)].name;
-      events.add(ManagerMatchEvent(
-        minute: uniqueMinute(),
-        text: fillers[_rng.nextInt(fillers.length)](n),
-        isHome: true,
-      ));
+      events.add(
+        ManagerMatchEvent(
+          minute: uniqueMinute(),
+          text: fillers[_rng.nextInt(fillers.length)](n),
+          isHome: true,
+        ),
+      );
     }
 
-    events.sort((a, b) => b.minute.compareTo(a.minute));
+    events.sort((a, b) => a.minute.compareTo(b.minute));
     return events;
   }
 }

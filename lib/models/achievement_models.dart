@@ -1,16 +1,6 @@
-enum AchievementCategory {
-  ranked,
-  mastery,
-  daily,
-  social,
-}
+enum AchievementCategory { ranked, mastery, daily, social }
 
-enum AchievementTier {
-  bronze,
-  silver,
-  gold,
-  platinum,
-}
+enum AchievementTier { bronze, silver, gold, platinum }
 
 class AchievementDefinition {
   final String id;
@@ -32,10 +22,22 @@ class AchievementDefinition {
     required this.tier,
     required this.signal,
     required this.target,
-    required this.coinReward,
+    this.coinReward = 0,
     required this.iconKey,
     this.hidden = false,
   });
+  AchievementDefinition withCoinReward(int value) => AchievementDefinition(
+    id: id,
+    title: title,
+    description: description,
+    category: category,
+    tier: tier,
+    signal: signal,
+    target: target,
+    coinReward: value,
+    iconKey: iconKey,
+    hidden: hidden,
+  );
 }
 
 class AchievementProgress {
@@ -64,10 +66,7 @@ class AchievementProgress {
     return (value / target).clamp(0, 1).toDouble();
   }
 
-  factory AchievementProgress.fromMap(
-    String id,
-    Map<String, dynamic> data,
-  ) {
+  factory AchievementProgress.fromMap(String id, Map<String, dynamic> data) {
     return AchievementProgress(
       id: id,
       value: _achievementInt(data['value']),
@@ -94,10 +93,7 @@ class UserAchievement {
     this.catalogVersion = 1,
   });
 
-  factory UserAchievement.fromMap(
-    String id,
-    Map<String, dynamic> data,
-  ) {
+  factory UserAchievement.fromMap(String id, Map<String, dynamic> data) {
     return UserAchievement(
       id: id,
       unlockedAtMs: _achievementInt(data['unlockedAt']),

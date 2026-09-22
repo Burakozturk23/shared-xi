@@ -9,6 +9,8 @@ class MissionItem {
   final int rawProgress;
   final int target;
   final int rewardCoins;
+  final bool enabled;
+  final bool limitReached;
   final bool claimable;
   final bool claimed;
   final int? claimedAtMs;
@@ -17,6 +19,8 @@ class MissionItem {
   final int stageCount;
 
   const MissionItem({
+    this.enabled = true,
+    this.limitReached = false,
     required this.id,
     required this.kind,
     required this.title,
@@ -40,6 +44,8 @@ class MissionItem {
 
   factory MissionItem.fromMap(Map<String, dynamic> data) {
     return MissionItem(
+      enabled: data['enabled'] != false,
+      limitReached: data['limitReached'] == true,
       id: data['id']?.toString() ?? '',
       kind: data['kind']?.toString() == 'daily'
           ? MissionKind.daily
@@ -64,12 +70,14 @@ class MissionProfile {
   final String dateKey;
   final List<MissionItem> daily;
   final List<MissionItem> general;
+  final int dailyClaimLimit;
   final int dailyCompletedCount;
   final int generalCompletedCount;
   final int? updatedAtMs;
   final int version;
 
   const MissionProfile({
+    this.dailyClaimLimit = 3,
     required this.dateKey,
     required this.daily,
     required this.general,
@@ -81,6 +89,7 @@ class MissionProfile {
 
   factory MissionProfile.fromMap(Map<String, dynamic> data) {
     return MissionProfile(
+      dailyClaimLimit: _missionInt(data['dailyClaimLimit'], fallback: 3),
       dateKey: data['dateKey']?.toString() ?? '',
       daily: _missionList(data['daily']),
       general: _missionList(data['general']),

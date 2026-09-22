@@ -10,15 +10,15 @@ class EconomyService {
   EconomyService._();
 
   static FirebaseFunctions get _functions => FirebaseFunctions.instanceFor(
-        app: Firebase.app(),
-        region: 'europe-west1',
-      );
+    app: Firebase.app(),
+    region: 'europe-west1',
+  );
 
   static FirebaseDatabase get _db => FirebaseDatabase.instanceFor(
-        app: Firebase.app(),
-        databaseURL:
-            'https://sharedix-default-rtdb.europe-west1.firebasedatabase.app',
-      );
+    app: Firebase.app(),
+    databaseURL:
+        'https://sharedix-default-rtdb.europe-west1.firebasedatabase.app',
+  );
 
   static Future<EconomyWallet> syncMyWallet() async {
     await CloudBootstrap.ensureInitialized();
@@ -33,9 +33,7 @@ class EconomyService {
       throw StateError('Coin bakiyesi eşitlenemedi.');
     }
 
-    return EconomyWallet.fromMap(
-      Map<String, dynamic>.from(rawWallet),
-    );
+    return EconomyWallet.fromMap(Map<String, dynamic>.from(rawWallet));
   }
 
   static Future<EconomyClaimResult> claimAchievementReward(
@@ -44,9 +42,7 @@ class EconomyService {
     await CloudBootstrap.ensureInitialized();
     _requireUid();
 
-    final callable = _functions.httpsCallable(
-      'claimAchievementReward',
-    );
+    final callable = _functions.httpsCallable('claimAchievementReward');
     final response = await callable.call(<String, dynamic>{
       'achievementId': achievementId,
     });
@@ -65,8 +61,9 @@ class EconomyService {
   }
 
   static Future<EconomyPurchaseResult> purchaseOffer(
-    String offerId,
-  ) async {
+    String offerId, {
+    int? expectedPriceCoins,
+  }) async {
     await CloudBootstrap.ensureInitialized();
     _requireUid();
 
@@ -79,11 +76,10 @@ class EconomyService {
       );
     }
 
-    final callable = _functions.httpsCallable(
-      'purchaseEconomyOffer',
-    );
+    final callable = _functions.httpsCallable('purchaseEconomyOffer');
     final response = await callable.call(<String, dynamic>{
       'offerId': normalized,
+      if (expectedPriceCoins != null) 'expectedPriceCoins': expectedPriceCoins,
     });
     final data = _map(response.data);
     final rawItem = data['item'];
@@ -104,6 +100,20 @@ class EconomyService {
     );
   }
 
+  static Future<Map<String, int>> achievementRewards() async {
+    await CloudBootstrap.ensureInitialized();
+    _requireUid();
+    final response = await _functions
+        .httpsCallable('getEconomyContract')
+        .call();
+    final data = _map(response.data);
+    if (data['ok'] != true) throw StateError('Ödül bilgisi alınamadı.');
+    final rewards = _map(_map(data['economy'])['achievementRewards']);
+    return Map<String, int>.unmodifiable(
+      rewards.map((key, value) => MapEntry(key, _int(value))),
+    );
+  }
+
   static Stream<EconomyWallet> watchWallet() {
     final uid = _requireUid();
 
@@ -114,9 +124,7 @@ class EconomyService {
         return EconomyWallet.empty;
       }
 
-      return EconomyWallet.fromMap(
-        Map<String, dynamic>.from(value),
-      );
+      return EconomyWallet.fromMap(Map<String, dynamic>.from(value));
     });
   }
 
@@ -146,9 +154,7 @@ class EconomyService {
     });
   }
 
-  static Stream<List<EconomyLedgerEntry>> watchLedger({
-    int limit = 50,
-  }) {
+  static Stream<List<EconomyLedgerEntry>> watchLedger({int limit = 50}) {
     final uid = _requireUid();
     final safeLimit = limit < 1 ? 1 : (limit > 100 ? 100 : limit);
     final query = _db
@@ -177,9 +183,7 @@ class EconomyService {
         );
       }
 
-      rows.sort(
-        (a, b) => (b.createdAtMs ?? 0).compareTo(a.createdAtMs ?? 0),
-      );
+      rows.sort((a, b) => (b.createdAtMs ?? 0).compareTo(a.createdAtMs ?? 0));
 
       return List<EconomyLedgerEntry>.unmodifiable(rows);
     });

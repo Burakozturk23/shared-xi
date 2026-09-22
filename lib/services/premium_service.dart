@@ -9,6 +9,12 @@ import 'cloud_bootstrap.dart';
 class PremiumService {
   PremiumService._();
 
+  static String? _purchaseAccountIdUid;
+  static String? _purchaseAccountId;
+  static bool _salesEnabled = false;
+
+  static bool get salesEnabled => _salesEnabled;
+
   static FirebaseFunctions get _functions => FirebaseFunctions.instanceFor(
         app: Firebase.app(),
         region: 'europe-west1',
@@ -32,7 +38,16 @@ class PremiumService {
     final data = _map(response.data);
 
     if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium durumu yüklenemedi.');
+      throw StateError('Linkball Pro durumu yüklenemedi.');
+    }
+
+    _salesEnabled = data['salesEnabled'] == true;
+
+    final uid = AuthService.uid;
+    final accountId = data['accountId']?.toString().trim() ?? '';
+    if (uid != null && RegExp(r'^[a-f0-9]{64}$').hasMatch(accountId)) {
+      _purchaseAccountIdUid = uid;
+      _purchaseAccountId = accountId;
     }
 
     return PremiumEntitlement.fromMap(
@@ -64,6 +79,29 @@ class PremiumService {
     });
   }
 
+  static Future<String> purchaseAccountId() async {
+    await CloudBootstrap.ensureInitialized();
+    _requireGoogleAccount();
+
+    final uid = AuthService.uid!;
+    final cached = _purchaseAccountId;
+    if (_purchaseAccountIdUid == uid &&
+        cached != null &&
+        RegExp(r'^[a-f0-9]{64}$').hasMatch(cached)) {
+      return cached;
+    }
+
+    await fetchStatus();
+
+    final resolved = _purchaseAccountId;
+    if (_purchaseAccountIdUid != uid ||
+        resolved == null ||
+        !RegExp(r'^[a-f0-9]{64}$').hasMatch(resolved)) {
+      throw StateError('Google Play hesap bağı hazırlanamadı.');
+    }
+
+    return resolved;
+  }
 
   static Future<PremiumEntitlement> verifyGooglePlayPurchase({
     required String productId,
@@ -85,7 +123,7 @@ class PremiumService {
     final data = _map(response.data);
 
     if (data['ok'] != true || data['entitlement'] is! Map) {
-      throw StateError('Premium satın alma doğrulanamadı.');
+      throw StateError('Linkball Pro satın alma doğrulanamadı.');
     }
 
     return PremiumEntitlement.fromMap(
@@ -96,7 +134,7 @@ class PremiumService {
   static void _requireGoogleAccount() {
     if (!AuthService.isGoogleAccount || AuthService.uid == null) {
       throw StateError(
-        'Premium için Google hesabına bağlı profil gerekli.',
+        'Linkball Pro için Google hesabına bağlı profil gerekli.',
       );
     }
   }

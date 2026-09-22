@@ -1,205 +1,210 @@
 import 'package:flutter/material.dart';
 
 import '../models/manager_rating.dart';
-import '../repositories/repository.dart';
 import '../services/manager_career_store.dart';
+import '../services/manager_roster_service.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/manager_ui.dart';
+import '../widgets/pitch_ui.dart';
 import 'club_manager_season_page.dart';
 
 class ClubManagerHubPage extends StatefulWidget {
-  const ClubManagerHubPage({super.key});
-
+  const ClubManagerHubPage({super.key, this.store, this.loadRoster});
+  final ManagerCareerStore? store;
+  final ManagerRosterLoader? loadRoster;
   @override
   State<ClubManagerHubPage> createState() => _ClubManagerHubPageState();
 }
 
 class _ClubManagerHubPageState extends State<ClubManagerHubPage> {
-  bool _booting = true;
+  ManagerCareerStore get _store => widget.store ?? ManagerCareerStore.instance;
   final Map<ManagerDifficulty, ManagerCareerState> _careers = {};
-
+  bool _loading = true, _busy = false;
+  String? _error;
   @override
   void initState() {
     super.initState();
-    _boot();
+    _load();
   }
 
-  Future<void> _boot() async {
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      await Repository.instance.initialize();
-    } catch (_) {}
-    for (final d in ManagerDifficulty.values) {
-      _careers[d] = await ManagerCareerStore.instance.load(d);
+      for (final d in ManagerDifficulty.values) {
+        _careers[d] = await _store.load(d);
+      }
+    } catch (e) {
+      _error = managerError(e);
     }
-    if (mounted) setState(() => _booting = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   Future<void> _open(ManagerDifficulty d) async {
-    await ManagerCareerStore.instance.startIfNeeded(d);
-    if (!mounted) return;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ClubManagerSeasonPage(difficulty: d),
-      ),
-    );
-    final updated = await ManagerCareerStore.instance.load(d);
-    if (mounted) setState(() => _careers[d] = updated);
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await _store.startIfNeeded(d);
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ClubManagerSeasonPage(
+            difficulty: d,
+            store: _store,
+            loadRoster: widget.loadRoster,
+          ),
+        ),
+      );
+      if (mounted) await _load();
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(managerError(e))));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _reset(ManagerDifficulty d) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF141A18),
-        title: const Text('Sıfırla?', style: TextStyle(color: Colors.white)),
+        title: Text('${d.label} kariyer sıfırlansın mı?'),
         content: const Text(
-          'Sezon, kadro ve bütçe silinecek.',
-          style: TextStyle(color: Colors.white70),
+          'Bu zorluktaki kadro, kasa, sezon ve arşiv silinir.',
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('İptal')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Vazgeç'),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Sıfırla')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Sıfırla'),
+          ),
         ],
       ),
     );
-    if (ok != true) return;
-    await ManagerCareerStore.instance.reset(d);
-    final fresh = await ManagerCareerStore.instance.load(d);
-    if (mounted) setState(() => _careers[d] = fresh);
+    if (ok != true || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      await _store.reset(d);
+      if (mounted) await _load();
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(managerError(e))));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0E14),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white70,
-        title: const Text('Club Manager', style: TextStyle(color: Colors.white)),
-      ),
-      body: _booting
-          ? const Center(child: CircularProgressIndicator())
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Club Manager')),
+    body: SafeArea(
+      top: false,
+      child: _loading
+          ? const ManagerMessage(
+              title: 'Kariyerlerin hazırlanıyor',
+              message: 'Kadro, kasa ve sezon kayıtların yükleniyor.',
+              loading: true,
+            )
+          : _error != null
+          ? ManagerMessage(
+              title: 'Kayıt açılamadı',
+              message: _error!,
+              onRetry: _load,
+            )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               children: [
-                const Text(
-                  '19 HAFTALIK SEZON',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                  ),
+                Text(
+                  '38 HAFTA · 20 TAKIM',
+                  style: Theme.of(context).textTheme.labelMedium
+                      ?.copyWith(color: PitchColors.of(context).accent),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
+                Text(
+                  'Kulübün.\nSenin kararların.',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+                const SizedBox(height: 12),
                 const Text(
-                  '18 rakip · 19 maç · puan durumu ve fikstür.\n'
-                  'Her hafta kadronla çık, taktik seç, sıralamayı kap.',
-                  style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.35),
+                  '19 rakip, iki devre. Kadronu kur, taktiğini belirle ve zirveye oyna.',
                 ),
                 const SizedBox(height: 20),
                 for (final d in ManagerDifficulty.values) ...[
-                  _DiffCard(
-                    difficulty: d,
-                    career: _careers[d] ?? ManagerCareerState.fresh(d),
-                    accent: d == ManagerDifficulty.easy
-                        ? const Color(0xFF00E676)
-                        : d == ManagerDifficulty.medium
-                            ? Colors.orangeAccent
-                            : Colors.redAccent,
-                    onPlay: () => _open(d),
-                    onReset: () => _reset(d),
-                  ),
-                  const SizedBox(height: 12),
+                  _career(d),
+                  const SizedBox(height: 14),
                 ],
+                const PitchSectionTitle('Sezon nasıl işler?'),
+                const Text(
+                  'Her rakiple bir iç saha, bir deplasman maçı oynarsın. '
+                  'Galibiyet 3, beraberlik 1 puan. Eşit puanda averaj, sonra atılan gol belirleyicidir.',
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Transfer listesi her hafta yenilenir. Sahip olduğun oyuncuyu ilk 11 ile '
+                  'yedekler arasında ücretsiz taşıyabilirsin. En fazla 25 oyuncu tutabilirsin. '
+                  'Galibiyet primi kulüp kasana eklenir; sezon sonunda kadronla yeni sezona geçersin.',
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'LINK bu kariyerin oyun içi bütçesidir.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
-    );
-  }
-}
+    ),
+  );
 
-class _DiffCard extends StatelessWidget {
-  final ManagerDifficulty difficulty;
-  final ManagerCareerState career;
-  final Color accent;
-  final VoidCallback onPlay;
-  final VoidCallback onReset;
-
-  const _DiffCard({
-    required this.difficulty,
-    required this.career,
-    required this.accent,
-    required this.onPlay,
-    required this.onReset,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final season = career.season;
-    final week = season?.nextFixture?.week;
-    return Material(
-      color: const Color(0xFF141A22),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: accent.withOpacity(0.35)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(difficulty.label.toUpperCase(),
-                    style: TextStyle(
-                        color: accent,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 13,
-                        letterSpacing: 1)),
-                const Spacer(),
-                if (career.started)
-                  TextButton(
-                    onPressed: onReset,
-                    child: const Text('Sıfırla',
-                        style: TextStyle(color: Colors.white38, fontSize: 12)),
-                  ),
-              ],
-            ),
-            Text('${career.budgetLink} LINK',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900)),
-            const SizedBox(height: 4),
-            Text(
-              season == null
-                  ? '19 haftalık yeni sezon'
-                  : season.isComplete
-                      ? 'Sezon bitti · Sıra ${season.userRank()}'
-                      : 'Hafta $week/19 · Sıra ${season.userRank()} · ${season.user.points} puan',
-              style: TextStyle(
-                  color: accent, fontSize: 12, fontWeight: FontWeight.w600),
-            ),
+  Widget _career(ManagerDifficulty d) {
+    final c = _careers[d]!;
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(d.label, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 6),
+          Text(d.description),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ManagerTag('${c.budgetLink} LINK', active: true),
+              ManagerTag('Galibiyet +${d.winBonusLink} LINK'),
+              if (c.season != null)
+                ManagerTag(
+                  c.season!.isComplete
+                      ? 'Sezon tamamlandı'
+                      : 'Hafta ${c.season!.nextFixture!.week}/38',
+                ),
+            ],
+          ),
+          if (c.started) ...[
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accent,
-                  foregroundColor: Colors.black,
-                ),
-                onPressed: onPlay,
-                child: Text(
-                  season == null ? 'SEZONU BAŞLAT' : 'SEZONA GİR',
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-              ),
+            Text(
+              'Kariyer: ${c.matchesPlayed} maç · ${c.wins}G ${c.draws}B ${c.losses}M',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
-        ),
+          const SizedBox(height: 14),
+          PitchAction(
+            label: c.started
+                ? '${d.label} kariyere devam'
+                : '${d.label} kariyer başlat',
+            onPressed: _busy ? null : () => _open(d),
+          ),
+          if (c.started)
+            TextButton(
+              onPressed: _busy ? null : () => _reset(d),
+              child: const Text('Kariyeri sıfırla'),
+            ),
+        ],
       ),
     );
   }

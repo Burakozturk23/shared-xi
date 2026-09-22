@@ -33,38 +33,75 @@ function verificationBlock() {
   return source.slice(start, end);
 }
 
-test("Google Play verifier uses official Android Publisher endpoints", () => {
+test("Google Play verifier uses subscriptions v2 as source of truth", () => {
   const block = verificationBlock();
 
   assert.ok(block.includes("purchases/subscriptionsv2/tokens/"));
-  assert.ok(block.includes("purchases/products/"));
+  assert.equal(block.includes("/purchases/products/"), false);
   assert.ok(block.includes("https://www.googleapis.com/auth/androidpublisher"));
   assert.equal(block.includes("request.data.verified"), false);
 });
 
-test("only canonical Linkball Premium product ids are accepted", () => {
+test("only canonical Linkball Pro launch product ids are accepted", () => {
   const block = verificationBlock();
 
   for (const productId of [
-    "linkball_premium_monthly",
-    "linkball_premium_yearly",
-    "linkball_premium_lifetime",
+    "linkball_pro_monthly",
+    "linkball_pro_yearly",
   ]) {
     assert.ok(block.includes(productId));
   }
 
+  assert.equal(block.includes("linkball_premium_monthly"), false);
+  assert.equal(block.includes("linkball_premium_yearly"), false);
+  assert.equal(block.includes("linkball_premium_lifetime"), false);
   assert.ok(block.includes("LB_PLAY_PREMIUM_PRODUCTS"));
   assert.ok(block.includes("lbPlayPremiumPlan(productId)"));
 });
 
-test("subscription and lifetime state are verified server-side", () => {
+test("subscription lifecycle state is verified server-side", () => {
   const block = verificationBlock();
 
   assert.ok(block.includes("SUBSCRIPTION_STATE_ACTIVE"));
   assert.ok(block.includes("SUBSCRIPTION_STATE_IN_GRACE_PERIOD"));
   assert.ok(block.includes("SUBSCRIPTION_STATE_CANCELED"));
   assert.ok(block.includes("expiresAt > currentTime"));
-  assert.ok(block.includes("const entitled = purchaseState === 0"));
+  assert.ok(block.includes("SUBSCRIPTION_STATE_CANCELED"));
+  assert.ok(block.includes("externalAccountIdentifiers"));
+  assert.ok(block.includes("obfuscatedExternalAccountId"));
+  assert.ok(block.includes("entitled: verified.result.entitled === true"));
+});
+
+test("purchase is cryptographically bound to the Linkball account", () => {
+  const block = verificationBlock();
+
+  assert.ok(block.includes("\"linkball-play:\" + uid"));
+  assert.ok(block.includes("lbPlayAccountId(uid)"));
+  assert.ok(block.includes("verified.result.accountId !== expectedAccountId"));
+  assert.ok(block.includes("\"permission-denied\""));
+});
+
+test("subscription renewals and cancellations are reconciled from Play", () => {
+  const block = verificationBlock();
+
+  assert.ok(block.includes("exports.reconcilePremiumSubscriptions"));
+  assert.ok(block.includes("schedule: \"every 30 minutes\""));
+  assert.ok(block.includes("lbPremiumRefreshFromPlay"));
+  assert.ok(block.includes("purchaseToken: purchaseToken"));
+  assert.ok(block.includes("premiumPurchaseOwners"));
+});
+
+test("new Pro subscriptions are acknowledged on the trusted backend", () => {
+  const block = verificationBlock();
+
+  assert.ok(block.includes("lbPlayAcknowledgeSubscription"));
+  assert.ok(block.includes("/purchases/subscriptions/"));
+  assert.ok(block.includes(":acknowledge"));
+  assert.ok(block.includes("ACKNOWLEDGEMENT_STATE_PENDING"));
+  assert.ok(block.includes("ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED"));
+  assert.ok(block.includes("externalAccountIds"));
+  assert.ok(block.includes("obfuscatedAccountId"));
+  assert.ok(block.includes("lbPremiumApplyAndAcknowledge"));
 });
 
 test("purchase token replay uses a private hash claim", () => {
@@ -85,7 +122,8 @@ test("verified Play purchase is the only source of premium activation", () => {
   assert.ok(block.includes("exports.verifyPremiumPurchase"));
   assert.ok(block.includes("verified: true"));
   assert.ok(block.includes("premiumState/"));
-  assert.ok(block.includes("premiumEntitlements/"));
+  assert.ok(block.includes("lbPremiumWriteProjection"));
+  assert.ok(source.includes("premiumEntitlements/"));
   assert.ok(block.includes("lbRequireGoogleLinked(request)"));
 });
 
