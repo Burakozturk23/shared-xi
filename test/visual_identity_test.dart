@@ -56,14 +56,16 @@ void main() {
   });
 
   testWidgets('all bundled portraits decode and missing custom images fall back', (tester) async {
-    for (final asset in PlayerAvatar.representativeAssets) {
-      final data = await rootBundle.load(asset);
-      final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
-      final frame = await codec.getNextFrame();
-      expect(frame.image.width, 384);
-      frame.image.dispose();
-      codec.dispose();
-    }
+    await tester.runAsync(() async {
+      for (final asset in PlayerAvatar.representativeAssets) {
+        final data = await rootBundle.load(asset);
+        final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+        final frame = await codec.getNextFrame();
+        expect(frame.image.width, 384);
+        frame.image.dispose();
+        codec.dispose();
+      }
+    });
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: PlayerAvatar(
       player: player(1, avatarKey: 'intentionally_missing'),
     ))));
@@ -74,7 +76,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.byType(PlayerAvatar), findsOneWidget);
-    expect(PlayerAvatar.representativeAssetFor(1), PlayerAvatar.representativeAssetFor(1));
+    expect(tester.widgetList<RawImage>(find.byType(RawImage)).any((image) => image.image != null), isTrue);
     expect({for (var id = 1; id <= 100; id++) PlayerAvatar.representativeAssetFor(id)},
         PlayerAvatar.representativeAssets.toSet());
   });
