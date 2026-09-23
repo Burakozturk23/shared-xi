@@ -1,722 +1,390 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-
+import '../app/app_copy.dart';
+import '../app/app_feedback.dart';
 import '../models/achievement_catalog.dart';
 import '../models/achievement_models.dart';
-import '../models/economy_models.dart';
-import '../services/achievement_presentation_store.dart';
-import '../services/achievement_service.dart';
-import '../services/economy_service.dart';
+import '../services/experience/badges_gateway.dart';
 import '../widgets/achievement_badge_emblem.dart';
-import '../widgets/wallet_balance_chip.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/social_ui.dart';
+
+enum _BadgeFilter { all, unlocked, locked, rewards }
 
 class AchievementsPage extends StatefulWidget {
-  const AchievementsPage({super.key});
-
+  const AchievementsPage({super.key, this.gateway = const BadgesGateway()});
+  final BadgesGateway gateway;
   @override
   State<AchievementsPage> createState() => _AchievementsPageState();
 }
 
 class _AchievementsPageState extends State<AchievementsPage> {
-  final Set<String> _claiming = <String>{};
-
+  BadgeSnapshot? _data;
+  bool _loading = false, _error = false;
+  final Set<String> _claiming = {}, _acknowledged = {};
   AchievementCategory? _category;
-  Map<String, int> _rewards = const {};
-  AchievementDefinition _priced(AchievementDefinition item) =>
-      item.withCoinReward(_rewards[item.id] ?? 0);
-  bool _syncing = true;
-  bool _presenting = false;
-  String? _syncError;
-
+  _BadgeFilter _filter = _BadgeFilter.all;
+  String c(String tr, String en) => appCopy(context, tr, en);
   @override
   void initState() {
     super.initState();
-    _sync();
+    _load();
   }
 
-  Future<void> _sync() async {
+  Future<void> _load() async {
+    if (_loading || _claiming.isNotEmpty || !widget.gateway.connected) return;
     setState(() {
-      _syncing = true;
-      _syncError = null;
+      _loading = true;
+      _error = false;
     });
-
     try {
-      await Future.wait([
-        AchievementService.syncMyAchievements(),
-        EconomyService.syncMyWallet(),
-        EconomyService.achievementRewards().then((value) => _rewards = value),
-      ]);
+      final data = await widget.gateway.load();
+      if (mounted) setState(() => _data = data);
     } catch (_) {
-      _syncError = 'Rozet veya Link Coin ilerlemesi şu anda eşitlenemedi.';
+      if (mounted) setState(() => _error = true);
     } finally {
-      if (mounted) {
-        setState(() => _syncing = false);
-      }
+      if (mounted) setState(() => _loading = false);
     }
   }
 
-  Future<void> _claim(AchievementDefinition definition) async {
-    if (_claiming.contains(definition.id)) return;
-
-    setState(() {
-      _claiming.add(definition.id);
-    });
-
+  bool _claimed(String id) =>
+      _acknowledged.contains(id) ||
+      _data!.claims.containsKey(widget.gateway.claimId(id));
+  AchievementDefinition _priced(AchievementDefinition d) => d.withCoinReward(
+    _data!.claims[widget.gateway.claimId(d.id)]?.amount ??
+        _data!.rewards[d.id] ??
+        0,
+  );
+  Future<void> _claim(AchievementDefinition d) async {
+    if (_claiming.contains(d.id) ||
+        _claimed(d.id) ||
+        _loading ||
+        _data!.progress[d.id]?.unlocked != true ||
+        d.coinReward <= 0)
+      return;
+    setState(() => _claiming.add(d.id));
     try {
-      final result = await EconomyService.claimAchievementReward(definition.id);
-
+      final r = await widget.gateway.claim(d.id);
       if (!mounted) return;
-
-      final message = result.granted
-          ? '+${result.amount} Link Coin hesabına eklendi.'
-          : 'Bu başarım ödülü daha önce alınmış.';
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
-    } catch (_) {
-      if (!mounted) return;
-
+      if (r.granted || r.alreadyClaimed)
+        setState(() => _acknowledged.add(d.id));
+      if (r.granted) AppFeedback.answer(correct: true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Başarım ödülü alınamadı. Kilidin açık olduğundan emin ol.',
+            r.granted
+                ? '+${r.amount} Link Coin'
+                : r.alreadyClaimed
+                ? c('Ödül zaten alındı.', 'Reward already claimed.')
+                : c(
+                    'Ödül şu anda kullanılamıyor.',
+                    'Reward currently unavailable.',
+                  ),
           ),
         ),
       );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _claiming.remove(definition.id);
-        });
-      }
-    }
-  }
-
-  Future<void> _presentNew(Map<String, AchievementProgress> progress) async {
-    if (_presenting) return;
-
-    final unlocked = AchievementCatalog.all
-        .where((item) => progress[item.id]?.unlocked == true)
-        .map((item) => item.id)
-        .toList();
-
-    if (unlocked.isEmpty) return;
-
-    final seen = await AchievementPresentationStore.loadSeenIds();
-    final unseen = unlocked.where((id) => !seen.contains(id)).toList();
-
-    if (unseen.isEmpty || !mounted) return;
-
-    _presenting = true;
-    try {
-      for (final id in unseen) {
-        final item = AchievementCatalog.byId[id];
-        if (item == null || !mounted) continue;
-
-        await showDialog<void>(
-          context: context,
-          builder: (_) => _UnlockedDialog(definition: _priced(item)),
-        );
-
-        await AchievementPresentationStore.markSeen(id);
-      }
-    } finally {
-      _presenting = false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rozetler'),
-        actions: [
-          const WalletBalanceChip(compact: true),
-          IconButton(
-            tooltip: 'İlerlemeyi eşitle',
-            onPressed: _syncing ? null : _sync,
-            icon: _syncing
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.sync_rounded),
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              c(
+                'Ödül alınamadı. Yeniden deneyebilirsin.',
+                'Could not claim reward. Please retry.',
+              ),
+            ),
           ),
-        ],
-      ),
-      body: StreamBuilder<Map<String, AchievementProgress>>(
-        stream: AchievementService.watchProgress(),
-        builder: (context, snapshot) {
-          final progress =
-              snapshot.data ?? const <String, AchievementProgress>{};
+        );
+    } finally {
+      if (mounted) setState(() => _claiming.remove(d.id));
+    }
+  }
 
-          if (snapshot.hasData) {
-            scheduleMicrotask(() => _presentNew(progress));
-          }
-
-          return StreamBuilder<Map<String, EconomyRewardClaim>>(
-            stream: EconomyService.watchRewardClaims(),
-            builder: (context, claimSnapshot) {
-              final claims =
-                  claimSnapshot.data ?? const <String, EconomyRewardClaim>{};
-              final definitions = _category == null
-                  ? AchievementCatalog.all
-                  : AchievementCatalog.forCategory(_category!);
-
-              final unlockedCount = AchievementCatalog.all
-                  .where((item) => progress[item.id]?.unlocked == true)
-                  .length;
-
-              return CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: _SummaryCard(
-                      unlockedCount: unlockedCount,
-                      totalCount: AchievementCatalog.all.length,
-                      error: _syncError,
-                      onRetry: _sync,
-                    ),
+  void _details(AchievementDefinition d) {
+    final p = _data!.progress[d.id];
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheet) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheet).height * .72,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AchievementBadgeEmblem(
+                  definition: d,
+                  unlocked: p?.unlocked == true,
+                  size: 100,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  d.title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(sheet).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 10),
+                Text(d.description, textAlign: TextAlign.center),
+                const SizedBox(height: 20),
+                LinearProgressIndicator(value: _ratio(d)),
+                const SizedBox(height: 8),
+                Text(
+                  '${p?.value ?? 0} / ${_target(d)}',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  d.coinReward > 0
+                      ? '+${d.coinReward} Link Coin'
+                      : c('Coin ödülü şu anda yok', 'No coin reward available'),
+                  textAlign: TextAlign.center,
+                ),
+                if (p?.unlockedAtMs != null)
+                  Text(
+                    socialDate(p!.unlockedAtMs),
+                    textAlign: TextAlign.center,
                   ),
-                  SliverToBoxAdapter(
-                    child: _CategoryFilters(
-                      selected: _category,
-                      onChanged: (value) {
-                        setState(() => _category = value);
-                      },
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(14, 8, 14, 32),
-                    sliver: SliverLayoutBuilder(
-                      builder: (context, constraints) {
-                        final width = constraints.crossAxisExtent;
-                        final columns = width >= 900
-                            ? 5
-                            : width >= 650
-                            ? 4
-                            : width >= 430
-                            ? 3
-                            : 2;
-
-                        return SliverGrid(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: columns,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 0.68,
-                              ),
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final definition = definitions[index];
-                            final receipt =
-                                claims[EconomyService.achievementClaimId(
-                                  definition.id,
-                                )];
-                            final item = receipt != null
-                                ? definition.withCoinReward(receipt.amount)
-                                : _priced(definition);
-                            final claimId = EconomyService.achievementClaimId(
-                              item.id,
-                            );
-
-                            return _BadgeTile(
-                              definition: item,
-                              progress: progress[item.id],
-                              claimed: claims.containsKey(claimId),
-                              claiming: _claiming.contains(item.id),
-                              onClaim: () => _claim(item),
-                            );
-                          }, childCount: definitions.length),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-        },
+                const SizedBox(height: 20),
+                // Claim on the live page, where pending/error state stays visible.
+                FilledButton(
+                  onPressed: () => Navigator.pop(sheet),
+                  child: Text(c('Koleksiyona dön', 'Back to collection')),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
-}
 
-class _SummaryCard extends StatelessWidget {
-  final int unlockedCount;
-  final int totalCount;
-  final String? error;
-  final VoidCallback onRetry;
-
-  const _SummaryCard({
-    required this.unlockedCount,
-    required this.totalCount,
-    required this.error,
-    required this.onRetry,
-  });
-
+  int _target(AchievementDefinition d) =>
+      (_data!.progress[d.id]?.target ?? 0) > 0
+      ? _data!.progress[d.id]!.target
+      : d.target;
+  double _ratio(AchievementDefinition d) => _target(d) <= 0
+      ? 0
+      : ((_data!.progress[d.id]?.value ?? 0) / _target(d))
+            .clamp(0, 1)
+            .toDouble();
   @override
-  Widget build(BuildContext context) {
-    final ratio = totalCount == 0 ? 0.0 : unlockedCount / totalCount;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(c('Rozet Koleksiyonu', 'Badge Collection')),
+      actions: [
+        IconButton(
+          tooltip: c('Yenile', 'Refresh'),
+          onPressed: _loading || _claiming.isNotEmpty ? null : _load,
+          icon: const Icon(Icons.refresh_rounded),
+        ),
+      ],
+    ),
+    body: SafeArea(
+      child: !widget.gateway.connected
+          ? SocialAccountGate(
+              onReturn: () {
+                setState(() {});
+                _load();
+              },
+            )
+          : _data == null
+          ? _error
+                ? SocialNotice(
+                    title: c(
+                      'Koleksiyon yüklenemedi',
+                      'Collection unavailable',
+                    ),
+                    message: c(
+                      'Bağlantını kontrol edip tekrar dene.',
+                      'Check your connection and retry.',
+                    ),
+                    onAction: _load,
+                  )
+                : const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(onRefresh: _load, child: _collection()),
+    ),
+  );
+  Widget _collection() {
+    final unlocked = AchievementCatalog.all
+        .where((d) => _data!.progress[d.id]?.unlocked == true)
+        .length;
+    final visible =
+        AchievementCatalog.all
+            .where((d) {
+              if (_category != null && d.category != _category) return false;
+              final open = _data!.progress[d.id]?.unlocked == true;
+              return switch (_filter) {
+                _BadgeFilter.all => true,
+                _BadgeFilter.unlocked => open,
+                _BadgeFilter.locked => !open,
+                _BadgeFilter.rewards =>
+                  open && !_claimed(d.id) && (_data!.rewards[d.id] ?? 0) > 0,
+              };
+            })
+            .map(_priced)
+            .toList()
+          ..sort((a, b) => _ratio(b).compareTo(_ratio(a)));
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      children: [
+        if (_loading) const LinearProgressIndicator(),
+        SocialHero(
+          icon: Icons.military_tech_rounded,
+          eyebrow: c('SAHADAKİ İMZAN', 'YOUR MARK ON THE PITCH'),
+          title: c('$unlocked rozet senin.', '$unlocked badges earned.'),
+          message: c(
+            'Her rozet ayrı bir hikâye. Sıradaki hedefini seç.',
+            'Every badge tells a story. Choose your next goal.',
+          ),
+          footer: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              LinearProgressIndicator(
+                value: unlocked / AchievementCatalog.all.length,
+                minHeight: 8,
+              ),
+              const SizedBox(height: 8),
+              Text('$unlocked / ${AchievementCatalog.all.length}'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (_error)
+          SocialNotice(
+            title: c('Yenilenemedi', 'Refresh failed'),
+            message: c(
+              'Son koleksiyon bilgilerin gösteriliyor.',
+              'Showing your last loaded collection.',
+            ),
+            onAction: _load,
+          ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final f in _BadgeFilter.values)
+              ChoiceChip(
+                label: Text(switch (f) {
+                  _BadgeFilter.all => c('Tümü', 'All'),
+                  _BadgeFilter.unlocked => c('Kazanılan', 'Earned'),
+                  _BadgeFilter.locked => c('Kilitli', 'Locked'),
+                  _BadgeFilter.rewards => c('Ödülü hazır', 'Ready to claim'),
+                }),
+                selected: _filter == f,
+                onSelected: (_) => setState(() => _filter = f),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            ChoiceChip(
+              label: Text(c('Her kategori', 'All categories')),
+              selected: _category == null,
+              onSelected: (_) => setState(() => _category = null),
+            ),
+            for (final cat in AchievementCategory.values)
+              ChoiceChip(
+                label: Text(switch (cat) {
+                  AchievementCategory.ranked => c('Dereceli', 'Ranked'),
+                  AchievementCategory.mastery => c('Ustalık', 'Mastery'),
+                  AchievementCategory.daily => c('Günlük', 'Daily'),
+                  AchievementCategory.social => c('Sosyal', 'Social'),
+                }),
+                selected: _category == cat,
+                onSelected: (_) => setState(() => _category = cat),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (visible.isEmpty)
+          SocialNotice(
+            title: c('Bu filtrede rozet yok', 'No matching badges'),
+            message: c(
+              'Diğer kategorileri keşfet.',
+              'Explore another category.',
+            ),
+          ),
+        for (final d in visible)
+          Padding(padding: const EdgeInsets.only(bottom: 12), child: _tile(d)),
+      ],
+    );
+  }
+
+  Widget _tile(AchievementDefinition d) {
+    final open = _data!.progress[d.id]?.unlocked == true;
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            onTap: () => _details(d),
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
                 children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Icon(
-                      Icons.military_tech_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  AchievementBadgeEmblem(
+                    definition: d,
+                    unlocked: open,
+                    size: 66,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Rozet Koleksiyonu',
-                          style: TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
                         Text(
-                          '$unlockedCount / $totalCount rozet açıldı',
-                          style: TextStyle(color: Theme.of(context).hintColor),
+                          d.title,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
+                        const SizedBox(height: 4),
+                        Text(d.description),
                       ],
                     ),
                   ),
-                  Text(
-                    '${(ratio * 100).round()}%',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                  const Icon(Icons.chevron_right_rounded, size: 20),
                 ],
               ),
-              const SizedBox(height: 14),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(999),
-                child: LinearProgressIndicator(value: ratio, minHeight: 8),
-              ),
-              if (error != null) ...[
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        error!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: onRetry,
-                      child: const Text('Tekrar Dene'),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryFilters extends StatelessWidget {
-  final AchievementCategory? selected;
-  final ValueChanged<AchievementCategory?> onChanged;
-
-  const _CategoryFilters({required this.selected, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    final items = <(String, AchievementCategory?, IconData)>[
-      ('Tümü', null, Icons.apps_rounded),
-      ('Dereceli', AchievementCategory.ranked, Icons.emoji_events_outlined),
-      ('Ustalık', AchievementCategory.mastery, Icons.sports_esports_rounded),
-      ('Günlük', AchievementCategory.daily, Icons.calendar_today_rounded),
-      ('Sosyal', AchievementCategory.social, Icons.people_outline_rounded),
-    ];
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
-      child: Row(
-        children: items.map((item) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              selected: selected == item.$2,
-              onSelected: (_) => onChanged(item.$2),
-              avatar: Icon(item.$3, size: 17),
-              label: Text(item.$1),
             ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-class _BadgeTile extends StatelessWidget {
-  final AchievementDefinition definition;
-  final AchievementProgress? progress;
-  final bool claimed;
-  final bool claiming;
-  final Future<void> Function() onClaim;
-
-  const _BadgeTile({
-    required this.definition,
-    required this.progress,
-    required this.claimed,
-    required this.claiming,
-    required this.onClaim,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final unlocked = progress?.unlocked == true;
-    final value = progress?.value ?? 0;
-    final target = (progress?.target ?? 0) > 0
-        ? progress!.target
-        : definition.target;
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => showModalBottomSheet<void>(
-          context: context,
-          showDragHandle: true,
-          builder: (_) => _DetailsSheet(
-            definition: definition,
-            progress: progress,
-            claimed: claimed,
-            claiming: claiming,
-            onClaim: onClaim,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 14, 10, 12),
-          child: Column(
-            children: [
-              AchievementBadgeEmblem(
-                definition: definition,
-                unlocked: unlocked,
-                size: 68,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                definition.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: unlocked ? null : Theme.of(context).hintColor,
-                ),
-              ),
-              const SizedBox(height: 6),
-              _CoinRewardPill(amount: definition.coinReward),
-              const Spacer(),
-              if (unlocked)
-                claimed
-                    ? const _RewardClaimedPill()
-                    : FilledButton.tonalIcon(
-                        onPressed: claiming || definition.coinReward <= 0
-                            ? null
-                            : onClaim,
-                        icon: claiming
-                            ? const SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(
-                                Icons.monetization_on_rounded,
-                                size: 17,
-                              ),
-                        label: Text(
-                          claiming
-                              ? 'Alınıyor'
-                              : definition.coinReward > 0
-                              ? 'Topla +${definition.coinReward}'
-                              : 'Ödül bekleniyor',
-                        ),
-                      )
-              else ...[
-                Text(
-                  '$value / $target',
-                  style: TextStyle(
-                    color: Theme.of(context).hintColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: target <= 0
-                        ? 0
-                        : (value / target).clamp(0, 1).toDouble(),
-                    minHeight: 5,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CoinRewardPill extends StatelessWidget {
-  final int amount;
-
-  const _CoinRewardPill({required this.amount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFB300).withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.monetization_on_rounded,
-            color: Color(0xFFFFB300),
-            size: 15,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            amount > 0 ? '+$amount Link Coin' : '—',
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RewardClaimedPill extends StatelessWidget {
-  const _RewardClaimedPill();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        'ÖDÜL ALINDI',
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
-        ),
-      ),
-    );
-  }
-}
-
-class _DetailsSheet extends StatelessWidget {
-  final AchievementDefinition definition;
-  final AchievementProgress? progress;
-  final bool claimed;
-  final bool claiming;
-  final Future<void> Function() onClaim;
-
-  const _DetailsSheet({
-    required this.definition,
-    required this.progress,
-    required this.claimed,
-    required this.claiming,
-    required this.onClaim,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final unlocked = progress?.unlocked == true;
-    final value = progress?.value ?? 0;
-    final target = (progress?.target ?? 0) > 0
-        ? progress!.target
-        : definition.target;
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(22, 6, 22, 26),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AchievementBadgeEmblem(
-              definition: definition,
-              unlocked: unlocked,
-              size: 92,
-            ),
-            const SizedBox(height: 14),
-            Text(
-              definition.title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              definition.description,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor, height: 1.4),
-            ),
-            const SizedBox(height: 12),
-            _CoinRewardPill(amount: definition.coinReward),
-            const SizedBox(height: 18),
-            if (unlocked)
-              if (claimed)
-                const _RewardClaimedPill()
-              else
-                FilledButton.icon(
-                  onPressed: claiming || definition.coinReward <= 0
-                      ? null
-                      : () async {
-                          await onClaim();
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        },
-                  icon: claiming
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.monetization_on_rounded),
-                  label: Text(
-                    claiming
-                        ? 'Ödül alınıyor'
-                        : definition.coinReward > 0
-                        ? '+${definition.coinReward} Link Coin topla'
-                        : 'Ödül kullanılamıyor',
-                  ),
-                )
-            else ...[
-              Row(
-                children: [
-                  const Text(
-                    'İlerleme',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '$value / $target',
-                    style: const TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(999),
-                child: LinearProgressIndicator(
-                  value: target <= 0
-                      ? 0
-                      : (value / target).clamp(0, 1).toDouble(),
-                  minHeight: 9,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _UnlockedDialog extends StatelessWidget {
-  final AchievementDefinition definition;
-
-  const _UnlockedDialog({required this.definition});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AchievementBadgeEmblem.tierColor(definition.tier);
-
-    return AlertDialog(
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'YENİ ROZET',
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 18),
-          AchievementBadgeEmblem(
-            definition: definition,
-            unlocked: true,
-            size: 104,
-          ),
-          const SizedBox(height: 18),
-          Text(
-            definition.title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            definition.description,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).hintColor),
           ),
           const SizedBox(height: 12),
-          _CoinRewardPill(amount: definition.coinReward),
+          LinearProgressIndicator(value: _ratio(d)),
           const SizedBox(height: 8),
-          Text(
-            'Link Coin ödülünü Rozetler ekranından toplayabilirsin.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).hintColor, fontSize: 12),
+          Wrap(
+            spacing: 10,
+            runSpacing: 8,
+            children: [
+              Text('${_data!.progress[d.id]?.value ?? 0}/${_target(d)}'),
+              SocialStatus(
+                open ? c('Kazanıldı', 'Earned') : c('Kilitli', 'Locked'),
+                complete: !open,
+              ),
+              if (d.coinReward > 0) Text('+${d.coinReward} Link Coin'),
+            ],
           ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Harika'),
-          ),
+          if (open && !_claimed(d.id) && d.coinReward > 0) ...[
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: _loading || _claiming.contains(d.id)
+                  ? null
+                  : () => _claim(d),
+              child: Text(
+                _claiming.contains(d.id)
+                    ? c('Alınıyor…', 'Claiming…')
+                    : c('Ödülü al', 'Claim reward'),
+              ),
+            ),
+          ],
+          if (_claimed(d.id))
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(c('Ödül alındı', 'Reward claimed')),
+            ),
         ],
       ),
     );

@@ -5,15 +5,16 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../models/premium_billing_models.dart';
 import '../models/premium_models.dart';
-import '../services/auth_service.dart';
-import '../services/monetization_analytics.dart';
 import '../services/premium_billing_service.dart';
-import '../services/premium_service.dart';
-import '../services/profile_service.dart';
 import 'sign_in_page.dart';
+import '../services/experience/pro_gateway.dart';
+import '../app/route_appearance.dart';
+import '../widgets/social_ui.dart';
+import '../widgets/pitch_ui.dart';
 
 class PremiumPage extends StatefulWidget {
-  const PremiumPage({super.key});
+  const PremiumPage({super.key, this.gateway = const ProGateway()});
+  final ProGateway gateway;
 
   @override
   State<PremiumPage> createState() => _PremiumPageState();
@@ -28,17 +29,17 @@ class _PremiumPageState extends State<PremiumPage> {
 
   PremiumPlan? _launchingPlan;
   bool _restoring = false;
+  bool _pending = false;
+  bool _reloading = false;
   bool _cancellationLogged = false;
   String? _purchaseStateMessage;
 
   @override
   void initState() {
     super.initState();
-    unawaited(
-      MonetizationAnalytics.instance.surfaceViewed('linkball_pro'),
-    );
+    widget.gateway.record('view');
 
-    if (AuthService.isGoogleAccount) {
+    if (widget.gateway.connected) {
       _startPersistentSession();
     }
   }
@@ -50,28 +51,27 @@ class _PremiumPageState extends State<PremiumPage> {
   }
 
   Future<PremiumEntitlement> _loadEntitlement() async {
-    final entitlement = await PremiumService.fetchStatus();
+    final entitlement = await widget.gateway.status();
     if (entitlement.cancellationPending && !_cancellationLogged) {
       _cancellationLogged = true;
-      unawaited(
-        MonetizationAnalytics.instance.premiumCancelled(
-          entitlement.productId,
-        ),
-      );
+      widget.gateway.record('cancel', productId: entitlement.productId);
     }
     return entitlement;
   }
 
   void _startPersistentSession() {
     _entitlementFuture = _loadEntitlement();
-    _catalogFuture = PremiumBillingService.queryCatalog();
+    _catalogFuture = widget.gateway.catalog().catchError(
+      (Object _) => const PremiumBillingCatalog.unavailable(),
+    );
 
     _purchaseSubscription?.cancel();
-    _purchaseSubscription = PremiumBillingService.purchaseUpdates.listen(
+    _purchaseSubscription = widget.gateway.purchases.listen(
       _handlePurchaseUpdates,
       onError: (Object error) {
         if (!mounted) return;
         setState(() {
+          _pending = false;
           _purchaseStateMessage =
               'Google Play satın alma akışı şu anda kullanılamıyor.';
         });
@@ -80,33 +80,49 @@ class _PremiumPageState extends State<PremiumPage> {
   }
 
   Future<void> _reload() async {
-    if (!AuthService.isGoogleAccount) return;
-
+    if (!widget.gateway.connected || _reloading) return;
+    setState(() {
+      _reloading = true;
+    });
     final entitlement = _loadEntitlement();
-    final catalog = PremiumBillingService.queryCatalog();
-
+    final catalog = widget.gateway.catalog().catchError(
+      (Object _) => const PremiumBillingCatalog.unavailable(),
+    );
     setState(() {
       _entitlementFuture = entitlement;
       _catalogFuture = catalog;
     });
-
-    await entitlement;
-    await catalog;
+    try {
+      await Future.wait<Object>([entitlement, catalog]);
+    } catch (_) {
+      /* FutureBuilders display recoverable errors. */
+    } finally {
+      if (mounted) setState(() => _reloading = false);
+    }
   }
 
   Future<void> _connectGoogle() async {
     final signedIn = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
+      LinkballRoute(
+        modern: false,
         builder: (_) => const LinkballSignInPage(allowSkip: false),
       ),
     );
 
-    if (!mounted || signedIn != true || !AuthService.isGoogleAccount) {
+    if (!mounted || signedIn != true || !widget.gateway.connected) {
       return;
     }
 
-    await ProfileService.ensureCanonicalProfile();
+    try {
+      await widget.gateway.prepareProfile();
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profil hazırlanamadı. Yeniden dene.')),
+        );
+      return;
+    }
 
     if (!mounted) return;
 
@@ -119,25 +135,22 @@ class _PremiumPageState extends State<PremiumPage> {
   }
 
   Future<void> _buy(PremiumBillingProduct product) async {
-    if (_launchingPlan != null) return;
+    if (_launchingPlan != null || _pending || _restoring || _reloading) return;
 
     setState(() {
       _launchingPlan = product.plan;
+      _pending = true;
       _purchaseStateMessage = null;
     });
 
     try {
-      unawaited(
-        MonetizationAnalytics.instance.purchaseStarted(
-          flow: 'pro',
-          productId: product.productId,
-        ),
-      );
-      final launched = await PremiumBillingService.purchasePlan(product.plan);
+      widget.gateway.record('start', productId: product.productId);
+      final launched = await widget.gateway.buy(product.plan);
 
       if (!mounted) return;
 
       setState(() {
+        if (!launched) _pending = false;
         _purchaseStateMessage = launched
             ? 'Google Play satın alma ekranı açıldı. Onay bekleniyor.'
             : 'Google Play satın alma ekranı açılamadı.';
@@ -146,6 +159,7 @@ class _PremiumPageState extends State<PremiumPage> {
       if (!mounted) return;
 
       setState(() {
+        _pending = false;
         _purchaseStateMessage = _friendlyBillingError(error);
       });
     } finally {
@@ -158,7 +172,7 @@ class _PremiumPageState extends State<PremiumPage> {
   }
 
   Future<void> _restore() async {
-    if (_restoring) return;
+    if (_restoring || _launchingPlan != null) return;
 
     setState(() {
       _restoring = true;
@@ -167,7 +181,7 @@ class _PremiumPageState extends State<PremiumPage> {
     });
 
     try {
-      await PremiumBillingService.restorePurchases();
+      await widget.gateway.restore();
 
       if (!mounted) return;
 
@@ -179,6 +193,7 @@ class _PremiumPageState extends State<PremiumPage> {
       if (!mounted) return;
 
       setState(() {
+        _pending = false;
         _purchaseStateMessage = _friendlyBillingError(error);
       });
     } finally {
@@ -196,6 +211,7 @@ class _PremiumPageState extends State<PremiumPage> {
       switch (purchase.status) {
         case PurchaseStatus.pending:
           setState(() {
+            _pending = true;
             _purchaseStateMessage =
                 'Google Play satın alma onayı bekleniyor...';
           });
@@ -203,14 +219,15 @@ class _PremiumPageState extends State<PremiumPage> {
 
         case PurchaseStatus.error:
           setState(() {
+            _pending = false;
             _purchaseStateMessage =
-                purchase.error?.message ??
-                'Google Play satın alma işlemi tamamlanamadı.';
+                'Satın alma tamamlanamadı. Tekrar deneyebilir veya satın almalarını geri yükleyebilirsin.';
           });
           break;
 
         case PurchaseStatus.canceled:
           setState(() {
+            _pending = false;
             _purchaseStateMessage = 'Satın alma iptal edildi.';
           });
           break;
@@ -230,6 +247,7 @@ class _PremiumPageState extends State<PremiumPage> {
 
     if (_verifyingPurchaseKeys.contains(key)) return;
     _verifyingPurchaseKeys.add(key);
+    _pending = true;
 
     if (mounted) {
       setState(() {
@@ -239,22 +257,19 @@ class _PremiumPageState extends State<PremiumPage> {
     }
 
     try {
-      final entitlement = await PremiumBillingService.verifyAndComplete(
-        purchase,
-      );
-      unawaited(
-        MonetizationAnalytics.instance.purchaseCompleted(
-          flow: 'pro',
-          productId: purchase.productID,
-          restored: purchase.status == PurchaseStatus.restored,
-        ),
+      final entitlement = await widget.gateway.verify(purchase);
+      widget.gateway.record(
+        'complete',
+        productId: purchase.productID,
+        restored: purchase.status == PurchaseStatus.restored,
       );
 
       if (!mounted) return;
 
       setState(() {
         _entitlementFuture = Future<PremiumEntitlement>.value(entitlement);
-        _purchaseStateMessage = 'Linkball Pro doğrulandı ve hesabına tanımlandı.';
+        _purchaseStateMessage =
+            'Linkball Pro doğrulandı ve hesabına tanımlandı.';
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -268,6 +283,7 @@ class _PremiumPageState extends State<PremiumPage> {
       });
     } finally {
       _verifyingPurchaseKeys.remove(key);
+      if (mounted) setState(() => _pending = _verifyingPurchaseKeys.isNotEmpty);
     }
   }
 
@@ -277,7 +293,7 @@ class _PremiumPageState extends State<PremiumPage> {
     if (raw.contains('bulunamadı') ||
         raw.contains('not found') ||
         raw.contains('product')) {
-      return 'Linkball Pro ürünleri Google Play üzerinde henüz etkin değil.';
+      return 'Bu plan şu anda kullanılamıyor. Daha sonra yeniden dene.';
     }
 
     if (raw.contains('kullanılamıyor') ||
@@ -295,706 +311,299 @@ class _PremiumPageState extends State<PremiumPage> {
     if (raw.contains('failed-precondition') ||
         raw.contains('play developer api') ||
         raw.contains('api access')) {
-      return 'Satın alma doğrulaması Play Console/API kurulumu '
-          'tamamlandıktan sonra etkinleşecek.';
+      return 'Satın alma henüz doğrulanamadı. Yeniden ödeme yapmadan satın almalarını geri yüklemeyi dene.';
     }
 
-    return 'Satın alma doğrulanamadı. Premium hakkı verilmedi.';
+    return 'Satın alma doğrulanamadı. Üyeliğin etkinleşmedi; satın almalarını geri yükleyerek tekrar deneyebilirsin.';
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Linkball Pro')),
-      body: AuthService.isGoogleAccount
-          ? _buildPersistentBody()
-          : _buildAccountRequired(),
-    );
-  }
-
-  Widget _buildAccountRequired() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.workspace_premium_outlined, size: 54),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Linkball Pro için kalıcı profil gerekli',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Linkball Pro üyeliğin ve satın alma geçmişin Google hesabına '
-                    'bağlı Linkball profilinde korunur.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: _connectGoogle,
-                      icon: const Icon(Icons.login_rounded),
-                      label: const Text('Google ile Bağla'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Linkball Pro'),
+      actions: [
+        if (widget.gateway.connected)
+          IconButton(
+            tooltip: 'Yenile',
+            onPressed: _reloading ? null : _reload,
+            icon: const Icon(Icons.refresh_rounded),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPersistentBody() {
-    final entitlementFuture = _entitlementFuture ??= _loadEntitlement();
-
-    return FutureBuilder<PremiumEntitlement>(
-      future: entitlementFuture,
-      builder: (context, entitlementSnapshot) {
-        final entitlement =
-            entitlementSnapshot.data ?? const PremiumEntitlement.inactive();
-
-        return RefreshIndicator(
-          onRefresh: _reload,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 36),
-            children: [
-              _PremiumHero(entitlement: entitlement),
-              const SizedBox(height: 14),
-              if (entitlementSnapshot.hasError)
-                _InlineNotice(
-                  icon: Icons.sync_problem_rounded,
-                  title: 'Premium durumu yenilenemedi',
+      ],
+    ),
+    body: SafeArea(
+      child: widget.gateway.connected
+          ? _body()
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                const SocialHero(
+                  icon: Icons.workspace_premium_rounded,
+                  eyebrow: 'LINKBALL PRO',
+                  title: 'Oyunun, bir adım daha kişisel.',
                   message:
-                      'Mevcut üyelik bilgisi şu anda alınamadı. Yenilemek '
-                      'için aşağı çekebilirsin.',
+                      'Reklamsız bonuslar, profil kozmetiği ve kişisel istatistikler. Üyeliğin Google hesabına bağlı profilinde korunur.',
                 ),
-              if (entitlementSnapshot.connectionState ==
-                  ConnectionState.waiting)
-                const LinearProgressIndicator(),
-              if (_purchaseStateMessage != null) ...[
-                const SizedBox(height: 14),
-                _InlineNotice(
-                  icon: Icons.info_outline_rounded,
-                  title: 'Satın alma durumu',
-                  message: _purchaseStateMessage!,
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: _connectGoogle,
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text('Google hesabını bağla'),
                 ),
               ],
-              const SizedBox(height: 22),
-              const _SectionTitle(
-                title: 'Linkball Pro avantajları',
-                subtitle:
-                    'Temel oyun herkese açık kalır; Pro yalnızca reklamsızlık, '
-                    'kozmetik ve kişisel analiz avantajları sunar.',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.block_rounded,
-                title: 'Reklamsız deneyim',
-                subtitle:
-                    'Rewarded bonuslarda reklam açılmaz; Pro günlük bonusunu '
-                    'doğrudan alırsın.',
-                status: 'HAZIR',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.auto_awesome_rounded,
-                title: 'Pro profil kozmetiği',
-                subtitle:
-                    'Profilinde Linkball Pro çerçevesi ve üyelik rozeti görünür.',
-                status: 'HAZIR',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.insights_rounded,
-                title: 'Gelişmiş istatistikler',
-                subtitle:
-                    'Son maç formun, Elo hareketin ve skor eğilimlerin yalnızca '
-                    'kendi profilinde özetlenir.',
-                status: 'HAZIR',
-              ),
-              const SizedBox(height: 10),
-              const _BenefitCard(
-                icon: Icons.card_giftcard_rounded,
-                title: 'Pro günlük bonusu',
-                subtitle:
-                    'Rewarded coin hakkını reklam izlemeden aynı günlük limit '
-                    'içinde alabilirsin.',
-                status: 'HAZIR',
-              ),
-              const SizedBox(height: 24),
-              const _SectionTitle(
-                title: 'Premium planları',
-                subtitle:
-                    'Fiyatlar Linkball tarafından yazılmaz; Google Play '
-                    'üzerinden yerel para biriminle gelir.',
-              ),
-              const SizedBox(height: 10),
-              _buildBillingSection(entitlement),
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: _restoring ? null : _restore,
-                icon: _restoring
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.restore_rounded),
-                label: Text(
-                  _restoring
-                      ? 'Kontrol ediliyor...'
-                      : 'Satın almaları geri yükle',
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Linkball Pro yalnızca Google Play satın alması Linkball '
-                'sunucusunda doğrulandıktan sonra etkinleşir.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).hintColor,
-                  fontSize: 12,
-                  height: 1.35,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBillingSection(PremiumEntitlement entitlement) {
-    final future = _catalogFuture ??= PremiumBillingService.queryCatalog();
-
-    return FutureBuilder<PremiumBillingCatalog>(
-      future: future,
-      builder: (context, catalogSnapshot) {
-        if (catalogSnapshot.connectionState == ConnectionState.waiting) {
-          return const Card(
-            child: Padding(
-              padding: EdgeInsets.all(22),
-              child: Center(child: CircularProgressIndicator()),
             ),
-          );
-        }
-
-        if (catalogSnapshot.hasError) {
-          return const _BillingUnavailableCard(
-            message:
-                'Google Play ürün bilgileri şu anda alınamıyor. '
-                'Play Console kurulumu tamamlandığında fiyatlar burada '
-                'otomatik görünecek.',
-          );
-        }
-
-        final catalog = catalogSnapshot.data;
-
-        if (catalog == null || !catalog.storeAvailable) {
-          return _BillingUnavailableCard(
-            message: catalog?.errorMessage.trim().isNotEmpty == true
-                ? catalog!.errorMessage
-                : 'Google Play satın alma servisi bu cihazda kullanılamıyor.',
-          );
-        }
-
-        if (catalog.products.isEmpty) {
-          return const _BillingUnavailableCard(
-            message:
-                'Linkball Pro ürünleri Play Console üzerinde henüz etkin değil. '
-                'Ürünler etkinleştirildiğinde yerel fiyatlar burada '
-                'otomatik görünecek.',
-          );
-        }
-
-        return Column(
+    ),
+  );
+  Widget _body() => FutureBuilder<PremiumEntitlement>(
+    future: _entitlementFuture,
+    builder: (context, snapshot) {
+      final entitlement = snapshot.data;
+      final known =
+          snapshot.connectionState == ConnectionState.done &&
+          !snapshot.hasError &&
+          entitlement != null;
+      return RefreshIndicator(
+        onRefresh: _reload,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
           children: [
-            for (final plan in const <PremiumPlan>[
-              PremiumPlan.monthly,
-              PremiumPlan.yearly,
-            ]) ...[
-              _PremiumPlanCard(
-                plan: plan,
-                product: catalog.productFor(plan),
-                activeEntitlement: entitlement,
-                launching: _launchingPlan == plan,
-                onBuy: (product) => _buy(product),
+            SocialHero(
+              icon: Icons.workspace_premium_rounded,
+              eyebrow: 'LINKBALL PRO',
+              title: !known
+                  ? 'Üyeliğin kontrol ediliyor'
+                  : entitlement.active
+                  ? 'Pro ayrıcalıkları senin.'
+                  : 'Oyunun, bir adım daha kişisel.',
+              message: !known
+                  ? 'Güncel üyelik bilgini doğruladıktan sonra planlarını göstereceğiz.'
+                  : entitlement.active
+                  ? _status(entitlement)
+                  : 'Temel oyun herkese açık. Pro ile deneyimini kişiselleştir.',
+              footer: known && entitlement.active
+                  ? Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        SocialStatus(_planName(entitlement.plan)),
+                        if (entitlement.autoRenewing)
+                          const SocialStatus('Otomatik yenilenir'),
+                        if (entitlement.cancellationPending)
+                          const SocialStatus('Yenileme iptal edildi'),
+                        if (entitlement.inGracePeriod)
+                          const SocialStatus('Ödeme kontrolü gerekli'),
+                      ],
+                    )
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            if (snapshot.connectionState != ConnectionState.done)
+              const LinearProgressIndicator(),
+            if (snapshot.hasError)
+              SocialNotice(
+                title: 'Üyelik bilgisi alınamadı',
+                message:
+                    'Bağlantını kontrol edip yeniden dene. Üyelik durumu bilinmeden yeni satın alma başlatılmaz.',
+                onAction: _reload,
               ),
-              if (plan != PremiumPlan.yearly) const SizedBox(height: 10),
+            if (_purchaseStateMessage != null) ...[
+              SocialNotice(
+                title: 'Satın alma durumu',
+                message: _purchaseStateMessage!,
+              ),
+              const SizedBox(height: 16),
             ],
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _PremiumHero extends StatelessWidget {
-  final PremiumEntitlement entitlement;
-
-  const _PremiumHero({required this.entitlement});
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final active = entitlement.active;
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              primary.withValues(alpha: 0.32),
-              primary.withValues(alpha: 0.10),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.18),
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  child: Icon(
-                    active
-                        ? Icons.workspace_premium_rounded
-                        : Icons.workspace_premium_outlined,
-                    color: primary,
-                    size: 31,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
+            const PitchSectionTitle('Pro ile neler değişir?'),
+            for (final item in const [
+              (
+                Icons.card_giftcard_outlined,
+                'Reklamsız bonus',
+                'Günlük coin bonusunu mevcut hakkın ve limitin içinde reklam izlemeden al.',
+              ),
+              (
+                Icons.auto_awesome_outlined,
+                'Sana ait bir profil',
+                'Pro profil çerçevesi ve üyelik rozetiyle kendini göster.',
+              ),
+              (
+                Icons.insights_outlined,
+                'Oyununun gelişimini gör',
+                'Maç formunu, Elo hareketini ve skor eğilimlerini kendi profilinde takip et.',
+              ),
+            ])
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: PitchPanel(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        active ? 'Linkball Pro aktif' : 'Linkball Pro’ya Geç',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
+                      Icon(item.$1, color: socialAccent(context)),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.$2,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(item.$3),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        active
-                            ? _entitlementSubtitle(entitlement)
-                            : 'Kozmetik ve konfor avantajlarını hesabına bağla.',
-                        style: const TextStyle(height: 1.35),
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
+            const PitchSectionTitle('Planını seç'),
+            const Text(
+              'Güncel fiyatlar ve ödeme koşulları Google Play’den gelir. Son onaydan önce mağazada gösterilen tutarı kontrol et.',
             ),
-            if (active) ...[
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _StatusPill(
-                    icon: Icons.verified_rounded,
-                    label: _planLabel(entitlement.plan),
-                  ),
-                  if (entitlement.autoRenewing)
-                    const _StatusPill(
-                      icon: Icons.autorenew_rounded,
-                      label: 'Otomatik yenilenir',
-                    ),
-                  if (entitlement.cancellationPending)
-                    const _StatusPill(
-                      icon: Icons.event_busy_outlined,
-                      label: 'Yenileme iptal edildi',
-                    ),
-                  if (entitlement.inGracePeriod)
-                    const _StatusPill(
-                      icon: Icons.payment_outlined,
-                      label: 'Ödeme ek süresinde',
-                    ),
-                  if (entitlement.isLifetime)
-                    const _StatusPill(
-                      icon: Icons.all_inclusive_rounded,
-                      label: 'Süresiz',
-                    ),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  static String _entitlementSubtitle(PremiumEntitlement entitlement) {
-    if (entitlement.isLifetime) {
-      return 'Ömür boyu Linkball Pro hakkın hesabında aktif.';
-    }
-
-    if (entitlement.expiresAt > 0) {
-      final date = DateTime.fromMillisecondsSinceEpoch(
-        entitlement.expiresAt,
-      ).toLocal();
-      final formatted =
-          '${_two(date.day)}.${_two(date.month)}.${date.year}';
-
-      if (entitlement.cancellationPending) {
-        return 'Yenileme iptal edildi. Pro erişimin $formatted tarihine kadar aktif.';
-      }
-      if (entitlement.inGracePeriod) {
-        return 'Ödeme yöntemi güncellenmeli. Pro erişimin ek süre boyunca devam ediyor.';
-      }
-      if (entitlement.autoRenewing) {
-        return 'Bir sonraki yenileme: $formatted';
-      }
-      return 'Mevcut Pro dönemi: $formatted tarihine kadar.';
-    }
-
-    return 'Linkball Pro hesabında aktif.';
-  }
-
-  static String _two(int value) => value.toString().padLeft(2, '0');
-}
-
-class _PremiumPlanCard extends StatelessWidget {
-  final PremiumPlan plan;
-  final PremiumBillingProduct? product;
-  final PremiumEntitlement activeEntitlement;
-  final bool launching;
-  final ValueChanged<PremiumBillingProduct> onBuy;
-
-  const _PremiumPlanCard({
-    required this.plan,
-    required this.product,
-    required this.activeEntitlement,
-    required this.launching,
-    required this.onBuy,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final currentPlan =
-        activeEntitlement.active && activeEntitlement.plan == plan;
-    final anyPremiumActive = activeEntitlement.active;
-    final available = product != null && !anyPremiumActive;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                _planIcon(plan),
-                color: Theme.of(context).colorScheme.primary,
+            const SizedBox(height: 12),
+            if (known) _plans(entitlement),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: _restoring || _launchingPlan != null ? null : _restore,
+              icon: const Icon(Icons.restore_rounded),
+              label: Text(
+                _restoring ? 'Kontrol ediliyor…' : 'Satın almaları geri yükle',
               ),
             ),
-            const SizedBox(width: 14),
-            Expanded(
+            const SizedBox(height: 12),
+            const PitchPanel(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          _planLabel(plan),
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                      if (currentPlan) ...[
-                        const SizedBox(width: 8),
-                        const _MiniBadge(text: 'AKTİF'),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
                   Text(
-                    product?.description.trim().isNotEmpty == true
-                        ? product!.description
-                        : _planDescription(plan),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      height: 1.3,
-                    ),
+                    'Üyeliğini yönet',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Aboneliğini ve yenilemeyi Google Play → Ödemeler ve abonelikler → Abonelikler bölümünden yönetebilirsin. Hesabını silmek veya uygulamayı kaldırmak abonelik yönetiminin yerini almaz.',
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 12),
-            SizedBox(
-              width: 118,
-              child: FilledButton(
-                onPressed: available && !launching
-                    ? () => onBuy(product!)
-                    : null,
-                child: launching
-                    ? const SizedBox(
-                        width: 17,
-                        height: 17,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        currentPlan ? 'Aktif' : (product?.price ?? 'Yakında'),
-                        textAlign: TextAlign.center,
-                      ),
+          ],
+        ),
+      );
+    },
+  );
+  Widget _plans(
+    PremiumEntitlement entitlement,
+  ) => FutureBuilder<PremiumBillingCatalog>(
+    future: _catalogFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done)
+        return const LinearProgressIndicator();
+      final catalog = snapshot.data;
+      if (snapshot.hasError ||
+          catalog == null ||
+          !catalog.storeAvailable ||
+          catalog.products.isEmpty)
+        return SocialNotice(
+          title: 'Planlar şu anda alınamıyor',
+          message:
+              'Google Play bağlantını ve mağaza hesabını kontrol et. Mevcut üyeliğin varsa satın almalarını geri yükleyebilirsin.',
+          onAction: _reload,
+        );
+      return Column(
+        children: [
+          for (final plan in const [PremiumPlan.monthly, PremiumPlan.yearly])
+            if (catalog.productFor(plan) != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ProPlanCard(
+                  product: catalog.productFor(plan)!,
+                  active: entitlement.active,
+                  current: entitlement.active && entitlement.plan == plan,
+                  busy:
+                      _pending ||
+                      _launchingPlan != null ||
+                      _restoring ||
+                      _reloading,
+                  onBuy: () => _buy(catalog.productFor(plan)!),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+        ],
+      );
+    },
+  );
+  String _status(PremiumEntitlement e) {
+    if (e.isLifetime) return 'Süresiz Pro üyeliğin aktif.';
+    if (e.inGracePeriod)
+      return 'Ödeme yöntemini Google Play’den kontrol et. Pro erişimin ek süre boyunca devam ediyor.';
+    final d = DateTime.fromMillisecondsSinceEpoch(e.expiresAt).toLocal();
+    if (e.expiresAt <= 0) return 'Üyeliğin hesabında aktif.';
+    return e.autoRenewing
+        ? 'Sonraki yenileme: ${d.day}.${d.month}.${d.year}'
+        : 'Pro erişimin ${d.day}.${d.month}.${d.year} tarihine kadar aktif.';
   }
 }
 
-class _BenefitCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String status;
-
-  const _BenefitCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.status,
+class ProPlanCard extends StatelessWidget {
+  const ProPlanCard({
+    super.key,
+    required this.product,
+    required this.active,
+    required this.current,
+    required this.busy,
+    required this.onBuy,
   });
-
+  final PremiumBillingProduct product;
+  final bool active, current, busy;
+  final VoidCallback onBuy;
   @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
-    return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: primary.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Icon(icon, color: primary),
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        subtitle: Text(subtitle),
-        trailing: _MiniBadge(text: status),
-      ),
-    );
-  }
-}
-
-class _BillingUnavailableCard extends StatelessWidget {
-  final String message;
-
-  const _BillingUnavailableCard({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const Icon(Icons.store_mall_directory_outlined, size: 38),
-            const SizedBox(height: 12),
-            const Text(
-              'Google Play kurulumu bekleniyor',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor, height: 1.4),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InlineNotice extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String message;
-
-  const _InlineNotice({
-    required this.icon,
-    required this.title,
-    required this.message,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-        subtitle: Text(message),
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const _SectionTitle({required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) => PitchPanel(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          spacing: 12,
+          runSpacing: 8,
+          children: [
+            Text(
+              _planName(product.plan),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            if (current) const SocialStatus('Aktif'),
+          ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
+        Text(product.price, style: Theme.of(context).textTheme.headlineMedium),
         Text(
-          subtitle,
-          style: TextStyle(color: Theme.of(context).hintColor, height: 1.35),
+          product.plan == PremiumPlan.yearly
+              ? 'Yıllık faturalandırılır'
+              : 'Aylık faturalandırılır',
+        ),
+        if (product.description.trim().isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(product.description),
+        ],
+        const SizedBox(height: 16),
+        FilledButton(
+          onPressed: active || busy ? null : onBuy,
+          child: Text(
+            current
+                ? 'Mevcut planın'
+                : active
+                ? 'Pro üyeliğin aktif'
+                : busy
+                ? 'İşlem bekleniyor…'
+                : 'Google Play ile devam et',
+          ),
         ),
       ],
-    );
-  }
+    ),
+  );
 }
 
-class _StatusPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _StatusPill({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.70),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniBadge extends StatelessWidget {
-  final String text;
-
-  const _MiniBadge({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: primary,
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 0.3,
-        ),
-      ),
-    );
-  }
-}
-
-String _planLabel(PremiumPlan plan) {
-  switch (plan) {
-    case PremiumPlan.monthly:
-      return 'Aylık';
-    case PremiumPlan.yearly:
-      return 'Yıllık';
-    case PremiumPlan.lifetime:
-      return 'Ömür Boyu';
-    case PremiumPlan.none:
-      return 'Premium';
-  }
-}
-
-String _planDescription(PremiumPlan plan) {
-  switch (plan) {
-    case PremiumPlan.monthly:
-      return 'Her ay yenilenen Premium üyelik.';
-    case PremiumPlan.yearly:
-      return 'Yıllık Premium üyelik.';
-    case PremiumPlan.lifetime:
-      return 'Tek seferlik kalıcı Premium yükseltmesi.';
-    case PremiumPlan.none:
-      return 'Premium üyelik.';
-  }
-}
-
-IconData _planIcon(PremiumPlan plan) {
-  switch (plan) {
-    case PremiumPlan.monthly:
-      return Icons.calendar_month_rounded;
-    case PremiumPlan.yearly:
-      return Icons.event_repeat_rounded;
-    case PremiumPlan.lifetime:
-      return Icons.all_inclusive_rounded;
-    case PremiumPlan.none:
-      return Icons.workspace_premium_outlined;
-  }
-}
+String _planName(PremiumPlan plan) => switch (plan) {
+  PremiumPlan.monthly => 'Aylık',
+  PremiumPlan.yearly => 'Yıllık',
+  PremiumPlan.lifetime => 'Süresiz',
+  PremiumPlan.none => 'Pro',
+};

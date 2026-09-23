@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
 
 import '../controllers/build_xi_controller.dart';
 import '../data/build_xi_formations.dart';
@@ -189,6 +190,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
         );
       }
       c.finish();
+      AppFeedback.answer(correct: _result?.won == true);
     } catch (e) {
       if (mounted) _error = managerError(e);
     } finally {
@@ -304,6 +306,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
         c.removePlayer(index);
       } else {
         c.assignPlayer(index, widget.catalog.players[selected]!);
+        AppFeedback.selection();
       }
     } catch (e) {
       ScaffoldMessenger.of(context)

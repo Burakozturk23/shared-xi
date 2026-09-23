@@ -79,6 +79,16 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Upload player experience previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: player-experience-previews
+          path: .dart_tool/experience_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Android debug compile gate
         run: flutter build apk --debug
 

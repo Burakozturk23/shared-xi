@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../config/privacy_config.dart';
-import '../services/account_deletion_service.dart';
-import '../services/auth_service.dart';
+import '../services/experience/account_gateway.dart';
+import '../app/route_appearance.dart';
+import '../widgets/social_ui.dart';
 import '../theme/app_theme.dart';
 import 'sign_in_page.dart';
 
 class PrivacyAccountPage extends StatefulWidget {
-  const PrivacyAccountPage({super.key});
+  const PrivacyAccountPage({super.key, this.gateway = const AccountGateway()});
+  final AccountGateway gateway;
 
   @override
   State<PrivacyAccountPage> createState() => _PrivacyAccountPageState();
@@ -27,7 +29,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
   @override
   void initState() {
     super.initState();
-    _currentUser = AuthService.currentUser;
+    _currentUser = widget.gateway.user;
   }
 
   @override
@@ -37,7 +39,17 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
   }
 
   Future<void> _copy(String label, String value) async {
-    await Clipboard.setData(ClipboardData(text: value));
+    try {
+      await Clipboard.setData(ClipboardData(text: value));
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Kopyalanamadı. Metni seçerek kopyalayabilirsin.'),
+          ),
+        );
+      return;
+    }
     if (!mounted) return;
 
     ScaffoldMessenger.of(
@@ -86,7 +98,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
     });
 
     try {
-      final result = await AccountDeletionService.deleteCurrentAccount();
+      final result = await widget.gateway.delete();
 
       if (!mounted) return;
 
@@ -113,12 +125,23 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
 
       setState(() {
         _deleting = false;
-        _deleteError = error.toString();
+        _deleteError =
+            'İşlem tamamlanamadı. Bağlantını kontrol et; gerekirse Google hesabına yeniden giriş yapıp tekrar dene.';
       });
     }
   }
 
   Widget _section(String title, Widget child) {
+    if (title != 'Linkball hesabı') {
+      return Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: ExpansionTile(
+          title: Text(title),
+          childrenPadding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+          children: [child],
+        ),
+      );
+    }
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
       child: Padding(
@@ -157,14 +180,15 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
   Future<void> _openGoogleSignIn() async {
     final signedIn = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
+      LinkballRoute(
+        modern: false,
         builder: (_) => const LinkballSignInPage(allowSkip: true),
       ),
     );
 
     if (!mounted || signedIn != true) return;
     setState(() {
-      _currentUser = AuthService.currentUser;
+      _currentUser = widget.gateway.user;
       _deleteError = null;
     });
   }
@@ -224,18 +248,18 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
         ),
         const SizedBox(height: 5),
         Text(
-          AuthService.isGoogleAccount
+          widget.gateway.connected
               ? 'Google hesabı bağlı · kalıcı profil'
               : 'Misafir hesap · cihazla sınırlı',
           style: TextStyle(
             fontSize: 12,
-            color: AuthService.isGoogleAccount
-                ? AppTheme.primaryColor
-                : AppTheme.hintColor,
+            color: widget.gateway.connected
+                ? socialAccent(context)
+                : Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),
-        if (!AuthService.isGoogleAccount) ...[
+        if (!widget.gateway.connected) ...[
           const SizedBox(height: 10),
           OutlinedButton.icon(
             onPressed: _deleting ? null : _openGoogleSignIn,
@@ -284,7 +308,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
           const Text(
             'Profilin, istatistiklerin, günlük skorların ve hesabın '
             'silinir. Paylaşılan maç kayıtlarında hesabına bağlı '
-            'kimlik alanları anonimleştirilir.',
+            'kimlik alanları anonimleştirilir. Aktif Google Play aboneliğini ayrıca Google Play aboneliklerinden yönetmelisin.',
           ),
           const SizedBox(height: 12),
           const Text(
@@ -349,99 +373,110 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Gizlilik & Hesap')),
-      body: ListView(
-        padding: const EdgeInsets.all(18),
-        children: [
-          _section('Linkball hesabı', _accountBody()),
-          _section(
-            'Topladığımız veriler',
-            const Text(
-              'Linkball çevrim içi özellikler için anonim Firebase kullanıcı '
-              'kimliği, görünen ad, oyun sonuçları, Elo/istatistikler, günlük '
-              'skorlar ve çevrim içi maç/oda verileri işler. Firebase '
-              'Authentication ve Realtime Database; güvenlik ve hizmet '
-              'işletimi için IP adresi, user-agent ve Firebase uygulama '
-              'tanımlayıcıları gibi teknik bilgileri işleyebilir. Analytics; '
-              'uygulama etkileşimleri, app-instance/device tanımlayıcıları ve '
-              'yaklaşık konum gibi ölçüm bilgilerini işleyebilir. '
-              'Crashlytics/Sessions ise crash, ANR, uygulama/cihaz durumu ve '
-              'tanılama bilgilerini işleyebilir. App Check / Play Integrity '
-              'bütünlük ve kötüye kullanımı önleme sinyalleri kullanır. '
-              'Ayrıntılar yayımlanan gizlilik politikasındadır.',
+    return PopScope(
+      canPop: !_deleting,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Gizlilik ve Hesap')),
+        body: ListView(
+          padding: const EdgeInsets.all(18),
+          children: [
+            const SocialHero(
+              icon: Icons.privacy_tip_outlined,
+              eyebrow: 'HESABIN SENİN KONTROLÜNDE',
+              title: 'Neyi paylaştığını bil.',
+              message:
+                  'Hesap bilgilerini incele, veri kullanımını öğren ve gizlilik kaynaklarına ulaş.',
             ),
-          ),
-          _section(
-            'Verileri nasıl kullanıyoruz?',
-            const Text(
-              'Veriler; oyunu çalıştırmak, eşleştirme ve skor tablolarını '
-              'sunmak, hata/performans sorunlarını teşhis etmek, hizmet '
-              'kalitesini ölçmek ve kötüye kullanımı azaltmak amacıyla '
-              'kullanılır. Linkball kişisel verileri satmaz. Çevrim içi '
-              'oyunlarda görünen adın ve oyun skorların diğer oyunculara '
-              'veya skor tablolarına gösterilebilir.',
+            const SizedBox(height: 20),
+            _section('Linkball hesabı', _accountBody()),
+            _section(
+              'Topladığımız veriler',
+              const Text(
+                'Linkball çevrim içi özellikler için anonim Firebase kullanıcı '
+                'kimliği, görünen ad, oyun sonuçları, Elo/istatistikler, günlük '
+                'skorlar ve çevrim içi maç/oda verileri işler. Firebase '
+                'Authentication ve Realtime Database; güvenlik ve hizmet '
+                'işletimi için IP adresi, user-agent ve Firebase uygulama '
+                'tanımlayıcıları gibi teknik bilgileri işleyebilir. Analytics; '
+                'uygulama etkileşimleri, app-instance/device tanımlayıcıları ve '
+                'yaklaşık konum gibi ölçüm bilgilerini işleyebilir. '
+                'Crashlytics/Sessions ise crash, ANR, uygulama/cihaz durumu ve '
+                'tanılama bilgilerini işleyebilir. App Check / Play Integrity '
+                'bütünlük ve kötüye kullanımı önleme sinyalleri kullanır. '
+                'Ayrıntılar yayımlanan gizlilik politikasındadır.',
+              ),
             ),
-          ),
-          _section(
-            'Saklama ve silme',
-            const Text(
-              'Hesap silme isteği tamamlandığında Firebase Authentication '
-              'hesabı, Linkball profil/istatistikleri, günlük skor ve oturum '
-              'verileri ile eşleştirme kuyruk verileri silinir. Diğer '
-              'oyuncularla paylaşılan maç kayıtlarındaki kullanıcı kimliği '
-              've görünen ad gibi tanımlayıcı alanlar anonimleştirilir. '
-              'Kimliği kaldırılmış toplu ölçümler ile Firebase tanılama '
-              'verileri, ilgili hizmetlerin saklama süreleri kapsamında '
-              'bir süre daha tutulabilir.',
+            _section(
+              'Verileri nasıl kullanıyoruz?',
+              const Text(
+                'Veriler; oyunu çalıştırmak, eşleştirme ve skor tablolarını '
+                'sunmak, hata/performans sorunlarını teşhis etmek, hizmet '
+                'kalitesini ölçmek ve kötüye kullanımı azaltmak amacıyla '
+                'kullanılır. Linkball kişisel verileri satmaz. Çevrim içi '
+                'oyunlarda görünen adın ve oyun skorların diğer oyunculara '
+                'veya skor tablolarına gösterilebilir.',
+              ),
             ),
-          ),
-          _section(
-            'Gizlilik politikası',
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Play Store için yayımlanan güncel politika:'),
-                const SizedBox(height: 6),
-                _copyRow(
-                  label: 'Gizlilik politikası bağlantısı',
-                  value: PrivacyConfig.privacyPolicyUrl,
-                ),
-              ],
+            _section(
+              'Saklama ve silme',
+              const Text(
+                'Hesap silme isteği tamamlandığında Firebase Authentication '
+                'hesabı, Linkball profil/istatistikleri, günlük skor ve oturum '
+                'verileri ile eşleştirme kuyruk verileri silinir. Diğer '
+                'oyuncularla paylaşılan maç kayıtlarındaki kullanıcı kimliği '
+                've görünen ad gibi tanımlayıcı alanlar anonimleştirilir. '
+                'Kimliği kaldırılmış toplu ölçümler ile Firebase tanılama '
+                'verileri, ilgili hizmetlerin saklama süreleri kapsamında '
+                'bir süre daha tutulabilir.',
+              ),
             ),
-          ),
-          _section(
-            'Uygulama dışından hesap silme talebi',
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Uygulamaya erişemiyorsan aşağıdaki web kaynağından '
-                  'hesap/veri silme talebi başlatabilirsin:',
-                ),
-                const SizedBox(height: 6),
-                _copyRow(
-                  label: 'Hesap silme bağlantısı',
-                  value: PrivacyConfig.accountDeletionUrl,
-                ),
-              ],
+            _section(
+              'Gizlilik politikası',
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Play Store için yayımlanan güncel politika:'),
+                  const SizedBox(height: 6),
+                  _copyRow(
+                    label: 'Gizlilik politikası bağlantısı',
+                    value: PrivacyConfig.privacyPolicyUrl,
+                  ),
+                ],
+              ),
             ),
-          ),
-          _section(
-            'İletişim',
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Gizlilik ve veri talepleri:'),
-                const SizedBox(height: 6),
-                _copyRow(
-                  label: 'İletişim e-postası',
-                  value: PrivacyConfig.contactEmail,
-                ),
-              ],
+            _section(
+              'Uygulama dışından hesap silme talebi',
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Uygulamaya erişemiyorsan aşağıdaki web kaynağından '
+                    'hesap/veri silme talebi başlatabilirsin:',
+                  ),
+                  const SizedBox(height: 6),
+                  _copyRow(
+                    label: 'Hesap silme bağlantısı',
+                    value: PrivacyConfig.accountDeletionUrl,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            _section(
+              'İletişim',
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Gizlilik ve veri talepleri:'),
+                  const SizedBox(height: 6),
+                  _copyRow(
+                    label: 'İletişim e-postası',
+                    value: PrivacyConfig.contactEmail,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
