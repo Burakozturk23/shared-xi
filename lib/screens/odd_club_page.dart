@@ -1,3 +1,4 @@
+import '../widgets/club_badge.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/odd_club_controller.dart';
@@ -186,15 +187,7 @@ class _OddClubPageState extends State<OddClubPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (club.logo.isNotEmpty)
-                      Image.network(
-                        club.logo,
-                        height: 40,
-                        errorBuilder: (c, e, st) =>
-                            const Icon(Icons.shield, size: 36),
-                      )
-                    else
-                      const Icon(Icons.shield, size: 36),
+                    ClubBadge(club: club, size: 40),
                     const SizedBox(height: 8),
                     Text(
                       club.name,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/network_logo.dart';
-import '../repositories/repository.dart';
+import '../widgets/club_identity_badge.dart';
 import '../models/player.dart';
 
 import '../models/grid_criterion.dart';
@@ -534,18 +533,11 @@ class _CriterionHeader extends StatelessWidget {
     if (isCountry) {
       leading = CountryBadge(country: criterion.label, width: 28, height: 18);
     } else if (isClub && criterion.clubId != null) {
-      final club = Repository.instance.clubById(criterion.clubId!);
-      final logo = club?.logo.trim() ?? '';
-      if (logo.isNotEmpty) {
-        leading = NetworkLogo(
-          url: logo,
-          width: 28,
-          height: 28,
-          fallback: const Icon(Icons.shield, size: 20),
-        );
-      } else {
-        leading = const Icon(Icons.shield, size: 20, color: AppTheme.hintColor);
-      }
+      leading = ClubIdentityBadge(
+        clubId: criterion.clubId!,
+        clubName: criterion.label,
+        size: 28,
+      );
     }
 
     return Column(

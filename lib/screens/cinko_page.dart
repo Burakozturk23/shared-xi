@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/network_logo.dart';
+import '../widgets/club_identity_badge.dart';
 
 import '../widgets/country_badge.dart';
 import '../widgets/league_badge.dart';
@@ -362,17 +362,12 @@ class _CellTile extends StatelessWidget {
                 CountryBadge(country: cell.label, width: 36, height: 24)
               else if (cell.type == CinkoCellType.league)
                 LeagueBadge(league: cell.label, size: 28)
-              else if (cell.logoUrl != null && cell.logoUrl!.isNotEmpty)
+              else if (cell.type == CinkoCellType.club && cell.clubId != null)
                 Expanded(
-                  child: NetworkLogo(
-                    url: cell.logoUrl,
-                    width: 36,
-                    height: 36,
-                    fallback: Icon(
-                      _typeIcon(cell.type),
-                      size: 22,
-                      color: AppTheme.hintColor,
-                    ),
+                  child: ClubIdentityBadge(
+                    clubId: cell.clubId!,
+                    clubName: cell.label,
+                    size: 36,
                   ),
                 )
               else

@@ -6,7 +6,7 @@ import '../models/match_entity.dart';
 import '../online/room_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/country_badge.dart';
-import '../widgets/network_logo.dart';
+import '../widgets/club_identity_badge.dart';
 import 'game_results_page.dart';
 import '../online/random_match_page.dart';
 import '../online/online_mode_hub_page.dart';
@@ -804,16 +804,10 @@ class _EntityHeaderTile
       children: [
         if (entity.type ==
             MatchEntityType.club)
-          NetworkLogo(
-            url: entity.logoUrl,
-            width: 52,
-            height: 52,
-            fit: BoxFit.cover,
-            circular: true,
-            fallback: const Icon(
-              Icons.sports_soccer,
-              size: 52,
-            ),
+          ClubIdentityBadge(
+            clubId: entity.clubId ?? 0,
+            clubName: entity.displayName,
+            size: 52,
           )
         else if (entity.type ==
             MatchEntityType.country)
