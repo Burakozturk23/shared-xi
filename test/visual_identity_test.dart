@@ -70,8 +70,14 @@ void main() {
       player: player(1, avatarKey: 'intentionally_missing'),
     ))));
     await tester.runAsync(() async {
-      await precacheImage(AssetImage(PlayerAvatar.representativeAssetFor(1)),
-          tester.element(find.byType(PlayerAvatar)));
+      final context = tester.element(find.byType(PlayerAvatar));
+      final pixels = (48 * MediaQuery.devicePixelRatioOf(context))
+          .ceil().clamp(1, 384).toInt();
+      await precacheImage(
+        ResizeImage.resizeIfNeeded(pixels, null,
+          AssetImage(PlayerAvatar.representativeAssetFor(1))),
+        context,
+      );
     });
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
