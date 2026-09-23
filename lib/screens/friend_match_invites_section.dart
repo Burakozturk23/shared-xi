@@ -4,10 +4,12 @@ import '../models/friend_models.dart';
 import '../services/friends_service.dart';
 import '../widgets/player_safety_actions.dart';
 import '../widgets/user_avatar_badge.dart';
+import '../widgets/social_ui.dart';
 import 'friend_match_invite_joiner.dart';
 
 class FriendMatchInvitesSection extends StatefulWidget {
-  const FriendMatchInvitesSection({super.key});
+  const FriendMatchInvitesSection({super.key, this.stream});
+  final Stream<List<FriendMatchInvite>>? stream;
 
   @override
   State<FriendMatchInvitesSection> createState() =>
@@ -15,6 +17,8 @@ class FriendMatchInvitesSection extends StatefulWidget {
 }
 
 class _FriendMatchInvitesSectionState extends State<FriendMatchInvitesSection> {
+  late final Stream<List<FriendMatchInvite>> _fallbackStream =
+      FriendsService.watchMatchInvites();
   final Set<String> _busy = <String>{};
 
   Future<void> _accept(FriendMatchInvite invite) async {
@@ -115,8 +119,18 @@ class _FriendMatchInvitesSectionState extends State<FriendMatchInvitesSection> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<FriendMatchInvite>>(
-      stream: FriendsService.watchMatchInvites(),
+      stream: widget.stream ?? _fallbackStream,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Padding(
+            padding: EdgeInsets.only(bottom: 16),
+            child: SocialNotice(
+              title: 'Maç davetleri yüklenemedi',
+              message: 'Üstteki yenile düğmesiyle tekrar deneyebilirsin.',
+              icon: Icons.cloud_off_outlined,
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),

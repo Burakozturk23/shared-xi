@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/route_appearance.dart';
 
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
@@ -103,7 +104,7 @@ class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                LinkballRoute(
                   builder: (_) => const FriendsPage(),
                 ),
               );
@@ -119,7 +120,7 @@ class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                LinkballRoute(
                   builder: (_) => const LeaderboardPage(
                     initialScope: LeaderboardScope.global,
                   ),

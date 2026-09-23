@@ -112,7 +112,7 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
         PitchRow(
           title: 'Topluluk',
           icon: Icons.forum_outlined,
-          onTap: () => _open(const CommunityCenterPage()),
+          onTap: () => _open(const CommunityCenterPage(), modern: true),
         ),
         const SizedBox(height: 16),
         PitchRow(

@@ -430,7 +430,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                             Navigator.push(
                               context,
                               LinkballRoute(
-                                modern: false,
+                                modern: true,
                                 builder: (_) => const FriendsPage(),
                               ),
                             );
@@ -443,7 +443,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                             Navigator.push<void>(
                               context,
                               LinkballRoute(
-                                modern: false,
+                                modern: true,
                                 builder: (_) => const SocialSafetyCenterPage(),
                               ),
                             );
@@ -478,7 +478,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           onTap: () => Navigator.push(
                             context,
                             LinkballRoute(
-                              modern: false,
+                              modern: true,
                               builder: (_) => const CommunityCenterPage(),
                             ),
                           ),
