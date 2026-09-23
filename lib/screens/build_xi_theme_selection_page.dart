@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/route_appearance.dart';
 
 import '../data/build_xi_formations.dart';
 import '../models/squad_challenge.dart';
@@ -129,7 +130,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
       } else {
         await Navigator.of(
           context,
-        ).push(MaterialPageRoute<void>(builder: (_) => const PremiumPage()));
+        ).push(LinkballRoute<void>(builder: (_) => const PremiumPage()));
       }
       await _refresh();
     } catch (e) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app/route_appearance.dart';
+import '../app/app_copy.dart';
 import '../screens/sign_in_page.dart';
 import 'pitch_ui.dart';
 
@@ -137,7 +138,9 @@ class SocialNotice extends StatelessWidget {
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: onAction,
-            child: Text(actionLabel ?? 'Tekrar dene'),
+            child: Text(
+              actionLabel ?? appCopy(context, 'Tekrar dene', 'Retry'),
+            ),
           ),
         ],
       ],
@@ -146,23 +149,32 @@ class SocialNotice extends StatelessWidget {
 }
 
 class SocialAccountGate extends StatelessWidget {
-  const SocialAccountGate({super.key, required this.onReturn});
+  const SocialAccountGate({
+    super.key,
+    required this.onReturn,
+    this.title,
+    this.message,
+  });
+  final String? title, message;
   final VoidCallback onReturn;
   @override
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(24),
     children: [
-      const SocialHero(
+      SocialHero(
         icon: Icons.groups_outlined,
-        eyebrow: 'BİRLİKTE OYNA',
-        title: 'Profilini bağla,\narkadaşlarına katıl.',
+        eyebrow: appCopy(context, 'LINKBALL PROFİLİN', 'YOUR LINKBALL PROFILE'),
+        title: title ?? 'Profilini bağla,\narkadaşlarına katıl.',
         message:
+            message ??
             'Arkadaşların, davetlerin ve güvenlik tercihlerin Google hesabına bağlı Linkball profilinde tutulur.',
       ),
       const SizedBox(height: 20),
       FilledButton.icon(
         icon: const Icon(Icons.login_rounded),
-        label: const Text('Google hesabını bağla'),
+        label: Text(
+          appCopy(context, 'Google hesabını bağla', 'Connect Google account'),
+        ),
         onPressed: () async {
           await Navigator.of(context).push(
             LinkballRoute<void>(

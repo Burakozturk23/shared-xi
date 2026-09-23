@@ -402,7 +402,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           onUpgrade: () => Navigator.push<void>(
                             context,
                             LinkballRoute(
-                              modern: false,
+                              modern: true,
                               builder: (_) => const PremiumPage(),
                             ),
                           ),
@@ -417,7 +417,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                             Navigator.push<void>(
                               context,
                               LinkballRoute(
-                                modern: false,
+                                modern: true,
                                 builder: (_) => const ProgressionCenterPage(),
                               ),
                             );

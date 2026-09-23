@@ -1,985 +1,480 @@
 import 'package:flutter/material.dart';
-
+import '../app/app_copy.dart';
+import '../app/app_feedback.dart';
+import '../app/route_appearance.dart';
 import '../models/mission_models.dart';
 import '../models/progression_models.dart';
-import '../services/auth_service.dart';
-import '../services/mission_service.dart';
-import '../services/progression_service.dart';
-import '../theme/app_theme.dart';
-import 'sign_in_page.dart';
+import '../services/experience/progress_gateway.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/social_ui.dart';
+import 'achievements_page.dart';
 
 class ProgressionCenterPage extends StatefulWidget {
-  const ProgressionCenterPage({super.key});
-
+  const ProgressionCenterPage({
+    super.key,
+    this.gateway = const ProgressGateway(),
+  });
+  final ProgressGateway gateway;
   @override
   State<ProgressionCenterPage> createState() => _ProgressionCenterPageState();
 }
 
-class _ProgressionCenterPageState extends State<ProgressionCenterPage> {
+class _ProgressionCenterPageState extends State<ProgressionCenterPage>
+    with WidgetsBindingObserver {
   ProgressionProfile? _progression;
   MissionProfile? _missions;
-  bool _loading = true;
-  bool _claimingDaily = false;
-  final Set<String> _claimingMissions = <String>{};
-  String? _error;
-
-  bool get _hasGoogleAccount => AuthService.isGoogleAccount;
-
+  bool _loading = false, _claiming = false, _error = false;
+  MissionKind _kind = MissionKind.daily;
+  bool _readyOnly = false;
+  String c(String tr, String en) => appCopy(context, tr, en);
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _load();
+  }
+
   Future<void> _load() async {
-    if (!_hasGoogleAccount) {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _progression = null;
-        _missions = null;
-        _error = null;
-      });
-      return;
-    }
-
-    if (mounted) {
-      setState(() {
-        _loading = true;
-        _error = null;
-      });
-    }
-
+    if (_loading || _claiming || !widget.gateway.connected) return;
+    setState(() {
+      _loading = true;
+      _error = false;
+    });
     try {
-      final results = await Future.wait<Object>([
-        ProgressionService.fetch(),
-        MissionService.fetch(),
+      final result = await Future.wait<Object>([
+        widget.gateway.progression(),
+        widget.gateway.missions(),
       ]);
-
       if (!mounted) return;
       setState(() {
-        _progression = results[0] as ProgressionProfile;
-        _missions = results[1] as MissionProfile;
-        _loading = false;
+        _progression = result[0] as ProgressionProfile;
+        _missions = result[1] as MissionProfile;
       });
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _error = _friendlyError(error);
-      });
+    } catch (_) {
+      if (mounted) setState(() => _error = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
-  Future<void> _openGoogleSignIn() async {
-    final signedIn = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LinkballSignInPage(allowSkip: false),
-      ),
-    );
-
-    if (!mounted || signedIn != true) return;
-    await _load();
-  }
-
-  Future<void> _claimDailyReward() async {
-    if (_claimingDaily) return;
-
-    setState(() => _claimingDaily = true);
-
+  Future<void> _claim([MissionItem? mission]) async {
+    if (_claiming || _loading) return;
+    final daily = _progression?.dailyReward;
+    if (mission == null && (daily == null || !daily.enabled || !daily.canClaim))
+      return;
+    if (mission != null &&
+        (!mission.enabled ||
+            !mission.claimable ||
+            mission.claimed ||
+            mission.limitReached))
+      return;
+    setState(() => _claiming = true);
     try {
-      final result = await ProgressionService.claimDailyReward();
-      if (!mounted) return;
-
-      setState(() {
-        _progression = result.profile;
-        _claimingDaily = false;
-      });
-
-      final extra = result.multiplier > 1
-          ? ' · ${result.multiplier}x Premium'
-          : '';
-      final protection = result.streakProtected
-          ? ' · Seri koruması kullanıldı'
-          : '';
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            result.alreadyClaimed
-                ? 'Bugünün ödülünü zaten aldın.'
-                : '+${result.amount} Link Coin · +${result.xp} XP$extra$protection',
+      String message;
+      bool granted;
+      if (mission == null) {
+        final result = await widget.gateway.claimDaily();
+        if (!mounted) return;
+        setState(() => _progression = result.profile);
+        granted = result.granted;
+        message = granted
+            ? '+${result.amount} Link Coin · +${result.xp} XP'
+            : c(
+                'Ödül zaten alınmış veya şu anda kullanılamıyor.',
+                'Reward already claimed or currently unavailable.',
+              );
+      } else {
+        final result = await widget.gateway.claimMission(mission.id);
+        if (!mounted) return;
+        setState(() => _missions = result.profile);
+        granted = result.granted;
+        message = granted
+            ? '+${result.amount} Link Coin'
+            : c(
+                'Ödül zaten alınmış veya şu anda kullanılamıyor.',
+                'Reward already claimed or currently unavailable.',
+              );
+      }
+      if (granted) AppFeedback.answer(correct: true);
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              c(
+                'Ödül alınamadı. Bağlantını kontrol edip yeniden dene.',
+                'Could not claim reward. Check your connection and retry.',
+              ),
+            ),
           ),
-        ),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      setState(() => _claimingDaily = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_friendlyError(error))));
-    }
-  }
-
-  Future<void> _claimMission(MissionItem mission) async {
-    if (_claimingMissions.contains(mission.id)) return;
-
-    setState(() => _claimingMissions.add(mission.id));
-
-    try {
-      final result = await MissionService.claim(mission.id);
-      if (!mounted) return;
-
-      setState(() {
-        _missions = result.profile;
-        _claimingMissions.remove(mission.id);
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            result.alreadyClaimed
-                ? 'Bu görev ödülünü zaten aldın.'
-                : '+${result.amount} Link Coin · Cüzdan ${result.walletCoins}',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      setState(() => _claimingMissions.remove(mission.id));
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_friendlyError(error))));
+        );
+    } finally {
+      if (mounted) setState(() => _claiming = false);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('İlerleme & Görevler'),
-        actions: [
-          if (_hasGoogleAccount)
-            IconButton(
-              onPressed: _loading ? null : _load,
-              tooltip: 'Yenile',
-              icon: const Icon(Icons.refresh_rounded),
-            ),
-        ],
-      ),
-      body: SafeArea(child: _buildBody()),
-    );
-  }
-
-  Widget _buildBody() {
-    if (!_hasGoogleAccount) {
-      return _GoogleAccountGate(onSignIn: _openGoogleSignIn);
-    }
-
-    if (_loading && _progression == null && _missions == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_error != null && _progression == null && _missions == null) {
-      return _LoadError(message: _error!, onRetry: _load);
-    }
-
-    final progression = _progression;
-    final missions = _missions;
-
-    if (progression == null || missions == null) {
-      return _LoadError(
-        message: 'İlerleme bilgileri hazırlanamadı.',
-        onRetry: _load,
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 36),
-        children: [
-          _ProgressionHero(profile: progression),
-          const SizedBox(height: 14),
-          _DailyRewardCard(
-            status: progression.dailyReward,
-            claiming: _claimingDaily,
-            onClaim: _claimDailyReward,
-          ),
-          const SizedBox(height: 22),
-          _SectionTitle(
-            icon: Icons.today_rounded,
-            title: 'Günlük Görevler',
-            trailing: '${missions.dailyCompletedCount} alındı',
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Günde ${missions.dailyClaimLimit} görev ödülü · Türkiye saatiyle 00.00’da yenilenir.',
-            style: const TextStyle(
-              color: AppTheme.secondaryTextColor,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 10),
-          if (missions.daily.isEmpty)
-            const _EmptyMissionCard(text: 'Bugün için görev bulunamadı.')
-          else
-            ...missions.daily.map(
-              (mission) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _MissionCard(
-                  mission: mission,
-                  claiming: _claimingMissions.contains(mission.id),
-                  onClaim: () => _claimMission(mission),
-                ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(c('İlerleme ve Görevler', 'Progress & Missions')),
+      actions: [
+        IconButton(
+          tooltip: c('Yenile', 'Refresh'),
+          onPressed: _loading || _claiming ? null : _load,
+          icon: const Icon(Icons.refresh_rounded),
+        ),
+      ],
+    ),
+    body: SafeArea(
+      child: !widget.gateway.connected
+          ? SocialAccountGate(
+              title: c(
+                'İlerlemeni yanında taşı.',
+                'Keep your progress with you.',
               ),
-            ),
-          const SizedBox(height: 12),
-          _SectionTitle(
-            icon: Icons.workspace_premium_outlined,
-            title: 'Genel Görevler',
-            trailing: '${missions.generalCompletedCount} tamamlandı',
-          ),
-          const SizedBox(height: 10),
-          if (missions.general.isEmpty)
-            const _EmptyMissionCard(
-              text: 'Yeni genel görev aşaması hazırlanıyor.',
+              message: c(
+                'Görevlerin, rozetlerin ve ödüllerin Google hesabına bağlı Linkball profilinde korunur.',
+                'Your missions, badges and rewards are saved to your Google-linked Linkball profile.',
+              ),
+              onReturn: () {
+                setState(() {});
+                _load();
+              },
             )
-          else
-            ...missions.general.map(
-              (mission) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _MissionCard(
-                  mission: mission,
-                  claiming: _claimingMissions.contains(mission.id),
-                  onClaim: () => _claimMission(mission),
-                ),
-              ),
-            ),
-          const SizedBox(height: 8),
-          const _TrustNotice(),
-        ],
-      ),
-    );
-  }
-
-  String _friendlyError(Object error) {
-    final text = error.toString().replaceFirst('Bad state: ', '').trim();
-    if (text.isEmpty) return 'Bir şeyler ters gitti. Tekrar dene.';
-    return text;
-  }
-}
-
-class _GoogleAccountGate extends StatelessWidget {
-  final VoidCallback onSignIn;
-
-  const _GoogleAccountGate({required this.onSignIn});
-
-  @override
-  Widget build(BuildContext context) {
+          : _progression == null || _missions == null
+          ? _error
+                ? SocialNotice(
+                    title: c('İlerleme yüklenemedi', 'Progress unavailable'),
+                    message: c(
+                      'Bağlantını kontrol edip tekrar dene.',
+                      'Check your connection and retry.',
+                    ),
+                    onAction: _load,
+                  )
+                : const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(onRefresh: _load, child: _content()),
+    ),
+  );
+  Widget _content() {
+    final p = _progression!;
+    final m = _missions!;
+    final list =
+        List<MissionItem>.of(_kind == MissionKind.daily ? m.daily : m.general)
+          ..sort(
+            (a, b) =>
+                (a.claimed
+                        ? 2
+                        : a.claimable
+                        ? 0
+                        : 1)
+                    .compareTo(
+                      b.claimed
+                          ? 2
+                          : b.claimable
+                          ? 0
+                          : 1,
+                    ),
+          );
+    final visible = list
+        .where(
+          (x) =>
+              !_readyOnly ||
+              x.enabled && x.claimable && !x.claimed && !x.limitReached,
+        )
+        .toList();
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       children: [
-        Container(
-          width: 78,
-          height: 78,
-          decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.14),
-            shape: BoxShape.circle,
+        if (_loading) const LinearProgressIndicator(),
+        if (_error)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SocialNotice(
+              title: c('Yenilenemedi', 'Refresh failed'),
+              message: c(
+                'Son alınan bilgileri görüyorsun.',
+                'Showing your last loaded progress.',
+              ),
+              onAction: _load,
+            ),
           ),
-          child: const Icon(
-            Icons.insights_rounded,
-            color: AppTheme.primaryColor,
-            size: 40,
+        SocialHero(
+          icon: Icons.trending_up_rounded,
+          eyebrow: c('OYUNUN İZ BIRAKSIN', 'MAKE YOUR PLAY COUNT'),
+          title: c('Seviye ${p.level.level}', 'Level ${p.level.level}'),
+          message: c(
+            '${p.lifetimeXp} toplam XP · Her maç yeni bir adım.',
+            '${p.lifetimeXp} total XP · Every match is another step.',
           ),
-        ),
-        const SizedBox(height: 24),
-        const Text(
-          'İlerlemeni hesabına bağla',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 23, fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 10),
-        const Text(
-          'Günlük ödüller, görevler, XP, seviye ve sezon ilerlemesi kalıcı '
-          'Linkball profilinde tutulur.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: AppTheme.secondaryTextColor, height: 1.45),
-        ),
-        const SizedBox(height: 26),
-        FilledButton.icon(
-          onPressed: onSignIn,
-          icon: const Icon(Icons.login_rounded),
-          label: const Text('Google hesabını bağla'),
-        ),
-      ],
-    );
-  }
-}
-
-class _ProgressionHero extends StatelessWidget {
-  final ProgressionProfile profile;
-
-  const _ProgressionHero({required this.profile});
-
-  @override
-  Widget build(BuildContext context) {
-    final level = profile.level;
-    final season = profile.season;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Text(
-                    '${level.level}',
-                    style: const TextStyle(
-                      color: AppTheme.primaryColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Oyuncu Seviyesi ${level.level}',
-                        style: const TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        '${profile.lifetimeXp} toplam XP · Harcanmaz',
-                        style: const TextStyle(
-                          color: AppTheme.secondaryTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  level.level >= level.cap
-                      ? 'MAX'
-                      : '${level.currentXp}/${level.nextLevelXp}',
-                  style: const TextStyle(
-                    color: AppTheme.primaryColor,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(value: level.ratio, minHeight: 8),
-            ),
-            const SizedBox(height: 18),
-            const Divider(height: 1),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Icon(
-                  Icons.calendar_month_rounded,
-                  color: AppTheme.warningColor,
-                  size: 22,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    season.title.isEmpty ? 'Aktif Sezon' : season.title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                Text(
-                  'Seviye ${season.level}/${season.levelCap}',
-                  style: const TextStyle(
-                    color: AppTheme.warningColor,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (season.startsOn.isNotEmpty || season.endsOn.isNotEmpty)
+          footer: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LinearProgressIndicator(value: p.level.ratio, minHeight: 8),
+              const SizedBox(height: 8),
               Text(
-                '${season.startsOn} → ${season.endsOn}',
-                style: const TextStyle(color: AppTheme.hintColor, fontSize: 12),
+                p.level.level >= p.level.cap
+                    ? c('En yüksek seviyedesin', 'Maximum level reached')
+                    : '${p.level.currentXp} / ${p.level.nextLevelXp} XP',
               ),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(
-                value: season.ratio,
-                minHeight: 7,
-                color: AppTheme.warningColor,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              season.level >= season.levelCap
-                  ? '${season.xp} sezon XP · maksimum seviye'
-                  : '${season.currentXp}/${season.nextLevelXp} XP · ${season.xp} sezon XP',
-              style: const TextStyle(
-                color: AppTheme.secondaryTextColor,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DailyRewardCard extends StatelessWidget {
-  final DailyRewardStatus status;
-  final bool claiming;
-  final VoidCallback onClaim;
-
-  const _DailyRewardCard({
-    required this.status,
-    required this.claiming,
-    required this.onClaim,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final nextIndex = status.nextDayIndex.clamp(1, 7);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: AppTheme.warningColor.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Icons.card_giftcard_rounded,
-                    color: AppTheme.warningColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Günlük Ödül',
-                        style: TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Seri ${status.currentStreak} · En iyi ${status.bestStreak}',
-                        style: const TextStyle(
-                          color: AppTheme.secondaryTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (status.multiplier > 1)
-                  const _MiniPill(
-                    icon: Icons.workspace_premium_rounded,
-                    text: '2x',
-                    color: AppTheme.warningColor,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: List.generate(status.scheduleCoins.length, (index) {
-                final day = index + 1;
-                final selected = day == nextIndex;
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: index == status.scheduleCoins.length - 1 ? 0 : 5,
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 9),
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? AppTheme.primaryColor.withValues(alpha: 0.18)
-                            : AppTheme.mutedSurfaceColor,
-                        borderRadius: BorderRadius.circular(11),
-                        border: Border.all(
-                          color: selected
-                              ? AppTheme.primaryColor
-                              : AppTheme.borderColor,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '$day',
-                            style: TextStyle(
-                              color: selected
-                                  ? AppTheme.primaryColor
-                                  : AppTheme.secondaryTextColor,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            '+${status.scheduleCoins[index]}',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: AppTheme.hintColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 14),
-            const Text(
-              'Link Coin harcanır; XP seviye ilerlemesini gösterir.',
-              style: TextStyle(
-                color: AppTheme.secondaryTextColor,
-                fontSize: 12,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    children: [
-                      _MiniPill(
-                        icon: Icons.monetization_on_rounded,
-                        text: '+${status.rewardCoins} Link Coin',
-                        color: AppTheme.warningColor,
-                      ),
-                      _MiniPill(
-                        icon: Icons.bolt_rounded,
-                        text: '+${status.xpReward} XP',
-                        color: AppTheme.primaryColor,
-                      ),
-                      if (status.streakProtectionAvailable)
-                        _MiniPill(
-                          icon: Icons.shield_outlined,
-                          text: status.wouldUseStreakProtection
-                              ? 'Seri koruması hazır'
-                              : 'Premium seri koruması',
-                          color: AppTheme.successColor,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: status.canClaim && !claiming ? onClaim : null,
-                icon: claiming
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Icon(
-                        status.canClaim
-                            ? Icons.redeem_rounded
-                            : Icons.check_circle_outline_rounded,
-                      ),
-                label: Text(
-                  claiming
-                      ? 'Alınıyor…'
-                      : status.canClaim
-                      ? 'Ödülü Topla'
-                      : !status.enabled
-                      ? 'Günlük ödül şu anda kapalı'
-                      : status.dateKey.isEmpty
-                      ? 'Ödül bilgisi yükleniyor'
-                      : 'Bugünün ödülü alındı',
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MissionCard extends StatelessWidget {
-  final MissionItem mission;
-  final bool claiming;
-  final VoidCallback onClaim;
-
-  const _MissionCard({
-    required this.mission,
-    required this.claiming,
-    required this.onClaim,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final completed = mission.progress >= mission.target;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 15, 14, 15),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: _iconColor.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(13),
-              ),
-              child: Icon(_icon, color: _iconColor, size: 22),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          mission.title,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                      if (mission.kind == MissionKind.general)
-                        Text(
-                          '${mission.stage}/${mission.stageCount}',
-                          style: const TextStyle(
-                            color: AppTheme.hintColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (mission.description.isNotEmpty) ...[
-                    const SizedBox(height: 3),
-                    Text(
-                      mission.description,
-                      style: const TextStyle(
-                        color: AppTheme.secondaryTextColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 10),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(999),
-                    child: LinearProgressIndicator(
-                      value: mission.ratio,
-                      minHeight: 6,
-                      color: completed
-                          ? AppTheme.successColor
-                          : AppTheme.primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${mission.progress}/${mission.target}',
-                    style: const TextStyle(
-                      color: AppTheme.hintColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            _MissionRewardAction(
-              mission: mission,
-              claiming: claiming,
-              onClaim: onClaim,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  IconData get _icon {
-    final id = mission.id.toLowerCase();
-    if (id.contains('win')) return Icons.emoji_events_outlined;
-    if (id.contains('daily')) return Icons.today_rounded;
-    if (id.contains('play')) return Icons.sports_esports_outlined;
-    return Icons.flag_outlined;
-  }
-
-  Color get _iconColor {
-    if (mission.claimed) return AppTheme.successColor;
-    if (mission.kind == MissionKind.daily) return AppTheme.infoColor;
-    return AppTheme.warningColor;
-  }
-}
-
-class _MissionRewardAction extends StatelessWidget {
-  final MissionItem mission;
-  final bool claiming;
-  final VoidCallback onClaim;
-
-  const _MissionRewardAction({
-    required this.mission,
-    required this.claiming,
-    required this.onClaim,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (mission.claimed) {
-      return const _MiniPill(
-        icon: Icons.check_rounded,
-        text: 'Alındı',
-        color: AppTheme.successColor,
-      );
-    }
-
-    if (!mission.enabled || mission.limitReached) {
-      return _MiniPill(
-        icon: Icons.pause_circle_outline_rounded,
-        text: mission.limitReached ? 'Günlük limit' : 'Kapalı',
-        color: AppTheme.hintColor,
-      );
-    }
-
-    if (claiming) {
-      return const SizedBox(
-        width: 44,
-        height: 44,
-        child: Padding(
-          padding: EdgeInsets.all(11),
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      );
-    }
-
-    if (mission.claimable) {
-      return FilledButton(
-        onPressed: onClaim,
-        style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          minimumSize: const Size(0, 40),
-        ),
-        child: Text('+${mission.rewardCoins}'),
-      );
-    }
-
-    return _MiniPill(
-      icon: Icons.monetization_on_rounded,
-      text: '+${mission.rewardCoins}',
-      color: AppTheme.hintColor,
-    );
-  }
-}
-
-class _MiniPill extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final Color color;
-
-  const _MiniPill({
-    required this.icon,
-    required this.text,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              color: color,
-              fontSize: 11,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String trailing;
-
-  const _SectionTitle({
-    required this.icon,
-    required this.title,
-    required this.trailing,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 22, color: AppTheme.primaryColor),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+            ],
           ),
         ),
+        const SizedBox(height: 16),
+        PitchPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                c('Sezon yolculuğu', 'Season journey'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(p.season.title),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(value: p.season.ratio),
+              const SizedBox(height: 8),
+              Text(
+                c(
+                  'Seviye ${p.season.level} · ${p.season.xp} sezon XP',
+                  'Level ${p.season.level} · ${p.season.xp} season XP',
+                ),
+              ),
+              if (p.season.endsOn.isNotEmpty)
+                Text(
+                  c('Bitiş: ${p.season.endsOn}', 'Ends: ${p.season.endsOn}'),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        _daily(p.dailyReward),
+        const SizedBox(height: 24),
         Text(
-          trailing,
-          style: const TextStyle(
-            color: AppTheme.hintColor,
-            fontWeight: FontWeight.w700,
+          c('Sıradaki hedefin', 'Your next goal'),
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final kind in MissionKind.values)
+              ChoiceChip(
+                label: Text(
+                  kind == MissionKind.daily
+                      ? c('Günlük', 'Daily')
+                      : c('Kariyer', 'Career'),
+                ),
+                selected: _kind == kind,
+                onSelected: (_) => setState(() => _kind = kind),
+              ),
+            FilterChip(
+              label: Text(c('Ödülü hazır', 'Ready to claim')),
+              selected: _readyOnly,
+              onSelected: (v) => setState(() => _readyOnly = v),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _kind == MissionKind.daily
+              ? c(
+                  '${m.dailyCompletedCount}/${m.dailyClaimLimit} ödül alındı · Türkiye saatiyle 00.00’da yenilenir.',
+                  '${m.dailyCompletedCount}/${m.dailyClaimLimit} rewards claimed · Resets at 00:00 Türkiye time.',
+                )
+              : c(
+                  'Aşamaları tamamla, sıradaki hedefi aç.',
+                  'Complete stages to unlock the next goal.',
+                ),
+        ),
+        const SizedBox(height: 12),
+        if (visible.isEmpty)
+          SocialNotice(
+            title: c('Burada görev yok', 'No missions here'),
+            message: c(
+              'Diğer filtreye bakabilir veya daha sonra yenileyebilirsin.',
+              'Try another filter or refresh later.',
+            ),
+          ),
+        for (final mission in visible)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _mission(mission),
+          ),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(
+            context,
+          ).push(LinkballRoute(builder: (_) => const AchievementsPage())),
+          icon: const Icon(Icons.military_tech_outlined),
+          label: Text(
+            c('Rozet koleksiyonunu keşfet', 'Explore your badge collection'),
           ),
         ),
       ],
     );
   }
-}
 
-class _EmptyMissionCard extends StatelessWidget {
-  final String text;
-
-  const _EmptyMissionCard({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Text(
-          text,
-          style: const TextStyle(color: AppTheme.secondaryTextColor),
-        ),
-      ),
-    );
-  }
-}
-
-class _TrustNotice extends StatelessWidget {
-  const _TrustNotice();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: AppTheme.infoColor.withValues(alpha: 0.07),
-      child: const Padding(
-        padding: EdgeInsets.all(15),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.verified_user_outlined, color: AppTheme.infoColor),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Görev ilerlemesi yalnız doğrulanmış sıralamalı maçlar ve '
-                'Günlük Mücadele kayıtlarından hesaplanır. Modlara özel yeni '
-                'görevler, ilgili modlar Faz 17’de doğrulandıkça eklenecek.',
-                style: TextStyle(
-                  color: AppTheme.secondaryTextColor,
-                  fontSize: 12,
-                  height: 1.4,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LoadError extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _LoadError({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
+  Widget _daily(DailyRewardStatus s) => PitchPanel(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.error_outline_rounded,
-          size: 48,
-          color: AppTheme.dangerColor,
+        Text(
+          c('Günlük buluşma', 'Daily check-in'),
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          c(
+            '${s.currentStreak} günlük seri · En iyi ${s.bestStreak}',
+            '${s.currentStreak}-day streak · Best ${s.bestStreak}',
+          ),
         ),
         const SizedBox(height: 14),
-        const Text(
-          'İlerleme yüklenemedi',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (var i = 0; i < s.scheduleCoins.length; i++)
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  border: i + 1 == s.nextDayIndex
+                      ? Border.all(color: socialAccent(context), width: 2)
+                      : null,
+                ),
+                child: Text(
+                  c(
+                    '${i + 1}. gün\n+${s.scheduleCoins[i]}',
+                    'Day ${i + 1}\n+${s.scheduleCoins[i]}',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            SocialStatus('+${s.rewardCoins} Link Coin'),
+            SocialStatus('+${s.xpReward} XP'),
+            if (s.multiplier > 1) SocialStatus('${s.multiplier}× Pro'),
+            if (s.streakProtectionAvailable)
+              SocialStatus(c('Seri koruması', 'Streak protection')),
+          ],
         ),
         const SizedBox(height: 8),
         Text(
-          message,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: AppTheme.secondaryTextColor),
+          c(
+            'Link Coin harcanır; XP seviyeni yükseltir.',
+            'Spend Link Coin; earn XP to level up.',
+          ),
         ),
-        const SizedBox(height: 18),
-        FilledButton.icon(
-          onPressed: onRetry,
-          icon: const Icon(Icons.refresh_rounded),
-          label: const Text('Tekrar dene'),
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: !_loading && !_claiming && s.enabled && s.canClaim
+                ? () => _claim()
+                : null,
+            icon: const Icon(Icons.redeem_rounded),
+            label: Text(
+              !s.enabled
+                  ? c('Şu anda kapalı', 'Currently unavailable')
+                  : s.canClaim
+                  ? c('Günlük ödülü al', 'Claim daily reward')
+                  : c('Bugünün ödülü alındı', 'Today’s reward claimed'),
+            ),
+          ),
         ),
       ],
-    );
-  }
+    ),
+  );
+  Widget _mission(MissionItem m) => PitchPanel(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              m.claimed ? Icons.check_circle_outline : Icons.flag_outlined,
+              color: socialAccent(context),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                m.title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(m.description),
+        const SizedBox(height: 14),
+        LinearProgressIndicator(value: m.ratio, minHeight: 6),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 10,
+          runSpacing: 6,
+          children: [
+            Text('${m.progress}/${m.target}'),
+            if (m.stageCount > 0)
+              Text(
+                c(
+                  'Aşama ${m.stage}/${m.stageCount}',
+                  'Stage ${m.stage}/${m.stageCount}',
+                ),
+              ),
+            SocialStatus('+${m.rewardCoins} Link Coin'),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (m.claimed)
+          SocialStatus(c('Ödül alındı', 'Reward claimed'), complete: true)
+        else if (!m.enabled || m.limitReached)
+          Text(
+            m.limitReached
+                ? c(
+                    'Günlük ödül limitine ulaştın',
+                    'Daily reward limit reached',
+                  )
+                : c(
+                    'Bu görev şu anda kapalı',
+                    'This mission is currently unavailable',
+                  ),
+          )
+        else if (m.claimable)
+          FilledButton(
+            onPressed: _loading || _claiming ? null : () => _claim(m),
+            child: Text(c('Ödülü al', 'Claim reward')),
+          )
+        else
+          Text(
+            c(
+              'Oynadıkça ilerlemen burada güncellenir.',
+              'Your progress updates here as you play.',
+            ),
+          ),
+      ],
+    ),
+  );
 }

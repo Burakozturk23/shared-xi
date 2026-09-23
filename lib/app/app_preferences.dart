@@ -9,6 +9,7 @@ class AppPreferences extends ChangeNotifier {
       (m) => m.name == stored,
       orElse: () => ThemeMode.system,
     );
+    languageCode = _store.getString('linkball.language') == 'en' ? 'en' : 'tr';
     sound = _store.getBool('linkball.sound') ?? true;
     haptics = _store.getBool('linkball.haptics') ?? true;
     onboardingComplete =
@@ -17,9 +18,19 @@ class AppPreferences extends ChangeNotifier {
 
   final SharedPreferences _store;
   late ThemeMode themeMode;
+  late String languageCode;
   late bool sound, haptics, onboardingComplete;
   static Future<AppPreferences> load() async =>
       AppPreferences._(await SharedPreferences.getInstance());
+
+  Future<void> setLanguage(String code) async {
+    if (code != 'tr' && code != 'en') throw ArgumentError.value(code);
+    if (!await _store.setString('linkball.language', code)) {
+      throw StateError('Dil kaydedilemedi.');
+    }
+    languageCode = code;
+    notifyListeners();
+  }
 
   Future<void> setTheme(ThemeMode mode) async {
     if (!await _store.setString('linkball.theme_mode', mode.name)) {

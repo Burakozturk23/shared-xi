@@ -202,6 +202,9 @@ void main() {
       250,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Oyunları tanı'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Oyunları tanı'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Devam'));
