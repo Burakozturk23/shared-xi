@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../models/friend_models.dart';
-import '../services/friends_service.dart';
+import '../services/social/social_gateways.dart';
+import '../widgets/social_ui.dart';
+import '../widgets/pitch_ui.dart';
 import '../services/nickname_service.dart';
 import '../widgets/player_safety_actions.dart';
 import '../widgets/user_avatar_badge.dart';
@@ -9,7 +11,13 @@ import 'friend_match_invites_section.dart';
 import 'social_safety_center_page.dart';
 
 class FriendsPage extends StatefulWidget {
-  const FriendsPage({super.key});
+  const FriendsPage({
+    super.key,
+    this.initialTab = 0,
+    this.gateway = const FriendsGateway(),
+  }) : assert(initialTab >= 0 && initialTab < 4);
+  final int initialTab;
+  final FriendsGateway gateway;
 
   @override
   State<FriendsPage> createState() => _FriendsPageState();
@@ -19,6 +27,23 @@ class _FriendsPageState extends State<FriendsPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   late Future<void> _readyFuture;
+  late Stream<List<FriendshipEdge>> _friends;
+  late Stream<List<FriendRequestEdge>> _incoming, _outgoing;
+  late Stream<List<BlockedUserEdge>> _blocks;
+  late Stream<List<FriendMatchInvite>> _invites;
+  int _prepareEpoch = 0;
+
+  Future<void> _prepare() async {
+    final epoch = ++_prepareEpoch;
+    if (!widget.gateway.isGoogleAccount) return;
+    await widget.gateway.prepare();
+    if (!mounted || epoch != _prepareEpoch) return;
+    _friends = widget.gateway.friends();
+    _incoming = widget.gateway.incoming();
+    _outgoing = widget.gateway.outgoing();
+    _blocks = widget.gateway.blocks();
+    _invites = widget.gateway.invites();
+  }
 
   final TextEditingController _searchController = TextEditingController();
   final Map<String, Future<PublicFriendProfile?>> _profileCache = {};
@@ -31,8 +56,12 @@ class _FriendsPageState extends State<FriendsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _readyFuture = FriendsService.ensureReady();
+    _tabController = TabController(
+      length: 4,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
+    _readyFuture = _prepare();
   }
 
   @override
@@ -45,7 +74,10 @@ class _FriendsPageState extends State<FriendsPage>
   Future<PublicFriendProfile?> _profile(String uid) {
     return _profileCache.putIfAbsent(
       uid,
-      () => FriendsService.fetchPublicProfile(uid),
+      () => widget.gateway.profile(uid).catchError((Object error) {
+        _profileCache.remove(uid);
+        throw error;
+      }),
     );
   }
 
@@ -56,12 +88,13 @@ class _FriendsPageState extends State<FriendsPage>
   Future<void> _retryReady() async {
     setState(() {
       _profileCache.clear();
-      _readyFuture = FriendsService.ensureReady();
+      _readyFuture = _prepare();
     });
   }
 
   Future<void> _search() async {
     if (_searching) return;
+    FocusScope.of(context).unfocus();
 
     setState(() {
       _searching = true;
@@ -70,9 +103,7 @@ class _FriendsPageState extends State<FriendsPage>
     });
 
     try {
-      final result = await FriendsService.searchByNickname(
-        _searchController.text,
-      );
+      final result = await widget.gateway.search(_searchController.text);
 
       if (!mounted) return;
       setState(() {
@@ -101,7 +132,6 @@ class _FriendsPageState extends State<FriendsPage>
     String uid,
     Future<FriendRelationship> Function() mutation, {
     String? successMessage,
-    bool refreshSearch = true,
   }) async {
     if (_busyUids.contains(uid)) return;
 
@@ -115,9 +145,7 @@ class _FriendsPageState extends State<FriendsPage>
 
       if (!mounted) return;
 
-      if (refreshSearch &&
-          _searchResult?.profile?.uid == uid &&
-          _searchResult != null) {
+      if (_searchResult?.profile?.uid == uid && _searchResult != null) {
         setState(() {
           _searchResult = FriendSearchResult(
             found: true,
@@ -146,6 +174,34 @@ class _FriendsPageState extends State<FriendsPage>
     }
   }
 
+  Future<void> _removeFriend(String uid) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Arkadaşlıktan çıkarılsın mı?'),
+        content: const Text(
+          'Tekrar arkadaş olmak için yeni bir istek göndermen gerekir.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Arkadaşlıktan çıkar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await _runMutation(
+      uid,
+      () => widget.gateway.removeFriend(uid),
+      successMessage: 'Arkadaş kaldırıldı.',
+    );
+  }
+
   Future<void> _reportPlayer(
     String uid, {
     String? displayName,
@@ -159,11 +215,7 @@ class _FriendsPageState extends State<FriendsPage>
     );
   }
 
-  Future<void> _blockWithConfirmation(
-    String uid, {
-    String? displayName,
-    bool refreshSearch = true,
-  }) async {
+  Future<void> _blockWithConfirmation(String uid, {String? displayName}) async {
     final confirmed = await PlayerSafetyActions.confirmBlock(
       context: context,
       targetDisplayName: displayName,
@@ -173,9 +225,8 @@ class _FriendsPageState extends State<FriendsPage>
 
     await _runMutation(
       uid,
-      () => FriendsService.blockUser(uid),
+      () => widget.gateway.blockUser(uid),
       successMessage: 'Kullanıcı engellendi.',
-      refreshSearch: refreshSearch,
     );
   }
 
@@ -205,6 +256,11 @@ class _FriendsPageState extends State<FriendsPage>
         title: const Text('Arkadaşlar'),
         actions: [
           IconButton(
+            tooltip: 'Arkadaşları yenile',
+            onPressed: _retryReady,
+            icon: const Icon(Icons.refresh_rounded),
+          ),
+          IconButton(
             tooltip: 'Güvenlik & Raporlar',
             onPressed: () {
               Navigator.push<void>(
@@ -228,136 +284,143 @@ class _FriendsPageState extends State<FriendsPage>
           ],
         ),
       ),
-      body: FutureBuilder<void>(
-        future: _readyFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: !widget.gateway.isGoogleAccount
+          ? SocialAccountGate(
+              onReturn: () {
+                setState(() {});
+                _retryReady();
+              },
+            )
+          : FutureBuilder<void>(
+              future: _readyFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (snapshot.hasError) {
-            return _FriendsErrorState(
-              message: _messageFor(snapshot.error!),
-              onRetry: _retryReady,
-            );
-          }
+                if (snapshot.hasError) {
+                  return _FriendsErrorState(
+                    message: _messageFor(snapshot.error!),
+                    onRetry: _retryReady,
+                  );
+                }
 
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _FriendsList(
-                profileFor: _profile,
-                busyUids: _busyUids,
-                onRemove: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.removeFriend(uid),
-                  successMessage: 'Arkadaş kaldırıldı.',
-                  refreshSearch: false,
-                ),
-                onReport: (uid) => _reportPlayer(uid, sourceContext: 'friends'),
-                onBlock: (uid) =>
-                    _blockWithConfirmation(uid, refreshSearch: false),
-              ),
-              _RequestsList(
-                profileFor: _profile,
-                busyUids: _busyUids,
-                onAccept: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.respondRequest(
-                    senderUid: uid,
-                    accept: true,
+                return SafeArea(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _FriendsList(
+                        stream: _friends,
+                        onRetry: _retryReady,
+                        onSearch: () => _tabController.animateTo(2),
+                        profileFor: _profile,
+                        busyUids: _busyUids,
+                        onRemove: _removeFriend,
+                        onReport: (uid) =>
+                            _reportPlayer(uid, sourceContext: 'friends'),
+                        onBlock: (uid) => _blockWithConfirmation(uid),
+                      ),
+                      _RequestsList(
+                        incoming: _incoming,
+                        outgoing: _outgoing,
+                        invites: _invites,
+                        onRetry: _retryReady,
+                        profileFor: _profile,
+                        busyUids: _busyUids,
+                        onAccept: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.respondRequest(
+                            senderUid: uid,
+                            accept: true,
+                          ),
+                          successMessage: 'Arkadaşlık isteği kabul edildi.',
+                        ),
+                        onReject: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.respondRequest(
+                            senderUid: uid,
+                            accept: false,
+                          ),
+                          successMessage: 'Arkadaşlık isteği reddedildi.',
+                        ),
+                        onCancel: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.cancelRequest(uid),
+                          successMessage: 'Arkadaşlık isteği iptal edildi.',
+                        ),
+                        onReport: (uid) =>
+                            _reportPlayer(uid, sourceContext: 'friends'),
+                        onBlock: (uid) => _blockWithConfirmation(uid),
+                      ),
+                      _SearchFriendView(
+                        controller: _searchController,
+                        searching: _searching,
+                        error: _searchError,
+                        result: _searchResult,
+                        busyUids: _busyUids,
+                        onSearch: _search,
+                        onSend: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.sendRequest(uid),
+                          successMessage: 'Arkadaşlık isteği gönderildi.',
+                        ),
+                        onAccept: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.respondRequest(
+                            senderUid: uid,
+                            accept: true,
+                          ),
+                          successMessage: 'Arkadaşlık isteği kabul edildi.',
+                        ),
+                        onReject: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.respondRequest(
+                            senderUid: uid,
+                            accept: false,
+                          ),
+                          successMessage: 'Arkadaşlık isteği reddedildi.',
+                        ),
+                        onCancel: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.cancelRequest(uid),
+                          successMessage: 'Arkadaşlık isteği iptal edildi.',
+                        ),
+                        onRemove: _removeFriend,
+                        onBlock: (uid) => _blockWithConfirmation(uid),
+                        onReport: (profile) => _reportPlayer(
+                          profile.uid,
+                          displayName: profile.displayName,
+                          sourceContext: 'profile',
+                        ),
+                        onUnblock: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.unblockUser(uid),
+                          successMessage: 'Engel kaldırıldı.',
+                        ),
+                      ),
+                      _BlockedList(
+                        stream: _blocks,
+                        onRetry: _retryReady,
+                        profileFor: _profile,
+                        busyUids: _busyUids,
+                        onUnblock: (uid) => _runMutation(
+                          uid,
+                          () => widget.gateway.unblockUser(uid),
+                          successMessage: 'Engel kaldırıldı.',
+                        ),
+                      ),
+                    ],
                   ),
-                  successMessage: 'Arkadaşlık isteği kabul edildi.',
-                  refreshSearch: false,
-                ),
-                onReject: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.respondRequest(
-                    senderUid: uid,
-                    accept: false,
-                  ),
-                  successMessage: 'Arkadaşlık isteği reddedildi.',
-                  refreshSearch: false,
-                ),
-                onCancel: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.cancelRequest(uid),
-                  successMessage: 'Arkadaşlık isteği iptal edildi.',
-                  refreshSearch: false,
-                ),
-                onReport: (uid) => _reportPlayer(uid, sourceContext: 'friends'),
-                onBlock: (uid) =>
-                    _blockWithConfirmation(uid, refreshSearch: false),
-              ),
-              _SearchFriendView(
-                controller: _searchController,
-                searching: _searching,
-                error: _searchError,
-                result: _searchResult,
-                busyUids: _busyUids,
-                onSearch: _search,
-                onSend: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.sendRequest(uid),
-                  successMessage: 'Arkadaşlık isteği gönderildi.',
-                ),
-                onAccept: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.respondRequest(
-                    senderUid: uid,
-                    accept: true,
-                  ),
-                  successMessage: 'Arkadaşlık isteği kabul edildi.',
-                ),
-                onReject: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.respondRequest(
-                    senderUid: uid,
-                    accept: false,
-                  ),
-                  successMessage: 'Arkadaşlık isteği reddedildi.',
-                ),
-                onCancel: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.cancelRequest(uid),
-                  successMessage: 'Arkadaşlık isteği iptal edildi.',
-                ),
-                onRemove: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.removeFriend(uid),
-                  successMessage: 'Arkadaş kaldırıldı.',
-                ),
-                onBlock: (uid) => _blockWithConfirmation(uid),
-                onReport: (profile) => _reportPlayer(
-                  profile.uid,
-                  displayName: profile.displayName,
-                  sourceContext: 'profile',
-                ),
-                onUnblock: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.unblockUser(uid),
-                  successMessage: 'Engel kaldırıldı.',
-                ),
-              ),
-              _BlockedList(
-                profileFor: _profile,
-                busyUids: _busyUids,
-                onUnblock: (uid) => _runMutation(
-                  uid,
-                  () => FriendsService.unblockUser(uid),
-                  successMessage: 'Engel kaldırıldı.',
-                  refreshSearch: false,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                );
+              },
+            ),
     );
   }
 }
 
 class _FriendsList extends StatelessWidget {
+  final Stream<List<FriendshipEdge>> stream;
+  final VoidCallback onRetry, onSearch;
   final Future<PublicFriendProfile?> Function(String uid) profileFor;
   final Set<String> busyUids;
   final ValueChanged<String> onRemove;
@@ -365,6 +428,9 @@ class _FriendsList extends StatelessWidget {
   final ValueChanged<String> onBlock;
 
   const _FriendsList({
+    required this.stream,
+    required this.onRetry,
+    required this.onSearch,
     required this.profileFor,
     required this.busyUids,
     required this.onRemove,
@@ -375,28 +441,64 @@ class _FriendsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<FriendshipEdge>>(
-      stream: FriendsService.watchFriends(),
+      stream: stream,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: SocialNotice(
+              title: 'Liste yüklenemedi',
+              message: 'Bağlantını kontrol edip tekrar dene.',
+              icon: Icons.cloud_off_outlined,
+              onAction: onRetry,
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
 
         final rows = snapshot.data!;
         if (rows.isEmpty) {
-          return const _FriendsEmptyState(
-            icon: Icons.people_outline_rounded,
-            title: 'Henüz arkadaşın yok',
-            subtitle:
-                'Arkadaş Ara sekmesinden Linkball takma adıyla oyuncu bul.',
+          return ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              const SocialHero(
+                icon: Icons.groups_outlined,
+                eyebrow: 'ARKADAŞLARIN',
+                title: 'Aynı oyunda buluş.',
+                message:
+                    'Bir takma ad ara, arkadaşlık isteği gönder ve birlikte oynamaya başla.',
+              ),
+              const SizedBox(height: 20),
+              SocialNotice(
+                title: 'İlk arkadaşını ekle',
+                message: 'Arama için oyuncunun Linkball takma adını kullan.',
+                actionLabel: 'Arkadaş bul',
+                onAction: onSearch,
+              ),
+            ],
           );
         }
 
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-          itemCount: rows.length,
+          itemCount: rows.length + 1,
           separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
-            final edge = rows[index];
+            if (index == 0)
+              return SocialHero(
+                icon: Icons.groups_outlined,
+                eyebrow: '${rows.length} ARKADAŞ',
+                title: 'Takımın burada.',
+                message: 'İsteklerini yönet, arkadaşlarınla bağlantıda kal.',
+                footer: OutlinedButton.icon(
+                  onPressed: onSearch,
+                  icon: const Icon(Icons.person_add_alt_1),
+                  label: const Text('Arkadaş ekle'),
+                ),
+              );
+            final edge = rows[index - 1];
             final busy = busyUids.contains(edge.uid);
 
             return _HydratedProfileCard(
@@ -437,6 +539,9 @@ class _FriendsList extends StatelessWidget {
 }
 
 class _RequestsList extends StatelessWidget {
+  final Stream<List<FriendRequestEdge>> incoming, outgoing;
+  final Stream<List<FriendMatchInvite>> invites;
+  final VoidCallback onRetry;
   final Future<PublicFriendProfile?> Function(String uid) profileFor;
   final Set<String> busyUids;
   final ValueChanged<String> onAccept;
@@ -446,6 +551,10 @@ class _RequestsList extends StatelessWidget {
   final ValueChanged<String> onBlock;
 
   const _RequestsList({
+    required this.incoming,
+    required this.outgoing,
+    required this.invites,
+    required this.onRetry,
     required this.profileFor,
     required this.busyUids,
     required this.onAccept,
@@ -461,15 +570,26 @@ class _RequestsList extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       children: [
-        const FriendMatchInvitesSection(),
+        FriendMatchInvitesSection(stream: invites),
         const _SectionTitle(
           title: 'Gelen İstekler',
           icon: Icons.call_received_rounded,
         ),
         const SizedBox(height: 8),
         StreamBuilder<List<FriendRequestEdge>>(
-          stream: FriendsService.watchIncomingRequests(),
+          stream: incoming,
           builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: SocialNotice(
+                  title: 'Liste yüklenemedi',
+                  message: 'Bağlantını kontrol edip tekrar dene.',
+                  icon: Icons.cloud_off_outlined,
+                  onAction: onRetry,
+                ),
+              );
+            }
             if (!snapshot.hasData) {
               return const _InlineLoading();
             }
@@ -540,8 +660,19 @@ class _RequestsList extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         StreamBuilder<List<FriendRequestEdge>>(
-          stream: FriendsService.watchOutgoingRequests(),
+          stream: outgoing,
           builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: SocialNotice(
+                  title: 'Liste yüklenemedi',
+                  message: 'Bağlantını kontrol edip tekrar dene.',
+                  icon: Icons.cloud_off_outlined,
+                  onAction: onRetry,
+                ),
+              );
+            }
             if (!snapshot.hasData) {
               return const _InlineLoading();
             }
@@ -620,14 +751,16 @@ class _SearchFriendView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
       children: [
-        const Text(
-          'Linkball takma adıyla ara',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+        const SocialHero(
+          icon: Icons.person_search_outlined,
+          eyebrow: 'YENİ BİR RAKİP, YENİ BİR ARKADAŞ',
+          title: 'Takma adını biliyor musun?',
+          message:
+              'Tam Linkball takma adını yaz. E-posta adresleri aramada kullanılmaz.',
         ),
         const SizedBox(height: 6),
         Text(
-          'Google e-posta adresi veya Google profil fotoğrafı '
-          'arkadaş aramasında kullanılmaz.',
+          'Arama, yazdığın tam takma adla eşleşir.',
           style: TextStyle(color: Theme.of(context).hintColor, height: 1.35),
         ),
         const SizedBox(height: 16),
@@ -846,11 +979,15 @@ class _SearchActions extends StatelessWidget {
 }
 
 class _BlockedList extends StatelessWidget {
+  final Stream<List<BlockedUserEdge>> stream;
+  final VoidCallback onRetry;
   final Future<PublicFriendProfile?> Function(String uid) profileFor;
   final Set<String> busyUids;
   final ValueChanged<String> onUnblock;
 
   const _BlockedList({
+    required this.stream,
+    required this.onRetry,
     required this.profileFor,
     required this.busyUids,
     required this.onUnblock,
@@ -859,8 +996,19 @@ class _BlockedList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<BlockedUserEdge>>(
-      stream: FriendsService.watchBlocks(),
+      stream: stream,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: SocialNotice(
+              title: 'Liste yüklenemedi',
+              message: 'Bağlantını kontrol edip tekrar dene.',
+              icon: Icons.cloud_off_outlined,
+              onAction: onRetry,
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -917,30 +1065,51 @@ class _HydratedProfileCard extends StatelessWidget {
       builder: (context, snapshot) {
         final profile = snapshot.data;
 
-        return Card(
-          child: ListTile(
-            leading: UserAvatarBadge(
-              avatarId: profile?.avatarId ?? 'starter_ball',
-              radius: 24,
-            ),
-            title: Text(
-              profile?.displayName ?? 'Linkball oyuncusu',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
-            subtitle: Text(
-              profile == null
-                  ? 'Profil hazırlanıyor…'
-                  : [
-                      if (profile.normalizedName.isNotEmpty)
-                        '@${profile.normalizedName}',
-                      '${profile.elo} Elo',
-                    ].join(' · '),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: trailing,
+        return PitchPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  UserAvatarBadge(
+                    avatarId: profile?.avatarId ?? 'starter_ball',
+                    radius: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile?.displayName ?? 'Linkball oyuncusu',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          profile != null
+                              ? [
+                                  if (profile.normalizedName.isNotEmpty)
+                                    '@${profile.normalizedName}',
+                                  '${profile.elo} Elo',
+                                ].join(' · ')
+                              : snapshot.connectionState ==
+                                    ConnectionState.waiting
+                              ? 'Profil yükleniyor…'
+                              : snapshot.hasError
+                              ? 'Profil yüklenemedi. Listeyi yenileyebilirsin.'
+                              : 'Bu profil artık görünür değil.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Align(alignment: Alignment.centerRight, child: trailing),
+            ],
           ),
         );
       },
