@@ -183,6 +183,14 @@ class _AchievementsPageState extends State<AchievementsPage> {
     body: SafeArea(
       child: !widget.gateway.connected
           ? SocialAccountGate(
+              title: c(
+                'İlerlemeni yanında taşı.',
+                'Keep your progress with you.',
+              ),
+              message: c(
+                'Görevlerin, rozetlerin ve ödüllerin Google hesabına bağlı Linkball profilinde korunur.',
+                'Your missions, badges and rewards are saved to your Google-linked Linkball profile.',
+              ),
               onReturn: () {
                 setState(() {});
                 _load();

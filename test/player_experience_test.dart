@@ -420,8 +420,13 @@ void main() {
       final g = ProFake();
       addTearDown(g.updates.close);
       await open(t, PremiumPage(gateway: g));
-      await reveal(t, find.text('Google Play ile devam et').first);
-      await t.tap(find.text('Google Play ile devam et').first);
+      await reveal(t, find.byKey(const ValueKey(PremiumPlan.monthly)));
+      await t.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey(PremiumPlan.monthly)),
+          matching: find.byType(FilledButton),
+        ),
+      );
       await t.pumpAndSettle();
       expect(g.buys, 1);
       expect(find.text('Google Play ile devam et'), findsNothing);
@@ -438,7 +443,7 @@ void main() {
         ),
       ]);
       await t.pumpAndSettle();
-      await reveal(t, find.text('Google Play ile devam et').first);
+      await reveal(t, find.byKey(const ValueKey(PremiumPlan.monthly)));
       expect(
         t
             .widget<FilledButton>(

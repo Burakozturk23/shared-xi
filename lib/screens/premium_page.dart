@@ -516,6 +516,7 @@ class _PremiumPageState extends State<PremiumPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: ProPlanCard(
+                  key: ValueKey(plan),
                   product: catalog.productFor(plan)!,
                   active: entitlement.active,
                   current: entitlement.active && entitlement.plan == plan,
@@ -573,7 +574,12 @@ class ProPlanCard extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        Text(product.price, style: Theme.of(context).textTheme.headlineMedium),
+        Text(
+          product.price,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(fontFamily: 'Inter'),
+        ),
         Text(
           product.plan == PremiumPlan.yearly
               ? 'Yıllık faturalandırılır'
