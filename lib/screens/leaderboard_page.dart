@@ -85,6 +85,7 @@ class _LeaderboardPageState extends State<LeaderboardPage>
     appBar: AppBar(
       title: const Text('Liderlik Tablosu'),
       bottom: TabBar(
+        isScrollable: MediaQuery.textScalerOf(context).scale(14) > 18,
         controller: _tabs,
         tabs: const [
           Tab(text: 'Günlük'),

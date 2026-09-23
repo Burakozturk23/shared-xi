@@ -149,6 +149,7 @@ class _CommunityCenterPageState extends State<CommunityCenterPage>
     appBar: AppBar(
       title: const Text('Topluluk Merkezi'),
       bottom: TabBar(
+        isScrollable: MediaQuery.textScalerOf(context).scale(14) > 18,
         controller: _tabs,
         tabs: const [
           Tab(text: 'Merkez'),

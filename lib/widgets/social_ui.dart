@@ -4,6 +4,15 @@ import '../app/route_appearance.dart';
 import '../screens/sign_in_page.dart';
 import 'pitch_ui.dart';
 
+// The brand lime is decorative on light surfaces; use the darker secondary
+// ink for readable labels and icons in light mode.
+Color socialAccent(BuildContext context) {
+  final theme = Theme.of(context);
+  return theme.brightness == Brightness.dark
+      ? theme.colorScheme.primary
+      : theme.colorScheme.secondary;
+}
+
 /// Shared, theme-aware vocabulary for the social and support screens.
 class SocialHero extends StatelessWidget {
   const SocialHero({
@@ -20,6 +29,7 @@ class SocialHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final accent = socialAccent(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -36,14 +46,14 @@ class SocialHero extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: colors.primary, size: 24),
+              Icon(icon, color: accent, size: 24),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   eyebrow,
                   style: Theme.of(
                     context,
-                  ).textTheme.labelLarge?.copyWith(color: colors.primary),
+                  ).textTheme.labelLarge?.copyWith(color: accent),
                 ),
               ),
             ],
@@ -77,7 +87,7 @@ class SocialStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final color = complete ? colors.onSurfaceVariant : colors.primary;
+    final color = complete ? colors.onSurfaceVariant : socialAccent(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -110,7 +120,7 @@ class SocialNotice extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
+        Icon(icon, size: 32, color: socialAccent(context)),
         const SizedBox(height: 12),
         Text(
           title,
