@@ -1,3 +1,4 @@
+import '../widgets/club_badge.dart';
 import 'package:flutter/material.dart';
 
 import '../data/popular_matchups.dart';
@@ -170,15 +171,7 @@ class _DatabaseClubClubPageState extends State<DatabaseClubClubPage> {
                 final c = filtered[i];
                 final selected = c.id == _c1?.id || c.id == _c2?.id;
                 return ListTile(
-                  leading: c.logo.isNotEmpty
-                      ? Image.network(
-                          c.logo,
-                          width: 32,
-                          height: 32,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.shield, size: 28),
-                        )
-                      : const Icon(Icons.shield, size: 28),
+                  leading: ClubBadge(club: c, size: 32),
                   title: Text(c.name),
                   subtitle: Text(
                     c.league,

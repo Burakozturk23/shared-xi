@@ -49,6 +49,7 @@ class PitchRow extends StatelessWidget {
     this.subtitle,
     this.onTap,
     this.trailing,
+    this.leading,
     this.highlight = false,
   });
   final String title;
@@ -56,6 +57,7 @@ class PitchRow extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final Widget? leading;
   final bool highlight;
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,7 @@ class PitchRow extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Container(
+          leading ?? Container(
             width: 48,
             height: 48,
             decoration: BoxDecoration(

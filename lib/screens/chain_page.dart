@@ -1,3 +1,4 @@
+import '../widgets/club_badge.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/chain_controller.dart';
@@ -126,16 +127,7 @@ class _ChainPageState extends State<ChainPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (club.logo.isNotEmpty)
-          Image.network(
-            club.logo,
-            width: 22,
-            height: 22,
-            errorBuilder: (c, e, st) => const Icon(Icons.circle, size: 12),
-          )
-        else
-          Icon(Icons.circle,
-              size: 12, color: highlight ? Colors.amber : Colors.redAccent),
+        ClubBadge(club: club, size: 24),
         const SizedBox(width: 6),
         Text(club.name,
             style: TextStyle(
@@ -250,10 +242,7 @@ class _ChainPageState extends State<ChainPage> {
             ),
             ...s.nextClubOptions.map(
               (c) => ListTile(
-                leading: c.logo.isNotEmpty
-                    ? Image.network(c.logo, width: 28, height: 28,
-                        errorBuilder: (a, b, c) => const Icon(Icons.shield))
-                    : const Icon(Icons.shield),
+                leading: ClubBadge(club: c, size: 28),
                 title: Text(c.name),
                 subtitle: Text(c.league.isNotEmpty ? c.league : c.country),
                 onTap: () => _controller.selectNextClub(c),

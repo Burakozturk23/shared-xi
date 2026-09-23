@@ -59,6 +59,16 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Upload visual identity previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-identity-previews
+          path: .dart_tool/identity_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Android debug compile gate
         run: flutter build apk --debug
 

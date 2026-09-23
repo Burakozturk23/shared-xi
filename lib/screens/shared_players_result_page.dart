@@ -8,6 +8,7 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/entity_header_tile.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/player_avatar.dart';
 
 typedef SharedPlayersLoader =
     Future<(List<Player>, Map<int, String>)> Function();
@@ -133,6 +134,8 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
             children: [
               Row(
                 children: [
+                  PlayerAvatar(player: player, size: 64),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       player.name,
@@ -146,6 +149,8 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
+              Text('Temsili illüstrasyon', style: Theme.of(context).textTheme.labelSmall),
               const SizedBox(height: 8),
               Text(
                 '${_positionLabel(player)} · ${player.countryLabel}',
@@ -305,6 +310,7 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
                           subtitle:
                               '${_positionLabel(player)} · ${player.countryLabel}',
                           icon: Icons.person_outline_rounded,
+                          leading: PlayerAvatar(player: player),
                           onTap: () => _showPlayer(player),
                         );
                       },
