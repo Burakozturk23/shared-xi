@@ -26,7 +26,8 @@ List<StoreOffer> offers() =>
                 as Map)['offers']
             as List)
         .map((o) => StoreOffer.fromMap(Map<String, dynamic>.from(o as Map)))
-        .toList();
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 EconomyInventoryItem item(String id, String type, [int count = 1]) =>
     EconomyInventoryItem(
       itemId: id,

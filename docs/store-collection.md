@@ -8,7 +8,7 @@ Bu paket `codex/player-experience-refresh` (#12) üzerine kuruludur. #11 ve #12 
 - Anagram: 60 Link Coin, üçlü paket 150.
 - Her destek tek kişilik Futbol Lingo, Mystery Player ve Transfer Detective ekranındaki **Destek çantam** içinde bir turda bir kez kullanılabilir. Mevcut ücretsiz ipuçları kalır. En fazla 99 adet stok.
 - 33 yeni isimli avatar: futbolcular, teknik direktörler, efsaneler ve içerik üreticileri. 300 coin, efsaneler 450. Eski dört Linkball mağaza avatarı korunur.
-- Altı özgün profil forması: 250 coin; Retro 350. Satın aldıktan sonra **Giy**; Profilim kartında görünür. **Profil formasını çıkar** seçimi sıfırlar; sahiplik kaybolmaz.
+- 24 profil forması: mevcut altı özgün tasarım 250 coin (Retro 350); Türkiye dört büyükleri ve İngiltere/İspanya/İtalya/Almanya/Fransa liglerinden 14 takımın renklerinden esinlenen 18 yeni tasarım 300 coin. Yeni koleksiyon arma/sponsor taşımaz ve resmî takım ürünü değildir. Lig filtreleri ve Türkiye öncelikli sıralama eklenmiştir. Satın aldıktan sonra **Giy**; Profilim kartında görünür. **Profil formasını çıkar** seçimi sıfırlar; sahiplik kaybolmaz.
 - Avatarlar şu an isim/monogram yer tutucusudur; fotoğraf, resmi logo, sponsorluk veya kişiyle iş birliği iddiası içermez. Görseller daha sonra sabit item ID'leri korunarak eklenebilir. İsim kullanımı için bir hak/lisans garantisi verilmez.
 - Şansa bağlı kutu, rakibi engelleme veya doğrulanmamış 2× coin/XP satılmaz. Ücretli destekler sıralamalı maça eklenmez.
 
@@ -48,3 +48,10 @@ Solo bulmacalar client'ta bulunduğundan sunucu doğru cevabı doğrulamaz; yaln
 - Dar ekran, büyük yazı, açık/koyu tema; mağaza filtreleri/Çantam/boş durum, Google hesabı gereksinimi.
 
 Node testleri gerçek callable kodunu bellek içi transaction transportuyla çalıştırır; Flutter testleri fake gateway kullanır. Gerçek Firebase kuralları/emülatörü, Google Play satın alma ve fiziksel cihaz kabulü bu otomatik testlerin kapsamı dışındadır.
+
+## Profil/arkadaşlar düzeltmeleri
+
+- Profil rozet kısayolu güncel tema ile açılır; eski tema sınırına geçiş kaldırıldı.
+- Arkadaşlar sayfası her veri kaynağına tek abonelik açar. Sekmeler son veri/hata durumunu yeniden alır; sekme değişimi, yenileme ve sayfadan çıkış abonelikleri güvenle yönetir.
+- Takma ad penceresi metin kontrolünü kendi yaşam döngüsünde tutar. Kaydetme sırasında çıkış kilitlenir; geç gelen hata kapanmış pencereyi güncellemez.
+- Bu ek sürüm için yeni forma kataloğunu yayınlamak üzere Functions deploy gerekir. Uygulamada tam yeniden başlatma kullanın; yalnızca hot reload ile kontrol etmeyin.

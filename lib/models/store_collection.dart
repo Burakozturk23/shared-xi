@@ -236,8 +236,14 @@ const collectionAvatars = <UserAvatarDefinition>[
 ];
 
 class ProfileKit {
-  const ProfileKit(this.id, this.title, this.primary, this.secondary);
-  final String id, title;
+  const ProfileKit(
+    this.id,
+    this.title,
+    this.primary,
+    this.secondary, {
+    this.pattern = 'center',
+  });
+  final String id, title, pattern;
   final int primary, secondary;
 }
 
@@ -248,6 +254,132 @@ const profileKits = <ProfileKit>[
   ProfileKit('kit_violet', 'Mor Tribün', 0xFF6236A0, 0xFFE3CCFF),
   ProfileKit('kit_ice', 'Buz Mavisi', 0xFFD8F3FA, 0xFF14637A),
   ProfileKit('kit_retro', 'Retro Kaptan', 0xFF8C243C, 0xFFF0CA79),
+  ProfileKit(
+    'kit_galatasaray',
+    'Galatasaray Esintisi',
+    0xFFF6B817,
+    0xFFAE1731,
+    pattern: 'half',
+  ),
+  ProfileKit(
+    'kit_fenerbahce',
+    'Fenerbahçe Esintisi',
+    0xFFF7D629,
+    0xFF14284D,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_besiktas',
+    'Beşiktaş Esintisi',
+    0xFFF4F4EE,
+    0xFF202126,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_trabzonspor',
+    'Trabzonspor Esintisi',
+    0xFF78243F,
+    0xFF5CBADD,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_liverpool',
+    'Liverpool Esintisi',
+    0xFFC82438,
+    0xFFF2EADC,
+    pattern: 'plain',
+  ),
+  ProfileKit(
+    'kit_manchester_city',
+    'Manchester City Esintisi',
+    0xFF79BADD,
+    0xFFF6F4ED,
+    pattern: 'plain',
+  ),
+  ProfileKit(
+    'kit_manchester_united',
+    'Manchester United Esintisi',
+    0xFFCC2531,
+    0xFF272833,
+    pattern: 'plain',
+  ),
+  ProfileKit(
+    'kit_arsenal',
+    'Arsenal Esintisi',
+    0xFFD52B36,
+    0xFFF4F3EC,
+    pattern: 'sleeves',
+  ),
+  ProfileKit(
+    'kit_real_madrid',
+    'Real Madrid Esintisi',
+    0xFFF5F2EA,
+    0xFFCEAF55,
+    pattern: 'plain',
+  ),
+  ProfileKit(
+    'kit_barcelona',
+    'Barcelona Esintisi',
+    0xFF253D89,
+    0xFFAE2443,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_atletico_madrid',
+    'Atlético Madrid Esintisi',
+    0xFFF8F4EC,
+    0xFFD0353C,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_juventus',
+    'Juventus Esintisi',
+    0xFFF1F1ED,
+    0xFF252730,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_milan',
+    'Milan Esintisi',
+    0xFFBD2334,
+    0xFF24252B,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_inter',
+    'Inter Esintisi',
+    0xFF2455AB,
+    0xFF20242D,
+    pattern: 'stripes',
+  ),
+  ProfileKit(
+    'kit_bayern',
+    'Bayern Münih Esintisi',
+    0xFFCC263D,
+    0xFFE9EEF4,
+    pattern: 'hoops',
+  ),
+  ProfileKit(
+    'kit_dortmund',
+    'Borussia Dortmund Esintisi',
+    0xFFF5D829,
+    0xFF23272F,
+    pattern: 'sleeves',
+  ),
+  ProfileKit(
+    'kit_psg',
+    'Paris Saint-Germain Esintisi',
+    0xFF172C55,
+    0xFFC62C42,
+    pattern: 'center',
+  ),
+  ProfileKit(
+    'kit_marseille',
+    'Marsilya Esintisi',
+    0xFFF2F4ED,
+    0xFF37A8D5,
+    pattern: 'plain',
+  ),
 ];
 ProfileKit? profileKit(String id) {
   for (final kit in profileKits) {

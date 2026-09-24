@@ -43,14 +43,27 @@ class _KitPainter extends CustomPainter {
     canvas.drawPath(shape, Paint()..color = Color(kit.primary));
     canvas.save();
     canvas.clipPath(shape);
-    canvas.drawRect(
-      const Rect.fromLTWH(44, 22, 12, 70),
-      Paint()..color = Color(kit.secondary),
-    );
-    canvas.drawRect(
-      const Rect.fromLTWH(0, 47, 100, 6),
-      Paint()..color = Color(kit.secondary).withValues(alpha: .25),
-    );
+    final accent = Paint()..color = Color(kit.secondary);
+    switch (kit.pattern) {
+      case 'half':
+        canvas.drawRect(const Rect.fromLTWH(50, 0, 50, 100), accent);
+      case 'stripes':
+        for (var x = 27.0; x < 80; x += 18) {
+          canvas.drawRect(Rect.fromLTWH(x, 0, 9, 100), accent);
+        }
+      case 'hoops':
+        for (var y = 35.0; y < 90; y += 22) {
+          canvas.drawRect(Rect.fromLTWH(0, y, 100, 7), accent);
+        }
+      case 'sleeves':
+        canvas.drawRect(const Rect.fromLTWH(0, 0, 26, 100), accent);
+        canvas.drawRect(const Rect.fromLTWH(74, 0, 26, 100), accent);
+      case 'plain':
+        canvas.drawRect(const Rect.fromLTWH(0, 49, 24, 5), accent);
+        canvas.drawRect(const Rect.fromLTWH(76, 49, 24, 5), accent);
+      default:
+        canvas.drawRect(const Rect.fromLTWH(44, 22, 12, 70), accent);
+    }
     canvas.restore();
     canvas.drawPath(
       Path()

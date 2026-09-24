@@ -684,6 +684,348 @@
         "transfer_detective"
       ],
       "sortOrder": 144
+    },
+    {
+      "offerId": "kit_galatasaray",
+      "itemId": "kit_galatasaray",
+      "itemType": "kit",
+      "category": "tr",
+      "title": "Galatasaray Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 60,
+      "colors": [
+        "F6B817",
+        "AE1731"
+      ],
+      "pattern": "half"
+    },
+    {
+      "offerId": "kit_fenerbahce",
+      "itemId": "kit_fenerbahce",
+      "itemType": "kit",
+      "category": "tr",
+      "title": "Fenerbahçe Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 61,
+      "colors": [
+        "F7D629",
+        "14284D"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_besiktas",
+      "itemId": "kit_besiktas",
+      "itemType": "kit",
+      "category": "tr",
+      "title": "Beşiktaş Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 62,
+      "colors": [
+        "F4F4EE",
+        "202126"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_trabzonspor",
+      "itemId": "kit_trabzonspor",
+      "itemType": "kit",
+      "category": "tr",
+      "title": "Trabzonspor Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 63,
+      "colors": [
+        "78243F",
+        "5CBADD"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_liverpool",
+      "itemId": "kit_liverpool",
+      "itemType": "kit",
+      "category": "england",
+      "title": "Liverpool Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 64,
+      "colors": [
+        "C82438",
+        "F2EADC"
+      ],
+      "pattern": "plain"
+    },
+    {
+      "offerId": "kit_manchester_city",
+      "itemId": "kit_manchester_city",
+      "itemType": "kit",
+      "category": "england",
+      "title": "Manchester City Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 65,
+      "colors": [
+        "79BADD",
+        "F6F4ED"
+      ],
+      "pattern": "plain"
+    },
+    {
+      "offerId": "kit_manchester_united",
+      "itemId": "kit_manchester_united",
+      "itemType": "kit",
+      "category": "england",
+      "title": "Manchester United Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 66,
+      "colors": [
+        "CC2531",
+        "272833"
+      ],
+      "pattern": "plain"
+    },
+    {
+      "offerId": "kit_arsenal",
+      "itemId": "kit_arsenal",
+      "itemType": "kit",
+      "category": "england",
+      "title": "Arsenal Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 67,
+      "colors": [
+        "D52B36",
+        "F4F3EC"
+      ],
+      "pattern": "sleeves"
+    },
+    {
+      "offerId": "kit_real_madrid",
+      "itemId": "kit_real_madrid",
+      "itemType": "kit",
+      "category": "spain",
+      "title": "Real Madrid Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 68,
+      "colors": [
+        "F5F2EA",
+        "CEAF55"
+      ],
+      "pattern": "plain"
+    },
+    {
+      "offerId": "kit_barcelona",
+      "itemId": "kit_barcelona",
+      "itemType": "kit",
+      "category": "spain",
+      "title": "Barcelona Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 69,
+      "colors": [
+        "253D89",
+        "AE2443"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_atletico_madrid",
+      "itemId": "kit_atletico_madrid",
+      "itemType": "kit",
+      "category": "spain",
+      "title": "Atlético Madrid Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 70,
+      "colors": [
+        "F8F4EC",
+        "D0353C"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_juventus",
+      "itemId": "kit_juventus",
+      "itemType": "kit",
+      "category": "italy",
+      "title": "Juventus Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 71,
+      "colors": [
+        "F1F1ED",
+        "252730"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_milan",
+      "itemId": "kit_milan",
+      "itemType": "kit",
+      "category": "italy",
+      "title": "Milan Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 72,
+      "colors": [
+        "BD2334",
+        "24252B"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_inter",
+      "itemId": "kit_inter",
+      "itemType": "kit",
+      "category": "italy",
+      "title": "Inter Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 73,
+      "colors": [
+        "2455AB",
+        "20242D"
+      ],
+      "pattern": "stripes"
+    },
+    {
+      "offerId": "kit_bayern",
+      "itemId": "kit_bayern",
+      "itemType": "kit",
+      "category": "germany",
+      "title": "Bayern Münih Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 74,
+      "colors": [
+        "CC263D",
+        "E9EEF4"
+      ],
+      "pattern": "hoops"
+    },
+    {
+      "offerId": "kit_dortmund",
+      "itemId": "kit_dortmund",
+      "itemType": "kit",
+      "category": "germany",
+      "title": "Borussia Dortmund Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 75,
+      "colors": [
+        "F5D829",
+        "23272F"
+      ],
+      "pattern": "sleeves"
+    },
+    {
+      "offerId": "kit_psg",
+      "itemId": "kit_psg",
+      "itemType": "kit",
+      "category": "france",
+      "title": "Paris Saint-Germain Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 76,
+      "colors": [
+        "172C55",
+        "C62C42"
+      ],
+      "pattern": "center"
+    },
+    {
+      "offerId": "kit_marseille",
+      "itemId": "kit_marseille",
+      "itemType": "kit",
+      "category": "france",
+      "title": "Marsilya Esintisi",
+      "subtitle": "Takım renklerinden esinlenen özgün profil forması · Resmî ürün değildir",
+      "badge": "TRİBÜN KOLEKSİYONU",
+      "priceCoins": 300,
+      "units": 1,
+      "oneTime": true,
+      "enabled": true,
+      "sortOrder": 77,
+      "colors": [
+        "F2F4ED",
+        "37A8D5"
+      ],
+      "pattern": "plain"
     }
   ]
 }

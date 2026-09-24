@@ -24,7 +24,7 @@ class StorePage extends StatefulWidget {
 class _StorePageState extends State<StorePage> {
   StoreCatalogSnapshot? _data;
   bool _loading = false, _busy = false, _error = false, _ownedOnly = false;
-  String _tab = 'boost', _category = 'all';
+  String _tab = 'boost', _category = 'all', _kitCategory = 'all';
   bool _confirming = false;
   @override
   void initState() {
@@ -227,6 +227,9 @@ class _StorePageState extends State<StorePage> {
         .where(
           (o) =>
               o.itemType == _tab &&
+              (_tab != 'kit' ||
+                  _kitCategory == 'all' ||
+                  o.category == _kitCategory) &&
               (_tab != 'avatar' ||
                   _category == 'all' ||
                   o.category == _category) &&
@@ -335,7 +338,31 @@ class _StorePageState extends State<StorePage> {
               ],
               if (_tab == 'kit') ...[
                 const Text(
-                  'Özgün renklerde profil formaları. Satın al, giy ve profil kartında sergile.',
+                  'Takım renklerini profiline taşı. Logosuz, sponsorsuz özgün tasarımlar; resmî takım ürünü değildir.',
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final category in const [
+                      ('all', 'Tüm formalar'),
+                      ('tr', 'Türkiye'),
+                      ('england', 'İngiltere'),
+                      ('spain', 'İspanya'),
+                      ('italy', 'İtalya'),
+                      ('germany', 'Almanya'),
+                      ('france', 'Fransa'),
+                      ('kits', 'Linkball'),
+                    ])
+                      ChoiceChip(
+                        label: Text(category.$2),
+                        selected: _kitCategory == category.$1,
+                        onSelected: _busy
+                            ? null
+                            : (_) => setState(() => _kitCategory = category.$1),
+                      ),
+                  ],
                 ),
                 if (d.selectedKitId.isNotEmpty)
                   TextButton.icon(
