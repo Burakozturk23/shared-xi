@@ -1,3 +1,5 @@
+import 'dart:async';
+import '../services/replay_stream.dart';
 import 'package:flutter/material.dart';
 
 import '../models/friend_models.dart';
@@ -32,17 +34,31 @@ class _FriendsPageState extends State<FriendsPage>
   late Stream<List<BlockedUserEdge>> _blocks;
   late Stream<List<FriendMatchInvite>> _invites;
   int _prepareEpoch = 0;
+  final List<Future<void> Function()> _streamDisposers = [];
+  Stream<T> _replay<T>(Stream<T> source) {
+    final replay = ReplayStream<T>(source);
+    _streamDisposers.add(replay.dispose);
+    return replay.stream;
+  }
+
+  void _closeStreams() {
+    for (final dispose in _streamDisposers) {
+      unawaited(dispose());
+    }
+    _streamDisposers.clear();
+  }
 
   Future<void> _prepare() async {
     final epoch = ++_prepareEpoch;
     if (!widget.gateway.isGoogleAccount) return;
     await widget.gateway.prepare();
     if (!mounted || epoch != _prepareEpoch) return;
-    _friends = widget.gateway.friends();
-    _incoming = widget.gateway.incoming();
-    _outgoing = widget.gateway.outgoing();
-    _blocks = widget.gateway.blocks();
-    _invites = widget.gateway.invites();
+    _closeStreams();
+    _friends = _replay(widget.gateway.friends());
+    _incoming = _replay(widget.gateway.incoming());
+    _outgoing = _replay(widget.gateway.outgoing());
+    _blocks = _replay(widget.gateway.blocks());
+    _invites = _replay(widget.gateway.invites());
   }
 
   final TextEditingController _searchController = TextEditingController();
@@ -66,6 +82,7 @@ class _FriendsPageState extends State<FriendsPage>
 
   @override
   void dispose() {
+    _closeStreams();
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();

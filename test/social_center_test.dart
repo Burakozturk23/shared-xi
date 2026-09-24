@@ -254,6 +254,28 @@ void main() {
     }
   });
   testWidgets(
+    'single-subscription feeds survive repeated tab changes and refresh',
+    (tester) async {
+      final fake = FriendsFake();
+      await open(tester, FriendsPage(gateway: fake));
+      for (var cycle = 0; cycle < 3; cycle++) {
+        for (final label in ['İstekler', 'Arkadaş Ara', 'Arkadaşlarım']) {
+          await tester.ensureVisible(find.widgetWithText(Tab, label));
+          await tester.tap(find.widgetWithText(Tab, label));
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+        }
+      }
+      expect(fake.friendStreams, 1);
+      await tester.tap(find.byTooltip('Arkadaşları yenile'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('İstekler'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(fake.friendStreams, 2);
+    },
+  );
+  testWidgets(
     'failed community submission keeps the draft; duplicate taps submit once',
     (tester) async {
       final fake = CommunityFake()..failSubmit = true;

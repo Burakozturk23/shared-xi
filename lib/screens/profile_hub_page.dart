@@ -106,7 +106,7 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
         PitchRow(
           title: 'Mağaza',
           icon: Icons.storefront_outlined,
-          onTap: () => _open(const StorePage()),
+          onTap: () => _open(const StorePage(), modern: true),
         ),
         const SizedBox(height: 16),
         PitchRow(

@@ -149,7 +149,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
       } else {
         await Navigator.of(
           context,
-        ).push(MaterialPageRoute<void>(builder: (_) => const StorePage()));
+        ).push(LinkballRoute<void>(builder: (_) => const StorePage()));
       }
       await _refresh();
     } catch (e) {

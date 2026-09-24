@@ -11,6 +11,8 @@ class StoreOffer {
   final bool oneTime;
   final int sortOrder;
   final int version;
+  final String category;
+  final int units;
 
   const StoreOffer({
     required this.offerId,
@@ -23,6 +25,8 @@ class StoreOffer {
     required this.oneTime,
     required this.sortOrder,
     this.version = 1,
+    this.category = 'classic',
+    this.units = 1,
   });
 
   bool get isAvatar => itemType == 'avatar';
@@ -30,6 +34,8 @@ class StoreOffer {
   factory StoreOffer.fromMap(Map<String, dynamic> data) {
     return StoreOffer(
       offerId: data['offerId']?.toString() ?? '',
+      category: data['category']?.toString() ?? 'classic',
+      units: _storeInt(data['units'], fallback: 1),
       title: data['title']?.toString() ?? '',
       subtitle: data['subtitle']?.toString() ?? '',
       badge: data['badge']?.toString() ?? '',
@@ -47,11 +53,16 @@ class StoreCatalogSnapshot {
   final int catalogVersion;
   final EconomyWallet wallet;
   final List<StoreOffer> offers;
+  final Map<String, EconomyInventoryItem> inventory;
+  final String selectedAvatarId, selectedKitId;
 
   const StoreCatalogSnapshot({
     required this.catalogVersion,
     required this.wallet,
     required this.offers,
+    this.inventory = const {},
+    this.selectedAvatarId = 'starter_ball',
+    this.selectedKitId = '',
   });
 }
 

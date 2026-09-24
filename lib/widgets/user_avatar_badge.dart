@@ -17,7 +17,8 @@ class UserAvatarBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final definition = UserAvatarCatalog.byId(avatarId) ??
+    final definition =
+        UserAvatarCatalog.byId(avatarId) ??
         UserAvatarCatalog.byId(LinkballProfileSchema.defaultAvatarId)!;
 
     final accent = _accentFor(definition.visualKey);
@@ -29,15 +30,33 @@ class UserAvatarBadge extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: accent.withValues(alpha: 0.16),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.55),
-          width: 1.4,
-        ),
+        border: Border.all(color: accent.withValues(alpha: 0.55), width: 1.4),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(icon, size: radius * 0.95, color: accent),
+          if (definition.visualKey.startsWith('persona_'))
+            Padding(
+              padding: EdgeInsets.all(radius * .2),
+              child: FittedBox(
+                child: Text(
+                  definition.title
+                      .split(' ')
+                      .where((s) => s.isNotEmpty)
+                      .take(2)
+                      .map((s) => s.characters.first)
+                      .join()
+                      .toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: accent,
+                    fontSize: radius * .75,
+                  ),
+                ),
+              ),
+            )
+          else
+            Icon(icon, size: radius * 0.95, color: accent),
           if (showLocked && !definition.isStarter)
             Positioned(
               right: 0,
@@ -48,14 +67,9 @@ class UserAvatarBadge extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
-                child: Icon(
-                  Icons.lock_rounded,
-                  size: radius * 0.42,
-                ),
+                child: Icon(Icons.lock_rounded, size: radius * 0.42),
               ),
             ),
         ],
@@ -78,6 +92,10 @@ class UserAvatarBadge extends StatelessWidget {
 
   static Color _accentFor(String visualKey) {
     return switch (visualKey) {
+      'persona_players' => const Color(0xFF1EAE8B),
+      'persona_coaches' => const Color(0xFF5A97E8),
+      'persona_legends' => const Color(0xFFDB9938),
+      'persona_creators' => const Color(0xFFBE70D6),
       'shield' => const Color(0xFF2F80ED),
       'keeper' => const Color(0xFFF2994A),
       'star' => const Color(0xFF9B51E0),
