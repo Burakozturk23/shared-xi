@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -58,18 +60,74 @@ class StoreService {
     });
 
     return StoreCatalogSnapshot(
+      inventory: {
+        for (final entry in _map(data['inventory']).entries)
+          if (entry.value is Map)
+            entry.key: EconomyInventoryItem.fromMap(
+              entry.key,
+              _map(entry.value),
+            ),
+      },
+      selectedAvatarId: data['selectedAvatarId']?.toString() ?? 'starter_ball',
+      selectedKitId: data['selectedKitId']?.toString() ?? '',
       catalogVersion: _int(data['catalogVersion'], fallback: 1),
       wallet: EconomyWallet.fromMap(Map<String, dynamic>.from(rawWallet)),
       offers: List<StoreOffer>.unmodifiable(offers),
     );
   }
 
-  static Future<EconomyPurchaseResult> purchase(StoreOffer offer) {
+  static String newRequestId() {
+    final random = Random.secure();
+    return List.generate(
+      24,
+      (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
+  }
+
+  static Future<EconomyPurchaseResult> purchase(StoreOffer offer) async {
     _requireGoogleAccount();
-    return EconomyService.purchaseOffer(
+    final uid = AuthService.uid!;
+    final store = await SharedPreferences.getInstance();
+    final key = 'linkball.store.pending.$uid.${offer.offerId}';
+    final requestId = store.getString(key) ?? newRequestId();
+    // Persist before spending. An interrupted response/restart reuses the receipt ID.
+    if (!await store.setString(key, requestId))
+      throw StateError('İşlem kaydedilemedi.');
+    if (AuthService.uid != uid) throw StateError('Hesabın değişti.');
+    final result = await EconomyService.purchaseOffer(
       offer.offerId,
       expectedPriceCoins: offer.priceCoins,
+      requestId: requestId,
     );
+    await store.remove(key);
+    return result;
+  }
+
+  static Future<int> consume({
+    required String itemId,
+    required String modeId,
+    required String roundId,
+  }) async {
+    await CloudBootstrap.ensureInitialized();
+    _requireGoogleAccount();
+    final result = await _functions.httpsCallable('consumeStoreBoost').call({
+      'itemId': itemId,
+      'modeId': modeId,
+      'roundId': roundId,
+    });
+    final data = _map(result.data);
+    if (data['ok'] != true || data['consumed'] != true)
+      throw StateError('Destek kullanılamadı.');
+    return _int(data['quantity']);
+  }
+
+  static Future<void> equip(String itemId) async {
+    await CloudBootstrap.ensureInitialized();
+    _requireGoogleAccount();
+    final result = await _functions.httpsCallable('equipStoreItem').call({
+      'itemId': itemId,
+    });
+    if (_map(result.data)['ok'] != true) throw StateError('Ürün seçilemedi.');
   }
 
   static void _requireGoogleAccount() {

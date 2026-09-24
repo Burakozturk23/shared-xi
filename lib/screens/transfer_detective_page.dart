@@ -1,3 +1,4 @@
+import '../widgets/store_boost_panel.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/transfer_detective_controller.dart';
@@ -5,6 +6,7 @@ import '../models/club.dart';
 import '../models/player.dart';
 import '../models/transfer_detective_state.dart';
 import '../widgets/club_badge.dart';
+
 class TransferDetectivePage extends StatefulWidget {
   const TransferDetectivePage({super.key});
 
@@ -92,6 +94,11 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
             _transferCard(state),
             const SizedBox(height: 12),
             _hintsSection(state),
+            StoreBoostPanel(
+              key: ValueKey(state.target!.id),
+              modeId: 'transfer_detective',
+              answer: state.target!.name,
+            ),
             const SizedBox(height: 12),
             Text(
               'Potansiyel kazanç: ${state.potentialPoints} puan',
@@ -116,7 +123,9 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
                 state.feedback!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: state.feedbackSuccess ? Colors.greenAccent : Colors.orange,
+                  color: state.feedbackSuccess
+                      ? Colors.greenAccent
+                      : Colors.orange,
                 ),
               ),
             ],
@@ -172,9 +181,9 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
     );
   }
 
-Widget _clubLogo(Club club, {double size = 36}) {
-  return ClubBadge(club: club, size: size);
-}
+  Widget _clubLogo(Club club, {double size = 36}) {
+    return ClubBadge(club: club, size: size);
+  }
 
   Widget _transferCard(TransferDetectiveState state) {
     final t = state.transfer!;
@@ -216,7 +225,10 @@ Widget _clubLogo(Club club, {double size = 36}) {
                       if (from.league.isNotEmpty || from.country.isNotEmpty)
                         Text(
                           from.league.isNotEmpty ? from.league : from.country,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                         ),
                     ],
                   ),
@@ -248,7 +260,10 @@ Widget _clubLogo(Club club, {double size = 36}) {
                       if (to.league.isNotEmpty || to.country.isNotEmpty)
                         Text(
                           to.league.isNotEmpty ? to.league : to.country,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                         ),
                     ],
                   ),
@@ -270,7 +285,10 @@ Widget _clubLogo(Club club, {double size = 36}) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('İpuçları', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'İpuçları',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             for (final hint in state.hints)
               if (hint.unlocked)
@@ -278,8 +296,12 @@ Widget _clubLogo(Club club, {double size = 36}) {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      const Icon(Icons.lightbulb, size: 18, color: Colors.amber),
-const SizedBox(width: 8),
+                      const Icon(
+                        Icons.lightbulb,
+                        size: 18,
+                        color: Colors.amber,
+                      ),
+                      const SizedBox(width: 8),
                       Expanded(child: Text('${hint.title}: ${hint.text}')),
                     ],
                   ),
@@ -291,8 +313,16 @@ const SizedBox(width: 8),
                     children: [
                       const Icon(Icons.lock, size: 18, color: Colors.grey),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(hint.title, style: const TextStyle(color: Colors.grey))),
-                      Text('-${hint.cost}', style: const TextStyle(color: Colors.orange)),
+                      Expanded(
+                        child: Text(
+                          hint.title,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      Text(
+                        '-${hint.cost}',
+                        style: const TextStyle(color: Colors.orange),
+                      ),
                     ],
                   ),
                 ),
@@ -359,7 +389,9 @@ const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton(
                 onPressed: _controller.revealFirstLetter,
-                child: Text('İlk harf (${TransferDetectiveState.letterRevealCost}🪙)'),
+                child: Text(
+                  'İlk harf (${TransferDetectiveState.letterRevealCost}🪙)',
+                ),
               ),
             ),
           ],
@@ -391,7 +423,10 @@ const SizedBox(width: 8),
               const SizedBox(height: 12),
               Text(
                 state.target?.name ?? '',
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 '${state.fromClub?.name} → ${state.toClub?.name} (${state.transfer?.year})',

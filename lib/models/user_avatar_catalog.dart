@@ -1,3 +1,5 @@
+import 'store_collection.dart';
+
 enum AvatarUnlockKind { starter, shop }
 
 class UserAvatarDefinition {
@@ -79,6 +81,7 @@ abstract final class UserAvatarCatalog {
       visualKey: 'trophy',
       unlockKind: AvatarUnlockKind.shop,
     ),
+    ...collectionAvatars,
   ];
 
   static const Set<String> starterIds = {

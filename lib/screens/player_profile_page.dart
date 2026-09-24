@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/profile_kit.dart';
+import '../models/store_collection.dart';
 
 import '../models/premium_models.dart';
 import '../models/user_avatar_catalog.dart';
@@ -208,7 +210,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                               await Navigator.push<void>(
                                 this.context,
                                 LinkballRoute(
-                                  modern: false,
+                                  modern: true,
                                   builder: (_) => const StorePage(),
                                 ),
                               );
@@ -362,7 +364,8 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                       : null,
                   initialData: const PremiumEntitlement.inactive(),
                   builder: (context, premiumSnapshot) {
-                    final premium = premiumSnapshot.data ??
+                    final premium =
+                        premiumSnapshot.data ??
                         const PremiumEntitlement.inactive();
                     return RefreshIndicator(
                       onRefresh: () async {
@@ -374,116 +377,118 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                         }
                       },
                       child: ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                    children: [
-                      if (profile.nicknameNeedsSetup)
-                        _NicknameSetupWarning(
-                          onTap: () => _editNickname(profile),
-                        ),
-                      if (profile.nicknameNeedsSetup)
-                        const SizedBox(height: 12),
-                      _ProfileHero(
-                        profile: profile,
-                        proActive: premium.active,
-                        onEditNickname: () => _editNickname(profile),
-                        onEditAvatar: () => _openAvatarPicker(profile),
-                      ),
-                      const SizedBox(height: 16),
-                      if (!profile.isPersistent)
-                        _GoogleUpgradeCard(onTap: _upgradeToGoogle),
-                      if (!profile.isPersistent) const SizedBox(height: 16),
-                      _StatsCard(profile: profile),
-                      const SizedBox(height: 16),
-                      if (profile.isPersistent)
-                        _ProInsightsCard(
-                          profile: profile,
-                          entitlement: premium,
-                          onUpgrade: () => Navigator.push<void>(
-                            context,
-                            LinkballRoute(
-                              modern: true,
-                              builder: (_) => const PremiumPage(),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                        children: [
+                          if (profile.nicknameNeedsSetup)
+                            _NicknameSetupWarning(
+                              onTap: () => _editNickname(profile),
+                            ),
+                          if (profile.nicknameNeedsSetup)
+                            const SizedBox(height: 12),
+                          _ProfileHero(
+                            profile: profile,
+                            proActive: premium.active,
+                            onEditNickname: () => _editNickname(profile),
+                            onEditAvatar: () => _openAvatarPicker(profile),
+                          ),
+                          const SizedBox(height: 16),
+                          if (!profile.isPersistent)
+                            _GoogleUpgradeCard(onTap: _upgradeToGoogle),
+                          if (!profile.isPersistent) const SizedBox(height: 16),
+                          _StatsCard(profile: profile),
+                          const SizedBox(height: 16),
+                          if (profile.isPersistent)
+                            _ProInsightsCard(
+                              profile: profile,
+                              entitlement: premium,
+                              onUpgrade: () => Navigator.push<void>(
+                                context,
+                                LinkballRoute(
+                                  modern: true,
+                                  builder: (_) => const PremiumPage(),
+                                ),
+                              ),
+                            ),
+                          if (profile.isPersistent) const SizedBox(height: 16),
+                          if (profile.isPersistent)
+                            const AchievementProfilePreviewCard(),
+                          if (profile.isPersistent) const SizedBox(height: 16),
+                          if (profile.isPersistent)
+                            _ProgressionShortcutCard(
+                              onTap: () {
+                                Navigator.push<void>(
+                                  context,
+                                  LinkballRoute(
+                                    modern: true,
+                                    builder: (_) =>
+                                        const ProgressionCenterPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          if (profile.isPersistent) const SizedBox(height: 16),
+                          if (profile.isPersistent)
+                            _FriendsShortcutCard(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  LinkballRoute(
+                                    modern: true,
+                                    builder: (_) => const FriendsPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          if (profile.isPersistent) const SizedBox(height: 16),
+                          if (profile.isPersistent)
+                            _SafetyShortcutCard(
+                              onTap: () {
+                                Navigator.push<void>(
+                                  context,
+                                  LinkballRoute(
+                                    modern: true,
+                                    builder: (_) =>
+                                        const SocialSafetyCenterPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          if (profile.isPersistent) const SizedBox(height: 16),
+                          _StoreShortcutCard(
+                            isPersistent: profile.isPersistent,
+                            onTap: () {
+                              Navigator.push<void>(
+                                context,
+                                LinkballRoute(
+                                  modern: true,
+                                  builder: (_) => const StorePage(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _AvatarCollectionCard(
+                            profile: profile,
+                            onTap: () => _openAvatarPicker(profile),
+                          ),
+                          const SizedBox(height: 16),
+                          _RecentMatchesCard(profile: profile),
+                          const SizedBox(height: 16),
+                          Card(
+                            child: ListTile(
+                              title: const Text('Topluluk'),
+                              leading: const Icon(Icons.forum_outlined),
+                              trailing: const Icon(Icons.chevron_right_rounded),
+                              onTap: () => Navigator.push(
+                                context,
+                                LinkballRoute(
+                                  modern: true,
+                                  builder: (_) => const CommunityCenterPage(),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      if (profile.isPersistent) const SizedBox(height: 16),
-                      if (profile.isPersistent)
-                        const AchievementProfilePreviewCard(),
-                      if (profile.isPersistent) const SizedBox(height: 16),
-                      if (profile.isPersistent)
-                        _ProgressionShortcutCard(
-                          onTap: () {
-                            Navigator.push<void>(
-                              context,
-                              LinkballRoute(
-                                modern: true,
-                                builder: (_) => const ProgressionCenterPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      if (profile.isPersistent) const SizedBox(height: 16),
-                      if (profile.isPersistent)
-                        _FriendsShortcutCard(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              LinkballRoute(
-                                modern: true,
-                                builder: (_) => const FriendsPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      if (profile.isPersistent) const SizedBox(height: 16),
-                      if (profile.isPersistent)
-                        _SafetyShortcutCard(
-                          onTap: () {
-                            Navigator.push<void>(
-                              context,
-                              LinkballRoute(
-                                modern: true,
-                                builder: (_) => const SocialSafetyCenterPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      if (profile.isPersistent) const SizedBox(height: 16),
-                      _StoreShortcutCard(
-                        isPersistent: profile.isPersistent,
-                        onTap: () {
-                          Navigator.push<void>(
-                            context,
-                            LinkballRoute(
-                              modern: false,
-                              builder: (_) => const StorePage(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _AvatarCollectionCard(
-                        profile: profile,
-                        onTap: () => _openAvatarPicker(profile),
-                      ),
-                      const SizedBox(height: 16),
-                      _RecentMatchesCard(profile: profile),
-                      const SizedBox(height: 16),
-                      Card(
-                        child: ListTile(
-                          title: const Text('Topluluk'),
-                          leading: const Icon(Icons.forum_outlined),
-                          trailing: const Icon(Icons.chevron_right_rounded),
-                          onTap: () => Navigator.push(
-                            context,
-                            LinkballRoute(
-                              modern: true,
-                              builder: (_) => const CommunityCenterPage(),
-                            ),
-                          ),
-                        ),
-                      ),
                         ],
                       ),
                     );
@@ -529,10 +534,9 @@ class _ProfileHero extends StatelessWidget {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withValues(alpha: 0.28),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.28),
                               blurRadius: 18,
                               spreadRadius: 2,
                             ),
@@ -566,6 +570,11 @@ class _ProfileHero extends StatelessWidget {
                 ),
               ],
             ),
+            if (profileKit(profile.kitId) case final kit?) ...[
+              const SizedBox(height: 8),
+              ProfileKitView(kit: kit, size: 104),
+              Text(kit.title, style: Theme.of(context).textTheme.labelSmall),
+            ],
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -603,16 +612,14 @@ class _ProfileHero extends StatelessWidget {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.14),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.36),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.36),
                   ),
                 ),
                 child: Text(
@@ -784,12 +791,14 @@ class _ProInsightsCard extends StatelessWidget {
     final formText = matches.isEmpty
         ? 'Henüz dereceli maç verisi yok.'
         : matches
-            .map((m) => switch (m.result) {
+              .map(
+                (m) => switch (m.result) {
                   RankedResult.win => 'G',
                   RankedResult.loss => 'M',
                   RankedResult.draw => 'B',
-                })
-            .join(' · ');
+                },
+              )
+              .join(' · ');
 
     return Card(
       child: Padding(
@@ -807,10 +816,7 @@ class _ProInsightsCard extends StatelessWidget {
                 const Expanded(
                   child: Text(
                     'Pro performans özeti',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
                   ),
                 ),
                 Container(
@@ -819,10 +825,9 @@ class _ProInsightsCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -902,10 +907,7 @@ class _ProInsightTile extends StatelessWidget {
       width: width,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .primary
-            .withValues(alpha: 0.07),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
@@ -913,10 +915,7 @@ class _ProInsightTile extends StatelessWidget {
         children: [
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 3),
           Text(

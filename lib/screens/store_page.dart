@@ -1,629 +1,478 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
-import '../models/economy_models.dart';
+import '../app/route_appearance.dart';
+import '../app/app_feedback.dart';
 import '../models/store_models.dart';
-import '../models/user_avatar_catalog.dart';
-import '../services/auth_service.dart';
-import '../services/economy_service.dart';
-import '../services/monetization_analytics.dart';
-import '../services/profile_service.dart';
-import '../services/store_service.dart';
+import '../models/economy_models.dart';
+import '../models/store_collection.dart';
+import '../services/store_gateway.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/social_ui.dart';
 import '../widgets/user_avatar_badge.dart';
-import '../widgets/wallet_balance_chip.dart';
-import 'sign_in_page.dart';
+import '../widgets/profile_kit.dart';
 import 'premium_page.dart';
 import 'coin_packs_page.dart';
+import 'progression_center_page.dart';
 
 class StorePage extends StatefulWidget {
-  const StorePage({super.key});
-
+  const StorePage({super.key, this.gateway = const StoreGateway()});
+  final StoreGateway gateway;
   @override
   State<StorePage> createState() => _StorePageState();
 }
 
 class _StorePageState extends State<StorePage> {
-  Future<StoreCatalogSnapshot>? _catalogFuture;
-  final Set<String> _purchasingOfferIds = <String>{};
-
+  StoreCatalogSnapshot? _data;
+  bool _loading = false, _busy = false, _error = false, _ownedOnly = false;
+  String _tab = 'boost', _category = 'all';
   @override
   void initState() {
     super.initState();
-    unawaited(
-      MonetizationAnalytics.instance.surfaceViewed('store'),
-    );
-    if (AuthService.isGoogleAccount) {
-      _catalogFuture = StoreService.fetchCatalog();
+    unawaited(widget.gateway.view());
+    _load();
+  }
+
+  Future<void> _load() async {
+    if (!widget.gateway.connected || _loading || _busy) return;
+    setState(() {
+      _loading = true;
+      _error = false;
+    });
+    try {
+      final data = await widget.gateway.load();
+      if (mounted) setState(() => _data = data);
+    } catch (_) {
+      if (mounted) setState(() => _error = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
-  void _reloadCatalog() {
-    setState(() {
-      _catalogFuture = StoreService.fetchCatalog();
-    });
+  void _open(Widget page) async {
+    await Navigator.of(context).push(LinkballRoute(builder: (_) => page));
+    if (mounted) _load();
   }
 
-  Future<void> _connectGoogle() async {
-    final signedIn = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LinkballSignInPage(allowSkip: false),
+  Future<void> _buy(StoreOffer offer) async {
+    if (_busy || _loading || _data!.wallet.coins < offer.priceCoins) return;
+    setState(() => _busy = true);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(offer.title),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                offer.itemType == 'boost'
+                    ? '${offer.units} kullanımlık destek çantana eklenecek.'
+                    : 'Bu öğe kalıcı olarak koleksiyonuna eklenecek.',
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '${offer.priceCoins} Link Coin',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(
+                'İşlem sonrası bakiye: ${_data!.wallet.coins - offer.priceCoins}',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialog, true),
+            child: const Text('Satın al'),
+          ),
+        ],
       ),
     );
-
-    if (!mounted || signedIn != true || !AuthService.isGoogleAccount) {
+    if (!mounted) return;
+    if (confirmed != true) {
+      setState(() => _busy = false);
       return;
     }
-
-    await ProfileService.ensureCanonicalProfile();
-    if (!mounted) return;
-    _reloadCatalog();
+    unawaited(widget.gateway.started(offer));
+    try {
+      final r = await widget.gateway.purchase(offer);
+      if (!mounted) return;
+      final old = _data!;
+      setState(
+        () => _data = StoreCatalogSnapshot(
+          catalogVersion: old.catalogVersion,
+          wallet: EconomyWallet(
+            coins: r.coins,
+            lifetimeEarned: old.wallet.lifetimeEarned,
+            lifetimeSpent:
+                old.wallet.lifetimeSpent + (r.purchased ? r.priceCoins : 0),
+          ),
+          offers: old.offers,
+          inventory: {...old.inventory, offer.itemId: r.item},
+          selectedAvatarId: old.selectedAvatarId,
+          selectedKitId: old.selectedKitId,
+        ),
+      );
+      if (r.purchased) {
+        unawaited(widget.gateway.completed(offer));
+        AppFeedback.answer(correct: true);
+      }
+      _notice(
+        r.alreadyOwned
+            ? 'Bu öğe zaten koleksiyonunda.'
+            : 'İşlem onaylandı. ${offer.title} çantanda.',
+      );
+    } catch (e) {
+      final text = e.toString().toLowerCase();
+      _notice(
+        text.contains('fiyat')
+            ? 'Fiyat değişti. Mağazayı yenileyip yeni fiyatı onayla.'
+            : text.contains('insufficient')
+            ? 'Yeterli Link Coin yok. Bakiyeni yenile.'
+            : text.contains('stock')
+            ? 'Bu destekten en fazla 99 adet biriktirebilirsin.'
+            : 'İşlem doğrulanamadı. Tekrar denediğinde aynı işlem kontrol edilir.',
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
-  Future<void> _purchase(StoreOffer offer) async {
-    if (_purchasingOfferIds.contains(offer.offerId)) return;
-
-    setState(() => _purchasingOfferIds.add(offer.offerId));
-    unawaited(
-      MonetizationAnalytics.instance.storeOfferStarted(
-        offerId: offer.offerId,
-        coinPrice: offer.priceCoins,
-      ),
-    );
-
+  Future<void> _equip(String id) async {
+    if (_busy || _loading) return;
+    setState(() => _busy = true);
     try {
-      final result = await StoreService.purchase(offer);
-
+      await widget.gateway.equip(id);
       if (!mounted) return;
+      final old = _data!;
+      setState(
+        () => _data = StoreCatalogSnapshot(
+          catalogVersion: old.catalogVersion,
+          wallet: old.wallet,
+          offers: old.offers,
+          inventory: old.inventory,
+          selectedAvatarId: id.startsWith('kit_') ? old.selectedAvatarId : id,
+          selectedKitId: id == 'kit_none'
+              ? ''
+              : id.startsWith('kit_')
+              ? id
+              : old.selectedKitId,
+        ),
+      );
+      _notice('Profil görünümün güncellendi.');
+    } catch (_) {
+      _notice('Seçim kaydedilemedi. Yeniden dene.');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
-      final message = result.alreadyOwned
-          ? '${offer.title} zaten koleksiyonunda.'
-          : '${offer.title} açıldı. ${result.coins} Link Coin kaldı.';
-      if (!result.alreadyOwned) {
-        unawaited(
-          MonetizationAnalytics.instance.storeOfferCompleted(
-            offerId: offer.offerId,
-            coinPrice: offer.priceCoins,
-          ),
-        );
-      }
-
+  void _notice(String message) {
+    if (mounted)
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-
-      _reloadCatalog();
-    } catch (error) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_purchaseErrorMessage(error))));
-      _reloadCatalog();
-    } finally {
-      if (mounted) {
-        setState(() => _purchasingOfferIds.remove(offer.offerId));
-      }
-    }
-  }
-
-  String _purchaseErrorMessage(Object error) {
-    final raw = error.toString().toLowerCase();
-
-    if (raw.contains('fiyat'))
-      return 'Fiyat güncellendi. Yeni fiyatı kontrol edip tekrar dene.';
-    if (raw.contains('unavailable')) return 'Bu ürün şu anda satışta değil.';
-
-    if (raw.contains('insufficient') ||
-        raw.contains('yetersiz') ||
-        raw.contains('balance')) {
-      return 'Bu teklif için yeterli Link Coin’in yok.';
-    }
-
-    if (raw.contains('already') || raw.contains('owned')) {
-      return 'Bu ürün zaten koleksiyonunda.';
-    }
-
-    return 'Satın alma tamamlanamadı. Tekrar dene.';
   }
 
   @override
-  Widget build(BuildContext context) {
-    final persistent = AuthService.isGoogleAccount;
-
-    return Scaffold(
+  Widget build(BuildContext context) => PopScope(
+    canPop: !_busy,
+    child: Scaffold(
       appBar: AppBar(
         title: const Text('Mağaza'),
         actions: [
-          if (persistent) const WalletBalanceChip(compact: true),
-          const SizedBox(width: 6),
+          IconButton(
+            tooltip: 'Yenile',
+            onPressed: _loading || _busy ? null : _load,
+            icon: const Icon(Icons.refresh_rounded),
+          ),
         ],
       ),
-      body: persistent ? _buildStore() : _buildAccountRequired(),
-    );
-  }
-
-  Widget _buildAccountRequired() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.storefront_outlined, size: 52),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Mağaza için kalıcı profil gerekli',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Link Coin bakiyen, satın aldığın avatarlar ve ilerideki '
-                    'Pro hakların Google hesabına bağlı Linkball '
-                    'profilinde korunur.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: _connectGoogle,
-                      icon: const Icon(Icons.login_rounded),
-                      label: const Text('Google ile Bağla'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      body: SafeArea(
+        child: !widget.gateway.connected
+            ? SocialAccountGate(
+                title: 'Koleksiyonun hep seninle.',
+                message:
+                    'Desteklerini, avatarlarını ve profil formalarını Google hesabına bağlı Linkball profilinde sakla.',
+                onReturn: () {
+                  setState(() {});
+                  _load();
+                },
+              )
+            : _data == null
+            ? _error
+                  ? SocialNotice(
+                      title: 'Mağaza yüklenemedi',
+                      message: 'Bağlantını kontrol edip tekrar dene.',
+                      onAction: _load,
+                    )
+                  : const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(onRefresh: _load, child: _content()),
       ),
-    );
-  }
-
-  Widget _buildStore() {
-    final future = _catalogFuture ??= StoreService.fetchCatalog();
-
-    return FutureBuilder<StoreCatalogSnapshot>(
-      future: future,
-      builder: (context, catalogSnapshot) {
-        if (catalogSnapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (catalogSnapshot.hasError || !catalogSnapshot.hasData) {
-          return _StoreErrorState(onRetry: _reloadCatalog);
-        }
-
-        final catalog = catalogSnapshot.data!;
-
-        return StreamBuilder<EconomyWallet>(
-          stream: EconomyService.watchWallet(),
-          initialData: catalog.wallet,
-          builder: (context, walletSnapshot) {
-            final wallet = walletSnapshot.data ?? catalog.wallet;
-
-            return StreamBuilder<UserProfile?>(
-              stream: ProfileService.watchMyProfile(),
-              builder: (context, profileSnapshot) {
-                final profile = profileSnapshot.data;
-                final owned = profile?.ownedAvatarIds ?? const <String>{};
-
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    final next = await StoreService.fetchCatalog();
-                    if (!mounted) return;
-                    setState(() {
-                      _catalogFuture = Future<StoreCatalogSnapshot>.value(next);
-                    });
-                  },
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final crossAxisCount = constraints.maxWidth >= 760
-                          ? 3
-                          : 2;
-
-                      return CustomScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(18, 14, 18, 8),
-                              child: _StoreHeaderCard(
-                                coins: wallet.coins,
-                                offerCount: catalog.offers.length,
-                              ),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(18, 4, 18, 8),
-                              child: _PremiumStoreBanner(
-                                onTap: () {
-                                  Navigator.push<void>(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const PremiumPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          if (catalog.offers.isEmpty)
-                            const SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Center(
-                                child: Text(
-                                  'Şu anda aktif mağaza teklifi yok.',
-                                ),
-                              ),
-                            )
-                          else
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(18, 8, 18, 36),
-                              sliver: SliverGrid(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      childAspectRatio:
-                                          constraints.maxWidth >= 760
-                                          ? 0.92
-                                          : 0.76,
-                                      crossAxisSpacing: 12,
-                                      mainAxisSpacing: 12,
-                                    ),
-                                delegate: SliverChildBuilderDelegate((
-                                  context,
-                                  index,
-                                ) {
-                                  final offer = catalog.offers[index];
-                                  final isOwned = owned.contains(offer.itemId);
-                                  final purchasing = _purchasingOfferIds
-                                      .contains(offer.offerId);
-                                  final canAfford =
-                                      wallet.coins >= offer.priceCoins;
-
-                                  return _StoreOfferCard(
-                                    offer: offer,
-                                    owned: isOwned,
-                                    purchasing: purchasing,
-                                    canAfford: canAfford,
-                                    onBuy: () => _purchase(offer),
-                                  );
-                                }, childCount: catalog.offers.length),
-                              ),
-                            ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
-                              child: OutlinedButton.icon(
-                                onPressed: () => Navigator.push<void>(context,
-                                  MaterialPageRoute(builder: (_) => const CoinPacksPage())),
-                                icon: const Icon(Icons.toll_outlined),
-                                label: const Text('Link Coin paketlerini gör'),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-class _StoreHeaderCard extends StatelessWidget {
-  final int coins;
-  final int offerCount;
-
-  const _StoreHeaderCard({required this.coins, required this.offerCount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFB300).withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: const Icon(
-                Icons.storefront_rounded,
-                color: Color(0xFFFFB300),
-                size: 28,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Link Coin Mağazası',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '$offerCount aktif teklif · $coins Link Coin kullanılabilir\n'
-                    'Kozmetiklerini Link Coin ile aç. XP harcanmaz.',
-                    style: TextStyle(color: Theme.of(context).hintColor),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PremiumStoreBanner extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _PremiumStoreBanner({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                primary.withValues(alpha: 0.24),
-                primary.withValues(alpha: 0.08),
-              ],
-            ),
-          ),
-          child: Row(
+    ),
+  );
+  Widget _content() {
+    final d = _data!;
+    final visible = d.offers
+        .where(
+          (o) =>
+              o.itemType == _tab &&
+              (_tab != 'avatar' ||
+                  _category == 'all' ||
+                  o.category == _category) &&
+              (!_ownedOnly || d.inventory.containsKey(o.itemId)),
+        )
+        .toList();
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          sliver: SliverList.list(
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: primary.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Icon(
-                  Icons.workspace_premium_rounded,
-                  color: primary,
-                  size: 29,
-                ),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              if (_loading || _busy) const LinearProgressIndicator(),
+              SocialHero(
+                icon: Icons.shopping_bag_outlined,
+                eyebrow: 'LINK COIN MAĞAZASI',
+                title: '${d.wallet.coins} Link Coin',
+                message: 'Çantana destek, profiline karakter kat.',
+                footer: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    Text(
-                      'Linkball Pro',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    OutlinedButton.icon(
+                      onPressed: _busy
+                          ? null
+                          : () => _open(const CoinPacksPage()),
+                      icon: const Icon(Icons.toll_outlined),
+                      label: const Text('Coin al'),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Üyelik durumunu, avantajları ve Google Play '
-                      'planlarını görüntüle.',
-                      style: TextStyle(height: 1.3),
+                    TextButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _open(const ProgressionCenterPage()),
+                      child: const Text('Görevlerle kazan'),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
-              FilledButton(onPressed: onTap, child: const Text('İncele')),
+              if (_error)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: SocialNotice(
+                    title: 'Yenilenemedi',
+                    message:
+                        'Son alınan fiyatları görüyorsun. Satın alırken güncel fiyat kontrol edilir.',
+                    onAction: _load,
+                  ),
+                ),
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final row in const [
+                    ('boost', 'Güçlendirmeler'),
+                    ('avatar', 'Avatarlar'),
+                    ('kit', 'Formalar'),
+                  ])
+                    ChoiceChip(
+                      label: Text(row.$2),
+                      selected: _tab == row.$1,
+                      onSelected: _busy
+                          ? null
+                          : (_) => setState(() => _tab = row.$1),
+                    ),
+                  FilterChip(
+                    label: const Text('Çantam'),
+                    selected: _ownedOnly,
+                    onSelected: _busy
+                        ? null
+                        : (v) => setState(() => _ownedOnly = v),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (_tab == 'boost')
+                const Text(
+                  'Tek kişilik Futbol Lingo, Mystery Player ve Transfer Detective için. Her destek bir turda bir kez kullanılır. 3’lü paketler daha uygundur.',
+                ),
+              if (_tab == 'avatar') ...[
+                const Text(
+                  'Şimdilik isim ve temsili monogramlarla. Satın aldıktan sonra profil avatarı olarak kullanabilirsin.',
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final row in const [
+                      ('all', 'Tümü'),
+                      ('players', 'Futbolcular'),
+                      ('coaches', 'Teknik direktörler'),
+                      ('legends', 'Efsaneler'),
+                      ('creators', 'İçerik üreticileri'),
+                      ('classic', 'Linkball'),
+                    ])
+                      ChoiceChip(
+                        label: Text(row.$2),
+                        selected: _category == row.$1,
+                        onSelected: (_) => setState(() => _category = row.$1),
+                      ),
+                  ],
+                ),
+              ],
+              if (_tab == 'kit') ...[
+                const Text(
+                  'Özgün renklerde profil formaları. Satın al, giy ve profil kartında sergile.',
+                ),
+                if (d.selectedKitId.isNotEmpty)
+                  TextButton.icon(
+                    onPressed: _busy ? null : () => _equip('kit_none'),
+                    icon: const Icon(Icons.checkroom_outlined),
+                    label: const Text('Profil formasını çıkar'),
+                  ),
+              ],
+              const SizedBox(height: 16),
             ],
           ),
         ),
-      ),
+        if (visible.isEmpty)
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: SocialNotice(
+                title: 'Burada henüz ürün yok',
+                message:
+                    'Çanta filtresini kapatabilir veya diğer kategorilere bakabilirsin.',
+              ),
+            ),
+          ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          sliver: SliverList.builder(
+            itemCount: (visible.length / 2).ceil(),
+            itemBuilder: (context, row) => LayoutBuilder(
+              builder: (context, constraints) {
+                final two =
+                    constraints.maxWidth >= 340 &&
+                    MediaQuery.textScalerOf(context).scale(14) < 19;
+                final start = row * 2;
+                if (!two)
+                  return Column(
+                    children: [
+                      _card(visible[start]),
+                      if (start + 1 < visible.length) _card(visible[start + 1]),
+                    ],
+                  );
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _card(visible[start])),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: start + 1 < visible.length
+                            ? _card(visible[start + 1])
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+            child: PitchRow(
+              title: 'Linkball Pro',
+              subtitle: 'Üyeliğini ve ayrıcalıklarını incele',
+              icon: Icons.workspace_premium_outlined,
+              onTap: _busy ? null : () => _open(const PremiumPage()),
+            ),
+          ),
+        ),
+      ],
     );
   }
-}
 
-class _StoreOfferCard extends StatelessWidget {
-  final StoreOffer offer;
-  final bool owned;
-  final bool purchasing;
-  final bool canAfford;
-  final VoidCallback onBuy;
-
-  const _StoreOfferCard({
-    required this.offer,
-    required this.owned,
-    required this.purchasing,
-    required this.canAfford,
-    required this.onBuy,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isKnownAvatar =
-        offer.isAvatar && UserAvatarCatalog.contains(offer.itemId);
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
+  Widget _card(StoreOffer o) {
+    final stock = _data!.inventory[o.itemId];
+    final owned = stock != null;
+    final equipped = o.itemType == 'avatar'
+        ? _data!.selectedAvatarId == o.itemId
+        : o.itemType == 'kit' && _data!.selectedKitId == o.itemId;
+    final enough = _data!.wallet.coins >= o.priceCoins;
+    final kit = profileKit(o.itemId);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: PitchPanel(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: _OfferBadge(
-                text: owned
-                    ? 'SAHİPSİN'
-                    : (offer.badge.isEmpty ? 'MAĞAZA' : offer.badge),
-                owned: owned,
-              ),
-            ),
-            const SizedBox(height: 6),
-            if (isKnownAvatar)
-              UserAvatarBadge(avatarId: offer.itemId, radius: 38)
-            else
-              Container(
-                width: 76,
-                height: 76,
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer.withValues(alpha: 0.45),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.auto_awesome_rounded, size: 36),
-              ),
-            const SizedBox(height: 12),
-            Text(
-              offer.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 5),
-            Expanded(
-              child: Text(
-                offer.subtitle,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).hintColor,
-                  fontSize: 12,
-                  height: 1.3,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: owned
-                  ? OutlinedButton.icon(
-                      onPressed: null,
-                      icon: const Icon(Icons.check_circle_outline_rounded),
-                      label: const Text('Koleksiyonunda'),
-                    )
-                  : FilledButton.icon(
-                      onPressed: purchasing || !canAfford ? null : onBuy,
-                      icon: purchasing
-                          ? const SizedBox(
-                              width: 17,
-                              height: 17,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.monetization_on_rounded),
-                      label: Text(
-                        purchasing
-                            ? 'Alınıyor...'
-                            : (canAfford
-                                  ? '${offer.priceCoins} Link Coin'
-                                  : 'Yetersiz Link Coin'),
-                      ),
+            Center(
+              child: o.isAvatar
+                  ? UserAvatarBadge(avatarId: o.itemId, radius: 32)
+                  : kit != null
+                  ? ProfileKitView(kit: kit)
+                  : Icon(
+                      o.itemId.contains('anagram')
+                          ? Icons.shuffle_rounded
+                          : o.itemId.contains('last')
+                          ? Icons.last_page_rounded
+                          : Icons.first_page_rounded,
+                      size: 54,
+                      color: socialAccent(context),
                     ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _OfferBadge extends StatelessWidget {
-  final String text;
-  final bool owned;
-
-  const _OfferBadge({required this.text, required this.owned});
-
-  @override
-  Widget build(BuildContext context) {
-    final background = owned
-        ? Colors.green.withValues(alpha: 0.15)
-        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.14);
-
-    final foreground = owned
-        ? Colors.greenAccent
-        : Theme.of(context).colorScheme.primary;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: foreground,
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 0.4,
-        ),
-      ),
-    );
-  }
-}
-
-class _StoreErrorState extends StatelessWidget {
-  final VoidCallback onRetry;
-
-  const _StoreErrorState({required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.storefront_outlined, size: 48),
             const SizedBox(height: 12),
-            const Text(
-              'Mağaza yüklenemedi',
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 8),
+            Text(o.title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 6),
             Text(
-              'Bağlantını kontrol edip tekrar deneyebilirsin.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor),
+              o.itemType == 'boost'
+                  ? '${o.units} kullanım · Çantanda ${stock?.quantity ?? 0}'
+                  : o.itemType == 'kit'
+                  ? 'Profil forması'
+                  : 'Profil avatarı',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Tekrar dene'),
-            ),
+            const SizedBox(height: 10),
+            if (!o.oneTime || !owned)
+              Text(
+                '${o.priceCoins} Link Coin',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            const SizedBox(height: 12),
+            if (o.oneTime && owned)
+              OutlinedButton(
+                onPressed: _busy || _loading || equipped
+                    ? null
+                    : () => _equip(o.itemId),
+                child: Text(
+                  equipped
+                      ? 'Kullanılıyor'
+                      : o.itemType == 'kit'
+                      ? 'Giy'
+                      : 'Kullan',
+                ),
+              )
+            else
+              FilledButton(
+                onPressed: _busy || _loading || !enough ? null : () => _buy(o),
+                child: Text(
+                  enough
+                      ? 'Satın al'
+                      : '${o.priceCoins - _data!.wallet.coins} coin eksik',
+                ),
+              ),
           ],
         ),
       ),

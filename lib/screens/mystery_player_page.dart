@@ -1,3 +1,4 @@
+import '../widgets/store_boost_panel.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/mystery_player_controller.dart';
@@ -38,7 +39,9 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
 
   void _onQueryChanged(String q) {
     setState(() {
-      _suggestions = q.trim().length >= 3 ? _controller.suggestions(q) : const [];
+      _suggestions = q.trim().length >= 3
+          ? _controller.suggestions(q)
+          : const [];
     });
   }
 
@@ -69,10 +72,7 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mystery Player'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Mystery Player'), centerTitle: true),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -80,6 +80,11 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
             _buildTopBar(state),
             const SizedBox(height: 12),
             _buildHints(state),
+            StoreBoostPanel(
+              key: ValueKey('${state.target!.id}_${state.roundStartedAt}'),
+              modeId: 'mystery_player',
+              answer: state.target!.name,
+            ),
             const SizedBox(height: 12),
             Text(
               'Mevcut kazanılacak: ${state.potentialPoints} puan'
@@ -105,7 +110,9 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
                 state.feedback!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: state.feedbackSuccess ? Colors.greenAccent : Colors.orange,
+                  color: state.feedbackSuccess
+                      ? Colors.greenAccent
+                      : Colors.orange,
                 ),
               ),
             ],
@@ -145,7 +152,10 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
             ),
             Row(children: hearts),
             const SizedBox(width: 10),
-            Text('🪙 ${state.coins}', style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              '🪙 ${state.coins}',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),
@@ -159,7 +169,10 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('İpuçları', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'İpuçları',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             for (var i = 0; i < state.hints.length; i++)
               _hintRow(state, i, state.hints[i]),
@@ -177,9 +190,7 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
           children: [
             const Icon(Icons.lightbulb, size: 18, color: Colors.amber),
             const SizedBox(width: 8),
-            Expanded(
-              child: Text('${hint.title}: ${hint.text}'),
-            ),
+            Expanded(child: Text('${hint.title}: ${hint.text}')),
           ],
         ),
       );
@@ -192,7 +203,10 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
           const Icon(Icons.lock, size: 18, color: Colors.grey),
           const SizedBox(width: 8),
           Expanded(child: Text('İpucu: ${hint.title}')),
-          Text('-${hint.cost} puan', style: const TextStyle(color: Colors.orange)),
+          Text(
+            '-${hint.cost} puan',
+            style: const TextStyle(color: Colors.orange),
+          ),
           const SizedBox(width: 8),
           TextButton(
             onPressed: () => _controller.unlockHint(index),
@@ -250,7 +264,9 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
             Expanded(
               child: OutlinedButton(
                 onPressed: _controller.revealLetter,
-                child: Text('Harf Al (${MysteryPlayerState.letterRevealCost}🪙)'),
+                child: Text(
+                  'Harf Al (${MysteryPlayerState.letterRevealCost}🪙)',
+                ),
               ),
             ),
           ],
@@ -282,7 +298,10 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
               const SizedBox(height: 12),
               Text(
                 ok ? 'Doğru!' : 'Bilemedin',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(state.target?.name ?? ''),
