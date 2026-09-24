@@ -17,6 +17,21 @@ class StoreBoostPanel extends StatefulWidget {
   final String modeId, answer;
   final Set<String> blockedItems;
   final StoreGateway gateway;
+  static Set<String> blockedLetters(String answer, Set<int> revealed) {
+    final positions = <int>[];
+    var offset = 0;
+    for (final letter in answer.characters) {
+      if (!RegExp(r"[\s.\-'’]").hasMatch(letter)) positions.add(offset);
+      offset += letter.length;
+    }
+    return {
+      if (positions.isNotEmpty && revealed.contains(positions.first))
+        'boost_first_letter',
+      if (positions.isNotEmpty && revealed.contains(positions.last))
+        'boost_last_letter',
+    };
+  }
+
   @override
   State<StoreBoostPanel> createState() => _StoreBoostPanelState();
 }

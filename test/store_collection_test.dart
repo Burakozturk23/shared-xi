@@ -176,6 +176,16 @@ void main() {
       }
     },
   );
+  test(
+    'already revealed native letters cannot consume a duplicate store hint',
+    () {
+      expect(StoreBoostPanel.blockedLetters(' Lionel Messi ', {1, 12}), {
+        'boost_first_letter',
+        'boost_last_letter',
+      });
+      expect(StoreBoostPanel.blockedLetters('Lionel Messi', {3}), isEmpty);
+    },
+  );
   testWidgets(
     'purchase confirms price, cancels safely and updates balance and stock',
     (t) async {

@@ -84,6 +84,10 @@ class _MysteryPlayerPageState extends State<MysteryPlayerPage> {
               key: ValueKey('${state.target!.id}_${state.roundStartedAt}'),
               modeId: 'mystery_player',
               answer: state.target!.name,
+              blockedItems: StoreBoostPanel.blockedLetters(
+                state.target!.name,
+                state.revealedLetterIndexes,
+              ),
             ),
             const SizedBox(height: 12),
             Text(

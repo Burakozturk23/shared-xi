@@ -95,9 +95,13 @@ class _TransferDetectivePageState extends State<TransferDetectivePage> {
             const SizedBox(height: 12),
             _hintsSection(state),
             StoreBoostPanel(
-              key: ValueKey(state.target!.id),
+              key: ObjectKey(state.transfer!),
               modeId: 'transfer_detective',
               answer: state.target!.name,
+              blockedItems: StoreBoostPanel.blockedLetters(
+                state.target!.name,
+                state.revealedLetterIndexes,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
