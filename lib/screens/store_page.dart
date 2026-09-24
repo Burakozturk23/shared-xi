@@ -25,6 +25,7 @@ class _StorePageState extends State<StorePage> {
   StoreCatalogSnapshot? _data;
   bool _loading = false, _busy = false, _error = false, _ownedOnly = false;
   String _tab = 'boost', _category = 'all';
+  bool _confirming = false;
   @override
   void initState() {
     super.initState();
@@ -55,7 +56,10 @@ class _StorePageState extends State<StorePage> {
 
   Future<void> _buy(StoreOffer offer) async {
     if (_busy || _loading || _data!.wallet.coins < offer.priceCoins) return;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _confirming = true;
+    });
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialog) => AlertDialog(
@@ -94,6 +98,7 @@ class _StorePageState extends State<StorePage> {
       ),
     );
     if (!mounted) return;
+    setState(() => _confirming = false);
     if (confirmed != true) {
       setState(() => _busy = false);
       return;
@@ -235,7 +240,8 @@ class _StorePageState extends State<StorePage> {
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
           sliver: SliverList.list(
             children: [
-              if (_loading || _busy) const LinearProgressIndicator(),
+              if (_loading || (_busy && !_confirming))
+                const LinearProgressIndicator(),
               SocialHero(
                 icon: Icons.shopping_bag_outlined,
                 eyebrow: 'LINK COIN MAĞAZASI',

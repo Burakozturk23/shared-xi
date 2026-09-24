@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/models/economy_models.dart';
@@ -144,6 +145,16 @@ Future<void> reveal(WidgetTester t, Finder f) async {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final (family, path) in [
+      ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
+    ]) {
+      await (FontLoader(family)..addFont(rootBundle.load(path))).load();
+    }
+  });
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test(
     'server avatar and kit IDs have client visuals and packs cost less than singles',
@@ -191,6 +202,38 @@ void main() {
       expect(find.text('1 kullanım · Çantanda 1'), findsOneWidget);
     },
   );
+  testWidgets('pending purchase blocks a second debit and leaving the page', (
+    t,
+  ) async {
+    final fake = ShopFake()..pending = Completer<EconomyPurchaseResult>();
+    await mount(t, StorePage(gateway: fake));
+    await reveal(t, find.text('Satın al').first);
+    await t.tap(find.text('Satın al').first);
+    await t.pumpAndSettle();
+    await t.tap(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('Satın al'),
+      ),
+    );
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 350));
+    expect(fake.purchases, 1);
+    final buttons = t.widgetList<FilledButton>(find.byType(FilledButton));
+    expect(buttons.every((b) => b.onPressed == null), isTrue);
+    expect(t.widget<PopScope>(find.byType(PopScope).first).canPop, isFalse);
+    fake.pending!.complete(
+      EconomyPurchaseResult(
+        purchased: true,
+        alreadyOwned: false,
+        priceCoins: 25,
+        coins: 975,
+        item: item('boost_first_letter', 'boost'),
+      ),
+    );
+    await t.pumpAndSettle();
+    expect(fake.purchases, 1);
+  });
   testWidgets('owned jersey equips without another purchase', (t) async {
     final fake = ShopFake()
       ..items['kit_midnight'] = item('kit_midnight', 'kit');
@@ -281,7 +324,9 @@ void main() {
     t,
   ) async {
     final key = await mount(t, StorePage(gateway: ShopFake()), large: true);
-    await reveal(t, find.text('Satın al').first);
+    await reveal(t, find.text('İlk Harf'));
+    await t.ensureVisible(find.text('Satın al').first);
+    await t.pumpAndSettle();
     await capture(t, key, 'large_text');
     expect(t.takeException(), isNull);
     await mount(
