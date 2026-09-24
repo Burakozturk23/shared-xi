@@ -318,6 +318,10 @@ void main() {
         final key = await mount(t, StorePage(gateway: ShopFake()), dark: dark);
         await t.tap(find.text(tab));
         await t.pumpAndSettle();
+        if (tab == 'Formalar') {
+          await t.drag(find.byType(CustomScrollView), const Offset(0, -320));
+          await t.pumpAndSettle();
+        }
         await capture(
           t,
           key,
