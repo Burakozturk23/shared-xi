@@ -75,6 +75,13 @@ kotlin {
     }
 }
 
+dependencies {
+    // Pin a current WorkManager runtime for AGP 9/R8 release builds.
+    // Google Mobile Ads pulls WorkManager transitively; older resolved versions
+    // can crash during AndroidX Startup while creating WorkDatabase.
+    implementation("androidx.work:work-runtime:2.11.2")
+}
+
 flutter {
     source = "../.."
 }
