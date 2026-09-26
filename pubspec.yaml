@@ -55,5 +55,5 @@ flutter:
     - assets/runtime/linkball_game_data_v4.sqlite
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/
-    - assets/avatars/
+    - assets/avatars/portraits_v1/
     - assets/badges/

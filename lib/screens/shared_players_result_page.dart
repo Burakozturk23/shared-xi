@@ -150,8 +150,6 @@ class _SharedPlayersResultPageState extends State<SharedPlayersResultPage> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text('Temsili illüstrasyon', style: Theme.of(context).textTheme.labelSmall),
-              const SizedBox(height: 8),
               Text(
                 '${_positionLabel(player)} · ${player.countryLabel}',
                 style: Theme.of(context).textTheme.bodySmall,

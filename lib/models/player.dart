@@ -24,7 +24,7 @@ class Player {
   final int careerGoals;
   final List<CareerStop> careerTimeline;
 
-  /// Ileride assets/avatars/{avatarKey}.webp
+  /// Legacy data key; display portraits are resolved by PlayerPortraitCatalog.
   final String? avatarKey;
 
   /// PlayerElo vb. — yoksa null. marketValue bos ise UI rating kullanabilir.
