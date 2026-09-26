@@ -156,6 +156,9 @@ class ClassicGridBotController extends ChangeNotifier {
       players: availablePlayers,
       query: query,
       excludedPlayerIds: usedPlayerIds,
+      // This mode owns a scoped V4 session pool. A warmed global Repository
+      // index can contain players that are not valid for the current session.
+      useGlobalIndex: false,
     );
     notifyListeners();
   }
