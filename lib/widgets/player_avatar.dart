@@ -1,65 +1,120 @@
 import 'package:flutter/material.dart';
 
+import '../data/country_flags.dart';
+import '../data/player_kit_identity.dart';
 import '../models/player.dart';
 
-/// Fictional illustrated characters, not photographs or player likenesses.
-/// Selection uses only a stable catalog ID, never nationality or other traits.
+/// Offline kit identity. At small sizes only the shirt and initials are shown.
+/// The kit is symbolic: it does not claim a current club or squad number.
 class PlayerAvatar extends StatelessWidget {
   final Player player;
   final double size;
 
   const PlayerAvatar({super.key, required this.player, this.size = 48});
 
-  static const representativeAssets = [
-    'assets/avatars/representative_v1_01.webp',
-    'assets/avatars/representative_v1_02.webp',
-    'assets/avatars/representative_v1_03.webp',
-    'assets/avatars/representative_v1_04.webp',
-  ];
+  @override
+  Widget build(BuildContext context) {
+    final (accent, code, label) = PlayerKitIdentity.position(player.position);
+    final detailed = size >= 64;
+    return Semantics(
+      image: true,
+      label: '${player.name}, $label${player.countries.isEmpty ? '' : ', ${player.countryLabel}'}',
+      child: ExcludeSemantics(
+        child: Container(
+          width: size,
+          height: size,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(size * .22),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1C2C35), Color(0xFF0C151D)],
+            ),
+            border: Border.all(color: accent.withValues(alpha: .45)),
+          ),
+          child: Stack(
+            children: [
+              Positioned.fill(child: CustomPaint(painter: _KitPainter(accent, detailed))),
+              Positioned(
+                left: size * .24,
+                right: size * .24,
+                top: size * (detailed ? .32 : .37),
+                height: size * .25,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    PlayerKitIdentity.initials(player.name),
+                    textScaler: TextScaler.noScaling,
+                    style: TextStyle(color: const Color(0xFFF4F8FC),
+                      fontSize: size * .23, fontWeight: FontWeight.w900,
+                      height: 1, letterSpacing: .2),
+                  ),
+                ),
+              ),
+              if (detailed) ...[
+                Positioned(
+                  bottom: size * .045,
+                  left: 0,
+                  right: 0,
+                  child: Text(code, textAlign: TextAlign.center,
+                    textScaler: TextScaler.noScaling,
+                    style: TextStyle(color: accent, fontSize: size * .13,
+                      height: 1, fontWeight: FontWeight.w800)),
+                ),
+                if (player.countries.isNotEmpty)
+                  Positioned(
+                    right: size * .055,
+                    top: size * .045,
+                    child: Text(flagFor(player.countries.first),
+                      textScaler: TextScaler.noScaling,
+                      style: TextStyle(fontSize: size * .19, height: 1)),
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-  static String representativeAssetFor(int playerId) {
-    final id = playerId.abs();
-    return representativeAssets[(id ^ (id >> 4) ^ (id >> 8)) % representativeAssets.length];
+class _KitPainter extends CustomPainter {
+  final Color accent;
+  final bool detailed;
+  const _KitPainter(this.accent, this.detailed);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.scale(size.width, size.height);
+    if (detailed) {
+      canvas.translate(0, -.035);
+      canvas.scale(1, .94);
+    }
+    final shirt = Path()
+      ..moveTo(.35, .20)..lineTo(.22, .24)..lineTo(.10, .43)
+      ..lineTo(.25, .52)..lineTo(.30, .44)..lineTo(.30, .80)
+      ..quadraticBezierTo(.50, .85, .70, .80)
+      ..lineTo(.70, .44)..lineTo(.75, .52)..lineTo(.90, .43)
+      ..lineTo(.78, .24)..lineTo(.65, .20)
+      ..quadraticBezierTo(.50, .31, .35, .20)..close();
+    canvas.drawPath(shirt, Paint()..color = Color.lerp(const Color(0xFF17242F), accent, .19)!);
+    canvas.save();
+    canvas.clipPath(shirt);
+    canvas.drawRect(const Rect.fromLTWH(.37, .20, .065, .66),
+        Paint()..color = accent.withValues(alpha: .12));
+    canvas.drawRect(const Rect.fromLTWH(.565, .20, .065, .66),
+        Paint()..color = accent.withValues(alpha: .12));
+    canvas.restore();
+    canvas.drawPath(shirt, Paint()..color = accent..style = PaintingStyle.stroke
+      ..strokeWidth = .019..strokeJoin = StrokeJoin.round);
+    canvas.drawPath(Path()..moveTo(.35, .20)..quadraticBezierTo(.50, .40, .65, .20),
+        Paint()..color = accent..style = PaintingStyle.stroke..strokeWidth = .024);
+    canvas.restore();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final custom = player.avatarKey;
-    final decodeSize = (size * MediaQuery.devicePixelRatioOf(context))
-        .ceil().clamp(1, 384).toInt();
-    Widget illustration() => Image.asset(
-      representativeAssetFor(player.id),
-      width: size,
-      height: size,
-      fit: BoxFit.cover,
-      cacheWidth: decodeSize,
-      excludeFromSemantics: true,
-      errorBuilder: (_, _, _) => ColoredBox(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: Center(child: Icon(Icons.person_outline_rounded, size: size * .5)),
-      ),
-    );
-    return Semantics(
-      image: true,
-      label: '${player.name}: temsili oyuncu illüstrasyonu',
-      child: Container(
-        width: size,
-        height: size,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(size * .22),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-        child: custom != null && custom.isNotEmpty
-            ? Image.asset(
-                'assets/avatars/$custom.webp',
-                fit: BoxFit.cover,
-                cacheWidth: decodeSize,
-                excludeFromSemantics: true,
-                errorBuilder: (_, _, _) => illustration(),
-              )
-            : illustration(),
-      ),
-    );
-  }
+  bool shouldRepaint(covariant _KitPainter oldDelegate) =>
+      oldDelegate.accent != accent || oldDelegate.detailed != detailed;
 }
