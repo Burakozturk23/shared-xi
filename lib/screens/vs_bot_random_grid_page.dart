@@ -149,7 +149,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   Expanded(
                       child:
                           _chip('Sen', _c.userScore, PitchColors.of(context).accent)),
-                  Padding(
+                  Expanded(child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       _c.busy ? 'Hazırlanıyor…' : (_c.turn == VsBotRandomTurn.user ? 'Sıra sende' : 'Bot…'),
@@ -160,7 +160,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                             : Colors.orangeAccent,
                       ),
                     ),
-                  ),
+                  )), 
                   Expanded(
                       child: _chip('Bot', _c.botScore, PitchColors.of(context).error)),
                 ],

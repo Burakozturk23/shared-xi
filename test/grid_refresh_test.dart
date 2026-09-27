@@ -100,6 +100,9 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
+        final previousError = FlutterError.onError;
+        FlutterError.onError = (details) { debugPrint(details.toString()); previousError?.call(details); };
+        addTearDown(() => FlutterError.onError = previousError);
         final key = GlobalKey();
         final classic = ClassicGridBotController(loadSession: () async => ClassicGridSession(
           rows: List.generate(3, (_) => GridCriterion.club(a)),

@@ -478,10 +478,11 @@ class _ClassicGridPageState extends State<ClassicGridPage>
                         size: 22,
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      Flexible(child: Text(
                         selected ? 'Cevapla' : 'Boş',
+                        maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelSmall,
-                      ),
+                      )),
                     ],
                   )
                 : Column(

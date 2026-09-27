@@ -165,10 +165,11 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
     return Row(
       children: [
         Expanded(child: _chip('Sen', _c.userScore, PitchColors.of(context).accent)),
-        Padding(
+        Expanded(child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             _c.turn == VsBotReverseTurn.user ? 'Sıra sende' : 'Bot…',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: _c.turn == VsBotReverseTurn.user
@@ -176,7 +177,7 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
                   : Colors.orangeAccent,
             ),
           ),
-        ),
+        )), 
         Expanded(child: _chip('Bot', _c.botScore, PitchColors.of(context).error)),
       ],
     );
