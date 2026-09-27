@@ -12,13 +12,24 @@ No evidence in this inspected main history shows a whole-project revert.
 
 - PR13 b4aeae0: complete social/player experience/store updates.
 - Main 8f9118e: WorkManager 2.11.2 startup dependency fix, retained.
-- Main 62c7a6b: bot Grid uses VsBotGridPage compatibility route, retained.
+- Main 62c7a6b compatibility route is superseded by the Grid refresh below.
 - Main 7d7b1a7: modern controller suggestions limited to session pool, retained.
 - PR14 a31fc5b: procedural kit identities and tests, retained.
 
 All 59 files changed by PR11/12/13 relative to e06c2f5 are preserved byte-for-byte.
-The Grid route is the existing compatibility fix; this consolidation does not
-claim to repair or reactivate the modern ClassicGridPage.
+## Grid refresh
+
+ClassicGridPage is reactivated with bounded row heights inside its scroll view;
+its scoped V4 suggestion fix remains. Reverse/random pages now follow the
+current light/dark theme with a scrolling, width-bounded board and kit identities.
+Random pair generation and anchor placement are awaited: duplicate operations
+are locked, points are awarded only after placement succeeds, cancelled/disposed
+loads cannot publish a pair, and bot anchor wins are checked. Reverse input
+checks axis bounds and bot score follows accepted answers.
+
+Regression tests: three routes, 320px/1.8x text/keyboard layouts in both themes,
+delayed and rejected random placement, invalid reverse axes. The previous
+kit-test semantics handles are disposed before test completion.
 
 ## Validation
 

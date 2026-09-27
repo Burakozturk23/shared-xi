@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../data/popular_clubs_pool.dart';
+import '../utils/country_names.dart';
 import '../data/grid_country_pool.dart';
 import '../models/club.dart';
 import '../models/grid_criterion.dart';
@@ -83,7 +84,7 @@ class ReverseGridController extends ChangeNotifier {
       case GridCriterionType.club:
         return _clubIdsForPlayer(player).contains(criterion.clubId);
       case GridCriterionType.country:
-        return player.countries.contains(criterion.countryName);
+        return player.countries.any((country) => CountryNames.same(country, criterion.countryName ?? ''));
       case GridCriterionType.position:
         return player.position == criterion.position;
       case GridCriterionType.goals:

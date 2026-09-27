@@ -30,6 +30,7 @@ class VsBotRandomGridController extends ChangeNotifier {
   Timer? _botTimer;
   Timer? _feedbackTimer;
   bool _disposed = false;
+  bool busy = false;
 
   bool get isLoading => grid.state.isLoading;
   RandomGridState get puzzle => grid.state;
@@ -57,7 +58,7 @@ class VsBotRandomGridController extends ChangeNotifier {
   List<Player> get suggestions => grid.suggestions;
 
   void updateSuggestions(String query) {
-    if (_disposed || turn != VsBotRandomTurn.user) {
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) {
       grid.clearSuggestions();
       _safeNotify();
       return;
@@ -72,7 +73,7 @@ class VsBotRandomGridController extends ChangeNotifier {
   }
 
   bool userSubmitPendingPlayerObj(Player player) {
-    if (_disposed || turn != VsBotRandomTurn.user) return false;
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) return false;
     // pending pair doğrula isim üzerinden
     final ok = userSubmitPendingPlayer(player.name);
     clearSuggestions();
@@ -80,8 +81,8 @@ class VsBotRandomGridController extends ChangeNotifier {
   }
 
   bool userSubmitCellPlayer(int index, Player player) {
-    if (_disposed || turn != VsBotRandomTurn.user) return false;
-    if (owners[index] != 0) return false;
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) return false;
+    if (index < 0 || index >= 9 || owners[index] != 0) return false;
     final resolved = grid.submitGuess(index, player.name);
     if (resolved == null) {
       _setFeedback('Yanlış.', false);
@@ -113,14 +114,23 @@ class VsBotRandomGridController extends ChangeNotifier {
     return true;
   }
 
-void userGeneratePair() {
-    if (_disposed || turn != VsBotRandomTurn.user) return;
-    grid.generatePair();
+  Future<void> userGeneratePair() async {
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) return;
+    busy = true;
     _safeNotify();
+    try {
+      await grid.generatePair();
+      if (!_disposed && !puzzle.hasPendingPair) _setFeedback('Uygun çift bulunamadı. Tekrar dene.', false);
+    } catch (_) {
+      if (!_disposed) _setFeedback('Çift yüklenemedi. Tekrar dene.', false);
+    } finally {
+      busy = false;
+      _safeNotify();
+    }
   }
 
   bool userSubmitPendingPlayer(String answer) {
-    if (_disposed || turn != VsBotRandomTurn.user) return false;
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) return false;
     final player = grid.submitPendingPlayerGuess(answer);
     if (player == null) {
       _setFeedback('Oyuncu uymuyor.', false);
@@ -134,11 +144,22 @@ void userGeneratePair() {
     return true;
   }
 
-  void userPlaceAtAnchor(int anchorIndex,
-      {required Club rowClub, required Club colClub}) {
-    if (_disposed || turn != VsBotRandomTurn.user) return;
-    if (owners[anchorIndex] != 0) return;
-    grid.placeAtAnchor(anchorIndex, rowClub: rowClub, colClub: colClub);
+  Future<void> userPlaceAtAnchor(int anchorIndex,
+      {required Club rowClub, required Club colClub}) async {
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) return;
+    if (anchorIndex < 0 || anchorIndex >= 9 || owners[anchorIndex] != 0) return;
+    busy = true;
+    _safeNotify();
+    bool placed = false;
+    try {
+      placed = await grid.placeAtAnchor(anchorIndex, rowClub: rowClub, colClub: colClub);
+    } catch (_) {
+      if (!_disposed) _setFeedback('Yerleştirme tamamlanamadı. Tekrar dene.', false);
+    } finally {
+      busy = false;
+      _safeNotify();
+    }
+    if (_disposed || !placed) return;
     owners[anchorIndex] = 1;
     userScore++;
     if (_hasLine(1)) {
@@ -160,8 +181,8 @@ void userGeneratePair() {
   }
 
   bool userSubmitCell(int index, String answer) {
-    if (_disposed || turn != VsBotRandomTurn.user) return false;
-    if (owners[index] != 0) return false;
+    if (_disposed || busy || isLoading || turn != VsBotRandomTurn.user) return false;
+    if (index < 0 || index >= 9 || owners[index] != 0) return false;
 
     final player = grid.submitGuess(index, answer);
     if (player == null) {
@@ -193,7 +214,7 @@ void userGeneratePair() {
   }
 
   void userCancelPending() {
-    if (_disposed) return;
+    if (_disposed || busy || turn != VsBotRandomTurn.user) return;
     grid.cancelPending();
     _safeNotify();
   }
@@ -218,7 +239,7 @@ void userGeneratePair() {
     );
   }
 
-  void _botMove() {
+  Future<void> _botMove() async {
     if (_disposed || turn != VsBotRandomTurn.bot) return;
 
     for (var i = 0; i < 9; i++) {
@@ -246,7 +267,13 @@ void userGeneratePair() {
     }
 
     if (puzzle.roundsUsed < 3) {
-      grid.generatePair();
+      try {
+        await grid.generatePair();
+      } catch (_) {
+        if (!_disposed) { turn = VsBotRandomTurn.user; _safeNotify(); }
+        return;
+      }
+      if (_disposed) return;
       final a = puzzle.pendingClubA;
       final b = puzzle.pendingClubB;
       if (a != null && b != null) {
@@ -257,11 +284,19 @@ void userGeneratePair() {
           if (anchors.isNotEmpty) {
             final anchor = anchors[_random.nextInt(anchors.length)];
             final asRow = _random.nextBool();
-            grid.placeAtAnchor(
+            bool placed;
+            try {
+              placed = await grid.placeAtAnchor(
               anchor,
               rowClub: asRow ? a : b,
               colClub: asRow ? b : a,
             );
+            } catch (_) {
+              if (!_disposed) { turn = VsBotRandomTurn.user; _safeNotify(); }
+              return;
+            }
+            if (_disposed) return;
+            if (!placed) { turn = VsBotRandomTurn.user; _safeNotify(); return; }
             owners[anchor] = 2;
             botScore++;
             _setFeedback('Bot çapa: ${player.name}', false);
@@ -279,6 +314,12 @@ void userGeneratePair() {
   }
 
   void _finishBotTurn() {
+    if (_hasLine(2)) {
+      lineWinner = 2;
+      turn = VsBotRandomTurn.gameOver;
+      _safeNotify();
+      return;
+    }
     turn = _boardFull() ? VsBotRandomTurn.gameOver : VsBotRandomTurn.user;
     _safeNotify();
   }

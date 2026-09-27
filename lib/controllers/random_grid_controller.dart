@@ -14,10 +14,13 @@ import '../services/runtime_v3/hybrid_gameplay_data_service.dart';
 
 class RandomGridController extends ChangeNotifier {
   bool _disposed = false;
+  bool _generating = false;
+  int _generation = 0;
 
   @override
   void dispose() {
     _disposed = true;
+    _generation++;
     super.dispose();
   }
 
@@ -139,15 +142,22 @@ class RandomGridController extends ChangeNotifier {
           if (c != null) c.id,
       };
 
-  void generatePair() {
-    if (_usingRuntimeV3) {
-      unawaited(_generatePairRuntime());
-      return;
+  Future<void> generatePair() async {
+    if (_disposed || _generating || _state.isLoading || _state.hasPendingPair || _state.roundsUsed >= 3) return;
+    _generating = true;
+    final generation = ++_generation;
+    try {
+      if (_usingRuntimeV3) {
+        await _generatePairRuntime(generation);
+      } else {
+        _generatePairLegacy();
+      }
+    } finally {
+      _generating = false;
     }
-    _generatePairLegacy();
   }
 
-  Future<void> _generatePairRuntime() async {
+  Future<void> _generatePairRuntime(int generation) async {
     if (_state.roundsUsed >= 3 || _state.hasPendingPair) return;
 
     final usedClubs = _usedClubIds;
@@ -177,6 +187,7 @@ class RandomGridController extends ChangeNotifier {
           }
 
           final ids = await _answersForPair(first, second);
+          if (_disposed || generation != _generation) return;
           final usable =
               ids.any((id) => !usedPlayers.contains(id));
           if (!usable) continue;
@@ -205,6 +216,7 @@ class RandomGridController extends ChangeNotifier {
         final a = shuffled[i];
         final b = shuffled[j];
         final ids = await _answersForPair(a, b);
+        if (_disposed || generation != _generation) return;
         if (!ids.any((id) => !usedPlayers.contains(id))) continue;
 
         _state = _state.copyWith(
@@ -326,6 +338,7 @@ class RandomGridController extends ChangeNotifier {
       players: source.toList(),
       query: query,
       excludedPlayerIds: _state.usedPlayerIds,
+      useGlobalIndex: false,
     );
     notifyListeners();
   }
@@ -372,32 +385,32 @@ Player? submitPendingPlayerGuess(String answer) {
   }
 
   void cancelPending() {
+    if (_disposed) return;
+    _generation++;
     _state = _state.copyWith(clearPending: true);
     notifyListeners();
   }
 
   /// Bekleyen oyuncuyu, seçilen köşeye ve satır/sütun yönüne göre yerleştirir.
-  void placeAtAnchor(
+  Future<bool> placeAtAnchor(
     int anchorIndex, {
     required Club rowClub,
     required Club colClub,
-  }) {
+  }) async {
+    if (_disposed || !_state.availableAnchors.contains(anchorIndex) ||
+        _state.pendingPlayer == null || !_state.hasPendingPair) return false;
+    final a = _state.pendingClubA!.id;
+    final b = _state.pendingClubB!.id;
+    if (!((rowClub.id == a && colClub.id == b) ||
+        (rowClub.id == b && colClub.id == a))) return false;
+    if (_state.rowClubs[anchorIndex ~/ 3] != null ||
+        _state.colClubs[anchorIndex % 3] != null) return false;
     if (_usingRuntimeV3) {
-      unawaited(
-        _placeAtAnchorRuntime(
-          anchorIndex,
-          rowClub: rowClub,
-          colClub: colClub,
-        ),
-      );
-      return;
+      await _placeAtAnchorRuntime(anchorIndex, rowClub: rowClub, colClub: colClub);
+    } else {
+      _placeAtAnchorLegacy(anchorIndex, rowClub: rowClub, colClub: colClub);
     }
-
-    _placeAtAnchorLegacy(
-      anchorIndex,
-      rowClub: rowClub,
-      colClub: colClub,
-    );
+    return !_disposed && _state.cells[anchorIndex].isFilled;
   }
 
   Future<void> _placeAtAnchorRuntime(
@@ -417,6 +430,8 @@ Player? submitPendingPlayerGuess(String answer) {
     // Important: expose the new grid only after every visible row/column
     // pair has its canonical broad-answer cache ready.
     await _primePairCache(newRows, newCols);
+    if (_disposed || _state.pendingPlayer?.id != player.id ||
+        _state.cells[anchorIndex].isFilled) return;
 
     final newCells = List<GridCellState>.from(_state.cells);
     newCells[anchorIndex] = GridCellState(

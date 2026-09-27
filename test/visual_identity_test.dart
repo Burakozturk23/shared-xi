@@ -79,7 +79,7 @@ void main() {
   for (final size in [28.0, 34.0, 48.0, 64.0, 96.0]) {
     testWidgets('kit fits at $size px with large system text', (tester) async {
       final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
+
       await tester.pumpWidget(MaterialApp(home: MediaQuery(
         data: const MediaQueryData(textScaler: TextScaler.linear(3)),
         child: Scaffold(body: PlayerAvatar(
@@ -91,6 +91,7 @@ void main() {
       expect(find.text('HC'), size >= 64 ? findsOneWidget : findsNothing);
       expect(find.byType(Image), findsNothing);
       expect(find.bySemanticsLabel('Oyuncu 8198, Hücum, Turkey'), findsOneWidget);
+      semantics.dispose();
       expect(tester.takeException(), isNull);
     });
   }

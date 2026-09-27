@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../controllers/vs_bot_random_grid_controller.dart';
 import '../models/club.dart';
-import '../theme/app_theme.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/grid_player_identity.dart';
 
 /// Bot'a karşı rastgele grid — sheet yok, sayfa içi input.
 class VsBotRandomGridPage extends StatefulWidget {
-  const VsBotRandomGridPage({super.key});
+  const VsBotRandomGridPage({super.key, this.controllerFactory});
+  final VsBotRandomGridController Function()? controllerFactory;
 
   @override
   State<VsBotRandomGridPage> createState() => _VsBotRandomGridPageState();
@@ -27,7 +29,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
   @override
   void initState() {
     super.initState();
-    _c = VsBotRandomGridController()..addListener(_onChanged);
+    _c = (widget.controllerFactory?.call() ?? VsBotRandomGridController())..addListener(_onChanged);
     _c.initialize();
   }
 
@@ -119,8 +121,8 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
   @override
   Widget build(BuildContext context) {
     if (_c.isLoading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
+      return Scaffold(
+        backgroundColor: PitchColors.of(context).background,
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -132,59 +134,59 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
     final s = _c.puzzle;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: PitchColors.of(context).background,
       appBar: AppBar(
-        title: const Text('Bot · Rastgele Grid'),
+        title: Text('Bot · Rastgele Grid'),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
           child: Column(
             children: [
               Row(
                 children: [
                   Expanded(
                       child:
-                          _chip('Sen', _c.userScore, AppTheme.primaryColor)),
+                          _chip('Sen', _c.userScore, PitchColors.of(context).accent)),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
-                      _c.turn == VsBotRandomTurn.user ? 'Sıra sende' : 'Bot…',
+                      _c.busy ? 'Hazırlanıyor…' : (_c.turn == VsBotRandomTurn.user ? 'Sıra sende' : 'Bot…'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: _c.turn == VsBotRandomTurn.user
-                            ? AppTheme.primaryColor
+                            ? PitchColors.of(context).accent
                             : Colors.orangeAccent,
                       ),
                     ),
                   ),
                   Expanded(
-                      child: _chip('Bot', _c.botScore, Colors.redAccent)),
+                      child: _chip('Bot', _c.botScore, PitchColors.of(context).error)),
                 ],
               ),
               if (_c.feedback != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 6),
+                  padding: EdgeInsets.only(top: 6),
                   child: Text(
                     _c.feedback!,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: _c.feedbackOk
-                          ? Colors.greenAccent
-                          : Colors.redAccent,
+                          ? PitchColors.of(context).success
+                          : PitchColors.of(context).error,
                     ),
                   ),
                 ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               if (_c.turn == VsBotRandomTurn.user &&
-                  !s.hasPendingPair &&
+                  !_c.busy && !s.hasPendingPair &&
                   s.roundsUsed < 3)
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _c.userGeneratePair,
-                    icon: const Icon(Icons.casino),
+                    icon: Icon(Icons.casino),
                     label: Text('Çift üret (${3 - s.roundsUsed} hak)'),
                   ),
                 ),
@@ -195,8 +197,9 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                 _orientationPanel(_pendingA!, _pendingB!),
               if (_selectedCell != null && _c.turn == VsBotRandomTurn.user)
                 _cellGuessBar(),
-              const SizedBox(height: 8),
-              Expanded(child: _board()),
+              SizedBox(height: 8),
+              LayoutBuilder(builder: (context, bounds) => SizedBox(
+                height: bounds.maxWidth + 24, child: _board())),
             ],
           ),
         ),
@@ -211,23 +214,23 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
 
     if (s.hasPendingPlayer) {
       return Card(
-        color: AppTheme.cardColor,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
+        color: PitchColors.of(context).surface,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text('Oyuncu: ${s.pendingPlayer!.name}',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: AppTheme.textColor)),
-              const SizedBox(height: 6),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: PitchColors.of(context).text)),
+              SizedBox(height: 6),
               Text('${a.name} × ${b.name}',
                   style:
-                      const TextStyle(color: AppTheme.hintColor, fontSize: 13)),
-              const SizedBox(height: 8),
-              const Text('Bir çapa seç (köşegen hücreler):',
-                  style: TextStyle(fontSize: 12, color: AppTheme.hintColor)),
-              const SizedBox(height: 6),
+                      TextStyle(color: PitchColors.of(context).muted, fontSize: 13)),
+              SizedBox(height: 8),
+              Text('Bir çapa seç (köşegen hücreler):',
+                  style: TextStyle(fontSize: 12, color: PitchColors.of(context).muted)),
+              SizedBox(height: 6),
               Wrap(
                 spacing: 8,
                 children: s.availableAnchors.map((anchor) {
@@ -242,7 +245,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   _c.userCancelPending();
                   _pendingNameCtrl.clear();
                 },
-                child: const Text('İptal'),
+                child: Text('İptal'),
               ),
             ],
           ),
@@ -251,29 +254,29 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
     }
 
     return Card(
-      color: AppTheme.cardColor,
+      color: PitchColors.of(context).surface,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Column(
           children: [
             Text('${a.name}  ×  ${b.name}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: AppTheme.textColor)),
-            const SizedBox(height: 8),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: PitchColors.of(context).text)),
+            SizedBox(height: 8),
             TextField(
               controller: _pendingNameCtrl,
               onChanged: (q) => _c.updateSuggestions(q),
               focusNode: _pendingFocus,
-              style: const TextStyle(color: AppTheme.textColor),
+              style: TextStyle(color: PitchColors.of(context).text),
               textInputAction: TextInputAction.done,
               decoration:
-                  const InputDecoration(hintText: 'Ortak oyuncu adı'),
+                  InputDecoration(hintText: 'Ortak oyuncu adı'),
               onSubmitted: (_) => _submitPendingPlayer(),
             ),
 
             if (_c.suggestions.isNotEmpty)
               ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 140),
+                constraints: BoxConstraints(maxHeight: 140),
                 child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: _c.suggestions.length,
@@ -294,7 +297,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   },
                 ),
               ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
@@ -303,14 +306,14 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                       _c.userCancelPending();
                       _pendingNameCtrl.clear();
                     },
-                    child: const Text('İptal'),
+                    child: Text('İptal'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _submitPendingPlayer,
-                    child: const Text('ONAYLA'),
+                    child: Text('ONAYLA'),
                   ),
                 ),
               ],
@@ -323,26 +326,26 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
 
   Widget _orientationPanel(Club a, Club b) {
     return Card(
-      color: AppTheme.cardColor,
+      color: PitchColors.of(context).surface,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Yön seç',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: AppTheme.textColor,
+                color: PitchColors.of(context).text,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _confirmOrientation(row: a, col: b),
               child: Text('Satır: ${a.name} / Sütun: ${b.name}'),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             ElevatedButton(
               onPressed: () => _confirmOrientation(row: b, col: a),
               child: Text('Satır: ${b.name} / Sütun: ${a.name}'),
@@ -355,7 +358,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   _pendingB = null;
                 });
               },
-              child: const Text('Vazgeç'),
+              child: Text('Vazgeç'),
             ),
           ],
         ),
@@ -368,35 +371,35 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
     final row = _c.puzzle.rowClubs[index ~/ 3];
     final col = _c.puzzle.colClubs[index % 3];
     return Card(
-      color: AppTheme.cardColor,
+      color: PitchColors.of(context).surface,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               '${row?.name ?? '?'} × ${col?.name ?? '?'}',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: AppTheme.textColor,
+                color: PitchColors.of(context).text,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextField(
               controller: _cellNameCtrl,
               onChanged: (q) => _c.updateSuggestions(q),
               focusNode: _cellFocus,
               autofocus: true,
-              style: const TextStyle(color: AppTheme.textColor),
+              style: TextStyle(color: PitchColors.of(context).text),
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(hintText: 'Oyuncu adı'),
+              decoration: InputDecoration(hintText: 'Oyuncu adı'),
               onSubmitted: (_) => _submitCell(),
             ),
 
             if (_c.suggestions.isNotEmpty)
               ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 140),
+                constraints: BoxConstraints(maxHeight: 140),
                 child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: _c.suggestions.length,
@@ -419,21 +422,21 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   },
                 ),
               ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _cancelCell,
-                    child: const Text('İptal'),
+                    child: Text('İptal'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
                     onPressed: _submitCell,
-                    child: const Text(
+                    child: Text(
                       'ONAYLA',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -453,7 +456,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
       children: [
         Row(
           children: [
-            const SizedBox(width: 56),
+            SizedBox(width: 56),
             for (var c = 0; c < 3; c++)
               Expanded(
                 child: Text(
@@ -461,10 +464,10 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.hintColor),
+                      color: PitchColors.of(context).muted),
                 ),
               ),
           ],
@@ -479,10 +482,10 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                     s.rowClubs[r]?.name ?? '—',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.hintColor),
+                        color: PitchColors.of(context).muted),
                   ),
                 ),
                 for (var c = 0; c < 3; c++)
@@ -505,21 +508,21 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
         col != null;
     final selected = _selectedCell == index;
 
-    Color border = AppTheme.borderColor;
-    Color bg = AppTheme.cardColor;
+    Color border = PitchColors.of(context).border;
+    Color bg = PitchColors.of(context).surface;
     if (owner == 1) {
-      border = AppTheme.primaryColor;
-      bg = AppTheme.primaryColor.withValues(alpha: 0.2);
+      border = PitchColors.of(context).accent;
+      bg = PitchColors.of(context).accent.withValues(alpha: 0.2);
     } else if (owner == 2) {
-      border = Colors.redAccent;
-      bg = Colors.redAccent.withValues(alpha: 0.2);
+      border = PitchColors.of(context).error;
+      bg = PitchColors.of(context).error.withValues(alpha: 0.2);
     } else if (selected) {
-      border = AppTheme.primaryColor;
-      bg = AppTheme.primaryColor.withValues(alpha: 0.12);
+      border = PitchColors.of(context).accent;
+      bg = PitchColors.of(context).accent.withValues(alpha: 0.12);
     }
 
     return Padding(
-      padding: const EdgeInsets.all(3),
+      padding: EdgeInsets.all(3),
       child: Material(
         color: bg,
         borderRadius: BorderRadius.circular(10),
@@ -535,29 +538,17 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
               ),
             ),
             alignment: Alignment.center,
-            padding: const EdgeInsets.all(4),
+            padding: EdgeInsets.all(4),
             child: cell.isFilled
-                ? Text(
-                    cell.player!.name,
-                    textAlign: TextAlign.center,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: owner == 1
-                          ? AppTheme.primaryColor
-                          : Colors.redAccent,
-                    ),
-                  )
+                ? GridPlayerIdentity(player: cell.player!)
                 : Icon(
                     canFill
                         ? (selected ? Icons.edit : Icons.add)
                         : Icons.remove,
                     size: 18,
                     color: selected
-                        ? AppTheme.primaryColor
-                        : AppTheme.hintColor,
+                        ? PitchColors.of(context).accent
+                        : PitchColors.of(context).muted,
                   ),
           ),
         ),
@@ -567,9 +558,9 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
 
   Widget _chip(String label, int score, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: PitchColors.of(context).surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
@@ -600,24 +591,24 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
       title = 'Bot Kazandı';
     }
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(title: const Text('Rastgele Grid Bitti')),
+      backgroundColor: PitchColors.of(context).background,
+      appBar: AppBar(title: Text('Rastgele Grid Bitti')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(title,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.textColor)),
-              const SizedBox(height: 12),
+                      color: PitchColors.of(context).text)),
+              SizedBox(height: 12),
               Text('Sen ${_c.userScore}  –  Bot ${_c.botScore}',
                   style:
-                      const TextStyle(fontSize: 18, color: AppTheme.hintColor)),
-              const SizedBox(height: 28),
+                      TextStyle(fontSize: 18, color: PitchColors.of(context).muted)),
+              SizedBox(height: 28),
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -625,20 +616,20 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   onPressed: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => const VsBotRandomGridPage()),
+                        builder: (_) => VsBotRandomGridPage()),
                   ),
-                  child: const Text('YENİDEN OYNA',
+                  child: Text('YENİDEN OYNA',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton(
                   onPressed: () =>
                       Navigator.popUntil(context, (r) => r.isFirst),
-                  child: const Text('ANA MENÜ'),
+                  child: Text('ANA MENÜ'),
                 ),
               ),
             ],
