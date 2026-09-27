@@ -24,7 +24,7 @@ class Player {
   final int careerGoals;
   final List<CareerStop> careerTimeline;
 
-  /// Legacy data key; display portraits are resolved by PlayerPortraitCatalog.
+  /// Legacy data key; the symbolic kit identity does not use portrait assets.
   final String? avatarKey;
 
   /// PlayerElo vb. — yoksa null. marketValue bos ise UI rating kullanabilir.

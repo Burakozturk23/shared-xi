@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/data/club_visual_identity.dart';
-import 'package:shared_xi/data/player_portrait_catalog.dart';
+import 'package:shared_xi/data/player_kit_identity.dart';
 import 'package:shared_xi/models/club.dart';
 import 'package:shared_xi/models/match_entity.dart';
 import 'package:shared_xi/models/player.dart';
@@ -36,16 +35,6 @@ Future<void> capture(GlobalKey key, String name) async {
   await file.parent.create(recursive: true);
   await file.writeAsBytes(bytes!.buffer.asUint8List());
   image.dispose();
-}
-
-class MissingPortraitBundle extends CachingAssetBundle {
-  @override
-  Future<ByteData> load(String key) {
-    if (key == 'assets/avatars/portraits_v1/p_8198.webp') {
-      return Future<ByteData>.error(StateError('Simulated missing portrait'));
-    }
-    return rootBundle.load(key);
-  }
 }
 
 void main() {
@@ -78,91 +67,37 @@ void main() {
     },
   );
 
-  testWidgets('catalog portraits decode and are selected by player ID', (
-    tester,
-  ) async {
-    await tester.runAsync(() async {
-      for (final asset in PlayerPortraitCatalog.assets.values) {
-        final data = await rootBundle.load(asset);
-        final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
-        final frame = await codec.getNextFrame();
-        expect(frame.image.width, 384);
-        expect(frame.image.height, 384);
-        frame.image.dispose();
-        codec.dispose();
-      }
-    });
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: PlayerAvatar(
-            player: player(8198, avatarKey: 'incorrect_legacy_key'),
-          ),
-        ),
-      ),
-    );
-    await tester.runAsync(() async {
-      await precacheImage(
-        const ResizeImage(
-          AssetImage('assets/avatars/portraits_v1/p_8198.webp'),
-          width: 144,
-        ),
-        tester.element(find.byType(PlayerAvatar)),
-      );
-    });
-    await tester.pumpAndSettle();
-    expect(find.byType(Image), findsOneWidget);
-    expect(
-      tester.widget<Image>(find.byType(Image)).semanticLabel,
-      'Oyuncu 8198: stilize portre',
-    );
-    expect(tester.takeException(), isNull);
+  test('kit initials preserve Unicode names and handle empty values', () {
+    expect(PlayerKitIdentity.initials('Cristiano Ronaldo'), 'CR');
+    expect(PlayerKitIdentity.initials('Hakan Çalhanoğlu'), 'HÇ');
+    expect(PlayerKitIdentity.initials('  Arda   Güler  '), 'AG');
+    expect(PlayerKitIdentity.initials('Pelé'), 'P');
+    expect(PlayerKitIdentity.initials(''), '?');
+    expect(PlayerKitIdentity.position('unknown').$2, 'F');
   });
 
-  testWidgets(
-    'unknown player cannot borrow another player portrait via avatarKey',
-    (tester) async {
+  for (final size in [28.0, 34.0, 48.0, 64.0, 96.0]) {
+    testWidgets('kit fits at $size px with large system text', (tester) async {
       final semantics = tester.ensureSemantics();
       addTearDown(semantics.dispose);
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PlayerAvatar(
-              player: player(1, avatarKey: 'portraits_v1/p_8198'),
-            ),
-          ),
-        ),
-      );
+      await tester.pumpWidget(MaterialApp(home: MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(3)),
+        child: Scaffold(body: PlayerAvatar(
+          player: player(8198, avatarKey: 'intentionally_missing'), size: size,
+        )),
+      )));
       await tester.pumpAndSettle();
+      expect(find.text('O8'), findsOneWidget);
+      expect(find.text('HC'), size >= 64 ? findsOneWidget : findsNothing);
       expect(find.byType(Image), findsNothing);
-      expect(find.byIcon(Icons.person_outline_rounded), findsOneWidget);
-      expect(
-        find.bySemanticsLabel('Oyuncu 1: portre mevcut değil'),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel('Oyuncu 8198, Hücum, Turkey'), findsOneWidget);
       expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets('failed catalog asset shows neutral fallback', (tester) async {
-    final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
-    await tester.pumpWidget(MaterialApp(home: DefaultAssetBundle(
-      bundle: MissingPortraitBundle(),
-      child: Scaffold(body: PlayerAvatar(player: player(8198))),
-    )));
-    await tester.runAsync(() async {
-      await Future<void>.delayed(Duration.zero);
     });
-    await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.person_outline_rounded), findsOneWidget);
-    expect(find.bySemanticsLabel('Oyuncu 8198: portre mevcut değil'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+  }
 
   for (final dark in [true, false]) {
     testWidgets(
-      'shared player portraits and detail fit narrow screens, dark=$dark',
+      'shared player kits and detail fit narrow screens, dark=$dark',
       (tester) async {
         tester.view.physicalSize = const Size(360, 800);
         tester.view.devicePixelRatio = 1;
@@ -183,15 +118,6 @@ void main() {
             ),
           ),
         );
-        await tester.pumpAndSettle();
-        await tester.runAsync(() async {
-          for (final asset in PlayerPortraitCatalog.assets.values) {
-            await precacheImage(
-              AssetImage(asset),
-              tester.element(find.byType(Scaffold).first),
-            );
-          }
-        });
         await tester.pumpAndSettle();
         expect(find.byType(PlayerAvatar), findsNWidgets(4));
         expect(tester.takeException(), isNull);
