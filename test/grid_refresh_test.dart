@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/app/bot_game_catalog.dart';
 import 'package:shared_xi/controllers/classic_grid_bot_controller.dart';
@@ -60,6 +61,16 @@ class DelayedPlacement extends ReadyRandom {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final (family, path) in [
+      ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
+    ]) {
+      await (FontLoader(family)..addFont(rootBundle.load(path))).load();
+    }
+  });
   test('all three bot Grid routes use the current theme', () {
     expect(BotGameCatalog.classicGrid.entry.page, isA<ClassicGridPage>());
     expect(BotGameCatalog.classicGrid.entry.requiresRepository, isFalse);

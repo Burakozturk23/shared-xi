@@ -16,7 +16,8 @@ No evidence in this inspected main history shows a whole-project revert.
 - Main 7d7b1a7: modern controller suggestions limited to session pool, retained.
 - PR14 a31fc5b: procedural kit identities and tests, retained.
 
-All 59 files changed by PR11/12/13 relative to e06c2f5 are preserved byte-for-byte.
+The initial recovery preserved all 59 PR11/12/13 files byte-for-byte.
+The Grid refresh below intentionally updates the relevant routes, UI and tests.
 ## Grid refresh
 
 ClassicGridPage is reactivated with bounded row heights inside its scroll view;

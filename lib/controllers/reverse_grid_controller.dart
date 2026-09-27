@@ -272,8 +272,8 @@ class ReverseGridController extends ChangeNotifier {
     }
 
     for (final country in axisPlayers.first.countries) {
-      if (SearchService.equals(country, trimmed)) {
-        if (axisPlayers.every((p) => p.countries.contains(country))) {
+      if (CountryNames.same(country, trimmed)) {
+        if (axisPlayers.every((p) => p.countries.any((value) => CountryNames.same(value, country)))) {
           return true;
         }
       }

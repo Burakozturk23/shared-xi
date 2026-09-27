@@ -177,7 +177,7 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
                   : Colors.orangeAccent,
             ),
           ),
-        )), 
+        )),
         Expanded(child: _chip('Bot', _c.botScore, PitchColors.of(context).error)),
       ],
     );

@@ -160,7 +160,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                             : Colors.orangeAccent,
                       ),
                     ),
-                  )), 
+                  )),
                   Expanded(
                       child: _chip('Bot', _c.botScore, PitchColors.of(context).error)),
                 ],
