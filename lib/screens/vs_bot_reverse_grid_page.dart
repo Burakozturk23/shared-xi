@@ -165,7 +165,7 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
     return Row(
       children: [
         Expanded(child: _chip('Sen', _c.userScore, PitchColors.of(context).accent)),
-        Expanded(child: Padding(
+        Expanded(flex: 2, child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             _c.turn == VsBotReverseTurn.user ? 'Sıra sende' : 'Bot…',

@@ -149,10 +149,11 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   Expanded(
                       child:
                           _chip('Sen', _c.userScore, PitchColors.of(context).accent)),
-                  Expanded(child: Padding(
+                  Expanded(flex: 2, child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       _c.busy ? 'Hazırlanıyor…' : (_c.turn == VsBotRandomTurn.user ? 'Sıra sende' : 'Bot…'),
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: _c.turn == VsBotRandomTurn.user
