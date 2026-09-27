@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 
 import '../models/safety_models.dart';
-import '../services/safety_service.dart';
+import '../services/social/social_gateways.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/social_ui.dart';
 import '../widgets/user_avatar_badge.dart';
+import 'friends_page.dart';
 
 class SocialSafetyCenterPage extends StatefulWidget {
-  const SocialSafetyCenterPage({super.key});
-
+  const SocialSafetyCenterPage({
+    super.key,
+    this.gateway = const SafetyGateway(),
+  });
+  final SafetyGateway gateway;
   @override
   State<SocialSafetyCenterPage> createState() => _SocialSafetyCenterPageState();
 }
 
 class _SocialSafetyCenterPageState extends State<SocialSafetyCenterPage> {
-  List<PlayerReportSummary> _reports = const <PlayerReportSummary>[];
-  bool _loading = true;
+  List<PlayerReportSummary> _reports = [];
+  bool _loading = false;
   String? _error;
-
+  int _filter = 0;
+  bool _active(PlayerReportSummary report) =>
+      report.status == PlayerReportStatus.open ||
+      report.status == PlayerReportStatus.reviewing;
   @override
   void initState() {
     super.initState();
@@ -23,295 +32,252 @@ class _SocialSafetyCenterPageState extends State<SocialSafetyCenterPage> {
   }
 
   Future<void> _load() async {
-    if (mounted) {
-      setState(() {
-        _loading = true;
-        _error = null;
-      });
-    }
-
+    if (_loading || !widget.gateway.isGoogleAccount) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final reports = await SafetyService.getMyReports();
-      if (!mounted) return;
-
-      setState(() {
-        _reports = reports;
-        _loading = false;
-      });
-    } catch (error) {
-      if (!mounted) return;
-
-      setState(() {
-        _loading = false;
-        _error = _messageFor(error);
-      });
+      final rows = List<PlayerReportSummary>.of(
+        await widget.gateway.listMine(),
+      );
+      rows.sort((a, b) => (b.createdAtMs ?? 0).compareTo(a.createdAtMs ?? 0));
+      if (mounted) setState(() => _reports = rows);
+    } catch (_) {
+      if (mounted)
+        setState(
+          () => _error =
+              'Raporların yenilenemedi. Bağlantını kontrol edip tekrar dene.',
+        );
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
+  void _openFriends(int tab) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => FriendsPage(initialTab: tab)));
   @override
   Widget build(BuildContext context) {
+    final rows = _reports
+        .where((r) => _filter == 0 || (_filter == 1 ? _active(r) : !_active(r)))
+        .toList();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Güvenlik & Raporlar'),
+        title: const Text('Güvenlik ve Raporlar'),
         actions: [
           IconButton(
-            onPressed: _loading ? null : _load,
-            tooltip: 'Yenile',
+            tooltip: 'Raporları yenile',
+            onPressed: _loading || !widget.gateway.isGoogleAccount
+                ? null
+                : _load,
             icon: const Icon(Icons.refresh_rounded),
           ),
         ],
       ),
-      body: SafeArea(child: _buildBody()),
-    );
-  }
-
-  Widget _buildBody() {
-    if (_loading && _reports.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_error != null && _reports.isEmpty) {
-      return _SafetyErrorState(message: _error!, onRetry: _load);
-    }
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 36),
-        children: [
-          const _SafetyInfoCard(),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              const Icon(Icons.flag_outlined, size: 22),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Raporlarım',
-                  style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+      body: SafeArea(
+        child: !widget.gateway.isGoogleAccount
+            ? SocialAccountGate(
+                onReturn: () {
+                  setState(() {});
+                  _load();
+                },
+              )
+            : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+                  children: [
+                    const SocialHero(
+                      icon: Icons.shield_outlined,
+                      eyebrow: 'GÜVENLİ OYUN',
+                      title: 'Rekabet var.\nRahatsızlığa yer yok.',
+                      message:
+                          'İstemediğin etkileşimleri engelle. Oyuncu davranışlarına ilişkin bildirimlerinin durumunu buradan takip et.',
+                    ),
+                    const SizedBox(height: 16),
+                    PitchRow(
+                      title: 'Engellenen oyuncular',
+                      subtitle: 'Engellerini gör ve yönet',
+                      icon: Icons.block_outlined,
+                      onTap: () => _openFriends(3),
+                    ),
+                    const SizedBox(height: 12),
+                    PitchRow(
+                      title: 'Bir oyuncuyu bildir',
+                      subtitle: 'Oyuncuyu bul, seçeneklerinden Bildir’i seç',
+                      icon: Icons.flag_outlined,
+                      onTap: () => _openFriends(2),
+                    ),
+                    const SizedBox(height: 16),
+                    PitchPanel(
+                      child: ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        childrenPadding: const EdgeInsets.only(bottom: 12),
+                        title: const Text('Engellemek ve bildirmek'),
+                        leading: const Icon(Icons.help_outline_rounded),
+                        children: const [
+                          Text(
+                            'Engelleme, o oyuncuyla arkadaşlık ve davet etkileşimlerini kısıtlar. Bildirim ise davranışın incelenmesi için gönderilir. Birini bildirmek onu otomatik olarak engellemez.\n\nTaciz, nefret söylemi, spam, uygunsuz takma ad veya hile şüphesini ilgili kategoriyle iletebilirsin.',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const PitchSectionTitle('Raporlarım'),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final (index, title) in [
+                          (0, 'Tümü'),
+                          (1, 'Açık'),
+                          (2, 'Sonuçlanan'),
+                        ])
+                          ChoiceChip(
+                            label: Text(title),
+                            selected: _filter == index,
+                            onSelected: (_) => setState(() => _filter = index),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (_loading) ...[
+                      const LinearProgressIndicator(),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_error != null) ...[
+                      SocialNotice(
+                        title: 'Bağlantı kurulamadı',
+                        message: _error!,
+                        icon: Icons.cloud_off_outlined,
+                        onAction: _loading ? null : _load,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (!_loading && _error == null && rows.isEmpty)
+                      SocialNotice(
+                        title: _reports.isEmpty
+                            ? 'Henüz bir raporun yok'
+                            : 'Bu filtrede rapor yok',
+                        message: _reports.isEmpty
+                            ? 'Gönderdiğin oyuncu bildirimleri burada görünür.'
+                            : 'Diğer raporlarını görmek için filtreyi değiştir.',
+                        icon: Icons.verified_user_outlined,
+                      ),
+                    for (final report in rows)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: PitchPanel(
+                          onTap: () => _detail(report),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  UserAvatarBadge(
+                                    avatarId: report.targetAvatarId,
+                                    radius: 22,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          report.targetDisplayName,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          report.category.title,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(Icons.chevron_right_rounded),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              Wrap(
+                                spacing: 10,
+                                runSpacing: 8,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  SocialStatus(
+                                    report.status.title,
+                                    complete: !_active(report),
+                                  ),
+                                  Text(
+                                    socialDate(report.createdAtMs),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              Text(
-                '${_reports.length}',
-                style: TextStyle(
-                  color: Theme.of(context).hintColor,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          if (_error != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text(
-                _error!,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          if (_reports.isEmpty)
-            const _NoReportsCard()
-          else
-            ..._reports.map(
-              (report) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _ReportCard(report: report),
-              ),
-            ),
-        ],
       ),
     );
   }
 
-  String _messageFor(Object error) {
-    final text = error.toString();
-    if (text.contains('Google')) {
-      return 'Rapor geçmişi için Google hesabına bağlı profil gerekli.';
-    }
-    return 'Rapor geçmişi yüklenemedi. Tekrar dene.';
-  }
-}
-
-class _SafetyInfoCard extends StatelessWidget {
-  const _SafetyInfoCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
+  void _detail(PlayerReportSummary report) => showModalBottomSheet<void>(
+    context: context,
+    useSafeArea: true,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (context) => ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .8,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
-              children: [
-                Icon(Icons.verified_user_outlined, size: 28),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Oyuncu Güvenliği',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Oyuncuları Arkadaşlar ekranındaki seçeneklerden '
-              'bildirebilir veya engelleyebilirsin. Engellediğin kişiler '
-              'Arkadaşlar > Engellenenler sekmesinde yönetilir.',
-              style: TextStyle(color: Theme.of(context).hintColor, height: 1.4),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Topluluk Merkezi ürün önerisi, yardım ve hata bildirimi '
-              'içindir; oyuncu davranışı bildirimleri burada takip edilir.',
-              style: TextStyle(
-                color: Theme.of(context).hintColor,
-                fontSize: 12,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ReportCard extends StatelessWidget {
-  final PlayerReportSummary report;
-
-  const _ReportCard({required this.report});
-
-  @override
-  Widget build(BuildContext context) {
-    final statusColor = _statusColor(context, report.status);
-
-    return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-        leading: UserAvatarBadge(avatarId: report.targetAvatarId, radius: 24),
-        title: Text(
-          report.targetDisplayName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(report.category.title),
-              if (report.createdAtMs != null) ...[
-                const SizedBox(height: 3),
-                Text(
-                  _date(report.createdAtMs!),
-                  style: TextStyle(
-                    color: Theme.of(context).hintColor,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-          decoration: BoxDecoration(
-            color: statusColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Text(
-            report.status.title,
-            style: TextStyle(
-              color: statusColor,
-              fontSize: 11,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  static Color _statusColor(BuildContext context, PlayerReportStatus status) {
-    return switch (status) {
-      PlayerReportStatus.open => Theme.of(context).colorScheme.primary,
-      PlayerReportStatus.reviewing => Colors.orange.shade700,
-      PlayerReportStatus.actioned => Colors.green.shade700,
-      PlayerReportStatus.closed => Theme.of(context).hintColor,
-    };
-  }
-
-  static String _date(int ms) {
-    final value = DateTime.fromMillisecondsSinceEpoch(ms).toLocal();
-    final day = value.day.toString().padLeft(2, '0');
-    final month = value.month.toString().padLeft(2, '0');
-    return '$day.$month.${value.year}';
-  }
-}
-
-class _NoReportsCard extends StatelessWidget {
-  const _NoReportsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(22),
-        child: Column(
-          children: [
-            const Icon(Icons.shield_outlined, size: 38),
-            const SizedBox(height: 10),
-            const Text(
-              'Henüz oyuncu bildirimin yok',
-              style: TextStyle(fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Bir oyuncuyu bildirdiğinde durumunu burada görebilirsin.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SafetyErrorState extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _SafetyErrorState({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline_rounded, size: 46),
-            const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center),
+            SocialStatus(report.status.title, complete: !_active(report)),
             const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Tekrar dene'),
+            Text(
+              report.targetDisplayName,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(report.category.title),
+            const SizedBox(height: 20),
+            Text(switch (report.status) {
+              PlayerReportStatus.open =>
+                'Bildirimin alındı. İnceleme durumunu bu ekrandan takip edebilirsin.',
+              PlayerReportStatus.reviewing =>
+                'Bildirimin inceleniyor. Güncellemeler burada görünecek.',
+              PlayerReportStatus.actioned =>
+                'Bildirimin değerlendirildi ve işlem uygulandı.',
+              PlayerReportStatus.closed =>
+                'Bu bildirimin inceleme süreci kapatıldı.',
+            }),
+            const SizedBox(height: 20),
+            Text('Gönderim: ${socialDate(report.createdAtMs)}'),
+            const SizedBox(height: 8),
+            Text('Güncelleme: ${socialDate(report.updatedAtMs)}'),
+            const SizedBox(height: 16),
+            SelectableText(
+              'Rapor no: ${report.reportId}',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }

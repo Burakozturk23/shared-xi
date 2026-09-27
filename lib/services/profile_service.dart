@@ -54,6 +54,7 @@ class UserProfile {
   final String? normalizedName;
   final bool nicknameNeedsSetup;
   final String avatarId;
+  final String kitId;
   final Set<String> ownedAvatarIds;
   final String accountType;
   final int profileVersion;
@@ -71,6 +72,7 @@ class UserProfile {
     this.normalizedName,
     this.nicknameNeedsSetup = false,
     this.avatarId = LinkballProfileSchema.defaultAvatarId,
+    this.kitId = '',
     this.ownedAvatarIds = const {},
     this.accountType = LinkballProfileSchema.guestAccountType,
     this.profileVersion = LinkballProfileSchema.version,
@@ -154,6 +156,7 @@ class UserProfile {
       normalizedName: data['normalizedName']?.toString(),
       nicknameNeedsSetup: data['nicknameNeedsSetup'] == true,
       avatarId: avatarId,
+      kitId: data['kitId']?.toString() ?? '',
       ownedAvatarIds: Set<String>.unmodifiable(ownedAvatarIds),
       accountType: accountType,
       profileVersion:

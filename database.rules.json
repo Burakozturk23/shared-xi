@@ -22,7 +22,7 @@
           ".read": "auth != null"
         },
         "avatarId": {
-          ".validate": "newData.isString() && (newData.val() == \"starter_ball\" || newData.val() == \"captain_shield\" || newData.val() == \"keeper_glove\" || newData.val() == \"playmaker_star\" || newData.val() == \"speedster_bolt\" || newData.val() == \"tactician_board\" || newData.val() == \"night_owl\" || newData.val() == \"champion_cup\") && newData.parent().child(\"ownedAvatars\").child(newData.val()).val() == true"
+          ".validate": "newData.isString() && newData.parent().child(\"ownedAvatars\").child(newData.val()).val() == true && (newData.val() == \"starter_ball\" || newData.val() == \"captain_shield\" || newData.val() == \"keeper_glove\" || newData.val() == \"playmaker_star\" || newData.val() == \"speedster_bolt\" || newData.val() == \"tactician_board\" || newData.val() == \"night_owl\" || newData.val() == \"champion_cup\" || root.child(\"inventory\").child($uid).child(newData.val()).child(\"itemType\").val() == \"avatar\")"
         },
         "ownedAvatars": {
           "$avatarId": {
@@ -37,6 +37,9 @@
         },
         "nicknameNeedsSetup": {
           ".validate": "!newData.exists() || (data.exists() && newData.val() == data.val())"
+        },
+        "kitId": {
+          ".validate": "newData.isString() && ((!data.exists() && newData.val() == \"\") || newData.val() == data.val())"
         }
       }
     },

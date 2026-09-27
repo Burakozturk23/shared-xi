@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../app/app_feedback.dart';
+import '../app/app_copy.dart';
 import '../app/route_appearance.dart';
 import '../services/auth_service.dart';
 import '../services/cloud_bootstrap.dart';
@@ -26,7 +27,12 @@ class _AppShellState extends State<AppShell> {
   int _index = 0;
   final _visited = <int>{0};
   StreamSubscription<dynamic>? _auth;
-  static const _labels = ['Ana Sayfa', 'Oyunlar', 'Online', 'Profil'];
+  List<String> get _labels => [
+    appCopy(context, 'Ana Sayfa', 'Home'),
+    appCopy(context, 'Oyunlar', 'Games'),
+    'Online',
+    appCopy(context, 'Profil', 'Profile'),
+  ];
   @override
   void initState() {
     super.initState();
@@ -102,7 +108,9 @@ class _AppShellState extends State<AppShell> {
                         shape: const CircleBorder(),
                       )
                     : null,
-                tooltip: _index == 0 ? 'Profil' : 'Ayarlar',
+                tooltip: _index == 0
+                    ? _labels[3]
+                    : appCopy(context, 'Ayarlar', 'Settings'),
                 icon: Icon(
                   _index == 0
                       ? Icons.person_outline_rounded
@@ -138,15 +146,15 @@ class _AppShellState extends State<AppShell> {
             NavigationBar(
               selectedIndex: _index,
               onDestinationSelected: _select,
-              destinations: const [
+              destinations: [
                 NavigationDestination(
                   icon: Icon(Icons.home_outlined),
                   selectedIcon: Icon(Icons.home_rounded),
-                  label: 'Ana Sayfa',
+                  label: _labels[0],
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.sports_esports_outlined),
-                  label: 'Oyunlar',
+                  label: _labels[1],
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.public_rounded),
@@ -154,7 +162,7 @@ class _AppShellState extends State<AppShell> {
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person_outline_rounded),
-                  label: 'Profil',
+                  label: _labels[3],
                 ),
               ],
             ),

@@ -1291,7 +1291,9 @@ exports.submitRankedResult = httpsV2.onCall(
 
 const LB_SOCIAL_MAX_FRIENDS = 250;
 const LB_SOCIAL_MAX_OUTGOING_REQUESTS = 30;
+const storeCollection = require("./store_collection");
 const LB_SOCIAL_AVATAR_IDS = new Set([
+  ...storeCollection.avatarIds,
   "starter_ball",
   "captain_shield",
   "keeper_glove",
@@ -4999,7 +5001,7 @@ const LB_ACHIEVEMENT_COIN_REWARDS = economyConfig.defaults.sources.achievement.r
 
 // LINKBALL_16_7B_COIN_STORE_FOUNDATION_START
 
-const LB_STORE_CATALOG_VERSION = 1;
+const LB_STORE_CATALOG_VERSION = 2;
 const LB_STORE_COIN_OFFERS = economyConfig.defaults.sinks.cosmetics.offers;
 
 /**
@@ -5976,6 +5978,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    storeUses: data.storeUses && typeof data.storeUses === "object" ? {...data.storeUses} : {},
     squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
       data.squadChallenge : {},
     createdAt: lbEconomyNumber(data.createdAt),
@@ -6066,6 +6069,7 @@ function lbEconomyInventoryProjection(item) {
     sourceType: item.sourceType,
     sourceId: item.sourceId,
     acquiredAt: item.acquiredAt,
+    quantity: Number.isSafeInteger(item.quantity) ? item.quantity : 1,
     version: LB_ECONOMY_VERSION,
   };
 }
@@ -6365,13 +6369,17 @@ exports.getStoreCatalog = httpsV2.onCall(
       const db = admin.database();
       const state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
-      const offers = await lbStoreCatalog(db, config);
+      const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers];
+      const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
         ok: true,
         catalogVersion: LB_STORE_CATALOG_VERSION,
         wallet: lbEconomyWalletProjection(state),
         offers: offers,
+        inventory: state.inventory,
+        selectedAvatarId: profile.avatarId || "starter_ball",
+        selectedKitId: profile.kitId || "",
         economy: economyConfig.publicContract(config),
       };
     },
@@ -6398,6 +6406,9 @@ exports.purchaseEconomyOffer = httpsV2.onCall(
       }
 
       const db = admin.database();
+      if (Object.hasOwn(storeCollection.offers, offerId)) {
+        return lbStoreCollectionService().purchase(uid, request.data || {});
+      }
       const config = await lbGetEconomyConfig();
       const raw = Object.hasOwn(config.sinks.cosmetics.offers, offerId) ? config.sinks.cosmetics.offers[offerId] : null;
       if (!raw) throw new httpsV2.HttpsError("not-found", "Unknown offer.");
@@ -8843,3 +8854,17 @@ exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "
   }
 });
 // MONETIZATION_C_COIN_PURCHASES_END
+
+// Server-owned collection inventory; no client writes can mint or spend items.
+function lbStoreCollectionService() {
+  return storeCollection.createStore({db: admin.database(), normalize: lbEconomyState,
+    project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now()});
+}
+exports.consumeStoreBoost = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbStoreCollectionService().consume(request.auth.uid, request.data || {});
+});
+exports.equipStoreItem = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbStoreCollectionService().equip(request.auth.uid, request.data || {});
+});
