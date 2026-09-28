@@ -14,7 +14,7 @@ MANIFEST = ROOT / "assets" / "runtime" / "linkball_game_data_v4_manifest.json"
 EXPECTED = {
     "players": 30_135,
     "clubs": 4_311,
-    "transfers": 33_993,
+    "transfers": 33_994,  # reviewed v4-2026-09-28.1 adds one event
     "players_with_clubs": 30_135,
     "search_players": 30_135,
     "coaches": 5_275,
@@ -132,7 +132,7 @@ def main() -> int:
         "clubs_removed": EXPECTED["pruned_clubs"],
         "transfer_rows_removed": EXPECTED["pruned_transfer_rows"],
         "clubs_remaining": EXPECTED["clubs"],
-        "transfers_remaining": EXPECTED["transfers"],
+        "transfers_remaining": 33_993,  # historical pruning result, before reviewed patches
     }
     for key, expected in expected_pruning.items():
         if pruning.get(key) != expected:

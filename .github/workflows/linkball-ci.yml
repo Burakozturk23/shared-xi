@@ -25,6 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify bundled data and reviewed patches
+        run: |
+          python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_reviewed_patch.py'
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
