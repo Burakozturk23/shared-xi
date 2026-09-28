@@ -27,6 +27,15 @@ void main() {
     expect(pool.filter(clubs).map((c) => c.id), [11, 36]);
     expect(GridClubPool.decode(pool.encode()).leagues, pool.leagues);
   });
+  test('same league name in another country does not leak into selection', () {
+    const german = Club(id: 27, name: 'Bayern', league: 'Bundesliga', country: 'Germany');
+    const austrian = Club(id: 409, name: 'Austria team', league: 'Bundesliga', country: 'Austria');
+    const pool = GridClubPool(kind: GridPoolKind.leagues, leagues: {'germany'});
+    expect(pool.filter([german, austrian]), [german]);
+    expect(const GridClubPool(kind: GridPoolKind.leagues, leagues: {'turkey'}).filter([
+      const Club(id: 141, name: 'Galatasaray', league: 'Süper Lig', country: 'Türkiye'),
+    ]).single.id, 141);
+  });
   test('corrupt, obsolete and empty league settings recover to popular', () {
     for (final raw in [null, 'broken', '{"kind":"leagues","leagues":["removed"]}']) {
       expect(GridClubPool.decode(raw).kind, GridPoolKind.popular);

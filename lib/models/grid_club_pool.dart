@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/popular_clubs_pool.dart' show popularClubIds;
 import 'club.dart';
+import '../utils/country_names.dart';
 
 enum GridPoolKind { popular, leagues, broad }
 
@@ -13,6 +14,10 @@ class GridClubPool {
   static const labels = {
     'england': 'Premier League', 'spain': 'La Liga', 'italy': 'Serie A',
     'germany': 'Bundesliga', 'france': 'Ligue 1', 'turkey': 'Süper Lig',
+  };
+  static const countries = {
+    'england': 'England', 'spain': 'Spain', 'italy': 'Italy',
+    'germany': 'Germany', 'france': 'France', 'turkey': 'Turkey',
   };
   static const aliases = {
     'england': {'premier league', 'gb1'}, 'spain': {'laliga', 'la liga', 'es1'},
@@ -28,7 +33,9 @@ class GridClubPool {
   List<Club> filter(Iterable<Club> clubs) => clubs.where((club) {
     if (kind == GridPoolKind.broad) return true;
     if (kind == GridPoolKind.popular) return popularClubIds.contains(club.id);
-    return leagues.any((id) => aliases[id]?.contains(club.league.trim().toLowerCase()) ?? false);
+    return leagues.any((id) =>
+      (aliases[id]?.contains(club.league.trim().toLowerCase()) ?? false) &&
+      CountryNames.same(club.country, countries[id] ?? ''));
   }).toList();
   String encode() => jsonEncode({'kind': kind.name, 'leagues': leagues.toList()});
   static GridClubPool decode(String? raw) {
