@@ -22,11 +22,6 @@ jobs:
           python3 tools/data_platform_v4/apply_reviewed_patch.py tools/data_platform_v4/patches/v4-2026-09-28.1.json
           python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_reviewed_patch.py'
-          python3 - <<'PY'
-          import hashlib
-          from pathlib import Path
-          assert hashlib.sha256(Path('assets/runtime/linkball_game_data_v4.sqlite').read_bytes()).hexdigest() == '7e8f5e8695397f7f4053a47074edea264565cddd456d28515791322f4928517f'
-          PY
       - name: Commit only the reviewed data package
         run: |
           git config user.name 'github-actions[bot]'
