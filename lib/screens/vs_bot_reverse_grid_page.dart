@@ -81,6 +81,14 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_c.grid.errorMessage != null) {
+      return Scaffold(appBar: AppBar(title: const Text('Tersten Grid')),
+        body: Center(child: Padding(padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(_c.grid.errorMessage!, textAlign: TextAlign.center),
+            TextButton(onPressed: _c.initialize, child: const Text('Tekrar dene')),
+          ]))));
+    }
     if (_c.isLoading) {
       return Scaffold(
         backgroundColor: PitchColors.of(context).background,

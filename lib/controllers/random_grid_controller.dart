@@ -3,7 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../data/popular_clubs_pool.dart';
+import '../models/grid_club_pool.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../models/club.dart';
 import '../models/grid_state.dart';
 import '../models/player.dart';
@@ -33,6 +34,8 @@ class RandomGridController extends ChangeNotifier {
 
   List<Player> suggestions = const [];
 
+  GridClubPool _clubPool = const GridClubPool();
+  Set<int> _familiarPlayerIds = {};
   bool _usingRuntimeV3 = false;
   List<Club> _runtimeClubs = const [];
 
@@ -47,12 +50,16 @@ class RandomGridController extends ChangeNotifier {
   }
 
   Future<void> _initializeHybrid() async {
+    _clubPool = await GridClubPoolStore.load();
     final hybrid = HybridGameplayDataService.instance;
     _usingRuntimeV3 = hybrid.isGameplayEnabled;
 
     if (_usingRuntimeV3) {
-      _runtimeClubs = await hybrid.topGameplayClubs(limit: 120);
-      if (_runtimeClubs.length < 20) {
+      if (_clubPool.kind != GridPoolKind.broad) {
+        _familiarPlayerIds = (await hybrid.playersInPool('grid_question_normal')).map((p) => p.id).toSet();
+      }
+      _runtimeClubs = _clubPool.filter(await GameDataV4QueryService.instance.sharedXiClubCatalog());
+      if (_runtimeClubs.length < 2) {
         debugPrint(
           '[HybridV3] RandomGrid SQLite club pool too small; '
           'legacy fallback.',
@@ -157,6 +164,12 @@ class RandomGridController extends ChangeNotifier {
     }
   }
 
+  bool _usablePair(List<int> ids, Set<int> used) {
+    final available = ids.where((id) => !used.contains(id)).toList();
+    return available.length >= _clubPool.minimumAnswers &&
+        (_clubPool.kind == GridPoolKind.broad || available.any(_familiarPlayerIds.contains));
+  }
+
   Future<void> _generatePairRuntime(int generation) async {
     if (_state.roundsUsed >= 3 || _state.hasPendingPair) return;
 
@@ -169,60 +182,18 @@ class RandomGridController extends ChangeNotifier {
 
     if (pool.length < 2) return;
 
-    // Prefer cross-league pairs, but validity is determined only by broad
-    // canonical `grid_answer`, never market value or careerGoals.
-    for (var attempt = 0; attempt < _maxPairAttempts; attempt++) {
-      final shuffled = List<Club>.from(pool)..shuffle(_random);
-      Club? a;
-      Club? b;
-
-      for (var i = 0; i < shuffled.length; i++) {
-        for (var j = i + 1; j < shuffled.length; j++) {
-          final first = shuffled[i];
-          final second = shuffled[j];
-
-          if (first.league.trim().isNotEmpty &&
-              first.league == second.league) {
-            continue;
-          }
-
-          final ids = await _answersForPair(first, second);
-          if (_disposed || generation != _generation) return;
-          final usable =
-              ids.any((id) => !usedPlayers.contains(id));
-          if (!usable) continue;
-
-          a = first;
-          b = second;
-          break;
-        }
-        if (a != null) break;
-      }
-
-      if (a != null && b != null) {
-        _state = _state.copyWith(
-          pendingClubA: a,
-          pendingClubB: b,
-        );
-        notifyListeners();
-        return;
-      }
-    }
-
-    // Relax league diversity before giving up.
+    // Shuffle once and bound database work; a retry gets a fresh ordering.
     final shuffled = List<Club>.from(pool)..shuffle(_random);
+    var checked = 0;
     for (var i = 0; i < shuffled.length; i++) {
       for (var j = i + 1; j < shuffled.length; j++) {
+        if (++checked > 120) return;
         final a = shuffled[i];
         final b = shuffled[j];
         final ids = await _answersForPair(a, b);
         if (_disposed || generation != _generation) return;
-        if (!ids.any((id) => !usedPlayers.contains(id))) continue;
-
-        _state = _state.copyWith(
-          pendingClubA: a,
-          pendingClubB: b,
-        );
+        if (!_usablePair(ids, usedPlayers)) continue;
+        _state = _state.copyWith(pendingClubA: a, pendingClubB: b);
         notifyListeners();
         return;
       }
@@ -236,43 +207,18 @@ class RandomGridController extends ChangeNotifier {
     final usedClubs = _usedClubIds;
     final usedPlayers = _state.usedPlayerIds;
 
-    final pool = PopularClubs.resolveAll()
+    final pool = _clubPool.filter(Repository.instance.clubs)
         .where((c) => !usedClubs.contains(c.id))
         .toList();
 
     if (pool.length < 2) return;
 
     bool hasKnownCommon(Club a, Club b) {
-      for (final p in players) {
-        if (usedPlayers.contains(p.id)) continue;
-        if (p.name.trim().isEmpty) continue;
-        if (!p.clubs.contains(a.id) || !p.clubs.contains(b.id)) continue;
-        // En azından bir miktar tanınırlık
-        if (p.careerGoals >= 15 || p.peakMarketValue >= 5000000) return true;
-      }
-      // Fallback: herhangi ortak
-      return players.any((p) =>
-          !usedPlayers.contains(p.id) &&
-          p.clubs.contains(a.id) &&
-          p.clubs.contains(b.id));
-    }
-
-    // 1) Farklı ligden çift dene
-    for (var attempt = 0; attempt < _maxPairAttempts; attempt++) {
-      final pair = PopularClubs.pickDiverse(
-        count: 2,
-        maxPerLeague: 1,
-        maxPerCountry: 2,
-        random: _random,
-      ).where((c) => !usedClubs.contains(c.id)).toList();
-      if (pair.length < 2) break;
-      final a = pair[0];
-      final b = pair[1];
-      if (hasKnownCommon(a, b)) {
-        _state = _state.copyWith(pendingClubA: a, pendingClubB: b);
-        notifyListeners();
-        return;
-      }
+      final candidates = players.where((p) => !usedPlayers.contains(p.id) &&
+        p.name.trim().isNotEmpty && p.clubs.contains(a.id) && p.clubs.contains(b.id)).toList();
+      return candidates.length >= _clubPool.minimumAnswers &&
+        (_clubPool.kind == GridPoolKind.broad || candidates.any((p) =>
+          p.careerGoals >= 15 || p.peakMarketValue >= 5000000));
     }
 
     // 2) Popüler havuzdan rastgele (yine farklı lig tercihi)
@@ -282,10 +228,7 @@ class RandomGridController extends ChangeNotifier {
       Club? b;
       for (var i = 0; i < shuffled.length; i++) {
         for (var j = i + 1; j < shuffled.length; j++) {
-          if (shuffled[i].league == shuffled[j].league &&
-              shuffled[i].league.trim().isNotEmpty) {
-            continue; // aynı lig atla
-          }
+
           if (hasKnownCommon(shuffled[i], shuffled[j])) {
             a = shuffled[i];
             b = shuffled[j];

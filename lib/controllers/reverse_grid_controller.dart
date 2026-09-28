@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../data/popular_clubs_pool.dart';
+import '../models/grid_club_pool.dart';
+import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../utils/country_names.dart';
 import '../data/grid_country_pool.dart';
 import '../models/club.dart';
@@ -23,7 +25,9 @@ class ReverseGridController extends ChangeNotifier {
     super.dispose();
   }
 
-  static const int _maxAttempts = 25;
+  static const int _maxAttempts = 100;
+  GridClubPool _clubPool = const GridClubPool();
+  String? errorMessage;
 
   final Random _random = Random();
 
@@ -38,10 +42,17 @@ class ReverseGridController extends ChangeNotifier {
 
   void initialize() {
     if (_disposed) return;
-    unawaited(_initializeHybrid());
+    errorMessage = null;
+    unawaited(_initializeHybrid().catchError((Object error) {
+      if (_disposed) return;
+      errorMessage = 'Tahta yüklenemedi. Tekrar dene.';
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
+    }));
   }
 
   Future<void> _initializeHybrid() async {
+    _clubPool = await GridClubPoolStore.load();
     final hybrid = HybridGameplayDataService.instance;
     _usingRuntimeV3 = hybrid.isGameplayEnabled;
 
@@ -49,11 +60,11 @@ class ReverseGridController extends ChangeNotifier {
       _runtimePlayers = await hybrid.playersInPool('grid_question_normal');
       _runtimeClubIdsByPlayer =
           await hybrid.playerClubIdsForPool('grid_question_normal');
-      _runtimeClubs = await hybrid.topGameplayClubs(limit: 120);
+      _runtimeClubs = _clubPool.filter(await GameDataV4QueryService.instance.sharedXiClubCatalog());
 
       if (_runtimePlayers.length < 500 ||
           _runtimeClubIdsByPlayer.length < 500 ||
-          _runtimeClubs.length < 20) {
+          _runtimeClubs.length < 3) {
         debugPrint(
           '[HybridV3] ReverseGrid SQLite pool too small; legacy fallback.',
         );
@@ -143,7 +154,7 @@ class ReverseGridController extends ChangeNotifier {
     final players =
         _usingRuntimeV3 ? _runtimePlayers : Repository.instance.players;
     final clubs =
-        _usingRuntimeV3 ? _runtimeClubs : PopularClubs.resolveAll();
+        _usingRuntimeV3 ? _runtimeClubs : _clubPool.filter(Repository.instance.clubs);
 
     // Runtime pool is already selectionRankV3 ordered.
     final ranked = _usingRuntimeV3
@@ -158,20 +169,14 @@ class ReverseGridController extends ChangeNotifier {
           }));
 
     for (var attempt = 0; attempt < _maxAttempts; attempt++) {
-      final diverse = _usingRuntimeV3
-          ? _runtimeDiverseClubs(source: clubs, count: 8)
-          : PopularClubs.pickDiverse(
-              count: 8,
-              maxPerLeague: 2,
-              maxPerCountry: 3,
-              random: _random,
-            );
+      final diverse = _runtimeDiverseClubs(source: clubs, count: 8);
 
       final pool = diverse.isNotEmpty
           ? diverse
           : (List<Club>.from(clubs)..shuffle(_random));
 
       final rowClubs = pool.take(3).toList();
+      if (rowClubs.length < 3) break;
       final rows = rowClubs.map(GridCriterion.club).toList();
       final remaining = pool.skip(3).toList()..shuffle(_random);
       final cols = _generateColumnCriteria(remaining);
@@ -216,6 +221,7 @@ class ReverseGridController extends ChangeNotifier {
       }
     }
 
+    errorMessage = 'Bu havuzda tahta hazırlanamadı. Başka lig ekleyip tekrar dene.';
     _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }
