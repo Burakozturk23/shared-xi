@@ -97,3 +97,6 @@ tools/data_platform_v4/input/*.sqlite
 /root_analyzer_diagnostics_forensics*_bundle.zip
 # END LINKBALL GITHUB PUBLISH SAFETY
 
+
+# Local API collection cache and reports (no credentials)
+reports/api_football*/
