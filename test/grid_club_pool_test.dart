@@ -1,4 +1,8 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_xi/models/player.dart';
+import 'package:shared_xi/models/grid_criterion.dart';
+import 'package:shared_xi/services/classic_grid_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/models/club.dart';
@@ -35,6 +39,25 @@ void main() {
     await expectLater(GridClubPoolStore.save(const GridClubPool(kind: GridPoolKind.leagues)), throwsArgumentError);
     expect((await GridClubPoolStore.load()).leagues, pool.leagues);
   });
+  test('session filters club questions but keeps less familiar valid answers', () async {
+    final catalog = [for (var i = 1; i <= 6; i++)
+      Club(id: i, name: 'Team $i', league: 'Premier League', country: 'England'), clubs[2]];
+    final answers = [for (var i = 1; i <= 100; i++) Player.fromJson({
+      'id': i, 'name': 'Player $i', 'position': 'Attack', 'countries': ['France'],
+      'clubIds': [1, 2, 3, 4, 5, 6],
+    })];
+    final session = await ClassicGridSession.load(
+      random: Random(9),
+      clubPool: const GridClubPool(kind: GridPoolKind.leagues, leagues: {'england'}),
+      loadClubCatalog: () async => catalog,
+      loadClubPlayers: (_) async => answers,
+    );
+    for (final criterion in [...session.rows, ...session.cols]) {
+      if (criterion.type == GridCriterionType.club) expect(criterion.clubId, inInclusiveRange(1, 6));
+    }
+    expect(session.players.any((p) => p.id == 100), isTrue);
+    expect(session.validPlayerIdsByCell.values.every((ids) => ids.contains(100)), isTrue);
+  });
   testWidgets('picker requires a league, saves and restores selection', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: GridClubPoolPicker())));
     await tester.pumpAndSettle();
@@ -43,8 +66,12 @@ void main() {
     await tester.tap(find.text('Lig seç'));
     await tester.pumpAndSettle();
     expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull);
+    await tester.ensureVisible(find.text('La Liga'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('La Liga'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Uygula'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Uygula'));
     await tester.pumpAndSettle();
     expect((await GridClubPoolStore.load()).leagues, {'spain'});

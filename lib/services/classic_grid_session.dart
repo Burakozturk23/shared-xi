@@ -27,10 +27,12 @@ class ClassicGridSession {
     Random? random,
     int maxAttempts = 60,
     GridClubPool? clubPool,
+    Future<List<Club>> Function()? loadClubCatalog,
+    Future<List<Player>> Function(int clubId)? loadClubPlayers,
   }) async {
     final rng = random ?? Random();
     final query = GameDataV4QueryService.instance;
-    final allClubs = await query.sharedXiClubCatalog();
+    final allClubs = await (loadClubCatalog?.call() ?? query.sharedXiClubCatalog());
     final pool = clubPool ?? await GridClubPoolStore.load();
     final clubs = pool.filter(allClubs);
     if (clubs.length < 6) {
@@ -41,7 +43,7 @@ class ClassicGridSession {
     Future<List<Player>> playersFor(Club club) async {
       final cached = playersByClub[club.id];
       if (cached != null) return cached;
-      final loaded = await query.playersForClub(club.id);
+      final loaded = await (loadClubPlayers?.call(club.id) ?? query.playersForClub(club.id));
       playersByClub[club.id] = loaded;
       return loaded;
     }

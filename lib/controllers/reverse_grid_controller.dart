@@ -43,6 +43,8 @@ class ReverseGridController extends ChangeNotifier {
   void initialize() {
     if (_disposed) return;
     errorMessage = null;
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
     unawaited(_initializeHybrid().catchError((Object error) {
       if (_disposed) return;
       errorMessage = 'Tahta yüklenemedi. Tekrar dene.';
