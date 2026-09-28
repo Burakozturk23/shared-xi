@@ -25,8 +25,6 @@ class RandomGridController extends ChangeNotifier {
     super.dispose();
   }
 
-  static const int _maxPairAttempts = 40;
-
   final Random _random = Random();
 
   RandomGridState _state = const RandomGridState();
@@ -221,29 +219,21 @@ class RandomGridController extends ChangeNotifier {
           p.careerGoals >= 15 || p.peakMarketValue >= 5000000));
     }
 
-    // 2) Popüler havuzdan rastgele (yine farklı lig tercihi)
-    for (var attempt = 0; attempt < _maxPairAttempts; attempt++) {
-      final shuffled = List<Club>.from(pool)..shuffle(_random);
-      Club? a;
-      Club? b;
-      for (var i = 0; i < shuffled.length; i++) {
-        for (var j = i + 1; j < shuffled.length; j++) {
-
-          if (hasKnownCommon(shuffled[i], shuffled[j])) {
-            a = shuffled[i];
-            b = shuffled[j];
-            break;
-          }
-        }
-        if (a != null) break;
-      }
-      if (a != null && b != null) {
+    final shuffled = List<Club>.from(pool)..shuffle(_random);
+    var checked = 0;
+    for (var i = 0; i < shuffled.length; i++) {
+      for (var j = i + 1; j < shuffled.length; j++) {
+        if (++checked > 120) return;
+        final a = shuffled[i];
+        final b = shuffled[j];
+        if (!hasKnownCommon(a, b)) continue;
         _state = _state.copyWith(pendingClubA: a, pendingClubB: b);
         notifyListeners();
         return;
       }
     }
-    }
+  }
+
   int _rarityBonus(
     Player player, {
     Club? clubA,
