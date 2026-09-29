@@ -142,5 +142,6 @@
       "rows": 779,
       "league": "usa.1"
     }
-  ]
+  ],
+  "workflowTrigger": "publish-v4-2026-09-29.2"
 }
