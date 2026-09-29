@@ -143,5 +143,5 @@
       "league": "usa.1"
     }
   ],
-  "workflowTrigger": "publish-v4-2026-09-29.4"
+  "workflowTrigger": "push-hook"
 }
