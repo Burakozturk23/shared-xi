@@ -286,7 +286,7 @@ jobs:
 
   roster_publish:
     name: Publish reviewed roster expansion
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'codex/roster-publish-trigger'
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'codex/roster-publish-trigger')
     runs-on: ubuntu-latest
     permissions:
       contents: write
