@@ -112,3 +112,5 @@ def apply(database,manifest_path,review_path):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('review');p.add_argument('--database',default=ROOT/'assets/runtime/linkball_game_data_v4.sqlite');p.add_argument('--manifest',default=ROOT/'assets/runtime/linkball_game_data_v4_manifest.json');a=p.parse_args()
     print(json.dumps(apply(a.database,a.manifest,a.review),indent=2))
+
+# The reviewed expansion is applied offline from hash-pinned evidence.
