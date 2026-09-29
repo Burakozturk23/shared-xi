@@ -1,12 +1,5 @@
 name: Publish reviewed roster expansion
 on:
-  push:
-    branches: [codex/restore-pr13-complete]
-    paths:
-      - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
-      - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29-*.json'
-      - 'tools/data_platform_v4/apply_roster_expansion.py'
-      - '.github/workflows/publish-roster-expansion.yml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
