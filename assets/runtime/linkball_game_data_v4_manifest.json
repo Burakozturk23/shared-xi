@@ -7,7 +7,7 @@
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
     "bytes": 42582016,
     "sizeMB": 40.61,
-    "sha256": "4c47a6d14711cbf9e66f9a1b40766d4cc38deaf95bd582917c507c125102d5be"
+    "sha256": "1a5ce8f113133cd7f87bc1249339f17329190edd2b475ff28bf637e5bd621655"
   },
   "counts": {
     "players": 36280,
@@ -61,7 +61,7 @@
     {
       "id": "v4-2026-09-29.2",
       "baseSha256": "1f6a125d3402188d5c5e53d3c05697d4f9a26b99a0959b4a6ff70cd792336b9c",
-      "outputSha256": "4c47a6d14711cbf9e66f9a1b40766d4cc38deaf95bd582917c507c125102d5be",
+      "outputSha256": "1a5ce8f113133cd7f87bc1249339f17329190edd2b475ff28bf637e5bd621655",
       "newPlayers": 6145,
       "newLinks": 6362,
       "definition": "tools/data_platform_v4/patches/roster-expansion-2026-09-29.json"
