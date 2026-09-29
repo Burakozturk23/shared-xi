@@ -2,9 +2,6 @@
 name: Sync Daily Fixtures
 
 on:
-  push:
-    branches:
-      - codex/restore-pr13-complete
   schedule:
     # UTC 00:30 = yazin 03:30 TR, kisin 03:30 TR (UTC+3)
     - cron: "30 0 * * *"
@@ -43,7 +40,7 @@ jobs:
 
   roster_publish:
     name: Publish reviewed roster expansion
-    if: github.ref == 'refs/heads/codex/restore-pr13-complete'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/restore-pr13-complete'
     runs-on: ubuntu-latest
     permissions:
       contents: write
