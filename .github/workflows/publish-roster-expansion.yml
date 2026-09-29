@@ -1,5 +1,12 @@
 name: Publish reviewed roster expansion
 on:
+  push:
+    branches: [codex/restore-pr13-complete]
+    paths:
+      - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
+      - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29-*.json'
+      - 'tools/data_platform_v4/apply_roster_expansion.py'
+      - '.github/workflows/publish-roster-expansion.yml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -11,7 +18,7 @@ permissions:
   contents: read
 jobs:
   publish:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'codex/restore-pr13-complete'
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'codex/restore-pr13-complete') || (github.event_name == 'push' && github.ref == 'refs/heads/codex/restore-pr13-complete')
     runs-on: ubuntu-latest
     permissions:
       contents: write
