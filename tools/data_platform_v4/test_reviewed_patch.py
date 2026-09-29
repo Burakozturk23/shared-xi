@@ -21,7 +21,7 @@ class ReviewedPatchTests(unittest.TestCase):
             self.assertEqual(con.execute('SELECT club_id FROM career_spells WHERE player_id=357498 ORDER BY sequence').fetchall(),
                              [(669,), (430,), (506,), (114,)])
             self.assertIsNone(con.execute('SELECT appearances FROM career_spells WHERE player_id=357498 AND club_id=114').fetchone()[0])
-            self.assertEqual(con.execute('SELECT COUNT(*) FROM players').fetchone()[0], 30135)
+            self.assertEqual(con.execute("SELECT COUNT(*) FROM players WHERE source <> 'worldcup26-roster'").fetchone()[0], 30135)
             manifest = json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text())
             self.assertEqual(manifest['database']['sha256'], digest(ROOT/'assets/runtime/linkball_game_data_v4.sqlite'))
 

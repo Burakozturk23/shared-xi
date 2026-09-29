@@ -166,7 +166,8 @@ class GameDataV4QueryService {
             JOIN players p
               ON p.id = pc.player_id
             WHERE pc.club_id = c.id
-              AND p.selection_rank BETWEEN 1 AND 30000
+              AND (p.selection_rank BETWEEN 1 AND 30000
+                   OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
             LIMIT 1
           )
         ORDER BY
@@ -343,7 +344,8 @@ class GameDataV4QueryService {
         SELECT DISTINCT pc.club_id AS id
         FROM player_clubs pc
         JOIN players p ON p.id = pc.player_id
-        WHERE p.selection_rank BETWEEN 1 AND 30000
+        WHERE (p.selection_rank BETWEEN 1 AND 30000
+          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
       )
       SELECT
         COUNT(*) AS total,
@@ -627,7 +629,8 @@ class GameDataV4QueryService {
       FROM players p
       LEFT JOIN player_aliases pa
         ON pa.player_id = p.id
-      WHERE p.selection_rank BETWEEN 1 AND 30000
+      WHERE (p.selection_rank BETWEEN 1 AND 30000
+          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
         AND (
           p.name LIKE ? COLLATE NOCASE
           OR pa.alias LIKE ? COLLATE NOCASE
@@ -691,7 +694,8 @@ class GameDataV4QueryService {
       WHERE a.club_id = ?
         AND b.club_id <> ?
         AND TRIM(c.name) <> ''
-        AND p.selection_rank BETWEEN 1 AND 30000
+        AND (p.selection_rank BETWEEN 1 AND 30000
+          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
       GROUP BY b.club_id
       HAVING COUNT(DISTINCT a.player_id) >= ?
       ORDER BY shared_count DESC, c.popularity_seed DESC, c.name COLLATE NOCASE
@@ -786,7 +790,8 @@ class GameDataV4QueryService {
         ON pc.player_id = p.id
       WHERE pc.club_id = ?
         AND TRIM(p.name) <> ''
-        AND p.selection_rank BETWEEN 1 AND 30000
+        AND (p.selection_rank BETWEEN 1 AND 30000
+          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
       ORDER BY p.selection_rank, p.id
       LIMIT ?
       ''',

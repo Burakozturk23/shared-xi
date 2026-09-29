@@ -52,6 +52,15 @@ def main() -> int:
         return fail(f"Manifest missing: {MANIFEST}")
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    expansions = manifest.get("expansions", [])
+    additions = sum(e.get("newPlayers", 0) for e in expansions)
+    expansion_links = sum(e.get("newLinks", 0) for e in expansions)
+    if not isinstance(additions, int) or additions < 0:
+        return fail("Invalid reviewed expansion counts")
+    if not isinstance(expansion_links, int) or expansion_links < 0:
+        return fail("Invalid reviewed expansion link counts")
+    for key in ("players", "players_with_clubs", "search_players"):
+        EXPECTED[key] = 30_135 + additions
     con = sqlite3.connect(str(DB))
     try:
         con.execute("PRAGMA foreign_keys=ON")
@@ -73,6 +82,12 @@ def main() -> int:
             "search_players": scalar(
                 con, "SELECT COUNT(DISTINCT player_id) FROM player_search_terms"
             ),
+            "roster_expansion_players": scalar(
+                con, "SELECT COUNT(*) FROM players WHERE source='worldcup26-roster'"
+            ),
+            "roster_expansion_links": scalar(
+                con, "SELECT COUNT(*) FROM player_clubs WHERE source='roster:worldcup26:2026-09-29.2'"
+            ),
             "coaches": scalar(con, "SELECT COUNT(*) FROM coaches"),
             "shadow_players": scalar(
                 con, "SELECT COUNT(*) FROM players WHERE id IN (34601, 111961)"
@@ -89,6 +104,16 @@ def main() -> int:
                 )
         if actual["shadow_players"] != 0:
             return fail(f"shadow players leaked: {actual['shadow_players']}")
+        if actual["roster_expansion_players"] != additions:
+            return fail(
+                "roster expansion players: "
+                f"{actual['roster_expansion_players']:,} != recorded {additions:,}"
+            )
+        if actual["roster_expansion_links"] != expansion_links:
+            return fail(
+                "roster expansion links: "
+                f"{actual['roster_expansion_links']:,} != recorded {expansion_links:,}"
+            )
 
         metadata = dict(con.execute("SELECT key, value FROM metadata"))
         if metadata.get("compiler_step") != EXPECTED_COMPILER_STEP:

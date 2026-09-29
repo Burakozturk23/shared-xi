@@ -1,0 +1,35 @@
+name: Publish reviewed roster expansion
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
+      - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29-*.json'
+      - 'tools/data_platform_v4/apply_roster_expansion.py'
+      - '.github/workflows/publish-roster-expansion.yml'
+permissions:
+  contents: read
+jobs:
+  publish:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'codex/restore-pr13-complete'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Restore the hash-pinned base manifest
+        run: git show 37934c06a76db0b2adc0cfe2e7c548f39011a7e6:assets/runtime/linkball_game_data_v4_manifest.json > assets/runtime/linkball_game_data_v4_manifest.json
+      - name: Apply and verify reviewed roster expansion
+        run: |
+          python3 tools/data_platform_v4/apply_roster_expansion.py tools/data_platform_v4/patches/roster-expansion-2026-09-29.json
+          python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_*.py'
+      - name: Commit verified data package
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/runtime/linkball_game_data_v4.sqlite assets/runtime/linkball_game_data_v4_manifest.json
+          git commit -m 'Publish verified current roster expansion v4-2026-09-29.2'
+          git push origin HEAD:refs/heads/codex/restore-pr13-complete

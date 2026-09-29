@@ -1,0 +1,146 @@
+{
+  "id": "v4-2026-09-29.2",
+  "reviewedUtc": "2026-09-29T16:28:20.134452+00:00",
+  "baseSha256": "1f6a125d3402188d5c5e53d3c05697d4f9a26b99a0959b4a6ff70cd792336b9c",
+  "scope": "Current male first-division rosters for 17 recognizable leagues; add complete new identities and missing current club links. Exclude cups, lower divisions, youth/reserve records, unresolved identities, and players born after 2010.",
+  "source": {
+    "provider": "worldcup26.ir",
+    "endpoint": "/get/soccer/{league}/clubs/{clubId}",
+    "leagues": [
+      "arg.1",
+      "aut.1",
+      "bel.1",
+      "bra.1",
+      "eng.1",
+      "esp.1",
+      "fra.1",
+      "ger.1",
+      "ita.1",
+      "jpn.1",
+      "ksa.1",
+      "mex.1",
+      "ned.1",
+      "por.1",
+      "sco.1",
+      "tur.1",
+      "usa.1"
+    ],
+    "lastSyncedAtMin": "2026-09-29T05:15:20.136Z",
+    "lastSyncedAtMax": "2026-09-29T14:25:32.815Z"
+  },
+  "newPlayers": 6145,
+  "newLinks": 6362,
+  "rows": 6362,
+  "rejected": {
+    "review_identity": 1270,
+    "review_incomplete": 693,
+    "existing": 2172,
+    "review_roster_conflict": 40,
+    "review_duplicate_source": 2,
+    "underage_or_missing_birth_year": 1
+  },
+  "parts": [
+    {
+      "file": "roster-expansion-2026-09-29-arg.1.json",
+      "sha256": "8a434a3077718964a5c56e8292fbd864b97c63669a2576ccdb05f8a374fdc22f",
+      "rows": 845,
+      "league": "arg.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-aut.1.json",
+      "sha256": "85e3c87be0030ec95a640620b7f12af85ddf09591fd97a6a0e240faf0064a237",
+      "rows": 283,
+      "league": "aut.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-bel.1.json",
+      "sha256": "d4cd89133c3eaaee2ffb576031776339a7af8d346e7a8fc1772d9e4c66fb92db",
+      "rows": 387,
+      "league": "bel.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-bra.1.json",
+      "sha256": "eb7ccb19a35642555f94df101324ae6c24df418c8df4807200785fe1ebfaeb61",
+      "rows": 426,
+      "league": "bra.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-eng.1.json",
+      "sha256": "948e89bcef383bc48366fd517eacd4e11c4d12cadfa10411ebd0f60e46f30637",
+      "rows": 207,
+      "league": "eng.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-esp.1.json",
+      "sha256": "bba740cc93c80699dcca62606a7984b1db7dec222b3ab197adba4aff0bd1dbd1",
+      "rows": 201,
+      "league": "esp.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-fra.1.json",
+      "sha256": "10f79d491d50a85737c00c67ca90e5b6acf7f3bfd53718f6510e7eb7b928336c",
+      "rows": 266,
+      "league": "fra.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-ger.1.json",
+      "sha256": "d07409789a3ef8f99c11b10d8087a1a9c16bc6f1e585bff44f9fd145d660808b",
+      "rows": 249,
+      "league": "ger.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-ita.1.json",
+      "sha256": "bb909c1083bfda959ca18258ca9e22e933a208fc6b21298eda93a0f8d3e5d7a8",
+      "rows": 212,
+      "league": "ita.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-jpn.1.json",
+      "sha256": "e483b22b9391c6efc8471d458aa30609e48faf4d86f0a4cc7f4e2251142d53a4",
+      "rows": 558,
+      "league": "jpn.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-ksa.1.json",
+      "sha256": "44cfcfae54483c37e3d18dccfef65669336f5ab16356118fde07809545e289fb",
+      "rows": 452,
+      "league": "ksa.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-mex.1.json",
+      "sha256": "517b30e349c891e8cc5cc81b644c9472ffd575741b7b4565eaeb5c24b1417a34",
+      "rows": 379,
+      "league": "mex.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-ned.1.json",
+      "sha256": "a3cf95ac5085f6e96d93299a0023959461bc2ba519ff6aca8852cb5338b26edd",
+      "rows": 343,
+      "league": "ned.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-por.1.json",
+      "sha256": "d921f777dccd8f31ddb2314ac509e3db59418d6a1855fbdf668356adf5ab0c16",
+      "rows": 293,
+      "league": "por.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-sco.1.json",
+      "sha256": "2db610cec3cf9d0b0292315269fc6820cd4d1a342cd2d90529d587b3aec544de",
+      "rows": 245,
+      "league": "sco.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-tur.1.json",
+      "sha256": "b8fa591a1c2f22dc69cdfb4a101cfe2a920b791bf95c4a11a9fe0b4899263149",
+      "rows": 237,
+      "league": "tur.1"
+    },
+    {
+      "file": "roster-expansion-2026-09-29-usa.1.json",
+      "sha256": "ae59f089af7c49c6da1aae9c02fd6f0d5d0abc0d99762c5a4710157dd47a9aff",
+      "rows": 779,
+      "league": "usa.1"
+    }
+  ]
+}
