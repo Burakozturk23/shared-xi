@@ -1,7 +1,7 @@
 name: Publish reviewed roster expansion
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
     paths:
       - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
       - 'tools/data_platform_v4/patches/roster-expansion-2026-09-29-*.json'
