@@ -4,6 +4,7 @@ import '../../models/club.dart';
 import '../../models/match_entity.dart';
 import '../../models/player.dart';
 import '../../utils/country_names.dart';
+import '../search_service.dart';
 import 'game_data_v4_database.dart';
 import 'game_data_v4_legacy_bridge.dart';
 
@@ -167,7 +168,7 @@ class GameDataV4QueryService {
               ON p.id = pc.player_id
             WHERE pc.club_id = c.id
               AND (p.selection_rank BETWEEN 1 AND 30000
-                   OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
+                   OR (p.source IN ('worldcup26-roster', 'reviewed-player') AND p.answer_eligible = 1))
             LIMIT 1
           )
         ORDER BY
@@ -345,7 +346,7 @@ class GameDataV4QueryService {
         FROM player_clubs pc
         JOIN players p ON p.id = pc.player_id
         WHERE (p.selection_rank BETWEEN 1 AND 30000
-          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
+          OR (p.source IN ('worldcup26-roster', 'reviewed-player') AND p.answer_eligible = 1))
       )
       SELECT
         COUNT(*) AS total,
@@ -617,7 +618,7 @@ class GameDataV4QueryService {
   Future<List<Player>> searchPlayers(String query, {int limit = 24}) async {
     await initialize();
 
-    final q = query.trim();
+    final q = SearchService.compact(query);
     if (q.length < 2) return const <Player>[];
 
     final safeLimit = limit.clamp(1, 60).toInt();
@@ -627,18 +628,17 @@ class GameDataV4QueryService {
       '''
       SELECT DISTINCT p.id
       FROM players p
-      LEFT JOIN player_aliases pa
-        ON pa.player_id = p.id
+      JOIN player_search_terms ps
+        ON ps.player_id = p.id
       WHERE (p.selection_rank BETWEEN 1 AND 30000
-          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
+          OR (p.source IN ('worldcup26-roster', 'reviewed-player') AND p.answer_eligible = 1))
         AND (
-          p.name LIKE ? COLLATE NOCASE
-          OR pa.alias LIKE ? COLLATE NOCASE
+          ps.compact_term LIKE ?
         )
       ORDER BY p.selection_rank, p.id
       LIMIT ?
       ''',
-      <Object?>[like, like, safeLimit],
+      <Object?>[like, safeLimit],
     );
 
     return playersByIds(rows.map((row) => (row['id'] as num).toInt()));
@@ -695,7 +695,7 @@ class GameDataV4QueryService {
         AND b.club_id <> ?
         AND TRIM(c.name) <> ''
         AND (p.selection_rank BETWEEN 1 AND 30000
-          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
+          OR (p.source IN ('worldcup26-roster', 'reviewed-player') AND p.answer_eligible = 1))
       GROUP BY b.club_id
       HAVING COUNT(DISTINCT a.player_id) >= ?
       ORDER BY shared_count DESC, c.popularity_seed DESC, c.name COLLATE NOCASE
@@ -791,7 +791,7 @@ class GameDataV4QueryService {
       WHERE pc.club_id = ?
         AND TRIM(p.name) <> ''
         AND (p.selection_rank BETWEEN 1 AND 30000
-          OR (p.source = 'worldcup26-roster' AND p.answer_eligible = 1))
+          OR (p.source IN ('worldcup26-roster', 'reviewed-player') AND p.answer_eligible = 1))
       ORDER BY p.selection_rank, p.id
       LIMIT ?
       ''',

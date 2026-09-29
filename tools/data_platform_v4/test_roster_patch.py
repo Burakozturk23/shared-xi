@@ -27,11 +27,11 @@ class RosterPatchTests(unittest.TestCase):
                 self.assertEqual(c.execute('SELECT p.name,pr.birth_year FROM players p JOIN profiles pr ON pr.player_id=p.id WHERE p.id=?',(r['playerId'],)).fetchone(),(r['canonicalName'],r['birthYear']))
                 self.assertEqual(c.execute('SELECT trust,source FROM player_clubs WHERE player_id=? AND club_id=?',(r['playerId'],r['clubId'])).fetchone(),(2,'roster:worldcup26:2026-09-29'))
             # Only existing identities: no new entities or fabricated career events.
-            self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE source <> 'worldcup26-roster'").fetchone()[0],30135)
+            self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE source = 'v4'").fetchone()[0],30135)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM clubs').fetchone()[0],4311)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0],33994)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0],37966)
-            self.assertEqual(c.execute("SELECT COUNT(*) FROM player_clubs WHERE source <> 'roster:worldcup26:2026-09-29.2'").fetchone()[0],165563+len(additions))
+            self.assertEqual(c.execute("SELECT COUNT(*) FROM player_clubs WHERE source NOT IN ('roster:worldcup26:2026-09-29.2','reviewed:notable:2026-09-30')").fetchone()[0],165563+len(additions))
             for r in evidence['rows']:
                 if r['status'] in ('review','conflicting_rosters') and r.get('playerId'):
                     self.assertFalse(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=? AND source=?',(r['playerId'],r['clubId'],'roster:worldcup26:2026-09-29')).fetchone())

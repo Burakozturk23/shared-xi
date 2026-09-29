@@ -54,13 +54,16 @@ def main() -> int:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     expansions = manifest.get("expansions", [])
     additions = sum(e.get("newPlayers", 0) for e in expansions)
+    reviews = manifest.get("reviewedAdditions", [])
+    reviewed_players = sum(r["newPlayers"] for r in reviews)
+    reviewed_links = sum(r["newLinks"] for r in reviews)
     expansion_links = sum(e.get("newLinks", 0) for e in expansions)
     if not isinstance(additions, int) or additions < 0:
         return fail("Invalid reviewed expansion counts")
     if not isinstance(expansion_links, int) or expansion_links < 0:
         return fail("Invalid reviewed expansion link counts")
     for key in ("players", "players_with_clubs", "search_players"):
-        EXPECTED[key] = 30_135 + additions
+        EXPECTED[key] = 30_135 + additions + reviewed_players
     con = sqlite3.connect(str(DB))
     try:
         con.execute("PRAGMA foreign_keys=ON")
@@ -114,6 +117,13 @@ def main() -> int:
                 "roster expansion links: "
                 f"{actual['roster_expansion_links']:,} != recorded {expansion_links:,}"
             )
+
+        if scalar(con, "SELECT COUNT(*) FROM players WHERE source='v4'") != 30_135:
+            return fail("Original player universe changed")
+        if scalar(con, "SELECT COUNT(*) FROM players WHERE source='reviewed-player'") != reviewed_players:
+            return fail("Reviewed player count mismatch")
+        if scalar(con, "SELECT COUNT(*) FROM player_clubs WHERE source='reviewed:notable:2026-09-30'") != reviewed_links:
+            return fail("Reviewed link count mismatch")
 
         metadata = dict(con.execute("SELECT key, value FROM metadata"))
         if metadata.get("compiler_step") != EXPECTED_COMPILER_STEP:
