@@ -143,5 +143,5 @@
       "league": "usa.1"
     }
   ],
-  "workflowTrigger": "push-hook-2"
+  "workflowTrigger": "trigger3"
 }
