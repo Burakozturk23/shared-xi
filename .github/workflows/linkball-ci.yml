@@ -297,7 +297,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Restore the hash-pinned base manifest when needed
         run: |
-          if [ "$(sha256sum assets/runtime/linkball_game_data_v4.sqlite | cut -d' ' -f1)" = "1f6a125d3402188d5c5e53d05697d4f9a26b99a0959b4a6ff70cd792336b9c" ]; then
+          if [ "$(sha256sum assets/runtime/linkball_game_data_v4.sqlite | cut -d' ' -f1)" = "1f6a125d3402188d5c5e53d3c05697d4f9a26b99a0959b4a6ff70cd792336b9c" ]; then
             cat > assets/runtime/linkball_game_data_v4_manifest.json <<'BASE_MANIFEST'
 {
   "schemaVersion": "4",
