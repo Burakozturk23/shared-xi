@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Restore the hash-pinned base manifest
         run: |
           cat > assets/runtime/linkball_game_data_v4_manifest.json <<'BASE_MANIFEST'
