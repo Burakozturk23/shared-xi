@@ -18,7 +18,7 @@ permissions:
   contents: read
 jobs:
   publish:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'codex/restore-pr13-complete') || (github.event_name == 'push' && github.ref == 'refs/heads/codex/restore-pr13-complete')
+    # The workflow is present only on the release PR branch; the path filters above are the guard.
     runs-on: ubuntu-latest
     permissions:
       contents: write
