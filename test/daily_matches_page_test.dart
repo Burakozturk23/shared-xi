@@ -141,6 +141,8 @@ void main() {
       await preview(tester, 'daily-lobby');
       final start = find.text('Mücadeleye başla');
       await tester.scrollUntilVisible(start, 200);
+      await tester.pumpAndSettle();
+      expect(start.hitTestable(), findsOneWidget);
       await tester.tap(start);
       await tester.pumpAndSettle();
       expect(find.text('Ödülümü al ve bitir'), findsNothing);
@@ -148,16 +150,19 @@ void main() {
       for (var i = 0; i < 3; i++) {
         await tester.enterText(find.byType(TextField), 'Oyuncu $i');
         await tester.ensureVisible(find.text('Cevabı kontrol et'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Cevabı kontrol et'));
         await tester.pumpAndSettle();
       }
       final finish = find.text('Ödülümü al ve bitir');
       await tester.ensureVisible(finish);
+      await tester.pumpAndSettle();
       await tester.tap(finish);
       await tester.pumpAndSettle();
       expect(find.text('30 Link Coin'), findsOneWidget);
       final bonus = find.text('Reklam izle · 60 coine katla');
       await tester.ensureVisible(bonus);
+      await tester.pumpAndSettle();
       await tester.tap(bonus);
       await tester.pumpAndSettle();
       expect(gateway.lastPlacement, 'daily_double');
@@ -187,6 +192,7 @@ void main() {
     await tester.tap(find.text('Tekrar dene'));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('Mücadeleye başla'), 300);
+    await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     await preview(tester, 'daily-large-text');
   });
