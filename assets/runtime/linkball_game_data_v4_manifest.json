@@ -5,20 +5,21 @@
   "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
   "database": {
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
-    "bytes": 36917248,
-    "sizeMB": 35.21,
-    "sha256": "c749fe3163cdc36f0ffc61222bf4b6ae90d2215463461636f6fbc11984a0d54f"
+    "bytes": 42795008,
+    "sizeMB": 40.81,
+    "sha256": "f8f97a4f49b2723e84981de4c34f74c67325123c92aa8af17fbde7024ea78614"
   },
   "counts": {
-    "players": 30135,
-    "unique_player_ids": 30135,
+    "players": 36325,
+    "unique_player_ids": 36325,
     "shadow_players": 0,
-    "players_with_clubs": 30135,
+    "players_with_clubs": 36325,
     "clubs": 4311,
     "career_players": 6962,
     "transfer_players": 4586,
-    "search_players": 30135,
-    "coaches": 5275
+    "search_players": 36325,
+    "coaches": 5275,
+    "transfers": 33994
   },
   "pruning": {
     "step": "08D.7O",
@@ -39,5 +40,41 @@
     "careerPolicy": "Normalized V3 career_spells only",
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
-  }
+  },
+  "revision": "v4-2026-09-30.1",
+  "updatedUtc": "2026-09-30",
+  "patches": [
+    {
+      "id": "v4-2026-09-28.1",
+      "baseSha256": "c749fe3163cdc36f0ffc61222bf4b6ae90d2215463461636f6fbc11984a0d54f",
+      "outputSha256": "dad40bb41b20405e12f309acec9a7c88dd356753024992e55b5646f1eff6f5db",
+      "definition": "v4-2026-09-28.1.json"
+    },
+    {
+      "id": "v4-2026-09-29.1",
+      "baseSha256": "dad40bb41b20405e12f309acec9a7c88dd356753024992e55b5646f1eff6f5db",
+      "outputSha256": "1f6a125d3402188d5c5e53d3c05697d4f9a26b99a0959b4a6ff70cd792336b9c",
+      "definition": "v4-2026-09-29.1.json"
+    }
+  ],
+  "expansions": [
+    {
+      "id": "v4-2026-09-29.2",
+      "baseSha256": "1f6a125d3402188d5c5e53d3c05697d4f9a26b99a0959b4a6ff70cd792336b9c",
+      "outputSha256": "1a5ce8f113133cd7f87bc1249339f17329190edd2b475ff28bf637e5bd621655",
+      "newPlayers": 6145,
+      "newLinks": 6362,
+      "definition": "tools/data_platform_v4/patches/roster-expansion-2026-09-29.json"
+    }
+  ],
+  "reviewedAdditions": [
+    {
+      "id": "v4-2026-09-30.1",
+      "baseSha256": "1a5ce8f113133cd7f87bc1249339f17329190edd2b475ff28bf637e5bd621655",
+      "outputSha256": "f8f97a4f49b2723e84981de4c34f74c67325123c92aa8af17fbde7024ea78614",
+      "evidenceSha256": "77c494f29b2e84becc2f830177f7021c971604dbbd0e6a1ef3168ff3af76333b",
+      "newPlayers": 45,
+      "newLinks": 191
+    }
+  ]
 }

@@ -77,7 +77,7 @@ const DERBY_NAME_PATTERNS = [
  */
 function dateKey(d) {
   const date = d || new Date();
-  return date.toISOString().slice(0, 10);
+  return require("./rewarded_ads").dayKey(date.getTime());
 }
 
 /**
@@ -134,7 +134,7 @@ function importance(match) {
  * @return {Promise<Array>}
  */
 async function fetchFixturesForDate(dateStr, key) {
-  const url = "https://v3.football.api-sports.io/fixtures?date=" + dateStr;
+  const url = "https://v3.football.api-sports.io/fixtures?date=" + dateStr + "&timezone=Europe%2FIstanbul";
   const res = await fetch(url, {
     headers: {
       "x-apisports-key": key,
@@ -145,7 +145,9 @@ async function fetchFixturesForDate(dateStr, key) {
     throw new Error("API-Football error " + res.status + ": " + body);
   }
   const json = await res.json();
-  return json.response || [];
+  if (json.errors && Object.keys(json.errors).length) throw new Error("Fixture API rejected the request");
+  if (!Array.isArray(json.response)) throw new Error("Invalid fixture response");
+  return json.response;
 }
 
 /**
@@ -182,6 +184,7 @@ function normalize(rawList) {
       leagueName: league.name || "",
       leagueCountry: league.country || "",
       kickoff: fixture.date || null,
+      status: fixture.status?.short || "TBD",
       isDerby: derby,
       importance: 0,
     };
@@ -219,7 +222,7 @@ async function writeDay(dateStr, matches) {
 /** Her gun 03:00 Europe/Istanbul — bugun + yarin */
 exports.syncDailyFixtures = onSchedule(
     {
-      schedule: "0 3 * * *",
+      schedule: "0 */4 * * *",
       timeZone: "Europe/Istanbul",
       secrets: [apiKey],
       memory: "256MiB",
@@ -1291,7 +1294,9 @@ exports.submitRankedResult = httpsV2.onCall(
 
 const LB_SOCIAL_MAX_FRIENDS = 250;
 const LB_SOCIAL_MAX_OUTGOING_REQUESTS = 30;
+const storeCollection = require("./store_collection");
 const LB_SOCIAL_AVATAR_IDS = new Set([
+  ...storeCollection.avatarIds,
   "starter_ball",
   "captain_shield",
   "keeper_glove",
@@ -4999,7 +5004,7 @@ const LB_ACHIEVEMENT_COIN_REWARDS = economyConfig.defaults.sources.achievement.r
 
 // LINKBALL_16_7B_COIN_STORE_FOUNDATION_START
 
-const LB_STORE_CATALOG_VERSION = 1;
+const LB_STORE_CATALOG_VERSION = 2;
 const LB_STORE_COIN_OFFERS = economyConfig.defaults.sinks.cosmetics.offers;
 
 /**
@@ -5976,6 +5981,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    storeUses: data.storeUses && typeof data.storeUses === "object" ? {...data.storeUses} : {},
     squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
       data.squadChallenge : {},
     createdAt: lbEconomyNumber(data.createdAt),
@@ -6066,6 +6072,7 @@ function lbEconomyInventoryProjection(item) {
     sourceType: item.sourceType,
     sourceId: item.sourceId,
     acquiredAt: item.acquiredAt,
+    quantity: Number.isSafeInteger(item.quantity) ? item.quantity : 1,
     version: LB_ECONOMY_VERSION,
   };
 }
@@ -6365,13 +6372,17 @@ exports.getStoreCatalog = httpsV2.onCall(
       const db = admin.database();
       const state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
-      const offers = await lbStoreCatalog(db, config);
+      const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers];
+      const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
         ok: true,
         catalogVersion: LB_STORE_CATALOG_VERSION,
         wallet: lbEconomyWalletProjection(state),
         offers: offers,
+        inventory: state.inventory,
+        selectedAvatarId: profile.avatarId || "starter_ball",
+        selectedKitId: profile.kitId || "",
         economy: economyConfig.publicContract(config),
       };
     },
@@ -6398,6 +6409,9 @@ exports.purchaseEconomyOffer = httpsV2.onCall(
       }
 
       const db = admin.database();
+      if (Object.hasOwn(storeCollection.offers, offerId)) {
+        return lbStoreCollectionService().purchase(uid, request.data || {});
+      }
       const config = await lbGetEconomyConfig();
       const raw = Object.hasOwn(config.sinks.cosmetics.offers, offerId) ? config.sinks.cosmetics.offers[offerId] : null;
       if (!raw) throw new httpsV2.HttpsError("not-found", "Unknown offer.");
@@ -8253,6 +8267,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
 
   updates["economyState/" + uid] = null;
   updates["rewardedAdState/" + uid] = null;
+  updates["dailyMatchState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -8669,6 +8684,8 @@ function lbRewardedService() {
     const db = admin.database();
     lbRewardedInstance = require("./rewarded_ads").createService({
       db, getConfig: lbGetEconomyConfig,
+      prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
+      settleDailyReward: (uid, receipt) => lbDailyMatchesService().settleReward(uid, receipt),
       units: require("./config/admob.units.json"),
       now: () => Date.now(),
       grantCoins: (uid, id, source, placement, amount, configId) =>
@@ -8695,7 +8712,9 @@ function lbRewardedCallable(action) {
     const uid = request.auth.uid;
     const service = lbRewardedService();
     try {
-      if (action === "prepare") return await service.prepare(uid, input.platform, input.placement, input.requestId);
+      if (action === "prepare") {
+        return await service.prepare(uid, input.platform, input.placement, input.requestId, input.context);
+      }
       if (action === "cancel") return await service.cancel(uid, input.ticketId);
       if (!["android", "ios"].includes(input.platform)) {
         throw new httpsV2.HttpsError("invalid-argument", "Desteklenmeyen platform.");
@@ -8843,3 +8862,62 @@ exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "
   }
 });
 // MONETIZATION_C_COIN_PURCHASES_END
+
+// Server-owned collection inventory; no client writes can mint or spend items.
+function lbStoreCollectionService() {
+  return storeCollection.createStore({db: admin.database(), normalize: lbEconomyState,
+    project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now()});
+}
+exports.consumeStoreBoost = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbStoreCollectionService().consume(request.auth.uid, request.data || {});
+});
+exports.equipStoreItem = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbStoreCollectionService().equip(request.auth.uid, request.data || {});
+});
+
+// Server-owned daily fixture sessions; clients never submit coin amounts or answer counts.
+let lbDailyMatchesInstance;
+function lbDailyMatchesService() {
+  if (!lbDailyMatchesInstance) {
+    const db = admin.database();
+    lbDailyMatchesInstance = require("./daily_matches").createService({
+      db,
+      recordWin: async (uid, day, result) => {
+        await lbAchievementRecordDaily(db, uid, day, result);
+        await lbMissionRecordDailyChallenge(db, uid, day);
+      },
+      grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+      isLinked: async (uid) => {
+        const user = await admin.auth().getUser(uid);
+        return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+      },
+    });
+  }
+  return lbDailyMatchesInstance;
+}
+function lbDailyMatchesCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    const uid = request.auth.uid;
+    const input = request.data || {};
+    try {
+      const service = lbDailyMatchesService();
+      if (action === "start") return await service.start(uid, input.fixtureId);
+      if (action === "play") return await service.play(uid, input);
+      // Recover late SSV benefits when the player returns to the mode.
+      const bonus = await lbRewardedService().status(uid, input.platform);
+      return {...await service.status(uid), bonus: {pro: bonus.pro, enabled: bonus.enabled,
+        testingOnly: bonus.testingOnly, remaining: bonus.remaining}};
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getDailyMatches = lbDailyMatchesCallable("status");
+exports.startDailyMatch = lbDailyMatchesCallable("start");
+exports.playDailyMatch = lbDailyMatchesCallable("play");

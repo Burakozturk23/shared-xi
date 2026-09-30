@@ -14,6 +14,7 @@ class PlayableDailyMatch {
   final bool isDerby;
   final int importance;
   final String leagueName;
+
   /// Bu iki kulübün gerçek ortak (kaliteli) oyuncu sayısı
   final int sharedCount;
 
@@ -40,7 +41,11 @@ class DailyPlayableMatches {
       // Fallback: tek klasik eslesme
       final fb = DailyChallengeService.getMatchupForDate(date);
       final theme = FootballCalendarTheme.forDate(date);
-      final q = DailyChallengeService.qualityCountPublic(fb.entity1, fb.entity2);
+      final q = DailyChallengeService.qualityCountPublic(
+        fb.entity1,
+        fb.entity2,
+      );
+      if (!DailyChallengeService.hasEnoughAnswers(q, theme)) return [];
       return [
         PlayableDailyMatch(
           id: 'fallback-${DailyChallengeService.dateKeyFor(date)}',
@@ -48,7 +53,8 @@ class DailyPlayableMatches {
           entity2: fb.entity2,
           label: fb.label,
           theme: theme,
-          isDerby: theme.kind == CalendarThemeKind.derbyDay ||
+          isDerby:
+              theme.kind == CalendarThemeKind.derbyDay ||
               theme.kind == CalendarThemeKind.derbyCountdown,
           importance: 0,
           leagueName: '',
@@ -68,7 +74,6 @@ class DailyPlayableMatches {
       final e1 = MatchEntity.club(h);
       final e2 = MatchEntity.club(a);
       final q = DailyChallengeService.qualityCountPublic(e1, e2);
-      if (q < 3) continue;
 
       final id = m.fixtureId != null
           ? 'fx-${m.fixtureId}'
@@ -76,13 +81,16 @@ class DailyPlayableMatches {
       if (seen.contains(id)) continue;
       seen.add(id);
 
-      final label =
-          m.isDerby ? '${h.name} 🆚 ${a.name}' : '${h.name} × ${a.name}';
+      final label = m.isDerby
+          ? '${h.name} 🆚 ${a.name}'
+          : '${h.name} × ${a.name}';
       final theme = FootballCalendarTheme.fromFixture(
         isDerby: m.isDerby,
         leagueId: m.leagueId,
         label: label,
       );
+
+      if (!DailyChallengeService.hasEnoughAnswers(q, theme)) continue;
 
       out.add(
         PlayableDailyMatch(
@@ -105,7 +113,11 @@ class DailyPlayableMatches {
     if (out.isEmpty) {
       final fb = DailyChallengeService.getMatchupForDate(date);
       final theme = FootballCalendarTheme.forDate(date);
-      final q = DailyChallengeService.qualityCountPublic(fb.entity1, fb.entity2);
+      final q = DailyChallengeService.qualityCountPublic(
+        fb.entity1,
+        fb.entity2,
+      );
+      if (!DailyChallengeService.hasEnoughAnswers(q, theme)) return [];
       return [
         PlayableDailyMatch(
           id: 'fallback-${DailyChallengeService.dateKeyFor(date)}',

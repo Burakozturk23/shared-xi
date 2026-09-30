@@ -12,7 +12,6 @@ import 'game_service.dart';
 import 'daily_fixture_service.dart';
 import 'club_name_resolver.dart';
 
-
 class DailyChallengeService {
   DailyChallengeService._();
 
@@ -32,6 +31,9 @@ class DailyChallengeService {
   /// Ortak oyuncu kalite eşiği.
   static const int minQualityCommons = 5;
 
+  static bool hasEnoughAnswers(int count, FootballCalendarTheme theme) =>
+      count >= max(minQualityCommons, theme.targetFinds);
+
   static String dateKeyFor(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
@@ -50,7 +52,7 @@ class DailyChallengeService {
       FootballCalendarTheme.forDate(date ?? DateTime.now());
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})
-      getMatchupForDate(DateTime date) {
+  getMatchupForDate(DateTime date) {
     final theme = themeFor(date);
     final need = max(minQualityCommons, theme.targetFinds);
     final rng = _rngFor(date);
@@ -59,7 +61,8 @@ class DailyChallengeService {
     final themedPick = _bestFromCandidates(themed, need, rng);
     if (themedPick != null) return themedPick;
 
-    final allPopular = <({MatchEntity entity1, MatchEntity entity2, String label})>[];
+    final allPopular =
+        <({MatchEntity entity1, MatchEntity entity2, String label})>[];
     for (final m in popularClubClubMatchups) {
       final a = Repository.instance.clubById(m.clubId1);
       final b = Repository.instance.clubById(m.clubId2);
@@ -79,14 +82,17 @@ class DailyChallengeService {
 
     return _fromGlobalPool(date);
   }
-    /// Önce RTDB daily_fixtures; olmazsa eski algoritma.
+
+  /// Önce RTDB daily_fixtures; olmazsa eski algoritma.
   static Future<
-      ({
-        MatchEntity entity1,
-        MatchEntity entity2,
-        String label,
-        FootballCalendarTheme theme,
-      })> getMatchupForDateAsync(DateTime date) async {
+    ({
+      MatchEntity entity1,
+      MatchEntity entity2,
+      String label,
+      FootballCalendarTheme theme,
+    })
+  >
+  getMatchupForDateAsync(DateTime date) async {
     final day = await DailyFixtureService.fetchDay(date);
     final top = day?.topMatch;
 
@@ -94,19 +100,16 @@ class DailyChallengeService {
       final home = ClubNameResolver.resolve(top.homeName);
       final away = ClubNameResolver.resolve(top.awayName);
       if (home != null && away != null && home.id != away.id) {
-        final q = _qualityCount(
-          MatchEntity.club(home),
-          MatchEntity.club(away),
+        final q = _qualityCount(MatchEntity.club(home), MatchEntity.club(away));
+        final label = top.isDerby
+            ? '${home.name} 🆚 ${away.name}'
+            : '${home.name} × ${away.name}';
+        final theme = FootballCalendarTheme.fromFixture(
+          isDerby: top.isDerby,
+          leagueId: top.leagueId,
+          label: label,
         );
-        if (q >= 3) {
-          final label = top.isDerby
-              ? '${home.name} 🆚 ${away.name}'
-              : '${home.name} × ${away.name}';
-          final theme = FootballCalendarTheme.fromFixture(
-            isDerby: top.isDerby,
-            leagueId: top.leagueId,
-            label: label,
-          );
+        if (hasEnoughAnswers(q, theme)) {
           return (
             entity1: MatchEntity.club(home),
             entity2: MatchEntity.club(away),
@@ -122,14 +125,15 @@ class DailyChallengeService {
         final a = ClubNameResolver.resolve(m.awayName);
         if (h == null || a == null || h.id == a.id) continue;
         final q = _qualityCount(MatchEntity.club(h), MatchEntity.club(a));
-        if (q < 3) continue;
-        final label =
-            m.isDerby ? '${h.name} 🆚 ${a.name}' : '${h.name} × ${a.name}';
+        final label = m.isDerby
+            ? '${h.name} 🆚 ${a.name}'
+            : '${h.name} × ${a.name}';
         final theme = FootballCalendarTheme.fromFixture(
           isDerby: m.isDerby,
           leagueId: m.leagueId,
           label: label,
         );
+        if (!hasEnoughAnswers(q, theme)) continue;
         return (
           entity1: MatchEntity.club(h),
           entity2: MatchEntity.club(a),
@@ -150,19 +154,22 @@ class DailyChallengeService {
   }
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})?
-      _bestFromCandidates(
+  _bestFromCandidates(
     List<({MatchEntity entity1, MatchEntity entity2, String label})> pool,
     int need,
     Random rng,
   ) {
     if (pool.isEmpty) return null;
 
-    final scored = <({
-      MatchEntity entity1,
-      MatchEntity entity2,
-      String label,
-      int quality,
-    })>[];
+    final scored =
+        <
+          ({
+            MatchEntity entity1,
+            MatchEntity entity2,
+            String label,
+            int quality,
+          })
+        >[];
 
     for (final m in pool) {
       final q = _qualityCount(m.entity1, m.entity2);
@@ -173,21 +180,6 @@ class DailyChallengeService {
           label: m.label,
           quality: q,
         ));
-      }
-    }
-
-    if (scored.isEmpty) {
-      final relaxed = (need * 0.6).ceil().clamp(3, need);
-      for (final m in pool) {
-        final q = _qualityCount(m.entity1, m.entity2);
-        if (q >= relaxed) {
-          scored.add((
-            entity1: m.entity1,
-            entity2: m.entity2,
-            label: m.label,
-            quality: q,
-          ));
-        }
       }
     }
 
@@ -208,7 +200,8 @@ class DailyChallengeService {
     }
     return n;
   }
-    static int qualityCountPublic(MatchEntity a, MatchEntity b) =>
+
+  static int qualityCountPublic(MatchEntity a, MatchEntity b) =>
       _qualityCount(a, b);
 
   static bool _belongs(Player p, MatchEntity e) {
@@ -229,7 +222,7 @@ class DailyChallengeService {
   }
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})?
-      _pickDynamicPair(int need, Random rng) {
+  _pickDynamicPair(int need, Random rng) {
     final clubs = PopularClubs.resolveAll();
     if (clubs.length < 2) return null;
 
@@ -263,13 +256,12 @@ class DailyChallengeService {
   }
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})
-      getTodayMatchup([DateTime? date]) =>
-          getMatchupForDate(date ?? DateTime.now());
+  getTodayMatchup([DateTime? date]) =>
+      getMatchupForDate(date ?? DateTime.now());
 
   static List<({MatchEntity entity1, MatchEntity entity2, String label})>
-      _poolForTheme(CalendarThemeKind kind) {
-    final out =
-        <({MatchEntity entity1, MatchEntity entity2, String label})>[];
+  _poolForTheme(CalendarThemeKind kind) {
+    final out = <({MatchEntity entity1, MatchEntity entity2, String label})>[];
 
     Iterable source;
     switch (kind) {
@@ -341,7 +333,7 @@ class DailyChallengeService {
   }
 
   static ({MatchEntity entity1, MatchEntity entity2, String label})
-      _fromGlobalPool(DateTime date) {
+  _fromGlobalPool(DateTime date) {
     final clubs = PopularClubs.resolveAll();
     if (clubs.length >= 2) {
       final rng = _rngFor(date);
@@ -400,7 +392,6 @@ class DailyChallengeService {
     return quality.isNotEmpty ? quality : raw;
   }
 
-
   // ── Persistence helpers ──────────────────────────────────────────
 
   static Future<bool> isCompletedOn(DateTime date) async {
@@ -426,8 +417,7 @@ class DailyChallengeService {
 
   static Future<void> _saveCompletedMap(Map<String, int> map) async {
     final prefs = await SharedPreferences.getInstance();
-    final raw =
-        map.entries.map((e) => '${e.key}:${e.value}').join(',');
+    final raw = map.entries.map((e) => '${e.key}:${e.value}').join(',');
     await prefs.setString(_completedDatesKey, raw);
   }
 
@@ -485,13 +475,15 @@ class DailyChallengeService {
     if (points < unlockCost) {
       return (
         ok: false,
-        message: 'Yetersiz puan ($points / $unlockCost). Mücadele tamamlayarak puan kazan.'
+        message:
+            'Yetersiz puan ($points / $unlockCost). Mücadele tamamlayarak puan kazan.',
       );
     }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_pointsKey, points - unlockCost);
-    final unlocked = await _unlockedSet()..add(dateKeyFor(d));
+    final unlocked = await _unlockedSet()
+      ..add(dateKeyFor(d));
     await _saveUnlocked(unlocked);
     return (ok: true, message: 'Gün açıldı! -$unlockCost puan.');
   }
@@ -530,7 +522,7 @@ class DailyChallengeService {
 
   /// Tamamlama kaydı. [playDate] arşiv günü için.
   static Future<({int streak, Set<String> newBadges, int hints, int points})>
-      recordCompletion({
+  recordCompletion({
     required int score,
     required double successRate,
     required FootballCalendarTheme theme,
@@ -551,8 +543,9 @@ class DailyChallengeService {
     // streak sadece bugün ilk tamamlamada
     final lastPlayed = prefs.getString(_lastPlayedDateKey);
     final currentStreak = prefs.getInt(_streakKey) ?? 0;
-    final yesterdayStr =
-        dateKeyFor(DateTime.now().subtract(const Duration(days: 1)));
+    final yesterdayStr = dateKeyFor(
+      DateTime.now().subtract(const Duration(days: 1)),
+    );
 
     int newStreak = currentStreak;
     if (isToday && !alreadyDone) {

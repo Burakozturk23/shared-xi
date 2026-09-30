@@ -49,11 +49,11 @@ class VsBotReverseGridController extends ChangeNotifier {
     super.dispose();
   }
 
-  bool isAxisOpen(int axis) => owners[axis] == 0;
+  bool isAxisOpen(int axis) => axis >= 0 && axis < 6 && owners[axis] == 0;
 
   bool submitUserGuess(int axis, String guess) {
-    if (_disposed || turn != VsBotReverseTurn.user) return false;
-    if (owners[axis] != 0) return false;
+    if (_disposed || isLoading || turn != VsBotReverseTurn.user) return false;
+    if (!isAxisOpen(axis)) return false;
 
     final text = guess.trim();
     if (text.isEmpty) return false;
@@ -137,6 +137,12 @@ class VsBotReverseGridController extends ChangeNotifier {
       grid.submitColGuess(axis - 3, label);
     }
 
+    final accepted = axis < 3 ? grid.state.rowCorrect[axis] : grid.state.colCorrect[axis - 3];
+    if (!accepted) {
+      turn = VsBotReverseTurn.user;
+      _setFeedback('Bot pas.', true);
+      return;
+    }
     owners[axis] = 2;
     botScore++;
     _setFeedback('Bot: $label', false);

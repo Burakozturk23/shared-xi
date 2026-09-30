@@ -1,34 +1,21 @@
-# Representative player illustrations — v1
+# Player visuals
 
-`representative_v1_01.webp` through `representative_v1_04.webp` are original
-fictional characters generated with the built-in image-generation tool on
-2026-09-23 for this project. They are not photographs, actual player likenesses,
-or evidence of endorsement. A stable player-ID hash selects one of four reusable
-characters without inferring appearance from nationality. Repeated faces are
-expected; this is not a unique portrait catalog for 30,000 players.
+PlayerAvatar now renders a symbolic kit using Flutter CustomPainter. No portrait
+assets, avatarKey lookup, network calls or per-player image generation are used.
+The previous portrait experiment is superseded by this design.
 
-Production assets are 384 × 384 WebP (quality 88), approximately 52 KB total.
-The originals were generated individually; no source athlete photos were traced.
-PlayerAvatar also accepts an explicitly supplied local `avatarKey` and falls back
-to the bundled illustrations if that asset is missing.
+PlayerKitIdentity supplies name initials and position colors. Kits below 64px
+show only the shirt and initials; 64px and larger add a local emoji flag and a
+position abbreviation. Unknown positions use a neutral palette; empty names use
+?. Full name, position and countries remain available to screen readers.
 
-## Prompt set (built-in generation, stylized-concept)
+Colors: Goalkeeper amber, Defender cyan, Midfield green, Attack lavender.
+A symbolic shirt does not represent a current club kit or squad number.
+Emoji flag rendering depends on the device font; unsupported countries use the
+existing neutral flag fallback. No flag image is downloaded by PlayerAvatar.
 
-All prompts: one fictional adult male footballer, centered frontal head and upper
-shoulders, full hair visible with small top margin, close face crop, premium
-editorial comic illustration, crisp ink outlines, natural anatomy and controlled
-cel shading, readable at 48 px, plain unbranded deep teal sports shirt, pale sage
-background, square composition, no text, logos, official marks or watermark,
-not a recognizable real athlete.
-
-- 01: warm olive skin, short wavy dark brown hair, neat stubble, approachable
-  confident expression, detailed expressive eyes.
-- 02: dark brown skin, very short tightly textured black hair, clean-shaven,
-  broad expressive face, calm slight smile.
-- 03: fair warm skin, short sandy blond hair brushed back, clean-shaven square
-  jaw, relaxed friendly expression, gray-green eyes.
-- 04: medium tan skin, straight short black hair with neat side part,
-  clean-shaven, dark brown almond eyes, rounded jaw, pleasant expression.
-
-The UI labels these as representative illustrations. This provenance records
-how these files were created; it is not a legal clearance certificate.
+See docs/design/player-kit-preview.svg for a vector design preview (not a
+Flutter screenshot). Widget tests cover 28/34/48/64/96px and 3x system text.
+Flutter execution remains unverified: the earlier normal and offline dependency
+setup was blocked by automatic review because it requested a cloud metadata
+endpoint. No further attempt was made to bypass that block.

@@ -93,7 +93,7 @@ void main() {
       expect(game.entry.requiresRepository, !migrated);
       expect(game.entry.requiresAuth, isFalse);
       expect(game.entry.requiresPersistentAccount, isFalse);
-      expect(game.entry.modern, migrated);
+      expect(game.entry.modern, isTrue);
     }
   });
 

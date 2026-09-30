@@ -1,3 +1,4 @@
+import '../widgets/store_boost_panel.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -415,6 +416,19 @@ class _FutbolLingoPageState extends State<FutbolLingoPage> {
                 _buildLetterHints(),
                 const SizedBox(height: 8),
                 _buildHintButtons(puzzle),
+                if (!_finished)
+                  StoreBoostPanel(
+                    key: ValueKey(puzzle.key),
+                    modeId: 'futbol_lingo',
+                    answer: puzzle.answer,
+                    blockedItems: {
+                      if (_revealedLetters.containsKey(0)) 'boost_first_letter',
+                      if (_revealedLetters.containsKey(
+                        puzzle.answer.length - 1,
+                      ))
+                        'boost_last_letter',
+                    },
+                  ),
                 if (_feedback != null) ...[
                   const SizedBox(height: 10),
                   Text(

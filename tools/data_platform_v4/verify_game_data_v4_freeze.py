@@ -14,7 +14,7 @@ MANIFEST = ROOT / "assets" / "runtime" / "linkball_game_data_v4_manifest.json"
 EXPECTED = {
     "players": 30_135,
     "clubs": 4_311,
-    "transfers": 33_993,
+    "transfers": 33_994,  # reviewed v4-2026-09-28.1 adds one event
     "players_with_clubs": 30_135,
     "search_players": 30_135,
     "coaches": 5_275,
@@ -52,6 +52,18 @@ def main() -> int:
         return fail(f"Manifest missing: {MANIFEST}")
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    expansions = manifest.get("expansions", [])
+    additions = sum(e.get("newPlayers", 0) for e in expansions)
+    reviews = manifest.get("reviewedAdditions", [])
+    reviewed_players = sum(r["newPlayers"] for r in reviews)
+    reviewed_links = sum(r["newLinks"] for r in reviews)
+    expansion_links = sum(e.get("newLinks", 0) for e in expansions)
+    if not isinstance(additions, int) or additions < 0:
+        return fail("Invalid reviewed expansion counts")
+    if not isinstance(expansion_links, int) or expansion_links < 0:
+        return fail("Invalid reviewed expansion link counts")
+    for key in ("players", "players_with_clubs", "search_players"):
+        EXPECTED[key] = 30_135 + additions + reviewed_players
     con = sqlite3.connect(str(DB))
     try:
         con.execute("PRAGMA foreign_keys=ON")
@@ -73,6 +85,12 @@ def main() -> int:
             "search_players": scalar(
                 con, "SELECT COUNT(DISTINCT player_id) FROM player_search_terms"
             ),
+            "roster_expansion_players": scalar(
+                con, "SELECT COUNT(*) FROM players WHERE source='worldcup26-roster'"
+            ),
+            "roster_expansion_links": scalar(
+                con, "SELECT COUNT(*) FROM player_clubs WHERE source='roster:worldcup26:2026-09-29.2'"
+            ),
             "coaches": scalar(con, "SELECT COUNT(*) FROM coaches"),
             "shadow_players": scalar(
                 con, "SELECT COUNT(*) FROM players WHERE id IN (34601, 111961)"
@@ -89,6 +107,23 @@ def main() -> int:
                 )
         if actual["shadow_players"] != 0:
             return fail(f"shadow players leaked: {actual['shadow_players']}")
+        if actual["roster_expansion_players"] != additions:
+            return fail(
+                "roster expansion players: "
+                f"{actual['roster_expansion_players']:,} != recorded {additions:,}"
+            )
+        if actual["roster_expansion_links"] != expansion_links:
+            return fail(
+                "roster expansion links: "
+                f"{actual['roster_expansion_links']:,} != recorded {expansion_links:,}"
+            )
+
+        if scalar(con, "SELECT COUNT(*) FROM players WHERE source='v4'") != 30_135:
+            return fail("Original player universe changed")
+        if scalar(con, "SELECT COUNT(*) FROM players WHERE source='reviewed-player'") != reviewed_players:
+            return fail("Reviewed player count mismatch")
+        if scalar(con, "SELECT COUNT(*) FROM player_clubs WHERE source='reviewed:notable:2026-09-30'") != reviewed_links:
+            return fail("Reviewed link count mismatch")
 
         metadata = dict(con.execute("SELECT key, value FROM metadata"))
         if metadata.get("compiler_step") != EXPECTED_COMPILER_STEP:
@@ -132,7 +167,7 @@ def main() -> int:
         "clubs_removed": EXPECTED["pruned_clubs"],
         "transfer_rows_removed": EXPECTED["pruned_transfer_rows"],
         "clubs_remaining": EXPECTED["clubs"],
-        "transfers_remaining": EXPECTED["transfers"],
+        "transfers_remaining": 33_993,  # historical pruning result, before reviewed patches
     }
     for key, expected in expected_pruning.items():
         if pruning.get(key) != expected:

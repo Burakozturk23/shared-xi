@@ -100,19 +100,19 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
         PitchRow(
           title: 'Görevler ve ödüller',
           icon: Icons.task_alt_rounded,
-          onTap: () => _open(const ProgressionCenterPage()),
+          onTap: () => _open(const ProgressionCenterPage(), modern: true),
         ),
         const SizedBox(height: 16),
         PitchRow(
           title: 'Mağaza',
           icon: Icons.storefront_outlined,
-          onTap: () => _open(const StorePage()),
+          onTap: () => _open(const StorePage(), modern: true),
         ),
         const SizedBox(height: 16),
         PitchRow(
           title: 'Topluluk',
           icon: Icons.forum_outlined,
-          onTap: () => _open(const CommunityCenterPage()),
+          onTap: () => _open(const CommunityCenterPage(), modern: true),
         ),
         const SizedBox(height: 16),
         PitchRow(

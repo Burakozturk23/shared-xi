@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/player.dart';
+import '../data/player_kit_identity.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 import 'linkball_card.dart';
@@ -104,7 +105,7 @@ class PlayerCard extends StatelessWidget {
 
   String get _meta {
     final values = <String>[];
-    if (player.position.trim().isNotEmpty) values.add(player.position.trim());
+    if (player.position.trim().isNotEmpty) values.add(PlayerKitIdentity.position(player.position).$3);
     if (player.countries.isNotEmpty) values.add(player.countries.first);
     return values.join(' · ');
   }

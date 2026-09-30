@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../data/grid_country_pool.dart';
 import '../models/club.dart';
+import '../models/grid_club_pool.dart';
 import '../models/grid_criterion.dart';
 import '../models/player.dart';
 import 'runtime_v4/game_data_v4_query_service.dart';
@@ -24,12 +25,16 @@ class ClassicGridSession {
 
   static Future<ClassicGridSession> load({
     Random? random,
-    int maxAttempts = 36,
+    int maxAttempts = 60,
+    GridClubPool? clubPool,
+    Future<List<Club>> Function()? loadClubCatalog,
+    Future<List<Player>> Function(int clubId)? loadClubPlayers,
   }) async {
     final rng = random ?? Random();
     final query = GameDataV4QueryService.instance;
-    final allClubs = await query.sharedXiClubCatalog();
-    final clubs = allClubs.take(160).toList();
+    final allClubs = await (loadClubCatalog?.call() ?? query.sharedXiClubCatalog());
+    final pool = clubPool ?? await GridClubPoolStore.load();
+    final clubs = pool.filter(allClubs);
     if (clubs.length < 6) {
       throw StateError('Classic Grid için yeterli kulüp yok.');
     }
@@ -38,7 +43,7 @@ class ClassicGridSession {
     Future<List<Player>> playersFor(Club club) async {
       final cached = playersByClub[club.id];
       if (cached != null) return cached;
-      final loaded = await query.playersForClub(club.id);
+      final loaded = await (loadClubPlayers?.call(club.id) ?? query.playersForClub(club.id));
       playersByClub[club.id] = loaded;
       return loaded;
     }
@@ -68,6 +73,10 @@ class ClassicGridSession {
         candidates: candidates,
         players: rowPlayers.values.toList(growable: false),
         random: rng,
+        minimumAnswers: pool.minimumAnswers,
+        familiarByClub: pool.kind == GridPoolKind.broad ? null : {
+          for (final club in rowClubs) club.id: playersByClub[club.id]!.take(80).map((p) => p.id).toSet(),
+        },
       );
       if (cols == null) continue;
 
@@ -94,6 +103,8 @@ class ClassicGridSession {
     required List<GridCriterion> candidates,
     required List<Player> players,
     required Random random,
+    required int minimumAnswers,
+    Map<int, Set<int>>? familiarByClub,
   }) {
     // Do the cheap row-by-row intersection first. Without this filter a
     // random club column would almost always be unrelated to the three row
@@ -112,7 +123,8 @@ class ClassicGridSession {
       }
       return rows.every(
         (row) => players.any(
-          (player) => row.matches(player) && criterion.matches(player),
+          (player) => row.matches(player) && criterion.matches(player) &&
+              (familiarByClub == null || familiarByClub[row.clubId]!.contains(player.id)),
         ),
       );
     }).toList();
@@ -123,7 +135,8 @@ class ClassicGridSession {
                 (criterion) => rows.every(
                   (row) => players.any(
                     (player) =>
-                        row.matches(player) && criterion.matches(player),
+                        row.matches(player) && criterion.matches(player) &&
+              (familiarByClub == null || familiarByClub[row.clubId]!.contains(player.id)),
                   ),
                 ),
               )
@@ -135,7 +148,7 @@ class ClassicGridSession {
       final picked = shuffled.take(3).toList(growable: false);
       if (picked.length != 3) continue;
       final valid = _validPlayersByCell(rows, picked, players);
-      if (valid.values.every((ids) => ids.isNotEmpty)) return picked;
+      if (valid.values.every((ids) => ids.length >= minimumAnswers)) return picked;
     }
     return null;
   }

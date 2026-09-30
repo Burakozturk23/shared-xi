@@ -126,6 +126,7 @@ class EconomyInventoryItem {
   final String sourceId;
   final int? acquiredAtMs;
   final int version;
+  final int quantity;
 
   const EconomyInventoryItem({
     required this.itemId,
@@ -134,6 +135,7 @@ class EconomyInventoryItem {
     required this.sourceId,
     this.acquiredAtMs,
     this.version = 1,
+    this.quantity = 1,
   });
 
   factory EconomyInventoryItem.fromMap(
@@ -142,6 +144,7 @@ class EconomyInventoryItem {
   ) {
     return EconomyInventoryItem(
       itemId: data['itemId']?.toString() ?? itemId,
+      quantity: _economyInt(data['quantity'], fallback: 1),
       itemType: data['itemType']?.toString() ?? '',
       sourceType: data['sourceType']?.toString() ?? '',
       sourceId: data['sourceId']?.toString() ?? '',

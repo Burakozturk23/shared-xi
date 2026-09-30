@@ -236,12 +236,18 @@ class GameDataV4Database {
     final playerCount =
         (countRows.first['c'] as num).toInt();
 
-    if (playerCount != 30135) {
+    final counts = decoded['counts'];
+    final expectedPlayers = counts is Map<String, dynamic>
+        ? counts['players']
+        : null;
+    final metadataPlayers = int.tryParse(_metadata!['player_count'] ?? '');
+    if (expectedPlayers is! int || expectedPlayers <= 0 ||
+        playerCount != expectedPlayers || metadataPlayers != expectedPlayers) {
       await close();
 
       throw StateError(
         'Unexpected V4 player count: '
-        '$playerCount',
+        '$playerCount (manifest=$expectedPlayers, metadata=$metadataPlayers)',
       );
     }
 

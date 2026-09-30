@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/vs_bot_reverse_grid_controller.dart';
-import '../theme/app_theme.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/grid_player_identity.dart';
 
 /// Bot'a karşı tersten grid — tahmin sayfa içinde (bottom sheet yok).
 class VsBotReverseGridPage extends StatefulWidget {
-  const VsBotReverseGridPage({super.key});
+  const VsBotReverseGridPage({super.key, this.controllerFactory});
+  final VsBotReverseGridController Function()? controllerFactory;
 
   @override
   State<VsBotReverseGridPage> createState() => _VsBotReverseGridPageState();
@@ -22,7 +24,7 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
   @override
   void initState() {
     super.initState();
-    _c = VsBotReverseGridController()..addListener(_onChanged);
+    _c = (widget.controllerFactory?.call() ?? VsBotReverseGridController())..addListener(_onChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _c.initialize();
     });
@@ -79,9 +81,17 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_c.grid.errorMessage != null) {
+      return Scaffold(appBar: AppBar(title: const Text('Tersten Grid')),
+        body: Center(child: Padding(padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(_c.grid.errorMessage!, textAlign: TextAlign.center),
+            TextButton(onPressed: _c.initialize, child: const Text('Tekrar dene')),
+          ]))));
+    }
     if (_c.isLoading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
+      return Scaffold(
+        backgroundColor: PitchColors.of(context).background,
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -93,15 +103,15 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
     final s = _c.puzzle;
     if (s.cellPlayers.length < 9) {
       return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
-        appBar: AppBar(title: const Text('Bot · Tersten Grid')),
-        body: const Center(
+        backgroundColor: PitchColors.of(context).background,
+        appBar: AppBar(title: Text('Bot · Tersten Grid')),
+        body: Center(
           child: Padding(
             padding: EdgeInsets.all(24),
             child: Text(
               'Grid üretilemedi, geri dönüp tekrar dene.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppTheme.textColor),
+              style: TextStyle(color: PitchColors.of(context).text),
             ),
           ),
         ),
@@ -112,32 +122,32 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
     final isRow = axis != null && axis < 3;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: PitchColors.of(context).background,
       appBar: AppBar(
-        title: const Text('Bot · Tersten Grid'),
+        title: Text('Bot · Tersten Grid'),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
           child: Column(
             children: [
               _scoreBar(),
               if (_c.feedback != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 6),
+                  padding: EdgeInsets.only(top: 6),
                   child: Text(
                     _c.feedback!,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: _c.feedbackOk
-                          ? Colors.greenAccent
-                          : Colors.redAccent,
+                          ? PitchColors.of(context).success
+                          : PitchColors.of(context).error,
                     ),
                   ),
                 ),
               if (axis != null && _c.turn == VsBotReverseTurn.user) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _GuessBar(
                   label: isRow
                       ? 'Satır ${axis + 1} ortak noktası'
@@ -149,8 +159,9 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
                   onCancel: _cancelSelection,
                 ),
               ],
-              const SizedBox(height: 10),
-              Expanded(child: _board()),
+              SizedBox(height: 10),
+              LayoutBuilder(builder: (context, bounds) => SizedBox(
+                height: bounds.maxWidth + 24, child: _board())),
             ],
           ),
         ),
@@ -161,29 +172,30 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
   Widget _scoreBar() {
     return Row(
       children: [
-        Expanded(child: _chip('Sen', _c.userScore, AppTheme.primaryColor)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+        Expanded(child: _chip('Sen', _c.userScore, PitchColors.of(context).accent)),
+        Expanded(flex: 2, child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             _c.turn == VsBotReverseTurn.user ? 'Sıra sende' : 'Bot…',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: _c.turn == VsBotReverseTurn.user
-                  ? AppTheme.primaryColor
+                  ? PitchColors.of(context).accent
                   : Colors.orangeAccent,
             ),
           ),
-        ),
-        Expanded(child: _chip('Bot', _c.botScore, Colors.redAccent)),
+        )),
+        Expanded(child: _chip('Bot', _c.botScore, PitchColors.of(context).error)),
       ],
     );
   }
 
   Widget _chip(String label, int score, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: PitchColors.of(context).surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
@@ -201,9 +213,9 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
   }
 
   Color _ownerColor(int owner) {
-    if (owner == 1) return AppTheme.primaryColor;
-    if (owner == 2) return Colors.redAccent;
-    return AppTheme.hintColor;
+    if (owner == 1) return PitchColors.of(context).accent;
+    if (owner == 2) return PitchColors.of(context).error;
+    return PitchColors.of(context).muted;
   }
 
   Widget _board() {
@@ -212,11 +224,11 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
       children: [
         Row(
           children: [
-            const SizedBox(width: 64),
+            SizedBox(width: 64),
             for (var c = 0; c < 3; c++)
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(3),
+                  padding: EdgeInsets.all(3),
                   child: _axisButton(
                     axis: 3 + c,
                     label: s.colCorrect[c]
@@ -243,25 +255,15 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
                 for (var c = 0; c < 3; c++)
                   Expanded(
                     child: Container(
-                      margin: const EdgeInsets.all(3),
+                      margin: EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                        color: AppTheme.cardColor,
+                        color: PitchColors.of(context).surface,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.borderColor),
+                        border: Border.all(color: PitchColors.of(context).border),
                       ),
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.all(4),
-                      child: Text(
-                        s.cellPlayers[r * 3 + c].name,
-                        textAlign: TextAlign.center,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textColor,
-                        ),
-                      ),
+                      padding: EdgeInsets.all(4),
+                      child: GridPlayerIdentity(player: s.cellPlayers[r * 3 + c]),
                     ),
                   ),
               ],
@@ -280,19 +282,19 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
 
     return Material(
       color: selected
-          ? AppTheme.primaryColor.withValues(alpha: 0.2)
-          : (owner == 0 ? AppTheme.cardColor : color.withValues(alpha: 0.2)),
+          ? PitchColors.of(context).accent.withValues(alpha: 0.2)
+          : (owner == 0 ? PitchColors.of(context).surface : color.withValues(alpha: 0.2)),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: canTap ? () => _selectAxis(axis) : null,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: selected
-                ? Border.all(color: AppTheme.primaryColor, width: 2)
+                ? Border.all(color: PitchColors.of(context).accent, width: 2)
                 : null,
           ),
           child: Text(
@@ -303,7 +305,7 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: selected ? AppTheme.primaryColor : color,
+              color: selected ? PitchColors.of(context).accent : color,
             ),
           ),
         ),
@@ -318,24 +320,24 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
         : (_c.userScore > _c.botScore ? 'Kazandın! 🏆' : 'Bot Kazandı');
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(title: const Text('Tersten Grid Bitti')),
+      backgroundColor: PitchColors.of(context).background,
+      appBar: AppBar(title: Text('Tersten Grid Bitti')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(title,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.textColor)),
-              const SizedBox(height: 12),
+                      color: PitchColors.of(context).text)),
+              SizedBox(height: 12),
               Text('Sen ${_c.userScore}  –  Bot ${_c.botScore}',
                   style:
-                      const TextStyle(fontSize: 18, color: AppTheme.hintColor)),
-              const SizedBox(height: 28),
+                      TextStyle(fontSize: 18, color: PitchColors.of(context).muted)),
+              SizedBox(height: 28),
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -343,20 +345,20 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
                   onPressed: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => const VsBotReverseGridPage()),
+                        builder: (_) => VsBotReverseGridPage()),
                   ),
-                  child: const Text('YENİDEN OYNA',
+                  child: Text('YENİDEN OYNA',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton(
                   onPressed: () =>
                       Navigator.popUntil(context, (r) => r.isFirst),
-                  child: const Text('ANA MENÜ'),
+                  child: Text('ANA MENÜ'),
                 ),
               ),
             ],
@@ -375,7 +377,7 @@ class _GuessBar extends StatelessWidget {
   final VoidCallback onSubmit;
   final VoidCallback onCancel;
 
-  const _GuessBar({
+  _GuessBar({
     required this.label,
     required this.hint,
     required this.controller,
@@ -387,46 +389,46 @@ class _GuessBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.cardColor,
+      color: PitchColors.of(context).surface,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                color: AppTheme.textColor,
+                color: PitchColors.of(context).text,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             TextField(
               controller: controller,
               focusNode: focusNode,
               autofocus: true,
-              style: const TextStyle(color: AppTheme.textColor),
+              style: TextStyle(color: PitchColors.of(context).text),
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => onSubmit(),
               decoration: InputDecoration(hintText: hint),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: onCancel,
-                    child: const Text('İptal'),
+                    child: Text('İptal'),
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
                     onPressed: onSubmit,
-                    child: const Text(
+                    child: Text(
                       'ONAYLA',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),

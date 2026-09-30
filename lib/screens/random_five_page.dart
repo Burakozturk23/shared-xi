@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
 
 import '../controllers/random_five_controller.dart';
 import '../models/random_five_state.dart';
@@ -52,6 +53,7 @@ class _RandomFivePageState extends State<RandomFivePage> {
                 subtitle: Text('${p.position} • ${p.countryLabel}'),
                 onTap: () {
                   _controller.submitPlayer(p);
+                  AppFeedback.answer(correct: _controller.state.feedbackSuccess);
                   _answerController.clear();
                   _controller.clearSuggestions();
                 },
@@ -68,6 +70,7 @@ class _RandomFivePageState extends State<RandomFivePage> {
     if (input.isEmpty) return;
 
     _controller.submitGuess(input);
+    if (_controller.suggestions.isEmpty) AppFeedback.answer(correct: _controller.state.feedbackSuccess);
     _answerController.clear();
   }
 

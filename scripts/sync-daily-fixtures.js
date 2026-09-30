@@ -50,7 +50,7 @@ const DERBY_NAME_PATTERNS = [
 ];
 
 function dateKey(d) {
-  return d.toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", {timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"}).format(d);
 }
 
 function isDerbyByName(homeName, awayName) {
@@ -78,7 +78,7 @@ function importance(match) {
 }
 
 async function fetchFixturesForDate(dateStr, key) {
-  const url = "https://v3.football.api-sports.io/fixtures?date=" + dateStr;
+  const url = "https://v3.football.api-sports.io/fixtures?date=" + dateStr + "&timezone=Europe%2FIstanbul";
   const res = await fetch(url, {
     headers: {"x-apisports-key": key},
   });
@@ -87,7 +87,9 @@ async function fetchFixturesForDate(dateStr, key) {
     throw new Error("API-Football error " + res.status + ": " + body);
   }
   const json = await res.json();
-  return json.response || [];
+  if (json.errors && Object.keys(json.errors).length) throw new Error("Fixture API rejected the request");
+  if (!Array.isArray(json.response)) throw new Error("Invalid fixture response");
+  return json.response;
 }
 
 function normalize(rawList) {
@@ -115,6 +117,7 @@ function normalize(rawList) {
       leagueName: league.name || "",
       leagueCountry: league.country || "",
       kickoff: fixture.date || null,
+      status: fixture.status?.short || "TBD",
       isDerby: derby,
       importance: 0,
     };

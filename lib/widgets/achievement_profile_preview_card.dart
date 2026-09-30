@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../app/route_appearance.dart';
 
 import '../models/achievement_catalog.dart';
@@ -65,7 +64,7 @@ class _AchievementProfilePreviewCardState
                   await Navigator.push(
                     context,
                     LinkballRoute(
-                      modern: false,
+                      modern: true,
                       builder: (_) => const AchievementsPage(),
                     ),
                   );
