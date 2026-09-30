@@ -77,7 +77,7 @@ const DERBY_NAME_PATTERNS = [
  */
 function dateKey(d) {
   const date = d || new Date();
-  return date.toISOString().slice(0, 10);
+  return require("./rewarded_ads").dayKey(date.getTime());
 }
 
 /**
@@ -134,7 +134,7 @@ function importance(match) {
  * @return {Promise<Array>}
  */
 async function fetchFixturesForDate(dateStr, key) {
-  const url = "https://v3.football.api-sports.io/fixtures?date=" + dateStr;
+  const url = "https://v3.football.api-sports.io/fixtures?date=" + dateStr + "&timezone=Europe%2FIstanbul";
   const res = await fetch(url, {
     headers: {
       "x-apisports-key": key,
@@ -145,7 +145,9 @@ async function fetchFixturesForDate(dateStr, key) {
     throw new Error("API-Football error " + res.status + ": " + body);
   }
   const json = await res.json();
-  return json.response || [];
+  if (json.errors && Object.keys(json.errors).length) throw new Error("Fixture API rejected the request");
+  if (!Array.isArray(json.response)) throw new Error("Invalid fixture response");
+  return json.response;
 }
 
 /**
@@ -182,6 +184,7 @@ function normalize(rawList) {
       leagueName: league.name || "",
       leagueCountry: league.country || "",
       kickoff: fixture.date || null,
+      status: fixture.status?.short || "TBD",
       isDerby: derby,
       importance: 0,
     };
@@ -219,7 +222,7 @@ async function writeDay(dateStr, matches) {
 /** Her gun 03:00 Europe/Istanbul — bugun + yarin */
 exports.syncDailyFixtures = onSchedule(
     {
-      schedule: "0 3 * * *",
+      schedule: "0 */4 * * *",
       timeZone: "Europe/Istanbul",
       secrets: [apiKey],
       memory: "256MiB",
@@ -8264,6 +8267,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
 
   updates["economyState/" + uid] = null;
   updates["rewardedAdState/" + uid] = null;
+  updates["dailyMatchState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -8680,6 +8684,8 @@ function lbRewardedService() {
     const db = admin.database();
     lbRewardedInstance = require("./rewarded_ads").createService({
       db, getConfig: lbGetEconomyConfig,
+      prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
+      settleDailyReward: (uid, receipt) => lbDailyMatchesService().settleReward(uid, receipt),
       units: require("./config/admob.units.json"),
       now: () => Date.now(),
       grantCoins: (uid, id, source, placement, amount, configId) =>
@@ -8706,7 +8712,9 @@ function lbRewardedCallable(action) {
     const uid = request.auth.uid;
     const service = lbRewardedService();
     try {
-      if (action === "prepare") return await service.prepare(uid, input.platform, input.placement, input.requestId);
+      if (action === "prepare") {
+        return await service.prepare(uid, input.platform, input.placement, input.requestId, input.context);
+      }
       if (action === "cancel") return await service.cancel(uid, input.ticketId);
       if (!["android", "ios"].includes(input.platform)) {
         throw new httpsV2.HttpsError("invalid-argument", "Desteklenmeyen platform.");
@@ -8868,3 +8876,48 @@ exports.equipStoreItem = httpsV2.onCall({region: "europe-west1", maxInstances: 2
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().equip(request.auth.uid, request.data || {});
 });
+
+// Server-owned daily fixture sessions; clients never submit coin amounts or answer counts.
+let lbDailyMatchesInstance;
+function lbDailyMatchesService() {
+  if (!lbDailyMatchesInstance) {
+    const db = admin.database();
+    lbDailyMatchesInstance = require("./daily_matches").createService({
+      db,
+      recordWin: async (uid, day, result) => {
+        await lbAchievementRecordDaily(db, uid, day, result);
+        await lbMissionRecordDailyChallenge(db, uid, day);
+      },
+      grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+      isLinked: async (uid) => {
+        const user = await admin.auth().getUser(uid);
+        return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+      },
+    });
+  }
+  return lbDailyMatchesInstance;
+}
+function lbDailyMatchesCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    const uid = request.auth.uid;
+    const input = request.data || {};
+    try {
+      const service = lbDailyMatchesService();
+      if (action === "start") return await service.start(uid, input.fixtureId);
+      if (action === "play") return await service.play(uid, input);
+      // Recover late SSV benefits when the player returns to the mode.
+      const bonus = await lbRewardedService().status(uid, input.platform);
+      return {...await service.status(uid), bonus: {pro: bonus.pro, enabled: bonus.enabled,
+        testingOnly: bonus.testingOnly, remaining: bonus.remaining}};
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getDailyMatches = lbDailyMatchesCallable("status");
+exports.startDailyMatch = lbDailyMatchesCallable("start");
+exports.playDailyMatch = lbDailyMatchesCallable("play");

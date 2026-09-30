@@ -35,6 +35,11 @@ jobs:
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_roster_expansion.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_notable_players.py'
 
+      - name: Verify daily answer catalog matches the bundled database
+        run: |
+          python3 tools/data_platform_v4/export_daily_catalog.py
+          git diff --exit-code -- functions/config/daily_catalog.json
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -115,6 +120,16 @@ jobs:
         with:
           name: store-previews
           path: .dart_tool/store_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload daily match previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-match-previews
+          path: .dart_tool/daily_qa/*.png
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7

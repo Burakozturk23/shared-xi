@@ -1,4 +1,4 @@
-# Her gun 00:30 UTC (~03:30 Turkiye) bugun+yarin fiksturlerini RTDB'ye yazar.
+# Dört saatte bir bugün ve yarının gerçek fikstürünü RTDB’ye yazar.
 name: Sync Daily Fixtures
 
 on:
@@ -8,10 +8,15 @@ on:
       - tools/data_platform_v4/apply_notable_players.py
       - tools/data_platform_v4/patches/notable-players-2026-09-30.json
   schedule:
-    # UTC 00:30 = yazin 03:30 TR, kisin 03:30 TR (UTC+3)
-    - cron: "30 0 * * *"
+    # İstanbul günü API isteğinde açıkça belirtilir.
+    - cron: "30 */4 * * *"
   workflow_dispatch:
     inputs:
+      task:
+        description: "fixtures: fikstür senkronizasyonu; data: oyuncu paketini yayımla"
+        type: choice
+        options: [fixtures, data]
+        default: fixtures
       date:
         description: "Opsiyonel tek gun YYYY-MM-DD (bos = bugun+yarin)"
         required: false
@@ -19,7 +24,7 @@ on:
 
 jobs:
   sync:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/codex/restore-pr13-complete')
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.task != 'data')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,7 +33,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Install script deps
         run: |
@@ -46,7 +51,7 @@ jobs:
 
   roster_publish:
     name: Publish reviewed player corrections
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/codex/restore-pr13-complete'
+    if: (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.task == 'data')) && github.ref == 'refs/heads/codex/restore-pr13-complete'
     runs-on: ubuntu-latest
     permissions:
       contents: write
