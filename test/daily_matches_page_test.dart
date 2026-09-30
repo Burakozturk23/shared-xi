@@ -171,6 +171,11 @@ void main() {
       await tester.tap(finish);
       await tester.pumpAndSettle();
       expect(find.text('30 Link Coin'), findsOneWidget);
+      expect(find.text('Hedef tamamlandı. Maç bitti.'), findsOneWidget);
+      expect(
+        find.text('Hedef tamam! Ek ödül için devam edebilirsin.'),
+        findsNothing,
+      );
       final bonus = find.text('Reklam izle · 60 coine katla');
       await tester.ensureVisible(bonus);
       await tester.pumpAndSettle();

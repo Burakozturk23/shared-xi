@@ -425,7 +425,9 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
               ),
               const SizedBox(height: 10),
               Text(
-                won
+                finished
+                    ? (won ? 'Hedef tamamlandı. Maç bitti.' : 'Maç tamamlandı.')
+                    : won
                     ? 'Hedef tamam! Ek ödül için devam edebilirsin.'
                     : '${3 - found.length} doğru daha bul, kazan.',
                 style: TextStyle(color: p.accent, fontWeight: FontWeight.w700),
