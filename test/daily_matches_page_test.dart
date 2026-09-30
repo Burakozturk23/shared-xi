@@ -89,18 +89,18 @@ class FakeDailyGateway implements DailyMatchesGateway {
 
 final previewKey = GlobalKey();
 Future<void> preview(WidgetTester tester, String name) async {
-  final boundary =
-      previewKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  final image = await boundary.toImage(pixelRatio: 1);
-  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   await tester.runAsync(() async {
+    final boundary =
+        previewKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final image = await boundary.toImage(pixelRatio: 1);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     final dir = Directory('.dart_tool/daily_qa');
     await dir.create(recursive: true);
     await File(
       '${dir.path}/$name.png',
     ).writeAsBytes(bytes!.buffer.asUint8List());
+    image.dispose();
   });
-  image.dispose();
 }
 
 Future<void> open(

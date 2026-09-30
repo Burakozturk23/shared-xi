@@ -18,6 +18,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
   late final DailyMatchesGateway _gateway =
       widget.gateway ?? FirebaseDailyMatchesGateway();
   final _answer = TextEditingController();
+  final _scroll = ScrollController();
   Map<String, dynamic>? _data, _round, _match;
   bool _busy = false;
   String? _message;
@@ -44,6 +45,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _answer.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -95,6 +97,12 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
     });
   }
 
+  void _scrollToTop() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scroll.hasClients) _scroll.jumpTo(0);
+    });
+  }
+
   Future<void> _start(Map<String, dynamic> match) async {
     final data = await _gateway.call('start', {
       'fixtureId': match['fixtureId'],
@@ -105,6 +113,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
       _round = rewardMap(data['session']);
       _answer.clear();
     });
+    _scrollToTop();
   }
 
   Future<void> _play(String action) async {
@@ -123,7 +132,10 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
       if ((_round!['foundPlayers'] as List? ?? []).length > before)
         _answer.clear();
     });
-    if (_round!['finished'] == true) await _refresh();
+    if (_round!['finished'] == true) {
+      _scrollToTop();
+      await _refresh();
+    }
   }
 
   Future<void> _watch(String placement) async {
@@ -615,6 +627,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
       child: RefreshIndicator(
         onRefresh: () => _run(_refresh),
         child: ListView(
+          controller: _scroll,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
           children: [
