@@ -86,6 +86,8 @@ test("cancelled hint consumes no benefit; verified hint survives UI closure and 
   const s = setup(); await s.put(); const {session} = await s.service.start("alice", 1);
   await s.service.play("alice", {key: session.key, action: "hint"});
   const {event, ticket} = await s.ad("daily_hint", session.key);
+  assert.equal((await s.ads.status("alice", "android")).ticket, null);
+  assert.equal((await s.ads.status("alice", "android", ticket.id)).ticket.id, ticket.id);
   await s.ads.cancel("alice", ticket.id);
   assert.equal((await s.service.start("alice", 1)).session.adHint, false);
   await s.ads.accept(event);

@@ -100,7 +100,8 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     const key = dayKey(time);
     const pro = await isPro(uid);
     const ticket = ticketId ? state.tickets[ticketId] : Object.values(state.tickets)
-        .filter((t) => t.status === "verified" || t.status === "pending" && t.expiresAt > time)
+        .filter((t) => !t.placement.startsWith("daily_") &&
+          (t.status === "verified" || t.status === "pending" && t.expiresAt > time))
         .sort((a, b) => b.createdAt - a.createdAt)[0];
     return {ok: true, dayKey: key, resetTimeZone: "Europe/Istanbul", pro,
       enabled: policy.enabled, testingOnly: !policy.unitId,
