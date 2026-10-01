@@ -4083,8 +4083,9 @@ exports.setMyNickname = httpsV2.onCall(
 
 // LINKBALL_16_5B_ACHIEVEMENTS_FOUNDATION_START
 
-const LB_ACHIEVEMENT_CATALOG_VERSION = 1;
+const LB_ACHIEVEMENT_CATALOG_VERSION = 2;
 const LB_ACHIEVEMENT_DEFINITIONS = [
+  ...require("./config/achievement_expansion.json"),
   {
     id: "first_whistle",
     signal: "ranked_played",
@@ -5000,7 +5001,7 @@ exports.syncMyAchievements = httpsV2.onCall(
 // LINKBALL_16_6B_ECONOMY_FOUNDATION_START
 
 const LB_ECONOMY_VERSION = 3;
-const LB_ACHIEVEMENT_COIN_REWARDS = economyConfig.defaults.sources.achievement.rewards;
+const LB_ACHIEVEMENT_COIN_REWARDS = economyConfig.achievementRewards(economyConfig.defaults);
 
 // LINKBALL_16_7B_COIN_STORE_FOUNDATION_START
 
@@ -6314,7 +6315,7 @@ exports.claimAchievementReward = httpsV2.onCall(
           (request.data || {}).achievementId || "",
       ).trim();
       const config = await lbGetEconomyConfig();
-      const amount = config.sources.achievement.rewards[achievementId];
+      const amount = economyConfig.achievementRewards(config)[achievementId];
 
       if (!achievementId ||
           !Object.prototype.hasOwnProperty.call(
@@ -8921,3 +8922,29 @@ function lbDailyMatchesCallable(action) {
 exports.getDailyMatches = lbDailyMatchesCallable("status");
 exports.startDailyMatch = lbDailyMatchesCallable("start");
 exports.playDailyMatch = lbDailyMatchesCallable("play");
+
+// Monthly season rewards reuse the canonical wallet: its atomic claim IDs also
+// recover an interrupted projection without granting a second reward.
+function lbSeasonService() {
+  const db = admin.database();
+  return require("./season_pass").createService({db, now: () => Date.now(),
+    isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args)});
+}
+function lbSeasonCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    lbRequireGoogleLinked(request);
+    try {
+      const service = lbSeasonService();
+      return action === "claim" ? await service.claim(request.auth.uid, request.data || {}) :
+        await service.status(request.auth.uid);
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getSeasonPass = lbSeasonCallable("status");
+exports.claimSeasonReward = lbSeasonCallable("claim");
