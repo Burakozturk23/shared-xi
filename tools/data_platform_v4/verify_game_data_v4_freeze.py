@@ -129,6 +129,7 @@ def main() -> int:
         reviewed_sources = {
             "v4-2026-09-30.1": "reviewed:notable:2026-09-30",
             "v4-2026-10-01.1": "reviewed:legend-portraits:2026-10-01",
+            "v4-2026-10-01.2": "reviewed:season-portraits:2026-10-01",
         }
         actual_reviewed_links = 0
         for review in reviews:
