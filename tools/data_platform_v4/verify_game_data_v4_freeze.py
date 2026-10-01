@@ -39,8 +39,12 @@ def fail(message: str) -> int:
     return 1
 
 
-def scalar(con: sqlite3.Connection, sql: str) -> int:
-    return int(con.execute(sql).fetchone()[0])
+def scalar(
+    con: sqlite3.Connection,
+    sql: str,
+    params: tuple[object, ...] = (),
+) -> int:
+    return int(con.execute(sql, params).fetchone()[0])
 
 
 def main() -> int:
