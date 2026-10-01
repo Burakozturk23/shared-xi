@@ -83,7 +83,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- assets/player_portraits; then
+          if [ -z "$(git status --porcelain -- assets/player_portraits)" ]; then
             echo 'Portrait assets already materialized.'
             exit 0
           fi
