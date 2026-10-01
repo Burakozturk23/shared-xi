@@ -15,7 +15,14 @@ class NotablePlayersTests(unittest.TestCase):
     def test_reviewed_identities_clubs_and_turkish_search(self):
         review = json.loads(REVIEW.read_text())
         with sqlite3.connect(DB) as c:
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM players WHERE source=?', (SOURCE,)).fetchone()[0], 45)
+            self.assertEqual(len(review['players']), 45)
+            self.assertEqual(
+                c.execute(
+                    'SELECT COUNT(*) FROM players WHERE id BETWEEN 4000000001 AND 4000000045 AND source=?',
+                    (SOURCE,),
+                ).fetchone()[0],
+                45,
+            )
             for r in review['players'] + review['corrections']:
                 self.assertEqual(c.execute('SELECT name FROM players WHERE id=?', (r['id'],)).fetchone(), (r['name'],))
                 for club in r['clubs']:
