@@ -131,10 +131,11 @@ def main() -> int:
             source = reviewed_sources.get(review["id"])
             if source is None:
                 return fail(f"Unknown reviewed link source for {review['id']}")
-            actual_reviewed_links += scalar(
-                con,
-                "SELECT COUNT(*) FROM player_clubs WHERE source=?",
-                (source,),
+            actual_reviewed_links += int(
+                con.execute(
+                    "SELECT COUNT(*) FROM player_clubs WHERE source=?",
+                    (source,),
+                ).fetchone()[0]
             )
         if actual_reviewed_links != reviewed_links:
             return fail(
