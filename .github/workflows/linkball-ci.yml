@@ -25,6 +25,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Upload portrait work base data
+        uses: actions/upload-artifact@v4
+        with:
+          name: portrait-work-base
+          path: |
+            assets/runtime/linkball_game_data_v4.sqlite
+            assets/runtime/linkball_game_data_v4_manifest.json
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Verify bundled data and reviewed patches
         run: |
           python3 tools/data_platform_v4/apply_notable_players.py
