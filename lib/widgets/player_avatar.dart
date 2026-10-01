@@ -20,7 +20,7 @@ class PlayerAvatar extends StatelessWidget {
     final detailed = size >= 64;
     final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id);
     final seasonPortrait = portraitAsset == null
-        ? SeasonPortraitCatalog.forPlayerName(player.name)
+        ? SeasonPortraitCatalog.forPlayerId(player.id)
         : null;
     return Semantics(
       image: true,
@@ -91,33 +91,31 @@ class _SeasonPortrait extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sheetWidth = size * 7;
-    final sheetHeight = size * 8;
+    final scaleX = size / spec.width;
+    final scaleY = size / spec.height;
     return ClipRect(
       child: Stack(
-        clipBehavior: Clip.hardEdge,
+        fit: StackFit.expand,
         children: [
           Positioned(
-            left: -spec.column * size,
-            top: -spec.row * size,
-            width: sheetWidth,
-            height: sheetHeight,
+            left: -spec.left * scaleX,
+            top: -spec.top * scaleY,
+            width: spec.sheetWidth * scaleX,
+            height: spec.sheetHeight * scaleY,
             child: Image.asset(
               spec.asset,
-              width: sheetWidth,
-              height: sheetHeight,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.medium,
-              errorBuilder: (_, __, ___) => SizedBox(
-                width: sheetWidth,
-                height: sheetHeight,
-                child: Align(
-                  alignment: Alignment(
-                    -1 + (2 * spec.column / 6),
-                    -1 + (2 * spec.row / 7),
+              errorBuilder: (_, __, ___) => Stack(
+                children: [
+                  Positioned(
+                    left: spec.left * scaleX,
+                    top: spec.top * scaleY,
+                    width: size,
+                    height: size,
+                    child: fallback,
                   ),
-                  child: SizedBox(width: size, height: size, child: fallback),
-                ),
+                ],
               ),
             ),
           ),
@@ -145,7 +143,9 @@ class _KitIdentity extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Stack(
     children: [
-      Positioned.fill(child: CustomPaint(painter: _KitPainter(accent, detailed))),
+      Positioned.fill(
+        child: CustomPaint(painter: _KitPainter(accent, detailed)),
+      ),
       Positioned(
         left: size * .24,
         right: size * .24,
