@@ -162,7 +162,7 @@ class AppSettingsPage extends StatelessWidget {
                     context,
                     LinkballRoute(
                       builder: (_) => const SocialSafetyCenterPage(),
-                      modern: false,
+                      modern: true,
                     ),
                   ),
                 ),
