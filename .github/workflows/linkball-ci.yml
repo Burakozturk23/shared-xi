@@ -25,37 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Upload portrait work base data
-        uses: actions/upload-artifact@v4
-        with:
-          name: portrait-work-base
-          path: |
-            assets/runtime/linkball_game_data_v4.sqlite
-            assets/runtime/linkball_game_data_v4_manifest.json
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Fetch five missing legendary portraits
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p build/legend-portraits
-          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/263ff730205511.5617dbcf6e0d0-full.jpg' -o build/legend-portraits/46-jean-pierre-papin.jpg
-          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/911ab830205511.5617dbcf62a98-full.jpg' -o build/legend-portraits/47-paul-scholes.jpg
-          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/a4b66a30205511.5617dbcf554c2-full.jpg' -o build/legend-portraits/48-pep-guardiola.jpg
-          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/4a1b8430205511.5617dbcf70032-full.jpg' -o build/legend-portraits/49-socrates.jpg
-          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/35a0da30205511.5617dbcf7733a-full.jpg' -o build/legend-portraits/50-paolo-maldini.jpg
-          curl -L --fail --retry 3 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj8_b8sFAtOLJPBkF_Rb7aYKIsFNpdTu8HgOgSOZHbWMiyYzDb9yn__9YxaTTd6YRBl4ot4iRhhUJHLJpHNcBGcFWQaQ8ZYJ5ToWdbu-R2TuCciiIWeuSlWaLFTqEOkrZeFQiY9_X-vOps/s1600/2015%2BMathieu%2BMarcou%2B-%2B50%2BFavourite%2BPlayers%2B-002.jpg' -o build/legend-portraits/overview-002.jpg
-          curl -L --fail --retry 3 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3Lg1S7Lzs-jv7ynxgt6Mdibr7BQy9OPdRuJl1XQUIHNYFQvJp7ZpmSzwugHyGIQMOwqE9xVzPlAHhRnPDYkUyJYwReiekXLGe7MBJAJu0IjDeEbHT-U0gdoyY8nBhG4Cn4SqiHJsnEuo/s1600/2015%2BMathieu%2BMarcou%2B-%2B50%2BFavourite%2BPlayers%2B-003.jpg' -o build/legend-portraits/overview-003.jpg
-
-      - name: Upload five missing legendary portraits
-        uses: actions/upload-artifact@v4
-        with:
-          name: legend-portraits-missing
-          path: build/legend-portraits/*.jpg
-          if-no-files-found: error
-          retention-days: 1
-
       - name: Verify bundled data and reviewed patches
         run: |
           python3 tools/data_platform_v4/apply_notable_players.py
