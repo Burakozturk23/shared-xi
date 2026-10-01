@@ -36,7 +36,8 @@ class RosterPatchTests(unittest.TestCase):
                     "SELECT COUNT(*) FROM player_clubs WHERE source NOT IN ("
                     "'roster:worldcup26:2026-09-29.2',"
                     "'reviewed:notable:2026-09-30',"
-                    "'reviewed:legend-portraits:2026-10-01'"
+                    "'reviewed:legend-portraits:2026-10-01',"
+                    "'reviewed:season-portraits:2026-10-01'"
                     ")"
                 ).fetchone()[0],
                 165563 + len(additions),
