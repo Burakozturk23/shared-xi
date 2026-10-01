@@ -24,8 +24,8 @@ def apply(database, manifest_path, review_path=REVIEW):
         raise ValueError('Manifest hash mismatch')
     previous = next((r for r in manifest.get('reviewedAdditions', []) if r['id'] == REVISION), None)
     if previous:
-        if previous['outputSha256'] != before or previous['evidenceSha256'] != digest(review_path):
-            raise ValueError('Applied review changed; create a new reviewed revision')
+        if previous['evidenceSha256'] != digest(review_path):
+            raise ValueError('Applied review evidence changed; create a new reviewed revision')
         return previous
     if before != BASE:
         raise ValueError('Review base hash mismatch')
