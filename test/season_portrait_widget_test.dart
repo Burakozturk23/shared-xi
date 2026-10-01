@@ -69,12 +69,13 @@ void main() {
               child: SizedBox(
                 width: 420,
                 child: Wrap(
+                  runSpacing: 16,
                   children: [
                     for (final p in players)
                       SizedBox(
                         width: 140,
-                        height: 144,
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             PlayerAvatar(
                               player: Player.fromJson({
@@ -84,8 +85,15 @@ void main() {
                               }),
                               size: 96,
                             ),
-                            Text(p.$2),
-                            Text('${p.$1}'),
+                            Text(
+                              p.$2,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 14, height: 1.3),
+                            ),
+                            Text(
+                              '${p.$1}',
+                              style: const TextStyle(fontSize: 12, height: 1.3),
+                            ),
                           ],
                         ),
                       ),
