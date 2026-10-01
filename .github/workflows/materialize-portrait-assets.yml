@@ -1,0 +1,97 @@
+name: Materialize approved portrait assets
+
+on:
+  push:
+    branches:
+      - codex/player-portraits-avatar-refresh
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[portrait-assets-materialized]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/player-portraits-avatar-refresh
+          fetch-depth: 0
+      - name: Install image tooling
+        run: python3 -m pip install --disable-pip-version-check pillow
+      - name: Fetch approved source artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/portrait-sources
+          curl -L --fail --retry 3 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj8_b8sFAtOLJPBkF_Rb7aYKIsFNpdTu8HgOgSOZHbWMiyYzDb9yn__9YxaTTd6YRBl4ot4iRhhUJHLJpHNcBGcFWQaQ8ZYJ5ToWdbu-R2TuCciiIWeuSlWaLFTqEOkrZeFQiY9_X-vOps/s1600/2015%2BMathieu%2BMarcou%2B-%2B50%2BFavourite%2BPlayers%2B-002.jpg' -o build/portrait-sources/overview-002.jpg
+          curl -L --fail --retry 3 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3Lg1S7Lzs-jv7ynxgt6Mdibr7BQy9OPdRuJl1XQUIHNYFQvJp7ZpmSzwugHyGIQMOwqE9xVzPlAHhRnPDYkUyJYwReiekXLGe7MBJAJu0IjDeEbHT-U0gdoyY8nBhG4Cn4SqiHJsnEuo/s1600/2015%2BMathieu%2BMarcou%2B-%2B50%2BFavourite%2BPlayers%2B-003.jpg' -o build/portrait-sources/overview-003.jpg
+          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/263ff730205511.5617dbcf6e0d0-full.jpg' -o build/portrait-sources/46.jpg
+          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/911ab830205511.5617dbcf62a98-full.jpg' -o build/portrait-sources/47.jpg
+          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/a4b66a30205511.5617dbcf554c2-full.jpg' -o build/portrait-sources/48.jpg
+          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/4a1b8430205511.5617dbcf70032-full.jpg' -o build/portrait-sources/49.jpg
+          curl -L --fail --retry 3 'https://www.sport24.gr/wp-content/uploads/2016/03/35a0da30205511.5617dbcf7733a-full.jpg' -o build/portrait-sources/50.jpg
+      - name: Build 50 runtime portraits
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageOps
+
+          src = Path('build/portrait-sources')
+          out = Path('assets/player_portraits')
+          out.mkdir(parents=True, exist_ok=True)
+          target = (256, 356)
+
+          candidates = []
+          expected_ratio = (9 * 580) / (5 * 805)
+          for path in [src/'overview-002.jpg', src/'overview-003.jpg']:
+              with Image.open(path) as im:
+                  ratio = im.width / im.height
+                  candidates.append((abs(ratio - expected_ratio), path, im.size))
+          candidates.sort(key=lambda row: row[0])
+          _, sheet_path, sheet_size = candidates[0]
+          if abs((sheet_size[0] / sheet_size[1]) - expected_ratio) > 0.22:
+              raise SystemExit(f'Could not identify 9x5 portrait overview: {candidates}')
+
+          with Image.open(sheet_path) as sheet:
+              sheet = sheet.convert('RGB')
+              for index in range(45):
+                  row, col = divmod(index, 9)
+                  x0 = round(col * sheet.width / 9)
+                  x1 = round((col + 1) * sheet.width / 9)
+                  y0 = round(row * sheet.height / 5)
+                  y1 = round((row + 1) * sheet.height / 5)
+                  cell = sheet.crop((x0, y0, x1, y1))
+                  portrait = ImageOps.fit(cell, target, method=Image.Resampling.LANCZOS)
+                  portrait.save(out/f'legend_{index + 1:02d}.jpg', quality=90, optimize=True, progressive=True)
+
+          for index in range(46, 51):
+              with Image.open(src/f'{index}.jpg') as im:
+                  portrait = ImageOps.fit(im.convert('RGB'), target, method=Image.Resampling.LANCZOS)
+                  portrait.save(out/f'legend_{index:02d}.jpg', quality=90, optimize=True, progressive=True)
+
+          files = sorted(out.glob('legend_*.jpg'))
+          if len(files) != 50:
+              raise SystemExit(f'Expected 50 portraits, found {len(files)}')
+          for path in files:
+              with Image.open(path) as im:
+                  if im.size != target:
+                      raise SystemExit(f'Unexpected size for {path}: {im.size}')
+          print('source sheet:', sheet_path, sheet_size)
+          print('portrait files:', len(files))
+          PY
+      - name: Commit portrait assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- assets/player_portraits; then
+            echo 'Portrait assets already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/player_portraits
+          git commit -m 'assets: materialize 50 approved portraits [portrait-assets-materialized]'
+          git push origin HEAD:codex/player-portraits-avatar-refresh
