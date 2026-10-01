@@ -1,0 +1,323 @@
+{
+  "sources": {
+    "2012_13": {
+      "url": "https://www.behance.net/gallery/9010659/56-football-players-20122013-season",
+      "referenceSize": [
+        600,
+        1010
+      ],
+      "grid": {
+        "x0": 28,
+        "xStep": 79.3,
+        "y0": 64,
+        "yStep": 111.7,
+        "cardWidth": 68,
+        "portraitHeight": 96
+      }
+    },
+    "2013_14": {
+      "url": "https://www.behance.net/gallery/19289757/56-football-players-20132014-season",
+      "referenceSize": [
+        736,
+        1239
+      ],
+      "grid": {
+        "x0": 34,
+        "xStep": 97.3,
+        "y0": 80,
+        "yStep": 136.9,
+        "cardWidth": 84,
+        "portraitHeight": 114
+      }
+    }
+  },
+  "seasons": {
+    "2012_13": [
+      [
+        "Franck Ribery",
+        "Toni Kroos",
+        "Bastian Schweinsteiger",
+        "Philipp Lahm",
+        "Arjen Robben",
+        "Mesut Ozil",
+        "Sami Khedira"
+      ],
+      [
+        "Vincent Kompany",
+        "Joleon Lescott",
+        "David Silva",
+        "Carlos Tevez",
+        "Cristiano Ronaldo",
+        "Karim Benzema",
+        "Sergio Ramos"
+      ],
+      [
+        "Gylfi Sigurdsson",
+        "Clint Dempsey",
+        "Stephan El Shaarawy",
+        "M'Baye Niang",
+        "Mario Balotelli",
+        "Didier Drogba",
+        "Wesley Sneijder"
+      ],
+      [
+        "Petr Cech",
+        "Frank Lampard",
+        "Fernando Torres",
+        "Eden Hazard",
+        "Thiago Motta",
+        "Marco Verratti",
+        "Javier Pastore"
+      ],
+      [
+        "Mats Hummels",
+        "Gareth Bale",
+        "Iker Casillas",
+        "Gerard Pique",
+        "Xavi Hernandez",
+        "Andres Iniesta",
+        "Lionel Messi"
+      ],
+      [
+        "Steven Gerrard",
+        "Michael Essien",
+        "Marco Reus",
+        "Mario Gotze",
+        "Robert Lewandowski",
+        "Thierry Henry",
+        "Juninho Pernambucano"
+      ],
+      [
+        "Victor Moses",
+        "David Beckham",
+        "Zlatan Ibrahimovic",
+        "Blaise Matuidi",
+        "Salvatore Sirigu",
+        "Lucas Moura",
+        "Giorgio Chiellini"
+      ],
+      [
+        "Claudio Marchisio",
+        "Andrea Pirlo",
+        "Javier Zanetti",
+        "Robin van Persie",
+        "Wayne Rooney",
+        "Paul Scholes",
+        "Rio Ferdinand"
+      ]
+    ],
+    "2013_14": [
+      [
+        "Franck Ribery",
+        "Toni Kroos",
+        "Bastian Schweinsteiger",
+        "Philipp Lahm",
+        "Arjen Robben",
+        "Mario Gotze",
+        "Andrea Pirlo"
+      ],
+      [
+        "Vincent Kompany",
+        "Joleon Lescott",
+        "David Silva",
+        "Gareth Bale",
+        "Cristiano Ronaldo",
+        "Karim Benzema",
+        "Carlos Tevez"
+      ],
+      [
+        "Martin Skrtel",
+        "Mamadou Sakho",
+        "Daniel Agger",
+        "Luka Modric",
+        "Sergio Ramos",
+        "Marcelo",
+        "Gonzalo Higuain"
+      ],
+      [
+        "Raheem Sterling",
+        "Steven Gerrard",
+        "Luis Suarez",
+        "Eden Hazard",
+        "Petr Cech",
+        "Frank Lampard",
+        "Fernando Torres"
+      ],
+      [
+        "Salvatore Sirigu",
+        "Blaise Matuidi",
+        "Neymar",
+        "Dani Alves",
+        "Xavi Hernandez",
+        "Andres Iniesta",
+        "Lionel Messi"
+      ],
+      [
+        "Zlatan Ibrahimovic",
+        "Thiago Silva",
+        "Olivier Giroud",
+        "Laurent Koscielny",
+        "Jack Wilshere",
+        "Kieran Gibbs",
+        "Mesut Ozil"
+      ],
+      [
+        "Ezequiel Lavezzi",
+        "Edinson Cavani",
+        "Aaron Ramsey",
+        "Radamel Falcao",
+        "Francesco Totti",
+        "Robert Lewandowski",
+        "Marco Reus"
+      ],
+      [
+        "Robin van Persie",
+        "Ryan Giggs",
+        "Wayne Rooney",
+        "Michael Carrick",
+        "Patrice Evra",
+        "David Villa",
+        "Diego Costa"
+      ]
+    ]
+  },
+  "aliases": {
+    "Franck Ribery": [
+      "Franck Ribéry"
+    ],
+    "Mario Gotze": [
+      "Mario Götze"
+    ],
+    "Mesut Ozil": [
+      "Mesut Özil"
+    ],
+    "Martin Skrtel": [
+      "Martin Škrtel"
+    ],
+    "Luka Modric": [
+      "Luka Modrić"
+    ],
+    "Gonzalo Higuain": [
+      "Gonzalo Higuaín"
+    ],
+    "Luis Suarez": [
+      "Luis Suárez"
+    ],
+    "Petr Cech": [
+      "Petr Čech"
+    ],
+    "Xavi Hernandez": [
+      "Xavi Hernández",
+      "Xavi"
+    ],
+    "Andres Iniesta": [
+      "Andrés Iniesta"
+    ],
+    "Gylfi Sigurdsson": [
+      "Gylfi Sigurðsson"
+    ],
+    "Gerard Pique": [
+      "Gerard Piqué"
+    ],
+    "M'Baye Niang": [
+      "M'Baye Niang",
+      "Mbaye Niang"
+    ],
+    "Javier Zanetti": [
+      "Javier Adelmar Zanetti"
+    ],
+    "Marcelo": [
+      "Marcelo Vieira",
+      "Marcelo Vieira da Silva Júnior",
+      "Marcelo Vieira da Silva Junior"
+    ],
+    "Neymar": [
+      "Neymar Jr",
+      "Neymar da Silva Santos Júnior",
+      "Neymar da Silva Santos Junior"
+    ]
+  },
+  "playerIds": {
+    "Franck Ribery": 22068,
+    "Toni Kroos": 31909,
+    "Bastian Schweinsteiger": 2514,
+    "Philipp Lahm": 2219,
+    "Arjen Robben": 4360,
+    "Mesut Ozil": 35664,
+    "Sami Khedira": 29401,
+    "Vincent Kompany": 9594,
+    "Joleon Lescott": 4241,
+    "David Silva": 35518,
+    "Carlos Tevez": 4276,
+    "Cristiano Ronaldo": 8198,
+    "Karim Benzema": 18922,
+    "Sergio Ramos": 25557,
+    "Gylfi Sigurdsson": 90466,
+    "Clint Dempsey": 4000000067,
+    "Stephan El Shaarawy": 94529,
+    "M'Baye Niang": 157501,
+    "Mario Balotelli": 45146,
+    "Didier Drogba": 3924,
+    "Wesley Sneijder": 4673,
+    "Petr Cech": 5658,
+    "Frank Lampard": 3163,
+    "Fernando Torres": 7767,
+    "Eden Hazard": 50202,
+    "Thiago Motta": 7602,
+    "Marco Verratti": 102558,
+    "Javier Pastore": 55215,
+    "Mats Hummels": 39728,
+    "Gareth Bale": 39381,
+    "Iker Casillas": 3979,
+    "Gerard Pique": 18944,
+    "Xavi Hernandez": 7607,
+    "Andres Iniesta": 7600,
+    "Lionel Messi": 28003,
+    "Steven Gerrard": 3109,
+    "Michael Essien": 5588,
+    "Marco Reus": 35207,
+    "Mario Gotze": 74842,
+    "Robert Lewandowski": 38253,
+    "Thierry Henry": 3207,
+    "Juninho Pernambucano": 4000000053,
+    "Victor Moses": 59866,
+    "David Beckham": 4000000023,
+    "Zlatan Ibrahimovic": 3455,
+    "Blaise Matuidi": 33923,
+    "Salvatore Sirigu": 25508,
+    "Lucas Moura": 77100,
+    "Giorgio Chiellini": 29260,
+    "Claudio Marchisio": 44716,
+    "Andrea Pirlo": 5817,
+    "Javier Zanetti": 4000000068,
+    "Robin van Persie": 4380,
+    "Wayne Rooney": 3332,
+    "Paul Scholes": 4000000026,
+    "Rio Ferdinand": 4000000069,
+    "Martin Skrtel": 24180,
+    "Mamadou Sakho": 47713,
+    "Daniel Agger": 22832,
+    "Luka Modric": 27992,
+    "Marcelo": 44501,
+    "Gonzalo Higuain": 39153,
+    "Raheem Sterling": 134425,
+    "Luis Suarez": 44352,
+    "Neymar": 68290,
+    "Dani Alves": 15951,
+    "Thiago Silva": 29241,
+    "Olivier Giroud": 82442,
+    "Laurent Koscielny": 76277,
+    "Jack Wilshere": 74223,
+    "Kieran Gibbs": 44792,
+    "Ezequiel Lavezzi": 50570,
+    "Edinson Cavani": 48280,
+    "Aaron Ramsey": 50057,
+    "Radamel Falcao": 39152,
+    "Francesco Totti": 4000000025,
+    "Ryan Giggs": 4000000059,
+    "Michael Carrick": 3878,
+    "Patrice Evra": 5285,
+    "David Villa": 7980,
+    "Diego Costa": 44779
+  }
+}

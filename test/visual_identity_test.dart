@@ -80,17 +80,27 @@ void main() {
     testWidgets('kit fits at $size px with large system text', (tester) async {
       final semantics = tester.ensureSemantics();
 
-      await tester.pumpWidget(MaterialApp(home: MediaQuery(
-        data: const MediaQueryData(textScaler: TextScaler.linear(3)),
-        child: Scaffold(body: PlayerAvatar(
-          player: player(8198, avatarKey: 'intentionally_missing'), size: size,
-        )),
-      )));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(3)),
+            child: Scaffold(
+              body: PlayerAvatar(
+                player: player(99999999, avatarKey: 'intentionally_missing'),
+                size: size,
+              ),
+            ),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
-      expect(find.text('O8'), findsOneWidget);
+      expect(find.text('O9'), findsOneWidget);
       expect(find.text('HC'), size >= 64 ? findsOneWidget : findsNothing);
       expect(find.byType(Image), findsNothing);
-      expect(find.bySemanticsLabel('Oyuncu 8198, Hücum, Turkey'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel('Oyuncu 99999999, Hücum, Turkey'),
+        findsOneWidget,
+      );
       semantics.dispose();
       expect(tester.takeException(), isNull);
     });

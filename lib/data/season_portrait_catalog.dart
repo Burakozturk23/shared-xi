@@ -1,0 +1,831 @@
+/// Rectangles refer to the unmodified licensed source sheets.
+class SeasonPortraitSpec {
+  final String asset;
+  final double sheetWidth, sheetHeight, left, top, width, height;
+  const SeasonPortraitSpec({
+    required this.asset,
+    required this.sheetWidth,
+    required this.sheetHeight,
+    required this.left,
+    required this.top,
+    required this.width,
+    required this.height,
+  });
+}
+
+abstract final class SeasonPortraitCatalog {
+  // Canonical IDs prevent portraits leaking to namesakes (Suárez, Marcelo, Xavi).
+  static const Map<int, SeasonPortraitSpec> byPlayerId = {
+    // Franck Ribery
+    22068: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Toni Kroos
+    31909: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Bastian Schweinsteiger
+    2514: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Philipp Lahm
+    2219: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Arjen Robben
+    4360: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Mesut Ozil
+    35664: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Sami Khedira
+    29401: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 503.8,
+      top: 64.0,
+      width: 68,
+      height: 96,
+    ),
+    // Vincent Kompany
+    9594: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // Joleon Lescott
+    4241: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // David Silva
+    35518: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // Carlos Tevez
+    4276: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // Cristiano Ronaldo
+    8198: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // Karim Benzema
+    18922: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // Sergio Ramos
+    25557: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Gylfi Sigurdsson
+    90466: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 28.0,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // Clint Dempsey
+    4000000067: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 107.3,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // Stephan El Shaarawy
+    94529: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 186.6,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // M'Baye Niang
+    157501: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 265.9,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // Mario Balotelli
+    45146: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 345.2,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // Didier Drogba
+    3924: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 424.5,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // Wesley Sneijder
+    4673: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 503.8,
+      top: 287.4,
+      width: 68,
+      height: 96,
+    ),
+    // Petr Cech
+    5658: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Frank Lampard
+    3163: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Fernando Torres
+    7767: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Eden Hazard
+    50202: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Thiago Motta
+    7602: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 345.2,
+      top: 399.1,
+      width: 68,
+      height: 96,
+    ),
+    // Marco Verratti
+    102558: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 424.5,
+      top: 399.1,
+      width: 68,
+      height: 96,
+    ),
+    // Javier Pastore
+    55215: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 503.8,
+      top: 399.1,
+      width: 68,
+      height: 96,
+    ),
+    // Mats Hummels
+    39728: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 28.0,
+      top: 510.8,
+      width: 68,
+      height: 96,
+    ),
+    // Gareth Bale
+    39381: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 216.9,
+      width: 84,
+      height: 114,
+    ),
+    // Iker Casillas
+    3979: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 186.6,
+      top: 510.8,
+      width: 68,
+      height: 96,
+    ),
+    // Gerard Pique
+    18944: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 265.9,
+      top: 510.8,
+      width: 68,
+      height: 96,
+    ),
+    // Xavi Hernandez
+    7607: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Andres Iniesta
+    7600: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Lionel Messi
+    28003: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Steven Gerrard
+    3109: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Michael Essien
+    5588: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 107.3,
+      top: 622.5,
+      width: 68,
+      height: 96,
+    ),
+    // Marco Reus
+    35207: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Mario Gotze
+    74842: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Robert Lewandowski
+    38253: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Thierry Henry
+    3207: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 424.5,
+      top: 622.5,
+      width: 68,
+      height: 96,
+    ),
+    // Juninho Pernambucano
+    4000000053: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 503.8,
+      top: 622.5,
+      width: 68,
+      height: 96,
+    ),
+    // Victor Moses
+    59866: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 28.0,
+      top: 734.2,
+      width: 68,
+      height: 96,
+    ),
+    // David Beckham
+    4000000023: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 107.3,
+      top: 734.2,
+      width: 68,
+      height: 96,
+    ),
+    // Zlatan Ibrahimovic
+    3455: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Blaise Matuidi
+    33923: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Salvatore Sirigu
+    25508: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Lucas Moura
+    77100: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 424.5,
+      top: 734.2,
+      width: 68,
+      height: 96,
+    ),
+    // Giorgio Chiellini
+    29260: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 503.8,
+      top: 734.2,
+      width: 68,
+      height: 96,
+    ),
+    // Claudio Marchisio
+    44716: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 28.0,
+      top: 845.9,
+      width: 68,
+      height: 96,
+    ),
+    // Andrea Pirlo
+    5817: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 80.0,
+      width: 84,
+      height: 114,
+    ),
+    // Javier Zanetti
+    4000000068: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 186.6,
+      top: 845.9,
+      width: 68,
+      height: 96,
+    ),
+    // Robin van Persie
+    4380: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+    // Wayne Rooney
+    3332: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+    // Paul Scholes
+    4000000026: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 424.5,
+      top: 845.9,
+      width: 68,
+      height: 96,
+    ),
+    // Rio Ferdinand
+    4000000069: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2012_13.jpg',
+      sheetWidth: 600,
+      sheetHeight: 1010,
+      left: 503.8,
+      top: 845.9,
+      width: 68,
+      height: 96,
+    ),
+    // Martin Skrtel
+    24180: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Mamadou Sakho
+    47713: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Daniel Agger
+    22832: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Luka Modric
+    27992: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Marcelo
+    44501: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Gonzalo Higuain
+    39153: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 353.8,
+      width: 84,
+      height: 114,
+    ),
+    // Raheem Sterling
+    134425: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Luis Suarez
+    44352: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 490.7,
+      width: 84,
+      height: 114,
+    ),
+    // Neymar
+    68290: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Dani Alves
+    15951: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 627.6,
+      width: 84,
+      height: 114,
+    ),
+    // Thiago Silva
+    29241: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Olivier Giroud
+    82442: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Laurent Koscielny
+    76277: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Jack Wilshere
+    74223: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Kieran Gibbs
+    44792: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 764.5,
+      width: 84,
+      height: 114,
+    ),
+    // Ezequiel Lavezzi
+    50570: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 34.0,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Edinson Cavani
+    48280: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Aaron Ramsey
+    50057: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 228.6,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Radamel Falcao
+    39152: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Francesco Totti
+    4000000025: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 901.4,
+      width: 84,
+      height: 114,
+    ),
+    // Ryan Giggs
+    4000000059: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 131.3,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+    // Michael Carrick
+    3878: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 325.9,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+    // Patrice Evra
+    5285: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 423.2,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+    // David Villa
+    7980: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 520.5,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+    // Diego Costa
+    44779: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/season_2013_14.jpg',
+      sheetWidth: 736,
+      sheetHeight: 1239,
+      left: 617.8,
+      top: 1038.3,
+      width: 84,
+      height: 114,
+    ),
+  };
+  static SeasonPortraitSpec? forPlayerId(int id) => byPlayerId[id];
+}

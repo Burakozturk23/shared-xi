@@ -39,8 +39,12 @@ def fail(message: str) -> int:
     return 1
 
 
-def scalar(con: sqlite3.Connection, sql: str) -> int:
-    return int(con.execute(sql).fetchone()[0])
+def scalar(
+    con: sqlite3.Connection,
+    sql: str,
+    params: tuple[object, ...] = (),
+) -> int:
+    return int(con.execute(sql, params).fetchone()[0])
 
 
 def main() -> int:
@@ -122,8 +126,26 @@ def main() -> int:
             return fail("Original player universe changed")
         if scalar(con, "SELECT COUNT(*) FROM players WHERE source='reviewed-player'") != reviewed_players:
             return fail("Reviewed player count mismatch")
-        if scalar(con, "SELECT COUNT(*) FROM player_clubs WHERE source='reviewed:notable:2026-09-30'") != reviewed_links:
-            return fail("Reviewed link count mismatch")
+        reviewed_sources = {
+            "v4-2026-09-30.1": "reviewed:notable:2026-09-30",
+            "v4-2026-10-01.1": "reviewed:legend-portraits:2026-10-01",
+            "v4-2026-10-01.2": "reviewed:season-portraits:2026-10-01",
+        }
+        actual_reviewed_links = 0
+        for review in reviews:
+            source = reviewed_sources.get(review["id"])
+            if source is None:
+                return fail(f"Unknown reviewed link source for {review['id']}")
+            actual_reviewed_links += int(
+                con.execute(
+                    "SELECT COUNT(*) FROM player_clubs WHERE source=?",
+                    (source,),
+                ).fetchone()[0]
+            )
+        if actual_reviewed_links != reviewed_links:
+            return fail(
+                f"Reviewed link count mismatch: {actual_reviewed_links} != {reviewed_links}"
+            )
 
         metadata = dict(con.execute("SELECT key, value FROM metadata"))
         if metadata.get("compiler_step") != EXPECTED_COMPILER_STEP:

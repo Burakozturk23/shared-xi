@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data/player_portrait_catalog.dart';
 import '../models/linkball_profile_schema.dart';
 import '../models/user_avatar_catalog.dart';
 
@@ -23,6 +24,7 @@ class UserAvatarBadge extends StatelessWidget {
 
     final accent = _accentFor(definition.visualKey);
     final icon = _iconFor(definition.visualKey);
+    final portraitAsset = PlayerPortraitCatalog.forAvatarId(definition.id);
 
     return Container(
       width: radius * 2,
@@ -35,7 +37,33 @@ class UserAvatarBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          if (definition.visualKey.startsWith('persona_'))
+          if (portraitAsset != null)
+            Positioned.fill(
+              child: ClipOval(
+                child: Image.asset(
+                  portraitAsset,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.medium,
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Text(
+                      definition.title
+                          .split(' ')
+                          .where((s) => s.isNotEmpty)
+                          .take(2)
+                          .map((s) => s.characters.first)
+                          .join()
+                          .toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: accent,
+                        fontSize: radius * .75,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else if (definition.visualKey.startsWith('persona_'))
             Padding(
               padding: EdgeInsets.all(radius * .2),
               child: FittedBox(

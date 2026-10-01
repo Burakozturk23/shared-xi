@@ -28,12 +28,17 @@ jobs:
       - name: Verify bundled data and reviewed patches
         run: |
           python3 tools/data_platform_v4/apply_notable_players.py
+          python3 tools/data_platform_v4/apply_legend_portrait_players.py
+          python3 tools/data_platform_v4/apply_season_portrait_players.py
           python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_reviewed_patch.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_api_football_sync.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_roster_patch.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_roster_expansion.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_notable_players.py'
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_legend_portrait_players.py'
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_season_portrait_players.py'
+          python3 tools/season_portraits/verify_players.py
 
       - name: Verify daily answer catalog matches the bundled database
         run: |

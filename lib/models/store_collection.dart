@@ -220,15 +220,8 @@ const collectionAvatars = <UserAvatarDefinition>[
     unlockKind: AvatarUnlockKind.shop,
   ),
   UserAvatarDefinition(
-    id: 'persona_hilmi',
-    title: 'Hilmi',
-    subtitle: 'İsimli profil avatarı',
-    visualKey: 'persona_creators',
-    unlockKind: AvatarUnlockKind.shop,
-  ),
-  UserAvatarDefinition(
-    id: 'persona_turan',
-    title: 'Turan',
+    id: 'persona_emre_ozcan',
+    title: 'Emre Özcan',
     subtitle: 'İsimli profil avatarı',
     visualKey: 'persona_creators',
     unlockKind: AvatarUnlockKind.shop,

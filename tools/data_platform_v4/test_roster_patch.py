@@ -31,7 +31,17 @@ class RosterPatchTests(unittest.TestCase):
             self.assertEqual(c.execute('SELECT COUNT(*) FROM clubs').fetchone()[0],4311)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0],33994)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0],37966)
-            self.assertEqual(c.execute("SELECT COUNT(*) FROM player_clubs WHERE source NOT IN ('roster:worldcup26:2026-09-29.2','reviewed:notable:2026-09-30')").fetchone()[0],165563+len(additions))
+            self.assertEqual(
+                c.execute(
+                    "SELECT COUNT(*) FROM player_clubs WHERE source NOT IN ("
+                    "'roster:worldcup26:2026-09-29.2',"
+                    "'reviewed:notable:2026-09-30',"
+                    "'reviewed:legend-portraits:2026-10-01',"
+                    "'reviewed:season-portraits:2026-10-01'"
+                    ")"
+                ).fetchone()[0],
+                165563 + len(additions),
+            )
             for r in evidence['rows']:
                 if r['status'] in ('review','conflicting_rosters') and r.get('playerId'):
                     self.assertFalse(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=? AND source=?',(r['playerId'],r['clubId'],'roster:worldcup26:2026-09-29')).fetchone())

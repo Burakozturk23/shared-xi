@@ -1,0 +1,67 @@
+abstract final class PlayerPortraitCatalog {
+  static const String assetRoot = 'assets/player_portraits';
+
+  static const Map<int, String> byPlayerId = {
+    4000000041: '$assetRoot/legend_01.jpg',
+    5811: '$assetRoot/legend_02.jpg',
+    3207: '$assetRoot/legend_03.jpg',
+    4000000035: '$assetRoot/legend_04.jpg',
+    4000000046: '$assetRoot/legend_05.jpg',
+    3446: '$assetRoot/legend_06.jpg',
+    4000000047: '$assetRoot/legend_07.jpg',
+    4000000048: '$assetRoot/legend_08.jpg',
+    4000000030: '$assetRoot/legend_09.jpg',
+    5817: '$assetRoot/legend_10.jpg',
+    4289: '$assetRoot/legend_11.jpg',
+    4000000049: '$assetRoot/legend_12.jpg',
+    4000000027: '$assetRoot/legend_13.jpg',
+    4000000036: '$assetRoot/legend_14.jpg',
+    4000000064: '$assetRoot/legend_15.jpg',
+    3140: '$assetRoot/legend_16.jpg',
+    3396: '$assetRoot/legend_17.jpg',
+    4000000050: '$assetRoot/legend_18.jpg',
+    4000000039: '$assetRoot/legend_19.jpg',
+    4000000051: '$assetRoot/legend_20.jpg',
+    4000000025: '$assetRoot/legend_21.jpg',
+    4000000052: '$assetRoot/legend_22.jpg',
+    4000000053: '$assetRoot/legend_23.jpg',
+    4000000044: '$assetRoot/legend_24.jpg',
+    4000000033: '$assetRoot/legend_25.jpg',
+    3111: '$assetRoot/legend_26.jpg',
+    4000000042: '$assetRoot/legend_27.jpg',
+    4000000065: '$assetRoot/legend_28.jpg',
+    3163: '$assetRoot/legend_29.jpg',
+    3373: '$assetRoot/legend_30.jpg',
+    4000000054: '$assetRoot/legend_31.jpg',
+    4000000055: '$assetRoot/legend_32.jpg',
+    4000000040: '$assetRoot/legend_33.jpg',
+    4000000031: '$assetRoot/legend_34.jpg',
+    7607: '$assetRoot/legend_35.jpg',
+    4000000056: '$assetRoot/legend_36.jpg',
+    4000000057: '$assetRoot/legend_37.jpg',
+    4000000058: '$assetRoot/legend_38.jpg',
+    4000000029: '$assetRoot/legend_39.jpg',
+    4000000059: '$assetRoot/legend_40.jpg',
+    5813: '$assetRoot/legend_41.jpg',
+    4000000066: '$assetRoot/legend_42.jpg',
+    4000000023: '$assetRoot/legend_43.jpg',
+    4000000060: '$assetRoot/legend_44.jpg',
+    3109: '$assetRoot/legend_45.jpg',
+    4000000061: '$assetRoot/legend_46.jpg',
+    4000000026: '$assetRoot/legend_47.jpg',
+    4000000062: '$assetRoot/legend_48.jpg',
+    4000000063: '$assetRoot/legend_49.jpg',
+    4000000024: '$assetRoot/legend_50.jpg',
+  };
+
+  static const Map<String, String> byAvatarId = {
+    'persona_diego_maradona': '$assetRoot/legend_04.jpg',
+    'persona_zinedine_zidane': '$assetRoot/legend_26.jpg',
+    'persona_pele': '$assetRoot/legend_28.jpg',
+    'persona_ronaldinho': '$assetRoot/legend_30.jpg',
+    'persona_pep_guardiola': '$assetRoot/legend_48.jpg',
+  };
+
+  static String? forPlayerId(int playerId) => byPlayerId[playerId];
+  static String? forAvatarId(String avatarId) => byAvatarId[avatarId];
+}
