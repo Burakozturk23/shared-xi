@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import '../data/country_flags.dart';
 import '../data/player_kit_identity.dart';
 import '../data/player_portrait_catalog.dart';
+import '../data/season_portrait_catalog.dart';
 import '../models/player.dart';
 
-/// Uses the approved portrait set for mapped legends and keeps the symbolic
-/// offline kit identity as a deterministic fallback for every other player.
+/// Uses approved local portrait sets when a player is mapped and keeps the
+/// symbolic offline kit identity as a deterministic fallback for every other player.
 class PlayerAvatar extends StatelessWidget {
   final Player player;
   final double size;
@@ -17,7 +18,8 @@ class PlayerAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final (accent, code, label) = PlayerKitIdentity.position(player.position);
     final detailed = size >= 64;
-    final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id);
+    final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id) ??
+        SeasonPortraitCatalog.forPlayerName(player.name);
     return Semantics(
       image: true,
       label:
