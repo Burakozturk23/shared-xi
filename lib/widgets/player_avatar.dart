@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../data/country_flags.dart';
 import '../data/player_kit_identity.dart';
+import '../data/player_portrait_catalog.dart';
 import '../models/player.dart';
 
-/// Offline kit identity. At small sizes only the shirt and initials are shown.
-/// The kit is symbolic: it does not claim a current club or squad number.
+/// Uses the approved portrait set for mapped legends and keeps the symbolic
+/// offline kit identity as a deterministic fallback for every other player.
 class PlayerAvatar extends StatelessWidget {
   final Player player;
   final double size;
@@ -16,9 +17,11 @@ class PlayerAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final (accent, code, label) = PlayerKitIdentity.position(player.position);
     final detailed = size >= 64;
+    final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id);
     return Semantics(
       image: true,
-      label: '${player.name}, $label${player.countries.isEmpty ? '' : ', ${player.countryLabel}'}',
+      label:
+          '${player.name}, $label${player.countries.isEmpty ? '' : ', ${player.countryLabel}'}',
       child: ExcludeSemantics(
         child: Container(
           width: size,
@@ -33,50 +36,101 @@ class PlayerAvatar extends StatelessWidget {
             ),
             border: Border.all(color: accent.withValues(alpha: .45)),
           ),
-          child: Stack(
-            children: [
-              Positioned.fill(child: CustomPaint(painter: _KitPainter(accent, detailed))),
-              Positioned(
-                left: size * .24,
-                right: size * .24,
-                top: size * (detailed ? .32 : .37),
-                height: size * .25,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    PlayerKitIdentity.initials(player.name),
-                    textScaler: TextScaler.noScaling,
-                    style: TextStyle(color: const Color(0xFFF4F8FC),
-                      fontSize: size * .23, fontWeight: FontWeight.w900,
-                      height: 1, letterSpacing: .2),
+          child: portraitAsset == null
+              ? _KitIdentity(
+                  player: player,
+                  size: size,
+                  accent: accent,
+                  code: code,
+                  detailed: detailed,
+                )
+              : Image.asset(
+                  portraitAsset,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.medium,
+                  errorBuilder: (_, __, ___) => _KitIdentity(
+                    player: player,
+                    size: size,
+                    accent: accent,
+                    code: code,
+                    detailed: detailed,
                   ),
                 ),
-              ),
-              if (detailed) ...[
-                Positioned(
-                  bottom: size * .045,
-                  left: 0,
-                  right: 0,
-                  child: Text(code, textAlign: TextAlign.center,
-                    textScaler: TextScaler.noScaling,
-                    style: TextStyle(color: accent, fontSize: size * .13,
-                      height: 1, fontWeight: FontWeight.w800)),
-                ),
-                if (player.countries.isNotEmpty)
-                  Positioned(
-                    right: size * .055,
-                    top: size * .045,
-                    child: Text(flagFor(player.countries.first),
-                      textScaler: TextScaler.noScaling,
-                      style: TextStyle(fontSize: size * .19, height: 1)),
-                  ),
-              ],
-            ],
-          ),
         ),
       ),
     );
   }
+}
+
+class _KitIdentity extends StatelessWidget {
+  const _KitIdentity({
+    required this.player,
+    required this.size,
+    required this.accent,
+    required this.code,
+    required this.detailed,
+  });
+
+  final Player player;
+  final double size;
+  final Color accent;
+  final String code;
+  final bool detailed;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned.fill(child: CustomPaint(painter: _KitPainter(accent, detailed))),
+      Positioned(
+        left: size * .24,
+        right: size * .24,
+        top: size * (detailed ? .32 : .37),
+        height: size * .25,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            PlayerKitIdentity.initials(player.name),
+            textScaler: TextScaler.noScaling,
+            style: TextStyle(
+              color: const Color(0xFFF4F8FC),
+              fontSize: size * .23,
+              fontWeight: FontWeight.w900,
+              height: 1,
+              letterSpacing: .2,
+            ),
+          ),
+        ),
+      ),
+      if (detailed) ...[
+        Positioned(
+          bottom: size * .045,
+          left: 0,
+          right: 0,
+          child: Text(
+            code,
+            textAlign: TextAlign.center,
+            textScaler: TextScaler.noScaling,
+            style: TextStyle(
+              color: accent,
+              fontSize: size * .13,
+              height: 1,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        if (player.countries.isNotEmpty)
+          Positioned(
+            right: size * .055,
+            top: size * .045,
+            child: Text(
+              flagFor(player.countries.first),
+              textScaler: TextScaler.noScaling,
+              style: TextStyle(fontSize: size * .19, height: 1),
+            ),
+          ),
+      ],
+    ],
+  );
 }
 
 class _KitPainter extends CustomPainter {
@@ -93,24 +147,52 @@ class _KitPainter extends CustomPainter {
       canvas.scale(1, .94);
     }
     final shirt = Path()
-      ..moveTo(.35, .20)..lineTo(.22, .24)..lineTo(.10, .43)
-      ..lineTo(.25, .52)..lineTo(.30, .44)..lineTo(.30, .80)
+      ..moveTo(.35, .20)
+      ..lineTo(.22, .24)
+      ..lineTo(.10, .43)
+      ..lineTo(.25, .52)
+      ..lineTo(.30, .44)
+      ..lineTo(.30, .80)
       ..quadraticBezierTo(.50, .85, .70, .80)
-      ..lineTo(.70, .44)..lineTo(.75, .52)..lineTo(.90, .43)
-      ..lineTo(.78, .24)..lineTo(.65, .20)
-      ..quadraticBezierTo(.50, .31, .35, .20)..close();
-    canvas.drawPath(shirt, Paint()..color = Color.lerp(const Color(0xFF17242F), accent, .19)!);
+      ..lineTo(.70, .44)
+      ..lineTo(.75, .52)
+      ..lineTo(.90, .43)
+      ..lineTo(.78, .24)
+      ..lineTo(.65, .20)
+      ..quadraticBezierTo(.50, .31, .35, .20)
+      ..close();
+    canvas.drawPath(
+      shirt,
+      Paint()..color = Color.lerp(const Color(0xFF17242F), accent, .19)!,
+    );
     canvas.save();
     canvas.clipPath(shirt);
-    canvas.drawRect(const Rect.fromLTWH(.37, .20, .065, .66),
-        Paint()..color = accent.withValues(alpha: .12));
-    canvas.drawRect(const Rect.fromLTWH(.565, .20, .065, .66),
-        Paint()..color = accent.withValues(alpha: .12));
+    canvas.drawRect(
+      const Rect.fromLTWH(.37, .20, .065, .66),
+      Paint()..color = accent.withValues(alpha: .12),
+    );
+    canvas.drawRect(
+      const Rect.fromLTWH(.565, .20, .065, .66),
+      Paint()..color = accent.withValues(alpha: .12),
+    );
     canvas.restore();
-    canvas.drawPath(shirt, Paint()..color = accent..style = PaintingStyle.stroke
-      ..strokeWidth = .019..strokeJoin = StrokeJoin.round);
-    canvas.drawPath(Path()..moveTo(.35, .20)..quadraticBezierTo(.50, .40, .65, .20),
-        Paint()..color = accent..style = PaintingStyle.stroke..strokeWidth = .024);
+    canvas.drawPath(
+      shirt,
+      Paint()
+        ..color = accent
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .019
+        ..strokeJoin = StrokeJoin.round,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(.35, .20)
+        ..quadraticBezierTo(.50, .40, .65, .20),
+      Paint()
+        ..color = accent
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .024,
+    );
     canvas.restore();
   }
 
