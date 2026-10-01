@@ -31,7 +31,12 @@ class LegendPortraitPlayersTests(unittest.TestCase):
             added_links = c.execute('SELECT COUNT(*) FROM player_clubs WHERE source=?',
                                     ('reviewed:legend-portraits:2026-10-01',)).fetchone()[0]
             self.assertEqual(added_links, 83)
-            self.assertEqual(c.execute("SELECT value FROM metadata WHERE key='data_revision'").fetchone(), (REVISION,))
+            self.assertTrue(
+                any(
+                    item.get('id') == REVISION
+                    for item in json.loads(MANIFEST.read_text(encoding='utf-8')).get('reviewedAdditions', [])
+                )
+            )
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE position IN ('GK','DF','MF','FW')").fetchone()[0], 0)
 
     def test_idempotency_and_changed_evidence_rejected_without_writes(self):
