@@ -116,7 +116,7 @@ def write_catalog(manifest: dict) -> None:
         "  };",
         "",
         "  static String? forPlayerName(String name) {",
-        "    final key = name.trim().toLowerCase().replaceAll('’', "'");",
+        '    final key = name.trim().toLowerCase().replaceAll(\'’\', "\'");',
         "    return _byName[key];",
         "  }",
         "}",
