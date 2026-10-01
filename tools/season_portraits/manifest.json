@@ -1,0 +1,240 @@
+{
+  "sources": {
+    "2012_13": {
+      "url": "https://www.behance.net/gallery/9010659/56-football-players-20122013-season",
+      "referenceSize": [
+        600,
+        1010
+      ],
+      "grid": {
+        "x0": 26,
+        "xStep": 82,
+        "y0": 56,
+        "yStep": 117,
+        "cardWidth": 73,
+        "portraitHeight": 88
+      }
+    },
+    "2013_14": {
+      "url": "https://www.behance.net/gallery/19289757/56-football-players-20132014-season",
+      "referenceSize": [
+        736,
+        1239
+      ],
+      "grid": {
+        "x0": 31,
+        "xStep": 97,
+        "y0": 72,
+        "yStep": 141,
+        "cardWidth": 90,
+        "portraitHeight": 108
+      }
+    }
+  },
+  "seasons": {
+    "2012_13": [
+      [
+        "Franck Ribery",
+        "Toni Kroos",
+        "Bastian Schweinsteiger",
+        "Philipp Lahm",
+        "Arjen Robben",
+        "Mesut Ozil",
+        "Sami Khedira"
+      ],
+      [
+        "Vincent Kompany",
+        "Joleon Lescott",
+        "David Silva",
+        "Carlos Tevez",
+        "Cristiano Ronaldo",
+        "Karim Benzema",
+        "Sergio Ramos"
+      ],
+      [
+        "Gylfi Sigurdsson",
+        "Clint Dempsey",
+        "Stephan El Shaarawy",
+        "M'Baye Niang",
+        "Mario Balotelli",
+        "Didier Drogba",
+        "Wesley Sneijder"
+      ],
+      [
+        "Petr Cech",
+        "Frank Lampard",
+        "Fernando Torres",
+        "Eden Hazard",
+        "Thiago Motta",
+        "Marco Verratti",
+        "Javier Pastore"
+      ],
+      [
+        "Mats Hummels",
+        "Gareth Bale",
+        "Iker Casillas",
+        "Gerard Pique",
+        "Xavi Hernandez",
+        "Andres Iniesta",
+        "Lionel Messi"
+      ],
+      [
+        "Steven Gerrard",
+        "Michael Essien",
+        "Marco Reus",
+        "Mario Gotze",
+        "Robert Lewandowski",
+        "Thierry Henry",
+        "Juninho Pernambucano"
+      ],
+      [
+        "Victor Moses",
+        "David Beckham",
+        "Zlatan Ibrahimovic",
+        "Blaise Matuidi",
+        "Salvatore Sirigu",
+        "Lucas Moura",
+        "Giorgio Chiellini"
+      ],
+      [
+        "Claudio Marchisio",
+        "Andrea Pirlo",
+        "Javier Zanetti",
+        "Robin van Persie",
+        "Wayne Rooney",
+        "Paul Scholes",
+        "Rio Ferdinand"
+      ]
+    ],
+    "2013_14": [
+      [
+        "Franck Ribery",
+        "Toni Kroos",
+        "Bastian Schweinsteiger",
+        "Philipp Lahm",
+        "Arjen Robben",
+        "Mario Gotze",
+        "Andrea Pirlo"
+      ],
+      [
+        "Vincent Kompany",
+        "Joleon Lescott",
+        "David Silva",
+        "Gareth Bale",
+        "Cristiano Ronaldo",
+        "Karim Benzema",
+        "Carlos Tevez"
+      ],
+      [
+        "Martin Skrtel",
+        "Mamadou Sakho",
+        "Daniel Agger",
+        "Luka Modric",
+        "Sergio Ramos",
+        "Marcelo",
+        "Gonzalo Higuain"
+      ],
+      [
+        "Raheem Sterling",
+        "Steven Gerrard",
+        "Luis Suarez",
+        "Eden Hazard",
+        "Petr Cech",
+        "Frank Lampard",
+        "Fernando Torres"
+      ],
+      [
+        "Salvatore Sirigu",
+        "Blaise Matuidi",
+        "Neymar",
+        "Dani Alves",
+        "Xavi Hernandez",
+        "Andres Iniesta",
+        "Lionel Messi"
+      ],
+      [
+        "Zlatan Ibrahimovic",
+        "Thiago Silva",
+        "Olivier Giroud",
+        "Laurent Koscielny",
+        "Jack Wilshere",
+        "Kieran Gibbs",
+        "Mesut Ozil"
+      ],
+      [
+        "Ezequiel Lavezzi",
+        "Edinson Cavani",
+        "Aaron Ramsey",
+        "Radamel Falcao",
+        "Francesco Totti",
+        "Robert Lewandowski",
+        "Marco Reus"
+      ],
+      [
+        "Robin van Persie",
+        "Ryan Giggs",
+        "Wayne Rooney",
+        "Michael Carrick",
+        "Patrice Evra",
+        "David Villa",
+        "Diego Costa"
+      ]
+    ]
+  },
+  "aliases": {
+    "Franck Ribery": [
+      "Franck Ribéry"
+    ],
+    "Mario Gotze": [
+      "Mario Götze"
+    ],
+    "Mesut Ozil": [
+      "Mesut Özil"
+    ],
+    "Martin Skrtel": [
+      "Martin Škrtel"
+    ],
+    "Luka Modric": [
+      "Luka Modrić"
+    ],
+    "Gonzalo Higuain": [
+      "Gonzalo Higuaín"
+    ],
+    "Luis Suarez": [
+      "Luis Suárez"
+    ],
+    "Petr Cech": [
+      "Petr Čech"
+    ],
+    "Xavi Hernandez": [
+      "Xavi Hernández",
+      "Xavi"
+    ],
+    "Andres Iniesta": [
+      "Andrés Iniesta"
+    ],
+    "Gylfi Sigurdsson": [
+      "Gylfi Sigurðsson"
+    ],
+    "Gerard Pique": [
+      "Gerard Piqué"
+    ],
+    "M'Baye Niang": [
+      "M'Baye Niang",
+      "Mbaye Niang"
+    ],
+    "Javier Zanetti": [
+      "Javier Adelmar Zanetti"
+    ],
+    "Marcelo": [
+      "Marcelo Vieira",
+      "Marcelo Vieira da Silva Júnior",
+      "Marcelo Vieira da Silva Junior"
+    ],
+    "Neymar": [
+      "Neymar Jr",
+      "Neymar da Silva Santos Júnior",
+      "Neymar da Silva Santos Junior"
+    ]
+  }
+}
