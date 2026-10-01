@@ -14,7 +14,7 @@ test("catalog exposes server prices, solo modes and unique stable item definitio
   assert.equal(c.offers.length, catalog.offers.length + 4);
   assert.equal(new Set(c.offers.map((o) => o.offerId)).size, c.offers.length);
   assert.equal(catalog.offers.filter((o) => o.itemType === "kit").length, 24);
-  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar").length, 33);
+  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar").length, 32);
   for (const o of catalog.offers) {
     assert.ok(Number.isSafeInteger(o.priceCoins) && o.priceCoins > 0);
     if (o.itemType === "boost") assert.deepEqual(o.modes, ["futbol_lingo", "mystery_player", "transfer_detective"]);
