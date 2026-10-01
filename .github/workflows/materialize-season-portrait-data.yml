@@ -1,0 +1,45 @@
+name: Materialize season portrait player data
+
+on:
+  push:
+    branches:
+      - codex/player-portraits-avatar-refresh
+    paths:
+      - "tools/data_platform_v4/apply_season_portrait_players.py"
+      - "tools/data_platform_v4/patches/season-portrait-players-2026-10-01.json"
+      - "tools/data_platform_v4/test_season_portrait_players.py"
+      - ".github/workflows/materialize-season-portrait-data.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[season-portrait-data-materialized]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/player-portraits-avatar-refresh
+          fetch-depth: 0
+      - name: Apply reviewed season portrait player patch
+        run: |
+          python3 tools/data_platform_v4/apply_notable_players.py
+          python3 tools/data_platform_v4/apply_legend_portrait_players.py
+          python3 tools/data_platform_v4/apply_season_portrait_players.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_season_portrait_players.py'
+          python3 tools/data_platform_v4/export_daily_catalog.py
+      - name: Commit materialized runtime data
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- assets/runtime/linkball_game_data_v4.sqlite assets/runtime/linkball_game_data_v4_manifest.json functions/config/daily_catalog.json; then
+            echo "Runtime data already materialized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/runtime/linkball_game_data_v4.sqlite assets/runtime/linkball_game_data_v4_manifest.json functions/config/daily_catalog.json
+          git commit -m "data: materialize 3 season portrait players [season-portrait-data-materialized]"
+          git push origin HEAD:codex/player-portraits-avatar-refresh
