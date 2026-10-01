@@ -18,8 +18,10 @@ class PlayerAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final (accent, code, label) = PlayerKitIdentity.position(player.position);
     final detailed = size >= 64;
-    final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id) ??
-        SeasonPortraitCatalog.forPlayerName(player.name);
+    final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id);
+    final seasonPortrait = portraitAsset == null
+        ? SeasonPortraitCatalog.forPlayerName(player.name)
+        : null;
     return Semantics(
       image: true,
       label:
@@ -38,15 +40,8 @@ class PlayerAvatar extends StatelessWidget {
             ),
             border: Border.all(color: accent.withValues(alpha: .45)),
           ),
-          child: portraitAsset == null
-              ? _KitIdentity(
-                  player: player,
-                  size: size,
-                  accent: accent,
-                  code: code,
-                  detailed: detailed,
-                )
-              : Image.asset(
+          child: portraitAsset != null
+              ? Image.asset(
                   portraitAsset,
                   fit: BoxFit.cover,
                   filterQuality: FilterQuality.medium,
@@ -57,8 +52,76 @@ class PlayerAvatar extends StatelessWidget {
                     code: code,
                     detailed: detailed,
                   ),
+                )
+              : seasonPortrait != null
+              ? _SeasonPortrait(
+                  spec: seasonPortrait,
+                  size: size,
+                  fallback: _KitIdentity(
+                    player: player,
+                    size: size,
+                    accent: accent,
+                    code: code,
+                    detailed: detailed,
+                  ),
+                )
+              : _KitIdentity(
+                  player: player,
+                  size: size,
+                  accent: accent,
+                  code: code,
+                  detailed: detailed,
                 ),
         ),
+      ),
+    );
+  }
+}
+
+class _SeasonPortrait extends StatelessWidget {
+  const _SeasonPortrait({
+    required this.spec,
+    required this.size,
+    required this.fallback,
+  });
+
+  final SeasonPortraitSpec spec;
+  final double size;
+  final Widget fallback;
+
+  @override
+  Widget build(BuildContext context) {
+    final sheetWidth = size * 7;
+    final sheetHeight = size * 8;
+    return ClipRect(
+      child: Stack(
+        clipBehavior: Clip.hardEdge,
+        children: [
+          Positioned(
+            left: -spec.column * size,
+            top: -spec.row * size,
+            width: sheetWidth,
+            height: sheetHeight,
+            child: Image.asset(
+              spec.asset,
+              width: sheetWidth,
+              height: sheetHeight,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.medium,
+              errorBuilder: (_, __, ___) => SizedBox(
+                width: sheetWidth,
+                height: sheetHeight,
+                child: Align(
+                  alignment: Alignment(
+                    -1 + (2 * spec.column / 6),
+                    -1 + (2 * spec.row / 7),
+                  ),
+                  child: SizedBox(width: size, height: size, child: fallback),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
