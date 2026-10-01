@@ -7,6 +7,7 @@ import '../models/premium_billing_models.dart';
 import '../models/premium_models.dart';
 import '../services/premium_billing_service.dart';
 import 'sign_in_page.dart';
+import 'season_pass_page.dart';
 import '../services/experience/pro_gateway.dart';
 import '../app/route_appearance.dart';
 import '../widgets/social_ui.dart';
@@ -414,7 +415,19 @@ class _PremiumPageState extends State<PremiumPage> {
               const SizedBox(height: 16),
             ],
             const PitchSectionTitle('Pro ile neler değişir?'),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(
+                context,
+              ).push(LinkballRoute(builder: (_) => const SeasonPassPage())),
+              icon: const Icon(Icons.route_outlined),
+              label: const Text('Sezon Rotası’nı incele'),
+            ),
             for (final item in const [
+              (
+                Icons.route_rounded,
+                'Sezon Rotası Pro yolu',
+                '20 duraklı aylık rotada ek 1.040 Link Coin. Görevlerle ilerle, ulaştığın ödülleri al. Ek sezon kartı satın alman gerekmez.',
+              ),
               (
                 Icons.card_giftcard_outlined,
                 'Reklamsız bonus',

@@ -8,6 +8,7 @@ import '../services/experience/progress_gateway.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/social_ui.dart';
 import 'achievements_page.dart';
+import 'season_pass_page.dart';
 
 class ProgressionCenterPage extends StatefulWidget {
   const ProgressionCenterPage({
@@ -238,26 +239,27 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         const SizedBox(height: 16),
         PitchPanel(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                c('Sezon yolculuğu', 'Season journey'),
-                style: Theme.of(context).textTheme.titleMedium,
+                c('Sezon Rotası', 'Season Route'),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              Text(p.season.title),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(value: p.season.ratio),
               const SizedBox(height: 8),
               Text(
                 c(
-                  'Seviye ${p.season.level} · ${p.season.xp} sezon XP',
-                  'Level ${p.season.level} · ${p.season.xp} season XP',
+                  'Görevlerini tamamla, sezon puanı kazan. 20 durak, ücretsiz ödüller ve Pro’ya dahil ikinci ödül yolu.',
+                  'Complete missions, earn season points. 20 stops, free rewards and a second track included with Pro.',
                 ),
               ),
-              if (p.season.endsOn.isNotEmpty)
-                Text(
-                  c('Bitiş: ${p.season.endsOn}', 'Ends: ${p.season.endsOn}'),
-                ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(LinkballRoute(builder: (_) => const SeasonPassPage())),
+                icon: const Icon(Icons.route_outlined),
+                label: Text(c('Sezon kartını aç', 'Open season card')),
+              ),
             ],
           ),
         ),
@@ -298,7 +300,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                   '${m.dailyCompletedCount}/${m.dailyClaimLimit} rewards claimed · Resets at 00:00 Türkiye time.',
                 )
               : c(
-                  'Aşamaları tamamla, sıradaki hedefi aç.',
+                  'Aşamaları tamamla, sıradaki hedefi aç. Ödülünü alınca sezon puanı da kazanırsın (günlük SP sınırı içinde).',
                   'Complete stages to unlock the next goal.',
                 ),
         ),
@@ -376,6 +378,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
           children: [
             SocialStatus('+${s.rewardCoins} Link Coin'),
             SocialStatus('+${s.xpReward} XP'),
+            const SocialStatus('+10 SP'),
             if (s.multiplier > 1) SocialStatus('${s.multiplier}× Pro'),
             if (s.streakProtectionAvailable)
               SocialStatus(c('Seri koruması', 'Streak protection')),
@@ -445,6 +448,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 ),
               ),
             SocialStatus('+${m.rewardCoins} Link Coin'),
+            SocialStatus('+${m.kind == MissionKind.daily ? 30 : 50} SP'),
           ],
         ),
         const SizedBox(height: 12),
