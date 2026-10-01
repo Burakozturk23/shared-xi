@@ -20,6 +20,7 @@ class AchievementsPage extends StatefulWidget {
 }
 
 class _AchievementsPageState extends State<AchievementsPage> {
+  final _scroll = ScrollController();
   BadgeSnapshot? _data;
   bool _loading = false, _error = false;
   final Set<String> _claiming = {}, _acknowledged = {};
@@ -30,6 +31,19 @@ class _AchievementsPageState extends State<AchievementsPage> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _selectTrack(_AchievementTrack? track) {
+    setState(() => _category = track);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scroll.hasClients) _scroll.jumpTo(0);
+    });
   }
 
   Future<void> _load() async {
@@ -236,6 +250,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             .toList()
           ..sort((a, b) => _ratio(b).compareTo(_ratio(a)));
     return ListView(
+      controller: _scroll,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       children: [
@@ -295,13 +310,13 @@ class _AchievementsPageState extends State<AchievementsPage> {
             ChoiceChip(
               label: Text(c('Her kategori', 'All categories')),
               selected: _category == null,
-              onSelected: (_) => setState(() => _category = null),
+              onSelected: (_) => _selectTrack(null),
             ),
             for (final cat in _AchievementTrack.values)
               ChoiceChip(
                 label: Text(_trackLabel(cat)),
                 selected: _category == cat,
-                onSelected: (_) => setState(() => _category = cat),
+                onSelected: (_) => _selectTrack(cat),
               ),
           ],
         ),
@@ -375,7 +390,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               TextButton(
-                onPressed: () => setState(() => _category = track),
+                onPressed: () => _selectTrack(track),
                 child: Text(c('Tümünü gör', 'See all')),
               ),
             ],

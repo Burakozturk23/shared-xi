@@ -344,6 +344,7 @@ class _SeasonPassPageState extends State<SeasonPassPage>
           const Text('Link Coin', textAlign: TextAlign.center),
           const SizedBox(height: 10),
           FilledButton(
+            key: ValueKey('season-${t.step}-$lane'),
             onPressed: _busy || claimed || !available
                 ? null
                 : () => _claim(t, lane),

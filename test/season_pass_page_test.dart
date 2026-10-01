@@ -131,13 +131,13 @@ void main() {
     await open(t, SeasonPassPage(gateway: g));
     expect(find.text('50 SP sonra sıradaki ödül'), findsOneWidget);
     await preview(t, 'season-home');
-    final button = find.widgetWithText(FilledButton, 'Ödülü al').first;
+    final button = find.byKey(const ValueKey('season-1-free'));
     await reveal(t, button);
     await t.tap(button);
     await t.pumpAndSettle();
     expect(g.claims, 1);
     expect(find.text('Alındı'), findsOneWidget);
-    final pro = find.widgetWithText(FilledButton, 'Pro').first;
+    final pro = find.byKey(const ValueKey('season-1-pro'));
     expect(t.widget<FilledButton>(pro).onPressed, isNull);
     await preview(t, 'season-rewards');
     expect(t.takeException(), isNull);
@@ -148,7 +148,7 @@ void main() {
     final g = SeasonFake()..pro = true;
     await open(t, SeasonPassPage(gateway: g));
     expect(find.text('Pro rotan açık'), findsOneWidget);
-    final button = find.widgetWithText(FilledButton, 'Ödülü al').at(1);
+    final button = find.byKey(const ValueKey('season-1-pro'));
     await reveal(t, button);
     await t.tap(button);
     await t.pumpAndSettle();
@@ -167,7 +167,7 @@ void main() {
     g.fail = false;
     await t.tap(find.byTooltip('Yenile'));
     await t.pumpAndSettle();
-    await reveal(t, find.widgetWithText(FilledButton, 'Ödülü al').first);
+    await reveal(t, find.byKey(const ValueKey('season-1-free')));
     await preview(t, 'season-large');
     expect(t.takeException(), isNull);
   });
@@ -180,8 +180,8 @@ void main() {
     await reveal(t, find.widgetWithText(ChoiceChip, 'Galibiyet'));
     await t.tap(find.widgetWithText(ChoiceChip, 'Galibiyet'));
     await t.pumpAndSettle();
-    expect(find.text('750 dereceli galibiyet kazan.'), findsOneWidget);
     await reveal(t, find.text('Linkball İkonu'));
+    expect(find.text('750 dereceli galibiyet kazan.'), findsOneWidget);
     await t.tap(find.text('Linkball İkonu'));
     await t.pumpAndSettle();
     expect(find.text('Koleksiyona dön'), findsOneWidget);
