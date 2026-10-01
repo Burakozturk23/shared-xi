@@ -1,0 +1,602 @@
+{
+  "reviewedUtc": "2026-10-01",
+  "policy": "Verified senior playing clubs only. Club history is intentionally partial; coaching, youth teams, appearances, transfer dates and fees are not inferred. These identities fill missing or ambiguous legendary-player records used by the approved portrait set.",
+  "portraitSource": "Mathieu Marcou — 50 Legendary Football Players Portraits (user confirmed publication permission for this project).",
+  "players": [
+    {
+      "id": 4000000046,
+      "name": "Rivaldo",
+      "birthYear": 1972,
+      "country": "Brazil",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rivaldo"
+      ],
+      "clubs": [
+        {
+          "id": 585,
+          "name": "São Paulo Futebol Clube"
+        },
+        {
+          "id": 199,
+          "name": "Sport Club Corinthians Paulista"
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 683,
+          "name": "Olympiacos Piraeus"
+        },
+        {
+          "id": 2441,
+          "name": "AEK Athens"
+        }
+      ]
+    },
+    {
+      "id": 4000000047,
+      "name": "Jürgen Klinsmann",
+      "birthYear": 1964,
+      "country": "Germany",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/J%C3%BCrgen_Klinsmann"
+      ],
+      "clubs": [
+        {
+          "id": 79,
+          "name": "VfB Stuttgart"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 162,
+          "name": "AS Monaco"
+        },
+        {
+          "id": 148,
+          "name": "Tottenham Hotspur"
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        }
+      ]
+    },
+    {
+      "id": 4000000048,
+      "name": "Bobby Charlton",
+      "birthYear": 1937,
+      "country": "England",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bobby_Charlton"
+      ],
+      "clubs": [
+        {
+          "id": 985,
+          "name": "Manchester United"
+        }
+      ]
+    },
+    {
+      "id": 4000000049,
+      "name": "Andriy Shevchenko",
+      "birthYear": 1976,
+      "country": "Ukraine",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Andriy_Shevchenko"
+      ],
+      "clubs": [
+        {
+          "id": 338,
+          "name": "Dynamo Kyiv"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 631,
+          "name": "Chelsea FC"
+        }
+      ]
+    },
+    {
+      "id": 4000000050,
+      "name": "Davor Šuker",
+      "birthYear": 1968,
+      "country": "Croatia",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Davor_%C5%A0uker"
+      ],
+      "clubs": [
+        {
+          "id": 327,
+          "name": "NK Osijek"
+        },
+        {
+          "id": 419,
+          "name": "GNK Dinamo Zagreb"
+        },
+        {
+          "id": 368,
+          "name": "Sevilla FC"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 11,
+          "name": "Arsenal FC"
+        }
+      ]
+    },
+    {
+      "id": 4000000051,
+      "name": "Carlos Valderrama",
+      "birthYear": 1961,
+      "country": "Colombia",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Carlos_Valderrama"
+      ],
+      "clubs": [
+        {
+          "id": 14680,
+          "name": "Unión Magdalena"
+        },
+        {
+          "id": 9961,
+          "name": "Deportivo Cali"
+        },
+        {
+          "id": 969,
+          "name": "Montpellier HSC"
+        },
+        {
+          "id": 366,
+          "name": "Real Valladolid CF"
+        },
+        {
+          "id": 11854,
+          "name": "Junior FC"
+        }
+      ]
+    },
+    {
+      "id": 4000000052,
+      "name": "Hidetoshi Nakata",
+      "birthYear": 1977,
+      "country": "Japan",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hidetoshi_Nakata"
+      ],
+      "clubs": [
+        {
+          "id": 8457,
+          "name": "Shonan Bellmare"
+        },
+        {
+          "id": 839,
+          "name": "AC Perugia Calcio"
+        },
+        {
+          "id": 12,
+          "name": "AS Roma"
+        },
+        {
+          "id": 130,
+          "name": "Parma Calcio 1913"
+        },
+        {
+          "id": 355,
+          "name": "Bolton Wanderers"
+        }
+      ]
+    },
+    {
+      "id": 4000000053,
+      "name": "Juninho Pernambucano",
+      "birthYear": 1975,
+      "country": "Brazil",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Juninho_Pernambucano"
+      ],
+      "clubs": [
+        {
+          "id": 978,
+          "name": "Clube de Regatas Vasco da Gama"
+        },
+        {
+          "id": 1041,
+          "name": "Olympique Lyon"
+        },
+        {
+          "id": 6297,
+          "name": "Al-Gharafa SC"
+        },
+        {
+          "id": 623,
+          "name": "New York Red Bulls"
+        }
+      ]
+    },
+    {
+      "id": 4000000054,
+      "name": "Fernando Hierro",
+      "birthYear": 1968,
+      "country": "Spain",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fernando_Hierro"
+      ],
+      "clubs": [
+        {
+          "id": 366,
+          "name": "Real Valladolid CF"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 3229,
+          "name": "Al-Rayyan SC"
+        },
+        {
+          "id": 355,
+          "name": "Bolton Wanderers"
+        }
+      ]
+    },
+    {
+      "id": 4000000055,
+      "name": "Edgar Davids",
+      "birthYear": 1973,
+      "country": "Netherlands",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Edgar_Davids"
+      ],
+      "clubs": [
+        {
+          "id": 610,
+          "name": "Ajax Amsterdam"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 506
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        }
+      ]
+    },
+    {
+      "id": 4000000056,
+      "name": "Ruud van Nistelrooy",
+      "birthYear": 1976,
+      "country": "Netherlands",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ruud_van_Nistelrooy"
+      ],
+      "clubs": [
+        {
+          "id": 404,
+          "name": "FC Den Bosch"
+        },
+        {
+          "id": 306,
+          "name": "SC Heerenveen"
+        },
+        {
+          "id": 383,
+          "name": "PSV Eindhoven"
+        },
+        {
+          "id": 985,
+          "name": "Manchester United"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        }
+      ]
+    },
+    {
+      "id": 4000000057,
+      "name": "Enzo Francescoli",
+      "birthYear": 1961,
+      "country": "Uruguay",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Enzo_Francescoli"
+      ],
+      "clubs": [
+        {
+          "id": 209,
+          "name": "CA River Plate"
+        },
+        {
+          "id": 3318,
+          "name": "Racing Club de France"
+        },
+        {
+          "id": 244,
+          "name": "Olympique Marseille"
+        },
+        {
+          "id": 1390,
+          "name": "Cagliari Calcio"
+        }
+      ]
+    },
+    {
+      "id": 4000000058,
+      "name": "Frank Rijkaard",
+      "birthYear": 1962,
+      "country": "Netherlands",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Frank_Rijkaard"
+      ],
+      "clubs": [
+        {
+          "id": 610,
+          "name": "Ajax Amsterdam"
+        },
+        {
+          "id": 142,
+          "name": "Real Zaragoza"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        }
+      ]
+    },
+    {
+      "id": 4000000059,
+      "name": "Ryan Giggs",
+      "birthYear": 1973,
+      "country": "Wales",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ryan_Giggs"
+      ],
+      "clubs": [
+        {
+          "id": 985,
+          "name": "Manchester United"
+        }
+      ]
+    },
+    {
+      "id": 4000000060,
+      "name": "Juan Román Riquelme",
+      "birthYear": 1978,
+      "country": "Argentina",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Juan_Rom%C3%A1n_Riquelme"
+      ],
+      "clubs": [
+        {
+          "id": 189,
+          "name": "CA Boca Juniors"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 1050,
+          "name": "Villarreal CF"
+        },
+        {
+          "id": 1030,
+          "name": "AA Argentinos Juniors"
+        }
+      ]
+    },
+    {
+      "id": 4000000061,
+      "name": "Jean-Pierre Papin",
+      "birthYear": 1963,
+      "country": "France",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jean-Pierre_Papin"
+      ],
+      "clubs": [
+        {
+          "id": 1423,
+          "name": "Valenciennes FC"
+        },
+        {
+          "id": 2282,
+          "name": "Club Brugge KV"
+        },
+        {
+          "id": 244,
+          "name": "Olympique Marseille"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        }
+      ]
+    },
+    {
+      "id": 4000000062,
+      "name": "Pep Guardiola",
+      "birthYear": 1971,
+      "country": "Spain",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pep_Guardiola"
+      ],
+      "clubs": [
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 19,
+          "name": "Brescia Calcio (- 2025)"
+        },
+        {
+          "id": 12,
+          "name": "AS Roma"
+        },
+        {
+          "id": 10091,
+          "name": "Dorados de Sinaloa"
+        }
+      ]
+    },
+    {
+      "id": 4000000063,
+      "name": "Sócrates",
+      "birthYear": 1954,
+      "country": "Brazil",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/S%C3%B3crates_(footballer)"
+      ],
+      "clubs": [
+        {
+          "id": 199,
+          "name": "Sport Club Corinthians Paulista"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 614,
+          "name": "CR Flamengo"
+        }
+      ]
+    },
+    {
+      "id": 4000000064,
+      "name": "Raúl González Blanco",
+      "birthYear": 1977,
+      "country": "Spain",
+      "position": "Attack",
+      "aliases": [
+        "Raúl",
+        "Raúl González"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ra%C3%BAl_(footballer)"
+      ],
+      "clubs": [
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 33,
+          "name": "FC Schalke 04"
+        },
+        {
+          "id": 656,
+          "name": "Al-Sadd SC"
+        }
+      ]
+    },
+    {
+      "id": 4000000065,
+      "name": "Pelé (Edson Arantes do Nascimento)",
+      "birthYear": 1940,
+      "country": "Brazil",
+      "position": "Attack",
+      "aliases": [
+        "Pelé",
+        "Edson Arantes do Nascimento"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pel%C3%A9"
+      ],
+      "clubs": [
+        {
+          "id": 221,
+          "name": "Santos FC"
+        }
+      ]
+    },
+    {
+      "id": 4000000066,
+      "name": "Romário de Souza Faria",
+      "birthYear": 1966,
+      "country": "Brazil",
+      "position": "Attack",
+      "aliases": [
+        "Romário"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rom%C3%A1rio"
+      ],
+      "clubs": [
+        {
+          "id": 978,
+          "name": "Clube de Regatas Vasco da Gama"
+        },
+        {
+          "id": 383,
+          "name": "PSV Eindhoven"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 614,
+          "name": "CR Flamengo"
+        },
+        {
+          "id": 1049,
+          "name": "Valencia CF"
+        },
+        {
+          "id": 2462,
+          "name": "Fluminense Football Club"
+        }
+      ]
+    }
+  ],
+  "corrections": []
+}
