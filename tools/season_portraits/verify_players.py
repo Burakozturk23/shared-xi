@@ -29,6 +29,8 @@ def main() -> int:
                     seen.add(name)
                     requested.append(name)
 
+    requested.extend(p['name'] for p in manifest.get('additionalPortraits', []))
+
     with sqlite3.connect(DB) as con:
         player_names = {row[0]: norm(row[1]) for row in con.execute("SELECT id, name FROM players")}
         search_terms = {}
@@ -44,7 +46,7 @@ def main() -> int:
         if player_id is None or not any(norm(candidate) in terms for candidate in candidates):
             missing.append(name)
 
-    print(f"Season portrait players: {len(requested)} unique across 112 cards")
+    print(f"Season portrait players: {len(requested)} unique across source sheets and additional portraits")
     if missing:
         print("Missing from bundled V4 data:")
         for name in missing:

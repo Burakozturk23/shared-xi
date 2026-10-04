@@ -397,7 +397,7 @@ const collectionAvatars = <UserAvatarDefinition>[
   UserAvatarDefinition(
     id: 'persona_mikel_arteta',
     title: 'Mikel Arteta',
-    subtitle: 'İsimli profil avatarı',
+    subtitle: 'Futbolcu portresi',
     visualKey: 'persona_coaches',
     unlockKind: AvatarUnlockKind.shop,
   ),

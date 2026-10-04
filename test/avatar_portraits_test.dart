@@ -39,7 +39,7 @@ void main() {
         collectionAvatars.map((a) => a.id).toSet(),
         offers.map((o) => o['itemId']).toSet(),
       );
-      expect(PlayerPortraitCatalog.avatarPlayerIds.length, 44);
+      expect(PlayerPortraitCatalog.avatarPlayerIds.length, 45);
       for (final entry in PlayerPortraitCatalog.avatarPlayerIds.entries) {
         expect(
           UserAvatarCatalog.contains(entry.key),
@@ -64,7 +64,7 @@ void main() {
       expect(UserAvatarCatalog.contains('persona_mikel_arteta'), isTrue);
       expect(
         PlayerPortraitCatalog.playerIdForAvatar('persona_mikel_arteta'),
-        isNull,
+        7451,
       );
       expect(
         PlayerPortraitCatalog.playerIdForAvatar('persona_james_rodriguez'),
@@ -95,7 +95,7 @@ void main() {
       final key = GlobalKey();
       final ids = [
         ...PlayerPortraitCatalog.avatarPlayerIds.keys,
-        'persona_mikel_arteta',
+        'persona_emre_ozcan',
       ];
       await tester.pumpWidget(
         MaterialApp(
@@ -159,10 +159,11 @@ void main() {
         );
       });
       await tester.pumpAndSettle();
-      expect(find.byType(PlayerPortrait), findsNWidgets(44));
-      expect(find.byType(Image), findsNWidgets(44));
-      expect(find.byIcon(Icons.lock_rounded), findsNWidgets(45));
-      expect(find.text('MA'), findsOneWidget);
+      expect(find.byType(PlayerPortrait), findsNWidgets(45));
+      expect(find.byType(Image), findsNWidgets(45));
+      expect(find.byIcon(Icons.lock_rounded), findsNWidgets(46));
+      expect(find.text('MA'), findsNothing);
+      expect(find.text('EÖ'), findsOneWidget);
       expect(tester.takeException(), isNull);
       if (const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) {
         await tester.runAsync(() async {

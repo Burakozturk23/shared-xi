@@ -44,11 +44,15 @@ Marchisio and the 2013/14 card to Higuaín. Buffon now uses the newer Juventus c
 
 The latest update adds Lampard, Shevchenko, Sócrates, Deschamps, Cruyff, Valderrama,
 Gullit and Rijkaard with the existing legend artwork, plus James Rodríguez with
-his Monaco season card. Mikel Arteta is also selectable, with a clearly labelled
-monogram because no matching portrait is present in the bundled artwork.
-The collection has 66 avatar offers, 44 with portraits. Existing offer IDs,
+his Monaco season card. Mikel Arteta uses the separately captioned illustration supplied by the owner
+from the 2013/14 Behance project. It is absent from the bundled collage; the
+original screenshot is preserved and the existing display-time crop excludes
+the page controls and caption. Canonical player ID 7451 connects it to the
+profile picker, shop and player cards. Source and crop are in the manifest
+under `additionalPortraits`. No duplicate database player is added.
+The collection has 66 avatar offers, 45 with portraits. Existing offer IDs,
 prices and ownership remain valid; new entries follow their category prices.
-The Functions catalog version is 4. Deploy the updated Functions catalog with
+The Functions catalog version is 5. Deploy the updated Functions catalog with
 the app to make the new purchases available on the live backend.
 
 ## Caption audit (4 October)
@@ -56,7 +60,7 @@ the app to make the new purchases available on the live backend.
 All 112 season cards and the 50 bundled legend portraits were visually reviewed.
 There are 26 incorrect season-card labels in the earlier manifest; those have
 been corrected. The season sets contain 77 unique identities, and the union with
-the legend set contains 118. The full cell-by-cell correction record is in
+the legend set contains 118 (119 with the separate Arteta portrait). The full cell-by-cell correction record is in
 `tools/season_portraits/manifest.json` under `audit.corrections`.
 
 Behance's live project pages returned HTTP 403 during this review. The audit used

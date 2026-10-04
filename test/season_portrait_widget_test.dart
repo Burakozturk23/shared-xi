@@ -13,7 +13,7 @@ void main() {
   test(
     'source sheets decode at original dimensions and all crops fit',
     () async {
-      expect(SeasonPortraitCatalog.byPlayerId.length, 77);
+      expect(SeasonPortraitCatalog.byPlayerId.length, 78);
       for (final asset
           in SeasonPortraitCatalog.byPlayerId.values
               .map((s) => s.asset)
@@ -49,6 +49,7 @@ void main() {
     'caption audit fixes identities instead of lending faces to namesakes',
     () {
       final anchors = <int, (double, double)>{
+        7451: (235, 65), // Arteta, separately captioned source screenshot.
         5023: (617.8, 353.8), // Buffon, 2013/14 row 3, column 7.
         88103: (228.6, 901.4), // James, 2013/14 row 7, column 3.
         58358: (131.3, 80.0), // Müller, not Kroos.

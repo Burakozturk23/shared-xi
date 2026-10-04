@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "offers": [
     {
       "offerId": "avatar_cristiano_ronaldo",
@@ -1355,7 +1355,7 @@
       "itemType": "avatar",
       "category": "coaches",
       "title": "Mikel Arteta",
-      "subtitle": "İsimli profil avatarı · temsili monogram",
+      "subtitle": "Futbolcu portresi · profil avatarı",
       "badge": "KOLEKSİYON",
       "priceCoins": 300,
       "oneTime": true,

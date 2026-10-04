@@ -319,7 +319,8 @@
     "Michael Carrick": 3878,
     "Patrice Evra": 5285,
     "David Villa": 7980,
-    "Diego Costa": 44779
+    "Diego Costa": 44779,
+    "Mikel Arteta": 7451
   },
   "audit": {
     "reviewedUtc": "2026-10-04",
@@ -509,5 +510,24 @@
         "corrected": "James Rodriguez"
       }
     ]
-  }
+  },
+  "additionalPortraits": [
+    {
+      "name": "Mikel Arteta",
+      "asset": "assets/season_portraits/mikel_arteta_source.png",
+      "url": "https://www.behance.net/gallery/19289757/56-football-players-20132014-season",
+      "artist": "Mathieu MARCOU / FootballTRAFIC",
+      "source": "User-supplied screenshot of the separately captioned 8. MIKEL ARTETA // ARSENAL FC illustration; not a cell in the bundled collage.",
+      "referenceSize": [
+        1301,
+        837
+      ],
+      "crop": [
+        235,
+        65,
+        650,
+        650
+      ]
+    }
+  ]
 }

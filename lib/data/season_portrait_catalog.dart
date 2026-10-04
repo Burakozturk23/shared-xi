@@ -787,6 +787,16 @@ abstract final class SeasonPortraitCatalog {
       width: 84,
       height: 114,
     ),
+    // Mikel Arteta — separately captioned source artwork.
+    7451: SeasonPortraitSpec(
+      asset: 'assets/season_portraits/mikel_arteta_source.png',
+      sheetWidth: 1301,
+      sheetHeight: 837,
+      left: 235,
+      top: 65,
+      width: 650,
+      height: 650,
+    ),
   };
   static SeasonPortraitSpec? forPlayerId(int id) => byPlayerId[id];
 }

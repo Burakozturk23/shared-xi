@@ -101,6 +101,7 @@ abstract final class PlayerPortraitCatalog {
     'persona_ruud_gullit': 4000000042,
     'persona_frank_rijkaard': 4000000058,
     'persona_james_rodriguez': 88103,
+    'persona_mikel_arteta': 7451,
   };
 
   static String? forPlayerId(int playerId) => byPlayerId[playerId];
