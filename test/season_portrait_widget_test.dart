@@ -113,15 +113,18 @@ void main() {
     expect(find.text('LS'), findsOneWidget);
     expect(tester.takeException(), isNull);
     if (const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) {
-      final image =
-          await (key.currentContext!.findRenderObject()
-                  as RenderRepaintBoundary)
-              .toImage(pixelRatio: 2);
-      final data = await image.toByteData(format: ui.ImageByteFormat.png);
-      final file = File('.dart_tool/identity_qa/season-portraits.png');
-      await file.parent.create(recursive: true);
-      await file.writeAsBytes(data!.buffer.asUint8List());
-      image.dispose();
+      // Image encoding and file IO must run outside the widget test fake clock.
+      await tester.runAsync(() async {
+        final image =
+            await (key.currentContext!.findRenderObject()
+                    as RenderRepaintBoundary)
+                .toImage(pixelRatio: 2);
+        final data = await image.toByteData(format: ui.ImageByteFormat.png);
+        final file = File('.dart_tool/identity_qa/season-portraits.png');
+        await file.parent.create(recursive: true);
+        await file.writeAsBytes(data!.buffer.asUint8List());
+        image.dispose();
+      });
     }
   });
 }
