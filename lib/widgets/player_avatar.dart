@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/country_flags.dart';
 import '../data/player_kit_identity.dart';
-import '../data/player_portrait_catalog.dart';
-import '../data/season_portrait_catalog.dart';
+import 'player_portrait.dart';
 import '../models/player.dart';
 
 /// Uses approved local portrait sets when a player is mapped and keeps the
@@ -18,10 +17,6 @@ class PlayerAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final (accent, code, label) = PlayerKitIdentity.position(player.position);
     final detailed = size >= 64;
-    final portraitAsset = PlayerPortraitCatalog.forPlayerId(player.id);
-    final seasonPortrait = portraitAsset == null
-        ? SeasonPortraitCatalog.forPlayerId(player.id)
-        : null;
     return Semantics(
       image: true,
       label:
@@ -40,86 +35,18 @@ class PlayerAvatar extends StatelessWidget {
             ),
             border: Border.all(color: accent.withValues(alpha: .45)),
           ),
-          child: portraitAsset != null
-              ? Image.asset(
-                  portraitAsset,
-                  fit: BoxFit.cover,
-                  filterQuality: FilterQuality.medium,
-                  errorBuilder: (_, __, ___) => _KitIdentity(
-                    player: player,
-                    size: size,
-                    accent: accent,
-                    code: code,
-                    detailed: detailed,
-                  ),
-                )
-              : seasonPortrait != null
-              ? _SeasonPortrait(
-                  spec: seasonPortrait,
-                  size: size,
-                  fallback: _KitIdentity(
-                    player: player,
-                    size: size,
-                    accent: accent,
-                    code: code,
-                    detailed: detailed,
-                  ),
-                )
-              : _KitIdentity(
-                  player: player,
-                  size: size,
-                  accent: accent,
-                  code: code,
-                  detailed: detailed,
-                ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SeasonPortrait extends StatelessWidget {
-  const _SeasonPortrait({
-    required this.spec,
-    required this.size,
-    required this.fallback,
-  });
-
-  final SeasonPortraitSpec spec;
-  final double size;
-  final Widget fallback;
-
-  @override
-  Widget build(BuildContext context) {
-    final scaleX = size / spec.width;
-    final scaleY = size / spec.height;
-    return ClipRect(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            left: -spec.left * scaleX,
-            top: -spec.top * scaleY,
-            width: spec.sheetWidth * scaleX,
-            height: spec.sheetHeight * scaleY,
-            child: Image.asset(
-              spec.asset,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.medium,
-              errorBuilder: (_, __, ___) => Stack(
-                children: [
-                  Positioned(
-                    left: spec.left * scaleX,
-                    top: spec.top * scaleY,
-                    width: size,
-                    height: size,
-                    child: fallback,
-                  ),
-                ],
-              ),
+          child: PlayerPortrait(
+            playerId: player.id,
+            size: size,
+            fallback: _KitIdentity(
+              player: player,
+              size: size,
+              accent: accent,
+              code: code,
+              detailed: detailed,
             ),
           ),
-        ],
+        ),
       ),
     );
   }

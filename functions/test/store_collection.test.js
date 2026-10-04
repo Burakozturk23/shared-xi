@@ -14,7 +14,7 @@ test("catalog exposes server prices, solo modes and unique stable item definitio
   assert.equal(c.offers.length, catalog.offers.length + 4);
   assert.equal(new Set(c.offers.map((o) => o.offerId)).size, c.offers.length);
   assert.equal(catalog.offers.filter((o) => o.itemType === "kit").length, 24);
-  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar").length, 32);
+  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar").length, 56);
   for (const o of catalog.offers) {
     assert.ok(Number.isSafeInteger(o.priceCoins) && o.priceCoins > 0);
     if (o.itemType === "boost") assert.deepEqual(o.modes, ["futbol_lingo", "mystery_player", "transfer_detective"]);
@@ -94,5 +94,19 @@ test("all store mutations require an authenticated linked account", async () => 
   for (const name of ["consumeStoreBoost", "equipStoreItem", "purchaseEconomyOffer"]) {
     await assert.rejects(h.call(name, {}, null), {code: "unauthenticated"});
     await assert.rejects(h.call(name, {}, {uid: "alice", token: {firebase: {sign_in_provider: "anonymous"}}}));
+  }
+});
+
+test("new portrait avatars can be bought and equipped exactly once", async () => {
+  const added = catalog.offers.filter((o) => o.itemType === "avatar" && o.sortOrder >= 140);
+  assert.equal(added.length, 24);
+  for (const offer of added) {
+    const h = funded(1000);
+    await assert.rejects(h.call("equipStoreItem", {itemId: offer.itemId}), {code: "permission-denied"});
+    await buy(h, offer.offerId, "new_avatar_request_1", offer.priceCoins);
+    await buy(h, offer.offerId, "new_avatar_request_2", offer.priceCoins);
+    await h.call("equipStoreItem", {itemId: offer.itemId});
+    assert.equal(h.read("economyState/alice/balances/coins"), 1000 - offer.priceCoins);
+    assert.equal(h.read("users/alice/avatarId"), offer.itemId);
   }
 });

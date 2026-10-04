@@ -54,14 +54,47 @@ abstract final class PlayerPortraitCatalog {
     4000000024: '$assetRoot/legend_50.jpg',
   };
 
-  static const Map<String, String> byAvatarId = {
-    'persona_diego_maradona': '$assetRoot/legend_04.jpg',
-    'persona_zinedine_zidane': '$assetRoot/legend_26.jpg',
-    'persona_pele': '$assetRoot/legend_28.jpg',
-    'persona_ronaldinho': '$assetRoot/legend_30.jpg',
-    'persona_pep_guardiola': '$assetRoot/legend_48.jpg',
+  // Profile IDs remain stable; canonical player IDs select the same artwork
+  // and legend-over-season priority used on common-player cards.
+  static const Map<String, int> avatarPlayerIds = {
+    'persona_cristiano_ronaldo': 8198,
+    'persona_lionel_messi': 28003,
+    'persona_neymar': 68290,
+    'persona_karim_benzema': 18922,
+    'persona_luka_modric': 27992,
+    'persona_zlatan_ibrahimovic': 3455,
+    'persona_diego_maradona': 4000000035,
+    'persona_zinedine_zidane': 3111,
+    'persona_pele': 4000000065,
+    'persona_ronaldinho': 3373,
+    'persona_pep_guardiola': 4000000062,
+    'persona_ronaldo_nazario': 3140,
+    'persona_thierry_henry': 3207,
+    'persona_alessandro_del_piero': 4289,
+    'persona_carles_puyol': 4000000027,
+    'persona_francesco_totti': 4000000025,
+    'persona_roberto_baggio': 4000000044,
+    'persona_edgar_davids': 4000000055,
+    'persona_roberto_carlos': 4000000029,
+    'persona_xavi': 7607,
+    'persona_gennaro_gattuso': 5813,
+    'persona_david_beckham': 4000000023,
+    'persona_steven_gerrard': 3109,
+    'persona_paolo_maldini': 4000000024,
+    'persona_arjen_robben': 4360,
+    'persona_andrea_pirlo': 5817,
+    'persona_gareth_bale': 39381,
+    'persona_sergio_ramos': 25557,
+    'persona_luis_suarez': 44352,
+    'persona_petr_cech': 5658,
+    'persona_fernando_torres': 7767,
+    'persona_andres_iniesta': 7600,
+    'persona_didier_drogba': 3924,
+    'persona_wesley_sneijder': 4673,
   };
 
   static String? forPlayerId(int playerId) => byPlayerId[playerId];
-  static String? forAvatarId(String avatarId) => byAvatarId[avatarId];
+  static int? playerIdForAvatar(String avatarId) => avatarPlayerIds[avatarId];
+  static String? forAvatarId(String avatarId) =>
+      byPlayerId[avatarPlayerIds[avatarId]];
 }

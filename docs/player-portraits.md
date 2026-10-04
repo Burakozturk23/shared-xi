@@ -29,3 +29,18 @@ Validation covers source decoding, crop bounds, namesake exclusion, legend
 priority, widget rendering, database integrity, reviewed patch idempotency,
 Functions contracts, Flutter analysis/tests and Android debug compilation.
 Device integration and signed release builds are separate release checks.
+
+## Profile avatar coverage (4 October)
+
+Profile badges now resolve stable avatar IDs to canonical player IDs and use the
+same `PlayerPortrait` widget as common-player cards, including season-sheet crops,
+legend priority and a fallback when an asset cannot load. Existing portraits for
+Cristiano Ronaldo, Messi, Neymar, Benzema, Modrić and Ibrahimović are now available
+in the profile picker, store and other `UserAvatarBadge` surfaces.
+
+The requested 24 profile entries have been added to both client and server
+catalogs. 23 have supplied artwork; Buffon has no portrait in either approved set
+and retains his initials. In total, 34 of the 56 collection avatars have portraits.
+New legend offers follow the existing 450-coin, one-time purchase policy. Existing
+offer IDs, prices and ownership remain valid. The Functions catalog version is 3;
+its deployment is required to purchase the new entries against the live backend.
