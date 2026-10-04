@@ -13,7 +13,7 @@ void main() {
   test(
     'source sheets decode at original dimensions and all crops fit',
     () async {
-      expect(SeasonPortraitCatalog.byPlayerId.length, 81);
+      expect(SeasonPortraitCatalog.byPlayerId.length, 77);
       for (final asset
           in SeasonPortraitCatalog.byPlayerId.values
               .map((s) => s.asset)
@@ -45,6 +45,39 @@ void main() {
       }
     },
   );
+  test(
+    'caption audit fixes identities instead of lending faces to namesakes',
+    () {
+      final anchors = <int, (double, double)>{
+        5023: (617.8, 353.8), // Buffon, 2013/14 row 3, column 7.
+        88103: (228.6, 901.4), // James, 2013/14 row 7, column 3.
+        58358: (131.3, 80.0), // Müller, not Kroos.
+        47082: (131.3, 353.8), // Sturridge, not Sakho.
+        29434: (34.0, 901.4), // Cabaye, not Lavezzi (who is on row 5).
+        33713: (520.5, 764.5), // Walcott, not Gibbs.
+        4000000073: (424.5, 845.9), // Vidić, not Scholes.
+      };
+      for (final entry in anchors.entries) {
+        final spec = SeasonPortraitCatalog.forPlayerId(entry.key)!;
+        expect(spec.left, closeTo(entry.value.$1, 0.01));
+        expect(spec.top, closeTo(entry.value.$2, 0.01));
+      }
+      for (final id in [
+        31909,
+        3979,
+        44716,
+        50057,
+        47713,
+        44792,
+        4000000067,
+        4000000068,
+        55266,
+        75833,
+      ]) {
+        expect(SeasonPortraitCatalog.forPlayerId(id), isNull, reason: '$id');
+      }
+    },
+  );
   testWidgets('season faces, legend priority and unknown fallback render', (
     tester,
   ) async {
@@ -52,8 +85,8 @@ void main() {
     final players = [
       (8198, 'Cristiano Ronaldo'),
       (28003, 'Lionel Messi'),
-      (4000000067, 'Clint Dempsey'),
-      (4000000068, 'Javier Zanetti'),
+      (5023, 'Gianluigi Buffon'),
+      (88103, 'James Rodríguez'),
       (4000000069, 'Rio Ferdinand'),
       (44501, 'Marcelo'),
       (44352, 'Luis Suárez'),

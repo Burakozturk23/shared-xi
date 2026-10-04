@@ -34,12 +34,12 @@ void main() {
       final offers = (catalog['offers'] as List)
           .where((o) => o['itemType'] == 'avatar')
           .toList();
-      expect(collectionAvatars.length, 56);
+      expect(collectionAvatars.length, 66);
       expect(
         collectionAvatars.map((a) => a.id).toSet(),
         offers.map((o) => o['itemId']).toSet(),
       );
-      expect(PlayerPortraitCatalog.avatarPlayerIds.length, 34);
+      expect(PlayerPortraitCatalog.avatarPlayerIds.length, 44);
       for (final entry in PlayerPortraitCatalog.avatarPlayerIds.entries) {
         expect(
           UserAvatarCatalog.contains(entry.key),
@@ -55,11 +55,20 @@ void main() {
         final offer = offers.singleWhere((o) => o['itemId'] == entry.key);
         expect(offer['subtitle'], contains('portresi'));
       }
-      // No approved Buffon image exists in either supplied collection.
+      // Buffon now resolves to the Juventus card in the 2013/14 source.
       expect(UserAvatarCatalog.contains('persona_gianluigi_buffon'), isTrue);
       expect(
         PlayerPortraitCatalog.playerIdForAvatar('persona_gianluigi_buffon'),
+        5023,
+      );
+      expect(UserAvatarCatalog.contains('persona_mikel_arteta'), isTrue);
+      expect(
+        PlayerPortraitCatalog.playerIdForAvatar('persona_mikel_arteta'),
         isNull,
+      );
+      expect(
+        PlayerPortraitCatalog.playerIdForAvatar('persona_james_rodriguez'),
+        88103,
       );
       expect(
         PlayerPortraitCatalog.playerIdForAvatar('persona_cristiano_ronaldo'),
@@ -86,7 +95,7 @@ void main() {
       final key = GlobalKey();
       final ids = [
         ...PlayerPortraitCatalog.avatarPlayerIds.keys,
-        'persona_gianluigi_buffon',
+        'persona_mikel_arteta',
       ];
       await tester.pumpWidget(
         MaterialApp(
@@ -150,10 +159,10 @@ void main() {
         );
       });
       await tester.pumpAndSettle();
-      expect(find.byType(PlayerPortrait), findsNWidgets(34));
-      expect(find.byType(Image), findsNWidgets(34));
-      expect(find.byIcon(Icons.lock_rounded), findsNWidgets(35));
-      expect(find.text('GB'), findsOneWidget);
+      expect(find.byType(PlayerPortrait), findsNWidgets(44));
+      expect(find.byType(Image), findsNWidgets(44));
+      expect(find.byIcon(Icons.lock_rounded), findsNWidgets(45));
+      expect(find.text('MA'), findsOneWidget);
       expect(tester.takeException(), isNull);
       if (const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) {
         await tester.runAsync(() async {

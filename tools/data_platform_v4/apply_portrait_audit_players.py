@@ -9,11 +9,11 @@ import tempfile
 
 from apply_roster_expansion import ROOT, digest, norm, add_search
 
-REVIEW = ROOT/'tools/data_platform_v4/patches/season-portrait-players-2026-10-01.json'
-REVISION = 'v4-2026-10-01.2'
-BASE = '7b0f34dcc1e9d07fe753c161e4965c72fac526bd31a9656868caf2d46f377bd1'
+REVIEW = ROOT/'tools/data_platform_v4/patches/portrait-audit-players-2026-10-04.json'
+REVISION = 'v4-2026-10-04.1'
+BASE = '81e4f0d1e0d4f2cd7717e501c4e9b36a9a6a2cb20e149be61d3e1104d9c76ee6'
 SOURCE = 'reviewed-player'
-LINK_SOURCE = 'reviewed:season-portraits:2026-10-01'
+LINK_SOURCE = 'reviewed:portrait-audit:2026-10-04'
 
 
 def apply(database, manifest_path, review_path=REVIEW):

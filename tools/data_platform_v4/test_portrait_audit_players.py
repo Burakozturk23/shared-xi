@@ -5,18 +5,18 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from apply_season_portrait_players import ROOT, REVIEW, REVISION, LINK_SOURCE, apply
+from apply_portrait_audit_players import ROOT, REVIEW, REVISION, LINK_SOURCE, apply
 from apply_roster_expansion import norm
 
 DB = ROOT/'assets/runtime/linkball_game_data_v4.sqlite'
 MANIFEST = ROOT/'assets/runtime/linkball_game_data_v4_manifest.json'
 
 
-class SeasonPortraitPlayersTests(unittest.TestCase):
-    def test_three_missing_identities_and_minimal_links(self):
+class PortraitAuditPlayersTests(unittest.TestCase):
+    def test_four_missing_identities_and_minimal_links(self):
         review = json.loads(REVIEW.read_text(encoding='utf-8'))
-        self.assertEqual(len(review['players']), 3)
-        self.assertEqual(sum(len(r['clubs']) for r in review['players']), 3)
+        self.assertEqual(len(review['players']), 4)
+        self.assertEqual(sum(len(r['clubs']) for r in review['players']), 4)
         with sqlite3.connect(DB) as con:
             for r in review['players']:
                 self.assertEqual(
@@ -36,7 +36,7 @@ class SeasonPortraitPlayersTests(unittest.TestCase):
                 self.assertTrue(any(compact in norm(x[0]).replace(' ','') for x in rows))
             self.assertEqual(
                 con.execute('SELECT COUNT(*) FROM player_clubs WHERE source=?',(LINK_SOURCE,)).fetchone()[0],
-                3,
+                4,
             )
             self.assertEqual(
                 con.execute("SELECT value FROM metadata WHERE key='data_revision'").fetchone(),

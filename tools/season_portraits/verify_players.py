@@ -30,17 +30,18 @@ def main() -> int:
                     requested.append(name)
 
     with sqlite3.connect(DB) as con:
-        player_names = {norm(row[0]) for row in con.execute("SELECT name FROM players")}
-        search_terms = {
-            norm(row[0])
-            for row in con.execute("SELECT DISTINCT compact_term FROM player_search_terms")
-            if row[0]
-        }
+        player_names = {row[0]: norm(row[1]) for row in con.execute("SELECT id, name FROM players")}
+        search_terms = {}
+        for player_id, term in con.execute("SELECT player_id, compact_term FROM player_search_terms"):
+            if term:
+                search_terms.setdefault(player_id, set()).add(norm(term))
 
     missing = []
     for name in requested:
         candidates = [name, *aliases.get(name, [])]
-        if not any(norm(candidate) in player_names or norm(candidate) in search_terms for candidate in candidates):
+        player_id = manifest['playerIds'].get(name)
+        terms = search_terms.get(player_id, set()) | {player_names.get(player_id, '')}
+        if player_id is None or not any(norm(candidate) in terms for candidate in candidates):
             missing.append(name)
 
     print(f"Season portrait players: {len(requested)} unique across 112 cards")

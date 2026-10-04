@@ -91,6 +91,16 @@ abstract final class PlayerPortraitCatalog {
     'persona_andres_iniesta': 7600,
     'persona_didier_drogba': 3924,
     'persona_wesley_sneijder': 4673,
+    'persona_gianluigi_buffon': 5023,
+    'persona_frank_lampard': 3163,
+    'persona_andriy_shevchenko': 4000000049,
+    'persona_socrates': 4000000063,
+    'persona_didier_deschamps': 4000000030,
+    'persona_johan_cruyff': 4000000036,
+    'persona_carlos_valderrama': 4000000051,
+    'persona_ruud_gullit': 4000000042,
+    'persona_frank_rijkaard': 4000000058,
+    'persona_james_rodriguez': 88103,
   };
 
   static String? forPlayerId(int playerId) => byPlayerId[playerId];
