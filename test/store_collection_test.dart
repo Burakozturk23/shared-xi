@@ -271,13 +271,12 @@ void main() {
     await t.pumpAndSettle();
     await reveal(t, find.text('José Mourinho'));
     expect(find.text('Cristiano Ronaldo'), findsNothing);
-    await t.scrollUntilVisible(
-      find.text('Sahip olduklarım'),
-      -250,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await t.tap(find.byTooltip('Filtrelere dön'));
+    await t.pumpAndSettle();
+    await reveal(t, find.text('Sahip olduklarım'));
     await t.tap(find.text('Sahip olduklarım'));
     await t.pumpAndSettle();
+    await reveal(t, find.text('Avatar bulunamadı'));
     expect(find.text('Avatar bulunamadı'), findsOneWidget);
   });
   testWidgets(

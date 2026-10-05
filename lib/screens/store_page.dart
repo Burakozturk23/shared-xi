@@ -479,7 +479,8 @@ class _StorePageState extends State<StorePage> {
     final enough = _data!.wallet.coins >= o.priceCoins;
     final kit = profileKit(o.itemId);
     return Padding(
-      key: ValueKey('store-${o.itemId}'),
+      // Boost packs share an inventory item, but each pack is a distinct offer.
+      key: ValueKey('store-${o.isAvatar ? o.itemId : o.offerId}'),
       padding: const EdgeInsets.only(bottom: 12),
       child: PitchPanel(
         child: Column(

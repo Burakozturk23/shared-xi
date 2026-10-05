@@ -49,7 +49,8 @@ void main() {
       .apply(UserAvatarCatalog.all, owned), isEmpty);
     final coaches = const AvatarBrowserFilter(query: 'guardiola', category: 'coaches')
       .apply(UserAvatarCatalog.all, {});
-    final players = const AvatarBrowserFilter(query: 'guardiola', category: 'players')
+    // Retired player portraits belong to Efsaneler in the source catalog.
+    final players = const AvatarBrowserFilter(query: 'guardiola', category: 'legends')
       .apply(UserAvatarCatalog.all, {});
     expect(coaches, hasLength(1));
     expect(players, hasLength(1));
