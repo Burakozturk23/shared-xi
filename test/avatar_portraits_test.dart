@@ -26,6 +26,8 @@ void main() {
   setUpAll(() async {
     await (FontLoader('Inter')
       ..addFont(rootBundle.load('assets/fonts/Inter-Body-Variable.ttf'))).load();
+    await (FontLoader('MaterialIcons')
+      ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
   test('every visible avatar has a portrait and agrees with active server offers', () {

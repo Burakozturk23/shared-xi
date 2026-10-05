@@ -25,6 +25,7 @@ List<StoreOffer> offers() =>
                 )
                 as Map)['offers']
             as List)
+        .where((o) => o['enabled'] == true)
         .map((o) => StoreOffer.fromMap(Map<String, dynamic>.from(o as Map)))
         .toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
