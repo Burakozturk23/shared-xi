@@ -19,8 +19,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sharedix-deploy.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,9 +44,11 @@ jobs:
               raise SystemExit('FIREBASE_SERVICE_ACCOUNT must contain a service-account JSON object.')
           if not isinstance(account, dict) or account.get('type') != 'service_account' or account.get('project_id') != 'sharedix':
               raise SystemExit('Deployment credentials must belong to the sharedix project.')
-          target = Path(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
+          target = Path(os.environ['RUNNER_TEMP']) / 'sharedix-deploy.json'
           target.touch(mode=0o600, exist_ok=False)
           target.write_text(raw, encoding='utf-8')
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as env:
+              env.write(f'GOOGLE_APPLICATION_CREDENTIALS={target}\n')
       - name: Install and verify Functions
         working-directory: functions
         run: |
@@ -62,4 +62,4 @@ jobs:
       - name: Remove temporary credentials
         if: always()
         shell: bash
-        run: rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
+        run: rm -f "$RUNNER_TEMP/sharedix-deploy.json"
