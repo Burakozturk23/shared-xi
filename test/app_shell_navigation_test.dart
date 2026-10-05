@@ -41,6 +41,7 @@ void main() {
           'Letter 11',
         ],
         'Kariyer & Oyuncu': [
+          'Günün Futbolcusu',
           'Career Puzzle',
           'Transfer Detective',
           'Mystery Player',
@@ -69,8 +70,8 @@ void main() {
       expect(GameCatalog.games.where((game) => game.category.isEmpty), [
         GameCatalog.vsBot,
       ]);
-      expect(GameCatalog.games.length, 20);
-      expect(GameCatalog.games.map((game) => game.title).toSet().length, 20);
+      expect(GameCatalog.games.length, 21);
+      expect(GameCatalog.games.map((game) => game.title).toSet().length, 21);
     },
   );
 
