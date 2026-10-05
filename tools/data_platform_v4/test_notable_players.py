@@ -15,7 +15,14 @@ class NotablePlayersTests(unittest.TestCase):
     def test_reviewed_identities_clubs_and_turkish_search(self):
         review = json.loads(REVIEW.read_text())
         with sqlite3.connect(DB) as c:
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM players WHERE source=?', (SOURCE,)).fetchone()[0], 45)
+            self.assertEqual(len(review['players']), 45)
+            self.assertEqual(
+                c.execute(
+                    'SELECT COUNT(*) FROM players WHERE id BETWEEN 4000000001 AND 4000000045 AND source=?',
+                    (SOURCE,),
+                ).fetchone()[0],
+                45,
+            )
             for r in review['players'] + review['corrections']:
                 self.assertEqual(c.execute('SELECT name FROM players WHERE id=?', (r['id'],)).fetchone(), (r['name'],))
                 for club in r['clubs']:
@@ -31,7 +38,7 @@ class NotablePlayersTests(unittest.TestCase):
             self.assertIn((4000000001,), common)
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE position IN ('GK','DF','MF','FW')").fetchone()[0], 0)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0], 33994)
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0], 37966)
+            self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0], 37966 + sum(r.get('newCareerSpells', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
 
     def test_idempotency_and_changed_evidence_rejected_without_writes(self):
         with tempfile.TemporaryDirectory() as td:

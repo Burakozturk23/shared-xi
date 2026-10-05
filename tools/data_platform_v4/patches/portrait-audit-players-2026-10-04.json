@@ -1,0 +1,75 @@
+{
+  "reviewedUtc": "2026-10-04",
+  "policy": "Add four identities found during the caption audit. Only the one source-card senior club per player is added; no invented dates, appearances or full career history.",
+  "portraitSources": [
+    "https://www.behance.net/gallery/9010659/56-football-players-20122013-season",
+    "https://www.behance.net/gallery/19289757/56-football-players-20132014-season"
+  ],
+  "players": [
+    {
+      "id": 4000000070,
+      "name": "Clément Grenier",
+      "birthYear": 1991,
+      "country": "France",
+      "position": "Midfield",
+      "sources": [
+        "https://www.lequipe.fr/fiche/clement-grenier/219786"
+      ],
+      "clubs": [
+        {
+          "id": 1041,
+          "name": "Olympique Lyon"
+        }
+      ]
+    },
+    {
+      "id": 4000000071,
+      "name": "Michel Bastos",
+      "birthYear": 1983,
+      "country": "Brazil",
+      "position": "Midfield",
+      "sources": [
+        "https://datencenter.dfb.de/en/data-center/people/michel-bastos/player"
+      ],
+      "clubs": [
+        {
+          "id": 33,
+          "name": "FC Schalke 04"
+        }
+      ]
+    },
+    {
+      "id": 4000000072,
+      "name": "César Delgado",
+      "birthYear": 1981,
+      "country": "Argentina",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/C%C3%A9sar_Delgado"
+      ],
+      "clubs": [
+        {
+          "id": 2407,
+          "name": "CF Monterrey"
+        }
+      ]
+    },
+    {
+      "id": 4000000073,
+      "name": "Nemanja Vidić",
+      "birthYear": 1981,
+      "country": "Serbia",
+      "position": "Defender",
+      "sources": [
+        "https://www.premierleague.com/players/2935/overview"
+      ],
+      "clubs": [
+        {
+          "id": 985,
+          "name": "Manchester United"
+        }
+      ]
+    }
+  ],
+  "corrections": []
+}
