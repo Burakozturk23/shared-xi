@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import '../models/economy_models.dart';
 import '../models/store_models.dart';
+import '../models/user_avatar_catalog.dart';
 import 'auth_service.dart';
 import 'cloud_bootstrap.dart';
 import 'economy_service.dart';
@@ -39,7 +40,7 @@ class StoreService {
     final offers = <StoreOffer>[];
 
     for (final raw in rawOffers) {
-      if (raw is! Map) continue;
+      if (raw is! Map || raw['enabled'] == false) continue;
 
       final offer = StoreOffer.fromMap(Map<String, dynamic>.from(raw));
 
@@ -49,6 +50,7 @@ class StoreService {
         continue;
       }
 
+      if (offer.isAvatar && !UserAvatarCatalog.contains(offer.itemId)) continue;
       offers.add(offer);
     }
 

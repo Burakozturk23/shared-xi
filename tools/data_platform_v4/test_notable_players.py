@@ -38,7 +38,7 @@ class NotablePlayersTests(unittest.TestCase):
             self.assertIn((4000000001,), common)
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE position IN ('GK','DF','MF','FW')").fetchone()[0], 0)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0], 33994)
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0], 37966)
+            self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0], 37966 + sum(r.get('newCareerSpells', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
 
     def test_idempotency_and_changed_evidence_rejected_without_writes(self):
         with tempfile.TemporaryDirectory() as td:

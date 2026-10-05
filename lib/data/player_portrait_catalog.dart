@@ -1,3 +1,5 @@
+import 'uploaded_portrait_catalog.dart';
+
 abstract final class PlayerPortraitCatalog {
   static const String assetRoot = 'assets/player_portraits';
 
@@ -105,7 +107,8 @@ abstract final class PlayerPortraitCatalog {
   };
 
   static String? forPlayerId(int playerId) => byPlayerId[playerId];
-  static int? playerIdForAvatar(String avatarId) => avatarPlayerIds[avatarId];
+  static int? playerIdForAvatar(String avatarId) =>
+      UploadedPortraitCatalog.avatarPlayerIds[avatarId] ?? avatarPlayerIds[avatarId];
   static String? forAvatarId(String avatarId) =>
       byPlayerId[avatarPlayerIds[avatarId]];
 }

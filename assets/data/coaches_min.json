@@ -5,9 +5,15 @@
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      131,
+      27,
+      281
+    ],
+    "aliases": [
+      "Pep Guardiola"
+    ],
+    "avatarKey": "pep_guardiola_coach",
     "rating": 2513.0
   },
   {
@@ -27,9 +33,13 @@
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      11
+    ],
+    "aliases": [
+      "Mikel Arteta"
+    ],
+    "avatarKey": "mikel_arteta_coach",
     "rating": 2476.2
   },
   {
@@ -38,9 +48,16 @@
     "countries": [
       "Germany"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      5000000005,
+      533,
+      27,
+      131
+    ],
+    "aliases": [
+      "Hansi Flick"
+    ],
+    "avatarKey": "hansi_flick_coach",
     "rating": 2458.3
   },
   {
@@ -60,9 +77,16 @@
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      12,
+      940,
+      131,
+      583
+    ],
+    "aliases": [
+      "Luis Enrique"
+    ],
+    "avatarKey": "luis_enrique_coach",
     "rating": 2397.2
   },
   {
@@ -71,20 +95,34 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      130,
+      1003,
+      631,
+      281
+    ],
+    "aliases": [
+      "Enzo Maresca"
+    ],
+    "avatarKey": "enzo_maresca_coach",
     "rating": 2396.8
   },
   {
     "id": "coach_7",
-    "name": "Xabier Alonso Olano",
+    "name": "Xabi Alonso",
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      15,
+      418,
+      631
+    ],
+    "aliases": [
+      "Xabier Alonso Olano",
+      "Xabi Alonso"
+    ],
+    "avatarKey": "xabi_alonso_coach",
     "rating": 2345.8
   },
   {
@@ -93,20 +131,46 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      5621,
+      130,
+      506,
+      5,
+      631,
+      583,
+      418,
+      27,
+      6195,
+      29
+    ],
+    "aliases": [
+      "Carlo Ancelotti"
+    ],
+    "avatarKey": "carlo_ancelotti_coach",
     "rating": 2343.9
   },
   {
     "id": "coach_9",
-    "name": "Unai Emery Etxegoien",
+    "name": "Unai Emery",
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      5000000014,
+      3302,
+      1049,
+      232,
+      368,
+      583,
+      11,
+      1050,
+      405
+    ],
+    "aliases": [
+      "Unai Emery Etxegoien",
+      "Unai Emery"
+    ],
+    "avatarKey": "unai_emery_coach",
     "rating": 2343.7
   },
   {
@@ -170,9 +234,17 @@
     "countries": [
       "Germany"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      39,
+      16,
+      583,
+      631,
+      27
+    ],
+    "aliases": [
+      "Thomas Tuchel"
+    ],
+    "avatarKey": "thomas_tuchel_coach",
     "rating": 2292.5
   },
   {
@@ -210,13 +282,20 @@
   },
   {
     "id": "coach_19",
-    "name": "Didier Claude Deschamps",
+    "name": "Didier Deschamps",
     "countries": [
       "France"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      162,
+      506,
+      244
+    ],
+    "aliases": [
+      "Didier Claude Deschamps",
+      "Didier Deschamps"
+    ],
+    "avatarKey": "didier_deschamps_coach",
     "rating": 2242.9
   },
   {
@@ -225,9 +304,15 @@
     "countries": [
       "Germany"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      533,
+      23826,
+      27
+    ],
+    "aliases": [
+      "Julian Nagelsmann"
+    ],
+    "avatarKey": "julian_nagelsmann_coach",
     "rating": 2228.9
   },
   {
@@ -298,13 +383,27 @@
   },
   {
     "id": "coach_27",
-    "name": "José Mário dos Santos Mourinho Félix",
+    "name": "José Mourinho",
     "countries": [
       "Portugal"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      294,
+      2639,
+      720,
+      631,
+      46,
+      418,
+      985,
+      148,
+      12,
+      36
+    ],
+    "aliases": [
+      "José Mário dos Santos Mourinho Félix",
+      "José Mourinho"
+    ],
+    "avatarKey": "jose_mourinho_coach",
     "rating": 2202.0
   },
   {
@@ -335,9 +434,21 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      4255,
+      332,
+      800,
+      1387,
+      506,
+      631,
+      46,
+      148,
+      6195
+    ],
+    "aliases": [
+      "Antonio Conte"
+    ],
+    "avatarKey": "antonio_conte_coach",
     "rating": 2187.8
   },
   {
@@ -399,9 +510,18 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      4083,
+      252,
+      46,
+      458,
+      800,
+      12
+    ],
+    "aliases": [
+      "Gian Piero Gasperini"
+    ],
+    "avatarKey": "gian_piero_gasperini_coach",
     "rating": 2170.5
   },
   {
@@ -439,13 +559,18 @@
   },
   {
     "id": "coach_40",
-    "name": "Francesc Fàbregas i Soler",
+    "name": "Cesc Fàbregas",
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      1047
+    ],
+    "aliases": [
+      "Francesc Fàbregas i Soler",
+      "Cesc Fàbregas"
+    ],
+    "avatarKey": "cesc_fabregas_coach",
     "rating": 2156.0
   },
   {
@@ -487,9 +612,20 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      704,
+      458,
+      4171,
+      6574,
+      660,
+      1237,
+      244,
+      148
+    ],
+    "aliases": [
+      "Roberto De Zerbi"
+    ],
+    "avatarKey": "roberto_de_zerbi_coach",
     "rating": 2147.8
   },
   {
@@ -518,11 +654,22 @@
     "id": "coach_47",
     "name": "Okan Buruk",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      2292,
+      524,
+      2381,
+      1467,
+      19771,
+      126,
+      6890,
+      141
+    ],
+    "aliases": [
+      "Okan Buruk"
+    ],
+    "avatarKey": "okan_buruk_coach",
     "rating": 2136.1
   },
   {
@@ -571,13 +718,23 @@
   },
   {
     "id": "coach_52",
-    "name": "Diego Pablo Simeone González",
+    "name": "Diego Simeone",
     "countries": [
       "Argentina"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      1444,
+      288,
+      209,
+      1775,
+      1627,
+      13
+    ],
+    "aliases": [
+      "Diego Pablo Simeone González",
+      "Diego Simeone"
+    ],
+    "avatarKey": "diego_simeone_coach",
     "rating": 2128.2
   },
   {
@@ -639,9 +796,22 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      749,
+      1038,
+      607,
+      410,
+      1388,
+      12,
+      964,
+      46,
+      6195,
+      506
+    ],
+    "aliases": [
+      "Luciano Spalletti"
+    ],
+    "avatarKey": "luciano_spalletti_coach",
     "rating": 2111.8
   },
   {
@@ -749,9 +919,28 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      1390,
+      6195,
+      430,
+      1049,
+      13,
+      631,
+      130,
+      506,
+      12,
+      46,
+      162,
+      1003,
+      995,
+      931,
+      1038,
+      1010
+    ],
+    "aliases": [
+      "Claudio Ranieri"
+    ],
+    "avatarKey": "claudio_ranieri_coach",
     "rating": 2090.2
   },
   {
@@ -793,20 +982,47 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      5000000008,
+      2722,
+      4333,
+      6574,
+      1390,
+      5,
+      506,
+      6195
+    ],
+    "aliases": [
+      "Massimiliano Allegri"
+    ],
+    "avatarKey": "massimiliano_allegri_coach",
     "rating": 2080.2
   },
   {
     "id": "coach_73",
     "name": "İsmail Kartal",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      1506,
+      2381,
+      5595,
+      2375,
+      1264,
+      2323,
+      36,
+      825,
+      524,
+      868,
+      126,
+      2293,
+      1000006079
+    ],
+    "aliases": [
+      "İsmail Kartal"
+    ],
+    "avatarKey": "ismail_kartal_coach",
     "rating": 2077.4
   },
   {
@@ -870,9 +1086,17 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      4331,
+      3522,
+      430,
+      1025,
+      114
+    ],
+    "aliases": [
+      "Vincenzo Italiano"
+    ],
+    "avatarKey": "vincenzo_italiano_coach",
     "rating": 2061.6
   },
   {
@@ -1333,13 +1557,26 @@
   },
   {
     "id": "coach_122",
-    "name": "Ali Rıza Sergen Yalçın",
+    "name": "Sergen Yalçın",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      524,
+      2381,
+      3205,
+      825,
+      2293,
+      11282,
+      19789,
+      114,
+      589
+    ],
+    "aliases": [
+      "Ali Rıza Sergen Yalçın",
+      "Sergen Yalçın"
+    ],
+    "avatarKey": "sergen_yalcin_coach",
     "rating": 1977.7
   },
   {
@@ -1653,9 +1890,19 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      430,
+      398,
+      46,
+      281,
+      141,
+      964,
+      656
+    ],
+    "aliases": [
+      "Roberto Mancini"
+    ],
+    "avatarKey": "roberto_mancini_coach",
     "rating": 1930.4
   },
   {
@@ -1856,11 +2103,21 @@
     "id": "coach_171",
     "name": "Fatih Terim",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      868,
+      1467,
+      141,
+      430,
+      5,
+      265,
+      9840
+    ],
+    "aliases": [
+      "Fatih Terim"
+    ],
+    "avatarKey": "fatih_terim_coach",
     "rating": 1909.9
   },
   {
@@ -1951,13 +2208,31 @@
   },
   {
     "id": "coach_180",
-    "name": "Rafael Benítez Maudes",
+    "name": "Rafael Benítez",
     "countries": [
       "Spain"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      119,
+      331,
+      648,
+      1049,
+      31,
+      46,
+      631,
+      6195,
+      418,
+      762,
+      33304,
+      29,
+      940,
+      265
+    ],
+    "aliases": [
+      "Rafael Benítez Maudes",
+      "Rafael Benítez"
+    ],
+    "avatarKey": "rafael_benitez_coach",
     "rating": 1899.5
   },
   {
@@ -2083,11 +2358,16 @@
     "id": "coach_192",
     "name": "Arda Turan",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      7160,
+      660
+    ],
+    "aliases": [
+      "Arda Turan"
+    ],
+    "avatarKey": "arda_turan_coach",
     "rating": 1890.3
   },
   {
@@ -2762,13 +3042,20 @@
   },
   {
     "id": "coach_255",
-    "name": "Abdullah Mucib Avcı",
+    "name": "Abdullah Avcı",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      6890,
+      114,
+      449
+    ],
+    "aliases": [
+      "Abdullah Mucib Avcı",
+      "Abdullah Avcı"
+    ],
+    "avatarKey": "abdullah_avci_coach",
     "rating": 1841.2
   },
   {
@@ -2918,11 +3205,22 @@
     "id": "coach_269",
     "name": "Şenol Güneş",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      449,
+      3207,
+      924,
+      589,
+      2463,
+      6500,
+      20,
+      114
+    ],
+    "aliases": [
+      "Şenol Güneş"
+    ],
+    "avatarKey": "senol_gunes_coach",
     "rating": 1832.1
   },
   {
@@ -3260,12 +3558,30 @@
   },
   {
     "id": "coach_301",
-    "name": "Ismail Kartal",
-    "countries": [],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
-    "rating": 1809.0
+    "name": "İsmail Kartal",
+    "countries": [
+      "Turkey"
+    ],
+    "clubIds": [
+      1506,
+      2381,
+      5595,
+      2375,
+      1264,
+      2323,
+      36,
+      825,
+      524,
+      868,
+      126,
+      2293,
+      1000006079
+    ],
+    "aliases": [
+      "İsmail Kartal"
+    ],
+    "avatarKey": "ismail_kartal_coach",
+    "rating": 2077.4
   },
   {
     "id": "coach_302",
@@ -4996,11 +5312,19 @@
     "id": "coach_463",
     "name": "Burak Yılmaz",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      114,
+      3205,
+      10484,
+      2832,
+      37951
+    ],
+    "aliases": [
+      "Burak Yılmaz"
+    ],
+    "avatarKey": "burak_yilmaz_coach",
     "rating": 1721.9
   },
   {
@@ -8243,9 +8567,15 @@
     "countries": [
       "Italy"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      506,
+      6646,
+      1038
+    ],
+    "aliases": [
+      "Andrea Pirlo"
+    ],
+    "avatarKey": "andrea_pirlo_coach",
     "rating": 1623.1
   },
   {
@@ -9523,11 +9853,32 @@
     "id": "coach_892",
     "name": "Hikmet Karaman",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      1766,
+      126,
+      6,
+      120,
+      3205,
+      868,
+      1264,
+      2944,
+      589,
+      1267,
+      524,
+      20,
+      6894,
+      11282,
+      19789,
+      3840,
+      10301,
+      74664
+    ],
+    "aliases": [
+      "Hikmet Karaman"
+    ],
+    "avatarKey": "hikmet_karaman_coach",
     "rating": 1591.5
   },
   {
@@ -10278,11 +10629,19 @@
     "id": "coach_963",
     "name": "Emre Belözoğlu",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      36,
+      6890,
+      868,
+      589,
+      10484
+    ],
+    "aliases": [
+      "Emre Belözoğlu"
+    ],
+    "avatarKey": "emre_belozoglu_coach",
     "rating": 1576.5
   },
   {
@@ -11810,11 +12169,18 @@
     "id": "coach_1109",
     "name": "Volkan Demirel",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      6646,
+      7775,
+      44006,
+      820
+    ],
+    "aliases": [
+      "Volkan Demirel"
+    ],
+    "avatarKey": "volkan_demirel_coach",
     "rating": 1546.5
   },
   {
@@ -13609,11 +13975,28 @@
     "id": "coach_1282",
     "name": "Rıza Çalımbay",
     "countries": [
-      "Türkiye"
+      "Turkey"
     ],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
+    "clubIds": [
+      1467,
+      833,
+      868,
+      126,
+      114,
+      2944,
+      825,
+      2381,
+      3216,
+      10484,
+      589,
+      449,
+      2293,
+      7775
+    ],
+    "aliases": [
+      "Rıza Çalımbay"
+    ],
+    "avatarKey": "riza_calimbay_coach",
     "rating": 1513.7
   },
   {
@@ -38611,11 +38994,34 @@
   {
     "id": "coach_3719",
     "name": "Hikmet Karaman",
-    "countries": [],
-    "clubIds": [],
-    "aliases": [],
-    "avatarKey": null,
-    "rating": 1130.4
+    "countries": [
+      "Turkey"
+    ],
+    "clubIds": [
+      1766,
+      126,
+      6,
+      120,
+      3205,
+      868,
+      1264,
+      2944,
+      589,
+      1267,
+      524,
+      20,
+      6894,
+      11282,
+      19789,
+      3840,
+      10301,
+      74664
+    ],
+    "aliases": [
+      "Hikmet Karaman"
+    ],
+    "avatarKey": "hikmet_karaman_coach",
+    "rating": 1591.5
   },
   {
     "id": "coach_3720",
@@ -54703,5 +55109,178 @@
     "aliases": [],
     "avatarKey": null,
     "rating": 346.9
+  },
+  {
+    "id": "coach_portrait_aykut_kocaman",
+    "name": "Aykut Kocaman",
+    "countries": [
+      "Turkey"
+    ],
+    "clubIds": [
+      924,
+      1264,
+      2293,
+      2944,
+      36,
+      6890
+    ],
+    "aliases": [
+      "Aykut Kocaman"
+    ],
+    "avatarKey": "aykut_kocaman_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_alex_ferguson",
+    "name": "Alex Ferguson",
+    "countries": [
+      "Scotland"
+    ],
+    "clubIds": [
+      1000003000,
+      465,
+      370,
+      985
+    ],
+    "aliases": [
+      "Alex Ferguson"
+    ],
+    "avatarKey": "alex_ferguson_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_jurgen_klopp",
+    "name": "Jürgen Klopp",
+    "countries": [
+      "Germany"
+    ],
+    "clubIds": [
+      39,
+      16,
+      31
+    ],
+    "aliases": [
+      "Jürgen Klopp"
+    ],
+    "avatarKey": "jurgen_klopp_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_arsene_wenger",
+    "name": "Arsène Wenger",
+    "countries": [
+      "France"
+    ],
+    "clubIds": [
+      1159,
+      162,
+      1066,
+      11
+    ],
+    "aliases": [
+      "Arsène Wenger"
+    ],
+    "avatarKey": "arsene_wenger_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_joachim_low",
+    "name": "Joachim Löw",
+    "countries": [
+      "Germany"
+    ],
+    "clubIds": [
+      5000000009,
+      79,
+      36,
+      48,
+      6,
+      14
+    ],
+    "aliases": [
+      "Joachim Löw"
+    ],
+    "avatarKey": "joachim_low_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_vicente_del_bosque",
+    "name": "Vicente del Bosque",
+    "countries": [
+      "Spain"
+    ],
+    "clubIds": [
+      418,
+      114
+    ],
+    "aliases": [
+      "Vicente del Bosque"
+    ],
+    "avatarKey": "vicente_del_bosque_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_frank_rijkaard",
+    "name": "Frank Rijkaard",
+    "countries": [
+      "Netherlands"
+    ],
+    "clubIds": [
+      468,
+      131,
+      141
+    ],
+    "aliases": [
+      "Frank Rijkaard"
+    ],
+    "avatarKey": "frank_rijkaard_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_johan_cruyff",
+    "name": "Johan Cruyff",
+    "countries": [
+      "Netherlands"
+    ],
+    "clubIds": [
+      610,
+      131
+    ],
+    "aliases": [
+      "Johan Cruyff"
+    ],
+    "avatarKey": "johan_cruyff_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_zinedine_zidane",
+    "name": "Zinedine Zidane",
+    "countries": [
+      "France"
+    ],
+    "clubIds": [
+      418
+    ],
+    "aliases": [
+      "Zinedine Zidane"
+    ],
+    "avatarKey": "zinedine_zidane_coach",
+    "rating": 1800
+  },
+  {
+    "id": "coach_portrait_xavi",
+    "name": "Xavi",
+    "countries": [
+      "Spain"
+    ],
+    "clubIds": [
+      656,
+      131
+    ],
+    "aliases": [
+      "Xavi"
+    ],
+    "avatarKey": "xavi_coach",
+    "rating": 1800
   }
 ]
