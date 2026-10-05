@@ -162,11 +162,11 @@ void main() {
   test(
     'Existing mode catalog keeps data and authentication entry requirements',
     () {
-      expect(GameCatalog.games.length, 20);
+      expect(GameCatalog.games.length, 21);
       expect(GameCatalog.daily.requiresAuth, isTrue);
       expect(GameCatalog.daily.requiresRepository, isTrue);
       expect(GameCatalog.discovery.requiresRepository, isFalse);
-      expect(GameCatalog.games.map((game) => game.title).toSet().length, 20);
+      expect(GameCatalog.games.map((game) => game.title).toSet().length, 21);
     },
   );
 

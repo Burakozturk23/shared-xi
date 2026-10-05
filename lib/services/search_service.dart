@@ -155,7 +155,7 @@ class SearchService {
   static String normalize(String input) {
     var s = input.trim().toLowerCase();
     const from = 'áàäâãåāăąéèëêēėęíìïîīįóòöôõøōúùüûūųýÿçćčñńňşšśžźżđ';
-    const to = 'aaaaaaaaaeeeeeeeiiiiiiioooooouuuuuuyycccnnnssszzzd';
+    const to = 'aaaaaaaaaeeeeeeeiiiiiiooooooouuuuuuyycccnnnssszzzd';
     final buf = StringBuffer();
     for (final code in s.runes) {
       final ch = String.fromCharCode(code);

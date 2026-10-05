@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../screens/football_calendar_page.dart';
+import '../screens/daily_footballer_page.dart';
 import '../screens/match_type_selection_page.dart';
 import '../screens/vs_bot_mode_selection_page.dart';
 import '../screens/club_manager_hub_page.dart';
@@ -66,6 +67,15 @@ class GameCatalog {
     requiresAuth: true,
     modern: true,
   );
+  static const dailyFootballer = GameEntry(
+    title: 'Günün Futbolcusu',
+    subtitle: '6 tahmin, 6 özellik, her gün tek futbolcu',
+    icon: Icons.person_search_outlined,
+    page: DailyFootballerPage(),
+    category: 'Kariyer & Oyuncu',
+    requiresRepository: false,
+    modern: true,
+  );
   static const discovery = GameEntry(
     title: 'Ortak Oyuncu Keşfi',
     subtitle: 'İki kulüp veya kulüp ve ülke seç',
@@ -125,6 +135,7 @@ class GameCatalog {
   // Gameplay keeps its readiness/account gates; menus may defer data loading.
   static const games = <GameEntry>[
     vsBot,
+    dailyFootballer,
     GameEntry(
       title: 'Club Manager',
       subtitle: 'Bütçe, kadro ve maç yönetimi',
