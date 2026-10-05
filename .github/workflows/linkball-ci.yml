@@ -28,12 +28,24 @@ jobs:
       - name: Verify bundled data and reviewed patches
         run: |
           python3 tools/data_platform_v4/apply_notable_players.py
+          python3 tools/data_platform_v4/apply_legend_portrait_players.py
+          python3 tools/data_platform_v4/apply_season_portrait_players.py
+          python3 tools/data_platform_v4/apply_portrait_audit_players.py
+          python3 tools/data_platform_v4/apply_avatar_careers.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_avatar_careers.py'
           python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_reviewed_patch.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_api_football_sync.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_roster_patch.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_roster_expansion.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_notable_players.py'
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_legend_portrait_players.py'
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_season_portrait_players.py'
+          python3 tools/season_portraits/verify_players.py
+          python3 tools/season_portraits/generate_catalog.py --check
+          python3 tools/uploaded_portraits/generate_catalog.py --check
+          python3 tools/uploaded_portraits/verify.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_portrait_audit_players.py'
 
       - name: Verify daily answer catalog matches the bundled database
         run: |
@@ -130,6 +142,16 @@ jobs:
         with:
           name: daily-match-previews
           path: .dart_tool/daily_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload season and badge previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: season-badge-previews
+          path: .dart_tool/season_qa/*.png
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7

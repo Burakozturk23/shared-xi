@@ -8,6 +8,8 @@ import '../widgets/achievement_badge_emblem.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/social_ui.dart';
 
+enum _AchievementTrack { victories, streaks, ranked, mastery, daily, social }
+
 enum _BadgeFilter { all, unlocked, locked, rewards }
 
 class AchievementsPage extends StatefulWidget {
@@ -18,16 +20,30 @@ class AchievementsPage extends StatefulWidget {
 }
 
 class _AchievementsPageState extends State<AchievementsPage> {
+  final _scroll = ScrollController();
   BadgeSnapshot? _data;
   bool _loading = false, _error = false;
   final Set<String> _claiming = {}, _acknowledged = {};
-  AchievementCategory? _category;
+  _AchievementTrack? _category;
   _BadgeFilter _filter = _BadgeFilter.all;
   String c(String tr, String en) => appCopy(context, tr, en);
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _selectTrack(_AchievementTrack? track) {
+    setState(() => _category = track);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scroll.hasClients) _scroll.jumpTo(0);
+    });
   }
 
   Future<void> _load() async {
@@ -220,7 +236,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
     final visible =
         AchievementCatalog.all
             .where((d) {
-              if (_category != null && d.category != _category) return false;
+              if (_category != null && _track(d) != _category) return false;
               final open = _data!.progress[d.id]?.unlocked == true;
               return switch (_filter) {
                 _BadgeFilter.all => true,
@@ -234,6 +250,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             .toList()
           ..sort((a, b) => _ratio(b).compareTo(_ratio(a)));
     return ListView(
+      controller: _scroll,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       children: [
@@ -243,7 +260,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
           eyebrow: c('SAHADAKİ İMZAN', 'YOUR MARK ON THE PITCH'),
           title: c('$unlocked rozet senin.', '$unlocked badges earned.'),
           message: c(
-            'Her rozet ayrı bir hikâye. Sıradaki hedefini seç.',
+            'Sezonlar değişir, başarımların kalır. 1’den 750 galibiyete kendi futbol hikâyeni yaz.',
             'Every badge tells a story. Choose your next goal.',
           ),
           footer: Column(
@@ -293,18 +310,13 @@ class _AchievementsPageState extends State<AchievementsPage> {
             ChoiceChip(
               label: Text(c('Her kategori', 'All categories')),
               selected: _category == null,
-              onSelected: (_) => setState(() => _category = null),
+              onSelected: (_) => _selectTrack(null),
             ),
-            for (final cat in AchievementCategory.values)
+            for (final cat in _AchievementTrack.values)
               ChoiceChip(
-                label: Text(switch (cat) {
-                  AchievementCategory.ranked => c('Dereceli', 'Ranked'),
-                  AchievementCategory.mastery => c('Ustalık', 'Mastery'),
-                  AchievementCategory.daily => c('Günlük', 'Daily'),
-                  AchievementCategory.social => c('Sosyal', 'Social'),
-                }),
+                label: Text(_trackLabel(cat)),
                 selected: _category == cat,
-                onSelected: (_) => setState(() => _category = cat),
+                onSelected: (_) => _selectTrack(cat),
               ),
           ],
         ),
@@ -317,9 +329,130 @@ class _AchievementsPageState extends State<AchievementsPage> {
               'Explore another category.',
             ),
           ),
-        for (final d in visible)
-          Padding(padding: const EdgeInsets.only(bottom: 12), child: _tile(d)),
+        if (_category == null && _filter == _BadgeFilter.all)
+          for (final track in _AchievementTrack.values) _trackSection(track)
+        else
+          for (final d in visible)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _tile(d),
+            ),
       ],
+    );
+  }
+
+  _AchievementTrack _track(AchievementDefinition d) {
+    if (d.signal == 'ranked_wins') return _AchievementTrack.victories;
+    if (d.signal.contains('streak')) return _AchievementTrack.streaks;
+    return switch (d.category) {
+      AchievementCategory.ranked => _AchievementTrack.ranked,
+      AchievementCategory.mastery => _AchievementTrack.mastery,
+      AchievementCategory.daily => _AchievementTrack.daily,
+      AchievementCategory.social => _AchievementTrack.social,
+    };
+  }
+
+  String _trackLabel(_AchievementTrack t) => switch (t) {
+    _AchievementTrack.victories => c('Galibiyet', 'Victories'),
+    _AchievementTrack.streaks => c('Seriler', 'Streaks'),
+    _AchievementTrack.ranked => c('Kariyer ve Elo', 'Career & Elo'),
+    _AchievementTrack.mastery => c('Mod ustalığı', 'Mode mastery'),
+    _AchievementTrack.daily => c('Günlük futbol', 'Daily football'),
+    _AchievementTrack.social => c('Takım ruhu', 'Team spirit'),
+  };
+  Widget _trackSection(_AchievementTrack track) {
+    final all = AchievementCatalog.all
+        .where((d) => _track(d) == track)
+        .map(_priced)
+        .toList();
+    final earned = all
+        .where((d) => _data!.progress[d.id]?.unlocked == true)
+        .length;
+    all.sort((a, b) {
+      int order(AchievementDefinition d) =>
+          _data!.progress[d.id]?.unlocked == true
+          ? (_claimed(d.id) ? 2 : 0)
+          : 1;
+      final orderDiff = order(a).compareTo(order(b));
+      return orderDiff != 0 ? orderDiff : _ratio(b).compareTo(_ratio(a));
+    });
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                '${_trackLabel(track)} · $earned/${all.length}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              TextButton(
+                onPressed: () => _selectTrack(track),
+                child: Text(c('Tümünü gör', 'See all')),
+              ),
+            ],
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) => Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                for (final d in all.take(2))
+                  SizedBox(
+                    width: constraints.maxWidth < 300
+                        ? constraints.maxWidth
+                        : (constraints.maxWidth - 12) / 2,
+                    child: _compact(d),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _compact(AchievementDefinition d) {
+    final open = _data!.progress[d.id]?.unlocked == true;
+    return PitchPanel(
+      child: InkWell(
+        onTap: () => _details(d),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AchievementBadgeEmblem(definition: d, unlocked: open, size: 64),
+            const SizedBox(height: 12),
+            Text(
+              d.title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            LinearProgressIndicator(value: _ratio(d), minHeight: 5),
+            const SizedBox(height: 6),
+            Text(
+              '${_data!.progress[d.id]?.value ?? 0}/${_target(d)}',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              open
+                  ? c('Kazanıldı', 'Earned')
+                  : c('Sıradaki hedef', 'Next goal'),
+              textAlign: TextAlign.center,
+            ),
+            if (open && !_claimed(d.id) && d.coinReward > 0)
+              TextButton(
+                onPressed: _loading || _claiming.contains(d.id)
+                    ? null
+                    : () => _claim(d),
+                child: Text('+${d.coinReward} Link Coin'),
+              ),
+          ],
+        ),
+      ),
     );
   }
 

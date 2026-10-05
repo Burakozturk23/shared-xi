@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import '../widgets/coach_avatar.dart';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/coach_xi_controller.dart';
@@ -191,18 +193,7 @@ class _CoachXiPlayPageState extends State<CoachXiPlayPage> {
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundColor:
-                        AppTheme.primaryColor.withValues(alpha: 0.2),
-                    child: Text(
-                      coach.name.isNotEmpty ? coach.name[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
+                  CoachAvatar(coach: coach),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(

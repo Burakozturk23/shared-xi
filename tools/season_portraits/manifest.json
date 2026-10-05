@@ -1,0 +1,533 @@
+{
+  "sources": {
+    "2012_13": {
+      "url": "https://www.behance.net/gallery/9010659/56-football-players-20122013-season",
+      "referenceSize": [
+        600,
+        1010
+      ],
+      "grid": {
+        "x0": 28,
+        "xStep": 79.3,
+        "y0": 64,
+        "yStep": 111.7,
+        "cardWidth": 68,
+        "portraitHeight": 96
+      }
+    },
+    "2013_14": {
+      "url": "https://www.behance.net/gallery/19289757/56-football-players-20132014-season",
+      "referenceSize": [
+        736,
+        1239
+      ],
+      "grid": {
+        "x0": 34,
+        "xStep": 97.3,
+        "y0": 80,
+        "yStep": 136.9,
+        "cardWidth": 84,
+        "portraitHeight": 114
+      }
+    }
+  },
+  "seasons": {
+    "2012_13": [
+      [
+        "Franck Ribery",
+        "Thomas Muller",
+        "Bastian Schweinsteiger",
+        "Philipp Lahm",
+        "Arjen Robben",
+        "Mesut Ozil",
+        "Xabi Alonso"
+      ],
+      [
+        "Vincent Kompany",
+        "Joleon Lescott",
+        "David Silva",
+        "Carlos Tevez",
+        "Cristiano Ronaldo",
+        "Karim Benzema",
+        "Sergio Ramos"
+      ],
+      [
+        "Roberto Soldado",
+        "Jonas",
+        "Stephan El Shaarawy",
+        "Robinho",
+        "Mario Balotelli",
+        "Didier Drogba",
+        "Wesley Sneijder"
+      ],
+      [
+        "Petr Cech",
+        "Frank Lampard",
+        "Fernando Torres",
+        "Eden Hazard",
+        "Steed Malbranque",
+        "Maxime Gonalons",
+        "Clement Grenier"
+      ],
+      [
+        "Hugo Lloris",
+        "Gareth Bale",
+        "Victor Valdes",
+        "Gerard Pique",
+        "Xavi Hernandez",
+        "Andres Iniesta",
+        "Lionel Messi"
+      ],
+      [
+        "Steven Gerrard",
+        "Neymar",
+        "Marco Reus",
+        "Mario Gotze",
+        "Robert Lewandowski",
+        "Thierry Henry",
+        "Juninho Pernambucano"
+      ],
+      [
+        "Michel Bastos",
+        "David Beckham",
+        "Zlatan Ibrahimovic",
+        "Thiago Silva",
+        "Ezequiel Lavezzi",
+        "Blaise Matuidi",
+        "Yohan Cabaye"
+      ],
+      [
+        "Gianluigi Buffon",
+        "Andrea Pirlo",
+        "Cesar Delgado",
+        "Robin van Persie",
+        "Wayne Rooney",
+        "Nemanja Vidic",
+        "Rio Ferdinand"
+      ]
+    ],
+    "2013_14": [
+      [
+        "Franck Ribery",
+        "Thomas Muller",
+        "Bastian Schweinsteiger",
+        "Philipp Lahm",
+        "Arjen Robben",
+        "Mario Gotze",
+        "Andrea Pirlo"
+      ],
+      [
+        "Vincent Kompany",
+        "Joleon Lescott",
+        "David Silva",
+        "Gareth Bale",
+        "Cristiano Ronaldo",
+        "Karim Benzema",
+        "Carlos Tevez"
+      ],
+      [
+        "Martin Skrtel",
+        "Daniel Sturridge",
+        "Daniel Agger",
+        "Luka Modric",
+        "Sergio Ramos",
+        "Marcelo",
+        "Gianluigi Buffon"
+      ],
+      [
+        "Raheem Sterling",
+        "Steven Gerrard",
+        "Luis Suarez",
+        "Eden Hazard",
+        "Petr Cech",
+        "Frank Lampard",
+        "Fernando Torres"
+      ],
+      [
+        "Ezequiel Lavezzi",
+        "Blaise Matuidi",
+        "Neymar",
+        "Dani Alves",
+        "Xavi Hernandez",
+        "Andres Iniesta",
+        "Lionel Messi"
+      ],
+      [
+        "Zlatan Ibrahimovic",
+        "Thiago Silva",
+        "Olivier Giroud",
+        "Laurent Koscielny",
+        "Jack Wilshere",
+        "Theo Walcott",
+        "Mesut Ozil"
+      ],
+      [
+        "Yohan Cabaye",
+        "Edinson Cavani",
+        "James Rodriguez",
+        "Radamel Falcao",
+        "Francesco Totti",
+        "Robert Lewandowski",
+        "Marco Reus"
+      ],
+      [
+        "Robin van Persie",
+        "Ryan Giggs",
+        "Wayne Rooney",
+        "Michael Carrick",
+        "Patrice Evra",
+        "David Villa",
+        "Diego Costa"
+      ]
+    ]
+  },
+  "aliases": {
+    "Franck Ribery": [
+      "Franck Ribéry"
+    ],
+    "Mario Gotze": [
+      "Mario Götze"
+    ],
+    "Mesut Ozil": [
+      "Mesut Özil"
+    ],
+    "Martin Skrtel": [
+      "Martin Škrtel"
+    ],
+    "Luka Modric": [
+      "Luka Modrić"
+    ],
+    "Luis Suarez": [
+      "Luis Suárez"
+    ],
+    "Petr Cech": [
+      "Petr Čech"
+    ],
+    "Xavi Hernandez": [
+      "Xavi Hernández",
+      "Xavi"
+    ],
+    "Andres Iniesta": [
+      "Andrés Iniesta"
+    ],
+    "Gerard Pique": [
+      "Gerard Piqué"
+    ],
+    "Marcelo": [
+      "Marcelo Vieira",
+      "Marcelo Vieira da Silva Júnior",
+      "Marcelo Vieira da Silva Junior"
+    ],
+    "Neymar": [
+      "Neymar Jr",
+      "Neymar da Silva Santos Júnior",
+      "Neymar da Silva Santos Junior"
+    ],
+    "Thomas Muller": [
+      "Thomas Müller"
+    ],
+    "Victor Valdes": [
+      "Víctor Valdés"
+    ],
+    "Clement Grenier": [
+      "Clément Grenier"
+    ],
+    "Cesar Delgado": [
+      "César Delgado"
+    ],
+    "Nemanja Vidic": [
+      "Nemanja Vidić"
+    ],
+    "James Rodriguez": [
+      "James Rodríguez"
+    ]
+  },
+  "playerIds": {
+    "Franck Ribery": 22068,
+    "Thomas Muller": 58358,
+    "Bastian Schweinsteiger": 2514,
+    "Philipp Lahm": 2219,
+    "Arjen Robben": 4360,
+    "Mesut Ozil": 35664,
+    "Xabi Alonso": 7476,
+    "Vincent Kompany": 9594,
+    "Joleon Lescott": 4241,
+    "David Silva": 35518,
+    "Carlos Tevez": 4276,
+    "Cristiano Ronaldo": 8198,
+    "Karim Benzema": 18922,
+    "Sergio Ramos": 25557,
+    "Roberto Soldado": 34870,
+    "Jonas": 50143,
+    "Stephan El Shaarawy": 94529,
+    "Robinho": 15511,
+    "Mario Balotelli": 45146,
+    "Didier Drogba": 3924,
+    "Wesley Sneijder": 4673,
+    "Petr Cech": 5658,
+    "Frank Lampard": 3163,
+    "Fernando Torres": 7767,
+    "Eden Hazard": 50202,
+    "Steed Malbranque": 3569,
+    "Maxime Gonalons": 60542,
+    "Clement Grenier": 4000000070,
+    "Hugo Lloris": 17965,
+    "Gareth Bale": 39381,
+    "Victor Valdes": 7589,
+    "Gerard Pique": 18944,
+    "Xavi Hernandez": 7607,
+    "Andres Iniesta": 7600,
+    "Lionel Messi": 28003,
+    "Steven Gerrard": 3109,
+    "Neymar": 68290,
+    "Marco Reus": 35207,
+    "Mario Gotze": 74842,
+    "Robert Lewandowski": 38253,
+    "Thierry Henry": 3207,
+    "Juninho Pernambucano": 4000000053,
+    "Michel Bastos": 4000000071,
+    "David Beckham": 4000000023,
+    "Zlatan Ibrahimovic": 3455,
+    "Thiago Silva": 29241,
+    "Ezequiel Lavezzi": 50570,
+    "Blaise Matuidi": 33923,
+    "Yohan Cabaye": 29434,
+    "Gianluigi Buffon": 5023,
+    "Andrea Pirlo": 5817,
+    "Cesar Delgado": 4000000072,
+    "Robin van Persie": 4380,
+    "Wayne Rooney": 3332,
+    "Nemanja Vidic": 4000000073,
+    "Rio Ferdinand": 4000000069,
+    "Martin Skrtel": 24180,
+    "Daniel Sturridge": 47082,
+    "Daniel Agger": 22832,
+    "Luka Modric": 27992,
+    "Marcelo": 44501,
+    "Raheem Sterling": 134425,
+    "Luis Suarez": 44352,
+    "Dani Alves": 15951,
+    "Olivier Giroud": 82442,
+    "Laurent Koscielny": 76277,
+    "Jack Wilshere": 74223,
+    "Theo Walcott": 33713,
+    "Edinson Cavani": 48280,
+    "James Rodriguez": 88103,
+    "Radamel Falcao": 39152,
+    "Francesco Totti": 4000000025,
+    "Ryan Giggs": 4000000059,
+    "Michael Carrick": 3878,
+    "Patrice Evra": 5285,
+    "David Villa": 7980,
+    "Diego Costa": 44779,
+    "Mikel Arteta": 7451
+  },
+  "audit": {
+    "reviewedUtc": "2026-10-04",
+    "method": "Read the captions on all 112 bundled season cards. Cross-check the 2012/13 captions against the 56 full-size artist illustrations reproduced by Forza27. Preserve the 50 existing legend mappings.",
+    "captionReference": "https://www.forza27.com/56-football-players-from-the-201213-season/",
+    "corrections": [
+      {
+        "season": "2012_13",
+        "row": 1,
+        "column": 2,
+        "previous": "Toni Kroos",
+        "corrected": "Thomas Muller"
+      },
+      {
+        "season": "2012_13",
+        "row": 1,
+        "column": 7,
+        "previous": "Sami Khedira",
+        "corrected": "Xabi Alonso"
+      },
+      {
+        "season": "2012_13",
+        "row": 3,
+        "column": 1,
+        "previous": "Gylfi Sigurdsson",
+        "corrected": "Roberto Soldado"
+      },
+      {
+        "season": "2012_13",
+        "row": 3,
+        "column": 2,
+        "previous": "Clint Dempsey",
+        "corrected": "Jonas"
+      },
+      {
+        "season": "2012_13",
+        "row": 3,
+        "column": 4,
+        "previous": "M'Baye Niang",
+        "corrected": "Robinho"
+      },
+      {
+        "season": "2012_13",
+        "row": 4,
+        "column": 5,
+        "previous": "Thiago Motta",
+        "corrected": "Steed Malbranque"
+      },
+      {
+        "season": "2012_13",
+        "row": 4,
+        "column": 6,
+        "previous": "Marco Verratti",
+        "corrected": "Maxime Gonalons"
+      },
+      {
+        "season": "2012_13",
+        "row": 4,
+        "column": 7,
+        "previous": "Javier Pastore",
+        "corrected": "Clement Grenier"
+      },
+      {
+        "season": "2012_13",
+        "row": 5,
+        "column": 1,
+        "previous": "Mats Hummels",
+        "corrected": "Hugo Lloris"
+      },
+      {
+        "season": "2012_13",
+        "row": 5,
+        "column": 3,
+        "previous": "Iker Casillas",
+        "corrected": "Victor Valdes"
+      },
+      {
+        "season": "2012_13",
+        "row": 6,
+        "column": 2,
+        "previous": "Michael Essien",
+        "corrected": "Neymar"
+      },
+      {
+        "season": "2012_13",
+        "row": 7,
+        "column": 1,
+        "previous": "Victor Moses",
+        "corrected": "Michel Bastos"
+      },
+      {
+        "season": "2012_13",
+        "row": 7,
+        "column": 4,
+        "previous": "Blaise Matuidi",
+        "corrected": "Thiago Silva"
+      },
+      {
+        "season": "2012_13",
+        "row": 7,
+        "column": 5,
+        "previous": "Salvatore Sirigu",
+        "corrected": "Ezequiel Lavezzi"
+      },
+      {
+        "season": "2012_13",
+        "row": 7,
+        "column": 6,
+        "previous": "Lucas Moura",
+        "corrected": "Blaise Matuidi"
+      },
+      {
+        "season": "2012_13",
+        "row": 7,
+        "column": 7,
+        "previous": "Giorgio Chiellini",
+        "corrected": "Yohan Cabaye"
+      },
+      {
+        "season": "2012_13",
+        "row": 8,
+        "column": 1,
+        "previous": "Claudio Marchisio",
+        "corrected": "Gianluigi Buffon"
+      },
+      {
+        "season": "2012_13",
+        "row": 8,
+        "column": 3,
+        "previous": "Javier Zanetti",
+        "corrected": "Cesar Delgado"
+      },
+      {
+        "season": "2012_13",
+        "row": 8,
+        "column": 6,
+        "previous": "Paul Scholes",
+        "corrected": "Nemanja Vidic"
+      },
+      {
+        "season": "2013_14",
+        "row": 1,
+        "column": 2,
+        "previous": "Toni Kroos",
+        "corrected": "Thomas Muller"
+      },
+      {
+        "season": "2013_14",
+        "row": 3,
+        "column": 2,
+        "previous": "Mamadou Sakho",
+        "corrected": "Daniel Sturridge"
+      },
+      {
+        "season": "2013_14",
+        "row": 3,
+        "column": 7,
+        "previous": "Gonzalo Higuain",
+        "corrected": "Gianluigi Buffon"
+      },
+      {
+        "season": "2013_14",
+        "row": 5,
+        "column": 1,
+        "previous": "Salvatore Sirigu",
+        "corrected": "Ezequiel Lavezzi"
+      },
+      {
+        "season": "2013_14",
+        "row": 6,
+        "column": 6,
+        "previous": "Kieran Gibbs",
+        "corrected": "Theo Walcott"
+      },
+      {
+        "season": "2013_14",
+        "row": 7,
+        "column": 1,
+        "previous": "Ezequiel Lavezzi",
+        "corrected": "Yohan Cabaye"
+      },
+      {
+        "season": "2013_14",
+        "row": 7,
+        "column": 3,
+        "previous": "Aaron Ramsey",
+        "corrected": "James Rodriguez"
+      }
+    ]
+  },
+  "additionalPortraits": [
+    {
+      "name": "Mikel Arteta",
+      "asset": "assets/season_portraits/mikel_arteta_source.png",
+      "url": "https://www.behance.net/gallery/19289757/56-football-players-20132014-season",
+      "artist": "Mathieu MARCOU / FootballTRAFIC",
+      "source": "User-supplied screenshot of the separately captioned 8. MIKEL ARTETA // ARSENAL FC illustration; not a cell in the bundled collage.",
+      "referenceSize": [
+        1301,
+        837
+      ],
+      "crop": [
+        235,
+        65,
+        650,
+        650
+      ]
+    }
+  ]
+}

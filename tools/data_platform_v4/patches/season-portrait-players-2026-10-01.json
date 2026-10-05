@@ -1,0 +1,59 @@
+{
+  "reviewedUtc": "2026-10-01",
+  "policy": "Verified identity plus a minimal verified senior-club link for each player missing from the bundled V4 data. Club history is intentionally partial; appearances, dates, fees and complete career history are not inferred.",
+  "portraitSources": [
+    "https://www.behance.net/gallery/9010659/56-football-players-20122013-season",
+    "https://www.behance.net/gallery/19289757/56-football-players-20132014-season"
+  ],
+  "players": [
+    {
+      "id": 4000000067,
+      "name": "Clint Dempsey",
+      "birthYear": 1983,
+      "country": "United States",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Clint_Dempsey"
+      ],
+      "clubs": [
+        {
+          "id": 148,
+          "name": "Tottenham Hotspur"
+        }
+      ]
+    },
+    {
+      "id": 4000000068,
+      "name": "Javier Zanetti",
+      "birthYear": 1973,
+      "country": "Argentina",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Javier_Zanetti"
+      ],
+      "clubs": [
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        }
+      ]
+    },
+    {
+      "id": 4000000069,
+      "name": "Rio Ferdinand",
+      "birthYear": 1978,
+      "country": "England",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rio_Ferdinand"
+      ],
+      "clubs": [
+        {
+          "id": 985,
+          "name": "Manchester United"
+        }
+      ]
+    }
+  ],
+  "corrections": []
+}

@@ -46,6 +46,9 @@ flutter:
   assets:
     - assets/config/admob.json
     - assets/brand/
+    - assets/uploaded_portraits/
+    - assets/player_portraits/
+    - assets/season_portraits/
     # Canonical player/club runtime data is V4 SQLite only.
     # Small coach/transfer/meta JSON assets remain for legacy side-data.
     - assets/data/coaches_min.json
