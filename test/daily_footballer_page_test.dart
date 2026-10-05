@@ -66,7 +66,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(game.round!.guesses.length, 1);
     expect(find.byKey(const ValueKey('daily-answer')), findsNothing);
-    await tester.scrollUntilVisible(find.byKey(const ValueKey('guess-card-0')), 200);
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('guess-card-0')), 200, scrollable: find.byType(Scrollable).first);
     await tester.pumpAndSettle();
     for (final label in ['Ülke', 'Kulüp', 'Lig', 'Mevki', 'Yaş', 'Forma']) {
       expect(find.text(label), findsOneWidget);
@@ -103,13 +103,13 @@ void main() {
       addTearDown(game.dispose);
       await open(tester, DailyFootballerPage(controller: game), light: light);
       await capture(tester, 'footballer-start-${light ? 'light' : 'dark'}');
-      await tester.scrollUntilVisible(find.byKey(const ValueKey('guess-card-0')), 200);
+      await tester.scrollUntilVisible(find.byKey(const ValueKey('guess-card-0')), 200, scrollable: find.byType(Scrollable).first);
       await tester.pumpAndSettle();
       await capture(tester, 'footballer-clues-${light ? 'light' : 'dark'}');
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
       await open(tester, DailyFootballerPage(controller: game), light: light, width: 320, scale: 1.8);
-      await tester.scrollUntilVisible(find.byKey(const ValueKey('guess-card-0')), 200);
+      await tester.scrollUntilVisible(find.byKey(const ValueKey('guess-card-0')), 200, scrollable: find.byType(Scrollable).first);
       await tester.pumpAndSettle();
       await capture(tester, 'footballer-large-${light ? 'light' : 'dark'}');
       expect(tester.takeException(), isNull);

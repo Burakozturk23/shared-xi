@@ -114,10 +114,12 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('GÜNLÜK OYUNCU DOSYASI · ${round.dayKey.split('-').reversed.join('.')}',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(color: p.accent)),
-                const SizedBox(height: 10),
-                Text('Sahadaki gizli ismi bul.', style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 8),
-                const Text('Her tahmin yeni bir iz bırakır. Altı özelliği karşılaştır, doğru isme yaklaş.'),
+                if (round.guesses.isEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text('Sahadaki gizli ismi bul.', style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: 8),
+                  const Text('Her tahmin yeni bir iz bırakır. Altı özelliği karşılaştır, doğru isme yaklaş.'),
+                ],
                 const SizedBox(height: 18),
                 Row(children: [for (var i = 0; i < round.limit; i++) Expanded(child: Container(
                   height: 6, margin: const EdgeInsets.only(right: 5), decoration: BoxDecoration(
@@ -214,9 +216,16 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
       const SizedBox(height: 14),
       LayoutBuilder(builder: (context, constraints) {
         final cols = MediaQuery.textScalerOf(context).scale(14) > 20 ? 2 : 3;
-        final width = (constraints.maxWidth - (cols - 1) * 8) / cols;
-        return Wrap(spacing: 8, runSpacing: 8, children: [for (final clue in round.compare(round.guesses[index]))
-          SizedBox(width: width, child: _clue(clue)),
+        final clues = round.compare(round.guesses[index]);
+        return Column(children: [
+          for (var start = 0; start < clues.length; start += cols)
+            Padding(padding: EdgeInsets.only(bottom: start + cols < clues.length ? 8 : 0),
+              child: IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                for (var col = 0; col < cols; col++) ...[
+                  if (col > 0) const SizedBox(width: 8),
+                  Expanded(child: _clue(clues[start + col])),
+                ],
+              ]))),
         ]);
       }),
     ]),

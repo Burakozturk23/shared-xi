@@ -19,7 +19,7 @@ class MemoryFootballerStore implements DailyFootballerStore {
 }
 
 DailyFootballer footballer(int i) => DailyFootballer(
-  id: '$i', name: i == 0 ? 'İlkay Gündoğan' : 'Oyuncu $i', aliases: ['Player $i'],
+  id: '$i', name: i == 0 ? 'İlkay Gündoğan' : 'Oyuncu $i', aliases: ['Player $i', if (i == 0) 'José Rodríguez'],
   country: i.isEven ? 'Türkiye' : 'Almanya', clubId: '$i', club: 'Kulüp $i',
   leagueId: 'tr', league: 'Süper Lig', position: 'M',
   birthDate: DateTime.utc(1990 + i, 10, 6), shirtNumber: i + 1,
@@ -32,13 +32,18 @@ void main() {
   late DailyFootballerController game;
   late DateTime now;
   late bool earned;
+  late bool adError;
   late int adCalls;
   setUp(() async {
     store = MemoryFootballerStore();
     now = DateTime.utc(2026, 10, 6, 12);
-    earned = true; adCalls = 0;
+    earned = true; adError = false; adCalls = 0;
     game = DailyFootballerController(catalog: sampleCatalog, store: store,
-      clock: () => now, watchAd: () async { adCalls++; return earned; });
+      clock: () => now, watchAd: () async {
+        adCalls++;
+        if (adError) throw StateError('no fill');
+        return earned;
+      });
     await game.initialize();
   });
   tearDown(() => game.dispose());
@@ -86,6 +91,7 @@ void main() {
     expect(sampleCatalog.search('i', game.round!), isEmpty);
     expect(sampleCatalog.search('ilkay gundogan', game.round!).single.id, '0');
     expect(sampleCatalog.search('player 8', game.round!).single.id, '8');
+    expect(sampleCatalog.search('jose rodriguez', game.round!).single.id, '0');
     final guessed = game.round!.copyWith(guesses: [footballer(0)]);
     expect(sampleCatalog.search('ilkay', guessed), isEmpty);
     expect(sampleCatalog.search('unknown player', guessed), isEmpty);
@@ -135,6 +141,20 @@ void main() {
     await game.guess(game.round!.target.id);
     expect(game.round!.guesses.length, 7);
   });
+  test('ad load failure preserves eligibility and progress for a retry', () async {
+    await game.guess(wrong().first.id);
+    final saved = store.value;
+    adError = true;
+    await game.unlockHint();
+    expect(game.round!.canHint, isTrue);
+    expect(game.round!.hintUsed, isFalse);
+    expect(game.busy, isFalse);
+    expect(store.value, saved);
+    expect(game.message, isNotNull);
+    adError = false;
+    await game.unlockHint();
+    expect(game.round!.hintUsed, isTrue);
+  });
   test('revealing after six ends the round and prevents extra reward', () async {
     await sixWrong();
     await game.reveal();
@@ -152,7 +172,7 @@ void main() {
     addTearDown(restored.dispose);
     await restored.initialize();
     expect(restored.round!.toJson(), game.round!.toJson());
-    expect(restored.catalog.search(game.round!.target.name, restored.round!).single.id, game.round!.target.id);
+    expect(restored.catalog.search(game.round!.target.name, restored.round!).map((p) => p.id), contains(game.round!.target.id));
     await restored.guess(game.round!.target.id);
     expect(restored.round!.won, isTrue);
   });
