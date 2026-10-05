@@ -34,7 +34,7 @@ void main() {
     final catalog = jsonDecode(File('functions/config/store_collection.json').readAsStringSync()) as Map;
     final offers = (catalog['offers'] as List)
         .where((o) => o['itemType'] == 'avatar' && o['enabled'] == true).toList();
-    expect(collectionAvatars.length, 123);
+    expect(collectionAvatars.length, 151);
     expect(collectionAvatars.map((a) => a.id).toSet(),
         offers.map((o) => o['itemId']).toSet());
     for (final avatar in collectionAvatars) {
@@ -56,10 +56,30 @@ void main() {
       expect(UploadedPortraitCatalog.forPlayerId(id), isNull, reason: 'Namesake $id');
     }
     expect(UploadedPortraitCatalog.coachPlayerIds['seed_zidane'], 3111);
-    expect(UploadedPortraitCatalog.coachKeys['seed_xavi'], 'xavi');
+    expect(UploadedPortraitCatalog.coachKeys['seed_xavi'], 'xavi_coach');
   });
 
-  for (var page = 0; page < 5; page++) {
+  test('all dual roles select player artwork independently of coach artwork', () {
+    final manifest = jsonDecode(File('tools/uploaded_portraits/manifest.json').readAsStringSync()) as Map;
+    final portraits = {for (final p in manifest['portraits'] as List) p['key']: p};
+    for (final pair in manifest['dualRoles'] as List) {
+      final player = portraits[pair['playerKey']]!;
+      final coach = portraits[pair['coachKey']]!;
+      expect(player['playerId'], coach['playerId']);
+      expect(UploadedPortraitCatalog.playerKeys[player['playerId']], pair['playerKey']);
+      expect(UploadedPortraitCatalog.portraits[pair['playerKey']]!.asset,
+          isNot(UploadedPortraitCatalog.portraits[pair['coachKey']]!.asset));
+    }
+    for (final (slug, title) in [('kaan', 'Kaan'), ('omer', 'Ömer'), ('berat', 'Berat'), ('burak', 'Burak'), ('ege', 'Ege')]) {
+      final avatar = collectionAvatars.singleWhere((a) => a.id == 'persona_$slug');
+      expect(avatar.title, title);
+      expect(UploadedPortraitCatalog.forAvatarId(avatar.id)!.asset,
+          'assets/uploaded_portraits/custom_$slug.png');
+      expect(UploadedPortraitCatalog.avatarPlayerIds[avatar.id], isNull);
+    }
+  });
+
+  for (var page = 0; page < (collectionAvatars.length / 30).ceil(); page++) {
     testWidgets('avatar portraits page $page decodes with locks and no monograms', (tester) async {
       tester.view.physicalSize = const Size(900, 1400);
       tester.view.devicePixelRatio = 1;

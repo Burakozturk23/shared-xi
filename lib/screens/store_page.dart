@@ -315,7 +315,7 @@ class _StorePageState extends State<StorePage> {
                 ),
               if (_tab == 'avatar') ...[
                 const Text(
-                  'Şimdilik isim ve temsili monogramlarla. Satın aldıktan sonra profil avatarı olarak kullanabilirsin.',
+                  'Futbolcu, teknik direktör ve özel portrelerden avatarını seç. Satın aldıktan sonra profilinde kullanabilirsin.',
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -328,6 +328,7 @@ class _StorePageState extends State<StorePage> {
                       ('coaches', 'Teknik direktörler'),
                       ('legends', 'Efsaneler'),
                       ('creators', 'İçerik üreticileri'),
+                      ('friends', 'Özel avatarlar'),
                       ('classic', 'Linkball'),
                     ])
                       ChoiceChip(

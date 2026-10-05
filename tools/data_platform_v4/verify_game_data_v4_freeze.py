@@ -68,6 +68,8 @@ def main() -> int:
         return fail("Invalid reviewed expansion link counts")
     for key in ("players", "players_with_clubs", "search_players"):
         EXPECTED[key] = 30_135 + additions + reviewed_players
+    EXPECTED["clubs"] += sum(r.get("newClubs", 0) for r in reviews)
+    EXPECTED["coaches"] += sum(r.get("newCoaches", 0) for r in reviews)
     con = sqlite3.connect(str(DB))
     try:
         con.execute("PRAGMA foreign_keys=ON")
@@ -131,6 +133,7 @@ def main() -> int:
             "v4-2026-10-01.1": "reviewed:legend-portraits:2026-10-01",
             "v4-2026-10-01.2": "reviewed:season-portraits:2026-10-01",
             "v4-2026-10-04.1": "reviewed:portrait-audit:2026-10-04",
+            "v4-2026-10-05.1": "reviewed:avatar-careers:2026-10-05",
         }
         actual_reviewed_links = 0
         for review in reviews:
@@ -189,7 +192,7 @@ def main() -> int:
         "policy": EXPECTED_PRUNE_POLICY,
         "clubs_removed": EXPECTED["pruned_clubs"],
         "transfer_rows_removed": EXPECTED["pruned_transfer_rows"],
-        "clubs_remaining": EXPECTED["clubs"],
+        "clubs_remaining": 4_311,  # historical pruning result, before additions
         "transfers_remaining": 33_993,  # historical pruning result, before reviewed patches
     }
     for key, expected in expected_pruning.items():

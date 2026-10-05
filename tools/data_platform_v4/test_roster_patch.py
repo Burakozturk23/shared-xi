@@ -28,9 +28,9 @@ class RosterPatchTests(unittest.TestCase):
                 self.assertEqual(c.execute('SELECT trust,source FROM player_clubs WHERE player_id=? AND club_id=?',(r['playerId'],r['clubId'])).fetchone(),(2,'roster:worldcup26:2026-09-29'))
             # Only existing identities: no new entities or fabricated career events.
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE source = 'v4'").fetchone()[0],30135)
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM clubs').fetchone()[0],4311)
+            self.assertEqual(c.execute('SELECT COUNT(*) FROM clubs').fetchone()[0],4311 + sum(r.get('newClubs', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
             self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0],33994)
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0],37966)
+            self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0],37966 + sum(r.get('newCareerSpells', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
             self.assertEqual(
                 c.execute(
                     "SELECT COUNT(*) FROM player_clubs WHERE source NOT IN ("
@@ -38,7 +38,8 @@ class RosterPatchTests(unittest.TestCase):
                     "'reviewed:notable:2026-09-30',"
                     "'reviewed:legend-portraits:2026-10-01',"
                     "'reviewed:season-portraits:2026-10-01',"
-                    "'reviewed:portrait-audit:2026-10-04'"
+                    "'reviewed:portrait-audit:2026-10-04',"
+                    "'reviewed:avatar-careers:2026-10-05'"
                     ")"
                 ).fetchone()[0],
                 165563 + len(additions),

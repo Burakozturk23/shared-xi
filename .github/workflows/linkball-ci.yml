@@ -31,6 +31,8 @@ jobs:
           python3 tools/data_platform_v4/apply_legend_portrait_players.py
           python3 tools/data_platform_v4/apply_season_portrait_players.py
           python3 tools/data_platform_v4/apply_portrait_audit_players.py
+          python3 tools/data_platform_v4/apply_avatar_careers.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_avatar_careers.py'
           python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_reviewed_patch.py'
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_api_football_sync.py'

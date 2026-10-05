@@ -1,0 +1,4831 @@
+{
+  "reviewedUtc": "2026-10-05",
+  "policy": "Canonical first-team club careers and year-precision spells from cited biographies; loans retained. Development spells are recorded in evidence but not promoted to parent clubs. Reserve-only Nagelsmann and amateur-only Karaman are searchable records, not gameplay answers. No invented transfers, fees, goals or appearance totals. Coach club pools include verified senior head-coach clubs only; unmapped historical teams retained in evidence.",
+  "players": [
+    {
+      "id": 4000000074,
+      "name": "José Mourinho",
+      "key": "jose_mourinho",
+      "birthYear": 1963,
+      "country": "Portugal",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jos%C3%A9_Mourinho"
+      ],
+      "clubs": [
+        {
+          "id": 2425,
+          "name": "Rio Ave FC"
+        },
+        {
+          "id": 68608,
+          "name": "CF Os Belenenses"
+        },
+        {
+          "id": 5000000015,
+          "name": "Sesimbra"
+        },
+        {
+          "id": 5000000016,
+          "name": "Comércio e Indústria"
+        }
+      ],
+      "spells": [
+        {
+          "id": 2425,
+          "name": "Rio Ave FC",
+          "startYear": 1980,
+          "endYear": 1982,
+          "loan": false
+        },
+        {
+          "id": 68608,
+          "name": "CF Os Belenenses",
+          "startYear": 1982,
+          "endYear": 1983,
+          "loan": false
+        },
+        {
+          "id": 5000000015,
+          "name": "Sesimbra",
+          "startYear": 1983,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 5000000016,
+          "name": "Comércio e Indústria",
+          "startYear": 1985,
+          "endYear": 1987,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000075,
+      "name": "Luis Enrique",
+      "key": "luis_enrique",
+      "birthYear": 1970,
+      "country": "Spain",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luis_Enrique"
+      ],
+      "clubs": [
+        {
+          "id": 2448,
+          "name": "Sporting Gijón"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        }
+      ],
+      "spells": [
+        {
+          "id": 2448,
+          "name": "Sporting Gijón",
+          "startYear": 1989,
+          "endYear": 1991,
+          "loan": false
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid",
+          "startYear": 1991,
+          "endYear": 1996,
+          "loan": false
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona",
+          "startYear": 1996,
+          "endYear": 2004,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1988,
+          "endYear": 1990,
+          "club": "Sporting Gijón B",
+          "apps": 61
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000076,
+      "name": "Fatih Terim",
+      "key": "fatih_terim",
+      "birthYear": 1953,
+      "country": "Turkey",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fatih_Terim"
+      ],
+      "clubs": [
+        {
+          "id": 3840,
+          "name": "Adana Demirspor"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        }
+      ],
+      "spells": [
+        {
+          "id": 3840,
+          "name": "Adana Demirspor",
+          "startYear": 1969,
+          "endYear": 1974,
+          "loan": false
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 1974,
+          "endYear": 1985,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000077,
+      "name": "İsmail Kartal",
+      "key": "ismail_kartal",
+      "birthYear": 1961,
+      "country": "Turkey",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C4%B0smail_Kartal"
+      ],
+      "clubs": [
+        {
+          "id": 518,
+          "name": "Sariyer"
+        },
+        {
+          "id": 524,
+          "name": "Gaziantepspor (-2020)"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 833,
+          "name": "Denizlispor"
+        },
+        {
+          "id": 6,
+          "name": "Adanaspor"
+        }
+      ],
+      "spells": [
+        {
+          "id": 518,
+          "name": "Sariyer",
+          "startYear": 1980,
+          "endYear": 1981,
+          "loan": false
+        },
+        {
+          "id": 524,
+          "name": "Gaziantepspor (-2020)",
+          "startYear": 1981,
+          "endYear": 1983,
+          "loan": false
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce",
+          "startYear": 1983,
+          "endYear": 1993,
+          "loan": false
+        },
+        {
+          "id": 833,
+          "name": "Denizlispor",
+          "startYear": 1993,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 6,
+          "name": "Adanaspor",
+          "startYear": 1994,
+          "endYear": 1995,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000078,
+      "name": "Okan Buruk",
+      "key": "okan_buruk",
+      "birthYear": 1973,
+      "country": "Turkey",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Okan_Buruk"
+      ],
+      "clubs": [
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 6890,
+          "name": "Basaksehir FK"
+        }
+      ],
+      "spells": [
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 1991,
+          "endYear": 2001,
+          "loan": false
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan",
+          "startYear": 2001,
+          "endYear": 2004,
+          "loan": false
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK",
+          "startYear": 2004,
+          "endYear": 2006,
+          "loan": false
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 2006,
+          "endYear": 2008,
+          "loan": false
+        },
+        {
+          "id": 6890,
+          "name": "Basaksehir FK",
+          "startYear": 2008,
+          "endYear": 2010,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000079,
+      "name": "Alex Ferguson",
+      "key": "alex_ferguson",
+      "birthYear": 1941,
+      "country": "Scotland",
+      "position": "Attack",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_Ferguson"
+      ],
+      "clubs": [
+        {
+          "id": 1000003031,
+          "name": "Queen's Park"
+        },
+        {
+          "id": 2578,
+          "name": "St. Johnstone FC"
+        },
+        {
+          "id": 1270,
+          "name": "Dunfermline Athletic FC"
+        },
+        {
+          "id": 124,
+          "name": "Rangers FC"
+        },
+        {
+          "id": 1191,
+          "name": "Falkirk FC"
+        },
+        {
+          "id": 1000001192,
+          "name": "Ayr United"
+        }
+      ],
+      "spells": [
+        {
+          "id": 1000003031,
+          "name": "Queen's Park",
+          "startYear": 1957,
+          "endYear": 1960,
+          "loan": false
+        },
+        {
+          "id": 2578,
+          "name": "St. Johnstone FC",
+          "startYear": 1960,
+          "endYear": 1964,
+          "loan": false
+        },
+        {
+          "id": 1270,
+          "name": "Dunfermline Athletic FC",
+          "startYear": 1964,
+          "endYear": 1967,
+          "loan": false
+        },
+        {
+          "id": 124,
+          "name": "Rangers FC",
+          "startYear": 1967,
+          "endYear": 1969,
+          "loan": false
+        },
+        {
+          "id": 1191,
+          "name": "Falkirk FC",
+          "startYear": 1969,
+          "endYear": 1973,
+          "loan": false
+        },
+        {
+          "id": 1000001192,
+          "name": "Ayr United",
+          "startYear": 1973,
+          "endYear": 1974,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000080,
+      "name": "Jürgen Klopp",
+      "key": "jurgen_klopp",
+      "birthYear": 1967,
+      "country": "Germany",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/J%C3%BCrgen_Klopp"
+      ],
+      "clubs": [
+        {
+          "id": 5000000000,
+          "name": "1. FC Pforzheim"
+        },
+        {
+          "id": 5000000001,
+          "name": "Viktoria Sindlingen"
+        },
+        {
+          "id": 5000000002,
+          "name": "Rot-Weiss Frankfurt"
+        },
+        {
+          "id": 39,
+          "name": "1.FSV Mainz 05"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000000,
+          "name": "1. FC Pforzheim",
+          "startYear": 1987,
+          "endYear": 1987,
+          "loan": false
+        },
+        {
+          "id": 5000000001,
+          "name": "Viktoria Sindlingen",
+          "startYear": 1988,
+          "endYear": 1989,
+          "loan": false
+        },
+        {
+          "id": 5000000002,
+          "name": "Rot-Weiss Frankfurt",
+          "startYear": 1989,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 39,
+          "name": "1.FSV Mainz 05",
+          "startYear": 1990,
+          "endYear": 2001,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1987,
+          "endYear": 1988,
+          "club": "Eintracht Frankfurt II",
+          "apps": null
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000081,
+      "name": "Arsène Wenger",
+      "key": "arsene_wenger",
+      "birthYear": 1949,
+      "country": "France",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ars%C3%A8ne_Wenger"
+      ],
+      "clubs": [
+        {
+          "id": 5000000003,
+          "name": "Mutzig"
+        },
+        {
+          "id": 1774,
+          "name": "FC Mulhouse"
+        },
+        {
+          "id": 5000000004,
+          "name": "ASPV Strasbourg"
+        },
+        {
+          "id": 667,
+          "name": "RC Strasbourg Alsace"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000003,
+          "name": "Mutzig",
+          "startYear": 1969,
+          "endYear": 1973,
+          "loan": false
+        },
+        {
+          "id": 1774,
+          "name": "FC Mulhouse",
+          "startYear": 1973,
+          "endYear": 1975,
+          "loan": false
+        },
+        {
+          "id": 5000000004,
+          "name": "ASPV Strasbourg",
+          "startYear": 1975,
+          "endYear": 1978,
+          "loan": false
+        },
+        {
+          "id": 667,
+          "name": "RC Strasbourg Alsace",
+          "startYear": 1978,
+          "endYear": 1981,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000082,
+      "name": "Carlo Ancelotti",
+      "key": "carlo_ancelotti",
+      "birthYear": 1959,
+      "country": "Italy",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Carlo_Ancelotti"
+      ],
+      "clubs": [
+        {
+          "id": 130,
+          "name": "Parma Calcio 1913"
+        },
+        {
+          "id": 12,
+          "name": "AS Roma"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        }
+      ],
+      "spells": [
+        {
+          "id": 130,
+          "name": "Parma Calcio 1913",
+          "startYear": 1976,
+          "endYear": 1979,
+          "loan": false
+        },
+        {
+          "id": 12,
+          "name": "AS Roma",
+          "startYear": 1979,
+          "endYear": 1987,
+          "loan": false
+        },
+        {
+          "id": 5,
+          "name": "AC Milan",
+          "startYear": 1987,
+          "endYear": 1992,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000083,
+      "name": "Hansi Flick",
+      "key": "hansi_flick",
+      "birthYear": 1965,
+      "country": "Germany",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hansi_Flick"
+      ],
+      "clubs": [
+        {
+          "id": 254,
+          "name": "SV Sandhausen"
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        },
+        {
+          "id": 3,
+          "name": "1.FC Köln"
+        },
+        {
+          "id": 5000000005,
+          "name": "Victoria Bammental"
+        }
+      ],
+      "spells": [
+        {
+          "id": 254,
+          "name": "SV Sandhausen",
+          "startYear": 1982,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich",
+          "startYear": 1985,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 3,
+          "name": "1.FC Köln",
+          "startYear": 1990,
+          "endYear": 1993,
+          "loan": false
+        },
+        {
+          "id": 5000000005,
+          "name": "Victoria Bammental",
+          "startYear": 1994,
+          "endYear": 2000,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000084,
+      "name": "Thomas Tuchel",
+      "key": "thomas_tuchel",
+      "birthYear": 1973,
+      "country": "Germany",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Thomas_Tuchel"
+      ],
+      "clubs": [
+        {
+          "id": 71,
+          "name": "Stuttgarter Kickers"
+        },
+        {
+          "id": 69,
+          "name": "SSV Ulm 1846"
+        }
+      ],
+      "spells": [
+        {
+          "id": 71,
+          "name": "Stuttgarter Kickers",
+          "startYear": 1992,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 69,
+          "name": "SSV Ulm 1846",
+          "startYear": 1995,
+          "endYear": 1998,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000085,
+      "name": "Diego Simeone",
+      "key": "diego_simeone",
+      "birthYear": 1970,
+      "country": "Argentina",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Diego_Simeone"
+      ],
+      "clubs": [
+        {
+          "id": 1029,
+          "name": "CA Vélez Sarsfield"
+        },
+        {
+          "id": 4172,
+          "name": "Pisa Sporting Club"
+        },
+        {
+          "id": 368,
+          "name": "Sevilla FC"
+        },
+        {
+          "id": 13,
+          "name": "Atlético de Madrid"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 398,
+          "name": "SS Lazio"
+        },
+        {
+          "id": 1444,
+          "name": "Racing Club"
+        }
+      ],
+      "spells": [
+        {
+          "id": 1029,
+          "name": "CA Vélez Sarsfield",
+          "startYear": 1987,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 4172,
+          "name": "Pisa Sporting Club",
+          "startYear": 1990,
+          "endYear": 1992,
+          "loan": false
+        },
+        {
+          "id": 368,
+          "name": "Sevilla FC",
+          "startYear": 1992,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 13,
+          "name": "Atlético de Madrid",
+          "startYear": 1994,
+          "endYear": 1997,
+          "loan": false
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan",
+          "startYear": 1997,
+          "endYear": 1999,
+          "loan": false
+        },
+        {
+          "id": 398,
+          "name": "SS Lazio",
+          "startYear": 1999,
+          "endYear": 2003,
+          "loan": false
+        },
+        {
+          "id": 13,
+          "name": "Atlético de Madrid",
+          "startYear": 2003,
+          "endYear": 2005,
+          "loan": false
+        },
+        {
+          "id": 1444,
+          "name": "Racing Club",
+          "startYear": 2005,
+          "endYear": 2006,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000086,
+      "name": "Unai Emery",
+      "key": "unai_emery",
+      "birthYear": 1971,
+      "country": "Spain",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Unai_Emery"
+      ],
+      "clubs": [
+        {
+          "id": 681,
+          "name": "Real Sociedad"
+        },
+        {
+          "id": 1000002929,
+          "name": "CD Toledo"
+        },
+        {
+          "id": 1176,
+          "name": "Racing Ferrol"
+        },
+        {
+          "id": 1244,
+          "name": "CD Leganés"
+        },
+        {
+          "id": 5000000014,
+          "name": "Lorca Deportiva"
+        }
+      ],
+      "spells": [
+        {
+          "id": 681,
+          "name": "Real Sociedad",
+          "startYear": 1995,
+          "endYear": 1996,
+          "loan": false
+        },
+        {
+          "id": 1000002929,
+          "name": "CD Toledo",
+          "startYear": 1996,
+          "endYear": 2000,
+          "loan": false
+        },
+        {
+          "id": 1176,
+          "name": "Racing Ferrol",
+          "startYear": 2000,
+          "endYear": 2002,
+          "loan": false
+        },
+        {
+          "id": 1244,
+          "name": "CD Leganés",
+          "startYear": 2002,
+          "endYear": 2003,
+          "loan": false
+        },
+        {
+          "id": 5000000014,
+          "name": "Lorca Deportiva",
+          "startYear": 2003,
+          "endYear": 2004,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1990,
+          "endYear": 1995,
+          "club": "Real Sociedad B",
+          "apps": 89
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000087,
+      "name": "Julian Nagelsmann",
+      "key": "julian_nagelsmann",
+      "birthYear": 1987,
+      "country": "Germany",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://fcbayern.com/en/teams/first-team/former-players/julian-nagelsmann"
+      ],
+      "clubs": [
+        {
+          "id": 5000000022,
+          "name": "1860 Munich II"
+        },
+        {
+          "id": 5000000023,
+          "name": "FC Augsburg II"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000022,
+          "name": "1860 Munich II",
+          "startYear": 2006,
+          "endYear": 2007,
+          "loan": false
+        },
+        {
+          "id": 5000000023,
+          "name": "FC Augsburg II",
+          "startYear": 2007,
+          "endYear": 2008,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": false,
+      "notes": "Reserve registrations only; no first-team gameplay eligibility or fabricated appearances."
+    },
+    {
+      "id": 4000000088,
+      "name": "Luciano Spalletti",
+      "key": "luciano_spalletti",
+      "birthYear": 1959,
+      "country": "Italy",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luciano_Spalletti"
+      ],
+      "clubs": [
+        {
+          "id": 5000000006,
+          "name": "Castelfiorentino"
+        },
+        {
+          "id": 20519,
+          "name": "Virtus Entella"
+        },
+        {
+          "id": 3522,
+          "name": "Spezia Calcio"
+        },
+        {
+          "id": 4104,
+          "name": "FC Esperia Viareggio"
+        },
+        {
+          "id": 749,
+          "name": "FC Empoli"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000006,
+          "name": "Castelfiorentino",
+          "startYear": 1982,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 20519,
+          "name": "Virtus Entella",
+          "startYear": 1985,
+          "endYear": 1986,
+          "loan": false
+        },
+        {
+          "id": 3522,
+          "name": "Spezia Calcio",
+          "startYear": 1986,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 4104,
+          "name": "FC Esperia Viareggio",
+          "startYear": 1990,
+          "endYear": 1991,
+          "loan": false
+        },
+        {
+          "id": 749,
+          "name": "FC Empoli",
+          "startYear": 1991,
+          "endYear": 1993,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000089,
+      "name": "Gian Piero Gasperini",
+      "key": "gian_piero_gasperini",
+      "birthYear": 1958,
+      "country": "Italy",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gian_Piero_Gasperini"
+      ],
+      "clubs": [
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 5621,
+          "name": "AC Reggiana 1919"
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC"
+        },
+        {
+          "id": 6266,
+          "name": "Cavese 1919"
+        },
+        {
+          "id": 1307,
+          "name": "FC Pistoiese"
+        },
+        {
+          "id": 2921,
+          "name": "Delfino Pescara 1936"
+        },
+        {
+          "id": 380,
+          "name": "US Salernitana 1919"
+        },
+        {
+          "id": 7030,
+          "name": "Vis Pesaro 1898"
+        }
+      ],
+      "spells": [
+        {
+          "id": 506,
+          "name": "Juventus FC",
+          "startYear": 1976,
+          "endYear": 1978,
+          "loan": false
+        },
+        {
+          "id": 5621,
+          "name": "AC Reggiana 1919",
+          "startYear": 1977,
+          "endYear": 1978,
+          "loan": true
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC",
+          "startYear": 1978,
+          "endYear": 1983,
+          "loan": false
+        },
+        {
+          "id": 6266,
+          "name": "Cavese 1919",
+          "startYear": 1983,
+          "endYear": 1984,
+          "loan": false
+        },
+        {
+          "id": 1307,
+          "name": "FC Pistoiese",
+          "startYear": 1984,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 2921,
+          "name": "Delfino Pescara 1936",
+          "startYear": 1985,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 380,
+          "name": "US Salernitana 1919",
+          "startYear": 1990,
+          "endYear": 1991,
+          "loan": false
+        },
+        {
+          "id": 7030,
+          "name": "Vis Pesaro 1898",
+          "startYear": 1991,
+          "endYear": 1993,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000090,
+      "name": "Massimiliano Allegri",
+      "key": "massimiliano_allegri",
+      "birthYear": 1967,
+      "country": "Italy",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Massimiliano_Allegri"
+      ],
+      "clubs": [
+        {
+          "id": 5000000007,
+          "name": "Cuoiopelli"
+        },
+        {
+          "id": 1210,
+          "name": "US Livorno 1915"
+        },
+        {
+          "id": 4172,
+          "name": "Pisa Sporting Club"
+        },
+        {
+          "id": 5174,
+          "name": "Pavia Calcio 1911"
+        },
+        {
+          "id": 2921,
+          "name": "Delfino Pescara 1936"
+        },
+        {
+          "id": 1390,
+          "name": "Cagliari Calcio"
+        },
+        {
+          "id": 839,
+          "name": "AC Perugia Calcio"
+        },
+        {
+          "id": 3037,
+          "name": "Calcio Padova"
+        },
+        {
+          "id": 6195,
+          "name": "SSC Napoli"
+        },
+        {
+          "id": 1307,
+          "name": "FC Pistoiese"
+        },
+        {
+          "id": 5000000008,
+          "name": "Aglianese"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000007,
+          "name": "Cuoiopelli",
+          "startYear": 1984,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 1210,
+          "name": "US Livorno 1915",
+          "startYear": 1985,
+          "endYear": 1988,
+          "loan": false
+        },
+        {
+          "id": 4172,
+          "name": "Pisa Sporting Club",
+          "startYear": 1988,
+          "endYear": 1989,
+          "loan": false
+        },
+        {
+          "id": 1210,
+          "name": "US Livorno 1915",
+          "startYear": 1989,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 5174,
+          "name": "Pavia Calcio 1911",
+          "startYear": 1990,
+          "endYear": 1991,
+          "loan": false
+        },
+        {
+          "id": 2921,
+          "name": "Delfino Pescara 1936",
+          "startYear": 1991,
+          "endYear": 1993,
+          "loan": false
+        },
+        {
+          "id": 1390,
+          "name": "Cagliari Calcio",
+          "startYear": 1993,
+          "endYear": 1995,
+          "loan": false
+        },
+        {
+          "id": 839,
+          "name": "AC Perugia Calcio",
+          "startYear": 1995,
+          "endYear": 1997,
+          "loan": false
+        },
+        {
+          "id": 3037,
+          "name": "Calcio Padova",
+          "startYear": 1997,
+          "endYear": 1997,
+          "loan": false
+        },
+        {
+          "id": 6195,
+          "name": "SSC Napoli",
+          "startYear": 1997,
+          "endYear": 1998,
+          "loan": false
+        },
+        {
+          "id": 2921,
+          "name": "Delfino Pescara 1936",
+          "startYear": 1998,
+          "endYear": 2000,
+          "loan": false
+        },
+        {
+          "id": 1307,
+          "name": "FC Pistoiese",
+          "startYear": 2000,
+          "endYear": 2001,
+          "loan": false
+        },
+        {
+          "id": 5000000008,
+          "name": "Aglianese",
+          "startYear": 2001,
+          "endYear": 2003,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000091,
+      "name": "Roberto Mancini",
+      "key": "roberto_mancini",
+      "birthYear": 1964,
+      "country": "Italy",
+      "position": "Attack",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_Mancini"
+      ],
+      "clubs": [
+        {
+          "id": 1025,
+          "name": "Bologna FC 1909"
+        },
+        {
+          "id": 1038,
+          "name": "UC Sampdoria"
+        },
+        {
+          "id": 398,
+          "name": "SS Lazio"
+        },
+        {
+          "id": 1003,
+          "name": "Leicester City"
+        }
+      ],
+      "spells": [
+        {
+          "id": 1025,
+          "name": "Bologna FC 1909",
+          "startYear": 1980,
+          "endYear": 1982,
+          "loan": false
+        },
+        {
+          "id": 1038,
+          "name": "UC Sampdoria",
+          "startYear": 1982,
+          "endYear": 1997,
+          "loan": false
+        },
+        {
+          "id": 398,
+          "name": "SS Lazio",
+          "startYear": 1997,
+          "endYear": 2001,
+          "loan": false
+        },
+        {
+          "id": 1003,
+          "name": "Leicester City",
+          "startYear": 2001,
+          "endYear": 2001,
+          "loan": true
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000092,
+      "name": "Joachim Löw",
+      "key": "joachim_low",
+      "birthYear": 1960,
+      "country": "Germany",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Joachim_L%C3%B6w"
+      ],
+      "clubs": [
+        {
+          "id": 60,
+          "name": "SC Freiburg"
+        },
+        {
+          "id": 79,
+          "name": "VfB Stuttgart"
+        },
+        {
+          "id": 24,
+          "name": "Eintracht Frankfurt"
+        },
+        {
+          "id": 48,
+          "name": "Karlsruher SC"
+        },
+        {
+          "id": 1277,
+          "name": "FC Schaffhausen"
+        },
+        {
+          "id": 242,
+          "name": "FC Winterthur"
+        },
+        {
+          "id": 5000000009,
+          "name": "FC Frauenfeld"
+        }
+      ],
+      "spells": [
+        {
+          "id": 60,
+          "name": "SC Freiburg",
+          "startYear": 1978,
+          "endYear": 1980,
+          "loan": false
+        },
+        {
+          "id": 79,
+          "name": "VfB Stuttgart",
+          "startYear": 1980,
+          "endYear": 1981,
+          "loan": false
+        },
+        {
+          "id": 24,
+          "name": "Eintracht Frankfurt",
+          "startYear": 1981,
+          "endYear": 1982,
+          "loan": true
+        },
+        {
+          "id": 60,
+          "name": "SC Freiburg",
+          "startYear": 1982,
+          "endYear": 1984,
+          "loan": false
+        },
+        {
+          "id": 48,
+          "name": "Karlsruher SC",
+          "startYear": 1984,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 60,
+          "name": "SC Freiburg",
+          "startYear": 1985,
+          "endYear": 1989,
+          "loan": false
+        },
+        {
+          "id": 1277,
+          "name": "FC Schaffhausen",
+          "startYear": 1989,
+          "endYear": 1992,
+          "loan": false
+        },
+        {
+          "id": 242,
+          "name": "FC Winterthur",
+          "startYear": 1992,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 5000000009,
+          "name": "FC Frauenfeld",
+          "startYear": 1994,
+          "endYear": 1995,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000093,
+      "name": "Abdullah Avcı",
+      "key": "abdullah_avci",
+      "birthYear": 1963,
+      "country": "Turkey",
+      "position": "Attack",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Abdullah_Avc%C4%B1"
+      ],
+      "clubs": [
+        {
+          "id": 6646,
+          "name": "Fatih Karagümrük"
+        },
+        {
+          "id": 126,
+          "name": "Caykur Rizespor"
+        },
+        {
+          "id": 12452,
+          "name": "Kahramanmaras Spor"
+        },
+        {
+          "id": 3202,
+          "name": "Bakirköyspor"
+        },
+        {
+          "id": 10484,
+          "name": "Kasimpasa"
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor"
+        },
+        {
+          "id": 5000000010,
+          "name": "Küçükçekmece"
+        },
+        {
+          "id": 5000000011,
+          "name": "Nişantaşıspor"
+        },
+        {
+          "id": 5000000012,
+          "name": "Vefa"
+        }
+      ],
+      "spells": [
+        {
+          "id": 6646,
+          "name": "Fatih Karagümrük",
+          "startYear": 1984,
+          "endYear": 1986,
+          "loan": false
+        },
+        {
+          "id": 126,
+          "name": "Caykur Rizespor",
+          "startYear": 1986,
+          "endYear": 1988,
+          "loan": false
+        },
+        {
+          "id": 12452,
+          "name": "Kahramanmaras Spor",
+          "startYear": 1988,
+          "endYear": 1989,
+          "loan": false
+        },
+        {
+          "id": 3202,
+          "name": "Bakirköyspor",
+          "startYear": 1989,
+          "endYear": 1990,
+          "loan": false
+        },
+        {
+          "id": 10484,
+          "name": "Kasimpasa",
+          "startYear": 1990,
+          "endYear": 1991,
+          "loan": false
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor",
+          "startYear": 1991,
+          "endYear": 1995,
+          "loan": false
+        },
+        {
+          "id": 5000000010,
+          "name": "Küçükçekmece",
+          "startYear": 1995,
+          "endYear": 1995,
+          "loan": false
+        },
+        {
+          "id": 5000000011,
+          "name": "Nişantaşıspor",
+          "startYear": 1996,
+          "endYear": 1996,
+          "loan": false
+        },
+        {
+          "id": 5000000012,
+          "name": "Vefa",
+          "startYear": 1998,
+          "endYear": 1999,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000094,
+      "name": "Rıza Çalımbay",
+      "key": "riza_calimbay",
+      "birthYear": 1963,
+      "country": "Turkey",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/R%C4%B1za_%C3%87al%C4%B1mbay"
+      ],
+      "clubs": [
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        }
+      ],
+      "spells": [
+        {
+          "id": 114,
+          "name": "Besiktas JK",
+          "startYear": 1980,
+          "endYear": 1996,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000095,
+      "name": "Hikmet Karaman",
+      "key": "hikmet_karaman",
+      "birthYear": 1960,
+      "country": "Turkey",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hikmet_Karaman"
+      ],
+      "clubs": [
+        {
+          "id": 5000000020,
+          "name": "Normannia 08 Berlin"
+        },
+        {
+          "id": 5000000021,
+          "name": "Berlin Türkspor 1965"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000020,
+          "name": "Normannia 08 Berlin",
+          "startYear": null,
+          "endYear": null,
+          "loan": false
+        },
+        {
+          "id": 5000000021,
+          "name": "Berlin Türkspor 1965",
+          "startYear": null,
+          "endYear": null,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": false,
+      "notes": "Amateur player. Dates are unknown; ambiguous Rot-Weiß identity omitted. Youth Kocaelispor is not a senior club link."
+    },
+    {
+      "id": 4000000096,
+      "name": "Vicente del Bosque",
+      "key": "vicente_del_bosque",
+      "birthYear": 1950,
+      "country": "Spain",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Vicente_del_Bosque"
+      ],
+      "clubs": [
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 2502,
+          "name": "CD Castellón"
+        },
+        {
+          "id": 993,
+          "name": "Córdoba CF"
+        }
+      ],
+      "spells": [
+        {
+          "id": 418,
+          "name": "Real Madrid",
+          "startYear": 1968,
+          "endYear": 1984,
+          "loan": false
+        },
+        {
+          "id": 2502,
+          "name": "CD Castellón",
+          "startYear": 1970,
+          "endYear": 1971,
+          "loan": true
+        },
+        {
+          "id": 993,
+          "name": "Córdoba CF",
+          "startYear": 1971,
+          "endYear": 1972,
+          "loan": true
+        },
+        {
+          "id": 2502,
+          "name": "CD Castellón",
+          "startYear": 1972,
+          "endYear": 1973,
+          "loan": true
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1967,
+          "endYear": 1968,
+          "club": "Real Madrid B",
+          "apps": 11
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000097,
+      "name": "Rafael Benítez",
+      "key": "rafael_benitez",
+      "birthYear": 1960,
+      "country": "Spain",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rafael_Ben%C3%ADtez"
+      ],
+      "clubs": [
+        {
+          "id": 1000026756,
+          "name": "AD Parla"
+        },
+        {
+          "id": 5000000013,
+          "name": "Linares"
+        }
+      ],
+      "spells": [
+        {
+          "id": 1000026756,
+          "name": "AD Parla",
+          "startYear": 1981,
+          "endYear": 1981,
+          "loan": true
+        },
+        {
+          "id": 1000026756,
+          "name": "AD Parla",
+          "startYear": 1981,
+          "endYear": 1985,
+          "loan": false
+        },
+        {
+          "id": 5000000013,
+          "name": "Linares",
+          "startYear": 1985,
+          "endYear": 1986,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1978,
+          "endYear": 1979,
+          "club": "Real Madrid Aficionados",
+          "apps": null
+        },
+        {
+          "startYear": 1979,
+          "endYear": 1981,
+          "club": "Real Madrid Castilla",
+          "apps": null
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000098,
+      "name": "Claudio Ranieri",
+      "key": "claudio_ranieri",
+      "birthYear": 1951,
+      "country": "Italy",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Claudio_Ranieri"
+      ],
+      "clubs": [
+        {
+          "id": 12,
+          "name": "AS Roma"
+        },
+        {
+          "id": 4097,
+          "name": "US Catanzaro"
+        },
+        {
+          "id": 1627,
+          "name": "Catania FC"
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC"
+        }
+      ],
+      "spells": [
+        {
+          "id": 12,
+          "name": "AS Roma",
+          "startYear": 1973,
+          "endYear": 1974,
+          "loan": false
+        },
+        {
+          "id": 4097,
+          "name": "US Catanzaro",
+          "startYear": 1974,
+          "endYear": 1982,
+          "loan": false
+        },
+        {
+          "id": 1627,
+          "name": "Catania FC",
+          "startYear": 1982,
+          "endYear": 1984,
+          "loan": false
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC",
+          "startYear": 1984,
+          "endYear": 1986,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000099,
+      "name": "Enzo Maresca",
+      "key": "enzo_maresca",
+      "birthYear": 1980,
+      "country": "Italy",
+      "position": "Midfield",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Enzo_Maresca"
+      ],
+      "clubs": [
+        {
+          "id": 984,
+          "name": "West Bromwich Albion"
+        },
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 1025,
+          "name": "Bologna FC 1909"
+        },
+        {
+          "id": 1408,
+          "name": "Piacenza Calcio 1919"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 368,
+          "name": "Sevilla FC"
+        },
+        {
+          "id": 683,
+          "name": "Olympiacos Piraeus"
+        },
+        {
+          "id": 1084,
+          "name": "Málaga CF"
+        },
+        {
+          "id": 1038,
+          "name": "UC Sampdoria"
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC"
+        },
+        {
+          "id": 276,
+          "name": "Hellas Verona"
+        }
+      ],
+      "spells": [
+        {
+          "id": 984,
+          "name": "West Bromwich Albion",
+          "startYear": 1998,
+          "endYear": 2000,
+          "loan": false
+        },
+        {
+          "id": 506,
+          "name": "Juventus FC",
+          "startYear": 2000,
+          "endYear": 2004,
+          "loan": false
+        },
+        {
+          "id": 1025,
+          "name": "Bologna FC 1909",
+          "startYear": 2000,
+          "endYear": 2001,
+          "loan": true
+        },
+        {
+          "id": 1408,
+          "name": "Piacenza Calcio 1919",
+          "startYear": 2002,
+          "endYear": 2003,
+          "loan": true
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina",
+          "startYear": 2004,
+          "endYear": 2005,
+          "loan": false
+        },
+        {
+          "id": 368,
+          "name": "Sevilla FC",
+          "startYear": 2005,
+          "endYear": 2009,
+          "loan": false
+        },
+        {
+          "id": 683,
+          "name": "Olympiacos Piraeus",
+          "startYear": 2009,
+          "endYear": 2010,
+          "loan": false
+        },
+        {
+          "id": 1084,
+          "name": "Málaga CF",
+          "startYear": 2011,
+          "endYear": 2012,
+          "loan": false
+        },
+        {
+          "id": 1038,
+          "name": "UC Sampdoria",
+          "startYear": 2012,
+          "endYear": 2014,
+          "loan": false
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC",
+          "startYear": 2014,
+          "endYear": 2016,
+          "loan": false
+        },
+        {
+          "id": 276,
+          "name": "Hellas Verona",
+          "startYear": 2016,
+          "endYear": 2017,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000100,
+      "name": "Rafael Márquez",
+      "key": "rafael_marquez",
+      "birthYear": 1979,
+      "country": "Mexico",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rafael_M%C3%A1rquez"
+      ],
+      "clubs": [
+        {
+          "id": 8590,
+          "name": "Atlas Guadalajara"
+        },
+        {
+          "id": 162,
+          "name": "AS Monaco"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 623,
+          "name": "New York Red Bulls"
+        },
+        {
+          "id": 4941,
+          "name": "Club León FC"
+        },
+        {
+          "id": 276,
+          "name": "Hellas Verona"
+        }
+      ],
+      "spells": [
+        {
+          "id": 8590,
+          "name": "Atlas Guadalajara",
+          "startYear": 1996,
+          "endYear": 1999,
+          "loan": false
+        },
+        {
+          "id": 162,
+          "name": "AS Monaco",
+          "startYear": 1999,
+          "endYear": 2003,
+          "loan": false
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona",
+          "startYear": 2003,
+          "endYear": 2010,
+          "loan": false
+        },
+        {
+          "id": 623,
+          "name": "New York Red Bulls",
+          "startYear": 2010,
+          "endYear": 2012,
+          "loan": false
+        },
+        {
+          "id": 4941,
+          "name": "Club León FC",
+          "startYear": 2012,
+          "endYear": 2014,
+          "loan": false
+        },
+        {
+          "id": 276,
+          "name": "Hellas Verona",
+          "startYear": 2014,
+          "endYear": 2015,
+          "loan": false
+        },
+        {
+          "id": 8590,
+          "name": "Atlas Guadalajara",
+          "startYear": 2016,
+          "endYear": 2018,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000101,
+      "name": "Jefferson Farfán",
+      "key": "jefferson_farfan",
+      "birthYear": 1984,
+      "country": "Peru",
+      "position": "Attack",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jefferson_Farf%C3%A1n"
+      ],
+      "clubs": [
+        {
+          "id": 1000000184,
+          "name": "Alianza Lima"
+        },
+        {
+          "id": 383,
+          "name": "PSV Eindhoven"
+        },
+        {
+          "id": 33,
+          "name": "FC Schalke 04"
+        },
+        {
+          "id": 1000002524,
+          "name": "Al-Jazira"
+        },
+        {
+          "id": 932,
+          "name": "Lokomotiv Moscow"
+        }
+      ],
+      "spells": [
+        {
+          "id": 1000000184,
+          "name": "Alianza Lima",
+          "startYear": 2001,
+          "endYear": 2004,
+          "loan": false
+        },
+        {
+          "id": 383,
+          "name": "PSV Eindhoven",
+          "startYear": 2004,
+          "endYear": 2008,
+          "loan": false
+        },
+        {
+          "id": 33,
+          "name": "FC Schalke 04",
+          "startYear": 2008,
+          "endYear": 2015,
+          "loan": false
+        },
+        {
+          "id": 1000002524,
+          "name": "Al-Jazira",
+          "startYear": 2015,
+          "endYear": 2016,
+          "loan": false
+        },
+        {
+          "id": 932,
+          "name": "Lokomotiv Moscow",
+          "startYear": 2017,
+          "endYear": 2020,
+          "loan": false
+        },
+        {
+          "id": 1000000184,
+          "name": "Alianza Lima",
+          "startYear": 2021,
+          "endYear": 2022,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000102,
+      "name": "Oliver Kahn",
+      "key": "oliver_kahn",
+      "birthYear": 1969,
+      "country": "Germany",
+      "position": "Goalkeeper",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Oliver_Kahn"
+      ],
+      "clubs": [
+        {
+          "id": 48,
+          "name": "Karlsruher SC"
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        }
+      ],
+      "spells": [
+        {
+          "id": 48,
+          "name": "Karlsruher SC",
+          "startYear": 1987,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich",
+          "startYear": 1994,
+          "endYear": 2008,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1987,
+          "endYear": 1990,
+          "club": "Karlsruher SC II",
+          "apps": 73
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000103,
+      "name": "Peter Schmeichel",
+      "key": "peter_schmeichel",
+      "birthYear": 1963,
+      "country": "Denmark",
+      "position": "Goalkeeper",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Peter_Schmeichel"
+      ],
+      "clubs": [
+        {
+          "id": 5000000017,
+          "name": "Gladsaxe-Hero"
+        },
+        {
+          "id": 1894,
+          "name": "Hvidovre IF"
+        },
+        {
+          "id": 206,
+          "name": "Bröndby IF"
+        },
+        {
+          "id": 985,
+          "name": "Manchester United"
+        },
+        {
+          "id": 336,
+          "name": "Sporting CP"
+        },
+        {
+          "id": 405,
+          "name": "Aston Villa"
+        },
+        {
+          "id": 281,
+          "name": "Manchester City"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000017,
+          "name": "Gladsaxe-Hero",
+          "startYear": 1981,
+          "endYear": 1984,
+          "loan": false
+        },
+        {
+          "id": 1894,
+          "name": "Hvidovre IF",
+          "startYear": 1984,
+          "endYear": 1987,
+          "loan": false
+        },
+        {
+          "id": 206,
+          "name": "Bröndby IF",
+          "startYear": 1987,
+          "endYear": 1991,
+          "loan": false
+        },
+        {
+          "id": 985,
+          "name": "Manchester United",
+          "startYear": 1991,
+          "endYear": 1999,
+          "loan": false
+        },
+        {
+          "id": 336,
+          "name": "Sporting CP",
+          "startYear": 1999,
+          "endYear": 2001,
+          "loan": false
+        },
+        {
+          "id": 405,
+          "name": "Aston Villa",
+          "startYear": 2001,
+          "endYear": 2002,
+          "loan": false
+        },
+        {
+          "id": 281,
+          "name": "Manchester City",
+          "startYear": 2002,
+          "endYear": 2003,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000104,
+      "name": "Cafu",
+      "key": "cafu",
+      "birthYear": 1970,
+      "country": "Brazil",
+      "position": "Defender",
+      "aliases": [
+        "Marcos Evangelista de Morais"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cafu"
+      ],
+      "clubs": [
+        {
+          "id": 585,
+          "name": "São Paulo Futebol Clube"
+        },
+        {
+          "id": 142,
+          "name": "Real Zaragoza"
+        },
+        {
+          "id": 10492,
+          "name": "Esporte Clube Juventude"
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras"
+        },
+        {
+          "id": 12,
+          "name": "AS Roma"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        }
+      ],
+      "spells": [
+        {
+          "id": 585,
+          "name": "São Paulo Futebol Clube",
+          "startYear": 1989,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 142,
+          "name": "Real Zaragoza",
+          "startYear": 1995,
+          "endYear": 1995,
+          "loan": false
+        },
+        {
+          "id": 10492,
+          "name": "Esporte Clube Juventude",
+          "startYear": 1995,
+          "endYear": 1995,
+          "loan": false
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras",
+          "startYear": 1995,
+          "endYear": 1997,
+          "loan": false
+        },
+        {
+          "id": 12,
+          "name": "AS Roma",
+          "startYear": 1997,
+          "endYear": 2003,
+          "loan": false
+        },
+        {
+          "id": 5,
+          "name": "AC Milan",
+          "startYear": 2003,
+          "endYear": 2008,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000105,
+      "name": "Metin Oktay",
+      "key": "metin_oktay",
+      "birthYear": 1936,
+      "country": "Turkey",
+      "position": "Attack",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Metin_Oktay"
+      ],
+      "clubs": [
+        {
+          "id": 3842,
+          "name": "Izmirspor"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC"
+        }
+      ],
+      "spells": [
+        {
+          "id": 3842,
+          "name": "Izmirspor",
+          "startYear": 1954,
+          "endYear": 1955,
+          "loan": false
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 1955,
+          "endYear": 1961,
+          "loan": false
+        },
+        {
+          "id": 458,
+          "name": "Palermo FC",
+          "startYear": 1961,
+          "endYear": 1962,
+          "loan": false
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 1962,
+          "endYear": 1969,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000106,
+      "name": "Bülent Korkmaz",
+      "key": "bulent_korkmaz",
+      "birthYear": 1968,
+      "country": "Turkey",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/B%C3%BClent_Korkmaz"
+      ],
+      "clubs": [
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        }
+      ],
+      "spells": [
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 1987,
+          "endYear": 2005,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000107,
+      "name": "Ümit Davala",
+      "key": "umit_davala",
+      "birthYear": 1973,
+      "country": "Turkey",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C3%9Cmit_Davala"
+      ],
+      "clubs": [
+        {
+          "id": 5000000018,
+          "name": "Türkspor Mannheim"
+        },
+        {
+          "id": 5000000019,
+          "name": "Afyonkarahisarspor"
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor"
+        },
+        {
+          "id": 845,
+          "name": "Diyarbakirspor"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 86,
+          "name": "SV Werder Bremen"
+        }
+      ],
+      "spells": [
+        {
+          "id": 5000000018,
+          "name": "Türkspor Mannheim",
+          "startYear": 1992,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 5000000019,
+          "name": "Afyonkarahisarspor",
+          "startYear": 1994,
+          "endYear": 1994,
+          "loan": false
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor",
+          "startYear": 1995,
+          "endYear": 1996,
+          "loan": false
+        },
+        {
+          "id": 845,
+          "name": "Diyarbakirspor",
+          "startYear": 1996,
+          "endYear": 1996,
+          "loan": true
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 1996,
+          "endYear": 2001,
+          "loan": false
+        },
+        {
+          "id": 5,
+          "name": "AC Milan",
+          "startYear": 2001,
+          "endYear": 2002,
+          "loan": false
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan",
+          "startYear": 2002,
+          "endYear": 2004,
+          "loan": false
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 2002,
+          "endYear": 2003,
+          "loan": true
+        },
+        {
+          "id": 86,
+          "name": "SV Werder Bremen",
+          "startYear": 2003,
+          "endYear": 2004,
+          "loan": true
+        },
+        {
+          "id": 86,
+          "name": "SV Werder Bremen",
+          "startYear": 2004,
+          "endYear": 2005,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000108,
+      "name": "Burak Yılmaz",
+      "key": "burak_yilmaz",
+      "birthYear": 1985,
+      "country": "Turkey",
+      "position": "Attack",
+      "aliases": [
+        "Burak Yilmaz"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Burak_Y%C4%B1lmaz"
+      ],
+      "clubs": [
+        {
+          "id": 589,
+          "name": "Antalyaspor"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 1267,
+          "name": "Manisaspor"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 825,
+          "name": "Eskisehirspor"
+        },
+        {
+          "id": 449,
+          "name": "Trabzonspor"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 3176,
+          "name": "Beijing Guoan"
+        },
+        {
+          "id": 1082,
+          "name": "LOSC Lille"
+        },
+        {
+          "id": 385,
+          "name": "Fortuna Sittard"
+        }
+      ],
+      "spells": [
+        {
+          "id": 589,
+          "name": "Antalyaspor",
+          "startYear": 2002,
+          "endYear": 2006,
+          "loan": false
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK",
+          "startYear": 2006,
+          "endYear": 2008,
+          "loan": false
+        },
+        {
+          "id": 1267,
+          "name": "Manisaspor",
+          "startYear": 2008,
+          "endYear": 2008,
+          "loan": false
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce",
+          "startYear": 2008,
+          "endYear": 2010,
+          "loan": false
+        },
+        {
+          "id": 825,
+          "name": "Eskisehirspor",
+          "startYear": 2009,
+          "endYear": 2010,
+          "loan": true
+        },
+        {
+          "id": 449,
+          "name": "Trabzonspor",
+          "startYear": 2010,
+          "endYear": 2012,
+          "loan": false
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray",
+          "startYear": 2012,
+          "endYear": 2016,
+          "loan": false
+        },
+        {
+          "id": 3176,
+          "name": "Beijing Guoan",
+          "startYear": 2016,
+          "endYear": 2017,
+          "loan": false
+        },
+        {
+          "id": 449,
+          "name": "Trabzonspor",
+          "startYear": 2017,
+          "endYear": 2018,
+          "loan": false
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK",
+          "startYear": 2018,
+          "endYear": 2020,
+          "loan": false
+        },
+        {
+          "id": 1082,
+          "name": "LOSC Lille",
+          "startYear": 2020,
+          "endYear": 2022,
+          "loan": false
+        },
+        {
+          "id": 385,
+          "name": "Fortuna Sittard",
+          "startYear": 2022,
+          "endYear": 2023,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000109,
+      "name": "Guti",
+      "key": "guti",
+      "birthYear": 1976,
+      "country": "Spain",
+      "position": "Midfield",
+      "aliases": [
+        "José María Gutiérrez Hernández"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Guti"
+      ],
+      "clubs": [
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        }
+      ],
+      "spells": [
+        {
+          "id": 418,
+          "name": "Real Madrid",
+          "startYear": 1995,
+          "endYear": 2010,
+          "loan": false
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK",
+          "startYear": 2010,
+          "endYear": 2011,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [
+        {
+          "startYear": 1994,
+          "endYear": 1995,
+          "club": "Real Madrid C",
+          "apps": 3
+        },
+        {
+          "startYear": 1995,
+          "endYear": 1996,
+          "club": "Real Madrid B",
+          "apps": 26
+        }
+      ],
+      "playable": true
+    },
+    {
+      "id": 4000000110,
+      "name": "Alex de Souza",
+      "key": "alex_de_souza",
+      "birthYear": 1977,
+      "country": "Brazil",
+      "position": "Midfield",
+      "aliases": [
+        "Alexsandro de Souza",
+        "Alex"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_(footballer%2C_born_1977)"
+      ],
+      "clubs": [
+        {
+          "id": 776,
+          "name": "Coritiba Foot Ball Club"
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras"
+        },
+        {
+          "id": 130,
+          "name": "Parma Calcio 1913"
+        },
+        {
+          "id": 614,
+          "name": "CR Flamengo"
+        },
+        {
+          "id": 609,
+          "name": "Cruzeiro Esporte Clube"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        }
+      ],
+      "spells": [
+        {
+          "id": 776,
+          "name": "Coritiba Foot Ball Club",
+          "startYear": 1995,
+          "endYear": 1997,
+          "loan": false
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras",
+          "startYear": 1997,
+          "endYear": 2000,
+          "loan": false
+        },
+        {
+          "id": 130,
+          "name": "Parma Calcio 1913",
+          "startYear": 2000,
+          "endYear": 2002,
+          "loan": false
+        },
+        {
+          "id": 614,
+          "name": "CR Flamengo",
+          "startYear": 2000,
+          "endYear": 2000,
+          "loan": true
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras",
+          "startYear": 2001,
+          "endYear": 2001,
+          "loan": true
+        },
+        {
+          "id": 609,
+          "name": "Cruzeiro Esporte Clube",
+          "startYear": 2001,
+          "endYear": 2001,
+          "loan": true
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras",
+          "startYear": 2002,
+          "endYear": 2002,
+          "loan": true
+        },
+        {
+          "id": 609,
+          "name": "Cruzeiro Esporte Clube",
+          "startYear": 2002,
+          "endYear": 2004,
+          "loan": false
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce",
+          "startYear": 2004,
+          "endYear": 2012,
+          "loan": false
+        },
+        {
+          "id": 776,
+          "name": "Coritiba Foot Ball Club",
+          "startYear": 2013,
+          "endYear": 2014,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    },
+    {
+      "id": 4000000111,
+      "name": "Micah Richards",
+      "key": "micah_richards",
+      "birthYear": 1988,
+      "country": "England",
+      "position": "Defender",
+      "aliases": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Micah_Richards"
+      ],
+      "clubs": [
+        {
+          "id": 281,
+          "name": "Manchester City"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 405,
+          "name": "Aston Villa"
+        }
+      ],
+      "spells": [
+        {
+          "id": 281,
+          "name": "Manchester City",
+          "startYear": 2005,
+          "endYear": 2015,
+          "loan": false
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina",
+          "startYear": 2014,
+          "endYear": 2015,
+          "loan": true
+        },
+        {
+          "id": 405,
+          "name": "Aston Villa",
+          "startYear": 2015,
+          "endYear": 2019,
+          "loan": false
+        }
+      ],
+      "omittedDevelopmentSpells": [],
+      "playable": true
+    }
+  ],
+  "newClubs": [
+    {
+      "id": 5000000000,
+      "name": "1. FC Pforzheim",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:1_fc_pforzheim"
+    },
+    {
+      "id": 5000000001,
+      "name": "Viktoria Sindlingen",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:viktoria_sindlingen"
+    },
+    {
+      "id": 5000000002,
+      "name": "Rot-Weiss Frankfurt",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:rot_weiss_frankfurt"
+    },
+    {
+      "id": 5000000003,
+      "name": "Mutzig",
+      "country": "France",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:mutzig"
+    },
+    {
+      "id": 5000000004,
+      "name": "ASPV Strasbourg",
+      "country": "France",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:aspv_strasbourg"
+    },
+    {
+      "id": 5000000005,
+      "name": "Victoria Bammental",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:victoria_bammental"
+    },
+    {
+      "id": 5000000006,
+      "name": "Castelfiorentino",
+      "country": "Italy",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:castelfiorentino"
+    },
+    {
+      "id": 5000000007,
+      "name": "Cuoiopelli",
+      "country": "Italy",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:cuoiopelli"
+    },
+    {
+      "id": 5000000008,
+      "name": "Aglianese",
+      "country": "Italy",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:aglianese"
+    },
+    {
+      "id": 5000000009,
+      "name": "FC Frauenfeld",
+      "country": "Switzerland",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:fc_frauenfeld"
+    },
+    {
+      "id": 5000000010,
+      "name": "Küçükçekmece",
+      "country": "Turkey",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:kucukcekmece"
+    },
+    {
+      "id": 5000000011,
+      "name": "Nişantaşıspor",
+      "country": "Turkey",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:nisantasispor"
+    },
+    {
+      "id": 5000000012,
+      "name": "Vefa",
+      "country": "Turkey",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:vefa"
+    },
+    {
+      "id": 5000000013,
+      "name": "Linares",
+      "country": "Spain",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:linares"
+    },
+    {
+      "id": 5000000014,
+      "name": "Lorca Deportiva",
+      "country": "Spain",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:lorca_deportiva"
+    },
+    {
+      "id": 5000000015,
+      "name": "Sesimbra",
+      "country": "Portugal",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:sesimbra"
+    },
+    {
+      "id": 5000000016,
+      "name": "Comércio e Indústria",
+      "country": "Portugal",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:comercio_e_industria"
+    },
+    {
+      "id": 5000000017,
+      "name": "Gladsaxe-Hero",
+      "country": "Denmark",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:gladsaxe_hero"
+    },
+    {
+      "id": 5000000018,
+      "name": "Türkspor Mannheim",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:turkspor_mannheim"
+    },
+    {
+      "id": 5000000019,
+      "name": "Afyonkarahisarspor",
+      "country": "Turkey",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:afyonkarahisarspor"
+    },
+    {
+      "id": 5000000020,
+      "name": "Normannia 08 Berlin",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:normannia_08_berlin"
+    },
+    {
+      "id": 5000000021,
+      "name": "Berlin Türkspor 1965",
+      "country": "Germany",
+      "entityType": "club",
+      "canonicalKey": "reviewed:avatar-careers:berlin_turkspor_1965"
+    },
+    {
+      "id": 5000000022,
+      "name": "1860 Munich II",
+      "country": "Germany",
+      "entityType": "reserve",
+      "canonicalKey": "reviewed:avatar-careers:1860_munich_ii"
+    },
+    {
+      "id": 5000000023,
+      "name": "FC Augsburg II",
+      "country": "Germany",
+      "entityType": "reserve",
+      "canonicalKey": "reviewed:avatar-careers:fc_augsburg_ii"
+    }
+  ],
+  "coaches": [
+    {
+      "id": "coach_27",
+      "name": "José Mourinho",
+      "countries": [
+        "Portugal"
+      ],
+      "clubIds": [
+        294,
+        2639,
+        720,
+        631,
+        46,
+        418,
+        985,
+        148,
+        12,
+        36
+      ],
+      "aliases": [
+        "José Mário dos Santos Mourinho Félix",
+        "José Mourinho"
+      ],
+      "avatarKey": "jose_mourinho_coach",
+      "rating": 2202.0,
+      "legacyIds": [
+        "coach_27",
+        "seed_mourinho"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jos%C3%A9_Mourinho"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_5",
+      "name": "Luis Enrique",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        12,
+        940,
+        131,
+        583
+      ],
+      "aliases": [
+        "Luis Enrique"
+      ],
+      "avatarKey": "luis_enrique_coach",
+      "rating": 2397.2,
+      "legacyIds": [
+        "coach_5",
+        "seed_luis_enrique"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luis_Enrique"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2008,
+          "endYear": 2011,
+          "club": "Barcelona B",
+          "apps": null
+        },
+        {
+          "startYear": 2018,
+          "endYear": 2019,
+          "club": "Spain",
+          "apps": null
+        },
+        {
+          "startYear": 2019,
+          "endYear": 2022,
+          "club": "Spain",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_171",
+      "name": "Fatih Terim",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        868,
+        1467,
+        141,
+        430,
+        5,
+        265,
+        9840
+      ],
+      "aliases": [
+        "Fatih Terim"
+      ],
+      "avatarKey": "fatih_terim_coach",
+      "rating": 1909.9,
+      "legacyIds": [
+        "coach_171",
+        "seed_terim"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fatih_Terim"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1990,
+          "endYear": 1993,
+          "club": "Turkey U21",
+          "apps": null
+        },
+        {
+          "startYear": 1993,
+          "endYear": 1996,
+          "club": "Turkey",
+          "apps": null
+        },
+        {
+          "startYear": 2005,
+          "endYear": 2009,
+          "club": "Turkey",
+          "apps": null
+        },
+        {
+          "startYear": 2013,
+          "endYear": 2017,
+          "club": "Turkey",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_73",
+      "name": "İsmail Kartal",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        1506,
+        2381,
+        5595,
+        2375,
+        1264,
+        2323,
+        36,
+        825,
+        524,
+        868,
+        126,
+        2293,
+        1000006079
+      ],
+      "aliases": [
+        "İsmail Kartal"
+      ],
+      "avatarKey": "ismail_kartal_coach",
+      "rating": 2077.4,
+      "legacyIds": [
+        "coach_73",
+        "coach_301",
+        "seed_kartal"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C4%B0smail_Kartal"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 2008,
+          "endYear": 2009,
+          "club": "Konya Şeker",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_47",
+      "name": "Okan Buruk",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        2292,
+        524,
+        2381,
+        1467,
+        19771,
+        126,
+        6890,
+        141
+      ],
+      "aliases": [
+        "Okan Buruk"
+      ],
+      "avatarKey": "okan_buruk_coach",
+      "rating": 2136.1,
+      "legacyIds": [
+        "coach_47",
+        "seed_buruk"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Okan_Buruk"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_122",
+      "name": "Sergen Yalçın",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        524,
+        2381,
+        3205,
+        825,
+        2293,
+        11282,
+        19789,
+        114,
+        589
+      ],
+      "aliases": [
+        "Ali Rıza Sergen Yalçın",
+        "Sergen Yalçın"
+      ],
+      "avatarKey": "sergen_yalcin_coach",
+      "rating": 1977.7,
+      "legacyIds": [
+        "coach_122"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sergen_Yal%C3%A7%C4%B1n"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_aykut_kocaman",
+      "name": "Aykut Kocaman",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        924,
+        1264,
+        2293,
+        2944,
+        36,
+        6890
+      ],
+      "aliases": [
+        "Aykut Kocaman"
+      ],
+      "avatarKey": "aykut_kocaman_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_kocaman"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aykut_Kocaman"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2009,
+          "endYear": 2010,
+          "club": "Fenerbahçe (sporting director)",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_269",
+      "name": "Şenol Güneş",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        449,
+        3207,
+        924,
+        589,
+        2463,
+        6500,
+        20,
+        114
+      ],
+      "aliases": [
+        "Şenol Güneş"
+      ],
+      "avatarKey": "senol_gunes_coach",
+      "rating": 1832.1,
+      "legacyIds": [
+        "coach_269",
+        "seed_gunes"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C5%9Eenol_G%C3%BCne%C5%9F"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2000,
+          "endYear": 2004,
+          "club": "Turkey",
+          "apps": null
+        },
+        {
+          "startYear": 2019,
+          "endYear": 2021,
+          "club": "Turkey",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_79",
+      "name": "Vincenzo Italiano",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        4331,
+        3522,
+        430,
+        1025,
+        114
+      ],
+      "aliases": [
+        "Vincenzo Italiano"
+      ],
+      "avatarKey": "vincenzo_italiano_coach",
+      "rating": 2061.6,
+      "legacyIds": [
+        "coach_79"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Vincenzo_Italiano"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 2016,
+          "endYear": 2017,
+          "club": "Vigontina San Paolo",
+          "apps": null
+        },
+        {
+          "startYear": 2017,
+          "endYear": 2017,
+          "club": "Vigontina San Paolo",
+          "apps": null
+        },
+        {
+          "startYear": 2017,
+          "endYear": 2018,
+          "club": "Union ArzignanoChiampo",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_portrait_alex_ferguson",
+      "name": "Alex Ferguson",
+      "countries": [
+        "Scotland"
+      ],
+      "clubIds": [
+        1000003000,
+        465,
+        370,
+        985
+      ],
+      "aliases": [
+        "Alex Ferguson"
+      ],
+      "avatarKey": "alex_ferguson_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_ferguson"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_Ferguson"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1985,
+          "endYear": 1986,
+          "club": "Scotland",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_0",
+      "name": "Pep Guardiola",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        131,
+        27,
+        281
+      ],
+      "aliases": [
+        "Pep Guardiola"
+      ],
+      "avatarKey": "pep_guardiola_coach",
+      "rating": 2513.0,
+      "legacyIds": [
+        "coach_0",
+        "seed_pep"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pep_Guardiola"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2007,
+          "endYear": 2008,
+          "club": "Barcelona B",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_jurgen_klopp",
+      "name": "Jürgen Klopp",
+      "countries": [
+        "Germany"
+      ],
+      "clubIds": [
+        39,
+        16,
+        31
+      ],
+      "aliases": [
+        "Jürgen Klopp"
+      ],
+      "avatarKey": "jurgen_klopp_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_klopp"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/J%C3%BCrgen_Klopp"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2026,
+          "endYear": null,
+          "club": "Germany",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_arsene_wenger",
+      "name": "Arsène Wenger",
+      "countries": [
+        "France"
+      ],
+      "clubIds": [
+        1159,
+        162,
+        1066,
+        11
+      ],
+      "aliases": [
+        "Arsène Wenger"
+      ],
+      "avatarKey": "arsene_wenger_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_wenger"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ars%C3%A8ne_Wenger"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_8",
+      "name": "Carlo Ancelotti",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        5621,
+        130,
+        506,
+        5,
+        631,
+        583,
+        418,
+        27,
+        6195,
+        29
+      ],
+      "aliases": [
+        "Carlo Ancelotti"
+      ],
+      "avatarKey": "carlo_ancelotti_coach",
+      "rating": 2343.9,
+      "legacyIds": [
+        "coach_8",
+        "seed_ancelotti"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Carlo_Ancelotti"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1992,
+          "endYear": 1995,
+          "club": "Italy (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2025,
+          "endYear": null,
+          "club": "Brazil",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_3",
+      "name": "Hansi Flick",
+      "countries": [
+        "Germany"
+      ],
+      "clubIds": [
+        5000000005,
+        533,
+        27,
+        131
+      ],
+      "aliases": [
+        "Hansi Flick"
+      ],
+      "avatarKey": "hansi_flick_coach",
+      "rating": 2458.3,
+      "legacyIds": [
+        "coach_3",
+        "seed_flick"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hansi_Flick"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2021,
+          "endYear": 2023,
+          "club": "Germany",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_15",
+      "name": "Thomas Tuchel",
+      "countries": [
+        "Germany"
+      ],
+      "clubIds": [
+        39,
+        16,
+        583,
+        631,
+        27
+      ],
+      "aliases": [
+        "Thomas Tuchel"
+      ],
+      "avatarKey": "thomas_tuchel_coach",
+      "rating": 2292.5,
+      "legacyIds": [
+        "coach_15",
+        "seed_tuchel"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Thomas_Tuchel"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2007,
+          "endYear": 2008,
+          "club": "FC Augsburg II",
+          "apps": null
+        },
+        {
+          "startYear": 2025,
+          "endYear": null,
+          "club": "England",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_52",
+      "name": "Diego Simeone",
+      "countries": [
+        "Argentina"
+      ],
+      "clubIds": [
+        1444,
+        288,
+        209,
+        1775,
+        1627,
+        13
+      ],
+      "aliases": [
+        "Diego Pablo Simeone González",
+        "Diego Simeone"
+      ],
+      "avatarKey": "diego_simeone_coach",
+      "rating": 2128.2,
+      "legacyIds": [
+        "coach_52",
+        "seed_simeone"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Diego_Simeone"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_7",
+      "name": "Xabi Alonso",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        15,
+        418,
+        631
+      ],
+      "aliases": [
+        "Xabier Alonso Olano",
+        "Xabi Alonso"
+      ],
+      "avatarKey": "xabi_alonso_coach",
+      "rating": 2345.8,
+      "legacyIds": [
+        "coach_7",
+        "seed_alonso"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Xabi_Alonso"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2019,
+          "endYear": 2022,
+          "club": "Real Sociedad B",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_30",
+      "name": "Antonio Conte",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        4255,
+        332,
+        800,
+        1387,
+        506,
+        631,
+        46,
+        148,
+        6195
+      ],
+      "aliases": [
+        "Antonio Conte"
+      ],
+      "avatarKey": "antonio_conte_coach",
+      "rating": 2187.8,
+      "legacyIds": [
+        "coach_30",
+        "seed_conte"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Antonio_Conte"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2014,
+          "endYear": 2016,
+          "club": "Italy",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_9",
+      "name": "Unai Emery",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        5000000014,
+        3302,
+        1049,
+        232,
+        368,
+        583,
+        11,
+        1050,
+        405
+      ],
+      "aliases": [
+        "Unai Emery Etxegoien",
+        "Unai Emery"
+      ],
+      "avatarKey": "unai_emery_coach",
+      "rating": 2343.7,
+      "legacyIds": [
+        "coach_9",
+        "seed_emery"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Unai_Emery"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_20",
+      "name": "Julian Nagelsmann",
+      "countries": [
+        "Germany"
+      ],
+      "clubIds": [
+        533,
+        23826,
+        27
+      ],
+      "aliases": [
+        "Julian Nagelsmann"
+      ],
+      "avatarKey": "julian_nagelsmann_coach",
+      "rating": 2228.9,
+      "legacyIds": [
+        "coach_20",
+        "seed_nagelsmann"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Julian_Nagelsmann"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2023,
+          "endYear": 2026,
+          "club": "Germany",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_44",
+      "name": "Roberto De Zerbi",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        704,
+        458,
+        4171,
+        6574,
+        660,
+        1237,
+        244,
+        148
+      ],
+      "aliases": [
+        "Roberto De Zerbi"
+      ],
+      "avatarKey": "roberto_de_zerbi_coach",
+      "rating": 2147.8,
+      "legacyIds": [
+        "coach_44",
+        "seed_dezerbi"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_De_Zerbi"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 2013,
+          "endYear": 2014,
+          "club": "Darfo Boario",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_58",
+      "name": "Luciano Spalletti",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        749,
+        1038,
+        607,
+        410,
+        1388,
+        12,
+        964,
+        46,
+        6195,
+        506
+      ],
+      "aliases": [
+        "Luciano Spalletti"
+      ],
+      "avatarKey": "luciano_spalletti_coach",
+      "rating": 2111.8,
+      "legacyIds": [
+        "coach_58",
+        "seed_spalletti"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luciano_Spalletti"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2023,
+          "endYear": 2025,
+          "club": "Italy",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_36",
+      "name": "Gian Piero Gasperini",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        4083,
+        252,
+        46,
+        458,
+        800,
+        12
+      ],
+      "aliases": [
+        "Gian Piero Gasperini"
+      ],
+      "avatarKey": "gian_piero_gasperini_coach",
+      "rating": 2170.5,
+      "legacyIds": [
+        "coach_36",
+        "seed_gasperini"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gian_Piero_Gasperini"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1994,
+          "endYear": 2003,
+          "club": "Juventus (youth)",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_72",
+      "name": "Massimiliano Allegri",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        5000000008,
+        2722,
+        4333,
+        6574,
+        1390,
+        5,
+        506,
+        6195
+      ],
+      "aliases": [
+        "Massimiliano Allegri"
+      ],
+      "avatarKey": "massimiliano_allegri_coach",
+      "rating": 2080.2,
+      "legacyIds": [
+        "coach_72",
+        "seed_allegri"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Massimiliano_Allegri"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_152",
+      "name": "Roberto Mancini",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        430,
+        398,
+        46,
+        281,
+        141,
+        964,
+        656
+      ],
+      "aliases": [
+        "Roberto Mancini"
+      ],
+      "avatarKey": "roberto_mancini_coach",
+      "rating": 1930.4,
+      "legacyIds": [
+        "coach_152"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_Mancini"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2018,
+          "endYear": 2023,
+          "club": "Italy",
+          "apps": null
+        },
+        {
+          "startYear": 2023,
+          "endYear": 2024,
+          "club": "Saudi Arabia",
+          "apps": null
+        },
+        {
+          "startYear": 2026,
+          "endYear": null,
+          "club": "Italy",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_joachim_low",
+      "name": "Joachim Löw",
+      "countries": [
+        "Germany"
+      ],
+      "clubIds": [
+        5000000009,
+        79,
+        36,
+        48,
+        6,
+        14
+      ],
+      "aliases": [
+        "Joachim Löw"
+      ],
+      "avatarKey": "joachim_low_coach",
+      "rating": 1800,
+      "legacyIds": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Joachim_L%C3%B6w"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1992,
+          "endYear": 1994,
+          "club": "FC Winterthur (youth)",
+          "apps": null
+        },
+        {
+          "startYear": 1995,
+          "endYear": 1996,
+          "club": "VfB Stuttgart (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2004,
+          "endYear": 2006,
+          "club": "Germany (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2006,
+          "endYear": 2021,
+          "club": "Germany",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 2001,
+          "endYear": 2002,
+          "club": "Tirol Innsbruck",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_255",
+      "name": "Abdullah Avcı",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        6890,
+        114,
+        449
+      ],
+      "aliases": [
+        "Abdullah Mucib Avcı",
+        "Abdullah Avcı"
+      ],
+      "avatarKey": "abdullah_avci_coach",
+      "rating": 1841.2,
+      "legacyIds": [
+        "coach_255",
+        "seed_avci"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Abdullah_Avc%C4%B1"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1999,
+          "endYear": 2002,
+          "club": "İstanbulspor (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2002,
+          "endYear": 2003,
+          "club": "İstanbulspor U21",
+          "apps": null
+        },
+        {
+          "startYear": 2004,
+          "endYear": 2004,
+          "club": "Galatasaray U21",
+          "apps": null
+        },
+        {
+          "startYear": 2004,
+          "endYear": 2005,
+          "club": "Turkey U-17",
+          "apps": null
+        },
+        {
+          "startYear": 2011,
+          "endYear": 2013,
+          "club": "Turkey",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_1282",
+      "name": "Rıza Çalımbay",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        1467,
+        833,
+        868,
+        126,
+        114,
+        2944,
+        825,
+        2381,
+        3216,
+        10484,
+        589,
+        449,
+        2293,
+        7775
+      ],
+      "aliases": [
+        "Rıza Çalımbay"
+      ],
+      "avatarKey": "riza_calimbay_coach",
+      "rating": 1513.7,
+      "legacyIds": [
+        "coach_1282",
+        "seed_calimbay"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/R%C4%B1za_%C3%87al%C4%B1mbay"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_892",
+      "name": "Hikmet Karaman",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        1766,
+        126,
+        6,
+        120,
+        3205,
+        868,
+        1264,
+        2944,
+        589,
+        1267,
+        524,
+        20,
+        6894,
+        11282,
+        19789,
+        3840,
+        10301,
+        74664
+      ],
+      "aliases": [
+        "Hikmet Karaman"
+      ],
+      "avatarKey": "hikmet_karaman_coach",
+      "rating": 1591.5,
+      "legacyIds": [
+        "coach_892",
+        "coach_3719"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hikmet_Karaman"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 1998,
+          "endYear": 1998,
+          "club": "Zeytinburnuspor",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_portrait_vicente_del_bosque",
+      "name": "Vicente del Bosque",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        418,
+        114
+      ],
+      "aliases": [
+        "Vicente del Bosque"
+      ],
+      "avatarKey": "vicente_del_bosque_coach",
+      "rating": 1800,
+      "legacyIds": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Vicente_del_Bosque"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1987,
+          "endYear": 1990,
+          "club": "Real Madrid Castilla",
+          "apps": null
+        },
+        {
+          "startYear": 2008,
+          "endYear": 2016,
+          "club": "Spain",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_180",
+      "name": "Rafael Benítez",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        119,
+        331,
+        648,
+        1049,
+        31,
+        46,
+        631,
+        6195,
+        418,
+        762,
+        33304,
+        29,
+        940,
+        265
+      ],
+      "aliases": [
+        "Rafael Benítez Maudes",
+        "Rafael Benítez"
+      ],
+      "avatarKey": "rafael_benitez_coach",
+      "rating": 1899.5,
+      "legacyIds": [
+        "coach_180",
+        "seed_benitez"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rafael_Ben%C3%ADtez"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1986,
+          "endYear": 1993,
+          "club": "Real Madrid U17",
+          "apps": null
+        },
+        {
+          "startYear": 1993,
+          "endYear": 1994,
+          "club": "Real Madrid (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 1993,
+          "endYear": 1994,
+          "club": "Real Madrid Castilla",
+          "apps": null
+        },
+        {
+          "startYear": 1994,
+          "endYear": 1995,
+          "club": "Real Madrid Castilla",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 1997,
+          "endYear": 1999,
+          "club": "Extremadura",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_68",
+      "name": "Claudio Ranieri",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        1390,
+        6195,
+        430,
+        1049,
+        13,
+        631,
+        130,
+        506,
+        12,
+        46,
+        162,
+        1003,
+        995,
+        931,
+        1038,
+        1010
+      ],
+      "aliases": [
+        "Claudio Ranieri"
+      ],
+      "avatarKey": "claudio_ranieri_coach",
+      "rating": 2090.2,
+      "legacyIds": [
+        "coach_68"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Claudio_Ranieri"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2014,
+          "endYear": 2014,
+          "club": "Greece",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 1986,
+          "endYear": 1987,
+          "club": "Vigor Lamezia",
+          "apps": null
+        },
+        {
+          "startYear": 1987,
+          "endYear": 1988,
+          "club": "Puteolana",
+          "apps": null
+        }
+      ]
+    },
+    {
+      "id": "coach_2",
+      "name": "Mikel Arteta",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        11
+      ],
+      "aliases": [
+        "Mikel Arteta"
+      ],
+      "avatarKey": "mikel_arteta_coach",
+      "rating": 2476.2,
+      "legacyIds": [
+        "coach_2",
+        "seed_arteta"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mikel_Arteta"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_6",
+      "name": "Enzo Maresca",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        130,
+        1003,
+        631,
+        281
+      ],
+      "aliases": [
+        "Enzo Maresca"
+      ],
+      "avatarKey": "enzo_maresca_coach",
+      "rating": 2396.8,
+      "legacyIds": [
+        "coach_6"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Enzo_Maresca"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2017,
+          "endYear": 2017,
+          "club": "Ascoli (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2017,
+          "endYear": 2018,
+          "club": "Sevilla (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2018,
+          "endYear": 2019,
+          "club": "West Ham United (assistant)",
+          "apps": null
+        },
+        {
+          "startYear": 2020,
+          "endYear": 2021,
+          "club": "Manchester City U23",
+          "apps": null
+        },
+        {
+          "startYear": 2022,
+          "endYear": 2023,
+          "club": "Manchester City (assistant)",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_19",
+      "name": "Didier Deschamps",
+      "countries": [
+        "France"
+      ],
+      "clubIds": [
+        162,
+        506,
+        244
+      ],
+      "aliases": [
+        "Didier Claude Deschamps",
+        "Didier Deschamps"
+      ],
+      "avatarKey": "didier_deschamps_coach",
+      "rating": 2242.9,
+      "legacyIds": [
+        "coach_19",
+        "seed_deschamps"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Didier_Deschamps"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2012,
+          "endYear": 2026,
+          "club": "France",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_frank_rijkaard",
+      "name": "Frank Rijkaard",
+      "countries": [
+        "Netherlands"
+      ],
+      "clubIds": [
+        468,
+        131,
+        141
+      ],
+      "aliases": [
+        "Frank Rijkaard"
+      ],
+      "avatarKey": "frank_rijkaard_coach",
+      "rating": 1800,
+      "legacyIds": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Frank_Rijkaard"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 1998,
+          "endYear": 2000,
+          "club": "Netherlands",
+          "apps": null
+        },
+        {
+          "startYear": 2011,
+          "endYear": 2013,
+          "club": "Saudi Arabia",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_johan_cruyff",
+      "name": "Johan Cruyff",
+      "countries": [
+        "Netherlands"
+      ],
+      "clubIds": [
+        610,
+        131
+      ],
+      "aliases": [
+        "Johan Cruyff"
+      ],
+      "avatarKey": "johan_cruyff_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_cruyff"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Johan_Cruyff"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2009,
+          "endYear": 2013,
+          "club": "Catalonia",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_zinedine_zidane",
+      "name": "Zinedine Zidane",
+      "countries": [
+        "France"
+      ],
+      "clubIds": [
+        418
+      ],
+      "aliases": [
+        "Zinedine Zidane"
+      ],
+      "avatarKey": "zinedine_zidane_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_zidane"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Zinedine_Zidane"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2014,
+          "endYear": 2016,
+          "club": "Real Madrid Castilla",
+          "apps": null
+        },
+        {
+          "startYear": 2026,
+          "endYear": null,
+          "club": "France",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_1109",
+      "name": "Volkan Demirel",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        6646,
+        7775,
+        44006,
+        820
+      ],
+      "aliases": [
+        "Volkan Demirel"
+      ],
+      "avatarKey": "volkan_demirel_coach",
+      "rating": 1546.5,
+      "legacyIds": [
+        "coach_1109"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Volkan_Demirel"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2019,
+          "endYear": 2021,
+          "club": "Fenerbahçe (assistant)",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_463",
+      "name": "Burak Yılmaz",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        114,
+        3205,
+        10484,
+        2832,
+        37951
+      ],
+      "aliases": [
+        "Burak Yılmaz"
+      ],
+      "avatarKey": "burak_yilmaz_coach",
+      "rating": 1721.9,
+      "legacyIds": [
+        "coach_463"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Burak_Y%C4%B1lmaz"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_963",
+      "name": "Emre Belözoğlu",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        36,
+        6890,
+        868,
+        589,
+        10484
+      ],
+      "aliases": [
+        "Emre Belözoğlu"
+      ],
+      "avatarKey": "emre_belozoglu_coach",
+      "rating": 1576.5,
+      "legacyIds": [
+        "coach_963"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Emre_Bel%C3%B6zo%C4%9Flu"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_192",
+      "name": "Arda Turan",
+      "countries": [
+        "Turkey"
+      ],
+      "clubIds": [
+        7160,
+        660
+      ],
+      "aliases": [
+        "Arda Turan"
+      ],
+      "avatarKey": "arda_turan_coach",
+      "rating": 1890.3,
+      "legacyIds": [
+        "coach_192"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Arda_Turan"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_portrait_xavi",
+      "name": "Xavi",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        656,
+        131
+      ],
+      "aliases": [
+        "Xavi"
+      ],
+      "avatarKey": "xavi_coach",
+      "rating": 1800,
+      "legacyIds": [
+        "seed_xavi"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Xavi"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2026,
+          "endYear": null,
+          "club": "Netherlands",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_40",
+      "name": "Cesc Fàbregas",
+      "countries": [
+        "Spain"
+      ],
+      "clubIds": [
+        1047
+      ],
+      "aliases": [
+        "Francesc Fàbregas i Soler",
+        "Cesc Fàbregas"
+      ],
+      "avatarKey": "cesc_fabregas_coach",
+      "rating": 2156.0,
+      "legacyIds": [
+        "coach_40"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cesc_F%C3%A0bregas"
+      ],
+      "excludedNonSeniorRoles": [],
+      "unmappedManagedClubs": []
+    },
+    {
+      "id": "coach_770",
+      "name": "Andrea Pirlo",
+      "countries": [
+        "Italy"
+      ],
+      "clubIds": [
+        506,
+        6646,
+        1038
+      ],
+      "aliases": [
+        "Andrea Pirlo"
+      ],
+      "avatarKey": "andrea_pirlo_coach",
+      "rating": 1623.1,
+      "legacyIds": [
+        "coach_770"
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Andrea_Pirlo"
+      ],
+      "excludedNonSeniorRoles": [
+        {
+          "startYear": 2020,
+          "endYear": 2020,
+          "club": "Juventus U23",
+          "apps": null
+        }
+      ],
+      "unmappedManagedClubs": [
+        {
+          "startYear": 2025,
+          "endYear": null,
+          "club": "Dubai United",
+          "apps": null
+        }
+      ]
+    }
+  ],
+  "newCoachIds": [
+    "coach_portrait_aykut_kocaman",
+    "coach_portrait_alex_ferguson",
+    "coach_portrait_jurgen_klopp",
+    "coach_portrait_arsene_wenger",
+    "coach_portrait_joachim_low",
+    "coach_portrait_vicente_del_bosque",
+    "coach_portrait_frank_rijkaard",
+    "coach_portrait_johan_cruyff",
+    "coach_portrait_zinedine_zidane",
+    "coach_portrait_xavi"
+  ]
+}

@@ -1,0 +1,34 @@
+name: Materialize reviewed avatar database
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/materialize-avatar-data.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/portrait-pack-oct05'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Apply and verify reviewed data
+        run: |
+          python3 tools/data_platform_v4/apply_avatar_careers.py
+          python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
+          python3 -m unittest discover -s tools/data_platform_v4 -p 'test_avatar_careers.py'
+          python3 tools/uploaded_portraits/verify.py
+      - name: Save generated database on the same branch
+        env:
+          TARGET_BRANCH: codex/portrait-pack-oct05
+        run: |
+          git add assets/runtime/linkball_game_data_v4.sqlite assets/runtime/linkball_game_data_v4_manifest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Package reviewed avatar careers in the runtime database'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"

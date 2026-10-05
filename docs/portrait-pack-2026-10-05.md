@@ -1,37 +1,44 @@
-# Kullanıcı portre paketi — 5 Ekim 2026
+# Portre ve kariyer güncellemesi — 5 Ekim 2026
 
-Taban: `codex/player-portraits-avatar-refresh` / `167002f` (PR #20).
+PR #21, `codex/portrait-pack-oct05`; taban PR #20.
 
-## Davranış
+## Portreler ve mağaza
 
-- İki ZIP içindeki isim etiketleri incelendi. 16–18. sayfaların tekrarları çıkarıldı; 216 portre, 23 değiştirilmemiş PNG kaynakta paketlendi.
-- Yeni kaynaklar oyun kartlarında öncelikli. Paket dışındaki eski, doğrulanmış portreler korunuyor; diğer oyuncularda forma/baş harf yedeği devam ediyor.
-- 123 görselli koleksiyon avatarı: önceki 66 seçeneğin 64'ü korundu, 59 yeni seçenek eklendi. Sekiz klasik simge avatarı ayrıca korunuyor.
-- Metin Oktay, Lefter, Batistuta, Vieira, Kahn, Cafu; Arda Turan, Fàbregas, Xabi Alonso; diğer seçilmiş efsaneler ve teknik direktörler eklendi.
-- Guardiola'nın mevcut `persona_pep_guardiola` kimliği teknik direktör portresini kullanıyor. `persona_pep_guardiola_player` ayrı futbolcu portresini kullanıyor. Oyundaki Guardiola futbolcu kartı da futbolcu portresine bağlı.
-- Ayrı TD portresi olmayan isimler mevcut futbolcu portresini paylaşır. Teknik Direktör XI başlığında da portre gösterilir; bilinmeyen TD baş harf kullanır.
-- Erman Yaşar, Hasan Arda, Emre Özcan gönderilen üçlü görsele bağlı.
-- Nwakaeme ve Hamšík için mevcut kaynaklarda portre bulunmadığından seçimden kaldırıldı; sunucu teklifleri devre dışı. Geçmiş satın alma kayıtları ve coin bakiyeleri silinmez. Eski seçili, artık bilinmeyen avatar mevcut profil onarımında başlangıç avatarına döner.
+- 247 etiketli portre, 34 orijinal PNG kaynak, 151 aktif koleksiyon avatarı. Sekiz klasik simge ayrıca korunur.
+- Yeni ZIP'teki 24 kişi için futbolcu ve teknik direktör görselleri ayrı. Futbolcu kartında futbolcu çizimi, TD kartında TD çizimi kullanılır. Her iki sürüm avatar olarak seçilebilir; mevcut satın alma kimlikleri korunur.
+- Oyuncu görselinin önceliği manifest sırasına değil açık `role` alanına bağlıdır.
+- Kaan, Ömer, Berat ve Burak görselleri gönderim sırasıyla bağlandı. Devam ekranında belirtilen Ege için aynı günkü ayrı gözlüklü avatar kullanıldı. Beşi mağazanın **Özel avatarlar** filtresinde görünür; futbolcu kaydı oluşturulmaz.
+- Önceki içerik üreticileri ve doğrulanmış eski portreler korunur. Portresiz Nwakaeme/Hamšík satışları kapalı kalır; eski sahiplik kayıtları silinmez.
+- Mağaza kataloğu sürüm 7. Canlı satın alımlar için bu sürümle eşleşen Functions dağıtımı gerekir.
 
-## Veri sınırı
+## Kariyer verileri
 
-Bu çalışma portre/mağaza koleksiyonudur; SQLite oyuncu veya kulüp geçmişlerini değiştirmez.
-12 kaynak ismi için doğru oynanabilir oyuncu kaydı bulunamadı: Rafael Márquez, Jefferson Farfán, Oliver Kahn, Peter Schmeichel, Cafu, Metin Oktay, Bülent Korkmaz, Ümit Davala, Burak Yılmaz, Guti, Alex de Souza, Micah Richards. Portreleri paketli; seçilenler profil avatarında kullanılabilir. Oyuncu verisine eklemek, ayrı ve kaynaklı kariyer verisi çalışması gerektirir.
+`tools/data_platform_v4/patches/avatar-careers-2026-10-05.json` her kişi için kaynak bağlantılarını, kanonik kulüp kimliklerini ve dahil edilmeyen gelişim takımlarını içerir.
 
-Cafu (466279/203655), Burak Yılmaz (164148), Guti (186623) adaşlarına görsel bağlanmadı. Tam ad, kanonik ID ve mevcut kulüp bağlantıları birlikte incelendi; belirsiz ad eşleşmesi otomatik kullanılmadı.
+- 38 yeni kimlik, 181 oyuncu-kulüp bağlantısı ve 200 kariyer dönemi. 36 kişi oyun cevaplarına uygun; Nagelsmann'ın rezerv kayıtları ve Karaman'ın amatör geçmişi kimlik/kariyer verisinde saklanır, oyun cevabı olmaz.
+- 24 eksik tarihsel/amatör/rezerv kulüp, ayrı yerel kimliklerle eklendi. Güncel adaş kulüplerle veya A takımla birleştirilmedi; rastgele kulüp havuzlarına eklenmedi.
+- Yıl hassasiyetindeki kaynaklar `YYYY` olarak saklanır; bilinmeyen tarihler boş bırakılır. Transfer olayı, ücret, maç veya gol sayısı üretilmez. Kiralık ve dönüş dönemleri korunur.
+- Cafu, Guti, Burak Yılmaz ve Alex de Souza mevcut adaş oyunculardan ayrı kimliklerdir.
+- Veritabanı toplamı: 36.391 oyuncu, 4.335 kulüp, 5.285 TD kaydı. Günlük oyun sunucu kataloğu yeniden üretildi.
 
-## Tekrar üretim ve doğrulama
+## Teknik direktörler
+
+- Portresi bulunan 46 TD için doğrulanmış üst takım teknik direktörlük kulüpleri güncellendi; JSON ve SQLite aynı veriyi taşır. Mevcut tam adlar/alternatif kimlikler korunur; eksik 10 TD kaydı eklendi.
+- TD XI, bu kişilerde eski seed tahminlerini birleştirmek yerine doğrulanmış kulüp listesini kullanır. Örneğin Luis Enrique'nin futbolcu olarak oynadığı Real Madrid, teknik direktör kulüp havuzuna girmez; Emery'ye Barcelona atanmaz.
+- Milli takım, altyapı, yardımcı antrenör ve sportif direktör rolleri kulüp havuzuna girmez. Veritabanında karşılığı olmayan bazı eski TD kulüpleri kaynak dosyasında `unmappedManagedClubs` olarak açıkça tutulur; yanlış kulüp kimliği atanmaz.
+- TD XI'nin mevcut kuralı kulüp geçmişi üzerinden oyuncu havuzu kurar; aynı tarihlerde birlikte çalışma garantisi vermez.
+
+## Tekrar üretim ve kontroller
 
 ```sh
-python3 tools/uploaded_portraits/generate_catalog.py
+python3 tools/data_platform_v4/apply_avatar_careers.py
+python3 tools/data_platform_v4/verify_game_data_v4_freeze.py
+python3 tools/data_platform_v4/export_daily_catalog.py
 python3 tools/uploaded_portraits/generate_catalog.py --check
 python3 tools/uploaded_portraits/verify.py
-node --test functions/test/store_collection.test.js
-flutter test test/avatar_portraits_test.dart test/uploaded_portrait_test.dart
+python3 -m unittest discover -s tools/data_platform_v4
+node --test functions/test/*.test.js
+flutter test
 ```
 
-Manifest her kartın kaynak sayfasını, sıra numarasını, gösterim alanını, SHA256 ve doğrulanmış oyuncu kimliğini tutar. PNG dosyaları kullanıcı kaynaklarıyla bayt düzeyinde aynı. İsimler ve başlıklar uygulamada Flutter kırpmasıyla gizlenir; dosyalar yeniden çizilmez.
-
-## Dağıtım
-
-Yeni mağaza seçeneklerinin satın alınması için eşleşen Firebase Functions kataloğu (sürüm 6) dağıtılmalı. Bu PR canlı Firebase dağıtımı veya main birleştirmesi yapmaz. Yeni istemci eski sunucudan gelen artık bilinmeyen/devre dışı teklifleri de filtreler.
+Uygulama betiği idempotenttir; hash veya uygulanmış kaynak değişirse reddeder. Kaynak PNG'ler değiştirilmeden paketlenir, görüntüleme kırpması istemcide yapılır. Kimlik, rol ayrımı, sınırlar, JSON/SQLite eşliği, arama, kariyer sırası ve mağazada tek seferlik ücretlendirme test kapsamındadır.
