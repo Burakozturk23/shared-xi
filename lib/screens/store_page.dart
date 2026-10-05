@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../app/route_appearance.dart';
 import '../app/app_feedback.dart';
 import '../models/store_models.dart';
+import '../models/avatar_browser.dart';
+import '../models/avatar_store_catalog.dart';
+import '../widgets/avatar_filter_bar.dart';
 import '../models/user_avatar_catalog.dart';
 import '../models/economy_models.dart';
 import '../models/store_collection.dart';
@@ -16,7 +19,10 @@ import 'coin_packs_page.dart';
 import 'progression_center_page.dart';
 
 class StorePage extends StatefulWidget {
-  const StorePage({super.key, this.gateway = const StoreGateway()});
+  const StorePage({super.key, this.gateway = const StoreGateway(),
+    this.initialTab = 'avatar', this.initialAvatarId});
+  final String initialTab;
+  final String? initialAvatarId;
   final StoreGateway gateway;
   @override
   State<StorePage> createState() => _StorePageState();
@@ -25,11 +31,16 @@ class StorePage extends StatefulWidget {
 class _StorePageState extends State<StorePage> {
   StoreCatalogSnapshot? _data;
   bool _loading = false, _busy = false, _error = false, _ownedOnly = false;
-  String _tab = 'boost', _category = 'all', _kitCategory = 'all';
+  late String _tab;
+  String _kitCategory = 'all';
+  AvatarBrowserFilter _avatarFilter = const AvatarBrowserFilter();
   bool _confirming = false;
   @override
   void initState() {
     super.initState();
+    _tab = widget.initialTab;
+    final avatar = UserAvatarCatalog.byId(widget.initialAvatarId ?? '');
+    if (avatar != null) _avatarFilter = AvatarBrowserFilter(query: avatar.title);
     unawaited(widget.gateway.view());
     _load();
   }
@@ -56,7 +67,7 @@ class _StorePageState extends State<StorePage> {
   }
 
   Future<void> _buy(StoreOffer offer) async {
-    if (_busy || _loading || _data!.wallet.coins < offer.priceCoins) return;
+    if (offer.isPreview || _busy || _loading || _data == null || _data!.wallet.coins < offer.priceCoins) return;
     setState(() {
       _busy = true;
       _confirming = true;
@@ -224,21 +235,19 @@ class _StorePageState extends State<StorePage> {
   );
   Widget _content() {
     final d = _data!;
-    final visible = d.offers
-        .where(
-          (o) =>
-              o.itemType == _tab &&
-              (!o.isAvatar || UserAvatarCatalog.contains(o.itemId)) &&
-              (_tab != 'kit' ||
-                  _kitCategory == 'all' ||
-                  o.category == _kitCategory) &&
-              (_tab != 'avatar' ||
-                  _category == 'all' ||
-                  o.category == _category) &&
-              (!_ownedOnly || d.inventory.containsKey(o.itemId)),
-        )
-        .toList();
+    final avatarOffers = avatarStoreOffers(d.offers);
+    final avatarDefinitions = [for (final o in avatarOffers) UserAvatarCatalog.byId(o.itemId)!];
+    final ownedIds = {for (final entry in d.inventory.entries) if (entry.value.quantity > 0) entry.key};
+    final filteredAvatars = _avatarFilter.apply(avatarDefinitions, ownedIds);
+    final offersByAvatar = {for (final o in avatarOffers) o.itemId: o};
+    final visible = _tab == 'avatar'
+        ? [for (final a in filteredAvatars) offersByAvatar[a.id]!]
+        : d.offers.where((o) => o.itemType == _tab &&
+            (_tab != 'kit' || _kitCategory == 'all' || o.category == _kitCategory) &&
+            (!_ownedOnly || ownedIds.contains(o.itemId))).toList();
+    final previewCount = avatarOffers.where((o) => o.isPreview).length;
     return CustomScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
@@ -299,7 +308,7 @@ class _StorePageState extends State<StorePage> {
                           ? null
                           : (_) => setState(() => _tab = row.$1),
                     ),
-                  FilterChip(
+                  if (_tab != 'avatar') FilterChip(
                     label: const Text('Çantam'),
                     selected: _ownedOnly,
                     onSelected: _busy
@@ -318,25 +327,15 @@ class _StorePageState extends State<StorePage> {
                   'Futbolcu, teknik direktör ve özel portrelerden avatarını seç. Satın aldıktan sonra profilinde kullanabilirsin.',
                 ),
                 const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final row in const [
-                      ('all', 'Tümü'),
-                      ('players', 'Futbolcular'),
-                      ('coaches', 'Teknik direktörler'),
-                      ('legends', 'Efsaneler'),
-                      ('creators', 'İçerik üreticileri'),
-                      ('friends', 'Özel avatarlar'),
-                      ('classic', 'Linkball'),
-                    ])
-                      ChoiceChip(
-                        label: Text(row.$2),
-                        selected: _category == row.$1,
-                        onSelected: (_) => setState(() => _category = row.$1),
-                      ),
-                  ],
+                AvatarFilterBar(
+                  filter: _avatarFilter, avatars: avatarDefinitions,
+                  resultCount: visible.length, enabled: !_busy,
+                  onChanged: (value) => setState(() => _avatarFilter = value),
+                ),
+                if (previewCount > 0) Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text('$previewCount avatarın satışı henüz açılmadı. Görsellerini inceleyebilir, satış durumu için mağazayı yenileyebilirsin.',
+                    style: Theme.of(context).textTheme.bodySmall),
                 ),
               ],
               if (_tab == 'kit') ...[
@@ -379,13 +378,18 @@ class _StorePageState extends State<StorePage> {
           ),
         ),
         if (visible.isEmpty)
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: SocialNotice(
-                title: 'Burada henüz ürün yok',
-                message:
-                    'Çanta filtresini kapatabilir veya diğer kategorilere bakabilirsin.',
+                title: _tab == 'avatar' ? 'Avatar bulunamadı' : 'Burada henüz ürün yok',
+                message: _tab == 'avatar' ? 'Başka bir isim ara veya filtrelerini temizle.' : 'Çanta filtresini kapatabilir veya diğer kategorilere bakabilirsin.',
+                actionLabel: 'Filtreleri temizle',
+                onAction: () => setState(() {
+                  _avatarFilter = const AvatarBrowserFilter();
+                  _ownedOnly = false;
+                  _kitCategory = 'all';
+                }),
               ),
             ),
           ),
@@ -442,13 +446,14 @@ class _StorePageState extends State<StorePage> {
 
   Widget _card(StoreOffer o) {
     final stock = _data!.inventory[o.itemId];
-    final owned = stock != null;
+    final owned = stock != null && stock.quantity > 0;
     final equipped = o.itemType == 'avatar'
         ? _data!.selectedAvatarId == o.itemId
         : o.itemType == 'kit' && _data!.selectedKitId == o.itemId;
     final enough = _data!.wallet.coins >= o.priceCoins;
     final kit = profileKit(o.itemId);
     return Padding(
+      key: ValueKey('store-${o.itemId}'),
       padding: const EdgeInsets.only(bottom: 12),
       child: PitchPanel(
         child: Column(
@@ -477,11 +482,11 @@ class _StorePageState extends State<StorePage> {
                   ? '${o.units} kullanım · Çantanda ${stock?.quantity ?? 0}'
                   : o.itemType == 'kit'
                   ? 'Profil forması'
-                  : 'Profil avatarı',
+                  : avatarCategories[avatarCategory(UserAvatarCatalog.byId(o.itemId)!)] ?? 'Profil avatarı',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 10),
-            if (!o.oneTime || !owned)
+            if (!o.isPreview && (!o.oneTime || !owned))
               Text(
                 '${o.priceCoins} Link Coin',
                 style: Theme.of(context).textTheme.titleSmall,
@@ -500,6 +505,8 @@ class _StorePageState extends State<StorePage> {
                       : 'Kullan',
                 ),
               )
+            else if (o.isPreview)
+              const OutlinedButton(onPressed: null, child: Text('Satışa hazırlanıyor'))
             else
               FilledButton(
                 onPressed: _busy || _loading || !enough ? null : () => _buy(o),

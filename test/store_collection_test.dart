@@ -45,6 +45,7 @@ class ShopFake extends StoreGateway {
   Completer<EconomyPurchaseResult>? pending;
   Completer<int>? consuming;
   bool failConsume = false;
+  List<StoreOffer>? catalogOverride;
   @override
   bool get connected => true;
   @override
@@ -61,7 +62,7 @@ class ShopFake extends StoreGateway {
       lifetimeEarned: 1000,
       lifetimeSpent: 1000 - coins,
     ),
-    offers: offers(),
+    offers: catalogOverride ?? offers(),
     inventory: {...items},
     selectedKitId: selected,
   );
@@ -192,7 +193,7 @@ void main() {
     'purchase confirms price, cancels safely and updates balance and stock',
     (t) async {
       final fake = ShopFake();
-      await mount(t, StorePage(gateway: fake));
+      await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
       await reveal(t, find.text('Satın al').first);
       await t.tap(find.text('Satın al').first);
       await t.pumpAndSettle();
@@ -218,7 +219,7 @@ void main() {
     t,
   ) async {
     final fake = ShopFake()..pending = Completer<EconomyPurchaseResult>();
-    await mount(t, StorePage(gateway: fake));
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
     await reveal(t, find.text('Satın al').first);
     await t.tap(find.text('Satın al').first);
     await t.pumpAndSettle();
@@ -249,7 +250,7 @@ void main() {
   testWidgets('owned jersey equips without another purchase', (t) async {
     final fake = ShopFake()
       ..items['kit_midnight'] = item('kit_midnight', 'kit');
-    await mount(t, StorePage(gateway: fake));
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
     await t.tap(find.text('Formalar'));
     await t.pumpAndSettle();
     await reveal(t, find.text('Giy'));
@@ -260,22 +261,24 @@ void main() {
     expect(find.text('Kullanılıyor'), findsOneWidget);
   });
   testWidgets('avatar filters and empty owned collection', (t) async {
-    await mount(t, StorePage(gateway: ShopFake()));
+    await mount(t, StorePage(gateway: ShopFake(), initialTab: 'boost'));
     await t.tap(find.text('Avatarlar'));
     await t.pumpAndSettle();
-    await reveal(t, find.text('Teknik direktörler'));
-    await t.tap(find.text('Teknik direktörler'));
+    await reveal(t, find.byType(DropdownButtonFormField<String>));
+    await t.tap(find.byType(DropdownButtonFormField<String>));
+    await t.pumpAndSettle();
+    await t.tap(find.textContaining('Teknik direktörler').last);
     await t.pumpAndSettle();
     await reveal(t, find.text('José Mourinho'));
     expect(find.text('Cristiano Ronaldo'), findsNothing);
     await t.scrollUntilVisible(
-      find.text('Çantam'),
+      find.text('Sahip olduklarım'),
       -250,
       scrollable: find.byType(Scrollable).first,
     );
-    await t.tap(find.text('Çantam'));
+    await t.tap(find.text('Sahip olduklarım'));
     await t.pumpAndSettle();
-    expect(find.text('Burada henüz ürün yok'), findsOneWidget);
+    expect(find.text('Avatar bulunamadı'), findsOneWidget);
   });
   testWidgets(
     'hint appears only after acknowledgement; failed call reuses round ID',
@@ -316,7 +319,7 @@ void main() {
   for (final dark in [true, false]) {
     for (final tab in ['Güçlendirmeler', 'Avatarlar', 'Formalar']) {
       testWidgets('$tab preview ${dark ? 'dark' : 'light'}', (t) async {
-        final key = await mount(t, StorePage(gateway: ShopFake()), dark: dark);
+        final key = await mount(t, StorePage(gateway: ShopFake(), initialTab: 'boost'), dark: dark);
         await t.tap(find.text(tab));
         await t.pumpAndSettle();
         if (tab == 'Formalar') {
@@ -339,7 +342,7 @@ void main() {
   testWidgets('narrow large text store and original jersey remain readable', (
     t,
   ) async {
-    final key = await mount(t, StorePage(gateway: ShopFake()), large: true);
+    final key = await mount(t, StorePage(gateway: ShopFake(), initialTab: 'boost'), large: true);
     await reveal(t, find.text('İlk Harf'));
     await t.ensureVisible(find.text('Satın al').first);
     await t.pumpAndSettle();
