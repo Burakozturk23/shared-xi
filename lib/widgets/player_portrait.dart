@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/player_portrait_catalog.dart';
 import '../data/season_portrait_catalog.dart';
+import '../data/uploaded_portrait_catalog.dart';
 
 /// Shared portrait selection for game cards and profile avatars.
 class PlayerPortrait extends StatelessWidget {
@@ -17,6 +18,10 @@ class PlayerPortrait extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final uploaded = UploadedPortraitCatalog.forPlayerId(playerId);
+    if (uploaded != null) {
+      return PortraitCrop(spec: uploaded, size: size, fallback: fallback);
+    }
     final asset = PlayerPortraitCatalog.forPlayerId(playerId);
     if (asset != null) {
       return Image.asset(
@@ -28,14 +33,15 @@ class PlayerPortrait extends StatelessWidget {
     }
     final season = SeasonPortraitCatalog.forPlayerId(playerId);
     if (season != null) {
-      return _SeasonPortrait(spec: season, size: size, fallback: fallback);
+      return PortraitCrop(spec: season, size: size, fallback: fallback);
     }
     return fallback;
   }
 }
 
-class _SeasonPortrait extends StatelessWidget {
-  const _SeasonPortrait({
+class PortraitCrop extends StatelessWidget {
+  const PortraitCrop({
+    super.key,
     required this.spec,
     required this.size,
     required this.fallback,
@@ -47,9 +53,14 @@ class _SeasonPortrait extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scaleX = size / spec.width;
-    final scaleY = size / spec.height;
-    return ClipRect(
+    final scale = size / (spec.width > spec.height ? spec.width : spec.height);
+    final scaleX = scale;
+    final scaleY = scale;
+    return Center(
+      child: SizedBox(
+        width: spec.width * scale,
+        height: spec.height * scale,
+        child: ClipRect(
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -61,6 +72,7 @@ class _SeasonPortrait extends StatelessWidget {
             child: Image.asset(
               spec.asset,
               fit: BoxFit.fill,
+              cacheWidth: spec.sheetWidth > 1024 ? 1024 : spec.sheetWidth.toInt(),
               filterQuality: FilterQuality.medium,
               errorBuilder: (_, __, ___) => Stack(
                 children: [
@@ -76,6 +88,8 @@ class _SeasonPortrait extends StatelessWidget {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }

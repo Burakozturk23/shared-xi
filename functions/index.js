@@ -6373,12 +6373,12 @@ exports.getStoreCatalog = httpsV2.onCall(
       const db = admin.database();
       const state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
-      const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers];
+      const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
       const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
         ok: true,
-        catalogVersion: LB_STORE_CATALOG_VERSION,
+        catalogVersion: Math.max(LB_STORE_CATALOG_VERSION, storeCollection.catalog.version),
         wallet: lbEconomyWalletProjection(state),
         offers: offers,
         inventory: state.inventory,

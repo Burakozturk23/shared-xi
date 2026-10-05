@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/player_portrait_catalog.dart';
+import '../data/uploaded_portrait_catalog.dart';
 import '../models/linkball_profile_schema.dart';
 import '../models/user_avatar_catalog.dart';
 import 'player_portrait.dart';
@@ -25,6 +26,7 @@ class UserAvatarBadge extends StatelessWidget {
 
     final accent = _accentFor(definition.visualKey);
     final icon = _iconFor(definition.visualKey);
+    final uploaded = UploadedPortraitCatalog.forAvatarId(definition.id);
     final portraitPlayerId = PlayerPortraitCatalog.playerIdForAvatar(
       definition.id,
     );
@@ -40,7 +42,17 @@ class UserAvatarBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          if (portraitPlayerId != null)
+          if (uploaded != null)
+            Positioned.fill(
+              child: ClipOval(
+                child: PortraitCrop(
+                  spec: uploaded,
+                  size: radius * 2,
+                  fallback: _initials(definition, accent),
+                ),
+              ),
+            )
+          else if (portraitPlayerId != null)
             Positioned.fill(
               child: ClipOval(
                 child: PlayerPortrait(
