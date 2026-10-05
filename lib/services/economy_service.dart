@@ -63,6 +63,7 @@ class EconomyService {
   static Future<EconomyPurchaseResult> purchaseOffer(
     String offerId, {
     int? expectedPriceCoins,
+    String? requestId,
   }) async {
     await CloudBootstrap.ensureInitialized();
     _requireUid();
@@ -79,6 +80,7 @@ class EconomyService {
     final callable = _functions.httpsCallable('purchaseEconomyOffer');
     final response = await callable.call(<String, dynamic>{
       'offerId': normalized,
+      if (requestId != null) 'requestId': requestId,
       if (expectedPriceCoins != null) 'expectedPriceCoins': expectedPriceCoins,
     });
     final data = _map(response.data);

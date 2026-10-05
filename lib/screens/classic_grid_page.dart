@@ -365,7 +365,9 @@ class _ClassicGridPageState extends State<ClassicGridPage>
               ),
               const SizedBox(height: 6),
               for (var row = 0; row < 3; row++)
-                Row(
+                SizedBox(
+                  height: 104 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.5),
+                  child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(
@@ -381,6 +383,7 @@ class _ClassicGridPageState extends State<ClassicGridPage>
                         ),
                       ),
                   ],
+                  ),
                 ),
             ],
           );
@@ -475,10 +478,11 @@ class _ClassicGridPageState extends State<ClassicGridPage>
                         size: 22,
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      Flexible(child: Text(
                         selected ? 'Cevapla' : 'Boş',
+                        maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelSmall,
-                      ),
+                      )),
                     ],
                   )
                 : Column(

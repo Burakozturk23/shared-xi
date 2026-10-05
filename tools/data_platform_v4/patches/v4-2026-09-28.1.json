@@ -1,0 +1,224 @@
+{
+  "id": "v4-2026-09-28.1",
+  "reviewedUtc": "2026-09-28T11:00:00Z",
+  "baseSha256": "c749fe3163cdc36f0ffc61222bf4b6ae90d2215463461636f6fbc11984a0d54f",
+  "scope": "Vlahovic only; not a complete summer-transfer update",
+  "sources": [
+    {
+      "url": "https://www.bjk.com.tr/tr/haber/94879/besiktasimiza-hos-geldin-dusan-vlahovic.html",
+      "fact": "Contract signed on 2026-08-13 for three seasons."
+    },
+    {
+      "url": "https://bjk.com.tr/tr/oyuncu/5396/dusan-vlahovic.html?fromMobile=true",
+      "fact": "Official biography lists Partizan, Fiorentina and Juventus before Besiktas."
+    },
+    {
+      "url": "https://www.bjk.com.tr/tr/mac_merkezi/canli/25433",
+      "fact": "Official 2026-08-31 match record confirms actual Besiktas appearance."
+    }
+  ],
+  "removalReason": "Ajman link is unsupported by official career biography and has no supporting career_spells, transfers or player_club_stats row. Original relation retained in precondition audit below.",
+  "preconditions": [
+    {
+      "sql": "SELECT name FROM players WHERE id=?",
+      "args": [
+        357498
+      ],
+      "rows": [
+        [
+          "Dušan Vlahović"
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT club_id,trust,source FROM player_clubs WHERE player_id=? ORDER BY club_id",
+      "args": [
+        357498
+      ],
+      "rows": [
+        [
+          430,
+          2,
+          "v3"
+        ],
+        [
+          506,
+          2,
+          "v3"
+        ],
+        [
+          515,
+          1,
+          "v3"
+        ],
+        [
+          669,
+          2,
+          "v3"
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM career_spells WHERE player_id=?",
+      "args": [
+        357498
+      ],
+      "rows": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM transfers WHERE player_id=?",
+      "args": [
+        357498
+      ],
+      "rows": [
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM player_club_stats WHERE player_id=? AND club_id=515",
+      "args": [
+        357498
+      ],
+      "rows": [
+        [
+          0
+        ]
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "sql": "DELETE FROM player_clubs WHERE player_id=? AND club_id=?",
+      "args": [
+        357498,
+        515
+      ],
+      "changes": 1
+    },
+    {
+      "sql": "INSERT INTO player_clubs(player_id,club_id,trust,source) VALUES(?,?,?,?)",
+      "args": [
+        357498,
+        114,
+        2,
+        "reviewed:bjk:2026-09-28"
+      ],
+      "changes": 1
+    },
+    {
+      "sql": "INSERT INTO career_spells(player_id,sequence,club_id,start_date,end_date,confidence,appearances) VALUES(?,?,?,?,?,?,?)",
+      "args": [
+        357498,
+        4,
+        114,
+        "2026-08-13",
+        null,
+        "HIGH",
+        null
+      ],
+      "changes": 1
+    },
+    {
+      "sql": "INSERT INTO transfers(event_id,player_id,transfer_date,transfer_year,from_club_id,to_club_id,trust,source_player_id) VALUES(?,?,?,?,?,?,?,?)",
+      "args": [
+        "reviewed:357498:2026-08-13:506:114",
+        357498,
+        "2026-08-13",
+        2026,
+        506,
+        114,
+        "HIGH",
+        357498
+      ],
+      "changes": 1
+    },
+    {
+      "sql": "UPDATE metadata SET value='37966' WHERE key='career_spell_rows'",
+      "args": [],
+      "changes": 1
+    },
+    {
+      "sql": "UPDATE metadata SET value='33994' WHERE key='transfer_rows'",
+      "args": [],
+      "changes": 1
+    },
+    {
+      "sql": "INSERT INTO metadata(key,value) VALUES('data_revision','v4-2026-09-28.1')",
+      "args": [],
+      "changes": 1
+    }
+  ],
+  "postconditions": [
+    {
+      "sql": "SELECT club_id FROM player_clubs WHERE player_id=? ORDER BY club_id",
+      "args": [
+        357498
+      ],
+      "rows": [
+        [
+          114
+        ],
+        [
+          430
+        ],
+        [
+          506
+        ],
+        [
+          669
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM players",
+      "args": [],
+      "rows": [
+        [
+          30135
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM clubs",
+      "args": [],
+      "rows": [
+        [
+          4311
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM transfers",
+      "args": [],
+      "rows": [
+        [
+          33994
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM player_clubs",
+      "args": [],
+      "rows": [
+        [
+          165563
+        ]
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM career_spells",
+      "args": [],
+      "rows": [
+        [
+          37966
+        ]
+      ]
+    }
+  ]
+}

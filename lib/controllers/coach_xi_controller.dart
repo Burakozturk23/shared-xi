@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../data/build_xi_formations.dart';
 import '../data/famous_coaches_seed.dart';
+import '../data/reviewed_portrait_coaches.dart';
 import '../models/coach.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';
@@ -45,9 +46,11 @@ class CoachXiController extends ChangeNotifier {
   List<Coach> _allCoaches() {
     final byKey = <String, Coach>{};
     for (final c in famousCoachesSeed) {
+      if (ReviewedPortraitCoaches.replacedIds.contains(c.id)) continue;
       byKey[c.name.toLowerCase()] = c;
     }
     for (final c in Repository.instance.coaches) {
+      if (ReviewedPortraitCoaches.replacedIds.contains(c.id)) continue;
       if (c.clubIds.isEmpty) continue;
       final key = c.name.toLowerCase();
       final prev = byKey[key];
@@ -64,6 +67,10 @@ class CoachXiController extends ChangeNotifier {
       } else {
         byKey[key] = c;
       }
+    }
+    // Reviewed head-coach clubs replace legacy guesses; never union player clubs.
+    for (final c in ReviewedPortraitCoaches.coaches) {
+      byKey[c.name.toLowerCase()] = c;
     }
     return byKey.values.toList();
   }

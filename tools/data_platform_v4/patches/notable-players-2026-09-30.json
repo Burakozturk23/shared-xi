@@ -1,0 +1,1338 @@
+{
+  "reviewedUtc": "2026-09-30",
+  "policy": "Verified senior playing clubs only. Club history is partial; coaching, youth teams, appearances, transfer dates and fees are not inferred. Stable reviewed-player namespace starts at 4,000,000,001.",
+  "players": [
+    {
+      "id": 4000000001,
+      "name": "Gökhan Gönül",
+      "birthYear": 1985,
+      "country": "Türkiye",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/G%C3%B6khan_G%C3%B6n%C3%BCl"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 126,
+          "name": "Caykur Rizespor"
+        },
+        {
+          "id": 10483,
+          "name": "Hacettepe Spor"
+        }
+      ]
+    },
+    {
+      "id": 4000000002,
+      "name": "Gheorghe Hagi",
+      "birthYear": 1965,
+      "country": "Romania",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gheorghe_Hagi"
+      ],
+      "clubs": [
+        {
+          "id": 19,
+          "name": "Brescia Calcio (- 2025)"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        }
+      ]
+    },
+    {
+      "id": 4000000003,
+      "name": "Gheorghe Popescu",
+      "birthYear": 1967,
+      "country": "Romania",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gheorghe_Popescu"
+      ],
+      "clubs": [
+        {
+          "id": 42,
+          "name": "Hannover 96"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 148,
+          "name": "Tottenham Hotspur"
+        },
+        {
+          "id": 312,
+          "name": "FC Dinamo 1948"
+        },
+        {
+          "id": 383,
+          "name": "PSV Eindhoven"
+        },
+        {
+          "id": 1005,
+          "name": "US Lecce"
+        }
+      ]
+    },
+    {
+      "id": 4000000004,
+      "name": "Sergen Yalçın",
+      "birthYear": 1972,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sergen_Yal%C3%A7%C4%B1n"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 449,
+          "name": "Trabzonspor"
+        },
+        {
+          "id": 825,
+          "name": "Eskisehirspor"
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000005,
+      "name": "Metin Tekin",
+      "birthYear": 1964,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Metin_Tekin"
+      ],
+      "clubs": [
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        }
+      ]
+    },
+    {
+      "id": 4000000006,
+      "name": "Ali Gültiken",
+      "birthYear": 1965,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ali_G%C3%BCltiken"
+      ],
+      "clubs": [
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 3205,
+          "name": "Kayserispor"
+        }
+      ]
+    },
+    {
+      "id": 4000000007,
+      "name": "Feyyaz Uçar",
+      "birthYear": 1963,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Feyyaz_U%C3%A7ar"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 589,
+          "name": "Antalyaspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000008,
+      "name": "Lefter Küçükandonyadis",
+      "birthYear": 1924,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lefter_K%C3%BC%C3%A7%C3%BCkandonyadis"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 417,
+          "name": "OGC Nice"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 2441,
+          "name": "AEK Athens"
+        },
+        {
+          "id": 3207,
+          "name": "Boluspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000009,
+      "name": "Can Bartu",
+      "birthYear": 1936,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Can_Bartu"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 398,
+          "name": "SS Lazio"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 607,
+          "name": "Venezia FC"
+        }
+      ]
+    },
+    {
+      "id": 4000000010,
+      "name": "Aykut Kocaman",
+      "birthYear": 1965,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aykut_Kocaman"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor"
+        },
+        {
+          "id": 2463,
+          "name": "Sakaryaspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000011,
+      "name": "Oğuz Çetin",
+      "birthYear": 1963,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/O%C4%9Fuz_%C3%87etin"
+      ],
+      "clubs": [
+        {
+          "id": 6,
+          "name": "Adanaspor"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor"
+        },
+        {
+          "id": 2463,
+          "name": "Sakaryaspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000012,
+      "name": "Tanju Çolak",
+      "birthYear": 1963,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tanju_%C3%87olak"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 152,
+          "name": "Samsunspor"
+        },
+        {
+          "id": 924,
+          "name": "Istanbulspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000013,
+      "name": "Hami Mandıralı",
+      "birthYear": 1968,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hami_Mand%C4%B1ral%C4%B1"
+      ],
+      "clubs": [
+        {
+          "id": 33,
+          "name": "FC Schalke 04"
+        },
+        {
+          "id": 449,
+          "name": "Trabzonspor"
+        },
+        {
+          "id": 868,
+          "name": "MKE Ankaragücü"
+        }
+      ]
+    },
+    {
+      "id": 4000000014,
+      "name": "Şenol Güneş",
+      "birthYear": 1952,
+      "country": "Türkiye",
+      "position": "Goalkeeper",
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C5%9Eenol_G%C3%BCne%C5%9F"
+      ],
+      "clubs": [
+        {
+          "id": 449,
+          "name": "Trabzonspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000015,
+      "name": "Gökdeniz Karadeniz",
+      "birthYear": 1980,
+      "country": "Türkiye",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/G%C3%B6kdeniz_Karadeniz"
+      ],
+      "clubs": [
+        {
+          "id": 449,
+          "name": "Trabzonspor"
+        },
+        {
+          "id": 2698,
+          "name": "Rubin Kazan"
+        }
+      ]
+    },
+    {
+      "id": 4000000016,
+      "name": "Tuncay Şanlı",
+      "birthYear": 1982,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tuncay_%C5%9Eanl%C4%B1"
+      ],
+      "clubs": [
+        {
+          "id": 20,
+          "name": "Bursaspor"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 82,
+          "name": "VfL Wolfsburg"
+        },
+        {
+          "id": 355,
+          "name": "Bolton Wanderers"
+        },
+        {
+          "id": 512,
+          "name": "Stoke City"
+        },
+        {
+          "id": 641,
+          "name": "Middlesbrough FC"
+        },
+        {
+          "id": 2463,
+          "name": "Sakaryaspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000017,
+      "name": "Emre Belözoğlu",
+      "birthYear": 1980,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Emre_Bel%C3%B6zo%C4%9Flu"
+      ],
+      "clubs": [
+        {
+          "id": 13,
+          "name": "Atlético de Madrid"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 762,
+          "name": "Newcastle United"
+        },
+        {
+          "id": 6890,
+          "name": "Basaksehir FK"
+        }
+      ]
+    },
+    {
+      "id": 4000000018,
+      "name": "Arda Turan",
+      "birthYear": 1987,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Arda_Turan"
+      ],
+      "clubs": [
+        {
+          "id": 13,
+          "name": "Atlético de Madrid"
+        },
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 141,
+          "name": "Galatasaray"
+        },
+        {
+          "id": 1267,
+          "name": "Manisaspor"
+        },
+        {
+          "id": 6890,
+          "name": "Basaksehir FK"
+        }
+      ]
+    },
+    {
+      "id": 4000000019,
+      "name": "Volkan Demirel",
+      "birthYear": 1981,
+      "country": "Türkiye",
+      "position": "Goalkeeper",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Volkan_Demirel"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 1204,
+          "name": "Kartalspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000020,
+      "name": "Tümer Metin",
+      "birthYear": 1974,
+      "country": "Türkiye",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/T%C3%BCmer_Metin"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 152,
+          "name": "Samsunspor"
+        }
+      ]
+    },
+    {
+      "id": 4000000021,
+      "name": "Pascal Nouma",
+      "birthYear": 1972,
+      "country": "France",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pascal_Nouma"
+      ],
+      "clubs": [
+        {
+          "id": 114,
+          "name": "Besiktas JK"
+        },
+        {
+          "id": 244,
+          "name": "Olympique Marseille"
+        },
+        {
+          "id": 583,
+          "name": "Paris Saint-Germain"
+        },
+        {
+          "id": 667,
+          "name": "RC Strasbourg Alsace"
+        },
+        {
+          "id": 826,
+          "name": "RC Lens"
+        },
+        {
+          "id": 1082,
+          "name": "LOSC Lille"
+        },
+        {
+          "id": 1162,
+          "name": "SM Caen"
+        }
+      ]
+    },
+    {
+      "id": 4000000022,
+      "name": "Nicolas Anelka",
+      "birthYear": 1979,
+      "country": "France",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nicolas_Anelka"
+      ],
+      "clubs": [
+        {
+          "id": 11,
+          "name": "Arsenal FC"
+        },
+        {
+          "id": 31,
+          "name": "Liverpool FC"
+        },
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 281,
+          "name": "Manchester City"
+        },
+        {
+          "id": 355,
+          "name": "Bolton Wanderers"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 583,
+          "name": "Paris Saint-Germain"
+        },
+        {
+          "id": 631,
+          "name": "Chelsea FC"
+        },
+        {
+          "id": 984,
+          "name": "West Bromwich Albion"
+        },
+        {
+          "id": 3183,
+          "name": "Shanghai Shenhua"
+        }
+      ]
+    },
+    {
+      "id": 4000000023,
+      "name": "David Beckham",
+      "birthYear": 1975,
+      "country": "England",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/David_Beckham"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 466,
+          "name": "Preston North End"
+        },
+        {
+          "id": 583,
+          "name": "Paris Saint-Germain"
+        },
+        {
+          "id": 985,
+          "name": "Manchester United"
+        },
+        {
+          "id": 1061,
+          "name": "Los Angeles Galaxy"
+        }
+      ]
+    },
+    {
+      "id": 4000000024,
+      "name": "Paolo Maldini",
+      "birthYear": 1968,
+      "country": "Italy",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Paolo_Maldini"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        }
+      ]
+    },
+    {
+      "id": 4000000025,
+      "name": "Francesco Totti",
+      "birthYear": 1976,
+      "country": "Italy",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Francesco_Totti"
+      ],
+      "clubs": [
+        {
+          "id": 12,
+          "name": "AS Roma"
+        }
+      ]
+    },
+    {
+      "id": 4000000026,
+      "name": "Paul Scholes",
+      "birthYear": 1974,
+      "country": "England",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Paul_Scholes"
+      ],
+      "clubs": [
+        {
+          "id": 985,
+          "name": "Manchester United"
+        }
+      ]
+    },
+    {
+      "id": 4000000027,
+      "name": "Carles Puyol",
+      "birthYear": 1978,
+      "country": "Spain",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Carles_Puyol"
+      ],
+      "clubs": [
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        }
+      ]
+    },
+    {
+      "id": 4000000028,
+      "name": "Kaká",
+      "birthYear": 1982,
+      "country": "Brazil",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kak%C3%A1"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 585,
+          "name": "São Paulo Futebol Clube"
+        },
+        {
+          "id": 45604,
+          "name": "Orlando City SC"
+        }
+      ]
+    },
+    {
+      "id": 4000000029,
+      "name": "Roberto Carlos",
+      "birthYear": 1973,
+      "country": "Brazil",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_Carlos"
+      ],
+      "clubs": [
+        {
+          "id": 36,
+          "name": "Fenerbahce"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 199,
+          "name": "Sport Club Corinthians Paulista"
+        },
+        {
+          "id": 330,
+          "name": "Clube Atlético Mineiro"
+        },
+        {
+          "id": 418,
+          "name": "Real Madrid"
+        },
+        {
+          "id": 1023,
+          "name": "Sociedade Esportiva Palmeiras"
+        },
+        {
+          "id": 2700,
+          "name": "Anzhi Makhachkala"
+        }
+      ]
+    },
+    {
+      "id": 4000000030,
+      "name": "Didier Deschamps",
+      "birthYear": 1968,
+      "country": "France",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Didier_Deschamps"
+      ],
+      "clubs": [
+        {
+          "id": 40,
+          "name": "FC Girondins Bordeaux"
+        },
+        {
+          "id": 244,
+          "name": "Olympique Marseille"
+        },
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 631,
+          "name": "Chelsea FC"
+        },
+        {
+          "id": 995,
+          "name": "FC Nantes"
+        },
+        {
+          "id": 1049,
+          "name": "Valencia CF"
+        }
+      ]
+    },
+    {
+      "id": 4000000031,
+      "name": "Dennis Bergkamp",
+      "birthYear": 1969,
+      "country": "Netherlands",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dennis_Bergkamp"
+      ],
+      "clubs": [
+        {
+          "id": 11,
+          "name": "Arsenal FC"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 610,
+          "name": "Ajax Amsterdam"
+        }
+      ]
+    },
+    {
+      "id": 4000000032,
+      "name": "Patrick Vieira",
+      "birthYear": 1976,
+      "country": "France",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Patrick_Vieira"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 11,
+          "name": "Arsenal FC"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 281,
+          "name": "Manchester City"
+        },
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 895,
+          "name": "AS Cannes"
+        }
+      ]
+    },
+    {
+      "id": 4000000033,
+      "name": "Eric Cantona",
+      "birthYear": 1966,
+      "country": "France",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Eric_Cantona"
+      ],
+      "clubs": [
+        {
+          "id": 40,
+          "name": "FC Girondins Bordeaux"
+        },
+        {
+          "id": 244,
+          "name": "Olympique Marseille"
+        },
+        {
+          "id": 290,
+          "name": "AJ Auxerre"
+        },
+        {
+          "id": 399,
+          "name": "Leeds United"
+        },
+        {
+          "id": 969,
+          "name": "Montpellier HSC"
+        },
+        {
+          "id": 985,
+          "name": "Manchester United"
+        },
+        {
+          "id": 1160,
+          "name": "Nîmes Olympique"
+        }
+      ]
+    },
+    {
+      "id": 4000000034,
+      "name": "Alan Shearer",
+      "birthYear": 1970,
+      "country": "England",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alan_Shearer"
+      ],
+      "clubs": [
+        {
+          "id": 164,
+          "name": "Blackburn Rovers"
+        },
+        {
+          "id": 180,
+          "name": "Southampton FC"
+        },
+        {
+          "id": 762,
+          "name": "Newcastle United"
+        }
+      ]
+    },
+    {
+      "id": 4000000035,
+      "name": "Diego Maradona",
+      "birthYear": 1960,
+      "country": "Argentina",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Diego_Maradona"
+      ],
+      "clubs": [
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 189,
+          "name": "CA Boca Juniors"
+        },
+        {
+          "id": 368,
+          "name": "Sevilla FC"
+        },
+        {
+          "id": 1030,
+          "name": "AA Argentinos Juniors"
+        },
+        {
+          "id": 1286,
+          "name": "CA Newell\\"
+        },
+        {
+          "id": 6195,
+          "name": "SSC Napoli"
+        }
+      ]
+    },
+    {
+      "id": 4000000036,
+      "name": "Johan Cruyff",
+      "birthYear": 1947,
+      "country": "Netherlands",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Johan_Cruyff"
+      ],
+      "clubs": [
+        {
+          "id": 131,
+          "name": "FC Barcelona"
+        },
+        {
+          "id": 234,
+          "name": "Feyenoord Rotterdam"
+        },
+        {
+          "id": 610,
+          "name": "Ajax Amsterdam"
+        },
+        {
+          "id": 3368,
+          "name": "Levante UD"
+        }
+      ]
+    },
+    {
+      "id": 4000000037,
+      "name": "Franz Beckenbauer",
+      "birthYear": 1945,
+      "country": "Germany",
+      "position": "Defender",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Franz_Beckenbauer"
+      ],
+      "clubs": [
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        },
+        {
+          "id": 41,
+          "name": "Hamburger SV"
+        }
+      ]
+    },
+    {
+      "id": 4000000038,
+      "name": "Gerd Müller",
+      "birthYear": 1945,
+      "country": "Germany",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gerd_M%C3%BCller"
+      ],
+      "clubs": [
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        }
+      ]
+    },
+    {
+      "id": 4000000039,
+      "name": "George Best",
+      "birthYear": 1946,
+      "country": "Northern Ireland",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/George_Best"
+      ],
+      "clubs": [
+        {
+          "id": 903,
+          "name": "Hibernian FC"
+        },
+        {
+          "id": 931,
+          "name": "Fulham FC"
+        },
+        {
+          "id": 985,
+          "name": "Manchester United"
+        },
+        {
+          "id": 989,
+          "name": "AFC Bournemouth"
+        },
+        {
+          "id": 1098,
+          "name": "Stockport County"
+        }
+      ]
+    },
+    {
+      "id": 4000000040,
+      "name": "Michel Platini",
+      "birthYear": 1955,
+      "country": "France",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Michel_Platini"
+      ],
+      "clubs": [
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 618,
+          "name": "AS Saint-Étienne"
+        },
+        {
+          "id": 1159,
+          "name": "AS Nancy-Lorraine"
+        }
+      ]
+    },
+    {
+      "id": 4000000041,
+      "name": "Marco van Basten",
+      "birthYear": 1964,
+      "country": "Netherlands",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marco_van_Basten"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 610,
+          "name": "Ajax Amsterdam"
+        }
+      ]
+    },
+    {
+      "id": 4000000042,
+      "name": "Ruud Gullit",
+      "birthYear": 1962,
+      "country": "Netherlands",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ruud_Gullit"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 234,
+          "name": "Feyenoord Rotterdam"
+        },
+        {
+          "id": 383,
+          "name": "PSV Eindhoven"
+        },
+        {
+          "id": 631,
+          "name": "Chelsea FC"
+        },
+        {
+          "id": 643,
+          "name": "HFC Haarlem (- 2009)"
+        },
+        {
+          "id": 1038,
+          "name": "UC Sampdoria"
+        }
+      ]
+    },
+    {
+      "id": 4000000043,
+      "name": "Lothar Matthäus",
+      "birthYear": 1961,
+      "country": "Germany",
+      "position": "Midfield",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lothar_Matth%C3%A4us"
+      ],
+      "clubs": [
+        {
+          "id": 18,
+          "name": "Borussia Mönchengladbach"
+        },
+        {
+          "id": 27,
+          "name": "Bayern Munich"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 623,
+          "name": "New York Red Bulls"
+        }
+      ]
+    },
+    {
+      "id": 4000000044,
+      "name": "Roberto Baggio",
+      "birthYear": 1967,
+      "country": "Italy",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_Baggio"
+      ],
+      "clubs": [
+        {
+          "id": 5,
+          "name": "AC Milan"
+        },
+        {
+          "id": 19,
+          "name": "Brescia Calcio (- 2025)"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 506,
+          "name": "Juventus FC"
+        },
+        {
+          "id": 1025,
+          "name": "Bologna FC 1909"
+        },
+        {
+          "id": 2655,
+          "name": "LR Vicenza"
+        }
+      ]
+    },
+    {
+      "id": 4000000045,
+      "name": "Gabriel Batistuta",
+      "birthYear": 1969,
+      "country": "Argentina",
+      "position": "Attack",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gabriel_Batistuta"
+      ],
+      "clubs": [
+        {
+          "id": 12,
+          "name": "AS Roma"
+        },
+        {
+          "id": 46,
+          "name": "Inter Milan"
+        },
+        {
+          "id": 189,
+          "name": "CA Boca Juniors"
+        },
+        {
+          "id": 209,
+          "name": "CA River Plate"
+        },
+        {
+          "id": 430,
+          "name": "ACF Fiorentina"
+        },
+        {
+          "id": 1230,
+          "name": "Al-Arabi SC"
+        },
+        {
+          "id": 1286,
+          "name": "CA Newell\\"
+        }
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "id": 3000340741,
+      "name": "Ümit Akdağ",
+      "aliases": [
+        "Umit Akdag"
+      ],
+      "clubs": [
+        {
+          "id": 11282,
+          "name": "Alanyaspor"
+        },
+        {
+          "id": 415,
+          "name": "FC Toulouse"
+        },
+        {
+          "id": 1467,
+          "name": "Göztepe"
+        }
+      ],
+      "sources": [
+        "https://www.bjk.com.tr/en/oyuncu/5425/umit-akdag.html",
+        "https://www.goztepe.org.tr/Haberler/futbol/2023/7/28/umit-akdag-goztepe-mizde",
+        "https://www.toulousefc.com/play/blog/2024/08/umit-akdag-rejoint-le-tefece"
+      ]
+    },
+    {
+      "id": 3000384290,
+      "name": "İlhan Fakılı",
+      "aliases": [
+        "Ilhan Fakili"
+      ],
+      "clubs": [
+        {
+          "id": 3524,
+          "name": "Clermont Foot 63"
+        }
+      ],
+      "sources": [
+        "https://www.bjk.com.tr/en/oyuncu/5375/ilhan-fakili.html"
+      ]
+    }
+  ]
+}

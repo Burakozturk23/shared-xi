@@ -4,6 +4,7 @@ import '../app/app_feedback.dart';
 import '../app/bot_game_catalog.dart';
 import '../app/route_appearance.dart';
 import '../widgets/bot_mode_card.dart';
+import '../widgets/grid_club_pool_picker.dart';
 import 'bot_game_detail_page.dart';
 
 class VsBotGridModeSelectionPage extends StatelessWidget {
@@ -26,6 +27,8 @@ class VsBotGridModeSelectionPage extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 24),
+          const GridClubPoolPicker(),
+          const SizedBox(height: 16),
           for (final game in BotGameCatalog.gridVariants)
             Padding(
               padding: const EdgeInsets.only(bottom: 16),

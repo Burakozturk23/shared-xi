@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../data/player_portrait_catalog.dart';
+import '../data/uploaded_portrait_catalog.dart';
 import '../models/linkball_profile_schema.dart';
 import '../models/user_avatar_catalog.dart';
+import 'player_portrait.dart';
 
 class UserAvatarBadge extends StatelessWidget {
   final String avatarId;
@@ -17,11 +20,16 @@ class UserAvatarBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final definition = UserAvatarCatalog.byId(avatarId) ??
+    final definition =
+        UserAvatarCatalog.byId(avatarId) ??
         UserAvatarCatalog.byId(LinkballProfileSchema.defaultAvatarId)!;
 
     final accent = _accentFor(definition.visualKey);
     final icon = _iconFor(definition.visualKey);
+    final uploaded = UploadedPortraitCatalog.forAvatarId(definition.id);
+    final portraitPlayerId = PlayerPortraitCatalog.playerIdForAvatar(
+      definition.id,
+    );
 
     return Container(
       width: radius * 2,
@@ -29,15 +37,35 @@ class UserAvatarBadge extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: accent.withValues(alpha: 0.16),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.55),
-          width: 1.4,
-        ),
+        border: Border.all(color: accent.withValues(alpha: 0.55), width: 1.4),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(icon, size: radius * 0.95, color: accent),
+          if (uploaded != null)
+            Positioned.fill(
+              child: ClipOval(
+                child: PortraitCrop(
+                  spec: uploaded,
+                  size: radius * 2,
+                  fallback: _initials(definition, accent),
+                ),
+              ),
+            )
+          else if (portraitPlayerId != null)
+            Positioned.fill(
+              child: ClipOval(
+                child: PlayerPortrait(
+                  playerId: portraitPlayerId,
+                  size: radius * 2,
+                  fallback: _initials(definition, accent),
+                ),
+              ),
+            )
+          else if (definition.visualKey.startsWith('persona_'))
+            _initials(definition, accent)
+          else
+            Icon(icon, size: radius * 0.95, color: accent),
           if (showLocked && !definition.isStarter)
             Positioned(
               right: 0,
@@ -48,20 +76,37 @@ class UserAvatarBadge extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
-                child: Icon(
-                  Icons.lock_rounded,
-                  size: radius * 0.42,
-                ),
+                child: Icon(Icons.lock_rounded, size: radius * 0.42),
               ),
             ),
         ],
       ),
     );
   }
+
+  Widget _initials(UserAvatarDefinition definition, Color accent) => Center(
+    child: Padding(
+      padding: EdgeInsets.all(radius * .2),
+      child: FittedBox(
+        child: Text(
+          definition.title
+              .split(' ')
+              .where((s) => s.isNotEmpty)
+              .take(2)
+              .map((s) => s.characters.first)
+              .join()
+              .toUpperCase(),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: accent,
+            fontSize: radius * .75,
+          ),
+        ),
+      ),
+    ),
+  );
 
   static IconData _iconFor(String visualKey) {
     return switch (visualKey) {
@@ -78,6 +123,10 @@ class UserAvatarBadge extends StatelessWidget {
 
   static Color _accentFor(String visualKey) {
     return switch (visualKey) {
+      'persona_players' => const Color(0xFF1EAE8B),
+      'persona_coaches' => const Color(0xFF5A97E8),
+      'persona_legends' => const Color(0xFFDB9938),
+      'persona_creators' => const Color(0xFFBE70D6),
       'shield' => const Color(0xFF2F80ED),
       'keeper' => const Color(0xFFF2994A),
       'star' => const Color(0xFF9B51E0),

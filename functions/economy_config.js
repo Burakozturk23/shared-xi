@@ -93,6 +93,11 @@ function createProvider({fetch, now = Date.now, warn = () => {}, ttlMs = 300000,
     return pending;
   };
 }
+function achievementRewards(config) {
+  if (!config.sources.achievement.enabled) return {};
+  const additions = Object.fromEntries(require("./config/achievement_expansion.json").map((d) => [d.id, d.reward]));
+  return {...additions, ...config.sources.achievement.rewards};
+}
 function publicContract(config) {
   return {
     configId: config.configId,
@@ -100,7 +105,7 @@ function publicContract(config) {
     currency: "coin",
     xpSpendable: false,
     resetTimeZone: config.resetTimeZone,
-    achievementRewards: config.sources.achievement.enabled ? config.sources.achievement.rewards : {},
+    achievementRewards: achievementRewards(config),
   };
 }
 function squadPolicy(config = DEFAULT_CONFIG) {
@@ -112,4 +117,5 @@ function squadPolicy(config = DEFAULT_CONFIG) {
     maxPaid: config.sinks.squad_extra_attempt.dailyLimit,
   };
 }
-module.exports = {defaults, PARAMETER, DEFAULT_CONFIG, validateConfig, createProvider, publicContract, squadPolicy};
+module.exports = {achievementRewards, defaults, PARAMETER, DEFAULT_CONFIG,
+  validateConfig, createProvider, publicContract, squadPolicy};

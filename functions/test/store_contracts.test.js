@@ -41,7 +41,7 @@ test("store catalog is server-backed and returns wallet context", () => {
   assert.ok(source.includes("exports.getStoreCatalog"));
   assert.ok(source.includes("await lbStoreCatalog(db, config)"));
   assert.ok(source.includes("wallet: lbEconomyWalletProjection(state)"));
-  assert.ok(source.includes("catalogVersion: LB_STORE_CATALOG_VERSION"));
+  assert.ok(source.includes("catalogVersion: Math.max(LB_STORE_CATALOG_VERSION, storeCollection.catalog.version)"));
 });
 
 test("purchase uses Remote Config prices and compares the displayed quote", () => {

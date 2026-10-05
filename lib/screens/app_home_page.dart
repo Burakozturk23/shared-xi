@@ -113,7 +113,7 @@ class AppHomePage extends StatelessWidget {
           onTap: () => Navigator.of(context).push(
             LinkballRoute(
               builder: (_) => const ProgressionCenterPage(),
-              modern: false,
+              modern: true,
             ),
           ),
         ),

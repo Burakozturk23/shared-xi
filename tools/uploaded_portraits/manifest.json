@@ -1,0 +1,4564 @@
+{
+  "version": 2,
+  "origin": "User-supplied labelled portrait sheets, 2026-10-05. Originals retained without pixel edits.",
+  "sources": {
+    "zip0_00": {
+      "asset": "assets/uploaded_portraits/zip0_00.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "d68c759d3b35986775a56587f33175ed6e2283a90a9249df267db94b7a2b0c0f"
+    },
+    "zip0_01": {
+      "asset": "assets/uploaded_portraits/zip0_01.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "5bfcae1d534869d1f7b7e7471fa860c32af963eb02a27a8bed01e2f1275b1e43"
+    },
+    "zip0_02": {
+      "asset": "assets/uploaded_portraits/zip0_02.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "d12e4acd48aac93983c56e258ffabe6ebd185b98163f52adb016e7033cb6ca07"
+    },
+    "zip0_03": {
+      "asset": "assets/uploaded_portraits/zip0_03.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "032cbc778ca65557c78de580df627cf5f528e6a39cd1108af9cc2e68a17eb8e2"
+    },
+    "zip0_04": {
+      "asset": "assets/uploaded_portraits/zip0_04.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "a64da0fdca9542156f61e5a193fab6db0b1964e8061d03626a27bd4f02cc0fbc"
+    },
+    "zip1_00": {
+      "asset": "assets/uploaded_portraits/zip1_00.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "ed0d8cdfd750965abcc8222a63dd1169c125ade0200e473d549c2454bbffe3a1"
+    },
+    "zip1_01": {
+      "asset": "assets/uploaded_portraits/zip1_01.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "bb7d4b38533db3c2001078427e489d0e03eafdb96fbe3b362758bc2a0bb78819"
+    },
+    "zip1_02": {
+      "asset": "assets/uploaded_portraits/zip1_02.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "061170a0445b4d69a3e82bbbdec0d1e2b1d1be651156843d1ff76aa3e23582af"
+    },
+    "zip1_03": {
+      "asset": "assets/uploaded_portraits/zip1_03.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "9858d5a7f6c39f96183131e5175e7e2e5e225eb82022faa4d2727593a59a933d"
+    },
+    "zip1_04": {
+      "asset": "assets/uploaded_portraits/zip1_04.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "3a9905585f885c60d20d2592f8681e1a4805262e3cedb13b90b45434b6ecfc3a"
+    },
+    "zip1_05": {
+      "asset": "assets/uploaded_portraits/zip1_05.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "a877c012d05f8d13968e83584e92e42f6b8d4f42ca5a18e0c76712ae6dcf0106"
+    },
+    "zip1_06": {
+      "asset": "assets/uploaded_portraits/zip1_06.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "ff813d43d6eecf1ee26dab61cb04f726792408c2f83c6991ba47414aaec53ebe"
+    },
+    "zip1_07": {
+      "asset": "assets/uploaded_portraits/zip1_07.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "603a638174183ce64ae21e9f640fe27aafce6e87453cfdfb64483fee33af370f"
+    },
+    "zip1_08": {
+      "asset": "assets/uploaded_portraits/zip1_08.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "543bf13843886d74f168157a6eafc74dca0f7b7538a52fd88e8a89249559f863"
+    },
+    "zip1_09": {
+      "asset": "assets/uploaded_portraits/zip1_09.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "c6c346cb5fc4d2e9d52ecc84d1c76f90e5215f84ec6a47089baefe6e83b460bf"
+    },
+    "zip1_10": {
+      "asset": "assets/uploaded_portraits/zip1_10.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "f180599cb8beb4601be84908c04a2459ccc5a062d4713e30fd9b01ac55f2fd52"
+    },
+    "zip1_11": {
+      "asset": "assets/uploaded_portraits/zip1_11.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "dc9880c9905850d21eaf4dc6bd892e95de35f0137a3d5b062c333cca09783919"
+    },
+    "zip1_12": {
+      "asset": "assets/uploaded_portraits/zip1_12.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "40e8a60822a0029f93fb58124b95a0bb9c23bc13b7af32ef8cff238c43a32757"
+    },
+    "zip1_13": {
+      "asset": "assets/uploaded_portraits/zip1_13.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "7988bf44c465459114cbe5a000dc83582c63004f1c004ef4b1372d6b346022b7"
+    },
+    "zip1_14": {
+      "asset": "assets/uploaded_portraits/zip1_14.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "af135729148f861a6e1df2876662b7c819bfd862671139c58cd40ccb05a14bee"
+    },
+    "zip1_15": {
+      "asset": "assets/uploaded_portraits/zip1_15.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "063a4604221d0b3a5cc71c9431775fc7004f6a40dae39b990f7aa670df743ee2"
+    },
+    "zip1_19": {
+      "asset": "assets/uploaded_portraits/zip1_19.png",
+      "size": [
+        1842,
+        854
+      ],
+      "sha256": "415b6fc2f2828ef4decdbaf694b730ef2e341fb448a5b28d74f4c1f10746a045"
+    },
+    "creators": {
+      "asset": "assets/uploaded_portraits/creators.png",
+      "size": [
+        1448,
+        1086
+      ],
+      "sha256": "a6df5b8e0359b3d22a568c47dff0a71083e8b8436fd4da849c04bd5e0ea4b6b4"
+    },
+    "dual_role_00": {
+      "asset": "assets/uploaded_portraits/dual_role_00.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "9d5cf893427626e6f61ecb2ef9378df3d00eca06fc3c735b99bc8456270cea53"
+    },
+    "dual_role_01": {
+      "asset": "assets/uploaded_portraits/dual_role_01.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "3de4de43c3d98ddbfbe0475ab46bbb0d8de0da47bbab989cac4ce871303ef184"
+    },
+    "dual_role_02": {
+      "asset": "assets/uploaded_portraits/dual_role_02.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "eeb163a0edfe8a7db4ad5b066725bee3fe11578a93c43b1a8e82719d415af24a"
+    },
+    "dual_role_03": {
+      "asset": "assets/uploaded_portraits/dual_role_03.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "26d4ad102297e3198ce9f3def8282568089ac4a7224496b3e874428d76615308"
+    },
+    "dual_role_04": {
+      "asset": "assets/uploaded_portraits/dual_role_04.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "4fdafadef44f144265a9daab5a07577f2cddf37d66ae5362e01b679a7b1d2ac0"
+    },
+    "dual_role_05": {
+      "asset": "assets/uploaded_portraits/dual_role_05.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "ebf4228f3b920cc48e05aedcf7b4664b565c56722add625bf06b78c65170b08f"
+    },
+    "custom_kaan": {
+      "asset": "assets/uploaded_portraits/custom_kaan.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "2422f41eb7fed5b184e5d4712c3316a26cf49b7f532e697a1e0b0fb6e8634498"
+    },
+    "custom_omer": {
+      "asset": "assets/uploaded_portraits/custom_omer.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "b63fe653a0efab966700b1c7fd82b4729ad2d07c28ababafa401c9889cad060d"
+    },
+    "custom_berat": {
+      "asset": "assets/uploaded_portraits/custom_berat.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "06408e9acd6a5feee111eb01cfce9efc211c971a456ecc72d31663a8487254de"
+    },
+    "custom_burak": {
+      "asset": "assets/uploaded_portraits/custom_burak.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "1cc8688864b65c891cc020f5ed3cb949155ff3c7423a3afb1b3793a06b33c4de"
+    },
+    "custom_ege": {
+      "asset": "assets/uploaded_portraits/custom_ege.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "cf9a5b5858cb6aabc78d87133d4d7850b8bf36a7386be3eb182b75010b885a97"
+    }
+  },
+  "portraits": [
+    {
+      "key": "jose_mourinho_coach",
+      "name": "José Mourinho",
+      "source": "zip0_00",
+      "cardIndex": 0,
+      "crop": [
+        136,
+        139,
+        265,
+        265
+      ],
+      "playerId": 4000000074,
+      "role": "coach",
+      "databaseName": "José Mourinho"
+    },
+    {
+      "key": "luis_enrique_coach",
+      "name": "Luis Enrique",
+      "source": "dual_role_01",
+      "cardIndex": 4,
+      "crop": [
+        418,
+        536,
+        287,
+        287
+      ],
+      "playerId": 4000000075,
+      "role": "coach",
+      "databaseName": "Luis Enrique"
+    },
+    {
+      "key": "fatih_terim_coach",
+      "name": "Fatih Terim",
+      "source": "dual_role_03",
+      "cardIndex": 3,
+      "crop": [
+        71,
+        548,
+        308,
+        308
+      ],
+      "playerId": 4000000076,
+      "role": "coach",
+      "databaseName": "Fatih Terim"
+    },
+    {
+      "key": "ismail_kartal_coach",
+      "name": "İsmail Kartal",
+      "source": "dual_role_05",
+      "cardIndex": 0,
+      "crop": [
+        93,
+        135,
+        291,
+        291
+      ],
+      "playerId": 4000000077,
+      "role": "coach",
+      "databaseName": "İsmail Kartal"
+    },
+    {
+      "key": "okan_buruk_coach",
+      "name": "Okan Buruk",
+      "source": "dual_role_03",
+      "cardIndex": 4,
+      "crop": [
+        412,
+        548,
+        302,
+        302
+      ],
+      "playerId": 4000000078,
+      "role": "coach",
+      "databaseName": "Okan Buruk"
+    },
+    {
+      "key": "sergen_yalcin_coach",
+      "name": "Sergen Yalçın",
+      "source": "dual_role_03",
+      "cardIndex": 5,
+      "crop": [
+        745,
+        547,
+        306,
+        306
+      ],
+      "playerId": 4000000004,
+      "databaseName": "Sergen Yalçın",
+      "role": "coach"
+    },
+    {
+      "key": "aykut_kocaman_coach",
+      "name": "Aykut Kocaman",
+      "source": "dual_role_03",
+      "cardIndex": 6,
+      "crop": [
+        238,
+        953,
+        307,
+        307
+      ],
+      "playerId": 4000000010,
+      "databaseName": "Aykut Kocaman",
+      "role": "coach"
+    },
+    {
+      "key": "senol_gunes_coach",
+      "name": "Şenol Güneş",
+      "source": "dual_role_03",
+      "cardIndex": 7,
+      "crop": [
+        577,
+        953,
+        307,
+        307
+      ],
+      "playerId": 4000000014,
+      "databaseName": "Şenol Güneş",
+      "role": "coach"
+    },
+    {
+      "key": "vincenzo_italiano_coach",
+      "name": "Vincenzo Italiano",
+      "source": "zip0_01",
+      "cardIndex": 0,
+      "crop": [
+        136,
+        136,
+        263,
+        263
+      ],
+      "playerId": 21865,
+      "databaseName": "Vincenzo Italiano",
+      "role": "coach"
+    },
+    {
+      "key": "alex_ferguson_coach",
+      "name": "Alex Ferguson",
+      "source": "zip0_01",
+      "cardIndex": 1,
+      "crop": [
+        430,
+        136,
+        262,
+        262
+      ],
+      "playerId": 4000000079,
+      "role": "coach",
+      "databaseName": "Alex Ferguson"
+    },
+    {
+      "key": "pep_guardiola_coach",
+      "name": "Pep Guardiola",
+      "source": "dual_role_01",
+      "cardIndex": 0,
+      "crop": [
+        95,
+        123,
+        287,
+        287
+      ],
+      "playerId": 4000000062,
+      "databaseName": "Pep Guardiola",
+      "role": "coach"
+    },
+    {
+      "key": "jurgen_klopp_coach",
+      "name": "Jürgen Klopp",
+      "source": "zip0_01",
+      "cardIndex": 3,
+      "crop": [
+        136,
+        522,
+        263,
+        263
+      ],
+      "playerId": 4000000080,
+      "role": "coach",
+      "databaseName": "Jürgen Klopp"
+    },
+    {
+      "key": "arsene_wenger_coach",
+      "name": "Arsène Wenger",
+      "source": "zip0_01",
+      "cardIndex": 4,
+      "crop": [
+        430,
+        522,
+        262,
+        262
+      ],
+      "playerId": 4000000081,
+      "role": "coach",
+      "databaseName": "Arsène Wenger"
+    },
+    {
+      "key": "carlo_ancelotti_coach",
+      "name": "Carlo Ancelotti",
+      "source": "dual_role_01",
+      "cardIndex": 2,
+      "crop": [
+        740,
+        123,
+        287,
+        287
+      ],
+      "playerId": 4000000082,
+      "role": "coach",
+      "databaseName": "Carlo Ancelotti"
+    },
+    {
+      "key": "hansi_flick_coach",
+      "name": "Hansi Flick",
+      "source": "zip0_01",
+      "cardIndex": 6,
+      "crop": [
+        265,
+        911,
+        281,
+        281
+      ],
+      "playerId": 4000000083,
+      "role": "coach",
+      "databaseName": "Hansi Flick"
+    },
+    {
+      "key": "thomas_tuchel_coach",
+      "name": "Thomas Tuchel",
+      "source": "zip0_01",
+      "cardIndex": 7,
+      "crop": [
+        578,
+        911,
+        279,
+        279
+      ],
+      "playerId": 4000000084,
+      "role": "coach",
+      "databaseName": "Thomas Tuchel"
+    },
+    {
+      "key": "diego_simeone_coach",
+      "name": "Diego Simeone",
+      "source": "dual_role_01",
+      "cardIndex": 7,
+      "crop": [
+        578,
+        947,
+        302,
+        302
+      ],
+      "playerId": 4000000085,
+      "role": "coach",
+      "databaseName": "Diego Simeone"
+    },
+    {
+      "key": "xabi_alonso_coach",
+      "name": "Xabi Alonso",
+      "source": "dual_role_01",
+      "cardIndex": 1,
+      "crop": [
+        418,
+        123,
+        287,
+        287
+      ],
+      "playerId": 7476,
+      "databaseName": "Xabi Alonso",
+      "role": "coach"
+    },
+    {
+      "key": "antonio_conte_coach",
+      "name": "Antonio Conte",
+      "source": "dual_role_01",
+      "cardIndex": 3,
+      "crop": [
+        95,
+        536,
+        288,
+        288
+      ],
+      "playerId": 5759,
+      "databaseName": "Antonio Conte",
+      "role": "coach"
+    },
+    {
+      "key": "unai_emery_coach",
+      "name": "Unai Emery",
+      "source": "zip0_02",
+      "cardIndex": 3,
+      "crop": [
+        136,
+        529,
+        263,
+        263
+      ],
+      "playerId": 4000000086,
+      "role": "coach",
+      "databaseName": "Unai Emery"
+    },
+    {
+      "key": "julian_nagelsmann_coach",
+      "name": "Julian Nagelsmann",
+      "source": "zip0_02",
+      "cardIndex": 4,
+      "crop": [
+        430,
+        529,
+        262,
+        262
+      ],
+      "playerId": 4000000087,
+      "role": "coach",
+      "databaseName": "Julian Nagelsmann"
+    },
+    {
+      "key": "roberto_de_zerbi_coach",
+      "name": "Roberto De Zerbi",
+      "source": "zip0_02",
+      "cardIndex": 5,
+      "crop": [
+        723,
+        529,
+        263,
+        263
+      ],
+      "playerId": 23194,
+      "databaseName": "Roberto De Zerbi",
+      "role": "coach"
+    },
+    {
+      "key": "luciano_spalletti_coach",
+      "name": "Luciano Spalletti",
+      "source": "zip0_02",
+      "cardIndex": 6,
+      "crop": [
+        268,
+        922,
+        271,
+        271
+      ],
+      "playerId": 4000000088,
+      "role": "coach",
+      "databaseName": "Luciano Spalletti"
+    },
+    {
+      "key": "gian_piero_gasperini_coach",
+      "name": "Gian Piero Gasperini",
+      "source": "zip0_02",
+      "cardIndex": 7,
+      "crop": [
+        570,
+        922,
+        272,
+        272
+      ],
+      "playerId": 4000000089,
+      "role": "coach",
+      "databaseName": "Gian Piero Gasperini"
+    },
+    {
+      "key": "massimiliano_allegri_coach",
+      "name": "Massimiliano Allegri",
+      "source": "zip0_03",
+      "cardIndex": 0,
+      "crop": [
+        93,
+        274,
+        294,
+        294
+      ],
+      "playerId": 4000000090,
+      "role": "coach",
+      "databaseName": "Massimiliano Allegri"
+    },
+    {
+      "key": "roberto_mancini_coach",
+      "name": "Roberto Mancini",
+      "source": "dual_role_01",
+      "cardIndex": 6,
+      "crop": [
+        242,
+        947,
+        302,
+        302
+      ],
+      "playerId": 4000000091,
+      "role": "coach",
+      "databaseName": "Roberto Mancini"
+    },
+    {
+      "key": "joachim_low_coach",
+      "name": "Joachim Löw",
+      "source": "zip0_03",
+      "cardIndex": 2,
+      "crop": [
+        736,
+        274,
+        293,
+        293
+      ],
+      "playerId": 4000000092,
+      "role": "coach",
+      "databaseName": "Joachim Löw"
+    },
+    {
+      "key": "abdullah_avci_coach",
+      "name": "Abdullah Avcı",
+      "source": "zip0_03",
+      "cardIndex": 3,
+      "crop": [
+        94,
+        700,
+        292,
+        292
+      ],
+      "playerId": 4000000093,
+      "role": "coach",
+      "databaseName": "Abdullah Avcı"
+    },
+    {
+      "key": "riza_calimbay_coach",
+      "name": "Rıza Çalımbay",
+      "source": "zip0_03",
+      "cardIndex": 4,
+      "crop": [
+        416,
+        700,
+        291,
+        291
+      ],
+      "playerId": 4000000094,
+      "role": "coach",
+      "databaseName": "Rıza Çalımbay"
+    },
+    {
+      "key": "hikmet_karaman_coach",
+      "name": "Hikmet Karaman",
+      "source": "zip0_03",
+      "cardIndex": 5,
+      "crop": [
+        737,
+        700,
+        292,
+        292
+      ],
+      "playerId": 4000000095,
+      "role": "coach",
+      "databaseName": "Hikmet Karaman"
+    },
+    {
+      "key": "vicente_del_bosque_coach",
+      "name": "Vicente del Bosque",
+      "source": "zip0_04",
+      "cardIndex": 0,
+      "crop": [
+        72,
+        214,
+        307,
+        307
+      ],
+      "playerId": 4000000096,
+      "role": "coach",
+      "databaseName": "Vicente del Bosque"
+    },
+    {
+      "key": "rafael_benitez_coach",
+      "name": "Rafael Benítez",
+      "source": "zip0_04",
+      "cardIndex": 1,
+      "crop": [
+        409,
+        214,
+        304,
+        304
+      ],
+      "playerId": 4000000097,
+      "role": "coach",
+      "databaseName": "Rafael Benítez"
+    },
+    {
+      "key": "claudio_ranieri_coach",
+      "name": "Claudio Ranieri",
+      "source": "zip0_04",
+      "cardIndex": 2,
+      "crop": [
+        744,
+        214,
+        306,
+        306
+      ],
+      "playerId": 4000000098,
+      "role": "coach",
+      "databaseName": "Claudio Ranieri"
+    },
+    {
+      "key": "mikel_arteta_coach",
+      "name": "Mikel Arteta",
+      "source": "zip0_04",
+      "cardIndex": 3,
+      "crop": [
+        236,
+        651,
+        309,
+        309
+      ],
+      "playerId": 7451,
+      "databaseName": "Mikel Arteta",
+      "role": "coach"
+    },
+    {
+      "key": "enzo_maresca_coach",
+      "name": "Enzo Maresca",
+      "source": "zip0_04",
+      "cardIndex": 4,
+      "crop": [
+        577,
+        651,
+        308,
+        308
+      ],
+      "playerId": 4000000099,
+      "role": "coach",
+      "databaseName": "Enzo Maresca"
+    },
+    {
+      "key": "pepe",
+      "name": "Pepe",
+      "source": "zip1_00",
+      "cardIndex": 0,
+      "crop": [
+        168,
+        97,
+        243,
+        243
+      ],
+      "playerId": 14132,
+      "databaseName": "Pepe",
+      "role": "player"
+    },
+    {
+      "key": "sergio_ramos",
+      "name": "Sergio Ramos",
+      "source": "zip1_00",
+      "cardIndex": 1,
+      "crop": [
+        437,
+        96,
+        249,
+        249
+      ],
+      "playerId": 25557,
+      "databaseName": "Sergio Ramos",
+      "role": "player"
+    },
+    {
+      "key": "roberto_soldado",
+      "name": "Roberto Soldado",
+      "source": "zip1_00",
+      "cardIndex": 2,
+      "crop": [
+        712,
+        97,
+        243,
+        243
+      ],
+      "playerId": 34870,
+      "databaseName": "Roberto Soldado",
+      "role": "player"
+    },
+    {
+      "key": "jonas",
+      "name": "Jonas",
+      "source": "zip1_00",
+      "cardIndex": 3,
+      "crop": [
+        168,
+        416,
+        243,
+        243
+      ],
+      "playerId": 50143,
+      "databaseName": "Jonas",
+      "role": "player"
+    },
+    {
+      "key": "stephan_el_shaarawy",
+      "name": "Stephan El Shaarawy",
+      "source": "zip1_00",
+      "cardIndex": 4,
+      "crop": [
+        437,
+        416,
+        249,
+        249
+      ],
+      "playerId": 94529,
+      "databaseName": "Stephan El Shaarawy",
+      "role": "player"
+    },
+    {
+      "key": "robinho",
+      "name": "Robinho",
+      "source": "zip1_00",
+      "cardIndex": 5,
+      "crop": [
+        712,
+        416,
+        244,
+        244
+      ],
+      "playerId": 15511,
+      "databaseName": "Robinho",
+      "role": "player"
+    },
+    {
+      "key": "mario_balotelli",
+      "name": "Mario Balotelli",
+      "source": "zip1_00",
+      "cardIndex": 6,
+      "crop": [
+        170,
+        740,
+        240,
+        240
+      ],
+      "playerId": 45146,
+      "databaseName": "Mario Balotelli",
+      "role": "player"
+    },
+    {
+      "key": "didier_drogba",
+      "name": "Didier Drogba",
+      "source": "zip1_00",
+      "cardIndex": 7,
+      "crop": [
+        442,
+        740,
+        240,
+        240
+      ],
+      "playerId": 3924,
+      "databaseName": "Didier Drogba",
+      "role": "player"
+    },
+    {
+      "key": "wesley_sneijder",
+      "name": "Wesley Sneijder",
+      "source": "zip1_00",
+      "cardIndex": 8,
+      "crop": [
+        714,
+        740,
+        240,
+        240
+      ],
+      "playerId": 4673,
+      "databaseName": "Wesley Sneijder",
+      "role": "player"
+    },
+    {
+      "key": "petr_cech",
+      "name": "Petr Čech",
+      "source": "zip1_00",
+      "cardIndex": 9,
+      "crop": [
+        169,
+        1049,
+        243,
+        243
+      ],
+      "playerId": 5658,
+      "databaseName": "Petr Cech",
+      "role": "player"
+    },
+    {
+      "key": "frank_lampard",
+      "name": "Frank Lampard",
+      "source": "zip1_00",
+      "cardIndex": 10,
+      "crop": [
+        438,
+        1049,
+        249,
+        249
+      ],
+      "playerId": 3163,
+      "databaseName": "Frank Lampard",
+      "role": "player"
+    },
+    {
+      "key": "fernando_torres",
+      "name": "Fernando Torres",
+      "source": "zip1_00",
+      "cardIndex": 11,
+      "crop": [
+        712,
+        1049,
+        244,
+        244
+      ],
+      "playerId": 7767,
+      "databaseName": "Fernando Torres",
+      "role": "player"
+    },
+    {
+      "key": "eden_hazard",
+      "name": "Eden Hazard",
+      "source": "zip1_01",
+      "cardIndex": 0,
+      "crop": [
+        167,
+        101,
+        247,
+        247
+      ],
+      "playerId": 50202,
+      "databaseName": "Eden Hazard",
+      "role": "player"
+    },
+    {
+      "key": "bafetimbi_gomis",
+      "name": "Bafétimbi Gomis",
+      "source": "zip1_01",
+      "cardIndex": 1,
+      "crop": [
+        439,
+        101,
+        246,
+        246
+      ],
+      "playerId": 22388,
+      "databaseName": "Bafétimbi Gomis",
+      "role": "player"
+    },
+    {
+      "key": "rachid_ghezzal",
+      "name": "Rachid Ghezzal",
+      "source": "zip1_01",
+      "cardIndex": 2,
+      "crop": [
+        709,
+        101,
+        247,
+        247
+      ],
+      "playerId": 118287,
+      "databaseName": "Rachid Ghezzal",
+      "role": "player"
+    },
+    {
+      "key": "clement_grenier",
+      "name": "Clément Grenier",
+      "source": "zip1_01",
+      "cardIndex": 3,
+      "crop": [
+        167,
+        425,
+        247,
+        247
+      ],
+      "playerId": 4000000070,
+      "databaseName": "Clément Grenier",
+      "role": "player"
+    },
+    {
+      "key": "hugo_lloris",
+      "name": "Hugo Lloris",
+      "source": "zip1_01",
+      "cardIndex": 4,
+      "crop": [
+        439,
+        425,
+        246,
+        246
+      ],
+      "playerId": 17965,
+      "databaseName": "Hugo Lloris",
+      "role": "player"
+    },
+    {
+      "key": "gareth_bale",
+      "name": "Gareth Bale",
+      "source": "zip1_01",
+      "cardIndex": 5,
+      "crop": [
+        709,
+        425,
+        247,
+        247
+      ],
+      "playerId": 39381,
+      "databaseName": "Gareth Bale",
+      "role": "player"
+    },
+    {
+      "key": "victor_valdes",
+      "name": "Víctor Valdés",
+      "source": "zip1_01",
+      "cardIndex": 6,
+      "crop": [
+        167,
+        747,
+        247,
+        247
+      ],
+      "playerId": 7589,
+      "databaseName": "Víctor Valdés",
+      "role": "player"
+    },
+    {
+      "key": "gerard_pique",
+      "name": "Gerard Piqué",
+      "source": "zip1_01",
+      "cardIndex": 7,
+      "crop": [
+        439,
+        747,
+        246,
+        246
+      ],
+      "playerId": 18944,
+      "databaseName": "Gerard Piqué",
+      "role": "player"
+    },
+    {
+      "key": "cesc_fabregas",
+      "name": "Cesc Fàbregas",
+      "source": "dual_role_04",
+      "cardIndex": 6,
+      "crop": [
+        237,
+        977,
+        307,
+        307
+      ],
+      "playerId": 8806,
+      "databaseName": "Cesc Fàbregas",
+      "role": "player"
+    },
+    {
+      "key": "andres_iniesta",
+      "name": "Andrés Iniesta",
+      "source": "zip1_01",
+      "cardIndex": 9,
+      "crop": [
+        167,
+        1068,
+        247,
+        247
+      ],
+      "playerId": 7600,
+      "databaseName": "Andrés Iniesta",
+      "role": "player"
+    },
+    {
+      "key": "lionel_messi",
+      "name": "Lionel Messi",
+      "source": "zip1_01",
+      "cardIndex": 10,
+      "crop": [
+        439,
+        1068,
+        246,
+        246
+      ],
+      "playerId": 28003,
+      "databaseName": "Lionel Messi",
+      "role": "player"
+    },
+    {
+      "key": "steven_gerrard",
+      "name": "Steven Gerrard",
+      "source": "zip1_01",
+      "cardIndex": 11,
+      "crop": [
+        709,
+        1068,
+        247,
+        247
+      ],
+      "playerId": 3109,
+      "databaseName": "Steven Gerrard",
+      "role": "player"
+    },
+    {
+      "key": "neymar",
+      "name": "Neymar",
+      "source": "zip1_02",
+      "cardIndex": 0,
+      "crop": [
+        171,
+        99,
+        244,
+        244
+      ],
+      "playerId": 68290,
+      "databaseName": "Neymar",
+      "role": "player"
+    },
+    {
+      "key": "marco_reus",
+      "name": "Marco Reus",
+      "source": "zip1_02",
+      "cardIndex": 1,
+      "crop": [
+        440,
+        99,
+        244,
+        244
+      ],
+      "playerId": 35207,
+      "databaseName": "Marco Reus",
+      "role": "player"
+    },
+    {
+      "key": "mario_gotze",
+      "name": "Mario Götze",
+      "source": "zip1_02",
+      "cardIndex": 2,
+      "crop": [
+        709,
+        99,
+        244,
+        244
+      ],
+      "playerId": 74842,
+      "databaseName": "Mario Götze",
+      "role": "player"
+    },
+    {
+      "key": "robert_lewandowski",
+      "name": "Robert Lewandowski",
+      "source": "zip1_02",
+      "cardIndex": 3,
+      "crop": [
+        171,
+        425,
+        244,
+        244
+      ],
+      "playerId": 38253,
+      "databaseName": "Robert Lewandowski",
+      "role": "player"
+    },
+    {
+      "key": "thierry_henry",
+      "name": "Thierry Henry",
+      "source": "zip1_02",
+      "cardIndex": 4,
+      "crop": [
+        440,
+        425,
+        244,
+        244
+      ],
+      "playerId": 3207,
+      "databaseName": "Thierry Henry",
+      "role": "player"
+    },
+    {
+      "key": "rafael_marquez",
+      "name": "Rafael Márquez",
+      "source": "zip1_02",
+      "cardIndex": 5,
+      "crop": [
+        709,
+        425,
+        245,
+        245
+      ],
+      "playerId": 4000000100,
+      "role": "player",
+      "databaseName": "Rafael Márquez"
+    },
+    {
+      "key": "jefferson_farfan",
+      "name": "Jefferson Farfán",
+      "source": "zip1_02",
+      "cardIndex": 6,
+      "crop": [
+        171,
+        749,
+        244,
+        244
+      ],
+      "playerId": 4000000101,
+      "role": "player",
+      "databaseName": "Jefferson Farfán"
+    },
+    {
+      "key": "david_beckham",
+      "name": "David Beckham",
+      "source": "zip1_02",
+      "cardIndex": 7,
+      "crop": [
+        440,
+        749,
+        244,
+        244
+      ],
+      "playerId": 4000000023,
+      "databaseName": "David Beckham",
+      "role": "player"
+    },
+    {
+      "key": "zlatan_ibrahimovic",
+      "name": "Zlatan Ibrahimović",
+      "source": "zip1_02",
+      "cardIndex": 8,
+      "crop": [
+        709,
+        749,
+        245,
+        245
+      ],
+      "playerId": 3455,
+      "databaseName": "Zlatan Ibrahimović",
+      "role": "player"
+    },
+    {
+      "key": "thiago_silva",
+      "name": "Thiago Silva",
+      "source": "zip1_02",
+      "cardIndex": 9,
+      "crop": [
+        171,
+        1065,
+        244,
+        244
+      ],
+      "playerId": 29241,
+      "databaseName": "Thiago Silva",
+      "role": "player"
+    },
+    {
+      "key": "ezequiel_lavezzi",
+      "name": "Ezequiel Lavezzi",
+      "source": "zip1_02",
+      "cardIndex": 10,
+      "crop": [
+        440,
+        1065,
+        244,
+        244
+      ],
+      "playerId": 50570,
+      "databaseName": "Ezequiel Lavezzi",
+      "role": "player"
+    },
+    {
+      "key": "blaise_matuidi",
+      "name": "Blaise Matuidi",
+      "source": "zip1_02",
+      "cardIndex": 11,
+      "crop": [
+        709,
+        1065,
+        245,
+        245
+      ],
+      "playerId": 33923,
+      "databaseName": "Blaise Matuidi",
+      "role": "player"
+    },
+    {
+      "key": "yohan_cabaye",
+      "name": "Yohan Cabaye",
+      "source": "zip1_03",
+      "cardIndex": 0,
+      "crop": [
+        158,
+        97,
+        252,
+        252
+      ],
+      "playerId": 29434,
+      "databaseName": "Yohan Cabaye",
+      "role": "player"
+    },
+    {
+      "key": "claudio_marchisio",
+      "name": "Claudio Marchisio",
+      "source": "zip1_03",
+      "cardIndex": 1,
+      "crop": [
+        435,
+        97,
+        252,
+        252
+      ],
+      "playerId": 44716,
+      "databaseName": "Claudio Marchisio",
+      "role": "player"
+    },
+    {
+      "key": "andrea_pirlo",
+      "name": "Andrea Pirlo",
+      "source": "dual_role_04",
+      "cardIndex": 7,
+      "crop": [
+        578,
+        977,
+        308,
+        308
+      ],
+      "playerId": 5817,
+      "databaseName": "Andrea Pirlo",
+      "role": "player"
+    },
+    {
+      "key": "younes_belhanda",
+      "name": "Younès Belhanda",
+      "source": "zip1_03",
+      "cardIndex": 3,
+      "crop": [
+        160,
+        420,
+        248,
+        248
+      ],
+      "playerId": 118022,
+      "databaseName": "Younès Belhanda",
+      "role": "player"
+    },
+    {
+      "key": "robin_van_persie",
+      "name": "Robin van Persie",
+      "source": "zip1_03",
+      "cardIndex": 4,
+      "crop": [
+        436,
+        420,
+        249,
+        249
+      ],
+      "playerId": 4380,
+      "databaseName": "Robin van Persie",
+      "role": "player"
+    },
+    {
+      "key": "wayne_rooney",
+      "name": "Wayne Rooney",
+      "source": "zip1_03",
+      "cardIndex": 5,
+      "crop": [
+        713,
+        420,
+        249,
+        249
+      ],
+      "playerId": 3332,
+      "databaseName": "Wayne Rooney",
+      "role": "player"
+    },
+    {
+      "key": "paul_scholes",
+      "name": "Paul Scholes",
+      "source": "zip1_03",
+      "cardIndex": 6,
+      "crop": [
+        164,
+        736,
+        239,
+        239
+      ],
+      "playerId": 4000000026,
+      "databaseName": "Paul Scholes",
+      "role": "player"
+    },
+    {
+      "key": "ashley_young",
+      "name": "Ashley Young",
+      "source": "zip1_03",
+      "cardIndex": 7,
+      "crop": [
+        442,
+        737,
+        238,
+        238
+      ],
+      "playerId": 14086,
+      "databaseName": "Ashley Young",
+      "role": "player"
+    },
+    {
+      "key": "karim_benzema",
+      "name": "Karim Benzema",
+      "source": "zip1_03",
+      "cardIndex": 8,
+      "crop": [
+        719,
+        737,
+        238,
+        238
+      ],
+      "playerId": 18922,
+      "databaseName": "Karim Benzema",
+      "role": "player"
+    },
+    {
+      "key": "paul_pogba",
+      "name": "Paul Pogba",
+      "source": "zip1_03",
+      "cardIndex": 9,
+      "crop": [
+        158,
+        1043,
+        252,
+        252
+      ],
+      "playerId": 122153,
+      "databaseName": "Paul Pogba",
+      "role": "player"
+    },
+    {
+      "key": "danny_welbeck",
+      "name": "Danny Welbeck",
+      "source": "zip1_03",
+      "cardIndex": 10,
+      "crop": [
+        436,
+        1043,
+        251,
+        251
+      ],
+      "playerId": 67063,
+      "databaseName": "Danny Welbeck",
+      "role": "player"
+    },
+    {
+      "key": "luka_modric",
+      "name": "Luka Modrić",
+      "source": "zip1_03",
+      "cardIndex": 11,
+      "crop": [
+        711,
+        1043,
+        252,
+        252
+      ],
+      "playerId": 27992,
+      "databaseName": "Luka Modrić",
+      "role": "player"
+    },
+    {
+      "key": "marcelo",
+      "name": "Marcelo",
+      "source": "zip1_04",
+      "cardIndex": 0,
+      "crop": [
+        165,
+        100,
+        250,
+        250
+      ],
+      "playerId": 44501,
+      "databaseName": "Marcelo",
+      "role": "player"
+    },
+    {
+      "key": "daniel_sturridge",
+      "name": "Daniel Sturridge",
+      "source": "zip1_04",
+      "cardIndex": 1,
+      "crop": [
+        440,
+        100,
+        242,
+        242
+      ],
+      "playerId": 47082,
+      "databaseName": "Daniel Sturridge",
+      "role": "player"
+    },
+    {
+      "key": "luis_suarez",
+      "name": "Luis Suárez",
+      "source": "zip1_04",
+      "cardIndex": 2,
+      "crop": [
+        708,
+        101,
+        249,
+        249
+      ],
+      "playerId": 44352,
+      "databaseName": "Luis Suárez",
+      "role": "player"
+    },
+    {
+      "key": "oscar",
+      "name": "Oscar",
+      "source": "zip1_04",
+      "cardIndex": 3,
+      "crop": [
+        165,
+        422,
+        250,
+        250
+      ],
+      "playerId": 85314,
+      "databaseName": "Oscar",
+      "role": "player"
+    },
+    {
+      "key": "dani_alves",
+      "name": "Dani Alves",
+      "source": "zip1_04",
+      "cardIndex": 4,
+      "crop": [
+        440,
+        422,
+        243,
+        243
+      ],
+      "playerId": 15951,
+      "databaseName": "Dani Alves",
+      "role": "player"
+    },
+    {
+      "key": "xavi",
+      "name": "Xavi",
+      "source": "dual_role_04",
+      "cardIndex": 5,
+      "crop": [
+        743,
+        560,
+        297,
+        297
+      ],
+      "playerId": 7607,
+      "databaseName": "Xavi",
+      "role": "player"
+    },
+    {
+      "key": "edinson_cavani",
+      "name": "Edinson Cavani",
+      "source": "zip1_04",
+      "cardIndex": 6,
+      "crop": [
+        165,
+        743,
+        250,
+        250
+      ],
+      "playerId": 48280,
+      "databaseName": "Edinson Cavani",
+      "role": "player"
+    },
+    {
+      "key": "lucas_moura",
+      "name": "Lucas Moura",
+      "source": "zip1_04",
+      "cardIndex": 7,
+      "crop": [
+        441,
+        744,
+        242,
+        242
+      ],
+      "playerId": 77100,
+      "databaseName": "Lucas Moura",
+      "role": "player"
+    },
+    {
+      "key": "marco_verratti",
+      "name": "Marco Verratti",
+      "source": "zip1_04",
+      "cardIndex": 8,
+      "crop": [
+        709,
+        744,
+        248,
+        248
+      ],
+      "playerId": 102558,
+      "databaseName": "Marco Verratti",
+      "role": "player"
+    },
+    {
+      "key": "olivier_giroud",
+      "name": "Olivier Giroud",
+      "source": "zip1_04",
+      "cardIndex": 9,
+      "crop": [
+        165,
+        1062,
+        250,
+        250
+      ],
+      "playerId": 82442,
+      "databaseName": "Olivier Giroud",
+      "role": "player"
+    },
+    {
+      "key": "santi_cazorla",
+      "name": "Santi Cazorla",
+      "source": "zip1_04",
+      "cardIndex": 10,
+      "crop": [
+        441,
+        1062,
+        242,
+        242
+      ],
+      "playerId": 15799,
+      "databaseName": "Santi Cazorla",
+      "role": "player"
+    },
+    {
+      "key": "laurent_koscielny",
+      "name": "Laurent Koscielny",
+      "source": "zip1_04",
+      "cardIndex": 11,
+      "crop": [
+        708,
+        1062,
+        250,
+        250
+      ],
+      "playerId": 76277,
+      "databaseName": "Laurent Koscielny",
+      "role": "player"
+    },
+    {
+      "key": "henrikh_mkhitaryan",
+      "name": "Henrikh Mkhitaryan",
+      "source": "zip1_05",
+      "cardIndex": 0,
+      "crop": [
+        176,
+        97,
+        238,
+        238
+      ],
+      "playerId": 55735,
+      "databaseName": "Henrikh Mkhitaryan",
+      "role": "player"
+    },
+    {
+      "key": "diego_costa",
+      "name": "Diego Costa",
+      "source": "zip1_05",
+      "cardIndex": 1,
+      "crop": [
+        442,
+        97,
+        239,
+        239
+      ],
+      "playerId": 44779,
+      "databaseName": "Diego Costa",
+      "role": "player"
+    },
+    {
+      "key": "thibaut_courtois",
+      "name": "Thibaut Courtois",
+      "source": "zip1_05",
+      "cardIndex": 2,
+      "crop": [
+        710,
+        97,
+        238,
+        238
+      ],
+      "playerId": 108390,
+      "databaseName": "Thibaut Courtois",
+      "role": "player"
+    },
+    {
+      "key": "koke",
+      "name": "Koke",
+      "source": "zip1_05",
+      "cardIndex": 3,
+      "crop": [
+        176,
+        416,
+        238,
+        238
+      ],
+      "playerId": 74229,
+      "databaseName": "Koke",
+      "role": "player"
+    },
+    {
+      "key": "francesco_totti",
+      "name": "Francesco Totti",
+      "source": "zip1_05",
+      "cardIndex": 4,
+      "crop": [
+        442,
+        416,
+        239,
+        239
+      ],
+      "playerId": 4000000025,
+      "databaseName": "Francesco Totti",
+      "role": "player"
+    },
+    {
+      "key": "marco_van_basten",
+      "name": "Marco van Basten",
+      "source": "zip1_05",
+      "cardIndex": 5,
+      "crop": [
+        710,
+        416,
+        238,
+        238
+      ],
+      "playerId": 4000000041,
+      "databaseName": "Marco van Basten",
+      "role": "player"
+    },
+    {
+      "key": "fernando_redondo",
+      "name": "Fernando Redondo",
+      "source": "zip1_05",
+      "cardIndex": 6,
+      "crop": [
+        176,
+        732,
+        238,
+        238
+      ],
+      "playerId": 5811,
+      "databaseName": "Fernando Redondo",
+      "role": "player"
+    },
+    {
+      "key": "diego_maradona",
+      "name": "Diego Maradona",
+      "source": "zip1_05",
+      "cardIndex": 7,
+      "crop": [
+        442,
+        732,
+        239,
+        239
+      ],
+      "playerId": 4000000035,
+      "databaseName": "Diego Maradona",
+      "role": "player"
+    },
+    {
+      "key": "rivaldo",
+      "name": "Rivaldo",
+      "source": "zip1_05",
+      "cardIndex": 8,
+      "crop": [
+        710,
+        732,
+        238,
+        238
+      ],
+      "playerId": 4000000046,
+      "databaseName": "Rivaldo",
+      "role": "player"
+    },
+    {
+      "key": "luis_figo",
+      "name": "Luís Figo",
+      "source": "zip1_05",
+      "cardIndex": 9,
+      "crop": [
+        176,
+        1043,
+        238,
+        238
+      ],
+      "playerId": 3446,
+      "databaseName": "Luís Figo",
+      "role": "player"
+    },
+    {
+      "key": "jurgen_klinsmann",
+      "name": "Jürgen Klinsmann",
+      "source": "zip1_05",
+      "cardIndex": 10,
+      "crop": [
+        442,
+        1043,
+        239,
+        239
+      ],
+      "playerId": 4000000047,
+      "databaseName": "Jürgen Klinsmann",
+      "role": "player"
+    },
+    {
+      "key": "bobby_charlton",
+      "name": "Bobby Charlton",
+      "source": "zip1_05",
+      "cardIndex": 11,
+      "crop": [
+        710,
+        1043,
+        238,
+        238
+      ],
+      "playerId": 4000000048,
+      "databaseName": "Bobby Charlton",
+      "role": "player"
+    },
+    {
+      "key": "gianluigi_buffon",
+      "name": "Gianluigi Buffon",
+      "source": "zip1_06",
+      "cardIndex": 0,
+      "crop": [
+        171,
+        102,
+        245,
+        245
+      ],
+      "playerId": 5023,
+      "databaseName": "Gianluigi Buffon",
+      "role": "player"
+    },
+    {
+      "key": "manuel_neuer",
+      "name": "Manuel Neuer",
+      "source": "zip1_06",
+      "cardIndex": 1,
+      "crop": [
+        440,
+        102,
+        242,
+        242
+      ],
+      "playerId": 17259,
+      "databaseName": "Manuel Neuer",
+      "role": "player"
+    },
+    {
+      "key": "oliver_kahn",
+      "name": "Oliver Kahn",
+      "source": "zip1_06",
+      "cardIndex": 2,
+      "crop": [
+        706,
+        102,
+        247,
+        247
+      ],
+      "playerId": 4000000102,
+      "role": "player",
+      "databaseName": "Oliver Kahn"
+    },
+    {
+      "key": "peter_schmeichel",
+      "name": "Peter Schmeichel",
+      "source": "zip1_06",
+      "cardIndex": 3,
+      "crop": [
+        171,
+        425,
+        245,
+        245
+      ],
+      "playerId": 4000000103,
+      "role": "player",
+      "databaseName": "Peter Schmeichel"
+    },
+    {
+      "key": "cafu",
+      "name": "Cafu",
+      "source": "zip1_06",
+      "cardIndex": 4,
+      "crop": [
+        441,
+        425,
+        241,
+        241
+      ],
+      "playerId": 4000000104,
+      "role": "player",
+      "databaseName": "Cafu"
+    },
+    {
+      "key": "fabio_cannavaro",
+      "name": "Fabio Cannavaro",
+      "source": "zip1_06",
+      "cardIndex": 5,
+      "crop": [
+        706,
+        425,
+        247,
+        247
+      ],
+      "playerId": 5775,
+      "databaseName": "Fabio Cannavaro",
+      "role": "player"
+    },
+    {
+      "key": "alessandro_nesta",
+      "name": "Alessandro Nesta",
+      "source": "zip1_06",
+      "cardIndex": 6,
+      "crop": [
+        172,
+        749,
+        244,
+        244
+      ],
+      "playerId": 4171,
+      "databaseName": "Alessandro Nesta",
+      "role": "player"
+    },
+    {
+      "key": "philipp_lahm",
+      "name": "Philipp Lahm",
+      "source": "zip1_06",
+      "cardIndex": 7,
+      "crop": [
+        441,
+        750,
+        241,
+        241
+      ],
+      "playerId": 2219,
+      "databaseName": "Philipp Lahm",
+      "role": "player"
+    },
+    {
+      "key": "john_terry",
+      "name": "John Terry",
+      "source": "zip1_06",
+      "cardIndex": 8,
+      "crop": [
+        707,
+        749,
+        246,
+        246
+      ],
+      "playerId": 3160,
+      "databaseName": "John Terry",
+      "role": "player"
+    },
+    {
+      "key": "rio_ferdinand",
+      "name": "Rio Ferdinand",
+      "source": "zip1_06",
+      "cardIndex": 9,
+      "crop": [
+        172,
+        1069,
+        245,
+        245
+      ],
+      "playerId": 4000000069,
+      "databaseName": "Rio Ferdinand",
+      "role": "player"
+    },
+    {
+      "key": "nemanja_vidic",
+      "name": "Nemanja Vidić",
+      "source": "zip1_06",
+      "cardIndex": 10,
+      "crop": [
+        441,
+        1069,
+        241,
+        241
+      ],
+      "playerId": 4000000073,
+      "databaseName": "Nemanja Vidić",
+      "role": "player"
+    },
+    {
+      "key": "virgil_van_dijk",
+      "name": "Virgil van Dijk",
+      "source": "zip1_06",
+      "cardIndex": 11,
+      "crop": [
+        707,
+        1069,
+        246,
+        246
+      ],
+      "playerId": 139208,
+      "databaseName": "Virgil van Dijk",
+      "role": "player"
+    },
+    {
+      "key": "sergio_busquets",
+      "name": "Sergio Busquets",
+      "source": "zip1_07",
+      "cardIndex": 0,
+      "crop": [
+        172,
+        103,
+        245,
+        245
+      ],
+      "playerId": 65230,
+      "databaseName": "Sergio Busquets",
+      "role": "player"
+    },
+    {
+      "key": "patrick_vieira",
+      "name": "Patrick Vieira",
+      "source": "zip1_07",
+      "cardIndex": 1,
+      "crop": [
+        441,
+        103,
+        242,
+        242
+      ],
+      "playerId": 4000000032,
+      "databaseName": "Patrick Vieira",
+      "role": "player"
+    },
+    {
+      "key": "claude_makelele",
+      "name": "Claude Makélélé",
+      "source": "zip1_07",
+      "cardIndex": 2,
+      "crop": [
+        707,
+        103,
+        245,
+        245
+      ],
+      "playerId": 4182,
+      "databaseName": "Claude Makélélé",
+      "role": "player"
+    },
+    {
+      "key": "antoine_griezmann",
+      "name": "Antoine Griezmann",
+      "source": "zip1_07",
+      "cardIndex": 3,
+      "crop": [
+        172,
+        434,
+        245,
+        245
+      ],
+      "playerId": 125781,
+      "databaseName": "Antoine Griezmann",
+      "role": "player"
+    },
+    {
+      "key": "gabriel_batistuta",
+      "name": "Gabriel Batistuta",
+      "source": "zip1_07",
+      "cardIndex": 4,
+      "crop": [
+        441,
+        434,
+        242,
+        242
+      ],
+      "playerId": 4000000045,
+      "databaseName": "Gabriel Batistuta",
+      "role": "player"
+    },
+    {
+      "key": "lautaro_martinez",
+      "name": "Lautaro Martínez",
+      "source": "zip1_07",
+      "cardIndex": 5,
+      "crop": [
+        707,
+        434,
+        245,
+        245
+      ],
+      "playerId": 406625,
+      "databaseName": "Lautaro Martínez",
+      "role": "player"
+    },
+    {
+      "key": "federico_valverde",
+      "name": "Federico Valverde",
+      "source": "zip1_07",
+      "cardIndex": 6,
+      "crop": [
+        173,
+        761,
+        243,
+        243
+      ],
+      "playerId": 369081,
+      "databaseName": "Federico Valverde",
+      "role": "player"
+    },
+    {
+      "key": "martin_degaard",
+      "name": "Martin Ødegaard",
+      "source": "zip1_07",
+      "cardIndex": 7,
+      "crop": [
+        441,
+        761,
+        242,
+        242
+      ],
+      "playerId": 316264,
+      "databaseName": "Martin Ødegaard",
+      "role": "player"
+    },
+    {
+      "key": "declan_rice",
+      "name": "Declan Rice",
+      "source": "zip1_07",
+      "cardIndex": 8,
+      "crop": [
+        708,
+        761,
+        243,
+        243
+      ],
+      "playerId": 357662,
+      "databaseName": "Declan Rice",
+      "role": "player"
+    },
+    {
+      "key": "khvicha_kvaratskhelia",
+      "name": "Khvicha Kvaratskhelia",
+      "source": "zip1_07",
+      "cardIndex": 9,
+      "crop": [
+        304,
+        1071,
+        245,
+        245
+      ],
+      "playerId": 502670,
+      "databaseName": "Khvicha Kvaratskhelia",
+      "role": "player"
+    },
+    {
+      "key": "phil_foden",
+      "name": "Phil Foden",
+      "source": "zip1_07",
+      "cardIndex": 10,
+      "crop": [
+        573,
+        1071,
+        245,
+        245
+      ],
+      "playerId": 3000250787,
+      "databaseName": "Phil Foden",
+      "role": "player"
+    },
+    {
+      "key": "alisson",
+      "name": "Alisson",
+      "source": "zip1_08",
+      "cardIndex": 0,
+      "crop": [
+        178,
+        94,
+        238,
+        238
+      ],
+      "playerId": 105470,
+      "databaseName": "Alisson",
+      "role": "player"
+    },
+    {
+      "key": "ederson",
+      "name": "Ederson",
+      "source": "zip1_08",
+      "cardIndex": 1,
+      "crop": [
+        441,
+        94,
+        240,
+        240
+      ],
+      "playerId": 238223,
+      "databaseName": "Ederson",
+      "role": "player"
+    },
+    {
+      "key": "gianluigi_donnarumma",
+      "name": "Gianluigi Donnarumma",
+      "source": "zip1_08",
+      "cardIndex": 2,
+      "crop": [
+        706,
+        94,
+        239,
+        239
+      ],
+      "playerId": 315858,
+      "databaseName": "Gianluigi Donnarumma",
+      "role": "player"
+    },
+    {
+      "key": "metin_oktay",
+      "name": "Metin Oktay",
+      "source": "zip1_08",
+      "cardIndex": 3,
+      "crop": [
+        178,
+        426,
+        238,
+        238
+      ],
+      "playerId": 4000000105,
+      "role": "player",
+      "databaseName": "Metin Oktay"
+    },
+    {
+      "key": "lefter_kucukandonyadis",
+      "name": "Lefter Küçükandonyadis",
+      "source": "zip1_08",
+      "cardIndex": 4,
+      "crop": [
+        442,
+        426,
+        239,
+        239
+      ],
+      "playerId": 4000000008,
+      "databaseName": "Lefter Küçükandonyadis",
+      "role": "player"
+    },
+    {
+      "key": "rustu_recber",
+      "name": "Rüştü Reçber",
+      "source": "zip1_08",
+      "cardIndex": 5,
+      "crop": [
+        707,
+        426,
+        238,
+        238
+      ],
+      "playerId": 4077,
+      "databaseName": "Rüştü Reçber",
+      "role": "player"
+    },
+    {
+      "key": "bulent_korkmaz",
+      "name": "Bülent Korkmaz",
+      "source": "zip1_08",
+      "cardIndex": 6,
+      "crop": [
+        178,
+        753,
+        238,
+        238
+      ],
+      "playerId": 4000000106,
+      "role": "player",
+      "databaseName": "Bülent Korkmaz"
+    },
+    {
+      "key": "umit_davala",
+      "name": "Ümit Davala",
+      "source": "zip1_08",
+      "cardIndex": 7,
+      "crop": [
+        442,
+        753,
+        239,
+        239
+      ],
+      "playerId": 4000000107,
+      "role": "player",
+      "databaseName": "Ümit Davala"
+    },
+    {
+      "key": "ilhan_mansiz",
+      "name": "İlhan Mansız",
+      "source": "zip1_08",
+      "cardIndex": 8,
+      "crop": [
+        707,
+        753,
+        238,
+        238
+      ],
+      "playerId": 6875,
+      "databaseName": "İlhan Mansız",
+      "role": "player"
+    },
+    {
+      "key": "tanju_colak",
+      "name": "Tanju Çolak",
+      "source": "zip1_08",
+      "cardIndex": 9,
+      "crop": [
+        305,
+        1070,
+        243,
+        243
+      ],
+      "playerId": 4000000012,
+      "databaseName": "Tanju Çolak",
+      "role": "player"
+    },
+    {
+      "key": "emre_belozoglu",
+      "name": "Emre Belözoğlu",
+      "source": "dual_role_04",
+      "cardIndex": 3,
+      "crop": [
+        83,
+        560,
+        297,
+        297
+      ],
+      "playerId": 4000000017,
+      "databaseName": "Emre Belözoğlu",
+      "role": "player"
+    },
+    {
+      "key": "enzo_francescoli",
+      "name": "Enzo Francescoli",
+      "source": "zip1_09",
+      "cardIndex": 0,
+      "crop": [
+        177,
+        92,
+        238,
+        238
+      ],
+      "playerId": 4000000057,
+      "databaseName": "Enzo Francescoli",
+      "role": "player"
+    },
+    {
+      "key": "frank_rijkaard",
+      "name": "Frank Rijkaard",
+      "source": "dual_role_02",
+      "cardIndex": 0,
+      "crop": [
+        104,
+        114,
+        283,
+        283
+      ],
+      "playerId": 4000000058,
+      "databaseName": "Frank Rijkaard",
+      "role": "player"
+    },
+    {
+      "key": "roberto_carlos",
+      "name": "Roberto Carlos",
+      "source": "zip1_09",
+      "cardIndex": 2,
+      "crop": [
+        707,
+        92,
+        238,
+        238
+      ],
+      "playerId": 4000000029,
+      "databaseName": "Roberto Carlos",
+      "role": "player"
+    },
+    {
+      "key": "ryan_giggs",
+      "name": "Ryan Giggs",
+      "source": "zip1_09",
+      "cardIndex": 3,
+      "crop": [
+        178,
+        413,
+        238,
+        238
+      ],
+      "playerId": 4000000059,
+      "databaseName": "Ryan Giggs",
+      "role": "player"
+    },
+    {
+      "key": "gennaro_gattuso",
+      "name": "Gennaro Gattuso",
+      "source": "zip1_09",
+      "cardIndex": 4,
+      "crop": [
+        442,
+        413,
+        239,
+        239
+      ],
+      "playerId": 5813,
+      "databaseName": "Gennaro Gattuso",
+      "role": "player"
+    },
+    {
+      "key": "romario",
+      "name": "Romário",
+      "source": "zip1_09",
+      "cardIndex": 5,
+      "crop": [
+        708,
+        413,
+        238,
+        238
+      ],
+      "playerId": 4000000066,
+      "databaseName": "Romário de Souza Faria",
+      "role": "player"
+    },
+    {
+      "key": "juan_roman_riquelme",
+      "name": "Juan Román Riquelme",
+      "source": "zip1_09",
+      "cardIndex": 6,
+      "crop": [
+        178,
+        738,
+        237,
+        237
+      ],
+      "playerId": 4000000060,
+      "databaseName": "Juan Román Riquelme",
+      "role": "player"
+    },
+    {
+      "key": "jean_pierre_papin",
+      "name": "Jean-Pierre Papin",
+      "source": "zip1_09",
+      "cardIndex": 7,
+      "crop": [
+        442,
+        738,
+        239,
+        239
+      ],
+      "playerId": 4000000061,
+      "databaseName": "Jean-Pierre Papin",
+      "role": "player"
+    },
+    {
+      "key": "pep_guardiola",
+      "name": "Pep Guardiola",
+      "source": "dual_role_00",
+      "cardIndex": 0,
+      "crop": [
+        86,
+        122,
+        296,
+        296
+      ],
+      "playerId": 4000000062,
+      "databaseName": "Pep Guardiola",
+      "role": "player"
+    },
+    {
+      "key": "socrates",
+      "name": "Sócrates",
+      "source": "zip1_09",
+      "cardIndex": 9,
+      "crop": [
+        305,
+        1054,
+        242,
+        242
+      ],
+      "playerId": 4000000063,
+      "databaseName": "Sócrates",
+      "role": "player"
+    },
+    {
+      "key": "paolo_maldini",
+      "name": "Paolo Maldini",
+      "source": "zip1_09",
+      "cardIndex": 10,
+      "crop": [
+        574,
+        1054,
+        241,
+        241
+      ],
+      "playerId": 4000000024,
+      "databaseName": "Paolo Maldini",
+      "role": "player"
+    },
+    {
+      "key": "samuel_eto_o",
+      "name": "Samuel Eto'o",
+      "source": "zip1_10",
+      "cardIndex": 0,
+      "crop": [
+        158,
+        99,
+        251,
+        251
+      ],
+      "playerId": 4257,
+      "databaseName": "Samuel Eto'o",
+      "role": "player"
+    },
+    {
+      "key": "kaka",
+      "name": "Kaká",
+      "source": "zip1_10",
+      "cardIndex": 1,
+      "crop": [
+        438,
+        99,
+        249,
+        249
+      ],
+      "playerId": 4000000028,
+      "databaseName": "Kaká",
+      "role": "player"
+    },
+    {
+      "key": "arda_turan",
+      "name": "Arda Turan",
+      "source": "dual_role_04",
+      "cardIndex": 4,
+      "crop": [
+        413,
+        560,
+        297,
+        297
+      ],
+      "playerId": 4000000018,
+      "databaseName": "Arda Turan",
+      "role": "player"
+    },
+    {
+      "key": "burak_yilmaz",
+      "name": "Burak Yılmaz",
+      "source": "dual_role_04",
+      "cardIndex": 2,
+      "crop": [
+        743,
+        132,
+        298,
+        298
+      ],
+      "playerId": 4000000108,
+      "role": "player",
+      "databaseName": "Burak Yılmaz"
+    },
+    {
+      "key": "nihat_kahveci",
+      "name": "Nihat Kahveci",
+      "source": "zip1_10",
+      "cardIndex": 4,
+      "crop": [
+        438,
+        437,
+        249,
+        249
+      ],
+      "playerId": 6569,
+      "databaseName": "Nihat Kahveci",
+      "role": "player"
+    },
+    {
+      "key": "tuncay_sanli",
+      "name": "Tuncay Şanlı",
+      "source": "zip1_10",
+      "cardIndex": 5,
+      "crop": [
+        715,
+        437,
+        250,
+        250
+      ],
+      "playerId": 4000000016,
+      "databaseName": "Tuncay Şanlı",
+      "role": "player"
+    },
+    {
+      "key": "volkan_demirel",
+      "name": "Volkan Demirel",
+      "source": "dual_role_04",
+      "cardIndex": 1,
+      "crop": [
+        413,
+        132,
+        297,
+        297
+      ],
+      "playerId": 4000000019,
+      "databaseName": "Volkan Demirel",
+      "role": "player"
+    },
+    {
+      "key": "fernando_muslera",
+      "name": "Fernando Muslera",
+      "source": "zip1_10",
+      "cardIndex": 7,
+      "crop": [
+        438,
+        774,
+        249,
+        249
+      ],
+      "playerId": 58088,
+      "databaseName": "Fernando Muslera",
+      "role": "player"
+    },
+    {
+      "key": "pierre_van_hooijdonk",
+      "name": "Pierre van Hooijdonk",
+      "source": "zip1_10",
+      "cardIndex": 8,
+      "crop": [
+        715,
+        774,
+        250,
+        250
+      ],
+      "playerId": 3520,
+      "databaseName": "Pierre van Hooijdonk",
+      "role": "player"
+    },
+    {
+      "key": "guti",
+      "name": "Guti",
+      "source": "zip1_10",
+      "cardIndex": 9,
+      "crop": [
+        445,
+        1105,
+        233,
+        233
+      ],
+      "playerId": 4000000109,
+      "role": "player",
+      "databaseName": "Guti"
+    },
+    {
+      "key": "kevin_de_bruyne",
+      "name": "Kevin De Bruyne",
+      "source": "zip1_11",
+      "cardIndex": 0,
+      "crop": [
+        98,
+        133,
+        290,
+        290
+      ],
+      "playerId": 88755,
+      "databaseName": "Kevin De Bruyne",
+      "role": "player"
+    },
+    {
+      "key": "son_heung_min",
+      "name": "Son Heung-min",
+      "source": "zip1_11",
+      "cardIndex": 1,
+      "crop": [
+        415,
+        133,
+        290,
+        290
+      ],
+      "playerId": 91845,
+      "databaseName": "Heung-min Son",
+      "role": "player"
+    },
+    {
+      "key": "julian_alvarez",
+      "name": "Julián Álvarez",
+      "source": "zip1_11",
+      "cardIndex": 2,
+      "crop": [
+        732,
+        133,
+        292,
+        292
+      ],
+      "playerId": 576024,
+      "databaseName": "Julián Alvarez",
+      "role": "player"
+    },
+    {
+      "key": "alexander_isak",
+      "name": "Alexander Isak",
+      "source": "zip1_11",
+      "cardIndex": 3,
+      "crop": [
+        97,
+        558,
+        291,
+        291
+      ],
+      "playerId": 349066,
+      "databaseName": "Alexander Isak",
+      "role": "player"
+    },
+    {
+      "key": "cole_palmer",
+      "name": "Cole Palmer",
+      "source": "zip1_11",
+      "cardIndex": 4,
+      "crop": [
+        415,
+        558,
+        290,
+        290
+      ],
+      "playerId": 568177,
+      "databaseName": "Cole Palmer",
+      "role": "player"
+    },
+    {
+      "key": "bukayo_saka",
+      "name": "Bukayo Saka",
+      "source": "zip1_11",
+      "cardIndex": 5,
+      "crop": [
+        732,
+        558,
+        292,
+        292
+      ],
+      "playerId": 433177,
+      "databaseName": "Bukayo Saka",
+      "role": "player"
+    },
+    {
+      "key": "jamal_musiala",
+      "name": "Jamal Musiala",
+      "source": "zip1_11",
+      "cardIndex": 6,
+      "crop": [
+        244,
+        969,
+        305,
+        305
+      ],
+      "playerId": 580195,
+      "databaseName": "Jamal Musiala",
+      "role": "player"
+    },
+    {
+      "key": "florian_wirtz",
+      "name": "Florian Wirtz",
+      "source": "zip1_11",
+      "cardIndex": 7,
+      "crop": [
+        574,
+        969,
+        304,
+        304
+      ],
+      "playerId": 598577,
+      "databaseName": "Florian Wirtz",
+      "role": "player"
+    },
+    {
+      "key": "n_golo_kante",
+      "name": "N'Golo Kanté",
+      "source": "zip1_12",
+      "cardIndex": 0,
+      "crop": [
+        125,
+        105,
+        269,
+        269
+      ],
+      "playerId": 225083,
+      "databaseName": "N'Golo Kanté",
+      "role": "player"
+    },
+    {
+      "key": "leandro_trossard",
+      "name": "Leandro Trossard",
+      "source": "zip1_12",
+      "cardIndex": 1,
+      "crop": [
+        428,
+        105,
+        267,
+        267
+      ],
+      "playerId": 144028,
+      "databaseName": "Leandro Trossard",
+      "role": "player"
+    },
+    {
+      "key": "orkun_kokcu",
+      "name": "Orkun Kökçü",
+      "source": "zip1_12",
+      "cardIndex": 2,
+      "crop": [
+        729,
+        105,
+        269,
+        269
+      ],
+      "playerId": 454567,
+      "databaseName": "Orkun Kökçü",
+      "role": "player"
+    },
+    {
+      "key": "mario_gomez",
+      "name": "Mario Gómez",
+      "source": "zip1_12",
+      "cardIndex": 3,
+      "crop": [
+        124,
+        514,
+        271,
+        271
+      ],
+      "playerId": 6288,
+      "databaseName": "Mario Gómez",
+      "role": "player"
+    },
+    {
+      "key": "alex_de_souza",
+      "name": "Alex de Souza",
+      "source": "zip1_12",
+      "cardIndex": 4,
+      "crop": [
+        429,
+        514,
+        266,
+        266
+      ],
+      "playerId": 4000000110,
+      "role": "player",
+      "databaseName": "Alex de Souza"
+    },
+    {
+      "key": "ricardo_quaresma",
+      "name": "Ricardo Quaresma",
+      "source": "zip1_12",
+      "cardIndex": 5,
+      "crop": [
+        728,
+        514,
+        270,
+        270
+      ],
+      "playerId": 4188,
+      "databaseName": "Ricardo Quaresma",
+      "role": "player"
+    },
+    {
+      "key": "hami_mandirali",
+      "name": "Hami Mandıralı",
+      "source": "zip1_12",
+      "cardIndex": 6,
+      "crop": [
+        240,
+        925,
+        304,
+        304
+      ],
+      "playerId": 4000000013,
+      "databaseName": "Hami Mandıralı",
+      "role": "player"
+    },
+    {
+      "key": "gheorghe_hagi",
+      "name": "Gheorghe Hagi",
+      "source": "zip1_12",
+      "cardIndex": 7,
+      "crop": [
+        581,
+        925,
+        300,
+        300
+      ],
+      "playerId": 4000000002,
+      "databaseName": "Gheorghe Hagi",
+      "role": "player"
+    },
+    {
+      "key": "raphinha",
+      "name": "Raphinha",
+      "source": "zip1_13",
+      "cardIndex": 0,
+      "crop": [
+        135,
+        104,
+        259,
+        259
+      ],
+      "playerId": 411295,
+      "databaseName": "Raphinha",
+      "role": "player"
+    },
+    {
+      "key": "rodri",
+      "name": "Rodri",
+      "source": "zip1_13",
+      "cardIndex": 1,
+      "crop": [
+        430,
+        104,
+        254,
+        254
+      ],
+      "playerId": 357565,
+      "databaseName": "Rodri",
+      "role": "player"
+    },
+    {
+      "key": "bernardo_silva",
+      "name": "Bernardo Silva",
+      "source": "zip1_13",
+      "cardIndex": 2,
+      "crop": [
+        720,
+        104,
+        259,
+        259
+      ],
+      "playerId": 241641,
+      "databaseName": "Bernardo Silva",
+      "role": "player"
+    },
+    {
+      "key": "bruno_fernandes",
+      "name": "Bruno Fernandes",
+      "source": "zip1_13",
+      "cardIndex": 3,
+      "crop": [
+        135,
+        452,
+        259,
+        259
+      ],
+      "playerId": 240306,
+      "databaseName": "Bruno Fernandes",
+      "role": "player"
+    },
+    {
+      "key": "vitinha",
+      "name": "Vitinha",
+      "source": "zip1_13",
+      "cardIndex": 4,
+      "crop": [
+        430,
+        452,
+        254,
+        254
+      ],
+      "playerId": 487469,
+      "databaseName": "Vitinha",
+      "role": "player"
+    },
+    {
+      "key": "pedri",
+      "name": "Pedri",
+      "source": "zip1_13",
+      "cardIndex": 5,
+      "crop": [
+        720,
+        452,
+        259,
+        259
+      ],
+      "playerId": 683840,
+      "databaseName": "Pedri",
+      "role": "player"
+    },
+    {
+      "key": "rayan_cherki",
+      "name": "Rayan Cherki",
+      "source": "zip1_13",
+      "cardIndex": 6,
+      "crop": [
+        135,
+        786,
+        258,
+        258
+      ],
+      "playerId": 3000298008,
+      "databaseName": "Rayan Cherki",
+      "role": "player"
+    },
+    {
+      "key": "dusan_vlahovic",
+      "name": "Dušan Vlahović",
+      "source": "zip1_13",
+      "cardIndex": 7,
+      "crop": [
+        430,
+        787,
+        254,
+        254
+      ],
+      "playerId": 357498,
+      "databaseName": "Dušan Vlahović",
+      "role": "player"
+    },
+    {
+      "key": "mason_greenwood",
+      "name": "Mason Greenwood",
+      "source": "zip1_13",
+      "cardIndex": 8,
+      "crop": [
+        720,
+        787,
+        257,
+        257
+      ],
+      "playerId": 532826,
+      "databaseName": "Mason Greenwood",
+      "role": "player"
+    },
+    {
+      "key": "marco_asensio",
+      "name": "Marco Asensio",
+      "source": "zip1_13",
+      "cardIndex": 9,
+      "crop": [
+        452,
+        1111,
+        210,
+        210
+      ],
+      "playerId": 296622,
+      "databaseName": "Marco Asensio",
+      "role": "player"
+    },
+    {
+      "key": "victor_osimhen",
+      "name": "Victor Osimhen",
+      "source": "zip1_14",
+      "cardIndex": 0,
+      "crop": [
+        136,
+        106,
+        260,
+        260
+      ],
+      "playerId": 401923,
+      "databaseName": "Victor Osimhen",
+      "role": "player"
+    },
+    {
+      "key": "mauro_icardi",
+      "name": "Mauro Icardi",
+      "source": "zip1_14",
+      "cardIndex": 1,
+      "crop": [
+        433,
+        105,
+        257,
+        257
+      ],
+      "playerId": 68863,
+      "databaseName": "Mauro Icardi",
+      "role": "player"
+    },
+    {
+      "key": "mohamed_salah",
+      "name": "Mohamed Salah",
+      "source": "zip1_14",
+      "cardIndex": 2,
+      "crop": [
+        726,
+        106,
+        262,
+        262
+      ],
+      "playerId": 148455,
+      "databaseName": "Mohamed Salah",
+      "role": "player"
+    },
+    {
+      "key": "jude_bellingham",
+      "name": "Jude Bellingham",
+      "source": "zip1_14",
+      "cardIndex": 3,
+      "crop": [
+        136,
+        457,
+        260,
+        260
+      ],
+      "playerId": 581678,
+      "databaseName": "Jude Bellingham",
+      "role": "player"
+    },
+    {
+      "key": "vinicius_junior",
+      "name": "Vinícius Júnior",
+      "source": "zip1_14",
+      "cardIndex": 4,
+      "crop": [
+        433,
+        457,
+        258,
+        258
+      ],
+      "playerId": 371998,
+      "databaseName": "Vinicius Junior",
+      "role": "player"
+    },
+    {
+      "key": "michael_olise",
+      "name": "Michael Olise",
+      "source": "zip1_14",
+      "cardIndex": 5,
+      "crop": [
+        727,
+        457,
+        260,
+        260
+      ],
+      "playerId": 566723,
+      "databaseName": "Michael Olise",
+      "role": "player"
+    },
+    {
+      "key": "arda_guler",
+      "name": "Arda Güler",
+      "source": "zip1_14",
+      "cardIndex": 6,
+      "crop": [
+        136,
+        797,
+        260,
+        260
+      ],
+      "playerId": 861410,
+      "databaseName": "Arda Güler",
+      "role": "player"
+    },
+    {
+      "key": "kenan_yildiz",
+      "name": "Kenan Yıldız",
+      "source": "zip1_14",
+      "cardIndex": 7,
+      "crop": [
+        433,
+        797,
+        258,
+        258
+      ],
+      "playerId": 845654,
+      "databaseName": "Kenan Yıldız",
+      "role": "player"
+    },
+    {
+      "key": "harry_kane",
+      "name": "Harry Kane",
+      "source": "zip1_14",
+      "cardIndex": 8,
+      "crop": [
+        727,
+        797,
+        260,
+        260
+      ],
+      "playerId": 132098,
+      "databaseName": "Harry Kane",
+      "role": "player"
+    },
+    {
+      "key": "ousmane_dembele",
+      "name": "Ousmane Dembélé",
+      "source": "zip1_14",
+      "cardIndex": 9,
+      "crop": [
+        459,
+        1129,
+        204,
+        204
+      ],
+      "playerId": 288230,
+      "databaseName": "Ousmane Dembélé",
+      "role": "player"
+    },
+    {
+      "key": "franck_ribery",
+      "name": "Franck Ribéry",
+      "source": "zip1_15",
+      "cardIndex": 0,
+      "crop": [
+        175,
+        95,
+        241,
+        241
+      ],
+      "playerId": 22068,
+      "databaseName": "Franck Ribéry",
+      "role": "player"
+    },
+    {
+      "key": "thomas_muller",
+      "name": "Thomas Müller",
+      "source": "zip1_15",
+      "cardIndex": 1,
+      "crop": [
+        440,
+        95,
+        242,
+        242
+      ],
+      "playerId": 58358,
+      "databaseName": "Thomas Müller",
+      "role": "player"
+    },
+    {
+      "key": "bastian_schweinsteiger",
+      "name": "Bastian Schweinsteiger",
+      "source": "zip1_15",
+      "cardIndex": 2,
+      "crop": [
+        707,
+        95,
+        241,
+        241
+      ],
+      "playerId": 2514,
+      "databaseName": "Bastian Schweinsteiger",
+      "role": "player"
+    },
+    {
+      "key": "toni_kroos",
+      "name": "Toni Kroos",
+      "source": "zip1_15",
+      "cardIndex": 3,
+      "crop": [
+        175,
+        424,
+        241,
+        241
+      ],
+      "playerId": 31909,
+      "databaseName": "Toni Kroos",
+      "role": "player"
+    },
+    {
+      "key": "arjen_robben",
+      "name": "Arjen Robben",
+      "source": "zip1_15",
+      "cardIndex": 4,
+      "crop": [
+        440,
+        424,
+        242,
+        242
+      ],
+      "playerId": 4360,
+      "databaseName": "Arjen Robben",
+      "role": "player"
+    },
+    {
+      "key": "mesut_ozil",
+      "name": "Mesut Özil",
+      "source": "zip1_15",
+      "cardIndex": 5,
+      "crop": [
+        707,
+        424,
+        241,
+        241
+      ],
+      "playerId": 35664,
+      "databaseName": "Mesut Özil",
+      "role": "player"
+    },
+    {
+      "key": "iker_casillas",
+      "name": "Iker Casillas",
+      "source": "zip1_15",
+      "cardIndex": 6,
+      "crop": [
+        175,
+        749,
+        241,
+        241
+      ],
+      "playerId": 3979,
+      "databaseName": "Iker Casillas",
+      "role": "player"
+    },
+    {
+      "key": "yaya_toure",
+      "name": "Yaya Touré",
+      "source": "zip1_15",
+      "cardIndex": 7,
+      "crop": [
+        440,
+        749,
+        242,
+        242
+      ],
+      "playerId": 13091,
+      "databaseName": "Yaya Touré",
+      "role": "player"
+    },
+    {
+      "key": "micah_richards",
+      "name": "Micah Richards",
+      "source": "zip1_15",
+      "cardIndex": 8,
+      "crop": [
+        707,
+        749,
+        241,
+        241
+      ],
+      "playerId": 4000000111,
+      "role": "player",
+      "databaseName": "Micah Richards"
+    },
+    {
+      "key": "david_silva",
+      "name": "David Silva",
+      "source": "zip1_15",
+      "cardIndex": 9,
+      "crop": [
+        175,
+        1067,
+        241,
+        241
+      ],
+      "playerId": 35518,
+      "databaseName": "David Silva",
+      "role": "player"
+    },
+    {
+      "key": "vincent_kompany",
+      "name": "Vincent Kompany",
+      "source": "zip1_15",
+      "cardIndex": 10,
+      "crop": [
+        440,
+        1067,
+        242,
+        242
+      ],
+      "playerId": 9594,
+      "databaseName": "Vincent Kompany",
+      "role": "player"
+    },
+    {
+      "key": "cristiano_ronaldo",
+      "name": "Cristiano Ronaldo",
+      "source": "zip1_15",
+      "cardIndex": 11,
+      "crop": [
+        707,
+        1067,
+        241,
+        241
+      ],
+      "playerId": 8198,
+      "databaseName": "Cristiano Ronaldo",
+      "role": "player"
+    },
+    {
+      "key": "lamine_yamal",
+      "name": "Lamine Yamal",
+      "source": "zip1_19",
+      "cardIndex": 0,
+      "crop": [
+        10,
+        65,
+        526,
+        680
+      ],
+      "playerId": 937958,
+      "databaseName": "Lamine Yamal",
+      "role": "player"
+    },
+    {
+      "key": "kylian_mbappe",
+      "name": "Kylian Mbappé",
+      "source": "zip1_19",
+      "cardIndex": 1,
+      "crop": [
+        635,
+        65,
+        555,
+        680
+      ],
+      "playerId": 342229,
+      "databaseName": "Kylian Mbappé",
+      "role": "player"
+    },
+    {
+      "key": "erling_haaland",
+      "name": "Erling Haaland",
+      "source": "zip1_19",
+      "cardIndex": 2,
+      "crop": [
+        1300,
+        65,
+        532,
+        680
+      ],
+      "playerId": 418560,
+      "databaseName": "Erling Haaland",
+      "role": "player"
+    },
+    {
+      "key": "erman_yasar",
+      "name": "Erman Yaşar",
+      "source": "creators",
+      "cardIndex": 0,
+      "crop": [
+        46,
+        279,
+        424,
+        610
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "hasan_arda",
+      "name": "Hasan Arda",
+      "source": "creators",
+      "cardIndex": 1,
+      "crop": [
+        512,
+        279,
+        424,
+        610
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "emre_ozcan",
+      "name": "Emre Özcan",
+      "source": "creators",
+      "cardIndex": 2,
+      "crop": [
+        977,
+        279,
+        424,
+        610
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "xabi_alonso",
+      "name": "Xabi Alonso",
+      "source": "dual_role_00",
+      "cardIndex": 1,
+      "crop": [
+        414,
+        122,
+        295,
+        295
+      ],
+      "playerId": 7476,
+      "role": "player",
+      "databaseName": "Xabi Alonso"
+    },
+    {
+      "key": "carlo_ancelotti",
+      "name": "Carlo Ancelotti",
+      "source": "dual_role_00",
+      "cardIndex": 2,
+      "crop": [
+        741,
+        121,
+        297,
+        297
+      ],
+      "playerId": 4000000082,
+      "role": "player",
+      "databaseName": "Carlo Ancelotti"
+    },
+    {
+      "key": "antonio_conte",
+      "name": "Antonio Conte",
+      "source": "dual_role_00",
+      "cardIndex": 3,
+      "crop": [
+        86,
+        540,
+        297,
+        297
+      ],
+      "playerId": 5759,
+      "role": "player",
+      "databaseName": "Antonio Conte"
+    },
+    {
+      "key": "luis_enrique",
+      "name": "Luis Enrique",
+      "source": "dual_role_00",
+      "cardIndex": 4,
+      "crop": [
+        414,
+        540,
+        295,
+        295
+      ],
+      "playerId": 4000000075,
+      "role": "player",
+      "databaseName": "Luis Enrique"
+    },
+    {
+      "key": "didier_deschamps",
+      "name": "Didier Deschamps",
+      "source": "dual_role_00",
+      "cardIndex": 5,
+      "crop": [
+        741,
+        540,
+        297,
+        297
+      ],
+      "playerId": 4000000030,
+      "role": "player",
+      "databaseName": "Didier Deschamps"
+    },
+    {
+      "key": "roberto_mancini",
+      "name": "Roberto Mancini",
+      "source": "dual_role_00",
+      "cardIndex": 6,
+      "crop": [
+        233,
+        955,
+        310,
+        310
+      ],
+      "playerId": 4000000091,
+      "role": "player",
+      "databaseName": "Roberto Mancini"
+    },
+    {
+      "key": "diego_simeone",
+      "name": "Diego Simeone",
+      "source": "dual_role_00",
+      "cardIndex": 7,
+      "crop": [
+        579,
+        955,
+        312,
+        312
+      ],
+      "playerId": 4000000085,
+      "role": "player",
+      "databaseName": "Diego Simeone"
+    },
+    {
+      "key": "didier_deschamps_coach",
+      "name": "Didier Deschamps",
+      "source": "dual_role_01",
+      "cardIndex": 5,
+      "crop": [
+        740,
+        536,
+        287,
+        287
+      ],
+      "playerId": 4000000030,
+      "role": "coach",
+      "databaseName": "Didier Deschamps"
+    },
+    {
+      "key": "johan_cruyff",
+      "name": "Johan Cruyff",
+      "source": "dual_role_02",
+      "cardIndex": 1,
+      "crop": [
+        421,
+        114,
+        281,
+        281
+      ],
+      "playerId": 4000000036,
+      "role": "player",
+      "databaseName": "Johan Cruyff"
+    },
+    {
+      "key": "zinedine_zidane",
+      "name": "Zinedine Zidane",
+      "source": "dual_role_02",
+      "cardIndex": 2,
+      "crop": [
+        736,
+        114,
+        283,
+        283
+      ],
+      "playerId": 3111,
+      "role": "player",
+      "databaseName": "Zinédine Zidane"
+    },
+    {
+      "key": "fatih_terim",
+      "name": "Fatih Terim",
+      "source": "dual_role_02",
+      "cardIndex": 3,
+      "crop": [
+        104,
+        535,
+        283,
+        283
+      ],
+      "playerId": 4000000076,
+      "role": "player",
+      "databaseName": "Fatih Terim"
+    },
+    {
+      "key": "okan_buruk",
+      "name": "Okan Buruk",
+      "source": "dual_role_02",
+      "cardIndex": 4,
+      "crop": [
+        422,
+        535,
+        280,
+        280
+      ],
+      "playerId": 4000000078,
+      "role": "player",
+      "databaseName": "Okan Buruk"
+    },
+    {
+      "key": "sergen_yalcin",
+      "name": "Sergen Yalçın",
+      "source": "dual_role_02",
+      "cardIndex": 5,
+      "crop": [
+        736,
+        535,
+        283,
+        283
+      ],
+      "playerId": 4000000004,
+      "role": "player",
+      "databaseName": "Sergen Yalçın"
+    },
+    {
+      "key": "aykut_kocaman",
+      "name": "Aykut Kocaman",
+      "source": "dual_role_02",
+      "cardIndex": 6,
+      "crop": [
+        255,
+        951,
+        289,
+        289
+      ],
+      "playerId": 4000000010,
+      "role": "player",
+      "databaseName": "Aykut Kocaman"
+    },
+    {
+      "key": "senol_gunes",
+      "name": "Şenol Güneş",
+      "source": "dual_role_02",
+      "cardIndex": 7,
+      "crop": [
+        579,
+        951,
+        289,
+        289
+      ],
+      "playerId": 4000000014,
+      "role": "player",
+      "databaseName": "Şenol Güneş"
+    },
+    {
+      "key": "frank_rijkaard_coach",
+      "name": "Frank Rijkaard",
+      "source": "dual_role_03",
+      "cardIndex": 0,
+      "crop": [
+        72,
+        130,
+        307,
+        307
+      ],
+      "playerId": 4000000058,
+      "role": "coach",
+      "databaseName": "Frank Rijkaard"
+    },
+    {
+      "key": "johan_cruyff_coach",
+      "name": "Johan Cruyff",
+      "source": "dual_role_03",
+      "cardIndex": 1,
+      "crop": [
+        411,
+        130,
+        302,
+        302
+      ],
+      "playerId": 4000000036,
+      "role": "coach",
+      "databaseName": "Johan Cruyff"
+    },
+    {
+      "key": "zinedine_zidane_coach",
+      "name": "Zinedine Zidane",
+      "source": "dual_role_03",
+      "cardIndex": 2,
+      "crop": [
+        745,
+        130,
+        306,
+        306
+      ],
+      "playerId": 3111,
+      "role": "coach",
+      "databaseName": "Zinédine Zidane"
+    },
+    {
+      "key": "ismail_kartal",
+      "name": "İsmail Kartal",
+      "source": "dual_role_04",
+      "cardIndex": 0,
+      "crop": [
+        81,
+        132,
+        298,
+        298
+      ],
+      "playerId": 4000000077,
+      "role": "player",
+      "databaseName": "İsmail Kartal"
+    },
+    {
+      "key": "volkan_demirel_coach",
+      "name": "Volkan Demirel",
+      "source": "dual_role_05",
+      "cardIndex": 1,
+      "crop": [
+        417,
+        135,
+        291,
+        291
+      ],
+      "playerId": 4000000019,
+      "role": "coach",
+      "databaseName": "Volkan Demirel"
+    },
+    {
+      "key": "burak_yilmaz_coach",
+      "name": "Burak Yılmaz",
+      "source": "dual_role_05",
+      "cardIndex": 2,
+      "crop": [
+        742,
+        135,
+        290,
+        290
+      ],
+      "playerId": 4000000108,
+      "role": "coach",
+      "databaseName": "Burak Yılmaz"
+    },
+    {
+      "key": "emre_belozoglu_coach",
+      "name": "Emre Belözoğlu",
+      "source": "dual_role_05",
+      "cardIndex": 3,
+      "crop": [
+        93,
+        539,
+        291,
+        291
+      ],
+      "playerId": 4000000017,
+      "role": "coach",
+      "databaseName": "Emre Belözoğlu"
+    },
+    {
+      "key": "arda_turan_coach",
+      "name": "Arda Turan",
+      "source": "dual_role_05",
+      "cardIndex": 4,
+      "crop": [
+        417,
+        539,
+        291,
+        291
+      ],
+      "playerId": 4000000018,
+      "role": "coach",
+      "databaseName": "Arda Turan"
+    },
+    {
+      "key": "xavi_coach",
+      "name": "Xavi",
+      "source": "dual_role_05",
+      "cardIndex": 5,
+      "crop": [
+        742,
+        539,
+        290,
+        290
+      ],
+      "playerId": 7607,
+      "role": "coach",
+      "databaseName": "Xavi"
+    },
+    {
+      "key": "cesc_fabregas_coach",
+      "name": "Cesc Fàbregas",
+      "source": "dual_role_05",
+      "cardIndex": 6,
+      "crop": [
+        254,
+        943,
+        291,
+        291
+      ],
+      "playerId": 8806,
+      "role": "coach",
+      "databaseName": "Cesc Fàbregas"
+    },
+    {
+      "key": "andrea_pirlo_coach",
+      "name": "Andrea Pirlo",
+      "source": "dual_role_05",
+      "cardIndex": 7,
+      "crop": [
+        580,
+        943,
+        291,
+        291
+      ],
+      "playerId": 5817,
+      "role": "coach",
+      "databaseName": "Andrea Pirlo"
+    },
+    {
+      "key": "kaan",
+      "name": "Kaan",
+      "source": "custom_kaan",
+      "cardIndex": 0,
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "omer",
+      "name": "Ömer",
+      "source": "custom_omer",
+      "cardIndex": 0,
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "berat",
+      "name": "Berat",
+      "source": "custom_berat",
+      "cardIndex": 0,
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "burak",
+      "name": "Burak",
+      "source": "custom_burak",
+      "cardIndex": 0,
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "playerId": null,
+      "role": "custom"
+    },
+    {
+      "key": "ege",
+      "name": "Ege",
+      "source": "custom_ege",
+      "cardIndex": 0,
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "playerId": null,
+      "role": "custom"
+    }
+  ],
+  "avatarKeys": {
+    "persona_cristiano_ronaldo": "cristiano_ronaldo",
+    "persona_lionel_messi": "lionel_messi",
+    "persona_neymar": "neymar",
+    "persona_lamine_yamal": "lamine_yamal",
+    "persona_kylian_mbappe": "kylian_mbappe",
+    "persona_karim_benzema": "karim_benzema",
+    "persona_luka_modric": "luka_modric",
+    "persona_victor_osimhen": "victor_osimhen",
+    "persona_mauro_icardi": "mauro_icardi",
+    "persona_erling_haaland": "erling_haaland",
+    "persona_mohamed_salah": "mohamed_salah",
+    "persona_jose_mourinho": "jose_mourinho_coach",
+    "persona_pep_guardiola": "pep_guardiola_coach",
+    "persona_luis_enrique": "luis_enrique_coach",
+    "persona_fatih_terim": "fatih_terim_coach",
+    "persona_ismail_kartal": "ismail_kartal_coach",
+    "persona_okan_buruk": "okan_buruk_coach",
+    "persona_sergen_yalcin": "sergen_yalcin_coach",
+    "persona_aykut_kocaman": "aykut_kocaman_coach",
+    "persona_zlatan_ibrahimovic": "zlatan_ibrahimovic",
+    "persona_ricardo_quaresma": "ricardo_quaresma",
+    "persona_alex_de_souza": "alex_de_souza",
+    "persona_hami_mandirali": "hami_mandirali",
+    "persona_diego_maradona": "diego_maradona",
+    "persona_erman_yasar": "erman_yasar",
+    "persona_hasan_arda": "hasan_arda",
+    "persona_emre_ozcan": "emre_ozcan",
+    "persona_thierry_henry": "thierry_henry",
+    "persona_francesco_totti": "francesco_totti",
+    "persona_roberto_carlos": "roberto_carlos",
+    "persona_xavi": "xavi",
+    "persona_gennaro_gattuso": "gennaro_gattuso",
+    "persona_david_beckham": "david_beckham",
+    "persona_steven_gerrard": "steven_gerrard",
+    "persona_paolo_maldini": "paolo_maldini",
+    "persona_arjen_robben": "arjen_robben",
+    "persona_andrea_pirlo": "andrea_pirlo",
+    "persona_gareth_bale": "gareth_bale",
+    "persona_gianluigi_buffon": "gianluigi_buffon",
+    "persona_sergio_ramos": "sergio_ramos",
+    "persona_luis_suarez": "luis_suarez",
+    "persona_petr_cech": "petr_cech",
+    "persona_fernando_torres": "fernando_torres",
+    "persona_andres_iniesta": "andres_iniesta",
+    "persona_didier_drogba": "didier_drogba",
+    "persona_wesley_sneijder": "wesley_sneijder",
+    "persona_mikel_arteta": "mikel_arteta_coach",
+    "persona_frank_lampard": "frank_lampard",
+    "persona_socrates": "socrates",
+    "persona_frank_rijkaard": "frank_rijkaard",
+    "persona_senol_gunes": "senol_gunes_coach",
+    "persona_vincenzo_italiano": "vincenzo_italiano_coach",
+    "persona_alex_ferguson": "alex_ferguson_coach",
+    "persona_jurgen_klopp": "jurgen_klopp_coach",
+    "persona_arsene_wenger": "arsene_wenger_coach",
+    "persona_carlo_ancelotti": "carlo_ancelotti_coach",
+    "persona_hansi_flick": "hansi_flick_coach",
+    "persona_thomas_tuchel": "thomas_tuchel_coach",
+    "persona_diego_simeone": "diego_simeone_coach",
+    "persona_xabi_alonso": "xabi_alonso_coach",
+    "persona_antonio_conte": "antonio_conte_coach",
+    "persona_unai_emery": "unai_emery_coach",
+    "persona_julian_nagelsmann": "julian_nagelsmann_coach",
+    "persona_roberto_de_zerbi": "roberto_de_zerbi_coach",
+    "persona_luciano_spalletti": "luciano_spalletti_coach",
+    "persona_gian_piero_gasperini": "gian_piero_gasperini_coach",
+    "persona_massimiliano_allegri": "massimiliano_allegri_coach",
+    "persona_roberto_mancini": "roberto_mancini_coach",
+    "persona_joachim_low": "joachim_low_coach",
+    "persona_abdullah_avci": "abdullah_avci_coach",
+    "persona_riza_calimbay": "riza_calimbay_coach",
+    "persona_hikmet_karaman": "hikmet_karaman_coach",
+    "persona_vicente_del_bosque": "vicente_del_bosque_coach",
+    "persona_rafael_benitez": "rafael_benitez_coach",
+    "persona_claudio_ranieri": "claudio_ranieri_coach",
+    "persona_enzo_maresca": "enzo_maresca_coach",
+    "persona_metin_oktay": "metin_oktay",
+    "persona_lefter_kucukandonyadis": "lefter_kucukandonyadis",
+    "persona_gabriel_batistuta": "gabriel_batistuta",
+    "persona_patrick_vieira": "patrick_vieira",
+    "persona_oliver_kahn": "oliver_kahn",
+    "persona_cafu": "cafu",
+    "persona_peter_schmeichel": "peter_schmeichel",
+    "persona_arda_turan": "arda_turan_coach",
+    "persona_cesc_fabregas": "cesc_fabregas_coach",
+    "persona_emre_belozoglu": "emre_belozoglu_coach",
+    "persona_volkan_demirel": "volkan_demirel_coach",
+    "persona_burak_yilmaz": "burak_yilmaz_coach",
+    "persona_rustu_recber": "rustu_recber",
+    "persona_bulent_korkmaz": "bulent_korkmaz",
+    "persona_umit_davala": "umit_davala",
+    "persona_ilhan_mansiz": "ilhan_mansiz",
+    "persona_tanju_colak": "tanju_colak",
+    "persona_gheorghe_hagi": "gheorghe_hagi",
+    "persona_fernando_muslera": "fernando_muslera",
+    "persona_manuel_neuer": "manuel_neuer",
+    "persona_kevin_de_bruyne": "kevin_de_bruyne",
+    "persona_arda_guler": "arda_guler",
+    "persona_kenan_yildiz": "kenan_yildiz",
+    "persona_jude_bellingham": "jude_bellingham",
+    "persona_vinicius_junior": "vinicius_junior",
+    "persona_harry_kane": "harry_kane",
+    "persona_bukayo_saka": "bukayo_saka",
+    "persona_jamal_musiala": "jamal_musiala",
+    "persona_florian_wirtz": "florian_wirtz",
+    "persona_robert_lewandowski": "robert_lewandowski",
+    "persona_son_heung_min": "son_heung_min",
+    "persona_vincent_kompany": "vincent_kompany",
+    "persona_pep_guardiola_player": "pep_guardiola",
+    "persona_xabi_alonso_player": "xabi_alonso",
+    "persona_carlo_ancelotti_player": "carlo_ancelotti",
+    "persona_antonio_conte_player": "antonio_conte",
+    "persona_luis_enrique_player": "luis_enrique",
+    "persona_didier_deschamps": "didier_deschamps",
+    "persona_didier_deschamps_coach": "didier_deschamps_coach",
+    "persona_roberto_mancini_player": "roberto_mancini",
+    "persona_diego_simeone_player": "diego_simeone",
+    "persona_frank_rijkaard_coach": "frank_rijkaard_coach",
+    "persona_johan_cruyff": "johan_cruyff",
+    "persona_johan_cruyff_coach": "johan_cruyff_coach",
+    "persona_zinedine_zidane": "zinedine_zidane",
+    "persona_zinedine_zidane_coach": "zinedine_zidane_coach",
+    "persona_fatih_terim_player": "fatih_terim",
+    "persona_okan_buruk_player": "okan_buruk",
+    "persona_sergen_yalcin_player": "sergen_yalcin",
+    "persona_aykut_kocaman_player": "aykut_kocaman",
+    "persona_senol_gunes_player": "senol_gunes",
+    "persona_ismail_kartal_player": "ismail_kartal",
+    "persona_volkan_demirel_player": "volkan_demirel",
+    "persona_burak_yilmaz_player": "burak_yilmaz",
+    "persona_emre_belozoglu_player": "emre_belozoglu",
+    "persona_arda_turan_player": "arda_turan",
+    "persona_xavi_coach": "xavi_coach",
+    "persona_cesc_fabregas_player": "cesc_fabregas",
+    "persona_andrea_pirlo_coach": "andrea_pirlo_coach",
+    "persona_kaan": "kaan",
+    "persona_omer": "omer",
+    "persona_berat": "berat",
+    "persona_burak": "burak",
+    "persona_ege": "ege"
+  },
+  "avatarPlayerIds": {
+    "persona_cristiano_ronaldo": 8198,
+    "persona_lionel_messi": 28003,
+    "persona_neymar": 68290,
+    "persona_lamine_yamal": 937958,
+    "persona_kylian_mbappe": 342229,
+    "persona_karim_benzema": 18922,
+    "persona_luka_modric": 27992,
+    "persona_victor_osimhen": 401923,
+    "persona_mauro_icardi": 68863,
+    "persona_erling_haaland": 418560,
+    "persona_mohamed_salah": 148455,
+    "persona_pep_guardiola": 4000000062,
+    "persona_sergen_yalcin": 4000000004,
+    "persona_aykut_kocaman": 4000000010,
+    "persona_zlatan_ibrahimovic": 3455,
+    "persona_ricardo_quaresma": 4188,
+    "persona_hami_mandirali": 4000000013,
+    "persona_diego_maradona": 4000000035,
+    "persona_thierry_henry": 3207,
+    "persona_francesco_totti": 4000000025,
+    "persona_roberto_carlos": 4000000029,
+    "persona_xavi": 7607,
+    "persona_gennaro_gattuso": 5813,
+    "persona_david_beckham": 4000000023,
+    "persona_steven_gerrard": 3109,
+    "persona_paolo_maldini": 4000000024,
+    "persona_arjen_robben": 4360,
+    "persona_andrea_pirlo": 5817,
+    "persona_gareth_bale": 39381,
+    "persona_gianluigi_buffon": 5023,
+    "persona_sergio_ramos": 25557,
+    "persona_luis_suarez": 44352,
+    "persona_petr_cech": 5658,
+    "persona_fernando_torres": 7767,
+    "persona_andres_iniesta": 7600,
+    "persona_didier_drogba": 3924,
+    "persona_wesley_sneijder": 4673,
+    "persona_mikel_arteta": 7451,
+    "persona_frank_lampard": 3163,
+    "persona_socrates": 4000000063,
+    "persona_frank_rijkaard": 4000000058,
+    "persona_senol_gunes": 4000000014,
+    "persona_vincenzo_italiano": 21865,
+    "persona_xabi_alonso": 7476,
+    "persona_antonio_conte": 5759,
+    "persona_roberto_de_zerbi": 23194,
+    "persona_lefter_kucukandonyadis": 4000000008,
+    "persona_gabriel_batistuta": 4000000045,
+    "persona_patrick_vieira": 4000000032,
+    "persona_arda_turan": 4000000018,
+    "persona_cesc_fabregas": 8806,
+    "persona_emre_belozoglu": 4000000017,
+    "persona_volkan_demirel": 4000000019,
+    "persona_rustu_recber": 4077,
+    "persona_ilhan_mansiz": 6875,
+    "persona_tanju_colak": 4000000012,
+    "persona_gheorghe_hagi": 4000000002,
+    "persona_fernando_muslera": 58088,
+    "persona_manuel_neuer": 17259,
+    "persona_kevin_de_bruyne": 88755,
+    "persona_arda_guler": 861410,
+    "persona_kenan_yildiz": 845654,
+    "persona_jude_bellingham": 581678,
+    "persona_vinicius_junior": 371998,
+    "persona_harry_kane": 132098,
+    "persona_bukayo_saka": 433177,
+    "persona_jamal_musiala": 580195,
+    "persona_florian_wirtz": 598577,
+    "persona_robert_lewandowski": 38253,
+    "persona_son_heung_min": 91845,
+    "persona_vincent_kompany": 9594,
+    "persona_pep_guardiola_player": 4000000062,
+    "persona_jose_mourinho": 4000000074,
+    "persona_luis_enrique": 4000000075,
+    "persona_fatih_terim": 4000000076,
+    "persona_ismail_kartal": 4000000077,
+    "persona_okan_buruk": 4000000078,
+    "persona_alex_de_souza": 4000000110,
+    "persona_alex_ferguson": 4000000079,
+    "persona_jurgen_klopp": 4000000080,
+    "persona_arsene_wenger": 4000000081,
+    "persona_carlo_ancelotti": 4000000082,
+    "persona_hansi_flick": 4000000083,
+    "persona_thomas_tuchel": 4000000084,
+    "persona_diego_simeone": 4000000085,
+    "persona_unai_emery": 4000000086,
+    "persona_julian_nagelsmann": 4000000087,
+    "persona_luciano_spalletti": 4000000088,
+    "persona_gian_piero_gasperini": 4000000089,
+    "persona_massimiliano_allegri": 4000000090,
+    "persona_roberto_mancini": 4000000091,
+    "persona_joachim_low": 4000000092,
+    "persona_abdullah_avci": 4000000093,
+    "persona_riza_calimbay": 4000000094,
+    "persona_hikmet_karaman": 4000000095,
+    "persona_vicente_del_bosque": 4000000096,
+    "persona_rafael_benitez": 4000000097,
+    "persona_claudio_ranieri": 4000000098,
+    "persona_enzo_maresca": 4000000099,
+    "persona_metin_oktay": 4000000105,
+    "persona_oliver_kahn": 4000000102,
+    "persona_cafu": 4000000104,
+    "persona_peter_schmeichel": 4000000103,
+    "persona_burak_yilmaz": 4000000108,
+    "persona_bulent_korkmaz": 4000000106,
+    "persona_umit_davala": 4000000107,
+    "persona_xabi_alonso_player": 7476,
+    "persona_carlo_ancelotti_player": 4000000082,
+    "persona_antonio_conte_player": 5759,
+    "persona_luis_enrique_player": 4000000075,
+    "persona_didier_deschamps": 4000000030,
+    "persona_didier_deschamps_coach": 4000000030,
+    "persona_roberto_mancini_player": 4000000091,
+    "persona_diego_simeone_player": 4000000085,
+    "persona_frank_rijkaard_coach": 4000000058,
+    "persona_johan_cruyff": 4000000036,
+    "persona_johan_cruyff_coach": 4000000036,
+    "persona_zinedine_zidane": 3111,
+    "persona_zinedine_zidane_coach": 3111,
+    "persona_fatih_terim_player": 4000000076,
+    "persona_okan_buruk_player": 4000000078,
+    "persona_sergen_yalcin_player": 4000000004,
+    "persona_aykut_kocaman_player": 4000000010,
+    "persona_senol_gunes_player": 4000000014,
+    "persona_ismail_kartal_player": 4000000077,
+    "persona_volkan_demirel_player": 4000000019,
+    "persona_burak_yilmaz_player": 4000000108,
+    "persona_emre_belozoglu_player": 4000000017,
+    "persona_arda_turan_player": 4000000018,
+    "persona_xavi_coach": 7607,
+    "persona_cesc_fabregas_player": 8806,
+    "persona_andrea_pirlo_coach": 5817
+  },
+  "coachKeys": {
+    "coach_0": "pep_guardiola_coach",
+    "coach_1": "vincent_kompany",
+    "coach_2": "mikel_arteta_coach",
+    "coach_3": "hansi_flick_coach",
+    "coach_5": "luis_enrique_coach",
+    "coach_6": "enzo_maresca_coach",
+    "coach_7": "xabi_alonso_coach",
+    "coach_8": "carlo_ancelotti_coach",
+    "coach_15": "thomas_tuchel_coach",
+    "coach_20": "julian_nagelsmann_coach",
+    "coach_27": "jose_mourinho_coach",
+    "coach_30": "antonio_conte_coach",
+    "coach_36": "gian_piero_gasperini_coach",
+    "coach_40": "cesc_fabregas_coach",
+    "coach_44": "roberto_de_zerbi_coach",
+    "coach_47": "okan_buruk_coach",
+    "coach_52": "diego_simeone_coach",
+    "coach_58": "luciano_spalletti_coach",
+    "coach_68": "claudio_ranieri_coach",
+    "coach_72": "massimiliano_allegri_coach",
+    "coach_73": "ismail_kartal_coach",
+    "coach_79": "vincenzo_italiano_coach",
+    "coach_152": "roberto_mancini_coach",
+    "coach_171": "fatih_terim_coach",
+    "coach_192": "arda_turan_coach",
+    "coach_260": "gennaro_gattuso",
+    "coach_261": "patrick_vieira",
+    "coach_269": "senol_gunes_coach",
+    "coach_301": "ismail_kartal_coach",
+    "coach_463": "burak_yilmaz_coach",
+    "coach_770": "andrea_pirlo_coach",
+    "coach_892": "hikmet_karaman_coach",
+    "coach_963": "emre_belozoglu_coach",
+    "coach_1109": "volkan_demirel_coach",
+    "coach_1282": "riza_calimbay_coach",
+    "coach_1907": "gheorghe_hagi",
+    "coach_3719": "hikmet_karaman_coach",
+    "seed_pep": "pep_guardiola_coach",
+    "seed_mourinho": "jose_mourinho_coach",
+    "seed_klopp": "jurgen_klopp_coach",
+    "seed_ancelotti": "carlo_ancelotti_coach",
+    "seed_ferguson": "alex_ferguson_coach",
+    "seed_wenger": "arsene_wenger_coach",
+    "seed_simeone": "diego_simeone_coach",
+    "seed_conte": "antonio_conte_coach",
+    "seed_allegri": "massimiliano_allegri_coach",
+    "seed_spalletti": "luciano_spalletti_coach",
+    "seed_gasperini": "gian_piero_gasperini_coach",
+    "seed_flick": "hansi_flick_coach",
+    "seed_tuchel": "thomas_tuchel_coach",
+    "seed_nagelsmann": "julian_nagelsmann_coach",
+    "seed_alonso": "xabi_alonso_coach",
+    "seed_arteta": "mikel_arteta_coach",
+    "seed_dezerbi": "roberto_de_zerbi_coach",
+    "seed_emery": "unai_emery_coach",
+    "seed_benitez": "rafael_benitez_coach",
+    "seed_xavi": "xavi_coach",
+    "seed_luis_enrique": "luis_enrique_coach",
+    "seed_terim": "fatih_terim_coach",
+    "seed_gunes": "senol_gunes_coach",
+    "seed_avci": "abdullah_avci_coach",
+    "seed_buruk": "okan_buruk_coach",
+    "seed_kartal": "ismail_kartal_coach",
+    "seed_kocaman": "aykut_kocaman_coach",
+    "seed_calimbay": "riza_calimbay_coach",
+    "seed_hagi": "gheorghe_hagi",
+    "coach_portrait_sergen_yalcin": "sergen_yalcin_coach",
+    "coach_portrait_aykut_kocaman": "aykut_kocaman_coach",
+    "coach_portrait_alex_ferguson": "alex_ferguson_coach",
+    "coach_portrait_jurgen_klopp": "jurgen_klopp_coach",
+    "coach_portrait_arsene_wenger": "arsene_wenger_coach",
+    "coach_portrait_unai_emery": "unai_emery_coach",
+    "coach_portrait_joachim_low": "joachim_low_coach",
+    "coach_portrait_abdullah_avci": "abdullah_avci_coach",
+    "coach_portrait_vicente_del_bosque": "vicente_del_bosque_coach",
+    "coach_portrait_rafael_benitez": "rafael_benitez_coach",
+    "seed_deschamps": "didier_deschamps_coach",
+    "coach_portrait_didier_deschamps": "didier_deschamps_coach",
+    "coach_portrait_frank_rijkaard": "frank_rijkaard_coach",
+    "seed_cruyff": "johan_cruyff_coach",
+    "coach_portrait_johan_cruyff": "johan_cruyff_coach",
+    "seed_zidane": "zinedine_zidane_coach",
+    "coach_portrait_zinedine_zidane": "zinedine_zidane_coach",
+    "coach_portrait_xavi": "xavi_coach",
+    "coach_122": "sergen_yalcin_coach",
+    "coach_9": "unai_emery_coach",
+    "coach_255": "abdullah_avci_coach",
+    "coach_180": "rafael_benitez_coach",
+    "coach_19": "didier_deschamps_coach"
+  },
+  "coachPlayerIds": {
+    "coach_19": 4000000030,
+    "seed_zidane": 3111,
+    "seed_lampard": 3163,
+    "seed_deschamps": 4000000030,
+    "seed_cruyff": 4000000036,
+    "seed_maradona": 4000000035,
+    "coach_0": 4000000062,
+    "coach_1": 9594,
+    "coach_2": 7451,
+    "coach_3": 4000000083,
+    "coach_5": 4000000075,
+    "coach_6": 4000000099,
+    "coach_7": 7476,
+    "coach_8": 4000000082,
+    "coach_15": 4000000084,
+    "coach_20": 4000000087,
+    "coach_27": 4000000074,
+    "coach_30": 5759,
+    "coach_36": 4000000089,
+    "coach_40": 8806,
+    "coach_44": 23194,
+    "coach_47": 4000000078,
+    "coach_52": 4000000085,
+    "coach_58": 4000000088,
+    "coach_68": 4000000098,
+    "coach_72": 4000000090,
+    "coach_73": 4000000077,
+    "coach_79": 21865,
+    "coach_152": 4000000091,
+    "coach_171": 4000000076,
+    "coach_192": 4000000018,
+    "coach_260": 5813,
+    "coach_261": 4000000032,
+    "coach_269": 4000000014,
+    "coach_301": 4000000077,
+    "coach_463": 4000000108,
+    "coach_770": 5817,
+    "coach_892": 4000000095,
+    "coach_963": 4000000017,
+    "coach_1109": 4000000019,
+    "coach_1282": 4000000094,
+    "coach_1907": 4000000002,
+    "coach_3719": 4000000095,
+    "seed_pep": 4000000062,
+    "seed_mourinho": 4000000074,
+    "seed_klopp": 4000000080,
+    "seed_ancelotti": 4000000082,
+    "seed_ferguson": 4000000079,
+    "seed_wenger": 4000000081,
+    "seed_simeone": 4000000085,
+    "seed_conte": 5759,
+    "seed_allegri": 4000000090,
+    "seed_spalletti": 4000000088,
+    "seed_gasperini": 4000000089,
+    "seed_flick": 4000000083,
+    "seed_tuchel": 4000000084,
+    "seed_nagelsmann": 4000000087,
+    "seed_alonso": 7476,
+    "seed_arteta": 7451,
+    "seed_dezerbi": 23194,
+    "seed_emery": 4000000086,
+    "seed_benitez": 4000000097,
+    "seed_xavi": 7607,
+    "seed_luis_enrique": 4000000075,
+    "seed_terim": 4000000076,
+    "seed_gunes": 4000000014,
+    "seed_avci": 4000000093,
+    "seed_buruk": 4000000078,
+    "seed_kartal": 4000000077,
+    "seed_kocaman": 4000000010,
+    "seed_calimbay": 4000000094,
+    "seed_hagi": 4000000002,
+    "coach_portrait_sergen_yalcin": 4000000004,
+    "coach_portrait_aykut_kocaman": 4000000010,
+    "coach_portrait_alex_ferguson": 4000000079,
+    "coach_portrait_jurgen_klopp": 4000000080,
+    "coach_portrait_arsene_wenger": 4000000081,
+    "coach_portrait_unai_emery": 4000000086,
+    "coach_portrait_joachim_low": 4000000092,
+    "coach_portrait_abdullah_avci": 4000000093,
+    "coach_portrait_vicente_del_bosque": 4000000096,
+    "coach_portrait_rafael_benitez": 4000000097,
+    "coach_portrait_didier_deschamps": 4000000030,
+    "coach_portrait_frank_rijkaard": 4000000058,
+    "coach_portrait_johan_cruyff": 4000000036,
+    "coach_portrait_zinedine_zidane": 3111,
+    "coach_portrait_xavi": 7607,
+    "coach_122": 4000000004,
+    "coach_9": 4000000086,
+    "coach_255": 4000000093,
+    "coach_180": 4000000097
+  },
+  "unmappedPlayers": [],
+  "retiredAvatarIds": [
+    "persona_anthony_nwakaeme",
+    "persona_marek_hamsik"
+  ],
+  "dualRoles": [
+    {
+      "name": "Pep Guardiola",
+      "playerKey": "pep_guardiola",
+      "coachKey": "pep_guardiola_coach"
+    },
+    {
+      "name": "Xabi Alonso",
+      "playerKey": "xabi_alonso",
+      "coachKey": "xabi_alonso_coach"
+    },
+    {
+      "name": "Carlo Ancelotti",
+      "playerKey": "carlo_ancelotti",
+      "coachKey": "carlo_ancelotti_coach"
+    },
+    {
+      "name": "Antonio Conte",
+      "playerKey": "antonio_conte",
+      "coachKey": "antonio_conte_coach"
+    },
+    {
+      "name": "Luis Enrique",
+      "playerKey": "luis_enrique",
+      "coachKey": "luis_enrique_coach"
+    },
+    {
+      "name": "Didier Deschamps",
+      "playerKey": "didier_deschamps",
+      "coachKey": "didier_deschamps_coach"
+    },
+    {
+      "name": "Roberto Mancini",
+      "playerKey": "roberto_mancini",
+      "coachKey": "roberto_mancini_coach"
+    },
+    {
+      "name": "Diego Simeone",
+      "playerKey": "diego_simeone",
+      "coachKey": "diego_simeone_coach"
+    },
+    {
+      "name": "Frank Rijkaard",
+      "playerKey": "frank_rijkaard",
+      "coachKey": "frank_rijkaard_coach"
+    },
+    {
+      "name": "Johan Cruyff",
+      "playerKey": "johan_cruyff",
+      "coachKey": "johan_cruyff_coach"
+    },
+    {
+      "name": "Zinedine Zidane",
+      "playerKey": "zinedine_zidane",
+      "coachKey": "zinedine_zidane_coach"
+    },
+    {
+      "name": "Fatih Terim",
+      "playerKey": "fatih_terim",
+      "coachKey": "fatih_terim_coach"
+    },
+    {
+      "name": "Okan Buruk",
+      "playerKey": "okan_buruk",
+      "coachKey": "okan_buruk_coach"
+    },
+    {
+      "name": "Sergen Yalçın",
+      "playerKey": "sergen_yalcin",
+      "coachKey": "sergen_yalcin_coach"
+    },
+    {
+      "name": "Aykut Kocaman",
+      "playerKey": "aykut_kocaman",
+      "coachKey": "aykut_kocaman_coach"
+    },
+    {
+      "name": "Şenol Güneş",
+      "playerKey": "senol_gunes",
+      "coachKey": "senol_gunes_coach"
+    },
+    {
+      "name": "İsmail Kartal",
+      "playerKey": "ismail_kartal",
+      "coachKey": "ismail_kartal_coach"
+    },
+    {
+      "name": "Volkan Demirel",
+      "playerKey": "volkan_demirel",
+      "coachKey": "volkan_demirel_coach"
+    },
+    {
+      "name": "Burak Yılmaz",
+      "playerKey": "burak_yilmaz",
+      "coachKey": "burak_yilmaz_coach"
+    },
+    {
+      "name": "Emre Belözoğlu",
+      "playerKey": "emre_belozoglu",
+      "coachKey": "emre_belozoglu_coach"
+    },
+    {
+      "name": "Arda Turan",
+      "playerKey": "arda_turan",
+      "coachKey": "arda_turan_coach"
+    },
+    {
+      "name": "Xavi",
+      "playerKey": "xavi",
+      "coachKey": "xavi_coach"
+    },
+    {
+      "name": "Cesc Fàbregas",
+      "playerKey": "cesc_fabregas",
+      "coachKey": "cesc_fabregas_coach"
+    },
+    {
+      "name": "Andrea Pirlo",
+      "playerKey": "andrea_pirlo",
+      "coachKey": "andrea_pirlo_coach"
+    }
+  ]
+}
