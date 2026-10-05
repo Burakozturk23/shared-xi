@@ -215,7 +215,8 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
       Text('${index + 1}. ${round.guesses[index].name}', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 14),
       LayoutBuilder(builder: (context, constraints) {
-        final cols = MediaQuery.textScalerOf(context).scale(14) > 20 ? 2 : 3;
+        final minWidth = 90 * MediaQuery.textScalerOf(context).scale(14) / 14;
+        final cols = (constraints.maxWidth / minWidth).floor().clamp(1, 3).toInt();
         final clues = round.compare(round.guesses[index]);
         return Column(children: [
           for (var start = 0; start < clues.length; start += cols)
