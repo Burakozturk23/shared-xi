@@ -24,7 +24,7 @@ Future<void> search(WidgetTester t, String value) async {
   await fixture.reveal(t, find.byKey(const ValueKey('avatar-search')));
   await t.enterText(find.byKey(const ValueKey('avatar-search')), value);
   await t.pumpAndSettle();
-  await t.testTextInput.hide();
+  t.testTextInput.hide();
   await t.pumpAndSettle();
 }
 

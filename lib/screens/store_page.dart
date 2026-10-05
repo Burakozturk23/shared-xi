@@ -34,7 +34,13 @@ class _StorePageState extends State<StorePage> {
   late String _tab;
   String _kitCategory = 'all';
   AvatarBrowserFilter _avatarFilter = const AvatarBrowserFilter();
+  final _scroll = ScrollController();
   bool _confirming = false;
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     super.initState();
@@ -203,6 +209,13 @@ class _StorePageState extends State<StorePage> {
       appBar: AppBar(
         title: const Text('Mağaza'),
         actions: [
+          if (_tab == 'avatar') IconButton(
+            tooltip: 'Filtrelere dön', icon: const Icon(Icons.tune_rounded),
+            onPressed: () {
+              if (_scroll.hasClients) _scroll.animateTo(0,
+                duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+            },
+          ),
           IconButton(
             tooltip: 'Yenile',
             onPressed: _loading || _busy ? null : _load,
@@ -247,6 +260,7 @@ class _StorePageState extends State<StorePage> {
             (!_ownedOnly || ownedIds.contains(o.itemId))).toList();
     final previewCount = avatarOffers.where((o) => o.isPreview).length;
     return CustomScrollView(
+      controller: _scroll,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
@@ -256,7 +270,19 @@ class _StorePageState extends State<StorePage> {
             children: [
               if (_loading || (_busy && !_confirming))
                 const LinearProgressIndicator(),
-              SocialHero(
+              if (_tab == 'avatar')
+                PitchPanel(child: Wrap(
+                  spacing: 16, runSpacing: 8,
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text('${d.wallet.coins} Link Coin', style: Theme.of(context).textTheme.titleMedium),
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : () => _open(const CoinPacksPage()),
+                      icon: const Icon(Icons.toll_outlined), label: const Text('Coin al')),
+                  ],
+                ))
+              else SocialHero(
                 icon: Icons.shopping_bag_outlined,
                 eyebrow: 'LINK COIN MAĞAZASI',
                 title: '${d.wallet.coins} Link Coin',
