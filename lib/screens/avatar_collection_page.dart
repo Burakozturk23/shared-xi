@@ -126,7 +126,7 @@ class _AvatarCollectionPageState extends State<AvatarCollectionPage> {
               style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 10),
             Text(selected ? '✓ Kullanılıyor' : owned ? 'Kullan' : 'Mağazada gör', textAlign: TextAlign.center,
-              style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700)),
+              style: TextStyle(color: socialAccent(context), fontWeight: FontWeight.w700)),
           ])),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/avatar_browser.dart';
 import '../models/user_avatar_catalog.dart';
+import 'social_ui.dart';
 
 class AvatarFilterBar extends StatefulWidget {
   const AvatarFilterBar({super.key, required this.filter, required this.avatars,
@@ -41,6 +42,7 @@ class _AvatarFilterBarState extends State<AvatarFilterBar> {
         onChanged: (v) => widget.onChanged(widget.filter.copyWith(query: v)),
         decoration: InputDecoration(
           labelText: 'Avatar ara', hintText: 'İsim yaz: Messi, Ömer…',
+          floatingLabelStyle: TextStyle(color: socialAccent(context)),
           prefixIcon: const Icon(Icons.search_rounded),
           suffixIcon: widget.filter.query.isEmpty ? null : IconButton(
             tooltip: 'Aramayı temizle',
