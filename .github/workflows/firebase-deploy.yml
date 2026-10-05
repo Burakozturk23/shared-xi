@@ -1,0 +1,65 @@
+name: Deploy Firebase backend
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/firebase-deploy.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-production-sharedix
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy sharedix Functions and database rules
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sharedix-deploy.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - name: Validate deployment credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        shell: python
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          raw = os.environ.get('FIREBASE_SERVICE_ACCOUNT', '')
+          if not raw:
+              raise SystemExit('Missing repository secret FIREBASE_SERVICE_ACCOUNT; deployment did not start.')
+          try:
+              account = json.loads(raw)
+          except ValueError:
+              raise SystemExit('FIREBASE_SERVICE_ACCOUNT must contain a service-account JSON object.')
+          if not isinstance(account, dict) or account.get('type') != 'service_account' or account.get('project_id') != 'sharedix':
+              raise SystemExit('Deployment credentials must belong to the sharedix project.')
+          target = Path(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
+          target.touch(mode=0o600, exist_ok=False)
+          target.write_text(raw, encoding='utf-8')
+      - name: Install and verify Functions
+        working-directory: functions
+        run: |
+          npm ci
+          npm run lint
+          npm test
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@15.32.1
+      - name: Deploy backend and matching rules
+        run: firebase deploy --only functions,database --project sharedix --non-interactive
+      - name: Remove temporary credentials
+        if: always()
+        shell: bash
+        run: rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
