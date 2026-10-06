@@ -1,129 +1,74 @@
 import 'package:flutter/material.dart';
-
+import '../app/game_catalog.dart';
+import '../app/game_launcher.dart';
+import '../models/player.dart';
 import '../models/player_journey_chapter.dart';
 import '../services/player_journey_progress_service.dart';
+import '../services/journey_v2_store.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/player_avatar.dart';
 import 'player_journey_page.dart';
+import 'journey_v2_page.dart';
 
-/// Bir bölümün oyuncu listesi — sıralı kilit.
 class PlayerJourneyListPage extends StatefulWidget {
+  const PlayerJourneyListPage({super.key, required this.chapter});
   final PlayerJourneyChapter chapter;
-
-  const PlayerJourneyListPage({
-    super.key,
-    required this.chapter,
-  });
-
   @override
   State<PlayerJourneyListPage> createState() => _PlayerJourneyListPageState();
 }
 
 class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
   Set<String> _completed = {};
-  bool _loading = true;
-
+  Map<String,(int, bool)> _progress = {};
+  bool _loading = true, _failed = false;
   @override
-  void initState() {
-    super.initState();
-    _loadProgress();
-  }
-
+  void initState() { super.initState(); _loadProgress(); }
   Future<void> _loadProgress() async {
-    final ids = await PlayerJourneyProgressService.getCompletedIds();
-    if (!mounted) return;
-    setState(() {
-      _completed = ids;
-      _loading = false;
-    });
+    setState(() { _loading = true; _failed = false; });
+    try {
+      final ids = await PlayerJourneyProgressService.getCompletedIds();
+      final progress = await LocalJourneyV2Store.summaries();
+      if (mounted) setState(() { _completed = ids; _progress = progress; _loading = false; });
+    } catch (_) { if (mounted) setState(() { _loading = false; _failed = true; }); }
   }
-
-  bool _isUnlocked(int index) {
-    if (index <= 0) return true;
-    final journeys = widget.chapter.journeys;
-    for (var i = 0; i < index; i++) {
-      if (!_completed.contains(journeys[i].id)) return false;
-    }
-    return true;
-  }
-
+  bool _isUnlocked(int index) => widget.chapter.journeys.take(index).every((j) => _completed.contains(j.id));
   @override
   Widget build(BuildContext context) {
     final chapter = widget.chapter;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bölüm ${chapter.number}'),
-        centerTitle: true,
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: chapter.journeys.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final journey = chapter.journeys[index];
-                final unlocked = _isUnlocked(index);
-                final done = _completed.contains(journey.id);
-
-                return Card(
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    leading: Icon(
-                      done
-                          ? Icons.check_circle
-                          : (unlocked ? Icons.person : Icons.lock),
-                      size: 30,
-                      color: done
-                          ? Colors.green
-                          : (unlocked ? Colors.amber : Colors.white38),
-                    ),
-                    title: Text(
-                      '${index + 1}. ${journey.subjectName}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: unlocked ? null : Colors.white38,
-                      ),
-                    ),
-                    subtitle: Text(
-                      done
-                          ? 'Tamamlandı ✓'
-                          : (unlocked
-                              ? '${journey.stages.length} aşama'
-                              : 'Önceki hikayeyi tamamla'),
-                      style: TextStyle(
-                        color: unlocked ? null : Colors.white24,
-                      ),
-                    ),
-                    trailing: unlocked
-                        ? const Icon(Icons.chevron_right)
-                        : null,
-                    onTap: () async {
-                      if (!unlocked) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Bu hikayeyi açmak için önceki oyuncunun yolculuğunu tamamlamalısın.',
-                            ),
-                          ),
-                        );
-                        return;
-                      }
-
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              PlayerJourneyPage(journey: journey),
-                        ),
-                      );
-
-                      // Geri dönünce ilerlemeyi yenile
-                      if (mounted) _loadProgress();
-                    },
-                  ),
-                );
-              },
-            ),
+    final doneCount = chapter.journeys.where((j) => _completed.contains(j.id)).length;
+    return Scaffold(appBar: AppBar(title: Text('Bölüm ${chapter.number}')),
+      body: SafeArea(child: _loading ? const Center(child: CircularProgressIndicator())
+        : _failed ? Center(child: FilledButton(onPressed: _loadProgress, child: const Text('İlerlemeyi yeniden yükle')))
+        : ListView(padding: const EdgeInsets.fromLTRB(20,12,20,28), children: [
+          PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(chapter.title, style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 10), Text('$doneCount / ${chapter.journeys.length} yolculuk tamamlandı'),
+            const SizedBox(height: 12), LinearProgressIndicator(value: doneCount / chapter.journeys.length),
+            const SizedBox(height: 10), const Text('Bir yolculuğu bitir, sıradaki futbolcuyu aç.'),
+          ])), const SizedBox(height: 20),
+          for (var i=0;i<chapter.journeys.length;i++) _row(i),
+        ])),
     );
+  }
+  Widget _row(int index) {
+    final journey = widget.chapter.journeys[index];
+    final unlocked = journey.available && _isUnlocked(index), done = _completed.contains(journey.id);
+    final v2 = widget.chapter.id == 'chapter_1_goat';
+    final solved = _progress[journey.id]?.$1 ?? 0;
+    return Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(
+      key: ValueKey('journey-player-${journey.id}'), title: '${index+1}. ${journey.subjectName}',
+      subtitle: done ? 'Tamamlandı · Tekrar oyna' : !unlocked ? 'Önceki yolculuğu tamamla'
+        : v2 && solved > 0 ? '$solved / 4 görev · Devam et' : '${journey.stages.length} aşama · Yolculuğa başla',
+      icon: Icons.person_outline, highlight: unlocked,
+      leading: unlocked ? PlayerAvatar(player: Player.fromJson({'id': journey.subjectPlayerId, 'name': journey.subjectName, 'countries': <String>[], 'position': ''}), size: 48) : const Icon(Icons.lock_outline, size: 32),
+      trailing: Icon(done ? Icons.check_circle_outline : unlocked ? Icons.chevron_right : Icons.lock_outline),
+      onTap: !unlocked ? null : () async {
+        await GameLauncher.open(context, GameEntry(title: journey.subjectName, subtitle: '', icon: Icons.route,
+          page: v2 ? JourneyV2Page(journeyId: journey.id) : PlayerJourneyPage(journey: journey),
+          requiresRepository: !v2, modern: v2,
+        ));
+        if (mounted) await _loadProgress();
+      },
+    ));
   }
 }

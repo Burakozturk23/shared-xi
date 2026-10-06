@@ -59,7 +59,7 @@ final PlayerJourneyDefinition zidaneJourney = PlayerJourneyDefinition(
 final PlayerJourneyDefinition kakaJourney = PlayerJourneyDefinition(
   id: 'kaka',
   subjectName: 'Kaká',
-  subjectPlayerId: 3366,
+  subjectPlayerId: 4000000028,
   available: true,
   stages: [
     PlayerJourneyStage(
@@ -167,7 +167,7 @@ final PlayerJourneyDefinition benzemaJourney = PlayerJourneyDefinition(
 final PlayerJourneyDefinition maldiniJourney = PlayerJourneyDefinition(
   id: 'maldini',
   subjectName: 'Paolo Maldini',
-  subjectPlayerId: 5803,
+  subjectPlayerId: 4000000024,
   available: true,
   stages: [
     PlayerJourneyStage(

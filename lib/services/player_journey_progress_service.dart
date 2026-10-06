@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'journey_v2_store.dart';
 
 class PlayerJourneyProgressService {
   static const String _completedKey = 'player_journey_completed_ids';
@@ -6,7 +7,8 @@ class PlayerJourneyProgressService {
   static Future<Set<String>> getCompletedIds() async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_completedKey) ?? const [];
-    return list.toSet();
+    final v2 = await LocalJourneyV2Store.summaries();
+    return {...list, ...v2.entries.where((e) => e.value.$2).map((e) => e.key)};
   }
 
   static Future<void> markCompleted(String journeyId) async {
