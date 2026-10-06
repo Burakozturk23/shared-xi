@@ -53,6 +53,14 @@ void main() {
         await tester.pumpAndSettle();
         Future<void> capture(String state) async {
           if (!const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) return;
+          // Asset decoding runs outside the fake clock; wait for portraits before capturing.
+          await tester.runAsync(() async {
+            final context = tester.element(find.byType(AnagramPage));
+            for (final widget in tester.widgetList<Image>(find.byType(Image))) {
+              await precacheImage(widget.image, context);
+            }
+          });
+          await tester.pumpAndSettle();
           await tester.runAsync(() async {
             final image = await (key.currentContext!.findRenderObject() as RenderRepaintBoundary).toImage(pixelRatio: 1);
             final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
