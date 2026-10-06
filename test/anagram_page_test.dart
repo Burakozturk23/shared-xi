@@ -70,6 +70,7 @@ void main() {
         await capture('start');
         await tester.tap(find.byKey(const ValueKey('anagram-tile-0')));
         await tester.pumpAndSettle();
+        await scrollTo(const ValueKey('anagram-answer'));
         expect(tester.widget<TextField>(find.byKey(const ValueKey('anagram-answer'))).controller!.text, 'R');
         await scrollTo(const ValueKey('anagram-bio'));
         await tester.tap(find.byKey(const ValueKey('anagram-bio')));
