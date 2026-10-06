@@ -48,7 +48,7 @@ void main() {
           'Chain',
           'Fake Club',
         ],
-        'Harf & Kelime': ['Futbol Lingo', 'Passaparola'],
+        'Harf & Kelime': ['Futbol Lingo', 'Passaparola', 'Anagram'],
         'Hız & Eşleştirme': ['Burst', 'Pyramid', 'Matching'],
         'Seçim & Sıralama': [
           'This or That?',
@@ -70,8 +70,8 @@ void main() {
       expect(GameCatalog.games.where((game) => game.category.isEmpty), [
         GameCatalog.vsBot,
       ]);
-      expect(GameCatalog.games.length, 21);
-      expect(GameCatalog.games.map((game) => game.title).toSet().length, 21);
+      expect(GameCatalog.games.length, 22);
+      expect(GameCatalog.games.map((game) => game.title).toSet().length, 22);
     },
   );
 

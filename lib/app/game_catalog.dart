@@ -20,6 +20,7 @@ import '../screens/this_or_that_mode_selection_page.dart';
 import '../screens/match_pair_page.dart';
 import '../screens/futbol_lingo_page.dart';
 import '../screens/passaparola_page.dart';
+import '../screens/anagram_page.dart';
 import '../screens/harf11_page.dart';
 import '../screens/pyramid_page.dart';
 import '../screens/story_mode_selection_page.dart';
@@ -226,6 +227,15 @@ class GameCatalog {
       icon: Icons.abc_rounded,
       page: PassaparolaPage(),
       category: 'Harf & Kelime',
+    ),
+    GameEntry(
+      title: 'Anagram',
+      subtitle: 'Harfleri çöz, 8 futbolcuyu bul',
+      icon: Icons.shuffle_rounded,
+      page: AnagramPage(),
+      category: 'Harf & Kelime',
+      requiresRepository: false,
+      modern: true,
     ),
     GameEntry(
       title: 'Burst',
