@@ -137,7 +137,7 @@ class _AnagramPageState extends State<AnagramPage> {
           const SizedBox(height: 10),
           TextButton.icon(key: const ValueKey('anagram-shuffle'), onPressed: game.busy ? null : game.shuffle,
             icon: const Icon(Icons.shuffle_rounded), label: const Text('Yeniden karıştır · Ücretsiz')),
-        ]),
+        ])),
         const SizedBox(height: 16),
         TextField(key: const ValueKey('anagram-answer'), controller: _answer, enabled: !game.busy,
           maxLength: 80, autocorrect: false, enableSuggestions: false,
@@ -225,7 +225,7 @@ class _AnagramPageState extends State<AnagramPage> {
       const SizedBox(height: 16),
       for (final r in session.rounds) Padding(padding: const EdgeInsets.only(bottom: 8), child: PitchRow(
         title: game.catalog.player(r.playerId).name,
-        subtitle: '${game.catalog.player(r.playerId).answer} · ${r.points(game.catalog)} puan',
+        subtitle: '${game.catalog.player(r.playerId).answer} · ${r.points(game.catalog.player(r.playerId))} puan',
         icon: r.won(game.catalog.player(r.playerId)) ? Icons.check_circle_outline : Icons.flag_outlined,
         trailing: const SizedBox.shrink(),
       )),
