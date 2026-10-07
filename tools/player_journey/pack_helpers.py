@@ -1,5 +1,17 @@
 """Shared task templates and reviewed canonical player identities."""
 P = {
+ 'DeBruyne':(88755,'Kevin De Bruyne'), 'Neuer':(17259,'Manuel Neuer'),
+ 'Neymar':(68290,'Neymar'), 'Verratti':(102558,'Marco Verratti'),
+ 'Cavani':(48280,'Edinson Cavani'), 'Matuidi':(33923,'Blaise Matuidi'),
+ 'Perisic':(42460,'Ivan Perišić'), 'DavidSilva':(35518,'David Silva'),
+ 'Aguero':(26399,'Sergio Agüero'), 'Sterling':(134425,'Raheem Sterling'),
+ 'Rodri':(357565,'Rodri'), 'Sane':(192565,'Leroy Sané'),
+ 'Muller':(58358,'Thomas Müller'), 'Robben':(4360,'Arjen Robben'),
+ 'Ribery':(22068,'Franck Ribéry'), 'Coman':(243714,'Kingsley Coman'),
+ 'Reus':(35207,'Marco Reus'), 'Brandt':(187492,'Julian Brandt'),
+ 'Sancho':(401173,'Jadon Sancho'), 'Lahm':(2219,'Philipp Lahm'),
+ 'Boateng':(26485,'Jérôme Boateng'), 'Kimmich':(161056,'Joshua Kimmich'),
+ 'Goretzka':(153084,'Leon Goretzka'), 'Musiala':(580195,'Jamal Musiala'),
  'Vardy':(197838,'Jamie Vardy'), 'Kante':(225083,"N'Golo Kanté"),
  'Drogba':(3924,'Didier Drogba'), 'Arda':(4000000018,'Arda Turan'),
  'Ozil':(35664,'Mesut Özil'), 'Eriksen':(69633,'Christian Eriksen'),

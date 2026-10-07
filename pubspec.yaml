@@ -59,6 +59,7 @@ flutter:
     - assets/data/anagram_catalog.json
     - assets/data/player_journey_chapter_one.json
     - assets/data/player_journey_chapter_two.json
+    - assets/data/player_journey_chapter_three.json
     - assets/runtime/linkball_game_data_v4.sqlite
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/

@@ -1,0 +1,1241 @@
+{
+  "version": 2,
+  "chapterId": "chapter_3_architects",
+  "journeys": [
+    {
+      "id": "ibrahimovic",
+      "name": "Zlatan Ibrahimović",
+      "playerId": 3455,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk büyük adım",
+          "prompt": "Ibrahimović, Malmö’den 2001’de ayrıldığında hangi Hollanda kulübüne katıldı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Ajax"
+            },
+            {
+              "key": "o1",
+              "label": "PSV"
+            },
+            {
+              "key": "o2",
+              "label": "Feyenoord"
+            },
+            {
+              "key": "o3",
+              "label": "AZ Alkmaar"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Malmö’de başlayan kariyerini 2001’de Ajax’a taşıdı. Hollanda’daki çıkışı, İtalya’daki uzun yolculuğunun önünü açtı.",
+          "hint": "İsveç dışındaki ilk kulübünü düşün.",
+          "id": "ibrahimovic_v2_1"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Ibrahimović’in 2004–2012 arasındaki bu dört kulübünü forma giyme sırasına koy.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Juventus"
+            },
+            {
+              "key": "o1",
+              "label": "Inter"
+            },
+            {
+              "key": "o2",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o3",
+              "label": "AC Milan"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Zlatan, Juventus’tan Inter’e, ardından Barcelona’ya geçti. 2010’da Milan’a kiralandı ve oradaki ilk dönemi 2012’ye kadar sürdü.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "ibrahimovic_v2_2"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2012–2016 PSG döneminde Ibrahimović ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Marco Verratti",
+              "playerId": 102558
+            },
+            {
+              "key": "o1",
+              "label": "Edinson Cavani",
+              "playerId": 48280
+            },
+            {
+              "key": "o2",
+              "label": "Blaise Matuidi",
+              "playerId": 33923
+            },
+            {
+              "key": "o3",
+              "label": "Lionel Messi",
+              "playerId": 28003
+            },
+            {
+              "key": "o4",
+              "label": "Neymar",
+              "playerId": 68290
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Marco Verratti, Edinson Cavani ve Blaise Matuidi bu dönemde Zlatan ile PSG forması giydi. Messi ve Neymar, Zlatan ayrıldıktan sonra geldi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "ibrahimovic_v2_3"
+        },
+        {
+          "type": "missingClub",
+          "title": "Okyanusun ötesi",
+          "prompt": "PSG → Manchester United → ? → AC Milan\n2018’deki transfer durağını seç. Rota 2020’deki dönüşte bitiyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "LA Galaxy"
+            },
+            {
+              "key": "o1",
+              "label": "Los Angeles FC"
+            },
+            {
+              "key": "o2",
+              "label": "Inter Miami"
+            },
+            {
+              "key": "o3",
+              "label": "New York City FC"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Ibrahimović 2018’de LA Galaxy’ye katıldı. Ardından 2020’de yeniden Milan forması giydi. LA Galaxy ve LAFC farklı kulüplerdir.",
+          "hint": "Los Angeles’taki iki farklı kulübü birbirine karıştırma.",
+          "id": "ibrahimovic_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.acmilan.com/en/news/articles/media/2019-12-27/zlatan-ibrahimovic-rejoins-ac-milan",
+        "https://www.uefa.com/newsfiles/UCL/2015/2014403_FR.pdf"
+      ]
+    },
+    {
+      "id": "de_bruyne",
+      "name": "Kevin De Bruyne",
+      "playerId": 88755,
+      "tasks": [
+        {
+          "type": "missingClub",
+          "title": "Kiralık durak",
+          "prompt": "Chelsea → ? (2012/13 kiralık) → Chelsea’ye dönüş → Wolfsburg\nDe Bruyne’nin eksik kulübünü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Werder Bremen"
+            },
+            {
+              "key": "o1",
+              "label": "Hamburger SV"
+            },
+            {
+              "key": "o2",
+              "label": "Hannover 96"
+            },
+            {
+              "key": "o3",
+              "label": "Bayer Leverkusen"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Genk’ten Chelsea’ye transfer olan De Bruyne, 2012/13 sezonunda Werder Bremen’e kiralandı. Chelsea’ye döndükten sonra Ocak 2014’te Wolfsburg’a geçti.",
+          "hint": "İlk Almanya deneyimi ile daha sonraki kalıcı transferini ayır.",
+          "id": "de_bruyne_v2_1"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2014/15 sezonunda Wolfsburg’da De Bruyne ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Ivan Perišić",
+              "playerId": 42460
+            },
+            {
+              "key": "o1",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o2",
+              "label": "Sergio Ramos",
+              "playerId": 25557
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Ivan Perišić, De Bruyne ile Wolfsburg’un 2014/15 kadrosundaydı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "de_bruyne_v2_2"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2015/16–2019/20 sezonlarında Manchester City’de De Bruyne ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Sergio Agüero",
+              "playerId": 26399
+            },
+            {
+              "key": "o1",
+              "label": "David Silva",
+              "playerId": 35518
+            },
+            {
+              "key": "o2",
+              "label": "Raheem Sterling",
+              "playerId": 134425
+            },
+            {
+              "key": "o3",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o4",
+              "label": "Harry Kane",
+              "playerId": 132098
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Sergio Agüero, David Silva ve Raheem Sterling bu sezonlarda De Bruyne ile City’de oynadı. Haaland 2022’de geldi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "de_bruyne_v2_3"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2022/23 sezonunda üç kupa kazanan Manchester City kadrosunda De Bruyne ile oynayan futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Rodri",
+              "playerId": 357565
+            },
+            {
+              "key": "o1",
+              "label": "Sergio Agüero",
+              "playerId": 26399
+            },
+            {
+              "key": "o2",
+              "label": "David Silva",
+              "playerId": 35518
+            },
+            {
+              "key": "o3",
+              "label": "Leroy Sané",
+              "playerId": 192565
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Rodri, 2022/23 kadrosundaydı ve Şampiyonlar Ligi finalinin golünü attı. Diğer adaylar o sezondan önce City’den ayrılmıştı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "de_bruyne_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.mancity.com/news/first-team/first-team-news/2016/april/chelsea-v-city-kdb-preview",
+        "https://www.bundesliga.com/de/bundesliga/news/supercup-historie-rekorde-alle-spiele-tore-meister-pokalsieger-5786",
+        "https://www.uefa.com/uefachampionsleague/news/0281-18144ba42a0c-26670126d6b2-1000--champions-league-final-starting-line-ups/"
+      ]
+    },
+    {
+      "id": "lewandowski",
+      "name": "Robert Lewandowski",
+      "playerId": 38253,
+      "tasks": [
+        {
+          "type": "missingClub",
+          "title": "Yeni lig",
+          "prompt": "Lech Poznań → ?\nLewandowski’nin 2010’da katıldığı ilk Bundesliga kulübünü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Borussia Dortmund"
+            },
+            {
+              "key": "o1",
+              "label": "Bayern Münih"
+            },
+            {
+              "key": "o2",
+              "label": "VfL Wolfsburg"
+            },
+            {
+              "key": "o3",
+              "label": "Schalke 04"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Lewandowski, 2010’da Lech Poznań’dan Borussia Dortmund’a geçti. Bayern dönemi daha sonra başladı.",
+          "hint": "Almanya’daki ilk durağını düşün.",
+          "id": "lewandowski_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2014–2020 arasında Bayern’de Lewandowski ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Manuel Neuer",
+              "playerId": 17259
+            },
+            {
+              "key": "o1",
+              "label": "Thomas Müller",
+              "playerId": 58358
+            },
+            {
+              "key": "o2",
+              "label": "Arjen Robben",
+              "playerId": 4360
+            },
+            {
+              "key": "o3",
+              "label": "Harry Kane",
+              "playerId": 132098
+            },
+            {
+              "key": "o4",
+              "label": "Sadio Mané",
+              "playerId": 200512
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Manuel Neuer, Thomas Müller ve Arjen Robben bu aralıkta Lewandowski ile Bayern forması giydi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "lewandowski_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2020 Şampiyonlar Ligi şampiyonu Bayern kadrosunda Lewandowski ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Kingsley Coman",
+              "playerId": 243714
+            },
+            {
+              "key": "o1",
+              "label": "Harry Kane",
+              "playerId": 132098
+            },
+            {
+              "key": "o2",
+              "label": "Sadio Mané",
+              "playerId": 200512
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Kingsley Coman, 2020 finalinde Bayern’in galibiyet golünü attı. Kane ve Mané sonraki yıllarda kulübe geldi.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "lewandowski_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Lewandowski’nin bu dört kulübünü ilk katılma sırasına koy. Rota 2008’den 2022 yazındaki transfere kadar uzanıyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Lech Poznań"
+            },
+            {
+              "key": "o1",
+              "label": "Borussia Dortmund"
+            },
+            {
+              "key": "o2",
+              "label": "Bayern Münih"
+            },
+            {
+              "key": "o3",
+              "label": "FC Barcelona"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Lech Poznań, Dortmund, Bayern ve Barcelona sırası bu dönemin rotasıdır. Daha önceki Polonya kulüpleri bu sorunun kapsamı dışındadır.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "lewandowski_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/uefachampionsleague/news/0260-1033c96091a1-3d127374ef80-1000/",
+        "https://www.fcbarcelona.com/en/news/4526738/robert-lewandowski/amp"
+      ]
+    },
+    {
+      "id": "haaland",
+      "name": "Erling Haaland",
+      "playerId": 418560,
+      "tasks": [
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Haaland’ın ilk üç A takım durağını sırala. Rota 2019’da bitiyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Bryne"
+            },
+            {
+              "key": "o1",
+              "label": "Molde"
+            },
+            {
+              "key": "o2",
+              "label": "Red Bull Salzburg"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 3,
+          "explanation": "Haaland, Bryne’den Molde’ye geçti. Sonraki basamağı 2019’da Red Bull Salzburg oldu.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "haaland_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2020–2022 Dortmund döneminde Haaland ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Marco Reus",
+              "playerId": 35207
+            },
+            {
+              "key": "o1",
+              "label": "Julian Brandt",
+              "playerId": 187492
+            },
+            {
+              "key": "o2",
+              "label": "Jadon Sancho",
+              "playerId": 401173
+            },
+            {
+              "key": "o3",
+              "label": "Robert Lewandowski",
+              "playerId": 38253
+            },
+            {
+              "key": "o4",
+              "label": "Kevin De Bruyne",
+              "playerId": 88755
+            },
+            {
+              "key": "o5",
+              "label": "Rodri",
+              "playerId": 357565
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Marco Reus, Julian Brandt ve Jadon Sancho bu aralıkta Haaland ile Dortmund’da oynadı. Lewandowski 2014’te ayrılmıştı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "haaland_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2022/23 Manchester City kadrosunda Haaland ile oynayan futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Kevin De Bruyne",
+              "playerId": 88755
+            },
+            {
+              "key": "o1",
+              "label": "Sergio Agüero",
+              "playerId": 26399
+            },
+            {
+              "key": "o2",
+              "label": "David Silva",
+              "playerId": 35518
+            },
+            {
+              "key": "o3",
+              "label": "Leroy Sané",
+              "playerId": 192565
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Kevin De Bruyne, Haaland’ın ilk City sezonunda takım arkadaşıydı. Diğer adaylar Haaland gelmeden önce ayrılmıştı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "haaland_v2_3"
+        },
+        {
+          "type": "missingClub",
+          "title": "Bir sonraki adım",
+          "prompt": "Molde → Salzburg → Dortmund → ?\nHaaland’ın 2022 yazındaki transferini tamamla.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Manchester City"
+            },
+            {
+              "key": "o1",
+              "label": "Manchester United"
+            },
+            {
+              "key": "o2",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o3",
+              "label": "Chelsea"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Haaland, 2022 yazında Manchester City’ye katıldı. İlk sezonunda lig, FA Cup ve Şampiyonlar Ligi şampiyonluğu yaşadı.",
+          "hint": "2022 yazında katıldığı İngiliz kulübünü düşün.",
+          "id": "haaland_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.mancity.com/features/haaland/bryne/fk/",
+        "https://www.uefa.com/uefachampionsleague/news/0281-18144ba42a0c-26670126d6b2-1000--champions-league-final-starting-line-ups/"
+      ]
+    },
+    {
+      "id": "bale",
+      "name": "Gareth Bale",
+      "playerId": 39381,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Yükseliş",
+          "prompt": "Bale, Southampton’dan 2007’de ayrılıp Premier League’de hangi kulübe katıldı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Tottenham"
+            },
+            {
+              "key": "o1",
+              "label": "Arsenal"
+            },
+            {
+              "key": "o2",
+              "label": "Chelsea"
+            },
+            {
+              "key": "o3",
+              "label": "Manchester United"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Bale, Southampton’dan Tottenham’a geçti. Sol bekten hücumun önemli isimlerinden birine dönüşerek yıldızlaştı.",
+          "hint": "Madrid’den önceki Londra yıllarını düşün.",
+          "id": "bale_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2010–2013 Tottenham döneminde Bale ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Luka Modrić",
+              "playerId": 27992
+            },
+            {
+              "key": "o1",
+              "label": "Aaron Lennon",
+              "playerId": 14221
+            },
+            {
+              "key": "o2",
+              "label": "Jermain Defoe",
+              "playerId": 3875
+            },
+            {
+              "key": "o3",
+              "label": "Heung-min Son",
+              "playerId": 91845
+            },
+            {
+              "key": "o4",
+              "label": "Kevin De Bruyne",
+              "playerId": 88755
+            },
+            {
+              "key": "o5",
+              "label": "Rodri",
+              "playerId": 357565
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Luka Modrić, Aaron Lennon ve Jermain Defoe bu aralıkta Bale ile Tottenham’da oynadı. Son 2015’te geldi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "bale_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2013–2018 Real Madrid döneminde Bale ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Karim Benzema",
+              "playerId": 18922
+            },
+            {
+              "key": "o1",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            },
+            {
+              "key": "o2",
+              "label": "Zinédine Zidane",
+              "playerId": 3111
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Karim Benzema, Bale’in Madrid takım arkadaşıydı. Birlikte Avrupa kupalarında başarılar yaşadılar.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "bale_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Bu dört kulübü Bale’in İLK KATILMA sırasına koy. Kiralık dönüşleri tekrar ekleme; rota 2022’de sona eriyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Southampton"
+            },
+            {
+              "key": "o1",
+              "label": "Tottenham"
+            },
+            {
+              "key": "o2",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o3",
+              "label": "Los Angeles FC"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "İlk katılma sırası Southampton, Tottenham, Real Madrid ve LAFC’dir. Bale 2020/21’de Tottenham’a kiralandı, Madrid’e döndü ve 2022’de LAFC’ye geçti. Bu görev ilk katılmaları soruyor.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "bale_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.lafc.com/news/lafc-signs-forward-gareth-bale",
+        "https://www.tottenhamhotspur.com/news/1009750/the-archive-arsenal-2-3-spurs-201110"
+      ]
+    },
+    {
+      "id": "neymar",
+      "name": "Neymar",
+      "playerId": 68290,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk forma",
+          "prompt": "Neymar, profesyonel A takım kariyerine 2009’da hangi kulüpte başladı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Santos"
+            },
+            {
+              "key": "o1",
+              "label": "Flamengo"
+            },
+            {
+              "key": "o2",
+              "label": "Palmeiras"
+            },
+            {
+              "key": "o3",
+              "label": "São Paulo"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Neymar, Santos altyapısından A takıma yükseldi. 2009’daki başlangıcından sonra Brezilya’da dikkatleri üzerine çekti.",
+          "hint": "Avrupa’ya gitmeden önceki Brezilya kulübünü düşün.",
+          "id": "neymar_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2013–2017 Barcelona döneminde Neymar ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Lionel Messi",
+              "playerId": 28003
+            },
+            {
+              "key": "o1",
+              "label": "Luis Suárez",
+              "playerId": 44352
+            },
+            {
+              "key": "o2",
+              "label": "Andrés Iniesta",
+              "playerId": 7600
+            },
+            {
+              "key": "o3",
+              "label": "Pedri",
+              "playerId": 683840
+            },
+            {
+              "key": "o4",
+              "label": "Robert Lewandowski",
+              "playerId": 38253
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Lionel Messi, Luis Suárez ve Andrés Iniesta bu aralıkta Neymar’ın Barcelona takım arkadaşlarıydı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "neymar_v2_2"
+        },
+        {
+          "type": "missingClub",
+          "title": "Rekor transfer",
+          "prompt": "Santos → Barcelona → ?\nNeymar’ın 2017 yazındaki transferini tamamla.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o1",
+              "label": "Manchester City"
+            },
+            {
+              "key": "o2",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o3",
+              "label": "Bayern Münih"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Neymar, 2017’de Barcelona’dan Paris Saint-Germain’e transfer oldu.",
+          "hint": "2017’deki Fransa transferini düşün.",
+          "id": "neymar_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Neymar’ın 2009’dan 2023 yazındaki transferine kadar bu dört durağını sırala.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Santos"
+            },
+            {
+              "key": "o1",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o2",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o3",
+              "label": "Al-Hilal"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Neymar’ın 2023’e kadarki rotası Santos, Barcelona, PSG ve Al-Hilal şeklindedir. Bu görev 2023’te sona erer; sonraki transferleri kapsamaz.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "neymar_v2_4"
+        }
+      ],
+      "sources": [
+        "https://players.fcbarcelona.com/en/player/603-neymar-neymar-da-silva-santos-junior"
+      ]
+    },
+    {
+      "id": "neuer",
+      "name": "Manuel Neuer",
+      "playerId": 17259,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Kaleye ilk adım",
+          "prompt": "Neuer, altyapısından yetişip 2006’da Bundesliga’da kaleye geçtiği hangi kulüpte oynadı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Schalke 04"
+            },
+            {
+              "key": "o1",
+              "label": "Bayern Münih"
+            },
+            {
+              "key": "o2",
+              "label": "Borussia Dortmund"
+            },
+            {
+              "key": "o3",
+              "label": "Bayer Leverkusen"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Neuer, Schalke altyapısından yetişti ve Bundesliga’daki ilk maçına 2006’da çıktı. 2011’de Bayern’e geçti.",
+          "hint": "Bayern’e gelmeden önceki kulübünü düşün.",
+          "id": "neuer_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2011–2014 Bayern döneminde Neuer ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Philipp Lahm",
+              "playerId": 2219
+            },
+            {
+              "key": "o1",
+              "label": "Thomas Müller",
+              "playerId": 58358
+            },
+            {
+              "key": "o2",
+              "label": "Franck Ribéry",
+              "playerId": 22068
+            },
+            {
+              "key": "o3",
+              "label": "Harry Kane",
+              "playerId": 132098
+            },
+            {
+              "key": "o4",
+              "label": "Sadio Mané",
+              "playerId": 200512
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Philipp Lahm, Thomas Müller ve Franck Ribéry bu dönemde Neuer ile Bayern’de oynadı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "neuer_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2014–2020 arasında Bayern savunmasında Neuer ile birlikte oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Jérôme Boateng",
+              "playerId": 26485
+            },
+            {
+              "key": "o1",
+              "label": "Sergio Ramos",
+              "playerId": 25557
+            },
+            {
+              "key": "o2",
+              "label": "Diego Godín",
+              "playerId": 54928
+            },
+            {
+              "key": "o3",
+              "label": "John Terry",
+              "playerId": 3160
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Jérôme Boateng bu dönemde Neuer’in önünde Bayern savunmasında görev yaptı. Diğer üç aday Bayern’de oynamadı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "neuer_v2_3"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2020/21–2021/22 sezonlarında Bayern’de Neuer ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Joshua Kimmich",
+              "playerId": 161056
+            },
+            {
+              "key": "o1",
+              "label": "Leon Goretzka",
+              "playerId": 153084
+            },
+            {
+              "key": "o2",
+              "label": "Jamal Musiala",
+              "playerId": 580195
+            },
+            {
+              "key": "o3",
+              "label": "Philipp Lahm",
+              "playerId": 2219
+            },
+            {
+              "key": "o4",
+              "label": "Arjen Robben",
+              "playerId": 4360
+            },
+            {
+              "key": "o5",
+              "label": "Franck Ribéry",
+              "playerId": 22068
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Joshua Kimmich, Leon Goretzka ve Jamal Musiala bu sezonlarda Neuer ile oynadı. Lahm, Robben ve Ribéry önceki yıllarda Bayern’den ayrılmıştı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "neuer_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/uefachampionsleague/news/0260-1033c96091a1-3d127374ef80-1000/",
+        "https://fcbayern.com/en/club/honours/german-championship/season-2020-2021",
+        "https://fcbayern.com/en/teams/first-team/manuel-neuer/"
+      ]
+    },
+    {
+      "id": "ramos",
+      "name": "Sergio Ramos",
+      "playerId": 25557,
+      "tasks": [
+        {
+          "type": "missingClub",
+          "title": "Yeni sorumluluk",
+          "prompt": "Sevilla → ?\nRamos’un 2005’te transfer olduğu kulübü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o1",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o2",
+              "label": "Atlético Madrid"
+            },
+            {
+              "key": "o3",
+              "label": "Valencia"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Ramos, Sevilla’dan 2005’te Real Madrid’e geçti. Burada yıllar içinde savunmanın ve takımın liderlerinden biri oldu.",
+          "hint": "2005’teki büyük transferini düşün.",
+          "id": "ramos_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2005–2014 arasında Real Madrid’de Ramos ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Cristiano Ronaldo",
+              "playerId": 8198
+            },
+            {
+              "key": "o1",
+              "label": "Karim Benzema",
+              "playerId": 18922
+            },
+            {
+              "key": "o2",
+              "label": "Luka Modrić",
+              "playerId": 27992
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            },
+            {
+              "key": "o4",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o5",
+              "label": "Pedri",
+              "playerId": 683840
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Cristiano Ronaldo, Karim Benzema ve Luka Modrić bu aralıkta Ramos ile Real Madrid’de oynadı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "ramos_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2015/16, 2016/17 ve 2017/18 sezonlarında üst üste üç Şampiyonlar Ligi kazanan Madrid kadrosunda Ramos ile oynayan futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o1",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            },
+            {
+              "key": "o2",
+              "label": "Zinédine Zidane",
+              "playerId": 3111
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Toni Kroos, Ramos ile bu üç şampiyonluğu kazandı. Zidane bu dönemde teknik direktördü; soruda futbolcu olarak aynı kadroda bulunan isim aranıyor.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "ramos_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Ramos’un ilk A takımından 2023’teki dönüşüne kadar bu durakları sırala. Aynı kulüp iki kez yer alıyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Sevilla"
+            },
+            {
+              "key": "o1",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o2",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o3",
+              "label": "Sevilla"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Ramos, Sevilla’dan Madrid’e, 2021’de PSG’ye ve 2023’te yeniden Sevilla’ya geçti. Bu rota 2023 dönüşünde biter.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "ramos_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.realmadrid.com/es-ES/el-club/historia/leyendas-futbol/sergio-ramos-garcia/",
+        "https://www.realmadrid.com/StaticFiles/RealMadrid/img/pdf/Annual_Report_RealMadrid_2020-21.pdf",
+        "https://sevillafc.es/es/actualidad/noticias/primera-entrevista-ramos-septiembre-2023"
+      ]
+    }
+  ]
+}

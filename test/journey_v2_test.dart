@@ -34,10 +34,11 @@ Future<void> solveJourneyTask(JourneyV2Controller game) async {
 void main() {
   final chapterOne = journeyTestPack();
   final chapterTwo = journeyTestPack(chapter: 'two');
-  final pack = [...chapterOne, ...chapterTwo];
-  test('sixteen canonical journeys across two chapters and all five task templates', () {
-    expect(pack.length, 16);
-    expect(pack.expand((j) => j.tasks).length, 64);
+  final chapterThree = journeyTestPack(chapter: 'three');
+  final pack = [...chapterOne, ...chapterTwo, ...chapterThree];
+  test('24 canonical journeys across three chapters and all five task templates', () {
+    expect(pack.length, 24);
+    expect(pack.expand((j) => j.tasks).length, 96);
     expect(pack.expand((j) => j.tasks).map((t) => t.type).toSet(), JourneyTaskType.values.toSet());
     expect(pack.firstWhere((j) => j.id == 'kaka').playerId, 4000000028);
     expect(chapterOne.last.playerId, 4000000024);
@@ -98,7 +99,7 @@ void main() {
     store.fail=false;await tested.submit();expect(tested.checkpoint!.solved,1);
     store.fail=true;await tested.next();expect(tested.checkpoint!.index,0);expect(tested.checkpoint!.reviewing,isTrue);
   });
-  test('all sixteen stories can finish, restore results and preserve unlock after replay', () async {
+  test('all 24 stories can finish, restore results and preserve unlock after replay', () async {
     for (final journey in pack) {
       final store=MemoryJourneyStore();
       final c=JourneyV2Controller(journey:journey,store:store);addTearDown(c.dispose);await c.initialize();
