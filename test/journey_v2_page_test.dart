@@ -42,6 +42,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   setUpAll(() async {
+    // Complete real asset I/O before entering the widget tests' fake clock.
+    await rootBundle.loadString('assets/data/player_journey_chapter_one.json');
     for (final (name,path) in [
       ('Satoshi','assets/fonts/Satoshi-Variable.ttf'),('Inter','assets/fonts/Inter-Body-Variable.ttf'),
       ('MaterialIcons','fonts/MaterialIcons-Regular.otf'),
@@ -63,8 +65,12 @@ void main() {
       testWidgets('direct Story hub and chapter navigation $variant',(tester) async {
         viewport(tester);final key=GlobalKey(),observer=RouteAppearanceObserver();addTearDown(observer.dispose);
         await tester.pumpWidget(app(const Scaffold(body:GamesCatalogPage()),key,observer:observer));await tester.pumpAndSettle();
-        await tester.scrollUntilVisible(find.text('Hikâye'),250,scrollable:find.byType(Scrollable).first);
-        await tester.tap(find.text('Hikâye'));await tester.pumpAndSettle();
+        for (var i=0;i<20 && find.text('Hikâye').hitTestable().evaluate().isEmpty;i++) {
+          await tester.drag(find.byType(Scrollable).first,const Offset(0,-300));
+          await tester.pumpAndSettle();
+        }
+        expect(find.text('Hikâye').hitTestable(),findsOneWidget);
+        await tester.tap(find.text('Hikâye').hitTestable());await tester.pumpAndSettle();
         expect(find.byType(StoryModeSelectionPage),findsOneWidget);expect(find.text('Story Mode'),findsNothing);
         expect(observer.legacy.value,isFalse);await snapshot(tester,key,'hub-$variant');
         await tester.tap(find.byKey(const ValueKey('story-mode-0')));await tester.pumpAndSettle();

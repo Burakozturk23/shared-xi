@@ -101,10 +101,11 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
           Text('${state.solved} / 4 görev tamamlandı', style: Theme.of(context).textTheme.bodySmall),
         ])),
       ]), const SizedBox(height: 16),
-      LinearProgressIndicator(value: state.solved / 4, semanticsLabel: 'Yolculuk ilerlemesi', semanticsValue: '${state.solved} / 4'),
+      LinearProgressIndicator(value: state.solved / 4, semanticsLabel: 'Yolculuk ilerlemesi, ${state.solved} görev tamamlandı'),
       const SizedBox(height: 12),
       Wrap(spacing: 8, runSpacing: 8, children: [for (var i=0;i<4;i++) Chip(
-        avatar: Icon(i < state.solved ? Icons.check_rounded : i == state.index ? Icons.play_arrow_rounded : Icons.lock_outline_rounded, size: 18),
+        avatar: Icon(i < state.solved ? Icons.check_rounded : i == state.index ? Icons.play_arrow_rounded : Icons.lock_outline_rounded,
+          size: 18, color: i < state.solved ? p.limeInk : i == state.index ? p.accent : p.muted),
         label: Text('Aşama ${i+1}'),
       )]),
     ]));
