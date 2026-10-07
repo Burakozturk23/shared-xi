@@ -1,0 +1,1240 @@
+{
+  "version": 2,
+  "chapterId": "chapter_4_icons",
+  "journeys": [
+    {
+      "id": "pirlo",
+      "name": "Andrea Pirlo",
+      "playerId": 5817,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk dokunuş",
+          "prompt": "Pirlo, 1995’te Serie A’daki ilk maçına hangi kulübün A takımında çıktı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Brescia"
+            },
+            {
+              "key": "o1",
+              "label": "Atalanta"
+            },
+            {
+              "key": "o2",
+              "label": "Parma"
+            },
+            {
+              "key": "o3",
+              "label": "Torino"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Andrea Pirlo, profesyonel kariyerine Brescia’da başladı. Inter ve Milan dönemleri daha sonra geldi.",
+          "hint": "Altyapısından yetiştiği İtalyan kulübünü düşün.",
+          "id": "pirlo_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2001–2011 Milan döneminde Pirlo ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Kaká",
+              "playerId": 4000000028
+            },
+            {
+              "key": "o1",
+              "label": "Clarence Seedorf",
+              "playerId": 4168
+            },
+            {
+              "key": "o2",
+              "label": "Gennaro Gattuso",
+              "playerId": 5813
+            },
+            {
+              "key": "o3",
+              "label": "Ruud Gullit",
+              "playerId": 4000000042
+            },
+            {
+              "key": "o4",
+              "label": "Frank Rijkaard",
+              "playerId": 4000000058
+            },
+            {
+              "key": "o5",
+              "label": "Marco van Basten",
+              "playerId": 4000000041
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Kaká, Clarence Seedorf ve Gennaro Gattuso bu dönemde Pirlo ile Milan forması giydi. Diğer üç isim kulübün daha önceki kuşağındandı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "pirlo_v2_2"
+        },
+        {
+          "type": "missingClub",
+          "title": "Yeni bir sayfa",
+          "prompt": "Milan → ?\nPirlo’nun 2011 yazında katıldığı kulübü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Juventus"
+            },
+            {
+              "key": "o1",
+              "label": "Inter"
+            },
+            {
+              "key": "o2",
+              "label": "Roma"
+            },
+            {
+              "key": "o3",
+              "label": "Napoli"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Pirlo, 2011’de Milan’dan Juventus’a geçti. Torino’da dört sezon oynadıktan sonra 2015’te ABD’ye gitti.",
+          "hint": "2011 yazındaki transferini düşün.",
+          "id": "pirlo_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Bu beş kulübü Pirlo’nun İLK KATILMA sırasına koy. Rota 2015’e kadar seçili durakları kapsar; kiralık dönüşleri ekleme.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Brescia"
+            },
+            {
+              "key": "o1",
+              "label": "Inter"
+            },
+            {
+              "key": "o2",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o3",
+              "label": "Juventus"
+            },
+            {
+              "key": "o4",
+              "label": "New York City FC"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3",
+            "o4"
+          ],
+          "requiredCount": 5,
+          "explanation": "Seçili kulüplere ilk katılma sırası Brescia, Inter, Milan, Juventus ve NYCFC’dir. Inter dönemindeki Reggina kiralaması ve Brescia’ya kiralık dönüş bu kısa rotaya dahil değildir.",
+          "hint": "İlk katılmaları düşün; kiralık dönüşleri tekrar sayma.",
+          "id": "pirlo_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/uefachampionsleague/news/0223-0e912cea1ac7-fc6df35643d3-1000--new-york-bound-pirlo-s-champions-league-highs/",
+        "https://www.mlssoccer.com/news/andrea-pirlo-101-everything-you-need-know-about-new-york-city-fcs-new-star",
+        "https://www.uefa.com/newsfiles/UCL/2004/1086988_LU.pdf"
+      ]
+    },
+    {
+      "id": "henry",
+      "name": "Thierry Henry",
+      "playerId": 3207,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk adım",
+          "prompt": "Henry, profesyonel A takım kariyerine 1994’te hangi Fransız kulübünde başladı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Monaco"
+            },
+            {
+              "key": "o1",
+              "label": "Lyon"
+            },
+            {
+              "key": "o2",
+              "label": "Marseille"
+            },
+            {
+              "key": "o3",
+              "label": "Paris Saint-Germain"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Thierry Henry, Monaco A takımında profesyonel oldu. Juventus’taki kısa döneminin ardından Arsenal’e geçti.",
+          "hint": "İtalya ve İngiltere’den önceki kulübünü düşün.",
+          "id": "henry_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "1999–2007 Arsenal döneminde Henry ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Dennis Bergkamp",
+              "playerId": 4000000031
+            },
+            {
+              "key": "o1",
+              "label": "Patrick Vieira",
+              "playerId": 4000000032
+            },
+            {
+              "key": "o2",
+              "label": "Freddie Ljungberg",
+              "playerId": 3134
+            },
+            {
+              "key": "o3",
+              "label": "Mesut Özil",
+              "playerId": 35664
+            },
+            {
+              "key": "o4",
+              "label": "Alexis Sánchez",
+              "playerId": 40433
+            },
+            {
+              "key": "o5",
+              "label": "Harry Kane",
+              "playerId": 132098
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Dennis Bergkamp, Patrick Vieira ve Freddie Ljungberg, Henry ile Arsenal’de oynadı. Özil ve Alexis Sánchez bu dönemden sonra geldi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "henry_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2007–2010 Barcelona döneminde Henry ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Andrés Iniesta",
+              "playerId": 7600
+            },
+            {
+              "key": "o1",
+              "label": "Neymar",
+              "playerId": 68290
+            },
+            {
+              "key": "o2",
+              "label": "Luis Suárez",
+              "playerId": 44352
+            },
+            {
+              "key": "o3",
+              "label": "Antoine Griezmann",
+              "playerId": 125781
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Andrés Iniesta, Henry’nin Barcelona takım arkadaşıydı. Diğer üç isim Henry ayrıldıktan sonra kulübe katıldı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "henry_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Henry’nin bu beş kulübünü İLK KATILMA sırasına koy. Rota 2010 yazında sona eriyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Monaco"
+            },
+            {
+              "key": "o1",
+              "label": "Juventus"
+            },
+            {
+              "key": "o2",
+              "label": "Arsenal"
+            },
+            {
+              "key": "o3",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o4",
+              "label": "New York Red Bulls"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3",
+            "o4"
+          ],
+          "requiredCount": 5,
+          "explanation": "Henry önce Monaco, Juventus, Arsenal ve Barcelona’da oynadı; 2010’da New York Red Bulls’a katıldı. 2012’deki kısa Arsenal kiralaması bu sorunun tarih aralığı dışındadır.",
+          "hint": "İlk katılmaları düşün; kiralık dönüşleri tekrar sayma.",
+          "id": "henry_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.newyorkredbulls.com/news/new-york-red-bulls-sign-international-star-thierry-henry",
+        "https://www.arsenal.com/history/the-wenger-years/the-2004-invincibles?ts=dn",
+        "https://www.uefa.com/uefachampionsleague/news/0254-0d7db9c63165-e5b8966aa34e-1000--arsenal-bring-back-henry-on-short-term-loan/"
+      ]
+    },
+    {
+      "id": "gerrard",
+      "name": "Steven Gerrard",
+      "playerId": 3109,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Evindeki ilk maç",
+          "prompt": "Gerrard, 1998’de A takımına yükseldiği ve 2015’e kadar oynadığı hangi İngiliz kulübünün altyapısından yetişti?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Liverpool"
+            },
+            {
+              "key": "o1",
+              "label": "Everton"
+            },
+            {
+              "key": "o2",
+              "label": "Manchester United"
+            },
+            {
+              "key": "o3",
+              "label": "Aston Villa"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Steven Gerrard, Liverpool altyapısından A takıma yükseldi. Kulüpteki uzun oyunculuk dönemi 2015’te sona erdi.",
+          "hint": "Kaptan olarak uzun yıllar forma giydiği kulübü düşün.",
+          "id": "gerrard_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2004–2006 Liverpool döneminde Gerrard ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Xabi Alonso",
+              "playerId": 7476
+            },
+            {
+              "key": "o1",
+              "label": "Jerzy Dudek",
+              "playerId": 3209
+            },
+            {
+              "key": "o2",
+              "label": "Harry Kewell",
+              "playerId": 3241
+            },
+            {
+              "key": "o3",
+              "label": "Luis Suárez",
+              "playerId": 44352
+            },
+            {
+              "key": "o4",
+              "label": "Mohamed Salah",
+              "playerId": 148455
+            },
+            {
+              "key": "o5",
+              "label": "Sadio Mané",
+              "playerId": 200512
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Xabi Alonso, Jerzy Dudek ve Harry Kewell bu dönemde Gerrard’ın takım arkadaşlarıydı. Üçü de 2005 İstanbul finalinin ilk 11’inde yer aldı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "gerrard_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2008–2014 aralığında Liverpool’da Gerrard ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Luis Suárez",
+              "playerId": 44352
+            },
+            {
+              "key": "o1",
+              "label": "Mohamed Salah",
+              "playerId": 148455
+            },
+            {
+              "key": "o2",
+              "label": "Sadio Mané",
+              "playerId": 200512
+            },
+            {
+              "key": "o3",
+              "label": "Roberto Firmino",
+              "playerId": 131789
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Luis Suárez, 2011–2014 arasında Gerrard ile Liverpool’da oynadı. Diğer adaylar Gerrard kulüpten ayrıldıktan sonra geldi.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "gerrard_v2_3"
+        },
+        {
+          "type": "missingClub",
+          "title": "Okyanusun ötesi",
+          "prompt": "Liverpool → ?\nGerrard’ın 2015 yazında forma giymeye başladığı ABD kulübünü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "LA Galaxy"
+            },
+            {
+              "key": "o1",
+              "label": "Los Angeles FC"
+            },
+            {
+              "key": "o2",
+              "label": "New York City FC"
+            },
+            {
+              "key": "o3",
+              "label": "New York Red Bulls"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Gerrard, 2015 yazında LA Galaxy’ye katıldı ve 2016’ya kadar oynadı. LA Galaxy ile LAFC farklı kulüplerdir.",
+          "hint": "Los Angeles’taki iki kulübü karıştırma.",
+          "id": "gerrard_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.lagalaxy.com/news/la-galaxy-sign-midfielder-steven-gerrard",
+        "https://www.uefa.com/newsfiles/UCL/2004/1086988_LU.pdf"
+      ]
+    },
+    {
+      "id": "rooney",
+      "name": "Wayne Rooney",
+      "playerId": 3332,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Genç yetenek",
+          "prompt": "Rooney’nin 2002’de ilk A takım maçına çıktığı profesyonel kulübünü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Everton"
+            },
+            {
+              "key": "o1",
+              "label": "Manchester United"
+            },
+            {
+              "key": "o2",
+              "label": "Liverpool"
+            },
+            {
+              "key": "o3",
+              "label": "Newcastle United"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Wayne Rooney, Everton’da A takıma yükseldi. 2004’te Manchester United’a transfer oldu.",
+          "hint": "Manchester yıllarından önceki kulübünü düşün.",
+          "id": "rooney_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2004–2009 Manchester United döneminde Rooney ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Cristiano Ronaldo",
+              "playerId": 8198
+            },
+            {
+              "key": "o1",
+              "label": "Paul Scholes",
+              "playerId": 4000000026
+            },
+            {
+              "key": "o2",
+              "label": "Rio Ferdinand",
+              "playerId": 4000000069
+            },
+            {
+              "key": "o3",
+              "label": "Zlatan Ibrahimović",
+              "playerId": 3455
+            },
+            {
+              "key": "o4",
+              "label": "Casemiro",
+              "playerId": 16306
+            },
+            {
+              "key": "o5",
+              "label": "Jadon Sancho",
+              "playerId": 401173
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Cristiano Ronaldo, Paul Scholes ve Rio Ferdinand bu dönemde Rooney ile Manchester United’da oynadı. Diğer adaylar kulübe daha sonra katıldı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "rooney_v2_2"
+        },
+        {
+          "type": "missingClub",
+          "title": "Geri dönüş",
+          "prompt": "Manchester United → ? (2017) → D.C. United\nRooney’nin bir sezon oynadığı dönüş kulübünü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Everton"
+            },
+            {
+              "key": "o1",
+              "label": "Derby County"
+            },
+            {
+              "key": "o2",
+              "label": "Liverpool"
+            },
+            {
+              "key": "o3",
+              "label": "Tottenham"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Rooney 2017’de Everton’a döndü. Bir sezon sonra D.C. United’a transfer oldu. Derby County dönemi daha sonradır.",
+          "hint": "2017’de çocukluk kulübüne döndü.",
+          "id": "rooney_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Rooney’nin 2002–2021 arasındaki oyunculuk duraklarını sırala. Bir kulüp iki kez yer alıyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Everton"
+            },
+            {
+              "key": "o1",
+              "label": "Manchester United"
+            },
+            {
+              "key": "o2",
+              "label": "Everton"
+            },
+            {
+              "key": "o3",
+              "label": "D.C. United"
+            },
+            {
+              "key": "o4",
+              "label": "Derby County"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3",
+            "o4"
+          ],
+          "requiredCount": 5,
+          "explanation": "Rooney, Everton’dan Manchester United’a geçti, Everton’a döndü ve ardından D.C. United ile Derby County’de oynadı. Bu rota teknik direktörlük görevlerini kapsamaz.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "rooney_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.dcunited.com/players/wayne-rooney/",
+        "https://www.dcunited.com/news/dc-united-forward-wayne-rooney-depart-following-2019-mls-season"
+      ]
+    },
+    {
+      "id": "kroos",
+      "name": "Toni Kroos",
+      "playerId": 31909,
+      "tasks": [
+        {
+          "type": "missingClub",
+          "title": "Kiralık basamak",
+          "prompt": "Bayern Münih → ? (2009–2010 kiralık) → Bayern Münih\nKroos’un eksik kulübünü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Bayer Leverkusen"
+            },
+            {
+              "key": "o1",
+              "label": "Borussia Dortmund"
+            },
+            {
+              "key": "o2",
+              "label": "Schalke 04"
+            },
+            {
+              "key": "o3",
+              "label": "VfL Wolfsburg"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Kroos, Ocak 2009’da Bayer Leverkusen’e kiralandı. 2010 yazında Bayern’e döndü.",
+          "hint": "Bayern’e dönmeden önce Bundesliga’da forma giydiği kulübü düşün.",
+          "id": "kroos_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2010–2014 Bayern döneminde Kroos ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Thomas Müller",
+              "playerId": 58358
+            },
+            {
+              "key": "o1",
+              "label": "Philipp Lahm",
+              "playerId": 2219
+            },
+            {
+              "key": "o2",
+              "label": "Franck Ribéry",
+              "playerId": 22068
+            },
+            {
+              "key": "o3",
+              "label": "Joshua Kimmich",
+              "playerId": 161056
+            },
+            {
+              "key": "o4",
+              "label": "Leon Goretzka",
+              "playerId": 153084
+            },
+            {
+              "key": "o5",
+              "label": "Jamal Musiala",
+              "playerId": 580195
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Thomas Müller, Philipp Lahm ve Franck Ribéry bu dönemde Kroos ile Bayern’de oynadı. Diğer adaylar Bayern A takımına daha sonra katıldı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "kroos_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2014–2024 Real Madrid döneminde Kroos ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Luka Modrić",
+              "playerId": 27992
+            },
+            {
+              "key": "o1",
+              "label": "Zinédine Zidane",
+              "playerId": 3111
+            },
+            {
+              "key": "o2",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            },
+            {
+              "key": "o3",
+              "label": "Kylian Mbappé",
+              "playerId": 342229
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Luka Modrić uzun yıllar Kroos ile Madrid orta sahasında oynadı. Zidane bu dönemde teknik direktördü; Mbappé, Kroos’un son kulüp sezonundan sonra geldi.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "kroos_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Kroos’un A takım kariyerini 2007’den 2024’e kadar sırala. Kiralık dönemden dönüşü de dahil et.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Bayern Münih"
+            },
+            {
+              "key": "o1",
+              "label": "Bayer Leverkusen"
+            },
+            {
+              "key": "o2",
+              "label": "Bayern Münih"
+            },
+            {
+              "key": "o3",
+              "label": "Real Madrid"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Kroos, Bayern’den Leverkusen’e kiralandı ve Bayern’e döndü. 2014’te Real Madrid’e geçti. Oyunculuk kariyerini 2024’te tamamladı.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "kroos_v2_4"
+        }
+      ],
+      "sources": [
+        "https://fcbayern.com/en/news/2025/01/fc-bayern-players-on-loan-who-have-made-a-career-for-themselves",
+        "https://www.realmadrid.com/en-US/news/club/announcements/comunicado-oficial-toni-kroos-21-05-2024"
+      ]
+    },
+    {
+      "id": "hazard",
+      "name": "Eden Hazard",
+      "playerId": 50202,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk sahne",
+          "prompt": "Hazard, 2007’de profesyonel A takım kariyerine hangi Fransız kulübünde başladı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Lille"
+            },
+            {
+              "key": "o1",
+              "label": "Monaco"
+            },
+            {
+              "key": "o2",
+              "label": "Lyon"
+            },
+            {
+              "key": "o3",
+              "label": "Marseille"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Eden Hazard, Lille’de A takıma yükseldi. Fransa’daki çıkışının ardından 2012’de Chelsea’ye katıldı.",
+          "hint": "İngiltere’ye gitmeden önceki Fransa yıllarını düşün.",
+          "id": "hazard_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2012–2019 Chelsea döneminde Hazard ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Frank Lampard",
+              "playerId": 3163
+            },
+            {
+              "key": "o1",
+              "label": "John Terry",
+              "playerId": 3160
+            },
+            {
+              "key": "o2",
+              "label": "N'Golo Kanté",
+              "playerId": 225083
+            },
+            {
+              "key": "o3",
+              "label": "Sadio Mané",
+              "playerId": 200512
+            },
+            {
+              "key": "o4",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Frank Lampard, John Terry ve N’Golo Kanté bu dönemin farklı sezonlarında Hazard ile Chelsea’de oynadı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "hazard_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2019–2023 Real Madrid döneminde Hazard ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Karim Benzema",
+              "playerId": 18922
+            },
+            {
+              "key": "o1",
+              "label": "Cristiano Ronaldo",
+              "playerId": 8198
+            },
+            {
+              "key": "o2",
+              "label": "Kylian Mbappé",
+              "playerId": 342229
+            },
+            {
+              "key": "o3",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Karim Benzema, Hazard’ın Madrid takım arkadaşıydı. Cristiano Ronaldo 2018’de ayrılmış, Mbappé ise 2024’te gelmişti.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "hazard_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Hazard’ın üç profesyonel A takım kulübünü ilk katılma sırasına koy.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Lille"
+            },
+            {
+              "key": "o1",
+              "label": "Chelsea"
+            },
+            {
+              "key": "o2",
+              "label": "Real Madrid"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 3,
+          "explanation": "Hazard, Lille’den Chelsea’ye, 2019’da da Real Madrid’e geçti. Bu üç kulüp oyunculuk kariyerinin ana takım duraklarıdır.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "hazard_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.chelseafc.com/en/news/article/eden-hazard-s-career-at-chelsea"
+      ]
+    },
+    {
+      "id": "adriano",
+      "name": "Adriano",
+      "playerId": 5876,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Yeni kıta",
+          "prompt": "Adriano, Flamengo’dan ayrılıp 2001’de hangi Avrupa kulübüne transfer oldu?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Inter"
+            },
+            {
+              "key": "o1",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o2",
+              "label": "Juventus"
+            },
+            {
+              "key": "o3",
+              "label": "Roma"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Adriano’nun Avrupa’daki ilk kulübü Inter’di. Sonrasında Fiorentina ve Parma’da oynayıp Inter’e döndü.",
+          "hint": "2001 yazındaki İtalya transferini düşün.",
+          "id": "adriano_v2_1"
+        },
+        {
+          "type": "missingClub",
+          "title": "Eksik basamak",
+          "prompt": "Inter → Fiorentina → ? → Inter (2004)\nAdriano’nun 2002–2004 döneminde forma giydiği kulübü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Parma"
+            },
+            {
+              "key": "o1",
+              "label": "Roma"
+            },
+            {
+              "key": "o2",
+              "label": "Lazio"
+            },
+            {
+              "key": "o3",
+              "label": "Napoli"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Adriano, Fiorentina döneminden sonra Parma’da oynadı. Ocak 2004’te Inter’e döndü.",
+          "hint": "Fiorentina sonrasındaki İtalya durağını düşün.",
+          "id": "adriano_v2_2"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2004–2009 arasında Inter’de Adriano ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Javier Zanetti",
+              "playerId": 4000000068
+            },
+            {
+              "key": "o1",
+              "label": "Esteban Cambiasso",
+              "playerId": 7520
+            },
+            {
+              "key": "o2",
+              "label": "Zlatan Ibrahimović",
+              "playerId": 3455
+            },
+            {
+              "key": "o3",
+              "label": "Romelu Lukaku",
+              "playerId": 96341
+            },
+            {
+              "key": "o4",
+              "label": "Christian Eriksen",
+              "playerId": 69633
+            },
+            {
+              "key": "o5",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Javier Zanetti, Esteban Cambiasso ve Zlatan Ibrahimović bu aralıkta Adriano ile Inter’de oynadı. Lukaku ve Eriksen daha sonraki yıllarda geldi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "adriano_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Adriano’nun 2000–2009 arasından seçilmiş bu beş durağını sırala. Kısa rota tüm kiralık dönemleri içermez.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Flamengo"
+            },
+            {
+              "key": "o1",
+              "label": "Inter"
+            },
+            {
+              "key": "o2",
+              "label": "Parma"
+            },
+            {
+              "key": "o3",
+              "label": "Inter"
+            },
+            {
+              "key": "o4",
+              "label": "Flamengo"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3",
+            "o4"
+          ],
+          "requiredCount": 5,
+          "explanation": "Seçili rota Flamengo, Inter, Parma, Inter ve 2009’daki Flamengo dönüşüdür. Fiorentina ve São Paulo dönemleri bu kısa rotada gösterilmez; sonraki kariyerini de kapsamaz.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "adriano_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/uefaeuropaleague/news/019a-0e6c0cfa0be3-88feffbe3df2-1000--adriano-welcome-at-inter/",
+        "https://www.uefa.com/news-media/news/01d8-0f85b8be6bbd-51168ca0c124-1000--adriano-parts-company-with-inter/",
+        "https://www.inter.it/en/match_center/3758",
+        "https://www.flamengo.com.br/noticias/futebol/adriano-da-show-e-fla-goleia"
+      ]
+    },
+    {
+      "id": "mbappe",
+      "name": "Kylian Mbappé",
+      "playerId": 342229,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk ışık",
+          "prompt": "Mbappé, Aralık 2015’te ilk profesyonel A takım maçına hangi kulüpte çıktı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Monaco"
+            },
+            {
+              "key": "o1",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o2",
+              "label": "Lyon"
+            },
+            {
+              "key": "o3",
+              "label": "Lille"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Kylian Mbappé, Monaco altyapısından A takıma yükseldi. İlk profesyonel maçına Aralık 2015’te çıktı.",
+          "hint": "Paris döneminden önceki kulübünü düşün.",
+          "id": "mbappe_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2017–2024 PSG döneminde Mbappé ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Neymar",
+              "playerId": 68290
+            },
+            {
+              "key": "o1",
+              "label": "Marco Verratti",
+              "playerId": 102558
+            },
+            {
+              "key": "o2",
+              "label": "Edinson Cavani",
+              "playerId": 48280
+            },
+            {
+              "key": "o3",
+              "label": "Zlatan Ibrahimović",
+              "playerId": 3455
+            },
+            {
+              "key": "o4",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            },
+            {
+              "key": "o5",
+              "label": "Ronaldinho",
+              "playerId": 3373
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Neymar, Marco Verratti ve Edinson Cavani bu dönemde Mbappé ile PSG forması giydi. Diğer adaylar Mbappé gelmeden önce ayrılmıştı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "mbappe_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2021/22–2022/23 sezonlarında PSG’de Mbappé ile oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Lionel Messi",
+              "playerId": 28003
+            },
+            {
+              "key": "o1",
+              "label": "Zlatan Ibrahimović",
+              "playerId": 3455
+            },
+            {
+              "key": "o2",
+              "label": "Edinson Cavani",
+              "playerId": 48280
+            },
+            {
+              "key": "o3",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Lionel Messi, 2021–2023 arasında Mbappé ile PSG’de oynadı. Cavani daha önce Mbappé’nin takım arkadaşıydı ancak bu sezonlardan önce ayrılmıştı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "mbappe_v2_3"
+        },
+        {
+          "type": "missingClub",
+          "title": "Yeni forma",
+          "prompt": "Monaco → PSG → ?\nMbappé’nin 2024 yazında katıldığı kulübü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o1",
+              "label": "Liverpool"
+            },
+            {
+              "key": "o2",
+              "label": "Manchester City"
+            },
+            {
+              "key": "o3",
+              "label": "FC Barcelona"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Mbappé, 2024 yazında Real Madrid’e katıldı. Bu görev 2024 transferinde sona erer; sonraki sezonları sormaz.",
+          "hint": "2024 yazında Fransa dışındaki ilk kulübüne geçti.",
+          "id": "mbappe_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.asmonaco.com/fr/news/kylian-mbappe-fete-ses-cinq-ans-en-pro",
+        "https://en.psg.fr/teams/first-team/content/season-2017-2018-in-numbers-5-of-5",
+        "https://www.psg.fr/equipes/equipe-premiere/content/2022-paris-puissance-10",
+        "https://www.realmadrid.com/en-US/news/football/first-team/latest-news/comunicado-oficial-mbappe-03-06-2024"
+      ]
+    }
+  ]
+}

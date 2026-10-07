@@ -1,5 +1,11 @@
 """Shared task templates and reviewed canonical player identities."""
 P = {
+ 'Henry':(3207,'Thierry Henry'), 'Gerrard':(3109,'Steven Gerrard'),
+ 'Adriano':(5876,'Adriano'), 'Mbappe':(342229,'Kylian Mbappé'),
+ 'Zanetti':(4000000068,'Javier Zanetti'), 'Cambiasso':(7520,'Esteban Cambiasso'),
+ 'Bergkamp':(4000000031,'Dennis Bergkamp'), 'Vieira':(4000000032,'Patrick Vieira'),
+ 'Ljungberg':(3134,'Freddie Ljungberg'), 'XabiAlonso':(7476,'Xabi Alonso'),
+ 'Dudek':(3209,'Jerzy Dudek'), 'Kewell':(3241,'Harry Kewell'),
  'DeBruyne':(88755,'Kevin De Bruyne'), 'Neuer':(17259,'Manuel Neuer'),
  'Neymar':(68290,'Neymar'), 'Verratti':(102558,'Marco Verratti'),
  'Cavani':(48280,'Edinson Cavani'), 'Matuidi':(33923,'Blaise Matuidi'),

@@ -6,6 +6,7 @@ chapters = [
  ('one', 'chapter_1_goat', ['messi','ronaldo','ronaldinho','modric','zidane','kaka','benzema','maldini']),
  ('two', 'chapter_2_underdogs', ['vardy','kante','drogba','arda_turan','ozil','eriksen','salah','falcao']),
  ('three', 'chapter_3_architects', ['ibrahimovic','de_bruyne','lewandowski','haaland','bale','neymar','neuer','ramos']),
+ ('four', 'chapter_4_icons', ['pirlo','henry','gerrard','rooney','kroos','hazard','adriano','mbappe']),
 ]
 journeys=[]
 for number, chapter_id, ids in chapters:
@@ -17,7 +18,7 @@ for number, chapter_id, ids in chapters:
  assert pack['version']==2 and pack['chapterId']==chapter_id
  assert [j['id'] for j in pack['journeys']]==ids
  journeys.extend(pack['journeys'])
-assert len({j['id'] for j in journeys}) == 24
+assert len({j['id'] for j in journeys}) == 32
 def key(s):return ''.join(c for c in unicodedata.normalize('NFKD',s.casefold()) if c.isalnum())
 with sqlite3.connect(root/'assets/runtime/linkball_game_data_v4.sqlite') as c:
  for j in journeys:
@@ -39,4 +40,4 @@ with sqlite3.connect(root/'assets/runtime/linkball_game_data_v4.sqlite') as c:
    for k in t['answerKeys']:
     assert key(opts[k]['label']) not in public, (t['id'],'answer in pre-solve copy')
    assert t['hint'] and t['explanation'] and j['sources']
-print('[PASS] Chapters 1–3: 24 canonical players, 96 valid tasks, no answer in pre-solve text.')
+print('[PASS] Chapters 1–4: 32 canonical players, 128 valid tasks, no answer in pre-solve text.')
