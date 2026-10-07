@@ -35,15 +35,18 @@ void main() {
   final chapterOne = journeyTestPack();
   final chapterTwo = journeyTestPack(chapter: 'two');
   final chapterThree = journeyTestPack(chapter: 'three');
-  final pack = [...chapterOne, ...chapterTwo, ...chapterThree];
-  test('24 canonical journeys across three chapters and all five task templates', () {
-    expect(pack.length, 24);
-    expect(pack.expand((j) => j.tasks).length, 96);
+  final chapterFour = journeyTestPack(chapter: 'four');
+  final pack = [...chapterOne, ...chapterTwo, ...chapterThree, ...chapterFour];
+  test('32 canonical journeys across all four chapters and all five task templates', () {
+    expect(pack.length, 32);
+    expect(pack.expand((j) => j.tasks).length, 128);
     expect(pack.expand((j) => j.tasks).map((t) => t.type).toSet(), JourneyTaskType.values.toSet());
     expect(pack.firstWhere((j) => j.id == 'kaka').playerId, 4000000028);
     expect(chapterOne.last.playerId, 4000000024);
     expect(chapterTwo[1].playerId,225083);
     expect(chapterTwo[3].playerId,4000000018);
+    expect(chapterFour[6].playerId,5876); // The Inter striker, not another Adriano.
+    expect(chapterFour.last.playerId,342229);
   });
   test('all reviewed tasks accept intended answers and reject distractors/incomplete selections', () {
     for (final task in pack.expand((j) => j.tasks)) {
@@ -99,7 +102,7 @@ void main() {
     store.fail=false;await tested.submit();expect(tested.checkpoint!.solved,1);
     store.fail=true;await tested.next();expect(tested.checkpoint!.index,0);expect(tested.checkpoint!.reviewing,isTrue);
   });
-  test('all 24 stories can finish, restore results and preserve unlock after replay', () async {
+  test('all 32 stories can finish, restore results and preserve unlock after replay', () async {
     for (final journey in pack) {
       final store=MemoryJourneyStore();
       final c=JourneyV2Controller(journey:journey,store:store);addTearDown(c.dispose);await c.initialize();
