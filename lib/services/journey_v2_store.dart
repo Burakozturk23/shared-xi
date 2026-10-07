@@ -8,6 +8,8 @@ const journeyV2Chapters = <String, ({int number, String asset, List<String> ids}
     ids: ['messi','ronaldo','ronaldinho','modric','zidane','kaka','benzema','maldini']),
   'chapter_2_underdogs': (number: 2, asset: 'assets/data/player_journey_chapter_two.json',
     ids: ['vardy','kante','drogba','arda_turan','ozil','eriksen','salah','falcao']),
+  'chapter_3_architects': (number: 3, asset: 'assets/data/player_journey_chapter_three.json',
+    ids: ['ibrahimovic','de_bruyne','lewandowski','haaland','bale','neymar','neuer','ramos']),
 };
 
 Future<List<JourneyV2Definition>> loadChapterOneJourneys() => loadJourneyChapter('chapter_1_goat');
