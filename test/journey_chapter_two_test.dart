@@ -10,14 +10,20 @@ import 'package:shared_xi/screens/journey_v2_page.dart';
 import 'package:shared_xi/services/journey_v2_store.dart';
 import 'package:shared_xi/services/player_journey_progress_service.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/pitch_ui.dart';
 import 'journey_v2_test.dart' show journeyTestPack;
 import 'journey_v2_page_test.dart' show goTo, snapshot;
 import 'package:flutter/services.dart';
 
 Future<void> openJourney(WidgetTester tester, String id) async {
-  await goTo(tester,ValueKey('journey-player-$id'));
+  final row = find.byKey(ValueKey('journey-player-$id'));
+  await goTo(tester, ValueKey('journey-player-$id'));
+  expect(tester.widget<PitchRow>(row).onTap, isNotNull,
+    reason: '$id must be unlocked before navigating');
+  // Keep navigation in the test clock so the pop continuation refreshes
+  // unlocks before the next tap. Only asset I/O needs real async time.
+  await tester.tap(row);
   await tester.runAsync(() async {
-    await tester.tap(find.byKey(ValueKey('journey-player-$id')));
     for (var i=0;i<100;i++) {
       await tester.pump();
       if (find.byKey(const ValueKey('journey-prompt')).evaluate().isNotEmpty) break;
