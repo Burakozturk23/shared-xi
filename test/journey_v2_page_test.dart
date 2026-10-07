@@ -42,8 +42,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   setUpAll(() async {
-    // Complete real asset I/O before entering the widget tests' fake clock.
-    await rootBundle.loadString('assets/data/player_journey_chapter_one.json');
     for (final (name,path) in [
       ('Satoshi','assets/fonts/Satoshi-Variable.ttf'),('Inter','assets/fonts/Inter-Body-Variable.ttf'),
       ('MaterialIcons','fonts/MaterialIcons-Regular.otf'),
@@ -81,7 +79,18 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('journey-player-ronaldo')));await tester.pumpAndSettle();
         expect(find.byType(JourneyV2Page),findsNothing);
         await goTo(tester,const ValueKey('journey-player-messi'));
-        await tester.tap(find.byKey(const ValueKey('journey-player-messi')));await tester.pumpAndSettle();
+        // Asset loading uses real I/O. Let it finish outside the fake clock,
+        // and require the actual prompt instead of settling a loading spinner.
+        await tester.runAsync(() async {
+          await tester.tap(find.byKey(const ValueKey('journey-player-messi')));
+          for (var i=0;i<100;i++) {
+            await tester.pump();
+            if (find.byKey(const ValueKey('journey-prompt')).evaluate().isNotEmpty) break;
+            await Future<void>.delayed(const Duration(milliseconds:50));
+          }
+        });
+        await tester.pumpAndSettle();
+        expect(find.byKey(const ValueKey('journey-prompt')),findsOneWidget);
         expect(find.byType(JourneyV2Page),findsOneWidget);expect(observer.legacy.value,isFalse);
         expect(tester.takeException(),isNull);await tester.pumpWidget(const SizedBox.shrink());
       });
