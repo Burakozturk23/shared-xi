@@ -1,0 +1,1265 @@
+{
+  "version": 2,
+  "chapterId": "chapter_1_goat",
+  "journeys": [
+    {
+      "id": "messi",
+      "name": "Lionel Messi",
+      "playerId": 28003,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk adım",
+          "prompt": "Messi ilk resmi A takım lig maçına hangi kulüpte çıktı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o1",
+              "label": "Newell’s Old Boys"
+            },
+            {
+              "key": "o2",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o3",
+              "label": "River Plate"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Altyapıda Newell’s Old Boys forması giydi. Resmi A takım lig başlangıcını 2004 yılında Barcelona ile yaptı.",
+          "hint": "Altyapı ile resmi A takım başlangıcını ayır.",
+          "id": "messi_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2008–2015 arasında Barcelona A takımında Messi ile birlikte oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Xavi",
+              "playerId": 7607
+            },
+            {
+              "key": "o1",
+              "label": "Andrés Iniesta",
+              "playerId": 7600
+            },
+            {
+              "key": "o2",
+              "label": "Carles Puyol",
+              "playerId": 4000000027
+            },
+            {
+              "key": "o3",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o4",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Xavi, Andrés Iniesta ve Carles Puyol bu aralıkta Messi ile Barcelona forması giydi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "messi_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2017–2021 arasında Barcelona A takımında Messi ile birlikte OYNAMAMIŞ futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Robert Lewandowski",
+              "playerId": 38253
+            },
+            {
+              "key": "o1",
+              "label": "Antoine Griezmann",
+              "playerId": 125781
+            },
+            {
+              "key": "o2",
+              "label": "Ousmane Dembélé",
+              "playerId": 288230
+            },
+            {
+              "key": "o3",
+              "label": "Pedri",
+              "playerId": 683840
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Lewandowski 2022’de Barcelona’ya geldi. Messi ise 2021’de ayrıldı. Diğer üç isim bu aralıkta Messi ile aynı takımdaydı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "messi_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "A takımında oynadığı bu üç kulübü ilkinden sonuncusuna sırala.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o1",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o2",
+              "label": "Inter Miami"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 3,
+          "explanation": "Messi, Barcelona’dan 2021’de PSG’ye, 2023’te Inter Miami’ye geçti.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "messi_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/newsfiles/UCL/2009/302813_LU.pdf",
+        "https://es.intermiamicf.com/noticias/inter-miami-cf-ficha-al-siete-veces-ganador-del-balon-de-oro-y-campeon-de-la-cop",
+        "https://players.fcbarcelona.com/en/player/2927-robert-lewandowski-robert-lewandowski"
+      ]
+    },
+    {
+      "id": "ronaldo",
+      "name": "Cristiano Ronaldo",
+      "playerId": 8198,
+      "tasks": [
+        {
+          "type": "missingClub",
+          "title": "Eksik durak",
+          "prompt": "Sporting CP → ? → Real Madrid\nBoş bırakılan kulübü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Manchester United"
+            },
+            {
+              "key": "o1",
+              "label": "Manchester City"
+            },
+            {
+              "key": "o2",
+              "label": "Benfica"
+            },
+            {
+              "key": "o3",
+              "label": "Chelsea"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Ronaldo, Sporting’den 2003’te Manchester United’a, 2009’da Real Madrid’e transfer oldu.",
+          "hint": "İlk yurt dışı deneyiminin ülkesini düşün.",
+          "id": "ronaldo_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2003–2009 Manchester United döneminde Ronaldo ile aynı takımda oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Wayne Rooney",
+              "playerId": 3332
+            },
+            {
+              "key": "o1",
+              "label": "Paul Scholes",
+              "playerId": 4000000026
+            },
+            {
+              "key": "o2",
+              "label": "Rio Ferdinand",
+              "playerId": 4000000069
+            },
+            {
+              "key": "o3",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o4",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Wayne Rooney, Paul Scholes ve Rio Ferdinand bu dönemde Ronaldo’nun Manchester United takım arkadaşlarıydı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "ronaldo_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2009–2018 Real Madrid döneminde Ronaldo ile aynı takımda oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Sergio Ramos",
+              "playerId": 25557
+            },
+            {
+              "key": "o1",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            },
+            {
+              "key": "o2",
+              "label": "Zinédine Zidane",
+              "playerId": 3111
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Sergio Ramos, Ronaldo’nun Real Madrid yıllarında takım arkadaşıydı. Beckham ve Zidane daha önce ayrılmıştı; Bellingham daha sonra geldi.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "ronaldo_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "İlk A takımından 2021’deki dönüşüne kadar bu durakları sırala. Aynı kulüp iki kez yer alıyor.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Sporting CP"
+            },
+            {
+              "key": "o1",
+              "label": "Manchester United"
+            },
+            {
+              "key": "o2",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o3",
+              "label": "Juventus"
+            },
+            {
+              "key": "o4",
+              "label": "Manchester United"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3",
+            "o4"
+          ],
+          "requiredCount": 5,
+          "explanation": "Sıra: Sporting, Manchester United, Real Madrid, Juventus, Manchester United. Bu rota 2021’deki dönüşte sona eriyor.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "ronaldo_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/newsfiles/UCL/2009/302813_LU.pdf",
+        "https://www.realmadrid.com/en-US/the-club/history/football-legends/cristiano-ronaldo-dos-santos-aveiro/"
+      ]
+    },
+    {
+      "id": "ronaldinho",
+      "name": "Ronaldinho",
+      "playerId": 3373,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Yeni kıta",
+          "prompt": "Ronaldinho Avrupa’daki ilk A takım deneyimini hangi kulüpte yaşadı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o1",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o2",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o3",
+              "label": "Olympique Lyon"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Ronaldinho, Grêmio’dan ayrılıp 2001’de Paris Saint-Germain’e katıldı.",
+          "hint": "Fransa’daki ilk yıllarını düşün.",
+          "id": "ronaldinho_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2001–2003 PSG döneminde Ronaldinho ile birlikte oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Gabriel Heinze",
+              "playerId": 5555
+            },
+            {
+              "key": "o1",
+              "label": "Jay-Jay Okocha",
+              "playerId": 3708
+            },
+            {
+              "key": "o2",
+              "label": "Mikel Arteta",
+              "playerId": 7451
+            },
+            {
+              "key": "o3",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o4",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            },
+            {
+              "key": "o5",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Gabriel Heinze, Jay-Jay Okocha ve Mikel Arteta, Ronaldinho’nun PSG yıllarında takım arkadaşlarıydı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "ronaldinho_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2003–2008 Barcelona döneminde Ronaldinho ile birlikte oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Xavi",
+              "playerId": 7607
+            },
+            {
+              "key": "o1",
+              "label": "Antoine Griezmann",
+              "playerId": 125781
+            },
+            {
+              "key": "o2",
+              "label": "Pedri",
+              "playerId": 683840
+            },
+            {
+              "key": "o3",
+              "label": "Robert Lewandowski",
+              "playerId": 38253
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Xavi bu dönemde Ronaldinho ile aynı takımdaydı. Diğer adaylar daha sonraki kuşaklara ait.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "ronaldinho_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Avrupa’ya ilk transferinden Brezilya’ya ilk dönüşüne kadar bu durakları sırala.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Paris Saint-Germain"
+            },
+            {
+              "key": "o1",
+              "label": "FC Barcelona"
+            },
+            {
+              "key": "o2",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o3",
+              "label": "Flamengo"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Ronaldinho’nun bu rotası PSG, Barcelona, Milan ve 2011’de Flamengo şeklindedir. Burada Brezilya’daki ilk dönüş kulübü soruluyor.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "ronaldinho_v2_4"
+        }
+      ],
+      "sources": [
+        "https://en.psg.fr/teams/club/content/50-legendary-matches-paris-dance-at-marseille-in-le-classique",
+        "https://players.fcbarcelona.com/en/player/763-ronaldinho-ronaldo-assis-moreira",
+        "https://www.psg.fr/content/la-photo-du-jour-4-aout-2001",
+        "https://en.psg.fr/teams/first-team/content/paris-saint-germain-players-at-the-world-cup-act-3-the-2000s"
+      ]
+    },
+    {
+      "id": "modric",
+      "name": "Luka Modrić",
+      "playerId": 27992,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Yola çıkmadan",
+          "prompt": "Modrić, Tottenham’a transfer olmadan hemen önce Hırvatistan’da hangi kulübün A takımında oynuyordu?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Dinamo Zagreb"
+            },
+            {
+              "key": "o1",
+              "label": "Hajduk Split"
+            },
+            {
+              "key": "o2",
+              "label": "HNK Rijeka"
+            },
+            {
+              "key": "o3",
+              "label": "NK Osijek"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Modrić, Dinamo Zagreb’den 2008’de Tottenham’a transfer oldu. Daha önceki kiralık dönemleri bu sorunun dışında.",
+          "hint": "İngiltere’ye taşınmadan hemen önceki kulübünü düşün.",
+          "id": "modric_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2008–2012 Tottenham döneminde Modrić ile birlikte oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Gareth Bale",
+              "playerId": 39381
+            },
+            {
+              "key": "o1",
+              "label": "Aaron Lennon",
+              "playerId": 14221
+            },
+            {
+              "key": "o2",
+              "label": "Jermain Defoe",
+              "playerId": 3875
+            },
+            {
+              "key": "o3",
+              "label": "Heung-min Son",
+              "playerId": 91845
+            },
+            {
+              "key": "o4",
+              "label": "Casemiro",
+              "playerId": 16306
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Gareth Bale, Aaron Lennon ve Jermain Defoe bu aralıkta Modrić ile Tottenham forması giydi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "modric_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "Modrić’in Real Madrid yıllarında aynı takımda oynadığı futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Casemiro",
+              "playerId": 16306
+            },
+            {
+              "key": "o1",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            },
+            {
+              "key": "o2",
+              "label": "Zinédine Zidane",
+              "playerId": 3111
+            },
+            {
+              "key": "o3",
+              "label": "Roberto Carlos",
+              "playerId": 4000000029
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Casemiro, Modrić ile Real Madrid orta sahasında birlikte oynadı. Diğer üç isim Modrić gelmeden önce ayrıldı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "modric_v2_3"
+        },
+        {
+          "type": "missingClub",
+          "title": "Üçüncü durak",
+          "prompt": "Dinamo Zagreb → Tottenham → ?\n2012’deki transferle oluşan rotayı tamamla.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o1",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o2",
+              "label": "Chelsea"
+            },
+            {
+              "key": "o3",
+              "label": "Manchester United"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Modrić, Tottenham’dan 2012’de Real Madrid’e katıldı. Bu soru 2012’deki transferde sona eriyor.",
+          "hint": "2012 yazındaki transferini hatırla.",
+          "id": "modric_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.tottenhamhotspur.com/news/1009750/the-archive-arsenal-2-3-spurs-201110",
+        "https://www.realmadrid.com/en-US/football/squad/luka-modric"
+      ]
+    },
+    {
+      "id": "zidane",
+      "name": "Zinédine Zidane",
+      "playerId": 3111,
+      "tasks": [
+        {
+          "type": "missingClub",
+          "title": "Eksik durak",
+          "prompt": "Cannes → ? → Juventus\nEksik kulübü seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Bordeaux"
+            },
+            {
+              "key": "o1",
+              "label": "Olympique Marseille"
+            },
+            {
+              "key": "o2",
+              "label": "AS Monaco"
+            },
+            {
+              "key": "o3",
+              "label": "Paris Saint-Germain"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Zidane, Cannes sonrası Bordeaux’da oynadı ve 1996’da Juventus’a geçti.",
+          "hint": "Fransa’daki ikinci profesyonel kulübünü düşün.",
+          "id": "zidane_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "1996–2001 Juventus döneminde Zidane ile aynı takımda oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Alessandro Del Piero",
+              "playerId": 4289
+            },
+            {
+              "key": "o1",
+              "label": "Didier Deschamps",
+              "playerId": 4000000030
+            },
+            {
+              "key": "o2",
+              "label": "Filippo Inzaghi",
+              "playerId": 5821
+            },
+            {
+              "key": "o3",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o4",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            },
+            {
+              "key": "o5",
+              "label": "Vinicius Junior",
+              "playerId": 371998
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Alessandro Del Piero, Didier Deschamps ve Filippo Inzaghi, Zidane ile Juventus’ta aynı dönemde oynadı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "zidane_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2001–2006 Real Madrid döneminde Zidane’ın takım arkadaşı olan futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Roberto Carlos",
+              "playerId": 4000000029
+            },
+            {
+              "key": "o1",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o2",
+              "label": "Vinicius Junior",
+              "playerId": 371998
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Roberto Carlos, Zidane’ın Real Madrid takım arkadaşıydı. Diğer adaylar sonraki yıllarda kulübe katıldı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "zidane_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Zidane’ın profesyonel A takım kariyerini ilk kulübünden son kulübüne sırala.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Cannes"
+            },
+            {
+              "key": "o1",
+              "label": "Bordeaux"
+            },
+            {
+              "key": "o2",
+              "label": "Juventus"
+            },
+            {
+              "key": "o3",
+              "label": "Real Madrid"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3"
+          ],
+          "requiredCount": 4,
+          "explanation": "Zidane’ın oyunculuk kariyeri Cannes, Bordeaux, Juventus ve Real Madrid sırasını izledi.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "zidane_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.realmadrid.com/en-US/the-club/history/football-legends/zinedine-zidane",
+        "https://www.uefa.com/uefachampionsleague/news/0243-0e988f44c7ca-2cac9bed2ed7-1000--last-eight-reunion-for-juventus-and-real-madrid/"
+      ]
+    },
+    {
+      "id": "kaka",
+      "name": "Kaká",
+      "playerId": 4000000028,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "Okyanusun ötesi",
+          "prompt": "Kaká Avrupa’daki ilk kulüp deneyimini nerede yaşadı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o1",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o2",
+              "label": "Inter"
+            },
+            {
+              "key": "o3",
+              "label": "Juventus"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Kaká, São Paulo’dan 2003’te Milan’a transfer oldu.",
+          "hint": "İtalya’daki ilk yıllarını düşün.",
+          "id": "kaka_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2005–2007 Milan döneminde Kaká ile aynı takımda oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Andrea Pirlo",
+              "playerId": 5817
+            },
+            {
+              "key": "o1",
+              "label": "Clarence Seedorf",
+              "playerId": 4168
+            },
+            {
+              "key": "o2",
+              "label": "Gennaro Gattuso",
+              "playerId": 5813
+            },
+            {
+              "key": "o3",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o4",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o5",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Andrea Pirlo, Clarence Seedorf ve Gennaro Gattuso bu dönemde Kaká ile Milan forması giydi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "kaka_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2009–2013 Real Madrid döneminde Kaká ile aynı takımda oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Sergio Ramos",
+              "playerId": 25557
+            },
+            {
+              "key": "o1",
+              "label": "Toni Kroos",
+              "playerId": 31909
+            },
+            {
+              "key": "o2",
+              "label": "Vinicius Junior",
+              "playerId": 371998
+            },
+            {
+              "key": "o3",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Sergio Ramos, Kaká’nın Real Madrid takım arkadaşıydı. Diğer üç isim Kaká ayrıldıktan sonra geldi.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "kaka_v2_3"
+        },
+        {
+          "type": "timeline",
+          "title": "Kariyer rotası",
+          "prompt": "Kaká’nın A takımda forma giydiği durakları sırala. 2014’teki kısa kiralık dönüşü de dahil.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "São Paulo"
+            },
+            {
+              "key": "o1",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o2",
+              "label": "Real Madrid"
+            },
+            {
+              "key": "o3",
+              "label": "AC Milan"
+            },
+            {
+              "key": "o4",
+              "label": "São Paulo"
+            },
+            {
+              "key": "o5",
+              "label": "Orlando City"
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2",
+            "o3",
+            "o4",
+            "o5"
+          ],
+          "requiredCount": 6,
+          "explanation": "Kaká 2014’te Orlando ile anlaştıktan sonra São Paulo’ya kiralandı. Orlando formasıyla oynamaya 2015’te başladı. Rota, sözleşme tarihini değil forma giyme sırasını izliyor.",
+          "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
+          "id": "kaka_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.acmilan.com/en/hall-of-fame/inductees/ricardo-kaka",
+        "https://www.acmilan.com/en/roster-archive/men-first-team-archive/acmilan-2006-roster",
+        "https://www.mlssoccer.com/competitions/mls-regular-season/news/orlando-city-sc-confirm-lawsuit-against-sao-paulo-over-missed-payments-closes"
+      ]
+    },
+    {
+      "id": "benzema",
+      "name": "Karim Benzema",
+      "playerId": 18922,
+      "tasks": [
+        {
+          "type": "clubChoice",
+          "title": "İlk forma",
+          "prompt": "Benzema altyapısından yetişip ilk profesyonel A takım maçlarına hangi kulüpte çıktı?",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Olympique Lyon"
+            },
+            {
+              "key": "o1",
+              "label": "Olympique Marseille"
+            },
+            {
+              "key": "o2",
+              "label": "AS Monaco"
+            },
+            {
+              "key": "o3",
+              "label": "Paris Saint-Germain"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Benzema, Lyon altyapısından A takıma yükseldi. 2009’da Real Madrid’e transfer oldu.",
+          "hint": "Doğduğu şehirdeki futbol başlangıcını düşün.",
+          "id": "benzema_v2_1"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2009–2018 Real Madrid döneminde Benzema ile birlikte oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Cristiano Ronaldo",
+              "playerId": 8198
+            },
+            {
+              "key": "o1",
+              "label": "Gareth Bale",
+              "playerId": 39381
+            },
+            {
+              "key": "o2",
+              "label": "Sergio Ramos",
+              "playerId": 25557
+            },
+            {
+              "key": "o3",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            },
+            {
+              "key": "o4",
+              "label": "Jude Bellingham",
+              "playerId": 581678
+            },
+            {
+              "key": "o5",
+              "label": "Heung-min Son",
+              "playerId": 91845
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Cristiano Ronaldo, Gareth Bale ve Sergio Ramos bu dönemde Benzema ile Real Madrid forması giydi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "benzema_v2_2"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2018/19–2022/23 sezonlarında Real Madrid’de Benzema ile aynı takımda oynayan futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Vinicius Junior",
+              "playerId": 371998
+            },
+            {
+              "key": "o1",
+              "label": "Cristiano Ronaldo",
+              "playerId": 8198
+            },
+            {
+              "key": "o2",
+              "label": "Zinédine Zidane",
+              "playerId": 3111
+            },
+            {
+              "key": "o3",
+              "label": "David Beckham",
+              "playerId": 4000000023
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Vinicius Junior, Ronaldo’nun 2018’de ayrılmasından sonraki yıllarda Benzema ile oynadı. Bu soruda 2018/19 ve sonrası esas alınıyor.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "benzema_v2_3"
+        },
+        {
+          "type": "missingClub",
+          "title": "Yeni sayfa",
+          "prompt": "Lyon → Real Madrid → ?\n2023 yazındaki transferle oluşan rotayı tamamla.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Al-Ittihad"
+            },
+            {
+              "key": "o1",
+              "label": "Al-Nassr"
+            },
+            {
+              "key": "o2",
+              "label": "Al-Hilal"
+            },
+            {
+              "key": "o3",
+              "label": "Al-Ahli"
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Benzema, 2023 yazında Real Madrid’den Al-Ittihad’a geçti. Bu sorunun zaman sınırı bu transferdir.",
+          "hint": "2023 yazındaki Suudi Arabistan transferini düşün.",
+          "id": "benzema_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.uefa.com/newsfiles/UCL/2009/302813_LU.pdf",
+        "https://www.realmadrid.com/StaticFiles/RealMadrid/pretemporada/preseason_press_kit_0910_en.pdf",
+        "https://www.uefa.com/uefachampionsleague/news/0283-1888126c5b78-5c4e6a7fd9b5-1000--uefa-champions-league-transfers-ins-and-outs/"
+      ]
+    },
+    {
+      "id": "maldini",
+      "name": "Paolo Maldini",
+      "playerId": 4000000024,
+      "tasks": [
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "1988–1991 arasında Milan A takımında Maldini ile oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Ruud Gullit",
+              "playerId": 4000000042
+            },
+            {
+              "key": "o1",
+              "label": "Frank Rijkaard",
+              "playerId": 4000000058
+            },
+            {
+              "key": "o2",
+              "label": "Marco van Basten",
+              "playerId": 4000000041
+            },
+            {
+              "key": "o3",
+              "label": "Kaká",
+              "playerId": 4000000028
+            },
+            {
+              "key": "o4",
+              "label": "Andrea Pirlo",
+              "playerId": 5817
+            },
+            {
+              "key": "o5",
+              "label": "Alessandro Nesta",
+              "playerId": 4171
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Ruud Gullit, Frank Rijkaard ve Marco van Basten, bu yıllarda Maldini ile Milan forması giydi.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "maldini_v2_1"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "1990–1999 arasında Milan’da Maldini ile aynı takımda oynamış futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Alessandro Costacurta",
+              "playerId": 10055
+            },
+            {
+              "key": "o1",
+              "label": "Kaká",
+              "playerId": 4000000028
+            },
+            {
+              "key": "o2",
+              "label": "Ronaldinho",
+              "playerId": 3373
+            },
+            {
+              "key": "o3",
+              "label": "Karim Benzema",
+              "playerId": 18922
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Alessandro Costacurta bu dönemin Milan savunmasındaydı. Kaká ve Ronaldinho daha sonra geldi; Benzema Milan’da oynamadı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "maldini_v2_2"
+        },
+        {
+          "type": "teammate",
+          "title": "Ortak forma",
+          "prompt": "2003–2007 Milan döneminde Maldini ile birlikte oynamış 2 futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Andrea Pirlo",
+              "playerId": 5817
+            },
+            {
+              "key": "o1",
+              "label": "Clarence Seedorf",
+              "playerId": 4168
+            },
+            {
+              "key": "o2",
+              "label": "Alessandro Nesta",
+              "playerId": 4171
+            },
+            {
+              "key": "o3",
+              "label": "Ruud Gullit",
+              "playerId": 4000000042
+            },
+            {
+              "key": "o4",
+              "label": "Frank Rijkaard",
+              "playerId": 4000000058
+            },
+            {
+              "key": "o5",
+              "label": "Erling Haaland",
+              "playerId": 418560
+            }
+          ],
+          "answerKeys": [
+            "o0",
+            "o1",
+            "o2"
+          ],
+          "requiredCount": 2,
+          "explanation": "Andrea Pirlo, Clarence Seedorf ve Alessandro Nesta bu yıllarda Maldini’nin Milan takım arkadaşlarıydı.",
+          "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
+          "id": "maldini_v2_3"
+        },
+        {
+          "type": "eraChoice",
+          "title": "Dönem hafızası",
+          "prompt": "2007–2009 arasında Milan’da Maldini ile aynı takımda OYNAMAMIŞ futbolcuyu seç.",
+          "options": [
+            {
+              "key": "o0",
+              "label": "Zlatan Ibrahimović",
+              "playerId": 3455
+            },
+            {
+              "key": "o1",
+              "label": "Kaká",
+              "playerId": 4000000028
+            },
+            {
+              "key": "o2",
+              "label": "Ronaldinho",
+              "playerId": 3373
+            },
+            {
+              "key": "o3",
+              "label": "Alessandro Nesta",
+              "playerId": 4171
+            }
+          ],
+          "answerKeys": [
+            "o0"
+          ],
+          "requiredCount": 1,
+          "explanation": "Maldini 2009’da futbolu bıraktı. Ibrahimović Milan’a 2010’da geldi. Kaká, Ronaldinho ve Nesta ise Maldini’nin son yıllarında onunla oynadı.",
+          "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
+          "id": "maldini_v2_4"
+        }
+      ],
+      "sources": [
+        "https://www.acmilan.com/en/club/palmares/1988-89-champions-league",
+        "https://www.acmilan.com/en/roster-archive/men-first-team-archive/acmilan-2006-roster",
+        "https://www.acmilan.com/en/roster-archive/men-first-team-archive/acmilan-1989-roster"
+      ]
+    }
+  ]
+}

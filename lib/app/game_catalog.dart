@@ -285,6 +285,8 @@ class GameCatalog {
       icon: Icons.auto_stories_outlined,
       page: StoryModeSelectionPage(),
       category: 'Hikâye',
+      requiresRepository: false,
+      modern: true,
     ),
   ];
 }

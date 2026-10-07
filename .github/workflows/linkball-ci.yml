@@ -43,6 +43,7 @@ jobs:
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_season_portrait_players.py'
           python3 tools/season_portraits/verify_players.py
           python3 tools/anagram/verify.py
+          python3 tools/player_journey/verify.py
           python3 tools/season_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/verify.py
@@ -133,6 +134,16 @@ jobs:
         with:
           name: store-previews
           path: .dart_tool/store_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload Player Journey previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: player-journey-previews
+          path: .dart_tool/journey_qa/*.png
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7

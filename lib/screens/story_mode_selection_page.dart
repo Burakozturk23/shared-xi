@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../app/game_catalog.dart';
+import '../app/game_launcher.dart';
+import '../widgets/pitch_ui.dart';
 import 'player_journey_chapter_list_page.dart';
 import 'derby_day_country_page.dart';
 import 'ucl_moments_page.dart';
@@ -67,94 +70,29 @@ class StoryModeSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const pages = <Widget>[
+      PlayerJourneyChapterListPage(), LegendsPathPartSelectionPage(),
+      UclMomentsPage(), TurkishNostalgiaPage(), InternationalGloryPage(),
+      DynastiesPage(), FootballDocuSeriesPartSelectionPage(), DerbyDayCountryPage(),
+    ];
     return Scaffold(
-      appBar: AppBar(title: const Text('Story Mode')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: storySubModes.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          final mode = storySubModes[index];
-          return Card(
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: Icon(mode.icon, size: 32),
-              title: Row(
-                children: [
-                  Text(
-                    'MOD ${index + 1}: ${mode.title}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-              ),
-              subtitle: Text(mode.subtitle),
-              trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-  if (index == 0) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PlayerJourneyChapterListPage()),
-    );
-    return;
-  }
-  if (index == 1) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const LegendsPathPartSelectionPage()),
-  );
-  return;
-}
-  if (index == 2) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const UclMomentsPage()),
-    );
-    return;
-  }
-  if (index == 7) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const DerbyDayCountryPage()),
-    );
-    return;
-  }
-  if (index == 3) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const TurkishNostalgiaPage()),
-  );
-  return;
-}
-if (index == 4) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const InternationalGloryPage()),
-  );
-  return;
-}
-if (index == 5) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const DynastiesPage()),
-  );
-  return;
-}
-if (index == 6) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const FootballDocuSeriesPartSelectionPage()),
-  );
-  return;
-}
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('${mode.title} çok yakında!')),
-  );
-},
-            ),
-          );
-        },
-      ),
+      appBar: AppBar(title: const Text('Hikâye')),
+      body: SafeArea(child: ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 28), children: [
+        Text('Futbolun hikâyelerine katıl.', style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 8), const Text('Bir yolculuk seç. Sahadaki izleri takip et.'),
+        const SizedBox(height: 22),
+        for (var i=0;i<storySubModes.length;i++) Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: PitchRow(key: ValueKey('story-mode-$i'), title: storySubModes[i].title,
+            subtitle: storySubModes[i].subtitle, icon: storySubModes[i].icon, highlight: true,
+            onTap: () => GameLauncher.open(context, GameEntry(
+              title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
+              icon: storySubModes[i].icon, page: pages[i],
+              requiresRepository: i != 0, modern: i == 0,
+            )),
+          ),
+        ),
+      ])),
     );
   }
 }
