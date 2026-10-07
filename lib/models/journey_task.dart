@@ -44,7 +44,9 @@ class JourneyTask {
   JourneyOption option(String key) => options.firstWhere((o) => o.key == key);
   bool accepts(List<String> keys) {
     if (keys.length != requiredCount || keys.toSet().length != keys.length ||
-        keys.any((key) => !options.any((o) => o.key == key))) return false;
+        keys.any((key) => !options.any((o) => o.key == key))) {
+      return false;
+    }
     if (isTimeline) {
       // Repeated clubs are indistinguishable to the player: compare club labels,
       // not internal occurrence keys (United and Milan each appear twice).
