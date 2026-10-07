@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../controllers/journey_v2_controller.dart';
 import '../models/player.dart';
-import '../models/journey_task.dart';
 import '../services/journey_v2_store.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/player_avatar.dart';
 
 class JourneyV2Page extends StatefulWidget {
-  const JourneyV2Page({super.key, required this.journeyId, this.controller});
+  const JourneyV2Page({super.key, required this.journeyId, this.chapterId = 'chapter_1_goat', this.controller});
   final String journeyId;
+  final String chapterId;
   final JourneyV2Controller? controller;
   @override
   State<JourneyV2Page> createState() => _JourneyV2PageState();
@@ -26,7 +26,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
     setState(() => _failed = false);
     try {
       final game = widget.controller ?? JourneyV2Controller(
-        journey: (await loadChapterOneJourneys()).firstWhere((j) => j.id == widget.journeyId),
+        journey: (await loadJourneyChapter(widget.chapterId)).firstWhere((j) => j.id == widget.journeyId),
         store: LocalJourneyV2Store(),
       );
       if (!mounted) { if (widget.controller == null) game.dispose(); return; }
@@ -96,7 +96,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       Row(children: [
         PlayerAvatar(player: Player.fromJson({'id': game.journey.playerId, 'name': game.journey.name, 'countries': <String>[], 'position': ''}), size: 64),
         const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('BÖLÜM 1', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: p.accent)),
+          Text('BÖLÜM ${journeyV2Chapters[widget.chapterId]!.number}', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: p.accent)),
           Text(game.journey.name, style: Theme.of(context).textTheme.titleLarge),
           Text('${state.solved} / 4 görev tamamlandı', style: Theme.of(context).textTheme.bodySmall),
         ])),
