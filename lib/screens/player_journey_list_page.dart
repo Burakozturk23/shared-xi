@@ -53,7 +53,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
   Widget _row(int index) {
     final journey = widget.chapter.journeys[index];
     final unlocked = journey.available && _isUnlocked(index), done = _completed.contains(journey.id);
-    final v2 = widget.chapter.id == 'chapter_1_goat';
+    final v2 = journeyV2Chapters.containsKey(widget.chapter.id);
     final solved = _progress[journey.id]?.$1 ?? 0;
     return Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(
       key: ValueKey('journey-player-${journey.id}'), title: '${index+1}. ${journey.subjectName}',
@@ -64,7 +64,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
       trailing: Icon(done ? Icons.check_circle_outline : unlocked ? Icons.chevron_right : Icons.lock_outline),
       onTap: !unlocked ? null : () async {
         await GameLauncher.open(context, GameEntry(title: journey.subjectName, subtitle: '', icon: Icons.route,
-          page: v2 ? JourneyV2Page(journeyId: journey.id) : PlayerJourneyPage(journey: journey),
+          page: v2 ? JourneyV2Page(journeyId: journey.id, chapterId: widget.chapter.id) : PlayerJourneyPage(journey: journey),
           requiresRepository: !v2, modern: v2,
         ));
         if (mounted) await _loadProgress();

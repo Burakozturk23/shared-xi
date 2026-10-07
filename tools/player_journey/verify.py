@@ -2,16 +2,24 @@
 import json, sqlite3, subprocess, sys, unicodedata
 from pathlib import Path
 root=Path(__file__).resolve().parents[2]
-path=root/'assets/data/player_journey_chapter_one.json'
-original=path.read_bytes()
-subprocess.run([sys.executable,str(Path(__file__).with_name('build_chapter_one.py'))],check=True)
-assert path.read_bytes()==original, 'Regenerate chapter one before committing'
-pack=json.loads(original)
-assert pack['version']==2 and pack['chapterId']=='chapter_1_goat'
-assert [j['id'] for j in pack['journeys']]==['messi','ronaldo','ronaldinho','modric','zidane','kaka','benzema','maldini']
+chapters = [
+ ('one', 'chapter_1_goat', ['messi','ronaldo','ronaldinho','modric','zidane','kaka','benzema','maldini']),
+ ('two', 'chapter_2_underdogs', ['vardy','kante','drogba','arda_turan','ozil','eriksen','salah','falcao']),
+]
+journeys=[]
+for number, chapter_id, ids in chapters:
+ path=root/f'assets/data/player_journey_chapter_{number}.json'
+ original=path.read_bytes()
+ subprocess.run([sys.executable,str(Path(__file__).with_name(f'build_chapter_{number}.py'))],check=True)
+ assert path.read_bytes()==original, f'Regenerate chapter {number} before committing'
+ pack=json.loads(original)
+ assert pack['version']==2 and pack['chapterId']==chapter_id
+ assert [j['id'] for j in pack['journeys']]==ids
+ journeys.extend(pack['journeys'])
+assert len({j['id'] for j in journeys}) == 16
 def key(s):return ''.join(c for c in unicodedata.normalize('NFKD',s.casefold()) if c.isalnum())
 with sqlite3.connect(root/'assets/runtime/linkball_game_data_v4.sqlite') as c:
- for j in pack['journeys']:
+ for j in journeys:
   assert c.execute('select name from players where id=?',(j['playerId'],)).fetchone()==(j['name'],),j['id']
   assert len(j['tasks'])==4
   for i,t in enumerate(j['tasks']):
@@ -30,4 +38,4 @@ with sqlite3.connect(root/'assets/runtime/linkball_game_data_v4.sqlite') as c:
    for k in t['answerKeys']:
     assert key(opts[k]['label']) not in public, (t['id'],'answer in pre-solve copy')
    assert t['hint'] and t['explanation'] and j['sources']
-print('[PASS] Chapter 1: 8 canonical players, 32 valid tasks, no answer in pre-solve text.')
+print('[PASS] Chapters 1–2: 16 canonical players, 64 valid tasks, no answer in pre-solve text.')

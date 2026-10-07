@@ -130,7 +130,7 @@ final PlayerJourneyDefinition ibrahimovicJourney = PlayerJourneyDefinition(
 final PlayerJourneyDefinition ardaTuranJourney = PlayerJourneyDefinition(
   id: 'arda_turan',
   subjectName: 'Arda Turan',
-  subjectPlayerId: 21369,
+  subjectPlayerId: 4000000018,
   available: true,
   stages: [
     PlayerJourneyStage(

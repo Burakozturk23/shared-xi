@@ -3,13 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/journey_task.dart';
 
-Future<List<JourneyV2Definition>> loadChapterOneJourneys() async {
-  final raw = jsonDecode(await rootBundle.loadString('assets/data/player_journey_chapter_one.json')) as Map<String,dynamic>;
-  if (raw['version'] != 2 || raw['chapterId'] != 'chapter_1_goat') {
+const journeyV2Chapters = <String, ({int number, String asset, List<String> ids})>{
+  'chapter_1_goat': (number: 1, asset: 'assets/data/player_journey_chapter_one.json',
+    ids: ['messi','ronaldo','ronaldinho','modric','zidane','kaka','benzema','maldini']),
+  'chapter_2_underdogs': (number: 2, asset: 'assets/data/player_journey_chapter_two.json',
+    ids: ['vardy','kante','drogba','arda_turan','ozil','eriksen','salah','falcao']),
+};
+
+Future<List<JourneyV2Definition>> loadChapterOneJourneys() => loadJourneyChapter('chapter_1_goat');
+
+Future<List<JourneyV2Definition>> loadJourneyChapter(String chapterId) async {
+  final chapter = journeyV2Chapters[chapterId];
+  if (chapter == null) throw const FormatException('Unsupported journey chapter');
+  final raw = jsonDecode(await rootBundle.loadString(chapter.asset)) as Map<String,dynamic>;
+  if (raw['version'] != 2 || raw['chapterId'] != chapterId) {
     throw const FormatException('Invalid journey catalog');
   }
   final journeys = (raw['journeys'] as List).map((j) => JourneyV2Definition.fromJson(Map<String,dynamic>.from(j as Map))).toList();
-  if (journeys.length != 8 || journeys.map((j) => j.id).toSet().length != 8) {
+  if (journeys.length != chapter.ids.length ||
+      List.generate(journeys.length, (i) => journeys[i].id != chapter.ids[i]).any((different) => different)) {
     throw const FormatException('Invalid chapter');
   }
   return journeys;
