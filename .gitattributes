@@ -1,0 +1,2 @@
+# Firebase Functions JavaScript and config files must use LF on all platforms.
+/functions/** text eol=lf
