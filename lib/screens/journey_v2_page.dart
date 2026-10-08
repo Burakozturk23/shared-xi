@@ -53,7 +53,9 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
     final screen = '${state?.index}:${state?.reviewing}';
     if (_screen != screen) {
       _screen = screen;
-      if (_scroll.hasClients) _scroll.jumpTo(0);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _screen == screen && _scroll.hasClients) _scroll.jumpTo(0);
+      });
     }
     setState(() {});
   }

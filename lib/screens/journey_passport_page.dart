@@ -20,8 +20,9 @@ Player passportPlayer(JourneyV2Definition journey) => Player.fromJson({
 });
 
 class JourneyPassportPage extends StatefulWidget {
-  const JourneyPassportPage({super.key, this.controller});
+  const JourneyPassportPage({super.key, this.controller, this.journeys});
   final JourneyRewardsController? controller;
+  final List<JourneyV2Definition>? journeys;
   @override
   State<JourneyPassportPage> createState()=>_JourneyPassportPageState();
 }
@@ -42,7 +43,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
   Future<void> _load() async {
     setState(() { _loading=true; _failed=false; });
     try {
-      final journeys=await loadPassportJourneys();
+      final journeys=widget.journeys ?? await loadPassportJourneys();
       final local=await PlayerJourneyProgressService.getCompletedIds();
       if(!mounted) return;
       setState(() { _journeys=journeys; _local=local; _loading=false; });

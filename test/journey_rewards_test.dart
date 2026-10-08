@@ -78,14 +78,7 @@ void main() {
       final key=GlobalKey();
       await tester.pumpWidget(MaterialApp(theme:large?OrtakSahaTheme.light:OrtakSahaTheme.dark,
         builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:TextScaler.linear(large?1.8:1)),
-          child:RepaintBoundary(key:key,child:child!)),home:JourneyPassportPage(controller:c)));
-      await tester.runAsync(() async {
-        for(var i=0;i<100;i++) {
-          await tester.pump();
-          if(find.text('8 / 32 kariyer damgası').evaluate().isNotEmpty) break;
-          await Future<void>.delayed(const Duration(milliseconds:20));
-        }
-      });
+          child:RepaintBoundary(key:key,child:child!)),home:JourneyPassportPage(controller:c,journeys:[for(final chapter in ['one','two','three','four']) ...journeyTestPack(chapter:chapter)])));
       await tester.pumpAndSettle();
       expect(find.text('8 / 32 kariyer damgası'),findsOneWidget);
       expect(tester.takeException(),isNull);

@@ -32,7 +32,7 @@ class JourneyRewardsController extends ChangeNotifier {
   void dispose() { _disposed = true; super.dispose(); }
   Future<T> _locked<T>(Future<T> Function() action) {
     final next = _writes.then((_)=>action());
-    _writes = next.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    _writes = next.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return next;
   }
   Future<Map<String,dynamic>> _queue() async {
