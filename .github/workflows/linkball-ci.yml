@@ -19,11 +19,33 @@ jobs:
   flutter:
     name: Flutter quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Android NDK downloads can be very slow on fresh GitHub runners.
+    # APK build is gated by mobile changes; keep extra headroom when it runs.
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check for mobile build changes
+        id: mobile_changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            echo "build_apk=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git diff --name-only "$BASE_SHA" HEAD > "$RUNNER_TEMP/changed_paths.txt"
+          if grep -Eq '^(lib/|android/|assets/|integration_test/|pubspec[.](yaml|lock)$)' "$RUNNER_TEMP/changed_paths.txt"; then
+            echo "build_apk=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_apk=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Android APK build: no mobile source/config changes."
+          fi
 
       - name: Verify bundled data and reviewed patches
         run: |
@@ -157,6 +179,7 @@ jobs:
           retention-days: 7
 
       - name: Android debug compile gate
+        if: steps.mobile_changes.outputs.build_apk == 'true'
         run: flutter build apk --debug
 
   functions:
