@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/journey_task.dart';
@@ -18,7 +19,7 @@ class JourneyRewardsController extends ChangeNotifier {
   bool busy = false, _disposed = false, _again = false;
   Map<String,dynamic> data = {};
   String? message;
-  static Future<void> _writes = Future.value();
+  static Future<void>? _writes;
   bool get linked => uid != null && (_injected || (AuthService.isGoogleAccount && AuthService.uid == uid));
   String get _key => 'journey.proofs.v1.$uid';
   Set<String> get completed => (data['completed'] as List? ?? []).map((e)=>e.toString()).toSet();
@@ -30,10 +31,19 @@ class JourneyRewardsController extends ChangeNotifier {
   void _notify() { if (!_disposed) notifyListeners(); }
   @override
   void dispose() { _disposed = true; super.dispose(); }
-  Future<T> _locked<T>(Future<T> Function() action) {
-    final next = _writes.then((_)=>action());
-    _writes = next.then<void>((_) {}, onError: (Object _, StackTrace _) {});
-    return next;
+  Future<T> _locked<T>(Future<T> Function() action) async {
+    final previous = _writes;
+    final gate = Completer<void>();
+    final pending = gate.future;
+    _writes = pending;
+    try {
+      if (previous != null) await previous;
+      return await action();
+    } finally {
+      // Do not retain an idle Future/zone between unrelated controller lifetimes.
+      if (identical(_writes, pending)) _writes = null;
+      gate.complete();
+    }
   }
   Future<Map<String,dynamic>> _queue() async {
     final prefs = await SharedPreferences.getInstance();
@@ -77,7 +87,11 @@ class JourneyRewardsController extends ChangeNotifier {
           await gateway.call('submit',proof);
           if (!linked) throw StateError('Hesap değişti.');
           await _locked(() async { final latest = await _queue(); latest.remove(entry.key); await _write(latest); });
-        } catch (_) {
+        } catch (e) {
+          // A legacy stage gap affects this journey only. Network/auth failures
+          // stop the batch so offline devices do not wait once per career.
+          if (e is! FirebaseFunctionsException ||
+              !{'failed-precondition','invalid-argument'}.contains(e.code)) rethrow;
           blocked.add(journey); pending = true;
         }
       }
@@ -86,7 +100,7 @@ class JourneyRewardsController extends ChangeNotifier {
       data = result;
       if (pending) message = 'Bazı cevaplar eşitlenmeyi bekliyor. Eski aşamalardan devam ettiysen ödül için o yolculuğu baştan tamamla. Diğer kariyerlerin etkilenmez.';
     } catch (_) {
-      message = 'Ödüller henüz eşitlenemedi. Cevapların bu hesap için saklanıyor; bağlantı gelince yeniden dene. Eski aşamalardan devam ettiysen ödül için bu yolculuğu tekrar tamamla.';
+      message = 'Ödüller henüz eşitlenemedi. Cevapların bu hesap için saklanıyor; bağlantı gelince yeniden dene.';
     } finally {
       busy = false; _notify();
       if (_again) { _again = false; unawaited(refresh()); }

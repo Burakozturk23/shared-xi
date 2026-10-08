@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,11 +15,12 @@ class FakeJourneyGateway implements JourneyGateway {
   final calls=<Map<String,dynamic>>[];
   Map<String,dynamic> state={'completed':<String>[],'favorites':<String>[]};
   String? failingJourney;
+  FirebaseFunctionsException failure=FirebaseFunctionsException(code:'failed-precondition');
   Completer<void>? adWait;
   @override
   Future<Map<String,dynamic>> call(String action,[Map<String,dynamic> input=const{}]) async {
     calls.add({'action':action,...input});
-    if(action=='submit' && input['journeyId']==failingJourney) throw StateError('offline');
+    if(action=='submit' && input['journeyId']==failingJourney) throw failure;
     if(action=='favorites') state['favorites']=input['ids'];
     return state;
   }
@@ -33,7 +35,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(()=>SharedPreferences.setMockInitialValues({}));
   test('offline proof survives controller recreation and only acknowledgement removes it',() async {
-    final j=journeyTestPack().first, api=FakeJourneyGateway()..failingJourney='messi';
+    final j=journeyTestPack().first, api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable');
     final c=JourneyRewardsController(gateway:api,userId:'alice');
     await c.enqueue(j.id,j.tasks.first,j.tasks.first.answerKeys); await idle(c); c.dispose();
     final prefs=await SharedPreferences.getInstance();
@@ -56,6 +58,19 @@ void main() {
     await alice.refresh();
     expect((jsonDecode(prefs.getString('journey.proofs.v1.alice')!) as Map).keys,['messi_v2_4']);
     expect(alice.message,contains('Diğer kariyerlerin etkilenmez'));
+  });
+  test('network failure stops the batch and retains every unacknowledged proof',() async {
+    final prefs=await SharedPreferences.getInstance();
+    await prefs.setString('journey.proofs.v1.alice',jsonEncode({
+      'messi_v2_1':{'journeyId':'messi','taskId':'messi_v2_1'},
+      'ronaldo_v2_1':{'journeyId':'ronaldo','taskId':'ronaldo_v2_1'},
+    }));
+    final api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable');
+    final c=JourneyRewardsController(gateway:api,userId:'alice');addTearDown(c.dispose);
+    await c.refresh();
+    expect(api.calls.length,1);
+    expect((jsonDecode(prefs.getString('journey.proofs.v1.alice')!) as Map).length,2);
+    expect(c.busy,isFalse);
   });
   test('proof enqueued during ad completion is flushed afterwards',() async {
     final api=FakeJourneyGateway()..adWait=Completer<void>();
