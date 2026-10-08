@@ -1,3 +1,4 @@
+import '../widgets/journey_profile_showcase.dart';
 import '../widgets/nickname_edit_dialog.dart';
 import 'package:flutter/material.dart';
 import '../widgets/profile_kit.dart';
@@ -214,6 +215,8 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           if (profile.isPersistent) const SizedBox(height: 16),
                           if (profile.isPersistent)
                             const AchievementProfilePreviewCard(),
+                          if (profile.isPersistent) const SizedBox(height: 16),
+                          if (profile.isPersistent) JourneyProfileShowcase(key: ValueKey(AuthService.uid)),
                           if (profile.isPersistent) const SizedBox(height: 16),
                           if (profile.isPersistent)
                             _ProgressionShortcutCard(
