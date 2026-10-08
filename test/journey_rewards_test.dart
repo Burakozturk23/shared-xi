@@ -15,7 +15,7 @@ class FakeJourneyGateway implements JourneyGateway {
   final calls=<Map<String,dynamic>>[];
   Map<String,dynamic> state={'completed':<String>[],'favorites':<String>[]};
   String? failingJourney;
-  FirebaseFunctionsException failure=FirebaseFunctionsException(code:'failed-precondition');
+  FirebaseFunctionsException failure=FirebaseFunctionsException(code:'failed-precondition',message:'legacy stage gap');
   Completer<void>? adWait;
   @override
   Future<Map<String,dynamic>> call(String action,[Map<String,dynamic> input=const{}]) async {
@@ -35,7 +35,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(()=>SharedPreferences.setMockInitialValues({}));
   test('offline proof survives controller recreation and only acknowledgement removes it',() async {
-    final j=journeyTestPack().first, api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable');
+    final j=journeyTestPack().first, api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable',message:'offline');
     final c=JourneyRewardsController(gateway:api,userId:'alice');
     await c.enqueue(j.id,j.tasks.first,j.tasks.first.answerKeys); await idle(c); c.dispose();
     final prefs=await SharedPreferences.getInstance();
@@ -65,7 +65,7 @@ void main() {
       'messi_v2_1':{'journeyId':'messi','taskId':'messi_v2_1'},
       'ronaldo_v2_1':{'journeyId':'ronaldo','taskId':'ronaldo_v2_1'},
     }));
-    final api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable');
+    final api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable',message:'offline');
     final c=JourneyRewardsController(gateway:api,userId:'alice');addTearDown(c.dispose);
     await c.refresh();
     expect(api.calls.length,1);
