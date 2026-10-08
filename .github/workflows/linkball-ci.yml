@@ -40,7 +40,7 @@ jobs:
           fi
           git fetch --no-tags --depth=1 origin "$BASE_SHA"
           git diff --name-only "$BASE_SHA" HEAD > "$RUNNER_TEMP/changed_paths.txt"
-          if grep -Eq '^(lib/|android/|assets/|integration_test/|pubspec\\.(yaml|lock)$)' "$RUNNER_TEMP/changed_paths.txt"; then
+          if grep -Eq '^(lib/|android/|assets/|integration_test/|pubspec[.](yaml|lock)$)' "$RUNNER_TEMP/changed_paths.txt"; then
             echo "build_apk=true" >> "$GITHUB_OUTPUT"
           else
             echo "build_apk=false" >> "$GITHUB_OUTPUT"
