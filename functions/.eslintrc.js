@@ -11,6 +11,9 @@ module.exports = {
     "google",
   ],
   rules: {
+    // CRLF is common in Windows working trees; do not fail lint over EOLs.
+    // Git enforces LF for Functions source via .gitattributes.
+    "linebreak-style": "off",
     "no-restricted-globals": ["error", "name", "length"],
     "prefer-arrow-callback": "error",
     "quotes": ["error", "double", {"allowTemplateLiterals": true}],
