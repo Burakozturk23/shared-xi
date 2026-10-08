@@ -1,3 +1,7 @@
+import '../controllers/journey_rewards_controller.dart';
+import '../widgets/journey_reward_card.dart';
+import 'journey_passport_page.dart';
+import '../app/route_appearance.dart';
 import 'package:flutter/material.dart';
 import '../controllers/journey_v2_controller.dart';
 import '../models/player.dart';
@@ -18,16 +22,26 @@ class JourneyV2Page extends StatefulWidget {
 class _JourneyV2PageState extends State<JourneyV2Page> {
   JourneyV2Controller? _game;
   final _scroll = ScrollController();
+  final _rewards = JourneyRewardsController();
   bool _failed = false;
   String? _screen;
   @override
-  void initState() { super.initState(); _boot(); }
+  void initState() { super.initState(); _rewards.addListener(_rewardChanged); _rewards.refresh(); _boot(); }
+  void _rewardChanged() {
+    if (!mounted) return;
+    final game = _game;
+    if (game != null && game.checkpoint != null && !game.locked) {
+      for (final key in game.selected.where(_eliminated(game).contains).toList()) { game.choose(key); }
+    }
+    setState(() {});
+  }
   Future<void> _boot() async {
     setState(() => _failed = false);
     try {
       final game = widget.controller ?? JourneyV2Controller(
         journey: (await loadJourneyChapter(widget.chapterId)).firstWhere((j) => j.id == widget.journeyId),
         store: LocalJourneyV2Store(),
+        onSolved: (task, answers) => _rewards.enqueue(widget.journeyId,task,answers),
       );
       if (!mounted) { if (widget.controller == null) game.dispose(); return; }
       _game = game; game.addListener(_changed); await game.initialize();
@@ -39,7 +53,9 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
     final screen = '${state?.index}:${state?.reviewing}';
     if (_screen != screen) {
       _screen = screen;
-      if (_scroll.hasClients) _scroll.jumpTo(0);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _screen == screen && _scroll.hasClients) _scroll.jumpTo(0);
+      });
     }
     setState(() {});
   }
@@ -47,6 +63,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
   void dispose() {
     _game?.removeListener(_changed);
     if (widget.controller == null) _game?.dispose();
+    _rewards.removeListener(_rewardChanged); _rewards.dispose();
     _scroll.dispose(); super.dispose();
   }
   Future<void> _reset() async {
@@ -65,9 +82,9 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         const SizedBox(height: 16),
         const Text('Her aşamada tek görev var. Seçeneklere dokun; takım arkadaşı sorusunda iki isim seç. Rota görevinde kulüpleri sırayla ekle, gerekirse yukarı ve aşağı taşı.'),
         const SizedBox(height: 12),
-        const Text('Yanlış cevap hakkını bitirmez. İpucu ücretsizdir. Bir aşamayı çözünce açıklaması açılır ve ilerlemen cihazına kaydedilir. Dört görevi bitirince sıradaki futbolcu açılır.'),
+        const Text('Yanlış cevap hakkını bitirmez. İlk ipucu ücretsizdir. Bir aşamayı çözünce açıklaması açılır ve ilerlemen cihazına kaydedilir. Dört görevi bitirince sıradaki futbolcu açılır.'),
         const SizedBox(height: 12),
-        const Text('Bu bölüm süre, reklam veya coin harcaması istemez. Ödülü yolculuk ilerlemesidir.'),
+        const Text('Reklam zorunlu değildir. İlk ipucu ücretsizdir. Daha güçlü yardım için reklam veya 10 coin seçebilirsin. İlk doğrulanmış kariyer bitişi 20 coin ve 40 XP verir. Bölüm ve final ödülleri de bir kez kazanılır.'),
         const SizedBox(height: 20),
         FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Anladım')),
       ]))));
@@ -138,7 +155,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         child: OutlinedButton(key: ValueKey('choice-${option.key}'),
           style: OutlinedButton.styleFrom(alignment: Alignment.centerLeft, padding: const EdgeInsets.all(16),
             backgroundColor: game.selected.contains(option.key) ? PitchColors.of(context).tint : null),
-          onPressed: game.busy || (task.isTimeline && game.selected.contains(option.key)) ? null : () => game.choose(option.key),
+          onPressed: game.busy || _eliminated(game).contains(option.key) || (task.isTimeline && game.selected.contains(option.key)) ? null : () => game.choose(option.key),
           child: Row(children: [Icon(game.selected.contains(option.key) ? Icons.check_circle : task.isTimeline ? Icons.add_circle_outline : Icons.radio_button_unchecked, size: 22),
             const SizedBox(width: 12), Expanded(child: Text(option.label))]),
         ))),
@@ -150,8 +167,46 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       TextButton.icon(key: const ValueKey('journey-hint'), onPressed: game.busy || game.hintVisible ? null : game.hint,
         icon: const Icon(Icons.lightbulb_outline_rounded), label: Text(game.hintVisible ? 'İpucu açık' : 'İpucu · Ücretsiz')),
       if (game.hintVisible) PitchPanel(child: Text(task.hint)),
+      const SizedBox(height:8),
+      OutlinedButton.icon(onPressed:_rewards.busy || _rewards.hints(task.id)['ad']==true || _rewards.hints(task.id)['coin']==true
+        ? null : ()=>_rewards.action('story_hint',{'journeyId':widget.journeyId,'taskId':task.id},ad:true),
+        icon:Icon(_rewards.pro ? Icons.workspace_premium : Icons.play_circle_outline),
+        label:Text(_rewards.pro ? 'Pro ile güçlü ipucu' : 'Reklamla güçlü ipucu')),
+      TextButton.icon(onPressed:_rewards.busy || _rewards.hints(task.id)['coin']==true ? null : ()=>_buyHint(game),
+        icon:const Icon(Icons.toll),label:const Text('Ek destek · 10 Coin')),
+      if (_rewards.hints(task.id).isNotEmpty) PitchPanel(child:Text(_assistance(game))),
+      if (_rewards.message!=null) Text(_rewards.message!),
       const SizedBox(height: 12), const Text('Süre sınırı yok. Yanlış seçimde tekrar deneyebilirsin.', textAlign: TextAlign.center),
     ];
+  }
+  Set<String> _eliminated(JourneyV2Controller game) {
+    final h=_rewards.hints(game.task.id), task=game.task;
+    if (task.isTimeline || h.isEmpty) return {};
+    final wrong=task.options.where((o)=>!task.answerKeys.contains(o.key));
+    if (h['coin']==true) return wrong.map((o)=>o.key).toSet();
+    if (task.type.name=='missingClub') return {};
+    return wrong.take(2).map((o)=>o.key).toSet();
+  }
+  String _assistance(JourneyV2Controller game) {
+    final task=game.task, coin=_rewards.hints(game.task.id)['coin']==true;
+    if (task.isTimeline) {
+      final count=coin ? 2 : 1;
+      return 'Doğru başlangıç: ${task.answerKeys.take(count).map((k)=>task.option(k).label).join(' → ')}';
+    }
+    if (task.type.name=='missingClub' && !coin) {
+      final label=task.option(task.answerKeys.first).label;
+      return 'Kulübün ilk harfi: ${label.characters.first}';
+    }
+    return coin ? 'Yanlış seçenekler elendi. Kalan seçeneklerden cevabını oluştur.' : 'İki yanlış seçenek elendi.';
+  }
+  Future<void> _buyHint(JourneyV2Controller game) async {
+    final task=game.task;
+    final accepted=await showDialog<bool>(context:context,builder:(context)=>AlertDialog(
+      title:const Text('10 Coin ile destek açılsın mı?'),
+      content:const Text('Bu görevdeki ek destek kalıcı olarak açılır. Reklam izlemen gerekmez.'),
+      actions:[TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('Vazgeç')),
+        FilledButton(onPressed:()=>Navigator.pop(context,true),child:const Text('10 Coin harca'))]));
+    if (accepted==true && mounted) await _rewards.action('hint',{'journeyId':widget.journeyId,'taskId':task.id});
   }
   List<Widget> _result(JourneyV2Controller game) => [
     PitchPanel(key: const ValueKey('journey-result'), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -161,6 +216,11 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       if (game.checkpoint!.complete) ...[const SizedBox(height: 16), const Text('Dört görevi çözdün. Oyuncu listesinde yolculuğuna devam edebilirsin.')],
     ])), const SizedBox(height: 18),
     if (game.checkpoint!.complete) ...[
+      JourneyRewardCard(rewards:_rewards,journeyId:widget.journeyId,chapter:journeyV2Chapters[widget.chapterId]!.number),
+      const SizedBox(height:12),
+      OutlinedButton.icon(onPressed:()=>Navigator.of(context).push(LinkballRoute(builder:(_)=>const JourneyPassportPage())),
+        icon:const Icon(Icons.collections_bookmark_outlined),label:const Text('Kariyer pasaportum')) ,
+      const SizedBox(height:12),
       PitchAction(key: const ValueKey('journey-finish'), label: 'Oyunculara dön', onPressed: game.busy ? null : () => Navigator.of(context).pop()),
       TextButton(onPressed: game.busy ? null : _reset, child: const Text('Bu yolculuğu tekrar oyna')),
     ] else PitchAction(key: const ValueKey('journey-next'), label: 'Sonraki aşama', icon: Icons.arrow_forward, onPressed: game.busy ? null : game.next),

@@ -6979,6 +6979,7 @@ function lbProgressionState(raw, now) {
   }
   return {
     pendingRewards,
+    journeyClaims: {...(data.journeyClaims || {})},
     version: LB_PROGRESSION_VERSION,
     lifetimeXp: lbProgressionNumber(data.lifetimeXp),
     season: {
@@ -8269,6 +8270,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["economyState/" + uid] = null;
   updates["rewardedAdState/" + uid] = null;
   updates["dailyMatchState/" + uid] = null;
+  updates["journeyRewardState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -8685,6 +8687,8 @@ function lbRewardedService() {
     const db = admin.database();
     lbRewardedInstance = require("./rewarded_ads").createService({
       db, getConfig: lbGetEconomyConfig,
+      prepareStoryReward: (uid, placement, context) => lbJourneyService().prepareReward(uid, placement, context),
+      settleStoryReward: (uid, receipt) => lbJourneyService().settleReward(uid, receipt),
       prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
       settleDailyReward: (uid, receipt) => lbDailyMatchesService().settleReward(uid, receipt),
       units: require("./config/admob.units.json"),
@@ -8948,3 +8952,80 @@ function lbSeasonCallable(action) {
 }
 exports.getSeasonPass = lbSeasonCallable("status");
 exports.claimSeasonReward = lbSeasonCallable("claim");
+
+
+// Player Journey uses server-reviewed answers and durable milestone receipts.
+function lbJourneyService() {
+  const db = admin.database();
+  return require("./player_journey").createService({db,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp;
+          s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now};
+          s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+    chargeHint: async (uid, taskId, price) => {
+      const key = "journey_hint__" + taskId;
+      const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+        const s = lbEconomyState(raw);
+        if (!s.purchases[key] && s.balances.coins >= price) {
+          const before = s.balances.coins;
+          s.balances.coins -= price;
+          s.lifetimeSpent += price;
+          s.purchases[key] = {txId: key, offerId: "journey_hint", itemId: taskId,
+            itemType: "hint", priceCoins: price, balanceBefore: before, balanceAfter: s.balances.coins,
+            purchasedAt: Date.now(), economyConfigId: "journey-v1"};
+          s.updatedAt = Date.now();
+        }
+        return s;
+      });
+      const s = lbEconomyState(tx.snapshot.val());
+      if (!s.purchases[key]) {
+        throw new (require("./rewarded_ads").RewardError)(
+            "failed-precondition", "Bu yardım için 10 coin gerekli.");
+      }
+      await lbEconomyProject(db, uid, s);
+    },
+    projectBadges: async (uid, counts) => {
+      const signals = {journey_total: counts.reduce((a, b) => a + b, 0)};
+      counts.forEach((n, i) => {
+        signals["journey_chapter_" + (i + 1)] = n;
+      });
+      await lbAchievementMergeSignals(db, uid, signals, "player_journey");
+    },
+  });
+}
+function lbJourneyCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    lbRequireGoogleLinked(request);
+    try {
+      const uid = request.auth.uid;
+      const service = lbJourneyService();
+      if (action === "status") {
+        await lbRewardedService().settle(uid);
+        return {...await service.status(uid),
+          pro: lbPremiumState((await admin.database().ref("premiumState/" + uid).get()).val(), Date.now()).active};
+      }
+      return await service[action](uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getPlayerJourney = lbJourneyCallable("status");
+exports.submitPlayerJourney = lbJourneyCallable("submit");
+exports.buyPlayerJourneyHint = lbJourneyCallable("hint");
+exports.setJourneyShowcase = lbJourneyCallable("favorites");

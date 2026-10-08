@@ -87,6 +87,8 @@ void main() {
           }
           await goTo(tester,const ValueKey('journey-submit'));
           await tester.tap(find.byKey(const ValueKey('journey-submit')));await tester.pumpAndSettle();
+          // Large text and the added reward panel make the result scrollable.
+          await goTo(tester,const ValueKey('journey-result'));
           expect(find.text(task.explanation),findsOneWidget);
           if (i<3) {
             await goTo(tester,const ValueKey('journey-next'));

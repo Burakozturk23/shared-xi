@@ -4,9 +4,10 @@ import '../models/journey_task.dart';
 import '../services/journey_v2_store.dart';
 
 class JourneyV2Controller extends ChangeNotifier {
-  JourneyV2Controller({required this.journey, required this.store, Random? random}) : random = random ?? Random();
+  JourneyV2Controller({required this.journey, required this.store, this.onSolved, Random? random}) : random = random ?? Random();
   final JourneyV2Definition journey;
   final JourneyV2Store store;
+  final Future<void> Function(JourneyTask task, List<String> answers)? onSolved;
   final Random random;
   JourneyCheckpoint? checkpoint;
   List<JourneyOption> options = const [];
@@ -70,6 +71,7 @@ class JourneyV2Controller extends ChangeNotifier {
     if (!task.accepts(selected)) {
       message = task.isTimeline ? 'Bu sıra uyuşmadı. Durakları değiştirip tekrar dene.' : 'Bu seçim döneme uymadı. Tekrar deneyebilirsin.'; return;
     }
+    await onSolved?.call(task, List<String>.from(selected));
     await _save(JourneyCheckpoint(index: checkpoint!.index, solved: checkpoint!.index + 1));
   });
   Future<void> next() => _run(() async {
