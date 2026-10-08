@@ -25,8 +25,9 @@ class FirebaseJourneyGateway implements JourneyGateway {
   ) async {
     final user = AuthService.currentUser;
     if (!AuthService.isGoogleAccount || user == null) throw StateError('Ödüller için Google hesabına bağlan.');
-    if (_uid != null && _uid != user.uid)
+    if (_uid != null && _uid != user.uid) {
       throw StateError('Hesap değişti. Ekranı yeniden aç.');
+    }
     _uid = user.uid;
     final result =
         await FirebaseFunctions.instanceFor(
@@ -45,8 +46,9 @@ class FirebaseJourneyGateway implements JourneyGateway {
                   ? 'ios'
                   : 'android',
             });
-    if (AuthService.uid != _uid)
+    if (AuthService.uid != _uid) {
       throw StateError('Hesap değişti. Ekranı yeniden aç.');
+    }
     return rewardMap(result.data);
   }
 

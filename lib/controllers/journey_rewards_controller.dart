@@ -91,7 +91,9 @@ class JourneyRewardsController extends ChangeNotifier {
           // A legacy stage gap affects this journey only. Network/auth failures
           // stop the batch so offline devices do not wait once per career.
           if (e is! FirebaseFunctionsException ||
-              !{'failed-precondition','invalid-argument'}.contains(e.code)) rethrow;
+              !{'failed-precondition','invalid-argument'}.contains(e.code)) {
+            rethrow;
+          }
           blocked.add(journey); pending = true;
         }
       }

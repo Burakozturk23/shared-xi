@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/controllers/journey_rewards_controller.dart';
@@ -34,6 +35,12 @@ Future<void> idle(JourneyRewardsController c) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(()=>SharedPreferences.setMockInitialValues({}));
+  setUpAll(() async {
+    for (final (name,path) in [
+      ('Satoshi','assets/fonts/Satoshi-Variable.ttf'),('Inter','assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons','fonts/MaterialIcons-Regular.otf'),
+    ]) { await (FontLoader(name)..addFont(rootBundle.load(path))).load(); }
+  });
   test('offline proof survives controller recreation and only acknowledgement removes it',() async {
     final j=journeyTestPack().first, api=FakeJourneyGateway()..failingJourney='messi'..failure=FirebaseFunctionsException(code:'unavailable',message:'offline');
     final c=JourneyRewardsController(gateway:api,userId:'alice');
@@ -101,8 +108,14 @@ void main() {
       await tester.scrollUntilVisible(find.text('Reklamla 2× bölüm coini'),250,maxScrolls:30);
       expect(tester.takeException(),isNull);
       await snapshot(tester,key,'passport-rewards-${large?"large-light":"dark"}');
-      await tester.scrollUntilVisible(find.byTooltip('Vitrinden kaldır').first,180,maxScrolls:30);
-      await tester.tap(find.byTooltip('Vitrinden kaldır').first);await tester.pumpAndSettle();
+      // RawTooltip uses a layout surrogate; target the actual tappable control.
+      final favorite=find.widgetWithIcon(IconButton,Icons.star_rounded);
+      for(var i=0;i<25 && favorite.hitTestable().evaluate().isEmpty;i++) {
+        await tester.drag(find.byType(ListView),const Offset(0,-180));
+        await tester.pumpAndSettle();
+      }
+      expect(favorite.hitTestable(),findsOneWidget);
+      await tester.tap(favorite.hitTestable());await tester.pumpAndSettle();
       expect(api.state['favorites'],isEmpty);
       expect(tester.takeException(),isNull);
       await tester.pumpWidget(const SizedBox.shrink());
