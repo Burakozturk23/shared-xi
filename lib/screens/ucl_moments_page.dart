@@ -4,6 +4,8 @@ import '../data/ucl_moments.dart';
 import '../models/match_entity.dart';
 import '../repositories/repository.dart';
 import 'game_page.dart';
+import 'history_archive_page.dart';
+import '../models/history_record.dart';
 
 class UclMomentsPage extends StatelessWidget {
   const UclMomentsPage({super.key});
@@ -11,7 +13,7 @@ class UclMomentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('UCL Moments')),
+      appBar: AppBar(title: const Text('UCL Moments'), actions: const [HistoryArchiveButton(scope: HistoryScope.championsLeague)]),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: uclMoments.length,

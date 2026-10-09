@@ -67,6 +67,8 @@ jobs:
           python3 tools/anagram/verify.py
           python3 tools/player_journey/verify.py
           python3 tools/what_if/verify.py
+          python3 -m unittest discover -s tools/history -p 'test_*.py'
+          python3 tools/history/verify.py
           python3 tools/season_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/verify.py
@@ -207,6 +209,16 @@ jobs:
         with:
           name: season-badge-previews
           path: .dart_tool/season_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload historical archive previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-archive-previews
+          path: .dart_tool/history_qa/*.png
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
