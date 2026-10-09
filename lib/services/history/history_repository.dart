@@ -21,6 +21,7 @@ class SqliteHistoryRepository implements HistoryRepository {
   SqliteHistoryRepository._();
   static final instance = SqliteHistoryRepository._();
   static const pageSize = 40;
+  static const _lineupSelectionIds = <int>{18236, 18242, 18245, 22912, 3750201, 3750235, 3752619};
   final Map<String, Future<Database>> _opening = {};
 
   Future<Database> _database(String pack) async {
@@ -88,7 +89,14 @@ class SqliteHistoryRepository implements HistoryRepository {
   @override
   Future<List<HistoryRecord>> selections() async {
     final db = await _database('matches');
-    return (await db.rawQuery('SELECT s.*, (SELECT count(*) FROM lineup_entries l WHERE l.selection_id=s.id) AS lineup_entries FROM selections s ORDER BY date,id')).map(HistoryRecord.new).toList();
+    final rows = await db.rawQuery('SELECT * FROM selections ORDER BY date,id');
+    final result = <HistoryRecord>[];
+    for (final row in rows) {
+      final id = (row['id'] as num).toInt();
+      final lineup = await _loadLineups(id);
+      result.add(HistoryRecord({...row, 'lineup_entries': lineup.length}));
+    }
+    return result;
   }
 
   @override
@@ -106,9 +114,14 @@ class SqliteHistoryRepository implements HistoryRepository {
       LEFT JOIN teams w ON w.id=m.shootout_winner_id WHERE m.id=?''', [id]);
     if (rows.isEmpty) throw StateError('Match not found');
     final goals = await db.rawQuery('SELECT g.*, t.name AS team FROM goals g JOIN teams t ON t.id=g.team_id WHERE match_id=? ORDER BY CAST(minute AS INTEGER),g.id', [id]);
-    final lineups = await db.rawQuery('SELECT * FROM lineup_entries WHERE selection_id=(SELECT id FROM selections WHERE match_id=?) ORDER BY team_id,starter DESC,position_order', [id]);
+    final selection = await db.rawQuery('SELECT id FROM selections WHERE match_id=?', [id]);
+    final lineups = selection.isEmpty ? const <HistoryRecord>[] : await _loadLineups((selection.single['id'] as num).toInt());
     final sources = await db.rawQuery('SELECT DISTINCT s.* FROM sources s JOIN match_sources ms ON ms.source_id=s.id WHERE ms.match_id=? ORDER BY s.name', [id]);
-    return HistoryDetail(record: HistoryRecord(rows.single), goals: goals.map(HistoryRecord.new).toList(), lineups: lineups.map(HistoryRecord.new).toList(), sources: sources.map(HistoryRecord.new).toList());
+    final sourceRecords = sources.map(HistoryRecord.new).toList();
+    if (lineups.isNotEmpty && sourceRecords.every((source) => source.text('id') != 'statsbomb')) {
+      sourceRecords.add(_statsBombSource);
+    }
+    return HistoryDetail(record: HistoryRecord(rows.single), goals: goals.map(HistoryRecord.new).toList(), lineups: lineups, sources: sourceRecords);
   }
 
   @override
@@ -116,10 +129,60 @@ class SqliteHistoryRepository implements HistoryRepository {
     final db = await _database('matches');
     final rows = await db.rawQuery('SELECT s.*, (SELECT count(*) FROM lineup_entries l WHERE l.selection_id=s.id) AS lineup_entries FROM selections s WHERE s.id=?', [id]);
     if (rows.isEmpty) throw StateError('Selection not found');
-    final lineups = await db.rawQuery('SELECT * FROM lineup_entries WHERE selection_id=? ORDER BY team_id,starter DESC,position_order', [id]);
+    final lineups = await _loadLineups(int.parse(id));
     final sources = await db.rawQuery('SELECT * FROM sources WHERE id=?', ['statsbomb']);
-    return HistoryDetail(record: HistoryRecord(rows.single), lineups: lineups.map(HistoryRecord.new).toList(), sources: sources.map(HistoryRecord.new).toList());
+    final sourceRecords = sources.map(HistoryRecord.new).toList();
+    if (lineups.isNotEmpty && sourceRecords.every((source) => source.text('id') != 'statsbomb')) sourceRecords.add(_statsBombSource);
+    return HistoryDetail(record: HistoryRecord(rows.single), lineups: lineups, sources: sourceRecords);
   }
+
+  Future<List<HistoryRecord>> _loadLineups(int selectionId) async {
+    if (!_lineupSelectionIds.contains(selectionId)) return const [];
+    try {
+      final raw = await rootBundle.loadString('assets/history/lineups/$selectionId.json');
+      final teams = jsonDecode(raw);
+      if (teams is! List) return const [];
+      final result = <HistoryRecord>[];
+      for (final team in teams) {
+        if (team is! Map) continue;
+        final teamId = team['team_id'];
+        final teamName = team['team_name']?.toString() ?? '';
+        final players = team['lineup'];
+        if (teamId is! num || players is! List) continue;
+        for (var order = 0; order < players.length; order++) {
+          final player = players[order];
+          if (player is! Map) continue;
+          final positions = player['positions'];
+          final firstPosition = positions is List && positions.isNotEmpty && positions.first is Map ? positions.first as Map : const <String, dynamic>{};
+          final country = player['country'];
+          result.add(HistoryRecord({
+            'team_id': teamId,
+            'team_name': teamName,
+            'player_id': player['player_id'],
+            'player_name': player['player_name'],
+            'player_nickname': player['player_nickname'],
+            'jersey_number': player['jersey_number'],
+            'country': country is Map ? country['name'] : null,
+            'position': firstPosition['position'],
+            'starter': positions is List && positions.any((p) => p is Map && p['start_reason'] == 'Starting XI') ? 1 : 0,
+            'position_order': order,
+          }));
+        }
+      }
+      return result;
+    } on FlutterError {
+      return const [];
+    } on FormatException {
+      return const [];
+    }
+  }
+
+  static final _statsBombSource = HistoryRecord({
+    'id': 'statsbomb',
+    'name': 'StatsBomb Open Data lineups',
+    'license': 'StatsBomb Open Data License',
+    'url': 'https://github.com/hudl/open-data/tree/master/data/lineups',
+  });
 }
 
 class HistoryQuery {

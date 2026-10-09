@@ -35,9 +35,14 @@ def main():
                 assert db.execute(f'SELECT count(*) FROM {table}').fetchone()[0]==count,(name,table)
             if name=='matches':
                 assert db.execute('SELECT count(*) FROM selections').fetchone()==(37,)
-                assert db.execute('SELECT count(*) FROM lineup_entries').fetchone()[0] > 0
-                assert db.execute('SELECT count(*) FROM (SELECT selection_id,team_id FROM lineup_entries WHERE starter=1 GROUP BY selection_id,team_id HAVING count(*) != 11)').fetchone()==(0,)
-                assert db.execute('SELECT count(DISTINCT selection_id) FROM lineup_entries').fetchone()==(7,)
+                lineup_dir=ROOT/'tools/history/lineups'
+                lineup_ids=[]
+                for lineup_path in sorted(lineup_dir.glob('*.json')):
+                    lineup=json.loads(lineup_path.read_text(encoding='utf-8'))
+                    assert isinstance(lineup,list) and len(lineup)==2
+                    assert all(sum(any(p.get('start_reason')=='Starting XI' for p in (player.get('positions') or [])) for player in team['lineup'])==11 for team in lineup)
+                    lineup_ids.append(int(lineup_path.stem))
+                assert len(lineup_ids)==7
                 assert db.execute('SELECT count(*) FROM matches WHERE date>?',(manifest['cutoff'],)).fetchone()==(0,)
                 assert db.execute('SELECT count(*) FROM matches m WHERE NOT EXISTS (SELECT 1 FROM match_sources s WHERE s.match_id=m.id)').fetchone()==(0,)
                 assert db.execute('SELECT count(*) FROM goals g JOIN matches m ON m.id=g.match_id WHERE g.team_id NOT IN (m.home_id,m.away_id)').fetchone()==(0,)
