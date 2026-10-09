@@ -1,6 +1,5 @@
 import '../models/player_journey.dart';
 import '../utils/career_overlap.dart';
-import 'player_journeys.dart'; // drogbaJourney, ardaTuranJourney
 
 // ── Jamie Vardy ──────────────────────────────────────────────
 
@@ -56,12 +55,11 @@ final PlayerJourneyDefinition vardyJourney = PlayerJourneyDefinition(
 );
 
 // ── N'Golo Kanté ─────────────────────────────────────────────
-// subjectPlayerId 2000001 — players.json'a eklenmeli
 
 final PlayerJourneyDefinition kanteJourney = PlayerJourneyDefinition(
   id: 'kante',
   subjectName: "N'Golo Kanté",
-  subjectPlayerId: 2000001,
+  subjectPlayerId: 225083,
   available: true,
   stages: [
     PlayerJourneyStage(

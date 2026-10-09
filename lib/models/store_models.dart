@@ -13,6 +13,8 @@ class StoreOffer {
   final int version;
   final String category;
   final int units;
+  /// App-bundled artwork without a current server offer. Never purchasable.
+  final bool isPreview;
 
   const StoreOffer({
     required this.offerId,
@@ -27,6 +29,7 @@ class StoreOffer {
     this.version = 1,
     this.category = 'classic',
     this.units = 1,
+    this.isPreview = false,
   });
 
   bool get isAvatar => itemType == 'avatar';

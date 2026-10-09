@@ -87,6 +87,7 @@ class StoreService {
   }
 
   static Future<EconomyPurchaseResult> purchase(StoreOffer offer) async {
+    if (offer.isPreview) throw StateError('Bu avatar henüz satışta değil.');
     _requireGoogleAccount();
     final uid = AuthService.uid!;
     final store = await SharedPreferences.getInstance();

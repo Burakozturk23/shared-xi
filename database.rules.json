@@ -288,6 +288,10 @@
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && auth.uid == $uid",
         ".write": false
       }
+    },
+    "journeyRewardState": {
+      ".read": false,
+      ".write": false
     }
   }
 }

@@ -55,6 +55,12 @@ flutter:
     - assets/data/famous_transfers.json
     - assets/data/meta.json
     - assets/data/squad_challenge_catalog.json
+    - assets/data/daily_footballer_catalog.json
+    - assets/data/anagram_catalog.json
+    - assets/data/player_journey_chapter_one.json
+    - assets/data/player_journey_chapter_two.json
+    - assets/data/player_journey_chapter_three.json
+    - assets/data/player_journey_chapter_four.json
     - assets/runtime/linkball_game_data_v4.sqlite
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/

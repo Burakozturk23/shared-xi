@@ -72,7 +72,7 @@ class _AppShellState extends State<AppShell> {
     final p = PitchColors.of(context);
     final hubHeader = _index == 1 || _index == 2;
     final pages = <Widget>[
-      AppHomePage(onGames: () => _select(1)),
+      const AppHomePage(),
       const GamesCatalogPage(),
       OnlineHubPage(),
       ProfileHubPage(),

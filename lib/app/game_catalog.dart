@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../screens/football_calendar_page.dart';
+import '../screens/daily_footballer_page.dart';
 import '../screens/match_type_selection_page.dart';
 import '../screens/vs_bot_mode_selection_page.dart';
 import '../screens/club_manager_hub_page.dart';
@@ -19,6 +20,7 @@ import '../screens/this_or_that_mode_selection_page.dart';
 import '../screens/match_pair_page.dart';
 import '../screens/futbol_lingo_page.dart';
 import '../screens/passaparola_page.dart';
+import '../screens/anagram_page.dart';
 import '../screens/harf11_page.dart';
 import '../screens/pyramid_page.dart';
 import '../screens/story_mode_selection_page.dart';
@@ -64,6 +66,15 @@ class GameCatalog {
     icon: Icons.calendar_today_outlined,
     page: FootballCalendarPage(),
     requiresAuth: true,
+    modern: true,
+  );
+  static const dailyFootballer = GameEntry(
+    title: 'Günün Futbolcusu',
+    subtitle: '6 tahmin, 6 özellik, her gün tek futbolcu',
+    icon: Icons.person_search_outlined,
+    page: DailyFootballerPage(),
+    category: 'Kariyer & Oyuncu',
+    requiresRepository: false,
     modern: true,
   );
   static const discovery = GameEntry(
@@ -125,6 +136,7 @@ class GameCatalog {
   // Gameplay keeps its readiness/account gates; menus may defer data loading.
   static const games = <GameEntry>[
     vsBot,
+    dailyFootballer,
     GameEntry(
       title: 'Club Manager',
       subtitle: 'Bütçe, kadro ve maç yönetimi',
@@ -217,6 +229,15 @@ class GameCatalog {
       category: 'Harf & Kelime',
     ),
     GameEntry(
+      title: 'Anagram',
+      subtitle: 'Harfleri çöz, 8 futbolcuyu bul',
+      icon: Icons.shuffle_rounded,
+      page: AnagramPage(),
+      category: 'Harf & Kelime',
+      requiresRepository: false,
+      modern: true,
+    ),
+    GameEntry(
       title: 'Burst',
       subtitle: 'Hızlı futbol bilgisi oyunları',
       icon: Icons.bolt_outlined,
@@ -264,6 +285,8 @@ class GameCatalog {
       icon: Icons.auto_stories_outlined,
       page: StoryModeSelectionPage(),
       category: 'Hikâye',
+      requiresRepository: false,
+      modern: true,
     ),
   ];
 }
