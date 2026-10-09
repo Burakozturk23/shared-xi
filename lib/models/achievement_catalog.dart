@@ -546,6 +546,21 @@ class AchievementCatalog {
       target: 10,
       iconKey: 'friends_10',
     ),
+    AchievementDefinition(id: 'journey_chapter_1', title: 'Altın Çağın Tanığı',
+      description: 'Player Journey 1. bölümündeki 8 kariyeri tamamla.', category: AchievementCategory.mastery,
+      tier: AchievementTier.gold, signal: 'journey_chapter_1', target: 8, iconKey: 'journey_chapter_1'),
+    AchievementDefinition(id: 'journey_chapter_2', title: 'İmkânsızı Başaranlar',
+      description: 'Player Journey 2. bölümündeki 8 kariyeri tamamla.', category: AchievementCategory.mastery,
+      tier: AchievementTier.gold, signal: 'journey_chapter_2', target: 8, iconKey: 'journey_chapter_2'),
+    AchievementDefinition(id: 'journey_chapter_3', title: 'Oyunun Mimarları',
+      description: 'Player Journey 3. bölümündeki 8 kariyeri tamamla.', category: AchievementCategory.mastery,
+      tier: AchievementTier.gold, signal: 'journey_chapter_3', target: 8, iconKey: 'journey_chapter_3'),
+    AchievementDefinition(id: 'journey_chapter_4', title: 'Ölümsüz İkonlar',
+      description: 'Player Journey 4. bölümündeki 8 kariyeri tamamla.', category: AchievementCategory.mastery,
+      tier: AchievementTier.gold, signal: 'journey_chapter_4', target: 8, iconKey: 'journey_chapter_4'),
+    AchievementDefinition(id: 'journey_legend', title: 'Linkball Kariyer Efsanesi',
+      description: 'Player Journey’deki 32 kariyeri tamamla.', category: AchievementCategory.mastery,
+      tier: AchievementTier.platinum, signal: 'journey_total', target: 32, iconKey: 'journey_legend'),
   ];
 
   static final Map<String, AchievementDefinition> byId =

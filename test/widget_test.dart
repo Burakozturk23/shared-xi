@@ -15,8 +15,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('LINKBALL'), findsOneWidget);
+      expect(find.text('Günün Futbolcusu'), findsOneWidget);
       expect(find.text('Günün Maçları'), findsOneWidget);
-      expect(find.text('Ortak Oyuncu Keşfi'), findsOneWidget);
+      expect(find.text('Tüm oyunları keşfet'), findsNothing);
       expect(find.byType(NavigationDestination), findsNWidgets(4));
       await tester.tap(find.text('Oyunlar').last);
       await tester.pumpAndSettle();

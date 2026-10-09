@@ -129,6 +129,11 @@ class AchievementBadgeEmblem extends StatelessWidget {
     AchievementCategory category,
   ) {
     return switch (key) {
+      'journey_chapter_1' => Icons.auto_awesome,
+      'journey_chapter_2' => Icons.trending_up_rounded,
+      'journey_chapter_3' => Icons.architecture_rounded,
+      'journey_chapter_4' => Icons.local_fire_department_rounded,
+      'journey_legend' => Icons.workspace_premium_rounded,
       'first_whistle' => Icons.sports_rounded,
       'first_victory' => Icons.emoji_events_rounded,
       'challenger' => Icons.sports_mma_rounded,

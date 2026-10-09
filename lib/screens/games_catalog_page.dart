@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app/game_catalog.dart';
+import 'story_mode_selection_page.dart';
 import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
 import '../services/search_service.dart';
@@ -37,6 +38,7 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
   @override
   Widget build(BuildContext context) {
     final group = widget.group;
+    if (group?.title == 'Hikâye') return const StoryModeSelectionPage();
     final query = _search.text.trim();
     final entries = GameCatalog.games
         .where((game) => group == null || game.category == group.title)
@@ -154,9 +156,11 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                       title: group.title,
                       caption: group.caption,
                       countLabel:
-                          '${GameCatalog.games.where((game) => game.category == group.title).length} oyun',
+                          group.title == 'Hikâye' ? '${storySubModes.length} mod' : '${GameCatalog.games.where((game) => game.category == group.title).length} oyun',
                       icon: group.icon,
-                      onTap: () => Navigator.of(context).push(
+                      onTap: () => group.title == 'Hikâye'
+                        ? GameLauncher.open(context, GameCatalog.games.firstWhere((game) => game.category == 'Hikâye'))
+                        : Navigator.of(context).push(
                         LinkballRoute(
                           builder: (_) => GamesCatalogPage(group: group),
                         ),
