@@ -58,6 +58,11 @@ void main(){
       expect(find.byKey(const ValueKey('what-if-ending')),findsOneWidget);
       await shot(t,key,'ending-text-$light');
       await t.drag(find.byType(ListView).last,const Offset(0,5000));await t.pumpAndSettle();await shot(t,key,'ending-$light');
+      const sources=PageStorageKey('what-if-sources-messi-alternate');
+      await go(t,sources);await t.tap(find.text('Kaynaklar ve kurgu notu'));await t.pumpAndSettle();
+      await t.scrollUntilVisible(find.text(s.note),200,scrollable:find.byType(Scrollable).last,maxScrolls:50);
+      await t.pumpAndSettle();await shot(t,key,'sources-$light');
+      expect(t.takeException(),isNull);
       await go(t,const ValueKey('what-if-other-route'));
       await t.tap(find.byKey(const ValueKey('what-if-other-route')));await t.pumpAndSettle();
       await go(t,const ValueKey('what-if-route-real'));
@@ -82,8 +87,8 @@ void main(){
       await t.tap(archive);await t.pumpAndSettle();
       await go(t,const ValueKey('what-if-open-messi'));
       expect(find.text('Çift evren'),findsWidgets);
-      final favorite=find.byTooltip('Favorilere ekle').first;
-      await t.ensureVisible(favorite);await t.tap(favorite);await t.pumpAndSettle();
+      await go(t,const ValueKey('what-if-favorite-messi'));
+      await t.tap(find.byKey(const ValueKey('what-if-favorite-messi')));await t.pumpAndSettle();
       expect(c.favorites,{s.id});
       await go(t,const ValueKey('what-if-open-messi'));await shot(t,key,'archive-$light');
       expect(t.takeException(),isNull);

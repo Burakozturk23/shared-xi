@@ -112,7 +112,7 @@ class _WhatIfPageState extends State<WhatIfPage> {
     final verified=rewardMap(rewardMap(cloudProgress(g))[s.id]);
     return PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
       Row(children:[Expanded(child:Text('${s.year} · ${s.name}',style:Theme.of(context).textTheme.labelLarge)),
-        IconButton(tooltip:g.favorites.contains(s.id)?'Favoriden çıkar':'Favorilere ekle',onPressed:g.busy?null:()=>g.favorite(s),
+        IconButton(key:ValueKey('what-if-favorite-${s.id}'),tooltip:g.favorites.contains(s.id)?'Favoriden çıkar':'Favorilere ekle',onPressed:g.busy?null:()=>g.favorite(s),
           icon:Icon(g.favorites.contains(s.id)?Icons.favorite:Icons.favorite_border)),
         if(archive && rewardMap(verified['ends']).isNotEmpty)IconButton(tooltip:g.showcase.contains(s.id)?'Vitrinden çıkar':'Profil vitrinine ekle',
           onPressed:g.syncing?null:()=>_showcase(g,s),icon:Icon(g.showcase.contains(s.id)?Icons.star:Icons.star_outline)),
@@ -192,7 +192,9 @@ class _WhatIfPlayPageState extends State<WhatIfPlayPage>{
         ])),const SizedBox(height:12),_reward(),
         const SizedBox(height:16),FilledButton(key:const ValueKey('what-if-other-route'),onPressed:locked?null:()=>c.setPhase(s,'choice'),child:const Text('Diğer evreni keşfet')),
         OutlinedButton(onPressed:()=>Navigator.of(context).pop(),child:const Text('Kader Arşivi / hikâyelere dön')),
-        ExpansionTile(title:const Text('Kaynaklar ve kurgu notu'),children:[Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+        // Store expansion separately from the parent ListView's scroll offset.
+        ExpansionTile(key:PageStorageKey('what-if-sources-${s.id}-${route.id}'),
+          title:const Text('Kaynaklar ve kurgu notu'),children:[Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text(s.note),for(final source in s.sources)TextButton(onPressed:() async {
             await Clipboard.setData(ClipboardData(text:source['url']!));
             if(context.mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Kaynak bağlantısı kopyalandı. Tarayıcıda açabilirsin.')));
