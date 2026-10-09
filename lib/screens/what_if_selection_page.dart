@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 import '../app/route_appearance.dart';
 import '../controllers/what_if_controller.dart';
 import '../models/what_if.dart';
@@ -194,9 +194,9 @@ class _WhatIfPlayPageState extends State<WhatIfPlayPage>{
         OutlinedButton(onPressed:()=>Navigator.of(context).pop(),child:const Text('Kader Arşivi / hikâyelere dön')),
         ExpansionTile(title:const Text('Kaynaklar ve kurgu notu'),children:[Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text(s.note),for(final source in s.sources)TextButton(onPressed:() async {
-            final ok=await launchUrl(Uri.parse(source['url']!),mode:LaunchMode.externalApplication);
-            if(!ok && context.mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Kaynak açılamadı.')));
-          },child:Text(source['label']!)),
+            await Clipboard.setData(ClipboardData(text:source['url']!));
+            if(context.mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Kaynak bağlantısı kopyalandı. Tarayıcıda açabilirsin.')));
+          },child:Text('${source['label']} · Bağlantıyı kopyala')),
         ]))]),
       ],
     ])));

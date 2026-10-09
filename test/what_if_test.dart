@@ -86,4 +86,26 @@ void main(){
     store.value={'version':7};await next.initialize();expect(next.error,isNotNull);
     await next.selectRoute(pack.scenarios.first,'real');expect(store.value,{'version':7});
   });
+  test('two open controllers merge disk writes without losing favorites or endings',() async {
+    final pack=whatIfPack(),store=MemoryWhatIfStore();
+    final a=WhatIfController(catalog:pack,store:store),b=WhatIfController(catalog:pack,store:store);
+    addTearDown(a.dispose);addTearDown(b.dispose);await a.initialize();await b.initialize();
+    await solveWhatIf(a,pack.scenarios.first,'real');
+    await b.favorite(pack.scenarios[1]);
+    final result=WhatIfController(catalog:pack,store:store);addTearDown(result.dispose);await result.initialize();
+    expect(result.ends(pack.scenarios.first),{'real'});expect(result.favorites,{pack.scenarios[1].id});
+  });
+  test('all 48 route completions persist and timeline order survives restoration',() async {
+    final pack=whatIfPack(),store=MemoryWhatIfStore();
+    final c=WhatIfController(catalog:pack,store:store);addTearDown(c.dispose);await c.initialize();
+    for(final s in pack.scenarios){for(final r in s.routes){await solveWhatIf(c,s,r.id);}}
+    expect(c.complete,24);expect(c.dual,24);
+    final next=WhatIfController(catalog:pack,store:store);addTearDown(next.dispose);await next.initialize();
+    expect(next.complete,24);expect(next.dual,24);
+    final s=pack.scenarios.firstWhere((s)=>s.routes.first.task.timeline);
+    await next.selectRoute(s,'real');await next.choose(s,'o1');await next.choose(s,'o2');
+    final again=WhatIfController(catalog:pack,store:store);addTearDown(again.dispose);await again.initialize();
+    expect(again.picked(s),['o1','o2']);expect(again.ends(s).length,2);
+  });
+
 }

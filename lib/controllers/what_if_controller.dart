@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,7 @@ class WhatIfController extends ChangeNotifier {
   late final WhatIfStore store;
   Map<String,dynamic> local={}, cloud={};
   bool loading=true, busy=false, syncing=false, _disposed=false;
+  static Future<void>? _writes;
   String? error, message, feedback;
   bool get linked=>uid!=null && (injected || (AuthService.isGoogleAccount && AuthService.uid==uid));
   bool get accountValid=>injected || (AuthService.isGoogleAccount ? AuthService.uid : null)==uid;
@@ -41,7 +43,7 @@ class WhatIfController extends ChangeNotifier {
         final s=catalog.scenarios.where((s)=>s.id==entry.key).firstOrNull;
         final p=rewardMap(entry.value);
         if(s==null || !{'intro','choice','task','result'}.contains(p['phase']) ||
-            (p['route']!=null && !s.routes.any((r)=>r.id==p['route']))) throw const FormatException('Invalid checkpoint');
+            (p['route']!=null && !s.routes.any((r)=>r.id==p['route']))) { throw const FormatException('Invalid checkpoint'); }
         if(p['route']!=null) {
           final t=s.route(p['route'] as String).task;
           final order=List<String>.from(p['order'] as List? ?? []);
@@ -78,12 +80,20 @@ class WhatIfController extends ChangeNotifier {
   Future<bool> _edit(void Function(Map<String,dynamic>) fn) async {
     if(busy || loading || error!=null || !accountValid)return false;
     busy=true;message=null;_notify();
+    final previous=_writes;
+    final gate=Completer<void>();
+    final pending=gate.future;
+    _writes=pending;
     try {
-      final next=jsonDecode(jsonEncode(local)) as Map<String,dynamic>;
+      if(previous!=null)await previous;
+      if(!accountValid)throw StateError('Hesap değişti');
+      final saved=await store.read();
+      final next=jsonDecode(jsonEncode(saved.isEmpty?local:saved)) as Map<String,dynamic>;
+      if(next['version']!=1 || next['progress'] is! Map || next['proofs'] is! Map)throw const FormatException('Invalid save');
       fn(next);await store.write(next);
       local=next;return true;
     } catch (_) {message='Kaydedilemedi. Aynı adımdasın; yeniden dene.';return false;}
-    finally {busy=false;_notify();}
+    finally {if(identical(_writes,pending))_writes=null;gate.complete();busy=false;_notify();}
   }
   Map<String,dynamic> _p(Map<String,dynamic> l,WhatIfScenario s)=>
     (l['progress'] as Map<String,dynamic>).putIfAbsent(s.id,()=> <String,dynamic>{'phase':'intro','ends':<String>[]}) as Map<String,dynamic>;
@@ -148,7 +158,7 @@ class WhatIfController extends ChangeNotifier {
       if(!linked)throw StateError('Hesap değişti');
       cloud=result;
       // Only acknowledged evidence is removed. A concurrent newly solved route survives.
-      await _edit((l){for(final s in catalog.scenarios){final seen=ends(s);if(seen.isNotEmpty)_p(l,s)['ends']=seen.toList();} final pending=l['proofs'] as Map;for(final e in proofs.entries){
+      await _edit((l){for(final s in catalog.scenarios){final seen=ends(s);if(seen.isNotEmpty){final p=_p(l,s);p['ends']={...List<String>.from(p['ends'] as List? ?? []),...seen}.toList();}} final pending=l['proofs'] as Map;for(final e in proofs.entries){
         if(jsonEncode(pending[e.key])==jsonEncode(e.value))pending.remove(e.key);
       }});
     }catch(_){message='Buluta ulaşılamadı. Oynamaya devam edebilirsin; ödüller için yeniden eşitle.';}

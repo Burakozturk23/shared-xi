@@ -3,6 +3,12 @@ import json
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 S = {
+ 'psg':'https://en.news.psg.fr/press-releases/first-team/leo-messi-signs-for-paris-saint-germain',
+ 'kdb':'https://www.mancity.com/news/first-team/first-team-news/2015/august/kevin-de-bruyne-signs-for-manchester-city',
+ 'salah':'https://www.liverpoolfc.com/news/first-team/266595-liverpool-fc-complete-signing-of-mohamed-salah',
+ 'toure':'https://www.mancity.com/news/first-team/first-team-news/archive/2010/july/manchester-city-sign-yaya-toure',
+ 'giuseppe':'https://www.inter.it/en/archivio_giocatore/G0038/giuseppe-baresi',
+ 'cech':'https://www.arsenal.com/news/news-archive/20151215/cech-i-thought-record-was-impossible',
  'barca':'https://www.fcbarcelona.com/en/club/history/legendary-players',
  'united':'https://www.manutd.com/en/club/history/history-by-decade/2000-2009',
  'zidane':'https://www.realmadrid.com/en-US/the-club/history/football-legends/zinedine-zidane',
@@ -182,6 +188,12 @@ for i,r in enumerate(rows):
  r['chapter']=i//8+1
  for route in r['routes']:
   route['task']['id']=r['id']+'__'+route['id']
+for r in rows:
+ if r['id']=='messi':r['sources'].append(dict(label='PSG • 10 Ağustos 2021 transfer duyurusu',url=S['psg']))
+ if r['id']=='messi':r['sources'].append(dict(label='Manchester City • Yaya Touré transferi',url=S['toure']))
+ if r['id']=='baresi':r['sources'].append(dict(label='Inter • Giuseppe Baresi arşivi',url=S['giuseppe']))
+ if r['id']=='drogba':r['sources'].append(dict(label='Arsenal • Petr Čech kariyeri',url=S['cech']))
+ if r['id']=='chelsea_duo':r['sources']=[dict(label='Resmî transfer kaydı • '+key,url=S[key]) for key in ['kdb','salah']]
 pack=dict(version=1,chapters=chapters,scenarios=rows)
 assert len(rows)==24
 for target in ['assets/data/what_if_v2.json','functions/config/what_if_catalog.json']:

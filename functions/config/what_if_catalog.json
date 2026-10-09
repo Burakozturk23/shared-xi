@@ -92,6 +92,14 @@
         {
           "label": "Tarihsel kayıt • barca",
           "url": "https://www.fcbarcelona.com/en/club/history/legendary-players"
+        },
+        {
+          "label": "PSG • 10 Ağustos 2021 transfer duyurusu",
+          "url": "https://en.news.psg.fr/press-releases/first-team/leo-messi-signs-for-paris-saint-germain"
+        },
+        {
+          "label": "Manchester City • Yaya Touré transferi",
+          "url": "https://www.mancity.com/news/first-team/first-team-news/archive/2010/july/manchester-city-sign-yaya-toure"
         }
       ],
       "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
@@ -981,6 +989,10 @@
         {
           "label": "Tarihsel kayıt • milan",
           "url": "https://www.acmilan.com/en/club/legends/champions"
+        },
+        {
+          "label": "Inter • Giuseppe Baresi arşivi",
+          "url": "https://www.inter.it/en/archivio_giocatore/G0038/giuseppe-baresi"
         }
       ],
       "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
@@ -1139,6 +1151,10 @@
         {
           "label": "Tarihsel kayıt • drogba",
           "url": "https://www.chelseafc.com/en/didier-drogba"
+        },
+        {
+          "label": "Arsenal • Petr Čech kariyeri",
+          "url": "https://www.arsenal.com/news/news-archive/20151215/cech-i-thought-record-was-impossible"
         }
       ],
       "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
@@ -1623,12 +1639,12 @@
       ],
       "sources": [
         {
-          "label": "Tarihsel kayıt • drogba",
-          "url": "https://www.chelseafc.com/en/didier-drogba"
+          "label": "Resmî transfer kaydı • kdb",
+          "url": "https://www.mancity.com/news/first-team/first-team-news/2015/august/kevin-de-bruyne-signs-for-manchester-city"
         },
         {
-          "label": "Tarihsel kayıt • makelele",
-          "url": "https://www.chelseafc.com/en/claude-makelele"
+          "label": "Resmî transfer kaydı • salah",
+          "url": "https://www.liverpoolfc.com/news/first-team/266595-liverpool-fc-complete-signing-of-mohamed-salah"
         }
       ],
       "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
