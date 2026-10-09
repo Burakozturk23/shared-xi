@@ -339,5 +339,49 @@
     "tier": "platinum",
     "iconKey": "journey_legend",
     "reward": 0
+  },
+  {
+    "id": "what_if_first",
+    "title": "İlk Kırılma",
+    "description": "What If içinde 1 hikâye tamamla.",
+    "signal": "what_if_total",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "what_if_first",
+    "reward": 0
+  },
+  {
+    "id": "what_if_eight",
+    "title": "Kader Yolcusu",
+    "description": "What If içinde 8 hikâye tamamla.",
+    "signal": "what_if_total",
+    "target": 8,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "what_if_eight",
+    "reward": 0
+  },
+  {
+    "id": "what_if_all",
+    "title": "Paralel Evren Ustası",
+    "description": "What If içinde 24 hikâye tamamla.",
+    "signal": "what_if_total",
+    "target": 24,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "what_if_all",
+    "reward": 0
+  },
+  {
+    "id": "what_if_dual",
+    "title": "İki Yüzlü Tarih",
+    "description": "What If içinde 12 hikâyenin iki sonunu da keşfet.",
+    "signal": "what_if_dual",
+    "target": 12,
+    "category": "mastery",
+    "tier": "platinum",
+    "iconKey": "what_if_dual",
+    "reward": 0
   }
 ]

@@ -1,0 +1,1958 @@
+{
+  "version": 1,
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Kaçan Fırsatlar",
+      "subtitle": "Bir imza, başka bir başlangıç."
+    },
+    {
+      "id": 2,
+      "title": "Alternatif Kaderler",
+      "subtitle": "Aynı yetenek, başka bir yol."
+    },
+    {
+      "id": 3,
+      "title": "Yeniden Yazılan Tarih",
+      "subtitle": "Değişseydi ne olurdu?"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "messi",
+      "name": "Lionel Messi",
+      "year": 2021,
+      "title": "Bir dönemin ardından",
+      "intro": "2021 yazında Messi’nin uzun kulüp yolculuğunda bir sayfa kapandı. Yeni bir ülke, yeni takım arkadaşları ve farklı bir oyun düzeni gündeme geldi. Sen bu kırılma anının iki ihtimalini açacaksın. Kararın bir sınav değil; seçtiğin evrene geçmek için çözmen gereken futbol görevi seni bekliyor.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Paris yolunu izle",
+          "kind": "history",
+          "ending": "Messi 2021 yazında Paris Saint-Germain’e katıldı. Barcelona’daki uzun döneminin ardından Fransa’da yeni bir takım düzenine girdi. Bu rota gerçekleşen transferi izler. Oyundaki görevin cevabı ise ayrı bir kariyer bağlantısıdır; bir oyuncunun başka bir kulübe gitmesinin bütün sonuçlarını tek başına açıklamaz.",
+          "task": {
+            "type": "connection",
+            "prompt": "Barcelona ve PSG A takımlarında forma giymiş ismi seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Neymar"
+              },
+              {
+                "key": "o1",
+                "label": "Harry Kane"
+              },
+              {
+                "key": "o2",
+                "label": "Marco Reus"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Güney Amerika’dan gelen hücum oyuncularını düşün.",
+            "strongHint": "Brezilyalı bir hücumcu; iki kulüp arasında 2017’de geçiş yaptı.",
+            "explanation": "Neymar Barcelona’dan 2017 yılında PSG’ye geçti.",
+            "id": "messi__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Manchester City ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Bu evrende Messi, Manchester City’de Guardiola ile yeniden çalışabilirdi. Pas istasyonları, sahte dokuz rolü ve kanat oyuncularının koşuları farklı biçimde kurulabilirdi. Ancak yeni ligde uyum, takım dengesi ve sezonun koşulları sonucu değiştirirdi. Bu kurgu bir kupa ya da bireysel ödül garantisi değil, başka bir hücum düzenini hayal etme fırsatıdır.",
+          "task": {
+            "type": "connection",
+            "prompt": "Barcelona ve Manchester City A takımlarında forma giymiş ismi seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Yaya Touré"
+              },
+              {
+                "key": "o1",
+                "label": "Paolo Maldini"
+              },
+              {
+                "key": "o2",
+                "label": "Francesco Totti"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Orta sahadaki fizik gücüyle tanınan bir isim.",
+            "strongHint": "Fildişi Sahilli orta saha, İngiltere’ye 2010’da geçti.",
+            "explanation": "Yaya Touré Barcelona’dan Manchester City’ye 2010’da transfer oldu.",
+            "id": "messi__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • barca",
+          "url": "https://www.fcbarcelona.com/en/club/history/legendary-players"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "cristiano",
+      "name": "Cristiano Ronaldo",
+      "year": 2003,
+      "title": "İlk büyük sıçrama",
+      "intro": "2003’te Portekiz’de parlayan genç bir kanat oyuncusu Avrupa’nın dikkatini çekiyordu. Henüz kariyerinin sonraki dönemlerindeki golcü kimliğine ulaşmamıştı. Yeni bir ligde gelişmek, doğru antrenörle çalışmak ve süre bulmak belirleyici olacaktı. Burada gerçekleşen yol ile Londra’da kurduğumuz alternatif bir başlangıç arasında seçim yapabilirsin.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Manchester United yolunu izle",
+          "kind": "history",
+          "ending": "Cristiano Ronaldo 2003’te Sporting’den Manchester United’a geçti. Sir Alex Ferguson yönetiminde gelişti ve İngiltere döneminin ardından 2009’da Real Madrid’e transfer oldu. Arsenal rotası bu oyunda alternatif tarih olarak sunulur; sözleşme, forma baskısı veya anlaşmanın neden gerçekleşmediğine ilişkin kesin bir iddia taşımaz.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Ronaldo’yu 2003’te İngiltere’ye gelmeden önce yetiştiren kulüp hangisiydi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Sporting"
+              },
+              {
+                "key": "o1",
+                "label": "Porto"
+              },
+              {
+                "key": "o2",
+                "label": "Benfica"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Lizbon’un iki büyük kulübünden biri.",
+            "strongHint": "Yeşil-beyaz renkleri düşün.",
+            "explanation": "Ronaldo’nun profesyonel başlangıcı Sporting’di.",
+            "id": "cristiano__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Arsenal ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Arsenal evreninde genç kanat, Wenger’in pas oyununda bire bir becerilerini geliştirebilirdi. Daha dar alanlarda verilecek kararlar ve takımın hücum hareketliliği onun rolünü başka yöne taşıyabilirdi. Aynı istatistikleri üreteceğini varsayamayız. Burada keşfettiğin şey, farklı bir futbol ortamının genç bir yeteneğin gelişimine nasıl başka sorular sorabileceğidir.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Arsenal’in 2003-04 sezonunda teknik direktörü kimdi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Arsène Wenger"
+              },
+              {
+                "key": "o1",
+                "label": "José Mourinho"
+              },
+              {
+                "key": "o2",
+                "label": "Rafael Benítez"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Fransız teknik direktör.",
+            "strongHint": "Kulüpte 1996’da başlayan uzun bir görev dönemi var.",
+            "explanation": "Wenger, Arsenal’in 2003-04 lig şampiyonluğunda teknik direktördü.",
+            "id": "cristiano__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • united",
+          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "lewandowski",
+      "name": "Robert Lewandowski",
+      "year": 2010,
+      "title": "Yeni ligin eşiğinde",
+      "intro": "2010’da Polonya’da yükselen bir golcü, kariyerini başka bir ligde sürdürmeye hazırlanıyordu. Bir sonraki takım, oyunun temposunu ve gelişim alanlarını değiştirecekti. Avrupa’ya açılan iki kapıyı düşün: Almanya’daki gerçek yol ve İngiltere’de hayal ettiğimiz rota. Popüler transfer anlatılarındaki ayrıntıları gerçekleşmiş anlaşma gibi kabul etmiyoruz.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Dortmund yolunu izle",
+          "kind": "history",
+          "ending": "Lewandowski 2010’da Lech Poznań’dan Borussia Dortmund’a katıldı. Klopp döneminde gelişti; 2014’te Bayern Münih’e geçti. Blackburn ihtimali bu oyunda karşılaştırma için kurulan alternatif rotadır. Uçuş sorunu veya başka tek bir olay, gerçekleşmeyen transferin tüm nedenlerini kesin biçimde açıklayan bilgi olarak kullanılmaz.",
+          "task": {
+            "type": "connection",
+            "prompt": "Dortmund ve Bayern Münih’te oynamış oyuncuyu seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Mats Hummels"
+              },
+              {
+                "key": "o1",
+                "label": "John Terry"
+              },
+              {
+                "key": "o2",
+                "label": "Carles Puyol"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Savunmanın merkezinde oynar.",
+            "strongHint": "Alman bir stoper.",
+            "explanation": "Hummels her iki kulübün A takımında da forma giydi.",
+            "id": "lewandowski__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Blackburn ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Blackburn evreninde hava topları, ikinci toplar ve farklı savunma eşleşmeleri daha erken öne çıkabilirdi. Lewandowski’nin ceza sahası becerileri başka bir takımın ihtiyaçlarıyla şekillenebilirdi. Ancak bu başlangıç, sonraki transferlerini veya gol sayılarını garanti etmezdi. Hayali rota, aynı oyuncunun farklı bir öğrenme ortamında nasıl sınanabileceğini düşünmek için açılıyor.",
+          "task": {
+            "type": "connection",
+            "prompt": "Blackburn ve Manchester United formalarını giymiş oyuncuyu seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Andy Cole"
+              },
+              {
+                "key": "o1",
+                "label": "Xavi"
+              },
+              {
+                "key": "o2",
+                "label": "Francesco Totti"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "1990’ların İngiliz santrforlarından biri.",
+            "strongHint": "1999’daki üç kupalı takımın hücumcularındandı.",
+            "explanation": "Andy Cole, Manchester United ve Blackburn’de oynadı.",
+            "id": "lewandowski__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • lewa",
+          "url": "https://www.bundesliga.com/en/bundesliga/news/robert-lewandowski-borussia-dortmund-klopp-bayern-munich-barcelona-18081"
+        },
+        {
+          "label": "Tarihsel kayıt • united",
+          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "gerrard",
+      "name": "Steven Gerrard",
+      "year": 2005,
+      "title": "Kaptanın kavşağı",
+      "intro": "2005 yazında Avrupa’nın en büyük sahnesinden gelen bir kaptan, kariyerinin yönünü düşünüyordu. Bir kulüple kurulan bağ ile yeni bir takımda kendini deneme fikri aynı soruda buluşuyor. Senin seçimin geçmişi değiştirmeyecek; bu oyunda gerçek rotayı izleyebilir veya başka bir orta saha düzeninin ihtimalini açabilirsin.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Liverpool’da devam et",
+          "kind": "history",
+          "ending": "Gerrard Liverpool’da kaldı ve kulübün kaptanı olarak uzun yıllar oynamayı sürdürdü. 2005 Şampiyonlar Ligi zaferi kariyerinin belirgin dönüm noktalarından biri olarak kaldı. Burada Liverpool yolu gerçek tarihi temsil eder. Chelsea’de oluşturduğumuz görev ise yalnız o dönemde gerçekten var olan kadro bilgisine dayanır.",
+          "task": {
+            "type": "teammate",
+            "prompt": "2005 Avrupa finalinde Gerrard ile aynı takımda oynayan orta sahayı seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Xabi Alonso"
+              },
+              {
+                "key": "o1",
+                "label": "Luka Modrić"
+              },
+              {
+                "key": "o2",
+                "label": "Toni Kroos"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İspanyol bir oyun kurucu.",
+            "strongHint": "Sonraki kariyerinde Madrid ve Münih durakları da var.",
+            "explanation": "Xabi Alonso 2005 finalinde Liverpool kadrosundaydı.",
+            "id": "gerrard__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Chelsea ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Chelsea evreninde Gerrard’ın ileri koşuları ile takımın mevcut orta saha görevleri yeniden paylaşılabilirdi. Topu kimin taşıdığı, ceza sahasına kimin girdiği ve gerideki alanı kimin koruduğu yeni kararlar gerektirirdi. Çok sayıda yıldızın bir araya gelmesi kusursuz uyum anlamına gelmez. Bu rota olası bir taktik dengeyi araştırır.",
+          "task": {
+            "type": "teammate",
+            "prompt": "2004-05 Chelsea kadrosunda bulunan orta sahayı seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Frank Lampard"
+              },
+              {
+                "key": "o1",
+                "label": "Steven Davis"
+              },
+              {
+                "key": "o2",
+                "label": "Paul Scholes"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Ceza sahasına yaptığı koşularla tanınır.",
+            "strongHint": "İngiliz milli takımında da oynayan bir orta saha.",
+            "explanation": "Frank Lampard 2004-05 sezonunda Chelsea’deydi.",
+            "id": "gerrard__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • gerrard",
+          "url": "https://www.liverpoolfc.com/info/steven-gerrard"
+        },
+        {
+          "label": "Tarihsel kayıt • makelele",
+          "url": "https://www.chelseafc.com/en/claude-makelele"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "neymar",
+      "name": "Neymar",
+      "year": 2017,
+      "title": "Üçlünün yol ayrımı",
+      "intro": "2017 yazında dünya futbolunun konuştuğu bir karar, yıldızlarla dolu bir hücum hattının geleceğini değiştirdi. Yeni bir takımda merkezde olmak ile alışılan düzende kalmak farklı sorumluluklar getirebilirdi. Bu senaryoda kararını ver, sonra gerçek kariyerin sırasını çöz. Bir transferin bütün kulüp tarihini tek başına belirlediğini varsaymıyoruz.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Paris’e geçişi izle",
+          "kind": "history",
+          "ending": "Neymar 2017’de Barcelona’dan PSG’ye geçti. Barcelona’daki 2013-2017 dönemi sona ererken yeni bir ligde kariyerine devam etti. Sonraki kulüp kararlarını yalnız bu ayrılığa bağlamak eksik olur. Bu gerçek rota, olayların doğrulanabilir sırasını gösterir; uzun vadeli bütün sonuçlar için tek neden ileri sürmez.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Neymar’ın bu kulüp duraklarını ilk katıldığı tarihe göre sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Santos"
+              },
+              {
+                "key": "o1",
+                "label": "Barcelona"
+              },
+              {
+                "key": "o2",
+                "label": "PSG"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Güney Amerika’dan Avrupa’ya uzanan çizgiyi izle.",
+            "strongHint": "İspanya dönemi Fransa döneminden önce.",
+            "explanation": "Sıra Santos → Barcelona (2013) → PSG (2017).",
+            "id": "neymar__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Barcelona’da kalmayı hayal et",
+          "kind": "fiction",
+          "ending": "Neymar’ın kaldığı evrende hücum üçlüsü birlikte çalışmayı sürdürebilirdi. Ancak rakiplerin uyumu, oyuncuların fiziksel durumu ve teknik kararlar yine belirleyici olurdu. Kadronun yenilenmesi tamamen durmayabilir, roller zaman içinde değişebilirdi. Bu son, kazanılmamış kupaları var saymak yerine tanıdık bir birlikteliğin bir sezon daha hangi sorularla karşılaşabileceğini hayal eder.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Neymar’ın bu olaylarını eskiden yeniye sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Barcelona’ya katılması"
+              },
+              {
+                "key": "o1",
+                "label": "Barcelona ile 2015 Avrupa zaferi"
+              },
+              {
+                "key": "o2",
+                "label": "PSG’ye geçmesi"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Kupayı kazandığı kulüp dönemini yerleştir.",
+            "strongHint": "Avrupa zaferi iki transferin arasında.",
+            "explanation": "2013’te katıldı, 2015’te Avrupa şampiyonu oldu, 2017’de ayrıldı.",
+            "id": "neymar__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • barca",
+          "url": "https://www.fcbarcelona.com/en/club/history/legendary-players"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "zidane",
+      "name": "Zinedine Zidane",
+      "year": 1996,
+      "title": "Yetenek için yeni sahne",
+      "intro": "1996’da Fransız bir oyun kurucu Avrupa kariyerinde yeni bir sayfa açıyordu. Topa dokunuşu ve oyunu okuma biçimi farklı liglerde başka şekillerde kullanılabilirdi. Gerçek İtalya yolunu veya İngiltere’de kurguladığımız ihtimali seç. Söylentilerdeki çarpıcı sözleri kanıtlanmış transfer gerekçesi olarak kullanmadan, kariyerin gerçek duraklarından bir görev çözeceğiz.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "İtalya yolunu izle",
+          "kind": "history",
+          "ending": "Zidane Bordeaux’dan 1996’da Juventus’a geçti; 2001’de Real Madrid’e katıldı. Bu rota kariyerinin gerçek kulüp sırasını temel alır. Blackburn ihtimali alternatif bir oyun sahnesidir. Yöneticilere atfedilen popüler sözler veya gerçekleşmeyen pazarlıklar, burada tarihsel kesinlik taşıyan bilgi ve doğru cevap olarak sunulmaz.",
+          "task": {
+            "type": "missing",
+            "prompt": "Bordeaux → ? → Real Madrid: boş durağı tamamla.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Juventus"
+              },
+              {
+                "key": "o1",
+                "label": "Lazio"
+              },
+              {
+                "key": "o2",
+                "label": "Napoli"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İtalya’da siyah-beyaz bir forma.",
+            "strongHint": "Torino kentini düşün.",
+            "explanation": "Zidane Juventus’ta 1996-2001 arasında oynadı.",
+            "id": "zidane__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Blackburn ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Blackburn’de Zidane’ın pas temposu, doğrudan hücum alışkanlıklarıyla yeni bir ilişki kurabilirdi. Takımın topu ona hangi bölgede ulaştırdığı belirleyici olurdu. Yetenek aynı kalsa da çevresindeki koşular ve rakip baskısı farklılaşırdı. Bu evren, sonraki kariyerindeki başarıları otomatik olarak İngiltere’ye taşımıyor; bir oyun kurucunun yeni şartlara nasıl uyabileceğini tartışıyor.",
+          "task": {
+            "type": "missing",
+            "prompt": "Zidane’ın Juventus’tan önceki Fransız kulübü hangisiydi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Bordeaux"
+              },
+              {
+                "key": "o1",
+                "label": "Lyon"
+              },
+              {
+                "key": "o2",
+                "label": "Monaco"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Ülkenin güneybatısındaki bir kulüp.",
+            "strongHint": "Şarap üretimiyle de tanınan bir kentin takımı.",
+            "explanation": "Zidane Bordeaux’dan Juventus’a transfer oldu.",
+            "id": "zidane__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • zidane",
+          "url": "https://www.realmadrid.com/en-US/the-club/history/football-legends/zinedine-zidane"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "di_stefano",
+      "name": "Alfredo Di Stéfano",
+      "year": 1953,
+      "title": "Bir çağın başlangıcı",
+      "intro": "1953’te Avrupa futbolunda yeni bir dönemin kapısı aralanıyordu. Bir yıldızın hangi formayı giyeceği iki büyük kulübün geleceğiyle birlikte konuşuldu. Karmaşık transfer sürecini tek bir siyasi nedene indirgemiyoruz. Burada gerçek kariyerin izini sürebilir veya başka bir forma altında açılan kurgusal yolu seçebilirsin.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Madrid yolunu izle",
+          "kind": "history",
+          "ending": "Di Stéfano 1953’te Real Madrid’e katıldı ve kulübün ilk beş Avrupa Kupası zaferinde önemli rol oynadı. Transfer sürecinde Barcelona da yer aldı. Bu karmaşık sürece dair tek taraflı bir hüküm vermiyoruz. Gerçek son yalnız gerçekleşen kulüp yolunu ve sonraki Avrupa başarılarını kayda geçirir.",
+          "task": {
+            "type": "connection",
+            "prompt": "Real Madrid ve Barcelona A takımlarında oynamış ismi seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Luís Figo"
+              },
+              {
+                "key": "o1",
+                "label": "Francesco Totti"
+              },
+              {
+                "key": "o2",
+                "label": "Ryan Giggs"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Portekizli bir kanat oyuncusu.",
+            "strongHint": "İki kulüp arasındaki geçişi 2000 yılında oldu.",
+            "explanation": "Figo iki kulübün de A takımında oynadı.",
+            "id": "di_stefano__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Barcelona ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Barcelona evreninde hücumu yönlendiren hareketli bir yıldız, takımın pas ve koşu düzenini değiştirebilirdi. Madrid ve Barcelona farklı kadro kararları alabilirdi; fakat sonraki Avrupa kupalarının sonuçları bu seçimden hesaplanamaz. Bu rota başka bir sportif başlangıcı hayal eder. Gerçekte oynanmamış sezonları tarihsel kayıtla karıştırmadan, olası bir oyun kimliğini düşünmeni ister.",
+          "task": {
+            "type": "connection",
+            "prompt": "Barcelona ve Real Madrid formalarını giymiş teknik orta sahayı seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Michael Laudrup"
+              },
+              {
+                "key": "o1",
+                "label": "Paul Scholes"
+              },
+              {
+                "key": "o2",
+                "label": "Steven Gerrard"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Danimarkalı bir oyun kurucu.",
+            "strongHint": "1990’larda İspanya’da iki farklı büyük takımda oynadı.",
+            "explanation": "Laudrup Barcelona’dan Real Madrid’e geçti.",
+            "id": "di_stefano__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • stefano",
+          "url": "https://www.realmadrid.com/en-US/the-club/history/football-legends/alfredo-di-stefano-laulhe"
+        },
+        {
+          "label": "Tarihsel kayıt • laudrup",
+          "url": "https://www.fcbarcelona.com/en/card/648078/michael-laudrup"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "zlatan",
+      "name": "Zlatan Ibrahimović",
+      "year": 2001,
+      "title": "Kendi yolunu çizen genç",
+      "intro": "2001’de İsveç’ten yükselen uzun boylu bir forvet Avrupa sahnesine adım atıyordu. Yeni bir kulüpte süre kazanmak, tekniğini geliştirmek ve oyun disiplinine uyum sağlamak gündemindeydi. Gerçek kariyer yoluna bakabilir veya Londra’da kurduğumuz alternatif başlangıcı seçebilirsin. Karardan sonra bir kulüp bilgisi görevi seni bekliyor.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Hollanda yolunu izle",
+          "kind": "history",
+          "ending": "Ibrahimović Malmö’den Ajax’a geçti ve sonraki yıllarda İtalya, İspanya, Fransa ile İngiltere’de oynadı. Burada Hollanda yolu gerçek başlangıcı temsil eder. Arsenal senaryosu bir anlaşmanın kesinleştiğini söylemez. Aktarılan deneme antrenmanı hikâyelerini doğrulama zorunluluğu olmayan dramatik ayrıntılar olarak oyunun doğru cevaplarına taşımıyoruz.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Zlatan’ın Malmö’den sonra katıldığı kulüp hangisiydi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Ajax"
+              },
+              {
+                "key": "o1",
+                "label": "PSV"
+              },
+              {
+                "key": "o2",
+                "label": "Feyenoord"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Amsterdam’daki kulübü düşün.",
+            "strongHint": "Genç yetenek geliştirmesiyle tanınan kırmızı-beyaz ekip.",
+            "explanation": "Zlatan 2001’de Ajax’a transfer oldu.",
+            "id": "zlatan__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Arsenal ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Arsenal evreninde uzun bir santrforun tekniği, hareketli hücumcuların koşularıyla birleşebilirdi. Sırtı dönük oyun ile tek pas tercihleri arasında farklı bir denge kurulabilirdi. Genç bir oyuncunun gelişimi, süre bulmasına ve takımın ona alan açmasına bağlı olurdu. Bu ihtimal onun gerçek kariyerinin aynısını başka bir forma ile yaşayacağını vaat etmez.",
+          "task": {
+            "type": "transfer",
+            "prompt": "2001’de Arsenal’in iç saha stadı hangisiydi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Highbury"
+              },
+              {
+                "key": "o1",
+                "label": "Emirates Stadium"
+              },
+              {
+                "key": "o2",
+                "label": "Wembley"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Kulübün yeni stadından önceki evi.",
+            "strongHint": "2006’ya kadar kullanılan stat.",
+            "explanation": "Arsenal 2001’de Highbury’de oynuyordu.",
+            "id": "zlatan__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • barca",
+          "url": "https://www.fcbarcelona.com/en/club/history/legendary-players"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 1
+    },
+    {
+      "id": "rooney",
+      "name": "Wayne Rooney",
+      "year": 2010,
+      "title": "Şehrin iki yakası",
+      "intro": "2010’da İngiliz bir yıldız kariyerinin devamına ilişkin bir yol ayrımındaydı. Aynı şehirdeki iki futbol projesi, sadakat ve yeni başlangıç sorularını düşündürüyor. Gerçek yolu seçebilir ya da komşu kulüpteki kurgusal ihtimali açabilirsin. Görevde hayali takım arkadaşlığı üretmeyeceğiz; o dönemin gerçek kadrolarına bakacağız.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "United’da devam et",
+          "kind": "history",
+          "ending": "Rooney Manchester United’da kaldı ve sonraki yıllarda kulübün önemli oyuncularından biri olmaya devam etti. City seçeneği bu oyun için oluşturulmuş alternatif rotadır. Bir transferin tamamlandığını veya tek bir sebeple engellendiğini ileri sürmez. Kadro görevleri gerçek oyuncu birlikteliklerini, sonuç metni ise seçtiğin evreni anlatır.",
+          "task": {
+            "type": "teammate",
+            "prompt": "2010-11 United kadrosunda Rooney ile oynayan kanat oyuncusunu seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Nani"
+              },
+              {
+                "key": "o1",
+                "label": "Eden Hazard"
+              },
+              {
+                "key": "o2",
+                "label": "Gareth Bale"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Portekizli bir kanat.",
+            "strongHint": "Sporting geçmişi var.",
+            "explanation": "Nani 2010-11 sezonunda Manchester United kadrosundaydı.",
+            "id": "rooney__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Manchester City ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Şehrin diğer tarafında Rooney’nin hem santrfor hem bağlantı oyuncusu olarak kullanılabileceği farklı düzenler kurulabilirdi. Takımın hücum merkezinin paylaşılması yeni uyum sorunları da doğurabilirdi. Taraftar tepkisi veya gelecekteki kupalar hakkında kesin sonuç yazmıyoruz. Bu paralel evren, aynı şehirdeki farklı bir futbol projesinin oyuncuya hangi yeni roller açabileceğini düşünür.",
+          "task": {
+            "type": "teammate",
+            "prompt": "2010-11 Manchester City kadrosundaki İspanyol oyun kurucu kimdi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "David Silva"
+              },
+              {
+                "key": "o1",
+                "label": "Andrés Iniesta"
+              },
+              {
+                "key": "o2",
+                "label": "Xavi"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Valencia’dan İngiltere’ye geçti.",
+            "strongHint": "Sol ayağıyla oyun kuran hücumcu.",
+            "explanation": "David Silva 2010 yazında City’ye katıldı.",
+            "id": "rooney__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • united",
+          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "laudrup",
+      "name": "Michael Laudrup",
+      "year": 1983,
+      "title": "Kuzeyden açılan yol",
+      "intro": "1983’te Danimarkalı bir yetenek kariyerini ülkesinin dışına taşımaya hazırlanıyordu. Farklı ligler aynı oyuncudan farklı roller isteyebilirdi. Gerçek İtalya çizgisini izle veya İngiltere’de başka bir başlangıç hayal et. Gerçekleşmeyen pazarlıkların ayrıntısını kesin bilgi saymadan, sonraki kariyerinin doğrulanabilir bir durağını bulacağız.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "İtalya çizgisini izle",
+          "kind": "history",
+          "ending": "Laudrup İtalya’da Lazio ve Juventus dönemlerini yaşadı; 1989’da Barcelona’ya katıldı. Bu rota onun gerçekleşen kulüp yolculuğunu temel alır. Liverpool seçeneği kurgusal karşılaştırmadır. Sonraki başarıları tek bir transfer kararına indirgemeden, farklı liglerde gelişen bir oyun kurucunun izlediği gerçek durakları birbirinden ayırıyoruz.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Laudrup 1989’da Barcelona’ya hangi kulüpten geldi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Juventus"
+              },
+              {
+                "key": "o1",
+                "label": "Inter"
+              },
+              {
+                "key": "o2",
+                "label": "Roma"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İtalya’daki siyah-beyaz kulüp.",
+            "strongHint": "Torino’daki iki büyük takımdan biri.",
+            "explanation": "Laudrup Juventus’tan Barcelona’ya geldi.",
+            "id": "laudrup__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Liverpool ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Liverpool evreninde Laudrup’un dar alandaki pasları İngiliz futbolunun temposuyla buluşabilirdi. Fiziksel baskı altında boşluk bulmak ve takımın hareketliliğine uyum sağlamak farklı bir gelişim yolu açabilirdi. Bu senaryo gerçek kariyerindeki bütün kupaları buraya taşımaz. Teknik bir yeteneğin başka bir futbol kültüründe aynı sorulara nasıl farklı cevaplar verebileceğini hayal eder.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Laudrup’un 1983-85 arasında forma giydiği Roma kulübünü seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Lazio"
+              },
+              {
+                "key": "o1",
+                "label": "Napoli"
+              },
+              {
+                "key": "o2",
+                "label": "Parma"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Açık mavi formayı düşün.",
+            "strongHint": "Roma kentinin kartal simgeli kulübü.",
+            "explanation": "Laudrup Juventus öncesinde Lazio’da oynadı.",
+            "id": "laudrup__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • laudrup",
+          "url": "https://www.fcbarcelona.com/en/card/648078/michael-laudrup"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "modric",
+      "name": "Luka Modrić",
+      "year": 2008,
+      "title": "Yeni ritim",
+      "intro": "2008’de Hırvat bir orta saha oyuncusu daha yüksek tempolu bir lige geçmeye hazırlanıyordu. Topla sakin kalmak, baskıdan çıkmak ve oyunun hızını belirlemek onun için yeni sınavlar olacaktı. Londra’daki gerçek başlangıcı seçebilir veya kuzeydeki alternatif yolu açabilirsin. Görev, geleceği tahmin etmek yerine gerçek kariyerin boşluğunu tamamlatacak.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Londra yolunu izle",
+          "kind": "history",
+          "ending": "Modrić 2008’de Dinamo Zagreb’den Tottenham’a transfer oldu. İngiltere’de dört yıl oynadıktan sonra 2012’de Real Madrid’e geçti. Bu iki transfer gerçek kariyerin sınırlarını oluşturur. Newcastle rotası, aynı başlangıç koşullarının başka bir kulüpte nasıl farklı sorular üretebileceğine ilişkin bir oyun kurgusudur.",
+          "task": {
+            "type": "missing",
+            "prompt": "Dinamo Zagreb → ? → Real Madrid zincirindeki İngiliz kulübü hangisi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Tottenham"
+              },
+              {
+                "key": "o1",
+                "label": "Everton"
+              },
+              {
+                "key": "o2",
+                "label": "West Ham"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Kuzey Londra’da beyaz forma.",
+            "strongHint": "Kulübün simgesinde bir horoz var.",
+            "explanation": "Modrić 2008-2012 arasında Tottenham’da oynadı.",
+            "id": "modric__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Newcastle ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Newcastle evreninde Modrić topu savunmadan hücuma taşıyan ana bağlantı haline gelebilirdi. Farklı kadro ve teknik ekip tercihleri ona daha fazla sorumluluk veya daha dar bir rol verebilirdi. Gelişimi önceden hesaplanamazdı. Bu son, gerçek kariyerindeki ödülleri başka bir kulübe mal etmek yerine yeni bir orta saha düzeninin ihtimalini açar.",
+          "task": {
+            "type": "missing",
+            "prompt": "Modrić İngiltere’ye hangi Hırvat kulübünden geldi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Dinamo Zagreb"
+              },
+              {
+                "key": "o1",
+                "label": "Hajduk Split"
+              },
+              {
+                "key": "o2",
+                "label": "Rijeka"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Başkentteki kulüp.",
+            "strongHint": "Mavi forma ile tanınır.",
+            "explanation": "Modrić Dinamo Zagreb’den İngiltere’ye geçti.",
+            "id": "modric__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • modric",
+          "url": "https://www.tottenhamhotspur.com/news/1042121/the-foe-you-know-real-madrids-modric-and-bale"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "baresi",
+      "name": "Franco Baresi",
+      "year": 1977,
+      "title": "Bir şehrin savunması",
+      "intro": "1970’lerin sonunda genç bir savunmacı için profesyonel futbolun kapısı aralanıyordu. Aynı şehrin iki güçlü kimliği, başka türlü gelişebilecek bir kariyeri düşündürüyor. Gerçek yolu izle veya farklı renklerde bir başlangıç seç. Altyapı seçmelerine ilişkin popüler hikâyeleri kesin gerekçe yapmadan, gerçek kadrolardan bir bilgi soracağız.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Milan yolunu izle",
+          "kind": "history",
+          "ending": "Baresi’nin profesyonel kariyeri Milan ile özdeşleşti. Uzun yıllar takımın savunmasına liderlik etti; 1997’de kaptanlık bandını Paolo Maldini devraldı. Bu gerçek rota, kulüp kimliğini ve savunma birlikteliğini esas alır. Diğer Milano kulübündeki gelişim senaryosu ise tarihsel bir kayıt veya kesinleşmiş teklif değildir.",
+          "task": {
+            "type": "teammate",
+            "prompt": "1990’larda Milan savunmasında Baresi ile birlikte oynayan ismi seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Paolo Maldini"
+              },
+              {
+                "key": "o1",
+                "label": "Javier Zanetti"
+              },
+              {
+                "key": "o2",
+                "label": "Carles Puyol"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Aynı kulüpte uzun bir kariyer sürdü.",
+            "strongHint": "Sol bek ve stoper olarak oynadı.",
+            "explanation": "Baresi ve Maldini Milan savunmasında birlikte oynadı.",
+            "id": "baresi__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Inter ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Inter evreninde genç savunmacı başka bir teknik ekip ve farklı savunma ortaklarıyla yetişebilirdi. Liderliğinin ne zaman ortaya çıkacağı, hangi sistemde daha rahat oynayacağı değişebilirdi. Tek bir altyapı tercihiyle gelecekteki kupaları yeniden dağıtmıyoruz. Bu ihtimal, oyuncu kimliği ile kulüp kültürünün birbirini nasıl etkileyebileceğini düşünmek için kurgulanmıştır.",
+          "task": {
+            "type": "teammate",
+            "prompt": "1980’lerde Inter’de oynayan, Franco’nun ağabeyi olan futbolcu kimdi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Giuseppe Baresi"
+              },
+              {
+                "key": "o1",
+                "label": "Fabio Cannavaro"
+              },
+              {
+                "key": "o2",
+                "label": "Alessandro Nesta"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Aynı aileden bir savunmacı.",
+            "strongHint": "Adı G harfiyle başlar.",
+            "explanation": "Giuseppe Baresi uzun yıllar Inter forması giydi.",
+            "id": "baresi__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • maldini",
+          "url": "https://www.acmilan.com/en/club/legends/player/paolo-maldini"
+        },
+        {
+          "label": "Tarihsel kayıt • milan",
+          "url": "https://www.acmilan.com/en/club/legends/champions"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "beckham",
+      "name": "David Beckham",
+      "year": 2003,
+      "title": "Yeni bir merkez",
+      "intro": "2003 yazında İngiltere’nin tanınan bir yıldızı yeni bir futbol ortamına geçiyordu. Duran toplar, uzun paslar ve sahanın sağındaki üretkenliği farklı takımlarda başka roller kazanabilirdi. Gerçek İspanya yolunu veya diğer büyük kulüpteki hayali rotayı seç. Soruda transfer söylentisini değil, gerçek kariyerden bir bağlantıyı çözeceksin.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Madrid yolunu izle",
+          "kind": "history",
+          "ending": "Beckham 2003’te Manchester United’dan Real Madrid’e transfer oldu. Madrid’deki döneminin ardından kariyerini farklı liglerde sürdürdü. Barcelona yolu bu oyunda alternatif tarih olarak yer alır. Oyuncunun tanınırlığı kadar, yeni bir takımda görev paylaşımının ve saha içi uyumun da önem taşıdığı bir kırılma anıdır.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Beckham’ın 2003 öncesindeki İngiliz kulübünü seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Manchester United"
+              },
+              {
+                "key": "o1",
+                "label": "Liverpool"
+              },
+              {
+                "key": "o2",
+                "label": "Tottenham"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Manchester’daki kırmızı forma.",
+            "strongHint": "1999’da üç kupa kazanan kulüp.",
+            "explanation": "Beckham United’dan Real Madrid’e geçti.",
+            "id": "beckham__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Barcelona ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Barcelona evreninde Beckham’ın uzun pasları ve duran topları farklı bir hücum yapısına hizmet edebilirdi. Kanat genişliği ile merkezdeki yaratıcılık arasındaki dağılım yeniden kurulabilirdi. Ancak takımın diğer transferleri ve teknik tercihleri de sonucu etkilerdi. Bu son, tek bir yıldızın gelişiyle bütün sportif geleceğin belirlenebileceğini varsaymayan bir olasılık hikâyesidir.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Beckham’ın 2007’de katıldığı ABD kulübü hangisiydi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "LA Galaxy"
+              },
+              {
+                "key": "o1",
+                "label": "Inter Miami"
+              },
+              {
+                "key": "o2",
+                "label": "New York City"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Los Angeles’ı düşün.",
+            "strongHint": "Kulübün adı gökyüzüyle ilgili.",
+            "explanation": "Beckham 2007’de LA Galaxy’ye katıldı.",
+            "id": "beckham__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • united",
+          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "drogba",
+      "name": "Didier Drogba",
+      "year": 2004,
+      "title": "Yeni bir hücum fikri",
+      "intro": "2004’te Fransa’da dikkat çeken güçlü bir santrfor, İngiltere’de yeni bir sayfa açmaya hazırlanıyordu. Top saklamak, savunmayı yıpratmak ve takım arkadaşlarına alan açmak onun farklı yönleriydi. Londra’nın iki ayrı oyun fikrini karşılaştır. Seçiminden sonra gerçek kulüp bağlantıları arasından tek bir oyuncuyu bulman yeterli olacak.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Chelsea yolunu izle",
+          "kind": "history",
+          "ending": "Drogba 2004’te Marseille’den Chelsea’ye transfer oldu ve kulübün önemli golcülerinden biri haline geldi. Arsenal senaryosu bu oyun için alternatif olarak kurulmuştur. Gerçek görev, kulüpler arasında oynamış başka bir futbolcuyu sorar. Bu bağlantı bir transfer teklifinin varlığını kanıtlamak için değil, futbol bilgisini sınamak için kullanılır.",
+          "task": {
+            "type": "connection",
+            "prompt": "Chelsea ve Arsenal A takımlarında oynamış kaleciyi seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Petr Čech"
+              },
+              {
+                "key": "o1",
+                "label": "Manuel Neuer"
+              },
+              {
+                "key": "o2",
+                "label": "Gianluigi Buffon"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Uzun süre koruyucu başlıkla oynadı.",
+            "strongHint": "Çekyalı bir kaleci.",
+            "explanation": "Čech Chelsea’den Arsenal’e geçti.",
+            "id": "drogba__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Arsenal ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Arsenal evreninde Drogba’nın top saklama gücü, hızlı paslarla hücum eden bir takım için başka bir seçenek yaratabilirdi. Savunmayı meşgul ederken kanatlardan gelen koşulara alan açabilirdi. Fakat bu uyum kendiliğinden oluşmazdı; takım alışkanlıklarının da değişmesi gerekirdi. Bu son kesin başarı yerine farklı bir santrfor profilinin açabileceği taktik olasılıkları anlatır.",
+          "task": {
+            "type": "connection",
+            "prompt": "Arsenal ve Chelsea formalarını giymiş sol beki seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Ashley Cole"
+              },
+              {
+                "key": "o1",
+                "label": "Philipp Lahm"
+              },
+              {
+                "key": "o2",
+                "label": "Jordi Alba"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İngiliz milli takımında oynadı.",
+            "strongHint": "Londra’daki iki kulüp arasında 2006’da geçti.",
+            "explanation": "Ashley Cole iki kulüpte de oynadı.",
+            "id": "drogba__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • drogba",
+          "url": "https://www.chelseafc.com/en/didier-drogba"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "pirlo",
+      "name": "Andrea Pirlo",
+      "year": 2011,
+      "title": "Oyunun yönünü değiştirmek",
+      "intro": "2011’de deneyimli bir oyun kurucu için yeni bir dönem başlıyordu. Savunmanın önünden pas dağıtmak ve maçın ritmini belirlemek farklı takım yapılarında başka anlamlar taşıyabilirdi. Gerçek rotayı izle veya aynı yaz başka bir kulüp hayal et. İlerlemen için kariyerindeki gerçek durakları sıraya koyman gerekecek.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Torino yolunu izle",
+          "kind": "history",
+          "ending": "Pirlo 2011’de Milan’dan Juventus’a geçti. İtalya’daki yeni döneminin ardından New York City’de oynadı. Bu sıralama gerçek kariyer kaydıdır. Alternatif rota ise gerçekleşmemiş bir lig değişimini düşünmek için açılır. Takım değişiminin tek başına bütün başarıları açıklamadığını, kadro ve teknik düzenin birlikte rol oynadığını unutmuyoruz.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Pirlo’nun bu kulüp duraklarını ilk katıldığı tarihe göre sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Inter"
+              },
+              {
+                "key": "o1",
+                "label": "Milan"
+              },
+              {
+                "key": "o2",
+                "label": "Juventus"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Milano yılları Torino’dan önce.",
+            "strongHint": "Mavi-siyah forma, kırmızı-siyah formadan önce.",
+            "explanation": "Pirlo Inter, Milan ve Juventus’ta bu sırayla oynadı.",
+            "id": "pirlo__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Başka bir lig hayal et",
+          "kind": "fiction",
+          "ending": "Başka bir ligde Pirlo’nun pas menzili, rakiplerin baskı biçimine farklı cevaplar aramak zorunda kalabilirdi. Takım arkadaşlarının onun çevresinde kurduğu koruma ve koşu düzeni önem kazanırdı. Bu evren hangi kulübün kesin teklif yaptığını iddia etmez. Ustalığı yerleşmiş bir oyun kurucunun farklı bir futbol kültüründe nasıl yeni çözümler bulabileceğini hayal eder.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Pirlo’nun bu üç dönemini eskiden yeniye sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Milan"
+              },
+              {
+                "key": "o1",
+                "label": "Juventus"
+              },
+              {
+                "key": "o2",
+                "label": "New York City"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Avrupa’dan Amerika’ya uzanan yolu düşün.",
+            "strongHint": "Torino dönemi iki şehir arasında.",
+            "explanation": "Pirlo Milan’dan Juventus’a, ardından New York City’ye geçti.",
+            "id": "pirlo__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • milan",
+          "url": "https://www.acmilan.com/en/club/legends/champions"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "shearer",
+      "name": "Alan Shearer",
+      "year": 1996,
+      "title": "Eve giden yol",
+      "intro": "1996’da İngiliz bir golcü kariyerinin en önemli kararlarından birine yaklaşıyordu. Bir kulübün hücumunu taşımak ile başka bir büyük projeye katılmak farklı beklentiler yaratacaktı. Gerçek kuzey yolunu seç veya Manchester’da kurguladığımız ihtimali aç. Görevde popüler pazarlık hikâyeleri yerine gerçek kariyer sırasını kullanacağız.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Newcastle yolunu izle",
+          "kind": "history",
+          "ending": "Shearer 1996’da Blackburn’den Newcastle United’a geçti. Premier League’deki gollerini Blackburn ve Newcastle formalarıyla biriktirdi. Manchester United rotası bu oyunda alternatif bir kariyer ihtimalidir. Gerçek son transferin gerçekleşen yönünü kaydeder; tercihlerin bütün kişisel ve sportif nedenlerini tek cümleye indirgemeye çalışmaz.",
+          "task": {
+            "type": "missing",
+            "prompt": "Southampton → ? → Newcastle: eksik kulübü bul.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Blackburn"
+              },
+              {
+                "key": "o1",
+                "label": "Everton"
+              },
+              {
+                "key": "o2",
+                "label": "Aston Villa"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "1994-95 lig şampiyonunu düşün.",
+            "strongHint": "Mavi-beyaz parçalı forma.",
+            "explanation": "Shearer Blackburn’den Newcastle’a geçti.",
+            "id": "shearer__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "United ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Manchester evreninde Shearer’ın ceza sahası bitiriciliği farklı kanat servisleri ve hücum ortaklarıyla buluşabilirdi. Gol yükünün paylaşılması ve takım içi roller başka biçimde kurulabilirdi. Gerçekte kazanılmış kupaları bu hayali kadroya otomatik olarak yazamayız. Bu olasılık, bir golcünün alışkanlıklarının farklı bir takımın oyun planına nasıl uyabileceğini düşünmek için açılır.",
+          "task": {
+            "type": "missing",
+            "prompt": "Shearer’ın Blackburn’den önceki A takım durağı hangisiydi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Southampton"
+              },
+              {
+                "key": "o1",
+                "label": "Portsmouth"
+              },
+              {
+                "key": "o2",
+                "label": "Sunderland"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İngiltere’nin güney kıyısında.",
+            "strongHint": "Azizler lakabıyla tanınır.",
+            "explanation": "Shearer’ın ilk profesyonel kulübü Southampton’dı.",
+            "id": "shearer__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • united",
+          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 2
+    },
+    {
+      "id": "van_basten",
+      "name": "Marco van Basten",
+      "year": 1993,
+      "title": "Yarım kalan hareket",
+      "intro": "1993’te bir golcünün kariyerinde sağlık sorunları giderek daha belirleyici hale geliyordu. Sahada yaptığı hareketlerle hatırlanan bir oyuncunun devam edememesi, futbolseverlere başka ihtimalleri düşündürür. Burada yaşanan gerçek yolu okuyabilir veya sağlıklı devam edebildiği bir kurgu açabilirsin. Görev, tıbbi tahminlere değil futbol tarihinin sırasına dayanır.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Gerçek kariyeri izle",
+          "kind": "history",
+          "ending": "Van Basten’in son resmi maçları 1993’e uzanır; futbolu bıraktığını 1995’te açıkladı. Milan’daki golleri ve Hollanda ile 1988 Avrupa şampiyonluğu kariyerinin güçlü izleri arasında kaldı. Bu son gerçek zaman çizgisini anlatır. Sağlıklı kalsaydı ne kadar oynayacağı veya kaç gol atacağı hesaplanmış bir gerçek değildir.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Van Basten’in bu olaylarını eskiden yeniye sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Milan’a transfer"
+              },
+              {
+                "key": "o1",
+                "label": "Hollanda ile 1988 Avrupa zaferi"
+              },
+              {
+                "key": "o2",
+                "label": "1995’te emekliliğini açıklaması"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Kulüp değişikliği milli takım zaferinden önce.",
+            "strongHint": "İtalya başlangıcı 1987’ye uzanır.",
+            "explanation": "Milan 1987, Avrupa zaferi 1988, emeklilik açıklaması 1995.",
+            "id": "van_basten__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Sağlıklı devamı hayal et",
+          "kind": "fiction",
+          "ending": "Bu evrende Van Basten bir süre daha sahada kalabilirdi. Milan hücumunda deneyimini yeni oyunculara aktarabilir, bitiriciliğiyle farklı maç planlarının parçası olabilirdi. Ancak yaş, kadro dönüşümü ve rekabet yine etkili olurdu. Bu kurgu tıbbi bir öngörü sunmaz; kaçırılan maçları kesin gollere veya kazanılmamış kupalara dönüştürmeden bir devam ihtimalini düşünür.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Bu kariyer evrelerini sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Ajax A takımı"
+              },
+              {
+                "key": "o1",
+                "label": "Milan A takımı"
+              },
+              {
+                "key": "o2",
+                "label": "Futbolu bırakma açıklaması"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Hollanda’dan İtalya’ya giden yolu düşün.",
+            "strongHint": "İtalya dönemi gençlik kulübünden sonra.",
+            "explanation": "Van Basten Ajax’tan Milan’a geçti, 1995’te emekliliğini açıkladı.",
+            "id": "van_basten__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • vanbasten",
+          "url": "https://www.acmilan.com/en/hall-of-fame/inductees/marco-van-basten"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "ronaldo_nazario",
+      "name": "Ronaldo Nazário",
+      "year": 2000,
+      "title": "Geri dönüş ihtimali",
+      "intro": "2000’de büyük bir yıldızın kariyerinde ağır sakatlıklar önemli bir kesinti yaratmıştı. Sahaya dönüş, yalnız yetenek değil zaman ve yeniden uyum da gerektiriyordu. Gerçek kariyerin izini sürebilir veya bu kesintinin yaşanmadığı bir futbol evreni açabilirsin. Görevimiz hayali performans hesaplamak değil, dönemin gerçek kadrosunu tanımak.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Gerçek geri dönüşü izle",
+          "kind": "history",
+          "ending": "Ronaldo’nun Inter dönemi 1997-2002 arasındaydı ve sakatlıklarla kesintiye uğradı. Sonrasında 2002 Dünya Kupası’nda Brezilya ile şampiyonluk yaşadı ve Real Madrid’e geçti. Bu sonuç yaşanmış kariyeri anlatır. Sakatlık olmasaydı aynı transferlerin, maçların veya bireysel başarıların gerçekleşeceğini varsaymak mümkün değildir.",
+          "task": {
+            "type": "teammate",
+            "prompt": "1999-2000 Inter kadrosunda Ronaldo ile bulunan İtalyan santrforu seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Christian Vieri"
+              },
+              {
+                "key": "o1",
+                "label": "Francesco Totti"
+              },
+              {
+                "key": "o2",
+                "label": "Alessandro Del Piero"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Güçlü fiziği ve sol ayağıyla tanınır.",
+            "strongHint": "Bobo lakabını düşün.",
+            "explanation": "Vieri 1999’da Inter’e katıldı ve Ronaldo ile aynı kadroda yer aldı.",
+            "id": "ronaldo_nazario__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Kesintisiz kariyeri hayal et",
+          "kind": "fiction",
+          "ending": "Kesintisiz evrende Ronaldo, Inter’de hücum ortaklarıyla daha uzun süre birlikte oynayabilirdi. Savunmaların onun hızına karşı aldığı önlemler ve takımın geliştirdiği çözümler değişebilirdi. Yine de belirli gol sayıları veya garanti şampiyonluklar yazmıyoruz. Bu kurgu sağlık hakkında bir tahmin değil, önemli bir oyuncunun sahada daha çok bulunmasının açabileceği futbol ihtimalleridir.",
+          "task": {
+            "type": "teammate",
+            "prompt": "1997-98 Inter kadrosunda Ronaldo ile oynayan Arjantinli sağ beki seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Javier Zanetti"
+              },
+              {
+                "key": "o1",
+                "label": "Cafu"
+              },
+              {
+                "key": "o2",
+                "label": "Roberto Carlos"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Uzun yıllar Inter kaptanlığı yaptı.",
+            "strongHint": "Forma numarası 4’tü.",
+            "explanation": "Zanetti ve Ronaldo 1997-98 Inter kadrosundaydı.",
+            "id": "ronaldo_nazario__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • ronaldo",
+          "url": "https://www.inter.it/en/archivio_giocatore/G0556"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "makelele",
+      "name": "Claude Makélélé",
+      "year": 2003,
+      "title": "Görünmeyen denge",
+      "intro": "2003’te yıldızlarla dolu bir takımın orta sahasında önemli bir değişim yaşandı. Topu kazanan, alanı kapatan ve diğer oyunculara hareket özgürlüğü sağlayan rol yeniden tartışılıyordu. Gerçek ayrılık yolunu izle veya aynı düzenin sürdüğü bir evren aç. Bir takımın sonraki bütün sonuçlarını tek oyuncunun varlığına bağlamayacağız.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Chelsea yolunu izle",
+          "kind": "history",
+          "ending": "Makélélé 2003’te Real Madrid’den Chelsea’ye transfer oldu. Savunma önündeki rolü yeni takımının orta saha yapısında önemli yer tuttu. Madrid’in sonraki sonuçlarını yalnız bu ayrılığa bağlamak eksik bir açıklama olur. Gerçek rota transferi kaydeder; alternatif son ise aynı görev dağılımı sürseydi nelerin değişebileceğini düşünür.",
+          "task": {
+            "type": "teammate",
+            "prompt": "2004-05 Chelsea’de Makélélé ile birlikte oynayan savunmacıyı seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "John Terry"
+              },
+              {
+                "key": "o1",
+                "label": "Sergio Ramos"
+              },
+              {
+                "key": "o2",
+                "label": "Nemanja Vidić"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İngiliz bir stoper.",
+            "strongHint": "Chelsea’nin uzun süreli kaptanlarından.",
+            "explanation": "Terry o sezon Chelsea savunmasının merkezindeydi.",
+            "id": "makelele__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Madrid’de kalmayı hayal et",
+          "kind": "fiction",
+          "ending": "Madrid’de kalınan evrende yıldız hücumcuların arkasındaki alan paylaşımı daha farklı korunabilirdi. Ancak bütün takımın savunma davranışı tek bir oyuncudan ibaret olmazdı. Teknik ekip, kadro yaşı ve rakiplerin oyun planları yine sonucu etkilerdi. Bu son, kazanılmamış kupalar ilan etmek yerine görünmeyen bir orta saha rolünün takım dengesine olası katkısını anlatır.",
+          "task": {
+            "type": "teammate",
+            "prompt": "2002-03 Real Madrid’de Makélélé ile birlikte oynayan Fransız oyun kurucuyu seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Zinedine Zidane"
+              },
+              {
+                "key": "o1",
+                "label": "Franck Ribéry"
+              },
+              {
+                "key": "o2",
+                "label": "Robert Pirès"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "2001’de İtalya’dan İspanya’ya geçti.",
+            "strongHint": "2002 Avrupa finalindeki volesiyle de hatırlanır.",
+            "explanation": "Zidane ve Makélélé 2002-03 Real Madrid kadrosundaydı.",
+            "id": "makelele__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • makelele",
+          "url": "https://www.chelseafc.com/en/claude-makelele"
+        },
+        {
+          "label": "Tarihsel kayıt • zidane",
+          "url": "https://www.realmadrid.com/en-US/the-club/history/football-legends/zinedine-zidane"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "chelsea_duo",
+      "name": "De Bruyne & Salah",
+      "year": 2014,
+      "title": "Gençliğe açılan alan",
+      "intro": "2014 döneminde Chelsea’nin kadro kararları gelecekte başka takımlarda parlayacak iki oyuncuyu da kapsıyordu. Gelişim, süre bulma ve farklı liglerde deneyim kazanma birbirine bağlı konulardı. Gerçek kariyer ayrımlarını izle veya iki yeteneğe daha uzun süre alan açılan bir kulüp projesi hayal et. Görevde gerçek bağlantıları kullanacağız.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Gerçek ayrılık yollarını izle",
+          "kind": "history",
+          "ending": "De Bruyne Chelsea sonrasında Wolfsburg ve Manchester City’de oynadı. Salah ise İtalya’daki döneminin ardından Liverpool’a geçti. İki oyuncunun sonraki gelişimini yalnız eski kulüplerinin kararıyla açıklayamayız. Bu gerçek son ayrı kariyer yollarını kaydeder; aynı takımda kalsalardı bugünkü başarılarının aynısını yaşayacaklarını ileri sürmez.",
+          "task": {
+            "type": "connection",
+            "prompt": "Chelsea ve Liverpool formalarını giymiş İspanyol santrforu seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Fernando Torres"
+              },
+              {
+                "key": "o1",
+                "label": "David Villa"
+              },
+              {
+                "key": "o2",
+                "label": "Raúl"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Atlético Madrid geçmişi var.",
+            "strongHint": "El Niño lakabıyla tanınır.",
+            "explanation": "Torres Liverpool ve Chelsea’de oynadı.",
+            "id": "chelsea_duo__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "İki yeteneği elde tutmayı hayal et",
+          "kind": "fiction",
+          "ending": "Bu evrende Chelsea genç hücumculara daha fazla süre ve belirli roller verebilirdi. Ancak aynı anda gelişmek, kadro rekabetini ve takımın savunma dengesini yönetmeyi gerektirirdi. Sonraki kariyerlerinden bildiğimiz bütün özellikler aynı hızda ortaya çıkmayabilirdi. Bu kurgu yıldızları bir araya getirip kupaları peşinen dağıtmaz; gelişim için yaratılabilecek farklı koşulları düşünür.",
+          "task": {
+            "type": "connection",
+            "prompt": "Chelsea ve Manchester City formalarını giymiş İngiliz orta sahayı seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Frank Lampard"
+              },
+              {
+                "key": "o1",
+                "label": "Paul Scholes"
+              },
+              {
+                "key": "o2",
+                "label": "Steven Gerrard"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Golcü bir orta saha oyuncusu.",
+            "strongHint": "City’de 2014-15 sezonunda oynadı.",
+            "explanation": "Lampard uzun Chelsea döneminin ardından City’de oynadı.",
+            "id": "chelsea_duo__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • drogba",
+          "url": "https://www.chelseafc.com/en/didier-drogba"
+        },
+        {
+          "label": "Tarihsel kayıt • makelele",
+          "url": "https://www.chelseafc.com/en/claude-makelele"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "de_gea",
+      "name": "David de Gea",
+      "year": 2015,
+      "title": "Son günün belirsizliği",
+      "intro": "2015 yazının son transfer günlerinde bir kalecinin geleceği yoğun biçimde konuşuluyordu. Süreç tamamlanmadı ve kariyer başka bir yönde devam etti. Popüler tek cümlelik açıklamalar bütün ayrıntıları anlatmaz. Gerçek yolu izle veya İspanya’daki alternatif başlangıcı seç; görevde belgelenmiş futbol bilgisini kullanacağız, teknik arızayı kesin neden ilan etmeyeceğiz.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Manchester’da devam et",
+          "kind": "history",
+          "ending": "De Gea’nın 2015’te Real Madrid’e transferi tamamlanmadı ve Manchester United’daki kariyeri devam etti. Bu olayın tek nedenini bozuk bir faks olarak sunmuyoruz. Gerçek rota gerçekleşen sonucu kaydeder. Alternatif rota ise transfer olsaydı yaşanabilecek uyum sürecini düşünür; tamamlanmamış bir anlaşmayı gerçekleşmiş gibi anlatmaz.",
+          "task": {
+            "type": "transfer",
+            "prompt": "De Gea 2011’de United’a hangi kulüpten geldi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Atlético Madrid"
+              },
+              {
+                "key": "o1",
+                "label": "Sevilla"
+              },
+              {
+                "key": "o2",
+                "label": "Valencia"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "İspanya başkentindeki kırmızı-beyaz ekip.",
+            "strongHint": "Kulüp adında Atlético geçer.",
+            "explanation": "De Gea Atlético Madrid’den Manchester United’a geçti.",
+            "id": "de_gea__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Madrid ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Madrid evreninde De Gea farklı bir savunma hattıyla iletişim kurmak ve yeni beklentilere uyum sağlamak zorunda kalabilirdi. Ayağıyla oyun kurma tercihleri ve ceza sahası yönetimi başka bir sistemde değerlendirilebilirdi. Bir kaleci değişikliği sonraki bütün kupaları açıklamazdı. Bu olasılık hikâyesi, gerçekleşmeyen transferin kesin sportif sonucunu bildiğini iddia etmez.",
+          "task": {
+            "type": "transfer",
+            "prompt": "2014’te Real Madrid’e katılan Kosta Rikalı kaleci kimdi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Keylor Navas"
+              },
+              {
+                "key": "o1",
+                "label": "Jan Oblak"
+              },
+              {
+                "key": "o2",
+                "label": "Thibaut Courtois"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "2014 Dünya Kupası’nda dikkat çekti.",
+            "strongHint": "Levante’den transfer edildi.",
+            "explanation": "Navas 2014’te Levante’den Real Madrid’e katıldı.",
+            "id": "de_gea__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • united",
+          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "sneijder",
+      "name": "Wesley Sneijder",
+      "year": 2010,
+      "title": "Bir yılın iki yorumu",
+      "intro": "2010’da kulüp ve milli takım düzeyindeki büyük başarılar bireysel ödüllerin nasıl değerlendirildiğini yeniden tartıştırdı. Takım kupaları ile bir oyuncunun sezon boyunca etkisi aynı şey değildir. Gerçek sonucu inceleyebilir veya farklı bir ödül kararını hayal edebilirsin. Görev öznel bir hak ediş yarışı değil, gerçek kariyerin zaman sırasıdır.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Gerçek ödül sonucunu izle",
+          "kind": "history",
+          "ending": "2010 Ballon d’Or ödülünü Lionel Messi kazandı; Sneijder Inter ile üç kupa kazanılan sezonun önemli isimlerindendi ve Hollanda ile Dünya Kupası finaline çıktı. Ödülün kime verilmesi gerektiği bir değerlendirmedir. Bu gerçek son sonucu kaydeder, farklı görüşleri skandal veya kanıtlanmış haksızlık diye etiketlemez.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Sneijder’in bu kulüp duraklarını sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Real Madrid"
+              },
+              {
+                "key": "o1",
+                "label": "Inter"
+              },
+              {
+                "key": "o2",
+                "label": "Galatasaray"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "İspanya’dan İtalya’ya, ardından Türkiye’ye.",
+            "strongHint": "Milano dönemi ortada.",
+            "explanation": "2009’da Inter’e, 2013’te Galatasaray’a geçti.",
+            "id": "sneijder__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Farklı kazananı hayal et",
+          "kind": "fiction",
+          "ending": "Bu evrende bireysel ödül Sneijder’e verilebilirdi. Böyle bir karar o yılın başarılarının hatırlanma biçimini değiştirebilir, takım kupaları ile bireysel etkinin nasıl tartıldığına ilişkin başka bir anlatı kurabilirdi. Ancak geçmiş maç sonuçları değişmezdi. Bu kurgu, bir futbolcunun değerini tek ödüle indirmeden farklı bir değerlendirme ihtimalini görünür kılar.",
+          "task": {
+            "type": "timeline",
+            "prompt": "Bu olayları eskiden yeniye sırala.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Inter’e katılması"
+              },
+              {
+                "key": "o1",
+                "label": "Inter ile 2010 Avrupa zaferi"
+              },
+              {
+                "key": "o2",
+                "label": "Galatasaray’a transferi"
+              }
+            ],
+            "answerKeys": [
+              "o0",
+              "o1",
+              "o2"
+            ],
+            "hint": "Kulübe katılmadan onunla kupa kazanamaz.",
+            "strongHint": "Türkiye’ye geçiş Avrupa zaferinden sonra.",
+            "explanation": "Inter’e 2009’da katıldı, 2010’da Avrupa şampiyonu oldu, 2013’te Türkiye’ye geldi.",
+            "id": "sneijder__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • sneijder",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0205-0e82f5488bd6-736eb926ee25-1000--galatasaray-signal-intent-with-sneijder-signing/"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "lukaku",
+      "name": "Romelu Lukaku",
+      "year": 2021,
+      "title": "Birlikte devam etmek",
+      "intro": "2021 yazında şampiyon bir takımın hücumundaki önemli isim için yeni bir karar zamanı geldi. Tanıdık bağlantıları sürdürmek ile başka bir ligde yeniden kendini göstermek farklı beklentiler yaratacaktı. Gerçek ayrılık yolunu seç veya aynı formayla devam edilen bir evren aç. Görev gerçek kariyer çizgisindeki eksik durağı bulduracak.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Londra’ya dönüşü izle",
+          "kind": "history",
+          "ending": "Lukaku 2021 yazında Inter’den Chelsea’ye transfer oldu. Inter’in 2020-21 lig şampiyonluğunda yer aldıktan sonra İngiltere’ye döndü; 2022’de kiralık olarak yeniden Inter’e katıldı. Bu rota gerçekleşen hareketleri birbirinden ayırır. Kalma seçeneği ise sonraki sezonun nasıl biteceğine dair kesin bir tahmin değildir.",
+          "task": {
+            "type": "missing",
+            "prompt": "Lukaku’nun 2019’da Inter’e gelmeden önceki kulübünü bul.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Manchester United"
+              },
+              {
+                "key": "o1",
+                "label": "Arsenal"
+              },
+              {
+                "key": "o2",
+                "label": "Liverpool"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Manchester’daki kırmızı forma.",
+            "strongHint": "Old Trafford’da oynayan kulüp.",
+            "explanation": "Lukaku 2019’da United’dan Inter’e geçti.",
+            "id": "lukaku__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "Inter’de kalmayı hayal et",
+          "kind": "fiction",
+          "ending": "Inter’de kalınan evrende Lukaku tanıdığı hücum bağlantılarını sürdürebilirdi. Teknik ekipteki ve kadrodaki diğer değişiklikler yine yeni uyum gerektirecekti. Geçmiş şampiyonluk bir sonraki sezonun garantisi olmazdı. Bu hikâye, birlikte oynama alışkanlığının korunmasının olası avantajlarını düşünürken rekabetin, fiziksel durumun ve takım kararlarının sonucu değiştirebileceğini açık bırakır.",
+          "task": {
+            "type": "missing",
+            "prompt": "Lukaku’nun 2014-2017 arasında kalıcı olarak oynadığı Liverpool şehri kulübü hangisi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Everton"
+              },
+              {
+                "key": "o1",
+                "label": "Liverpool"
+              },
+              {
+                "key": "o2",
+                "label": "Tranmere Rovers"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Mavi formayı düşün.",
+            "strongHint": "Goodison Park ile özdeşleşen kulüp.",
+            "explanation": "Lukaku 2014’te Everton’a kalıcı transfer oldu.",
+            "id": "lukaku__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • lukaku",
+          "url": "https://www.inter.it/en/news/2021-08-12-romelu-lukaku-to-chelsea-announcement"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    },
+    {
+      "id": "ronaldinho",
+      "name": "Ronaldinho",
+      "year": 2003,
+      "title": "Oyuna gelen gülümseme",
+      "intro": "2003’te Brezilyalı bir yıldız yeni bir takımın hücumuna hayal gücü katmaya hazırlanıyordu. Beklenmedik paslar ve bire bir becerisi başka futbol kültürlerinde farklı roller kazanabilirdi. Gerçek İspanya yolunu veya İngiltere’de açtığımız hayali ihtimali seç. Transfer söylentilerinin ayrıntısı yerine gerçekleşmiş bir kariyer bilgisinden ilerleyeceğiz.",
+      "routes": [
+        {
+          "id": "real",
+          "label": "Barcelona yolunu izle",
+          "kind": "history",
+          "ending": "Ronaldinho 2003’te PSG’den Barcelona’ya katıldı. İspanya’daki dönemi kulübün önemli bir yenilenme süreciyle birlikte hatırlanır. Manchester United rotası bu oyunda alternatif tarih olarak açılır. Gerçekleşmeyen görüşmelerin tek bir nedenle sonuçlandığını iddia etmiyoruz; oyuncunun gerçek kariyer durağını ve kurgusal ihtimalini açıkça ayırıyoruz.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Ronaldinho 2003’te Barcelona’ya hangi kulüpten geldi?",
+            "options": [
+              {
+                "key": "o0",
+                "label": "PSG"
+              },
+              {
+                "key": "o1",
+                "label": "Lyon"
+              },
+              {
+                "key": "o2",
+                "label": "Marseille"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Fransa’nın başkentindeki kulüp.",
+            "strongHint": "Kırmızı ve mavi renkler.",
+            "explanation": "Ronaldinho PSG’den Barcelona’ya geçti.",
+            "id": "ronaldinho__real"
+          }
+        },
+        {
+          "id": "alternate",
+          "label": "United ihtimalini aç",
+          "kind": "fiction",
+          "ending": "Manchester evreninde Ronaldinho’nun yaratıcılığı hızlı kanat koşuları ve farklı bir hücum temposuyla buluşabilirdi. Topu ayağında tutma süresi ile takımın doğrudan oyun tercihleri arasında yeni bir denge aranabilirdi. Bu ihtimal başka bir oyuncunun gelişimini ya da gelecekteki kupaları kesin biçimde değiştirmiş sayılmaz. Yalnız başka bir futbol birlikteliğinin mümkün görüntüsünü kurar.",
+          "task": {
+            "type": "transfer",
+            "prompt": "Ronaldinho’nun Brezilya’daki ilk profesyonel kulübünü seç.",
+            "options": [
+              {
+                "key": "o0",
+                "label": "Grêmio"
+              },
+              {
+                "key": "o1",
+                "label": "Santos"
+              },
+              {
+                "key": "o2",
+                "label": "Flamengo"
+              }
+            ],
+            "answerKeys": [
+              "o0"
+            ],
+            "hint": "Porto Alegre kentini düşün.",
+            "strongHint": "Mavi, siyah ve beyaz renkleri kullanır.",
+            "explanation": "Ronaldinho profesyonel kariyerine Grêmio’da başladı.",
+            "id": "ronaldinho__alternate"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "label": "Tarihsel kayıt • barca",
+          "url": "https://www.fcbarcelona.com/en/club/history/legendary-players"
+        }
+      ],
+      "editorialNote": "Alternatif rota oyun için kurgulanmıştır; gerçekleşmiş teklif veya kesinleşmiş transfer iddiası değildir.",
+      "chapter": 3
+    }
+  ]
+}

@@ -8273,6 +8273,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["rewardedAdState/" + uid] = null;
   updates["dailyMatchState/" + uid] = null;
   updates["journeyRewardState/" + uid] = null;
+  updates["whatIfState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -8689,6 +8690,8 @@ function lbRewardedService() {
     const db = getDatabase();
     lbRewardedInstance = require("./rewarded_ads").createService({
       db, getConfig: lbGetEconomyConfig,
+      prepareWhatIfReward: (uid, placement, context) => lbWhatIfService().prepareReward(uid, placement, context),
+      settleWhatIfReward: (uid, receipt) => lbWhatIfService().settleReward(uid, receipt),
       prepareStoryReward: (uid, placement, context) => lbJourneyService().prepareReward(uid, placement, context),
       settleStoryReward: (uid, receipt) => lbJourneyService().settleReward(uid, receipt),
       prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
@@ -9031,3 +9034,73 @@ exports.getPlayerJourney = lbJourneyCallable("status");
 exports.submitPlayerJourney = lbJourneyCallable("submit");
 exports.buyPlayerJourneyHint = lbJourneyCallable("hint");
 exports.setJourneyShowcase = lbJourneyCallable("favorites");
+
+// What If has an isolated catalog, progress and receipt namespace.
+function lbWhatIfService() {
+  const db = getDatabase();
+  return require("./what_if").createService({db,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp;
+          s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now};
+          s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+    chargeHint: async (uid, taskId, price) => {
+      const key = "what_if_hint__" + taskId;
+      const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+        const s = lbEconomyState(raw);
+        if (!s.purchases[key] && s.balances.coins >= price) {
+          const before = s.balances.coins;
+          s.balances.coins -= price;
+          s.lifetimeSpent += price;
+          s.purchases[key] = {txId: key, offerId: "what_if_hint", itemId: taskId,
+            itemType: "hint", priceCoins: price, balanceBefore: before, balanceAfter: s.balances.coins,
+            purchasedAt: Date.now(), economyConfigId: "what-if-v1"};
+          s.updatedAt = Date.now();
+        }
+        return s;
+      });
+      const s = lbEconomyState(tx.snapshot.val());
+      if (!s.purchases[key]) {
+        throw new (require("./rewarded_ads").RewardError)(
+            "failed-precondition", "Bu yardım için 10 coin gerekli.");
+      }
+      await lbEconomyProject(db, uid, s);
+    },
+    projectBadges: (uid, signals) => lbAchievementMergeSignals(db, uid, signals, "what_if"),
+  });
+}
+function lbWhatIfCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    lbRequireGoogleLinked(request);
+    try {
+      const uid = request.auth.uid;
+      const service = lbWhatIfService();
+      if (action === "status") {
+        await lbRewardedService().settle(uid);
+        return {...await service.status(uid),
+          pro: lbPremiumState((await getDatabase().ref("premiumState/" + uid).get()).val(), Date.now()).active};
+      }
+      return await service[action](uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getWhatIf = lbWhatIfCallable("status");
+exports.submitWhatIf = lbWhatIfCallable("submit");
+exports.buyWhatIfHint = lbWhatIfCallable("hint");
+exports.setWhatIfShowcase = lbWhatIfCallable("favorites");

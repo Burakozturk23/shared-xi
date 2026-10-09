@@ -292,6 +292,10 @@
     "journeyRewardState": {
       ".read": false,
       ".write": false
+    },
+    "whatIfState": {
+      ".read": false,
+      ".write": false
     }
   }
 }
