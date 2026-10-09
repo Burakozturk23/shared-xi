@@ -90,6 +90,8 @@ void main() {
       expect(resumed.checkpoint!.index, 1);
       expect(find.byKey(const ValueKey('journey-intro')), findsOneWidget);
       await startTask(tester);
+      await goTo(tester,const ValueKey('journey-prompt'));
+      expect(find.byKey(const ValueKey('journey-intro')), findsNothing);
       expect(find.text(journey.tasks[1].prompt), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
