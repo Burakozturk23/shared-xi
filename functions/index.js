@@ -9,7 +9,9 @@
 const {setGlobalOptions} = require("firebase-functions");
 const {onSchedule} = require("firebase-functions/v2/scheduler");
 const {defineSecret} = require("firebase-functions/params");
-const admin = require("firebase-admin");
+const {initializeApp} = require("firebase-admin/app");
+const {getDatabase} = require("firebase-admin/database");
+const {getAuth} = require("firebase-admin/auth");
 const logger = require("firebase-functions/logger");
 const httpsV2 = require("firebase-functions/v2/https");
 const {onValueWritten} = require("firebase-functions/v2/database");
@@ -27,7 +29,7 @@ const lbGetEconomyConfig = economyConfig.createProvider({
   warn: (message, detail) => logger.warn(message, detail),
 });
 
-admin.initializeApp();
+initializeApp();
 setGlobalOptions({maxInstances: 10});
 
 const apiKey = defineSecret("API_FOOTBALL_KEY");
@@ -202,7 +204,7 @@ function normalize(rawList) {
  * @return {Promise<void>}
  */
 async function writeDay(dateStr, matches) {
-  const db = admin.database();
+  const db = getDatabase();
   const topMatch = matches.length > 0 ? matches[0] : null;
   await db.ref("daily_fixtures/" + dateStr).set({
     updatedAt: Date.now(),
@@ -291,7 +293,7 @@ function lbDailyWeekKey(dateStr) {
 
 /** @param {string} dateStr @return {Promise<Object>} */
 async function lbDailyLimits(dateStr) {
-  const db = admin.database();
+  const db = getDatabase();
   const snap = await db.ref("daily_fixtures/" + dateStr + "/topMatch").get();
   if (snap.exists() && snap.val()) {
     const fixture = snap.val();
@@ -342,7 +344,7 @@ async function lbDailyPublicIdentity(uid) {
   };
 
   try {
-    const snap = await admin.database().ref("users/" + uid).get();
+    const snap = await getDatabase().ref("users/" + uid).get();
     if (!snap.exists() || !snap.val()) return fallback;
 
     const profile = snap.val();
@@ -383,7 +385,7 @@ exports.startDailyScoreSession = httpsV2.onCall(
       lbValidateDailyDateWindow(dateStr);
       const uid = request.auth.uid;
       const limits = await lbDailyLimits(dateStr);
-      const ref = admin.database().ref("dailyScoreSessions/" + uid + "/" + dateStr);
+      const ref = getDatabase().ref("dailyScoreSessions/" + uid + "/" + dateStr);
       const now = Date.now();
       const result = await ref.transaction((current) => {
         if (current && typeof current === "object" && Number.isFinite(Number(current.startedAt))) {
@@ -426,7 +428,7 @@ exports.submitDailyScore = httpsV2.onCall(
       }
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const sessionRef = db.ref("dailyScoreSessions/" + uid + "/" + dateStr);
       const sessionSnap = await sessionRef.get();
       if (!sessionSnap.exists() || !sessionSnap.val()) {
@@ -1019,7 +1021,7 @@ exports.submitRankedResult = httpsV2.onCall(
       }
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const matchPath = LB_RANKED_MODES[mode] + "/" + matchId;
       const matchSnap = await db.ref(matchPath).get();
 
@@ -1367,7 +1369,7 @@ function lbSocialAvatarId(raw) {
  */
 async function lbSocialHasGoogleProvider(uid) {
   try {
-    const authUser = await admin.auth().getUser(uid);
+    const authUser = await getAuth().getUser(uid);
     return authUser.providerData.some(
         (provider) => provider.providerId === "google.com",
     );
@@ -1713,7 +1715,7 @@ exports.syncPublicProfileProjection = onValueWritten(
     },
     async (event) => {
       const uid = event.params.uid;
-      const db = admin.database();
+      const db = getDatabase();
 
       if (!event.data.after.exists()) {
         await db.ref("publicProfiles/" + uid).remove();
@@ -1733,7 +1735,7 @@ exports.syncMyPublicProfile = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const profile = await lbSocialSyncPublicProfile(db, uid);
 
       if (!profile) {
@@ -1759,7 +1761,7 @@ exports.searchFriendByNickname = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const normalized = lbSocialNormalizeNickname(
           (request.data || {}).nickname,
       );
@@ -1855,7 +1857,7 @@ exports.sendFriendRequest = httpsV2.onCall(
         );
       }
 
-      const db = admin.database();
+      const db = getDatabase();
       const targetProfile = await lbSocialSyncPublicProfile(
           db,
           targetUid,
@@ -2001,7 +2003,7 @@ exports.respondFriendRequest = httpsV2.onCall(
         );
       }
 
-      const db = admin.database();
+      const db = getDatabase();
 
       if (accept) {
         await lbSocialRequireBelowLimit(
@@ -2100,7 +2102,7 @@ exports.cancelFriendRequest = httpsV2.onCall(
           request.data,
           "targetUid",
       );
-      const db = admin.database();
+      const db = getDatabase();
       const pair = await lbSocialPairSnapshot(
           db,
           uid,
@@ -2164,7 +2166,7 @@ exports.removeFriend = httpsV2.onCall(
           request.data,
           "friendUid",
       );
-      const db = admin.database();
+      const db = getDatabase();
       const pair = await lbSocialPairSnapshot(
           db,
           uid,
@@ -2236,7 +2238,7 @@ exports.blockUser = httpsV2.onCall(
         );
       }
 
-      const db = admin.database();
+      const db = getDatabase();
       const pair = await lbSocialPairSnapshot(
           db,
           uid,
@@ -2296,7 +2298,7 @@ exports.unblockUser = httpsV2.onCall(
           request.data,
           "targetUid",
       );
-      const db = admin.database();
+      const db = getDatabase();
       const pair = await lbSocialPairSnapshot(
           db,
           uid,
@@ -2616,7 +2618,7 @@ exports.sendFriendMatchInvite = httpsV2.onCall(
 
       const mode = lbSocialInviteMode(request.data);
       const roomCode = lbSocialInviteRoomCode(request.data);
-      const db = admin.database();
+      const db = getDatabase();
 
       await lbSocialRequireFriends(
           db,
@@ -2714,7 +2716,7 @@ exports.acceptFriendMatchInvite = httpsV2.onCall(
           request.data,
           "inviteId",
       );
-      const db = admin.database();
+      const db = getDatabase();
 
       const loaded = await lbSocialLoadInvite(
           db,
@@ -2809,7 +2811,7 @@ exports.declineFriendMatchInvite = httpsV2.onCall(
           request.data,
           "inviteId",
       );
-      const db = admin.database();
+      const db = getDatabase();
 
       const loaded = await lbSocialLoadInvite(
           db,
@@ -3213,7 +3215,7 @@ exports.reportPlayer = httpsV2.onCall(
           false,
       );
 
-      const db = admin.database();
+      const db = getDatabase();
       const targetProfile = await lbSocialSyncPublicProfile(
           db,
           targetUid,
@@ -3291,7 +3293,7 @@ exports.getMyPlayerReports = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const snap = await db.ref(
           "safetyReportIndex/" + uid,
       ).get();
@@ -3673,7 +3675,7 @@ async function lbNicknameReleaseOldIndex(
  */
 async function lbNicknameSyncAuthDisplayName(uid, displayName) {
   try {
-    await admin.auth().updateUser(uid, {
+    await getAuth().updateUser(uid, {
       displayName: displayName,
     });
   } catch (error) {
@@ -3856,7 +3858,7 @@ exports.checkNicknameAvailability = httpsV2.onCall(
       const nickname = lbNicknameValidateDisplay(
           (request.data || {}).nickname,
       );
-      const db = admin.database();
+      const db = getDatabase();
       const snap = await db.ref(
           "usernames/" + nickname.normalizedName,
       ).get();
@@ -3876,7 +3878,7 @@ exports.syncMyNickname = httpsV2.onCall(
     },
     async (request) => {
       const uid = lbNicknameRequireAuth(request);
-      const db = admin.database();
+      const db = getDatabase();
       const now = Date.now();
       const lock = await lbNicknameAcquireLock(
           db,
@@ -3919,7 +3921,7 @@ exports.setMyNickname = httpsV2.onCall(
       const nickname = lbNicknameValidateDisplay(
           (request.data || {}).nickname,
       );
-      const db = admin.database();
+      const db = getDatabase();
       const now = Date.now();
       const lock = await lbNicknameAcquireLock(
           db,
@@ -4451,7 +4453,7 @@ exports.syncRankedAchievements = onValueWritten(
       if (!event.data.after.exists()) return;
 
       const uid = event.params.uid;
-      const db = admin.database();
+      const db = getDatabase();
 
       if (!await lbAchievementEligible(db, uid)) return;
 
@@ -4479,7 +4481,7 @@ exports.syncDailyAchievements = onValueWritten(
 
       if (row.serverValidated !== true) return;
 
-      const db = admin.database();
+      const db = getDatabase();
       if (!await lbAchievementEligible(db, uid)) return;
 
       await lbAchievementRecordDaily(
@@ -4505,7 +4507,7 @@ exports.syncWeeklyAchievements = onValueWritten(
 
       if (row.serverValidated !== true) return;
 
-      const db = admin.database();
+      const db = getDatabase();
       if (!await lbAchievementEligible(db, uid)) return;
 
       await lbAchievementMergeSignals(
@@ -4527,7 +4529,7 @@ exports.syncFriendAchievements = onValueWritten(
     },
     async (event) => {
       const uid = event.params.uid;
-      const db = admin.database();
+      const db = getDatabase();
 
       if (!await lbAchievementEligible(db, uid)) return;
 
@@ -4952,7 +4954,7 @@ exports.syncMyAchievements = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
 
       const snapshots = await Promise.all([
         db.ref("rankedState/profiles/" + uid).get(),
@@ -5233,7 +5235,7 @@ exports.getMyPremiumStatus = httpsV2.onCall(
 
       const uid = request.auth.uid;
       const entitlement = await lbPremiumRefreshFromPlay(
-          admin.database(),
+          getDatabase(),
           uid,
       );
 
@@ -5784,7 +5786,7 @@ exports.reconcilePremiumSubscriptions = onSchedule(
       timeoutSeconds: 540,
     },
     async () => {
-      const db = admin.database();
+      const db = getDatabase();
       const cursorRef = db.ref("premiumReconciliation/cursor");
       const cursor = (await cursorRef.get()).val();
       let query = db.ref("premiumPurchaseOwners").orderByKey();
@@ -5907,7 +5909,7 @@ exports.verifyPremiumPurchase = httpsV2.onCall(
           );
         }
 
-        const db = admin.database();
+        const db = getDatabase();
         const tokenHash = lbPlayPurchaseTokenHash(purchaseToken);
 
         await lbPlayClaimPurchaseToken(
@@ -6290,7 +6292,7 @@ exports.syncMyWallet = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       await lbRewardedService().settle(uid);
       const state = await lbEconomyEnsure(db, uid);
 
@@ -6330,7 +6332,7 @@ exports.claimAchievementReward = httpsV2.onCall(
         );
       }
 
-      const achievementSnap = await admin.database().ref(
+      const achievementSnap = await getDatabase().ref(
           "userAchievements/" + uid + "/" + achievementId,
       ).get();
 
@@ -6342,7 +6344,7 @@ exports.claimAchievementReward = httpsV2.onCall(
       }
 
       const result = await lbEconomyClaimAchievement(
-          admin.database(),
+          getDatabase(),
           uid,
           achievementId,
           amount,
@@ -6370,7 +6372,7 @@ exports.getStoreCatalog = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
       const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
@@ -6409,7 +6411,7 @@ exports.purchaseEconomyOffer = httpsV2.onCall(
         );
       }
 
-      const db = admin.database();
+      const db = getDatabase();
       if (Object.hasOwn(storeCollection.offers, offerId)) {
         return lbStoreCollectionService().purchase(uid, request.data || {});
       }
@@ -6691,7 +6693,7 @@ exports.submitCommunityRequest = httpsV2.onCall(
           64,
       );
 
-      const db = admin.database();
+      const db = getDatabase();
       const now = Date.now();
 
       await lbCommunityConsumeRateLimit(db, uid, now);
@@ -6747,7 +6749,7 @@ exports.getMyCommunityRequests = httpsV2.onCall(
     },
     async (request) => {
       const uid = lbCommunityRequireAuth(request);
-      const db = admin.database();
+      const db = getDatabase();
 
       const indexSnap =
         await db.ref("communitySubmissionIndex/" + uid).get();
@@ -7344,7 +7346,7 @@ exports.getMyProgression = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const state = await lbProgressionEnsure(db, uid);
       await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
       const benefits = await lbProgressionPremiumBenefits(db, uid);
@@ -7373,7 +7375,7 @@ exports.claimDailyReward = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const benefits = await lbProgressionPremiumBenefits(db, uid);
       const result = await lbProgressionClaimDaily(
           db,
@@ -8010,7 +8012,7 @@ exports.syncRankedMissions = onValueWritten(
 
       if (settlement.serverValidated !== true) return;
 
-      const db = admin.database();
+      const db = getDatabase();
       const mode = String(event.params.mode || "");
       const matchId = String(event.params.matchId || "");
       const settledAt = lbProgressionNumber(
@@ -8063,7 +8065,7 @@ exports.syncDailyMissions = onValueWritten(
 
       const uid = String(event.params.uid || "");
       const dateKey = String(event.params.dateKey || "");
-      const db = admin.database();
+      const db = getDatabase();
 
       if (!uid || !await lbAchievementEligible(db, uid)) {
         return;
@@ -8086,7 +8088,7 @@ exports.getMyMissions = httpsV2.onCall(
       lbRequireGoogleLinked(request);
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
       const state = await lbMissionEnsure(db, uid);
       await lbSettlePendingRewards(db, uid, "missionState/" + uid);
       const profile = await lbMissionProject(
@@ -8124,7 +8126,7 @@ exports.claimMissionReward = httpsV2.onCall(
       }
 
       const result = await lbMissionClaim(
-          admin.database(),
+          getDatabase(),
           uid,
           missionId,
       );
@@ -8271,6 +8273,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["rewardedAdState/" + uid] = null;
   updates["dailyMatchState/" + uid] = null;
   updates["journeyRewardState/" + uid] = null;
+  updates["whatIfState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -8580,14 +8583,14 @@ exports.deleteMyAccount = httpsV2.onCall(
       }
 
       const uid = request.auth.uid;
-      const db = admin.database();
+      const db = getDatabase();
 
       try {
         const plan = await lbBuildAccountDeletionUpdates(db, uid);
         await db.ref().update(plan.updates);
 
         try {
-          await admin.auth().deleteUser(uid);
+          await getAuth().deleteUser(uid);
         } catch (error) {
           if (error && error.code !== "auth/user-not-found") {
             throw error;
@@ -8635,7 +8638,7 @@ function squadCallable(action) {
       throw new httpsV2.HttpsError("failed-precondition", "Görevler güncellendi. Uygulamanı güncelle.");
     }
     const uid = request.auth.uid;
-    const db = admin.database();
+    const db = getDatabase();
     const now = Date.now();
     const premiumSnap = await db.ref("premiumState/" + uid).get();
     const premium = lbPremiumState(premiumSnap.val(), now).active;
@@ -8684,9 +8687,11 @@ let lbRewardedInstance;
 let lbAdmobKeys;
 function lbRewardedService() {
   if (!lbRewardedInstance) {
-    const db = admin.database();
+    const db = getDatabase();
     lbRewardedInstance = require("./rewarded_ads").createService({
       db, getConfig: lbGetEconomyConfig,
+      prepareWhatIfReward: (uid, placement, context) => lbWhatIfService().prepareReward(uid, placement, context),
+      settleWhatIfReward: (uid, receipt) => lbWhatIfService().settleReward(uid, receipt),
       prepareStoryReward: (uid, placement, context) => lbJourneyService().prepareReward(uid, placement, context),
       settleStoryReward: (uid, receipt) => lbJourneyService().settleReward(uid, receipt),
       prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
@@ -8697,7 +8702,7 @@ function lbRewardedService() {
         lbProgressionGrantCoins(db, uid, id, source, placement, amount, configId),
       isLinked: async (uid) => {
         try {
-          const user = await admin.auth().getUser(uid);
+          const user = await getAuth().getUser(uid);
           return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
         } catch (error) {
           if (error.code === "auth/user-not-found") return false;
@@ -8745,7 +8750,7 @@ exports.admobRewardCallback = httpsV2.onRequest({
     lbAdmobKeys ||= ssv.createKeyProvider();
     const original = request.originalUrl || request.url || "";
     const event = await ssv.verify(original.slice(original.indexOf("?") + 1), lbAdmobKeys);
-    const user = await admin.auth().getUser(event.user_id);
+    const user = await getAuth().getUser(event.user_id);
     if (user.disabled) return response.status(403).send("Account unavailable");
     await lbRewardedService().accept(event);
     return response.status(200).send("OK");
@@ -8793,7 +8798,7 @@ const lbCoinPlay = {
   },
 };
 function lbCoinService() {
-  return coinPurchases.createService({db: admin.database(), play: lbCoinPlay,
+  return coinPurchases.createService({db: getDatabase(), play: lbCoinPlay,
     normalize: lbEconomyState, project: lbEconomyProject, ErrorType: httpsV2.HttpsError});
 }
 exports.getCoinPurchaseCatalog = httpsV2.onCall(
@@ -8820,7 +8825,7 @@ exports.verifyCoinPurchase = httpsV2.onCall(
       }
     });
 async function lbReconcileCoinPurchases() {
-  const db = admin.database();
+  const db = getDatabase();
   const service = lbCoinService();
   // Rotate through pending work so a failing receipt cannot starve newer ones.
   const cursor = (await db.ref("coinPurchaseWorker/cursor").get()).val();
@@ -8870,7 +8875,7 @@ exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "
 
 // Server-owned collection inventory; no client writes can mint or spend items.
 function lbStoreCollectionService() {
-  return storeCollection.createStore({db: admin.database(), normalize: lbEconomyState,
+  return storeCollection.createStore({db: getDatabase(), normalize: lbEconomyState,
     project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now()});
 }
 exports.consumeStoreBoost = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
@@ -8886,7 +8891,7 @@ exports.equipStoreItem = httpsV2.onCall({region: "europe-west1", maxInstances: 2
 let lbDailyMatchesInstance;
 function lbDailyMatchesService() {
   if (!lbDailyMatchesInstance) {
-    const db = admin.database();
+    const db = getDatabase();
     lbDailyMatchesInstance = require("./daily_matches").createService({
       db,
       recordWin: async (uid, day, result) => {
@@ -8895,7 +8900,7 @@ function lbDailyMatchesService() {
       },
       grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
       isLinked: async (uid) => {
-        const user = await admin.auth().getUser(uid);
+        const user = await getAuth().getUser(uid);
         return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
       },
     });
@@ -8930,7 +8935,7 @@ exports.playDailyMatch = lbDailyMatchesCallable("play");
 // Monthly season rewards reuse the canonical wallet: its atomic claim IDs also
 // recover an interrupted projection without granting a second reward.
 function lbSeasonService() {
-  const db = admin.database();
+  const db = getDatabase();
   return require("./season_pass").createService({db, now: () => Date.now(),
     isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args)});
@@ -8956,7 +8961,7 @@ exports.claimSeasonReward = lbSeasonCallable("claim");
 
 // Player Journey uses server-reviewed answers and durable milestone receipts.
 function lbJourneyService() {
-  const db = admin.database();
+  const db = getDatabase();
   return require("./player_journey").createService({db,
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
@@ -9014,7 +9019,7 @@ function lbJourneyCallable(action) {
       if (action === "status") {
         await lbRewardedService().settle(uid);
         return {...await service.status(uid),
-          pro: lbPremiumState((await admin.database().ref("premiumState/" + uid).get()).val(), Date.now()).active};
+          pro: lbPremiumState((await getDatabase().ref("premiumState/" + uid).get()).val(), Date.now()).active};
       }
       return await service[action](uid, request.data || {});
     } catch (error) {
@@ -9029,3 +9034,73 @@ exports.getPlayerJourney = lbJourneyCallable("status");
 exports.submitPlayerJourney = lbJourneyCallable("submit");
 exports.buyPlayerJourneyHint = lbJourneyCallable("hint");
 exports.setJourneyShowcase = lbJourneyCallable("favorites");
+
+// What If has an isolated catalog, progress and receipt namespace.
+function lbWhatIfService() {
+  const db = getDatabase();
+  return require("./what_if").createService({db,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp;
+          s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now};
+          s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+    chargeHint: async (uid, taskId, price) => {
+      const key = "what_if_hint__" + taskId;
+      const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+        const s = lbEconomyState(raw);
+        if (!s.purchases[key] && s.balances.coins >= price) {
+          const before = s.balances.coins;
+          s.balances.coins -= price;
+          s.lifetimeSpent += price;
+          s.purchases[key] = {txId: key, offerId: "what_if_hint", itemId: taskId,
+            itemType: "hint", priceCoins: price, balanceBefore: before, balanceAfter: s.balances.coins,
+            purchasedAt: Date.now(), economyConfigId: "what-if-v1"};
+          s.updatedAt = Date.now();
+        }
+        return s;
+      });
+      const s = lbEconomyState(tx.snapshot.val());
+      if (!s.purchases[key]) {
+        throw new (require("./rewarded_ads").RewardError)(
+            "failed-precondition", "Bu yardım için 10 coin gerekli.");
+      }
+      await lbEconomyProject(db, uid, s);
+    },
+    projectBadges: (uid, signals) => lbAchievementMergeSignals(db, uid, signals, "what_if"),
+  });
+}
+function lbWhatIfCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    lbRequireGoogleLinked(request);
+    try {
+      const uid = request.auth.uid;
+      const service = lbWhatIfService();
+      if (action === "status") {
+        await lbRewardedService().settle(uid);
+        return {...await service.status(uid),
+          pro: lbPremiumState((await getDatabase().ref("premiumState/" + uid).get()).val(), Date.now()).active};
+      }
+      return await service[action](uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getWhatIf = lbWhatIfCallable("status");
+exports.submitWhatIf = lbWhatIfCallable("submit");
+exports.buyWhatIfHint = lbWhatIfCallable("hint");
+exports.setWhatIfShowcase = lbWhatIfCallable("favorites");

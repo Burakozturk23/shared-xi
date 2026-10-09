@@ -66,6 +66,7 @@ jobs:
           python3 tools/season_portraits/verify_players.py
           python3 tools/anagram/verify.py
           python3 tools/player_journey/verify.py
+          python3 tools/what_if/verify.py
           python3 tools/season_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/verify.py
@@ -170,6 +171,16 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Upload What If previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: what-if-previews
+          path: .dart_tool/what_if_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload Anagram previews
         if: always()
         uses: actions/upload-artifact@v4
@@ -225,6 +236,9 @@ jobs:
 
       - name: Install Functions dependencies
         run: npm ci
+
+      - name: Audit Functions dependencies
+        run: npm audit --audit-level=moderate
 
       - name: Lint Functions
         run: npm run lint

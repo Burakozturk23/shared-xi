@@ -153,6 +153,6 @@ test("deleteMyAccount de-identifies shared match records", () => {
 test("deleteMyAccount deletes the Firebase Auth user", () => {
   const block = deletionBlock();
 
-  assert.ok(block.includes("admin.auth().deleteUser(uid)"));
+  assert.ok(block.includes("getAuth().deleteUser(uid)"));
   assert.ok(block.includes("auth/user-not-found"));
 });

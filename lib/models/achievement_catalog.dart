@@ -561,6 +561,14 @@ class AchievementCatalog {
     AchievementDefinition(id: 'journey_legend', title: 'Linkball Kariyer Efsanesi',
       description: 'Player Journey’deki 32 kariyeri tamamla.', category: AchievementCategory.mastery,
       tier: AchievementTier.platinum, signal: 'journey_total', target: 32, iconKey: 'journey_legend'),
+    AchievementDefinition(id: 'what_if_first', title: 'İlk Kırılma', description: 'What If içinde 1 hikâye tamamla.',
+      category: AchievementCategory.mastery, tier: AchievementTier.bronze, signal: 'what_if_total', target: 1, iconKey: 'what_if_first'),
+    AchievementDefinition(id: 'what_if_eight', title: 'Kader Yolcusu', description: 'What If içinde 8 hikâye tamamla.',
+      category: AchievementCategory.mastery, tier: AchievementTier.silver, signal: 'what_if_total', target: 8, iconKey: 'what_if_eight'),
+    AchievementDefinition(id: 'what_if_all', title: 'Paralel Evren Ustası', description: 'What If içinde 24 hikâye tamamla.',
+      category: AchievementCategory.mastery, tier: AchievementTier.gold, signal: 'what_if_total', target: 24, iconKey: 'what_if_all'),
+    AchievementDefinition(id: 'what_if_dual', title: 'İki Yüzlü Tarih', description: 'What If içinde 12 hikâyenin iki sonunu da keşfet.',
+      category: AchievementCategory.mastery, tier: AchievementTier.platinum, signal: 'what_if_dual', target: 12, iconKey: 'what_if_dual'),
   ];
 
   static final Map<String, AchievementDefinition> byId =
