@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/controllers/journey_v2_controller.dart';
@@ -10,6 +11,14 @@ import 'journey_v2_test.dart' show journeyTestPack, MemoryJourneyStore, solveJou
 import 'journey_v2_page_test.dart' show goTo, startTask, snapshot;
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final (name,path) in [
+      ('Satoshi','assets/fonts/Satoshi-Variable.ttf'),
+      ('Inter','assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons','fonts/MaterialIcons-Regular.otf'),
+    ]) { await (FontLoader(name)..addFont(rootBundle.load(path))).load(); }
+  });
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test('two choices per chapter; out-of-order wins open one more, replay never locks', () {
     final ids = journeyTestPack().map((j) => j.id).toList();
@@ -61,6 +70,7 @@ void main() {
       expect(find.text(game.task.prompt), findsNothing);
       expect(find.text(game.task.explanation), findsNothing);
       for (final o in game.task.options) { expect(find.text(o.label), findsNothing); }
+      await goTo(tester,const ValueKey('journey-intro'));
       await snapshot(tester,key,'narrative-${light ? "light" : "dark"}-large');
       await startTask(tester);
       final picked = game.options.first.key;
