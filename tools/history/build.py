@@ -48,7 +48,9 @@ SOURCES = {
  'ucl':('football.csv European Cup','https://github.com/footballcsv/europe-champions-league','CC0-1.0',
  'European Cup / Champions League. FT, extra time and shootout scores are kept separately.'),
  'squads':('Football Squads CSV cache','https://github.com/footballcsv/cache.footballsquads','CC0-1.0',
- 'Season/tournament squad snapshots, not match lineups. Past players and current/previous/new club fields remain distinct.')}
+ 'Season/tournament squad snapshots, not match lineups. Past players and current/previous/new club fields remain distinct.'),
+ 'statsbomb':('StatsBomb Open Data lineups','https://github.com/hudl/open-data/tree/master/data/lineups','StatsBomb Open Data License',
+ 'Seven supplied match lineup files. The source terms require StatsBomb attribution; entries retain source player IDs and names.')}
 ARCHIVES = {'archive.zip':'international','cache.footballdata-master.zip':'footballdata',
  'cache.wfb-master.zip':'wfb','deutschland-master.zip':'germany','england-master.zip':'england',
  'espana-master.zip':'spain','europe-champions-league-master.zip':'ucl','cache.footballsquads-master.zip':'squads'}
@@ -101,6 +103,10 @@ CREATE TABLE goals(id INTEGER PRIMARY KEY,match_id INTEGER NOT NULL REFERENCES m
 CREATE TABLE former_names(current TEXT,former TEXT,start_date TEXT,end_date TEXT,PRIMARY KEY(current,former,start_date)) WITHOUT ROWID;
 CREATE TABLE selections(id INTEGER PRIMARY KEY,category TEXT NOT NULL,title TEXT NOT NULL,date TEXT NOT NULL,
  home TEXT NOT NULL,away TEXT NOT NULL,match_id INTEGER REFERENCES matches(id),status TEXT NOT NULL);
+CREATE TABLE lineup_entries(id INTEGER PRIMARY KEY,selection_id INTEGER NOT NULL REFERENCES selections(id),
+ team_id INTEGER NOT NULL,team_name TEXT NOT NULL,player_id INTEGER NOT NULL,player_name TEXT NOT NULL,
+ player_nickname TEXT,jersey_number INTEGER,country TEXT,position TEXT,starter INTEGER NOT NULL,
+ position_order INTEGER NOT NULL,source_path TEXT NOT NULL);
 '''
 SQUAD_SCHEMA = '''
 CREATE TABLE rosters(id INTEGER PRIMARY KEY,team_id INTEGER NOT NULL REFERENCES teams(id),context TEXT NOT NULL,season TEXT NOT NULL,
@@ -279,14 +285,50 @@ class Builder:
             db.execute('INSERT INTO selections VALUES(?,?,?,?,?,?,?,?)',(r['matchId'],r['kategori'],r['baslik'],r['tarih'],r['evSahibi'],r['deplasman'],mid,status))
             summary.append({'statsbomb_id':r['matchId'],'status':status,'match_id':mid,'events_available':False,'lineups_available':False})
         self.report['statsbomb']={'requested':37,'raw_events':0,'raw_lineups':0,'linked_results':sum(x['match_id'] is not None for x in summary),'selections':summary,
-          'note':'Selection metadata only. No StatsBomb raw events/lineups were supplied or distributed. Do not treat season squads as starting lineups.'}
+          'note':'Lineups are available only for the seven explicitly supplied files. No StatsBomb event files were supplied.'}
+
+    def lineups(self, directory):
+        db=self.dbs['matches']; imported=[]
+        for path in sorted(Path(directory).glob('*.json')):
+            try:
+                selection_id=int(path.stem); data=json.loads(path.read_text(encoding='utf-8'))
+                if not isinstance(data,list) or not data: raise ValueError('invalid_lineup_shape')
+                if db.execute('SELECT 1 FROM selections WHERE id=?',(selection_id,)).fetchone() is None:
+                    raise ValueError('unknown_selection')
+                starter_counts=[]; count=0
+                for team in data:
+                    team_id=int(team['team_id']); team_name=str(team['team_name']).strip()
+                    players=team.get('lineup')
+                    if not team_name or not isinstance(players,list): raise ValueError('invalid_team_lineup')
+                    team_starters=0
+                    for order,player in enumerate(players):
+                        positions=player.get('positions') or []
+                        starter=int(any(p.get('start_reason')=='Starting XI' for p in positions))
+                        team_starters+=starter
+                        db.execute('''INSERT INTO lineup_entries(selection_id,team_id,team_name,player_id,player_name,
+                          player_nickname,jersey_number,country,position,starter,position_order,source_path)
+                          VALUES(?,?,?,?,?,?,?,?,?,?,?,?)''', (selection_id,team_id,team_name,int(player['player_id']),
+                          str(player['player_name']).strip(),player.get('player_nickname'),player.get('jersey_number'),
+                          (player.get('country') or {}).get('name'),(positions[0].get('position') if positions else None),starter,order,
+                          f'data/lineups/{selection_id}.json'))
+                        count+=1
+                    starter_counts.append(team_starters)
+                if len(starter_counts)!=2 or any(x!=11 for x in starter_counts): raise ValueError('invalid_starting_xi_count')
+                imported.append(selection_id);self.counts['statsbomb_lineups_accepted']+=1;self.counts['statsbomb_lineup_entries']+=count
+                db.execute("UPDATE selections SET status=status WHERE id=?",(selection_id,))
+            except (ValueError,KeyError,TypeError,json.JSONDecodeError) as e:
+                self.reject('statsbomb','lineup_'+str(e),path.name,0)
+        self.report.setdefault('statsbomb',{})['raw_lineups']=len(imported)
+        self.report['statsbomb']['lineup_match_ids']=imported
+        for entry in self.report['statsbomb'].get('selections',[]):
+            entry['lineups_available']=entry['statsbomb_id'] in imported
 
     def finish(self,out):
         self.dbs['matches'].executescript('''CREATE INDEX match_date ON matches(date DESC,id);
          CREATE INDEX match_scope ON matches(kind,competition,date DESC,id);
          CREATE INDEX match_home ON matches(home_id,date DESC);CREATE INDEX match_away ON matches(away_id,date DESC);
          CREATE INDEX IF NOT EXISTS goal_match ON goals(match_id,team_id,id);CREATE INDEX source_match ON match_sources(match_id);
-         CREATE INDEX match_season ON matches(competition,season);''')
+         CREATE INDEX match_season ON matches(competition,season);CREATE INDEX lineup_selection ON lineup_entries(selection_id,starter,team_id,position_order);''')
         self.dbs['squads'].executescript('''CREATE INDEX roster_team ON rosters(team_id,season DESC,id);
          CREATE INDEX roster_season ON rosters(season DESC,id);CREATE INDEX squad_roster ON squad_entries(roster_id,id);''')
         manifest={'schema_version':VERSION,'cutoff':self.cutoff,'packs':{},'sources':{k:dict(zip(('name','url','license','note'),v)) for k,v in SOURCES.items()}}
@@ -294,7 +336,7 @@ class Builder:
             db.execute('CREATE INDEX team_search ON teams(search)');db.commit()
             assert db.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
             assert not db.execute('PRAGMA foreign_key_check').fetchall()
-            tables=['teams','matches','goals','former_names','selections'] if kind=='matches' else ['teams','rosters','squad_entries']
+            tables=['teams','matches','goals','former_names','selections','lineup_entries'] if kind=='matches' else ['teams','rosters','squad_entries']
             counts={t:db.execute(f'SELECT count(*) FROM {t}').fetchone()[0] for t in tables}
             if kind=='matches':
                 counts['conflicting_matches']=db.execute('SELECT count(*) FROM matches WHERE conflict=1').fetchone()[0]
@@ -314,7 +356,7 @@ class Builder:
         (out/'docs/history/import-report.json').parent.mkdir(parents=True,exist_ok=True)
         (out/'docs/history/import-report.json').write_text(json.dumps(self.report,ensure_ascii=False,indent=2)+'\n')
 
-    def run(self,archive,selections,out):
+    def run(self,archive,selections,out,lineups):
         with zipfile.ZipFile(archive) as outer:
             for member in sorted(outer.infolist(),key=lambda x:x.filename):
                 if member.is_dir():continue
@@ -333,11 +375,11 @@ class Builder:
                         elif source!='squads' and f.filename.endswith('.csv'):
                             self.club_file(source,f.filename,z.read(f).decode('utf-8-sig',errors='strict'))
                     self.dbs['squads' if source=='squads' else 'matches'].commit()
-        self.selections(selections);self.finish(out)
+        self.selections(selections);self.lineups(lineups);self.finish(out)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--archive',type=Path,required=True);p.add_argument('--selection',type=Path,default=ROOT/'tools/history/statsbomb_selection.json');p.add_argument('--cutoff',required=True);p.add_argument('--output',type=Path,default=ROOT)
+    p=argparse.ArgumentParser();p.add_argument('--archive',type=Path,required=True);p.add_argument('--selection',type=Path,default=ROOT/'tools/history/statsbomb_selection.json');p.add_argument('--lineups',type=Path,default=ROOT/'tools/history/lineups');p.add_argument('--cutoff',required=True);p.add_argument('--output',type=Path,default=ROOT)
     args=p.parse_args()
     with tempfile.TemporaryDirectory(prefix='linkball-history-') as tmp:
-        b=Builder(Path(tmp),args.cutoff);b.directory=Path(tmp);b.run(args.archive,args.selection,args.output)
+        b=Builder(Path(tmp),args.cutoff);b.directory=Path(tmp);b.run(args.archive,args.selection,args.output,args.lineups)
 if __name__=='__main__':main()

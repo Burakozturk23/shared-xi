@@ -122,28 +122,34 @@ class _HistoryArchivePageState extends State<HistoryArchivePage> {
 }
 
 class HistoryDetailPage extends StatefulWidget {
-  const HistoryDetailPage({super.key, required this.id, required this.squads, required this.repository});
+  const HistoryDetailPage({super.key, required this.id, required this.squads, required this.repository, this.selection = false});
   final String id;
   final bool squads;
   final HistoryRepository repository;
+  final bool selection;
   @override
   State<HistoryDetailPage> createState() => _HistoryDetailPageState();
 }
 
 class _HistoryDetailPageState extends State<HistoryDetailPage> {
-  late Future<HistoryDetail> _future = widget.repository.detail(widget.id, squads: widget.squads);
+  late Future<HistoryDetail> _future = widget.selection ? widget.repository.selectionDetail(widget.id) : widget.repository.detail(widget.id, squads: widget.squads);
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(widget.squads ? 'Sezon kadrosu' : 'Maç kaydı')),
     body: FutureBuilder<HistoryDetail>(future: _future, builder: (context, snapshot) {
-      if (snapshot.hasError) return Center(child: TextButton(onPressed: () => setState(() { _future = widget.repository.detail(widget.id, squads: widget.squads); }), child: const Text('Kayıt açılamadı. Yeniden dene')));
+      if (snapshot.hasError) return Center(child: TextButton(onPressed: () => setState(() { _future = widget.selection ? widget.repository.selectionDetail(widget.id) : widget.repository.detail(widget.id, squads: widget.squads); }), child: const Text('Kayıt açılamadı. Yeniden dene')));
       if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
       final detail = snapshot.data!;
       final record = detail.record;
       return ListView(padding: const EdgeInsets.all(20), children: [
         Text(record.title, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 12),
-        if (widget.squads) ...[
+        if (widget.selection) ...[
+          Text('${record.text('date')} · ${record.text('status') == 'independent_result' ? 'Arşiv sonucu mevcut' : 'Yalnızca katalog kaydı'}'),
+          const SizedBox(height: 12),
+          const Text('StatsBomb ilk 11 kaydı. Oyuncu adları kaynakta geçtiği biçimde korunur; mevcut oyuncu kimliklerine otomatik eşleştirme yapılmaz.'),
+          _lineupSection(context, detail.lineups),
+        ] else if (widget.squads) ...[
           Text(record.text('context')),
           const SizedBox(height: 12),
           const Text('Bu liste sezon veya turnuva kadrosudur; ilk 11, forma giyme ya da güncel transfer bilgisi olarak kullanılamaz.'),
@@ -178,7 +184,8 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
             subtitle: Text('${goal.text('team')} · ${goal.has('minute') ? "${goal.text('minute')}′" : 'Dakika bilinmiyor'}${goal.number('own_goal') == 1 ? ' · Kendi kalesine' : ''}${goal.number('penalty') == 1 ? ' · Penaltı' : ''}'),
           ),
           const SizedBox(height: 12),
-          const Text('Bu arşivde StatsBomb olay verisi ve maça özel ilk 11 bulunmuyor.'),
+          if (detail.lineups.isEmpty) const Text('Bu maç için StatsBomb ilk 11 dosyası sağlanmamış.'),
+          if (detail.lineups.isNotEmpty) _lineupSection(context, detail.lineups),
         ],
         const Divider(height: 32),
         Text('Kaynaklar', style: Theme.of(context).textTheme.titleMedium),
@@ -190,6 +197,21 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
   String _relation(String relation) => switch (relation) {
     'Previous Club' => 'Önceki kulüp', 'New Club' => 'Sonraki kulüp', 'Current Club' => 'Kaydın kulübü', _ => 'Kulüp',
   };
+
+  Widget _lineupSection(BuildContext context, List<HistoryRecord> lineups) {
+    if (lineups.isEmpty) return const Padding(padding: EdgeInsets.only(top: 16), child: Text('İlk 11 kaydı bulunmuyor.'));
+    final teams = <String>{for (final row in lineups) row.text('team_name')};
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const SizedBox(height: 20),
+      Text('İlk 11', style: Theme.of(context).textTheme.titleMedium),
+      for (final team in teams) ...[
+        const SizedBox(height: 12),
+        Text(team, style: const TextStyle(fontWeight: FontWeight.bold)),
+        for (final player in lineups.where((p) => p.text('team_name') == team && p.number('starter') == 1))
+          ListTile(contentPadding: EdgeInsets.zero, dense: true, leading: Text(player.text('jersey_number')), title: Text(player.text('player_name')), subtitle: Text([player.text('position'), player.text('country')].where((x) => x.isNotEmpty).join(' · '))),
+      ],
+    ]);
+  }
 }
 
 class HistorySelectionPage extends StatefulWidget {
@@ -208,12 +230,12 @@ class _HistorySelectionPageState extends State<HistorySelectionPage> {
       if (snapshot.hasError) return Center(child: TextButton(onPressed: () => setState(() { _future = widget.repository.selections(); }), child: const Text('Yeniden dene')));
       if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
       return ListView(padding: const EdgeInsets.all(16), children: [
-        const Padding(padding: EdgeInsets.only(bottom: 16), child: Text('StatsBomb paketindeki maç seçkisi. Olay ve ilk 11 dosyaları paket içinde bulunmuyor. Bağlı sonuçlar diğer tarihsel kaynaklardan gelir.')),
+        const Padding(padding: EdgeInsets.only(bottom: 16), child: Text('StatsBomb seçkisindeki maçlar. Yedi maç için kaynak ilk 11 dosyası da mevcut; diğer maçlarda yalnızca katalog veya bağımsız sonuç gösterilir.')),
         for (final record in snapshot.data!) Card(child: ListTile(
           title: Text(record.text('title')),
-          subtitle: Text('${record.text('date')} · ${record.has('match_id') ? 'Arşiv sonucu mevcut' : 'Yalnızca katalog kaydı'}'),
-          trailing: record.has('match_id') ? const Icon(Icons.chevron_right) : null,
-          onTap: record.has('match_id') ? () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => HistoryDetailPage(id: record.text('match_id'), squads: false, repository: widget.repository))) : null,
+          subtitle: Text('${record.text('date')} · ${record.has('match_id') ? 'Arşiv sonucu mevcut' : 'Yalnızca katalog kaydı'} · ${record.number('lineup_entries') > 0 ? '${record.number('lineup_entries')} kadro kaydı' : 'İlk 11 yok'}'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => HistoryDetailPage(id: record.id, squads: false, selection: true, repository: widget.repository))),
         )),
       ]);
     }),

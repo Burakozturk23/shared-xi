@@ -7,7 +7,7 @@ The user-supplied ZIP snapshots are imported into two independent, read-only SQL
 - 534,528 stored historical result records (conservative identity matching; aliases can leave distinct source records for the same real-world fixture).
 - 49,944 international matches, 47,914 goal records, 699 linked shootout winners, and 36 date-bounded former country names.
 - 16,581 season/tournament rosters containing 576,048 listed/past player entries. These are membership records, **not unique players**, current squads, career proofs, appearances, or match starting lineups.
-- All 37 StatsBomb selection entries, of which 34 have a unique independently sourced result. **No StatsBomb event or lineup JSON was present in the supplied ZIP.** No raw StatsBomb content is fetched, bundled, or claimed available.
+- All 37 StatsBomb selection entries, of which 34 have a unique independently sourced result. Seven requested lineup JSON files were verified in the official open-data repository and are bundled as source-attributed first-11 records. No StatsBomb event JSON was supplied or bundled.
 - Source identifiers, original labels, file/row provenance and original result fields; optional roster measurements and birthplace are retained as source text.
 
 Exact generated sizes, hashes, source snapshot checksums and counts are in `assets/history/manifest.json` and `import-report.json`. The packaged databases add approximately 62 MB compressed and require approximately 327 MB when both are installed. Each pack is installed only when requested. Streaming decompression and hashing run off the UI isolate; queries return at most 40 records at a time. Existing databases are hash-verified before reuse.
@@ -43,4 +43,4 @@ For application code use `HistoryRepository`: paginated `browse`, `detail`, and 
 
 Football CSV snapshots include CC0 notices; the international results upstream also publishes CC0. The included `licenses/history/CC0-1.0.txt` preserves the supplied notice, with source URLs listed in the manifest and in-app record details. Upstream sources are credited even where a CC0 waiver applies. Snapshot coverage, spelling errors, and ambiguous identities are not guaranteed correct merely because import validation passes.
 
-The StatsBomb ZIP is a catalog plus downloader, not the downloaded dataset. Before a future raw-data integration, obtain the actual files and assess the applicable upstream terms for the intended use. Its catalog-only entries are never offered as complete event/lineup records.
+The StatsBomb ZIP is a catalog plus downloader. The seven lineup files requested separately are the only raw lineup files bundled here; no event JSON is bundled. Before a future event-data integration, obtain the actual files and assess the applicable upstream terms for the intended use. Catalog-only entries are never offered as complete event records.

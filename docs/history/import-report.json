@@ -70,6 +70,8 @@
     "spain_rows": 4806,
     "squads_accepted": 576048,
     "squads_rows": 576640,
+    "statsbomb_lineup_entries": 242,
+    "statsbomb_lineups_accepted": 7,
     "ucl_accepted": 6554,
     "ucl_rows": 6554,
     "wfb_accepted": 136776,
@@ -361,7 +363,7 @@
   "statsbomb": {
     "requested": 37,
     "raw_events": 0,
-    "raw_lineups": 0,
+    "raw_lineups": 7,
     "linked_results": 34,
     "selections": [
       {
@@ -397,14 +399,14 @@
         "status": "catalog_only",
         "match_id": null,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 3752619,
         "status": "independent_result",
         "match_id": 531984,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 3750200,
@@ -418,7 +420,7 @@
         "status": "independent_result",
         "match_id": 533031,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 18235,
@@ -432,14 +434,14 @@
         "status": "independent_result",
         "match_id": 533457,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 18242,
         "status": "independent_result",
         "match_id": 534311,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 18243,
@@ -460,14 +462,14 @@
         "status": "catalog_only",
         "match_id": null,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 3750235,
         "status": "independent_result",
         "match_id": 528916,
         "events_available": false,
-        "lineups_available": false
+        "lineups_available": true
       },
       {
         "statsbomb_id": 3888711,
@@ -624,6 +626,15 @@
         "lineups_available": false
       }
     ],
-    "note": "Selection metadata only. No StatsBomb raw events/lineups were supplied or distributed. Do not treat season squads as starting lineups."
+    "note": "Lineups are available only for the seven explicitly supplied files. No StatsBomb event files were supplied.",
+    "lineup_match_ids": [
+      18236,
+      18242,
+      18245,
+      22912,
+      3750201,
+      3750235,
+      3752619
+    ]
   }
 }

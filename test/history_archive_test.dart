@@ -26,6 +26,8 @@ class FakeHistory implements HistoryRepository {
   @override
   Future<HistoryDetail> detail(String id, {required bool squads}) async => HistoryDetail(record: match('England'), goals: [HistoryRecord({'scorer': 'Player', 'team': 'England', 'minute': null})]);
   @override
+  Future<HistoryDetail> selectionDetail(String id) async => HistoryDetail(record: HistoryRecord({'id': id, 'title': 'Catalog', 'date': '2018-05-26', 'lineup_entries': 46}), lineups: [HistoryRecord({'team_name': 'Liverpool', 'player_name': 'Player', 'starter': 1})]);
+  @override
   Future<List<HistoryRecord>> selections() async => [HistoryRecord({'id': 1, 'title': 'Catalog only', 'date': '1971-01-01', 'match_id': null})];
 }
 
@@ -100,9 +102,12 @@ void main() {
     expect(find.textContaining('Gol listesi eksik'), findsOneWidget);
     expect(find.textContaining('Dakika bilinmiyor'), findsOneWidget);
   });
-  testWidgets('catalog-only selection stays disabled', (tester) async {
+  testWidgets('catalog-only selection still opens its available lineup', (tester) async {
     await tester.pumpWidget(MaterialApp(home: HistorySelectionPage(repository: FakeHistory()))); await tester.pumpAndSettle();
-    expect(tester.widget<ListTile>(find.byType(ListTile)).onTap, isNull);
+    expect(tester.widget<ListTile>(find.byType(ListTile)).onTap, isNotNull);
     expect(find.textContaining('Yalnızca katalog kaydı'), findsOneWidget);
+    await tester.tap(find.byType(ListTile)); await tester.pumpAndSettle();
+    expect(find.text('İlk 11'), findsOneWidget);
+    expect(find.text('Player'), findsOneWidget);
   });
 }

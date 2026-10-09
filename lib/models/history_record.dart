@@ -12,10 +12,11 @@ class HistoryRecord {
 }
 
 class HistoryDetail {
-  const HistoryDetail({required this.record, this.goals = const [], this.players = const [], this.sources = const []});
+  const HistoryDetail({required this.record, this.goals = const [], this.players = const [], this.lineups = const [], this.sources = const []});
   final HistoryRecord record;
   final List<HistoryRecord> goals;
   final List<HistoryRecord> players;
+  final List<HistoryRecord> lineups;
   final List<HistoryRecord> sources;
 }
 

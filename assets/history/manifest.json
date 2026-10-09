@@ -3,89 +3,90 @@
   "cutoff": "2026-10-09",
   "packs": {
     "matches": {
-      "bytes": 259846144,
-      "sha256": "b9b6b84fac6f9ad4b17d539c851712e2c161e14a9d7e3727451e65a8a64520f0",
-      "compressed_bytes": 39672807,
-      "compressed_sha256": "4ea43d01e8de5410af7104da2d654881184ec086f58ffa4e718e70feeb790793",
+      "parts": [
+        {
+          "asset": "assets/history/matches.sqlite.gz.part1",
+          "bytes": 6000000,
+          "sha256": "01e850c5655acf4c12babb110e6447ce652adaf713692ccb225a30da719db540"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part2",
+          "bytes": 6000000,
+          "sha256": "da16d14a37686b0e2440aac1359c5d3aa0623ea113b3b6cd23deef3bd463a14d"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part3",
+          "bytes": 6000000,
+          "sha256": "43f748a6eb88b8f05d786d6f0a81fe8a6d362cb0eaf52d566123c30017dda9ee"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part4",
+          "bytes": 6000000,
+          "sha256": "af379442d1f4e228015f0761757700f0082c96a748ab306b0487abae4b76532d"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part5",
+          "bytes": 6000000,
+          "sha256": "e8578b8100ed5d63d21a19ecbbcc862e9e1195643943a5e346ad1009a59bf208"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part6",
+          "bytes": 6000000,
+          "sha256": "733e203e913d214ead1a9de15393e52773c52c8c830bf259ff624c5266282b35"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part7",
+          "bytes": 3684536,
+          "sha256": "e1c97302e7571a00778a345479fc3abf0b1c698413a729ffdded89e9fcf4cf30"
+        }
+      ],
+      "bytes": 259883008,
+      "sha256": "c0ad04d18d4d494c454b2debb0f8d48753861daa8f8646e94c6bd09fe5a1e7f1",
+      "compressed_bytes": 39684536,
+      "compressed_sha256": "3b36155d833d16d7070989632fe58b27aeafcefa24b224fcf2f38adb37fd5242",
       "counts": {
         "teams": 5035,
         "matches": 534528,
         "goals": 47914,
         "former_names": 36,
         "selections": 37,
+        "lineup_entries": 242,
         "conflicting_matches": 1,
         "international": 49944
-      },
-      "parts": [
-        {
-          "asset": "assets/history/matches.sqlite.gz.part1",
-          "bytes": 6000000,
-          "sha256": "dd4393889a511e001d8d4480078b45d718d111d33a03bda68a73b93c0a0780d7"
-        },
-        {
-          "asset": "assets/history/matches.sqlite.gz.part2",
-          "bytes": 6000000,
-          "sha256": "73681bf6c2276bb5726d9e06bcc135cf23bde4d17cd2594cd440d5b8f6812a5b"
-        },
-        {
-          "asset": "assets/history/matches.sqlite.gz.part3",
-          "bytes": 6000000,
-          "sha256": "97a709df06eeb35302bf4a600bc1d3b3e4bf446d866590d61874019042d5d363"
-        },
-        {
-          "asset": "assets/history/matches.sqlite.gz.part4",
-          "bytes": 6000000,
-          "sha256": "aad936bbbff8ee127161e707d41daa93a242ea1e1825a3fae0a6ea71bdf8c68c"
-        },
-        {
-          "asset": "assets/history/matches.sqlite.gz.part5",
-          "bytes": 6000000,
-          "sha256": "e3b6275e554eb7f5e785eca170fe5ecb42de8351e8da00ad19cb31a0b158edb9"
-        },
-        {
-          "asset": "assets/history/matches.sqlite.gz.part6",
-          "bytes": 6000000,
-          "sha256": "acc18d988ee27e1d9836160ba378b73fa62c3fff116b33808b2038d8c990419b"
-        },
-        {
-          "asset": "assets/history/matches.sqlite.gz.part7",
-          "bytes": 3672807,
-          "sha256": "ec73b95279414c4b916b0bd71d178f7227b48ca2093d0fb40ccdb4b0cf39228a"
-        }
-      ]
+      }
     },
     "squads": {
-      "bytes": 67244032,
-      "sha256": "798dc5f5e676d801e28f6cfaa429d948ecff6e55f1f034ea354843b261cb91ef",
-      "compressed_bytes": 22639067,
-      "compressed_sha256": "47280c9f3ed1e8f00510cae695f72362064e41652e274d7bf114f8fcffcfcf7c",
-      "counts": {
-        "teams": 1582,
-        "rosters": 16581,
-        "squad_entries": 576048
-      },
       "parts": [
         {
           "asset": "assets/history/squads.sqlite.gz.part1",
           "bytes": 6000000,
-          "sha256": "da83e96e3d25dd035d9d9ad3736a4eb6bd0ac88e23230998fdea2370a40aee7d"
+          "sha256": "563639f022cf2ff131aac8d76eed026605538d59bcf35ae1583187935c39d961"
         },
         {
           "asset": "assets/history/squads.sqlite.gz.part2",
           "bytes": 6000000,
-          "sha256": "1ad738b0069960f7f70117f3c48d7a30b8abe5c648c92fbdc7924f6353a42555"
+          "sha256": "3028c0dd8ab297a0b6cb1d7a6d7b576f100d82585112aa1e134479b6b4db5505"
         },
         {
           "asset": "assets/history/squads.sqlite.gz.part3",
           "bytes": 6000000,
-          "sha256": "a014805aab203fddae47e54c86fcd7e353e378b1caf566d5d71c1d220515cade"
+          "sha256": "077bbc604410e8e1f4dfb79ee377b34a82b0e64ddf8743d163b597b90ae05e18"
         },
         {
           "asset": "assets/history/squads.sqlite.gz.part4",
-          "bytes": 4639067,
-          "sha256": "10cc745f593fea91b00e1e7a887b0a75982673f00c8a570316cd3bb0f2742128"
+          "bytes": 4639107,
+          "sha256": "f1d651e348bd469e8e59a5577155b6c3b1f43a68ae3db7b56210f728e197a932"
         }
-      ]
+      ],
+      "bytes": 67244032,
+      "sha256": "73e5fdc18c197e7f45dc880ccefccc55df276aac9540c20b989ffb0a95aafd33",
+      "compressed_bytes": 22639107,
+      "compressed_sha256": "c5bcd023d2dd3bd26bb7445f9c6889d53a5f22946ded314e6285e1f263d845c2",
+      "counts": {
+        "teams": 1582,
+        "rosters": 16581,
+        "squad_entries": 576048
+      }
     }
   },
   "sources": {
@@ -136,6 +137,12 @@
       "url": "https://github.com/footballcsv/cache.footballsquads",
       "license": "CC0-1.0",
       "note": "Season/tournament squad snapshots, not match lineups. Past players and current/previous/new club fields remain distinct."
+    },
+    "statsbomb": {
+      "name": "StatsBomb Open Data lineups",
+      "url": "https://github.com/hudl/open-data/tree/master/data/lineups",
+      "license": "StatsBomb Open Data License",
+      "note": "Seven supplied match lineup files. The source terms require StatsBomb attribution; entries retain source player IDs and names."
     }
   }
 }

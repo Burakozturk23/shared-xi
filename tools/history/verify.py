@@ -35,6 +35,9 @@ def main():
                 assert db.execute(f'SELECT count(*) FROM {table}').fetchone()[0]==count,(name,table)
             if name=='matches':
                 assert db.execute('SELECT count(*) FROM selections').fetchone()==(37,)
+                assert db.execute('SELECT count(*) FROM lineup_entries').fetchone()[0] > 0
+                assert db.execute('SELECT count(*) FROM (SELECT selection_id,team_id FROM lineup_entries WHERE starter=1 GROUP BY selection_id,team_id HAVING count(*) != 11)').fetchone()==(0,)
+                assert db.execute('SELECT count(DISTINCT selection_id) FROM lineup_entries').fetchone()==(7,)
                 assert db.execute('SELECT count(*) FROM matches WHERE date>?',(manifest['cutoff'],)).fetchone()==(0,)
                 assert db.execute('SELECT count(*) FROM matches m WHERE NOT EXISTS (SELECT 1 FROM match_sources s WHERE s.match_id=m.id)').fetchone()==(0,)
                 assert db.execute('SELECT count(*) FROM goals g JOIN matches m ON m.id=g.match_id WHERE g.team_id NOT IN (m.home_id,m.away_id)').fetchone()==(0,)

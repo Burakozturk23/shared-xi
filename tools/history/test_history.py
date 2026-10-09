@@ -68,4 +68,12 @@ Number, Name, Nat, Pos, Height, Weight, Date of Birth, Birth Place, New Club
         with self.assertRaisesRegex(ValueError,'same_team'):
             self.b.add_match('england','x',1,'club','eng.1','2020','2020-01-01','A','A',1,0,score_basis='source_ft')
 
+    def test_statsbomb_lineups_have_two_verified_starting_elevens(self):
+        root=Path(__file__).resolve().parents[2]
+        self.b.selections(root / 'tools/history/statsbomb_selection.json')
+        self.b.lineups(root / 'tools/history/lineups')
+        db=self.b.dbs['matches']
+        self.assertEqual(db.execute('SELECT count(DISTINCT selection_id) FROM lineup_entries').fetchone(),(7,))
+        self.assertEqual(db.execute('SELECT count(*) FROM (SELECT selection_id,team_id FROM lineup_entries WHERE starter=1 GROUP BY selection_id,team_id HAVING count(*) != 11)').fetchone(),(0,))
+
 if __name__=='__main__':unittest.main()

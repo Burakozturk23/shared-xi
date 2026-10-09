@@ -12,6 +12,7 @@ import '../../models/history_record.dart';
 abstract class HistoryRepository {
   Future<List<HistoryRecord>> browse({required bool squads, required HistoryScope scope, String query = '', int offset = 0});
   Future<HistoryDetail> detail(String id, {required bool squads});
+  Future<HistoryDetail> selectionDetail(String id);
   Future<List<HistoryRecord>> selections();
 }
 
@@ -87,7 +88,7 @@ class SqliteHistoryRepository implements HistoryRepository {
   @override
   Future<List<HistoryRecord>> selections() async {
     final db = await _database('matches');
-    return (await db.rawQuery('SELECT * FROM selections ORDER BY date,id')).map(HistoryRecord.new).toList();
+    return (await db.rawQuery('SELECT s.*, (SELECT count(*) FROM lineup_entries l WHERE l.selection_id=s.id) AS lineup_entries FROM selections s ORDER BY date,id')).map(HistoryRecord.new).toList();
   }
 
   @override
@@ -105,8 +106,19 @@ class SqliteHistoryRepository implements HistoryRepository {
       LEFT JOIN teams w ON w.id=m.shootout_winner_id WHERE m.id=?''', [id]);
     if (rows.isEmpty) throw StateError('Match not found');
     final goals = await db.rawQuery('SELECT g.*, t.name AS team FROM goals g JOIN teams t ON t.id=g.team_id WHERE match_id=? ORDER BY CAST(minute AS INTEGER),g.id', [id]);
+    final lineups = await db.rawQuery('SELECT * FROM lineup_entries WHERE selection_id=(SELECT id FROM selections WHERE match_id=?) ORDER BY team_id,starter DESC,position_order', [id]);
     final sources = await db.rawQuery('SELECT DISTINCT s.* FROM sources s JOIN match_sources ms ON ms.source_id=s.id WHERE ms.match_id=? ORDER BY s.name', [id]);
-    return HistoryDetail(record: HistoryRecord(rows.single), goals: goals.map(HistoryRecord.new).toList(), sources: sources.map(HistoryRecord.new).toList());
+    return HistoryDetail(record: HistoryRecord(rows.single), goals: goals.map(HistoryRecord.new).toList(), lineups: lineups.map(HistoryRecord.new).toList(), sources: sources.map(HistoryRecord.new).toList());
+  }
+
+  @override
+  Future<HistoryDetail> selectionDetail(String id) async {
+    final db = await _database('matches');
+    final rows = await db.rawQuery('SELECT s.*, (SELECT count(*) FROM lineup_entries l WHERE l.selection_id=s.id) AS lineup_entries FROM selections s WHERE s.id=?', [id]);
+    if (rows.isEmpty) throw StateError('Selection not found');
+    final lineups = await db.rawQuery('SELECT * FROM lineup_entries WHERE selection_id=? ORDER BY team_id,starter DESC,position_order', [id]);
+    final sources = await db.rawQuery('SELECT * FROM sources WHERE id=?', ['statsbomb']);
+    return HistoryDetail(record: HistoryRecord(rows.single), lineups: lineups.map(HistoryRecord.new).toList(), sources: sources.map(HistoryRecord.new).toList());
   }
 }
 
