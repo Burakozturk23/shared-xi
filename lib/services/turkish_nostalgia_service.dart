@@ -44,8 +44,9 @@ class FirebaseNostalgiaGateway implements NostalgiaGateway {
               ),
             )
             .call(input);
-    if (AuthService.uid != uid)
+    if (AuthService.uid != uid) {
       throw StateError('Hesap değişti. Ekranı yeniden aç.');
+    }
     return nostalgiaMap(result.data);
   }
 }
@@ -69,7 +70,8 @@ class LocalNostalgiaStore implements NostalgiaStore {
   @override
   Future<void> write(Map<String, dynamic> value) async {
     final prefs = await SharedPreferences.getInstance();
-    if (!await prefs.setString(key, jsonEncode(value)))
+    if (!await prefs.setString(key, jsonEncode(value))) {
       throw StateError('Cihaz kaydı yazılamadı.');
+    }
   }
 }

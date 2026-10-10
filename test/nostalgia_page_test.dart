@@ -25,6 +25,7 @@ Future<void> go(WidgetTester t, Key key) async {
 
 Future<void> shot(WidgetTester t, GlobalKey key, String name) async {
   if (!const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) return;
+  await t.drag(find.byType(ListView), const Offset(0, 5000));
   await t.pumpAndSettle();
   await t.runAsync(() async {
     final im =
@@ -78,7 +79,7 @@ void main() {
         );
         await t.pumpAndSettle();
         await shot(t, key, 'archive-$light');
-        for (final id in ['nostalgia_01', 'nostalgia_04', 'nostalgia_07']) {
+        for (final id in ['nostalgia_01', 'nostalgia_04', 'nostalgia_06', 'nostalgia_07']) {
           c.openChapter(id);
           await t.pumpAndSettle();
           await go(t, const ValueKey('nostalgia-start'));
@@ -122,6 +123,11 @@ void main() {
         await t.tap(find.text('Vazgeç'));
         await t.pumpAndSettle();
         expect(c.hints, isEmpty);
+        await t.tap(find.text('Güçlü yardım · 6 coin'));
+        await t.pumpAndSettle();
+        await t.tap(find.text('Yardımı aç'));
+        await t.pumpAndSettle();
+        expect(c.hints.containsKey(c.activeId), true);
         expect(t.takeException(), isNull);
       },
     );

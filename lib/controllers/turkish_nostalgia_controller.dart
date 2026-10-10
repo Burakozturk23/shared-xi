@@ -23,7 +23,7 @@ class NostalgiaController extends ChangeNotifier {
   String phase = 'archive', message = '';
   bool busy = false, ready = false, hintOpen = false, rewardEligible = false;
   int hintPrice = 6;
-  bool _disposed = false;
+  bool _disposed = false, _replaying = false;
   Future<void> _writes = Future.value();
   NostalgiaTask? get active =>
       activeId == null ? null : catalog.byId(activeId!);
@@ -60,6 +60,7 @@ class NostalgiaController extends ChangeNotifier {
     'phase': phase,
     'hintOpen': hintOpen,
     'badge': badge,
+    'replaying': _replaying,
   };
   Future<void> _save() {
     final snapshot = _snapshot();
@@ -93,8 +94,9 @@ class NostalgiaController extends ChangeNotifier {
         if (a.length > t.required ||
             a.where((s) => s.isNotEmpty).toSet().length !=
                 a.where((s) => s.isNotEmpty).length ||
-            a.any((id) => id.isNotEmpty && !t.optionIds.contains(id)))
+            a.any((id) => id.isNotEmpty && !t.optionIds.contains(id))) {
           drafts.remove(t.id);
+            }
       }
       results = nostalgiaMap(s['results'])
         ..removeWhere((id, v) => !ids.contains(id) || v is! Map);
@@ -115,10 +117,12 @@ class NostalgiaController extends ChangeNotifier {
           ? s['phase'] as String
           : 'archive';
       if (phase == 'result' && !results.containsKey(activeId) ||
-          phase == 'album' && !albums.containsKey(chapter?.id))
+          phase == 'album' && !albums.containsKey(chapter?.id)) {
         phase = 'task';
+          }
       if (phase == 'queued' && !pending.containsKey(activeId)) phase = 'task';
       hintOpen = s['hintOpen'] == true;
+      _replaying = s['replaying'] == true;
     }
     ready = true;
     _notify();
@@ -128,6 +132,7 @@ class NostalgiaController extends ChangeNotifier {
   void openChapter(String id, {bool replay = false}) {
     if (busy) return;
     final ch = catalog.chapter(id);
+    _replaying = replay;
     activeId = ch.taskIds.firstWhere(
       (t) => !results.containsKey(t),
       orElse: () => ch.taskIds.first,
@@ -147,7 +152,7 @@ class NostalgiaController extends ChangeNotifier {
     if (busy || active == null) return;
     phase = pending.containsKey(activeId)
         ? 'queued'
-        : results.containsKey(activeId)
+        : !_replaying && results.containsKey(activeId)
         ? 'result'
         : 'task';
     startIfNeeded();
@@ -156,8 +161,9 @@ class NostalgiaController extends ChangeNotifier {
   }
 
   void startIfNeeded() {
-    if (active?.type == 'timeline' && !validAnswers(active!, answers))
+    if (active?.type == 'timeline' && !validAnswers(active!, answers)) {
       drafts[activeId!] = active!.optionIds;
+    }
   }
 
   void start() {
@@ -181,10 +187,12 @@ class NostalgiaController extends ChangeNotifier {
     if (activeId == ids.first && available(ids.last)) {
       activeId = ids.last;
       hintOpen = false;
-      phase = results.containsKey(activeId) ? 'result' : 'task';
+      if (_replaying) drafts.remove(activeId);
+      phase = !_replaying && results.containsKey(activeId) ? 'result' : 'task';
       startIfNeeded();
     } else {
       phase = albums.containsKey(chapter!.id) ? 'album' : 'archive';
+      _replaying = false;
     }
     message = '';
     _saveSoon();
@@ -200,8 +208,9 @@ class NostalgiaController extends ChangeNotifier {
         active == null ||
         !active!.optionIds.contains(id) ||
         index < 0 ||
-        index >= active!.required)
+        index >= active!.required) {
       return;
+        }
     final a = List<String>.generate(
       active!.required,
       (i) => i < answers.length ? answers[i] : '',
@@ -236,8 +245,9 @@ class NostalgiaController extends ChangeNotifier {
   }
 
   void _merge(Map<String, dynamic> response) {
-    if (response['version'] != catalog.version)
+    if (response['version'] != catalog.version) {
       throw StateError('İçerik sürümü değişti. Uygulamayı güncelle.');
+    }
     results = nostalgiaMap(response['results']);
     rewards = nostalgiaMap(response['rewards']);
     albums = nostalgiaMap(response['albums']);
@@ -249,8 +259,9 @@ class NostalgiaController extends ChangeNotifier {
 
   String _error(Object e) {
     if (e is FirebaseFunctionsException &&
-        ['failed-precondition', 'permission-denied'].contains(e.code))
+        ['failed-precondition', 'permission-denied'].contains(e.code)) {
       return e.message ?? 'İşlem doğrulanamadı.';
+        }
     if (e is StateError) return e.message;
     return 'Sunucuya ulaşılamadı. Cevabın cihazda saklandı; bağlantı gelince Eşitle’ye dokun.';
   }
@@ -324,8 +335,9 @@ class NostalgiaController extends ChangeNotifier {
         if (_disposed) return;
         if (r['correct'] == true) {
           _merge(r);
-          if (id == activeId && ['task', 'queued'].contains(phase))
+          if (id == activeId && ['task', 'queued'].contains(phase)) {
             phase = 'result';
+          }
         } else {
           message =
               'Bekleyen bir cevap yanlış. İşaretli bölümü açıp yeniden dene.';

@@ -53,11 +53,13 @@ class FakeNostalgiaGateway implements NostalgiaGateway {
           .map(nostalgiaMap)
           .firstWhere((c) => c['id'] == task['chapterId']);
       final ids = nostalgiaStrings(chapter['taskIds']);
-      if (task['id'] != ids.first && !results.containsKey(ids.first))
+      if (task['id'] != ids.first && !results.containsKey(ids.first)) {
         throw StateError('first task required');
+      }
       submissions.add(task['id'] as String);
-      if (jsonEncode(input['answers']) != jsonEncode(task['answerKeys']))
+      if (jsonEncode(input['answers']) != jsonEncode(task['answerKeys'])) {
         return {'correct': false};
+      }
       results[task['id'] as String] = task['result'];
       rewards[task['id'] as String] = {'coins': 6, 'xp': 15, 'settled': true};
       if (ids.every(results.containsKey)) {
@@ -69,10 +71,11 @@ class FakeNostalgiaGateway implements NostalgiaGateway {
         };
       }
     }
-    if (action == 'hint')
+    if (action == 'hint') {
       hints[input['taskId'] as String] = privateTask(
         input['taskId'] as String,
       )['strongHint'];
+    }
     return {
       'version': 1,
       'correct': true,
@@ -96,7 +99,9 @@ void selectNostalgia(NostalgiaController c) {
       }
     }
   } else {
-    for (var i = 0; i < keys.length; i++) c.slot(i, keys[i]);
+    for (var i = 0; i < keys.length; i++) {
+      c.slot(i, keys[i]);
+    }
   }
 }
 
@@ -137,8 +142,13 @@ void main() {
         expect(c.phase, 'album');
         c.openChapter(chapter.id, replay: true);
         c.start();
-        selectNostalgia(c);
-        await c.submit();
+        for (var i = 0; i < 2; i++) {
+          expect(c.phase, 'task');
+          selectNostalgia(c);
+          await c.submit();
+          c.next();
+        }
+        expect(c.phase, 'album');
       }
       expect(c.count, 24);
       expect(c.albums.length, 12);

@@ -54,10 +54,11 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     final old = _c;
     _c = null;
     old?.dispose();
-    if (mounted)
+    if (mounted) {
       setState(() {
         _loadError = null;
       });
+    }
     NostalgiaController? created;
     try {
       if (AuthService.uid == null && Firebase.apps.isNotEmpty) {
@@ -111,7 +112,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
   @override
   Widget build(BuildContext context) {
     final c = _c;
-    if (_loadError != null)
+    if (_loadError != null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Nostalji')),
         body: Center(
@@ -131,8 +132,10 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           ),
         ),
       );
-    if (c == null)
+    }
+    if (c == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return AnimatedBuilder(
       animation: c,
       builder: (context, _) => PopScope(
@@ -267,7 +270,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     return [
       _hero(
         'TÜRK FUTBOLU · 1968–2018',
-        'Tribünlerin\nhafızası.',
+        'O yılları\nhatırla.',
         '12 dönem, 24 görev. Sezonları, efsaneleri ve kupa yollarını bir araya getir.',
         footer: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -680,12 +683,13 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
                   await Clipboard.setData(
                     ClipboardData(text: nostalgiaMap(raw)['url'] as String),
                   );
-                  if (mounted)
+                  if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Kaynak bağlantısı kopyalandı.'),
                       ),
                     );
+                  }
                 },
                 icon: const Icon(Icons.copy, size: 16),
                 label: const Text('Bağlantıyı kopyala'),
