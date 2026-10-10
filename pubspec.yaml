@@ -57,6 +57,8 @@ flutter:
     - assets/data/squad_challenge_catalog.json
     - assets/data/daily_footballer_catalog.json
     - assets/data/anagram_catalog.json
+    - assets/data/ucl_moments_v2.json
+    - assets/data/what_if_v2.json
     - assets/data/player_journey_chapter_one.json
     - assets/data/player_journey_chapter_two.json
     - assets/data/player_journey_chapter_three.json

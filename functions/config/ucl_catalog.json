@@ -1,0 +1,2504 @@
+{
+  "version": 1,
+  "matches": [
+    {
+      "id": "ucl_01",
+      "number": 1,
+      "season": "2004/2005",
+      "date": "2005-05-25",
+      "round": "Final",
+      "title": "İstanbul'da bir gece",
+      "home": {
+        "id": 5,
+        "name": "Milan"
+      },
+      "away": {
+        "id": 31,
+        "name": "Liverpool"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "timeline",
+      "prompt": "Liverpool'un ikinci yarıdaki üç golünü sırala.",
+      "clock": "54′–60′",
+      "hint": "İlk gol bir kafa vuruşuydu. Son gol, kaleciden dönen penaltının tamamlanmasıydı.",
+      "intro": "Milan ve Liverpool, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "2e179d80ae4c",
+          "label": "Steven Gerrard"
+        },
+        {
+          "id": "46a90400b505",
+          "label": "Xabi Alonso"
+        },
+        {
+          "id": "f4a119b14bd4",
+          "label": "Vladimír Šmicer"
+        }
+      ],
+      "answerKeys": [
+        "2e179d80ae4c",
+        "f4a119b14bd4",
+        "46a90400b505"
+      ],
+      "result": {
+        "answer": "Steven Gerrard → Vladimír Šmicer → Xabi Alonso",
+        "score": "3–3",
+        "story": "Liverpool altı dakikalık geri dönüşle uzatmaya ulaştı. Penaltılarda Milan 2–3 Liverpool; kupa Liverpool'un oldu.",
+        "penalties": [
+          2,
+          3
+        ],
+        "aggregate": null,
+        "duration": 120,
+        "events": [
+          {
+            "label": "Steven Gerrard",
+            "minute": "54′"
+          },
+          {
+            "label": "Vladimír Šmicer",
+            "minute": "56′"
+          },
+          {
+            "label": "Xabi Alonso",
+            "minute": "60′"
+          }
+        ],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/80813/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 2302764,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_02",
+      "number": 2,
+      "season": "1998/1999",
+      "date": "1999-05-26",
+      "round": "Final",
+      "title": "Son düdüğe kadar",
+      "home": {
+        "id": 985,
+        "name": "Manchester United"
+      },
+      "away": {
+        "id": 27,
+        "name": "Bayern Münih"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "timeline",
+      "prompt": "Finaldeki üç golü ilk golden son gole sırala.",
+      "clock": "6′ / 90+1′ / 90+3′",
+      "hint": "Erken gelen serbest vuruş golünü, iki korner organizasyonu izledi.",
+      "intro": "Manchester United ve Bayern Münih, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "9683fa219fd2",
+          "label": "Mario Basler"
+        },
+        {
+          "id": "3262643d4929",
+          "label": "Ole Gunnar Solskjær"
+        },
+        {
+          "id": "a70638672c19",
+          "label": "Teddy Sheringham"
+        }
+      ],
+      "answerKeys": [
+        "9683fa219fd2",
+        "a70638672c19",
+        "3262643d4929"
+      ],
+      "result": {
+        "answer": "Mario Basler → Teddy Sheringham → Ole Gunnar Solskjær",
+        "score": "2–1",
+        "story": "Basler'in erken golüne Manchester United ek sürede Sheringham ve Solskjær ile yanıt verdi.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [
+          {
+            "label": "Mario Basler",
+            "minute": "6′"
+          },
+          {
+            "label": "Teddy Sheringham",
+            "minute": "90+1′"
+          },
+          {
+            "label": "Ole Gunnar Solskjær",
+            "minute": "90+3′"
+          }
+        ],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/56379/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_03",
+      "number": 3,
+      "season": "2007/2008",
+      "date": "2008-05-21",
+      "round": "Final",
+      "title": "Moskova yağmurunda",
+      "home": {
+        "id": 985,
+        "name": "Manchester United"
+      },
+      "away": {
+        "id": 631,
+        "name": "Chelsea"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Anelka'nın son penaltısını kurtararak seriyi bitiren kaleci kimdi?",
+      "clock": "Penaltı serisi",
+      "hint": "Kaleci seçmelisin; maçın açık oyun golcüsünü değil.",
+      "intro": "Manchester United ve Chelsea, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "6aace8fca80d",
+          "label": "Nemanja Vidić"
+        },
+        {
+          "id": "47370d3f4e0a",
+          "label": "Petr Čech"
+        },
+        {
+          "id": "0e0500ecf9ac",
+          "label": "Edwin van der Sar"
+        },
+        {
+          "id": "97c1ccc6d2c7",
+          "label": "Rio Ferdinand"
+        }
+      ],
+      "answerKeys": [
+        "0e0500ecf9ac"
+      ],
+      "result": {
+        "answer": "Edwin van der Sar",
+        "score": "1–1",
+        "story": "Van der Sar son vuruşu kurtardı. Manchester United penaltı serisini 6–5 kazandı.",
+        "penalties": [
+          6,
+          5
+        ],
+        "aggregate": null,
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/301604/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_04",
+      "number": 4,
+      "season": "2013/2014",
+      "date": "2014-05-24",
+      "round": "Final",
+      "title": "Lizbon'daki eşik",
+      "home": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "away": {
+        "id": 13,
+        "name": "Atlético Madrid"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "90+3'te kafa vuruşuyla beraberliği getirip finali uzatmaya taşıyan kimdi?",
+      "clock": "90+3′",
+      "hint": "Belirleyici kafa vuruşu bir korner organizasyonundan geldi.",
+      "intro": "Real Madrid ve Atlético Madrid, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "0c8ff971fca1",
+          "label": "Gareth Bale"
+        },
+        {
+          "id": "711349952333",
+          "label": "Sergio Ramos"
+        },
+        {
+          "id": "101d27af33f0",
+          "label": "Karim Benzema"
+        },
+        {
+          "id": "562c0b008451",
+          "label": "Cristiano Ronaldo"
+        }
+      ],
+      "answerKeys": [
+        "711349952333"
+      ],
+      "result": {
+        "answer": "Sergio Ramos",
+        "score": "4–1",
+        "story": "Ramos'un golü 90 dakikayı 1–1'e getirdi. Real Madrid uzatmada üç gol daha buldu.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2011883/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18241,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_05",
+      "number": 5,
+      "season": "2012/2013",
+      "date": "2013-05-25",
+      "round": "Final",
+      "title": "Wembley ışıkları",
+      "home": {
+        "id": 16,
+        "name": "Dortmund"
+      },
+      "away": {
+        "id": 27,
+        "name": "Bayern Münih"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "89. dakikada Bayern'in galibiyet golünü kim attı?",
+      "clock": "89′",
+      "hint": "Dar alandaki paslaşmanın ardından ceza sahasına yapılan koşuyu düşün.",
+      "intro": "Dortmund ve Bayern Münih, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "076402c84345",
+          "label": "Mario Mandžukić"
+        },
+        {
+          "id": "87c741ea4e46",
+          "label": "Thomas Müller"
+        },
+        {
+          "id": "bd185e2d58b1",
+          "label": "Arjen Robben"
+        },
+        {
+          "id": "8549223cbd6b",
+          "label": "Franck Ribéry"
+        }
+      ],
+      "answerKeys": [
+        "bd185e2d58b1"
+      ],
+      "result": {
+        "answer": "Arjen Robben",
+        "score": "1–2",
+        "story": "Mandžukić ve Gündoğan'ın gollerinden sonra Robben son sözü söyledi.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2009612/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18240,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_06",
+      "number": 6,
+      "season": "2016/2017",
+      "date": "2017-03-08",
+      "round": "Son 16 · rövanş",
+      "title": "Camp Nou'da son fırsat",
+      "home": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "away": {
+        "id": 583,
+        "name": "Paris Saint-Germain"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Ek sürede son golü atarak Barcelona'yı çeyrek finale taşıyan kimdi?",
+      "clock": "90+5′",
+      "hint": "Gol, son bir yüksek topun savunma arkasına ulaştırılmasıyla geldi.",
+      "intro": "Barcelona ve Paris Saint-Germain, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "b92f9e582cc1",
+          "label": "Sergi Roberto"
+        },
+        {
+          "id": "c244bd2214e5",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "046c462fa8a8",
+          "label": "Neymar"
+        },
+        {
+          "id": "0f12e0a32ec0",
+          "label": "Luis Suárez"
+        }
+      ],
+      "answerKeys": [
+        "b92f9e582cc1"
+      ],
+      "result": {
+        "answer": "Sergi Roberto",
+        "score": "6–1",
+        "story": "Sergi Roberto, Neymar'ın ortasını tamamladı. Barcelona iki maç toplamında 6–5 ile tur atladı.",
+        "penalties": null,
+        "aggregate": [
+          6,
+          5
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2019621/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_07",
+      "number": 7,
+      "season": "2021/2022",
+      "date": "2022-05-04",
+      "round": "Yarı final · rövanş",
+      "title": "Bernabéu'da durmayan saat",
+      "home": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "away": {
+        "id": 281,
+        "name": "Manchester City"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "timeline",
+      "prompt": "Bu maçtaki dört gol olayını sırala. Rodrygo'nun iki golü ayrı karttır.",
+      "clock": "73′–95′",
+      "hint": "Deplasman ekibinin golü önce geldi; penaltı ise uzatma devresindeydi.",
+      "intro": "Real Madrid ve Manchester City, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "8f16a8183d62",
+          "label": "Karim Benzema"
+        },
+        {
+          "id": "911e84d3193b",
+          "label": "Rodrygo · ikinci gol"
+        },
+        {
+          "id": "1f9df5edde38",
+          "label": "Riyad Mahrez"
+        },
+        {
+          "id": "c27a46d80d59",
+          "label": "Rodrygo · ilk gol"
+        }
+      ],
+      "answerKeys": [
+        "1f9df5edde38",
+        "c27a46d80d59",
+        "911e84d3193b",
+        "8f16a8183d62"
+      ],
+      "result": {
+        "answer": "Riyad Mahrez → Rodrygo · ilk gol → Rodrygo · ikinci gol → Karim Benzema",
+        "score": "3–1",
+        "story": "Mahrez 73, Rodrygo 90 ve 90+1, Benzema penaltıdan 95. dakikada gol attı. Real Madrid toplamda 6–5 kazandı.",
+        "penalties": null,
+        "aggregate": [
+          6,
+          5
+        ],
+        "duration": 120,
+        "events": [
+          {
+            "label": "Riyad Mahrez",
+            "minute": "73′"
+          },
+          {
+            "label": "Rodrygo · ilk gol",
+            "minute": "90′"
+          },
+          {
+            "label": "Rodrygo · ikinci gol",
+            "minute": "90+1′"
+          },
+          {
+            "label": "Karim Benzema",
+            "minute": "95′"
+          }
+        ],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2034663/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_08",
+      "number": 8,
+      "season": "2018/2019",
+      "date": "2019-05-08",
+      "round": "Yarı final · rövanş",
+      "title": "Amsterdam'da kalan saniyeler",
+      "home": {
+        "id": 610,
+        "name": "Ajax"
+      },
+      "away": {
+        "id": 148,
+        "name": "Tottenham"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "İkinci yarıda hat-trick yaparak Tottenham'ı finale taşıyan kimdi?",
+      "clock": "55′ / 59′ / 90+6′",
+      "hint": "Üç gol de aynı oyuncudan ve ikinci yarıda geldi.",
+      "intro": "Ajax ve Tottenham, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "9b9b52a66dbc",
+          "label": "Harry Kane"
+        },
+        {
+          "id": "0266d5948661",
+          "label": "Lucas Moura"
+        },
+        {
+          "id": "e7793b497600",
+          "label": "Christian Eriksen"
+        },
+        {
+          "id": "aed24768599c",
+          "label": "Heung-min Son"
+        }
+      ],
+      "answerKeys": [
+        "0266d5948661"
+      ],
+      "result": {
+        "answer": "Lucas Moura",
+        "score": "2–3",
+        "story": "Lucas Moura üç gol attı. Toplam skor 3–3'tü; Tottenham o dönemki deplasman golü kuralıyla ilerledi.",
+        "penalties": null,
+        "aggregate": [
+          3,
+          3
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2027159/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_09",
+      "number": 9,
+      "season": "2018/2019",
+      "date": "2019-05-07",
+      "round": "Yarı final · rövanş",
+      "title": "Anfield'da bir işaret",
+      "home": {
+        "id": 31,
+        "name": "Liverpool"
+      },
+      "away": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Hızlı kullanılan korneri gole çeviren kimdi?",
+      "clock": "79′",
+      "hint": "Korneri kullananı değil, ceza alanında vuruşu yapanı arıyoruz.",
+      "intro": "Liverpool ve Barcelona, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "ce87d90493a9",
+          "label": "Jordan Henderson"
+        },
+        {
+          "id": "64bb113f18ae",
+          "label": "Georginio Wijnaldum"
+        },
+        {
+          "id": "14384e401951",
+          "label": "Divock Origi"
+        },
+        {
+          "id": "4168fe2b53fc",
+          "label": "Sadio Mané"
+        }
+      ],
+      "answerKeys": [
+        "14384e401951"
+      ],
+      "result": {
+        "answer": "Divock Origi",
+        "score": "4–0",
+        "story": "Alexander-Arnold'un çabuk kornerini Origi tamamladı. Liverpool toplamda 4–3 ile finale çıktı.",
+        "penalties": null,
+        "aggregate": [
+          4,
+          3
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2027160/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_10",
+      "number": 10,
+      "season": "2003/2004",
+      "date": "2004-04-07",
+      "round": "Çeyrek final · rövanş",
+      "title": "Riazor'da hesap günü",
+      "home": {
+        "id": 897,
+        "name": "Deportivo"
+      },
+      "away": {
+        "id": 5,
+        "name": "Milan"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "score",
+      "prompt": "Rövanşın maç sonu skoru neydi?",
+      "clock": "Maç sonu",
+      "hint": "Maç skorunu seç; iki karşılaşmanın toplamını değil.",
+      "intro": "Deportivo ve Milan, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "5ca468bbf670",
+          "label": "Deportivo 4–1 Milan"
+        },
+        {
+          "id": "0cecbfa164b0",
+          "label": "Deportivo 3–0 Milan"
+        },
+        {
+          "id": "3e39f5e50777",
+          "label": "Deportivo 3–1 Milan"
+        },
+        {
+          "id": "3ab50e9d639e",
+          "label": "Deportivo 4–0 Milan"
+        }
+      ],
+      "answerKeys": [
+        "3ab50e9d639e"
+      ],
+      "result": {
+        "answer": "Deportivo 4–0 Milan",
+        "score": "4–0",
+        "story": "İlk maçı 4–1 kaybeden Deportivo, rövanşı 4–0 kazanıp toplamda 5–4 ile ilerledi.",
+        "penalties": null,
+        "aggregate": [
+          5,
+          4
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç raporu",
+            "url": "https://www.uefa.com/uefachampionsleague/news/019c-0e6c12450ff2-294c584e2602-1000--dazzling-depor-ditch-milan/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_11",
+      "number": 11,
+      "season": "2008/2009",
+      "date": "2009-05-06",
+      "round": "Yarı final · rövanş",
+      "title": "Londra'da son hücum",
+      "home": {
+        "id": 631,
+        "name": "Chelsea"
+      },
+      "away": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Ek sürede Barcelona'ya beraberliği getiren golü kim attı?",
+      "clock": "90+3′",
+      "hint": "Ceza sahası dışından gelen vuruşu ve kalabalık savunmayı hatırla.",
+      "intro": "Chelsea ve Barcelona, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "3f9a17f3b054",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "4c195e05e336",
+          "label": "Samuel Eto'o"
+        },
+        {
+          "id": "3a7543286980",
+          "label": "Xavi"
+        },
+        {
+          "id": "4fdd1f9072b3",
+          "label": "Andrés Iniesta"
+        }
+      ],
+      "answerKeys": [
+        "4fdd1f9072b3"
+      ],
+      "result": {
+        "answer": "Andrés Iniesta",
+        "score": "1–1",
+        "story": "Iniesta'nın golüyle iki maç toplamı 1–1 oldu. Barcelona dönemin deplasman golü kuralıyla finale çıktı.",
+        "penalties": null,
+        "aggregate": [
+          1,
+          1
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/302812/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_12",
+      "number": 12,
+      "season": "2009/2010",
+      "date": "2010-04-28",
+      "round": "Yarı final · rövanş",
+      "title": "Camp Nou'da savunma sınavı",
+      "home": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "away": {
+        "id": 46,
+        "name": "Inter"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "score",
+      "prompt": "İki maç toplamında Inter lehine sonuç neydi?",
+      "clock": "İki maç toplamı",
+      "hint": "Tek maç skorunu değil, iki ayağın toplamını hesapla.",
+      "intro": "Barcelona ve Inter, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "e986caac3683",
+          "label": "Inter 2–1 Barcelona"
+        },
+        {
+          "id": "15e1a171422d",
+          "label": "Inter 3–2 Barcelona"
+        },
+        {
+          "id": "08ccae581067",
+          "label": "Inter 4–2 Barcelona"
+        },
+        {
+          "id": "887f755e5a2a",
+          "label": "Inter 3–1 Barcelona"
+        }
+      ],
+      "answerKeys": [
+        "15e1a171422d"
+      ],
+      "result": {
+        "answer": "Inter 3–2 Barcelona",
+        "score": "1–0",
+        "story": "Barcelona rövanşı 1–0 kazandı; ilk maçı 3–1 kazanan Inter toplamda 3–2 ile tur atladı.",
+        "penalties": null,
+        "aggregate": [
+          2,
+          3
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · eşleşme raporu",
+            "url": "https://www.uefa.com/uefachampionsleague/news/01e4-0e746f438ade-69d47b996827-1000--alves-reflects-on-big-loss/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_13",
+      "number": 13,
+      "season": "1999/2000",
+      "date": "1999-11-03",
+      "round": "Grup aşaması",
+      "title": "Ali Sami Yen'de Avrupa gecesi",
+      "home": {
+        "id": 141,
+        "name": "Galatasaray"
+      },
+      "away": {
+        "id": 5,
+        "name": "Milan"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "timeline",
+      "prompt": "Galatasaray'ın bu maçtaki üç golcüsünü gol sırasına diz.",
+      "clock": "30′ / 86′ / 90′",
+      "hint": "Son gol penaltıdan geldi; ondan önce bir kafa vuruşu vardı.",
+      "intro": "Galatasaray ve Milan, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "3a13540914b5",
+          "label": "Capone"
+        },
+        {
+          "id": "ab8748dc331c",
+          "label": "Ümit Davala"
+        },
+        {
+          "id": "54190c1c4c51",
+          "label": "Hakan Şükür"
+        }
+      ],
+      "answerKeys": [
+        "3a13540914b5",
+        "54190c1c4c51",
+        "ab8748dc331c"
+      ],
+      "result": {
+        "answer": "Capone → Hakan Şükür → Ümit Davala",
+        "score": "3–2",
+        "story": "Capone, Hakan Şükür ve penaltıdan Ümit Davala'nın golleri Galatasaray'a UEFA Kupası yolunu açtı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [
+          {
+            "label": "Capone",
+            "minute": "30′"
+          },
+          {
+            "label": "Hakan Şükür",
+            "minute": "86′"
+          },
+          {
+            "label": "Ümit Davala",
+            "minute": "90′"
+          }
+        ],
+        "sources": [
+          {
+            "name": "Galatasaray · kulüp arşivi",
+            "url": "https://www.galatasaray.org/haber/futbol/o-gun-en-uzak-11-metre/33804"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_14",
+      "number": 14,
+      "season": "2007/2008",
+      "date": "2008-02-20",
+      "round": "Son 16 · ilk maç",
+      "title": "Kadıköy'de son hamle",
+      "home": {
+        "id": 36,
+        "name": "Fenerbahçe"
+      },
+      "away": {
+        "id": 368,
+        "name": "Sevilla"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "87. dakikada Fenerbahçe'yi 3–2 öne geçiren kimdi?",
+      "clock": "87′",
+      "hint": "Belirleyici oyuncu bu maça yedek kulübesinde başladı.",
+      "intro": "Fenerbahçe ve Sevilla, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "18d6c13862fe",
+          "label": "Semih Şentürk"
+        },
+        {
+          "id": "4b16623a5724",
+          "label": "Alex de Souza"
+        },
+        {
+          "id": "a59566d992a7",
+          "label": "Diego Lugano"
+        },
+        {
+          "id": "f5d5c418576d",
+          "label": "Mateja Kežman"
+        }
+      ],
+      "answerKeys": [
+        "18d6c13862fe"
+      ],
+      "result": {
+        "answer": "Semih Şentürk",
+        "score": "3–2",
+        "story": "Oyuna sonradan giren Semih Şentürk ilk maçın galibiyet golünü attı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/301894/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_15",
+      "number": 15,
+      "season": "2017/2018",
+      "date": "2017-12-06",
+      "round": "Grup aşaması",
+      "title": "Almanya'da son grup gecesi",
+      "home": {
+        "id": 23826,
+        "name": "RB Leipzig"
+      },
+      "away": {
+        "id": 114,
+        "name": "Beşiktaş"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Beşiktaş'a son dakikada galibiyeti getiren kimdi?",
+      "clock": "90′",
+      "hint": "İlk golün penaltı vuruşunu değil, beraberlikten sonraki son hücumu düşün.",
+      "intro": "RB Leipzig ve Beşiktaş, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "43f44c0d0f99",
+          "label": "Talisca"
+        },
+        {
+          "id": "7fed01c7fdb1",
+          "label": "Álvaro Negredo"
+        },
+        {
+          "id": "b00f6729cb0e",
+          "label": "Ryan Babel"
+        },
+        {
+          "id": "d5aff64e77bf",
+          "label": "Cenk Tosun"
+        }
+      ],
+      "answerKeys": [
+        "43f44c0d0f99"
+      ],
+      "result": {
+        "answer": "Talisca",
+        "score": "1–2",
+        "story": "Talisca'nın golü Beşiktaş'ın grup aşamasını yenilgisiz tamamlamasını sağladı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2021679/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_16",
+      "number": 16,
+      "season": "2012/2013",
+      "date": "2013-03-12",
+      "round": "Son 16 · rövanş",
+      "title": "Gelsenkirchen'de son koşu",
+      "home": {
+        "id": 33,
+        "name": "Schalke"
+      },
+      "away": {
+        "id": 141,
+        "name": "Galatasaray"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Ek sürede Galatasaray'ın galibiyet golünü kim attı?",
+      "clock": "90+5′",
+      "hint": "Sorulan gol ilk yarıdaki iki golden biri değil.",
+      "intro": "Schalke ve Galatasaray, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "82fe595a397d",
+          "label": "Burak Yılmaz"
+        },
+        {
+          "id": "7508f9ded85c",
+          "label": "Hamit Altıntop"
+        },
+        {
+          "id": "16782268e70a",
+          "label": "Umut Bulut"
+        },
+        {
+          "id": "e50ec2dcd5e3",
+          "label": "Didier Drogba"
+        }
+      ],
+      "answerKeys": [
+        "16782268e70a"
+      ],
+      "result": {
+        "answer": "Umut Bulut",
+        "score": "2–3",
+        "story": "Umut Bulut son golü attı. Galatasaray iki maç toplamında 4–3 ile çeyrek finale çıktı.",
+        "penalties": null,
+        "aggregate": [
+          3,
+          4
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2009594/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_17",
+      "number": 17,
+      "season": "2017/2018",
+      "date": "2018-04-10",
+      "round": "Çeyrek final · rövanş",
+      "title": "Roma'da tribünlerin sesi",
+      "home": {
+        "id": 12,
+        "name": "Roma"
+      },
+      "away": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Roma'nın üçüncü golünü atan kimdi?",
+      "clock": "82′",
+      "hint": "Asisti yapanla kafa vuruşunu yapan oyuncuyu ayır.",
+      "intro": "Roma ve Barcelona, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "c64e2de48fc3",
+          "label": "Daniele De Rossi"
+        },
+        {
+          "id": "377b9a97bc90",
+          "label": "Edin Džeko"
+        },
+        {
+          "id": "ef4acade86b5",
+          "label": "Cengiz Ünder"
+        },
+        {
+          "id": "b1429379d475",
+          "label": "Kostas Manolas"
+        }
+      ],
+      "answerKeys": [
+        "b1429379d475"
+      ],
+      "result": {
+        "answer": "Kostas Manolas",
+        "score": "3–0",
+        "story": "Manolas'ın kafa golü toplam skoru 4–4 yaptı. Roma dönemin deplasman golü kuralıyla yarı finale çıktı.",
+        "penalties": null,
+        "aggregate": [
+          4,
+          4
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2021705/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_18",
+      "number": 18,
+      "season": "2012/2013",
+      "date": "2013-04-24",
+      "round": "Yarı final · ilk maç",
+      "title": "Sarı duvarın önünde",
+      "home": {
+        "id": 16,
+        "name": "Dortmund"
+      },
+      "away": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Dortmund'un dört golünün tamamını kim attı?",
+      "clock": "8′ / 50′ / 55′ / 66′",
+      "hint": "Dört golün biri penaltıydı; asistleri değil golcüyü arıyoruz.",
+      "intro": "Dortmund ve Real Madrid, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "9b05f821a2a3",
+          "label": "İlkay Gündoğan"
+        },
+        {
+          "id": "039a4ac5ba6c",
+          "label": "Robert Lewandowski"
+        },
+        {
+          "id": "95c30aea20d5",
+          "label": "Marco Reus"
+        },
+        {
+          "id": "e6a77a68593c",
+          "label": "Mario Götze"
+        }
+      ],
+      "answerKeys": [
+        "039a4ac5ba6c"
+      ],
+      "result": {
+        "answer": "Robert Lewandowski",
+        "score": "4–1",
+        "story": "Lewandowski dördüncü golünü penaltıdan attı; Dortmund rövanş öncesi üstünlük kurdu.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç raporu",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0208-0e9f60a306c2-d00309689516-1000/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_19",
+      "number": 19,
+      "season": "2002/2003",
+      "date": "2003-04-23",
+      "round": "Çeyrek final · rövanş",
+      "title": "Old Trafford'da alkış",
+      "home": {
+        "id": 985,
+        "name": "Manchester United"
+      },
+      "away": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Real Madrid adına hat-trick yapan futbolcu kimdi?",
+      "clock": "12′ / 50′ / 59′",
+      "hint": "Kazanan takım ile tur atlayan takım farklıydı; deplasman ekibinin golcüsünü bul.",
+      "intro": "Manchester United ve Real Madrid, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "92ff58078f20",
+          "label": "Luís Figo"
+        },
+        {
+          "id": "590241448dae",
+          "label": "Ronaldo Nazário"
+        },
+        {
+          "id": "92207cf31021",
+          "label": "Zinédine Zidane"
+        },
+        {
+          "id": "9b0c9cc01d8c",
+          "label": "Raúl"
+        }
+      ],
+      "answerKeys": [
+        "590241448dae"
+      ],
+      "result": {
+        "answer": "Ronaldo Nazário",
+        "score": "4–3",
+        "story": "Ronaldo Nazário üç gol attı. Manchester United geceyi kazansa da Real Madrid toplamda 6–5 ile ilerledi.",
+        "penalties": null,
+        "aggregate": [
+          5,
+          6
+        ],
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç raporu",
+            "url": "https://www.uefa.com/uefachampionsleague/news/025a-0eaae578b071-3f2001de8325-1000--united-rocked-by-ronaldo/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_20",
+      "number": 20,
+      "season": "2016/2017",
+      "date": "2016-11-23",
+      "round": "Grup aşaması",
+      "title": "Boğaz'da iki perde",
+      "home": {
+        "id": 114,
+        "name": "Beşiktaş"
+      },
+      "away": {
+        "id": 294,
+        "name": "Benfica"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "score",
+      "prompt": "Soyunma odasına gidilirken ilk yarı skoru neydi?",
+      "clock": "İlk yarı",
+      "hint": "Son düdüğü değil, devre arasındaki tabelayı soruyoruz.",
+      "intro": "Beşiktaş ve Benfica, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "9624fd949431",
+          "label": "Beşiktaş 1–3 Benfica"
+        },
+        {
+          "id": "fc0de618815b",
+          "label": "Beşiktaş 0–3 Benfica"
+        },
+        {
+          "id": "26454b4f96f3",
+          "label": "Beşiktaş 1–2 Benfica"
+        },
+        {
+          "id": "dd9e5be34c95",
+          "label": "Beşiktaş 0–2 Benfica"
+        }
+      ],
+      "answerKeys": [
+        "fc0de618815b"
+      ],
+      "result": {
+        "answer": "Beşiktaş 0–3 Benfica",
+        "score": "3–3",
+        "story": "İlk yarı 0–3 bitti. Beşiktaş ikinci yarıda Tosun, Quaresma ve Aboubakar ile beraberliği yakaladı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2019357/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_21",
+      "number": 21,
+      "season": "1996/1997",
+      "date": "1996-10-30",
+      "round": "Grup aşaması",
+      "title": "Manchester'da sessiz an",
+      "home": {
+        "id": 985,
+        "name": "Manchester United"
+      },
+      "away": {
+        "id": 36,
+        "name": "Fenerbahçe"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "goal",
+      "prompt": "Fenerbahçe'nin maçtaki tek golünü kim attı?",
+      "clock": "78′",
+      "hint": "Uzaktan çekilen ve savunmaya da çarpan şutu düşün.",
+      "intro": "Manchester United ve Fenerbahçe, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "ff8ccd8c7a71",
+          "label": "Tayfun Korkut"
+        },
+        {
+          "id": "bc8ef0a08e3d",
+          "label": "Aykut Kocaman"
+        },
+        {
+          "id": "1dacb28938ed",
+          "label": "Elvir Bolić"
+        },
+        {
+          "id": "77077751fb9e",
+          "label": "Jay-Jay Okocha"
+        }
+      ],
+      "answerKeys": [
+        "1dacb28938ed"
+      ],
+      "result": {
+        "answer": "Elvir Bolić",
+        "score": "0–1",
+        "story": "Bolić'in golüyle Fenerbahçe, Manchester United'ı Old Trafford'da mağlup etti.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/53226/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_22",
+      "number": 22,
+      "season": "2011/2012",
+      "date": "2012-05-19",
+      "round": "Final",
+      "title": "Münih'te son vuruş",
+      "home": {
+        "id": 27,
+        "name": "Bayern Münih"
+      },
+      "away": {
+        "id": 631,
+        "name": "Chelsea"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Hem beraberlik golünü hem de serinin son penaltısını atan kimdi?",
+      "clock": "88′ / penaltı serisi",
+      "hint": "Bir kafa golü ve penaltı serisindeki son vuruş aynı oyuncuya ait.",
+      "intro": "Bayern Münih ve Chelsea, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "36f91ca424ee",
+          "label": "Didier Drogba"
+        },
+        {
+          "id": "34d1d6b44a5b",
+          "label": "Salomon Kalou"
+        },
+        {
+          "id": "89c1316e079a",
+          "label": "Frank Lampard"
+        },
+        {
+          "id": "a86b130eed51",
+          "label": "Juan Mata"
+        }
+      ],
+      "answerKeys": [
+        "36f91ca424ee"
+      ],
+      "result": {
+        "answer": "Didier Drogba",
+        "score": "1–1",
+        "story": "Drogba 88'de eşitledi. Chelsea penaltı serisini 4–3 kazanırken son vuruşu da o yaptı.",
+        "penalties": [
+          3,
+          4
+        ],
+        "aggregate": null,
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2007693/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18237,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_23",
+      "number": 23,
+      "season": "2020/2021",
+      "date": "2020-08-14",
+      "round": "Çeyrek final · tek maç",
+      "title": "Lizbon'da tabela",
+      "home": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "away": {
+        "id": 27,
+        "name": "Bayern Münih"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "score",
+      "prompt": "Tek maç üzerinden oynanan çeyrek finalin skoru neydi?",
+      "clock": "Maç sonu",
+      "hint": "Tabelada Barcelona solda, Bayern sağda. Rövanş veya toplam skor yok.",
+      "intro": "Barcelona ve Bayern Münih, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "a7aad1033034",
+          "label": "Barcelona 2–8 Bayern Münih"
+        },
+        {
+          "id": "9228404fafd1",
+          "label": "Barcelona 1–7 Bayern Münih"
+        },
+        {
+          "id": "4eccb2b4eba8",
+          "label": "Barcelona 2–6 Bayern Münih"
+        },
+        {
+          "id": "da949cc200b0",
+          "label": "Barcelona 3–8 Bayern Münih"
+        }
+      ],
+      "answerKeys": [
+        "a7aad1033034"
+      ],
+      "result": {
+        "answer": "Barcelona 2–8 Bayern Münih",
+        "score": "2–8",
+        "story": "Bayern Münih 8–2 kazandı. Bu çeyrek final pandemi dönemindeki Lizbon tek maç formatında oynandı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2030146/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": null,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_24",
+      "number": 24,
+      "season": "2017/2018",
+      "date": "2018-05-26",
+      "round": "Final",
+      "title": "Kiev'de başlangıç düdüğü",
+      "home": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "away": {
+        "id": 31,
+        "name": "Liverpool"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "xi",
+      "prompt": "Real Madrid'in başlangıç 11'indeki eksik sağ beki seç.",
+      "clock": "İlk 11",
+      "hint": "Maçı bitiren kadroyu değil, ilk düdükte sahada olanı arıyoruz.",
+      "intro": "Real Madrid ve Liverpool, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "b847c09ebb3e",
+          "label": "Achraf Hakimi"
+        },
+        {
+          "id": "23342aa04e3f",
+          "label": "Dani Carvajal"
+        },
+        {
+          "id": "ed4245f0a3b1",
+          "label": "Nacho"
+        },
+        {
+          "id": "9312bf04fbdd",
+          "label": "Gareth Bale"
+        }
+      ],
+      "answerKeys": [
+        "23342aa04e3f"
+      ],
+      "result": {
+        "answer": "Dani Carvajal",
+        "score": "3–1",
+        "story": "Carvajal ilk 11'de başladı; sakatlanınca yerini Nacho aldı. Real Madrid 3–1 kazandı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2021711/"
+          },
+          {
+            "name": "UEFA · finaller ve başlangıç kadroları",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18245,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Real Madrid",
+        "rows": [
+          [
+            "Navas"
+          ],
+          [
+            "Marcelo",
+            "Ramos",
+            "Varane",
+            "?"
+          ],
+          [
+            "Kroos",
+            "Casemiro",
+            "Modrić"
+          ],
+          [
+            "Isco"
+          ],
+          [
+            "Cristiano Ronaldo",
+            "Benzema"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    },
+    {
+      "id": "ucl_25",
+      "number": 25,
+      "season": "1971/1972",
+      "date": "1972-05-31",
+      "round": "Final",
+      "title": "Rotterdam'ın eski ışıkları",
+      "home": {
+        "id": 610,
+        "name": "Ajax"
+      },
+      "away": {
+        "id": 46,
+        "name": "Inter"
+      },
+      "competition": "Avrupa Şampiyon Kulüpler Kupası",
+      "type": "xi",
+      "prompt": "Ajax'ın başlangıç 11'indeki eksik 7 numara kimdi?",
+      "clock": "İlk 11 · 7 numara",
+      "hint": "Bu karşılaşma modern Şampiyonlar Ligi adı kullanılmadan önce oynandı.",
+      "intro": "Ajax ve Inter, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "e5384169330e",
+          "label": "Johan Boskamp"
+        },
+        {
+          "id": "f94326043add",
+          "label": "Arnold Mühren"
+        },
+        {
+          "id": "be88b061b4a3",
+          "label": "Johnny Rep"
+        },
+        {
+          "id": "faff864a9e2b",
+          "label": "Johan Neeskens"
+        }
+      ],
+      "answerKeys": [
+        "faff864a9e2b"
+      ],
+      "result": {
+        "answer": "Johan Neeskens",
+        "score": "2–0",
+        "story": "Ajax, Cruyff'un iki golüyle Avrupa Şampiyon Kulüpler Kupası'nı kazandı. Neeskens başlangıç 11'indeydi.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/63097/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 3750235,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Ajax",
+        "rows": [
+          [
+            "Stuy"
+          ],
+          [
+            "Krol",
+            "Blankenburg",
+            "Hulshoff",
+            "Suurbier"
+          ],
+          [
+            "Mühren",
+            "Haan",
+            "?"
+          ],
+          [
+            "Keizer",
+            "Cruyff",
+            "Swart"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    },
+    {
+      "id": "ucl_26",
+      "number": 26,
+      "season": "2003/2004",
+      "date": "2004-05-26",
+      "round": "Final",
+      "title": "Gelsenkirchen'de iki hayal",
+      "home": {
+        "id": 162,
+        "name": "Monaco"
+      },
+      "away": {
+        "id": 720,
+        "name": "Porto"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "xi",
+      "prompt": "Porto'nun başlangıç 11'indeki eksik hücum oyuncusu kimdi?",
+      "clock": "İlk 11",
+      "hint": "Sonradan oyuna girenleri değil, Derlei ile başlayan oyuncuyu seç.",
+      "intro": "Monaco ve Porto, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "5f54bb2679a8",
+          "label": "Benni McCarthy"
+        },
+        {
+          "id": "2d5063250a9c",
+          "label": "Carlos Alberto"
+        },
+        {
+          "id": "fa83f033ef03",
+          "label": "Dmitri Alenichev"
+        },
+        {
+          "id": "bb6d56cac00d",
+          "label": "Edgaras Jankauskas"
+        }
+      ],
+      "answerKeys": [
+        "2d5063250a9c"
+      ],
+      "result": {
+        "answer": "Carlos Alberto",
+        "score": "0–3",
+        "story": "Carlos Alberto ilk 11'deydi ve ilk golü attı. Porto üç golle kupaya ulaştı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · resmi ilk 11 belgesi",
+            "url": "https://www.uefa.com/newsfiles/UCL/2003/1065206_LU.pdf"
+          },
+          {
+            "name": "UEFA · finaller ve başlangıç kadroları",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 3752619,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Porto",
+        "rows": [
+          [
+            "Vítor Baía"
+          ],
+          [
+            "Nuno Valente",
+            "Ricardo Carvalho",
+            "Jorge Costa",
+            "Paulo Ferreira"
+          ],
+          [
+            "Maniche",
+            "Costinha",
+            "Pedro Mendes"
+          ],
+          [
+            "Deco"
+          ],
+          [
+            "Derlei",
+            "?"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    },
+    {
+      "id": "ucl_27",
+      "number": 27,
+      "season": "2006/2007",
+      "date": "2007-05-23",
+      "round": "Final",
+      "title": "Atina'da yeniden karşılaşma",
+      "home": {
+        "id": 5,
+        "name": "Milan"
+      },
+      "away": {
+        "id": 31,
+        "name": "Liverpool"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Milan'ın finaldeki iki golünü de kim attı?",
+      "clock": "45′ / 82′",
+      "hint": "Aynı oyuncu ilk yarının sonunda ve ikinci yarıda gol buldu.",
+      "intro": "Milan ve Liverpool, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "f94831adb55d",
+          "label": "Alberto Gilardino"
+        },
+        {
+          "id": "e5993171a0f4",
+          "label": "Kaká"
+        },
+        {
+          "id": "eb7dd92b9fc5",
+          "label": "Filippo Inzaghi"
+        },
+        {
+          "id": "c7ff94ed9900",
+          "label": "Clarence Seedorf"
+        }
+      ],
+      "answerKeys": [
+        "eb7dd92b9fc5"
+      ],
+      "result": {
+        "answer": "Filippo Inzaghi",
+        "score": "2–1",
+        "story": "Inzaghi'nin iki golü Milan'a kupayı getirdi; Liverpool'un geç golü sonucu değiştirmedi.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/300099/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 3750200,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_28",
+      "number": 28,
+      "season": "2008/2009",
+      "date": "2009-05-27",
+      "round": "Final",
+      "title": "Roma'da ilk on bir",
+      "home": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "away": {
+        "id": 985,
+        "name": "Manchester United"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "xi",
+      "prompt": "Barcelona'nın başlangıç 11'indeki eksik oyuncuyu seç.",
+      "clock": "İlk 11",
+      "hint": "Sakatlık ve cezalar nedeniyle savunmada alışılmadık bir tercih vardı.",
+      "intro": "Barcelona ve Manchester United, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "f650ea6fc126",
+          "label": "Yaya Touré"
+        },
+        {
+          "id": "7ccf9710544d",
+          "label": "Dani Alves"
+        },
+        {
+          "id": "86a76c80ea2f",
+          "label": "Seydou Keita"
+        },
+        {
+          "id": "f7609450f3e7",
+          "label": "Rafael Márquez"
+        }
+      ],
+      "answerKeys": [
+        "f650ea6fc126"
+      ],
+      "result": {
+        "answer": "Yaya Touré",
+        "score": "2–0",
+        "story": "Yaya Touré savunmada başladı. Eto'o ve Messi'nin golleri Barcelona'ya kupayı getirdi.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/302813/"
+          },
+          {
+            "name": "UEFA · finaller ve başlangıç kadroları",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 3750201,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Barcelona",
+        "rows": [
+          [
+            "Valdés"
+          ],
+          [
+            "Sylvinho",
+            "Piqué",
+            "?",
+            "Puyol"
+          ],
+          [
+            "Iniesta",
+            "Busquets",
+            "Xavi"
+          ],
+          [
+            "Henry",
+            "Eto'o",
+            "Messi"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    },
+    {
+      "id": "ucl_29",
+      "number": 29,
+      "season": "2009/2010",
+      "date": "2010-05-22",
+      "round": "Final",
+      "title": "Madrid'de kupa gecesi",
+      "home": {
+        "id": 27,
+        "name": "Bayern Münih"
+      },
+      "away": {
+        "id": 46,
+        "name": "Inter"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Inter'in iki golünü de atan kimdi?",
+      "clock": "35′ / 70′",
+      "hint": "İki farklı devrede yapılan bitirici vuruşlar aynı oyuncudan geldi.",
+      "intro": "Bayern Münih ve Inter, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "2f1ad5d75e26",
+          "label": "Goran Pandev"
+        },
+        {
+          "id": "1f28720c9008",
+          "label": "Wesley Sneijder"
+        },
+        {
+          "id": "753e618a7375",
+          "label": "Diego Milito"
+        },
+        {
+          "id": "df6d91442d29",
+          "label": "Samuel Eto'o"
+        }
+      ],
+      "answerKeys": [
+        "753e618a7375"
+      ],
+      "result": {
+        "answer": "Diego Milito",
+        "score": "0–2",
+        "story": "Milito iki gol attı. Inter bu zaferle sezonu lig, kupa ve Avrupa şampiyonluğuyla tamamladı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2000488/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18235,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_30",
+      "number": 30,
+      "season": "2010/2011",
+      "date": "2011-05-28",
+      "round": "Final",
+      "title": "Wembley'de tahta",
+      "home": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "away": {
+        "id": 985,
+        "name": "Manchester United"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "xi",
+      "prompt": "Barcelona'nın başlangıç 11'indeki eksik hücum oyuncusunu seç.",
+      "clock": "İlk 11",
+      "hint": "Pedro ve Messi'nin yanındaki başlangıç tercihini bul.",
+      "intro": "Barcelona ve Manchester United, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "8655379d68cc",
+          "label": "David Villa"
+        },
+        {
+          "id": "60a0bec73f44",
+          "label": "Ibrahim Afellay"
+        },
+        {
+          "id": "257cbee894a0",
+          "label": "Seydou Keita"
+        },
+        {
+          "id": "e8430be0b46c",
+          "label": "Bojan Krkić"
+        }
+      ],
+      "answerKeys": [
+        "8655379d68cc"
+      ],
+      "result": {
+        "answer": "David Villa",
+        "score": "3–1",
+        "story": "Villa ilk 11'deydi ve Barcelona'nın üçüncü golünü attı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2003352/"
+          },
+          {
+            "name": "UEFA · finaller ve başlangıç kadroları",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18236,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Barcelona",
+        "rows": [
+          [
+            "Valdés"
+          ],
+          [
+            "Abidal",
+            "Mascherano",
+            "Piqué",
+            "Dani Alves"
+          ],
+          [
+            "Iniesta",
+            "Busquets",
+            "Xavi"
+          ],
+          [
+            "Pedro",
+            "Messi",
+            "?"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    },
+    {
+      "id": "ucl_31",
+      "number": 31,
+      "season": "2014/2015",
+      "date": "2015-06-06",
+      "round": "Final",
+      "title": "Berlin'de ilk adım",
+      "home": {
+        "id": 506,
+        "name": "Juventus"
+      },
+      "away": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "xi",
+      "prompt": "Barcelona'nın başlangıç 11'indeki eksik orta saha kimdi?",
+      "clock": "İlk 11",
+      "hint": "Sezonun genel kadrosu değil, bu finalin başlangıç kadrosu belirleyici.",
+      "intro": "Juventus ve Barcelona, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "f1d06b7dbd7b",
+          "label": "Ivan Rakitić"
+        },
+        {
+          "id": "05ef87ff838d",
+          "label": "Rafinha"
+        },
+        {
+          "id": "b6cf41485ef9",
+          "label": "Sergi Roberto"
+        },
+        {
+          "id": "c1022567d445",
+          "label": "Xavi"
+        }
+      ],
+      "answerKeys": [
+        "f1d06b7dbd7b"
+      ],
+      "result": {
+        "answer": "Ivan Rakitić",
+        "score": "1–3",
+        "story": "Rakitić ilk 11'de başladı ve ilk golü attı. Xavi sonradan oyuna girdi.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2015227/"
+          },
+          {
+            "name": "UEFA · finaller ve başlangıç kadroları",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18242,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Barcelona",
+        "rows": [
+          [
+            "Ter Stegen"
+          ],
+          [
+            "Jordi Alba",
+            "Mascherano",
+            "Piqué",
+            "Dani Alves"
+          ],
+          [
+            "Iniesta",
+            "Busquets",
+            "?"
+          ],
+          [
+            "Neymar",
+            "Suárez",
+            "Messi"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    },
+    {
+      "id": "ucl_32",
+      "number": 32,
+      "season": "2015/2016",
+      "date": "2016-05-28",
+      "round": "Final",
+      "title": "Milano'da son nokta",
+      "home": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "away": {
+        "id": 13,
+        "name": "Atlético Madrid"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Penaltı serisinin son vuruşunu gole çeviren kimdi?",
+      "clock": "Penaltı serisi",
+      "hint": "Normal süredeki golcü ile son penaltıyı atan oyuncuyu karıştırma.",
+      "intro": "Real Madrid ve Atlético Madrid, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "27e303ed6329",
+          "label": "Gareth Bale"
+        },
+        {
+          "id": "697eab3bfdbe",
+          "label": "Cristiano Ronaldo"
+        },
+        {
+          "id": "e9f127ed49f9",
+          "label": "Luka Modrić"
+        },
+        {
+          "id": "4b98665344a8",
+          "label": "Sergio Ramos"
+        }
+      ],
+      "answerKeys": [
+        "697eab3bfdbe"
+      ],
+      "result": {
+        "answer": "Cristiano Ronaldo",
+        "score": "1–1",
+        "story": "Real Madrid penaltıları 5–3 kazandı; seriyi Cristiano Ronaldo'nun vuruşu bitirdi.",
+        "penalties": [
+          5,
+          3
+        ],
+        "aggregate": null,
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2015789/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18243,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_33",
+      "number": 33,
+      "season": "2016/2017",
+      "date": "2017-06-03",
+      "round": "Final",
+      "title": "Cardiff'te final ışığı",
+      "home": {
+        "id": 506,
+        "name": "Juventus"
+      },
+      "away": {
+        "id": 418,
+        "name": "Real Madrid"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "hero",
+      "prompt": "Real Madrid adına iki gol atan oyuncu kimdi?",
+      "clock": "20′ / 64′",
+      "hint": "İlk ve üçüncü Real Madrid gollerinin sahibi aynıydı.",
+      "intro": "Juventus ve Real Madrid, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "e785ff62498d",
+          "label": "Marco Asensio"
+        },
+        {
+          "id": "70e2efdbebd7",
+          "label": "Casemiro"
+        },
+        {
+          "id": "9f7d92b42023",
+          "label": "Cristiano Ronaldo"
+        },
+        {
+          "id": "88ae385f4d84",
+          "label": "Karim Benzema"
+        }
+      ],
+      "answerKeys": [
+        "9f7d92b42023"
+      ],
+      "result": {
+        "answer": "Cristiano Ronaldo",
+        "score": "1–4",
+        "story": "Cristiano Ronaldo iki gol attı. Real Madrid üst üste ikinci kez kupayı kazandı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2019641/"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 18244,
+        "rawProviderDataIncluded": false
+      }
+    },
+    {
+      "id": "ucl_34",
+      "number": 34,
+      "season": "2018/2019",
+      "date": "2019-06-01",
+      "round": "Final",
+      "title": "Madrid'de kadro kararı",
+      "home": {
+        "id": 148,
+        "name": "Tottenham"
+      },
+      "away": {
+        "id": 31,
+        "name": "Liverpool"
+      },
+      "competition": "UEFA Şampiyonlar Ligi",
+      "type": "xi",
+      "prompt": "Tottenham'ın başlangıç 11'indeki eksik santrforu seç.",
+      "clock": "İlk 11",
+      "hint": "Yarı finalin kadrosunu değil, finalin ilk 11'ini düşün.",
+      "intro": "Tottenham ve Liverpool, Avrupa sahnesinde karşı karşıya. Bu gecenin izini sür; belirleyici anı kendi bilginle keşfet.",
+      "options": [
+        {
+          "id": "1dd67b794eb7",
+          "label": "Harry Kane"
+        },
+        {
+          "id": "ab3a239430e0",
+          "label": "Fernando Llorente"
+        },
+        {
+          "id": "39036c874347",
+          "label": "Lucas Moura"
+        },
+        {
+          "id": "0e47ecc6cd7a",
+          "label": "Erik Lamela"
+        }
+      ],
+      "answerKeys": [
+        "1dd67b794eb7"
+      ],
+      "result": {
+        "answer": "Harry Kane",
+        "score": "0–2",
+        "story": "Kane başlangıç kadrosundaydı; Lucas Moura yedek başladı. Liverpool Salah ve Origi ile kazandı.",
+        "penalties": null,
+        "aggregate": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "UEFA · maç arşivi",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2025486/"
+          },
+          {
+            "name": "UEFA · finaller ve başlangıç kadroları",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "status": "reviewed",
+        "reviewedAt": "2026-10-10",
+        "statsBombMatchId": 22912,
+        "rawProviderDataIncluded": false
+      },
+      "lineup": {
+        "club": "Tottenham",
+        "rows": [
+          [
+            "Lloris"
+          ],
+          [
+            "Rose",
+            "Vertonghen",
+            "Alderweireld",
+            "Trippier"
+          ],
+          [
+            "Winks",
+            "Sissoko"
+          ],
+          [
+            "Son",
+            "Dele Alli",
+            "Eriksen"
+          ],
+          [
+            "?"
+          ]
+        ],
+        "note": "Başlangıç 11’i · şematik yerleşim"
+      }
+    }
+  ],
+  "economy": {
+    "match": {
+      "coins": 8,
+      "xp": 20
+    },
+    "milestones": [
+      {
+        "count": 10,
+        "coins": 40,
+        "xp": 75
+      },
+      {
+        "count": 20,
+        "coins": 70,
+        "xp": 100
+      },
+      {
+        "count": 34,
+        "coins": 100,
+        "xp": 150
+      }
+    ]
+  }
+}

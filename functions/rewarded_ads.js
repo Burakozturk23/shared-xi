@@ -1,7 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
-  "story_hint", "story_double"]);
+  "story_hint", "story_double", "what_if_hint", "what_if_double"]);
 const TICKET_MS = 20 * 60000;
 const RETENTION_MS = 48 * 3600000;
 class RewardError extends Error {
@@ -50,7 +50,7 @@ function policyOf(config, units, platform) {
 // settled via the existing idempotent wallet, with a durable retryable outbox.
 function createService({db, getConfig, units, grantCoins, isLinked, isPro, now = Date.now,
   randomId = () => crypto.randomBytes(24).toString("hex"), prepareDailyReward, settleDailyReward,
-  prepareStoryReward, settleStoryReward}) {
+  prepareStoryReward, settleStoryReward, prepareWhatIfReward, settleWhatIfReward}) {
   const ref = (uid) => db.ref("rewardedAdState/" + uid);
   async function transact(uid, change) {
     let error;
@@ -73,7 +73,10 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     if (!Object.keys(state.pending).length) return;
     const linked = await isLinked(uid);
     for (const [id, receipt] of Object.entries(state.pending)) {
-      if (receipt.placement.startsWith("story_")) {
+      if (receipt.placement.startsWith("what_if_")) {
+        if (!settleWhatIfReward) continue;
+        await settleWhatIfReward(uid, receipt);
+      } else if (receipt.placement.startsWith("story_")) {
         if (!settleStoryReward) continue;
         await settleStoryReward(uid, receipt);
       } else if (receipt.placement.startsWith("daily_")) {
@@ -106,6 +109,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     const pro = await isPro(uid);
     const ticket = ticketId ? state.tickets[ticketId] : Object.values(state.tickets)
         .filter((t) => !t.placement.startsWith("daily_") && !t.placement.startsWith("story_") &&
+          !t.placement.startsWith("what_if_") &&
           (t.status === "verified" || t.status === "pending" && t.expiresAt > time))
         .sort((a, b) => b.createdAt - a.createdAt)[0];
     return {ok: true, dayKey: key, resetTimeZone: "Europe/Istanbul", pro,
@@ -124,23 +128,25 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         .find((t) => t.requestId === requestId);
     if (existing) {
       if (existing.placement !== placement) fail("invalid-argument", "Reklam isteği eşleşmiyor.");
-      if (placement.startsWith("story_") && Object.entries(existing.context || {})
+      if ((placement.startsWith("story_") || placement.startsWith("what_if_")) && Object.entries(existing.context || {})
           .some(([key, value]) => context?.[key] !== value)) {
         fail("invalid-argument", "Reklam görevi eşleşmiyor.");
       }
       await settle(uid);
       return {ok: true, pro: existing.sourceType === "pro_daily_bonus", userId: uid, ticket: publicTicket(existing)};
     }
-    const story = placement.startsWith("story_");
+    const whatIf = placement.startsWith("what_if_");
+    const story = placement.startsWith("story_") || whatIf;
     if (story && !await isLinked(uid)) fail("permission-denied", "Google hesabına bağlan.");
-    const benefit = story ? await prepareStoryReward?.(uid, placement, context) : placement.startsWith("daily_") ?
+    const benefit = whatIf ? await prepareWhatIfReward?.(uid, placement, context) :
+      story ? await prepareStoryReward?.(uid, placement, context) : placement.startsWith("daily_") ?
       await prepareDailyReward?.(uid, placement, context) : null;
     if ((story || placement.startsWith("daily_")) && !benefit) fail("failed-precondition", "Bonus hazır değil.");
     const time = now();
     const policy = policyOf(await getConfig(), units, platform);
     // Story uses its own opt-in placements, not the disabled generic coin source.
     if (story) {
-      policy.enabled = true; policy.limit = 4; policy.configId = "journey-v1";
+      policy.enabled = true; policy.limit = 4; policy.configId = whatIf ? "what-if-v1" : "journey-v1";
     }
     const pro = await isPro(uid);
     if (!policy.enabled) fail("failed-precondition", "Bonuslar şu anda kapalı.");
