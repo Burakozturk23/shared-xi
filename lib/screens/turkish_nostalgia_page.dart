@@ -243,15 +243,30 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFFFFF4E3),
-            fontSize: 27,
-            fontWeight: FontWeight.w800,
-            height: 1.2,
-          ),
-        ),
+        LayoutBuilder(builder: (context, constraints) {
+          final inherited = DefaultTextStyle.of(context).style;
+          final scaler = MediaQuery.textScalerOf(context);
+          var size = 27.0;
+          TextStyle heading() => inherited.copyWith(
+            color: const Color(0xFFFFF4E3), fontSize: size,
+            fontWeight: FontWeight.w800, height: 1.2,
+          );
+          // Keep complete words readable at large text sizes, without truncation.
+          while (size > 16) {
+            var fits = true;
+            for (final word in title.split(RegExp(r'\s+'))) {
+              final painter = TextPainter(
+                text: TextSpan(text: word, style: heading()),
+                textDirection: Directionality.of(context), textScaler: scaler,
+              )..layout();
+              if (painter.width > constraints.maxWidth - 1) fits = false;
+              painter.dispose();
+            }
+            if (fits) break;
+            size -= 0.5;
+          }
+          return Text(title, style: heading());
+        }),
         const SizedBox(height: 12),
         Text(
           subtitle,
