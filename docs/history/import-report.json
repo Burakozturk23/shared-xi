@@ -1,0 +1,640 @@
+{
+  "schema_version": 1,
+  "cutoff": "2026-10-09",
+  "inputs": {
+    "international": {
+      "file": "archive.zip",
+      "sha256": "7c5c8227f92ab7ba968a90936f3ca30e8b5ec2048a447908db1b6053a5dad945",
+      "files": 4,
+      "bytes": 7070845
+    },
+    "footballdata": {
+      "file": "cache.footballdata-master.zip",
+      "sha256": "449906e19eb5fa68ee3c5fd2950934b94826f4942d45668a074d9a61abc5bbc0",
+      "files": 850,
+      "bytes": 12389497
+    },
+    "squads": {
+      "file": "cache.footballsquads-master.zip",
+      "sha256": "aecd25e88286edd27da62f8206c76d8962bd56e247377cc8e2063fbe94b650fe",
+      "files": 17521,
+      "bytes": 43663128
+    },
+    "wfb": {
+      "file": "cache.wfb-master.zip",
+      "sha256": "f081689dbf51ffabdb86b007132215a6b193b2749552cbf5adc0913b21ed9b2a",
+      "files": 529,
+      "bytes": 13366422
+    },
+    "germany": {
+      "file": "deutschland-master.zip",
+      "sha256": "bf54dadac9dd12800aabeddeaa52a707b25d8a692f24a6f6ca3c9d778dbaf2e0",
+      "files": 76,
+      "bytes": 1251246
+    },
+    "england": {
+      "file": "england-master.zip",
+      "sha256": "b213f7f002decef01f8bfb0998ca31e62dcf154ebce65810380ed93c2725c2c4",
+      "files": 100,
+      "bytes": 2724051
+    },
+    "spain": {
+      "file": "espana-master.zip",
+      "sha256": "3bb789a6f551a2124f304a7b2a8a005fd56fc422ff950866e0c13480b59cfc55",
+      "files": 14,
+      "bytes": 241248
+    },
+    "ucl": {
+      "file": "europe-champions-league-master.zip",
+      "sha256": "fcdfc839440066ca76f0f6a5b79776fa1061d3c2869756ab2c67c832bf2d270e",
+      "files": 65,
+      "bytes": 988941
+    }
+  },
+  "counts": {
+    "conflicting_records": 1,
+    "england_accepted": 45849,
+    "england_rows": 47910,
+    "footballdata_accepted": 278456,
+    "footballdata_rows": 278459,
+    "germany_accepted": 22005,
+    "germany_rows": 22798,
+    "goalscorers.csv_accepted": 47914,
+    "goalscorers.csv_rows": 47914,
+    "international_accepted": 49945,
+    "international_rows": 49945,
+    "merged_duplicate_records": 9212,
+    "shootouts.csv_accepted": 699,
+    "shootouts.csv_rows": 700,
+    "spain_accepted": 4155,
+    "spain_rows": 4806,
+    "squads_accepted": 576048,
+    "squads_rows": 576640,
+    "statsbomb_lineup_entries": 242,
+    "statsbomb_lineups_accepted": 7,
+    "ucl_accepted": 6554,
+    "ucl_rows": 6554,
+    "wfb_accepted": 136776,
+    "wfb_rows": 155903
+  },
+  "rejected": {
+    "england:unplayed_match": 2061,
+    "footballdata:unplayed_match": 3,
+    "germany:unplayed_match": 793,
+    "international:unresolved_match": 1,
+    "spain:unplayed_match": 651,
+    "squads:column_count": 590,
+    "squads:missing_name": 2,
+    "wfb:invalid_score": 938,
+    "wfb:same_team": 91,
+    "wfb:unplayed_match": 18098
+  },
+  "examples": {
+    "international:unresolved_match": [
+      {
+        "path": "shootouts.csv",
+        "row": 431
+      }
+    ],
+    "footballdata:unplayed_match": [
+      {
+        "path": "cache.footballdata-master/2014-15/gr.1.csv",
+        "row": 302
+      },
+      {
+        "path": "cache.footballdata-master/2016/br.1.csv",
+        "row": 373
+      },
+      {
+        "path": "cache.footballdata-master/2018-19/gr.1.csv",
+        "row": 199
+      }
+    ],
+    "squads:column_count": [
+      {
+        "path": "cache.footballsquads-master/australia/2001-2002/prem/brisbane.txt",
+        "row": 19
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2002-2003/prem/sthmelb.txt",
+        "row": 20
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2003-2004/prem/brisbane.txt",
+        "row": 5
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2003-2004/prem/sydneyo.txt",
+        "row": 24
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2005-2006/aleague/queens.txt",
+        "row": 10
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2005-2006/aleague/queens.txt",
+        "row": 33
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2006-2007/aleague/adelaide.txt",
+        "row": 25
+      },
+      {
+        "path": "cache.footballsquads-master/australia/2007-2008/aleague/adelaide.txt",
+        "row": 14
+      }
+    ],
+    "squads:missing_name": [
+      {
+        "path": "cache.footballsquads-master/ger/2017-2018/bundes/mainz.txt",
+        "row": 18
+      },
+      {
+        "path": "cache.footballsquads-master/turkey/2004-2005/superl/ankgucu.txt",
+        "row": 15
+      }
+    ],
+    "wfb:invalid_score": [
+      {
+        "path": "cache.wfb-master/2013-14/at.3.o.csv",
+        "row": 21
+      },
+      {
+        "path": "cache.wfb-master/2016/br.1.csv",
+        "row": 372
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 54
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 57
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 65
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 66
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 76
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 105
+      }
+    ],
+    "wfb:unplayed_match": [
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 27
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 62
+      },
+      {
+        "path": "cache.wfb-master/2016/br.cup.csv",
+        "row": 64
+      },
+      {
+        "path": "cache.wfb-master/2018/br.carioca.csv",
+        "row": 77
+      },
+      {
+        "path": "cache.wfb-master/2019-20/ch.1.csv",
+        "row": 142
+      },
+      {
+        "path": "cache.wfb-master/2019-20/ch.1.csv",
+        "row": 143
+      },
+      {
+        "path": "cache.wfb-master/2019-20/ch.1.csv",
+        "row": 144
+      },
+      {
+        "path": "cache.wfb-master/2019-20/ch.1.csv",
+        "row": 145
+      }
+    ],
+    "wfb:same_team": [
+      {
+        "path": "cache.wfb-master/2024-25/it.cup.csv",
+        "row": 38
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 146
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 147
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 148
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 149
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 150
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 151
+      },
+      {
+        "path": "cache.wfb-master/2024-25/uefa.cl.csv",
+        "row": 152
+      }
+    ],
+    "germany:unplayed_match": [
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 362
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 363
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 364
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 365
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 366
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 367
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 368
+      },
+      {
+        "path": "deutschland-master/2010s/2019-20/de.3.csv",
+        "row": 369
+      }
+    ],
+    "england:unplayed_match": [
+      {
+        "path": "england-master/2010s/2018-19/eng.2.csv",
+        "row": 531
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 494
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 495
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 496
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 497
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 498
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 499
+      },
+      {
+        "path": "england-master/2010s/2019-20/eng.2.csv",
+        "row": 500
+      }
+    ],
+    "spain:unplayed_match": [
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 233
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 250
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 262
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 267
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 283
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 293
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 302
+      },
+      {
+        "path": "espana-master/2010s/2018-19/es.2.csv",
+        "row": 314
+      }
+    ]
+  },
+  "warnings": {},
+  "statsbomb": {
+    "requested": 37,
+    "raw_events": 0,
+    "raw_lineups": 7,
+    "linked_results": 34,
+    "selections": [
+      {
+        "statsbomb_id": 2302764,
+        "status": "independent_result",
+        "match_id": 532189,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 18237,
+        "status": "independent_result",
+        "match_id": 533670,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 18240,
+        "status": "independent_result",
+        "match_id": 533883,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 18241,
+        "status": "independent_result",
+        "match_id": 534096,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 18245,
+        "status": "catalog_only",
+        "match_id": null,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 3752619,
+        "status": "independent_result",
+        "match_id": 531984,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 3750200,
+        "status": "independent_result",
+        "match_id": 532605,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3750201,
+        "status": "independent_result",
+        "match_id": 533031,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 18235,
+        "status": "independent_result",
+        "match_id": 533244,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 18236,
+        "status": "independent_result",
+        "match_id": 533457,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 18242,
+        "status": "independent_result",
+        "match_id": 534311,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 18243,
+        "status": "independent_result",
+        "match_id": 534528,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 18244,
+        "status": "catalog_only",
+        "match_id": null,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 22912,
+        "status": "catalog_only",
+        "match_id": null,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 3750235,
+        "status": "independent_result",
+        "match_id": 528916,
+        "events_available": false,
+        "lineups_available": true
+      },
+      {
+        "statsbomb_id": 3888711,
+        "status": "independent_result",
+        "match_id": 528853,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3888706,
+        "status": "independent_result",
+        "match_id": 528973,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3869685,
+        "status": "independent_result",
+        "match_id": 45826,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3869321,
+        "status": "independent_result",
+        "match_id": 45814,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3869486,
+        "status": "independent_result",
+        "match_id": 45816,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3869519,
+        "status": "independent_result",
+        "match_id": 45819,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 8658,
+        "status": "independent_result",
+        "match_id": 41721,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 7580,
+        "status": "independent_result",
+        "match_id": 41705,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 8656,
+        "status": "independent_result",
+        "match_id": 41719,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3943043,
+        "status": "independent_result",
+        "match_id": 47520,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3942382,
+        "status": "independent_result",
+        "match_id": 47512,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3941022,
+        "status": "independent_result",
+        "match_id": 47504,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3795506,
+        "status": "independent_result",
+        "match_id": 44278,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3794691,
+        "status": "independent_result",
+        "match_id": 44236,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3857300,
+        "status": "independent_result",
+        "match_id": 45761,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3869420,
+        "status": "independent_result",
+        "match_id": 45813,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 7584,
+        "status": "independent_result",
+        "match_id": 41710,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3938639,
+        "status": "independent_result",
+        "match_id": 47439,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3930184,
+        "status": "independent_result",
+        "match_id": 47480,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3942752,
+        "status": "independent_result",
+        "match_id": 47515,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3941017,
+        "status": "independent_result",
+        "match_id": 47493,
+        "events_available": false,
+        "lineups_available": false
+      },
+      {
+        "statsbomb_id": 3942226,
+        "status": "independent_result",
+        "match_id": 47508,
+        "events_available": false,
+        "lineups_available": false
+      }
+    ],
+    "note": "Lineups are available only for the seven explicitly supplied files. No StatsBomb event files were supplied.",
+    "lineup_match_ids": [
+      18236,
+      18242,
+      18245,
+      22912,
+      3750201,
+      3750235,
+      3752619
+    ]
+  }
+}

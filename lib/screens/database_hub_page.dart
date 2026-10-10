@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'database_club_club_page.dart';
+import 'history_archive_page.dart';
 import 'database_club_country_page.dart';
 
 class DatabaseHubPage extends StatelessWidget {
@@ -12,9 +13,10 @@ class DatabaseHubPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Veritabanı')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
+            _Tile(icon: Icons.history, title: 'Futbol arşivi', subtitle: 'Tarihsel maçlar, goller ve sezon kadroları', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryArchivePage()))),
+            const SizedBox(height: 14),
             Text(
               'Ortak oyuncuları görüntüle',
               style: TextStyle(fontSize: 15, color: Colors.grey.shade400),
