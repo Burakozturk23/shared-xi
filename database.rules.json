@@ -293,6 +293,7 @@
       ".read": false,
       ".write": false
     },
+    "nostalgiaState": {".read": false, ".write": false},
     "uclMomentsState": {
       ".read": false,
       ".write": false

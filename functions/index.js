@@ -8275,6 +8275,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["journeyRewardState/" + uid] = null;
   updates["whatIfState/" + uid] = null;
   updates["uclMomentsState/" + uid] = null;
+  updates["nostalgiaState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -9151,3 +9152,73 @@ function lbUclCallable(action) {
 }
 exports.getUclMoments = lbUclCallable("status");
 exports.submitUclMoment = lbUclCallable("submit");
+
+function lbNostalgiaService() {
+  const db = getDatabase();
+  return require("./nostalgia").createService({db,
+    isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
+    chargeHint: async (uid, taskId, price) => {
+      const key = "nostalgia_hint_v1__" + taskId;
+      const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+        const s = lbEconomyState(raw);
+        if (!s.purchases[key] && s.balances.coins >= price) {
+          const before = s.balances.coins;
+          s.balances.coins -= price;
+          s.lifetimeSpent += price;
+          s.purchases[key] = {txId: key, offerId: "nostalgia_hint_v1", itemId: taskId,
+            itemType: "hint", priceCoins: price, balanceBefore: before, balanceAfter: s.balances.coins,
+            purchasedAt: Date.now(), economyConfigId: "nostalgia-v1"};
+          s.updatedAt = Date.now();
+        }
+        return s;
+      });
+      const s = lbEconomyState(tx.snapshot.val());
+      if (!s.purchases[key]) {
+        throw new (require("./rewarded_ads").RewardError)(
+            "failed-precondition", "Bu yardım için 6 coin gerekli.");
+      }
+      await lbEconomyProject(db, uid, s);
+    },
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp;
+          s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now};
+          s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+  });
+}
+function lbNostalgiaCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
+    let eligible = true;
+    try {
+      lbRequireGoogleLinked(request);
+    } catch (_) {
+      eligible = false;
+    }
+    try {
+      const service = lbNostalgiaService();
+      return action === "status" ? await service.status(request.auth.uid, eligible) :
+        await service[action](request.auth.uid, request.data || {}, eligible);
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getNostalgia = lbNostalgiaCallable("status");
+exports.submitNostalgiaTask = lbNostalgiaCallable("submit");
+
+exports.buyNostalgiaHint = lbNostalgiaCallable("hint");

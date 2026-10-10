@@ -1,3 +1,4 @@
+import 'turkish_nostalgia_page.dart';
 import 'package:flutter/material.dart';
 
 import '../app/route_appearance.dart';
@@ -35,6 +36,8 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
       key: const PageStorageKey('profile'),
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       children: [
+        PitchRow(title: 'Nostalji Albümü', subtitle: 'Türk futbolu hatıraların ve koleksiyon rozetin', icon: Icons.history_edu, onTap: () => Navigator.push<void>(context, LinkballRoute(modern: true, builder: (_) => const TurkishNostalgiaPage(openAlbum: true)))),
+        const SizedBox(height: 16),
         Text(
           'Futbol yolculuğun.',
           style: Theme.of(context).textTheme.headlineLarge,

@@ -1,0 +1,861 @@
+{
+  "version": 1,
+  "contentRevision": "2026-10-10",
+  "economy": {
+    "task": {
+      "coins": 6,
+      "xp": 15
+    },
+    "chapter": {
+      "coins": 15,
+      "xp": 30
+    },
+    "album": {
+      "coins": 60,
+      "xp": 120
+    },
+    "hintCoins": 6
+  },
+  "chapters": [
+    {
+      "id": "nostalgia_01",
+      "number": 1,
+      "title": "İzmir’den Avrupa’ya",
+      "era": "1960’lar",
+      "categories": [
+        "Avrupa",
+        "Anadolu"
+      ],
+      "intro": "Körfezden yükselen tezahürat Avrupa tribünlerine taşınıyor. Sarı kırmızılı bir kuşağın izini sür.",
+      "taskIds": [
+        "nostalgia_01_1",
+        "nostalgia_01_2"
+      ]
+    },
+    {
+      "id": "nostalgia_02",
+      "number": 2,
+      "title": "Karadeniz’den yükselen ses",
+      "era": "1970’ler",
+      "categories": [
+        "Şampiyonluk",
+        "Anadolu"
+      ],
+      "intro": "Şehrin sokaklarından tribünlere uzanan bir inanç. Lig tarihindeki dengelerin değiştiği döneme dön.",
+      "taskIds": [
+        "nostalgia_02_1",
+        "nostalgia_02_2"
+      ]
+    },
+    {
+      "id": "nostalgia_03",
+      "number": 3,
+      "title": "Kadıköy’ün gol hafızası",
+      "era": "1988–89",
+      "categories": [
+        "Şampiyonluk"
+      ],
+      "intro": "Sarı lacivertli tribünlerde hücum futbolunun konuşulduğu bir sezon. Sayıların ve isimlerin peşine düş.",
+      "taskIds": [
+        "nostalgia_03_1",
+        "nostalgia_03_2"
+      ]
+    },
+    {
+      "id": "nostalgia_04",
+      "number": 4,
+      "title": "İnönü’nün hücum hafızası",
+      "era": "1991–92",
+      "categories": [
+        "Şampiyonluk"
+      ],
+      "intro": "Birbirini tamamlayan roller, yıllarca hatırlanan bir takım. Siyah beyazlı kuşağın hikâyesini aç.",
+      "taskIds": [
+        "nostalgia_04_1",
+        "nostalgia_04_2"
+      ]
+    },
+    {
+      "id": "nostalgia_05",
+      "number": 5,
+      "title": "Avni Aker’de bir akşam",
+      "era": "1995–96",
+      "categories": [
+        "Şampiyonluk"
+      ],
+      "intro": "Takvim mayısı gösteriyor. İki şehrin beklentisi aynı sahada buluşuyor; yarışın dönüm noktasını hatırla.",
+      "taskIds": [
+        "nostalgia_05_1",
+        "nostalgia_05_2"
+      ]
+    },
+    {
+      "id": "nostalgia_06",
+      "number": 6,
+      "title": "Avrupa’da çifte iz",
+      "era": "2000",
+      "categories": [
+        "Avrupa"
+      ],
+      "intro": "İstanbul’dan kıtanın büyük sahnelerine uzanan bir yol. Rakipleri ve dönemin takvimini yeniden birleştir.",
+      "taskIds": [
+        "nostalgia_06_1",
+        "nostalgia_06_2"
+      ]
+    },
+    {
+      "id": "nostalgia_07",
+      "number": 7,
+      "title": "Uzak Doğu’da bir nesil",
+      "era": "2002",
+      "categories": [
+        "Millî Takım"
+      ],
+      "intro": "Sabah saatlerinde ekran başında buluşan bir ülke. Ay yıldızlı kuşağın turnuva hafızasını canlandır.",
+      "taskIds": [
+        "nostalgia_07_1",
+        "nostalgia_07_2"
+      ]
+    },
+    {
+      "id": "nostalgia_08",
+      "number": 8,
+      "title": "Kadıköy’den son sekize",
+      "era": "2007–08",
+      "categories": [
+        "Avrupa"
+      ],
+      "intro": "Avrupa akşamlarında sarı lacivertli tribünler. Kulübün yolculuğunu yöneten ismi ve eleme yolunu hatırla.",
+      "taskIds": [
+        "nostalgia_08_1",
+        "nostalgia_08_2"
+      ]
+    },
+    {
+      "id": "nostalgia_09",
+      "number": 9,
+      "title": "Son düdüğe kadar",
+      "era": "2008",
+      "categories": [
+        "Millî Takım"
+      ],
+      "intro": "Bir yaz, bitmek bilmeyen heyecan ve son ana kadar süren umut. Ay yıldızlıların izlediği yolu keşfet.",
+      "taskIds": [
+        "nostalgia_09_1",
+        "nostalgia_09_2"
+      ]
+    },
+    {
+      "id": "nostalgia_10",
+      "number": 10,
+      "title": "Anadolu’dan yeni bir sayfa",
+      "era": "2009–10",
+      "categories": [
+        "Şampiyonluk",
+        "Anadolu"
+      ],
+      "intro": "Son haftaya taşınan bir yarış ve futbol haritasında yeni bir sayfa. Bu hikâyenin kahramanlarını sen bul.",
+      "taskIds": [
+        "nostalgia_10_1",
+        "nostalgia_10_2"
+      ]
+    },
+    {
+      "id": "nostalgia_11",
+      "number": 11,
+      "title": "İstanbul’dan Avrupa’ya",
+      "era": "2012–13",
+      "categories": [
+        "Avrupa"
+      ],
+      "intro": "İstanbul’un iki yakasında Avrupa heyecanı. Bu bölümde bir turun kapısını ve bir orta saha rolünü aç.",
+      "taskIds": [
+        "nostalgia_11_1",
+        "nostalgia_11_2"
+      ]
+    },
+    {
+      "id": "nostalgia_12",
+      "number": 12,
+      "title": "Boğaz’dan Avrupa’ya",
+      "era": "2017–18",
+      "categories": [
+        "Avrupa"
+      ],
+      "intro": "Siyah beyazlı tribünlerden Avrupa deplasmanlarına. Grup yolculuğunun sayıları ve bir forvetin izi seni bekliyor.",
+      "taskIds": [
+        "nostalgia_12_1",
+        "nostalgia_12_2"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "nostalgia_01_1",
+      "chapterId": "nostalgia_01",
+      "type": "season",
+      "question": "Göztepe, Fuar Şehirleri Kupası’nda hangi sezonda yarı finale yükseldi?",
+      "options": [
+        {
+          "id": "09dedab06a0b",
+          "label": "1966–67"
+        },
+        {
+          "id": "678cdbaf2a42",
+          "label": "1968–69"
+        },
+        {
+          "id": "105255f65aec",
+          "label": "1969–70"
+        },
+        {
+          "id": "cc019b758860",
+          "label": "1967–68"
+        }
+      ],
+      "required": 1,
+      "hint": "1960’ların son bölümünü düşün.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_01_2",
+      "chapterId": "nostalgia_01",
+      "type": "route",
+      "question": "Göztepe’nin yarı finalde karşılaştığı Macar kulübünü seç.",
+      "options": [
+        {
+          "id": "0f9a0b87302f",
+          "label": "MTK Budapest"
+        },
+        {
+          "id": "3fe80ff4c9a6",
+          "label": "Ferencváros"
+        },
+        {
+          "id": "80ca4f66d3ac",
+          "label": "Honvéd"
+        },
+        {
+          "id": "756f0ed488eb",
+          "label": "Újpest Dózsa"
+        }
+      ],
+      "required": 1,
+      "hint": "Rakip, Macaristan’ın başkentindendi.",
+      "role": "",
+      "slots": [
+        "Yarı final"
+      ]
+    },
+    {
+      "id": "nostalgia_02_1",
+      "chapterId": "nostalgia_02",
+      "type": "season",
+      "question": "Trabzonspor ilk Türkiye 1. Futbol Ligi şampiyonluğunu hangi sezonda kazandı?",
+      "options": [
+        {
+          "id": "4641a2d56375",
+          "label": "1975–76"
+        },
+        {
+          "id": "b35a13005942",
+          "label": "1976–77"
+        },
+        {
+          "id": "49bf3bf84ca0",
+          "label": "1973–74"
+        },
+        {
+          "id": "82f44d39a172",
+          "label": "1974–75"
+        }
+      ],
+      "required": 1,
+      "hint": "Kulübün üst ligdeki ilk yıllarını düşün.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_02_2",
+      "chapterId": "nostalgia_02",
+      "type": "squad",
+      "question": "Trabzonspor’un ilk lig şampiyonluğunda takımın teknik direktörü kimdi?",
+      "options": [
+        {
+          "id": "f9838ce236db",
+          "label": "Turgay Şeren"
+        },
+        {
+          "id": "ee36df4ffba5",
+          "label": "Özkan Sümer"
+        },
+        {
+          "id": "c30dad847647",
+          "label": "Ahmet Suat Özyazıcı"
+        },
+        {
+          "id": "50a3ba717cb9",
+          "label": "Gündüz Kılıç"
+        }
+      ],
+      "required": 1,
+      "hint": "Dönemin yerel futbol kültüründen yetişen bir antrenör.",
+      "role": "Teknik direktör",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_03_1",
+      "chapterId": "nostalgia_03",
+      "type": "season",
+      "question": "Fenerbahçe’nin 1988–89 ligi resmî puan tablosundaki gol toplamı kaçtır?",
+      "options": [
+        {
+          "id": "b345973f4764",
+          "label": "103"
+        },
+        {
+          "id": "54a0cb3ccb29",
+          "label": "93"
+        },
+        {
+          "id": "a901e7a83e01",
+          "label": "98"
+        },
+        {
+          "id": "948788dd9b37",
+          "label": "108"
+        }
+      ],
+      "required": 1,
+      "hint": "Toplam, üç basamaklı bir sayıdır.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_03_2",
+      "chapterId": "nostalgia_03",
+      "type": "legend",
+      "question": "1988–89 liginde 29 golle gol kralı olan Fenerbahçeli kimdi?",
+      "options": [
+        {
+          "id": "2d1d72e92fb0",
+          "label": "Aykut Kocaman"
+        },
+        {
+          "id": "9cc3111a0b78",
+          "label": "Rıdvan Dilmen"
+        },
+        {
+          "id": "e01c52bd2233",
+          "label": "Hasan Vezir"
+        },
+        {
+          "id": "b14f9a245a84",
+          "label": "Oğuz Çetin"
+        }
+      ],
+      "required": 1,
+      "hint": "Hücum hattının santrforunu düşün.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_04_1",
+      "chapterId": "nostalgia_04",
+      "type": "squad",
+      "question": "Hücum üçlüsündeki eksik rolü tamamla: Metin Tekin, Ali Gültiken ve…",
+      "options": [
+        {
+          "id": "735627ec75de",
+          "label": "Mehmet Özdilek"
+        },
+        {
+          "id": "44029071b23e",
+          "label": "Zeki Önatlı"
+        },
+        {
+          "id": "5d13b74f3528",
+          "label": "Feyyaz Uçar"
+        },
+        {
+          "id": "37ebcc72eb40",
+          "label": "Sergen Yalçın"
+        }
+      ],
+      "required": 1,
+      "hint": "Siyah beyazlıların dönemin golcüsünü ara.",
+      "role": "Santrfor",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_04_2",
+      "chapterId": "nostalgia_04",
+      "type": "season",
+      "question": "Beşiktaş 1991–92 lig sezonunu kaç mağlubiyetle bitirdi?",
+      "options": [
+        {
+          "id": "a97ba7413557",
+          "label": "2"
+        },
+        {
+          "id": "4261b3c46505",
+          "label": "3"
+        },
+        {
+          "id": "20ba58ed159f",
+          "label": "1"
+        },
+        {
+          "id": "e2677996917a",
+          "label": "0"
+        }
+      ],
+      "required": 1,
+      "hint": "Sezonun en çok hatırlanan yönü istikrarıydı.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_05_1",
+      "chapterId": "nostalgia_05",
+      "type": "legend",
+      "question": "5 Mayıs 1996’da Avni Aker’de 84. dakikadaki Fenerbahçe galibiyet golünü kim attı?",
+      "options": [
+        {
+          "id": "f2290d311398",
+          "label": "Rıdvan Dilmen"
+        },
+        {
+          "id": "eba599b01541",
+          "label": "Oğuz Çetin"
+        },
+        {
+          "id": "4d0f827987f4",
+          "label": "Elvir Bolić"
+        },
+        {
+          "id": "0502aa18e6be",
+          "label": "Aykut Kocaman"
+        }
+      ],
+      "required": 1,
+      "hint": "Galibiyet golü bir Türk santrfordan geldi.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_05_2",
+      "chapterId": "nostalgia_05",
+      "type": "season",
+      "question": "1995–96 Türkiye 1. Futbol Ligi şampiyonu hangi kulüp oldu?",
+      "options": [
+        {
+          "id": "717a67a26b0c",
+          "label": "Beşiktaş"
+        },
+        {
+          "id": "b15988d6452f",
+          "label": "Galatasaray"
+        },
+        {
+          "id": "1759400fd9e6",
+          "label": "Fenerbahçe"
+        },
+        {
+          "id": "4ae32168c2c2",
+          "label": "Trabzonspor"
+        }
+      ],
+      "required": 1,
+      "hint": "Liderlik yarışı son haftalara kadar sürdü.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_06_1",
+      "chapterId": "nostalgia_06",
+      "type": "route",
+      "question": "Galatasaray’ın 2000 UEFA Kupası yarı final ve final rakiplerini turlara yerleştir.",
+      "options": [
+        {
+          "id": "2f9ce7f48a53",
+          "label": "Leeds United"
+        },
+        {
+          "id": "c048e31764d1",
+          "label": "Mallorca"
+        },
+        {
+          "id": "bdeae876677e",
+          "label": "Borussia Dortmund"
+        },
+        {
+          "id": "66276c8027b1",
+          "label": "Arsenal"
+        }
+      ],
+      "required": 2,
+      "hint": "Son iki turda da İngiliz rakipler vardı.",
+      "role": "",
+      "slots": [
+        "Yarı final",
+        "Final"
+      ]
+    },
+    {
+      "id": "nostalgia_06_2",
+      "chapterId": "nostalgia_06",
+      "type": "timeline",
+      "question": "Galatasaray’ın 2000 yılındaki iki Avrupa kupasını kazanılma sırasına koy.",
+      "options": [
+        {
+          "id": "c988c30b9c5e",
+          "label": "UEFA Süper Kupa"
+        },
+        {
+          "id": "3eac033a1491",
+          "label": "UEFA Kupası"
+        }
+      ],
+      "required": 2,
+      "hint": "Bir zafer sonraki kupa maçının kapısını açtı.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_07_1",
+      "chapterId": "nostalgia_07",
+      "type": "legend",
+      "question": "2002 Dünya Kupası’nda Senegal karşısındaki altın golü hangi futbolcu attı?",
+      "options": [
+        {
+          "id": "e66d0c9e3197",
+          "label": "Hakan Şükür"
+        },
+        {
+          "id": "64a6b0f815c5",
+          "label": "İlhan Mansız"
+        },
+        {
+          "id": "a34b7f63726d",
+          "label": "Hasan Şaş"
+        },
+        {
+          "id": "0eecf7028e1e",
+          "label": "Ümit Davala"
+        }
+      ],
+      "required": 1,
+      "hint": "Oyuna sonradan giren bir forvet fark yarattı.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_07_2",
+      "chapterId": "nostalgia_07",
+      "type": "timeline",
+      "question": "Türkiye’nin 2002 Dünya Kupası’ndaki çeyrek final, yarı final ve üçüncülük rakiplerini sırala.",
+      "options": [
+        {
+          "id": "76e2a4672cdb",
+          "label": "Güney Kore"
+        },
+        {
+          "id": "4abfe243ae6c",
+          "label": "Brezilya"
+        },
+        {
+          "id": "507f7fd3a478",
+          "label": "Senegal"
+        }
+      ],
+      "required": 3,
+      "hint": "Üç kıtadan üç farklı rakip.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_08_1",
+      "chapterId": "nostalgia_08",
+      "type": "squad",
+      "question": "Fenerbahçe’yi 2007–08 Şampiyonlar Ligi çeyrek finaline taşıyan teknik direktör kimdi?",
+      "options": [
+        {
+          "id": "655eac4596c9",
+          "label": "Zico"
+        },
+        {
+          "id": "3053850933b9",
+          "label": "Luis Aragonés"
+        },
+        {
+          "id": "30ff194d0577",
+          "label": "Aykut Kocaman"
+        },
+        {
+          "id": "2c614bcb1c91",
+          "label": "Christoph Daum"
+        }
+      ],
+      "required": 1,
+      "hint": "Brezilya futbolunun önemli bir ismiydi.",
+      "role": "Teknik direktör",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_08_2",
+      "chapterId": "nostalgia_08",
+      "type": "route",
+      "question": "Fenerbahçe’nin 2008 Şampiyonlar Ligi eleme rakiplerini turlara yerleştir.",
+      "options": [
+        {
+          "id": "45eeb93d8213",
+          "label": "Chelsea"
+        },
+        {
+          "id": "89dbd464f03b",
+          "label": "PSV"
+        },
+        {
+          "id": "579ca751acc2",
+          "label": "Inter"
+        },
+        {
+          "id": "1daa0efdb040",
+          "label": "Sevilla"
+        }
+      ],
+      "required": 2,
+      "hint": "Bir İspanyol kulübünü bir İngiliz kulübü izler.",
+      "role": "",
+      "slots": [
+        "Son 16",
+        "Çeyrek final"
+      ]
+    },
+    {
+      "id": "nostalgia_09_1",
+      "chapterId": "nostalgia_09",
+      "type": "timeline",
+      "question": "Türkiye’nin EURO 2008’de oynadığı son üç maçın rakiplerini sırala.",
+      "options": [
+        {
+          "id": "d80268f77a71",
+          "label": "Çekya"
+        },
+        {
+          "id": "bf8830513905",
+          "label": "Almanya"
+        },
+        {
+          "id": "9d71bc857bcf",
+          "label": "Hırvatistan"
+        }
+      ],
+      "required": 3,
+      "hint": "Grup son maçı, çeyrek final ve yarı final sırasını düşün.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_09_2",
+      "chapterId": "nostalgia_09",
+      "type": "legend",
+      "question": "EURO 2008’de Hırvatistan karşısında uzatmanın son anlarında beraberliği kim getirdi?",
+      "options": [
+        {
+          "id": "8347f3d1bc32",
+          "label": "Arda Turan"
+        },
+        {
+          "id": "5c2cf9018ffc",
+          "label": "Nihat Kahveci"
+        },
+        {
+          "id": "81a6610b797f",
+          "label": "Tuncay Şanlı"
+        },
+        {
+          "id": "afe84063153e",
+          "label": "Semih Şentürk"
+        }
+      ],
+      "required": 1,
+      "hint": "Yedekten gelip skor üreten bir santrfor.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_10_1",
+      "chapterId": "nostalgia_10",
+      "type": "season",
+      "question": "2009–10 sezonunda lig şampiyonluğunu kazanan Anadolu takımı hangisiydi?",
+      "options": [
+        {
+          "id": "06923f71e932",
+          "label": "Kayserispor"
+        },
+        {
+          "id": "a152293760c8",
+          "label": "Sivasspor"
+        },
+        {
+          "id": "9faa75c3bfb3",
+          "label": "Bursaspor"
+        },
+        {
+          "id": "eff5b8c6f8d7",
+          "label": "Eskişehirspor"
+        }
+      ],
+      "required": 1,
+      "hint": "Kulüp ilk lig şampiyonluğunu yaşadı.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_10_2",
+      "chapterId": "nostalgia_10",
+      "type": "squad",
+      "question": "2009–10 sezonunun şampiyon Anadolu takımını hangi teknik direktör çalıştırdı?",
+      "options": [
+        {
+          "id": "21b7268ab628",
+          "label": "Hikmet Karaman"
+        },
+        {
+          "id": "e6aaba7e47d2",
+          "label": "Tolunay Kafkas"
+        },
+        {
+          "id": "32dd7024afff",
+          "label": "Bülent Uygun"
+        },
+        {
+          "id": "e99b3ba814a1",
+          "label": "Ertuğrul Sağlam"
+        }
+      ],
+      "required": 1,
+      "hint": "Futbolculuk geçmişinde Beşiktaş da vardı.",
+      "role": "Teknik direktör",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_11_1",
+      "chapterId": "nostalgia_11",
+      "type": "route",
+      "question": "Galatasaray’ın 2012–13 Şampiyonlar Ligi eleme rakiplerini turlara yerleştir.",
+      "options": [
+        {
+          "id": "ea5672fc20a9",
+          "label": "Schalke 04"
+        },
+        {
+          "id": "e29e99305c7e",
+          "label": "Real Madrid"
+        },
+        {
+          "id": "92da931d58ab",
+          "label": "Manchester United"
+        },
+        {
+          "id": "ca64bf0a2169",
+          "label": "Cluj"
+        }
+      ],
+      "required": 2,
+      "hint": "Almanya’dan bir rakibi İspanya’dan bir rakip izler.",
+      "role": "",
+      "slots": [
+        "Son 16",
+        "Çeyrek final"
+      ]
+    },
+    {
+      "id": "nostalgia_11_2",
+      "chapterId": "nostalgia_11",
+      "type": "squad",
+      "question": "2013’te Drogba ile aynı sezon Galatasaray’a katılan Hollandalı orta saha kimdi?",
+      "options": [
+        {
+          "id": "3ce37f74537d",
+          "label": "Ibrahim Afellay"
+        },
+        {
+          "id": "73c8338e2e5c",
+          "label": "Clarence Seedorf"
+        },
+        {
+          "id": "947f14c990f3",
+          "label": "Wesley Sneijder"
+        },
+        {
+          "id": "866001b22bab",
+          "label": "Rafael van der Vaart"
+        }
+      ],
+      "required": 1,
+      "hint": "Hücum organizasyonunda oyun kurucu rolündeydi.",
+      "role": "Orta saha",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_12_1",
+      "chapterId": "nostalgia_12",
+      "type": "season",
+      "question": "Beşiktaş 2017–18 Şampiyonlar Ligi grubunu kaç puanla lider bitirdi?",
+      "options": [
+        {
+          "id": "137854576002",
+          "label": "12"
+        },
+        {
+          "id": "35af559c4919",
+          "label": "14"
+        },
+        {
+          "id": "462c231120ab",
+          "label": "10"
+        },
+        {
+          "id": "9ece0597f1c2",
+          "label": "16"
+        }
+      ],
+      "required": 1,
+      "hint": "Altı maçta yenilgi yaşamadı.",
+      "role": "",
+      "slots": []
+    },
+    {
+      "id": "nostalgia_12_2",
+      "chapterId": "nostalgia_12",
+      "type": "legend",
+      "question": "2017 Porto deplasmanında Beşiktaş adına uzak mesafeden gol atan Türk forvet kimdi?",
+      "options": [
+        {
+          "id": "a412c32294a8",
+          "label": "Cenk Tosun"
+        },
+        {
+          "id": "1598da5cd410",
+          "label": "Mustafa Pektemek"
+        },
+        {
+          "id": "362354e11f91",
+          "label": "Burak Yılmaz"
+        },
+        {
+          "id": "0a2641de8dae",
+          "label": "Umut Bulut"
+        }
+      ],
+      "required": 1,
+      "hint": "Dönemin siyah beyazlı santrforunu düşün.",
+      "role": "",
+      "slots": []
+    }
+  ]
+}
