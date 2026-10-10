@@ -88,7 +88,7 @@ class StoryModeSelectionPage extends StatelessWidget {
             onTap: () => GameLauncher.open(context, GameEntry(
               title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
               icon: storySubModes[i].icon, page: pages[i],
-              requiresRepository: i > 1, modern: i <= 1,
+              requiresRepository: i > 2, modern: i <= 2,
             )),
           ),
         ),

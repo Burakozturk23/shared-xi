@@ -8274,6 +8274,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["dailyMatchState/" + uid] = null;
   updates["journeyRewardState/" + uid] = null;
   updates["whatIfState/" + uid] = null;
+  updates["uclMomentsState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
   updates["rewardClaims/" + uid] = null;
@@ -9104,3 +9105,49 @@ exports.getWhatIf = lbWhatIfCallable("status");
 exports.submitWhatIf = lbWhatIfCallable("submit");
 exports.buyWhatIfHint = lbWhatIfCallable("hint");
 exports.setWhatIfShowcase = lbWhatIfCallable("favorites");
+
+// UCL answers and post-match disclosures are server-owned; no client reward amounts.
+function lbUclMomentsService() {
+  const db = getDatabase();
+  return require("./ucl_moments").createService({db,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp;
+          s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now};
+          s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+  });
+}
+function lbUclCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
+    let eligible = true;
+    try {
+      lbRequireGoogleLinked(request);
+    } catch (_) {
+      eligible = false;
+    }
+    try {
+      const service = lbUclMomentsService();
+      return action === "status" ? await service.status(request.auth.uid, eligible) :
+        await service.submit(request.auth.uid, request.data || {}, eligible);
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getUclMoments = lbUclCallable("status");
+exports.submitUclMoment = lbUclCallable("submit");
