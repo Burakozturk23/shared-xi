@@ -119,7 +119,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
   List<Widget> _archive(UclMomentsController c) {
     final visible = c.catalog.matches.where((m) => (!_collection || c.results.containsKey(m.id)) && (_filter == 'all' || m.type == _filter));
     return [
-      _hero('AVRUPA GECELERİ · 1972–2022', 'Bazı geceler\nunutulmaz.',
+      _hero('AVRUPA GECELERİ · 1972–2022', 'O geceyi\nhatırla.',
         '34 karşılaşma. Beş farklı görev. Futbol hafızanı sahaya çıkar.',
         footer: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('${c.count} / 34 hatıra', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
