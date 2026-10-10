@@ -127,13 +127,19 @@ class SqliteHistoryRepository implements HistoryRepository {
   @override
   Future<HistoryDetail> selectionDetail(String id) async {
     final db = await _database('matches');
-    final rows = await db.rawQuery('SELECT s.*, (SELECT count(*) FROM lineup_entries l WHERE l.selection_id=s.id) AS lineup_entries FROM selections s WHERE s.id=?', [id]);
+    // The distributed production pack intentionally keeps the verified first
+    // elevens as small JSON sidecars. Do not query the optional importer-only
+    // `lineup_entries` table here: older packs (including the shipped pack)
+    // remain fully compatible and get their count from the same sidecar used
+    // to render the lineup.
+    final rows = await db.rawQuery('SELECT s.* FROM selections s WHERE s.id=?', [id]);
     if (rows.isEmpty) throw StateError('Selection not found');
     final lineups = await _loadLineups(int.parse(id));
+    final record = HistoryRecord({...rows.single, 'lineup_entries': lineups.length});
     final sources = await db.rawQuery('SELECT * FROM sources WHERE id=?', ['statsbomb']);
     final sourceRecords = sources.map(HistoryRecord.new).toList();
     if (lineups.isNotEmpty && sourceRecords.every((source) => source.text('id') != 'statsbomb')) sourceRecords.add(_statsBombSource);
-    return HistoryDetail(record: HistoryRecord(rows.single), lineups: lineups, sources: sourceRecords);
+    return HistoryDetail(record: record, lineups: lineups, sources: sourceRecords);
   }
 
   Future<List<HistoryRecord>> _loadLineups(int selectionId) async {
