@@ -68,6 +68,7 @@ jobs:
           python3 tools/player_journey/verify.py
           python3 tools/what_if/verify.py
           python3 tools/ucl_moments/verify.py
+          python3 tools/nostalgia/verify.py
           python3 tools/season_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/generate_catalog.py --check
           python3 tools/uploaded_portraits/verify.py
@@ -218,6 +219,16 @@ jobs:
         with:
           name: season-badge-previews
           path: .dart_tool/season_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload nostalgia previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nostalgia-previews
+          path: .dart_tool/nostalgia_qa/*.png
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7

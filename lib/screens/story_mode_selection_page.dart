@@ -40,7 +40,7 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'Türk Futbolu: Nostalji',
-    subtitle: 'Türk futbolunun altın yılları',
+    subtitle: '12 dönem · 24 görev · Nostalji Albümü',
     icon: Icons.history_edu,
   ),
   StorySubMode(
