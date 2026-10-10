@@ -1,0 +1,295 @@
+{
+  "checkedAt": "2026-10-10",
+  "purpose": "Availability and identity only; raw provider files not redistributed",
+  "matches": [
+    {
+      "id": "ucl_01",
+      "date": "2005-05-25",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/80813/"
+      ],
+      "statsBombMatchId": 2302764,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_02",
+      "date": "1999-05-26",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/56379/"
+      ]
+    },
+    {
+      "id": "ucl_03",
+      "date": "2008-05-21",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/301604/"
+      ]
+    },
+    {
+      "id": "ucl_04",
+      "date": "2014-05-24",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2011883/"
+      ],
+      "statsBombMatchId": 18241,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_05",
+      "date": "2013-05-25",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2009612/"
+      ],
+      "statsBombMatchId": 18240,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_06",
+      "date": "2017-03-08",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2019621/"
+      ]
+    },
+    {
+      "id": "ucl_07",
+      "date": "2022-05-04",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2034663/"
+      ]
+    },
+    {
+      "id": "ucl_08",
+      "date": "2019-05-08",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2027159/"
+      ]
+    },
+    {
+      "id": "ucl_09",
+      "date": "2019-05-07",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2027160/"
+      ]
+    },
+    {
+      "id": "ucl_10",
+      "date": "2004-04-07",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/news/019c-0e6c12450ff2-294c584e2602-1000--dazzling-depor-ditch-milan/"
+      ]
+    },
+    {
+      "id": "ucl_11",
+      "date": "2009-05-06",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/302812/"
+      ]
+    },
+    {
+      "id": "ucl_12",
+      "date": "2010-04-28",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/news/01e4-0e746f438ade-69d47b996827-1000--alves-reflects-on-big-loss/"
+      ]
+    },
+    {
+      "id": "ucl_13",
+      "date": "1999-11-03",
+      "sourceUrls": [
+        "https://www.galatasaray.org/haber/futbol/o-gun-en-uzak-11-metre/33804"
+      ]
+    },
+    {
+      "id": "ucl_14",
+      "date": "2008-02-20",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/301894/"
+      ]
+    },
+    {
+      "id": "ucl_15",
+      "date": "2017-12-06",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2021679/"
+      ]
+    },
+    {
+      "id": "ucl_16",
+      "date": "2013-03-12",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2009594/"
+      ]
+    },
+    {
+      "id": "ucl_17",
+      "date": "2018-04-10",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2021705/"
+      ]
+    },
+    {
+      "id": "ucl_18",
+      "date": "2013-04-24",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/news/0208-0e9f60a306c2-d00309689516-1000/"
+      ]
+    },
+    {
+      "id": "ucl_19",
+      "date": "2003-04-23",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/news/025a-0eaae578b071-3f2001de8325-1000--united-rocked-by-ronaldo/"
+      ]
+    },
+    {
+      "id": "ucl_20",
+      "date": "2016-11-23",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2019357/"
+      ]
+    },
+    {
+      "id": "ucl_21",
+      "date": "1996-10-30",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/53226/"
+      ]
+    },
+    {
+      "id": "ucl_22",
+      "date": "2012-05-19",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2007693/"
+      ],
+      "statsBombMatchId": 18237,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_23",
+      "date": "2020-08-14",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2030146/"
+      ]
+    },
+    {
+      "id": "ucl_24",
+      "date": "2018-05-26",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2021711/",
+        "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      ],
+      "statsBombMatchId": 18245,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_25",
+      "date": "1972-05-31",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/63097/"
+      ],
+      "statsBombMatchId": 3750235,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_26",
+      "date": "2004-05-26",
+      "sourceUrls": [
+        "https://www.uefa.com/newsfiles/UCL/2003/1065206_LU.pdf",
+        "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      ],
+      "statsBombMatchId": 3752619,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_27",
+      "date": "2007-05-23",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/300099/"
+      ],
+      "statsBombMatchId": 3750200,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_28",
+      "date": "2009-05-27",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/302813/",
+        "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      ],
+      "statsBombMatchId": 3750201,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_29",
+      "date": "2010-05-22",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2000488/"
+      ],
+      "statsBombMatchId": 18235,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_30",
+      "date": "2011-05-28",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2003352/",
+        "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      ],
+      "statsBombMatchId": 18236,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_31",
+      "date": "2015-06-06",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2015227/",
+        "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      ],
+      "statsBombMatchId": 18242,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_32",
+      "date": "2016-05-28",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2015789/"
+      ],
+      "statsBombMatchId": 18243,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_33",
+      "date": "2017-06-03",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2019641/"
+      ],
+      "statsBombMatchId": 18244,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    },
+    {
+      "id": "ucl_34",
+      "date": "2019-06-01",
+      "sourceUrls": [
+        "https://www.uefa.com/uefachampionsleague/match/2025486/",
+        "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      ],
+      "statsBombMatchId": 22912,
+      "eventsAvailable": true,
+      "lineupsAvailable": true
+    }
+  ]
+}

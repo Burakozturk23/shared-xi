@@ -33,4 +33,12 @@ assert s['matches'][24]['competition']=='Avrupa Şampiyon Kulüpler Kupası'
 e=s['economy']
 assert 34*e['match']['coins']+sum(m['coins'] for m in e['milestones'])==482
 assert 34*e['match']['xp']+sum(m['xp'] for m in e['milestones'])==1005
+audit=json.loads((ROOT/'tools/ucl_moments/source_audit.json').read_text())
+assert len(audit['matches'])==34
+for m,r in zip(s['matches'],audit['matches']):
+ assert r['id']==m['id'] and r['date']==m['date']
+ assert r['sourceUrls']==[x['url'] for x in m['result']['sources']]
+ if m['verification']['statsBombMatchId']:
+  assert r['statsBombMatchId']==m['verification']['statsBombMatchId']
+  assert r['eventsAvailable'] and r['lineupsAvailable']
 print('UCL integrity OK: 34 matches, 5 mechanics, 15 provider references, 7 starting XIs, 482 coin / 1005 XP')

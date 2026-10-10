@@ -225,7 +225,8 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
       const SizedBox(height: 20), PitchPanel(key: const ValueKey('ucl-result'), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(result['answer']?.toString() ?? '', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12), Text(result['story']?.toString() ?? ''),
-        const SizedBox(height: 10), Text('Maç tarihi: ${m.text('date')} · ${result['duration']} dakika'),
+        const SizedBox(height: 10), Text('An: ${m.text('clock')}'),
+        Text('Maç tarihi: ${m.text('date')} · ${result['duration']} dakika'),
         if (penalties != null) Text('Penaltı serisi: ${m.home} ${penalties[0]}–${penalties[1]} ${m.away}'),
         if (aggregate != null) Text('İki maç toplamı: ${m.home} ${aggregate[0]}–${aggregate[1]} ${m.away}'),
       ])),
@@ -239,7 +240,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
           : '8 coin + 20 XP ödülü bekliyor. Bağlantını kontrol et; misafirsen aynı hesabı Google’a bağlayıp eşitle.')),
       const SizedBox(height: 12), ExpansionTile(key: PageStorageKey('ucl-sources-${m.id}'), title: const Text('Maçın kaynakları'), children: [
         for (final raw in result['sources'] as List? ?? []) Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(uclMap(raw)['name'] as String), SelectableText(uclMap(raw)['url'] as String, style: const TextStyle(fontSize: 12)),
+          Text(uclMap(raw)['name'] as String), Text(uclMap(raw)['url'] as String, style: const TextStyle(fontSize: 12)),
           TextButton(onPressed: () async { await Clipboard.setData(ClipboardData(text: uclMap(raw)['url'] as String)); }, child: const Text('Bağlantıyı kopyala')),
         ])),
       ]),

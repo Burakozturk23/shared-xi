@@ -25,10 +25,14 @@ class UclMomentsController extends ChangeNotifier {
   Map<String, dynamic> _snapshot() => {'version': catalog.version,
     'drafts': Map<String, dynamic>.from(drafts), 'results': Map<String, dynamic>.from(results),
     'rewards': Map<String, dynamic>.from(rewards), 'pending': Map<String, dynamic>.from(pending),
-    'activeId': activeId, 'phase': phase, 'hintOpen': hintOpen};
+    'activeId': activeId, 'phase': phase, 'hintOpen': hintOpen, 'rewardEligible': rewardEligible};
   Future<void> _save() {
     final snapshot = _snapshot();
-    final operation = _writes.then((_) => store.write(snapshot));
+    final operation = _writes.then((_) async {
+      try { await store.write(snapshot); } catch (_) {
+        throw StateError('Cihaz kaydı yazılamadı. Çıkmadan önce yeniden dene.');
+      }
+    });
     _writes = operation.catchError((Object _) {});
     return operation;
   }
@@ -53,6 +57,7 @@ class UclMomentsController extends ChangeNotifier {
       phase = activeId != null && ['intro','task','result'].contains(s['phase']) ? s['phase'] as String : 'archive';
       if (phase == 'result' && !results.containsKey(activeId)) phase = 'task';
       hintOpen = s['hintOpen'] == true;
+      rewardEligible = s['rewardEligible'] == true;
     }
     ready = true; _notify();
     await sync();
@@ -90,6 +95,7 @@ class UclMomentsController extends ChangeNotifier {
     rewardEligible = response['rewardEligible'] == true;
   }
   String _error(Object e) {
+    if (e is StateError) return e.message;
     if (e is FirebaseFunctionsException && ['failed-precondition','permission-denied'].contains(e.code)) {
       return e.message ?? 'Doğrulama yapılamadı.';
     }

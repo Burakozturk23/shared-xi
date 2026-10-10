@@ -62,17 +62,18 @@ test("UCL durable receipt repairs XP failure without minting coins again; other 
   await h.call("submitUclMoment", proof(catalog.matches[0]));
   assert.equal(h.read("economyState/alice/balances/coins"), 8);
   assert.equal(h.read("progressionState/alice/lifetimeXp"), 20);
-  assert.equal(Object.keys((await h.call("getUclMoments", {}, "bob")).completed).length, 0);
+  assert.equal(Object.keys((await h.call("getUclMoments", {}, {uid: "bob", token: {}})).completed).length, 0);
 });
 test("UCL guests can solve; rewards wait until eligible and then settle once", async () => {
   const h = harness();
-  const service = h.context.lbUclMomentsService();
-  const s = await service.submit("guest", proof(catalog.matches[2]), false);
+  const guest = {uid: "guest", token: {firebase: {sign_in_provider: "anonymous"}}};
+  const s = await h.call("submitUclMoment", proof(catalog.matches[2]), guest);
   assert.equal(s.correct, true);
   assert.equal(s.rewardEligible, false);
   assert.equal(h.read("economyState/guest"), null);
-  await service.status("guest", true);
-  await service.status("guest", true);
+  const linked = {uid: "guest", token: {firebase: {identities: {"google.com": ["linked"]}}}};
+  await h.call("getUclMoments", {}, linked);
+  await h.call("getUclMoments", {}, linked);
   assert.equal(h.read("economyState/guest/balances/coins"), 8);
   assert.equal(h.read("progressionState/guest/lifetimeXp"), 20);
 });
