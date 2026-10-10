@@ -11,7 +11,7 @@ test("real Firebase SDK loads every handler with modular Admin APIs", () => {
     const assert = require("node:assert/strict");
     const handlers = require("./index");
     for (const name of ["getPlayerJourney", "submitPlayerJourney", "buyPlayerJourneyHint", "setJourneyShowcase",
-      "getUclMoments", "submitUclMoment"]) {
+      "getUclMoments", "submitUclMoment", "getNostalgia", "submitNostalgiaTask", "buyNostalgiaHint"]) {
       assert.equal(typeof handlers[name], "function", name);
       assert.ok(handlers[name].__endpoint, name + " is registered");
     }

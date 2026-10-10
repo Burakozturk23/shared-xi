@@ -1,3 +1,5 @@
+import '../widgets/pitch_ui.dart';
+import 'turkish_nostalgia_page.dart';
 import '../widgets/what_if_profile_showcase.dart';
 import '../widgets/journey_profile_showcase.dart';
 import '../widgets/nickname_edit_dialog.dart';
@@ -219,6 +221,8 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           if (profile.isPersistent) const SizedBox(height: 16),
                           if (profile.isPersistent) JourneyProfileShowcase(key: ValueKey(AuthService.uid)),
                           WhatIfProfileShowcase(key: ValueKey('what-if-${AuthService.uid}')),
+                          const SizedBox(height: 16),
+                          PitchRow(title: 'Nostalji Albümü', subtitle: 'Türk futbolu hatıraların ve koleksiyon rozetin', icon: Icons.history_edu, onTap: () => Navigator.push<void>(context, LinkballRoute(modern: true, builder: (_) => const TurkishNostalgiaPage(openAlbum: true)))),
                           if (profile.isPersistent) const SizedBox(height: 16),
                           if (profile.isPersistent)
                             _ProgressionShortcutCard(
