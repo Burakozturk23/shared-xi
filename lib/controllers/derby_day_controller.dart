@@ -81,7 +81,6 @@ class DerbyDayController extends ChangeNotifier {
   void start() {
     if (busy || _disposed || active == null) return;
     if (active!.interaction == 'order' && !drafts.containsKey(activeId)) drafts[activeId!] = active!.optionIds;
-    if (active!.interaction == 'match' && !drafts.containsKey(activeId)) drafts[activeId!] = List<String>.filled(active!.slots.length, '');
     phase = 'task'; _saveSoon(); _notify();
   }
   void archive() { if (busy) return; phase = 'archive'; _saveSoon(); _notify(); }
