@@ -11,8 +11,11 @@ import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'football_docu_test.dart';
 
 Future<void> go(WidgetTester t,Key key)async{
-  await t.drag(find.byType(ListView),const Offset(0,6000));await t.pumpAndSettle();
-  await t.scrollUntilVisible(find.byKey(key),200,scrollable:find.byType(Scrollable).last,maxScrolls:100);
+  // A huge fling can skip a short result card after the list changes phase.
+  // Reset the real list position, then walk its lazily built children.
+  t.widget<ListView>(find.byType(ListView)).controller!.jumpTo(0);
+  await t.pumpAndSettle();
+  await t.scrollUntilVisible(find.byKey(key),80,scrollable:find.byType(Scrollable).last,maxScrolls:200);
   await t.pumpAndSettle();
 }
 Future<void> shot(WidgetTester t,GlobalKey key,String name)async{
