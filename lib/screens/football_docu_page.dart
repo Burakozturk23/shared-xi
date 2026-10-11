@@ -25,7 +25,7 @@ class _FootballDocuPageState extends State<FootballDocuPage> {
   int _generation = 0;
   bool _collection = false;
   String _filter = 'all', _theme = 'all', _progress = 'all';
-  final _scroll = ScrollController();
+  final _scroll = ScrollController(keepScrollOffset: false);
   @override
   void initState() {
     super.initState();
@@ -91,7 +91,9 @@ class _FootballDocuPageState extends State<FootballDocuPage> {
               onPressed: c.busy ? null : () { c.archive(); _top(); }, icon: const Icon(Icons.arrow_back)),
           actions: [IconButton(tooltip: 'Eşitle', onPressed: c.busy ? null : c.sync, icon: const Icon(Icons.sync))]),
         body: !c.ready ? const Center(child: CircularProgressIndicator()) : SafeArea(child: ListView(
-          key: const PageStorageKey('docu-scroll'), controller: _scroll,
+          // Each phase owns its lazy-list layout; a solved task must not reuse
+          // the previous question's retained children or scroll position.
+          key: ValueKey('docu-scroll-${c.phase}-${c.activeId ?? "archive"}'), controller: _scroll,
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 32), children: [
             if (c.busy) const Padding(padding: EdgeInsets.only(bottom: 12), child: LinearProgressIndicator()),
             if (c.message.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 16),
