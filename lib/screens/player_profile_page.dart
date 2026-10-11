@@ -1,3 +1,4 @@
+import 'international_glory_page.dart';
 import 'turkish_nostalgia_page.dart';
 import '../widgets/what_if_profile_showcase.dart';
 import '../widgets/journey_profile_showcase.dart';
@@ -220,6 +221,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           if (profile.isPersistent) const SizedBox(height: 16),
                           if (profile.isPersistent) JourneyProfileShowcase(key: ValueKey(AuthService.uid)),
                           WhatIfProfileShowcase(key: ValueKey('what-if-${AuthService.uid}')),
+                          ListTile(leading: const Icon(Icons.public), title: const Text('Milletler Albümü'), subtitle: const Text('40 millî karşılaşma hatırası'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const InternationalGloryPage(openAlbum: true)))),
                           ListTile(
                             leading: const Icon(Icons.collections_bookmark_outlined),
                             title: const Text('Nostalji Albümü'),

@@ -297,6 +297,10 @@
       ".read": false,
       ".write": false
     },
+    "internationalGloryState": {
+      ".read": false,
+      ".write": false
+    },
     "uclMomentsState": {
       ".read": false,
       ".write": false

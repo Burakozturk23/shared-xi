@@ -7,6 +7,8 @@ import '../models/ucl_moment.dart';
 import '../services/auth_service.dart';
 import '../services/ucl_moments_service.dart';
 import '../widgets/pitch_ui.dart';
+import 'history_archive_page.dart';
+import '../models/history_record.dart';
 
 class UclMomentsPage extends StatefulWidget {
   const UclMomentsPage({super.key, this.controller});
@@ -84,7 +86,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
         appBar: AppBar(title: const Text('UCL Moments'),
           leading: c.phase == 'archive' ? null : IconButton(tooltip: 'Arşive dön',
               onPressed: c.busy ? null : () { c.archive(); _top(); }, icon: const Icon(Icons.arrow_back)),
-          actions: [IconButton(tooltip: 'Eşitle', onPressed: c.busy ? null : c.sync, icon: const Icon(Icons.sync))]),
+          actions: [const HistoryArchiveButton(scope: HistoryScope.championsLeague), IconButton(tooltip: 'Eşitle', onPressed: c.busy ? null : c.sync, icon: const Icon(Icons.sync))]),
         body: !c.ready ? const Center(child: CircularProgressIndicator()) : SafeArea(child: ListView(
           key: const PageStorageKey('ucl-scroll'), controller: _scroll,
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 32), children: [

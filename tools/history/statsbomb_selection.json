@@ -1,0 +1,635 @@
+{
+  "bilgi": "Linkball secilmis mac kisa kataloğu; olaylar ve kadrolar ayrica indirilir. Ticari kullanim icin kaynak lisansini kontrol edin.",
+  "sayisi": 37,
+  "maclar": [
+    {
+      "matchId": 2302764,
+      "kategori": "ucl",
+      "altGrup": "mevcut_ucl",
+      "baslik": "2005 İstanbul Finali | AC Milan - Liverpool",
+      "tarih": "2005-05-25",
+      "evSahibi": "AC Milan",
+      "deplasman": "Liverpool",
+      "skor": "3-3",
+      "competitionId": 16,
+      "seasonId": 37,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/37.json",
+        "olaylar": "data/events/2302764.json",
+        "kadrolar": "data/lineups/2302764.json"
+      }
+    },
+    {
+      "matchId": 18237,
+      "kategori": "ucl",
+      "altGrup": "mevcut_ucl",
+      "baslik": "2012 Münih Finali | Bayern - Chelsea",
+      "tarih": "2012-05-19",
+      "evSahibi": "Bayern Munich",
+      "deplasman": "Chelsea",
+      "skor": "1-1",
+      "competitionId": 16,
+      "seasonId": 23,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/23.json",
+        "olaylar": "data/events/18237.json",
+        "kadrolar": "data/lineups/18237.json"
+      }
+    },
+    {
+      "matchId": 18240,
+      "kategori": "ucl",
+      "altGrup": "mevcut_ucl",
+      "baslik": "2013 Wembley Finali | Dortmund - Bayern",
+      "tarih": "2013-05-25",
+      "evSahibi": "Borussia Dortmund",
+      "deplasman": "Bayern Munich",
+      "skor": "1-2",
+      "competitionId": 16,
+      "seasonId": 24,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/24.json",
+        "olaylar": "data/events/18240.json",
+        "kadrolar": "data/lineups/18240.json"
+      }
+    },
+    {
+      "matchId": 18241,
+      "kategori": "ucl",
+      "altGrup": "mevcut_ucl",
+      "baslik": "2014 Lizbon Finali | Real Madrid - Atlético",
+      "tarih": "2014-05-24",
+      "evSahibi": "Real Madrid",
+      "deplasman": "Atlético Madrid",
+      "skor": "4-1",
+      "competitionId": 16,
+      "seasonId": 25,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/25.json",
+        "olaylar": "data/events/18241.json",
+        "kadrolar": "data/lineups/18241.json"
+      }
+    },
+    {
+      "matchId": 18245,
+      "kategori": "ucl",
+      "altGrup": "mevcut_ucl",
+      "baslik": "2018 Kiev Finali | Real Madrid - Liverpool",
+      "tarih": "2018-05-26",
+      "evSahibi": "Real Madrid",
+      "deplasman": "Liverpool",
+      "skor": "3-1",
+      "competitionId": 16,
+      "seasonId": 1,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/1.json",
+        "olaylar": "data/events/18245.json",
+        "kadrolar": "data/lineups/18245.json"
+      }
+    },
+    {
+      "matchId": 3752619,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2004 Porto 3-0 Monaco | Mourinho'nun ilk UCL kupası",
+      "tarih": "2004-05-26",
+      "evSahibi": "AS Monaco",
+      "deplasman": "FC Porto",
+      "skor": "0-3",
+      "competitionId": 16,
+      "seasonId": 44,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/44.json",
+        "olaylar": "data/events/3752619.json",
+        "kadrolar": "data/lineups/3752619.json"
+      }
+    },
+    {
+      "matchId": 3750200,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2007 Milan 2-1 Liverpool | İstanbul'un rövanşı",
+      "tarih": "2007-05-23",
+      "evSahibi": "AC Milan",
+      "deplasman": "Liverpool",
+      "skor": "2-1",
+      "competitionId": 16,
+      "seasonId": 39,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/39.json",
+        "olaylar": "data/events/3750200.json",
+        "kadrolar": "data/lineups/3750200.json"
+      }
+    },
+    {
+      "matchId": 3750201,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2009 Barcelona 2-0 Manchester United | Guardiola'nın ilk kupası",
+      "tarih": "2009-05-27",
+      "evSahibi": "Barcelona",
+      "deplasman": "Manchester United",
+      "skor": "2-0",
+      "competitionId": 16,
+      "seasonId": 41,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/41.json",
+        "olaylar": "data/events/3750201.json",
+        "kadrolar": "data/lineups/3750201.json"
+      }
+    },
+    {
+      "matchId": 18235,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2010 Inter 2-0 Bayern | Tarihi üçleme",
+      "tarih": "2010-05-22",
+      "evSahibi": "Bayern Munich",
+      "deplasman": "Inter Milan",
+      "skor": "0-2",
+      "competitionId": 16,
+      "seasonId": 21,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/21.json",
+        "olaylar": "data/events/18235.json",
+        "kadrolar": "data/lineups/18235.json"
+      }
+    },
+    {
+      "matchId": 18236,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2011 Barcelona 3-1 Manchester United | Wembley",
+      "tarih": "2011-05-28",
+      "evSahibi": "Barcelona",
+      "deplasman": "Manchester United",
+      "skor": "3-1",
+      "competitionId": 16,
+      "seasonId": 22,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/22.json",
+        "olaylar": "data/events/18236.json",
+        "kadrolar": "data/lineups/18236.json"
+      }
+    },
+    {
+      "matchId": 18242,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2015 Barcelona 3-1 Juventus | MSN dönemi",
+      "tarih": "2015-06-06",
+      "evSahibi": "Juventus",
+      "deplasman": "Barcelona",
+      "skor": "1-3",
+      "competitionId": 16,
+      "seasonId": 26,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/26.json",
+        "olaylar": "data/events/18242.json",
+        "kadrolar": "data/lineups/18242.json"
+      }
+    },
+    {
+      "matchId": 18243,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2016 Real Madrid 1-1 Atlético | Penaltılar",
+      "tarih": "2016-05-28",
+      "evSahibi": "Real Madrid",
+      "deplasman": "Atlético Madrid",
+      "skor": "1-1",
+      "competitionId": 16,
+      "seasonId": 27,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/27.json",
+        "olaylar": "data/events/18243.json",
+        "kadrolar": "data/lineups/18243.json"
+      }
+    },
+    {
+      "matchId": 18244,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2017 Real Madrid 4-1 Juventus | Ronaldo'nun finalleri",
+      "tarih": "2017-06-03",
+      "evSahibi": "Juventus",
+      "deplasman": "Real Madrid",
+      "skor": "1-4",
+      "competitionId": 16,
+      "seasonId": 2,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/2.json",
+        "olaylar": "data/events/18244.json",
+        "kadrolar": "data/lineups/18244.json"
+      }
+    },
+    {
+      "matchId": 22912,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "2019 Liverpool 2-0 Tottenham | Liverpool'un altıncı kupası",
+      "tarih": "2019-06-01",
+      "evSahibi": "Tottenham Hotspur",
+      "deplasman": "Liverpool",
+      "skor": "0-2",
+      "competitionId": 16,
+      "seasonId": 4,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/4.json",
+        "olaylar": "data/events/22912.json",
+        "kadrolar": "data/lineups/22912.json"
+      }
+    },
+    {
+      "matchId": 3750235,
+      "kategori": "ucl",
+      "altGrup": "yeni_ucl",
+      "baslik": "1972 Ajax 2-0 Inter | Cruyff ve total futbol",
+      "tarih": "1972-05-31",
+      "evSahibi": "Ajax",
+      "deplasman": "Inter Milan",
+      "skor": "2-0",
+      "competitionId": 16,
+      "seasonId": 71,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/71.json",
+        "olaylar": "data/events/3750235.json",
+        "kadrolar": "data/lineups/3750235.json"
+      }
+    },
+    {
+      "matchId": 3888711,
+      "kategori": "ajax",
+      "altGrup": "dynasties",
+      "baslik": "1971 Ajax 2-0 Panathinaikos | Üçlemenin başlangıcı",
+      "tarih": "1971-06-02",
+      "evSahibi": "Ajax",
+      "deplasman": "Panathinaikos",
+      "skor": "2-0",
+      "competitionId": 16,
+      "seasonId": 276,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/276.json",
+        "olaylar": "data/events/3888711.json",
+        "kadrolar": "data/lineups/3888711.json"
+      }
+    },
+    {
+      "matchId": 3888706,
+      "kategori": "ajax",
+      "altGrup": "dynasties",
+      "baslik": "1973 Ajax 1-0 Juventus | Üç yıl üst üste şampiyon",
+      "tarih": "1973-05-30",
+      "evSahibi": "Ajax",
+      "deplasman": "Juventus",
+      "skor": "1-0",
+      "competitionId": 16,
+      "seasonId": 277,
+      "kaynakDosyalari": {
+        "mac": "data/matches/16/277.json",
+        "olaylar": "data/events/3888706.json",
+        "kadrolar": "data/lineups/3888706.json"
+      }
+    },
+    {
+      "matchId": 3869685,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2022 Dünya Kupası Finali | Arjantin - Fransa",
+      "tarih": "2022-12-18",
+      "evSahibi": "Argentina",
+      "deplasman": "France",
+      "skor": "3-3",
+      "competitionId": 43,
+      "seasonId": 106,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/106.json",
+        "olaylar": "data/events/3869685.json",
+        "kadrolar": "data/lineups/3869685.json"
+      }
+    },
+    {
+      "matchId": 3869321,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2022 Dünya Kupası | Hollanda - Arjantin",
+      "tarih": "2022-12-09",
+      "evSahibi": "Netherlands",
+      "deplasman": "Argentina",
+      "skor": "2-2",
+      "competitionId": 43,
+      "seasonId": 106,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/106.json",
+        "olaylar": "data/events/3869321.json",
+        "kadrolar": "data/lineups/3869321.json"
+      }
+    },
+    {
+      "matchId": 3869486,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2022 Dünya Kupası | Fas - Portekiz",
+      "tarih": "2022-12-10",
+      "evSahibi": "Morocco",
+      "deplasman": "Portugal",
+      "skor": "1-0",
+      "competitionId": 43,
+      "seasonId": 106,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/106.json",
+        "olaylar": "data/events/3869486.json",
+        "kadrolar": "data/lineups/3869486.json"
+      }
+    },
+    {
+      "matchId": 3869519,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2022 Dünya Kupası | Arjantin - Hırvatistan",
+      "tarih": "2022-12-13",
+      "evSahibi": "Argentina",
+      "deplasman": "Croatia",
+      "skor": "3-0",
+      "competitionId": 43,
+      "seasonId": 106,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/106.json",
+        "olaylar": "data/events/3869519.json",
+        "kadrolar": "data/lineups/3869519.json"
+      }
+    },
+    {
+      "matchId": 8658,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2018 Dünya Kupası Finali | Fransa - Hırvatistan",
+      "tarih": "2018-07-15",
+      "evSahibi": "France",
+      "deplasman": "Croatia",
+      "skor": "4-2",
+      "competitionId": 43,
+      "seasonId": 3,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/3.json",
+        "olaylar": "data/events/8658.json",
+        "kadrolar": "data/lineups/8658.json"
+      }
+    },
+    {
+      "matchId": 7580,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2018 Dünya Kupası | Fransa - Arjantin",
+      "tarih": "2018-06-30",
+      "evSahibi": "France",
+      "deplasman": "Argentina",
+      "skor": "4-3",
+      "competitionId": 43,
+      "seasonId": 3,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/3.json",
+        "olaylar": "data/events/7580.json",
+        "kadrolar": "data/lineups/7580.json"
+      }
+    },
+    {
+      "matchId": 8656,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2018 Dünya Kupası | Hırvatistan - İngiltere",
+      "tarih": "2018-07-11",
+      "evSahibi": "Croatia",
+      "deplasman": "England",
+      "skor": "2-1",
+      "competitionId": 43,
+      "seasonId": 3,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/3.json",
+        "olaylar": "data/events/8656.json",
+        "kadrolar": "data/lineups/8656.json"
+      }
+    },
+    {
+      "matchId": 3943043,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2024 EURO Finali | İspanya - İngiltere",
+      "tarih": "2024-07-14",
+      "evSahibi": "Spain",
+      "deplasman": "England",
+      "skor": "2-1",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3943043.json",
+        "kadrolar": "data/lineups/3943043.json"
+      }
+    },
+    {
+      "matchId": 3942382,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2024 EURO | Türkiye - Hollanda",
+      "tarih": "2024-07-06",
+      "evSahibi": "Netherlands",
+      "deplasman": "Turkey",
+      "skor": "2-1",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3942382.json",
+        "kadrolar": "data/lineups/3942382.json"
+      }
+    },
+    {
+      "matchId": 3941022,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2024 EURO | Avusturya - Türkiye",
+      "tarih": "2024-07-02",
+      "evSahibi": "Austria",
+      "deplasman": "Turkey",
+      "skor": "1-2",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3941022.json",
+        "kadrolar": "data/lineups/3941022.json"
+      }
+    },
+    {
+      "matchId": 3795506,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2020 EURO Finali (2021) | İtalya - İngiltere",
+      "tarih": "2021-07-11",
+      "evSahibi": "Italy",
+      "deplasman": "England",
+      "skor": "1-1",
+      "competitionId": 55,
+      "seasonId": 43,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/43.json",
+        "olaylar": "data/events/3795506.json",
+        "kadrolar": "data/lineups/3795506.json"
+      }
+    },
+    {
+      "matchId": 3794691,
+      "kategori": "milli",
+      "altGrup": "onceki_milli",
+      "baslik": "2020 EURO (2021) | Fransa - İsviçre",
+      "tarih": "2021-06-28",
+      "evSahibi": "France",
+      "deplasman": "Switzerland",
+      "skor": "3-3",
+      "competitionId": 55,
+      "seasonId": 43,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/43.json",
+        "olaylar": "data/events/3794691.json",
+        "kadrolar": "data/lineups/3794691.json"
+      }
+    },
+    {
+      "matchId": 3857300,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2022 Dünya Kupası | Arjantin 1-2 Suudi Arabistan",
+      "tarih": "2022-11-22",
+      "evSahibi": "Argentina",
+      "deplasman": "Saudi Arabia",
+      "skor": "1-2",
+      "competitionId": 43,
+      "seasonId": 106,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/106.json",
+        "olaylar": "data/events/3857300.json",
+        "kadrolar": "data/lineups/3857300.json"
+      }
+    },
+    {
+      "matchId": 3869420,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2022 Dünya Kupası | Hırvatistan 1-1 Brezilya",
+      "tarih": "2022-12-09",
+      "evSahibi": "Croatia",
+      "deplasman": "Brazil",
+      "skor": "1-1",
+      "competitionId": 43,
+      "seasonId": 106,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/106.json",
+        "olaylar": "data/events/3869420.json",
+        "kadrolar": "data/lineups/3869420.json"
+      }
+    },
+    {
+      "matchId": 7584,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2018 Dünya Kupası | Belçika 3-2 Japonya",
+      "tarih": "2018-07-02",
+      "evSahibi": "Belgium",
+      "deplasman": "Japan",
+      "skor": "3-2",
+      "competitionId": 43,
+      "seasonId": 3,
+      "kaynakDosyalari": {
+        "mac": "data/matches/43/3.json",
+        "olaylar": "data/events/7584.json",
+        "kadrolar": "data/lineups/7584.json"
+      }
+    },
+    {
+      "matchId": 3938639,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2024 EURO | Türkiye 3-1 Gürcistan",
+      "tarih": "2024-06-18",
+      "evSahibi": "Turkey",
+      "deplasman": "Georgia",
+      "skor": "3-1",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3938639.json",
+        "kadrolar": "data/lineups/3938639.json"
+      }
+    },
+    {
+      "matchId": 3930184,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2024 EURO | Çekya 1-2 Türkiye",
+      "tarih": "2024-06-26",
+      "evSahibi": "Czech Republic",
+      "deplasman": "Turkey",
+      "skor": "1-2",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3930184.json",
+        "kadrolar": "data/lineups/3930184.json"
+      }
+    },
+    {
+      "matchId": 3942752,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2024 EURO Yarı Finali | İspanya 2-1 Fransa",
+      "tarih": "2024-07-09",
+      "evSahibi": "Spain",
+      "deplasman": "France",
+      "skor": "2-1",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3942752.json",
+        "kadrolar": "data/lineups/3942752.json"
+      }
+    },
+    {
+      "matchId": 3941017,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2024 EURO Son 16 | İngiltere 2-1 Slovakya",
+      "tarih": "2024-06-30",
+      "evSahibi": "England",
+      "deplasman": "Slovakia",
+      "skor": "2-1",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3941017.json",
+        "kadrolar": "data/lineups/3941017.json"
+      }
+    },
+    {
+      "matchId": 3942226,
+      "kategori": "milli",
+      "altGrup": "yeni_milli",
+      "baslik": "2024 EURO Çeyrek Finali | İspanya 2-1 Almanya",
+      "tarih": "2024-07-05",
+      "evSahibi": "Spain",
+      "deplasman": "Germany",
+      "skor": "2-1",
+      "competitionId": 55,
+      "seasonId": 282,
+      "kaynakDosyalari": {
+        "mac": "data/matches/55/282.json",
+        "olaylar": "data/events/3942226.json",
+        "kadrolar": "data/lineups/3942226.json"
+      }
+    }
+  ]
+}

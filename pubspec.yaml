@@ -17,6 +17,7 @@ dependencies:
   cloud_functions: ^6.3.6
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.3
+  crypto: 3.0.7
   sqflite: ^2.4.2
   provider: ^6.1.5
   firebase_core: 4.13.0
@@ -59,11 +60,13 @@ flutter:
     - assets/data/anagram_catalog.json
     - assets/data/turkish_nostalgia_v2.json
     - assets/data/ucl_moments_v2.json
+    - assets/data/international_glory_v2.json
     - assets/data/what_if_v2.json
     - assets/data/player_journey_chapter_one.json
     - assets/data/player_journey_chapter_two.json
     - assets/data/player_journey_chapter_three.json
     - assets/data/player_journey_chapter_four.json
+    - assets/history/
     - assets/runtime/linkball_game_data_v4.sqlite
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/

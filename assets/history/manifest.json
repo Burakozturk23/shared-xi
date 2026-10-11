@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "cutoff": "2026-10-09",
+  "packs": {
+    "matches": {
+      "bytes": 259846144,
+      "sha256": "b9b6b84fac6f9ad4b17d539c851712e2c161e14a9d7e3727451e65a8a64520f0",
+      "compressed_bytes": 39672807,
+      "compressed_sha256": "4ea43d01e8de5410af7104da2d654881184ec086f58ffa4e718e70feeb790793",
+      "counts": {
+        "teams": 5035,
+        "matches": 534528,
+        "goals": 47914,
+        "former_names": 36,
+        "selections": 37,
+        "conflicting_matches": 1,
+        "international": 49944
+      },
+      "parts": [
+        {
+          "asset": "assets/history/matches.sqlite.gz.part1",
+          "bytes": 6000000,
+          "sha256": "dd4393889a511e001d8d4480078b45d718d111d33a03bda68a73b93c0a0780d7"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part2",
+          "bytes": 6000000,
+          "sha256": "73681bf6c2276bb5726d9e06bcc135cf23bde4d17cd2594cd440d5b8f6812a5b"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part3",
+          "bytes": 6000000,
+          "sha256": "97a709df06eeb35302bf4a600bc1d3b3e4bf446d866590d61874019042d5d363"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part4",
+          "bytes": 6000000,
+          "sha256": "aad936bbbff8ee127161e707d41daa93a242ea1e1825a3fae0a6ea71bdf8c68c"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part5",
+          "bytes": 6000000,
+          "sha256": "e3b6275e554eb7f5e785eca170fe5ecb42de8351e8da00ad19cb31a0b158edb9"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part6",
+          "bytes": 6000000,
+          "sha256": "acc18d988ee27e1d9836160ba378b73fa62c3fff116b33808b2038d8c990419b"
+        },
+        {
+          "asset": "assets/history/matches.sqlite.gz.part7",
+          "bytes": 3672807,
+          "sha256": "ec73b95279414c4b916b0bd71d178f7227b48ca2093d0fb40ccdb4b0cf39228a"
+        }
+      ]
+    },
+    "squads": {
+      "bytes": 67244032,
+      "sha256": "798dc5f5e676d801e28f6cfaa429d948ecff6e55f1f034ea354843b261cb91ef",
+      "compressed_bytes": 22639067,
+      "compressed_sha256": "47280c9f3ed1e8f00510cae695f72362064e41652e274d7bf114f8fcffcfcf7c",
+      "counts": {
+        "teams": 1582,
+        "rosters": 16581,
+        "squad_entries": 576048
+      },
+      "parts": [
+        {
+          "asset": "assets/history/squads.sqlite.gz.part1",
+          "bytes": 6000000,
+          "sha256": "da83e96e3d25dd035d9d9ad3736a4eb6bd0ac88e23230998fdea2370a40aee7d"
+        },
+        {
+          "asset": "assets/history/squads.sqlite.gz.part2",
+          "bytes": 6000000,
+          "sha256": "1ad738b0069960f7f70117f3c48d7a30b8abe5c648c92fbdc7924f6353a42555"
+        },
+        {
+          "asset": "assets/history/squads.sqlite.gz.part3",
+          "bytes": 6000000,
+          "sha256": "a014805aab203fddae47e54c86fcd7e353e378b1caf566d5d71c1d220515cade"
+        },
+        {
+          "asset": "assets/history/squads.sqlite.gz.part4",
+          "bytes": 4639067,
+          "sha256": "10cc745f593fea91b00e1e7a887b0a75982673f00c8a570316cd3bb0f2742128"
+        }
+      ]
+    }
+  },
+  "sources": {
+    "international": {
+      "name": "International football results",
+      "url": "https://github.com/martj42/international_results",
+      "license": "CC0-1.0",
+      "note": "Men’s international results. Scores include extra time where played; exclude shootouts. Goal coverage is partial."
+    },
+    "footballdata": {
+      "name": "Football-Data CSV cache",
+      "url": "https://github.com/footballcsv/cache.footballdata",
+      "license": "CC0-1.0",
+      "note": "Snapshot supplied by user; upstream football-data.co.uk. Preserve provenance and review source errors."
+    },
+    "wfb": {
+      "name": "WorldFootball CSV cache",
+      "url": "https://github.com/footballcsv/cache.wfb",
+      "license": "CC0-1.0",
+      "note": "Snapshot supplied by user; upstream worldfootball.net. Historical results, not live fixtures."
+    },
+    "germany": {
+      "name": "football.csv Germany",
+      "url": "https://github.com/footballcsv/deutschland",
+      "license": "CC0-1.0",
+      "note": "User-supplied historical snapshot."
+    },
+    "england": {
+      "name": "football.csv England",
+      "url": "https://github.com/footballcsv/england",
+      "license": "CC0-1.0",
+      "note": "User-supplied historical snapshot."
+    },
+    "spain": {
+      "name": "football.csv Spain",
+      "url": "https://github.com/footballcsv/espana",
+      "license": "CC0-1.0",
+      "note": "User-supplied historical snapshot."
+    },
+    "ucl": {
+      "name": "football.csv European Cup",
+      "url": "https://github.com/footballcsv/europe-champions-league",
+      "license": "CC0-1.0",
+      "note": "European Cup / Champions League. FT, extra time and shootout scores are kept separately."
+    },
+    "squads": {
+      "name": "Football Squads CSV cache",
+      "url": "https://github.com/footballcsv/cache.footballsquads",
+      "license": "CC0-1.0",
+      "note": "Season/tournament squad snapshots, not match lineups. Past players and current/previous/new club fields remain distinct."
+    }
+  }
+}
