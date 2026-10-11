@@ -35,7 +35,7 @@ void main(){
     }
   });
   for(final light in [false,true]){
-    testWidgets('FootballDocu five mechanics and Atlas fit 320px / 180% light=$light',(t)async{
+    testWidgets('FootballDocu five mechanics and archive fit 320px / 180% light=$light',(t)async{
       t.view.physicalSize=const Size(320,844);t.view.devicePixelRatio=1;
       addTearDown(t.view.resetPhysicalSize);addTearDown(t.view.resetDevicePixelRatio);
       final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:FakeFootballDocuGateway());addTearDown(c.dispose);await c.load();
@@ -81,6 +81,30 @@ void main(){
       }
       await go(t,const ValueKey('docu-submit'));await t.tap(find.byKey(const ValueKey('docu-submit')));await t.pumpAndSettle();expect(c.phase,'result');expect(t.takeException(),isNull);
     }
+  });
+  testWidgets('Long-press dragging reorders events and moves each evidence card to one slot',(t)async{
+    t.view.physicalSize=const Size(800,1800);t.view.devicePixelRatio=1;
+    addTearDown(t.view.resetPhysicalSize);addTearDown(t.view.resetDevicePixelRatio);
+    final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:FakeFootballDocuGateway());
+    addTearDown(c.dispose);await c.load();c.open('DOC-03-01');c.start();
+    await t.pumpWidget(MaterialApp(home:FootballDocuPage(controller:c)));await t.pumpAndSettle();
+    final before=List<String>.from(c.answers);
+    final gesture=await t.startGesture(t.getCenter(find.byKey(ValueKey('event-${before.first}'))));
+    await t.pump(const Duration(milliseconds:600));
+    await gesture.moveTo(t.getCenter(find.byKey(ValueKey('event-${before[1]}'))));
+    await t.pump();await gesture.up();await t.pumpAndSettle();
+    expect(c.answers,[before[1],before[0],...before.skip(2)]);
+    c.open('DOC-01-01');c.start();await t.pumpAndSettle();
+    final card=c.active!.optionIds.first;
+    for(final slot in [0,1]){
+      final drag=await t.startGesture(t.getCenter(find.byType(LongPressDraggable<String>).first));
+      await t.pump(const Duration(milliseconds:600));
+      await drag.moveTo(t.getCenter(find.byKey(ValueKey('match-slot-$slot'))));
+      await t.pump();await drag.up();await t.pumpAndSettle();
+      expect(c.answers[slot],card);
+    }
+    expect(c.answers[0],isEmpty);expect(c.answers.where((x)=>x==card),hasLength(1));
+    expect(t.takeException(),isNull);
   });
   testWidgets('Paid help requires consent and preserves displayed free Pro price',(t)async{
     final gateway=FakeFootballDocuGateway();final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:gateway);addTearDown(c.dispose);await c.load();c.open('DOC-01-01');c.start();
