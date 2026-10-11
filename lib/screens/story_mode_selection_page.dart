@@ -55,7 +55,7 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'Football Docu-Series',
-    subtitle: 'Belgesel tadında futbol hikayeleri',
+    subtitle: '24 belgesel · 48 görev · Belgesel Arşivi',
     icon: Icons.movie_creation,
   ),
   StorySubMode(
@@ -88,7 +88,7 @@ class StoryModeSelectionPage extends StatelessWidget {
             onTap: () => GameLauncher.open(context, GameEntry(
               title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
               icon: storySubModes[i].icon, page: pages[i],
-              requiresRepository: i > 2 && i != 5, modern: i <= 2 || i == 5,
+              requiresRepository: i > 2 && i != 5 && i != 6, modern: i <= 2 || i == 5 || i == 6,
             )),
           ),
         ),
