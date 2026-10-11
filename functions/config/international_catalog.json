@@ -1,0 +1,3266 @@
+{
+  "version": 2,
+  "chapters": [
+    "Dünya Kupası Efsaneleri",
+    "Avrupa Şampiyonası Efsaneleri",
+    "Kıtaların Kahramanları",
+    "Modern Millî Futbol"
+  ],
+  "economy": {
+    "match": {
+      "coins": 8,
+      "xp": 20
+    },
+    "milestones": [
+      {
+        "count": 10,
+        "coins": 40,
+        "xp": 75
+      },
+      {
+        "count": 20,
+        "coins": 70,
+        "xp": 100
+      },
+      {
+        "count": 30,
+        "coins": 90,
+        "xp": 125
+      },
+      {
+        "count": 40,
+        "coins": 120,
+        "xp": 175
+      }
+    ],
+    "hintCoins": 6
+  },
+  "matches": [
+    {
+      "id": "ig2_01",
+      "number": 1,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "1986-06-22",
+      "competition": "Dünya Kupası 1986",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "away": {
+        "id": "ingiltere",
+        "name": "İngiltere"
+      },
+      "title": "Arjantin – İngiltere",
+      "intro": "Dünya Kupası 1986: Arjantin ve İngiltere, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Arjantin’in ünlü solo golünü atan futbolcu kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "jorgeburruchaga",
+          "label": "Jorge Burruchaga"
+        },
+        {
+          "id": "garylineker",
+          "label": "Gary Lineker"
+        },
+        {
+          "id": "jorgevaldano",
+          "label": "Jorge Valdano"
+        },
+        {
+          "id": "diegomaradona",
+          "label": "Diego Maradona"
+        }
+      ],
+      "answerKeys": [
+        "diegomaradona"
+      ],
+      "result": {
+        "answer": "Diego Maradona",
+        "story": "Diego Maradona. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-1",
+        "scoreFT": "2-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/diego-maradona-argentina-england-1986"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/diego-maradona-argentina-england-1986"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_02",
+      "number": 2,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "2014-07-08",
+      "competition": "Dünya Kupası 2014",
+      "round": "Yarı final",
+      "home": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "away": {
+        "id": "almanya",
+        "name": "Almanya"
+      },
+      "title": "Brezilya – Almanya",
+      "intro": "Dünya Kupası 2014: Brezilya ve Almanya, yarı final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "Seçilmiş dört Alman golünü sırala: ilk gol, Klose’nin golü, Kroos’un ilk golü ve beşinci gol.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "miroslavklose",
+          "label": "Miroslav Klose"
+        },
+        {
+          "id": "tonikroos",
+          "label": "Toni Kroos"
+        },
+        {
+          "id": "samikhedira",
+          "label": "Sami Khedira"
+        },
+        {
+          "id": "thomasmuller",
+          "label": "Thomas Müller"
+        }
+      ],
+      "answerKeys": [
+        "thomasmuller",
+        "miroslavklose",
+        "tonikroos",
+        "samikhedira"
+      ],
+      "result": {
+        "answer": "Thomas Müller → Miroslav Klose → Toni Kroos → Sami Khedira",
+        "story": "Thomas Müller → Miroslav Klose → Toni Kroos → Sami Khedira. Kroos’un 26. dakikadaki ikinci golü bu seçilmiş dört olay arasında değildir.",
+        "score": "1-7",
+        "scoreFT": "1-7",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [
+          {
+            "label": "Thomas Müller",
+            "minute": "11"
+          },
+          {
+            "label": "Miroslav Klose",
+            "minute": "23"
+          },
+          {
+            "label": "Toni Kroos",
+            "minute": "24"
+          },
+          {
+            "label": "Sami Khedira",
+            "minute": "29"
+          }
+        ],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/pt/tournaments/mens/worldcup/articles/copa-mundo-2026-maiores-vantagens-intervalo"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/pt/tournaments/mens/worldcup/articles/copa-mundo-2026-maiores-vantagens-intervalo"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_03",
+      "number": 3,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "2022-12-18",
+      "competition": "Dünya Kupası 2022",
+      "round": "Final",
+      "home": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "away": {
+        "id": "fransa",
+        "name": "Fransa"
+      },
+      "title": "Arjantin – Fransa",
+      "intro": "Dünya Kupası 2022: Arjantin ve Fransa, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "Arjantin’in şampiyonluğunu kesinleştiren son seri penaltısını kim attı?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "gonzalomontiel",
+          "label": "Gonzalo Montiel"
+        },
+        {
+          "id": "leandroparedes",
+          "label": "Leandro Paredes"
+        },
+        {
+          "id": "lionelmessi",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "paulodybala",
+          "label": "Paulo Dybala"
+        }
+      ],
+      "answerKeys": [
+        "gonzalomontiel"
+      ],
+      "result": {
+        "answer": "Gonzalo Montiel",
+        "story": "Gonzalo Montiel. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "3-3",
+        "scoreFT": "2-2",
+        "scoreET": "3-3",
+        "penalties": [
+          4,
+          2
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/articles/argentina-france-2022-final-greatest-games"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/articles/argentina-france-2022-final-greatest-games"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_04",
+      "number": 4,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "2006-07-09",
+      "competition": "Dünya Kupası 2006",
+      "round": "Final",
+      "home": {
+        "id": "italya",
+        "name": "İtalya"
+      },
+      "away": {
+        "id": "fransa",
+        "name": "Fransa"
+      },
+      "title": "İtalya – Fransa",
+      "intro": "Dünya Kupası 2006: İtalya ve Fransa, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Uzatmalarda kırmızı kart gören Fransız kaptan kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "thierryhenry",
+          "label": "Thierry Henry"
+        },
+        {
+          "id": "patrickvieira",
+          "label": "Patrick Vieira"
+        },
+        {
+          "id": "zinedinezidane",
+          "label": "Zinedine Zidane"
+        },
+        {
+          "id": "lilianthuram",
+          "label": "Lilian Thuram"
+        }
+      ],
+      "answerKeys": [
+        "zinedinezidane"
+      ],
+      "result": {
+        "answer": "Zinedine Zidane",
+        "story": "Zinedine Zidane. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-1",
+        "scoreFT": "1-1",
+        "scoreET": "1-1",
+        "penalties": [
+          5,
+          3
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/zinedine-zidane-france-five-memorable-matches"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/zinedine-zidane-france-five-memorable-matches"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_05",
+      "number": 5,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "1998-07-12",
+      "competition": "Dünya Kupası 1998",
+      "round": "Final",
+      "home": {
+        "id": "fransa",
+        "name": "Fransa"
+      },
+      "away": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "title": "Fransa – Brezilya",
+      "intro": "Dünya Kupası 1998: Fransa ve Brezilya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "Fransa’nın çeyrek final, yarı final ve final rakiplerini eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "brezilya",
+          "label": "Brezilya"
+        },
+        {
+          "id": "italya",
+          "label": "İtalya"
+        },
+        {
+          "id": "hrvatistan",
+          "label": "Hırvatistan"
+        }
+      ],
+      "answerKeys": [
+        "italya",
+        "hrvatistan",
+        "brezilya"
+      ],
+      "slots": [
+        "Çeyrek final",
+        "Yarı final",
+        "Final"
+      ],
+      "result": {
+        "answer": "İtalya → Hırvatistan → Brezilya",
+        "story": "İtalya → Hırvatistan → Brezilya. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "3-0",
+        "scoreFT": "3-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "fff.fr",
+            "url": "https://www.fff.fr/article/8519-1998-premiere-etoile.html"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fff.fr",
+            "url": "https://www.fff.fr/article/8519-1998-premiere-etoile.html"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_06",
+      "number": 6,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "1998-06-30",
+      "competition": "Dünya Kupası 1998",
+      "round": "Son 16",
+      "home": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "away": {
+        "id": "ingiltere",
+        "name": "İngiltere"
+      },
+      "title": "Arjantin – İngiltere",
+      "intro": "Dünya Kupası 1998: Arjantin ve İngiltere, son 16 karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "İngiltere’nin son seri penaltısını kim kullanıp kaçırdı?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "alanshearer",
+          "label": "Alan Shearer"
+        },
+        {
+          "id": "paulmerson",
+          "label": "Paul Merson"
+        },
+        {
+          "id": "michaelowen",
+          "label": "Michael Owen"
+        },
+        {
+          "id": "davidbatty",
+          "label": "David Batty"
+        }
+      ],
+      "answerKeys": [
+        "davidbatty"
+      ],
+      "result": {
+        "answer": "David Batty",
+        "story": "David Batty. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-2",
+        "scoreFT": "2-2",
+        "scoreET": "2-2",
+        "penalties": [
+          4,
+          3
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/tournaments/mens/worldcup/1998france/news/world-cup-at-home-argentina-england-1998-3070883"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/tournaments/mens/worldcup/1998france/news/world-cup-at-home-argentina-england-1998-3070883"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_07",
+      "number": 7,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "2014-06-13",
+      "competition": "Dünya Kupası 2014",
+      "round": "Grup",
+      "home": {
+        "id": "hollanda",
+        "name": "Hollanda"
+      },
+      "away": {
+        "id": "ispanya",
+        "name": "İspanya"
+      },
+      "title": "Hollanda – İspanya",
+      "intro": "Dünya Kupası 2014: Hollanda ve İspanya, grup karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Hollanda’nın uçarak kafa vuruşuyla beraberliği sağlayan ismi kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "wesleysneijder",
+          "label": "Wesley Sneijder"
+        },
+        {
+          "id": "daleyblind",
+          "label": "Daley Blind"
+        },
+        {
+          "id": "robinvanpersie",
+          "label": "Robin van Persie"
+        },
+        {
+          "id": "arjenrobben",
+          "label": "Arjen Robben"
+        }
+      ],
+      "answerKeys": [
+        "robinvanpersie"
+      ],
+      "result": {
+        "answer": "Robin van Persie",
+        "story": "Robin van Persie. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "5-1",
+        "scoreFT": "5-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/robin-van-persie-netherlands-spain-2014"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/robin-van-persie-netherlands-spain-2014"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_08",
+      "number": 8,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "2010-07-02",
+      "competition": "Dünya Kupası 2010",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "uruguay",
+        "name": "Uruguay"
+      },
+      "away": {
+        "id": "gana",
+        "name": "Gana"
+      },
+      "title": "Uruguay – Gana",
+      "intro": "Dünya Kupası 2010: Uruguay ve Gana, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "İki normal süre golü, çizgide el müdahalesi, kaçan penaltı ve seri sonucunu sırala.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "asamoahgyankacanpenalt",
+          "label": "Asamoah Gyan (kaçan penaltı)"
+        },
+        {
+          "id": "sulleymuntari",
+          "label": "Sulley Muntari"
+        },
+        {
+          "id": "uruguayturu",
+          "label": "Uruguay turu"
+        },
+        {
+          "id": "luissuarezel",
+          "label": "Luis Suárez (el)"
+        },
+        {
+          "id": "diegoforlan",
+          "label": "Diego Forlán"
+        }
+      ],
+      "answerKeys": [
+        "sulleymuntari",
+        "diegoforlan",
+        "luissuarezel",
+        "asamoahgyankacanpenalt",
+        "uruguayturu"
+      ],
+      "result": {
+        "answer": "Sulley Muntari → Diego Forlán → Luis Suárez (el) → Asamoah Gyan (kaçan penaltı) → Uruguay turu",
+        "story": "Sulley Muntari → Diego Forlán → Luis Suárez (el) → Asamoah Gyan (kaçan penaltı) → Uruguay turu. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-1",
+        "scoreFT": "1-1",
+        "scoreET": "1-1",
+        "penalties": [
+          4,
+          2
+        ],
+        "duration": 120,
+        "events": [
+          {
+            "label": "Sulley Muntari",
+            "minute": "45+2"
+          },
+          {
+            "label": "Diego Forlán",
+            "minute": "55"
+          },
+          {
+            "label": "Luis Suárez (el)",
+            "minute": "120"
+          },
+          {
+            "label": "Asamoah Gyan (kaçan penaltı)",
+            "minute": "120+1"
+          },
+          {
+            "label": "Uruguay turu",
+            "minute": "Penaltı serisi"
+          }
+        ],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/ghana-uruguay-a-thriller-for-the-ages-world-cup-qatar-2022-south-africa-2010"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/ghana-uruguay-a-thriller-for-the-ages-world-cup-qatar-2022-south-africa-2010"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_09",
+      "number": 9,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "1994-07-17",
+      "competition": "Dünya Kupası 1994",
+      "round": "Final",
+      "home": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "away": {
+        "id": "italya",
+        "name": "İtalya"
+      },
+      "title": "Brezilya – İtalya",
+      "intro": "Dünya Kupası 1994: Brezilya ve İtalya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "İtalya’nın son seri penaltısını üstten dışarı atan kimdi?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "danielemassaro",
+          "label": "Daniele Massaro"
+        },
+        {
+          "id": "demetrioalbertini",
+          "label": "Demetrio Albertini"
+        },
+        {
+          "id": "francobaresi",
+          "label": "Franco Baresi"
+        },
+        {
+          "id": "robertobaggio",
+          "label": "Roberto Baggio"
+        }
+      ],
+      "answerKeys": [
+        "robertobaggio"
+      ],
+      "result": {
+        "answer": "Roberto Baggio",
+        "story": "Roberto Baggio. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "0-0",
+        "scoreFT": "0-0",
+        "scoreET": "0-0",
+        "penalties": [
+          3,
+          2
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/articles/gianluca-pagliuca-italy-1994"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/articles/gianluca-pagliuca-italy-1994"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_10",
+      "number": 10,
+      "contentVersion": 2,
+      "chapterId": 1,
+      "date": "2002-06-30",
+      "competition": "Dünya Kupası 2002",
+      "round": "Final",
+      "home": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "away": {
+        "id": "almanya",
+        "name": "Almanya"
+      },
+      "title": "Brezilya – Almanya",
+      "intro": "Dünya Kupası 2002: Brezilya ve Almanya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Finalde iki gol atarak Brezilya’yı şampiyon yapan isim kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "kleberson",
+          "label": "Kleberson"
+        },
+        {
+          "id": "ronaldonazario",
+          "label": "Ronaldo Nazário"
+        },
+        {
+          "id": "ronaldinho",
+          "label": "Ronaldinho"
+        },
+        {
+          "id": "rivaldo",
+          "label": "Rivaldo"
+        }
+      ],
+      "answerKeys": [
+        "ronaldonazario"
+      ],
+      "result": {
+        "answer": "Ronaldo Nazário",
+        "story": "Ronaldo Nazário. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-0",
+        "scoreFT": "2-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/articles/tribute-ronaldo-fenomeno-brazil-moments-goal-stats-videos"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/articles/tribute-ronaldo-fenomeno-brazil-moments-goal-stats-videos"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_11",
+      "number": 11,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2004-07-04",
+      "competition": "EURO 2004",
+      "round": "Final",
+      "home": {
+        "id": "portekiz",
+        "name": "Portekiz"
+      },
+      "away": {
+        "id": "yunanistan",
+        "name": "Yunanistan"
+      },
+      "title": "Portekiz – Yunanistan",
+      "intro": "EURO 2004: Portekiz ve Yunanistan, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Yunanistan’a şampiyonluğu getiren final golünü kim attı?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "giorgoskaragounis",
+          "label": "Giorgos Karagounis"
+        },
+        {
+          "id": "angeloscharisteas",
+          "label": "Angelos Charisteas"
+        },
+        {
+          "id": "traianosdellas",
+          "label": "Traianos Dellas"
+        },
+        {
+          "id": "zisisvryzas",
+          "label": "Zisis Vryzas"
+        }
+      ],
+      "answerKeys": [
+        "angeloscharisteas"
+      ],
+      "result": {
+        "answer": "Angelos Charisteas",
+        "story": "Angelos Charisteas. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "0-1",
+        "scoreFT": "0-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0254-0d7b673abd33-d04e3bb2cd62-1000--greece-are-crowned-kings-of-europe/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0254-0d7b673abd33-d04e3bb2cd62-1000--greece-are-crowned-kings-of-europe/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_12",
+      "number": 12,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "1992-06-26",
+      "competition": "EURO 1992",
+      "round": "Final",
+      "home": {
+        "id": "danimarka",
+        "name": "Danimarka"
+      },
+      "away": {
+        "id": "almanya",
+        "name": "Almanya"
+      },
+      "title": "Danimarka – Almanya",
+      "intro": "EURO 1992: Danimarka ve Almanya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "Danimarka’nın son grup galibiyetinden finale uzanan rakiplerini eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "hollanda",
+          "label": "Hollanda"
+        },
+        {
+          "id": "almanya",
+          "label": "Almanya"
+        },
+        {
+          "id": "fransa",
+          "label": "Fransa"
+        }
+      ],
+      "answerKeys": [
+        "fransa",
+        "hollanda",
+        "almanya"
+      ],
+      "slots": [
+        "Son grup maçı",
+        "Yarı final",
+        "Final"
+      ],
+      "result": {
+        "answer": "Fransa → Hollanda → Almanya",
+        "story": "Fransa → Hollanda → Almanya. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-0",
+        "scoreFT": "2-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/025a-0eb91faf9bf0-942d69c5a0a8-1000--euro-1992-all-you-need-to-know/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/025a-0eb91faf9bf0-942d69c5a0a8-1000--euro-1992-all-you-need-to-know/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_13",
+      "number": 13,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2016-07-10",
+      "competition": "EURO 2016",
+      "round": "Final",
+      "home": {
+        "id": "portekiz",
+        "name": "Portekiz"
+      },
+      "away": {
+        "id": "fransa",
+        "name": "Fransa"
+      },
+      "title": "Portekiz – Fransa",
+      "intro": "EURO 2016: Portekiz ve Fransa, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Uzatmalarda kupayı getiren golü kim attı?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "eder",
+          "label": "Éder"
+        },
+        {
+          "id": "cristianoronaldo",
+          "label": "Cristiano Ronaldo"
+        },
+        {
+          "id": "ricardoquaresma",
+          "label": "Ricardo Quaresma"
+        },
+        {
+          "id": "nani",
+          "label": "Nani"
+        }
+      ],
+      "answerKeys": [
+        "eder"
+      ],
+      "result": {
+        "answer": "Éder",
+        "story": "Éder. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-0",
+        "scoreFT": "0-0",
+        "scoreET": "1-0",
+        "penalties": null,
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d81c3763c88-e741506b5589-1000--portugal-spoil-france-s-party-with-extra-time-win/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d81c3763c88-e741506b5589-1000--portugal-spoil-france-s-party-with-extra-time-win/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_14",
+      "number": 14,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2000-07-02",
+      "competition": "EURO 2000",
+      "round": "Final",
+      "home": {
+        "id": "fransa",
+        "name": "Fransa"
+      },
+      "away": {
+        "id": "italya",
+        "name": "İtalya"
+      },
+      "title": "Fransa – İtalya",
+      "intro": "EURO 2000: Fransa ve İtalya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "Finaldeki üç golcüyü gerçekleşme sırasına koy.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "davidtrezeguet",
+          "label": "David Trezeguet"
+        },
+        {
+          "id": "sylvainwiltord",
+          "label": "Sylvain Wiltord"
+        },
+        {
+          "id": "marcodelvecchio",
+          "label": "Marco Delvecchio"
+        }
+      ],
+      "answerKeys": [
+        "marcodelvecchio",
+        "sylvainwiltord",
+        "davidtrezeguet"
+      ],
+      "result": {
+        "answer": "Marco Delvecchio → Sylvain Wiltord → David Trezeguet",
+        "story": "Marco Delvecchio → Sylvain Wiltord → David Trezeguet. Altın gol kuralı: Trezeguet’nin golüyle karşılaşma hemen sona erdi.",
+        "score": "2-1",
+        "scoreFT": "1-1",
+        "scoreET": "2-1",
+        "penalties": null,
+        "duration": 103,
+        "events": [
+          {
+            "label": "Marco Delvecchio",
+            "minute": "55"
+          },
+          {
+            "label": "Sylvain Wiltord",
+            "minute": "90+4"
+          },
+          {
+            "label": "David Trezeguet",
+            "minute": "103"
+          }
+        ],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/025d-0f7d96fa64d5-e70a3904eef3-1000--classics-france-vs-italy-2000/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/025d-0f7d96fa64d5-e70a3904eef3-1000--classics-france-vs-italy-2000/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_15",
+      "number": 15,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2012-07-01",
+      "competition": "EURO 2012",
+      "round": "Final",
+      "home": {
+        "id": "ispanya",
+        "name": "İspanya"
+      },
+      "away": {
+        "id": "italya",
+        "name": "İtalya"
+      },
+      "title": "İspanya – İtalya",
+      "intro": "EURO 2012: İspanya ve İtalya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "xi",
+      "difficulty": "Kolay",
+      "prompt": "İspanya’nın ilk 11’inde başlayıp sonradan Torres’e yerini bırakan hücumcu kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Yedek kulübesini değil, başlangıç düdüğündeki on biri düşün.",
+      "options": [
+        {
+          "id": "fernandotorres",
+          "label": "Fernando Torres"
+        },
+        {
+          "id": "cescfabregas",
+          "label": "Cesc Fàbregas"
+        },
+        {
+          "id": "pedrorodriguez",
+          "label": "Pedro Rodríguez"
+        },
+        {
+          "id": "fernandollorente",
+          "label": "Fernando Llorente"
+        }
+      ],
+      "answerKeys": [
+        "cescfabregas"
+      ],
+      "lineup": {
+        "club": "İspanya",
+        "rows": [
+          [
+            "Iker Casillas"
+          ],
+          [
+            "Álvaro Arbeloa",
+            "Gerard Piqué",
+            "Sergio Ramos",
+            "Jordi Alba"
+          ],
+          [
+            "Xabi Alonso",
+            "Sergio Busquets"
+          ],
+          [
+            "David Silva",
+            "Xavi",
+            "Andrés Iniesta"
+          ],
+          [
+            "?"
+          ]
+        ]
+      },
+      "result": {
+        "answer": "Cesc Fàbregas",
+        "story": "Cesc Fàbregas. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "4-0",
+        "scoreFT": "4-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/match/2003351--spain-vs-italy/lineups/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "starting_xi",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/match/2003351--spain-vs-italy/lineups/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_16",
+      "number": 16,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2021-07-11",
+      "competition": "EURO 2020",
+      "round": "Final",
+      "home": {
+        "id": "italya",
+        "name": "İtalya"
+      },
+      "away": {
+        "id": "ingiltere",
+        "name": "İngiltere"
+      },
+      "title": "İtalya – İngiltere",
+      "intro": "EURO 2020: İtalya ve İngiltere, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "İngiltere’nin penaltı serisinde direğe vuran ismi kimdi?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "jadonsancho",
+          "label": "Jadon Sancho"
+        },
+        {
+          "id": "marcusrashford",
+          "label": "Marcus Rashford"
+        },
+        {
+          "id": "harrykane",
+          "label": "Harry Kane"
+        },
+        {
+          "id": "bukayosaka",
+          "label": "Bukayo Saka"
+        }
+      ],
+      "answerKeys": [
+        "marcusrashford"
+      ],
+      "result": {
+        "answer": "Marcus Rashford",
+        "story": "Marcus Rashford. Rashford direğe vurdu. Donnarumma, Sancho ve Saka’nın penaltılarını kurtardı.",
+        "score": "1-1",
+        "scoreFT": "1-1",
+        "scoreET": "1-1",
+        "penalties": [
+          3,
+          2
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/026b-12bba5b7b7a1-5519282c3d1a-1000--italy-1-1-england-aet-3-2-on-pens-donnarumma-the-hero-as-azzurri-win/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/026b-12bba5b7b7a1-5519282c3d1a-1000--italy-1-1-england-aet-3-2-on-pens-donnarumma-the-hero-as-azzurri-win/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_17",
+      "number": 17,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2004-07-01",
+      "competition": "EURO 2004",
+      "round": "Yarı final",
+      "home": {
+        "id": "yunanistan",
+        "name": "Yunanistan"
+      },
+      "away": {
+        "id": "cekya",
+        "name": "Çekya"
+      },
+      "title": "Yunanistan – Çekya",
+      "intro": "EURO 2004: Yunanistan ve Çekya, yarı final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Uzatmalarda gümüş golü atan Yunan savunmacı kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "takisfyssas",
+          "label": "Takis Fyssas"
+        },
+        {
+          "id": "angeloscharisteas",
+          "label": "Angelos Charisteas"
+        },
+        {
+          "id": "giourkasseitaridis",
+          "label": "Giourkas Seitaridis"
+        },
+        {
+          "id": "traianosdellas",
+          "label": "Traianos Dellas"
+        }
+      ],
+      "answerKeys": [
+        "traianosdellas"
+      ],
+      "result": {
+        "answer": "Traianos Dellas",
+        "story": "Traianos Dellas. Gümüş gol kuralı: İlk uzatma devresi sonunda önde olan Yunanistan finale çıktı.",
+        "score": "1-0",
+        "scoreFT": "0-0",
+        "scoreET": "1-0",
+        "penalties": null,
+        "duration": 105,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d811e88a032-1465bbb14f59-1000--euro-cult-heroes-traianos-dellas-2004/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d811e88a032-1465bbb14f59-1000--euro-cult-heroes-traianos-dellas-2004/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_18",
+      "number": 18,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2000-06-29",
+      "competition": "EURO 2000",
+      "round": "Yarı final",
+      "home": {
+        "id": "hollanda",
+        "name": "Hollanda"
+      },
+      "away": {
+        "id": "italya",
+        "name": "İtalya"
+      },
+      "title": "Hollanda – İtalya",
+      "intro": "EURO 2000: Hollanda ve İtalya, yarı final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "Seride “Cucchiaio” aşırtmasını yapan İtalyan futbolcu kimdi?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "francescototti",
+          "label": "Francesco Totti"
+        },
+        {
+          "id": "alessandrodelpiero",
+          "label": "Alessandro Del Piero"
+        },
+        {
+          "id": "luigidibiagio",
+          "label": "Luigi Di Biagio"
+        },
+        {
+          "id": "paolomaldini",
+          "label": "Paolo Maldini"
+        }
+      ],
+      "answerKeys": [
+        "francescototti"
+      ],
+      "result": {
+        "answer": "Francesco Totti",
+        "story": "Francesco Totti. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "0-0",
+        "scoreFT": "0-0",
+        "scoreET": "0-0",
+        "penalties": [
+          1,
+          3
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d7b2f86b0b0-c97e4540cb98-1000--spot-on-italy-inflict-more-woe-for-netherlands-in-euro-2000-sem/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d7b2f86b0b0-c97e4540cb98-1000--spot-on-italy-inflict-more-woe-for-netherlands-in-euro-2000-sem/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_19",
+      "number": 19,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "2016-07-01",
+      "competition": "EURO 2016",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "galler",
+        "name": "Galler"
+      },
+      "away": {
+        "id": "belcika",
+        "name": "Belçika"
+      },
+      "title": "Galler – Belçika",
+      "intro": "EURO 2016: Galler ve Belçika, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "Karşılaşmadaki dört golcüyü kronolojik sıraya koy.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "samvokes",
+          "label": "Sam Vokes"
+        },
+        {
+          "id": "radjanainggolan",
+          "label": "Radja Nainggolan"
+        },
+        {
+          "id": "ashleywilliams",
+          "label": "Ashley Williams"
+        },
+        {
+          "id": "halrobsonkanu",
+          "label": "Hal Robson-Kanu"
+        }
+      ],
+      "answerKeys": [
+        "radjanainggolan",
+        "ashleywilliams",
+        "halrobsonkanu",
+        "samvokes"
+      ],
+      "result": {
+        "answer": "Radja Nainggolan → Ashley Williams → Hal Robson-Kanu → Sam Vokes",
+        "story": "Radja Nainggolan → Ashley Williams → Hal Robson-Kanu → Sam Vokes. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "3-1",
+        "scoreFT": "3-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [
+          {
+            "label": "Radja Nainggolan",
+            "minute": "13"
+          },
+          {
+            "label": "Ashley Williams",
+            "minute": "31"
+          },
+          {
+            "label": "Hal Robson-Kanu",
+            "minute": "55"
+          },
+          {
+            "label": "Sam Vokes",
+            "minute": "86"
+          }
+        ],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d81b0c19f08-954fdc458315-1000--remarkable-wales-shock-belgium-to-reach-euro-2016-semis/?iv=true"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d81b0c19f08-954fdc458315-1000--remarkable-wales-shock-belgium-to-reach-euro-2016-semis/?iv=true"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_20",
+      "number": 20,
+      "contentVersion": 2,
+      "chapterId": 2,
+      "date": "1988-06-25",
+      "competition": "EURO 1988",
+      "round": "Final",
+      "home": {
+        "id": "hollanda",
+        "name": "Hollanda"
+      },
+      "away": {
+        "id": "sscb",
+        "name": "SSCB"
+      },
+      "title": "Hollanda – SSCB",
+      "intro": "EURO 1988: Hollanda ve SSCB, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Finalde dar açıdan unutulmaz vole golünü atan kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "ronaldkoeman",
+          "label": "Ronald Koeman"
+        },
+        {
+          "id": "frankrijkaard",
+          "label": "Frank Rijkaard"
+        },
+        {
+          "id": "ruudgullit",
+          "label": "Ruud Gullit"
+        },
+        {
+          "id": "marcovanbasten",
+          "label": "Marco van Basten"
+        }
+      ],
+      "answerKeys": [
+        "marcovanbasten"
+      ],
+      "result": {
+        "answer": "Marco van Basten",
+        "story": "Marco van Basten. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-0",
+        "scoreFT": "2-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d7b2f78ca99-40f24ef873fd-1000/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d7b2f78ca99-40f24ef873fd-1000/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_21",
+      "number": 21,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2012-02-12",
+      "competition": "AFCON 2012",
+      "round": "Final",
+      "home": {
+        "id": "zambiya",
+        "name": "Zambiya"
+      },
+      "away": {
+        "id": "fildisisahili",
+        "name": "Fildişi Sahili"
+      },
+      "title": "Zambiya – Fildişi Sahili",
+      "intro": "AFCON 2012: Zambiya ve Fildişi Sahili, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "Zambiya’ya kupayı getiren son seri penaltısını kim attı?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "kennedymweene",
+          "label": "Kennedy Mweene"
+        },
+        {
+          "id": "emmanuelmayuka",
+          "label": "Emmanuel Mayuka"
+        },
+        {
+          "id": "christopherkatongo",
+          "label": "Christopher Katongo"
+        },
+        {
+          "id": "stoppilasunzu",
+          "label": "Stoppila Sunzu"
+        }
+      ],
+      "answerKeys": [
+        "stoppilasunzu"
+      ],
+      "result": {
+        "answer": "Stoppila Sunzu",
+        "story": "Stoppila Sunzu. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "0-0",
+        "scoreFT": "0-0",
+        "scoreET": "0-0",
+        "penalties": [
+          8,
+          7
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "cafonline.com",
+            "url": "https://www.cafonline.com/media/05ebfeih/ultimate-media-guide-afcon25.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "cafonline.com",
+            "url": "https://www.cafonline.com/media/05ebfeih/ultimate-media-guide-afcon25.pdf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_22",
+      "number": 22,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2024-02-11",
+      "competition": "AFCON 2023",
+      "round": "Final",
+      "home": {
+        "id": "fildisisahili",
+        "name": "Fildişi Sahili"
+      },
+      "away": {
+        "id": "nijerya",
+        "name": "Nijerya"
+      },
+      "title": "Fildişi Sahili – Nijerya",
+      "intro": "AFCON 2023: Fildişi Sahili ve Nijerya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "Fildişi Sahili’nin son 16’dan itibaren geçtiği rakipleri eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "nijerya",
+          "label": "Nijerya"
+        },
+        {
+          "id": "mali",
+          "label": "Mali"
+        },
+        {
+          "id": "senegal",
+          "label": "Senegal"
+        },
+        {
+          "id": "dckongo",
+          "label": "DC Kongo"
+        }
+      ],
+      "answerKeys": [
+        "senegal",
+        "mali",
+        "dckongo",
+        "nijerya"
+      ],
+      "slots": [
+        "Son 16",
+        "Çeyrek final",
+        "Yarı final",
+        "Final"
+      ],
+      "result": {
+        "answer": "Senegal → Mali → DC Kongo → Nijerya",
+        "story": "Senegal → Mali → DC Kongo → Nijerya. Turnuvanın adı AFCON 2023; final 2024 takvim yılında oynandı.",
+        "score": "2-1",
+        "scoreFT": "2-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "cafonline.com",
+            "url": "https://www.cafonline.com/caf-africa-cup-of-nations/news/final-nigeria-v-cote-divoire-how-the-elephants-got-there/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "cafonline.com",
+            "url": "https://www.cafonline.com/caf-africa-cup-of-nations/news/final-nigeria-v-cote-divoire-how-the-elephants-got-there/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_23",
+      "number": 23,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2022-02-06",
+      "competition": "AFCON 2021",
+      "round": "Final",
+      "home": {
+        "id": "senegal",
+        "name": "Senegal"
+      },
+      "away": {
+        "id": "msr",
+        "name": "Mısır"
+      },
+      "title": "Senegal – Mısır",
+      "intro": "AFCON 2021: Senegal ve Mısır, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "Senegal’in şampiyonluğunu kesinleştiren seri penaltısını kim attı?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "sadiomane",
+          "label": "Sadio Mané"
+        },
+        {
+          "id": "bambadieng",
+          "label": "Bamba Dieng"
+        },
+        {
+          "id": "abdoudiallo",
+          "label": "Abdou Diallo"
+        },
+        {
+          "id": "kalidoukoulibaly",
+          "label": "Kalidou Koulibaly"
+        }
+      ],
+      "answerKeys": [
+        "sadiomane"
+      ],
+      "result": {
+        "answer": "Sadio Mané",
+        "story": "Sadio Mané. Turnuvanın adı AFCON 2021; final 2022’de oynandı. Maç içindeki kaçan penaltı ile son seri vuruşu farklıdır.",
+        "score": "0-0",
+        "scoreFT": "0-0",
+        "scoreET": "0-0",
+        "penalties": [
+          4,
+          2
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "cafonline.com",
+            "url": "https://www.cafonline.com/caf-africa-cup-of-nations/news/totalenergies-afcon-2021-inspiring-sadio-mane-gets-mvp-award"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "cafonline.com",
+            "url": "https://www.cafonline.com/caf-africa-cup-of-nations/news/totalenergies-afcon-2021-inspiring-sadio-mane-gets-mvp-award"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_24",
+      "number": 24,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2021-07-10",
+      "competition": "Copa América 2021",
+      "round": "Final",
+      "home": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "away": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "title": "Arjantin – Brezilya",
+      "intro": "Copa América 2021: Arjantin ve Brezilya, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Finalin tek golünü atan Arjantinli futbolcu kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "angeldimaria",
+          "label": "Ángel Di María"
+        },
+        {
+          "id": "lautaromartinez",
+          "label": "Lautaro Martínez"
+        },
+        {
+          "id": "lionelmessi",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "rodrigodepaul",
+          "label": "Rodrigo De Paul"
+        }
+      ],
+      "answerKeys": [
+        "angeldimaria"
+      ],
+      "result": {
+        "answer": "Ángel Di María",
+        "story": "Ángel Di María. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-0",
+        "scoreFT": "1-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "copaamerica.com",
+            "url": "https://copaamerica.com/es/novedades/copa-america-2021-argentina-alcanza-gloria-despues-de-28-anos"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "copaamerica.com",
+            "url": "https://copaamerica.com/es/novedades/copa-america-2021-argentina-alcanza-gloria-despues-de-28-anos"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_25",
+      "number": 25,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2016-06-26",
+      "competition": "Copa América 2016",
+      "round": "Final",
+      "home": {
+        "id": "sili",
+        "name": "Şili"
+      },
+      "away": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "title": "Şili – Arjantin",
+      "intro": "Copa América 2016: Şili ve Arjantin, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "xi",
+      "difficulty": "Kolay",
+      "prompt": "Şili’nin finalde ilk 11 başlayan kalecisi kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Yedek kulübesini değil, başlangıç düdüğündeki on biri düşün.",
+      "options": [
+        {
+          "id": "claudiobravo",
+          "label": "Claudio Bravo"
+        },
+        {
+          "id": "cristophertoselli",
+          "label": "Cristopher Toselli"
+        },
+        {
+          "id": "johnnyherrera",
+          "label": "Johnny Herrera"
+        },
+        {
+          "id": "sergioromero",
+          "label": "Sergio Romero"
+        }
+      ],
+      "answerKeys": [
+        "claudiobravo"
+      ],
+      "lineup": {
+        "club": "Şili",
+        "rows": [
+          [
+            "?"
+          ],
+          [
+            "Mauricio Isla",
+            "Gary Medel",
+            "Gonzalo Jara",
+            "Jean Beausejour"
+          ],
+          [
+            "Charles Aránguiz",
+            "Marcelo Díaz",
+            "Arturo Vidal"
+          ],
+          [
+            "José Pedro Fuenzalida",
+            "Eduardo Vargas",
+            "Alexis Sánchez"
+          ]
+        ]
+      },
+      "result": {
+        "answer": "Claudio Bravo",
+        "story": "Claudio Bravo. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "0-0",
+        "scoreFT": "0-0",
+        "scoreET": "0-0",
+        "penalties": [
+          4,
+          2
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "11v11.com",
+            "url": "https://www.11v11.com/matches/argentina-v-chile-26-june-2016-319063/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "starting_xi",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "11v11.com",
+            "url": "https://www.11v11.com/matches/argentina-v-chile-26-june-2016-319063/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_26",
+      "number": 26,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2004-07-25",
+      "competition": "Copa América 2004",
+      "round": "Final",
+      "home": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "away": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "title": "Brezilya – Arjantin",
+      "intro": "Copa América 2004: Brezilya ve Arjantin, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "Finaldeki dört golcüyü kronolojik sıraya koy.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "luisao",
+          "label": "Luisão"
+        },
+        {
+          "id": "kilygonzalez",
+          "label": "Kily González"
+        },
+        {
+          "id": "cesardelgado",
+          "label": "César Delgado"
+        },
+        {
+          "id": "adriano",
+          "label": "Adriano"
+        }
+      ],
+      "answerKeys": [
+        "kilygonzalez",
+        "luisao",
+        "cesardelgado",
+        "adriano"
+      ],
+      "result": {
+        "answer": "Kily González → Luisão → César Delgado → Adriano",
+        "story": "Kily González → Luisão → César Delgado → Adriano. Normal sürenin ardından uzatma oynanmadan penaltı serisine geçildi.",
+        "score": "2-2",
+        "scoreFT": "2-2",
+        "scoreET": null,
+        "penalties": [
+          4,
+          2
+        ],
+        "duration": 90,
+        "events": [
+          {
+            "label": "Kily González",
+            "minute": "20"
+          },
+          {
+            "label": "Luisão",
+            "minute": "45+1"
+          },
+          {
+            "label": "César Delgado",
+            "minute": "87"
+          },
+          {
+            "label": "Adriano",
+            "minute": "90+3"
+          }
+        ],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/news-media/news/019f-0e6c2da3251c-cdcc5139cda1-1000--brazil-savour-shoot-out-success/"
+          },
+          {
+            "name": "RSSSF",
+            "url": "https://www.rsssf.org/tables/2004sa.html"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/news-media/news/019f-0e6c2da3251c-cdcc5139cda1-1000--brazil-savour-shoot-out-success/"
+          },
+          {
+            "name": "RSSSF",
+            "url": "https://www.rsssf.org/tables/2004sa.html"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_27",
+      "number": 27,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2007-07-15",
+      "competition": "Copa América 2007",
+      "round": "Final",
+      "home": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "away": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "title": "Brezilya – Arjantin",
+      "intro": "Copa América 2007: Brezilya ve Arjantin, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "Brezilya’nın çeyrek final, yarı final ve final rakiplerini eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "arjantin",
+          "label": "Arjantin"
+        },
+        {
+          "id": "sili",
+          "label": "Şili"
+        },
+        {
+          "id": "uruguay",
+          "label": "Uruguay"
+        }
+      ],
+      "answerKeys": [
+        "sili",
+        "uruguay",
+        "arjantin"
+      ],
+      "slots": [
+        "Çeyrek final",
+        "Yarı final",
+        "Final"
+      ],
+      "result": {
+        "answer": "Şili → Uruguay → Arjantin",
+        "story": "Şili → Uruguay → Arjantin. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "3-0",
+        "scoreFT": "3-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "rsssf.org",
+            "url": "https://www.rsssf.org/tables/2007sa.html"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "rsssf.org",
+            "url": "https://www.rsssf.org/tables/2007sa.html"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_28",
+      "number": 28,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2007-07-29",
+      "competition": "Asya Kupası 2007",
+      "round": "Final",
+      "home": {
+        "id": "irak",
+        "name": "Irak"
+      },
+      "away": {
+        "id": "suudiarabistan",
+        "name": "Suudi Arabistan"
+      },
+      "title": "Irak – Suudi Arabistan",
+      "intro": "Asya Kupası 2007: Irak ve Suudi Arabistan, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "xi",
+      "difficulty": "Kolay",
+      "prompt": "Irak’ın finalde ilk 11’deki takım kaptanı kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Yedek kulübesini değil, başlangıç düdüğündeki on biri düşün.",
+      "options": [
+        {
+          "id": "hawarmullamohammed",
+          "label": "Hawar Mulla Mohammed"
+        },
+        {
+          "id": "noorsabri",
+          "label": "Noor Sabri"
+        },
+        {
+          "id": "nashatakram",
+          "label": "Nashat Akram"
+        },
+        {
+          "id": "younismahmoud",
+          "label": "Younis Mahmoud"
+        }
+      ],
+      "answerKeys": [
+        "younismahmoud"
+      ],
+      "lineup": {
+        "club": "Irak",
+        "rows": [
+          [
+            "Noor Sabri"
+          ],
+          [
+            "Jassim Ghulam",
+            "Bassem Abbas",
+            "Ali Rehema",
+            "Haidar Abdul Amir"
+          ],
+          [
+            "Nashat Akram",
+            "Mahdi Karim",
+            "Qusay Munir",
+            "Hawar Mulla Mohammed"
+          ],
+          [
+            "Karrar Jassim",
+            "?"
+          ]
+        ]
+      },
+      "result": {
+        "answer": "Younis Mahmoud",
+        "story": "Younis Mahmoud. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-0",
+        "scoreFT": "1-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "11v11.com",
+            "url": "https://www.11v11.com/matches/iraq-v-saudi-arabia-29-july-2007-278251/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "starting_xi",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "11v11.com",
+            "url": "https://www.11v11.com/matches/iraq-v-saudi-arabia-29-july-2007-278251/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_29",
+      "number": 29,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "1999-07-04",
+      "competition": "Copa América 1999",
+      "round": "Grup",
+      "home": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "away": {
+        "id": "kolombiya",
+        "name": "Kolombiya"
+      },
+      "title": "Arjantin – Kolombiya",
+      "intro": "Copa América 1999: Arjantin ve Kolombiya, grup karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "Maç sırasında üç penaltı kaçıran Arjantinli kimdi?",
+      "clock": "Maç içi penaltı",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "hernancrespo",
+          "label": "Hernán Crespo"
+        },
+        {
+          "id": "arielortega",
+          "label": "Ariel Ortega"
+        },
+        {
+          "id": "martinpalermo",
+          "label": "Martín Palermo"
+        },
+        {
+          "id": "gabrielbatistuta",
+          "label": "Gabriel Batistuta"
+        }
+      ],
+      "answerKeys": [
+        "martinpalermo"
+      ],
+      "result": {
+        "answer": "Martín Palermo",
+        "story": "Martín Palermo. Bu olay penaltı serisi değil, maç içindeki üç ayrı penaltıdır.",
+        "score": "0-3",
+        "scoreFT": "0-3",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "CONMEBOL Copa América",
+            "url": "https://copaamerica.com/es/novedades/fase-de-grupos-de-la-conmebol-copa-america-1999-victoria-de-colombia-y-la-noche-de-los-penales"
+          },
+          {
+            "name": "FIFA",
+            "url": "https://inside.fifa.com/fr/news/pres-loin-art-penalty-1085847"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "CONMEBOL Copa América",
+            "url": "https://copaamerica.com/es/novedades/fase-de-grupos-de-la-conmebol-copa-america-1999-victoria-de-colombia-y-la-noche-de-los-penales"
+          },
+          {
+            "name": "FIFA",
+            "url": "https://inside.fifa.com/fr/news/pres-loin-art-penalty-1085847"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_30",
+      "number": 30,
+      "contentVersion": 2,
+      "chapterId": 3,
+      "date": "2001-07-29",
+      "competition": "Copa América 2001",
+      "round": "Final",
+      "home": {
+        "id": "kolombiya",
+        "name": "Kolombiya"
+      },
+      "away": {
+        "id": "meksika",
+        "name": "Meksika"
+      },
+      "title": "Kolombiya – Meksika",
+      "intro": "Copa América 2001: Kolombiya ve Meksika, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "Kolombiya’nın çeyrek finalden itibaren oynadığı rakipleri eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "honduras",
+          "label": "Honduras"
+        },
+        {
+          "id": "meksika",
+          "label": "Meksika"
+        },
+        {
+          "id": "peru",
+          "label": "Peru"
+        }
+      ],
+      "answerKeys": [
+        "peru",
+        "honduras",
+        "meksika"
+      ],
+      "slots": [
+        "Çeyrek final",
+        "Yarı final",
+        "Final"
+      ],
+      "result": {
+        "answer": "Peru → Honduras → Meksika",
+        "story": "Peru → Honduras → Meksika. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-0",
+        "scoreFT": "1-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "rsssf.org",
+            "url": "https://www.rsssf.org/tables/2001sa.html"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "rsssf.org",
+            "url": "https://www.rsssf.org/tables/2001sa.html"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_31",
+      "number": 31,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2018-07-02",
+      "competition": "Dünya Kupası 2018",
+      "round": "Son 16",
+      "home": {
+        "id": "belcika",
+        "name": "Belçika"
+      },
+      "away": {
+        "id": "japonya",
+        "name": "Japonya"
+      },
+      "title": "Belçika – Japonya",
+      "intro": "Dünya Kupası 2018: Belçika ve Japonya, son 16 karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "Japonya’nın öne geçmesinden Belçika’nın galibiyetine kadarki beş golcüyü sırala.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "nacerchadli",
+          "label": "Nacer Chadli"
+        },
+        {
+          "id": "genkiharaguchi",
+          "label": "Genki Haraguchi"
+        },
+        {
+          "id": "marouanefellaini",
+          "label": "Marouane Fellaini"
+        },
+        {
+          "id": "takashiinui",
+          "label": "Takashi Inui"
+        },
+        {
+          "id": "janvertonghen",
+          "label": "Jan Vertonghen"
+        }
+      ],
+      "answerKeys": [
+        "genkiharaguchi",
+        "takashiinui",
+        "janvertonghen",
+        "marouanefellaini",
+        "nacerchadli"
+      ],
+      "result": {
+        "answer": "Genki Haraguchi → Takashi Inui → Jan Vertonghen → Marouane Fellaini → Nacer Chadli",
+        "story": "Genki Haraguchi → Takashi Inui → Jan Vertonghen → Marouane Fellaini → Nacer Chadli. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "3-2",
+        "scoreFT": "3-2",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [
+          {
+            "label": "Genki Haraguchi",
+            "minute": "48"
+          },
+          {
+            "label": "Takashi Inui",
+            "minute": "52"
+          },
+          {
+            "label": "Jan Vertonghen",
+            "minute": "69"
+          },
+          {
+            "label": "Marouane Fellaini",
+            "minute": "74"
+          },
+          {
+            "label": "Nacer Chadli",
+            "minute": "90+4"
+          }
+        ],
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/tournaments/mens/worldcup/2018russia/news/worldcupathome-belgium-japan-russia2018-3071468"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/tournaments/mens/worldcup/2018russia/news/worldcupathome-belgium-japan-russia2018-3071468"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_32",
+      "number": 32,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2018-06-30",
+      "competition": "Dünya Kupası 2018",
+      "round": "Son 16",
+      "home": {
+        "id": "fransa",
+        "name": "Fransa"
+      },
+      "away": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "title": "Fransa – Arjantin",
+      "intro": "Dünya Kupası 2018: Fransa ve Arjantin, son 16 karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Fransa’ya beraberliği getiren ünlü vole golünü kim attı?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "antoinegriezmann",
+          "label": "Antoine Griezmann"
+        },
+        {
+          "id": "paulpogba",
+          "label": "Paul Pogba"
+        },
+        {
+          "id": "kylianmbappe",
+          "label": "Kylian Mbappé"
+        },
+        {
+          "id": "benjaminpavard",
+          "label": "Benjamin Pavard"
+        }
+      ],
+      "answerKeys": [
+        "benjaminpavard"
+      ],
+      "result": {
+        "answer": "Benjamin Pavard",
+        "story": "Benjamin Pavard. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "4-3",
+        "scoreFT": "4-3",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/en/news/pavards-perfect-pearler-2993576"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/en/news/pavards-perfect-pearler-2993576"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_33",
+      "number": 33,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2022-11-22",
+      "competition": "Dünya Kupası 2022",
+      "round": "Grup",
+      "home": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "away": {
+        "id": "suudiarabistan",
+        "name": "Suudi Arabistan"
+      },
+      "title": "Arjantin – Suudi Arabistan",
+      "intro": "Dünya Kupası 2022: Arjantin ve Suudi Arabistan, grup karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Suudi Arabistan’ın galibiyet golünü kim attı?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "firasalburaikan",
+          "label": "Firas Al-Buraikan"
+        },
+        {
+          "id": "mohammedkanno",
+          "label": "Mohammed Kanno"
+        },
+        {
+          "id": "salemaldawsari",
+          "label": "Salem Al-Dawsari"
+        },
+        {
+          "id": "salehalshehri",
+          "label": "Saleh Al-Shehri"
+        }
+      ],
+      "answerKeys": [
+        "salemaldawsari"
+      ],
+      "result": {
+        "answer": "Salem Al-Dawsari",
+        "story": "Salem Al-Dawsari. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-2",
+        "scoreFT": "1-2",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/world-cup-qatar-2022-argentina-v-saudi-arabia-match-report-review-first-game-group-e-result"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/world-cup-qatar-2022-argentina-v-saudi-arabia-match-report-review-first-game-group-e-result"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_34",
+      "number": 34,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2022-12-09",
+      "competition": "Dünya Kupası 2022",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "hollanda",
+        "name": "Hollanda"
+      },
+      "away": {
+        "id": "arjantin",
+        "name": "Arjantin"
+      },
+      "title": "Hollanda – Arjantin",
+      "intro": "Dünya Kupası 2022: Hollanda ve Arjantin, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "penalty",
+      "difficulty": "Kolay",
+      "prompt": "Arjantin’in turu garantileyen son seri penaltısını kim attı?",
+      "clock": "Penaltı serisi",
+      "hint": "Maç içindeki vuruşlar ile maçtan sonraki seriyi birbirinden ayır.",
+      "options": [
+        {
+          "id": "leandroparedes",
+          "label": "Leandro Paredes"
+        },
+        {
+          "id": "gonzalomontiel",
+          "label": "Gonzalo Montiel"
+        },
+        {
+          "id": "lionelmessi",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "lautaromartinez",
+          "label": "Lautaro Martínez"
+        }
+      ],
+      "answerKeys": [
+        "lautaromartinez"
+      ],
+      "result": {
+        "answer": "Lautaro Martínez",
+        "story": "Lautaro Martínez. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-2",
+        "scoreFT": "2-2",
+        "scoreET": "2-2",
+        "penalties": [
+          3,
+          4
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/es/tournaments/mens/worldcup/articles/mirar-partido-completo-argentina-vs-paises-bajos-mundial-qatar-video"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/es/tournaments/mens/worldcup/articles/mirar-partido-completo-argentina-vs-paises-bajos-mundial-qatar-video"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_35",
+      "number": 35,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2022-12-09",
+      "competition": "Dünya Kupası 2022",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "hrvatistan",
+        "name": "Hırvatistan"
+      },
+      "away": {
+        "id": "brezilya",
+        "name": "Brezilya"
+      },
+      "title": "Hırvatistan – Brezilya",
+      "intro": "Dünya Kupası 2022: Hırvatistan ve Brezilya, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "xi",
+      "difficulty": "Kolay",
+      "prompt": "Hırvatistan’ın çeyrek finaldeki başlangıç kalecisi kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Yedek kulübesini değil, başlangıç düdüğündeki on biri düşün.",
+      "options": [
+        {
+          "id": "danijelsubasic",
+          "label": "Danijel Subašić"
+        },
+        {
+          "id": "ivogrbic",
+          "label": "Ivo Grbić"
+        },
+        {
+          "id": "dominiklivakovic",
+          "label": "Dominik Livaković"
+        },
+        {
+          "id": "ivicaivusic",
+          "label": "Ivica Ivušić"
+        }
+      ],
+      "answerKeys": [
+        "dominiklivakovic"
+      ],
+      "lineup": {
+        "club": "Hırvatistan",
+        "rows": [
+          [
+            "?"
+          ],
+          [
+            "Josip Juranović",
+            "Dejan Lovren",
+            "Joško Gvardiol",
+            "Borna Sosa"
+          ],
+          [
+            "Luka Modrić",
+            "Marcelo Brozović",
+            "Mateo Kovačić"
+          ],
+          [
+            "Mario Pašalić",
+            "Andrej Kramarić",
+            "Ivan Perišić"
+          ]
+        ]
+      },
+      "result": {
+        "answer": "Dominik Livaković",
+        "story": "Dominik Livaković. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-1",
+        "scoreFT": "0-0",
+        "scoreET": "1-1",
+        "penalties": [
+          4,
+          2
+        ],
+        "duration": 120,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifatrainingcentre.com",
+            "url": "https://www.fifatrainingcentre.com/media/native/world-cup-2022/report_128077b.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "starting_xi",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifatrainingcentre.com",
+            "url": "https://www.fifatrainingcentre.com/media/native/world-cup-2022/report_128077b.pdf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_36",
+      "number": 36,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2022-12-10",
+      "competition": "Dünya Kupası 2022",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "fas",
+        "name": "Fas"
+      },
+      "away": {
+        "id": "portekiz",
+        "name": "Portekiz"
+      },
+      "title": "Fas – Portekiz",
+      "intro": "Dünya Kupası 2022: Fas ve Portekiz, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "Fas’ın yarı finale giderken eleme turlarında geçtiği iki ülkeyi eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "portekiz",
+          "label": "Portekiz"
+        },
+        {
+          "id": "ispanya",
+          "label": "İspanya"
+        }
+      ],
+      "answerKeys": [
+        "ispanya",
+        "portekiz"
+      ],
+      "slots": [
+        "Son 16",
+        "Çeyrek final"
+      ],
+      "result": {
+        "answer": "İspanya → Portekiz",
+        "story": "İspanya → Portekiz. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "1-0",
+        "scoreFT": "1-0",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/morocco-portugal"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "fifa.com",
+            "url": "https://www.fifa.com/en/articles/morocco-portugal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_37",
+      "number": 37,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2024-06-18",
+      "competition": "EURO 2024",
+      "round": "Grup",
+      "home": {
+        "id": "turkiye",
+        "name": "Türkiye"
+      },
+      "away": {
+        "id": "gurcistan",
+        "name": "Gürcistan"
+      },
+      "title": "Türkiye – Gürcistan",
+      "intro": "EURO 2024: Türkiye ve Gürcistan, grup karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "xi",
+      "difficulty": "Kolay",
+      "prompt": "Türkiye’nin başlangıç 11’inde sol bek oynayan isim kimdi?",
+      "clock": "Millî takım arşivi",
+      "hint": "Yedek kulübesini değil, başlangıç düdüğündeki on biri düşün.",
+      "options": [
+        {
+          "id": "erenelmal",
+          "label": "Eren Elmalı"
+        },
+        {
+          "id": "rdvanylmaz",
+          "label": "Rıdvan Yılmaz"
+        },
+        {
+          "id": "zekicelik",
+          "label": "Zeki Çelik"
+        },
+        {
+          "id": "ferdikadoglu",
+          "label": "Ferdi Kadıoğlu"
+        }
+      ],
+      "answerKeys": [
+        "ferdikadoglu"
+      ],
+      "lineup": {
+        "club": "Türkiye",
+        "rows": [
+          [
+            "Mert Günok"
+          ],
+          [
+            "Mert Müldür",
+            "Samet Akaydin",
+            "Abdülkerim Bardakcı",
+            "?"
+          ],
+          [
+            "Kaan Ayhan",
+            "Hakan Çalhanoğlu"
+          ],
+          [
+            "Arda Güler",
+            "Orkun Kökçü",
+            "Kenan Yıldız"
+          ],
+          [
+            "Barış Alper Yılmaz"
+          ]
+        ]
+      },
+      "result": {
+        "answer": "Ferdi Kadıoğlu",
+        "story": "Ferdi Kadıoğlu. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "3-1",
+        "scoreFT": "3-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/028e-1b29ce033a7b-f0319eea90ab-1000--turkiye-3-1-georgia-arda-guler-thunderbolt-lights-up-thr/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "starting_xi",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/028e-1b29ce033a7b-f0319eea90ab-1000--turkiye-3-1-georgia-arda-guler-thunderbolt-lights-up-thr/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_38",
+      "number": 38,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2024-06-26",
+      "competition": "EURO 2024",
+      "round": "Grup",
+      "home": {
+        "id": "turkiye",
+        "name": "Türkiye"
+      },
+      "away": {
+        "id": "cekya",
+        "name": "Çekya"
+      },
+      "title": "Türkiye – Çekya",
+      "intro": "EURO 2024: Türkiye ve Çekya, grup karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "critical",
+      "difficulty": "Kolay",
+      "prompt": "Türkiye’nin son bölümdeki galibiyet golünü kim attı?",
+      "clock": "Millî takım arşivi",
+      "hint": "Soruda tarif edilen tek olaya odaklan; maçın diğer golleriyle karıştırma.",
+      "options": [
+        {
+          "id": "hakancalhanoglu",
+          "label": "Hakan Çalhanoğlu"
+        },
+        {
+          "id": "ardaguler",
+          "label": "Arda Güler"
+        },
+        {
+          "id": "kenanyldz",
+          "label": "Kenan Yıldız"
+        },
+        {
+          "id": "cenktosun",
+          "label": "Cenk Tosun"
+        }
+      ],
+      "answerKeys": [
+        "cenktosun"
+      ],
+      "result": {
+        "answer": "Cenk Tosun",
+        "story": "Cenk Tosun. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-1",
+        "scoreFT": "2-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/028e-1b3a2c028eb1-0351684033b3-1000--czechia-1-2-turkiye-cenk-tosun-snatches-win-as-turkiye-go-th/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/028e-1b3a2c028eb1-0351684033b3-1000--czechia-1-2-turkiye-cenk-tosun-snatches-win-as-turkiye-go-th/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_39",
+      "number": 39,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2024-07-06",
+      "competition": "EURO 2024",
+      "round": "Çeyrek final",
+      "home": {
+        "id": "hollanda",
+        "name": "Hollanda"
+      },
+      "away": {
+        "id": "turkiye",
+        "name": "Türkiye"
+      },
+      "title": "Hollanda – Türkiye",
+      "intro": "EURO 2024: Hollanda ve Türkiye, çeyrek final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "timeline",
+      "difficulty": "Orta",
+      "prompt": "Karşılaşmanın üç gol olayını kronolojik sıraya koy.",
+      "clock": "Millî takım arşivi",
+      "hint": "Normal süre, uzatma ve penaltı serisi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "mertmuldurkk",
+          "label": "Mert Müldür (KK)"
+        },
+        {
+          "id": "sametakaydin",
+          "label": "Samet Akaydin"
+        },
+        {
+          "id": "stefandevrij",
+          "label": "Stefan de Vrij"
+        }
+      ],
+      "answerKeys": [
+        "sametakaydin",
+        "stefandevrij",
+        "mertmuldurkk"
+      ],
+      "result": {
+        "answer": "Samet Akaydin → Stefan de Vrij → Mert Müldür (KK)",
+        "story": "Samet Akaydin → Stefan de Vrij → Mert Müldür (KK). Galibiyet golü Mert Müldür’ün kendi kalesine golü olarak kaydedildi.",
+        "score": "2-1",
+        "scoreFT": "2-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [
+          {
+            "label": "Samet Akaydin",
+            "minute": "35"
+          },
+          {
+            "label": "Stefan de Vrij",
+            "minute": "70"
+          },
+          {
+            "label": "Mert Müldür (KK)",
+            "minute": "76"
+          }
+        ],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/028f-1b4e44ac4633-c981ede0480b-1000--netherlands-2-1-turkiye-oranje-stage-comeback-to-set-up-eng/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/028f-1b4e44ac4633-c981ede0480b-1000--netherlands-2-1-turkiye-oranje-stage-comeback-to-set-up-eng/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ig2_40",
+      "number": 40,
+      "contentVersion": 2,
+      "chapterId": 4,
+      "date": "2024-07-14",
+      "competition": "EURO 2024",
+      "round": "Final",
+      "home": {
+        "id": "ispanya",
+        "name": "İspanya"
+      },
+      "away": {
+        "id": "ingiltere",
+        "name": "İngiltere"
+      },
+      "title": "İspanya – İngiltere",
+      "intro": "EURO 2024: İspanya ve İngiltere, final karşılaşmasında sahaya çıkıyor. Ülke formalarının arkasındaki hikâyeyi tek görevle hatırla.",
+      "type": "route",
+      "difficulty": "Orta",
+      "prompt": "İspanya’nın son 16, çeyrek final, yarı final ve final rakiplerini eşleştir.",
+      "clock": "Millî takım arşivi",
+      "hint": "Tur sırasını izleyerek rakipleri yerleştir.",
+      "options": [
+        {
+          "id": "almanya",
+          "label": "Almanya"
+        },
+        {
+          "id": "fransa",
+          "label": "Fransa"
+        },
+        {
+          "id": "gurcistan",
+          "label": "Gürcistan"
+        },
+        {
+          "id": "ingiltere",
+          "label": "İngiltere"
+        }
+      ],
+      "answerKeys": [
+        "gurcistan",
+        "almanya",
+        "fransa",
+        "ingiltere"
+      ],
+      "slots": [
+        "Son 16",
+        "Çeyrek final",
+        "Yarı final",
+        "Final"
+      ],
+      "result": {
+        "answer": "Gürcistan → Almanya → Fransa → İngiltere",
+        "story": "Gürcistan → Almanya → Fransa → İngiltere. Bu karşılaşmanın hatırası Milletler Albümü’ne eklendi.",
+        "score": "2-1",
+        "scoreFT": "2-1",
+        "scoreET": null,
+        "penalties": null,
+        "duration": 90,
+        "events": [],
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0288-1999d787a5d3-a495d63ec483-1000--euro-2024-results-spain-s-route-to-the-top/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "coverage": "selected_match_facts",
+        "editorial": true,
+        "sources": [
+          {
+            "name": "uefa.com",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0288-1999d787a5d3-a495d63ec483-1000--euro-2024-results-spain-s-route-to-the-top/"
+          }
+        ]
+      }
+    }
+  ]
+}

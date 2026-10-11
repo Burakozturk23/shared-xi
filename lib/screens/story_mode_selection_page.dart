@@ -45,7 +45,7 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'International Glory',
-    subtitle: 'Milli takım zaferleri',
+    subtitle: '40 maç · 4 bölüm · Milletler Albümü',
     icon: Icons.public,
   ),
   StorySubMode(

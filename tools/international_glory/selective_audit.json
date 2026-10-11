@@ -1,0 +1,41 @@
+{
+  "files": [
+    {
+      "path": "data/events/7584.json",
+      "sha256": "42b2a15f88146e6f549d4339f671a3847c5d55f2005c2cc43c2e8547b6308ad2",
+      "records": 3715,
+      "redistributed": false
+    },
+    {
+      "path": "data/events/3869685.json",
+      "sha256": "a0b0036d50c10a4c8879d1ee9f24a7502ec2cfb264a61951c8d500dfc897ec35",
+      "records": 4407,
+      "redistributed": false
+    },
+    {
+      "path": "data/events/3869321.json",
+      "sha256": "dd0472e758207eea4dc1726c778f506e91c1f630b3020b101cf111267c2621ed",
+      "records": 4708,
+      "redistributed": false
+    },
+    {
+      "path": "data/events/3942382.json",
+      "sha256": "31a3da99f63c52f83d69e5cdf2b26c14851da6d51765320d95f80b85b50a0a5f",
+      "records": 3417,
+      "redistributed": false
+    },
+    {
+      "path": "data/lineups/3869420.json",
+      "sha256": "7adac6a5d1afcfe0934bbd05e689eb6f27057ade8e6e332fcbcdfecd4a31f3e0",
+      "records": 2,
+      "redistributed": false
+    },
+    {
+      "path": "data/lineups/3938639.json",
+      "sha256": "cb17f4feb72143509e1037862a228314d98ebae5841fb4a46c0858a56949b234",
+      "records": 2,
+      "redistributed": false
+    }
+  ],
+  "licenseGate": "No provider data redistributed. Commercial permission is not assumed."
+}
