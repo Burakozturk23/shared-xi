@@ -132,7 +132,7 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
     final clubs=c.catalog.tasks.expand((t)=>t.clubs).toSet().toList()..sort();
     final visible=c.catalog.tasks.where((t)=>(_country=='all'||t.text('country')==_country)&&(_club=='all'||t.clubs.contains(_club))&&
       (_mechanic=='all'||t.label==_mechanic)&&(_progress=='all'||(_progress=='Tamamlanan'?c.stamps.containsKey(t.id):!c.stamps.containsKey(t.id)))&&
-      derbySearch('${t.text('title')} ${t.text('country')} ${t.text('city')}').contains(derbySearch(_query))).toList();
+      derbySearch('${t.text('title')} ${t.text('country')} ${t.text('city')} ${t.text('rivalryName')}').contains(derbySearch(_query))).toList();
     return [
       _hero(_collection?'DERBİ PASAPORTU':'REKABET ATLASI',_collection?'Her damga,\nbir hikâye.':'Bir dünya.\n48 rekabet.',
         '16 ülkeyi keşfet. Şehirleri, formaları ve unutulmaz maçları aynı pasaportta buluştur.',
@@ -169,7 +169,7 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
       for(final country in c.catalog.countries) ...[
         if(visible.any((t)=>t.text('country')==country)) PitchSectionTitle('$country · ${c.catalog.tasks.where((t)=>t.text('country')==country&&c.stamps.containsKey(t.id)).length}/${c.catalog.tasks.where((t)=>t.text('country')==country).length}'),
         for(final t in visible.where((t)=>t.text('country')==country)) Padding(padding:const EdgeInsets.only(bottom:12),child:PitchPanel(key:ValueKey('rivalry-${t.id}'),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-          Wrap(spacing:8,runSpacing:4,children:[Text(t.id,style:Theme.of(context).textTheme.labelSmall),if(t.text('origin')=='pdf_final') const Text('YENİ',style:TextStyle(fontWeight:FontWeight.bold)),
+          Wrap(spacing:8,runSpacing:4,children:[Text(t.id,style:Theme.of(context).textTheme.labelSmall),if(t.text('rivalryName').isNotEmpty) Text(t.text('rivalryName')),if(t.text('origin')=='pdf_final') const Text('YENİ',style:TextStyle(fontWeight:FontWeight.bold)),
             Text(c.stamps.containsKey(t.id)?'✓ DAMGALANDI':t.label)]),
           const SizedBox(height:8),Text(t.text('title'),style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:8),Text(t.text('city')),
           if(_collection&&c.stamps.containsKey(t.id)) ...[const SizedBox(height:8),Text('Hatıra: ${derbyMap(c.stamps[t.id])['period']}'),Text('Damga: ${_date((derbyMap(c.stamps[t.id])['earnedAt'] as num?)?.toInt()??0)}')],

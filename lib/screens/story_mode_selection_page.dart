@@ -60,8 +60,8 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'Derby Day',
-    subtitle: 'Tarihi rekabetlerin içine gir',
-    icon: Icons.sports_kabaddi,
+    subtitle: '48 rekabet · 16 ülke · Derbi Pasaportu',
+    icon: Icons.public,
   ),
 ];
 

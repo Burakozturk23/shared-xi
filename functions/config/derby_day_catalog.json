@@ -25,6 +25,7 @@
       "number": 1,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Türkiye",
       "clubIds": [
         114,
@@ -99,6 +100,7 @@
       "number": 2,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Kıtalararası Derbi",
       "country": "Türkiye",
       "clubIds": [
         36,
@@ -165,6 +167,7 @@
       "number": 3,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Türkiye",
       "clubIds": [
         114,
@@ -231,6 +234,7 @@
       "number": 4,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Türkiye",
       "clubIds": [
         1467,
@@ -311,6 +315,7 @@
       "number": 5,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "İzmir Derbisi",
       "country": "Türkiye",
       "clubIds": [
         1467,
@@ -385,6 +390,7 @@
       "number": 6,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Cumhuriyet Derbisi",
       "country": "Türkiye",
       "clubIds": [
         2375,
@@ -451,6 +457,7 @@
       "number": 7,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Ankara Derbisi",
       "country": "Türkiye",
       "clubIds": [
         868,
@@ -525,6 +532,7 @@
       "number": 8,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Türkiye",
       "clubIds": [
         449,
@@ -591,6 +599,7 @@
       "number": 9,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Türkiye",
       "clubIds": [
         449,
@@ -658,6 +667,7 @@
       "number": 10,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Türkiye",
       "clubIds": [
         449,
@@ -738,6 +748,7 @@
       "number": 11,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İngiltere",
       "clubIds": [
         31,
@@ -818,6 +829,7 @@
       "number": 12,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Manchester Derby",
       "country": "İngiltere",
       "clubIds": [
         985,
@@ -884,6 +896,7 @@
       "number": 13,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "North London Derby",
       "country": "İngiltere",
       "clubIds": [
         11,
@@ -950,6 +963,7 @@
       "number": 14,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İngiltere",
       "clubIds": [
         31,
@@ -1016,6 +1030,7 @@
       "number": 15,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İngiltere",
       "clubIds": [
         631,
@@ -1082,6 +1097,7 @@
       "number": 16,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İngiltere",
       "clubIds": [
         631,
@@ -1148,6 +1164,7 @@
       "number": 17,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İngiltere",
       "clubIds": [
         11,
@@ -1215,6 +1232,7 @@
       "number": 18,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İngiltere",
       "clubIds": [
         31,
@@ -1281,6 +1299,7 @@
       "number": 19,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "El Clásico",
       "country": "İspanya",
       "clubIds": [
         418,
@@ -1348,6 +1367,7 @@
       "number": 20,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İspanya",
       "clubIds": [
         13,
@@ -1414,6 +1434,7 @@
       "number": 21,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "El Gran Derbi",
       "country": "İspanya",
       "clubIds": [
         368,
@@ -1480,6 +1501,7 @@
       "number": 22,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Derby della Madonnina",
       "country": "İtalya",
       "clubIds": [
         5,
@@ -1554,6 +1576,7 @@
       "number": 23,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Derby d’Italia",
       "country": "İtalya",
       "clubIds": [
         506,
@@ -1620,6 +1643,7 @@
       "number": 24,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Derby della Capitale",
       "country": "İtalya",
       "clubIds": [
         12,
@@ -1687,6 +1711,7 @@
       "number": 25,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İtalya",
       "clubIds": [
         506,
@@ -1753,6 +1778,7 @@
       "number": 26,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İtalya",
       "clubIds": [
         506,
@@ -1817,6 +1843,7 @@
       "number": 27,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "İtalya",
       "clubIds": [
         506,
@@ -1883,6 +1910,7 @@
       "number": 28,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Almanya",
       "clubIds": [
         27,
@@ -1949,6 +1977,7 @@
       "number": 29,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Revierderby",
       "country": "Almanya",
       "clubIds": [
         16,
@@ -2015,6 +2044,7 @@
       "number": 30,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Le Classique",
       "country": "Fransa",
       "clubIds": [
         583,
@@ -2081,6 +2111,7 @@
       "number": 31,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "De Klassieker",
       "country": "Hollanda",
       "clubIds": [
         610,
@@ -2147,6 +2178,7 @@
       "number": 32,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "O Clássico",
       "country": "Portekiz",
       "clubIds": [
         294,
@@ -2213,6 +2245,7 @@
       "number": 33,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Derby de Lisboa",
       "country": "Portekiz",
       "clubIds": [
         336,
@@ -2279,6 +2312,7 @@
       "number": 34,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Portekiz",
       "clubIds": [
         336,
@@ -2345,6 +2379,7 @@
       "number": 35,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Derby of the Eternal Enemies",
       "country": "Yunanistan",
       "clubIds": [
         683,
@@ -2411,6 +2446,7 @@
       "number": 36,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "",
       "country": "Belçika",
       "clubIds": [
         58,
@@ -2477,6 +2513,7 @@
       "number": 37,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Old Firm",
       "country": "İskoçya",
       "clubIds": [
         371,
@@ -2557,6 +2594,7 @@
       "number": 38,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Fla-Flu",
       "country": "Brezilya",
       "clubIds": [
         614,
@@ -2623,6 +2661,7 @@
       "number": 39,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Derbi Paulista",
       "country": "Brezilya",
       "clubIds": [
         199,
@@ -2689,6 +2728,7 @@
       "number": 40,
       "contentVersion": 2,
       "origin": "sourced_expansion",
+      "rivalryName": "Superclásico",
       "country": "Arjantin",
       "clubIds": [
         189,
@@ -2755,6 +2795,7 @@
       "number": 41,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Ebedî Derbi",
       "country": "Sırbistan",
       "clubIds": [
         159,
@@ -2821,6 +2862,7 @@
       "number": 42,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Derby della Lanterna",
       "country": "İtalya",
       "clubIds": [
         252,
@@ -2887,6 +2929,7 @@
       "number": 43,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Gre-Nal",
       "country": "Brezilya",
       "clubIds": [
         210,
@@ -2953,6 +2996,7 @@
       "number": 44,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Rosario Derbisi",
       "country": "Arjantin",
       "clubIds": [
         1418,
@@ -3017,6 +3061,7 @@
       "number": 45,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Adana Derbisi",
       "country": "Türkiye",
       "clubIds": [
         3840,
@@ -3091,6 +3136,7 @@
       "number": 46,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Marmara Derbisi",
       "country": "Türkiye",
       "clubIds": [
         120,
@@ -3157,6 +3203,7 @@
       "number": 47,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Clásico Uruguayo",
       "country": "Uruguay",
       "clubIds": [
         1000000861,
@@ -3223,6 +3270,7 @@
       "number": 48,
       "contentVersion": 2,
       "origin": "pdf_final",
+      "rivalryName": "Clásico Nacional",
       "country": "Meksika",
       "clubIds": [
         3631,

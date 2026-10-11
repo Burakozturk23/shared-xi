@@ -49,7 +49,7 @@ void main(){
       await t.pumpWidget(MaterialApp(theme:light?OrtakSahaTheme.light:OrtakSahaTheme.dark,
         builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:TextScaler.linear(1.8)),child:RepaintBoundary(key:key,child:child!)),home:DerbyDayPage(controller:c)));
       await t.pumpAndSettle();await shot(t,key,'archive-$light');
-      for(final id in ['DER-01','DER-02','DER-03','DER-04','DER-05']){
+      for(final id in ['DER-41','DER-42','DER-43','DER-44','DER-45','DER-46','DER-47','DER-48']){
         c.open(id);await t.pumpAndSettle();
         expect(find.text(derbyPrivate(id)['result']['answer'] as String),findsNothing);
         await go(t,const ValueKey('derby-start'));await t.tap(find.byKey(const ValueKey('derby-start')));await t.pumpAndSettle();

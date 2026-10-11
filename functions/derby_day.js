@@ -10,8 +10,7 @@ function taskOf(id) {
 function accepts(t, answers) {
   if (!Array.isArray(answers) || answers.length !== t.answerKeys.length ||
       new Set(answers).size !== answers.length || answers.some((a) => typeof a !== "string")) return false;
-  return t.interaction === "multi" ? answers.every((a) => t.answerKeys.includes(a)) :
-    answers.every((a, i) => a === t.answerKeys[i]);
+  return answers.every((a, i) => a === t.answerKeys[i]);
 }
 const completedRivalries = (s) => catalog.tasks.filter((t) => s.completed[t.id]);
 function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
@@ -37,13 +36,9 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     }
   }
   function help(t) {
-    if (t.interaction === "boolean") {
-      return {text: "Karşı örnek aramak için iddiadaki her turnuvayı ve sezonu ayrı değerlendir."};
-    }
     const label = (id) => t.options.find((o) => o.id === id).label;
     if (t.interaction === "order") return {text: "İlk kart: " + label(t.answerKeys[0])};
-    if (t.interaction === "match") return {text: t.slots[0] + ": " + label(t.answerKeys[0])};
-    const excluded = t.options.filter((o) => !t.answerKeys.includes(o.id)).slice(0, t.interaction === "multi" ? 1 : 2);
+    const excluded = t.options.filter((o) => !t.answerKeys.includes(o.id)).slice(0, 2);
     return {text: "Elenen seçenekler: " + excluded.map((o) => o.label).join(", ")};
   }
   async function status(uid, eligible = true) {

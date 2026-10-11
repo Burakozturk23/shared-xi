@@ -17,7 +17,6 @@ class DerbyTask {
   String get mechanic=>text('mechanic');
   int get requiredCount=>data['requiredCount'] as int;
   bool get ordered=>interaction=='order';
-  List<String> get slots=>const [];
   List<String> get clubs=>derbyStrings(data['clubs']);
   List<Map<String,dynamic>> get options=>(data['options'] as List).map(derbyMap).toList();
   List<String> get optionIds=>options.map((o)=>o['id'] as String).toList();

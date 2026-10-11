@@ -5,7 +5,7 @@ const {harness} = require("./support/economy_harness");
 const {catalog, accepts} = require("../derby_day");
 const proof = (t) => ({version: 2, taskId: t.id, answers: t.answerKeys});
 const first = catalog.tasks[0];
-test("DerbyDay validates sets, sequences, boolean claims and role assignments", () => {
+test("DerbyDay validates single answers and timeline sequences", () => {
   for (const t of catalog.tasks) {
     assert.equal(accepts(t, t.answerKeys), true);
     for (const invalid of [null, [], 1, ["fake"], [...t.answerKeys, t.answerKeys[0]]]) {

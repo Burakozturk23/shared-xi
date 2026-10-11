@@ -6,6 +6,7 @@ from intros import INTROS
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 LABELS=dict(memory='Derbi Hafızası',identity='Rekabetin Kimliği',timeline='Rekabet Kronolojisi',two_shirts='İki Formanın Hikâyesi',legend='Derbi Efsanesi')
+NAMES={2:'Kıtalararası Derbi',5:'İzmir Derbisi',6:'Cumhuriyet Derbisi',7:'Ankara Derbisi',12:'Manchester Derby',13:'North London Derby',19:'El Clásico',21:'El Gran Derbi',22:'Derby della Madonnina',23:'Derby d’Italia',24:'Derby della Capitale',29:'Revierderby',30:'Le Classique',31:'De Klassieker',32:'O Clássico',33:'Derby de Lisboa',35:'Derby of the Eternal Enemies',37:'Old Firm',38:'Fla-Flu',39:'Derbi Paulista',40:'Superclásico',41:'Ebedî Derbi',42:'Derby della Lanterna',43:'Gre-Nal',44:'Rosario Derbisi',45:'Adana Derbisi',46:'Marmara Derbisi',47:'Clásico Uruguayo',48:'Clásico Nacional'}
 def build():
     tasks=[]
     portraits=json.loads((HERE/"portraits.json").read_text())
@@ -18,7 +19,7 @@ def build():
         ordered=r['mechanic']=='timeline'
         if ordered and [o['id'] for o in options]==answers:options=options[1:]+options[:1]
         sources=[dict(name=__import__('urllib.parse',fromlist=['urlparse']).urlparse(url).hostname,url=url) for url in r['urls']]
-        tasks.append(dict(id=tid,number=n,contentVersion=2,origin='pdf_final' if n>40 else 'sourced_expansion',country=r['country'],clubIds=r['clubIds'],clubs=r['clubs'],city=r['city'],title=' – '.join(r['clubs']),intro=intro,mechanic=r['mechanic'],interaction='order' if ordered else 'single',prompt=r['prompt'],hint=r['hint'],options=options,requiredCount=len(answers),answerKeys=answers,result=dict(answer=' → '.join(r['correct']),evidence=r['evidence'],period=r['period'],sources=sources),verification=dict(verifiedAt='2026-10-11',scope=r['period'],sources=sources,origin='Derby_Day_V2_Final.pdf' if n>40 else 'Original sourced question for preserved legacy rivalry')))
+        tasks.append(dict(id=tid,number=n,contentVersion=2,origin='pdf_final' if n>40 else 'sourced_expansion',rivalryName=NAMES.get(n,''),country=r['country'],clubIds=r['clubIds'],clubs=r['clubs'],city=r['city'],title=' – '.join(r['clubs']),intro=intro,mechanic=r['mechanic'],interaction='order' if ordered else 'single',prompt=r['prompt'],hint=r['hint'],options=options,requiredCount=len(answers),answerKeys=answers,result=dict(answer=' → '.join(r['correct']),evidence=r['evidence'],period=r['period'],sources=sources),verification=dict(verifiedAt='2026-10-11',scope=r['period'],sources=sources,origin='Derby_Day_V2_Final.pdf' if n>40 else 'Original sourced question for preserved legacy rivalry')))
     for t,r in zip(tasks,ROWS):
         if r["mechanic"]=="legend" and r["correct"][0] in portraits:
             t["result"]["playerId"]=portraits[r["correct"][0]]["playerId"]

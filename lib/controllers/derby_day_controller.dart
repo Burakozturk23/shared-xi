@@ -22,7 +22,6 @@ class DerbyDayController extends ChangeNotifier {
   List<String> get answers => derbyStrings(drafts[activeId]);
   int get count => results.length;
   int get stampCount => stamps.length;
-  bool available(DerbyTask t) => true;
   int get coins => rewards.values.map(derbyMap).where((r) => r['settled'] == true)
       .fold(0, (sum, r) => sum + ((r['coins'] as num?)?.toInt() ?? 0));
   bool get canSubmit => phase == 'task' && active != null && answers.length == active!.requiredCount && answers.toSet().length == answers.length && answers.every(active!.optionIds.contains);
@@ -54,7 +53,7 @@ class DerbyDayController extends ChangeNotifier {
       drafts = derbyMap(s['drafts']);
       for (final m in catalog.tasks) {
         final a = derbyStrings(drafts[m.id]);
-        if (a.where((x) => x.isNotEmpty).toSet().length != a.where((x) => x.isNotEmpty).length || a.any((x) => !(m.interaction == 'match' && x.isEmpty) && !m.optionIds.contains(x)) ||
+        if (a.where((x) => x.isNotEmpty).toSet().length != a.where((x) => x.isNotEmpty).length || a.any((x) => !m.optionIds.contains(x)) ||
             (m.ordered ? a.length != m.requiredCount : a.length > m.requiredCount)) drafts.remove(m.id);
       }
       results = derbyMap(s['results'])..removeWhere((id, v) => !validIds.contains(id) || v is! Map);
@@ -67,22 +66,20 @@ class DerbyDayController extends ChangeNotifier {
       rewardEligible = s['rewardEligible'] == true;
     }
     if (phase == 'task' && active != null && !drafts.containsKey(activeId)) {
-      if (active!.interaction == 'match') drafts[activeId!] = List<String>.filled(active!.slots.length, '');
       if (active!.interaction == 'order') drafts[activeId!] = active!.optionIds;
     }
-    if (active != null && !available(active!)) phase = 'archive';
     ready = true; _notify();
     await sync();
   }
   void open(String id, {bool replay = false}) {
-    if (busy || _disposed || !available(catalog.byId(id))) return;
+    if (busy || _disposed) return;
     activeId = catalog.byId(id).id; hintOpen = false; message = '';
     phase = !replay && results.containsKey(id) ? 'result' : 'intro';
     if (replay) { drafts.remove(id); pending.remove(id); }
     _saveSoon(); _notify();
   }
   void start() {
-    if (busy || active == null || !available(active!)) return;
+    if (busy || _disposed || active == null) return;
     if (active!.interaction == 'order' && !drafts.containsKey(activeId)) drafts[activeId!] = active!.optionIds;
     if (active!.interaction == 'match' && !drafts.containsKey(activeId)) drafts[activeId!] = List<String>.filled(active!.slots.length, '');
     phase = 'task'; _saveSoon(); _notify();
@@ -90,13 +87,7 @@ class DerbyDayController extends ChangeNotifier {
   void archive() { if (busy) return; phase = 'archive'; _saveSoon(); _notify(); }
   void choose(String id) {
     if (busy || phase != 'task' || active == null || active!.ordered || !active!.optionIds.contains(id)) return;
-    if (active!.interaction == 'multi') {
-      final a = answers;
-      if (a.contains(id)) { a.remove(id); }
-      else if (a.length < active!.requiredCount) { a.add(id); }
-      else { message = 'Önce bir kartın seçimini kaldır.'; _notify(); return; }
-      drafts[activeId!] = a;
-    } else { drafts[activeId!] = [id]; }
+    drafts[activeId!] = [id];
     pending.remove(activeId); message = ''; _saveSoon(); _notify();
   }
   void move(int index, int delta) {
@@ -110,12 +101,6 @@ class DerbyDayController extends ChangeNotifier {
     if (busy || phase != 'task' || active?.interaction != 'order') return;
     if (to > from) to--;
     move(from, to - from);
-  }
-  void assign(int slot, String id) {
-    if (busy || phase != 'task' || active?.interaction != 'match' || !active!.optionIds.contains(id) || slot < 0 || slot >= active!.slots.length) return;
-    final a = answers;
-    for (var i = 0; i < a.length; i++) { if (a[i] == id) a[i] = ''; }
-    a[slot] = id; drafts[activeId!] = a; pending.remove(activeId); message = ''; _saveSoon(); _notify();
   }
   Future<void> buyHint({required int maxPrice}) async {
     if (_disposed || busy || phase != 'task' || active == null) return;
@@ -155,9 +140,6 @@ class DerbyDayController extends ChangeNotifier {
         message = 'Görev kaydedildi. Tekrar oynamak ikinci bir ödül vermez.';
       } else { message = switch (active!.interaction) {
         'order' => 'Olayların sırasını yeniden incele; önce ve sonra ilişkisine bak.',
-        'match' => 'Kanıtlardan biri alanıyla uyuşmuyor. Birim, kişi ve maç evresini kontrol et.',
-        'multi' => 'Bu kart kümesi kayda uymuyor. Her seçimi sorudaki dönemle karşılaştır.',
-        'boolean' => 'Manşeti yeniden değerlendir; iddianın tamamı için aynı kayıt geçerli mi?',
         _ => 'Bu kart olay kaydına uymuyor. Sorudaki tarih ve rolü yeniden incele.',
       }; }
       pending.remove(id); await _save();

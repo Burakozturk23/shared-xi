@@ -41,10 +41,6 @@ void solve(DerbyDayController c){
       for(var i=0;i<keys.length;i++){
         while(c.answers.indexOf(keys[i])>i){c.move(c.answers.indexOf(keys[i]),-1);}
       }
-    case 'match':for(var i=0;i<keys.length;i++){c.assign(i,keys[i]);}
-    case 'multi':
-      for(final a in List<String>.from(c.answers)){c.choose(a);}
-      for(final a in keys){c.choose(a);}
     default:c.choose(keys.single);
   }
 }
