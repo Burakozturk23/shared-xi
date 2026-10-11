@@ -1,0 +1,3363 @@
+{
+  "version": 2,
+  "storageVersion": 1,
+  "countries": [
+    "Türkiye",
+    "İngiltere",
+    "İspanya",
+    "İtalya",
+    "Almanya",
+    "Fransa",
+    "Hollanda",
+    "Portekiz",
+    "Yunanistan",
+    "Belçika",
+    "İskoçya",
+    "Brezilya",
+    "Arjantin",
+    "Sırbistan",
+    "Uruguay",
+    "Meksika"
+  ],
+  "tasks": [
+    {
+      "id": "DER-01",
+      "number": 1,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Türkiye",
+      "clubIds": [
+        114,
+        141
+      ],
+      "clubs": [
+        "Beşiktaş",
+        "Galatasaray"
+      ],
+      "city": "İstanbul",
+      "title": "Beşiktaş – Galatasaray",
+      "intro": "Boğaz’ın iki köklü kulübü, aynı şehrin farklı futbol hatıralarını taşır. Bu kez rekabetin sınırını geçen bir kariyerin izini süreceksin.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2017’de Beşiktaş, 2021’de Galatasaray formasıyla maç kaydı bulunan Hollandalı hücumcu kim?",
+      "hint": "İstanbul kariyerinden önce Liverpool’da da oynayan bir hücumcuyu düşün.",
+      "options": [
+        {
+          "id": "c13125524e089",
+          "label": "Robin van Persie"
+        },
+        {
+          "id": "cc0623175d089",
+          "label": "Ryan Babel"
+        },
+        {
+          "id": "ca92bc21b3d04",
+          "label": "Dirk Kuyt"
+        },
+        {
+          "id": "ca8365ef5dea3",
+          "label": "Arjen Robben"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cc0623175d089"
+      ],
+      "result": {
+        "answer": "Ryan Babel",
+        "evidence": "Beşiktaş’ın Mayıs 2017 maç kaydı ve Galatasaray’ın Mayıs 2021 derbi raporu Ryan Babel’i iki farklı formayla kaydeder.",
+        "period": "2017 / 2021",
+        "sources": [
+          {
+            "name": "bjk.com.tr",
+            "url": "https://bjk.com.tr/tr/mac_merkezi/canli/10135"
+          },
+          {
+            "name": "www.galatasaray.org",
+            "url": "https://www.galatasaray.org/haber/futbol/galatasaray-3-1-besiktas/48662"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2017 / 2021",
+        "sources": [
+          {
+            "name": "bjk.com.tr",
+            "url": "https://bjk.com.tr/tr/mac_merkezi/canli/10135"
+          },
+          {
+            "name": "www.galatasaray.org",
+            "url": "https://www.galatasaray.org/haber/futbol/galatasaray-3-1-besiktas/48662"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-02",
+      "number": 2,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Kıtalararası Derbi",
+      "country": "Türkiye",
+      "clubIds": [
+        36,
+        141
+      ],
+      "clubs": [
+        "Fenerbahçe",
+        "Galatasaray"
+      ],
+      "city": "İstanbul",
+      "title": "Fenerbahçe – Galatasaray",
+      "intro": "İstanbul’da derbi günü, iki yakayı aynı maçın etrafında toplar. Şehrin futbol hafızasında yer etmiş bir gecenin tabelasını yeniden kur.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "6 Kasım 2002 lig derbisinin skoru neydi? Sıra: Fenerbahçe – Galatasaray.",
+      "hint": "Kadıköy’deki maçın ev sahibi galibiyeti olduğunu hatırla.",
+      "options": [
+        {
+          "id": "c63f2860280ca",
+          "label": "4–0"
+        },
+        {
+          "id": "c7603d5f9a46d",
+          "label": "3–0"
+        },
+        {
+          "id": "ce818bceea46d",
+          "label": "5–1"
+        },
+        {
+          "id": "c9492dbf33c2d",
+          "label": "6–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c9492dbf33c2d"
+      ],
+      "result": {
+        "answer": "6–0",
+        "evidence": "TFF kaydında 6 Kasım 2002 karşılaşması Fenerbahçe 6–0 Galatasaray olarak yer alır.",
+        "period": "6 Kasım 2002",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?macId=14912&pageID=528"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "6 Kasım 2002",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?macId=14912&pageID=528"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-03",
+      "number": 3,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Türkiye",
+      "clubIds": [
+        114,
+        36
+      ],
+      "clubs": [
+        "Beşiktaş",
+        "Fenerbahçe"
+      ],
+      "city": "İstanbul",
+      "title": "Beşiktaş – Fenerbahçe",
+      "intro": "İstanbul rekabetinde bazen alışıldık roller bir anda değişir. Bu hikâyede son düdüğe kadar sahada kalan bir oyuncunun sıra dışı görevini bul.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "17 Nisan 2005’te Beşiktaş’ın 4–3 kazandığı derbide maçın son bölümünde kaleye geçen saha oyuncusu kimdi?",
+      "hint": "Rumen futbolcunun o gün kullandığı eldivenler kulüp müzesine girdi.",
+      "options": [
+        {
+          "id": "c019a2163d5a3",
+          "label": "Sergen Yalçın"
+        },
+        {
+          "id": "c205b6c439c50",
+          "label": "Daniel Pancu"
+        },
+        {
+          "id": "c9702ce6f60d6",
+          "label": "Tümer Metin"
+        },
+        {
+          "id": "c64cc18a8ab50",
+          "label": "İbrahim Toraman"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c205b6c439c50"
+      ],
+      "result": {
+        "answer": "Daniel Pancu",
+        "evidence": "Kaleci kırmızı kart gördükten sonra kaleyi Daniel Pancu korudu. Beşiktaş’ın müze kaydı, eldivenleri bu karşılaşmayla ilişkilendirir.",
+        "period": "17 Nisan 2005",
+        "sources": [
+          {
+            "name": "bjk.com.tr",
+            "url": "https://bjk.com.tr/tr/haber/86091/eski-futbolcumuz-daniel-pancunun-4-3luk-unutulmaz-derbi-zaferimizde-kullandigi-eldivenler-besiktas-jk-muzesinde.html"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "17 Nisan 2005",
+        "sources": [
+          {
+            "name": "bjk.com.tr",
+            "url": "https://bjk.com.tr/tr/haber/86091/eski-futbolcumuz-daniel-pancunun-4-3luk-unutulmaz-derbi-zaferimizde-kullandigi-eldivenler-besiktas-jk-muzesinde.html"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-04",
+      "number": 4,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Türkiye",
+      "clubIds": [
+        1467,
+        2375
+      ],
+      "clubs": [
+        "Göztepe",
+        "Altay"
+      ],
+      "city": "İzmir",
+      "title": "Göztepe – Altay",
+      "intro": "İzmir’in futbol tarihi, kulüplerin kuruluşundan Avrupa yolculuklarına uzanır. İki komşunun hafızasındaki kilometre taşlarını zaman çizgisine yerleştir.",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "İzmir futbolunun bu üç olayını en eskiden en yeniye sırala.",
+      "hint": "Kuruluşları, Avrupa’daki sportif başarıdan önce düşün.",
+      "options": [
+        {
+          "id": "c4ef40c08025e",
+          "label": "Göztepe’nin Fuar Şehirleri Kupası yarı finali"
+        },
+        {
+          "id": "c6545b2e78305",
+          "label": "Altay’ın kuruluşu"
+        },
+        {
+          "id": "cf7930e11965f",
+          "label": "Göztepe’nin kuruluşu"
+        }
+      ],
+      "requiredCount": 3,
+      "answerKeys": [
+        "c6545b2e78305",
+        "cf7930e11965f",
+        "c4ef40c08025e"
+      ],
+      "result": {
+        "answer": "Altay’ın kuruluşu → Göztepe’nin kuruluşu → Göztepe’nin Fuar Şehirleri Kupası yarı finali",
+        "evidence": "Altay 1914’te, Göztepe 1925’te kuruldu. Göztepe 1968–69 Fuar Şehirleri Kupası’nda yarı finale çıktı.",
+        "period": "1914 → 1925 → 1969",
+        "sources": [
+          {
+            "name": "altay.org.tr",
+            "url": "https://altay.org.tr/tarihce/"
+          },
+          {
+            "name": "www.goztepe.org.tr",
+            "url": "https://www.goztepe.org.tr/Kulup/Tarihce"
+          },
+          {
+            "name": "olimpik.goztepe.org.tr",
+            "url": "https://olimpik.goztepe.org.tr/Haberler/arsiv/2015/6/14/90-yilimizi-buyuk-coskuyla-kutladik"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1914 → 1925 → 1969",
+        "sources": [
+          {
+            "name": "altay.org.tr",
+            "url": "https://altay.org.tr/tarihce/"
+          },
+          {
+            "name": "www.goztepe.org.tr",
+            "url": "https://www.goztepe.org.tr/Kulup/Tarihce"
+          },
+          {
+            "name": "olimpik.goztepe.org.tr",
+            "url": "https://olimpik.goztepe.org.tr/Haberler/arsiv/2015/6/14/90-yilimizi-buyuk-coskuyla-kutladik"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-05",
+      "number": 5,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "İzmir Derbisi",
+      "country": "Türkiye",
+      "clubIds": [
+        1467,
+        2330
+      ],
+      "clubs": [
+        "Göztepe",
+        "Karşıyaka"
+      ],
+      "city": "İzmir",
+      "title": "Göztepe – Karşıyaka",
+      "intro": "Körfez’in farklı taraflarında büyüyen iki futbol kültürü, İzmir’in renklerini taşır. Bu yolculukta bir kulübün şehirde bıraktığı stadyum izini keşfet.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Göztepe’nin Ocak 2020’de açılan yeni stadının adı nedir?",
+      "hint": "Adı, Göztepe tarihinin bir futbolcusunu yaşatıyor.",
+      "options": [
+        {
+          "id": "c298146ec09db",
+          "label": "Atatürk Olimpiyat"
+        },
+        {
+          "id": "c0630e1298ba5",
+          "label": "Alsancak Mustafa Denizli"
+        },
+        {
+          "id": "c287f8228a5ad",
+          "label": "Gürsel Aksel"
+        },
+        {
+          "id": "c3abfd8fbe2e8",
+          "label": "Bornova Aziz Kocaoğlu"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c287f8228a5ad"
+      ],
+      "result": {
+        "answer": "Gürsel Aksel",
+        "evidence": "Gürsel Aksel Stadyumu Ocak 2020’de açıldı. Bu soru tarihsel açılış adını sorar.",
+        "period": "Ocak 2020",
+        "sources": [
+          {
+            "name": "shgm.gsb.gov.tr",
+            "url": "https://shgm.gsb.gov.tr/HaberDetaylari/1/182141/g-"
+          },
+          {
+            "name": "www.goztepe.org.tr",
+            "url": "https://www.goztepe.org.tr/Iletisim"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "Ocak 2020",
+        "sources": [
+          {
+            "name": "shgm.gsb.gov.tr",
+            "url": "https://shgm.gsb.gov.tr/HaberDetaylari/1/182141/g-"
+          },
+          {
+            "name": "www.goztepe.org.tr",
+            "url": "https://www.goztepe.org.tr/Iletisim"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-06",
+      "number": 6,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Cumhuriyet Derbisi",
+      "country": "Türkiye",
+      "clubIds": [
+        2375,
+        2330
+      ],
+      "clubs": [
+        "Altay",
+        "Karşıyaka"
+      ],
+      "city": "İzmir",
+      "title": "Altay – Karşıyaka",
+      "intro": "İzmir’de aynı sezonun farklı maçları kolayca birbirine karışabilir. Arşivde tek bir güne odaklan ve o günkü derbinin sonucunu bul.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "17 Mayıs 2010 yükselme grubu maçında Altay ile Karşıyaka kaç kaç berabere kaldı?",
+      "hint": "Bu soru ligdeki diğer İzmir derbilerini değil, yükselme grubu maçını soruyor.",
+      "options": [
+        {
+          "id": "c41c0a2095629",
+          "label": "3–3"
+        },
+        {
+          "id": "cd229d9afaa2e",
+          "label": "2–2"
+        },
+        {
+          "id": "c5919cc26e13c",
+          "label": "1–1"
+        },
+        {
+          "id": "c8dbef9c2532a",
+          "label": "0–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c8dbef9c2532a"
+      ],
+      "result": {
+        "answer": "0–0",
+        "evidence": "TFF’nin yükselme grubu raporuna göre 17 Mayıs 2010’da Karşıyaka ile Altay golsüz berabere kaldı.",
+        "period": "17 Mayıs 2010",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=10015&pageID=287"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "17 Mayıs 2010",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=10015&pageID=287"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-07",
+      "number": 7,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Ankara Derbisi",
+      "country": "Türkiye",
+      "clubIds": [
+        868,
+        820
+      ],
+      "clubs": [
+        "Ankaragücü",
+        "Gençlerbirliği"
+      ],
+      "city": "Ankara",
+      "title": "Ankaragücü – Gençlerbirliği",
+      "intro": "Ankara futbolu, başkentin mahallelerinden profesyonel sahalara taşınan ortak bir hafızaya sahip. İki farklı formanın arkasında duran aynı kariyeri araştır.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2006’da Gençlerbirliği, 2009’da Ankaragücü kadrosunda bulunan hücum oyuncusu kim?",
+      "hint": "İlk adı Mehmet; Ankara’da uzun süre forma giymiş bir oyuncu.",
+      "options": [
+        {
+          "id": "c8a2b412f5ce5",
+          "label": "Gökhan Töre"
+        },
+        {
+          "id": "cba4ea8237bef",
+          "label": "Volkan Şen"
+        },
+        {
+          "id": "cdc2fe5769e1e",
+          "label": "Arda Turan"
+        },
+        {
+          "id": "ce5bac8e94fd3",
+          "label": "Mehmet Çakır"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "ce5bac8e94fd3"
+      ],
+      "result": {
+        "answer": "Mehmet Çakır",
+        "evidence": "TFF’nin 2006 maç kaydında Mehmet Çakır Gençlerbirliği tarafında bulunur; oyuncu geçmişi Eylül 2009 Ankaragücü kiralık transferini doğrular.",
+        "period": "2006 / 2009",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?macId=1023&pageID=29"
+          },
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?kisiId=571606&pageId=30"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2006 / 2009",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?macId=1023&pageID=29"
+          },
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?kisiId=571606&pageId=30"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-08",
+      "number": 8,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Türkiye",
+      "clubIds": [
+        449,
+        36
+      ],
+      "clubs": [
+        "Trabzonspor",
+        "Fenerbahçe"
+      ],
+      "city": "Trabzon · İstanbul",
+      "title": "Trabzonspor – Fenerbahçe",
+      "intro": "Karadeniz ile İstanbul arasındaki rekabet, lig yarışının dışına da taşar. Bu görev seni tek maçla belirlenen bir kupa gecesine götürüyor.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "5 Mayıs 2010 Türkiye Kupası finalinin skoru neydi? Sıra: Trabzonspor – Fenerbahçe.",
+      "hint": "Trabzonspor geriye düştüğü finalde son bölümde öne geçti.",
+      "options": [
+        {
+          "id": "c684d51a3b553",
+          "label": "2–1"
+        },
+        {
+          "id": "c17961b606c79",
+          "label": "3–1"
+        },
+        {
+          "id": "c10291b669c7f",
+          "label": "4–2"
+        },
+        {
+          "id": "c2fd6fdfb1aef",
+          "label": "1–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c17961b606c79"
+      ],
+      "result": {
+        "answer": "3–1",
+        "evidence": "Trabzonspor, Şanlıurfa’daki finalde Fenerbahçe’yi 3–1 yenerek Türkiye Kupası’nı kazandı.",
+        "period": "5 Mayıs 2010",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=9858&pageID=267"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "5 Mayıs 2010",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=9858&pageID=267"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-09",
+      "number": 9,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Türkiye",
+      "clubIds": [
+        449,
+        141
+      ],
+      "clubs": [
+        "Trabzonspor",
+        "Galatasaray"
+      ],
+      "city": "Trabzon · İstanbul",
+      "title": "Trabzonspor – Galatasaray",
+      "intro": "Trabzon ve İstanbul’dan iki kulüp, bu kez kupa için buluşuyor. Finalin akışını değiştiren oyuncuyu maçın somut izlerinden tanı.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "14 Mayıs 2025 Türkiye Kupası finalinde Galatasaray’ın Trabzonspor’a attığı üç golün ikisini kim kaydetti?",
+      "hint": "İki gol de ikinci yarıda geldi; Nijeryalı forveti düşün.",
+      "options": [
+        {
+          "id": "cb537f58b4bee",
+          "label": "Yunus Akgün"
+        },
+        {
+          "id": "cb0a37f9cb419",
+          "label": "Barış Alper Yılmaz"
+        },
+        {
+          "id": "c60ade624650f",
+          "label": "Lucas Torreira"
+        },
+        {
+          "id": "c3da731f8c70b",
+          "label": "Victor Osimhen"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c3da731f8c70b"
+      ],
+      "result": {
+        "answer": "Victor Osimhen",
+        "evidence": "TFF raporunda Barış Alper Yılmaz’ın 5. dakikadaki golünü, Victor Osimhen’in 46 ve 63. dakika golleri izler.",
+        "period": "14 Mayıs 2025",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?ftxtId=47556&pageId=200"
+          }
+        ],
+        "playerId": 401923
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "14 Mayıs 2025",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?ftxtId=47556&pageId=200"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-10",
+      "number": 10,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Türkiye",
+      "clubIds": [
+        449,
+        114
+      ],
+      "clubs": [
+        "Trabzonspor",
+        "Beşiktaş"
+      ],
+      "city": "Trabzon · İstanbul",
+      "title": "Trabzonspor – Beşiktaş",
+      "intro": "Bir kulübün kuruluşuyla ilk büyük başarısı arasında yıllar olabilir. İki farklı şehirde başlayan futbol hikâyelerini aynı zaman çizgisinde buluştur.",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "İki kulübün tarihindeki olayları sırala.",
+      "hint": "İlk üst lig şampiyonluğu, kulübün kuruluşundan sonra gelir.",
+      "options": [
+        {
+          "id": "c9d547267ebe0",
+          "label": "Trabzonspor’un ilk üst lig şampiyonluğu"
+        },
+        {
+          "id": "c8dc845643a8a",
+          "label": "Trabzonspor’un kuruluşu"
+        },
+        {
+          "id": "c41eaaf4adea0",
+          "label": "Beşiktaş’ın kuruluşu"
+        }
+      ],
+      "requiredCount": 3,
+      "answerKeys": [
+        "c41eaaf4adea0",
+        "c8dc845643a8a",
+        "c9d547267ebe0"
+      ],
+      "result": {
+        "answer": "Beşiktaş’ın kuruluşu → Trabzonspor’un kuruluşu → Trabzonspor’un ilk üst lig şampiyonluğu",
+        "evidence": "Beşiktaş 1903’te, Trabzonspor 1967’de kuruldu. Trabzonspor ilk üst lig şampiyonluğunu 1975–76 sezonunda kazandı.",
+        "period": "1903 → 1967 → 1976",
+        "sources": [
+          {
+            "name": "bjk.com.tr",
+            "url": "https://bjk.com.tr/tr/haber/31627/tarihce.html"
+          },
+          {
+            "name": "www.trabzonspor.org.tr",
+            "url": "https://www.trabzonspor.org.tr/tr/kulup/history"
+          },
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?pageId=545"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1903 → 1967 → 1976",
+        "sources": [
+          {
+            "name": "bjk.com.tr",
+            "url": "https://bjk.com.tr/tr/haber/31627/tarihce.html"
+          },
+          {
+            "name": "www.trabzonspor.org.tr",
+            "url": "https://www.trabzonspor.org.tr/tr/kulup/history"
+          },
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?pageId=545"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-11",
+      "number": 11,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İngiltere",
+      "clubIds": [
+        31,
+        985
+      ],
+      "clubs": [
+        "Liverpool",
+        "Manchester United"
+      ],
+      "city": "Liverpool · Manchester",
+      "title": "Liverpool – Manchester United",
+      "intro": "İngiltere’nin iki futbol şehrinde başarılar kuşaktan kuşağa anlatılır. Büyük kupaların ve lig zaferlerinin sırasını yeniden düşün.",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Bu üç başarıyı en eskiden en yeniye sırala.",
+      "hint": "Premier League adıyla gelen Liverpool şampiyonluğu, Madrid finalinden sonradır.",
+      "options": [
+        {
+          "id": "c650f3ea5bb6a",
+          "label": "Liverpool’un ilk Premier League şampiyonluğu"
+        },
+        {
+          "id": "c2b7ded8de54e",
+          "label": "Manchester United’ın üçlemesi"
+        },
+        {
+          "id": "cfa1dcaf47e9e",
+          "label": "Liverpool’un Madrid’deki Şampiyonlar Ligi zaferi"
+        }
+      ],
+      "requiredCount": 3,
+      "answerKeys": [
+        "c2b7ded8de54e",
+        "cfa1dcaf47e9e",
+        "c650f3ea5bb6a"
+      ],
+      "result": {
+        "answer": "Manchester United’ın üçlemesi → Liverpool’un Madrid’deki Şampiyonlar Ligi zaferi → Liverpool’un ilk Premier League şampiyonluğu",
+        "evidence": "Manchester United 1999’da üçleme yaptı. Liverpool 2019’da Madrid’de Avrupa şampiyonu, 2020’de Premier League şampiyonu oldu.",
+        "period": "1999 → 2019 → 2020",
+        "sources": [
+          {
+            "name": "www.premierleague.com",
+            "url": "https://www.premierleague.com/en/news/59576"
+          },
+          {
+            "name": "www.liverpoolfc.com",
+            "url": "https://www.liverpoolfc.com/info/2019-champions-league-final"
+          },
+          {
+            "name": "www.liverpoolfc.com",
+            "url": "https://www.liverpoolfc.com/news/first-team/399866-liverpool-football-club-premier-league-champions-2019-20"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1999 → 2019 → 2020",
+        "sources": [
+          {
+            "name": "www.premierleague.com",
+            "url": "https://www.premierleague.com/en/news/59576"
+          },
+          {
+            "name": "www.liverpoolfc.com",
+            "url": "https://www.liverpoolfc.com/info/2019-champions-league-final"
+          },
+          {
+            "name": "www.liverpoolfc.com",
+            "url": "https://www.liverpoolfc.com/news/first-team/399866-liverpool-football-club-premier-league-champions-2019-20"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-12",
+      "number": 12,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Manchester Derby",
+      "country": "İngiltere",
+      "clubIds": [
+        985,
+        281
+      ],
+      "clubs": [
+        "Manchester United",
+        "Manchester City"
+      ],
+      "city": "Manchester",
+      "title": "Manchester United – Manchester City",
+      "intro": "Manchester’ın aynı şehri paylaşan iki takımı, derbi gününde ayrı hikâyeler yazar. O günlerden birinin tabelasındaki eksik rakamları tamamla.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "23 Ekim 2011 derbisinin skoru neydi? Sıra: Manchester United – Manchester City.",
+      "hint": "Old Trafford’daki bu maçta konuk ekip çok farklı kazandı.",
+      "options": [
+        {
+          "id": "c3777e507fb03",
+          "label": "2–5"
+        },
+        {
+          "id": "c24426b913240",
+          "label": "1–6"
+        },
+        {
+          "id": "ca54f2687f942",
+          "label": "0–3"
+        },
+        {
+          "id": "ceb479afda648",
+          "label": "1–4"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c24426b913240"
+      ],
+      "result": {
+        "answer": "1–6",
+        "evidence": "Manchester City’nin arşivi, 23 Ekim 2011 Old Trafford derbisini 6–1 deplasman galibiyeti olarak kaydeder.",
+        "period": "23 Ekim 2011",
+        "sources": [
+          {
+            "name": "www.mancity.com",
+            "url": "https://www.mancity.com/news/mens/united-1-6-manchester-city-10-things-to-know-10-years-on-63770518"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "23 Ekim 2011",
+        "sources": [
+          {
+            "name": "www.mancity.com",
+            "url": "https://www.mancity.com/news/mens/united-1-6-manchester-city-10-things-to-know-10-years-on-63770518"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-13",
+      "number": 13,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "North London Derby",
+      "country": "İngiltere",
+      "clubIds": [
+        11,
+        148
+      ],
+      "clubs": [
+        "Arsenal",
+        "Tottenham"
+      ],
+      "city": "Londra",
+      "title": "Arsenal – Tottenham",
+      "intro": "Kuzey Londra’da bir transfer, yalnızca kadro değişikliği olmayabilir. Bir futbolcunun şehrin iki tarafında bıraktığı izleri takip et.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2001 yazında Tottenham’dan ayrılıp Arsenal’e katılan İngiliz stoper kimdi?",
+      "hint": "İngiltere milli takımında oynayan, Arsenal’in yenilgisiz sezonunda da bulunan bir stoper.",
+      "options": [
+        {
+          "id": "c1b464b52f3bd",
+          "label": "Sol Campbell"
+        },
+        {
+          "id": "c06a380f4d5cd",
+          "label": "Rio Ferdinand"
+        },
+        {
+          "id": "c0ee1dcb79dbd",
+          "label": "Ledley King"
+        },
+        {
+          "id": "c9d13230d91b7",
+          "label": "John Terry"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c1b464b52f3bd"
+      ],
+      "result": {
+        "answer": "Sol Campbell",
+        "evidence": "Tottenham’ın 3 Temmuz 2001 tarihli duyurusu, Sol Campbell’ın Arsenal’e katıldığını bildirir.",
+        "period": "2001",
+        "sources": [
+          {
+            "name": "www.tottenhamhotspur.com",
+            "url": "https://www.tottenhamhotspur.com/news/1046548/sols-a-gunner"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2001",
+        "sources": [
+          {
+            "name": "www.tottenhamhotspur.com",
+            "url": "https://www.tottenhamhotspur.com/news/1046548/sols-a-gunner"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-14",
+      "number": 14,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İngiltere",
+      "clubIds": [
+        31,
+        29
+      ],
+      "clubs": [
+        "Liverpool",
+        "Everton"
+      ],
+      "city": "Liverpool",
+      "title": "Liverpool – Everton",
+      "intro": "Liverpool’da kulüp tarihleri, sokaklar ve tribünlerle iç içe geçer. Eski bir taşınma hikâyesinden yola çıkarak futbol haritasındaki doğru yeri bul.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Everton 1892’de Anfield’dan ayrıldıktan sonra hangi stada taşındı?",
+      "hint": "Everton’ın bir yüzyılı aşan dönemine ev sahipliği yapan tarihî stadı düşün.",
+      "options": [
+        {
+          "id": "c5151982a3348",
+          "label": "Goodison Park"
+        },
+        {
+          "id": "c3493dbcda56e",
+          "label": "Highbury"
+        },
+        {
+          "id": "cb7b2ce0ee50f",
+          "label": "Craven Cottage"
+        },
+        {
+          "id": "ce97c92fa2b4c",
+          "label": "Villa Park"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c5151982a3348"
+      ],
+      "result": {
+        "answer": "Goodison Park",
+        "evidence": "Everton’ın tarih arşivine göre Goodison Park, 24 Ağustos 1892’de açıldı. Soru 1892’deki taşınmayı sorar.",
+        "period": "1892",
+        "sources": [
+          {
+            "name": "www.evertonfc.com",
+            "url": "https://www.evertonfc.com/club/history/our-former-homes"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1892",
+        "sources": [
+          {
+            "name": "www.evertonfc.com",
+            "url": "https://www.evertonfc.com/club/history/our-former-homes"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-15",
+      "number": 15,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İngiltere",
+      "clubIds": [
+        631,
+        11
+      ],
+      "clubs": [
+        "Chelsea",
+        "Arsenal"
+      ],
+      "city": "Londra",
+      "title": "Chelsea – Arsenal",
+      "intro": "Londra’daki kulüpler arasında dolaşan kariyerler, farklı renklerde hatıralar bırakır. Bu görevde iki formayı da giymiş bir kalecinin izini sür.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2004’te Chelsea’ye, 2015’te Arsenal’e katılan Çek kaleci kim?",
+      "hint": "Koruyucu başlığıyla hatırlanan kaleciyi düşün.",
+      "options": [
+        {
+          "id": "c72e749376d2e",
+          "label": "Jens Lehmann"
+        },
+        {
+          "id": "c1bd6054d1ea9",
+          "label": "Thibaut Courtois"
+        },
+        {
+          "id": "c3a531d04ce28",
+          "label": "Petr Čech"
+        },
+        {
+          "id": "ceb0d02da902d",
+          "label": "Wojciech Szczęsny"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c3a531d04ce28"
+      ],
+      "result": {
+        "answer": "Petr Čech",
+        "evidence": "Arsenal’in oyuncu arşivi, Petr Čech’in Chelsea’ye 2004’te ve Arsenal’e 2015’te katıldığını anlatır.",
+        "period": "2004 / 2015",
+        "sources": [
+          {
+            "name": "www.arsenal.com",
+            "url": "https://www.arsenal.com/news/news-archive/20151215/cech-i-thought-record-was-impossible"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2004 / 2015",
+        "sources": [
+          {
+            "name": "www.arsenal.com",
+            "url": "https://www.arsenal.com/news/news-archive/20151215/cech-i-thought-record-was-impossible"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-16",
+      "number": 16,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İngiltere",
+      "clubIds": [
+        631,
+        148
+      ],
+      "clubs": [
+        "Chelsea",
+        "Tottenham"
+      ],
+      "city": "Londra",
+      "title": "Chelsea – Tottenham",
+      "intro": "Bazen bir derbinin sonucu, sahada bulunmayan başka bir takımın kaderini belirler. Londra’daki bir beraberliğin lig yarışına etkisini hatırla.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "Leicester’ın şampiyonluğunu kesinleştiren 2 Mayıs 2016 Chelsea – Tottenham maçının skoru neydi?",
+      "hint": "Chelsea ilk yarıdaki geriden gelişini beraberlikle tamamladı.",
+      "options": [
+        {
+          "id": "ce869d57e5390",
+          "label": "2–2"
+        },
+        {
+          "id": "cbfd9b4a72655",
+          "label": "3–3"
+        },
+        {
+          "id": "c6127964f7feb",
+          "label": "1–1"
+        },
+        {
+          "id": "c4d7b9486f452",
+          "label": "0–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "ce869d57e5390"
+      ],
+      "result": {
+        "answer": "2–2",
+        "evidence": "Stamford Bridge’deki maç 2–2 bitti. Bu beraberlikle Leicester’ın 2015–16 Premier League şampiyonluğu kesinleşti.",
+        "period": "2 Mayıs 2016",
+        "sources": [
+          {
+            "name": "www.premierleague.com",
+            "url": "https://www.premierleague.com/en/news/693680"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2 Mayıs 2016",
+        "sources": [
+          {
+            "name": "www.premierleague.com",
+            "url": "https://www.premierleague.com/en/news/693680"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-17",
+      "number": 17,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İngiltere",
+      "clubIds": [
+        11,
+        985
+      ],
+      "clubs": [
+        "Arsenal",
+        "Manchester United"
+      ],
+      "city": "Londra · Manchester",
+      "title": "Arsenal – Manchester United",
+      "intro": "Londra ile Manchester arasındaki rekabette bazı maçlar yıllar sonra da anlatılır. Bu karşılaşmanın golcüsünü arşivdeki performansından tanı.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "Manchester United’ın Arsenal’i 8–2 yendiği 28 Ağustos 2011 maçında hat-trick yapan kimdi?",
+      "hint": "Üç golü atan İngiliz forvet, kulübün uzun yıllar başlıca golcülerindendi.",
+      "options": [
+        {
+          "id": "c16aa504e52f0",
+          "label": "Ashley Young"
+        },
+        {
+          "id": "ce00a1b3f897c",
+          "label": "Wayne Rooney"
+        },
+        {
+          "id": "cbf8b0736b7cd",
+          "label": "Nani"
+        },
+        {
+          "id": "c19cb204437aa",
+          "label": "Danny Welbeck"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "ce00a1b3f897c"
+      ],
+      "result": {
+        "answer": "Wayne Rooney",
+        "evidence": "UEFA’nın maç raporuna göre Wayne Rooney üç gol atarak 8–2’lik galibiyette hat-trick yaptı.",
+        "period": "28 Ağustos 2011",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/news-media/news/01f4-0e79668b3743-88ae60e380df-1000--spectacular-wins-for-manchester-s-finest/"
+          }
+        ],
+        "playerId": 3332
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "28 Ağustos 2011",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/news-media/news/01f4-0e79668b3743-88ae60e380df-1000--spectacular-wins-for-manchester-s-finest/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-18",
+      "number": 18,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İngiltere",
+      "clubIds": [
+        31,
+        631
+      ],
+      "clubs": [
+        "Liverpool",
+        "Chelsea"
+      ],
+      "city": "Liverpool · Londra",
+      "title": "Liverpool – Chelsea",
+      "intro": "Bir Avrupa yarı finalinde tek bir gol, bütün sezonun yönünü değiştirebilir. İki İngiliz kulübünün final yolundaki randevusuna geri dön.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "3 Mayıs 2005 Şampiyonlar Ligi yarı final rövanşının skoru neydi? Sıra: Liverpool – Chelsea.",
+      "hint": "Luis García’nın erken golünü hatırla.",
+      "options": [
+        {
+          "id": "c4d349cb7ab3b",
+          "label": "0–0"
+        },
+        {
+          "id": "c23cbde51852e",
+          "label": "1–0"
+        },
+        {
+          "id": "c5337aa57d2bb",
+          "label": "2–0"
+        },
+        {
+          "id": "c500ace31b18c",
+          "label": "2–1"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c23cbde51852e"
+      ],
+      "result": {
+        "answer": "1–0",
+        "evidence": "Liverpool, Anfield’daki rövanşı Luis García’nın golüyle 1–0 kazandı ve İstanbul finaline yükseldi.",
+        "period": "3 Mayıs 2005",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/01a9-0ea7b3b80a98-7d3bd7a4260b-1000--garcia-leads-liverpool-to-turkey/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "3 Mayıs 2005",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/01a9-0ea7b3b80a98-7d3bd7a4260b-1000--garcia-leads-liverpool-to-turkey/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-19",
+      "number": 19,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "El Clásico",
+      "country": "İspanya",
+      "clubIds": [
+        418,
+        131
+      ],
+      "clubs": [
+        "Real Madrid",
+        "Barcelona"
+      ],
+      "city": "Madrid · Barselona",
+      "title": "Real Madrid – Barcelona",
+      "intro": "Madrid ile Barselona arasındaki futbol rekabeti, yeni yıldızların sahnesi de olur. Bu görevde büyük bir gecede öne çıkan genç golcüyü bul.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "10 Mart 2007’de 3–3 biten El Clásico’da Barcelona’nın üç golünü de kim attı?",
+      "hint": "Arjantinli oyuncunun Barcelona A takımındaki ilk hat-trick’iydi.",
+      "options": [
+        {
+          "id": "c2d31031b3131",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "c1e6b19d23e2a",
+          "label": "Ronaldinho"
+        },
+        {
+          "id": "c2ebd183031c3",
+          "label": "Samuel Eto’o"
+        },
+        {
+          "id": "c5be3af99eef9",
+          "label": "Thierry Henry"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c2d31031b3131"
+      ],
+      "result": {
+        "answer": "Lionel Messi",
+        "evidence": "Lionel Messi, 10 Mart 2007’de Real Madrid karşısında üç gol atarak ilk Barcelona hat-trick’ini yaptı.",
+        "period": "10 Mart 2007",
+        "sources": [
+          {
+            "name": "www.fcbarcelona.com",
+            "url": "https://www.fcbarcelona.com/en/football/first-team/news/775153/10-years-since-leo-messis-first-barca-hat-trick"
+          }
+        ],
+        "playerId": 28003
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "10 Mart 2007",
+        "sources": [
+          {
+            "name": "www.fcbarcelona.com",
+            "url": "https://www.fcbarcelona.com/en/football/first-team/news/775153/10-years-since-leo-messis-first-barca-hat-trick"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-20",
+      "number": 20,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İspanya",
+      "clubIds": [
+        13,
+        418
+      ],
+      "clubs": [
+        "Atlético Madrid",
+        "Real Madrid"
+      ],
+      "city": "Madrid",
+      "title": "Atlético Madrid – Real Madrid",
+      "intro": "Aynı şehrin iki takımı, Avrupa’nın en büyük kupası için şehir dışında buluşur. Normal süre ile uzatma sonucunu ayırarak finali yeniden oku.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "2014 Şampiyonlar Ligi finali uzatmalar dâhil nasıl bitti? Sıra: Real Madrid – Atlético Madrid.",
+      "hint": "90 dakika sonunda 1–1’di; soru 120 dakikanın sonucunu istiyor.",
+      "options": [
+        {
+          "id": "c3b2b18a8d145",
+          "label": "1–1"
+        },
+        {
+          "id": "cc6daa1d81609",
+          "label": "4–1"
+        },
+        {
+          "id": "cd30cb37bc4d2",
+          "label": "3–1"
+        },
+        {
+          "id": "c66fbc85cb32f",
+          "label": "2–1"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cc6daa1d81609"
+      ],
+      "result": {
+        "answer": "4–1",
+        "evidence": "Lizbon finalinde normal süre 1–1 bitti. Real Madrid uzatmada üç gol daha buldu ve 4–1 kazandı.",
+        "period": "24 Mayıs 2014 · 120 dakika",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/025e-0f8f9e5c1596-c70c78003eac-1000--champions-league-classics-real-madrid-4-1-atletico/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "24 Mayıs 2014 · 120 dakika",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/025e-0f8f9e5c1596-c70c78003eac-1000--champions-league-classics-real-madrid-4-1-atletico/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-21",
+      "number": 21,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "El Gran Derbi",
+      "country": "İspanya",
+      "clubIds": [
+        368,
+        150
+      ],
+      "clubs": [
+        "Sevilla",
+        "Real Betis"
+      ],
+      "city": "Sevilla",
+      "title": "Sevilla – Real Betis",
+      "intro": "Sevilla’da iki kulüp, şehir yaşamına ayrı renkler katar. Kulüplerden birinin belirli bir sezondaki evini stadyum ipuçlarıyla bul.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Real Betis 2023–24 sezonundaki iç saha maçlarını hangi tarihî stadında oynadı?",
+      "hint": "Sevilla’nın değil, Betis’in o sezonki evini arıyoruz.",
+      "options": [
+        {
+          "id": "c3d1a7d961d4c",
+          "label": "Ramón Sánchez-Pizjuán"
+        },
+        {
+          "id": "c9a1742066552",
+          "label": "Riazor"
+        },
+        {
+          "id": "c6f9d7433bb84",
+          "label": "Benito Villamarín"
+        },
+        {
+          "id": "cb3d0bedea960",
+          "label": "Mestalla"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c6f9d7433bb84"
+      ],
+      "result": {
+        "answer": "Benito Villamarín",
+        "evidence": "Real Betis’in 2023–24 seyirci raporu iç saha maçlarını Benito Villamarín başlığı altında listeler.",
+        "period": "2023–24",
+        "sources": [
+          {
+            "name": "www.realbetisbalompie.es",
+            "url": "https://www.realbetisbalompie.es/media/files/rbetis/pdf/asistencia_estadio_benito_villamarin_23-24.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2023–24",
+        "sources": [
+          {
+            "name": "www.realbetisbalompie.es",
+            "url": "https://www.realbetisbalompie.es/media/files/rbetis/pdf/asistencia_estadio_benito_villamarin_23-24.pdf"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-22",
+      "number": 22,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Derby della Madonnina",
+      "country": "İtalya",
+      "clubIds": [
+        5,
+        46
+      ],
+      "clubs": [
+        "Milan",
+        "Inter"
+      ],
+      "city": "Milano",
+      "title": "Milan – Inter",
+      "intro": "Milano’da aynı şehrin iki formasını giymek, birbirinden farklı tribünlerin hafızasına girmek demektir. Bu kariyer kartının sahibini tanı.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2006–07 Inter ve 2010–11 Milan şampiyon kadrolarında bulunan İsveçli forvet kim?",
+      "hint": "Uzun kariyerinde Milano’nun iki tarafında da şampiyonluk yaşadı.",
+      "options": [
+        {
+          "id": "ce6b6a72faf9d",
+          "label": "Marcus Berg"
+        },
+        {
+          "id": "c3924d9f7a0c7",
+          "label": "Alexander Isak"
+        },
+        {
+          "id": "c9792e76ab130",
+          "label": "Zlatan Ibrahimović"
+        },
+        {
+          "id": "cf37f44e77e85",
+          "label": "Henrik Larsson"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c9792e76ab130"
+      ],
+      "result": {
+        "answer": "Zlatan Ibrahimović",
+        "evidence": "Inter’in arşivi ve Milan’ın dönüş duyurusu Zlatan Ibrahimović’in iki kulüpteki dönemlerini doğrular.",
+        "period": "2006–07 / 2010–11",
+        "sources": [
+          {
+            "name": "www.inter.it",
+            "url": "https://www.inter.it/en/archivio_giocatore/G0805"
+          },
+          {
+            "name": "www.acmilan.com",
+            "url": "https://www.acmilan.com/en/news/articles/media/2019-12-27/zlatan-ibrahimovic-rejoins-ac-milan"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2006–07 / 2010–11",
+        "sources": [
+          {
+            "name": "www.inter.it",
+            "url": "https://www.inter.it/en/archivio_giocatore/G0805"
+          },
+          {
+            "name": "www.acmilan.com",
+            "url": "https://www.acmilan.com/en/news/articles/media/2019-12-27/zlatan-ibrahimovic-rejoins-ac-milan"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-23",
+      "number": 23,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Derby d’Italia",
+      "country": "İtalya",
+      "clubIds": [
+        506,
+        46
+      ],
+      "clubs": [
+        "Juventus",
+        "Inter"
+      ],
+      "city": "Torino · Milano",
+      "title": "Juventus – Inter",
+      "intro": "İtalya’da bazı karşılaşmalar, oynandıkları şehirlerden daha geniş bir anlam taşır. Bu rekabetin adının nasıl ortaya çıktığını araştır.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Juventus – Inter rekabeti için “Derby d’Italia” adını 1967’de kullanan gazeteci kimdi?",
+      "hint": "İtalyan spor yazarlığının tanınmış isimlerinden; soyadı B ile başlıyor.",
+      "options": [
+        {
+          "id": "c3fb1598b5544",
+          "label": "Gianni Brera"
+        },
+        {
+          "id": "c7f5562535288",
+          "label": "Candido Cannavò"
+        },
+        {
+          "id": "c40b432ed756a",
+          "label": "Gianni Mura"
+        },
+        {
+          "id": "c94d9885639e2",
+          "label": "Giorgio Tosatti"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c3fb1598b5544"
+      ],
+      "result": {
+        "answer": "Gianni Brera",
+        "evidence": "Inter’in tarih yazısına göre Derby d’Italia ifadesini 1967’de Gianni Brera ortaya attı.",
+        "period": "1967",
+        "sources": [
+          {
+            "name": "www.inter.it",
+            "url": "https://www.inter.it/en/news/2020-02-29-juventus-inter-history"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1967",
+        "sources": [
+          {
+            "name": "www.inter.it",
+            "url": "https://www.inter.it/en/news/2020-02-29-juventus-inter-history"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-24",
+      "number": 24,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Derby della Capitale",
+      "country": "İtalya",
+      "clubIds": [
+        12,
+        398
+      ],
+      "clubs": [
+        "Roma",
+        "Lazio"
+      ],
+      "city": "Roma",
+      "title": "Roma – Lazio",
+      "intro": "Roma’nın iki takımı aynı kupanın son maçında karşılaşır. Bir golün, oyuncunun kulüp tarihindeki yerini nasıl değiştirdiğini keşfet.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "26 Mayıs 2013 İtalya Kupası finalinde Lazio’ya Roma karşısında kupayı getiren 71. dakika golünü kim attı?",
+      "hint": "Bosna-Hersekli oyuncu, Lazio’nun kulüp efsaneleri arasında yer alıyor.",
+      "options": [
+        {
+          "id": "cecc9457977ea",
+          "label": "Senad Lulić"
+        },
+        {
+          "id": "c0661e6a56147",
+          "label": "Antonio Candreva"
+        },
+        {
+          "id": "cda1ad9352160",
+          "label": "Miroslav Klose"
+        },
+        {
+          "id": "c1c6d44e0f2bc",
+          "label": "Hernanes"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cecc9457977ea"
+      ],
+      "result": {
+        "answer": "Senad Lulić",
+        "evidence": "Senad Lulić’in 71. dakikadaki golüyle Lazio finali 1–0 kazandı.",
+        "period": "26 Mayıs 2013",
+        "sources": [
+          {
+            "name": "it.uefa.com",
+            "url": "https://it.uefa.com/news-media/news/0209-0f8877c8cc3a-110e9ba8b4ef-1000--lulic-regala-coppa-ed-europa-alla-lazio/"
+          }
+        ],
+        "playerId": 61449
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "26 Mayıs 2013",
+        "sources": [
+          {
+            "name": "it.uefa.com",
+            "url": "https://it.uefa.com/news-media/news/0209-0f8877c8cc3a-110e9ba8b4ef-1000--lulic-regala-coppa-ed-europa-alla-lazio/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-25",
+      "number": 25,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İtalya",
+      "clubIds": [
+        506,
+        5
+      ],
+      "clubs": [
+        "Juventus",
+        "Milan"
+      ],
+      "city": "Torino · Milano",
+      "title": "Juventus – Milan",
+      "intro": "İki İtalyan kulübünün Avrupa finalinde tabela tek başına bütün hikâyeyi anlatmaz. Maç süresini ve penaltı serisini ayırarak doğru kaydı bul.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "2003 Şampiyonlar Ligi finalinde Juventus – Milan, penaltı atışlarından önce 120 dakika sonunda kaç kaçtı?",
+      "hint": "Penaltı serisinin skorunu maçın skoruyla karıştırma.",
+      "options": [
+        {
+          "id": "c689e66b9587a",
+          "label": "1–1"
+        },
+        {
+          "id": "c4779cae5eafd",
+          "label": "0–0"
+        },
+        {
+          "id": "c65dc29219faf",
+          "label": "3–2"
+        },
+        {
+          "id": "cfb6d8924e292",
+          "label": "2–2"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c4779cae5eafd"
+      ],
+      "result": {
+        "answer": "0–0",
+        "evidence": "120 dakika 0–0 tamamlandı. Milan penaltı serisini 3–2 kazandı; bu iki skor ayrı kayıtlardır.",
+        "period": "28 Mayıs 2003 · 120 dakika",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7b3011dd29-b3eede70c2ce-1000/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "28 Mayıs 2003 · 120 dakika",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7b3011dd29-b3eede70c2ce-1000/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-26",
+      "number": 26,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İtalya",
+      "clubIds": [
+        506,
+        6195
+      ],
+      "clubs": [
+        "Juventus",
+        "Napoli"
+      ],
+      "city": "Torino · Napoli",
+      "title": "Juventus – Napoli",
+      "intro": "Torino ile Napoli arasında uzanan rekabetin iki tarafında da farklı başarı dönemleri bulunur. Napoli’nin kupa yolculuğundaki üç durağı sırala.",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Rekabetin Napoli tarafındaki bu başarıları sırala.",
+      "hint": "İlk iki başarı Maradona döneminde; Süper Kupa çok daha sonra.",
+      "options": [
+        {
+          "id": "c6df949a094ee",
+          "label": "Napoli’nin UEFA Kupası zaferi"
+        },
+        {
+          "id": "cf0f276c21de8",
+          "label": "Napoli’nin ikinci İtalya Süper Kupası"
+        },
+        {
+          "id": "c1b89beeb136f",
+          "label": "Napoli’nin ilk Serie A şampiyonluğu"
+        }
+      ],
+      "requiredCount": 3,
+      "answerKeys": [
+        "c1b89beeb136f",
+        "c6df949a094ee",
+        "cf0f276c21de8"
+      ],
+      "result": {
+        "answer": "Napoli’nin ilk Serie A şampiyonluğu → Napoli’nin UEFA Kupası zaferi → Napoli’nin ikinci İtalya Süper Kupası",
+        "evidence": "Napoli ilk lig şampiyonluğunu 1986–87’de, UEFA Kupası’nı 1988–89’da kazandı. İkinci Süper Kupa başarısı kulüp arşivinde 2013–14 sezonu altında yer alır.",
+        "period": "1986–87 → 1988–89 → 2013–14",
+        "sources": [
+          {
+            "name": "sscnapoli.it",
+            "url": "https://sscnapoli.it/en/palmares/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1986–87 → 1988–89 → 2013–14",
+        "sources": [
+          {
+            "name": "sscnapoli.it",
+            "url": "https://sscnapoli.it/en/palmares/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-27",
+      "number": 27,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "İtalya",
+      "clubIds": [
+        506,
+        416
+      ],
+      "clubs": [
+        "Juventus",
+        "Torino"
+      ],
+      "city": "Torino",
+      "title": "Juventus – Torino",
+      "intro": "Torino’da futbol hafızası yalnız kupalarda değil, eski tribünlerde de yaşar. Bir kulübün tarihî sahasını yer ve dönem ipuçlarından tanı.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Torino’nun 17 Ekim 1926’da açılan tarihî stadının adı nedir?",
+      "hint": "Grande Torino’nun hafızasıyla özdeşleşen sahayı düşün.",
+      "options": [
+        {
+          "id": "c78e4520dc9ac",
+          "label": "San Paolo"
+        },
+        {
+          "id": "cfc007c617556",
+          "label": "Filadelfia"
+        },
+        {
+          "id": "c4a8f251f6f2c",
+          "label": "Olimpico di Roma"
+        },
+        {
+          "id": "c58162e039d52",
+          "label": "San Siro"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cfc007c617556"
+      ],
+      "result": {
+        "answer": "Filadelfia",
+        "evidence": "Torino kulübünün tarihçesinde Filadelfia’nın açılışı 17 Ekim 1926 olarak kaydedilir.",
+        "period": "17 Ekim 1926",
+        "sources": [
+          {
+            "name": "www.torinofc.it",
+            "url": "https://www.torinofc.it/en/stadio/filadelfia"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "17 Ekim 1926",
+        "sources": [
+          {
+            "name": "www.torinofc.it",
+            "url": "https://www.torinofc.it/en/stadio/filadelfia"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-28",
+      "number": 28,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Almanya",
+      "clubIds": [
+        27,
+        16
+      ],
+      "clubs": [
+        "Bayern Münih",
+        "Borussia Dortmund"
+      ],
+      "city": "Münih · Dortmund",
+      "title": "Bayern Münih – Borussia Dortmund",
+      "intro": "Almanya’nın iki güçlü takımı, Avrupa finalinde karşı karşıya gelir. Büyük gecenin skorunu takımların doğru sırasıyla yeniden kur.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "2013 Şampiyonlar Ligi finalinin skoru neydi? Sıra: Bayern Münih – Borussia Dortmund.",
+      "hint": "Wembley’de sonucu belirleyen gol son dakikalarda geldi.",
+      "options": [
+        {
+          "id": "c56ac3f411d8c",
+          "label": "1–0"
+        },
+        {
+          "id": "c5b611db7677e",
+          "label": "2–0"
+        },
+        {
+          "id": "ccc910220cbf0",
+          "label": "3–1"
+        },
+        {
+          "id": "c240d51942ded",
+          "label": "2–1"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c240d51942ded"
+      ],
+      "result": {
+        "answer": "2–1",
+        "evidence": "UEFA final kaydı Dortmund 1–2 Bayern sonucunu verir. Soruda Bayern önce yazıldığı için cevap 2–1’dir.",
+        "period": "25 Mayıs 2013",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2009612--borussia-dortmund-vs-bayern/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "25 Mayıs 2013",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2009612--borussia-dortmund-vs-bayern/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-29",
+      "number": 29,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Revierderby",
+      "country": "Almanya",
+      "clubIds": [
+        16,
+        33
+      ],
+      "clubs": [
+        "Borussia Dortmund",
+        "Schalke 04"
+      ],
+      "city": "Dortmund · Gelsenkirchen",
+      "title": "Borussia Dortmund – Schalke 04",
+      "intro": "Dortmund ve Gelsenkirchen’de futbol, şehirlerin çalışma ve tribün kültürüyle iç içedir. Rekabetin kök saldığı coğrafyayı keşfet.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Revierderby, Almanya’nın hangi sanayi bölgesinin rekabetidir?",
+      "hint": "Kömür ve çelik geçmişiyle anılan bölgeyi düşün.",
+      "options": [
+        {
+          "id": "cab1db07cf1ce",
+          "label": "Saksonya"
+        },
+        {
+          "id": "cb3ed10c3b04e",
+          "label": "Bavyera"
+        },
+        {
+          "id": "c5035d0eaf9e4",
+          "label": "Schwarzwald"
+        },
+        {
+          "id": "cd43851c661e7",
+          "label": "Ruhr"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cd43851c661e7"
+      ],
+      "result": {
+        "answer": "Ruhr",
+        "evidence": "Bundesliga’nın bölge tarihi, Dortmund ve Schalke rekabetini Ruhr futbol kültürü içinde anlatır.",
+        "period": "Bölgesel kimlik",
+        "sources": [
+          {
+            "name": "www.bundesliga.com",
+            "url": "https://www.bundesliga.com/en/bundesliga/news/schalke-borussia-dortmund-remarkable-history-of-football-in-ruhr-bochum-32438"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "Bölgesel kimlik",
+        "sources": [
+          {
+            "name": "www.bundesliga.com",
+            "url": "https://www.bundesliga.com/en/bundesliga/news/schalke-borussia-dortmund-remarkable-history-of-football-in-ruhr-bochum-32438"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-30",
+      "number": 30,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Le Classique",
+      "country": "Fransa",
+      "clubIds": [
+        583,
+        244
+      ],
+      "clubs": [
+        "Paris Saint-Germain",
+        "Marseille"
+      ],
+      "city": "Paris · Marsilya",
+      "title": "Paris Saint-Germain – Marseille",
+      "intro": "Paris ile Marsilya arasındaki futbol yolu, Fransa’nın iki farklı şehir hikâyesini birleştirir. Bu kez güneydeki kulübün tarihî evinin izini sür.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Marseille’in Haziran 1937’de taşındığı stadın adı nedir?",
+      "hint": "Adında bisiklet pistini çağrıştıran tarihî bir sözcük var.",
+      "options": [
+        {
+          "id": "c7421a7b3910a",
+          "label": "Stade Gerland"
+        },
+        {
+          "id": "c75817f5b732f",
+          "label": "Stade Vélodrome"
+        },
+        {
+          "id": "cf0e2b3facdbc",
+          "label": "Parc des Princes"
+        },
+        {
+          "id": "c7d3ffa30e7e7",
+          "label": "Stade de la Meinau"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c75817f5b732f"
+      ],
+      "result": {
+        "answer": "Stade Vélodrome",
+        "evidence": "Marseille’in resmî kulüp tarihi, Haziran 1937’de Stade Vélodrome’a taşınıldığını belirtir.",
+        "period": "Haziran 1937",
+        "sources": [
+          {
+            "name": "www.om.fr",
+            "url": "https://www.om.fr/en/the-birth-and-the-first-trophies"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "Haziran 1937",
+        "sources": [
+          {
+            "name": "www.om.fr",
+            "url": "https://www.om.fr/en/the-birth-and-the-first-trophies"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-31",
+      "number": 31,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "De Klassieker",
+      "country": "Hollanda",
+      "clubIds": [
+        610,
+        234
+      ],
+      "clubs": [
+        "Ajax",
+        "Feyenoord"
+      ],
+      "city": "Amsterdam · Rotterdam",
+      "title": "Ajax – Feyenoord",
+      "intro": "Amsterdam ve Rotterdam’ın futbol takımları karşılaştığında ülke futbolunun hafızasına yeni bir sayfa eklenir. Belirli bir maç gününün tabelasını bul.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "7 Nisan 2024 De Klassieker maçının skoru neydi? Sıra: Feyenoord – Ajax.",
+      "hint": "Rotterdam’daki maçta Feyenoord gol yemeden kazandı.",
+      "options": [
+        {
+          "id": "c5e7bcefd72e8",
+          "label": "6–0"
+        },
+        {
+          "id": "c9d22958127b7",
+          "label": "3–1"
+        },
+        {
+          "id": "cd5675ccb0ffc",
+          "label": "4–0"
+        },
+        {
+          "id": "cf011159d61ed",
+          "label": "5–1"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c5e7bcefd72e8"
+      ],
+      "result": {
+        "answer": "6–0",
+        "evidence": "Ajax’ın 7 Nisan 2024 tarihli maç kaydı, Feyenoord deplasmanındaki 6–0 mağlubiyeti doğrular.",
+        "period": "7 Nisan 2024",
+        "sources": [
+          {
+            "name": "www.ajax.nl",
+            "url": "https://www.ajax.nl/artikelen/in-beeld-feyenoord-ajax-07-04-24/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "7 Nisan 2024",
+        "sources": [
+          {
+            "name": "www.ajax.nl",
+            "url": "https://www.ajax.nl/artikelen/in-beeld-feyenoord-ajax-07-04-24/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-32",
+      "number": 32,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "O Clássico",
+      "country": "Portekiz",
+      "clubIds": [
+        294,
+        720
+      ],
+      "clubs": [
+        "Benfica",
+        "Porto"
+      ],
+      "city": "Lizbon · Porto",
+      "title": "Benfica – Porto",
+      "intro": "Lizbon ile Porto arasındaki lig yarışı, bazen son dakikaya kadar değişir. Liderlik mücadelesine yön veren bir maçın skorunu hatırla.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "11 Mayıs 2013’te Kelvin’in son dakika golüyle biten maçın skoru neydi? Sıra: Porto – Benfica.",
+      "hint": "Kelvin beraberliği bozdu; Benfica da gol bulmuştu.",
+      "options": [
+        {
+          "id": "c078d51145fcc",
+          "label": "2–1"
+        },
+        {
+          "id": "c6431f0ff3add",
+          "label": "1–0"
+        },
+        {
+          "id": "c32cc06147649",
+          "label": "3–2"
+        },
+        {
+          "id": "ce7e0fe87e8cb",
+          "label": "2–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c078d51145fcc"
+      ],
+      "result": {
+        "answer": "2–1",
+        "evidence": "UEFA raporunda Porto’nun Benfica’yı Kelvin’in geç golüyle 2–1 yenerek liderliği aldığı anlatılır.",
+        "period": "11 Mayıs 2013",
+        "sources": [
+          {
+            "name": "pt.uefa.com",
+            "url": "https://pt.uefa.com/news-media/news/0209-0f88740ebd15-c5f6fdc5e7d2-1000--kelvin-devolve-lideranca-ao-porto/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "11 Mayıs 2013",
+        "sources": [
+          {
+            "name": "pt.uefa.com",
+            "url": "https://pt.uefa.com/news-media/news/0209-0f88740ebd15-c5f6fdc5e7d2-1000--kelvin-devolve-lideranca-ao-porto/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-33",
+      "number": 33,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Derby de Lisboa",
+      "country": "Portekiz",
+      "clubIds": [
+        336,
+        294
+      ],
+      "clubs": [
+        "Sporting",
+        "Benfica"
+      ],
+      "city": "Lizbon",
+      "title": "Sporting – Benfica",
+      "intro": "Lizbon’un iki büyük kulübü arasındaki bir geçiş, aynı oyuncuyu farklı renklerle hatırlatır. Kariyerin iki durağını bir isimde birleştir.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2000 yazında Benfica’dan ayrılıp Sporting’e katılan Portekizli hücumcu kimdi?",
+      "hint": "1990’larda Benfica’nın önemli oyuncularındandı; Sporting’in 2001–02 şampiyonluğunda da oynadı.",
+      "options": [
+        {
+          "id": "c3094ad7ec3ce",
+          "label": "Pauleta"
+        },
+        {
+          "id": "c7c612adbd6e6",
+          "label": "Rui Costa"
+        },
+        {
+          "id": "c77412e19586e",
+          "label": "João Pinto"
+        },
+        {
+          "id": "c1caebdcfe1ee",
+          "label": "Luís Figo"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c77412e19586e"
+      ],
+      "result": {
+        "answer": "João Pinto",
+        "evidence": "UEFA’nın Sporting arşivi, João Pinto’nun Benfica’dan ayrıldıktan sonra 2000 yazında Sporting’e katıldığını doğrular.",
+        "period": "2000",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefaeuropaleague/news/022a-0e9361b27230-bba200940d22-1000--snap-shot-sporting-cp-s-2000-vintage/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2000",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefaeuropaleague/news/022a-0e9361b27230-bba200940d22-1000--snap-shot-sporting-cp-s-2000-vintage/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-34",
+      "number": 34,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Portekiz",
+      "clubIds": [
+        336,
+        720
+      ],
+      "clubs": [
+        "Sporting",
+        "Porto"
+      ],
+      "city": "Lizbon · Porto",
+      "title": "Sporting – Porto",
+      "intro": "Lizbon ile Porto arasındaki rekabette golcüler ayrı bir yer tutar. Bu görev, bir lig sezonunu sıra dışı bir gol sayısıyla tamamlayan oyuncuya odaklanır.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "Sporting’in 2001–02 lig sezonunda 42 gol atıp Avrupa Altın Ayakkabı ödülünü alan forveti kimdi?",
+      "hint": "Brezilyalı bir santrfor; aynı ödülü Porto döneminde de kazanmıştı.",
+      "options": [
+        {
+          "id": "ce4ae85913b07",
+          "label": "João Pinto"
+        },
+        {
+          "id": "c4f22e225f820",
+          "label": "Mário Jardel"
+        },
+        {
+          "id": "cc50b2e246333",
+          "label": "Pedro Barbosa"
+        },
+        {
+          "id": "cf1ddc8ce2d6c",
+          "label": "Ricardo Sá Pinto"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c4f22e225f820"
+      ],
+      "result": {
+        "answer": "Mário Jardel",
+        "evidence": "Sporting’in müze kaydı, Jardel’in 2001–02 liginde 30 maçta 42 golle Altın Ayakkabı kazandığını belirtir.",
+        "period": "2001–02",
+        "sources": [
+          {
+            "name": "www.sporting.pt",
+            "url": "https://www.sporting.pt/pt/noticias/clube/noticias/2021-07-08/bota-de-ouro-de-jardel-no-museu-sporting"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2001–02",
+        "sources": [
+          {
+            "name": "www.sporting.pt",
+            "url": "https://www.sporting.pt/pt/noticias/clube/noticias/2021-07-08/bota-de-ouro-de-jardel-no-museu-sporting"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-35",
+      "number": 35,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Derby of the Eternal Enemies",
+      "country": "Yunanistan",
+      "clubIds": [
+        683,
+        265
+      ],
+      "clubs": [
+        "Olympiacos",
+        "Panathinaikos"
+      ],
+      "city": "Pire · Atina",
+      "title": "Olympiacos – Panathinaikos",
+      "intro": "Atina çevresindeki futbol kültürü, tribünlerdeki renkler kadar kulüp sembolleriyle de yaşar. Tarihî bir amblemin taşıdığı işareti bul.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Panathinaikos 1918’de hangi sembolü amblem olarak benimsedi?",
+      "hint": "Yeşil renkle birleşen bir bitki simgesi.",
+      "options": [
+        {
+          "id": "ca7c48e687b8c",
+          "label": "Kartal"
+        },
+        {
+          "id": "c0cdcb91e123b",
+          "label": "Çapa"
+        },
+        {
+          "id": "c0b54909e57b3",
+          "label": "Defne çelengi"
+        },
+        {
+          "id": "cde7ebf7a3c8d",
+          "label": "Üç yapraklı yonca"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cde7ebf7a3c8d"
+      ],
+      "result": {
+        "answer": "Üç yapraklı yonca",
+        "evidence": "Panathinaikos’un resmî tarihçesi, yoncanın 1918’de kulüp sembolü olduğunu kaydeder.",
+        "period": "1918",
+        "sources": [
+          {
+            "name": "www.pao.gr",
+            "url": "https://www.pao.gr/en/historyitem/1918-2/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1918",
+        "sources": [
+          {
+            "name": "www.pao.gr",
+            "url": "https://www.pao.gr/en/historyitem/1918-2/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-36",
+      "number": 36,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "",
+      "country": "Belçika",
+      "clubIds": [
+        58,
+        3057
+      ],
+      "clubs": [
+        "Anderlecht",
+        "Standard Liège"
+      ],
+      "city": "Brüksel · Liège",
+      "title": "Anderlecht – Standard Liège",
+      "intro": "Brüksel ile Liège arasında futbolun farklı gelenekleri karşılaşır. Bir kulübün evini şehir ve stadyum ipuçlarını birleştirerek tanı.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Standard Liège’in Rue de la Centrale adresindeki stadı hangi adla tanınır?",
+      "hint": "Adını Liège’deki bulunduğu semtle paylaşır.",
+      "options": [
+        {
+          "id": "ca7d2a4cfaf31",
+          "label": "Lotto Park"
+        },
+        {
+          "id": "cdd8dee889058",
+          "label": "Sclessin"
+        },
+        {
+          "id": "c4c798d9ae4a3",
+          "label": "Bosuil"
+        },
+        {
+          "id": "cadbd56a68748",
+          "label": "Jan Breydel"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cdd8dee889058"
+      ],
+      "result": {
+        "answer": "Sclessin",
+        "evidence": "Standard Liège’in resmî stadyum ziyaret sayfası adresi Le Stade de Sclessin olarak verir.",
+        "period": "Stadyum kimliği",
+        "sources": [
+          {
+            "name": "standard.be",
+            "url": "https://standard.be/fr/visites-de-stade"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "Stadyum kimliği",
+        "sources": [
+          {
+            "name": "standard.be",
+            "url": "https://standard.be/fr/visites-de-stade"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-37",
+      "number": 37,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Old Firm",
+      "country": "İskoçya",
+      "clubIds": [
+        371,
+        124
+      ],
+      "clubs": [
+        "Celtic",
+        "Rangers"
+      ],
+      "city": "Glasgow",
+      "title": "Celtic – Rangers",
+      "intro": "Glasgow’un iki kulübü Avrupa’da farklı yollar izler. Şehrin hafızasında yer eden üç büyük randevuyu zaman çizgisine yerleştir.",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Glasgow’un iki kulübünün Avrupa yolculuğundaki bu olayları sırala.",
+      "hint": "Lizbon’daki zafer, Barcelona’dakinden; ikisi de Sevilla finalinden önceydi.",
+      "options": [
+        {
+          "id": "c8a519a805b04",
+          "label": "Celtic’in Avrupa Şampiyon Kulüpler Kupası zaferi"
+        },
+        {
+          "id": "cd0431cc47aca",
+          "label": "Celtic’in Porto ile UEFA Kupası finali"
+        },
+        {
+          "id": "c2b3105416f0c",
+          "label": "Rangers’ın Kupa Galipleri Kupası zaferi"
+        }
+      ],
+      "requiredCount": 3,
+      "answerKeys": [
+        "c8a519a805b04",
+        "c2b3105416f0c",
+        "cd0431cc47aca"
+      ],
+      "result": {
+        "answer": "Celtic’in Avrupa Şampiyon Kulüpler Kupası zaferi → Rangers’ın Kupa Galipleri Kupası zaferi → Celtic’in Porto ile UEFA Kupası finali",
+        "evidence": "Celtic 1967’de Avrupa şampiyonu oldu. Rangers 1972’de Kupa Galipleri Kupası’nı kazandı. Celtic, 2003 UEFA Kupası finalinde Porto ile karşılaştı.",
+        "period": "1967 → 1972 → 2003",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a053a5775-dc924599f3ea-1000--1966-67-celtic-adventure-reaps-reward/"
+          },
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefaeuropaleague/news/01cd-0e6f5dac0fda-ed082b182d79-1000--stakes-high-for-advocaat-s-rangers-reunion/"
+          },
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f100f076-ecb0d9d85bb1-1000--2003-04-porto-pull-off-biggest-surprise/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1967 → 1972 → 2003",
+        "sources": [
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a053a5775-dc924599f3ea-1000--1966-67-celtic-adventure-reaps-reward/"
+          },
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefaeuropaleague/news/01cd-0e6f5dac0fda-ed082b182d79-1000--stakes-high-for-advocaat-s-rangers-reunion/"
+          },
+          {
+            "name": "www.uefa.com",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f100f076-ecb0d9d85bb1-1000--2003-04-porto-pull-off-biggest-surprise/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-38",
+      "number": 38,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Fla-Flu",
+      "country": "Brezilya",
+      "clubIds": [
+        614,
+        2462
+      ],
+      "clubs": [
+        "Flamengo",
+        "Fluminense"
+      ],
+      "city": "Rio de Janeiro",
+      "title": "Flamengo – Fluminense",
+      "intro": "Rio de Janeiro’da futbol, şehrin ortak sahnelerinde anlatılan hikâyelerden biridir. Bir derbinin unutulmaz anından yola çıkarak oynandığı yeri bul.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "25 Haziran 1995’teki, Renato Gaúcho’nun “göbek golü” ile hatırlanan Fla-Flu hangi statta oynandı?",
+      "hint": "Rio futbolunun simge stadı; Dünya Kupası finallerine de sahne oldu.",
+      "options": [
+        {
+          "id": "c2073a26b9af2",
+          "label": "Maracanã"
+        },
+        {
+          "id": "c5146d7786b74",
+          "label": "Mineirão"
+        },
+        {
+          "id": "cda9cb4e0ec20",
+          "label": "Beira-Rio"
+        },
+        {
+          "id": "c1f9f10c5c0a3",
+          "label": "Morumbi"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c2073a26b9af2"
+      ],
+      "result": {
+        "answer": "Maracanã",
+        "evidence": "Fluminense’nin Maracanã maçları arşivi, 1995 şampiyonluğunu getiren Fla-Flu’yu bu statta oynanan unutulmaz maçlar arasında anlatır.",
+        "period": "25 Haziran 1995",
+        "sources": [
+          {
+            "name": "fluminense.com.br",
+            "url": "https://fluminense.com.br/noticia/fluminense-e-os-70-jogos-memoraveis-no-maracana"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "25 Haziran 1995",
+        "sources": [
+          {
+            "name": "fluminense.com.br",
+            "url": "https://fluminense.com.br/noticia/fluminense-e-os-70-jogos-memoraveis-no-maracana"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-39",
+      "number": 39,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Derbi Paulista",
+      "country": "Brezilya",
+      "clubIds": [
+        199,
+        1023
+      ],
+      "clubs": [
+        "Corinthians",
+        "Palmeiras"
+      ],
+      "city": "São Paulo",
+      "title": "Corinthians – Palmeiras",
+      "intro": "São Paulo rekabetinde bir final iki maça yayılabilir. Rövanşın sonucunu, iki maçın toplamından ve penaltı serisinden ayırarak incele.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "2018 Paulista finalinin 8 Nisan’daki rövanşı, penaltılardan önce nasıl bitti? Sıra: Palmeiras – Corinthians.",
+      "hint": "İlk maçın sonucu tersine döndü; toplam eşitlik penaltılara götürdü.",
+      "options": [
+        {
+          "id": "cfb7cc486053f",
+          "label": "0–1"
+        },
+        {
+          "id": "c96357725c9c4",
+          "label": "1–2"
+        },
+        {
+          "id": "cf446be6e27ef",
+          "label": "1–1"
+        },
+        {
+          "id": "c85afebf99e93",
+          "label": "0–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cfb7cc486053f"
+      ],
+      "result": {
+        "answer": "0–1",
+        "evidence": "Corinthians rövanşı 1–0 kazandı. İki maçın toplamı eşitlendiği için penaltılara gidildi; Corinthians seriyi 4–3 kazandı.",
+        "period": "8 Nisan 2018 · penaltılardan önce",
+        "sources": [
+          {
+            "name": "www.palmeiras.com.br",
+            "url": "https://www.palmeiras.com.br/noticias/verdao-e-superado-por-corinthians-nos-penaltis-e-fica-com-o-vice-do-paulista/"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "8 Nisan 2018 · penaltılardan önce",
+        "sources": [
+          {
+            "name": "www.palmeiras.com.br",
+            "url": "https://www.palmeiras.com.br/noticias/verdao-e-superado-por-corinthians-nos-penaltis-e-fica-com-o-vice-do-paulista/"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-40",
+      "number": 40,
+      "contentVersion": 2,
+      "origin": "sourced_expansion",
+      "rivalryName": "Superclásico",
+      "country": "Arjantin",
+      "clubIds": [
+        189,
+        209
+      ],
+      "clubs": [
+        "Boca Juniors",
+        "River Plate"
+      ],
+      "city": "Buenos Aires",
+      "title": "Boca Juniors – River Plate",
+      "intro": "Buenos Aires’in iki takımı, kıtalarının kupası için sıra dışı bir final yolculuğuna çıkar. Tek maçın sonucunu toplam skordan ayırarak hatırla.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "2018 Libertadores finalinin Madrid’deki rövanşı uzatmalar dâhil nasıl bitti? Sıra: River Plate – Boca Juniors.",
+      "hint": "İki maçın toplamını değil, yalnız Madrid’deki 120 dakikayı soruyoruz.",
+      "options": [
+        {
+          "id": "c74ec03885535",
+          "label": "1–1"
+        },
+        {
+          "id": "cff2d23d2e308",
+          "label": "5–3"
+        },
+        {
+          "id": "c030d1f4dc240",
+          "label": "3–1"
+        },
+        {
+          "id": "c4afade49270f",
+          "label": "2–1"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c030d1f4dc240"
+      ],
+      "result": {
+        "answer": "3–1",
+        "evidence": "River Plate Madrid’deki rövanşı 3–1, finali toplamda 5–3 kazandı. Maç sonucu ile toplam skor aynı değildir.",
+        "period": "9 Aralık 2018 · 120 dakika",
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/tournaments/mens/clubworldcup/uae2018/news/river-plate-triumph-in-superclasico-libertadores-final"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "9 Aralık 2018 · 120 dakika",
+        "sources": [
+          {
+            "name": "inside.fifa.com",
+            "url": "https://inside.fifa.com/tournaments/mens/clubworldcup/uae2018/news/river-plate-triumph-in-superclasico-libertadores-final"
+          }
+        ],
+        "origin": "Original sourced question for preserved legacy rivalry"
+      }
+    },
+    {
+      "id": "DER-41",
+      "number": 41,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Ebedî Derbi",
+      "country": "Sırbistan",
+      "clubIds": [
+        159,
+        669
+      ],
+      "clubs": [
+        "Kızılyıldız",
+        "Partizan"
+      ],
+      "city": "Belgrad",
+      "title": "Kızılyıldız – Partizan",
+      "intro": "Belgrad’ın iki kulübü, kuşaklar boyunca anlatılan bir rekabeti paylaşır. Bugün bu hikâyenin ilk sayfasına, arşivdeki ilk buluşmaya dönüyorsun.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "5 Ocak 1947’deki ilk Ebedî Derbi’de Kızılyıldız hangi skorla kazandı? Sıra: Kızılyıldız – Partizan.",
+      "hint": "Ev sahibi Partizan’dı; sorudaki skor sırası ise Kızılyıldız ile başlıyor.",
+      "options": [
+        {
+          "id": "c9ab3ef1d5f08",
+          "label": "2–1"
+        },
+        {
+          "id": "cbcf6414abc5c",
+          "label": "3–2"
+        },
+        {
+          "id": "cb8332bd3d035",
+          "label": "1–0"
+        },
+        {
+          "id": "c7f005e2b6943",
+          "label": "4–3"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c7f005e2b6943"
+      ],
+      "result": {
+        "answer": "4–3",
+        "evidence": "Kulübün tarih arşivi ilk maçı Partizan 3–4 Kızılyıldız olarak kaydeder. Kızılyıldız’ın skorunu önce yazınca cevap 4–3’tür.",
+        "period": "5 Ocak 1947",
+        "sources": [
+          {
+            "name": "www.crvenazvezdafk.com",
+            "url": "https://www.crvenazvezdafk.com/sr-latn/vesti/na-danasnji-dan---pobeda-u-prvom-vecitom-derbiju"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "5 Ocak 1947",
+        "sources": [
+          {
+            "name": "www.crvenazvezdafk.com",
+            "url": "https://www.crvenazvezdafk.com/sr-latn/vesti/na-danasnji-dan---pobeda-u-prvom-vecitom-derbiju"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-42",
+      "number": 42,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Derby della Lanterna",
+      "country": "İtalya",
+      "clubIds": [
+        252,
+        1038
+      ],
+      "clubs": [
+        "Genoa",
+        "Sampdoria"
+      ],
+      "city": "Cenova",
+      "title": "Genoa – Sampdoria",
+      "intro": "Cenova’da iki takım aynı şehrin denizle iç içe futbol hafızasını taşır. Bu rekabetin buluşma noktasını stadyum ipuçlarından keşfet.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "Derby della Lanterna’nın iki takımının da evi olan tarihî stadyum hangisidir?",
+      "hint": "Stadyum, Marassi adıyla da anılır.",
+      "options": [
+        {
+          "id": "cd14f4e9da764",
+          "label": "Stadio Olimpico"
+        },
+        {
+          "id": "ce9d3821d728b",
+          "label": "Renato Dall’Ara"
+        },
+        {
+          "id": "ce580d5e30ed3",
+          "label": "Luigi Ferraris"
+        },
+        {
+          "id": "c96e176a5f8ff",
+          "label": "Artemio Franchi"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "ce580d5e30ed3"
+      ],
+      "result": {
+        "answer": "Luigi Ferraris",
+        "evidence": "Lega Serie A’nın Genoa – Sampdoria kupa maçı belgesi karşılaşma yerini Luigi Ferraris olarak gösterir.",
+        "period": "Cenova · Luigi Ferraris",
+        "sources": [
+          {
+            "name": "img.legaseriea.it",
+            "url": "https://img.legaseriea.it/vimages/66f1a31b/2024-25_CPITA_16MI_UNI_1_GENSAM.pdf"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "Cenova · Luigi Ferraris",
+        "sources": [
+          {
+            "name": "img.legaseriea.it",
+            "url": "https://img.legaseriea.it/vimages/66f1a31b/2024-25_CPITA_16MI_UNI_1_GENSAM.pdf"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-43",
+      "number": 43,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Gre-Nal",
+      "country": "Brezilya",
+      "clubIds": [
+        210,
+        6600
+      ],
+      "clubs": [
+        "Grêmio",
+        "Internacional"
+      ],
+      "city": "Porto Alegre",
+      "title": "Grêmio – Internacional",
+      "intro": "Porto Alegre’nin iki kulübü, derbi gününde şehrin futbol odağını paylaşır. Bu görevde maçın yön değiştirdiği tarihî bir öğleden sonrayı hatırla.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "12 Şubat 1989 Gre-Nal derbisinin skoru neydi? Sıra: Internacional – Grêmio.",
+      "hint": "Internacional devreyi geride ve bir kişi eksik kapatmıştı.",
+      "options": [
+        {
+          "id": "cc5b057e1e1a4",
+          "label": "1–0"
+        },
+        {
+          "id": "cb42d1e14662e",
+          "label": "2–1"
+        },
+        {
+          "id": "c145f0fc5bccb",
+          "label": "2–2"
+        },
+        {
+          "id": "c79ca4ba61832",
+          "label": "3–1"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cb42d1e14662e"
+      ],
+      "result": {
+        "answer": "2–1",
+        "evidence": "Internacional’in tarih arşivine göre Nilson’un iki golüyle maç 2–1’e döndü. Karşılaşma Beira-Rio’da oynandı.",
+        "period": "12 Şubat 1989 · Beira-Rio",
+        "sources": [
+          {
+            "name": "internacional.com.br",
+            "url": "https://internacional.com.br/clube/historia/1980"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "12 Şubat 1989 · Beira-Rio",
+        "sources": [
+          {
+            "name": "internacional.com.br",
+            "url": "https://internacional.com.br/clube/historia/1980"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-44",
+      "number": 44,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Rosario Derbisi",
+      "country": "Arjantin",
+      "clubIds": [
+        1418,
+        1286
+      ],
+      "clubs": [
+        "Rosario Central",
+        "Newell’s Old Boys"
+      ],
+      "city": "Rosario",
+      "title": "Rosario Central – Newell’s Old Boys",
+      "intro": "Rosario’da iki farklı tribün kültürü, aynı şehrin futbol tarihine katkıda bulunur. Kulüplerin şampiyonluk duraklarını bir zaman çizgisinde buluştur.",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Rosario rekabetinin bu üç şampiyonluğunu en eskiden en yeniye sırala.",
+      "hint": "Nacional ve Metropolitano, dönemin iki farklı şampiyonluk organizasyonuydu.",
+      "options": [
+        {
+          "id": "c0a858fd2969d",
+          "label": "Newell’s Old Boys’un ilk Metropolitano şampiyonluğu"
+        },
+        {
+          "id": "c15373e7f7c1c",
+          "label": "Rosario Central’in ilk Nacional şampiyonluğu"
+        },
+        {
+          "id": "c92801b6ecc23",
+          "label": "Rosario Central’in ikinci Nacional şampiyonluğu"
+        }
+      ],
+      "requiredCount": 3,
+      "answerKeys": [
+        "c15373e7f7c1c",
+        "c92801b6ecc23",
+        "c0a858fd2969d"
+      ],
+      "result": {
+        "answer": "Rosario Central’in ilk Nacional şampiyonluğu → Rosario Central’in ikinci Nacional şampiyonluğu → Newell’s Old Boys’un ilk Metropolitano şampiyonluğu",
+        "evidence": "AFA şampiyonlar listesinde Rosario Central 1971 ve 1973 Nacional, Newell’s Old Boys 1974 Metropolitano şampiyonudur.",
+        "period": "1971 → 1973 → 1974",
+        "sources": [
+          {
+            "name": "www.afa.com.ar",
+            "url": "https://www.afa.com.ar/im/pages/campeones-de-primera-division"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "1971 → 1973 → 1974",
+        "sources": [
+          {
+            "name": "www.afa.com.ar",
+            "url": "https://www.afa.com.ar/im/pages/campeones-de-primera-division"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-45",
+      "number": 45,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Adana Derbisi",
+      "country": "Türkiye",
+      "clubIds": [
+        3840,
+        6
+      ],
+      "clubs": [
+        "Adana Demirspor",
+        "Adanaspor"
+      ],
+      "city": "Adana",
+      "title": "Adana Demirspor – Adanaspor",
+      "intro": "Adana’nın iki kulübü aynı şehrin farklı renklerini taşır. İki formanın da yer aldığı bir kariyer kartından doğru savunmacıyı bul.",
+      "mechanic": "two_shirts",
+      "interaction": "single",
+      "prompt": "2015’te Adana Demirspor’da bulunan, 2020–21’de Adanaspor forması giyen savunmacı kim?",
+      "hint": "Soyadı Ç ile başlayan, stoper pozisyonundaki oyuncuyu düşün.",
+      "options": [
+        {
+          "id": "ccf96de9b673e",
+          "label": "Hakan Çinemre"
+        },
+        {
+          "id": "cf4bb23099db4",
+          "label": "Tayyip Talha Sanuç"
+        },
+        {
+          "id": "ce106a52f3dca",
+          "label": "Emre Akbaba"
+        },
+        {
+          "id": "c6bf715aa5e5a",
+          "label": "Samet Akaydın"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "ccf96de9b673e"
+      ],
+      "result": {
+        "answer": "Hakan Çinemre",
+        "evidence": "TFF’nin Mart 2015 millî takım listesi Hakan Çinemre’yi Adana Demirspor oyuncusu olarak kaydeder. TFF’nin 20 Şubat 2021 Altınordu – Adanaspor maç kadrosu, Adanaspor dönemini doğrular.",
+        "period": "2015 / 2020–21",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=22520&pageID=284"
+          },
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?macId=219586&pageID=528"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "2015 / 2020–21",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=22520&pageID=284"
+          },
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/Default.aspx?macId=219586&pageID=528"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-46",
+      "number": 46,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Marmara Derbisi",
+      "country": "Türkiye",
+      "clubIds": [
+        120,
+        2463
+      ],
+      "clubs": [
+        "Kocaelispor",
+        "Sakaryaspor"
+      ],
+      "city": "Kocaeli · Sakarya",
+      "title": "Kocaelispor – Sakaryaspor",
+      "intro": "Kocaeli ile Sakarya’nın futbol rekabeti, komşu şehirlerin spor hafızasında yaşar. Bir üst lige çıkışı belirleyen finalin tabelasını yeniden kur.",
+      "mechanic": "memory",
+      "interaction": "single",
+      "prompt": "28 Mayıs 2021 2. Lig play-off finalinin skoru neydi? Sıra: Kocaelispor – Sakaryaspor.",
+      "hint": "Kocaelispor finali gol yemeden kazandı.",
+      "options": [
+        {
+          "id": "ce316cde0aa17",
+          "label": "4–0"
+        },
+        {
+          "id": "c7a8fc9a20c2f",
+          "label": "3–1"
+        },
+        {
+          "id": "c24c93f59b27a",
+          "label": "1–0"
+        },
+        {
+          "id": "c1ba21cc70509",
+          "label": "2–0"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "ce316cde0aa17"
+      ],
+      "result": {
+        "answer": "4–0",
+        "evidence": "TFF play-off kaydı 28 Mayıs 2021’deki finali Kocaelispor 4–0 Sakaryaspor olarak gösterir.",
+        "period": "28 Mayıs 2021",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=35229&pageID=338"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "28 Mayıs 2021",
+        "sources": [
+          {
+            "name": "www.tff.org",
+            "url": "https://www.tff.org/default.aspx?ftxtID=35229&pageID=338"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-47",
+      "number": 47,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Clásico Uruguayo",
+      "country": "Uruguay",
+      "clubIds": [
+        1000000861,
+        1000000866
+      ],
+      "clubs": [
+        "Peñarol",
+        "Nacional"
+      ],
+      "city": "Montevideo",
+      "title": "Peñarol – Nacional",
+      "intro": "Montevideo’da iki kulübün hikâyesi, kuşaklar boyunca anlatılan golcülerle zenginleşir. Kulüp arşivindeki belirli bir rekabet kaydının sahibini tanı.",
+      "mechanic": "legend",
+      "interaction": "single",
+      "prompt": "Nacional’in tarih kayıtlarında Peñarol’a karşı 35 Clásico golüyle anılan golcü kim?",
+      "hint": "1938’de Nacional’e katılan, Arjantin doğumlu tarihî santrfor.",
+      "options": [
+        {
+          "id": "c891ee4e0a76f",
+          "label": "Alberto Spencer"
+        },
+        {
+          "id": "c25c0a4c8f7a0",
+          "label": "Fernando Morena"
+        },
+        {
+          "id": "c12a8a8bdb218",
+          "label": "Atilio García"
+        },
+        {
+          "id": "c7be4169b59c6",
+          "label": "Héctor Scarone"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "c12a8a8bdb218"
+      ],
+      "result": {
+        "answer": "Atilio García",
+        "evidence": "Nacional’in tarih yazısı Atilio García’ya Peñarol karşısında 35 Clásico golü yazar. Sayı bu kulüp arşivinin kapsamıyla verilmiştir.",
+        "period": "Nacional arşivi · 35 Clásico golü",
+        "sources": [
+          {
+            "name": "nacional.uy",
+            "url": "https://nacional.uy/noticias/el-debut-del-historico-atilio-garcia"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "Nacional arşivi · 35 Clásico golü",
+        "sources": [
+          {
+            "name": "nacional.uy",
+            "url": "https://nacional.uy/noticias/el-debut-del-historico-atilio-garcia"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    },
+    {
+      "id": "DER-48",
+      "number": 48,
+      "contentVersion": 2,
+      "origin": "pdf_final",
+      "rivalryName": "Clásico Nacional",
+      "country": "Meksika",
+      "clubIds": [
+        3631,
+        6711
+      ],
+      "clubs": [
+        "Club América",
+        "Chivas"
+      ],
+      "city": "Meksiko · Guadalajara",
+      "title": "Club América – Chivas",
+      "intro": "Meksika futbolunda kulüpler yalnız sonuçlarıyla değil, kendi gelenekleriyle de hatırlanır. Tarihli bir kulüp açıklamasından yola çıkarak kimlik ipucunu çöz.",
+      "mechanic": "identity",
+      "interaction": "single",
+      "prompt": "7 Kasım 2012 tarihli resmî açıklamasında Meksikalı futbolcularla oynama geleneğini vurgulayan kulüp hangisidir?",
+      "hint": "Guadalajara’nın kırmızı-beyazlı kulübünü düşün.",
+      "options": [
+        {
+          "id": "cb12ff9dbb5a8",
+          "label": "Chivas"
+        },
+        {
+          "id": "c69108b0a0afb",
+          "label": "Pumas UNAM"
+        },
+        {
+          "id": "c7124fbad5996",
+          "label": "Club América"
+        },
+        {
+          "id": "cde21939f54d5",
+          "label": "Cruz Azul"
+        }
+      ],
+      "requiredCount": 1,
+      "answerKeys": [
+        "cb12ff9dbb5a8"
+      ],
+      "result": {
+        "answer": "Chivas",
+        "evidence": "Chivas’ın 7 Kasım 2012 açıklaması, takımın Meksikalı futbolcularla oynama geleneğini vurgular. Soru o tarihli açıklamaya dayanır.",
+        "period": "7 Kasım 2012 açıklaması",
+        "sources": [
+          {
+            "name": "www.chivasdecorazon.com.mx",
+            "url": "https://www.chivasdecorazon.com.mx/es/noticias/17556/Comunicado-de-Prensa"
+          }
+        ]
+      },
+      "verification": {
+        "verifiedAt": "2026-10-11",
+        "scope": "7 Kasım 2012 açıklaması",
+        "sources": [
+          {
+            "name": "www.chivasdecorazon.com.mx",
+            "url": "https://www.chivasdecorazon.com.mx/es/noticias/17556/Comunicado-de-Prensa"
+          }
+        ],
+        "origin": "Derby_Day_V2_Final.pdf"
+      }
+    }
+  ],
+  "economy": {
+    "task": {
+      "coins": 8,
+      "xp": 20
+    },
+    "hintCoins": 6,
+    "milestones": [
+      {
+        "count": 10,
+        "coins": 40,
+        "xp": 100,
+        "title": "Derbi Gezgini"
+      },
+      {
+        "count": 25,
+        "coins": 60,
+        "xp": 150,
+        "title": "Rekabet Kaşifi"
+      },
+      {
+        "count": 48,
+        "coins": 80,
+        "xp": 200,
+        "title": "Derbi Ustası"
+      }
+    ]
+  }
+}

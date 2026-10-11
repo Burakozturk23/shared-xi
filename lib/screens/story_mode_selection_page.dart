@@ -60,8 +60,8 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'Derby Day',
-    subtitle: 'Tarihi rekabetlerin içine gir',
-    icon: Icons.sports_kabaddi,
+    subtitle: '48 rekabet · 16 ülke · Derbi Pasaportu',
+    icon: Icons.public,
   ),
 ];
 
@@ -88,7 +88,7 @@ class StoryModeSelectionPage extends StatelessWidget {
             onTap: () => GameLauncher.open(context, GameEntry(
               title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
               icon: storySubModes[i].icon, page: pages[i],
-              requiresRepository: i > 2 && i != 5 && i != 6, modern: i <= 2 || i == 5 || i == 6,
+              requiresRepository: i > 2 && i != 5 && i != 6 && i != 7, modern: i <= 2 || i == 5 || i == 6 || i == 7,
             )),
           ),
         ),

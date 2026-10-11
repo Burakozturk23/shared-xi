@@ -1,3 +1,4 @@
+import 'derby_day_page.dart';
 import 'football_docu_page.dart';
 import 'dynasties_page.dart';
 import 'international_glory_page.dart';
@@ -225,6 +226,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           WhatIfProfileShowcase(key: ValueKey('what-if-${AuthService.uid}')),
                           ListTile(leading: const Icon(Icons.castle_outlined), title: const Text('Hanedanlıklar Atlası'), subtitle: const Text('16 mühür · Futbol Tarihçisi'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DynastiesPage(openAtlas: true)))),
                           ListTile(leading: const Icon(Icons.movie_filter_outlined), title: const Text('Belgesel Arşivi'), subtitle: const Text('24 dosya · Futbolun perde arkası'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FootballDocuPage(openCollection: true)))),
+                          ListTile(leading: const Icon(Icons.public), title: const Text('Derbi Pasaportu'), subtitle: const Text('48 rekabet · 16 ülke'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DerbyDayPage(openCollection: true)))),
                           ListTile(leading: const Icon(Icons.public), title: const Text('Milletler Albümü'), subtitle: const Text('40 millî karşılaşma hatırası'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const InternationalGloryPage(openAlbum: true)))),
                           ListTile(
                             leading: const Icon(Icons.collections_bookmark_outlined),
