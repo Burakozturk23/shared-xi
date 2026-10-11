@@ -61,6 +61,7 @@ flutter:
     - assets/data/turkish_nostalgia_v2.json
     - assets/data/ucl_moments_v2.json
     - assets/data/international_glory_v2.json
+    - assets/data/dynasties_v2.json
     - assets/data/what_if_v2.json
     - assets/data/player_journey_chapter_one.json
     - assets/data/player_journey_chapter_two.json
