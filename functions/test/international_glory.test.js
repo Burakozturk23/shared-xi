@@ -68,7 +68,7 @@ test("International Glory guests can solve; rewards wait until eligible and then
 
 test("International hints use canonical receipts and cannot unlock matches", async () => {
   const h = harness({economyState: {alice: {balances: {coins: 50}}}});
-  const input = {version: 2, matchId: catalog.matches[0].id, pro: true};
+  const input = {version: 2, matchId: catalog.matches[0].id, pro: true, maxPrice: 6};
   await Promise.all([h.call("buyInternationalGloryHint", input), h.call("buyInternationalGloryHint", input)]);
   assert.equal(h.read("economyState/alice/balances/coins"), 44);
   const s = await h.call("getInternationalGlory");
@@ -78,9 +78,31 @@ test("International hints use canonical receipts and cannot unlock matches", asy
 });
 test("International hint crash retry does not charge twice", async () => {
   const h = harness({economyState: {alice: {balances: {coins: 50}}}});
-  const input = {version: 2, matchId: catalog.matches[1].id};
+  const input = {version: 2, matchId: catalog.matches[1].id, maxPrice: 6};
   h.failNext("internationalGloryState/alice");
   await assert.rejects(h.call("buyInternationalGloryHint", input));
   await h.call("buyInternationalGloryHint", input);
   assert.equal(h.read("economyState/alice/balances/coins"), 44);
+});
+
+test("International help never charges above confirmed price or charges completed answers", async () => {
+  const h = harness({economyState: {alice: {balances: {coins: 50}}}});
+  const input = {version: 2, matchId: catalog.matches[0].id, maxPrice: 0};
+  await assert.rejects(h.call("buyInternationalGloryHint", input));
+  await assert.rejects(h.call("buyInternationalGloryHint", {...input, maxPrice: undefined}));
+  assert.equal(h.read("economyState/alice/balances/coins"), 50);
+  await h.call("submitInternationalGlory", proof(catalog.matches[0]));
+  await assert.rejects(h.call("buyInternationalGloryHint", {...input, maxPrice: 6}));
+  assert.equal(h.read("economyState/alice/balances/coins"), 58);
+});
+test("International interrupted free Pro help retains its zero-price receipt after expiry", async () => {
+  const h = harness({economyState: {alice: {balances: {coins: 50}}},
+    premiumState: {alice: {plan: "lifetime", verified: true, entitled: true}}});
+  const input = {version: 2, matchId: catalog.matches[0].id, maxPrice: 0};
+  h.failNext("internationalGloryState/alice");
+  await assert.rejects(h.call("buyInternationalGloryHint", input));
+  assert.equal(h.read("economyState/alice/purchases/international_v2_hint__ig2_01/priceCoins"), 0);
+  h.seed("premiumState/alice", null);
+  await h.call("buyInternationalGloryHint", input);
+  assert.equal(h.read("economyState/alice/balances/coins"), 50);
 });

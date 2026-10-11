@@ -17,9 +17,11 @@ class MemoryInternationalStore implements InternationalStore {
 }
 class FakeInternationalGateway implements InternationalGateway {
   bool offline = false;
+  final List<Map<String, dynamic>> hintRequests = [];
   final Map<String, dynamic> results = {}, rewards = {};
   @override Future<Map<String, dynamic>> call(String action, [Map<String, dynamic> input = const {}]) async {
     if (offline) throw StateError('offline');
+    if (action == 'hint') hintRequests.add(Map<String, dynamic>.from(input));
     if (action == 'submit') {
       final m = igPrivate(input['matchId'] as String);
       if (jsonEncode(input['answers']) != jsonEncode(m['answerKeys'])) return {'correct': false};

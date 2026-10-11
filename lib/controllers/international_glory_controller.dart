@@ -101,10 +101,10 @@ class InternationalGloryController extends ChangeNotifier {
     for (var i = 0; i < a.length; i++) { if (a[i] == id) a[i] = ''; }
     a[slot] = id; drafts[activeId!] = a; pending.remove(activeId); message = ''; _saveSoon(); _notify();
   }
-  Future<void> buyHint() async {
-    if (busy || active == null) return;
+  Future<void> buyHint({required int maxPrice}) async {
+    if (_disposed || busy || phase != 'task' || active == null) return;
     busy = true; _notify();
-    try { final response = await gateway.call('hint', {'version': catalog.version, 'matchId': activeId});
+    try { final response = await gateway.call('hint', {'version': catalog.version, 'matchId': activeId, 'maxPrice': maxPrice});
       if (_disposed) return; _merge(response); await _save();
     } catch (e) { if (!_disposed) message = _error(e); }
     finally { busy = false; _notify(); }

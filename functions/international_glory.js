@@ -72,7 +72,14 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     if (!eligible) throw new RewardError("permission-denied", "Ek yardım için Google hesabına bağlan.");
     const s = await get(uid);
     if (!s.hints[m.id]) {
-      if (!await isPro(uid)) await chargeHint(uid, m.id, catalog.economy.hintCoins);
+      if (s.completed[m.id]) throw new RewardError("failed-precondition", "Bu maçın cevabı zaten açık.");
+      const receipt = (await db.ref("economyState/" + uid + "/purchases/international_v2_hint__" + m.id).get()).val();
+      const price = receipt ? receipt.priceCoins : await isPro(uid) ? 0 : catalog.economy.hintCoins;
+      if (!Number.isInteger(input.maxPrice) || input.maxPrice < price) {
+        throw new RewardError("failed-precondition", "Yardım fiyatını eşitle ve yeniden onayla.");
+      }
+      // Persist free purchases too: an interrupted Pro claim must never become a paid retry.
+      await chargeHint(uid, m.id, price);
       await ref(uid).transaction((raw) => {
         const latest = stateOf(raw); latest.hints[m.id] = true; return latest;
       });

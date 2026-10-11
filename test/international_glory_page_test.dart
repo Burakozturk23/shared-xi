@@ -31,7 +31,7 @@ void main(){
     }
   });
   for(final light in [false,true]) {
-    testWidgets('UCL five mechanics, sources and keepsakes at 320px / 180% light=$light',(t) async {
+    testWidgets('International Glory five mechanics, sources and keepsakes at 320px / 180% light=$light',(t) async {
       t.view.physicalSize=const Size(320,844); t.view.devicePixelRatio=1;
       addTearDown(t.view.resetPhysicalSize); addTearDown(t.view.resetDevicePixelRatio);
       final c=InternationalGloryController(catalog:igPack(),store:MemoryInternationalStore(),gateway:FakeInternationalGateway());
@@ -80,6 +80,28 @@ void main(){
     await go(t,ValueKey('option-$answer')); await t.tap(find.byKey(ValueKey('option-$answer'))); await t.pumpAndSettle();
     await go(t,const ValueKey('ig-submit')); await t.tap(find.byKey(const ValueKey('ig-submit'))); await t.pumpAndSettle();
     expect(c.phase,'result'); expect(t.takeException(),isNull);
+  });
+
+  testWidgets('Help requires consent and sends the price shown before the dialog', (t) async {
+    final gateway=FakeInternationalGateway();
+    final c=InternationalGloryController(catalog:igPack(),store:MemoryInternationalStore(),gateway:gateway);
+    addTearDown(c.dispose); await c.load(); c.open('ig2_01'); c.start();
+    await t.pumpWidget(MaterialApp(home:InternationalGloryPage(controller:c))); await t.pumpAndSettle();
+    await t.scrollUntilVisible(find.text('Ek yardım · 6 coin'),200,scrollable:find.byType(Scrollable).last);
+    await t.tap(find.text('Ek yardım · 6 coin')); await t.pumpAndSettle();
+    await t.tap(find.text('Vazgeç')); await t.pumpAndSettle();
+    expect(gateway.hintRequests,isEmpty);
+    await t.tap(find.text('Ek yardım · 6 coin')); await t.pumpAndSettle();
+    await t.tap(find.text('Aç')); await t.pumpAndSettle();
+    expect(gateway.hintRequests.single['maxPrice'],6);
+    c.pro=true; await t.pumpWidget(const SizedBox());
+    await t.pumpWidget(MaterialApp(home:InternationalGloryPage(controller:c))); await t.pumpAndSettle();
+    await t.scrollUntilVisible(find.text('Pro · Ek yardım'),200,scrollable:find.byType(Scrollable).last);
+    await t.tap(find.text('Pro · Ek yardım')); await t.pumpAndSettle();
+    c.pro=false; // Entitlement changed while the free-price confirmation was open.
+    await t.tap(find.text('Aç')); await t.pumpAndSettle();
+    expect(gateway.hintRequests.last['maxPrice'],0);
+    expect(t.takeException(),isNull);
   });
 
 }

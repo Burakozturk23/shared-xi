@@ -49,7 +49,9 @@ Hesap değişiminde eski yanıtlar yok sayılır. Hesap silme bu alanı da temiz
 geçmiş tamamlama uydurulmaz. Diğer modların ilerleme anahtarları değişmez.
 
 İlk ipucu ücretsiz. Ek yardım 6 Coin veya sunucuda doğrulanmış Pro için ücretsiz.
-Hesap makbuzu kesinti/tekrarda yeniden ücret kesmez. Zorunlu reklam yoktur.
+Hesap makbuzu kesinti/tekrarda yeniden ücret kesmez. Yardım isteği onaylanan
+azami fiyatı taşır; Pro süresi dolsa bile ücretsiz onaydan Coin kesilmez.
+Ücretsiz Pro yardımları da makbuzlandığı için kesinti sonrası yeniden ücretlenmez. Zorunlu reklam yoktur.
 
 PDF ekonomi önerisi uygulanmıştır: maç başına 8 Coin / 20 XP; 10, 20, 30, 40
 eşikleriyle toplam 640 Coin / 1275 XP. Karşılaştırma: UCL 34 maçta 482/1005,

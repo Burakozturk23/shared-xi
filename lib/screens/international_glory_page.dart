@@ -152,10 +152,20 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
           FilterChip(label: Text(name), selected: _filter == id, onSelected: (_) => setState(() => _filter = id)),
       ]),
       if (c.pending.isNotEmpty) Text('${c.pending.length} cevap sunucu doğrulaması bekliyor.'),
-      if (_collection) Wrap(spacing: 8, children: [
-        for (var ch = 1; ch <= 4; ch++) Chip(avatar: Icon(c.catalog.matches.where((m) => m.chapterId == ch).every((m) => c.results.containsKey(m.id)) ? Icons.verified : Icons.lock_outline), label: Text('${c.catalog.chapters[ch-1]} · ${c.catalog.matches.where((m) => m.chapterId == ch && c.results.containsKey(m.id)).length}/10')),
-        if (c.count == 40) const Chip(avatar: Icon(Icons.emoji_events), label: Text('Milletler Albümü tamamlandı')),
-      ]),
+      if (_collection) ...[
+        for (var ch = 1; ch <= 4; ch++) Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: PitchPanel(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Icon(c.catalog.matches.where((m) => m.chapterId == ch).every((m) => c.results.containsKey(m.id)) ? Icons.verified : Icons.lock_outline),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(c.catalog.chapters[ch - 1]),
+              Text('${c.catalog.matches.where((m) => m.chapterId == ch && c.results.containsKey(m.id)).length} / 10 hatıra'),
+            ])),
+          ]))),
+        if (c.count == 40) const Padding(padding: EdgeInsets.only(top: 12), child: PitchPanel(
+          child: Text('Milletler Albümü tamamlandı 🏆'))),
+      ],
       const SizedBox(height: 20),
       if (visible.isEmpty) const PitchPanel(child: Text('Henüz burada bir hatıra yok. Bir maç seçip ilk kartını aç.')),
       for (final m in visible) Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(
@@ -206,8 +216,9 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       if (c.hintOpen) Padding(padding: const EdgeInsets.only(bottom: 16), child: PitchPanel(child: Text(m.text('hint')))),
       if (c.hints.containsKey(m.id)) Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchPanel(child: Text(igMap(c.hints[m.id])['text']?.toString() ?? 'Yardım açıldı.'))),
       if (!c.hints.containsKey(m.id)) TextButton(onPressed: c.busy ? null : () async {
-        final yes = await showDialog<bool>(context: context, builder: (context) => AlertDialog(title: const Text('Ek yardım'), content: Text(c.pro ? 'Pro hesabında ücretsiz ek yardımı aç?' : 'Bu maç için ek yardımı 6 coin karşılığında aç?'), actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Vazgeç')), FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Aç'))]));
-        if (yes == true && mounted) await c.buyHint();
+        final maxPrice = c.pro ? 0 : 6;
+        final yes = await showDialog<bool>(context: context, builder: (context) => AlertDialog(title: const Text('Ek yardım'), content: Text(maxPrice == 0 ? 'Pro hesabında ücretsiz ek yardımı aç?' : 'Bu maç için ek yardımı 6 coin karşılığında aç?'), actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Vazgeç')), FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Aç'))]));
+        if (yes == true && mounted && identical(c, _c)) await c.buyHint(maxPrice: maxPrice);
       }, child: Text(c.pro ? 'Pro · Ek yardım' : 'Ek yardım · 6 coin')),
       FilledButton(key: const ValueKey('ig-submit'), onPressed: c.busy || !c.canSubmit ? null : () async { await c.submit(); if (mounted && c.phase == 'result') _top(); },
         child: Text(c.busy ? 'Doğrulanıyor…' : 'Cevabı kontrol et')),
