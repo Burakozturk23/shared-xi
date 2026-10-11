@@ -11,11 +11,17 @@ import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'football_docu_test.dart';
 
 Future<void> go(WidgetTester t,Key key)async{
-  // A huge fling can skip a short result card after the list changes phase.
-  // Reset the real list position, then walk its lazily built children.
-  t.widget<ListView>(find.byType(ListView)).controller!.jumpTo(0);
+  // Walk the lazy list without flings or gesture competition from task cards.
+  final list=t.widget<ListView>(find.byType(ListView));
+  final scroll=list.controller!;
+  scroll.jumpTo(0);
   await t.pumpAndSettle();
-  await t.scrollUntilVisible(find.byKey(key),80,scrollable:find.byType(Scrollable).last,maxScrolls:200);
+  for(var i=0;i<200&&find.byKey(key).evaluate().isEmpty;i++){
+    scroll.jumpTo((scroll.offset+120).clamp(0,scroll.position.maxScrollExtent));
+    await t.pumpAndSettle();
+  }
+  expect(find.byKey(key),findsOneWidget,reason:'Missing $key at ${scroll.offset}/${scroll.position.maxScrollExtent}; children: ${(list.childrenDelegate as SliverChildListDelegate).children.map((w)=>w.key).toList()}');
+  await t.ensureVisible(find.byKey(key));
   await t.pumpAndSettle();
 }
 Future<void> shot(WidgetTester t,GlobalKey key,String name)async{
