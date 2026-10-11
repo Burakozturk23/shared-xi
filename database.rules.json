@@ -297,6 +297,10 @@
       ".read": false,
       ".write": false
     },
+    "footballDocuState": {
+      ".read": false,
+      ".write": false
+    },
     "dynastiesState": {
       ".read": false,
       ".write": false

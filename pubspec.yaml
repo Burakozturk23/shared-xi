@@ -62,6 +62,7 @@ flutter:
     - assets/data/ucl_moments_v2.json
     - assets/data/international_glory_v2.json
     - assets/data/dynasties_v2.json
+    - assets/data/football_docu_v2.json
     - assets/data/what_if_v2.json
     - assets/data/player_journey_chapter_one.json
     - assets/data/player_journey_chapter_two.json

@@ -1,0 +1,50 @@
+{
+  "Diego Maradona": {
+    "playerId": 4000000035,
+    "canonicalName": "Diego Maradona"
+  },
+  "Gabriel Batistuta": {
+    "playerId": 4000000045,
+    "canonicalName": "Gabriel Batistuta"
+  },
+  "David Beckham": {
+    "playerId": 4000000023,
+    "canonicalName": "David Beckham"
+  },
+  "Ryan Giggs": {
+    "playerId": 4000000059,
+    "canonicalName": "Ryan Giggs"
+  },
+  "Paul Scholes": {
+    "playerId": 4000000026,
+    "canonicalName": "Paul Scholes"
+  },
+  "Jürgen Klopp": {
+    "playerId": 4000000080,
+    "canonicalName": "Jürgen Klopp"
+  },
+  "Rafael Benítez": {
+    "playerId": 4000000097,
+    "canonicalName": "Rafael Benítez"
+  },
+  "Olivier Giroud": {
+    "playerId": 82442,
+    "canonicalName": "Olivier Giroud"
+  },
+  "Karim Benzema": {
+    "playerId": 18922,
+    "canonicalName": "Karim Benzema"
+  },
+  "Loïc Rémy": {
+    "playerId": 45121,
+    "canonicalName": "Loïc Rémy"
+  },
+  "Kevin Gameiro": {
+    "playerId": 27389,
+    "canonicalName": "Kévin Gameiro"
+  },
+  "Roberto Mancini": {
+    "playerId": 4000000091,
+    "canonicalName": "Roberto Mancini"
+  }
+}

@@ -1,0 +1,1036 @@
+[
+  {
+    "number": 1,
+    "mechanic": "evidence",
+    "prompt": "2015/16 Leicester sezonunun resmî Premier League bilançosunda galibiyet, beraberlik ve mağlubiyet sayıları nasıl eşleşir?",
+    "hint": "Puan tablosunda 38 maç ve 81 puana odaklan.",
+    "interaction": "match",
+    "correct": [
+      "23",
+      "12",
+      "3"
+    ],
+    "distractors": [],
+    "slots": [
+      "Galibiyet",
+      "Beraberlik",
+      "Mağlubiyet"
+    ],
+    "sourceIds": [
+      "leicester_table"
+    ],
+    "evidence": "23 galibiyet · 12 beraberlik · 3 mağlubiyet",
+    "periods": []
+  },
+  {
+    "number": 2,
+    "mechanic": "turning",
+    "prompt": "Leicester şampiyonluğunu, kendi maçını oynamadan kesinleştiren 2 Mayıs 2016 karşılaşması ve skor hangisiydi?",
+    "hint": "Leicester oynarken değil, Londra’daki beraberliğin ardından kutladı.",
+    "interaction": "single",
+    "correct": [
+      "Chelsea 2-2 Tottenham Hotspur"
+    ],
+    "distractors": [
+      "Chelsea 1-0 Tottenham Hotspur",
+      "Tottenham Hotspur 2-1 Chelsea",
+      "Chelsea 0-0 Tottenham Hotspur"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "leicester_title"
+    ],
+    "evidence": "Chelsea 2-2 Tottenham Hotspur",
+    "periods": []
+  },
+  {
+    "number": 3,
+    "mechanic": "person",
+    "prompt": "Napoli’nin 1986/87 tarihindeki ilk Serie A şampiyonluğunun simgesi olan Arjantinli on numara kimdi?",
+    "hint": "1984’te Napoli’ye katılan futbolcuyu düşün.",
+    "interaction": "single",
+    "correct": [
+      "Diego Maradona"
+    ],
+    "distractors": [
+      "Gabriel Batistuta",
+      "Jorge Valdano",
+      "Claudio Caniggia"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "napoli_player"
+    ],
+    "evidence": "Diego Maradona",
+    "periods": []
+  },
+  {
+    "number": 4,
+    "mechanic": "evidence",
+    "prompt": "Napoli 1986/87 sezonunu hangi iki büyük ulusal kupayı kazanarak tamamladı?",
+    "hint": "Biri lig, diğeri İtalya’nın eleme usulü kupası.",
+    "interaction": "multi",
+    "correct": [
+      "Serie A",
+      "Coppa Italia"
+    ],
+    "distractors": [
+      "UEFA Kupası",
+      "İtalya Süper Kupası"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "napoli_cups"
+    ],
+    "evidence": "Serie A şampiyonluğu ve Coppa Italia",
+    "periods": []
+  },
+  {
+    "number": 5,
+    "mechanic": "timeline",
+    "prompt": "Manchester City’nin QPR maçının sonunda gelen iki golünü doğru kronolojik sırayla diz.",
+    "hint": "Önce beraberlik, ardından şampiyonluk golü geldi.",
+    "interaction": "order",
+    "correct": [
+      "Edin Džeko’nun golü",
+      "Sergio Agüero’nun golü"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "city_order"
+    ],
+    "evidence": "Edin Džeko → Sergio Agüero",
+    "periods": [
+      "13 Mayıs 2012 · 90+2",
+      "13 Mayıs 2012 · 93:20"
+    ]
+  },
+  {
+    "number": 6,
+    "mechanic": "turning",
+    "prompt": "QPR karşısındaki son Manchester City golünde bitirici pası veren futbolcu kimdi?",
+    "hint": "Golü atan oyuncu Agüero’ydu; hazırlayanı bul.",
+    "interaction": "single",
+    "correct": [
+      "Mario Balotelli"
+    ],
+    "distractors": [
+      "David Silva",
+      "Samir Nasri",
+      "Carlos Tévez"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "city_assist"
+    ],
+    "evidence": "Mario Balotelli",
+    "periods": []
+  },
+  {
+    "number": 7,
+    "mechanic": "headline",
+    "prompt": "“Manchester United’ın 1998/99 üçlemesi Premier League, FA Cup ve UEFA Şampiyonlar Ligi’nden oluşur.” Bu manşet doğru mu?",
+    "hint": "Üç turnuvanın o sezonki kazananlarını birlikte değerlendir.",
+    "interaction": "boolean",
+    "correct": [
+      "Doğru"
+    ],
+    "distractors": [
+      "Yanlış"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "united_cups"
+    ],
+    "evidence": "1998/99 üçlemesi: Premier League, FA Cup ve UEFA Şampiyonlar Ligi.",
+    "periods": []
+  },
+  {
+    "number": 8,
+    "mechanic": "person",
+    "prompt": "Class of 92 kuşağından, 1999 finalinde iki duraklama zamanı golünün geldiği kornerleri kullanan oyuncu kimdi?",
+    "hint": "Orta saha ve sağ çizgideki efsane ismi düşün.",
+    "interaction": "single",
+    "correct": [
+      "David Beckham"
+    ],
+    "distractors": [
+      "Ryan Giggs",
+      "Paul Scholes",
+      "Nicky Butt"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "beckham"
+    ],
+    "evidence": "David Beckham",
+    "periods": []
+  },
+  {
+    "number": 9,
+    "mechanic": "evidence",
+    "prompt": "Arsenal’in 2003/04 Premier League puan tablosundaki üç temel sayıyı doğru eşleştir.",
+    "hint": "Ligin resmî tablosunda Pld, Pts ve L alanlarına bak.",
+    "interaction": "match",
+    "correct": [
+      "38",
+      "90",
+      "0"
+    ],
+    "distractors": [],
+    "slots": [
+      "Oynanan maç",
+      "Puan",
+      "Mağlubiyet"
+    ],
+    "sourceIds": [
+      "arsenal"
+    ],
+    "evidence": "38 maç · 90 puan · 0 yenilgi",
+    "periods": []
+  },
+  {
+    "number": 10,
+    "mechanic": "headline",
+    "prompt": "“Arsenal lig şampiyonluğunu 12 beraberlikle tamamladı” iddiası doğru mu?",
+    "hint": "38 maç içinde hiç mağlubiyet yoktu; kalan sonuçları düşün.",
+    "interaction": "boolean",
+    "correct": [
+      "Doğru"
+    ],
+    "distractors": [
+      "Yanlış"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "arsenal"
+    ],
+    "evidence": "Doğru",
+    "periods": []
+  },
+  {
+    "number": 11,
+    "mechanic": "timeline",
+    "prompt": "Liverpool’un bu üç başarısını en eskiden en yeniye sırala.",
+    "hint": "Eleme turu, Avrupa finali ve sonraki lig sezonunu karşılaştır.",
+    "interaction": "order",
+    "correct": [
+      "Barcelona rövanşı",
+      "Avrupa finali",
+      "Lig şampiyonluğu"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "lfc19",
+      "lfc20"
+    ],
+    "evidence": "Barcelona karşısında 4-0 → 2019 UCL şampiyonluğu → 2020 Premier League şampiyonluğu",
+    "periods": [
+      "7 Mayıs 2019",
+      "1 Haziran 2019",
+      "25 Haziran 2020"
+    ]
+  },
+  {
+    "number": 12,
+    "mechanic": "person",
+    "prompt": "2018–2020 Liverpool dönüşümünün teknik direktörü kimdi?",
+    "hint": "Takımın gegenpressing yaklaşımını öne çıkaran Alman çalıştırıcı.",
+    "interaction": "single",
+    "correct": [
+      "Jürgen Klopp"
+    ],
+    "distractors": [
+      "Rafael Benítez",
+      "Brendan Rodgers",
+      "Kenny Dalglish"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "lfc19",
+      "lfc20"
+    ],
+    "evidence": "Jürgen Klopp",
+    "periods": []
+  },
+  {
+    "number": 13,
+    "mechanic": "evidence",
+    "prompt": "1995 Ajax–Milan finalinin UEFA gol kaydını tamamla: galibiyet golünü hangi oyuncu attı?",
+    "hint": "Sonradan oyuna giren bir hücum oyuncusunu ara.",
+    "interaction": "single",
+    "correct": [
+      "Patrick Kluivert"
+    ],
+    "distractors": [
+      "Marc Overmars",
+      "Nwankwo Kanu",
+      "Jari Litmanen"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "ajax_goal"
+    ],
+    "evidence": "UEFA final raporunda Patrick Kluivert’in golü 84. dakikada kayıtlıdır.",
+    "periods": []
+  },
+  {
+    "number": 14,
+    "mechanic": "turning",
+    "prompt": "Galibiyet golünün sahibi Kluivert için UEFA değişiklik kaydını tamamla. Hangi dakikada, kimin yerine oyuna girdi?",
+    "hint": "Golün dakikasını oyuncu değişikliğinin dakikasıyla karıştırma.",
+    "interaction": "match",
+    "correct": [
+      "70. dakika",
+      "Jari Litmanen"
+    ],
+    "distractors": [
+      "53. dakika",
+      "Clarence Seedorf"
+    ],
+    "slots": [
+      "Kluivert’in oyuna girdiği dakika",
+      "Yerine çıktığı futbolcu"
+    ],
+    "sourceIds": [
+      "ajax_sub"
+    ],
+    "evidence": "UEFA değişiklik kaydı: 70. dakika, Jari Litmanen yerine Patrick Kluivert.",
+    "periods": []
+  },
+  {
+    "number": 15,
+    "mechanic": "timeline",
+    "prompt": "Nottingham Forest’ın yükselişindeki üç aşamayı doğru sırala.",
+    "hint": "Önce ligler arası yükseliş, en son kıta kupası.",
+    "interaction": "order",
+    "correct": [
+      "Birinci lige yükseliş",
+      "İngiltere lig şampiyonluğu",
+      "İlk Avrupa Kupası şampiyonluğu"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "forest",
+      "forest_promotion"
+    ],
+    "evidence": "1976/77 yükseliş; 1977/78 Football League First Division şampiyonluğu; 1978/79 Avrupa Kupası.",
+    "periods": [
+      "1976/77",
+      "1977/78",
+      "1978/79"
+    ]
+  },
+  {
+    "number": 16,
+    "mechanic": "person",
+    "prompt": "Forest’ın 1979 ve 1980 Avrupa şampiyonluklarının teknik direktörü kimdi?",
+    "hint": "Peter Taylor ile birlikte çalışan meşhur İngiliz menajer.",
+    "interaction": "single",
+    "correct": [
+      "Brian Clough"
+    ],
+    "distractors": [
+      "Bobby Robson",
+      "Bob Paisley",
+      "Ron Greenwood"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "forest"
+    ],
+    "evidence": "Brian Clough",
+    "periods": []
+  },
+  {
+    "number": 17,
+    "mechanic": "timeline",
+    "prompt": "Porto’nun iki Avrupa kupası zaferini gerçekleşme sırasına koy.",
+    "hint": "İki final arka arkaya gelen sezonlarda oynandı.",
+    "interaction": "order",
+    "correct": [
+      "UEFA Kupası zaferi",
+      "Şampiyonlar Ligi zaferi"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "porto"
+    ],
+    "evidence": "2003 UEFA Kupası → 2004 UEFA Şampiyonlar Ligi",
+    "periods": [
+      "2002/03",
+      "2003/04"
+    ]
+  },
+  {
+    "number": 18,
+    "mechanic": "evidence",
+    "prompt": "2004 Şampiyonlar Ligi finalinde Porto’nun mağlup ettiği takım ve maç skoru nedir?",
+    "hint": "Final Almanya’nın Gelsenkirchen kentinde oynandı.",
+    "interaction": "match",
+    "correct": [
+      "Monaco",
+      "3-0"
+    ],
+    "distractors": [
+      "Deportivo La Coruña",
+      "2-0"
+    ],
+    "slots": [
+      "Final rakibi",
+      "Porto lehine final skoru"
+    ],
+    "sourceIds": [
+      "porto"
+    ],
+    "evidence": "Monaco; Porto 3-0 Monaco",
+    "periods": []
+  },
+  {
+    "number": 19,
+    "mechanic": "evidence",
+    "prompt": "Inter’in 2009/10 sezonundaki üçlemesini hangi üç kupa oluşturdu?",
+    "hint": "İtalya’daki iki kupa ile bir Avrupa kupasını birlikte düşün.",
+    "interaction": "multi",
+    "correct": [
+      "Serie A",
+      "Coppa Italia",
+      "UEFA Şampiyonlar Ligi"
+    ],
+    "distractors": [
+      "İtalya Süper Kupası"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "inter_cups"
+    ],
+    "evidence": "Serie A · Coppa Italia · UEFA Şampiyonlar Ligi",
+    "periods": []
+  },
+  {
+    "number": 20,
+    "mechanic": "turning",
+    "prompt": "2010 Şampiyonlar Ligi yarı finalinde Inter hangi İspanyol kulübünü eledi?",
+    "hint": "Mourinho’nun savunma planıyla hatırlanan yarı final.",
+    "interaction": "single",
+    "correct": [
+      "Barcelona"
+    ],
+    "distractors": [
+      "Real Madrid",
+      "Valencia",
+      "Sevilla"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "inter_semi"
+    ],
+    "evidence": "Barcelona",
+    "periods": []
+  },
+  {
+    "number": 21,
+    "mechanic": "timeline",
+    "prompt": "17 Mayıs 2014 Barcelona–Atlético Madrid maçındaki golcüleri olay sırasına koy.",
+    "hint": "Ev sahibi takımın golü ile deplasman takımının golünü ayır.",
+    "interaction": "order",
+    "correct": [
+      "Alexis Sánchez’in golü",
+      "Diego Godín’in golü"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "atletico"
+    ],
+    "evidence": "Alexis Sánchez golü → Diego Godín’in beraberlik golü",
+    "periods": [
+      "17 Mayıs 2014 · 33. dakika",
+      "17 Mayıs 2014 · 49. dakika"
+    ]
+  },
+  {
+    "number": 22,
+    "mechanic": "turning",
+    "prompt": "Atlético’ya 2013/14 lig şampiyonluğunu getiren son hafta Barcelona maçının sonucu neydi?",
+    "hint": "Atlético için beraberlik yetiyordu.",
+    "interaction": "single",
+    "correct": [
+      "Barcelona 1-1 Atlético Madrid"
+    ],
+    "distractors": [
+      "Barcelona 0-1 Atlético Madrid",
+      "Barcelona 2-2 Atlético Madrid",
+      "Barcelona 1-2 Atlético Madrid"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "atletico"
+    ],
+    "evidence": "Barcelona 1-1 Atlético Madrid",
+    "periods": []
+  },
+  {
+    "number": 23,
+    "mechanic": "person",
+    "prompt": "Kaiserslautern’i 1997/98 Bundesliga şampiyonluğuna taşıyan teknik direktör kimdi?",
+    "hint": "Daha sonra Yunanistan ile EURO 2004 kazanan Alman çalıştırıcı.",
+    "interaction": "single",
+    "correct": [
+      "Otto Rehhagel"
+    ],
+    "distractors": [
+      "Ottmar Hitzfeld",
+      "Jupp Heynckes",
+      "Christoph Daum"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "lautern"
+    ],
+    "evidence": "Otto Rehhagel",
+    "periods": []
+  },
+  {
+    "number": 24,
+    "mechanic": "headline",
+    "prompt": "“Kaiserslautern 1997/98 lig şampiyonluğunu, yükseldiği ilk Bundesliga sezonunda kazandı.” Bu iddia doğru mu?",
+    "hint": "Yükseliş sezonu ile üst ligdeki ilk sezon aynı değildir.",
+    "interaction": "boolean",
+    "correct": [
+      "Doğru"
+    ],
+    "distractors": [
+      "Yanlış"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "lautern"
+    ],
+    "evidence": "Doğru",
+    "periods": []
+  },
+  {
+    "number": 25,
+    "mechanic": "evidence",
+    "prompt": "Montpellier’nin 2011/12 Ligue 1 şampiyonluğunda lig ikincisi hangi takımdı?",
+    "hint": "Şampiyonluk yarışının büyük bütçeli rakibi.",
+    "interaction": "single",
+    "correct": [
+      "Paris Saint-Germain"
+    ],
+    "distractors": [
+      "Lille",
+      "Lyon",
+      "Marseille"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "montpellier"
+    ],
+    "evidence": "Paris Saint-Germain",
+    "periods": []
+  },
+  {
+    "number": 26,
+    "mechanic": "person",
+    "prompt": "Montpellier şampiyonluk sezonunda ligde 21 gol atan ve sonraki sezon Arsenal’e giden forvet kimdi?",
+    "hint": "Fransız santrforun sonraki kulübü Arsenal.",
+    "interaction": "single",
+    "correct": [
+      "Olivier Giroud"
+    ],
+    "distractors": [
+      "Karim Benzema",
+      "Loïc Rémy",
+      "Kevin Gameiro"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "giroud"
+    ],
+    "evidence": "Olivier Giroud",
+    "periods": []
+  },
+  {
+    "number": 27,
+    "mechanic": "headline",
+    "prompt": "2010’daki 5-0 Barcelona–Real Madrid maçında “Gerard Piqué gol attı” manşeti doğru mu?",
+    "hint": "Golcü listesi ile kutlama görüntülerini karıştırma.",
+    "interaction": "boolean",
+    "correct": [
+      "Yanlış"
+    ],
+    "distractors": [
+      "Doğru"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "barca"
+    ],
+    "evidence": "Yanlış; Piqué gol atmadı",
+    "periods": []
+  },
+  {
+    "number": 28,
+    "mechanic": "evidence",
+    "prompt": "Barcelona’nın 5-0 galibiyetinde iki gol atan oyuncu ve son golün sahibi hangi ikiliydi?",
+    "hint": "Bir futbolcu iki gol attı; son gol yedekten gelen bir oyuncudan geldi.",
+    "interaction": "match",
+    "correct": [
+      "David Villa",
+      "Jeffrén Suárez"
+    ],
+    "distractors": [
+      "Lionel Messi",
+      "Pedro"
+    ],
+    "slots": [
+      "İki gol atan futbolcu",
+      "Son golü atan futbolcu"
+    ],
+    "sourceIds": [
+      "barca"
+    ],
+    "evidence": "David Villa (2 gol) · Jeffrén Suárez (son gol)",
+    "periods": []
+  },
+  {
+    "number": 29,
+    "mechanic": "headline",
+    "prompt": "“20 Ekim 1976 Trabzonspor–Liverpool karşılaşması Wembley’de oynandı.” Bu manşet doğru mu?",
+    "hint": "İki ayaklı turun ilk maçının ev sahibi kaydını düşün.",
+    "interaction": "boolean",
+    "correct": [
+      "Yanlış"
+    ],
+    "distractors": [
+      "Doğru"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "trabzon_venue",
+      "cemil"
+    ],
+    "evidence": "Yanlış; maç Trabzon’daki Hüseyin Avni Aker Stadyumu’nda oynandı",
+    "periods": []
+  },
+  {
+    "number": 30,
+    "mechanic": "turning",
+    "prompt": "20 Ekim 1976’da Trabzonspor’un Liverpool’u 1-0 yendiği maçtaki penaltıyı kim gole çevirdi?",
+    "hint": "Takımın kaptanı, Dozer lakabıyla anılıyordu.",
+    "interaction": "single",
+    "correct": [
+      "Cemil Usta"
+    ],
+    "distractors": [
+      "Ali Kemal Denizci",
+      "Necmi Perekli",
+      "Hüseyin Tok"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "cemil"
+    ],
+    "evidence": "Cemil Usta",
+    "periods": []
+  },
+  {
+    "number": 31,
+    "mechanic": "person",
+    "prompt": "1990/91 Sampdoria takımında “Gol İkizleri” olarak bilinen forvet ikilisi kimdi?",
+    "hint": "İkisi de daha sonra futbol dünyasında teknik adam olarak anıldı.",
+    "interaction": "multi",
+    "correct": [
+      "Roberto Mancini",
+      "Gianluca Vialli"
+    ],
+    "distractors": [
+      "Attilio Lombardo",
+      "Toninho Cerezo"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "samp"
+    ],
+    "evidence": "Roberto Mancini ve Gianluca Vialli",
+    "periods": []
+  },
+  {
+    "number": 32,
+    "mechanic": "headline",
+    "prompt": "“Sampdoria 1990/91 sezonunda kulüp tarihinin ilk Serie A şampiyonluğunu kazandı.” Bu iddia doğru mu?",
+    "hint": "Kupa başarılarıyla lig şampiyonluklarını ayrı değerlendir.",
+    "interaction": "boolean",
+    "correct": [
+      "Doğru"
+    ],
+    "distractors": [
+      "Yanlış"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "samp_first"
+    ],
+    "evidence": "Doğru",
+    "periods": []
+  },
+  {
+    "number": 33,
+    "mechanic": "evidence",
+    "prompt": "Leverkusen’in 2023/24 Bundesliga sezonundaki 34 maçının sonuç dağılımını eşleştir.",
+    "hint": "Bir sezon boyunca ligde hiç kaybetmedi.",
+    "interaction": "match",
+    "correct": [
+      "28",
+      "6",
+      "0"
+    ],
+    "distractors": [],
+    "slots": [
+      "Galibiyet",
+      "Beraberlik",
+      "Mağlubiyet"
+    ],
+    "sourceIds": [
+      "leverkusen"
+    ],
+    "evidence": "28 galibiyet · 6 beraberlik · 0 mağlubiyet",
+    "periods": []
+  },
+  {
+    "number": 34,
+    "mechanic": "headline",
+    "prompt": "“Leverkusen 2023/24 sezonunu Avrupa Ligi dahil üç kupayla tamamladı.” Bu manşet doğru mu?",
+    "hint": "Lig karnesi tek başına Avrupa finalinin sonucunu kanıtlamaz.",
+    "interaction": "boolean",
+    "correct": [
+      "Yanlış"
+    ],
+    "distractors": [
+      "Doğru"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "leverkusen_cups"
+    ],
+    "evidence": "Yanlış; Bundesliga ve DFB-Pokal’ı kazandı, Avrupa Ligi finalinde Atalanta’ya kaybetti",
+    "periods": []
+  },
+  {
+    "number": 35,
+    "mechanic": "timeline",
+    "prompt": "AFC Wimbledon’ın üç dönüm noktasını gerçekleşme sırasına koy.",
+    "hint": "Kuruluş, lig basamakları ve stadyum projesi farklı tarihlerdedir.",
+    "interaction": "order",
+    "correct": [
+      "AFC Wimbledon’ın kuruluşu",
+      "Football League’e yükseliş",
+      "Yeni Plough Lane’in açılışı"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "wimbledon"
+    ],
+    "evidence": "2002 kuruluş → 2011 Football League → 2020 Plough Lane",
+    "periods": [
+      "2002",
+      "2011",
+      "2020"
+    ]
+  },
+  {
+    "number": 36,
+    "mechanic": "evidence",
+    "prompt": "Kulübün 2024 strateji belgesinde AFC Wimbledon’ın taraftar sahipliğini temsil eden kuruluş hangisidir?",
+    "hint": "Kulüp içindeki taraftar sahipliği ile ulusal futbol kuruluşlarını ayır.",
+    "interaction": "single",
+    "correct": [
+      "The Dons Trust"
+    ],
+    "distractors": [
+      "The Football Association",
+      "Supporters Direct",
+      "Football Supporters’ Association"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "wimbledon",
+      "wimbledon_owner"
+    ],
+    "evidence": "2024 strateji belgesinde taraftar sahipliği The Dons Trust üzerinden tanımlanır.",
+    "periods": []
+  },
+  {
+    "number": 37,
+    "mechanic": "turning",
+    "prompt": "2013 FA Cup finalinde Manchester City’ye karşı galibiyet golünü atan futbolcu kimdi?",
+    "hint": "Finalin son dakikalarında kafa golü geldi.",
+    "interaction": "single",
+    "correct": [
+      "Ben Watson"
+    ],
+    "distractors": [
+      "Callum McManaman",
+      "Arouna Koné",
+      "Shaun Maloney"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "watson"
+    ],
+    "evidence": "Ben Watson",
+    "periods": []
+  },
+  {
+    "number": 38,
+    "mechanic": "headline",
+    "prompt": "“Wigan 2012/13 sezonunda FA Cup’ı kazanırken Premier League’de de kaldı.” Bu manşet doğru mu?",
+    "hint": "Kupa turnuvası ile lig sıralaması ayrı kayıtlardır.",
+    "interaction": "boolean",
+    "correct": [
+      "Yanlış"
+    ],
+    "distractors": [
+      "Doğru"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "wigan"
+    ],
+    "evidence": "Yanlış; aynı sezon küme düştü",
+    "periods": []
+  },
+  {
+    "number": 39,
+    "mechanic": "timeline",
+    "prompt": "Leeds’in Avrupa yarı finalini, 2004 kurtarma amaçlı kulüp devrini ve ligden düşüşünü sırala.",
+    "hint": "Kulüp devri Mart 2004’teydi; sezon sonuyla karşılaştır.",
+    "interaction": "order",
+    "correct": [
+      "Şampiyonlar Ligi yarı finali",
+      "Kurtarma amaçlı kulüp devri",
+      "Premier League’den düşüş"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "leeds_takeover",
+      "leeds_down",
+      "leeds_valencia"
+    ],
+    "evidence": "2001 Avrupa yarı finali; 19 Mart 2004 kulüp devri; Mayıs 2004 ligden düşüş. Mali kriz daha önce başlamıştı.",
+    "periods": [
+      "Mayıs 2001",
+      "19 Mart 2004",
+      "Mayıs 2004"
+    ]
+  },
+  {
+    "number": 40,
+    "mechanic": "evidence",
+    "prompt": "Leeds United’ın 2000/01 Şampiyonlar Ligi yarı finalinde elendiği İspanyol kulüp hangisiydi?",
+    "hint": "Kulüp daha sonra 2004 UEFA Kupası’nı kazandı.",
+    "interaction": "single",
+    "correct": [
+      "Valencia"
+    ],
+    "distractors": [
+      "Real Madrid",
+      "Barcelona",
+      "Deportivo La Coruña"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "leeds_valencia"
+    ],
+    "evidence": "Valencia",
+    "periods": []
+  },
+  {
+    "number": 41,
+    "mechanic": "timeline",
+    "prompt": "Dortmund’un mali krizini, Klopp döneminin başlangıcını ve 2013 Avrupa finalini sırala.",
+    "hint": "Ekonomik toparlanma ve teknik ekip değişimi farklı aşamalardır.",
+    "interaction": "order",
+    "correct": [
+      "İflasın eşiğindeki mali kriz",
+      "Yeni teknik direktör döneminin başlangıcı",
+      "Wembley’de Avrupa finali"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "bvb_crisis",
+      "bvb"
+    ],
+    "evidence": "2005 mali kriz → 2008 Klopp göreve gelişi → 2013 UCL finali",
+    "periods": [
+      "2005",
+      "2008",
+      "2013"
+    ]
+  },
+  {
+    "number": 42,
+    "mechanic": "evidence",
+    "prompt": "Dortmund 2011/12 sezonunda hangi iki ulusal kupayı birlikte kazandı?",
+    "hint": "Lig şampiyonluğu ve ulusal kupa birlikte alındı.",
+    "interaction": "multi",
+    "correct": [
+      "Bundesliga",
+      "DFB-Pokal"
+    ],
+    "distractors": [
+      "Almanya Süper Kupası",
+      "UEFA Şampiyonlar Ligi"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "bvb"
+    ],
+    "evidence": "Bundesliga ve DFB-Pokal",
+    "periods": []
+  },
+  {
+    "number": 43,
+    "mechanic": "evidence",
+    "prompt": "Celtic’in 1967 Avrupa finalinde rakibi, sonucu ve oynanan kenti eşleştir.",
+    "hint": "UEFA kaydında başkent Portekiz’dedir.",
+    "interaction": "match",
+    "correct": [
+      "Inter",
+      "2-1",
+      "Lizbon"
+    ],
+    "distractors": [
+      "Madrid"
+    ],
+    "slots": [
+      "Final rakibi",
+      "Celtic lehine final skoru",
+      "Final şehri"
+    ],
+    "sourceIds": [
+      "celtic"
+    ],
+    "evidence": "Inter · 2-1 · Lizbon",
+    "periods": []
+  },
+  {
+    "number": 44,
+    "mechanic": "person",
+    "prompt": "Celtic’i 1967 Avrupa Kupası şampiyonluğuna taşıyan teknik direktör kimdi?",
+    "hint": "İskoç futbolunun en tanınan teknik adamlarından biri.",
+    "interaction": "single",
+    "correct": [
+      "Jock Stein"
+    ],
+    "distractors": [
+      "Bill Shankly",
+      "Matt Busby",
+      "Bill Nicholson"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "celtic"
+    ],
+    "evidence": "Jock Stein",
+    "periods": []
+  },
+  {
+    "number": 45,
+    "mechanic": "timeline",
+    "prompt": "Gençlerbirliği’nin 2003/04 UEFA Kupası’nda Valencia turundan önce elediği üç rakibi sırala.",
+    "hint": "İlk turdan üçüncü tura doğru ilerle; kulüplerin ülkesinden tek başına sonuç çıkarma.",
+    "interaction": "order",
+    "correct": [
+      "Blackburn Rovers",
+      "Sporting CP",
+      "Parma"
+    ],
+    "distractors": [],
+    "slots": [],
+    "sourceIds": [
+      "gencler"
+    ],
+    "evidence": "Blackburn Rovers → Sporting CP → Parma",
+    "periods": [
+      "Eylül–Ekim 2003",
+      "Kasım 2003",
+      "Şubat–Mart 2004"
+    ]
+  },
+  {
+    "number": 46,
+    "mechanic": "turning",
+    "prompt": "Gençlerbirliği’nin 11 Mart 2004’te Ankara’da Valencia’yı 1-0 yendiği maçta penaltıyı atan futbolcu kimdi?",
+    "hint": "UEFA maç raporu 12. dakikadaki penaltıya işaret ediyor.",
+    "interaction": "single",
+    "correct": [
+      "Filip Daems"
+    ],
+    "distractors": [
+      "Josip Skoko",
+      "Mustafa Özkan",
+      "Souleymane Youla"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "gencler"
+    ],
+    "evidence": "Filip Daems",
+    "periods": []
+  },
+  {
+    "number": 47,
+    "mechanic": "turning",
+    "prompt": "Athletic Club’ın Mallorca’ya karşı 2024 Copa del Rey finalindeki penaltı serisini bitiren son golü kim attı?",
+    "hint": "Takımın dördüncü başarılı seri penaltısını düşün.",
+    "interaction": "single",
+    "correct": [
+      "Álex Berenguer"
+    ],
+    "distractors": [
+      "Oihan Sancet",
+      "Iñaki Williams",
+      "Nico Williams"
+    ],
+    "slots": [],
+    "sourceIds": [
+      "athletic"
+    ],
+    "evidence": "Álex Berenguer",
+    "periods": []
+  },
+  {
+    "number": 48,
+    "mechanic": "evidence",
+    "prompt": "Athletic Club’ın 2024 Copa del Rey finalindeki normal+uzatma sonu skoru ve seri sonucu neydi?",
+    "hint": "Maç skoru ile penaltı serisi skoru farklıdır.",
+    "interaction": "match",
+    "correct": [
+      "1-1",
+      "4-2"
+    ],
+    "distractors": [
+      "2-1",
+      "5-4"
+    ],
+    "slots": [
+      "120 dakika sonu",
+      "Athletic lehine penaltı serisi"
+    ],
+    "sourceIds": [
+      "athletic"
+    ],
+    "evidence": "1-1 (120 dakika sonunda); penaltılarda Athletic Club 4-2 kazandı",
+    "periods": []
+  }
+]

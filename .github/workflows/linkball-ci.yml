@@ -71,6 +71,7 @@ jobs:
           python3 tools/nostalgia/verify.py
           python3 tools/international_glory/verify.py
           python3 tools/dynasties/verify.py
+          python3 tools/football_docu/verify.py
           python3 -m unittest discover -s tools/history -p 'test_*.py'
           python3 tools/history/verify.py
           python3 tools/season_portraits/generate_catalog.py --check
@@ -106,6 +107,16 @@ jobs:
 
       - name: Run Flutter tests
         run: flutter test --reporter expanded --dart-define=UPDATE_FIVE_SCREENSHOTS=true
+
+      - name: Upload Football Docu previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: football_docu-previews
+          path: .dart_tool/football_docu_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload Dynasties previews
         if: always()

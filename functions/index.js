@@ -8277,6 +8277,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["uclMomentsState/" + uid] = null;
   updates["internationalGloryState/" + uid] = null;
   updates["dynastiesState/" + uid] = null;
+  updates["footballDocuState/" + uid] = null;
   updates["nostalgiaState/" + uid] = null;
   updates["walletBalances/" + uid] = null;
   updates["economyLedger/" + uid] = null;
@@ -9371,3 +9372,77 @@ exports.submitDynasties = lbDynastiesCallable("submit");
 
 
 exports.buyDynastiesHint = lbDynastiesCallable("hint");
+
+
+// FootballDocu uses isolated receipts and state.
+function lbFootballDocuService() {
+  const db = getDatabase();
+  return require("./football_docu").createService({db,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp;
+          s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now};
+          s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+    chargeHint: async (uid, taskId, price) => {
+      const key = "football_docu_v2_hint__" + taskId;
+      const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+        const s = lbEconomyState(raw);
+        if (!s.purchases[key] && s.balances.coins >= price) {
+          const before = s.balances.coins;
+          s.balances.coins -= price;
+          s.lifetimeSpent += price;
+          s.purchases[key] = {txId: key, offerId: "football_docu_v2_hint", itemId: taskId,
+            itemType: "hint", priceCoins: price, balanceBefore: before, balanceAfter: s.balances.coins,
+            purchasedAt: Date.now(), economyConfigId: "football_docu-v2"};
+          s.updatedAt = Date.now();
+        }
+        return s;
+      });
+      const s = lbEconomyState(tx.snapshot.val());
+      if (!s.purchases[key]) {
+        throw new (require("./rewarded_ads").RewardError)(
+            "failed-precondition", "Bu yardım için 6 coin gerekli.");
+      }
+      await lbEconomyProject(db, uid, s);
+    },
+    isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
+  });
+}
+function lbFootballDocuCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
+    let eligible = true;
+    try {
+      lbRequireGoogleLinked(request);
+    } catch (_) {
+      eligible = false;
+    }
+    try {
+      const service = lbFootballDocuService();
+      return action === "status" ? await service.status(request.auth.uid, eligible) :
+        action === "hint" ? await service.hint(request.auth.uid, request.data || {}, eligible) :
+        await service.submit(request.auth.uid, request.data || {}, eligible);
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getFootballDocu = lbFootballDocuCallable("status");
+exports.submitFootballDocu = lbFootballDocuCallable("submit");
+
+
+exports.buyFootballDocuHint = lbFootballDocuCallable("hint");
