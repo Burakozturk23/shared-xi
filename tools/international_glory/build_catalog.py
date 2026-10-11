@@ -47,6 +47,39 @@ ROWS='''1986-06-22|Arjantin;İngiltere|Dünya Kupası 1986|Çeyrek final|critica
 TIMES={2:['11','23','24','29'],8:['45+2','55','120','120+1','Penaltı serisi'],14:['55','90+4','103'],19:['13','31','55','86'],26:['20','45+1','87','90+3'],31:['48','52','69','74','90+4'],39:['35','70','76']}
 LINEUPS={15:[['Iker Casillas'],['Álvaro Arbeloa','Gerard Piqué','Sergio Ramos','Jordi Alba'],['Xabi Alonso','Sergio Busquets'],['David Silva','Xavi','Andrés Iniesta'],['?']],25:[['?'],['Mauricio Isla','Gary Medel','Gonzalo Jara','Jean Beausejour'],['Charles Aránguiz','Marcelo Díaz','Arturo Vidal'],['José Pedro Fuenzalida','Eduardo Vargas','Alexis Sánchez']],28:[['Noor Sabri'],['Jassim Ghulam','Bassem Abbas','Ali Rehema','Haidar Abdul Amir'],['Nashat Akram','Mahdi Karim','Qusay Munir','Hawar Mulla Mohammed'],['Karrar Jassim','?']],35:[['?'],['Josip Juranović','Dejan Lovren','Joško Gvardiol','Borna Sosa'],['Luka Modrić','Marcelo Brozović','Mateo Kovačić'],['Mario Pašalić','Andrej Kramarić','Ivan Perišić']],37:[['Mert Günok'],['Mert Müldür','Samet Akaydin','Abdülkerim Bardakcı','?'],['Kaan Ayhan','Hakan Çalhanoğlu'],['Arda Güler','Orkun Kökçü','Kenan Yıldız'],['Barış Alper Yılmaz']]}
 NOTES={2:'Kroos’un 26. dakikadaki ikinci golü bu seçilmiş dört olay arasında değildir.',14:'Altın gol kuralı: Trezeguet’nin golüyle karşılaşma hemen sona erdi.',16:'Rashford direğe vurdu. Donnarumma, Sancho ve Saka’nın penaltılarını kurtardı.',17:'Gümüş gol kuralı: İlk uzatma devresi sonunda önde olan Yunanistan finale çıktı.',22:'Turnuvanın adı AFCON 2023; final 2024 takvim yılında oynandı.',23:'Turnuvanın adı AFCON 2021; final 2022’de oynandı. Maç içindeki kaçan penaltı ile son seri vuruşu farklıdır.',26:'Normal sürenin ardından uzatma oynanmadan penaltı serisine geçildi.',29:'Bu olay penaltı serisi değil, maç içindeki üç ayrı penaltıdır.',39:'Galibiyet golü Mert Müldür’ün kendi kalesine golü olarak kaydedildi.'}
+NOTES.update({
+1:'Solo golüyle öne çıkan Arjantin, çeyrek finali 2-1 kazanarak yoluna devam etti.',
+3:'Normal süre 2-2, uzatma 3-3 bitti. Montiel’in son vuruşuyla seri Arjantin lehine 4-2 tamamlandı.',
+4:'Fransa kaptanı uzatmalarda oyun dışında kaldı. İtalya, 1-1 biten finali penaltı serisiyle kazandı.',
+5:'Fransa, çeyrek finalde İtalya’yı, yarı finalde Hırvatistan’ı ve finalde Brezilya’yı geçti.',
+6:'Batty’nin son vuruşunu Roa kurtardı. Arjantin seriyi 4-3 kazanarak çeyrek finale çıktı.',
+7:'Van Persie’nin kafa golü Hollanda’ya beraberliği getirdi; karşılaşma 5-1 tamamlandı.',
+8:'Normal süre golleri Muntari ve Forlán’dan geldi. Uzatmanın sonundaki el, kırmızı kart ve kaçan penaltının ardından turu seri belirledi.',
+9:'Baggio’nun vuruşu üstten dışarı gitti. Golsüz finalin ardından Brezilya penaltılarda 3-2 üstünlük sağladı.',
+10:'Ronaldo finalin iki golünü de atarak Brezilya’nın 2-0 galibiyetini sağladı.',
+11:'Charisteas’ın kafa golü, ev sahibi Portekiz karşısında Yunanistan’a kupayı getirdi.',
+12:'Danimarka son grup maçında Fransa’yı yendi; Hollanda’yı seride geçip finalde Almanya’yı mağlup etti.',
+13:'Normal süre golsüz bitti. Éder’in uzatmalardaki golü Portekiz’e ilk Avrupa şampiyonluğunu getirdi.',
+15:'Fàbregas başlangıç on birindeydi ve 75. dakikada yerini Torres’e bıraktı. İspanya finali 4-0 kazandı.',
+18:'Totti’nin aşırtma vuruşu penaltı serisindeydi. İtalya seriyi 3-1 kazanarak finale çıktı.',
+19:'Belçika öne geçti; Galler, Williams, Robson-Kanu ve Vokes ile yanıt verip yarı finale yükseldi.',
+20:'Van Basten’in dar açıdan volesi, Hollanda’nın finaldeki ikinci golüydü.',
+21:'Sunzu son vuruşu gole çevirdi. Zambiya golsüz finalin ardından uzun seriyi 8-7 kazandı.',
+24:'Di María’nın golü finaldeki tek gol oldu. Arjantin 1-0 kazanarak kupaya ulaştı.',
+25:'Bravo finalin başlangıç kalecisiydi. Şili, golsüz normal süre ve uzatmadan sonra seriyi 4-2 kazandı.',
+27:'Brezilya eleme turlarında Şili, Uruguay ve Arjantin ile karşılaştı; finali 3-0 kazandı.',
+28:'Younis Mahmoud ilk on birin kaptanıydı. Finalin tek golünü de atarak Irak’a kupayı getirdi.',
+30:'Kolombiya çeyrek finalde Peru, yarı finalde Honduras ve finalde Meksika’yı geçti.',
+31:'Japonya iki farklı üstünlüğe ulaştı. Vertonghen, Fellaini ve Chadli’nin golleri Belçika’yı çeyrek finale taşıdı.',
+32:'Pavard’ın volesi skoru 2-2 yaptı. Fransa son 16 karşılaşmasını 4-3 kazandı.',
+33:'Suudi Arabistan, Al-Shehri ve Al-Dawsari’nin golleriyle geriden gelerek 2-1 kazandı.',
+34:'Normal süre ve uzatma 2-2 bitti. Lautaro Martínez’in son seri vuruşuyla Arjantin yarı finale yükseldi.',
+35:'Livaković başlangıç on birindeydi. Hırvatistan normal süresi golsüz, uzatması 1-1 biten maçı seriyle kazandı.',
+36:'Fas, son 16’da İspanya’yı ve çeyrek finalde Portekiz’i eleyerek yarı finale ulaştı.',
+37:'Ferdi Kadıoğlu başlangıç on birinin sol bek bölgesindeydi. Türkiye grup açılışını 3-1 kazandı.',
+38:'Tosun’un son bölümdeki golü, Türkiye’ye 2-1 galibiyeti ve son 16 biletini getirdi.',
+40:'İspanya sırasıyla Gürcistan, Almanya, Fransa ve İngiltere’yi geçerek Avrupa şampiyonu oldu.',
+})
 def slug(s):return ''.join(c for c in unicodedata.normalize('NFKD',s).lower() if c.isascii() and c.isalnum())
 def build():
  sources=json.loads((ROOT/'tools/international_glory/sources.json').read_text())

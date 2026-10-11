@@ -37,5 +37,11 @@
       "redistributed": false
     }
   ],
-  "licenseGate": "No provider data redistributed. Commercial permission is not assumed."
+  "licenseGate": "No provider data redistributed. Commercial permission is not assumed.",
+  "license": {
+    "url": "https://github.com/hudl/open-data/blob/master/LICENSE.pdf",
+    "sha256": "a5462e69aeb71a39268b760b110c5c2190a2e0cee3015ba976f66bd71f6c2bb4",
+    "reviewedAt": "2026-10-11",
+    "decision": "No new StatsBomb data package distributed; commercial permission not assumed. See sections 1.2.1 and 1.2.2."
+  }
 }

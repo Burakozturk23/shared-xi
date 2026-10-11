@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,6 +37,17 @@ void selectCorrect(InternationalGloryController c) {
       while(c.answers.indexOf(keys[i]) > i) { c.move(c.answers.indexOf(keys[i]), -1); }
     }
   } else if (c.active!.type == 'route') { for (var i=0; i<keys.length; i++) { c.assign(i, keys[i]); } } else { c.choose(keys.single); }
+}
+class FailingInternationalStore extends MemoryInternationalStore {
+  bool fail = true;
+  @override Future<void> write(Map<String,dynamic> value) async {
+    if (fail) throw StateError('disk full');
+    await super.write(value);
+  }
+}
+class DelayedInternationalGateway extends FakeInternationalGateway {
+  final response = Completer<Map<String,dynamic>>();
+  @override Future<Map<String,dynamic>> call(String action,[Map<String,dynamic> input=const {}]) async => response.future;
 }
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -80,4 +92,31 @@ void main() {
     final c=InternationalGloryController(catalog:igPack(),store:a,gateway:FakeInternationalGateway()..offline=true);
     addTearDown(c.dispose); await c.load(); expect(c.count,0); expect(c.phase,'task'); expect(c.answers,isEmpty);
   });
+  test('Malformed route draft restores safe empty slots, not a broken task', () async {
+    final store = MemoryInternationalStore()..data = {'version':2,'activeId':'ig2_36','phase':'task','drafts':{'ig2_36':['fake']}};
+    final c=InternationalGloryController(catalog:igPack(),store:store,gateway:FakeInternationalGateway()..offline=true);
+    addTearDown(c.dispose); await c.load(); expect(c.answers,['','']); expect(c.canSubmit,false);
+    c.assign(1,c.active!.optionIds.first); expect(c.answers[1],c.active!.optionIds.first);
+  });
+
+  test('Disk failure prevents sending; retry persists then validates', () async {
+    final store = FailingInternationalStore(), gateway = FakeInternationalGateway();
+    final c = InternationalGloryController(catalog:igPack(),store:store,gateway:gateway);
+    addTearDown(c.dispose); await c.load(); c.open('ig2_01'); c.start(); selectCorrect(c);
+    await c.submit(); expect(gateway.results,isEmpty); expect(c.count,0);
+    store.fail=false; await c.submit(); expect(c.count,1); expect(c.phase,'result');
+  });
+  test('Late replies after disposal cannot mutate progress or notify widgets', () async {
+    final gateway = DelayedInternationalGateway();
+    final c=InternationalGloryController(catalog:igPack(),store:MemoryInternationalStore(),gateway:gateway);
+    final loading=c.load(); await Future<void>.delayed(Duration.zero); c.dispose();
+    gateway.response.complete({'version':2,'results':{'ig2_01':{'answer':'late'}},'rewards':{}});
+    await loading; expect(c.results,isEmpty);
+  });
+  test('Corrupt persisted JSON remains intact for recovery', () async {
+    SharedPreferences.setMockInitialValues({'international_glory.v2.alice':'{broken'});
+    await expectLater(LocalInternationalStore('alice').read(),throwsFormatException);
+    expect((await SharedPreferences.getInstance()).getString('international_glory.v2.alice'),'{broken');
+  });
+
 }

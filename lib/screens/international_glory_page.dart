@@ -76,7 +76,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
   @override
   Widget build(BuildContext context) {
     final c = _c;
-    if (_loadError != null) return Scaffold(appBar: AppBar(title: const Text('International Glory')),
+    if (_loadError != null) return Scaffold(appBar: AppBar(title: const Text('International Glory', maxLines: 1, overflow: TextOverflow.ellipsis)),
       body: Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min,
         children: [Text(_loadError!), const SizedBox(height: 16), FilledButton(onPressed: _boot, child: const Text('Yeniden dene'))]))));
     if (c == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -84,7 +84,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       canPop: c.phase == 'archive',
       onPopInvokedWithResult: (didPop, _) { if (!didPop && !c.busy) { c.archive(); _top(); } },
       child: Scaffold(
-        appBar: AppBar(title: const Text('International Glory'),
+        appBar: AppBar(title: const Text('International Glory', maxLines: 1, overflow: TextOverflow.ellipsis),
           leading: c.phase == 'archive' ? null : IconButton(tooltip: 'Arşive dön',
               onPressed: c.busy ? null : () { c.archive(); _top(); }, icon: const Icon(Icons.arrow_back)),
           actions: [IconButton(tooltip: 'Eşitle', onPressed: c.busy ? null : c.sync, icon: const Icon(Icons.sync))]),
@@ -144,7 +144,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       const SizedBox(height: 20),
       Wrap(spacing: 8, runSpacing: 8, children: [
         ChoiceChip(label: const Text('Maç arşivi'), selected: !_collection, onSelected: (_) => setState(() => _collection = false)),
-        ChoiceChip(label: Text('Milletler Albümü · ${c.count}'), selected: _collection, onSelected: (_) => setState(() => _collection = true)),
+        ChoiceChip(key: const ValueKey('ig-album'), label: Text('Milletler Albümü · ${c.count}'), selected: _collection, onSelected: (_) => setState(() => _collection = true)),
       ]),
       const SizedBox(height: 12),
       Wrap(spacing: 6, runSpacing: 6, children: [
@@ -153,14 +153,14 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       ]),
       if (c.pending.isNotEmpty) Text('${c.pending.length} cevap sunucu doğrulaması bekliyor.'),
       if (_collection) Wrap(spacing: 8, children: [
-        for (var ch = 1; ch <= 4; ch++) Chip(avatar: Icon(c.catalog.matches.where((m) => m.chapterId == ch).every((m) => c.results.containsKey(m.id)) ? Icons.verified : Icons.lock_outline), label: Text(c.catalog.chapters[ch-1])),
+        for (var ch = 1; ch <= 4; ch++) Chip(avatar: Icon(c.catalog.matches.where((m) => m.chapterId == ch).every((m) => c.results.containsKey(m.id)) ? Icons.verified : Icons.lock_outline), label: Text('${c.catalog.chapters[ch-1]} · ${c.catalog.matches.where((m) => m.chapterId == ch && c.results.containsKey(m.id)).length}/10')),
         if (c.count == 40) const Chip(avatar: Icon(Icons.emoji_events), label: Text('Milletler Albümü tamamlandı')),
       ]),
       const SizedBox(height: 20),
       if (visible.isEmpty) const PitchPanel(child: Text('Henüz burada bir hatıra yok. Bir maç seçip ilk kartını aç.')),
       for (final m in visible) Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(
         key: ValueKey('ig-card-${m.id}'), title: m.title,
-        subtitle: '${m.year} · ${m.home} – ${m.away}\n${m.label}${c.results.containsKey(m.id) ? ' · ${igMap(c.results[m.id])['score']} · Hatıra açık' : ' · Kilitli hatıra'}',
+        subtitle: '${m.text('competition')} · ${m.year}\n${m.label}${c.results.containsKey(m.id) ? ' · ${igMap(c.results[m.id])['score']} · Hatıra açık' : ' · Kilitli hatıra'}${_collection && c.results.containsKey(m.id) ? '\n${igMap(c.results[m.id])['answer']}' : ''}',
         icon: c.results.containsKey(m.id) ? Icons.verified_outlined : _icon(m.type), highlight: true,
         onTap: c.busy ? null : () => _open(m.id))),
     ];

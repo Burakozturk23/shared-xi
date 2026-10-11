@@ -55,7 +55,31 @@ void main(){
         await go(t,PageStorageKey('ig-sources-$id')); await t.tap(find.text('Maçın kaynakları')); await t.pumpAndSettle();
         expect(t.takeException(),isNull);
       }
-      c.archive(); await t.pumpAndSettle(); expect(t.takeException(),isNull);
+      c.archive(); await t.pumpAndSettle();
+      await go(t, const ValueKey('ig-album')); await t.tap(find.byKey(const ValueKey('ig-album'))); await t.pumpAndSettle();
+      await shot(t,key,'album-$light'); expect(t.takeException(),isNull);
     });
   }
+  testWidgets('Route dropdowns and critical choices submit through actual controls', (t) async {
+    final c=InternationalGloryController(catalog:igPack(),store:MemoryInternationalStore(),gateway:FakeInternationalGateway());
+    addTearDown(c.dispose); await c.load(); c.open('ig2_36'); c.start();
+    await t.pumpWidget(MaterialApp(home:InternationalGloryPage(controller:c))); await t.pumpAndSettle();
+    final route=igPrivate('ig2_36')['answerKeys'] as List;
+    for(var i=0;i<route.length;i++) {
+      await go(t,ValueKey('route-slot-$i')); await t.tap(find.byKey(ValueKey('route-slot-$i'))); await t.pumpAndSettle();
+      await t.tap(find.text(c.active!.optionLabel(route[i] as String)).last); await t.pumpAndSettle();
+    }
+    await go(t,const ValueKey('ig-submit')); await t.tap(find.byKey(const ValueKey('ig-submit'))); await t.pumpAndSettle();
+    expect(c.phase,'result');
+    c.open('ig2_01'); c.start(); await t.pumpAndSettle();
+    final answer=(igPrivate('ig2_01')['answerKeys'] as List).single as String;
+    final wrong=c.active!.optionIds.firstWhere((id)=>id!=answer);
+    await go(t,ValueKey('option-$wrong')); await t.tap(find.byKey(ValueKey('option-$wrong'))); await t.pumpAndSettle();
+    await go(t,const ValueKey('ig-submit')); await t.tap(find.byKey(const ValueKey('ig-submit'))); await t.pumpAndSettle();
+    expect(c.phase,'task');
+    await go(t,ValueKey('option-$answer')); await t.tap(find.byKey(ValueKey('option-$answer'))); await t.pumpAndSettle();
+    await go(t,const ValueKey('ig-submit')); await t.tap(find.byKey(const ValueKey('ig-submit'))); await t.pumpAndSettle();
+    expect(c.phase,'result'); expect(t.takeException(),isNull);
+  });
+
 }

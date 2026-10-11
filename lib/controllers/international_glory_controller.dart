@@ -23,7 +23,7 @@ class InternationalGloryController extends ChangeNotifier {
   int get count => results.length;
   int get coins => rewards.values.map(igMap).where((r) => r['settled'] == true)
       .fold(0, (sum, r) => sum + ((r['coins'] as num?)?.toInt() ?? 0));
-  bool get canSubmit => active != null && answers.length == (active!.ordered ? active!.options.length : 1) && answers.toSet().length == answers.length && answers.every(active!.optionIds.contains);
+  bool get canSubmit => phase == 'task' && active != null && answers.length == (active!.ordered ? active!.options.length : 1) && answers.toSet().length == answers.length && answers.every(active!.optionIds.contains);
   void _notify() { if (!_disposed) notifyListeners(); }
   Map<String, dynamic> _snapshot() => igMap(jsonDecode(jsonEncode({'version': catalog.version,
     'drafts': Map<String, dynamic>.from(drafts), 'results': Map<String, dynamic>.from(results),
@@ -63,6 +63,10 @@ class InternationalGloryController extends ChangeNotifier {
       hintOpen = s['hintOpen'] == true;
       rewardEligible = s['rewardEligible'] == true;
     }
+    if (phase == 'task' && active != null && !drafts.containsKey(activeId)) {
+      if (active!.type == 'route') drafts[activeId!] = List<String>.filled(active!.slots.length, '');
+      if (active!.type == 'timeline') drafts[activeId!] = active!.optionIds;
+    }
     ready = true; _notify();
     await sync();
   }
@@ -85,7 +89,7 @@ class InternationalGloryController extends ChangeNotifier {
     drafts[activeId!] = [id]; pending.remove(activeId); message = ''; _saveSoon(); _notify();
   }
   void move(int index, int delta) {
-    if (busy || active?.type != 'timeline') return;
+    if (busy || phase != 'task' || active?.type != 'timeline') return;
     final a = answers, next = index + delta;
     if (index < 0 || index >= a.length || next < 0 || next >= a.length) return;
     final value = a.removeAt(index); a.insert(next, value); drafts[activeId!] = a;
