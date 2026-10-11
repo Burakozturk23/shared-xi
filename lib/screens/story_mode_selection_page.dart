@@ -50,7 +50,7 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'Dynasties',
-    subtitle: 'Bir dönemi domine eden kulüpler',
+    subtitle: '16 hanedanlık · 32 görev · Hanedanlıklar Atlası',
     icon: Icons.castle,
   ),
   StorySubMode(
@@ -88,7 +88,7 @@ class StoryModeSelectionPage extends StatelessWidget {
             onTap: () => GameLauncher.open(context, GameEntry(
               title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
               icon: storySubModes[i].icon, page: pages[i],
-              requiresRepository: i > 2, modern: i <= 2,
+              requiresRepository: i > 2 && i != 5, modern: i <= 2 || i == 5,
             )),
           ),
         ),

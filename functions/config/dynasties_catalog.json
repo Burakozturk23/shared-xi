@@ -1,0 +1,2225 @@
+{
+  "version": 2,
+  "storageVersion": 1,
+  "chapters": [
+    "İmparatorlukların Doğuşu",
+    "Hanedanlıkların Mirası"
+  ],
+  "dynasties": [
+    {
+      "id": "DY-01",
+      "number": 1,
+      "chapterId": 1,
+      "club": "Barcelona",
+      "period": "2008–2012",
+      "title": "Pasın mimarisi",
+      "intro": "Sahadaki rollerden kupa yarışına uzanan bir oyun fikrinin izini sür.",
+      "story": "2009 başarısı altı kupanın kazanıldığı takvim yılına aittir; tek sezona değil.",
+      "taskIds": [
+        "DY-01-01",
+        "DY-01-02"
+      ]
+    },
+    {
+      "id": "DY-02",
+      "number": 2,
+      "chapterId": 1,
+      "club": "Real Madrid",
+      "period": "2016–2018",
+      "title": "Avrupa geceleri",
+      "intro": "Final yolculuklarını ve dönemin hücum düzenini keşfet.",
+      "story": "2016, 2017 ve 2018 finalleri kazanıldı. 2018 finalindeki röveşata Gareth Bale’e aittir.",
+      "taskIds": [
+        "DY-02-01",
+        "DY-02-02"
+      ]
+    },
+    {
+      "id": "DY-03",
+      "number": 3,
+      "chapterId": 1,
+      "club": "Arsenal",
+      "period": "2003–2004",
+      "title": "Altın sezon",
+      "intro": "Bir lig sezonunun dayanıklılığını sayılar ve kadro üzerinden incele.",
+      "story": "38 maçlık lig sezonu 26 galibiyet ve 12 beraberlikle yenilgisiz tamamlandı.",
+      "taskIds": [
+        "DY-03-01",
+        "DY-03-02"
+      ]
+    },
+    {
+      "id": "DY-04",
+      "number": 4,
+      "chapterId": 1,
+      "club": "AC Milan",
+      "period": "1988–1994",
+      "title": "Birlikte savunmak",
+      "intro": "Bir savunma fikrinin Avrupa başarılarına dönüşmesini keşfet.",
+      "story": "Sacchi’nin alan savunmasını Capello dönemi izledi. Maldini’nin kulüpteki oyunculuk süresi kaptanlık süresiyle aynı değildir.",
+      "taskIds": [
+        "DY-04-01",
+        "DY-04-02"
+      ]
+    },
+    {
+      "id": "DY-05",
+      "number": 5,
+      "chapterId": 1,
+      "club": "Ajax",
+      "period": "1971–1973",
+      "title": "Hareketin düzeni",
+      "intro": "Oyuncuların rollerini ve Avrupa yolculuğunun rakiplerini keşfet.",
+      "story": "Kolektif pozisyon değişimi düzeni koruma sorumluluğuyla birleşti. 1971–1973 Avrupa finalleri kazanıldı.",
+      "taskIds": [
+        "DY-05-01",
+        "DY-05-02"
+      ]
+    },
+    {
+      "id": "DY-06",
+      "number": 6,
+      "chapterId": 1,
+      "club": "Real Madrid",
+      "period": "1956–1960",
+      "title": "Avrupa’nın ilk yılları",
+      "intro": "Yeni bir kupanın başlangıcını final şehirleri ve süreklilikle incele.",
+      "story": "İlk beş Avrupa Kupası kazanıldı. Reims iki kez rakipti: 1956 Paris, 1959 Stuttgart.",
+      "taskIds": [
+        "DY-06-01",
+        "DY-06-02"
+      ]
+    },
+    {
+      "id": "DY-07",
+      "number": 7,
+      "chapterId": 1,
+      "club": "Juventus",
+      "period": "2011–2020",
+      "title": "Torino’nun omurgası",
+      "intro": "Avrupa finalleri ve savunma ortaklıkları üzerinden dönemi keşfet.",
+      "story": "Lig serisi 2011/12–2019/20 arasında dokuz şampiyonluktur. Buffon 2018/19’da PSG’deydi.",
+      "taskIds": [
+        "DY-07-01",
+        "DY-07-02"
+      ]
+    },
+    {
+      "id": "DY-08",
+      "number": 8,
+      "chapterId": 1,
+      "club": "Bayern Münih",
+      "period": "2013–2023",
+      "title": "Sürekliliğin gücü",
+      "intro": "Lig serisini ve Avrupa zaferlerinin teknik ekiplerini keşfet.",
+      "story": "Lig serisi 2012/13–2022/23 arasında 11 sezondu. 2019/20 başarısına bağlı altıncı kupa Şubat 2021’de kazanıldı.",
+      "taskIds": [
+        "DY-08-01",
+        "DY-08-02"
+      ]
+    },
+    {
+      "id": "DY-09",
+      "number": 9,
+      "chapterId": 2,
+      "club": "Manchester United",
+      "period": "1992–2013",
+      "title": "Bir neslin yükselişi",
+      "intro": "Kupaların birleştiği bir sezonu ve altyapıdan doğan kuşağı araştır.",
+      "story": "1998/99’da lig, FA Cup ve Şampiyonlar Ligi kazanıldı. Rooney Class of ’92 kuşağına dahil değildir.",
+      "taskIds": [
+        "DY-09-01",
+        "DY-09-02"
+      ]
+    },
+    {
+      "id": "DY-10",
+      "number": 10,
+      "chapterId": 2,
+      "club": "Trabzonspor",
+      "period": "1975–1984",
+      "title": "Karadeniz’in izi",
+      "intro": "Anadolu’dan yükselen takımın şampiyonluk takvimini keşfet.",
+      "story": "Altı lig şampiyonluğu içinde en uzun kesintisiz seri 1978/79, 1979/80 ve 1980/81 sezonlarıdır.",
+      "taskIds": [
+        "DY-10-01",
+        "DY-10-02"
+      ]
+    },
+    {
+      "id": "DY-11",
+      "number": 11,
+      "chapterId": 2,
+      "club": "Benfica",
+      "period": "1960–1968",
+      "title": "Lizbon’dan Avrupa’ya",
+      "intro": "Avrupa finallerinin ve bir geri dönüşün izlerini birleştir.",
+      "story": "1961’de Barcelona, 1962’de Real Madrid yenildi. Coluna ikinci finalde skoru 3-3 yaptı.",
+      "taskIds": [
+        "DY-11-01",
+        "DY-11-02"
+      ]
+    },
+    {
+      "id": "DY-12",
+      "number": 12,
+      "chapterId": 2,
+      "club": "Olympique Lyonnais",
+      "period": "2002–2008",
+      "title": "Gerland’ın yılları",
+      "intro": "Fransa’daki sürekliliği ve kadronun değişmeyen isimlerini keşfet.",
+      "story": "2001/02–2007/08 arasındaki yedi şampiyonlukta Juninho, Govou ve Coupet takımdaydı.",
+      "taskIds": [
+        "DY-12-01",
+        "DY-12-02"
+      ]
+    },
+    {
+      "id": "DY-13",
+      "number": 13,
+      "chapterId": 2,
+      "club": "Manchester City",
+      "period": "2017–2024",
+      "title": "Yeni roller, yeni ufuklar",
+      "intro": "Savunmadan başlayan bir fikri ve sezonun kupa tablosunu çöz.",
+      "story": "2022/23’te Stones topa sahipken orta sahaya çıktı. Üçleme lig, FA Cup ve Şampiyonlar Ligi’yle tamamlandı.",
+      "taskIds": [
+        "DY-13-01",
+        "DY-13-02"
+      ]
+    },
+    {
+      "id": "DY-14",
+      "number": 14,
+      "chapterId": 2,
+      "club": "Macaristan",
+      "period": "1950–1956",
+      "title": "Sınırları değiştiren takım",
+      "intro": "Bir millî takımın yeniliğini ve tarihsel karşılaşmalarını keşfet.",
+      "story": "1953 Wembley zaferini 1954’teki Batı Almanya grup galibiyeti izledi; finalde Macaristan yenildi.",
+      "taskIds": [
+        "DY-14-01",
+        "DY-14-02"
+      ]
+    },
+    {
+      "id": "DY-15",
+      "number": 15,
+      "chapterId": 2,
+      "club": "Bayern Münih",
+      "period": "1974–1976",
+      "title": "Avrupa’ya açılan kuşak",
+      "intro": "Sahadaki omurgayı kur, final rakiplerini yıllarıyla buluştur.",
+      "story": "1974 finali Atlético Madrid’e karşı tekrar maçında kazanıldı. Sonraki rakipler Leeds ve Saint-Étienne’di.",
+      "taskIds": [
+        "DY-15-01",
+        "DY-15-02"
+      ]
+    },
+    {
+      "id": "DY-16",
+      "number": 16,
+      "chapterId": 2,
+      "club": "Liverpool",
+      "period": "1977–1984",
+      "title": "Kırmızı miras",
+      "intro": "Avrupa yolculuklarını ve unutulmaz bir final kadrosunun son hattını keşfet.",
+      "story": "1977, 1978, 1981 ve 1984 Avrupa Kupaları kazanıldı. Roma finalinin kalecisi Bruce Grobbelaar’dı.",
+      "taskIds": [
+        "DY-16-01",
+        "DY-16-02"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "DY-01-01",
+      "number": 1,
+      "dynastyId": "DY-01",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "tactics",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "2009 Şampiyonlar Ligi finalinde Xavi ve Iniesta’nın arkasında, savunma önündeki merkez orta saha rolünü kim üstlendi?",
+      "hint": "Barcelona altyapısından gelen, oyun kurulumunu savunmayla birleştiren oyuncuyu düşün.",
+      "options": [
+        {
+          "id": "cf78e9a87136d",
+          "label": "Xabi Alonso"
+        },
+        {
+          "id": "cc07150eb8e74",
+          "label": "Sergio Busquets"
+        },
+        {
+          "id": "c5c7396518eea",
+          "label": "Yaya Touré"
+        },
+        {
+          "id": "cd6f8d0cb0e26",
+          "label": "Seydou Keita"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "cc07150eb8e74"
+      ],
+      "result": {
+        "answer": "Sergio Busquets",
+        "story": "Sergio Busquets.",
+        "sources": [
+          {
+            "name": "barca",
+            "url": "https://www.uefa.com/uefachampionsleague/match/302813/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "barca",
+            "url": "https://www.uefa.com/uefachampionsleague/match/302813/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-01-02",
+      "number": 2,
+      "dynastyId": "DY-01",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Zirve",
+      "prompt": "Barcelona’nın 2009 takvim yılında kazandığı altı kupadan Avrupa ve dünya düzeyindeki üç kupayı seç.",
+      "hint": "İspanya içindeki organizasyonlarla uluslararası organizasyonları ayır.",
+      "options": [
+        {
+          "id": "c23eb94915ae7",
+          "label": "Copa del Rey"
+        },
+        {
+          "id": "c9559a5a59d7b",
+          "label": "UEFA Süper Kupa"
+        },
+        {
+          "id": "c23697ee9381b",
+          "label": "UEFA Şampiyonlar Ligi"
+        },
+        {
+          "id": "ce8ddb0240e90",
+          "label": "İspanya Süper Kupası"
+        },
+        {
+          "id": "ce5233212692a",
+          "label": "FIFA Kulüpler Dünya Kupası"
+        },
+        {
+          "id": "cdd1e31a492b1",
+          "label": "La Liga"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "c23697ee9381b",
+        "c9559a5a59d7b",
+        "ce5233212692a"
+      ],
+      "result": {
+        "answer": "UEFA Şampiyonlar Ligi; UEFA Süper Kupa; FIFA Kulüpler Dünya Kupası",
+        "story": "UEFA Şampiyonlar Ligi; UEFA Süper Kupa; FIFA Kulüpler Dünya Kupası.",
+        "sources": [
+          {
+            "name": "six",
+            "url": "https://www.fcbarcelona.com/en/football/first-team/noticies/1650113/todays-special-2009-the-year-of-six-trophies"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "six",
+            "url": "https://www.fcbarcelona.com/en/football/first-team/noticies/1650113/todays-special-2009-the-year-of-six-trophies"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-02-01",
+      "number": 3,
+      "dynastyId": "DY-02",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "order",
+      "title": "Yükseliş",
+      "prompt": "2016, 2017 ve 2018 Şampiyonlar Ligi finallerinde Real Madrid’in rakiplerini yıl sırasına koy.",
+      "hint": "Final şehirleri Milano, Cardiff ve Kiev’di.",
+      "options": [
+        {
+          "id": "c6af15168dccb",
+          "label": "Liverpool"
+        },
+        {
+          "id": "cd05b4a534cfd",
+          "label": "Juventus"
+        },
+        {
+          "id": "c97c2c5fdd449",
+          "label": "Atlético Madrid"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "c97c2c5fdd449",
+        "cd05b4a534cfd",
+        "c6af15168dccb"
+      ],
+      "result": {
+        "answer": "2016: Atlético Madrid; 2017: Juventus; 2018: Liverpool",
+        "story": "2016: Atlético Madrid; 2017: Juventus; 2018: Liverpool.",
+        "sources": [
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "2016",
+          "2017",
+          "2018"
+        ],
+        "sources": [
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-02-02",
+      "number": 4,
+      "dynastyId": "DY-02",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "2017 Juventus finalinde Real Madrid’in ilk 11’inde başlayıp Gareth Bale’in yedek kaldığı hücum orta sahası kimdi?",
+      "hint": "İspanyol oyuncu, Benzema ve Cristiano Ronaldo’nun arkasındaydı.",
+      "options": [
+        {
+          "id": "c35404765e76b",
+          "label": "Isco"
+        },
+        {
+          "id": "c3306aa806afc",
+          "label": "Marco Asensio"
+        },
+        {
+          "id": "c9344052a4881",
+          "label": "Gareth Bale"
+        },
+        {
+          "id": "cc1bd56ec7b27",
+          "label": "James Rodríguez"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c35404765e76b"
+      ],
+      "result": {
+        "answer": "Isco",
+        "story": "Isco.",
+        "sources": [
+          {
+            "name": "isco",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2019641/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "isco",
+            "url": "https://www.uefa.com/uefachampionsleague/match/2019641/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-03-01",
+      "number": 5,
+      "dynastyId": "DY-03",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "records",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "Arsenal namağlup tamamladığı 2003/04 Premier League sezonunda kaç galibiyet ve beraberlik aldı?",
+      "hint": "38 lig maçının hiçbirini kaybetmedi.",
+      "options": [
+        {
+          "id": "c61c6abcd0e2e",
+          "label": "26 galibiyet · 12 beraberlik"
+        },
+        {
+          "id": "c89fcbe82da8d",
+          "label": "24 galibiyet · 14 beraberlik"
+        },
+        {
+          "id": "cde749a4b79ca",
+          "label": "25 galibiyet · 13 beraberlik"
+        },
+        {
+          "id": "c7ee1b59c3cda",
+          "label": "28 galibiyet · 10 beraberlik"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c61c6abcd0e2e"
+      ],
+      "result": {
+        "answer": "26 galibiyet · 12 beraberlik",
+        "story": "26 galibiyet · 12 beraberlik.",
+        "sources": [
+          {
+            "name": "arsenal",
+            "url": "https://www.premierleague.com/en/tables/premier-league/2003-04/all-matchweeks"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "arsenal",
+            "url": "https://www.premierleague.com/en/tables/premier-league/2003-04/all-matchweeks"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-03-02",
+      "number": 6,
+      "dynastyId": "DY-03",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "Arsenal’in 2003/04 sezonundaki 38 lig maçının tamamında forma giyen kalecisi kimdi?",
+      "hint": "Alman kaleci ilk Arsenal sezonunu yaşıyordu.",
+      "options": [
+        {
+          "id": "cfa05dc9b8fde",
+          "label": "Jens Lehmann"
+        },
+        {
+          "id": "c9177b377a0c0",
+          "label": "Manuel Almunia"
+        },
+        {
+          "id": "c0807d5c3b095",
+          "label": "Stuart Taylor"
+        },
+        {
+          "id": "c698dcbf457e4",
+          "label": "David Seaman"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "cfa05dc9b8fde"
+      ],
+      "result": {
+        "answer": "Jens Lehmann",
+        "story": "Jens Lehmann.",
+        "sources": [
+          {
+            "name": "lehmann",
+            "url": "https://www.arsenal.com/men/jens-lehmann-aiWrt9g2Yxah"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "lehmann",
+            "url": "https://www.arsenal.com/men/jens-lehmann-aiWrt9g2Yxah"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-04-01",
+      "number": 7,
+      "dynastyId": "DY-04",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "tactics",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "Arrigo Sacchi, Milan’da klasik adam adama savunma yerine hangi anlayışı öne çıkardı?",
+      "hint": "Toplu pres ve birlikte hareket eden savunma çizgisine odaklan.",
+      "options": [
+        {
+          "id": "c6f98c0847515",
+          "label": "Birbirinden kopuk savunma ve orta saha"
+        },
+        {
+          "id": "ca39e0d9399db",
+          "label": "Yalnızca uzun toplarla kurulan oyun"
+        },
+        {
+          "id": "cf778d14d99a8",
+          "label": "Alan savunması ve önde konumlanan savunma hattı"
+        },
+        {
+          "id": "cebe25acaced6",
+          "label": "Derinde bire bir markaj ve sabit libero"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "cf778d14d99a8"
+      ],
+      "result": {
+        "answer": "Alan savunması ve önde konumlanan savunma hattı",
+        "story": "Alan savunması ve önde konumlanan savunma hattı.",
+        "sources": [
+          {
+            "name": "sacchi",
+            "url": "https://www.uefa.com/news/0253-0d81cb410c87-4115a0f26160-1000--arrigo-sacchi-s-case-for-greatness/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "sacchi",
+            "url": "https://www.uefa.com/news/0253-0d81cb410c87-4115a0f26160-1000--arrigo-sacchi-s-case-for-greatness/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-04-02",
+      "number": 8,
+      "dynastyId": "DY-04",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "order",
+      "title": "Zirve",
+      "prompt": "Milan’ın 1989, 1990 ve 1994 Avrupa kupası zaferlerindeki final rakiplerini kronolojik sırala.",
+      "hint": "Farklı ülkelerden rakipleri bu üç final gecesiyle eşleştir.",
+      "options": [
+        {
+          "id": "c506e6054539f",
+          "label": "Barcelona"
+        },
+        {
+          "id": "c44d67b5b4b35",
+          "label": "Steaua Bükreş"
+        },
+        {
+          "id": "c37cc142f99d5",
+          "label": "Benfica"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "c44d67b5b4b35",
+        "c37cc142f99d5",
+        "c506e6054539f"
+      ],
+      "result": {
+        "answer": "1989: Steaua Bükreş; 1990: Benfica; 1994: Barcelona",
+        "story": "1989: Steaua Bükreş; 1990: Benfica; 1994: Barcelona.",
+        "sources": [
+          {
+            "name": "milan",
+            "url": "https://it.uefa.com/uefachampionsleague/news/023a-0e973c61b04c-9fdf234c6fd0-1000--madrid-1957-cardiff-2017-60-anni-di-finali-italiane/"
+          },
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "1989",
+          "1990",
+          "1994"
+        ],
+        "sources": [
+          {
+            "name": "milan",
+            "url": "https://it.uefa.com/uefachampionsleague/news/023a-0e973c61b04c-9fdf234c6fd0-1000--madrid-1957-cardiff-2017-60-anni-di-finali-italiane/"
+          },
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-05-01",
+      "number": 9,
+      "dynastyId": "DY-05",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "tactics",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "Total Futbol sisteminin temel özelliğini seç.",
+      "hint": "Sabit pozisyonlardan çok kolektif hareketi düşün.",
+      "options": [
+        {
+          "id": "c922f8a08093b",
+          "label": "Savunma ve hücumu bağımsız bırakmak"
+        },
+        {
+          "id": "c087a30b3b1e1",
+          "label": "Herkesi maç boyunca aynı noktada tutmak"
+        },
+        {
+          "id": "ce73e3c33d269",
+          "label": "Pozisyon değiştirirken takımın alan ve görev düzenini korumak"
+        },
+        {
+          "id": "c0f19fd9f8d12",
+          "label": "Orta sahayı pas oyunundan çıkarmak"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "ce73e3c33d269"
+      ],
+      "result": {
+        "answer": "Pozisyon değiştirirken takımın alan ve görev düzenini korumak",
+        "story": "Pozisyon değiştirirken takımın alan ve görev düzenini korumak.",
+        "sources": [
+          {
+            "name": "ajax_tactics",
+            "url": "https://www.uefa.com/news-media/news/0218-0e9b869a861e-556622f75175-1000--european-football-in-the-1970s/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "ajax_tactics",
+            "url": "https://www.uefa.com/news-media/news/0218-0e9b869a861e-556622f75175-1000--european-football-in-the-1970s/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-05-02",
+      "number": 10,
+      "dynastyId": "DY-05",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Zirve",
+      "prompt": "Ajax’ın 1971, 1972 ve 1973 Avrupa şampiyonluğu finallerindeki üç rakibini seç.",
+      "hint": "İki rakip İtalya’dan, biri Yunanistan’dan.",
+      "options": [
+        {
+          "id": "c7d67661507a5",
+          "label": "Inter"
+        },
+        {
+          "id": "ca41a571e3580",
+          "label": "Benfica"
+        },
+        {
+          "id": "cbd2c119cd247",
+          "label": "Panathinaikos"
+        },
+        {
+          "id": "c2d0c73753941",
+          "label": "Juventus"
+        },
+        {
+          "id": "cb66008f8bc02",
+          "label": "Milan"
+        },
+        {
+          "id": "c64997007df60",
+          "label": "Bayern Münih"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "cbd2c119cd247",
+        "c7d67661507a5",
+        "c2d0c73753941"
+      ],
+      "result": {
+        "answer": "Panathinaikos; Inter; Juventus",
+        "story": "Panathinaikos; Inter; Juventus.",
+        "sources": [
+          {
+            "name": "ajax",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff54908f6-5927d0a16600-1000--the-greatest-teams-of-all-time-ajax-1971-73/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "ajax",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff54908f6-5927d0a16600-1000--the-greatest-teams-of-all-time-ajax-1971-73/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-06-01",
+      "number": 11,
+      "dynastyId": "DY-06",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "order",
+      "title": "Yükseliş",
+      "prompt": "Real Madrid’in 1956–1960 Avrupa Kupası finallerindeki rakipleri sırala. Reims kartlarında final şehirlerine dikkat et.",
+      "hint": "Aynı Fransız rakiple iki farklı şehirde karşılaşıldı.",
+      "options": [
+        {
+          "id": "ce361552101e2",
+          "label": "Milan"
+        },
+        {
+          "id": "c33cb50ba3654",
+          "label": "Eintracht Frankfurt"
+        },
+        {
+          "id": "cf50cfafdf3d8",
+          "label": "Fiorentina"
+        },
+        {
+          "id": "ccc91e3f2952d",
+          "label": "Reims · Stuttgart finali"
+        },
+        {
+          "id": "c859f2e7c5e8d",
+          "label": "Reims · Paris finali"
+        }
+      ],
+      "requiredCount": 5,
+      "slots": [],
+      "answerKeys": [
+        "c859f2e7c5e8d",
+        "cf50cfafdf3d8",
+        "ce361552101e2",
+        "ccc91e3f2952d",
+        "c33cb50ba3654"
+      ],
+      "result": {
+        "answer": "1956: Reims · Paris finali; 1957: Fiorentina; 1958: Milan; 1959: Reims · Stuttgart finali; 1960: Eintracht Frankfurt",
+        "story": "1956: Reims · Paris finali; 1957: Fiorentina; 1958: Milan; 1959: Reims · Stuttgart finali; 1960: Eintracht Frankfurt.",
+        "sources": [
+          {
+            "name": "madrid",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "1956",
+          "1957",
+          "1958",
+          "1959",
+          "1960"
+        ],
+        "sources": [
+          {
+            "name": "madrid",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-06-02",
+      "number": 12,
+      "dynastyId": "DY-06",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "records",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "Real Madrid, Avrupa Şampiyon Kulüpler Kupası’nın ilk beş organizasyonunun kaçını kazandı?",
+      "hint": "1956 ile 1960 arasındaki turnuvaları, iki uç yılı da dahil ederek düşün.",
+      "options": [
+        {
+          "id": "c07b25fc8375e",
+          "label": "3"
+        },
+        {
+          "id": "cb28c27953768",
+          "label": "4"
+        },
+        {
+          "id": "cc4551541e16a",
+          "label": "5"
+        },
+        {
+          "id": "c59f595fe65ee",
+          "label": "6"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "cc4551541e16a"
+      ],
+      "result": {
+        "answer": "5",
+        "story": "5.",
+        "sources": [
+          {
+            "name": "madrid",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "madrid",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-07-01",
+      "number": 13,
+      "dynastyId": "DY-07",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Yükseliş",
+      "prompt": "Juventus’un dokuz lig şampiyonluğu serisinde Şampiyonlar Ligi finaline çıkıp kupayı alamadığı iki sezonu seç.",
+      "hint": "Her iki finali de İspanyol takımları kazandı.",
+      "options": [
+        {
+          "id": "c09d1bc1c46e0",
+          "label": "2015/16"
+        },
+        {
+          "id": "c2a1f5f5dfc80",
+          "label": "2018/19"
+        },
+        {
+          "id": "c558b68023f37",
+          "label": "2012/13"
+        },
+        {
+          "id": "cfb801ecd9b3a",
+          "label": "2014/15"
+        },
+        {
+          "id": "c8fc5d0feb399",
+          "label": "2013/14"
+        },
+        {
+          "id": "cf466a7702d3a",
+          "label": "2016/17"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [],
+      "answerKeys": [
+        "cfb801ecd9b3a",
+        "cf466a7702d3a"
+      ],
+      "result": {
+        "answer": "2014/15; 2016/17",
+        "story": "2014/15; 2016/17.",
+        "sources": [
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-07-02",
+      "number": 14,
+      "dynastyId": "DY-07",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "multi",
+      "title": "Zirve",
+      "prompt": "Juventus’un BBC savunma üçlüsündeki futbolcuları seç.",
+      "hint": "Kısaltma üç savunmacının soyadlarının baş harfleridir.",
+      "options": [
+        {
+          "id": "c5715d33ea87b",
+          "label": "Daniele Rugani"
+        },
+        {
+          "id": "cc84ea7d6c229",
+          "label": "Stephan Lichtsteiner"
+        },
+        {
+          "id": "cb3c8f5545dc3",
+          "label": "Giorgio Chiellini"
+        },
+        {
+          "id": "cf76dfacdc914",
+          "label": "Leonardo Bonucci"
+        },
+        {
+          "id": "cd2443cc92256",
+          "label": "Medhi Benatia"
+        },
+        {
+          "id": "c54208a1af0be",
+          "label": "Andrea Barzagli"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "c54208a1af0be",
+        "cf76dfacdc914",
+        "cb3c8f5545dc3"
+      ],
+      "result": {
+        "answer": "Andrea Barzagli; Leonardo Bonucci; Giorgio Chiellini",
+        "story": "Andrea Barzagli; Leonardo Bonucci; Giorgio Chiellini.",
+        "sources": [
+          {
+            "name": "bbc",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8162a5d698-6892fce36d5b-1000--italy-s-bbc-spell-out-programme-for-solidity/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "bbc",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8162a5d698-6892fce36d5b-1000--italy-s-bbc-spell-out-programme-for-solidity/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-08-01",
+      "number": 15,
+      "dynastyId": "DY-08",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "records",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "Bayern Münih, 2012/13’ten 2022/23’e kadar Bundesliga’yı art arda kaç kez kazandı?",
+      "hint": "İlk ve son sezonu da hesaba kat.",
+      "options": [
+        {
+          "id": "ceedb82b5eaed",
+          "label": "10"
+        },
+        {
+          "id": "c3d2c72ed7ade",
+          "label": "12"
+        },
+        {
+          "id": "cff74a9c3387d",
+          "label": "9"
+        },
+        {
+          "id": "c7fa2258e739c",
+          "label": "11"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c7fa2258e739c"
+      ],
+      "result": {
+        "answer": "11",
+        "story": "11.",
+        "sources": [
+          {
+            "name": "bayern11",
+            "url": "https://www.bundesliga.com/en/bundesliga/news/story-of-bayern-munich-record-breaking-11-year-reign-as-bundesliga-champions-27081"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "bayern11",
+            "url": "https://www.bundesliga.com/en/bundesliga/news/story-of-bayern-munich-record-breaking-11-year-reign-as-bundesliga-champions-27081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-08-02",
+      "number": 16,
+      "dynastyId": "DY-08",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "match",
+      "title": "Zirve",
+      "prompt": "Bayern’in 2013 ve 2020 Şampiyonlar Ligi zaferlerini teknik direktörleriyle eşleştir.",
+      "hint": "2013’ün başındaki isim daha sonra yeniden Bayern’i çalıştırdı.",
+      "options": [
+        {
+          "id": "c1b24014add29",
+          "label": "Jupp Heynckes"
+        },
+        {
+          "id": "cd4125d1681e2",
+          "label": "Hansi Flick"
+        },
+        {
+          "id": "c81446c774baf",
+          "label": "Pep Guardiola"
+        },
+        {
+          "id": "cd80f0ee95385",
+          "label": "Ottmar Hitzfeld"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [
+        "2013",
+        "2020"
+      ],
+      "answerKeys": [
+        "c1b24014add29",
+        "cd4125d1681e2"
+      ],
+      "result": {
+        "answer": "2013: Jupp Heynckes; 2020: Hansi Flick",
+        "story": "2013: Jupp Heynckes; 2020: Hansi Flick.",
+        "sources": [
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "2013",
+          "2020"
+        ],
+        "sources": [
+          {
+            "name": "finals",
+            "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-09-01",
+      "number": 17,
+      "dynastyId": "DY-09",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Yükseliş",
+      "prompt": "Manchester United’ın 1998/99 sezonundaki üçlemesini oluşturan kupaları seç.",
+      "hint": "Lig, ülke kupası ve Avrupa’nın ana kulüp turnuvasını düşün.",
+      "options": [
+        {
+          "id": "c2b9cb81d6eba",
+          "label": "UEFA Kupası"
+        },
+        {
+          "id": "c593ec67f9633",
+          "label": "Premier League"
+        },
+        {
+          "id": "caec1817fe5ab",
+          "label": "Lig Kupası"
+        },
+        {
+          "id": "c5e19a653194d",
+          "label": "UEFA Şampiyonlar Ligi"
+        },
+        {
+          "id": "cd5bc5a7e278f",
+          "label": "FA Cup"
+        },
+        {
+          "id": "c08704bc37673",
+          "label": "UEFA Süper Kupa"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "c593ec67f9633",
+        "cd5bc5a7e278f",
+        "c5e19a653194d"
+      ],
+      "result": {
+        "answer": "Premier League; FA Cup; UEFA Şampiyonlar Ligi",
+        "story": "Premier League; FA Cup; UEFA Şampiyonlar Ligi.",
+        "sources": [
+          {
+            "name": "united",
+            "url": "https://www.manutd.com/en/club/history/history-by-decade/1990-1999"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "united",
+            "url": "https://www.manutd.com/en/club/history/history-by-decade/1990-1999"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-09-02",
+      "number": 18,
+      "dynastyId": "DY-09",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "Bu dört isimden hangisi Manchester United’ın Class of ’92 kuşağına dahil değildir?",
+      "hint": "Altyapı kuşağından sonra başka bir kulüpten gelen oyuncuyu ara.",
+      "options": [
+        {
+          "id": "c969d72be3774",
+          "label": "Ryan Giggs"
+        },
+        {
+          "id": "c56dcce87aa5b",
+          "label": "Paul Scholes"
+        },
+        {
+          "id": "cd7d0feb8bd93",
+          "label": "David Beckham"
+        },
+        {
+          "id": "c4f1b75bc3097",
+          "label": "Wayne Rooney"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c4f1b75bc3097"
+      ],
+      "result": {
+        "answer": "Wayne Rooney",
+        "story": "Wayne Rooney.",
+        "sources": [
+          {
+            "name": "class92",
+            "url": "https://www.manutd.com/en/academy/academy-history"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "class92",
+            "url": "https://www.manutd.com/en/academy/academy-history"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-10-01",
+      "number": 19,
+      "dynastyId": "DY-10",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "order",
+      "title": "Yükseliş",
+      "prompt": "Trabzonspor’un 1975/76–1983/84 dönemindeki altı lig şampiyonluğunu sezon sırasına koy.",
+      "hint": "Sezonların başlangıç yıllarını karşılaştır.",
+      "options": [
+        {
+          "id": "ca5debc615de5",
+          "label": "1978/79"
+        },
+        {
+          "id": "cd84b5c984ba3",
+          "label": "1980/81"
+        },
+        {
+          "id": "cbcf3f34865e4",
+          "label": "1976/77"
+        },
+        {
+          "id": "c6095cc7aac09",
+          "label": "1979/80"
+        },
+        {
+          "id": "c35eb307e9cb1",
+          "label": "1983/84"
+        },
+        {
+          "id": "c15055e8d6085",
+          "label": "1975/76"
+        }
+      ],
+      "requiredCount": 6,
+      "slots": [],
+      "answerKeys": [
+        "c15055e8d6085",
+        "cbcf3f34865e4",
+        "ca5debc615de5",
+        "c6095cc7aac09",
+        "cd84b5c984ba3",
+        "c35eb307e9cb1"
+      ],
+      "result": {
+        "answer": "1975/76 → 1976/77 → 1978/79 → 1979/80 → 1980/81 → 1983/84",
+        "story": "1975/76 → 1976/77 → 1978/79 → 1979/80 → 1980/81 → 1983/84.",
+        "sources": [
+          {
+            "name": "tff",
+            "url": "https://www.tff.org/Default.aspx?pageID=545"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "tff",
+            "url": "https://www.tff.org/Default.aspx?pageID=545"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-10-02",
+      "number": 20,
+      "dynastyId": "DY-10",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "records",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "Trabzonspor’un 1975/76–1983/84 dönemindeki en uzun üst üste lig şampiyonluğu serisi kaç sezondu?",
+      "hint": "Toplam kupa sayısıyla kesintisiz serinin uzunluğu aynı değildir.",
+      "options": [
+        {
+          "id": "cb781ffcda51c",
+          "label": "3 sezon"
+        },
+        {
+          "id": "c59d37f4d2737",
+          "label": "2 sezon"
+        },
+        {
+          "id": "c3adebf4be9b8",
+          "label": "4 sezon"
+        },
+        {
+          "id": "cf5f02622aee4",
+          "label": "5 sezon"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "cb781ffcda51c"
+      ],
+      "result": {
+        "answer": "3 sezon",
+        "story": "3 sezon.",
+        "sources": [
+          {
+            "name": "tff",
+            "url": "https://www.tff.org/Default.aspx?pageID=545"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "tff",
+            "url": "https://www.tff.org/Default.aspx?pageID=545"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-11-01",
+      "number": 21,
+      "dynastyId": "DY-11",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "match",
+      "title": "Yükseliş",
+      "prompt": "Benfica’nın 1961 ve 1962 Avrupa şampiyonluğu finallerinde yendiği kulüpleri yıllarıyla eşleştir.",
+      "hint": "İki rakip de İspanya’dan.",
+      "options": [
+        {
+          "id": "c3de252da884d",
+          "label": "Real Madrid"
+        },
+        {
+          "id": "cd2726f1128d3",
+          "label": "Milan"
+        },
+        {
+          "id": "c430b93bd338d",
+          "label": "Inter"
+        },
+        {
+          "id": "cc0e080594373",
+          "label": "Barcelona"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [
+        "1961",
+        "1962"
+      ],
+      "answerKeys": [
+        "cc0e080594373",
+        "c3de252da884d"
+      ],
+      "result": {
+        "answer": "1961: Barcelona; 1962: Real Madrid",
+        "story": "1961: Barcelona; 1962: Real Madrid.",
+        "sources": [
+          {
+            "name": "benfica",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0219-0e8c04f35082-a8df3b001065-1000--eusebio-stars-in-benfica-s-second-triumph/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "1961",
+          "1962"
+        ],
+        "sources": [
+          {
+            "name": "benfica",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0219-0e8c04f35082-a8df3b001065-1000--eusebio-stars-in-benfica-s-second-triumph/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-11-02",
+      "number": 22,
+      "dynastyId": "DY-11",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "Benfica’nın 1962 Real Madrid finalinde skoru 3-3 yapan orta saha oyuncusu kimdi?",
+      "hint": "Eusébio’nun iki golünden önceki beraberlik golünü düşün.",
+      "options": [
+        {
+          "id": "cfff44de6864a",
+          "label": "José Águas"
+        },
+        {
+          "id": "cbd4246545031",
+          "label": "Eusébio"
+        },
+        {
+          "id": "c372f96682c98",
+          "label": "Mário Coluna"
+        },
+        {
+          "id": "cddec061b793b",
+          "label": "Domiciano Cavém"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c372f96682c98"
+      ],
+      "result": {
+        "answer": "Mário Coluna",
+        "story": "Mário Coluna.",
+        "sources": [
+          {
+            "name": "coluna",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a045944ea-75ee25be6a88-1000--1961-62-eusebio-strikes-gold-for-benfica/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "coluna",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a045944ea-75ee25be6a88-1000--1961-62-eusebio-strikes-gold-for-benfica/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-12-01",
+      "number": 23,
+      "dynastyId": "DY-12",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "records",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "Lyon 2001/02’den 2007/08’e kadar Ligue 1’i aralıksız kaç sezon kazandı?",
+      "hint": "Sezon aralığının başını ve sonunu da dahil et.",
+      "options": [
+        {
+          "id": "c9f3586c96fcb",
+          "label": "8 sezon"
+        },
+        {
+          "id": "c50beb5daa59e",
+          "label": "7 sezon"
+        },
+        {
+          "id": "c6ab2ad0f3473",
+          "label": "5 sezon"
+        },
+        {
+          "id": "cb82293633aa1",
+          "label": "6 sezon"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c50beb5daa59e"
+      ],
+      "result": {
+        "answer": "7 sezon",
+        "story": "7 sezon.",
+        "sources": [
+          {
+            "name": "lyon",
+            "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "lyon",
+            "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-12-02",
+      "number": 24,
+      "dynastyId": "DY-12",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "multi",
+      "title": "Zirve",
+      "prompt": "Lyon’un 2002–2008 arasındaki tüm lig şampiyonluklarında takımda bulunan üç futbolcuyu seç.",
+      "hint": "Orta saha, kanat ve kaleci üçlüsüne odaklan.",
+      "options": [
+        {
+          "id": "ccdeeb076ca24",
+          "label": "Juninho Pernambucano"
+        },
+        {
+          "id": "cedaaa909adf0",
+          "label": "Karim Benzema"
+        },
+        {
+          "id": "cc7bf1652b60d",
+          "label": "Michael Essien"
+        },
+        {
+          "id": "c36ae837eec78",
+          "label": "Florent Malouda"
+        },
+        {
+          "id": "c4b3efddeca41",
+          "label": "Grégory Coupet"
+        },
+        {
+          "id": "c72cd31641c08",
+          "label": "Sidney Govou"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "ccdeeb076ca24",
+        "c72cd31641c08",
+        "c4b3efddeca41"
+      ],
+      "result": {
+        "answer": "Juninho Pernambucano; Sidney Govou; Grégory Coupet",
+        "story": "Juninho Pernambucano; Sidney Govou; Grégory Coupet.",
+        "sources": [
+          {
+            "name": "lyon",
+            "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "lyon",
+            "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-13-01",
+      "number": 25,
+      "dynastyId": "DY-13",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "tactics",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "Guardiola’nın 2022/23 takımında savunmadan orta sahaya çıkarak Rodri’ye destek veren futbolcu kimdi?",
+      "hint": "Topa sahip olma evresinde merkez orta sahaya geçen İngiliz savunmacıyı düşün.",
+      "options": [
+        {
+          "id": "c9c566dca0e5b",
+          "label": "John Stones"
+        },
+        {
+          "id": "cc7197a43ab07",
+          "label": "Rúben Dias"
+        },
+        {
+          "id": "cda8e0f182a41",
+          "label": "Kyle Walker"
+        },
+        {
+          "id": "cd0d034b35519",
+          "label": "Nathan Aké"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c9c566dca0e5b"
+      ],
+      "result": {
+        "answer": "John Stones",
+        "story": "John Stones.",
+        "sources": [
+          {
+            "name": "stones",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0282-183fa8a707c0-4056c043e3d1-1000--in-the-zone-city-s-win-analysed/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "stones",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0282-183fa8a707c0-4056c043e3d1-1000--in-the-zone-city-s-win-analysed/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-13-02",
+      "number": 26,
+      "dynastyId": "DY-13",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Zirve",
+      "prompt": "Manchester City’nin 2022/23 sezonundaki üçlemesini oluşturan kupaları seç.",
+      "hint": "Sezon üçlemesiyle sonraki takvim aylarında kazanılan kupaları ayır.",
+      "options": [
+        {
+          "id": "c7190d90c3d4b",
+          "label": "UEFA Şampiyonlar Ligi"
+        },
+        {
+          "id": "c5f4e2fa9faf5",
+          "label": "Lig Kupası"
+        },
+        {
+          "id": "ce38da1e405dd",
+          "label": "FA Cup"
+        },
+        {
+          "id": "c0d2035fe2b58",
+          "label": "UEFA Süper Kupa"
+        },
+        {
+          "id": "cc4e721043a86",
+          "label": "Premier League"
+        },
+        {
+          "id": "c6feba74646af",
+          "label": "UEFA Avrupa Ligi"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "cc4e721043a86",
+        "ce38da1e405dd",
+        "c7190d90c3d4b"
+      ],
+      "result": {
+        "answer": "Premier League; FA Cup; UEFA Şampiyonlar Ligi",
+        "story": "Premier League; FA Cup; UEFA Şampiyonlar Ligi.",
+        "sources": [
+          {
+            "name": "city",
+            "url": "https://www.mancity.com/news/mens/man-city-champions-league-winners-treble-premier-league-fa-cup-63822026"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "city",
+            "url": "https://www.mancity.com/news/mens/man-city-champions-league-winners-treble-premier-league-fa-cup-63822026"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-14-01",
+      "number": 27,
+      "dynastyId": "DY-14",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "tactics",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "prompt": "1953 Wembley maçında geriye gelerek İngiliz savunmasının markaj düzenini bozan Macar santrfor kimdi?",
+      "hint": "Modern sahte dokuz rolünün öncülerindendi.",
+      "options": [
+        {
+          "id": "ced7c9f26617d",
+          "label": "Ferenc Puskás"
+        },
+        {
+          "id": "c839028694c15",
+          "label": "Nándor Hidegkuti"
+        },
+        {
+          "id": "c8a382d3d7de8",
+          "label": "József Bozsik"
+        },
+        {
+          "id": "cdc1020f37dc6",
+          "label": "Sándor Kocsis"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c839028694c15"
+      ],
+      "result": {
+        "answer": "Nándor Hidegkuti",
+        "story": "Nándor Hidegkuti.",
+        "sources": [
+          {
+            "name": "hungary",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "hungary",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-14-02",
+      "number": 28,
+      "dynastyId": "DY-14",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "order",
+      "title": "Zirve",
+      "prompt": "Macaristan’ın İngiltere maçını, 1954 Batı Almanya grup maçını ve 1954 finalini kronolojik sırala.",
+      "hint": "İngiltere maçı Dünya Kupası’ndan önceydi; grup aşaması finalden önce gelir.",
+      "options": [
+        {
+          "id": "ce17e279c3486",
+          "label": "Batı Almanya’ya karşı finalde 3-2 yenilgi"
+        },
+        {
+          "id": "c1df7eced5aeb",
+          "label": "Batı Almanya’ya karşı grupta 8-3 galibiyet"
+        },
+        {
+          "id": "cdc3568ee102a",
+          "label": "İngiltere’ye karşı 6-3 galibiyet"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [],
+      "answerKeys": [
+        "cdc3568ee102a",
+        "c1df7eced5aeb",
+        "ce17e279c3486"
+      ],
+      "result": {
+        "answer": "25 Kasım 1953: İngiltere’ye karşı 6-3 galibiyet; 20 Haziran 1954: Batı Almanya’ya karşı grupta 8-3 galibiyet; 4 Temmuz 1954: Batı Almanya’ya karşı finalde 3-2 yenilgi",
+        "story": "25 Kasım 1953: İngiltere’ye karşı 6-3 galibiyet; 20 Haziran 1954: Batı Almanya’ya karşı grupta 8-3 galibiyet; 4 Temmuz 1954: Batı Almanya’ya karşı finalde 3-2 yenilgi.",
+        "sources": [
+          {
+            "name": "hungary",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+          },
+          {
+            "name": "wc54",
+            "url": "https://inside.fifa.com/en/tournaments/mens/worldcup/qatar2022/news/the-finals-that-made-history"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "25 Kasım 1953",
+          "20 Haziran 1954",
+          "4 Temmuz 1954"
+        ],
+        "sources": [
+          {
+            "name": "hungary",
+            "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+          },
+          {
+            "name": "wc54",
+            "url": "https://inside.fifa.com/en/tournaments/mens/worldcup/qatar2022/news/the-finals-that-made-history"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-15-01",
+      "number": 29,
+      "dynastyId": "DY-15",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "match",
+      "title": "Yükseliş",
+      "prompt": "Bayern’in 1974–1976 kadrosundaki libero, kaleci ve santrfor rollerini futbolcularla eşleştir.",
+      "hint": "Der Kaiser savunmada, Der Bomber ileri uçtaydı.",
+      "options": [
+        {
+          "id": "cb356fcedd487",
+          "label": "Franz Roth"
+        },
+        {
+          "id": "c112cb5ae7702",
+          "label": "Franz Beckenbauer"
+        },
+        {
+          "id": "c00a693bcaf58",
+          "label": "Gerd Müller"
+        },
+        {
+          "id": "c33482a31f644",
+          "label": "Sepp Maier"
+        },
+        {
+          "id": "ce8822c182acc",
+          "label": "Uli Hoeneß"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [
+        "Libero",
+        "Kaleci",
+        "Santrfor"
+      ],
+      "answerKeys": [
+        "c112cb5ae7702",
+        "c33482a31f644",
+        "c00a693bcaf58"
+      ],
+      "result": {
+        "answer": "Libero: Franz Beckenbauer; Kaleci: Sepp Maier; Santrfor: Gerd Müller",
+        "story": "Libero: Franz Beckenbauer; Kaleci: Sepp Maier; Santrfor: Gerd Müller.",
+        "sources": [
+          {
+            "name": "bayernroles",
+            "url": "https://fcbayern.com/de/club/historie/meilensteine-seit-1900/1966-bis-1979-goldene-jahre"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "Libero",
+          "Kaleci",
+          "Santrfor"
+        ],
+        "sources": [
+          {
+            "name": "bayernroles",
+            "url": "https://fcbayern.com/de/club/historie/meilensteine-seit-1900/1966-bis-1979-goldene-jahre"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-15-02",
+      "number": 30,
+      "dynastyId": "DY-15",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "trophies",
+      "interaction": "match",
+      "title": "Zirve",
+      "prompt": "Bayern’in 1974, 1975 ve 1976 Avrupa Kupası final rakiplerini yıllarıyla eşleştir.",
+      "hint": "Rakiplerin ülkeleri İspanya, İngiltere ve Fransa.",
+      "options": [
+        {
+          "id": "c041d6bb55e21",
+          "label": "Atlético Madrid"
+        },
+        {
+          "id": "cbe5c78595b73",
+          "label": "Leeds United"
+        },
+        {
+          "id": "c505ddbc5b8f1",
+          "label": "Saint-Étienne"
+        },
+        {
+          "id": "c439cababecb1",
+          "label": "Benfica"
+        },
+        {
+          "id": "c4759b83058a0",
+          "label": "Inter"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [
+        "1974",
+        "1975",
+        "1976"
+      ],
+      "answerKeys": [
+        "c041d6bb55e21",
+        "cbe5c78595b73",
+        "c505ddbc5b8f1"
+      ],
+      "result": {
+        "answer": "1974: Atlético Madrid; 1975: Leeds United; 1976: Saint-Étienne",
+        "story": "1974: Atlético Madrid; 1975: Leeds United; 1976: Saint-Étienne.",
+        "sources": [
+          {
+            "name": "bayernfinals",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff546eab3-5cb419e6b81a-1000--the-greatest-teams-of-all-time-bayern-1973-76/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "1974",
+          "1975",
+          "1976"
+        ],
+        "sources": [
+          {
+            "name": "bayernfinals",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff546eab3-5cb419e6b81a-1000--the-greatest-teams-of-all-time-bayern-1973-76/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-16-01",
+      "number": 31,
+      "dynastyId": "DY-16",
+      "stage": 1,
+      "contentVersion": 2,
+      "mechanic": "timeline",
+      "interaction": "order",
+      "title": "Yükseliş",
+      "prompt": "Liverpool’un 1977, 1978, 1981 ve 1984 Avrupa şampiyonluğu final rakiplerini sırala.",
+      "hint": "Son final rakibin kendi şehrinde oynandı.",
+      "options": [
+        {
+          "id": "c554e83b57e6f",
+          "label": "Real Madrid"
+        },
+        {
+          "id": "cbd290a12bbf6",
+          "label": "Borussia Mönchengladbach"
+        },
+        {
+          "id": "c19007809177e",
+          "label": "Roma"
+        },
+        {
+          "id": "c80539cca06fe",
+          "label": "Club Brugge"
+        }
+      ],
+      "requiredCount": 4,
+      "slots": [],
+      "answerKeys": [
+        "cbd290a12bbf6",
+        "c80539cca06fe",
+        "c554e83b57e6f",
+        "c19007809177e"
+      ],
+      "result": {
+        "answer": "1977: Borussia Mönchengladbach; 1978: Club Brugge; 1981: Real Madrid; 1984: Roma",
+        "story": "1977: Borussia Mönchengladbach; 1978: Club Brugge; 1981: Real Madrid; 1984: Roma.",
+        "sources": [
+          {
+            "name": "liverpool",
+            "url": "https://www.uefa.com/news/0275-15201acb75e7-c57250f46a12-1000--liverpool-and-real-madrid-s-finals/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [
+          "1977",
+          "1978",
+          "1981",
+          "1984"
+        ],
+        "sources": [
+          {
+            "name": "liverpool",
+            "url": "https://www.uefa.com/news/0275-15201acb75e7-c57250f46a12-1000--liverpool-and-real-madrid-s-finals/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-16-02",
+      "number": 32,
+      "dynastyId": "DY-16",
+      "stage": 2,
+      "contentVersion": 2,
+      "mechanic": "squad",
+      "interaction": "single",
+      "title": "Zirve",
+      "prompt": "Liverpool’un 1984 Roma finalindeki başlangıç kalecisi kimdi?",
+      "hint": "Penaltı serisindeki sıra dışı hareketleriyle hatırlanır.",
+      "options": [
+        {
+          "id": "c68aa63352ef3",
+          "label": "Pepe Reina"
+        },
+        {
+          "id": "c2e76365091be",
+          "label": "Bruce Grobbelaar"
+        },
+        {
+          "id": "c00a4a8fbe585",
+          "label": "Ray Clemence"
+        },
+        {
+          "id": "ccfa0e74799c3",
+          "label": "David James"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": [],
+      "answerKeys": [
+        "c2e76365091be"
+      ],
+      "result": {
+        "answer": "Bruce Grobbelaar",
+        "story": "Bruce Grobbelaar.",
+        "sources": [
+          {
+            "name": "grobbelaar",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0244-0e98ae2983be-b3a08537e2b8-1000--liverpool-and-roma-relish-semi-final-opportunity/"
+          }
+        ],
+        "contentVersion": 2
+      },
+      "verification": {
+        "reviewedAt": "2026-10-11",
+        "periods": [],
+        "sources": [
+          {
+            "name": "grobbelaar",
+            "url": "https://www.uefa.com/uefachampionsleague/news/0244-0e98ae2983be-b3a08537e2b8-1000--liverpool-and-roma-relish-semi-final-opportunity/"
+          }
+        ]
+      }
+    }
+  ],
+  "economy": {
+    "task": {
+      "coins": 8,
+      "xp": 20
+    },
+    "hintCoins": 6,
+    "milestones": [
+      {
+        "count": 4,
+        "coins": 20,
+        "xp": 50
+      },
+      {
+        "count": 8,
+        "coins": 40,
+        "xp": 75
+      },
+      {
+        "count": 12,
+        "coins": 60,
+        "xp": 100
+      },
+      {
+        "count": 16,
+        "coins": 80,
+        "xp": 150
+      }
+    ]
+  }
+}
