@@ -239,9 +239,9 @@ abstract final class UploadedPortraitCatalog {
       left: 712, top: 1049, width: 244, height: 244,
     ),
     'eden_hazard': SeasonPortraitSpec(
-      asset: 'assets/uploaded_portraits/zip1_01.png',
+      asset: 'assets/uploaded_portraits/journey_sheet_20.png',
       sheetWidth: 1122, sheetHeight: 1402,
-      left: 167, top: 101, width: 247, height: 247,
+      left: 588, top: 760, width: 378, height: 465,
     ),
     'bafetimbi_gomis': SeasonPortraitSpec(
       asset: 'assets/uploaded_portraits/zip1_01.png',
@@ -384,9 +384,9 @@ abstract final class UploadedPortraitCatalog {
       left: 436, top: 420, width: 249, height: 249,
     ),
     'wayne_rooney': SeasonPortraitSpec(
-      asset: 'assets/uploaded_portraits/zip1_03.png',
+      asset: 'assets/uploaded_portraits/journey_sheet_20.png',
       sheetWidth: 1122, sheetHeight: 1402,
-      left: 713, top: 420, width: 249, height: 249,
+      left: 157, top: 760, width: 378, height: 465,
     ),
     'paul_scholes': SeasonPortraitSpec(
       asset: 'assets/uploaded_portraits/zip1_03.png',
@@ -769,9 +769,9 @@ abstract final class UploadedPortraitCatalog {
       left: 158, top: 99, width: 251, height: 251,
     ),
     'kaka': SeasonPortraitSpec(
-      asset: 'assets/uploaded_portraits/zip1_10.png',
+      asset: 'assets/uploaded_portraits/journey_sheet_19.png',
       sheetWidth: 1122, sheetHeight: 1402,
-      left: 438, top: 99, width: 249, height: 249,
+      left: 30, top: 160, width: 330, height: 455,
     ),
     'arda_turan': SeasonPortraitSpec(
       asset: 'assets/uploaded_portraits/dual_role_04.png',
@@ -954,9 +954,9 @@ abstract final class UploadedPortraitCatalog {
       left: 433, top: 105, width: 257, height: 257,
     ),
     'mohamed_salah': SeasonPortraitSpec(
-      asset: 'assets/uploaded_portraits/zip1_14.png',
+      asset: 'assets/uploaded_portraits/journey_sheet_19.png',
       sheetWidth: 1122, sheetHeight: 1402,
-      left: 726, top: 106, width: 262, height: 262,
+      left: 588, top: 750, width: 378, height: 470,
     ),
     'jude_bellingham': SeasonPortraitSpec(
       asset: 'assets/uploaded_portraits/zip1_14.png',
@@ -1009,9 +1009,9 @@ abstract final class UploadedPortraitCatalog {
       left: 707, top: 95, width: 241, height: 241,
     ),
     'toni_kroos': SeasonPortraitSpec(
-      asset: 'assets/uploaded_portraits/zip1_15.png',
+      asset: 'assets/uploaded_portraits/journey_sheet_20.png',
       sheetWidth: 1122, sheetHeight: 1402,
-      left: 175, top: 424, width: 241, height: 241,
+      left: 397, top: 163, width: 330, height: 460,
     ),
     'arjen_robben': SeasonPortraitSpec(
       asset: 'assets/uploaded_portraits/zip1_15.png',
@@ -1019,9 +1019,9 @@ abstract final class UploadedPortraitCatalog {
       left: 440, top: 424, width: 242, height: 242,
     ),
     'mesut_ozil': SeasonPortraitSpec(
-      asset: 'assets/uploaded_portraits/zip1_15.png',
+      asset: 'assets/uploaded_portraits/journey_sheet_19.png',
       sheetWidth: 1122, sheetHeight: 1402,
-      left: 707, top: 424, width: 241, height: 241,
+      left: 760, top: 160, width: 330, height: 455,
     ),
     'iker_casillas': SeasonPortraitSpec(
       asset: 'assets/uploaded_portraits/zip1_15.png',
@@ -1237,6 +1237,26 @@ abstract final class UploadedPortraitCatalog {
       asset: 'assets/uploaded_portraits/custom_ege.png',
       sheetWidth: 1254, sheetHeight: 1254,
       left: 0, top: 0, width: 1254, height: 1254,
+    ),
+    'jamie_vardy': SeasonPortraitSpec(
+      asset: 'assets/uploaded_portraits/journey_sheet_19.png',
+      sheetWidth: 1122, sheetHeight: 1402,
+      left: 395, top: 160, width: 330, height: 455,
+    ),
+    'christian_eriksen': SeasonPortraitSpec(
+      asset: 'assets/uploaded_portraits/journey_sheet_19.png',
+      sheetWidth: 1122, sheetHeight: 1402,
+      left: 157, top: 750, width: 378, height: 470,
+    ),
+    'radamel_falcao': SeasonPortraitSpec(
+      asset: 'assets/uploaded_portraits/journey_sheet_20.png',
+      sheetWidth: 1122, sheetHeight: 1402,
+      left: 30, top: 163, width: 330, height: 460,
+    ),
+    'adriano': SeasonPortraitSpec(
+      asset: 'assets/uploaded_portraits/journey_sheet_20.png',
+      sheetWidth: 1122, sheetHeight: 1402,
+      left: 762, top: 163, width: 330, height: 460,
     ),
   };
   static const Map<int, String> playerKeys = {
@@ -1455,6 +1475,10 @@ abstract final class UploadedPortraitCatalog {
     4000000030: 'didier_deschamps',
     4000000036: 'johan_cruyff',
     3111: 'zinedine_zidane',
+    197838: 'jamie_vardy',
+    69633: 'christian_eriksen',
+    39152: 'radamel_falcao',
+    5876: 'adriano',
   };
   static const Map<String, String> avatarKeys = {
     'persona_cristiano_ronaldo': 'cristiano_ronaldo',
@@ -1597,6 +1621,15 @@ abstract final class UploadedPortraitCatalog {
     'persona_berat': 'berat',
     'persona_burak': 'burak',
     'persona_ege': 'ege',
+    'persona_kaka': 'kaka',
+    'persona_jamie_vardy': 'jamie_vardy',
+    'persona_mesut_ozil': 'mesut_ozil',
+    'persona_christian_eriksen': 'christian_eriksen',
+    'persona_radamel_falcao': 'radamel_falcao',
+    'persona_toni_kroos': 'toni_kroos',
+    'persona_adriano': 'adriano',
+    'persona_wayne_rooney': 'wayne_rooney',
+    'persona_eden_hazard': 'eden_hazard',
   };
   static const Map<String, int> avatarPlayerIds = {
     'persona_cristiano_ronaldo': 8198,
@@ -1731,6 +1764,15 @@ abstract final class UploadedPortraitCatalog {
     'persona_xavi_coach': 7607,
     'persona_cesc_fabregas_player': 8806,
     'persona_andrea_pirlo_coach': 5817,
+    'persona_kaka': 4000000028,
+    'persona_jamie_vardy': 197838,
+    'persona_mesut_ozil': 35664,
+    'persona_christian_eriksen': 69633,
+    'persona_radamel_falcao': 39152,
+    'persona_toni_kroos': 31909,
+    'persona_adriano': 5876,
+    'persona_wayne_rooney': 3332,
+    'persona_eden_hazard': 50202,
   };
   static const Map<String, String> coachKeys = {
     'coach_0': 'pep_guardiola_coach',

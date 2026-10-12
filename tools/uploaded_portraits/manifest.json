@@ -273,6 +273,22 @@
         1254
       ],
       "sha256": "cf9a5b5858cb6aabc78d87133d4d7850b8bf36a7386be3eb182b75010b885a97"
+    },
+    "journey_sheet_19": {
+      "asset": "assets/uploaded_portraits/journey_sheet_19.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "593b2c0cf06acaf47832a5906f4458424b15fefa8ee779c54ce44ab9f8cc24bd"
+    },
+    "journey_sheet_20": {
+      "asset": "assets/uploaded_portraits/journey_sheet_20.png",
+      "size": [
+        1122,
+        1402
+      ],
+      "sha256": "ae6d8348a1cd51c6e10076b988f2c3ed40b6164c3de24632f73e4641fb9ccc82"
     }
   },
   "portraits": [
@@ -984,13 +1000,13 @@
     {
       "key": "eden_hazard",
       "name": "Eden Hazard",
-      "source": "zip1_01",
-      "cardIndex": 0,
+      "source": "journey_sheet_20",
+      "cardIndex": 4,
       "crop": [
-        167,
-        101,
-        247,
-        247
+        588,
+        760,
+        378,
+        465
       ],
       "playerId": 50202,
       "databaseName": "Eden Hazard",
@@ -1419,13 +1435,13 @@
     {
       "key": "wayne_rooney",
       "name": "Wayne Rooney",
-      "source": "zip1_03",
-      "cardIndex": 5,
+      "source": "journey_sheet_20",
+      "cardIndex": 3,
       "crop": [
-        713,
-        420,
-        249,
-        249
+        157,
+        760,
+        378,
+        465
       ],
       "playerId": 3332,
       "databaseName": "Wayne Rooney",
@@ -2574,13 +2590,13 @@
     {
       "key": "kaka",
       "name": "Kaká",
-      "source": "zip1_10",
-      "cardIndex": 1,
+      "source": "journey_sheet_19",
+      "cardIndex": 0,
       "crop": [
-        438,
-        99,
-        249,
-        249
+        30,
+        160,
+        330,
+        455
       ],
       "playerId": 4000000028,
       "databaseName": "Kaká",
@@ -3129,13 +3145,13 @@
     {
       "key": "mohamed_salah",
       "name": "Mohamed Salah",
-      "source": "zip1_14",
-      "cardIndex": 2,
+      "source": "journey_sheet_19",
+      "cardIndex": 4,
       "crop": [
-        726,
-        106,
-        262,
-        262
+        588,
+        750,
+        378,
+        470
       ],
       "playerId": 148455,
       "databaseName": "Mohamed Salah",
@@ -3294,13 +3310,13 @@
     {
       "key": "toni_kroos",
       "name": "Toni Kroos",
-      "source": "zip1_15",
-      "cardIndex": 3,
+      "source": "journey_sheet_20",
+      "cardIndex": 1,
       "crop": [
-        175,
-        424,
-        241,
-        241
+        397,
+        163,
+        330,
+        460
       ],
       "playerId": 31909,
       "databaseName": "Toni Kroos",
@@ -3324,13 +3340,13 @@
     {
       "key": "mesut_ozil",
       "name": "Mesut Özil",
-      "source": "zip1_15",
-      "cardIndex": 5,
+      "source": "journey_sheet_19",
+      "cardIndex": 2,
       "crop": [
-        707,
-        424,
-        241,
-        241
+        760,
+        160,
+        330,
+        455
       ],
       "playerId": 35664,
       "databaseName": "Mesut Özil",
@@ -3972,6 +3988,66 @@
       ],
       "playerId": null,
       "role": "custom"
+    },
+    {
+      "key": "jamie_vardy",
+      "name": "Jamie Vardy",
+      "source": "journey_sheet_19",
+      "cardIndex": 1,
+      "crop": [
+        395,
+        160,
+        330,
+        455
+      ],
+      "playerId": 197838,
+      "databaseName": "Jamie Vardy",
+      "role": "player"
+    },
+    {
+      "key": "christian_eriksen",
+      "name": "Christian Eriksen",
+      "source": "journey_sheet_19",
+      "cardIndex": 3,
+      "crop": [
+        157,
+        750,
+        378,
+        470
+      ],
+      "playerId": 69633,
+      "databaseName": "Christian Eriksen",
+      "role": "player"
+    },
+    {
+      "key": "radamel_falcao",
+      "name": "Radamel Falcao",
+      "source": "journey_sheet_20",
+      "cardIndex": 0,
+      "crop": [
+        30,
+        163,
+        330,
+        460
+      ],
+      "playerId": 39152,
+      "databaseName": "Radamel Falcao",
+      "role": "player"
+    },
+    {
+      "key": "adriano",
+      "name": "Adriano",
+      "source": "journey_sheet_20",
+      "cardIndex": 2,
+      "crop": [
+        762,
+        163,
+        330,
+        460
+      ],
+      "playerId": 5876,
+      "databaseName": "Adriano",
+      "role": "player"
     }
   ],
   "avatarKeys": {
@@ -4114,7 +4190,16 @@
     "persona_omer": "omer",
     "persona_berat": "berat",
     "persona_burak": "burak",
-    "persona_ege": "ege"
+    "persona_ege": "ege",
+    "persona_kaka": "kaka",
+    "persona_jamie_vardy": "jamie_vardy",
+    "persona_mesut_ozil": "mesut_ozil",
+    "persona_christian_eriksen": "christian_eriksen",
+    "persona_radamel_falcao": "radamel_falcao",
+    "persona_toni_kroos": "toni_kroos",
+    "persona_adriano": "adriano",
+    "persona_wayne_rooney": "wayne_rooney",
+    "persona_eden_hazard": "eden_hazard"
   },
   "avatarPlayerIds": {
     "persona_cristiano_ronaldo": 8198,
@@ -4248,7 +4333,16 @@
     "persona_arda_turan_player": 4000000018,
     "persona_xavi_coach": 7607,
     "persona_cesc_fabregas_player": 8806,
-    "persona_andrea_pirlo_coach": 5817
+    "persona_andrea_pirlo_coach": 5817,
+    "persona_kaka": 4000000028,
+    "persona_jamie_vardy": 197838,
+    "persona_mesut_ozil": 35664,
+    "persona_christian_eriksen": 69633,
+    "persona_radamel_falcao": 39152,
+    "persona_toni_kroos": 31909,
+    "persona_adriano": 5876,
+    "persona_wayne_rooney": 3332,
+    "persona_eden_hazard": 50202
   },
   "coachKeys": {
     "coach_0": "pep_guardiola_coach",

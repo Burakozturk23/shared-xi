@@ -96,7 +96,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
           const SizedBox(height:12),
           const Text('Dört görevi çöz, oyuncunun damgasını kazan. Üç favorini profil vitrinine taşı.'),
           const SizedBox(height:12),
-          const Text('İlk 32 kariyer: 20 Coin + 40 XP\nİlk dört bölüm: 80 Coin + 120 XP\nYeni İzler: Coin/XP ödülü henüz tanımlanmadı.',style:TextStyle(fontWeight:FontWeight.w600)),
+          const Text('İlk 32 kariyer: 20 Coin + 40 XP\nİlk dört bölüm: 80 Coin + 120 XP\nSınırları Aşanlar: Coin/XP ödülü henüz tanımlanmadı.',style:TextStyle(fontWeight:FontWeight.w600)),
         ])),
         if(_rewards.busy) const Padding(padding:EdgeInsets.symmetric(vertical:12),child:LinearProgressIndicator()),
         if(_rewards.message!=null) Padding(padding:const EdgeInsets.symmetric(vertical:12),child:Text(_rewards.message!)),
@@ -108,7 +108,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
         PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
           Row(children:[if (badge != null) AchievementBadgeEmblem(definition:badge,unlocked:collected==8,size:64) else const Icon(Icons.auto_stories, size:64),
             const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-              Text(badge?.title ?? 'Yeni İzler',style:Theme.of(context).textTheme.titleMedium),
+              Text(badge?.title ?? 'Sınırları Aşanlar',style:Theme.of(context).textTheme.titleMedium),
               Text('$collected / 8 damga'),
             ])),
           ]),
