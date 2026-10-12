@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../models/journey_task.dart';
@@ -10,7 +11,7 @@ class JourneyV2Controller extends ChangeNotifier {
   final Future<void> Function(JourneyTask task, List<String> answers)? onSolved;
   final Future<Map<String, dynamic>> Function(JourneyTask task, List<String> answers)? verify;
   final Map<String, dynamic> results = {};
-  Future<void> _writes = Future.value();
+  Future<void>? _writes;
   final Random random;
   JourneyCheckpoint? checkpoint;
   List<JourneyOption> options = const [];
@@ -35,11 +36,20 @@ class JourneyV2Controller extends ChangeNotifier {
     await _persist(next);
     if (!_disposed) checkpoint = next;
   }
-  Future<void> _persist(JourneyCheckpoint state) {
+  Future<void> _persist(JourneyCheckpoint state) async {
     final snapshot = {...state.toJson(journey), 'draft': List<String>.from(selected), 'results': Map<String, dynamic>.from(results)};
-    final write = _writes.then((_) => store.write(journey.id, snapshot));
-    _writes = write.catchError((Object _) {});
-    return write;
+    final previous = _writes;
+    final gate = Completer<void>();
+    final pending = gate.future;
+    _writes = pending;
+    try {
+      if (previous != null) await previous;
+      await store.write(journey.id, snapshot);
+    } finally {
+      // Release failed writes too, and do not retain an idle Future's zone.
+      if (identical(_writes, pending)) _writes = null;
+      gate.complete();
+    }
   }
   void _saveDraft() {
     if (checkpoint == null || !task.serverValidated) return;

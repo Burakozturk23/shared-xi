@@ -138,7 +138,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
             color:const Color(0xFFF3CF87),backgroundColor:Colors.white12),
         ])),
       const SizedBox(height:16),
-      const Text('Her görevde ilk başarı: 8 Coin + 20 XP. Her dönemde iki görev, bir mühür.'),
+      const Text('İlk 16 dönemin görevlerinde ilk başarı: 8 Coin + 20 XP. Her dönemde iki görev, bir mühür.'),
       if(!c.rewardEligible) const Padding(padding:EdgeInsets.only(top:8),child:Text('Misafir olarak oynayabilirsin. Ödüllerin için bu misafir hesabını Google’a bağla.')),
       const SizedBox(height:14),
       Wrap(spacing:8,runSpacing:8,children:[
@@ -193,6 +193,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
         onTap:c.busy||!c.available(c.catalog.byId(id))?null:()=>_open(id))),
       const SizedBox(height:12),Text('${t.text('title')} · ${t.label}',style:Theme.of(context).textTheme.titleMedium),
       const SizedBox(height:10),const Text('Ücretsiz ipucu ve sınırsız deneme. Seçimlerin cihazda saklanır; ilerleme ve ödül bağlantı olduğunda doğrulanır.'),
+      if (t.data['expansion'] != null) const Padding(padding:EdgeInsets.only(top:12),child:Text(expansionRewardNotice)),
       const SizedBox(height:20),FilledButton.icon(key:const ValueKey('dy-start'),onPressed:c.busy?null:(){c.start();_top();},icon:const Icon(Icons.play_arrow),label:Text('${t.text('title')} görevine başla')),
     ];
   }
