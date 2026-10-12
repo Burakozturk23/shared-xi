@@ -442,9 +442,9 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(t.text('hint')),
         ),
-      if (c.hints.contains(t.id))
+      if (!t.serverValidated && c.hints.contains(t.id))
         PitchPanel(child: Text(t.text('strongHint')))
-      else
+      else if (!t.serverValidated)
         TextButton(
           onPressed: c.task!.serverValidated || c.busy || c.syncing
               ? null
@@ -547,7 +547,9 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
       c.task!.serverValidated ? 'Genişleme görevi: Coin/XP ödülü henüz tanımlanmadı.' : 'Yeni görev: 6 Coin + 15 XP · Bölüm: 15 Coin + 30 XP\nTekrar oynama ikinci kez ödül kazandırmaz.',
     ),
     const PitchSectionTitle('Kaynak kaydı'),
-    for (final s in c.task!.sources)
+    for (final s in c.task!.serverValidated
+        ? (nostalgiaMap(c.results[c.task!.id])['sources'] as List? ?? []).map(nostalgiaMap)
+        : c.task!.sources)
       Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: Text('${s['label']}\n${s['url']}\nKontrol: ${s['accessed']}'),

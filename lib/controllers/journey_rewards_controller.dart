@@ -71,9 +71,11 @@ class JourneyRewardsController extends ChangeNotifier {
       final reply = await gateway.call('submit', {'version':1, 'journeyId':journeyId,
         'taskId':task.id, 'answers':answers});
       if (!linked) throw StateError('Hesap değişti. Ekranı yeniden aç.');
+      final result = rewardMap(rewardMap(reply['results'])[task.id]);
+      if (result['story'] is! String) throw StateError('Sunucu bu görevi henüz doğrulamadı. Seçimin saklandı.');
       data = reply;
       _notify();
-      return rewardMap(rewardMap(reply['results'])[task.id]);
+      return result;
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'invalid-argument') throw StateError('Cevap doğru değil. Yeniden deneyebilirsin.');
       rethrow;

@@ -1,5 +1,6 @@
 """Append-only expansion exports. Never rewrites a legacy catalog or database."""
 import copy, hashlib, json
+from urllib.parse import urlsplit
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).parent
@@ -7,7 +8,7 @@ S=json.loads((HERE/'sources.json').read_text())
 S['S33']='https://archive.coritiba.com.br/arq/sanfonas/lt/idolos.html'
 S['S34']='https://www.fifa.com/pt/articles/historia-brasil-finais-copa-mundo-fifa'
 PACK='five-mode-2026-10'
-def sources(*codes): return [{'name':c,'label':c,'url':S[c],'accessed':'2026-10-12'} for c in codes]
+def sources(*codes): return [{'name':urlsplit(S[c]).netloc,'label':urlsplit(S[c]).netloc,'url':S[c],'accessed':'2026-10-12'} for c in codes]
 def task(id,prompt,answers,wrong,hint,src,kind='single',story=None):
     labels=answers+wrong
     assert len(set(labels))==len(labels),id
@@ -96,8 +97,8 @@ def build():
       ('squad','single','Boca Juniors’ın 2000 ve 2003 Libertadores zaferlerinde görev alan ünlü teknik direktör kimdi?',['Carlos Bianchi'],['Marcelo Bielsa','Alfio Basile','Ramón Díaz'],'Oyuncuyu değil, dönemin teknik direktörünü ara.',['S29'])]),
       ('Al Ahly','2005–2008','Kahire’den kıtaya',[
       ('trophies','multi','Al Ahly’nin 2005–2008 döneminde CAF Şampiyonlar Ligi’ni kazandığı üç yılı seç.',['2005','2006','2008'],['2004','2007','2009'],'Finale katılmak ve kupayı kazanmak farklıdır.',['S24']),
-      ('timeline','single','Al Ahly’nin 2006 CAF Şampiyonlar Ligi finalindeki rakibi hangi kulüptü?',['CS Sfaxien'],['Étoile du Sahel','Coton Sport','Espérance'],'İki ayaklı finalin aynı sezon içindeki rakibini düşün.',['S24'])]),
-      ('Galatasaray','1996–2000','Dört sezonluk süreklilik',[
+      ('route','single','Al Ahly’nin 2006 CAF Şampiyonlar Ligi finalindeki rakibi hangi kulüptü?',['CS Sfaxien'],['Étoile du Sahel','Coton Sport','Espérance'],'İki ayaklı finalin aynı sezon içindeki rakibini düşün.',['S24'])]),
+      ('Galatasaray','1996–2000','İstanbul’da süreklilik',[
       ('records','single','Galatasaray, 1996/97–1999/2000 döneminde lig şampiyonluğunu üst üste kaç kez kazandı?',['4'],['2','3','5'],'Başlangıç ve bitiş sezonları da hesaba katılır.',['S25']),
       ('tactics','single','Bu dört lig şampiyonluğunda Galatasaray’ın teknik direktörü kimdi?',['Fatih Terim'],['Mustafa Denizli','Gheorghe Hagi','Mircea Lucescu'],'Oyunculuk rolü ile teknik direktörlük görevini ayır.',['S25'])])]
     for n,(club,period,title,ts) in enumerate(specs,17):

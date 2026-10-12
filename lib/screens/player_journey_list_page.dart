@@ -49,7 +49,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
             Text(chapter.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 10), Text('$doneCount / ${chapter.journeys.length} yolculuk tamamlandı'),
             const SizedBox(height: 12), LinearProgressIndicator(value: doneCount / chapter.journeys.length),
-            const SizedBox(height: 10), const Text('İlk iki futbolcudan istediğini seç. Her tamamlanan kariyer yeni bir futbolcu açar.'),
+            const SizedBox(height: 10), Text(chapter.number == 5 ? 'İstediğin futbolcuyu seç. Her kariyerde dört aşama sırayla açılır.' : 'İlk iki futbolcudan istediğini seç. Her tamamlanan kariyer yeni bir futbolcu açar.'),
             const SizedBox(height: 10),
             Text(chapter.number == 5 ? expansionRewardNotice : 'Her kariyer: 20 Coin + 40 XP\n8 kariyerin tamamı: ayrıca 80 Coin + 120 XP'),
           ])), const SizedBox(height: 20),

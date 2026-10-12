@@ -105,7 +105,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
     ));
   }
   IconData _icon(String type) => switch(type) {
-    'squad'=>Icons.groups_outlined, 'timeline'=>Icons.swap_vert,
+    'route'=>Icons.route, 'squad'=>Icons.groups_outlined, 'timeline'=>Icons.swap_vert,
     'trophies'=>Icons.emoji_events_outlined, 'tactics'=>Icons.account_tree_outlined,
     _=>Icons.bar_chart_rounded,
   };

@@ -29,7 +29,7 @@ class DynastyTask {
   String optionLabel(String id) => options.firstWhere((o)=>o['id']==id)['label'] as String;
   String get label => switch(mechanic) {
     'squad'=>'Hanedanlık Kadrosu', 'timeline'=>'Zaman Çizelgesi',
-    'trophies'=>'Kupa Dolabı', 'tactics'=>'Taktik DNA', _=>'Rekor Avcısı',
+    'route'=>'Kupa Yolu', 'trophies'=>'Kupa Dolabı', 'tactics'=>'Taktik DNA', _=>'Rekor Avcısı',
   };
 }
 class DynastiesCatalog {

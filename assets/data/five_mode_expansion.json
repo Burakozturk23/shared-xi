@@ -1745,7 +1745,7 @@
       "chapterId": 2,
       "club": "Galatasaray",
       "period": "1996–2000",
-      "title": "Dört sezonluk süreklilik",
+      "title": "İstanbul’da süreklilik",
       "intro": "Bir kulübün yıllara yayılan başarısını kupalar ve teknik yönetim üzerinden keşfet.",
       "taskIds": [
         "DY-19-01",
@@ -1902,7 +1902,7 @@
       "number": 36,
       "dynastyId": "DY-18",
       "stage": 2,
-      "mechanic": "timeline",
+      "mechanic": "route",
       "interaction": "single",
       "title": "Zirve",
       "slots": []

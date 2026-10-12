@@ -131,7 +131,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
             child: LinearProgressIndicator(value: c.count / c.catalog.matches.length, minHeight: 6, color: const Color(0xFF5FE4D1), backgroundColor: Colors.white12)),
         ])),
       const SizedBox(height: 16),
-      Text('Her ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
+      Text('Eski görevlerde ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
       const SizedBox(height: 6), const Text('10, 20, 30 ve 40 eski görevde koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 8),
         child: Text('Misafir olarak oynayabilirsin. Ödülleri almak için bu misafir hesabını Google’a bağla.')),
@@ -183,6 +183,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
     return [_matchHeader(m), const SizedBox(height: 20), Text(m.text('intro'), style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 20), PitchRow(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
       const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
+      if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text(expansionRewardNotice)),
       const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ig-start'), onPressed: c.busy ? null : () { c.start(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Karşılaşmaya katıl'))];
   }

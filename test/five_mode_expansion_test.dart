@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
+import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,6 +63,11 @@ class ExpansionGateway implements UclGateway, InternationalGateway, DynastiesGat
 }
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final (name,path) in [('Satoshi','assets/fonts/Satoshi-Variable.ttf'),('Inter','assets/fonts/Inter-Body-Variable.ttf'),('MaterialIcons','fonts/MaterialIcons-Regular.otf')]) {
+      await (FontLoader(name)..addFont(rootBundle.load(path))).load();
+    }
+  });
   setUp(()=>SharedPreferences.setMockInitialValues({}));
   test('runtime loaders append all 51 tasks with empty private answers',() async {
     final pj=await loadJourneyChapter('chapter_5_expansion');
@@ -131,20 +139,37 @@ void main() {
     testWidgets('five new mode tasks open at 320px / 180%, light=$light',(tester)async{
       tester.view.physicalSize=const Size(320,844);tester.view.devicePixelRatio=1;
       addTearDown(tester.view.resetPhysicalSize);addTearDown(tester.view.resetDevicePixelRatio);
-      final pj=JourneyV2Controller(journey:(await loadJourneyChapter('chapter_5_expansion')).first,store:MemoryJourneyStore());
-      final ucl=UclMomentsController(catalog:await UclCatalog.load(),store:MemoryUclStore(),gateway:ExpansionGateway('ucl',1));
-      final ig=InternationalGloryController(catalog:await InternationalCatalog.load(),store:MemoryInternationalStore(),gateway:ExpansionGateway('international',2));
-      final dy=DynastiesController(catalog:await DynastiesCatalog.load(),store:MemoryDynastiesStore(),gateway:ExpansionGateway('dynastyTasks',2));
-      final tn=TurkishNostalgiaController(catalog:await NostalgiaCatalog.load(),store:MemoryStore(),gateway:ExpansionGateway('nostalgia',2));
+      final loaded=await tester.runAsync(() async => <Object>[
+        await loadJourneyChapter('chapter_5_expansion'), await UclCatalog.load(),
+        await InternationalCatalog.load(), await DynastiesCatalog.load(), await NostalgiaCatalog.load(),
+      ]);
+      final pj=JourneyV2Controller(journey:(loaded![0] as List<JourneyV2Definition>).first,store:MemoryJourneyStore());
+      final ucl=UclMomentsController(catalog:loaded[1] as UclCatalog,store:MemoryUclStore(),gateway:ExpansionGateway('ucl',1));
+      final ig=InternationalGloryController(catalog:loaded[2] as InternationalCatalog,store:MemoryInternationalStore(),gateway:ExpansionGateway('international',2));
+      final dy=DynastiesController(catalog:loaded[3] as DynastiesCatalog,store:MemoryDynastiesStore(),gateway:ExpansionGateway('dynastyTasks',2));
+      final tn=TurkishNostalgiaController(catalog:loaded[4] as NostalgiaCatalog,store:MemoryStore(),gateway:ExpansionGateway('nostalgia',2));
       await pj.initialize();await ucl.load();await ig.load();await dy.load();await tn.load();
       ucl.open('UCL-36');ucl.start();ig.open('IG-42');ig.start();dy.open('DY-17-01');dy.start();tn.open('TN-15');tn.start();
+      final screenKey=GlobalKey();
       for(final page in <Widget>[JourneyV2Page(journeyId:'PJ-33',chapterId:'chapter_5_expansion',controller:pj),UclMomentsPage(controller:ucl),InternationalGloryPage(controller:ig),DynastiesPage(controller:dy),TurkishNostalgiaPage(controller:tn)]) {
-        await tester.pumpWidget(MaterialApp(theme:light?ThemeData.light():ThemeData.dark(),builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:const TextScaler.linear(1.8)),child:child!),home:page));
+        await tester.pumpWidget(MaterialApp(theme:light?OrtakSahaTheme.light:OrtakSahaTheme.dark,builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:const TextScaler.linear(1.8)),child:RepaintBoundary(key:screenKey,child:child!)),home:page));
         await tester.pumpAndSettle();expect(tester.takeException(),isNull);
         if(page is JourneyV2Page){await tester.scrollUntilVisible(find.byKey(const ValueKey('journey-start-task')),200);await tester.tap(find.byKey(const ValueKey('journey-start-task')));await tester.pumpAndSettle();}
+        await screenshot(tester,screenKey,'${page.runtimeType}-$light-start');
         await tester.drag(find.byType(ListView).first,const Offset(0,-600));await tester.pumpAndSettle();expect(tester.takeException(),isNull);
+        await screenshot(tester,screenKey,'${page.runtimeType}-$light-options');
       }
       await tester.pumpWidget(const SizedBox());pj.dispose();ucl.dispose();ig.dispose();dy.dispose();tn.dispose();
     });
   }
+}
+
+Future<void> screenshot(WidgetTester tester,GlobalKey key,String name) async {
+  if (!const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) return;
+  await tester.runAsync(() async {
+    final image=await (key.currentContext!.findRenderObject() as RenderRepaintBoundary).toImage(pixelRatio:1);
+    final bytes=await image.toByteData(format:ui.ImageByteFormat.png);
+    final file=File('.dart_tool/expansion_qa/$name.png');
+    await file.parent.create(recursive:true);await file.writeAsBytes(bytes!.buffer.asUint8List());image.dispose();
+  });
 }
