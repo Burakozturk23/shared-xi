@@ -71,7 +71,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
       subtitle: done ? 'Tamamlandı · Tekrar oyna' : !unlocked ? 'Yeni oyuncu için açık kariyerlerden birini tamamla'
         : v2 && solved > 0 ? '$solved / 4 görev · Devam et' : '${v2 ? 4 : journey.stages.length} aşama · Yolculuğa başla',
       icon: Icons.person_outline, highlight: unlocked,
-      leading: unlocked ? PlayerAvatar(player: Player.fromJson({'id': journey.subjectPlayerId, 'name': journey.subjectName, 'countries': <String>[], 'position': ''}), size: 48) : const Icon(Icons.lock_outline, size: 32),
+      leading: PlayerAvatar(player: Player.fromJson({'id': journey.subjectPlayerId, 'name': journey.subjectName, 'countries': <String>[], 'position': ''}), size: 48),
       trailing: Icon(done ? Icons.check_circle_outline : unlocked ? Icons.chevron_right : Icons.lock_outline),
       onTap: !unlocked ? null : () async {
         await GameLauncher.open(context, GameEntry(title: journey.subjectName, subtitle: '', icon: Icons.route,

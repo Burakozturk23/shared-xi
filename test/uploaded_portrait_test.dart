@@ -11,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test('all supplied sources decode and all portrait rectangles fit', () async {
     final specs = UploadedPortraitCatalog.portraits.values;
-    expect(specs.length, 247);
+    expect(specs.length, 251);
     for (final asset in specs.map((p) => p.asset).toSet()) {
       final bytes = await rootBundle.load(asset);
       final codec = await ui.instantiateImageCodec(bytes.buffer.asUint8List());

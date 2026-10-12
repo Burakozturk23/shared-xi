@@ -16,7 +16,7 @@ for source in manifest['sources'].values():
     assert data[:8] == b'\x89PNG\r\n\x1a\n'
     assert list(struct.unpack('>II', data[16:24])) == source['size']
 keys = {p['key'] for p in manifest['portraits']}
-assert len(keys) == len(manifest['portraits']) == 247
+assert len(keys) == len(manifest['portraits']) == 251
 with sqlite3.connect(ROOT / 'assets/runtime/linkball_game_data_v4.sqlite') as db:
     for p in manifest['portraits']:
         if p['playerId'] is not None:
@@ -26,7 +26,7 @@ with sqlite3.connect(ROOT / 'assets/runtime/linkball_game_data_v4.sqlite') as db
         assert 0 <= x < x+w <= sw and 0 <= y < y+h <= sh, p
 legacy = dict(re.findall(r"'(persona_[^']+)': (\d+)", (ROOT / 'lib/data/player_portrait_catalog.dart').read_text()))
 active = {o['itemId'] for o in catalog['offers'] if o['itemType'] == 'avatar' and o['enabled']}
-assert len(active) == 151
+assert len(active) == 160
 assert active == set(manifest['avatarKeys']) | set(legacy)
 assert not active.intersection(manifest['retiredAvatarIds'])
 assert set(manifest['avatarKeys'].values()) <= keys
@@ -54,4 +54,4 @@ for pair in manifest['dualRoles']:
 for name in ['kaan', 'omer', 'berat', 'burak', 'ege']:
     assert manifest['avatarKeys']['persona_' + name] == name
     assert by_key[name]['playerId'] is None
-print('[PASS] 247 labelled portraits, 151 visible avatars; 24 role pairs and canonical IDs verified.')
+print('[PASS] 251 labelled portraits, 160 visible avatars; 24 role pairs and canonical IDs verified.')

@@ -34,7 +34,7 @@ void main() {
     final catalog = jsonDecode(File('functions/config/store_collection.json').readAsStringSync()) as Map;
     final offers = (catalog['offers'] as List)
         .where((o) => o['itemType'] == 'avatar' && o['enabled'] == true).toList();
-    expect(collectionAvatars.length, 151);
+    expect(collectionAvatars.length, 160);
     expect(collectionAvatars.map((a) => a.id).toSet(),
         offers.map((o) => o['itemId']).toSet());
     for (final avatar in collectionAvatars) {

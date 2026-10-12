@@ -12,8 +12,8 @@ final List<PlayerJourneyChapter> playerJourneyChapters = [
   PlayerJourneyChapter(
     id: 'chapter_1_goat',
     number: 1,
-    title: 'G.O.A.T & Altın Çağ',
-    subtitle: 'Futbolun en büyük efsaneleri',
+    title: 'Oyunun Efsaneleri',
+    subtitle: 'Futbol tarihine yön veren kariyerler',
     available: true,
     journeys: [
       messiJourney, // 1
@@ -29,8 +29,8 @@ final List<PlayerJourneyChapter> playerJourneyChapters = [
   PlayerJourneyChapter(
     id: 'chapter_2_underdogs',
     number: 2,
-    title: 'Perde Arkası Mucizeler & Sıradışı Yükselişler',
-    subtitle: 'İmkansızı başaranlar',
+    title: 'Zirveye Yolculuk',
+    subtitle: 'Zorlukları aşan, iz bırakan oyuncular',
     available: true,
     journeys: [
       vardyJourney, // 9
@@ -46,8 +46,8 @@ final List<PlayerJourneyChapter> playerJourneyChapters = [
   PlayerJourneyChapter(
     id: 'chapter_3_architects',
     number: 3,
-    title: 'Saha İçi Mimarisi & Gol Makineleri',
-    subtitle: 'Oyunu kuranlar ve bitirenler',
+    title: 'Sahanın Mimarları',
+    subtitle: 'Oyunu değiştiren yetenekler',
     available: true,
     journeys: [
       ibrahimovicJourney, // 17
@@ -63,8 +63,8 @@ final List<PlayerJourneyChapter> playerJourneyChapters = [
   PlayerJourneyChapter(
     id: 'chapter_4_icons',
     number: 4,
-    title: 'Şef Orkestraları & Kült İkonlar',
-    subtitle: 'Orta saha ustaları ve efsaneler',
+    title: 'Unutulmaz İzler',
+    subtitle: 'Bir neslin hafızasındaki yıldızlar',
     available: true,
     journeys: [
       pirloJourney, // 25
@@ -77,8 +77,8 @@ final List<PlayerJourneyChapter> playerJourneyChapters = [
       mbappeJourney, // 32
     ],
   ),
-  PlayerJourneyChapter(id: 'chapter_5_expansion', number: 5, title: 'Yeni İzler',
-    subtitle: 'Klasik efsaneler ve Türkiye bağlantıları', available: true, journeys: [
+  PlayerJourneyChapter(id: 'chapter_5_expansion', number: 5, title: 'Sınırları Aşanlar',
+    subtitle: 'Dünyadan Türkiye’ye uzanan hikâyeler', available: true, journeys: [
       const PlayerJourneyDefinition(id: 'PJ-33', subjectName: 'Pelé', subjectPlayerId: 4000000065, available: true, stages: []),
       const PlayerJourneyDefinition(id: 'PJ-34', subjectName: 'Diego Maradona', subjectPlayerId: 4000000035, available: true, stages: []),
       const PlayerJourneyDefinition(id: 'PJ-35', subjectName: 'Ronaldo Nazário', subjectPlayerId: 3140, available: true, stages: []),
