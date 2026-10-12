@@ -1,3 +1,4 @@
+import '../services/five_mode_expansion.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
@@ -32,6 +33,10 @@ class UclCatalog {
   final int version;
   final List<UclMomentV2> matches;
   UclMomentV2 byId(String id) => matches.firstWhere((m) => m.id == id);
-  static Future<UclCatalog> load() async => UclCatalog(uclMap(jsonDecode(
-      await rootBundle.loadString('assets/data/ucl_moments_v2.json'))));
+  static Future<UclCatalog> load() async {
+    final base = uclMap(jsonDecode(await rootBundle.loadString('assets/data/ucl_moments_v2.json')));
+    final extra = await loadFiveModeExpansion();
+    base['matches'] = [...(base['matches'] as List), ...(extra['ucl'] as List)];
+    return UclCatalog(base);
+  }
 }

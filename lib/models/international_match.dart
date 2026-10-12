@@ -1,3 +1,4 @@
+import '../services/five_mode_expansion.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
@@ -36,6 +37,10 @@ class InternationalCatalog {
   final int version;
   final List<InternationalMatch> matches;
   InternationalMatch byId(String id) => matches.firstWhere((m) => m.id == id);
-  static Future<InternationalCatalog> load() async => InternationalCatalog(igMap(jsonDecode(
-      await rootBundle.loadString('assets/data/international_glory_v2.json'))));
+  static Future<InternationalCatalog> load() async {
+    final base = igMap(jsonDecode(await rootBundle.loadString('assets/data/international_glory_v2.json')));
+    final extra = await loadFiveModeExpansion();
+    base['matches'] = [...(base['matches'] as List), ...(extra['international'] as List)];
+    return InternationalCatalog(base);
+  }
 }

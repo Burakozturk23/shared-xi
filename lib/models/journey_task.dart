@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-enum JourneyTaskType { clubChoice, teammate, eraChoice, missingClub, timeline }
+enum JourneyTaskType { clubChoice, teammate, eraChoice, missingClub, timeline, multiChoice }
 
 class JourneyOption {
   const JourneyOption({required this.key, required this.label, this.playerId});
@@ -16,27 +16,29 @@ class JourneyOption {
 class JourneyTask {
   JourneyTask({required this.id, required this.type, required this.title,
     required this.prompt, required this.hint, required this.explanation,
-    this.introNarrative = '',
+    this.introNarrative = '', this.serverValidated = false,
     required List<JourneyOption> options, required List<String> answerKeys,
     required this.requiredCount}) : options = List.unmodifiable(options), answerKeys = List.unmodifiable(answerKeys) {
     final keys = options.map((o) => o.key).toSet();
     if (options.length < 3 || keys.length != options.length ||
-        answerKeys.isEmpty || answerKeys.toSet().length != answerKeys.length ||
-        !keys.containsAll(answerKeys) || requiredCount < 1 || requiredCount > answerKeys.length ||
-        (type == JourneyTaskType.timeline && (requiredCount != options.length || answerKeys.length != options.length)) ||
+        (!serverValidated && answerKeys.isEmpty) || answerKeys.toSet().length != answerKeys.length ||
+        !keys.containsAll(answerKeys) || requiredCount < 1 || requiredCount > (serverValidated ? options.length : answerKeys.length) ||
+        (!serverValidated && type == JourneyTaskType.timeline && (requiredCount != options.length || answerKeys.length != options.length)) ||
         (type == JourneyTaskType.teammate && requiredCount != 2) ||
-        (!isTimeline && type != JourneyTaskType.teammate && (requiredCount != 1 || answerKeys.length != 1))) {
+        (!serverValidated && !isTimeline && type != JourneyTaskType.teammate && (requiredCount != 1 || answerKeys.length != 1))) {
       throw const FormatException('Invalid journey task');
     }
   }
   final String id, title, prompt, hint, explanation, introNarrative;
   final JourneyTaskType type;
+  final bool serverValidated;
   final List<JourneyOption> options;
   final List<String> answerKeys;
   final int requiredCount;
   bool get isTimeline => type == JourneyTaskType.timeline;
   String get typeLabel => switch (type) {
     JourneyTaskType.clubChoice => 'Kulübü seç',
+    JourneyTaskType.multiChoice => 'Birden fazla seç',
     JourneyTaskType.teammate => '2 takım arkadaşı bul',
     JourneyTaskType.eraChoice => 'Aynı dönemi bul',
     JourneyTaskType.missingClub => 'Eksik kulübü bul',
@@ -44,6 +46,7 @@ class JourneyTask {
   };
   JourneyOption option(String key) => options.firstWhere((o) => o.key == key);
   bool accepts(List<String> keys) {
+    if (serverValidated) return false;
     if (keys.length != requiredCount || keys.toSet().length != keys.length ||
         keys.any((key) => !options.any((o) => o.key == key))) {
       return false;
@@ -70,10 +73,10 @@ class JourneyTask {
   factory JourneyTask.fromJson(Map<String, dynamic> j) => JourneyTask(
     id: j['id'] as String, type: JourneyTaskType.values.byName(j['type'] as String),
     title: j['title'] as String, prompt: j['prompt'] as String, hint: j['hint'] as String,
-    explanation: j['explanation'] as String, requiredCount: j['requiredCount'] as int,
+    explanation: j['explanation'] as String? ?? '', serverValidated: j['serverValidated'] == true, requiredCount: j['requiredCount'] as int,
     introNarrative: j['introNarrative'] as String? ?? '',
     options: (j['options'] as List).map((o) => JourneyOption.fromJson(Map<String,dynamic>.from(o as Map))).toList(),
-    answerKeys: List<String>.from(j['answerKeys'] as List),
+    answerKeys: List<String>.from(j['answerKeys'] as List? ?? []),
   );
 }
 

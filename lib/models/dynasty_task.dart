@@ -1,3 +1,4 @@
+import '../services/five_mode_expansion.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
@@ -28,7 +29,7 @@ class DynastyTask {
   String optionLabel(String id) => options.firstWhere((o)=>o['id']==id)['label'] as String;
   String get label => switch(mechanic) {
     'squad'=>'Hanedanlık Kadrosu', 'timeline'=>'Zaman Çizelgesi',
-    'trophies'=>'Kupa Dolabı', 'tactics'=>'Taktik DNA', _=>'Rekor Avcısı',
+    'route'=>'Kupa Yolu', 'trophies'=>'Kupa Dolabı', 'tactics'=>'Taktik DNA', _=>'Rekor Avcısı',
   };
 }
 class DynastiesCatalog {
@@ -44,5 +45,11 @@ class DynastiesCatalog {
   final List<DynastyTask> tasks;
   DynastyTask byId(String id)=>tasks.firstWhere((t)=>t.id==id);
   Dynasty dynasty(String id)=>dynasties.firstWhere((d)=>d.id==id);
-  static Future<DynastiesCatalog> load() async => DynastiesCatalog(dyMap(jsonDecode(await rootBundle.loadString('assets/data/dynasties_v2.json'))));
+  static Future<DynastiesCatalog> load() async {
+    final base = dyMap(jsonDecode(await rootBundle.loadString('assets/data/dynasties_v2.json')));
+    final extra = await loadFiveModeExpansion();
+    base['tasks'] = [...(base['tasks'] as List), ...(extra['dynastyTasks'] as List)];
+    base['dynasties'] = [...(base['dynasties'] as List), ...(extra['dynasties'] as List)];
+    return DynastiesCatalog(base);
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../app/game_catalog.dart';
+import '../services/five_mode_expansion.dart';
+import '../services/auth_service.dart';
 import '../app/game_launcher.dart';
 import '../models/player.dart';
 import '../models/player_journey_chapter.dart';
@@ -27,11 +29,12 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
     setState(() { _loading = true; _failed = false; });
     try {
       final ids = await PlayerJourneyProgressService.getCompletedIds();
-      final progress = await LocalJourneyV2Store.summaries();
+      final progress = await LocalJourneyV2Store.summaries(scope: widget.chapter.number == 5 ? 'expansion.${AuthService.uid ?? "guest"}' : null);
+      ids.addAll(progress.entries.where((e) => e.value.$2).map((e) => e.key));
       if (mounted) setState(() { _completed = ids; _progress = progress; _loading = false; });
     } catch (_) { if (mounted) setState(() { _loading = false; _failed = true; }); }
   }
-  bool _isUnlocked(int index) => journeyUnlocked(
+  bool _isUnlocked(int index) => widget.chapter.number == 5 || journeyUnlocked(
     ids: widget.chapter.journeys.map((j) => j.id).toList(), index: index,
     completed: _completed, progress: _progress);
   @override
@@ -46,9 +49,9 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
             Text(chapter.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 10), Text('$doneCount / ${chapter.journeys.length} yolculuk tamamlandı'),
             const SizedBox(height: 12), LinearProgressIndicator(value: doneCount / chapter.journeys.length),
-            const SizedBox(height: 10), const Text('İlk iki futbolcudan istediğini seç. Her tamamlanan kariyer yeni bir futbolcu açar.'),
+            const SizedBox(height: 10), Text(chapter.number == 5 ? 'İstediğin futbolcuyu seç. Her kariyerde dört aşama sırayla açılır.' : 'İlk iki futbolcudan istediğini seç. Her tamamlanan kariyer yeni bir futbolcu açar.'),
             const SizedBox(height: 10),
-            const Text('Her kariyer: 20 Coin + 40 XP\n8 kariyerin tamamı: ayrıca 80 Coin + 120 XP'),
+            Text(chapter.number == 5 ? expansionRewardNotice : 'Her kariyer: 20 Coin + 40 XP\n8 kariyerin tamamı: ayrıca 80 Coin + 120 XP'),
           ])), const SizedBox(height: 20),
           if (doneCount > 0) ...[
             const PitchPanel(child: Text('Önceki ilerlemen korunuyor. Eski sürümde bitirdiğin bir kariyerin damgası pasaportunda görünmüyorsa, dört görevini yeniden çözerek sunucu ödülünü açabilirsin. Kazanılmış Coin ve XP tekrar verilmez.')),
@@ -66,7 +69,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
     return Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(
       key: ValueKey('journey-player-${journey.id}'), title: '${index+1}. ${journey.subjectName}',
       subtitle: done ? 'Tamamlandı · Tekrar oyna' : !unlocked ? 'Yeni oyuncu için açık kariyerlerden birini tamamla'
-        : v2 && solved > 0 ? '$solved / 4 görev · Devam et' : '${journey.stages.length} aşama · Yolculuğa başla',
+        : v2 && solved > 0 ? '$solved / 4 görev · Devam et' : '${v2 ? 4 : journey.stages.length} aşama · Yolculuğa başla',
       icon: Icons.person_outline, highlight: unlocked,
       leading: unlocked ? PlayerAvatar(player: Player.fromJson({'id': journey.subjectPlayerId, 'name': journey.subjectName, 'countries': <String>[], 'position': ''}), size: 48) : const Icon(Icons.lock_outline, size: 32),
       trailing: Icon(done ? Icons.check_circle_outline : unlocked ? Icons.chevron_right : Icons.lock_outline),

@@ -2,7 +2,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
-const {catalog, matches} = require("../ucl_moments");
+const {matches} = require("../ucl_moments");
+const catalog = require("../config/ucl_catalog.json");
 const proof = (m) => ({version: 1, matchId: m.id, answers: m.answerKeys});
 test("UCL: 34 matches, exact mechanic counts, 15 provider references, no answer keys in APK", () => {
   const counts = {};

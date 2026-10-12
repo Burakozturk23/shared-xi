@@ -1,6 +1,9 @@
 "use strict";
 const {RewardError} = require("./rewarded_ads");
-const catalog = require("./config/dynasties_catalog.json");
+const baseCatalog = require("./config/dynasties_catalog.json");
+const expansion = require("./config/five_mode_expansion.json");
+const catalog = {...baseCatalog, tasks: [...baseCatalog.tasks, ...expansion.dynastyTasks],
+  dynasties: [...baseCatalog.dynasties, ...expansion.dynasties]};
 const tasks = Object.fromEntries(catalog.tasks.map((t) => [t.id, t]));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
 function taskOf(id) {
@@ -55,7 +58,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       rewards: s.rewards,
       seals: Object.fromEntries(seals.map((d) => [d.id, {story: d.story,
         earnedAt: Math.max(...d.taskIds.map((id) => s.completed[id]))}])),
-      historian: seals.length === 16,
+      historian: baseCatalog.dynasties.every((d) => d.taskIds.every((id) => s.completed[id])),
       hints: Object.fromEntries(Object.keys(s.hints).filter((id) => Object.hasOwn(tasks, id))
           .map((id) => [id, help(tasks[id])]))};
   }
@@ -70,8 +73,8 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       const earn = (id, coins, xp) => {
         s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
       };
-      earn(t.id, catalog.economy.task.coins, catalog.economy.task.xp);
-      const count = completedDynasties(s).length;
+      if (!t.expansion) earn(t.id, catalog.economy.task.coins, catalog.economy.task.xp);
+      const count = completedDynasties(s).filter((d) => !d.expansion).length;
       for (const m of catalog.economy.milestones) if (count >= m.count) earn("milestone_" + m.count, m.coins, m.xp);
       return s;
     });

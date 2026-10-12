@@ -1,6 +1,8 @@
 "use strict";
 const {RewardError} = require("./rewarded_ads");
-const catalog = require("./config/nostalgia_catalog.json");
+const baseCatalog = require("./config/nostalgia_catalog.json");
+const expansion = require("./config/five_mode_expansion.json");
+const catalog = {...baseCatalog, chapters: [...baseCatalog.chapters, ...expansion.nostalgia]};
 const tasks = Object.fromEntries(catalog.chapters.flatMap((c) => c.tasks.map((t) => [t.id, t])));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
 const fail = (code, message) => {
@@ -56,6 +58,8 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     if (eligible) await settle(uid);
     const s = await get(uid);
     return {version: catalog.version, completed: s.completed, hints: s.hints, rewards: s.rewards,
+      results: Object.fromEntries(Object.keys(s.completed).filter((id) => tasks[id]?.expansion)
+          .map((id) => [id, tasks[id].result])),
       pro: eligible && await isPro(uid), rewardEligible: eligible};
   }
   async function submit(uid, input, eligible = true) {
@@ -67,16 +71,19 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       const earn = (id, reward) => {
         s.rewards[id] ||= {...reward, earnedAt: now(), settled: false};
       };
-      earn(task.id, catalog.economy.task);
-      for (const c of catalog.chapters) {
+      if (!task.expansion) earn(task.id, catalog.economy.task);
+      for (const c of baseCatalog.chapters) {
         if (c.tasks.every((t) => s.completed[t.id])) earn(c.id, catalog.economy.chapter);
       }
-      if (Object.keys(tasks).every((id) => s.completed[id])) earn("album", catalog.economy.final);
+      if (baseCatalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
+        earn("album", catalog.economy.final);
+      }
     });
     return {correct: true, ...await status(uid, eligible)};
   }
   async function hint(uid, input, eligible = true) {
     const task = taskOf(input);
+    if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     if (!eligible) fail("permission-denied", "Güçlü yardım için Google hesabına bağlan.");
     const state = await get(uid);
     available(state, task);

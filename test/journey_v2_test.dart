@@ -40,7 +40,7 @@ void main() {
   test('32 canonical journeys across all four chapters and all five task templates', () {
     expect(pack.length, 32);
     expect(pack.expand((j) => j.tasks).length, 128);
-    expect(pack.expand((j) => j.tasks).map((t) => t.type).toSet(), JourneyTaskType.values.toSet());
+    expect(pack.expand((j) => j.tasks).map((t) => t.type).toSet(), JourneyTaskType.values.where((t) => t != JourneyTaskType.multiChoice).toSet());
     expect(pack.firstWhere((j) => j.id == 'kaka').playerId, 4000000028);
     expect(chapterOne.last.playerId, 4000000024);
     expect(chapterTwo[1].playerId,225083);

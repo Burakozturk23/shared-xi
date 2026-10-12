@@ -1,3 +1,4 @@
+import '../services/five_mode_expansion.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -121,21 +122,21 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
   List<Widget> _archive(UclMomentsController c) {
     final visible = c.catalog.matches.where((m) => (!_collection || c.results.containsKey(m.id)) && (_filter == 'all' || m.type == _filter));
     return [
-      _hero('AVRUPA GECELERİ · 1972–2022', 'O geceyi\nhatırla.',
-        '34 karşılaşma. Beş farklı görev. Futbol hafızanı sahaya çıkar.',
+      _hero('AVRUPA GECELERİ · 1972–2023', 'O geceyi\nhatırla.',
+        '37 karşılaşma. Beş farklı görev. Futbol hafızanı sahaya çıkar.',
         footer: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${c.count} / 34 hatıra', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text('${c.count} / ${c.catalog.matches.length} hatıra', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10), ClipRRect(borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(value: c.count / 34, minHeight: 6, color: const Color(0xFF5FE4D1), backgroundColor: Colors.white12)),
+            child: LinearProgressIndicator(value: c.count / c.catalog.matches.length, minHeight: 6, color: const Color(0xFF5FE4D1), backgroundColor: Colors.white12)),
         ])),
       const SizedBox(height: 16),
-      Text('Her ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 6), const Text('10, 20 ve 34 farklı gecede koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
+      Text('Eski görevlerde ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: 6), const Text('10, 20 ve 34 eski görevde koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 8),
         child: Text('Misafir olarak oynayabilirsin. Ödülleri almak için bu misafir hesabını Google’a bağla.')),
       const SizedBox(height: 12),
       Wrap(spacing: 8, runSpacing: 4, children: [
-        for (final (n, coin) in [(10,40),(20,70),(34,100)]) Chip(label: Text('${c.count >= n ? '✓ ' : ''}$n gece · +$coin coin')),
+        for (final (n, coin) in [(10,40),(20,70),(34,100)]) Chip(label: Text('${c.catalog.matches.where((m) => m.data['expansion'] == null && c.results.containsKey(m.id)).length >= n ? '✓ ' : ''}$n gece · +$coin coin')),
       ]),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
         child: PitchRow(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
@@ -166,6 +167,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
     return [_matchHeader(m), const SizedBox(height: 20), Text(m.text('intro'), style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 20), PitchRow(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
       const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
+      if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text(expansionRewardNotice)),
       const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ucl-start'), onPressed: c.busy ? null : () { c.start(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Bu geceye katıl'))];
   }
@@ -237,7 +239,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
         for (final raw in result['events'] as List) Padding(padding: const EdgeInsets.only(bottom: 8), child: PitchRow(
           title: uclMap(raw)['label'] as String, subtitle: uclMap(raw)['minute'] as String, icon: Icons.sports_soccer, trailing: const SizedBox.shrink())),
       ],
-      const SizedBox(height: 18), PitchPanel(child: Text(reward['settled'] == true
+      const SizedBox(height: 18), PitchPanel(child: Text(m.data['expansion'] != null ? expansionRewardNotice : reward['settled'] == true
           ? 'İlk tamamlama ödülü alındı: 8 coin + 20 XP. Tekrar oynarken ikinci ödeme yapılmaz.'
           : '8 coin + 20 XP ödülü bekliyor. Bağlantını kontrol et; misafirsen aynı hesabı Google’a bağlayıp eşitle.')),
       const SizedBox(height: 12), ExpansionTile(key: PageStorageKey('ucl-sources-${m.id}'), title: const Text('Maçın kaynakları'), children: [

@@ -2,7 +2,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
-const {catalog} = require("../international_glory");
+const catalog = require("../config/international_catalog.json");
 const proof = (m) => ({version: 2, matchId: m.id, answers: m.answerKeys});
 test("International catalog has exact mechanic counts and no private answers in APK", () => {
   const counts = {};

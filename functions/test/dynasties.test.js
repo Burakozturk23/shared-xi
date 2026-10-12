@@ -2,7 +2,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
-const {catalog, accepts} = require("../dynasties");
+const {accepts} = require("../dynasties");
+const catalog = require("../config/dynasties_catalog.json");
 const proof = (t) => ({version: 2, taskId: t.id, answers: t.answerKeys});
 const first = catalog.tasks[0];
 test("Dynasties has 16 eras, 32 redacted tasks and exact mechanic distribution", () => {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../services/five_mode_expansion.dart';
 
 import 'package:flutter/services.dart';
 
@@ -16,10 +17,12 @@ class NostalgiaTask {
   List<Map<String, dynamic>> get options =>
       (data['options'] as List).map(nostalgiaMap).toList();
   List<String> get optionIds => options.map((o) => o['id'] as String).toList();
+  bool get serverValidated => data['serverValidated'] == true;
+  int get requiredCount => (data['requiredCount'] as int?) ?? answerKeys.length;
   List<String> get answerKeys => nostalgiaStrings(data['answerKeys']);
   List<String> get slots => nostalgiaStrings(data['slots']);
   List<Map<String, dynamic>> get sources =>
-      (data['sources'] as List).map(nostalgiaMap).toList();
+      (data['sources'] as List? ?? []).map(nostalgiaMap).toList();
   String label(String id) =>
       options.firstWhere((o) => o['id'] == id)['label'] as String;
   bool accepts(List<String> answer) =>
@@ -68,10 +71,12 @@ class NostalgiaCatalog {
         ),
       ),
     );
+    final extra = await loadFiveModeExpansion();
+    c.chapters.addAll((extra['nostalgia'] as List).map((c) => NostalgiaChapter(nostalgiaMap(c))));
     if (c.version != 2 ||
-        c.chapters.length != 12 ||
-        c.tasks.length != 24 ||
-        c.tasks.map((t) => t.id).toSet().length != 24 ||
+        c.chapters.length != 15 ||
+        c.tasks.length != 30 ||
+        c.tasks.map((t) => t.id).toSet().length != 30 ||
         c.chapters.any((c) => c.tasks.length != 2)) {
       throw const FormatException('Nostalji kataloğu geçersiz');
     }

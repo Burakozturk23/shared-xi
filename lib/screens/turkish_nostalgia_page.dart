@@ -239,19 +239,19 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     _paper(
       'HİKÂYE ARŞİVİ / 04',
       'Futbolun\nhafızası',
-      'Bir sezon, bir nesil, bir hatıra.\n12 bölüm · 24 görev · 5 farklı oyun',
+      'Bir sezon, bir nesil, bir hatıra.\n15 bölüm · 30 görev · 5 farklı oyun',
     ),
     Wrap(
       spacing: 12,
       runSpacing: 8,
       children: [
-        Chip(label: Text('${c.solved.length}/24 görev')),
-        Chip(label: Text('${c.albums}/12 hatıra')),
+        Chip(label: Text('${c.solved.length}/${c.catalog.tasks.length} görev')),
+        Chip(label: Text('${c.albums}/${c.catalog.chapters.length} hatıra')),
         Chip(label: Text('${c.coins} Coin kazanıldı')),
       ],
     ),
     const SizedBox(height: 12),
-    LinearProgressIndicator(value: c.solved.length / 24),
+    LinearProgressIndicator(value: c.solved.length / c.catalog.tasks.length),
     const SizedBox(height: 16),
     if (c.active != null && c.count(c.active!) < 2) ...[
       FilledButton.icon(
@@ -442,11 +442,11 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(t.text('hint')),
         ),
-      if (c.hints.contains(t.id))
+      if (!t.serverValidated && c.hints.contains(t.id))
         PitchPanel(child: Text(t.text('strongHint')))
-      else
+      else if (!t.serverValidated)
         TextButton(
-          onPressed: c.busy || c.syncing
+          onPressed: c.task!.serverValidated || c.busy || c.syncing
               ? null
               : () async {
                   final buy = await showDialog<bool>(
@@ -529,11 +529,11 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     _paper(
       'TARİHİ GERÇEKLER',
       'Doğru izdesin',
-      c.task!.text('explanation'),
+      c.task!.serverValidated ? nostalgiaMap(c.results[c.task!.id])['story']?.toString() ?? '' : c.task!.text('explanation'),
       icon: Icons.auto_stories,
     ),
     Text(
-      c.task!.answerKeys.map(c.task!.label).join(' → '),
+      c.task!.serverValidated ? nostalgiaMap(c.results[c.task!.id])['answer']?.toString() ?? '' : c.task!.answerKeys.map(c.task!.label).join(' → '),
       style: Theme.of(context).textTheme.titleLarge,
     ),
     const SizedBox(height: 16),
@@ -543,11 +543,13 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           : 'Cihazda tamamlandı. Ödül, sunucu doğrulamasından sonra eklenir.',
     ),
     const SizedBox(height: 8),
-    const Text(
-      'Yeni görev: 6 Coin + 15 XP · Bölüm: 15 Coin + 30 XP\nTekrar oynama ikinci kez ödül kazandırmaz.',
+    Text(
+      c.task!.serverValidated ? 'Genişleme görevi: Coin/XP ödülü henüz tanımlanmadı.' : 'Yeni görev: 6 Coin + 15 XP · Bölüm: 15 Coin + 30 XP\nTekrar oynama ikinci kez ödül kazandırmaz.',
     ),
     const PitchSectionTitle('Kaynak kaydı'),
-    for (final s in c.task!.sources)
+    for (final s in c.task!.serverValidated
+        ? (nostalgiaMap(c.results[c.task!.id])['sources'] as List? ?? []).map(nostalgiaMap)
+        : c.task!.sources)
       Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: Text('${s['label']}\n${s['url']}\nKontrol: ${s['accessed']}'),
@@ -567,20 +569,20 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
   ];
   List<Widget> _album(TurkishNostalgiaController c) => [
     _paper(
-      'KOLEKSİYON / ${c.albums} / 12',
+      'KOLEKSİYON / ${c.albums} / ${c.catalog.chapters.length}',
       'Nostalji Albümü',
-      c.albums == 12
+      c.albums == c.catalog.chapters.length
           ? 'Futbol Hafızası rozeti tamamlandı. On iki dönemin hatırası sende.'
           : 'Her bölümden bir hatıra. İki görevi tamamla, dönemin kartını aç.',
       icon: Icons.collections_bookmark,
     ),
-    if (c.albums == 12)
+    if (c.albums == c.catalog.chapters.length)
       const Chip(
         avatar: Icon(Icons.workspace_premium),
         label: Text('Futbol Hafızası'),
       ),
     const Text(
-      'Albüm finali: 60 Coin + 120 XP. Ödüller sunucu onayıyla bir kez eklenir.',
+      'İlk 12 bölümün albüm finali: 60 Coin + 120 XP. Ödüller sunucu onayıyla bir kez eklenir.',
     ),
     const SizedBox(height: 20),
     for (final chapter in c.catalog.chapters)

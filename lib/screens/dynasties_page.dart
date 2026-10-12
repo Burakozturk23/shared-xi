@@ -1,3 +1,4 @@
+import '../services/five_mode_expansion.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,7 +105,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
     ));
   }
   IconData _icon(String type) => switch(type) {
-    'squad'=>Icons.groups_outlined, 'timeline'=>Icons.swap_vert,
+    'route'=>Icons.route, 'squad'=>Icons.groups_outlined, 'timeline'=>Icons.swap_vert,
     'trophies'=>Icons.emoji_events_outlined, 'tactics'=>Icons.account_tree_outlined,
     _=>Icons.bar_chart_rounded,
   };
@@ -130,14 +131,14 @@ class _DynastiesPageState extends State<DynastiesPage> {
     final visible=c.catalog.dynasties.where((d)=>_filter=='all'||d.chapterId.toString()==_filter);
     return [
       _hero('HANEDANLIKLAR ÇAĞI','Bir dönem.\nKalıcı bir iz.',
-        '16 hanedanlık. 32 görev. Kadroyu, kupaları ve oyun fikrini keşfet.',
+        '19 hanedanlık. 38 görev. Kadroyu, kupaları ve oyun fikrini keşfet.',
         footer:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-          Text('${c.sealCount} / 16 mühür  ·  ${c.count} / 32 görev',style:const TextStyle(color:Colors.white,fontWeight:FontWeight.bold)),
-          const SizedBox(height:12),LinearProgressIndicator(value:c.sealCount/16,minHeight:6,
+          Text('${c.sealCount} / ${c.catalog.dynasties.length} mühür  ·  ${c.count} / ${c.catalog.tasks.length} görev',style:const TextStyle(color:Colors.white,fontWeight:FontWeight.bold)),
+          const SizedBox(height:12),LinearProgressIndicator(value:c.sealCount/c.catalog.dynasties.length,minHeight:6,
             color:const Color(0xFFF3CF87),backgroundColor:Colors.white12),
         ])),
       const SizedBox(height:16),
-      const Text('Her görevde ilk başarı: 8 Coin + 20 XP. Her dönemde iki görev, bir mühür.'),
+      const Text('İlk 16 dönemin görevlerinde ilk başarı: 8 Coin + 20 XP. Her dönemde iki görev, bir mühür.'),
       if(!c.rewardEligible) const Padding(padding:EdgeInsets.only(top:8),child:Text('Misafir olarak oynayabilirsin. Ödüllerin için bu misafir hesabını Google’a bağla.')),
       const SizedBox(height:14),
       Wrap(spacing:8,runSpacing:8,children:[
@@ -157,10 +158,10 @@ class _DynastiesPageState extends State<DynastiesPage> {
         const PitchSectionTitle('Atlas kilometre taşları'),
         for(final raw in c.catalog.economy['milestones'] as List) Padding(padding:const EdgeInsets.only(bottom:8),child:PitchPanel(
           child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
-            Icon(c.sealCount >= dyMap(raw)['count'] ? Icons.verified : Icons.flag_outlined),const SizedBox(width:12),
-            Expanded(child:Text('${dyMap(raw)['count']} mühür · +${dyMap(raw)['coins']} Coin / +${dyMap(raw)['xp']} XP\n${dyMap(c.rewards['milestone_${dyMap(raw)['count']}'])['settled']==true?'Ödül alındı':c.sealCount >= dyMap(raw)['count']?'Ödül eşitlemesi bekliyor':'Keşfetmeye devam et'}')),
+            Icon(c.catalog.dynasties.where((d) => d.data['expansion'] == null && c.seals.containsKey(d.id)).length >= dyMap(raw)['count'] ? Icons.verified : Icons.flag_outlined),const SizedBox(width:12),
+            Expanded(child:Text('${dyMap(raw)['count']} mühür · +${dyMap(raw)['coins']} Coin / +${dyMap(raw)['xp']} XP\n${dyMap(c.rewards['milestone_${dyMap(raw)['count']}'])['settled']==true?'Ödül alındı':c.catalog.dynasties.where((d) => d.data['expansion'] == null && c.seals.containsKey(d.id)).length >= dyMap(raw)['count']?'Ödül eşitlemesi bekliyor':'Keşfetmeye devam et'}')),
           ]))),
-        PitchPanel(key:const ValueKey('dy-historian'),child:Text(c.sealCount==16?'Futbol Tarihçisi · 16/16 mühür tamamlandı':'Futbol Tarihçisi · tüm mühürlerle açılır')),
+        PitchPanel(key:const ValueKey('dy-historian'),child:Text(c.catalog.dynasties.where((d) => d.data['expansion'] == null && c.seals.containsKey(d.id)).length==16?'Futbol Tarihçisi · 16/16 mühür tamamlandı':'Futbol Tarihçisi · tüm mühürlerle açılır')),
       ],
       for(final chapter in [1,2]) ...[
         if(visible.any((d)=>d.chapterId==chapter)) PitchSectionTitle(c.catalog.chapters[chapter-1]),
@@ -192,6 +193,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
         onTap:c.busy||!c.available(c.catalog.byId(id))?null:()=>_open(id))),
       const SizedBox(height:12),Text('${t.text('title')} · ${t.label}',style:Theme.of(context).textTheme.titleMedium),
       const SizedBox(height:10),const Text('Ücretsiz ipucu ve sınırsız deneme. Seçimlerin cihazda saklanır; ilerleme ve ödül bağlantı olduğunda doğrulanır.'),
+      if (t.data['expansion'] != null) const Padding(padding:EdgeInsets.only(top:12),child:Text(expansionRewardNotice)),
       const SizedBox(height:20),FilledButton.icon(key:const ValueKey('dy-start'),onPressed:c.busy?null:(){c.start();_top();},icon:const Icon(Icons.play_arrow),label:Text('${t.text('title')} görevine başla')),
     ];
   }
@@ -277,7 +279,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
       if(sealed)...[const SizedBox(height:16),PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
         _seal(d,true),const SizedBox(height:12),Text(dyMap(c.seals[d.id])['story']?.toString()??''),
       ]))],
-      const SizedBox(height:16),PitchPanel(child:Text(reward['settled']==true?'İlk başarı ödülü alındı: 8 Coin + 20 XP. Yeniden oynamak ikinci ödül vermez.':'8 Coin + 20 XP ödülün bekliyor. Bağlantını kontrol et; misafirsen bu hesabı Google’a bağlayıp eşitle.')),
+      const SizedBox(height:16),PitchPanel(child:Text(t.data['expansion'] != null ? expansionRewardNotice : reward['settled']==true?'İlk başarı ödülü alındı: 8 Coin + 20 XP. Yeniden oynamak ikinci ödül vermez.':'8 Coin + 20 XP ödülün bekliyor. Bağlantını kontrol et; misafirsen bu hesabı Google’a bağlayıp eşitle.')),
       const SizedBox(height:12),ExpansionTile(key:PageStorageKey('dy-sources-${t.id}'),title:const Text('Tarihsel kaynaklar'),children:[
         for(final raw in r['sources'] as List? ?? []) Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text(Uri.parse(dyMap(raw)['url'] as String).host),Text(dyMap(raw)['url'] as String,style:const TextStyle(fontSize:12)),

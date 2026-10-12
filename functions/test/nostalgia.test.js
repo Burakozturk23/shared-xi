@@ -3,8 +3,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const {harness} = require("./support/economy_harness");
-const {catalog, tasks} = require("../nostalgia");
-const all = Object.values(tasks);
+const {tasks} = require("../nostalgia");
+const catalog = require("../config/nostalgia_catalog.json");
+const all = Object.values(tasks).filter((t) => !t.expansion);
 const proof = (t) => ({version: 2, taskId: t.id, answers: t.answerKeys});
 test("nostalgia catalog: 12 chapters, 24 reviewed unique tasks, five mechanics and runtime parity", () => {
   assert.deepEqual(catalog, require("../../assets/data/turkish_nostalgia_v2.json"));
