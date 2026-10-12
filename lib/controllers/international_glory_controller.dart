@@ -23,7 +23,7 @@ class InternationalGloryController extends ChangeNotifier {
   int get count => results.length;
   int get coins => rewards.values.map(igMap).where((r) => r['settled'] == true)
       .fold(0, (sum, r) => sum + ((r['coins'] as num?)?.toInt() ?? 0));
-  bool get canSubmit => phase == 'task' && active != null && answers.length == (active!.ordered ? active!.options.length : 1) && answers.toSet().length == answers.length && answers.every(active!.optionIds.contains);
+  bool get canSubmit => phase == 'task' && active != null && answers.length == (active!.type == 'route' ? active!.slots.length : active!.ordered ? active!.options.length : 1) && answers.toSet().length == answers.length && answers.every(active!.optionIds.contains);
   void _notify() { if (!_disposed) notifyListeners(); }
   Map<String, dynamic> _snapshot() => igMap(jsonDecode(jsonEncode({'version': catalog.version,
     'drafts': Map<String, dynamic>.from(drafts), 'results': Map<String, dynamic>.from(results),
@@ -52,7 +52,7 @@ class InternationalGloryController extends ChangeNotifier {
       for (final m in catalog.matches) {
         final a = igStrings(drafts[m.id]);
         if (a.where((x) => x.isNotEmpty).toSet().length != a.where((x) => x.isNotEmpty).length || a.any((x) => !(m.type == 'route' && x.isEmpty) && !m.optionIds.contains(x)) ||
-            (m.ordered ? a.length != m.options.length : a.length > 1)) drafts.remove(m.id);
+            (m.ordered ? a.length != (m.type == 'route' ? m.slots.length : m.options.length) : a.length > 1)) drafts.remove(m.id);
       }
       results = igMap(s['results'])..removeWhere((id, v) => !validIds.contains(id) || v is! Map);
       rewards = igMap(s['rewards']);

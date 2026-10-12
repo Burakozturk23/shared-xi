@@ -1,4 +1,5 @@
 import '../models/player_journey_chapter.dart';
+import '../models/player_journey.dart';
 import 'player_journeys.dart';
 import 'player_journey_new_legends.dart';
 import 'player_journey_chapter2.dart';
@@ -76,4 +77,15 @@ final List<PlayerJourneyChapter> playerJourneyChapters = [
       mbappeJourney, // 32
     ],
   ),
+  PlayerJourneyChapter(id: 'chapter_5_expansion', number: 5, title: 'Yeni İzler',
+    subtitle: 'Klasik efsaneler ve Türkiye bağlantıları', available: true, journeys: [
+      const PlayerJourneyDefinition(id: 'PJ-33', subjectName: 'Pelé', subjectPlayerId: 4000000065, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-34', subjectName: 'Diego Maradona', subjectPlayerId: 4000000035, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-35', subjectName: 'Ronaldo Nazário', subjectPlayerId: 3140, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-36', subjectName: 'Gianluigi Buffon', subjectPlayerId: 5023, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-37', subjectName: 'Gheorghe Hagi', subjectPlayerId: 4000000002, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-38', subjectName: 'Alex de Souza', subjectPlayerId: 4000000110, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-39', subjectName: 'Ricardo Quaresma', subjectPlayerId: 4188, available: true, stages: []),
+      const PlayerJourneyDefinition(id: 'PJ-40', subjectName: 'Burak Yılmaz', subjectPlayerId: 4000000108, available: true, stages: []),
+    ]),
 ];

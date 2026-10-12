@@ -102,7 +102,7 @@ void main() {
         builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:TextScaler.linear(large?1.8:1)),
           child:RepaintBoundary(key:key,child:child!)),home:JourneyPassportPage(controller:c,journeys:[for(final chapter in ['one','two','three','four']) ...journeyTestPack(chapter:chapter)])));
       await tester.pumpAndSettle();
-      expect(find.text('8 / 32 kariyer damgası'),findsOneWidget);
+      expect(find.text('8 / 40 kariyer damgası'),findsOneWidget);
       expect(tester.takeException(),isNull);
       await snapshot(tester,key,'passport-${large?"large-light":"dark"}');
       await tester.scrollUntilVisible(find.text('Reklamla 2× bölüm coini'),250,maxScrolls:30);

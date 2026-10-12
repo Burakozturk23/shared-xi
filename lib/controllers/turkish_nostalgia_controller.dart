@@ -17,7 +17,7 @@ class TurkishNostalgiaController extends ChangeNotifier {
   final NostalgiaStore store;
   final NostalgiaGateway gateway;
   final Set<String> solved = {}, confirmed = {}, hints = {};
-  Map<String, dynamic> drafts = {}, pending = {}, rewards = {};
+  Map<String, dynamic> drafts = {}, pending = {}, rewards = {}, results = {};
   String? activeId;
   int taskIndex = 0;
   String phase = 'archive', message = '';
@@ -42,7 +42,7 @@ class TurkishNostalgiaController extends ChangeNotifier {
       .fold(0, (n, r) => n + ((r['coins'] as num?)?.toInt() ?? 0));
   bool get canSubmit =>
       task != null &&
-      answers.length == task!.answerKeys.length &&
+      answers.length == task!.requiredCount &&
       answers.toSet().length == answers.length &&
       answers.every(task!.optionIds.contains);
   void _notify() {
@@ -60,7 +60,7 @@ class TurkishNostalgiaController extends ChangeNotifier {
           'hints': hints.toList(),
           'drafts': drafts,
           'pending': pending,
-          'rewards': rewards,
+          'rewards': rewards, 'results': results,
           'activeId': activeId,
           'taskIndex': taskIndex,
           'phase': phase,
@@ -103,10 +103,11 @@ class TurkishNostalgiaController extends ChangeNotifier {
                 !t.optionIds.contains(id),
           ) ||
           a.toSet().length != a.length ||
-          a.length > t.answerKeys.length) {
+          a.length > t.requiredCount) {
         drafts.remove(t.id);
       }
-      if (!t.accepts(nostalgiaStrings(pending[t.id]))) pending.remove(t.id);
+      final proof = nostalgiaStrings(pending[t.id]);
+      if (t.serverValidated ? (proof.length != t.requiredCount || proof.toSet().length != proof.length || !proof.every(t.optionIds.contains)) : !t.accepts(proof)) pending.remove(t.id);
     }
     pending.removeWhere((id, _) => !ids.contains(id));
     // Only known stable task IDs are reused; the legacy controller had no save.
@@ -114,6 +115,7 @@ class TurkishNostalgiaController extends ChangeNotifier {
       if (!solved.contains(c.tasks.first.id)) solved.remove(c.tasks.last.id);
     }
     rewards = nostalgiaMap(s['rewards']);
+    results = nostalgiaMap(s['results']);
     if (catalog.chapters.any((c) => c.id == s['activeId'])) {
       activeId = s['activeId'] as String;
       taskIndex = s['taskIndex'] == 1 && solved.contains(active!.tasks.first.id)
@@ -226,6 +228,15 @@ class TurkishNostalgiaController extends ChangeNotifier {
 
   Future<void> submit() async {
     if (busy || !canSubmit || phase != 'task') return;
+    if (task!.serverValidated) {
+      if (syncing) return;
+      busy = true; _notify();
+      pending[task!.id] = List<String>.from(answers);
+      try { await _save(); await sync(); }
+      catch (_) { message = 'Seçim kaydedilemedi. Yeniden dene.'; }
+      finally { busy = false; _notify(); }
+      return;
+    }
     if (!task!.accepts(answers)) {
       message = 'Henüz doğru değil. İpucuna bakıp yeniden dene.';
       _notify();
@@ -260,6 +271,7 @@ class TurkishNostalgiaController extends ChangeNotifier {
       nostalgiaMap(response['completed']).keys.where(ids.contains),
     );
     solved.addAll(confirmed);
+    results.addAll(nostalgiaMap(response['results']));
     hints.addAll(nostalgiaMap(response['hints']).keys.where(ids.contains));
     rewards = nostalgiaMap(response['rewards']);
     pro = response['pro'] == true;
@@ -293,9 +305,16 @@ class TurkishNostalgiaController extends ChangeNotifier {
         });
         if (_disposed) return;
         if (reply['correct'] != true) {
+          if (t.serverValidated) {
+            pending.remove(t.id);
+            await _save();
+            message = 'Cevap doğru değil. Yeniden deneyebilirsin.';
+            return;
+          }
           throw StateError('Bekleyen görev doğrulanamadı. İçeriği güncelle.');
         }
         _merge(reply);
+        if (t.serverValidated && task?.id == t.id && phase == 'task') phase = 'result';
         pending.remove(t.id);
         await _save();
       }

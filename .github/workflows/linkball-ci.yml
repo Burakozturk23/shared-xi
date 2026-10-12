@@ -73,6 +73,7 @@ jobs:
           python3 tools/dynasties/verify.py
           python3 tools/football_docu/verify.py
           python3 tools/derby_day/verify.py
+          python3 tools/five_mode_expansion/verify.py
           python3 -m unittest discover -s tools/history -p 'test_*.py'
           python3 tools/history/verify.py
           python3 tools/season_portraits/generate_catalog.py --check

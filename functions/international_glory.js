@@ -1,6 +1,8 @@
 "use strict";
 const {RewardError} = require("./rewarded_ads");
-const catalog = require("./config/international_catalog.json");
+const baseCatalog = require("./config/international_catalog.json");
+const expansion = require("./config/five_mode_expansion.json");
+const catalog = {...baseCatalog, matches: [...baseCatalog.matches, ...expansion.international]};
 const matches = Object.fromEntries(catalog.matches.map((m) => [m.id, m]));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
 function matchOf(id) {
@@ -50,8 +52,8 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       const earn = (id, coins, xp) => {
         s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
       };
-      earn(match.id, catalog.economy.match.coins, catalog.economy.match.xp);
-      const count = Object.keys(s.completed).filter((id) => Object.hasOwn(matches, id)).length;
+      if (!match.expansion) earn(match.id, catalog.economy.match.coins, catalog.economy.match.xp);
+      const count = baseCatalog.matches.filter((m) => s.completed[m.id]).length;
       for (const milestone of catalog.economy.milestones) {
         if (count >= milestone.count) earn("milestone_" + milestone.count, milestone.coins, milestone.xp);
       }

@@ -26,7 +26,7 @@ test("reject guest, unknown IDs, wrong answers and skipped stages", async () => 
 });
 test("all 128 proofs mint 1110 coins / 2060 XP once and unlock five badges", async () => {
   const h = harness();
-  for (const id of Object.keys(journeys)) await finish(h, id);
+  for (const id of Object.keys(journeys).filter((id) => !journeys[id].expansion)) await finish(h, id);
   let s = await h.call("getPlayerJourney");
   assert.equal(s.completed.length, 32);
   assert.equal(s.finalUnlocked, true);

@@ -1,0 +1,242 @@
+[
+  [
+    {
+      "stage": 1,
+      "title": "İlk Durak",
+      "prompt": "Pelé, profesyonel A takım futboluna hangi Brezilya kulübünde başladı?",
+      "answer": "Santos FC",
+      "source": "S01"
+    },
+    {
+      "stage": 2,
+      "title": "Milli Zirve",
+      "prompt": "Pelé, Brezilya ile ilk Dünya Kupası şampiyonluğunu hangi yıl kazandı?",
+      "answer": "1958",
+      "source": "S01"
+    },
+    {
+      "stage": 3,
+      "title": "Kıta Başarısı",
+      "prompt": "Pelé’nin Santos ile Libertadores şampiyonluğu kazandığı iki yılı seç.",
+      "answer": "1962 ve 1963",
+      "source": "S27"
+    },
+    {
+      "stage": 4,
+      "title": "Yeni Kıta",
+      "prompt": "Pelé’nin iki profesyonel kulübünü ilkinden sonuncusuna sırala.",
+      "answer": "Santos FC → New York Cosmos",
+      "source": "S02"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "İlk Adım",
+      "prompt": "Maradona, profesyonel A takım kariyerine hangi Arjantin kulübünde başladı?",
+      "answer": "Argentinos Juniors",
+      "source": "S03"
+    },
+    {
+      "stage": 2,
+      "title": "Avrupa’ya Açılan Kapı",
+      "prompt": "Maradona 1982’de hangi İspanyol kulübüne transfer oldu?",
+      "answer": "FC Barcelona",
+      "source": "S04"
+    },
+    {
+      "stage": 3,
+      "title": "Güneyin Şampiyonluğu",
+      "prompt": "Maradona’nın Napoli ile ilk Serie A şampiyonluğu hangi sezon geldi?",
+      "answer": "1986/87",
+      "source": "S03"
+    },
+    {
+      "stage": 4,
+      "title": "Kariyerin Yolu",
+      "prompt": "İlk Napoli dönemine ulaşan kulüp rotasını sırala.",
+      "answer": "Argentinos Juniors → Boca Juniors → Barcelona → Napoli",
+      "source": "S03"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "Brezilya’daki Başlangıç",
+      "prompt": "Ronaldo, Avrupa’ya transfer olmadan önce hangi Brezilya A takımında oynadı?",
+      "answer": "Cruzeiro",
+      "source": "S05"
+    },
+    {
+      "stage": 2,
+      "title": "Avrupa’ya İlk Adım",
+      "prompt": "Ronaldo’nun Avrupa’daki ilk kulübü hangisiydi?",
+      "answer": "PSV Eindhoven",
+      "source": "S05"
+    },
+    {
+      "stage": 3,
+      "title": "İtalya Yılları",
+      "prompt": "Ronaldo, 1997’de Barcelona’dan hangi İtalyan kulübüne geçti?",
+      "answer": "Inter",
+      "source": "S05"
+    },
+    {
+      "stage": 4,
+      "title": "Avrupa Rotası",
+      "prompt": "Ronaldo’nun ilk Real Madrid dönemine kadarki beş kulübünü sırala.",
+      "answer": "Cruzeiro → PSV → Barcelona → Inter → Real Madrid",
+      "source": "S05"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "Kalecinin İlk Kulübü",
+      "prompt": "Buffon’un Serie A’da ilk A takım maçlarını oynadığı kulüp hangisiydi?",
+      "answer": "Parma",
+      "source": "S06"
+    },
+    {
+      "stage": 2,
+      "title": "Torino’ya Yolculuk",
+      "prompt": "Buffon 2001’de Parma’dan hangi kulübe transfer oldu?",
+      "answer": "Juventus",
+      "source": "S06"
+    },
+    {
+      "stage": 3,
+      "title": "Paris Deneyimi",
+      "prompt": "Buffon, 2018/19 sezonunda hangi Fransız kulübünün formasını giydi?",
+      "answer": "Paris Saint-Germain",
+      "source": "S30"
+    },
+    {
+      "stage": 4,
+      "title": "İtalya’ya Dönüş",
+      "prompt": "Buffon, 2019 yazında PSG’den sonra hangi İtalyan kulübüne geri döndü?",
+      "answer": "Juventus",
+      "source": "S31"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "İspanya Yılları",
+      "prompt": "Hagi, 1990’da Romanya’dan ayrıldığında hangi İspanyol kulübüne katıldı?",
+      "answer": "Real Madrid",
+      "source": "S07"
+    },
+    {
+      "stage": 2,
+      "title": "Yeni Forma",
+      "prompt": "Hagi, 1994–1996 yılları arasında hangi İspanyol kulübünde oynadı?",
+      "answer": "FC Barcelona",
+      "source": "S07"
+    },
+    {
+      "stage": 3,
+      "title": "İstanbul Dönemi",
+      "prompt": "Hagi 1996’da hangi Türk kulübüne transfer oldu?",
+      "answer": "Galatasaray",
+      "source": "S07"
+    },
+    {
+      "stage": 4,
+      "title": "Dört Ülkede Bir Rota",
+      "prompt": "Şu dört kulübü Hagi’nin ilk katılma sırasına göre diz.",
+      "answer": "Real Madrid → Brescia → Barcelona → Galatasaray",
+      "source": "S07"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "Başlangıç",
+      "prompt": "Alex profesyonel kariyerine hangi Brezilya kulübünde başladı?",
+      "answer": "Coritiba",
+      "source": "S08"
+    },
+    {
+      "stage": 2,
+      "title": "Brezilya’daki Son Büyük Durak",
+      "prompt": "Alex, 2004’te Fenerbahçe’ye gelmeden hemen önce hangi Brezilya kulübündeydi?",
+      "answer": "Cruzeiro",
+      "source": "S08"
+    },
+    {
+      "stage": 3,
+      "title": "İstanbul",
+      "prompt": "Alex 2004’te hangi Türk kulübüne katıldı?",
+      "answer": "Fenerbahçe",
+      "source": "S08"
+    },
+    {
+      "stage": 4,
+      "title": "Eve Dönüş",
+      "prompt": "Alex, Fenerbahçe’den ayrıldıktan sonra hangi Brezilya kulübünde futbol oynadı?",
+      "answer": "Coritiba",
+      "source": "S08"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "Lizbon Çıkışı",
+      "prompt": "Quaresma 2003’te Sporting’den hangi İspanyol kulübüne transfer oldu?",
+      "answer": "FC Barcelona",
+      "source": "S09"
+    },
+    {
+      "stage": 2,
+      "title": "Porto Dönemi",
+      "prompt": "Quaresma, Barcelona’dan ayrıldıktan sonra hangi Portekiz kulübünde oynadı?",
+      "answer": "FC Porto",
+      "source": "S09"
+    },
+    {
+      "stage": 3,
+      "title": "İstanbul’a Geliş",
+      "prompt": "Quaresma, 2010’da Türkiye’de hangi kulübe katıldı?",
+      "answer": "Beşiktaş",
+      "source": "S09"
+    },
+    {
+      "stage": 4,
+      "title": "İkinci İstanbul Forması",
+      "prompt": "Quaresma 2019’da Beşiktaş’tan hangi diğer İstanbul kulübüne geçti?",
+      "answer": "Kasımpaşa",
+      "source": "S09"
+    }
+  ],
+  [
+    {
+      "stage": 1,
+      "title": "İlk Profesyonel Adım",
+      "prompt": "Burak Yılmaz’ın ilk profesyonel A takım kulübü hangisiydi?",
+      "answer": "Antalyaspor",
+      "source": "S10"
+    },
+    {
+      "stage": 2,
+      "title": "Karadeniz",
+      "prompt": "Burak Yılmaz, 2010’da hangi Karadeniz kulübüne transfer oldu?",
+      "answer": "Trabzonspor",
+      "source": "S10"
+    },
+    {
+      "stage": 3,
+      "title": "İstanbul",
+      "prompt": "Burak Yılmaz, 2012 yazında Trabzonspor’dan hangi takıma geçti?",
+      "answer": "Galatasaray",
+      "source": "S10"
+    },
+    {
+      "stage": 4,
+      "title": "Fransa Şampiyonluğu",
+      "prompt": "Burak Yılmaz 2020/21 Ligue 1 şampiyonluğunu hangi kulüple kazandı?",
+      "answer": "Lille OSC",
+      "source": "S11"
+    }
+  ]
+]
