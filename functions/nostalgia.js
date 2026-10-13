@@ -42,6 +42,28 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       fail("failed-precondition", "Önce ilk görevi eşitle.");
     }
   }
+  function accrue(s) {
+    const earn = (id, coins, xp) => {
+      s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
+    };
+    for (const c of catalog.chapters) {
+      for (const t of c.tasks) {
+        if (s.completed[t.id]) earn(t.id, catalog.economy.task.coins, catalog.economy.task.xp);
+      }
+      if (c.tasks.every((t) => s.completed[t.id])) {
+        earn(c.id, catalog.economy.chapter.coins, catalog.economy.chapter.xp);
+      }
+    }
+    // Keep the original album target and receipt: earned finals never reset.
+    if (baseCatalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
+      earn("album", catalog.economy.final.coins, catalog.economy.final.xp);
+    }
+    return s;
+  }
+  async function reconcile(uid) {
+    // Only server-confirmed progress is eligible. Preserve every existing receipt.
+    await ref(uid).transaction((raw) => accrue(stateOf(raw)));
+  }
   async function settle(uid) {
     const state = await get(uid);
     for (const [id, reward] of Object.entries(state.rewards)) {
@@ -55,6 +77,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     }
   }
   async function status(uid, eligible = true) {
+    await reconcile(uid);
     if (eligible) await settle(uid);
     const s = await get(uid);
     return {version: catalog.version, completed: s.completed, hints: s.hints, rewards: s.rewards,
@@ -68,16 +91,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     await change(uid, (s) => {
       available(s, task);
       s.completed[task.id] ||= now();
-      const earn = (id, reward) => {
-        s.rewards[id] ||= {...reward, earnedAt: now(), settled: false};
-      };
-      if (!task.expansion) earn(task.id, catalog.economy.task);
-      for (const c of baseCatalog.chapters) {
-        if (c.tasks.every((t) => s.completed[t.id])) earn(c.id, catalog.economy.chapter);
-      }
-      if (baseCatalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
-        earn("album", catalog.economy.final);
-      }
+      accrue(s);
     });
     return {correct: true, ...await status(uid, eligible)};
   }

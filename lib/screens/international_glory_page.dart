@@ -1,4 +1,3 @@
-import '../services/five_mode_expansion.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -124,20 +123,20 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
     final visible = c.catalog.matches.where((m) => (_filter == 'all' || m.chapterId.toString() == _filter));
     return [
       _hero('ULUSLARIN ZAFERİ · 1970–2024', 'Bir ülke.\nBir hatıra.',
-        '44 karşılaşma. Beş farklı görev. Futbol hafızanı sahaya çıkar.',
+        '${c.catalog.matches.length} karşılaşma. Beş farklı görev. Futbol hafızanı sahaya çıkar.',
         footer: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('${c.count} / ${c.catalog.matches.length} hatıra', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10), ClipRRect(borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(value: c.count / c.catalog.matches.length, minHeight: 6, color: const Color(0xFF5FE4D1), backgroundColor: Colors.white12)),
         ])),
       const SizedBox(height: 16),
-      Text('Eski görevlerde ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 6), const Text('10, 20, 30 ve 40 eski görevde koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
+      Text('Her ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: 6), const Text('10, 20, 30 ve 40 farklı maçta koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 8),
         child: Text('Misafir olarak oynayabilirsin. Ödülleri almak için bu misafir hesabını Google’a bağla.')),
       const SizedBox(height: 12),
       Wrap(spacing: 8, runSpacing: 4, children: [
-        for (final (n, coin) in [(10,40),(20,70),(30,90),(40,120)]) Chip(label: Text('${c.catalog.matches.where((m) => m.data['expansion'] == null && c.results.containsKey(m.id)).length >= n ? '✓ ' : ''}$n maç · +$coin coin')),
+        for (final (n, coin) in [(10,40),(20,70),(30,90),(40,120)]) Chip(label: Text('${c.catalog.matches.where((m) => c.results.containsKey(m.id)).length >= n ? '✓ ' : ''}$n maç · +$coin coin')),
       ]),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
         child: PitchRow(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
@@ -161,7 +160,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(c.catalog.chapters[ch - 1]),
-              Text('${c.catalog.matches.where((m) => m.chapterId == ch && c.results.containsKey(m.id)).length} / 10 hatıra'),
+              Text('${c.catalog.matches.where((m) => m.chapterId == ch && c.results.containsKey(m.id)).length} / ${c.catalog.matches.where((m) => m.chapterId == ch).length} hatıra'),
             ])),
           ]))),
         if (c.count == c.catalog.matches.length) const Padding(padding: EdgeInsets.only(top: 12), child: PitchPanel(
@@ -183,7 +182,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
     return [_matchHeader(m), const SizedBox(height: 20), Text(m.text('intro'), style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 20), PitchRow(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
       const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
-      if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text(expansionRewardNotice)),
+      if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text('İlk tamamlama: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
       const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ig-start'), onPressed: c.busy ? null : () { c.start(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Karşılaşmaya katıl'))];
   }
@@ -283,7 +282,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
         for (final raw in result['events'] as List) Padding(padding: const EdgeInsets.only(bottom: 8), child: PitchRow(
           title: igMap(raw)['label'] as String, subtitle: igMap(raw)['minute'] as String, icon: Icons.sports_soccer, trailing: const SizedBox.shrink())),
       ],
-      const SizedBox(height: 18), PitchPanel(child: Text(m.data['expansion'] != null ? expansionRewardNotice : reward['settled'] == true
+      const SizedBox(height: 18), PitchPanel(child: Text(reward['settled'] == true
           ? 'İlk tamamlama ödülü alındı: 8 coin + 20 XP. Tekrar oynarken ikinci ödeme yapılmaz.'
           : '8 coin + 20 XP ödülü bekliyor. Bağlantını kontrol et; misafirsen aynı hesabı Google’a bağlayıp eşitle.')),
       const SizedBox(height: 12), ExpansionTile(key: PageStorageKey('ig-sources-${m.id}'), title: const Text('Maçın kaynakları'), children: [

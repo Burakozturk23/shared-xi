@@ -96,7 +96,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
           const SizedBox(height:12),
           const Text('Dört görevi çöz, oyuncunun damgasını kazan. Üç favorini profil vitrinine taşı.'),
           const SizedBox(height:12),
-          const Text('İlk 32 kariyer: 20 Coin + 40 XP\nİlk dört bölüm: 80 Coin + 120 XP\nSınırları Aşanlar: Coin/XP ödülü henüz tanımlanmadı.',style:TextStyle(fontWeight:FontWeight.w600)),
+          const Text('Her kariyer: 20 Coin + 40 XP\nHer bölüm: 80 Coin + 120 XP\nÖdüller ilk tamamlamada bir kez verilir.',style:TextStyle(fontWeight:FontWeight.w600)),
         ])),
         if(_rewards.busy) const Padding(padding:EdgeInsets.symmetric(vertical:12),child:LinearProgressIndicator()),
         if(_rewards.message!=null) Padding(padding:const EdgeInsets.symmetric(vertical:12),child:Text(_rewards.message!)),
@@ -113,7 +113,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
             ])),
           ]),
           const SizedBox(height:12),
-          Text(_chapter == 5 ? 'Genişleme paketinin Coin/XP ödülü henüz tanımlanmadı.' : paid ? 'Bölüm ödülü alındı · 80 Coin + 120 XP' : 'Sekiz damgada bölüm ödülü açılır.'),
+          Text(paid ? 'Bölüm ödülü alındı · 80 Coin + 120 XP' : 'Sekiz damgada bölüm ödülü açılır.'),
           if(paid) ...[
             const SizedBox(height:8),
             if(doubled) const Text('Bonus alındı · +80 Coin',style:TextStyle(fontWeight:FontWeight.w700))

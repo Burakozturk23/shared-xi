@@ -10,6 +10,3 @@ Future<Map<String, dynamic>> loadFiveModeExpansion() async {
   }
   return data;
 }
-
-const expansionRewardNotice =
-    'Genişleme görevi: Coin/XP ödülü henüz tanımlanmadı. Tamamlanman kaydedilir.';

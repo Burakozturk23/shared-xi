@@ -1,6 +1,5 @@
 import '../controllers/journey_rewards_controller.dart';
 import '../services/auth_service.dart';
-import '../services/five_mode_expansion.dart';
 import '../widgets/journey_reward_card.dart';
 import 'journey_passport_page.dart';
 import '../app/route_appearance.dart';
@@ -212,7 +211,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         icon:const Icon(Icons.toll),label:const Text('Ek destek · 10 Coin')),
       if (_rewards.hints(task.id).isNotEmpty) PitchPanel(child:Text(_assistance(game))),
       ],
-      if (task.serverValidated) const PitchPanel(child: Text(expansionRewardNotice)),
+      if (task.serverValidated) const PitchPanel(child: Text('Dört aşama tamamlanınca: 20 Coin + 40 XP. Sekiz kariyerin tamamında: ayrıca 80 Coin + 120 XP.')),
       if (_rewards.message!=null) Text(_rewards.message!),
       const SizedBox(height: 12), const Text('Süre sınırı yok. Yanlış seçimde tekrar deneyebilirsin.', textAlign: TextAlign.center),
     ];
@@ -256,7 +255,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       if (game.checkpoint!.complete) ...[const SizedBox(height: 16), const Text('Dört görevi çözdün. Oyuncu listesinde yolculuğuna devam edebilirsin.')],
     ])), const SizedBox(height: 18),
     if (game.checkpoint!.complete) ...[
-      if (!game.task.serverValidated) JourneyRewardCard(rewards:_rewards,journeyId:widget.journeyId,chapter:journeyV2Chapters[widget.chapterId]!.number),
+      JourneyRewardCard(rewards:_rewards,journeyId:widget.journeyId,chapter:journeyV2Chapters[widget.chapterId]!.number),
       const SizedBox(height:12),
       OutlinedButton.icon(onPressed:()=>Navigator.of(context).push(LinkballRoute(builder:(_)=>const JourneyPassportPage())),
         icon:const Icon(Icons.collections_bookmark_outlined),label:const Text('Kariyer pasaportum')) ,

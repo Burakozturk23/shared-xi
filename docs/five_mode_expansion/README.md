@@ -18,12 +18,25 @@ Yeni seçenek anahtarları doğru cevap veya seçenek sırasını kodlamaz.
 
 ## Ekonomi ve kayıtlar
 
-PDF yeni 51 görevin ödülünü belirlemiyor. `rewardPolicy: pending` bu sürümde
-Coin/XP dağıtmaz; sonradan otomatik geriye dönük ödül çıkaracak bir işlem yoktur.
-Tamamlanmalar, kariyer damgaları ve hanedanlık mühürleri kaydedilir. Eski Coin/XP,
-bölüm/final/album ödülleri yalnızca eski görev kimlikleriyle hesaplanır. Örneğin
-40 Player Journey kariyerini tamamlamak önceki 1110 Coin / 2060 XP toplamını korur.
-Yeni içerik eski koleksiyon ödüllerinin yerine sayılamaz.
+13 Ekim güncellemesi: kullanıcının talebiyle `rewardPolicy: mode_default` etkin.
+Yeni içerikler kendi modlarının mevcut ekonomisini kullanır:
+
+| Mod | İlk başarı | Ek tamamlama |
+| --- | --- | --- |
+| Player Journey | Dört görevlik kariyer: 20 Coin / 40 XP | Sekiz kariyerlik bölüm: 80 Coin / 120 XP; isteğe bağlı +80 Coin reklam/Pro bonusu |
+| UCL Moments | Maç: 8 Coin / 20 XP | Mevcut 10/20/34 eşikleri |
+| Nostalji | Görev: 6 Coin / 15 XP | Her bölüm: 15 Coin / 30 XP |
+| International Glory | Maç: 8 Coin / 20 XP | Mevcut 10/20/30/40 eşikleri |
+| Dynasties | Görev: 8 Coin / 20 XP | Mevcut 4/8/12/16 mühür eşikleri |
+
+Yeni maçlar/mühürler mevcut sayı eşiklerine dahil edilir; aynı eşik yeniden ödemez.
+Player Journey'nin ilk 32 kariyer finali ve Nostalji'nin ilk 12 bölüm albüm finali
+aynı kimlik ve koşullarla korunur. Yeni bir genel final ödülü icat edilmez.
+Sunucuda önceden tamamlanmış, ödülsüz genişleme kayıtları durum eşitlemesinde
+hak kazanır. Mevcut makbuzlar `||=` ile korunur; Coin/XP yazımı kesilirse aynı
+makbuzla yeniden denenir. Kullanıcıdan gelen yerel tamamlanma iddiası kullanılmaz.
+Tüm içerik (reklam bonusu hariç): PJ 1350 Coin/2500 XP, UCL 506/1065,
+Nostalji 465/1020, International 672/1355, Dynasties 504/1135.
 
 Player Journey'nin mevcut Google hesabı koşulu devam eder. Yeni bölüm kayıtları
 UID ile ayrılır. Yeni kariyer ve Nostalji görevlerinde sunucu onayından önce

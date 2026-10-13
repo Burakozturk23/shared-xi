@@ -239,7 +239,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     _paper(
       'HİKÂYE ARŞİVİ / 04',
       'Futbolun\nhafızası',
-      'Bir sezon, bir nesil, bir hatıra.\n15 bölüm · 30 görev · 5 farklı oyun',
+      'Bir sezon, bir nesil, bir hatıra.\n${c.catalog.chapters.length} bölüm · ${c.catalog.tasks.length} görev · 5 farklı oyun',
     ),
     Wrap(
       spacing: 12,
@@ -250,6 +250,8 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
         Chip(label: Text('${c.coins} Coin kazanıldı')),
       ],
     ),
+    const SizedBox(height: 12),
+    const Text('Her görev: 6 Coin + 15 XP · Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
     const SizedBox(height: 12),
     LinearProgressIndicator(value: c.solved.length / c.catalog.tasks.length),
     const SizedBox(height: 16),
@@ -544,7 +546,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     ),
     const SizedBox(height: 8),
     Text(
-      c.task!.serverValidated ? 'Genişleme görevi: Coin/XP ödülü henüz tanımlanmadı.' : 'Yeni görev: 6 Coin + 15 XP · Bölüm: 15 Coin + 30 XP\nTekrar oynama ikinci kez ödül kazandırmaz.',
+      'Yeni görev: 6 Coin + 15 XP · Bölüm: 15 Coin + 30 XP\nTekrar oynama ikinci kez ödül kazandırmaz.',
     ),
     const PitchSectionTitle('Kaynak kaydı'),
     for (final s in c.task!.serverValidated
@@ -572,7 +574,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
       'KOLEKSİYON / ${c.albums} / ${c.catalog.chapters.length}',
       'Nostalji Albümü',
       c.albums == c.catalog.chapters.length
-          ? 'Futbol Hafızası rozeti tamamlandı. On iki dönemin hatırası sende.'
+          ? 'Futbol Hafızası rozeti tamamlandı. ${c.catalog.chapters.length} dönemin hatırası sende.'
           : 'Her bölümden bir hatıra. İki görevi tamamla, dönemin kartını aç.',
       icon: Icons.collections_bookmark,
     ),

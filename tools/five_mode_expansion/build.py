@@ -16,7 +16,7 @@ def task(id,prompt,answers,wrong,hint,src,kind='single',story=None):
     key=lambda label:hashlib.sha256((id+'|'+label).encode()).hexdigest()[:12]
     options=sorted([{'id':key(l),'label':l} for l in labels],key=lambda o:o['id'])
     return dict(id=id,prompt=prompt,options=options,answerKeys=[key(a) for a in answers],
-        requiredCount=len(answers),hint=hint,contentVersion=1,expansion=PACK,rewardPolicy='pending',
+        requiredCount=len(answers),hint=hint,contentVersion=1,expansion=PACK,rewardPolicy='mode_default',
         result=dict(answer=' → '.join(answers) if kind=='order' else ', '.join(answers),
                     story=story or 'Doğru cevap: '+', '.join(answers)+'.',sources=sources(*src)))
 
@@ -43,7 +43,7 @@ def build():
       ['İlk profesyonel A takım ile ilk büyük transfer aynı durak değil.','2010 yılındaki kulüp değişimine odaklan.','2012 yazındaki transferi, daha sonraki geri dönüşlerle karıştırma.','Takvim yılını değil, tamamlanan lig sezonunu düşün.']]
     questions=json.loads((HERE/'journey_questions.json').read_text())
     for k,(id,name,pid) in enumerate(people):
-      j=dict(id=id,name=name,playerId=pid,expansion=PACK,rewardPolicy='pending',tasks=[])
+      j=dict(id=id,name=name,playerId=pid,expansion=PACK,rewardPolicy='mode_default',tasks=[])
       for i,q in enumerate(questions[k]):
         a=q['answer'];typ='clubChoice';answers=[a]
         if ' → ' in a:
@@ -105,7 +105,7 @@ def build():
       d=dict(id=f'DY-{n}',number=n,chapterId=2,club=club,period=period,title=title,intro='Bir kulübün yıllara yayılan başarısını kupalar ve teknik yönetim üzerinden keşfet.',taskIds=[f'DY-{n}-01',f'DY-{n}-02'],expansion=PACK,story=f'{club} · {period}: iki tarihsel iz tamamlandı.');ds.append(d)
       for i,(kind,interaction,q,a,w,h,src) in enumerate(ts,1):
         t=task(d['taskIds'][i-1],q,a,w,h,src);t.update(number=(n-1)*2+i,dynastyId=d['id'],stage=i,mechanic=kind,interaction=interaction,title='Yükseliş' if i==1 else 'Zirve',slots=[]);dt.append(t)
-    private=dict(version=1,id=PACK,rewardPolicy='pending',journey=pj,ucl=ucl,nostalgia=tn,international=ig,dynasties=ds,dynastyTasks=dt)
+    private=dict(version=1,id=PACK,rewardPolicy='mode_default',journey=pj,ucl=ucl,nostalgia=tn,international=ig,dynasties=ds,dynastyTasks=dt)
     public=copy.deepcopy(private)
     def redact(v):
       if isinstance(v,dict):
