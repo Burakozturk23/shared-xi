@@ -84,3 +84,17 @@ Eksik alan veya bulunamayan keystore artık paketleme sonuna kadar beklemeden
 açıklayıcı hata üretir. Debug derlemesi yayın anahtarı istemez.
 
 Kaynak: https://docs.flutter.dev/deployment/android#sign-the-app
+
+## Windows: farklı sürücüde Kotlin önbelleği
+
+Windows doğrulamasında ayrıca `this and base files have different roots` /
+`Could not close incremental caches` hatası yeniden üretildi: Pub cache C:\,
+proje D:\ üzerindeydi. `android/gradle.properties` artık desteklenen
+`kotlin.incremental=false` seçeneğini içeriyor. Bu ayar Kotlin derleme hızını
+etkiler; uygulamanın çalışma şeklini, imzasını veya Firebase politikasını değiştirmez.
+
+Eski başarısız derlemeden kalan dosyalar sorun çıkarırsa proje klasöründe bir kez
+`flutter clean`, ardından aynı yerel APK scriptini çalıştır. Anahtar dosyalarını
+silme ve proje klasörünü başka sürücüye taşımak zorunda değilsin.
+
+Kaynak: https://kotlinlang.org/docs/gradle-compilation-and-caches.html#incremental-compilation

@@ -4,9 +4,14 @@ on:
   pull_request:
     paths:
       - android/app/build.gradle.kts
+      - android/gradle.properties
       - tools/build_local_apk.ps1
       - .github/workflows/android-signing.yml
   workflow_dispatch:
+
+concurrency:
+  group: android-signing-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
