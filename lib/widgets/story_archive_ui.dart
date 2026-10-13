@@ -98,3 +98,40 @@ class StoryArchiveRewards extends StatelessWidget {
     ));
   }
 }
+
+/// Give long club/country names the full card width at large text sizes.
+class StoryArchiveEntry extends StatelessWidget {
+  const StoryArchiveEntry({super.key, required this.title, required this.icon,
+    this.subtitle, this.onTap, this.trailing, this.highlight = false});
+  final String title;
+  final String? subtitle;
+  final IconData icon;
+  final VoidCallback? onTap;
+  final Widget? trailing;
+  final bool highlight;
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.textScalerOf(context).scale(16) <= 21) {
+      return PitchRow(title: title, subtitle: subtitle, icon: icon,
+        onTap: onTap, trailing: trailing, highlight: highlight);
+    }
+    final p = PitchColors.of(context), text = Theme.of(context).textTheme;
+    return PitchPanel(onTap: onTap, child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: highlight ? p.tint : p.raised,
+              borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: highlight ? p.accent : p.muted)),
+          const Spacer(),
+          trailing ?? Icon(Icons.chevron_right_rounded, color: p.muted),
+        ]),
+        const SizedBox(height: 12),
+        Text(title, style: text.titleSmall),
+        if (subtitle != null) ...[
+          const SizedBox(height: 8), Text(subtitle!, style: text.bodySmall),
+        ],
+      ],
+    ));
+  }
+}

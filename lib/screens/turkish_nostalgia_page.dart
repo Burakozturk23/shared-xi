@@ -283,7 +283,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     ))
       Padding(
         padding: const EdgeInsets.only(bottom: 12),
-        child: PitchRow(
+        child: StoryArchiveEntry(
           title: chapter.text('title'),
           subtitle: '${chapter.text('era')} · ${c.count(chapter)}/2 görev',
           icon: c.count(chapter) == 2

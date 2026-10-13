@@ -141,7 +141,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 12),
         child: Text('Maçlar ücretsiz. Coin ve XP almak için misafir hesabını Google’a bağla.')),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
-        child: PitchRow(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
+        child: StoryArchiveEntry(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
           onTap: c.busy ? null : () { _open(c.activeId!); c.start(); })),
       const SizedBox(height: 20),
       Wrap(spacing: 8, runSpacing: 8, children: [
@@ -171,7 +171,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       ],
       const SizedBox(height: 20),
       if (visible.isEmpty) const PitchPanel(child: Text('Henüz burada bir hatıra yok. Bir maç seçip ilk kartını aç.')),
-      for (final m in visible) Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(
+      for (final m in visible) Padding(padding: const EdgeInsets.only(bottom: 12), child: StoryArchiveEntry(
         key: ValueKey('ig-card-${m.id}'), title: m.title,
         subtitle: '${m.text('competition')}\n${m.label}${c.results.containsKey(m.id) ? ' · ${igMap(c.results[m.id])['score']} · Hatıra açık' : ' · Oyna, hatırayı aç'}${_collection && c.results.containsKey(m.id) ? '\n${igMap(c.results[m.id])['answer']}' : ''}',
         icon: c.results.containsKey(m.id) ? Icons.verified_outlined : _icon(m.type), highlight: true,
@@ -183,7 +183,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
   List<Widget> _intro(InternationalGloryController c) {
     final m = c.active!;
     return [_matchHeader(m), const SizedBox(height: 20), Text(m.text('intro'), style: Theme.of(context).textTheme.bodyLarge),
-      const SizedBox(height: 20), PitchRow(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
+      const SizedBox(height: 20), StoryArchiveEntry(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
       const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
       if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text('İlk tamamlama: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
       const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ig-start'), onPressed: c.busy ? null : () { c.start(); _top(); },
@@ -212,7 +212,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
           ]))),
       ] else if (m.type == 'route') ..._route(c) else for (final o in m.options) Padding(padding: const EdgeInsets.only(bottom: 10), child: Semantics(
         selected: c.answers.contains(o['id']), button: true,
-        child: PitchRow(key: ValueKey('option-${o['id']}'), title: o['label'] as String,
+        child: StoryArchiveEntry(key: ValueKey('option-${o['id']}'), title: o['label'] as String,
           icon: c.answers.contains(o['id']) ? Icons.radio_button_checked : Icons.radio_button_off,
           highlight: c.answers.contains(o['id']), trailing: const SizedBox.shrink(),
           onTap: c.busy ? null : () => c.choose(o['id'] as String)))),
@@ -283,7 +283,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       ])),
       if ((result['events'] as List? ?? []).isNotEmpty) ...[
         const PitchSectionTitle('Maçın zaman çizelgesi'),
-        for (final raw in result['events'] as List) Padding(padding: const EdgeInsets.only(bottom: 8), child: PitchRow(
+        for (final raw in result['events'] as List) Padding(padding: const EdgeInsets.only(bottom: 8), child: StoryArchiveEntry(
           title: igMap(raw)['label'] as String, subtitle: igMap(raw)['minute'] as String, icon: Icons.sports_soccer, trailing: const SizedBox.shrink())),
       ],
       const SizedBox(height: 18), PitchPanel(child: Text(reward['settled'] == true
