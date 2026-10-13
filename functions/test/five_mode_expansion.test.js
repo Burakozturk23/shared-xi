@@ -62,22 +62,24 @@ for (const [key, base, submit, status, path, idKey, version, coins, xp, newCoins
     assert.equal(h.read("economyState/guest/balances/coins"), newCoins);
     assert.equal(h.read("progressionState/guest/lifetimeXp"), newXp);
   });
-  if (key !== "nostalgia") test(key + ": new content counts towards existing collection thresholds", async () => {
-    const h = harness();
-    const original = require("../config/" + base + ".json");
-    const old = original.matches || original.tasks;
-    const threshold = original.economy.milestones[0];
-    const allNew = flattened(extra[key], key);
-    const unitSize = key === "dynastyTasks" ? 2 : 1;
-    const someOld = old.slice(0, threshold.count * unitSize - allNew.length);
-    for (const t of [...someOld, ...allNew]) {
-      await h.call(submit, {version, [idKey]: t.id, answers: t.answerKeys});
-    }
-    const reward = h.read(path + "/alice/rewards/milestone_" + threshold.count);
-    assert.equal(reward.coins, threshold.coins);
-    assert.equal(reward.xp, threshold.xp);
-    assert.equal(reward.settled, true);
-  });
+  if (key !== "nostalgia") {
+    test(key + ": new content counts towards existing collection thresholds", async () => {
+      const h = harness();
+      const original = require("../config/" + base + ".json");
+      const old = original.matches || original.tasks;
+      const threshold = original.economy.milestones[0];
+      const allNew = flattened(extra[key], key);
+      const unitSize = key === "dynastyTasks" ? 2 : 1;
+      const someOld = old.slice(0, threshold.count * unitSize - allNew.length);
+      for (const t of [...someOld, ...allNew]) {
+        await h.call(submit, {version, [idKey]: t.id, answers: t.answerKeys});
+      }
+      const reward = h.read(path + "/alice/rewards/milestone_" + threshold.count);
+      assert.equal(reward.coins, threshold.coins);
+      assert.equal(reward.xp, threshold.xp);
+      assert.equal(reward.settled, true);
+    });
+  }
 }
 test("eight new careers: ordered stages, replay, results, showcase and old final reward isolation", async () => {
   const h = harness();
@@ -124,7 +126,7 @@ test("expansion answers and source/explanation spoilers are absent from mobile a
 test("old expansion careers reconcile once; chapter five supports the existing double bonus", async () => {
   const h = harness();
   h.seed("journeyRewardState/alice", {journeys: Object.fromEntries(
-    extra.journey.journeys.map((j) => [j.id, {solved: 4, completedAt: 1}]))});
+      extra.journey.journeys.map((j) => [j.id, {solved: 4, completedAt: 1}]))});
   h.failNext("progressionState/alice");
   await assert.rejects(h.call("getPlayerJourney"));
   await Promise.all([h.call("getPlayerJourney"), h.call("getPlayerJourney")]);
