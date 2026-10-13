@@ -26,6 +26,26 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      - name: Verify fail-closed signing checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'for f in "$RUNNER_TEMP/local-cert.txt" "$RUNNER_TEMP/missing-key.log" "$RUNNER_TEMP/local-bundle.log" "$RUNNER_TEMP/partial-key.log"; do if [[ -f "$f" ]]; then cat "$f"; fi; done' EXIT
+          if flutter build apk --release --target-platform android-arm64 > "$RUNNER_TEMP/missing-key.log" 2>&1; then
+            echo 'Release unexpectedly succeeded without a keystore'; exit 1
+          fi
+          grep -q 'Linkball release signing is not configured' "$RUNNER_TEMP/missing-key.log"
+          cd android
+          if ./gradlew :app:bundleRelease --dry-run -PlinkballLocalApk=true > "$RUNNER_TEMP/local-bundle.log" 2>&1; then
+            echo 'Local test signing unexpectedly allowed an AAB'; exit 1
+          fi
+          grep -q 'for local APK testing only' "$RUNNER_TEMP/local-bundle.log"
+          printf 'storeFile=missing.jks\nkeyAlias=upload\n' > key.properties
+          if ./gradlew :app:assembleRelease --dry-run > "$RUNNER_TEMP/partial-key.log" 2>&1; then
+            echo 'Release unexpectedly accepted incomplete signing'; exit 1
+          fi
+          grep -q 'Missing properties: storePassword, keyPassword' "$RUNNER_TEMP/partial-key.log"
+          rm key.properties
       - name: Build local release APK through PowerShell
         shell: pwsh
         run: |
@@ -33,28 +53,13 @@ jobs:
           if (Test-Path Env:ORG_GRADLE_PROJECT_linkballLocalApk) {
             throw "Local signing opt-in leaked out of the script."
           }
-      - name: Verify local certificate and fail-closed signing checks
+      - name: Verify local APK certificate
         shell: bash
         run: |
           set -euo pipefail
           signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
-          "$signer" verify --print-certs build/app/outputs/flutter-apk/app-release.apk > "$RUNNER_TEMP/local-cert.txt"
+          "$signer" verify --print-certs build/app/outputs/flutter-apk/app-release.apk | tee "$RUNNER_TEMP/local-cert.txt"
           grep -q 'CN=Android Debug' "$RUNNER_TEMP/local-cert.txt"
-          cd android
-          if ./gradlew :app:validateSigningRelease > "$RUNNER_TEMP/missing-key.log" 2>&1; then
-            echo 'Release unexpectedly succeeded without a keystore'; exit 1
-          fi
-          grep -q 'Linkball release signing is not configured' "$RUNNER_TEMP/missing-key.log"
-          if ./gradlew :app:bundleRelease -PlinkballLocalApk=true > "$RUNNER_TEMP/local-bundle.log" 2>&1; then
-            echo 'Local test signing unexpectedly allowed an AAB'; exit 1
-          fi
-          grep -q 'for local APK testing only' "$RUNNER_TEMP/local-bundle.log"
-          printf 'storeFile=missing.jks\nkeyAlias=upload\n' > key.properties
-          if ./gradlew :app:validateSigningRelease > "$RUNNER_TEMP/partial-key.log" 2>&1; then
-            echo 'Release unexpectedly accepted incomplete signing'; exit 1
-          fi
-          grep -q 'Missing properties: storePassword, keyPassword' "$RUNNER_TEMP/partial-key.log"
-          rm key.properties
       - name: Verify a configured upload key still signs release APKs
         shell: bash
         run: |
