@@ -8,6 +8,7 @@ import '../models/turkish_nostalgia_state.dart';
 import '../services/auth_service.dart';
 import '../services/nostalgia_service.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/story_archive_ui.dart';
 
 class TurkishNostalgiaPage extends StatefulWidget {
   const TurkishNostalgiaPage({
@@ -33,6 +34,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     super.initState();
     if (widget.controller != null) {
       _c = widget.controller;
+      if (widget.showAlbum) _c!.archive(album: true);
     } else {
       _uid = AuthService.uid;
       _auth = AuthService.authStateChanges.listen((user) {
@@ -203,57 +205,26 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
   }
 
   Widget _paper(
-    String eyebrow,
-    String title,
-    String body, {
+    String eyebrow, String title, String body, {
     IconData icon = Icons.history_edu,
-  }) => Container(
-    padding: const EdgeInsets.all(22),
-    margin: const EdgeInsets.only(bottom: 20),
-    decoration: BoxDecoration(
-      color: Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xff302c23)
-          : const Color(0xfff6edd9),
-      borderRadius: BorderRadius.circular(22),
-      border: Border.all(color: const Color(0xffb19a6c).withValues(alpha: .5)),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 32),
-        const SizedBox(height: 18),
-        Text(eyebrow, style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
-        ),
-        const Divider(height: 30),
-        Text(body, style: Theme.of(context).textTheme.bodyLarge),
-      ],
-    ),
+    Widget? footer,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: StoryArchiveHero(eyebrow: eyebrow, title: title,
+      description: body, icon: icon, footer: footer),
   );
   List<Widget> _archive(TurkishNostalgiaController c) => [
     _paper(
-      'HİKÂYE ARŞİVİ / 04',
-      'Futbolun\nhafızası',
+      'TÜRK FUTBOLU · NOSTALJİ',
+      'Futbolun hafızası',
       'Bir sezon, bir nesil, bir hatıra.\n${c.catalog.chapters.length} bölüm · ${c.catalog.tasks.length} görev · 5 farklı oyun',
+      footer: StoryArchiveProgress(completed: c.solved.length,
+        total: c.catalog.tasks.length, label: 'görev'),
     ),
-    Wrap(
-      spacing: 12,
-      runSpacing: 8,
-      children: [
-        Chip(label: Text('${c.solved.length}/${c.catalog.tasks.length} görev')),
-        Chip(label: Text('${c.albums}/${c.catalog.chapters.length} hatıra')),
-        Chip(label: Text('${c.coins} Coin kazanıldı')),
-      ],
-    ),
-    const SizedBox(height: 12),
-    const Text('Her görev: 6 Coin + 15 XP · Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
-    const SizedBox(height: 12),
-    LinearProgressIndicator(value: c.solved.length / c.catalog.tasks.length),
+    StoryArchiveStats(items: [
+      (Icons.collections_bookmark_outlined, '${c.albums}/${c.catalog.chapters.length} hatıra'),
+      (Icons.toll_outlined, '${c.coins} Coin kazanıldı'),
+    ]),
     const SizedBox(height: 16),
     if (c.active != null && c.count(c.active!) < 2) ...[
       FilledButton.icon(
@@ -275,15 +246,16 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
       label: const Text('Nostalji Albümü'),
     ),
     const SizedBox(height: 16),
-    Text(
-      c.pending.isNotEmpty
-          ? '${c.pending.length} görev sunucu onayı bekliyor.'
-          : 'İlerlemen bu hesaba bağlı olarak saklanır.',
-    ),
-    if (!c.rewardEligible)
-      const Text(
-        'Coin ve XP için Google hesabına bağlan. Bölümleri ücretsiz oynayabilirsin.',
-      ),
+    const StoryArchiveRewards(storageId: 'nostalgia-rewards',
+      summary: 'Her görev · 6 Coin + 15 XP', children: [
+        Text('Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
+        SizedBox(height: 8),
+        Text('İlk 12 bölümün albüm finali: 60 Coin + 120 XP. Ek bölümler de görev ve bölüm ödülleri kazandırır.'),
+      ]),
+    if (c.pending.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 12),
+      child: Text('${c.pending.length} görev sunucu onayı bekliyor.')),
+    if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 12),
+      child: Text('Bölümler ücretsiz. Coin ve XP almak için misafir hesabını Google’a bağla.')),
     const PitchSectionTitle('Dönemini seç'),
     Wrap(
       spacing: 8,
@@ -317,7 +289,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           icon: c.count(chapter) == 2
               ? Icons.check_circle_outline
               : Icons.history_edu,
-          onTap: () => _open(chapter.id),
+          onTap: c.busy ? null : () => _open(chapter.id),
         ),
       ),
   ];
@@ -472,7 +444,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
                       ],
                     ),
                   );
-                  if (buy == true && mounted) await c.strongHint();
+                  if (buy == true && mounted && identical(c, _c)) await c.strongHint();
                 },
           child: Text(
             c.pro ? 'Pro: güçlü yardım ücretsiz' : 'Güçlü yardım · 6 Coin',
