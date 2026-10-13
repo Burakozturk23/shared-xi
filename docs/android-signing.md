@@ -2,7 +2,7 @@
 
 `SigningConfig "release" is missing required property "storeFile"` hatası,
 release imza dosyasının kurulmadığını gösterir. Kotlin eklentisi uyarısı bu hatanın
-nedenı değildir. `flutter clean` eksik anahtarı oluşturmaz.
+nedeni değildir. `flutter clean` eksik anahtarı oluşturmaz.
 
 ## Telefonda yerel test
 
@@ -14,8 +14,18 @@ powershell -ExecutionPolicy Bypass -File .\tools\build_local_apk.ps1
 
 Çıktı: `build\app\outputs\flutter-apk\app-release.apk`.
 Bu release modunda derlenmiş, Android debug sertifikasıyla imzalanmış bir test
-APK'sıdır. Script var olan yayın anahtarına dokunmaz; geçici Gradle ayarını hata
-olsa da geri yükler. Bu ayarla Play Store AAB üretimi engellenir.
+APK'sıdır. Script var olan yayın anahtarına dokunmaz. Test seçeneği ortam
+değişkeni yerine doğrudan Flutter komutuna eklenir; sonraki komutlara taşınmaz.
+Bu ayarla Play Store AAB üretimi engellenir.
+
+Script çalışmasına rağmen aynı imza hatasını aldıysan dalı güncelle. Eski
+scriptin Windows ortam değişkeni aktarımı yerine artık şu komut kullanılır:
+
+```powershell
+flutter build apk --release --dart-define=LINKBALL_LOCAL_APK=true
+```
+
+Bu doğrudan komut da güncel `android/app/build.gradle.kts` dosyasını gerektirir.
 
 Firebase App Check, Google giriş ve Billing ayarları değiştirilmez. Yerel APK
 üretimi bu servislerin Play Integrity/sertifika koşullarını karşıladığı anlamına

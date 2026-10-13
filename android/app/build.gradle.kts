@@ -1,5 +1,6 @@
 import java.io.FileInputStream
 import java.util.Properties
+import java.util.Base64
 
 plugins {
     id("com.android.application")
@@ -18,8 +19,14 @@ if (keystorePropertiesFile.exists()) {
 }
 
 // Explicit opt-in for sideload testing; never silently change the release key.
-val localReleaseApk = providers.gradleProperty("linkballLocalApk")
-    .map { it == "true" }.getOrElse(false)
+// Flutter forwards --dart-define as an explicit Gradle -Pdart-defines argument.
+// Avoid relying on mixed-case ORG_GRADLE_PROJECT_* environment transport on Windows.
+val localApkDefine = Base64.getEncoder().encodeToString(
+    "LINKBALL_LOCAL_APK=true".toByteArray(Charsets.UTF_8)
+)
+val localReleaseApk = providers.gradleProperty("dart-defines")
+    .map { it.split(",").contains(localApkDefine) }.getOrElse(false) ||
+    providers.gradleProperty("linkballLocalApk").map { it == "true" }.getOrElse(false)
 val requiredSigningProperties = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
 val missingSigningProperties = requiredSigningProperties.filter {
     keystoreProperties.getProperty(it).isNullOrBlank()

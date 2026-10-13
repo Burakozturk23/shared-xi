@@ -35,11 +35,11 @@ jobs:
             echo 'Release unexpectedly succeeded without a keystore'; exit 1
           fi
           grep -q 'Linkball release signing is not configured' "$RUNNER_TEMP/missing-key.log"
-          cd android
-          if ./gradlew :app:bundleRelease --dry-run -PlinkballLocalApk=true > "$RUNNER_TEMP/local-bundle.log" 2>&1; then
+          if flutter build appbundle --release --dart-define=LINKBALL_LOCAL_APK=true > "$RUNNER_TEMP/local-bundle.log" 2>&1; then
             echo 'Local test signing unexpectedly allowed an AAB'; exit 1
           fi
           grep -q 'for local APK testing only' "$RUNNER_TEMP/local-bundle.log"
+          cd android
           printf 'storeFile=missing.jks\nkeyAlias=upload\n' > key.properties
           if ./gradlew :app:assembleRelease --dry-run > "$RUNNER_TEMP/partial-key.log" 2>&1; then
             echo 'Release unexpectedly accepted incomplete signing'; exit 1
@@ -74,3 +74,36 @@ jobs:
       - name: Remove ephemeral signing files
         if: always()
         run: rm -f android/key.properties android/app/ci-signing.jks
+
+  windows_local_apk:
+    name: Windows PowerShell 5.1 local APK
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Build without release credentials or Gradle environment opt-in
+        shell: powershell
+        run: |
+          if (Test-Path android/key.properties) { throw "Unexpected release credentials" }
+          Remove-Item Env:ORG_GRADLE_PROJECT_linkballLocalApk -ErrorAction SilentlyContinue
+          & .\tools\build_local_apk.ps1 -TargetPlatform android-arm64
+      - name: Verify Windows APK signature
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $signer = Get-ChildItem "$env:ANDROID_HOME\build-tools\*\apksigner.bat" |
+              Sort-Object FullName | Select-Object -Last 1
+          if (-not $signer) { throw "apksigner was not found" }
+          $certificate = & $signer.FullName verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+          if ($LASTEXITCODE -ne 0) { throw "APK signature verification failed" }
+          if (($certificate -join "`n") -notmatch 'CN=Android Debug') {
+              throw "The local APK did not use the expected test certificate"
+          }
