@@ -1,0 +1,109 @@
+name: Android signing checks
+
+on:
+  pull_request:
+    paths:
+      - android/app/build.gradle.kts
+      - tools/build_local_apk.ps1
+      - .github/workflows/android-signing.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Verify fail-closed signing checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'for f in "$RUNNER_TEMP/local-cert.txt" "$RUNNER_TEMP/missing-key.log" "$RUNNER_TEMP/local-bundle.log" "$RUNNER_TEMP/partial-key.log"; do if [[ -f "$f" ]]; then cat "$f"; fi; done' EXIT
+          if flutter build apk --release --target-platform android-arm64 > "$RUNNER_TEMP/missing-key.log" 2>&1; then
+            echo 'Release unexpectedly succeeded without a keystore'; exit 1
+          fi
+          grep -q 'Linkball release signing is not configured' "$RUNNER_TEMP/missing-key.log"
+          if flutter build appbundle --release --dart-define=LINKBALL_LOCAL_APK=true > "$RUNNER_TEMP/local-bundle.log" 2>&1; then
+            echo 'Local test signing unexpectedly allowed an AAB'; exit 1
+          fi
+          grep -q 'for local APK testing only' "$RUNNER_TEMP/local-bundle.log"
+          cd android
+          printf 'storeFile=missing.jks\nkeyAlias=upload\n' > key.properties
+          if ./gradlew :app:assembleRelease --dry-run > "$RUNNER_TEMP/partial-key.log" 2>&1; then
+            echo 'Release unexpectedly accepted incomplete signing'; exit 1
+          fi
+          grep -q 'Missing properties: storePassword, keyPassword' "$RUNNER_TEMP/partial-key.log"
+          rm key.properties
+      - name: Build local release APK through PowerShell
+        shell: pwsh
+        run: |
+          ./tools/build_local_apk.ps1 -TargetPlatform android-arm64
+          if (Test-Path Env:ORG_GRADLE_PROJECT_linkballLocalApk) {
+            throw "Local signing opt-in leaked out of the script."
+          }
+      - name: Verify local APK certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          "$signer" verify --print-certs build/app/outputs/flutter-apk/app-release.apk | tee "$RUNNER_TEMP/local-cert.txt"
+          grep -q 'CN=Android Debug' "$RUNNER_TEMP/local-cert.txt"
+      - name: Verify a configured upload key still signs release APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Ephemeral CI-only certificate, never a production key.
+          keytool -genkeypair -keystore android/app/ci-signing.jks -storepass ci-test-only -keypass ci-test-only -alias upload -keyalg RSA -keysize 2048 -validity 1 -dname 'CN=Linkball CI Signing Test' -noprompt
+          printf 'storeFile=ci-signing.jks\nstorePassword=ci-test-only\nkeyPassword=ci-test-only\nkeyAlias=upload\n' > android/key.properties
+          flutter build apk --release --target-platform android-arm64
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          "$signer" verify --print-certs build/app/outputs/flutter-apk/app-release.apk > "$RUNNER_TEMP/upload-cert.txt"
+          grep -q 'CN=Linkball CI Signing Test' "$RUNNER_TEMP/upload-cert.txt"
+      - name: Remove ephemeral signing files
+        if: always()
+        run: rm -f android/key.properties android/app/ci-signing.jks
+
+  windows_local_apk:
+    name: Windows PowerShell 5.1 local APK
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Build without release credentials or Gradle environment opt-in
+        shell: powershell
+        run: |
+          if (Test-Path android/key.properties) { throw "Unexpected release credentials" }
+          Remove-Item Env:ORG_GRADLE_PROJECT_linkballLocalApk -ErrorAction SilentlyContinue
+          & .\tools\build_local_apk.ps1 -TargetPlatform android-arm64
+      - name: Verify Windows APK signature
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $signer = Get-ChildItem "$env:ANDROID_HOME\build-tools\*\apksigner.bat" |
+              Sort-Object FullName | Select-Object -Last 1
+          if (-not $signer) { throw "apksigner was not found" }
+          $certificate = & $signer.FullName verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+          if ($LASTEXITCODE -ne 0) { throw "APK signature verification failed" }
+          if (($certificate -join "`n") -notmatch 'CN=Android Debug') {
+              throw "The local APK did not use the expected test certificate"
+          }

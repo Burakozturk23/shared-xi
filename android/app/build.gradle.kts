@@ -1,5 +1,6 @@
-﻿import java.io.FileInputStream
+import java.io.FileInputStream
 import java.util.Properties
+import java.util.Base64
 
 plugins {
     id("com.android.application")
@@ -14,7 +15,46 @@ plugins {
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
+}
+
+// Explicit opt-in for sideload testing; never silently change the release key.
+// Flutter forwards --dart-define as an explicit Gradle -Pdart-defines argument.
+// Avoid relying on mixed-case ORG_GRADLE_PROJECT_* environment transport on Windows.
+val localApkDefine = Base64.getEncoder().encodeToString(
+    "LINKBALL_LOCAL_APK=true".toByteArray(Charsets.UTF_8)
+)
+val localReleaseApk = providers.gradleProperty("dart-defines")
+    .map { it.split(",").contains(localApkDefine) }.getOrElse(false) ||
+    providers.gradleProperty("linkballLocalApk").map { it == "true" }.getOrElse(false)
+val requiredSigningProperties = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val missingSigningProperties = requiredSigningProperties.filter {
+    keystoreProperties.getProperty(it).isNullOrBlank()
+}
+val releaseKeystore = keystoreProperties.getProperty("storeFile")
+    ?.takeIf { it.isNotBlank() }?.let { file(it) }
+
+// Check the selected task graph so debug builds still work without private keys.
+gradle.taskGraph.whenReady {
+    val releaseTasks = allTasks.filter {
+        it.project.path == ":app" && it.name.contains("Release", ignoreCase = true)
+    }
+    if (releaseTasks.isNotEmpty()) {
+        if (localReleaseApk) {
+            if (releaseTasks.any { it.name.contains("bundle", ignoreCase = true) }) {
+                throw GradleException("linkballLocalApk is for local APK testing only. Disable it and configure android/key.properties to build a Play Store AAB.")
+            }
+            logger.warn("LINKBALL: Local test APK uses the Android debug certificate. Not a Play Store release.")
+        } else if (missingSigningProperties.isNotEmpty() || releaseKeystore?.isFile != true) {
+            throw GradleException(
+                "Linkball release signing is not configured. Restore android/key.properties and its existing keystore. " +
+                "Missing properties: ${missingSigningProperties.joinToString().ifEmpty { "none" }}. " +
+                "Keystore file exists: ${releaseKeystore?.isFile == true}. " +
+                "For a local test APK run: powershell -File tools/build_local_apk.ps1. " +
+                "See docs/android-signing.md."
+            )
+        }
+    }
 }
 
 android {
@@ -51,20 +91,18 @@ android {
 
     signingConfigs {
         create("release") {
-            if (keystorePropertiesFile.exists()) {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
+            if (missingSigningProperties.isEmpty() && releaseKeystore?.isFile == true) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = releaseKeystore
+                storePassword = keystoreProperties.getProperty("storePassword")
             }
         }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName(if (localReleaseApk) "debug" else "release")
         }
     }
 }
