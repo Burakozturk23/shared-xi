@@ -1,0 +1,595 @@
+{
+  "DOC-01-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "23 galibiyet · 12 beraberlik · 3 mağlubiyet",
+    "periods": [],
+    "sources": [
+      {
+        "name": "leicester_table",
+        "url": "https://www.premierleague.com/clubs/26/club/season-history"
+      }
+    ]
+  },
+  "DOC-01-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Chelsea 2-2 Tottenham Hotspur",
+    "periods": [],
+    "sources": [
+      {
+        "name": "leicester_title",
+        "url": "https://www.premierleague.com/en/news/693680"
+      }
+    ]
+  },
+  "DOC-02-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Diego Maradona",
+    "periods": [],
+    "sources": [
+      {
+        "name": "napoli_player",
+        "url": "https://www.uefa.com/news-media/news/0263-10f1fecd826a-620d5ad4272d-1000--naples-remembers-maradona-s-greatest-european-performances/"
+      }
+    ]
+  },
+  "DOC-02-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Serie A şampiyonluğu ve Coppa Italia",
+    "periods": [],
+    "sources": [
+      {
+        "name": "napoli_cups",
+        "url": "https://sscnapoli.it/en/palmares/"
+      }
+    ]
+  },
+  "DOC-03-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Edin Džeko → Sergio Agüero",
+    "periods": [
+      "13 Mayıs 2012 · 90+2",
+      "13 Mayıs 2012 · 93:20"
+    ],
+    "sources": [
+      {
+        "name": "city_order",
+        "url": "https://www.mancity.com/citytv/mens/manchester-city-qpr-classic-highlights-63819552"
+      }
+    ]
+  },
+  "DOC-03-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Mario Balotelli",
+    "periods": [],
+    "sources": [
+      {
+        "name": "city_assist",
+        "url": "https://www.mancity.com/citytv/mens/mario-balotelli-i-wanted-to-shoot-for-aguero-goal-9320-extended-interview-63787876"
+      }
+    ]
+  },
+  "DOC-04-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "1998/99 üçlemesi: Premier League, FA Cup ve UEFA Şampiyonlar Ligi.",
+    "periods": [],
+    "sources": [
+      {
+        "name": "united_cups",
+        "url": "https://www.premierleague.com/en/news/59576"
+      }
+    ]
+  },
+  "DOC-04-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "David Beckham",
+    "periods": [],
+    "sources": [
+      {
+        "name": "beckham",
+        "url": "https://www.manutd.com/en/news/david-beckham-the-assist-king-in-1998-99-champions-league"
+      }
+    ]
+  },
+  "DOC-05-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "38 maç · 90 puan · 0 yenilgi",
+    "periods": [],
+    "sources": [
+      {
+        "name": "arsenal",
+        "url": "https://www.premierleague.com/en/tables/premier-league/2003-04/all-matchweeks"
+      }
+    ]
+  },
+  "DOC-05-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Doğru",
+    "periods": [],
+    "sources": [
+      {
+        "name": "arsenal",
+        "url": "https://www.premierleague.com/en/tables/premier-league/2003-04/all-matchweeks"
+      }
+    ]
+  },
+  "DOC-06-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Barcelona karşısında 4-0 → 2019 UCL şampiyonluğu → 2020 Premier League şampiyonluğu",
+    "periods": [
+      "7 Mayıs 2019",
+      "1 Haziran 2019",
+      "25 Haziran 2020"
+    ],
+    "sources": [
+      {
+        "name": "lfc19",
+        "url": "https://www.liverpoolfc.com/info/2019-champions-league-final"
+      },
+      {
+        "name": "lfc20",
+        "url": "https://www.liverpoolfc.com/news/first-team/399866-liverpool-football-club-premier-league-champions-2019-20"
+      }
+    ]
+  },
+  "DOC-06-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Jürgen Klopp",
+    "periods": [],
+    "sources": [
+      {
+        "name": "lfc19",
+        "url": "https://www.liverpoolfc.com/info/2019-champions-league-final"
+      },
+      {
+        "name": "lfc20",
+        "url": "https://www.liverpoolfc.com/news/first-team/399866-liverpool-football-club-premier-league-champions-2019-20"
+      }
+    ]
+  },
+  "DOC-07-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "UEFA final raporunda Patrick Kluivert’in golü 84. dakikada kayıtlıdır.",
+    "periods": [],
+    "sources": [
+      {
+        "name": "ajax_goal",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f0a393e2-49ba29a70f4c-1000--1994-95-kluivert-strikes-late-for-ajax/"
+      }
+    ]
+  },
+  "DOC-07-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "UEFA değişiklik kaydı: 70. dakika, Jari Litmanen yerine Patrick Kluivert.",
+    "periods": [],
+    "sources": [
+      {
+        "name": "ajax_sub",
+        "url": "https://www.uefa.com/MultimediaFiles/Download/EuroExperience/uefaorg/Publications/01/53/55/84/1535584_DOWNLOAD.pdf"
+      }
+    ]
+  },
+  "DOC-08-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "1976/77 yükseliş; 1977/78 Football League First Division şampiyonluğu; 1978/79 Avrupa Kupası.",
+    "periods": [
+      "1976/77",
+      "1977/78",
+      "1978/79"
+    ],
+    "sources": [
+      {
+        "name": "forest",
+        "url": "https://www.uefa.com/news-media/news/01a1-0f845bcbd001-90fd9a9328b9-1000--the-best-in-the-business/"
+      },
+      {
+        "name": "forest_promotion",
+        "url": "https://www.uefa.com/news-media/news/0218-0e9b869a861e-556622f75175-1000--european-football-in-the-1970s/"
+      }
+    ]
+  },
+  "DOC-08-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Brian Clough",
+    "periods": [],
+    "sources": [
+      {
+        "name": "forest",
+        "url": "https://www.uefa.com/news-media/news/01a1-0f845bcbd001-90fd9a9328b9-1000--the-best-in-the-business/"
+      }
+    ]
+  },
+  "DOC-09-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "2003 UEFA Kupası → 2004 UEFA Şampiyonlar Ligi",
+    "periods": [
+      "2002/03",
+      "2003/04"
+    ],
+    "sources": [
+      {
+        "name": "porto",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f100f076-ecb0d9d85bb1-1000--2003-04-porto-pull-off-biggest-surprise/"
+      }
+    ]
+  },
+  "DOC-09-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Monaco; Porto 3-0 Monaco",
+    "periods": [],
+    "sources": [
+      {
+        "name": "porto",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f100f076-ecb0d9d85bb1-1000--2003-04-porto-pull-off-biggest-surprise/"
+      }
+    ]
+  },
+  "DOC-10-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Serie A · Coppa Italia · UEFA Şampiyonlar Ligi",
+    "periods": [],
+    "sources": [
+      {
+        "name": "inter_cups",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f4b42c3a-0fbc1831ccbe-1000--inter-join-exclusive-treble-club/"
+      }
+    ]
+  },
+  "DOC-10-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Barcelona",
+    "periods": [],
+    "sources": [
+      {
+        "name": "inter_semi",
+        "url": "https://www.inter.it/en/match_center/3829"
+      }
+    ]
+  },
+  "DOC-11-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Alexis Sánchez golü → Diego Godín’in beraberlik golü",
+    "periods": [
+      "17 Mayıs 2014 · 33. dakika",
+      "17 Mayıs 2014 · 49. dakika"
+    ],
+    "sources": [
+      {
+        "name": "atletico",
+        "url": "https://www.uefa.com/news-media/news/0215-0e8adc597e0f-6bf435e52eab-1000--godin-heads-atletico-to-liga-title/"
+      }
+    ]
+  },
+  "DOC-11-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Barcelona 1-1 Atlético Madrid",
+    "periods": [],
+    "sources": [
+      {
+        "name": "atletico",
+        "url": "https://www.uefa.com/news-media/news/0215-0e8adc597e0f-6bf435e52eab-1000--godin-heads-atletico-to-liga-title/"
+      }
+    ]
+  },
+  "DOC-12-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Otto Rehhagel",
+    "periods": [],
+    "sources": [
+      {
+        "name": "lautern",
+        "url": "https://www.bundesliga.com/en/bundesliga/news/kaiserslautern-bundesliga-club-by-club-historical-guide-rehhagel-24160"
+      }
+    ]
+  },
+  "DOC-12-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Doğru",
+    "periods": [],
+    "sources": [
+      {
+        "name": "lautern",
+        "url": "https://www.bundesliga.com/en/bundesliga/news/kaiserslautern-bundesliga-club-by-club-historical-guide-rehhagel-24160"
+      }
+    ]
+  },
+  "DOC-13-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Paris Saint-Germain",
+    "periods": [],
+    "sources": [
+      {
+        "name": "montpellier",
+        "url": "https://www.uefa.com/news-media/news/01fd-0e7e40bb7623-afe6728daad4-1000--montpellier-win-maiden-ligue-1-title/"
+      }
+    ]
+  },
+  "DOC-13-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Olivier Giroud",
+    "periods": [],
+    "sources": [
+      {
+        "name": "giroud",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0201-0e81ff394add-1fe3c3ed1e3d-1000--arsenal-s-giroud-makes-rapid-return-to-montpellier/"
+      }
+    ]
+  },
+  "DOC-14-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Yanlış; Piqué gol atmadı",
+    "periods": [],
+    "sources": [
+      {
+        "name": "barca",
+        "url": "https://www.fcbarcelona.com/en/football/first-team/news/1916876/-5-01010-years-since-the-5-0-against-real-madrid"
+      }
+    ]
+  },
+  "DOC-14-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "David Villa (2 gol) · Jeffrén Suárez (son gol)",
+    "periods": [],
+    "sources": [
+      {
+        "name": "barca",
+        "url": "https://www.fcbarcelona.com/en/football/first-team/news/1916876/-5-01010-years-since-the-5-0-against-real-madrid"
+      }
+    ]
+  },
+  "DOC-15-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Yanlış; maç Trabzon’daki Hüseyin Avni Aker Stadyumu’nda oynandı",
+    "periods": [],
+    "sources": [
+      {
+        "name": "trabzon_venue",
+        "url": "https://www.uefa.com/uefachampionsleague/match/63365--trabzonspor-vs-liverpool/matchinfo/"
+      },
+      {
+        "name": "cemil",
+        "url": "https://www.tff.org/Resources/Tamsaha/239-sayi/110-111/"
+      }
+    ]
+  },
+  "DOC-15-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Cemil Usta",
+    "periods": [],
+    "sources": [
+      {
+        "name": "cemil",
+        "url": "https://www.tff.org/Resources/Tamsaha/239-sayi/110-111/"
+      }
+    ]
+  },
+  "DOC-16-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Roberto Mancini ve Gianluca Vialli",
+    "periods": [],
+    "sources": [
+      {
+        "name": "samp",
+        "url": "https://www.sampdoria.it/storia/"
+      }
+    ]
+  },
+  "DOC-16-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Doğru",
+    "periods": [],
+    "sources": [
+      {
+        "name": "samp_first",
+        "url": "https://www.sampdoria.it/news/archivio/2016/05/18/doria-dargento-su-premium-sport-hd-lo-speciale-sul-trionfo-del-9091/"
+      }
+    ]
+  },
+  "DOC-17-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "28 galibiyet · 6 beraberlik · 0 mağlubiyet",
+    "periods": [],
+    "sources": [
+      {
+        "name": "leverkusen",
+        "url": "https://www.bundesliga.com/en/bundesliga/news/bayer-leverkusen-record-unbeaten-run-xabi-alonso-26289"
+      }
+    ]
+  },
+  "DOC-17-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Yanlış; Bundesliga ve DFB-Pokal’ı kazandı, Avrupa Ligi finalinde Atalanta’ya kaybetti",
+    "periods": [],
+    "sources": [
+      {
+        "name": "leverkusen_cups",
+        "url": "https://www.bundesliga.com/en/bundesliga/news/bayer-leverkusen-bring-curtain-down-on-exceptional-2024-alonso-wirtz-30147"
+      }
+    ]
+  },
+  "DOC-18-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "2002 kuruluş → 2011 Football League → 2020 Plough Lane",
+    "periods": [
+      "2002",
+      "2011",
+      "2020"
+    ],
+    "sources": [
+      {
+        "name": "wimbledon",
+        "url": "https://thedonstrust.org/files/AFC-WIMBLEDON-STRATEGY-2024-.pdf"
+      }
+    ]
+  },
+  "DOC-18-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "2024 strateji belgesinde taraftar sahipliği The Dons Trust üzerinden tanımlanır.",
+    "periods": [],
+    "sources": [
+      {
+        "name": "wimbledon",
+        "url": "https://thedonstrust.org/files/AFC-WIMBLEDON-STRATEGY-2024-.pdf"
+      },
+      {
+        "name": "wimbledon_owner",
+        "url": "https://thedonstrust.org/about-us/"
+      }
+    ]
+  },
+  "DOC-19-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Ben Watson",
+    "periods": [],
+    "sources": [
+      {
+        "name": "watson",
+        "url": "https://www.thefa.com/news/2013/dec/24/fatv-top-ten-number-8-wigan-1-0-man-city"
+      }
+    ]
+  },
+  "DOC-19-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Yanlış; aynı sezon küme düştü",
+    "periods": [],
+    "sources": [
+      {
+        "name": "wigan",
+        "url": "https://www.premierleague.com/en/news/59705"
+      }
+    ]
+  },
+  "DOC-20-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "2001 Avrupa yarı finali; 19 Mart 2004 kulüp devri; Mayıs 2004 ligden düşüş. Mali kriz daha önce başlamıştı.",
+    "periods": [
+      "Mayıs 2001",
+      "19 Mart 2004",
+      "Mayıs 2004"
+    ],
+    "sources": [
+      {
+        "name": "leeds_takeover",
+        "url": "https://www.uefa.com/news-media/news/0254-0d7b51e0f10d-032ad0e94cf5-1000--leeds-saved-after-takeover/"
+      },
+      {
+        "name": "leeds_down",
+        "url": "https://www.uefa.com/news-media/news/0254-0d7b51e0f119-1a5bc0ab8e36-1000--leeds-left-down-and-out/"
+      },
+      {
+        "name": "leeds_valencia",
+        "url": "https://www.uefa.com/news-media/news/0199-0e6a9470caed-9a010034d387-1000--leeds-paying-a-heavy-price/"
+      }
+    ]
+  },
+  "DOC-20-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Valencia",
+    "periods": [],
+    "sources": [
+      {
+        "name": "leeds_valencia",
+        "url": "https://www.uefa.com/news-media/news/0199-0e6a9470caed-9a010034d387-1000--leeds-paying-a-heavy-price/"
+      }
+    ]
+  },
+  "DOC-21-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "2005 mali kriz → 2008 Klopp göreve gelişi → 2013 UCL finali",
+    "periods": [
+      "2005",
+      "2008",
+      "2013"
+    ],
+    "sources": [
+      {
+        "name": "bvb_crisis",
+        "url": "https://www.bvb.de/de/en/borussia-dortmund/history/decades/1999.html"
+      },
+      {
+        "name": "bvb",
+        "url": "https://www.bvb.de/de/en/borussia-dortmund/history/decades/2009.html"
+      }
+    ]
+  },
+  "DOC-21-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Bundesliga ve DFB-Pokal",
+    "periods": [],
+    "sources": [
+      {
+        "name": "bvb",
+        "url": "https://www.bvb.de/de/en/borussia-dortmund/history/decades/2009.html"
+      }
+    ]
+  },
+  "DOC-22-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Inter · 2-1 · Lizbon",
+    "periods": [],
+    "sources": [
+      {
+        "name": "celtic",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a053a5775-dc924599f3ea-1000--1966-67-celtic-adventure-reaps-reward/"
+      }
+    ]
+  },
+  "DOC-22-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Jock Stein",
+    "periods": [],
+    "sources": [
+      {
+        "name": "celtic",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a053a5775-dc924599f3ea-1000--1966-67-celtic-adventure-reaps-reward/"
+      }
+    ]
+  },
+  "DOC-23-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Blackburn Rovers → Sporting CP → Parma",
+    "periods": [
+      "Eylül–Ekim 2003",
+      "Kasım 2003",
+      "Şubat–Mart 2004"
+    ],
+    "sources": [
+      {
+        "name": "gencler",
+        "url": "https://www.uefa.com/uefaeuropaleague/news/019b-0e6acfcb2da7-53d3cec55089-1000--daems-decisive-for-genclerbirligi/"
+      }
+    ]
+  },
+  "DOC-23-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Filip Daems",
+    "periods": [],
+    "sources": [
+      {
+        "name": "gencler",
+        "url": "https://www.uefa.com/uefaeuropaleague/news/019b-0e6acfcb2da7-53d3cec55089-1000--daems-decisive-for-genclerbirligi/"
+      }
+    ]
+  },
+  "DOC-24-01": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "Álex Berenguer",
+    "periods": [],
+    "sources": [
+      {
+        "name": "athletic",
+        "url": "https://www.athletic-club.eus/en/teams/athletic-club/2023-24/matches/1_8428/"
+      }
+    ]
+  },
+  "DOC-24-02": {
+    "verifiedAt": "2026-10-11",
+    "evidence": "1-1 (120 dakika sonunda); penaltılarda Athletic Club 4-2 kazandı",
+    "periods": [],
+    "sources": [
+      {
+        "name": "athletic",
+        "url": "https://www.athletic-club.eus/en/teams/athletic-club/2023-24/matches/1_8428/"
+      }
+    ]
+  }
+}

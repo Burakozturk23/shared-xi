@@ -292,6 +292,31 @@
     "journeyRewardState": {
       ".read": false,
       ".write": false
+    },
+    "nostalgiaState": {
+      ".read": false,
+      ".write": false
+    },
+    "derbyDayState": {".read": false, ".write": false},
+    "footballDocuState": {
+      ".read": false,
+      ".write": false
+    },
+    "dynastiesState": {
+      ".read": false,
+      ".write": false
+    },
+    "internationalGloryState": {
+      ".read": false,
+      ".write": false
+    },
+    "uclMomentsState": {
+      ".read": false,
+      ".write": false
+    },
+    "whatIfState": {
+      ".read": false,
+      ".write": false
     }
   }
 }

@@ -1,0 +1,1979 @@
+{
+  "version": 1,
+  "id": "five-mode-2026-10",
+  "rewardPolicy": "mode_default",
+  "journey": {
+    "version": 2,
+    "chapterId": "chapter_5_expansion",
+    "journeys": [
+      {
+        "id": "PJ-33",
+        "name": "Pelé",
+        "playerId": 4000000065,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-33_v2_1",
+            "prompt": "Pelé, profesyonel A takım futboluna hangi Brezilya kulübünde başladı?",
+            "options": [
+              {
+                "key": "0d391c5d96f4",
+                "label": "Santos FC"
+              },
+              {
+                "key": "197ca63f9ddc",
+                "label": "Corinthians"
+              },
+              {
+                "key": "575eb709e575",
+                "label": "Flamengo"
+              },
+              {
+                "key": "8677537c852f",
+                "label": "Palmeiras"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Altyapı dönemini değil, ilk profesyonel A takımını düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İlk Durak",
+            "introNarrative": "Pelé kariyerinin 1. sayfasında. İlk Durak başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-33_v2_2",
+            "prompt": "Pelé, Brezilya ile ilk Dünya Kupası şampiyonluğunu hangi yıl kazandı?",
+            "options": [
+              {
+                "key": "5aa620075caf",
+                "label": "1950"
+              },
+              {
+                "key": "b15bb2248f3c",
+                "label": "1954"
+              },
+              {
+                "key": "ed83137f2f70",
+                "label": "1958"
+              },
+              {
+                "key": "f94277f40a99",
+                "label": "1966"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "İsveç’te düzenlenen turnuvayı hatırla.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "eraChoice",
+            "title": "Milli Zirve",
+            "introNarrative": "Pelé kariyerinin 2. sayfasında. Milli Zirve başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-33_v2_3",
+            "prompt": "Pelé’nin Santos ile Libertadores şampiyonluğu kazandığı iki yılı seç.",
+            "options": [
+              {
+                "key": "45fe468f624b",
+                "label": "1964"
+              },
+              {
+                "key": "589c4a4f4ebe",
+                "label": "1962"
+              },
+              {
+                "key": "8db33fba120d",
+                "label": "1960"
+              },
+              {
+                "key": "96b9edf3da05",
+                "label": "1961"
+              },
+              {
+                "key": "aeb8a35c056b",
+                "label": "1963"
+              }
+            ],
+            "requiredCount": 2,
+            "hint": "Güney Amerika kupası ile Dünya Kupası yıllarını ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "multiChoice",
+            "title": "Kıta Başarısı",
+            "introNarrative": "Pelé kariyerinin 3. sayfasında. Kıta Başarısı başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-33_v2_4",
+            "prompt": "Pelé’nin iki profesyonel kulübünü ilkinden sonuncusuna sırala.",
+            "options": [
+              {
+                "key": "036f98dd2cd3",
+                "label": "Benfica"
+              },
+              {
+                "key": "889a5ebbeda2",
+                "label": "Boca Juniors"
+              },
+              {
+                "key": "960550ac1f12",
+                "label": "Flamengo"
+              },
+              {
+                "key": "b2dcb1c3544e",
+                "label": "New York Cosmos"
+              },
+              {
+                "key": "bb1c90ff5427",
+                "label": "Santos FC"
+              }
+            ],
+            "requiredCount": 2,
+            "hint": "Kulüp yolculuğunu millî takım turnuvalarıyla karıştırma.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "timeline",
+            "title": "Yeni Kıta",
+            "introNarrative": "Pelé kariyerinin 4. sayfasında. Yeni Kıta başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-34",
+        "name": "Diego Maradona",
+        "playerId": 4000000035,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-34_v2_1",
+            "prompt": "Maradona, profesyonel A takım kariyerine hangi Arjantin kulübünde başladı?",
+            "options": [
+              {
+                "key": "24837f27be58",
+                "label": "Racing Club"
+              },
+              {
+                "key": "7954f7279c95",
+                "label": "Argentinos Juniors"
+              },
+              {
+                "key": "a76d667c47f8",
+                "label": "River Plate"
+              },
+              {
+                "key": "bc2a8a67b79b",
+                "label": "Independiente"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Buenos Aires’teki ilk A takım dönemini düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İlk Adım",
+            "introNarrative": "Diego Maradona kariyerinin 1. sayfasında. İlk Adım başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-34_v2_2",
+            "prompt": "Maradona 1982’de hangi İspanyol kulübüne transfer oldu?",
+            "options": [
+              {
+                "key": "1b3f6cb64660",
+                "label": "Real Madrid"
+              },
+              {
+                "key": "54ed032151d8",
+                "label": "FC Barcelona"
+              },
+              {
+                "key": "76ca0aa284c1",
+                "label": "Atlético Madrid"
+              },
+              {
+                "key": "78bb2d6b275c",
+                "label": "Valencia"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "İlk Avrupa transferini, daha sonraki İtalya yıllarından ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Avrupa’ya Açılan Kapı",
+            "introNarrative": "Diego Maradona kariyerinin 2. sayfasında. Avrupa’ya Açılan Kapı başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-34_v2_3",
+            "prompt": "Maradona’nın Napoli ile ilk Serie A şampiyonluğu hangi sezon geldi?",
+            "options": [
+              {
+                "key": "118a7e226b99",
+                "label": "1985/86"
+              },
+              {
+                "key": "612ede7259f8",
+                "label": "1987/88"
+              },
+              {
+                "key": "9f37640ed60c",
+                "label": "1986/87"
+              },
+              {
+                "key": "c714285427d8",
+                "label": "1984/85"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Napoli’deki ilk lig kupasını, ikinci şampiyonluktan ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "eraChoice",
+            "title": "Güneyin Şampiyonluğu",
+            "introNarrative": "Diego Maradona kariyerinin 3. sayfasında. Güneyin Şampiyonluğu başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-34_v2_4",
+            "prompt": "İlk Napoli dönemine ulaşan kulüp rotasını sırala.",
+            "options": [
+              {
+                "key": "1203ca012e83",
+                "label": "Newell’s Old Boys"
+              },
+              {
+                "key": "80d77afab3af",
+                "label": "River Plate"
+              },
+              {
+                "key": "cc6513d699d4",
+                "label": "Boca Juniors"
+              },
+              {
+                "key": "d2d06e8a6c1f",
+                "label": "Sevilla"
+              },
+              {
+                "key": "da5336a7bf4b",
+                "label": "Barcelona"
+              },
+              {
+                "key": "df2f2924b537",
+                "label": "Napoli"
+              },
+              {
+                "key": "e9917fba0f80",
+                "label": "Argentinos Juniors"
+              }
+            ],
+            "requiredCount": 4,
+            "hint": "İlk İtalya dönemine ulaştığında rotayı bitir; sonraki dönüşleri ekleme.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "timeline",
+            "title": "Kariyerin Yolu",
+            "introNarrative": "Diego Maradona kariyerinin 4. sayfasında. Kariyerin Yolu başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-35",
+        "name": "Ronaldo Nazário",
+        "playerId": 3140,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-35_v2_1",
+            "prompt": "Ronaldo, Avrupa’ya transfer olmadan önce hangi Brezilya A takımında oynadı?",
+            "options": [
+              {
+                "key": "6b67af734699",
+                "label": "Santos FC"
+              },
+              {
+                "key": "897dfad30a62",
+                "label": "Cruzeiro"
+              },
+              {
+                "key": "d305a9313821",
+                "label": "Palmeiras"
+              },
+              {
+                "key": "ea4faf4c7606",
+                "label": "Flamengo"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Avrupa öncesindeki Brezilya A takımını ara.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Brezilya’daki Başlangıç",
+            "introNarrative": "Ronaldo Nazário kariyerinin 1. sayfasında. Brezilya’daki Başlangıç başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-35_v2_2",
+            "prompt": "Ronaldo’nun Avrupa’daki ilk kulübü hangisiydi?",
+            "options": [
+              {
+                "key": "0fef9bcf2754",
+                "label": "Benfica"
+              },
+              {
+                "key": "4e284d507067",
+                "label": "Feyenoord"
+              },
+              {
+                "key": "5f8f816a42b7",
+                "label": "Ajax"
+              },
+              {
+                "key": "e35cddfaf692",
+                "label": "PSV Eindhoven"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "İspanya öncesindeki Hollanda dönemini düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Avrupa’ya İlk Adım",
+            "introNarrative": "Ronaldo Nazário kariyerinin 2. sayfasında. Avrupa’ya İlk Adım başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-35_v2_3",
+            "prompt": "Ronaldo, 1997’de Barcelona’dan hangi İtalyan kulübüne geçti?",
+            "options": [
+              {
+                "key": "0af382532a1c",
+                "label": "Lazio"
+              },
+              {
+                "key": "2937252a292d",
+                "label": "Inter"
+              },
+              {
+                "key": "67246d1f80e2",
+                "label": "Juventus"
+              },
+              {
+                "key": "a4dff19dcfa2",
+                "label": "AC Milan"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "1997 yazındaki İtalya transferini, sonraki İtalya dönüşünden ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İtalya Yılları",
+            "introNarrative": "Ronaldo Nazário kariyerinin 3. sayfasında. İtalya Yılları başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-35_v2_4",
+            "prompt": "Ronaldo’nun ilk Real Madrid dönemine kadarki beş kulübünü sırala.",
+            "options": [
+              {
+                "key": "2552a4a20824",
+                "label": "Corinthians"
+              },
+              {
+                "key": "4a34feec24a9",
+                "label": "Real Madrid"
+              },
+              {
+                "key": "5dd3159eb809",
+                "label": "Cruzeiro"
+              },
+              {
+                "key": "733226968c6e",
+                "label": "Barcelona"
+              },
+              {
+                "key": "757566f49342",
+                "label": "Flamengo"
+              },
+              {
+                "key": "8e06fff1ef0e",
+                "label": "AC Milan"
+              },
+              {
+                "key": "beb21961dc62",
+                "label": "PSV"
+              },
+              {
+                "key": "e948effffe91",
+                "label": "Inter"
+              }
+            ],
+            "requiredCount": 5,
+            "hint": "İlk Madrid dönemine kadar olan kulüpleri seç ve sırala.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "timeline",
+            "title": "Avrupa Rotası",
+            "introNarrative": "Ronaldo Nazário kariyerinin 4. sayfasında. Avrupa Rotası başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-36",
+        "name": "Gianluigi Buffon",
+        "playerId": 5023,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-36_v2_1",
+            "prompt": "Buffon’un Serie A’da ilk A takım maçlarını oynadığı kulüp hangisiydi?",
+            "options": [
+              {
+                "key": "118e05ae1fb1",
+                "label": "Juventus"
+              },
+              {
+                "key": "2c2ee9ad4d29",
+                "label": "Bologna"
+              },
+              {
+                "key": "aa9b4ed9c8ea",
+                "label": "Parma"
+              },
+              {
+                "key": "c95091f2f02a",
+                "label": "Genoa"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Genç kalecinin 1990’lardaki A takım dönemini düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Kalecinin İlk Kulübü",
+            "introNarrative": "Gianluigi Buffon kariyerinin 1. sayfasında. Kalecinin İlk Kulübü başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-36_v2_2",
+            "prompt": "Buffon 2001’de Parma’dan hangi kulübe transfer oldu?",
+            "options": [
+              {
+                "key": "1bd2c18bef8f",
+                "label": "Lazio"
+              },
+              {
+                "key": "3d86941e66d3",
+                "label": "Juventus"
+              },
+              {
+                "key": "c5ab147e6a35",
+                "label": "Inter"
+              },
+              {
+                "key": "f57287ce89fb",
+                "label": "Roma"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "2001’deki transfer ile 2019’daki geri dönüşü ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Torino’ya Yolculuk",
+            "introNarrative": "Gianluigi Buffon kariyerinin 2. sayfasında. Torino’ya Yolculuk başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-36_v2_3",
+            "prompt": "Buffon, 2018/19 sezonunda hangi Fransız kulübünün formasını giydi?",
+            "options": [
+              {
+                "key": "6513bdb8a36d",
+                "label": "Paris Saint-Germain"
+              },
+              {
+                "key": "6ddfaccbeb06",
+                "label": "Lyon"
+              },
+              {
+                "key": "785382aa24fb",
+                "label": "Marseille"
+              },
+              {
+                "key": "9eea0fb062a2",
+                "label": "Monaco"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Bir sezonluk Fransa deneyimine odaklan.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Paris Deneyimi",
+            "introNarrative": "Gianluigi Buffon kariyerinin 3. sayfasında. Paris Deneyimi başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-36_v2_4",
+            "prompt": "Buffon, 2019 yazında PSG’den sonra hangi İtalyan kulübüne geri döndü?",
+            "options": [
+              {
+                "key": "068a9e453bf7",
+                "label": "Roma"
+              },
+              {
+                "key": "9218e1799a2d",
+                "label": "Parma"
+              },
+              {
+                "key": "bee3820ef860",
+                "label": "Juventus"
+              },
+              {
+                "key": "e86f16f5877a",
+                "label": "AC Milan"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Son kariyer durağını değil, Fransa’dan hemen sonraki dönüşü ara.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İtalya’ya Dönüş",
+            "introNarrative": "Gianluigi Buffon kariyerinin 4. sayfasında. İtalya’ya Dönüş başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-37",
+        "name": "Gheorghe Hagi",
+        "playerId": 4000000002,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-37_v2_1",
+            "prompt": "Hagi, 1990’da Romanya’dan ayrıldığında hangi İspanyol kulübüne katıldı?",
+            "options": [
+              {
+                "key": "1cd64ac33e2d",
+                "label": "Real Madrid"
+              },
+              {
+                "key": "28943822ef27",
+                "label": "Valencia"
+              },
+              {
+                "key": "8a7f55f2444b",
+                "label": "FC Barcelona"
+              },
+              {
+                "key": "bc7e37906564",
+                "label": "Sevilla"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Romanya’dan sonraki ilk ülkesini ve transfer yılını düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İspanya Yılları",
+            "introNarrative": "Gheorghe Hagi kariyerinin 1. sayfasında. İspanya Yılları başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-37_v2_2",
+            "prompt": "Hagi, 1994–1996 yılları arasında hangi İspanyol kulübünde oynadı?",
+            "options": [
+              {
+                "key": "7e07e3c1d1a6",
+                "label": "FC Barcelona"
+              },
+              {
+                "key": "a96fe2a7aa5b",
+                "label": "Real Madrid"
+              },
+              {
+                "key": "ad40347b1353",
+                "label": "Villarreal"
+              },
+              {
+                "key": "b0c013c54153",
+                "label": "Atlético Madrid"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "1994 Dünya Kupası sonrasındaki iki sezonu hatırla.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Yeni Forma",
+            "introNarrative": "Gheorghe Hagi kariyerinin 2. sayfasında. Yeni Forma başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-37_v2_3",
+            "prompt": "Hagi 1996’da hangi Türk kulübüne transfer oldu?",
+            "options": [
+              {
+                "key": "45e79f63d747",
+                "label": "Fenerbahçe"
+              },
+              {
+                "key": "6272c384e6c9",
+                "label": "Beşiktaş"
+              },
+              {
+                "key": "8e884d920128",
+                "label": "Galatasaray"
+              },
+              {
+                "key": "a6e4ec2732b1",
+                "label": "Trabzonspor"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Futbolcu olarak geldiği kulübü düşün; teknik direktörlük dönemlerini ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İstanbul Dönemi",
+            "introNarrative": "Gheorghe Hagi kariyerinin 3. sayfasında. İstanbul Dönemi başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-37_v2_4",
+            "prompt": "Şu dört kulübü Hagi’nin ilk katılma sırasına göre diz.",
+            "options": [
+              {
+                "key": "328a4baecd5d",
+                "label": "Barcelona"
+              },
+              {
+                "key": "579f0448c805",
+                "label": "Inter"
+              },
+              {
+                "key": "66cb767ff9e2",
+                "label": "Real Madrid"
+              },
+              {
+                "key": "6fb5cbc85cd7",
+                "label": "Valencia"
+              },
+              {
+                "key": "98a0a6b09077",
+                "label": "Galatasaray"
+              },
+              {
+                "key": "a9c7e773e6a8",
+                "label": "Fenerbahçe"
+              },
+              {
+                "key": "e884a521e5f9",
+                "label": "Brescia"
+              }
+            ],
+            "requiredCount": 4,
+            "hint": "Verilen dört durağı ilk katıldığı yıllara göre sırala.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "timeline",
+            "title": "Dört Ülkede Bir Rota",
+            "introNarrative": "Gheorghe Hagi kariyerinin 4. sayfasında. Dört Ülkede Bir Rota başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-38",
+        "name": "Alex de Souza",
+        "playerId": 4000000110,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-38_v2_1",
+            "prompt": "Alex profesyonel kariyerine hangi Brezilya kulübünde başladı?",
+            "options": [
+              {
+                "key": "05aed572cc68",
+                "label": "Grêmio"
+              },
+              {
+                "key": "29e04eac78eb",
+                "label": "Coritiba"
+              },
+              {
+                "key": "51c624397f52",
+                "label": "Santos FC"
+              },
+              {
+                "key": "8f966d84ef81",
+                "label": "Cruzeiro"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "1990’lardaki ilk A takım dönemini düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Başlangıç",
+            "introNarrative": "Alex de Souza kariyerinin 1. sayfasında. Başlangıç başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-38_v2_2",
+            "prompt": "Alex, 2004’te Fenerbahçe’ye gelmeden hemen önce hangi Brezilya kulübündeydi?",
+            "options": [
+              {
+                "key": "0050a3521e61",
+                "label": "Flamengo"
+              },
+              {
+                "key": "115878cd2991",
+                "label": "Palmeiras"
+              },
+              {
+                "key": "cdebfd5674d1",
+                "label": "Coritiba"
+              },
+              {
+                "key": "fff6ba1518fc",
+                "label": "Cruzeiro"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Türkiye transferinden hemen önceki sezonu ara.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Brezilya’daki Son Büyük Durak",
+            "introNarrative": "Alex de Souza kariyerinin 2. sayfasında. Brezilya’daki Son Büyük Durak başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-38_v2_3",
+            "prompt": "Alex 2004’te hangi Türk kulübüne katıldı?",
+            "options": [
+              {
+                "key": "04aea7fc6e02",
+                "label": "Trabzonspor"
+              },
+              {
+                "key": "27c50c043476",
+                "label": "Beşiktaş"
+              },
+              {
+                "key": "5a0e7db509b4",
+                "label": "Galatasaray"
+              },
+              {
+                "key": "919f3204b928",
+                "label": "Fenerbahçe"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "2004 yazındaki ilk Türkiye transferini düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İstanbul",
+            "introNarrative": "Alex de Souza kariyerinin 3. sayfasında. İstanbul başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-38_v2_4",
+            "prompt": "Alex, Fenerbahçe’den ayrıldıktan sonra hangi Brezilya kulübünde futbol oynadı?",
+            "options": [
+              {
+                "key": "1cbe76a2bed5",
+                "label": "Palmeiras"
+              },
+              {
+                "key": "27f6778f668d",
+                "label": "Coritiba"
+              },
+              {
+                "key": "4919941278eb",
+                "label": "Cruzeiro"
+              },
+              {
+                "key": "7e85167073bd",
+                "label": "Santos FC"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Kariyer başlangıcı ile son dönem arasındaki bağlantıyı hatırla.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Eve Dönüş",
+            "introNarrative": "Alex de Souza kariyerinin 4. sayfasında. Eve Dönüş başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-39",
+        "name": "Ricardo Quaresma",
+        "playerId": 4188,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-39_v2_1",
+            "prompt": "Quaresma 2003’te Sporting’den hangi İspanyol kulübüne transfer oldu?",
+            "options": [
+              {
+                "key": "a501ecd59e42",
+                "label": "Sevilla"
+              },
+              {
+                "key": "aa03e5e02d48",
+                "label": "FC Barcelona"
+              },
+              {
+                "key": "b8d7946bb343",
+                "label": "Valencia"
+              },
+              {
+                "key": "d50001559292",
+                "label": "Real Madrid"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "2003 yazındaki İspanya transferini düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Lizbon Çıkışı",
+            "introNarrative": "Ricardo Quaresma kariyerinin 1. sayfasında. Lizbon Çıkışı başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-39_v2_2",
+            "prompt": "Quaresma, Barcelona’dan ayrıldıktan sonra hangi Portekiz kulübünde oynadı?",
+            "options": [
+              {
+                "key": "015771a58a81",
+                "label": "FC Porto"
+              },
+              {
+                "key": "7bca089aa739",
+                "label": "Braga"
+              },
+              {
+                "key": "88e4c11faedd",
+                "label": "Sporting CP"
+              },
+              {
+                "key": "f1d39729b484",
+                "label": "Benfica"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "İlk Türkiye döneminden önceki Portekiz dönüşüne odaklan.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Porto Dönemi",
+            "introNarrative": "Ricardo Quaresma kariyerinin 2. sayfasında. Porto Dönemi başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-39_v2_3",
+            "prompt": "Quaresma, 2010’da Türkiye’de hangi kulübe katıldı?",
+            "options": [
+              {
+                "key": "2a04ebcb0629",
+                "label": "Beşiktaş"
+              },
+              {
+                "key": "40cb1dae9393",
+                "label": "Galatasaray"
+              },
+              {
+                "key": "699a23f668ca",
+                "label": "Fenerbahçe"
+              },
+              {
+                "key": "73520ecea507",
+                "label": "Trabzonspor"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "İlk İstanbul transferini ikinci gelişinden ayır.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İstanbul’a Geliş",
+            "introNarrative": "Ricardo Quaresma kariyerinin 3. sayfasında. İstanbul’a Geliş başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-39_v2_4",
+            "prompt": "Quaresma 2019’da Beşiktaş’tan hangi diğer İstanbul kulübüne geçti?",
+            "options": [
+              {
+                "key": "4e85642869dd",
+                "label": "Kasımpaşa"
+              },
+              {
+                "key": "5c80fed9eec6",
+                "label": "Galatasaray"
+              },
+              {
+                "key": "6497c221ec5b",
+                "label": "Başakşehir"
+              },
+              {
+                "key": "beb78fbf6e83",
+                "label": "Fenerbahçe"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "2019 yazındaki İstanbul içi transferi hatırla.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İkinci İstanbul Forması",
+            "introNarrative": "Ricardo Quaresma kariyerinin 4. sayfasında. İkinci İstanbul Forması başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      },
+      {
+        "id": "PJ-40",
+        "name": "Burak Yılmaz",
+        "playerId": 4000000108,
+        "expansion": "five-mode-2026-10",
+        "rewardPolicy": "mode_default",
+        "tasks": [
+          {
+            "id": "PJ-40_v2_1",
+            "prompt": "Burak Yılmaz’ın ilk profesyonel A takım kulübü hangisiydi?",
+            "options": [
+              {
+                "key": "5f47927d5488",
+                "label": "Antalyaspor"
+              },
+              {
+                "key": "6e1b7d2cfaec",
+                "label": "Bursaspor"
+              },
+              {
+                "key": "76298b4cc14d",
+                "label": "Samsunspor"
+              },
+              {
+                "key": "f3db4ad7cbd5",
+                "label": "Beşiktaş"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "İlk profesyonel A takım ile ilk büyük transfer aynı durak değil.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İlk Profesyonel Adım",
+            "introNarrative": "Burak Yılmaz kariyerinin 1. sayfasında. İlk Profesyonel Adım başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-40_v2_2",
+            "prompt": "Burak Yılmaz, 2010’da hangi Karadeniz kulübüne transfer oldu?",
+            "options": [
+              {
+                "key": "15d84b55adad",
+                "label": "Orduspor"
+              },
+              {
+                "key": "779554f542b4",
+                "label": "Rizespor"
+              },
+              {
+                "key": "bdd73c4b5be1",
+                "label": "Samsunspor"
+              },
+              {
+                "key": "f77b2ed6127c",
+                "label": "Trabzonspor"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "2010 yılındaki kulüp değişimine odaklan.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Karadeniz",
+            "introNarrative": "Burak Yılmaz kariyerinin 2. sayfasında. Karadeniz başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-40_v2_3",
+            "prompt": "Burak Yılmaz, 2012 yazında Trabzonspor’dan hangi takıma geçti?",
+            "options": [
+              {
+                "key": "07f8beb701f8",
+                "label": "Başakşehir"
+              },
+              {
+                "key": "28a494f9c277",
+                "label": "Fenerbahçe"
+              },
+              {
+                "key": "4a1e9fbdb451",
+                "label": "Beşiktaş"
+              },
+              {
+                "key": "994ec26058de",
+                "label": "Galatasaray"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "2012 yazındaki transferi, daha sonraki geri dönüşlerle karıştırma.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "İstanbul",
+            "introNarrative": "Burak Yılmaz kariyerinin 3. sayfasında. İstanbul başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          },
+          {
+            "id": "PJ-40_v2_4",
+            "prompt": "Burak Yılmaz 2020/21 Ligue 1 şampiyonluğunu hangi kulüple kazandı?",
+            "options": [
+              {
+                "key": "0de43614ee46",
+                "label": "Monaco"
+              },
+              {
+                "key": "12fc1a93d9da",
+                "label": "Lyon"
+              },
+              {
+                "key": "d05cf2c7d0ea",
+                "label": "Paris Saint-Germain"
+              },
+              {
+                "key": "dd561aa80696",
+                "label": "Lille OSC"
+              }
+            ],
+            "requiredCount": 1,
+            "hint": "Takvim yılını değil, tamamlanan lig sezonunu düşün.",
+            "contentVersion": 1,
+            "expansion": "five-mode-2026-10",
+            "rewardPolicy": "mode_default",
+            "type": "clubChoice",
+            "title": "Fransa Şampiyonluğu",
+            "introNarrative": "Burak Yılmaz kariyerinin 4. sayfasında. Fransa Şampiyonluğu başlığındaki dönemin izini sür; kulüp ve millî takım hikâyelerini ayrı düşün.",
+            "serverValidated": true
+          }
+        ]
+      }
+    ]
+  },
+  "ucl": [
+    {
+      "id": "UCL-35",
+      "prompt": "1994 Atina finalinde Milan’ın ilk iki golünü hangi futbolcu attı?",
+      "options": [
+        {
+          "id": "09367d9c369f",
+          "label": "Daniele Massaro"
+        },
+        {
+          "id": "ac6e7b66b0d1",
+          "label": "Dejan Savićević"
+        },
+        {
+          "id": "bdfbf25df865",
+          "label": "Marcel Desailly"
+        },
+        {
+          "id": "ed6f1b1cd20b",
+          "label": "Zvonimir Boban"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Sorudaki finali ve oyuncunun o karşılaşmadaki rolünü düşün.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 35,
+      "date": "1994-05-18",
+      "season": "1993/1994",
+      "home": {
+        "id": 5,
+        "name": "AC Milan"
+      },
+      "away": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "type": "hero",
+      "title": "AC Milan – Barcelona",
+      "round": "Final",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "clock": "Final gecesi",
+      "intro": "İki kulüp, tek final. Karşılaşmanın belirleyici anını futbol hafızandan bul."
+    },
+    {
+      "id": "UCL-36",
+      "prompt": "1986 Avrupa Kupası finali penaltı serisinde Barcelona’nın dört vuruşunu da kurtaran kaleci kimdi?",
+      "options": [
+        {
+          "id": "28287f4968a1",
+          "label": "Dumitru Stângaciu"
+        },
+        {
+          "id": "acdc9ed03afd",
+          "label": "Silviu Lung"
+        },
+        {
+          "id": "bd60a7df2baf",
+          "label": "Helmuth Duckadam"
+        },
+        {
+          "id": "e4f038277bd2",
+          "label": "Andoni Zubizarreta"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Sorudaki finali ve oyuncunun o karşılaşmadaki rolünü düşün.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 36,
+      "date": "1986-05-07",
+      "season": "1985/1986",
+      "home": {
+        "id": null,
+        "name": "Steaua Bükreş"
+      },
+      "away": {
+        "id": 131,
+        "name": "Barcelona"
+      },
+      "type": "hero",
+      "title": "Steaua Bükreş – Barcelona",
+      "round": "Final",
+      "competition": "Avrupa Şampiyon Kulüpler Kupası",
+      "clock": "Final gecesi",
+      "intro": "İki kulüp, tek final. Karşılaşmanın belirleyici anını futbol hafızandan bul."
+    },
+    {
+      "id": "UCL-37",
+      "prompt": "Manchester City’ye ilk Şampiyonlar Ligi şampiyonluğunu getiren final golünü kim attı?",
+      "options": [
+        {
+          "id": "4a33f23592e1",
+          "label": "Erling Haaland"
+        },
+        {
+          "id": "77557ab74d30",
+          "label": "İlkay Gündoğan"
+        },
+        {
+          "id": "e2aded7768af",
+          "label": "Bernardo Silva"
+        },
+        {
+          "id": "ecbce3a1b97f",
+          "label": "Rodri"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Sorudaki finali ve oyuncunun o karşılaşmadaki rolünü düşün.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 37,
+      "date": "2023-06-10",
+      "season": "2022/2023",
+      "home": {
+        "id": 281,
+        "name": "Manchester City"
+      },
+      "away": {
+        "id": 46,
+        "name": "Inter"
+      },
+      "type": "goal",
+      "title": "Manchester City – Inter",
+      "round": "Final",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "clock": "Final gecesi",
+      "intro": "İki kulüp, tek final. Karşılaşmanın belirleyici anını futbol hafızandan bul."
+    }
+  ],
+  "nostalgia": [
+    {
+      "id": "TN-13",
+      "title": "1959 Millî Lig’in Doğuşu",
+      "era": "1959",
+      "card": "1959",
+      "categories": [
+        "Şampiyonluk"
+      ],
+      "intro": "Türkiye futbol tarihinin bu sayfasında sezonları, kişileri ve kupaları ayrı izlerle keşfet.",
+      "expansion": "five-mode-2026-10",
+      "tasks": [
+        {
+          "id": "TN-13-01",
+          "prompt": "Türkiye 1. Futbol Ligi’nin 1959’daki ilk şampiyonu hangi kulüptü?",
+          "options": [
+            {
+              "id": "3c4b915fb6bb",
+              "label": "Beşiktaş"
+            },
+            {
+              "id": "97d8681db761",
+              "label": "Göztepe"
+            },
+            {
+              "id": "b07695266f27",
+              "label": "Fenerbahçe"
+            },
+            {
+              "id": "cd82fdb975c4",
+              "label": "Galatasaray"
+            }
+          ],
+          "requiredCount": 1,
+          "hint": "İlk ulusal lig sezonunun iki ayaklı finalini düşün.",
+          "contentVersion": 1,
+          "expansion": "five-mode-2026-10",
+          "rewardPolicy": "mode_default",
+          "chapterId": "TN-13",
+          "mechanic": "season",
+          "question": "Türkiye 1. Futbol Ligi’nin 1959’daki ilk şampiyonu hangi kulüptü?",
+          "serverValidated": true,
+          "slots": [],
+          "role": ""
+        },
+        {
+          "id": "TN-13-02",
+          "prompt": "1959 iki ayaklı Millî Lig finalinin ikinci maçı kaç kaç bitti?",
+          "options": [
+            {
+              "id": "617f65cac6ae",
+              "label": "Fenerbahçe 4-0 Galatasaray"
+            },
+            {
+              "id": "7f5d5d0a9831",
+              "label": "Fenerbahçe 4-1 Galatasaray"
+            },
+            {
+              "id": "b00d29cf9eed",
+              "label": "Fenerbahçe 2-0 Galatasaray"
+            },
+            {
+              "id": "d6c440a48620",
+              "label": "Fenerbahçe 3-0 Galatasaray"
+            }
+          ],
+          "requiredCount": 1,
+          "hint": "İlk karşılaşmanın sonucunu değil, rövanşı ara.",
+          "contentVersion": 1,
+          "expansion": "five-mode-2026-10",
+          "rewardPolicy": "mode_default",
+          "chapterId": "TN-13",
+          "mechanic": "season",
+          "question": "1959 iki ayaklı Millî Lig finalinin ikinci maçı kaç kaç bitti?",
+          "serverValidated": true,
+          "slots": [],
+          "role": ""
+        }
+      ]
+    },
+    {
+      "id": "TN-14",
+      "title": "Metin Oktay ve Lefter Dönemi",
+      "era": "1950’ler–1960’lar",
+      "card": "1950’ler–1960’lar",
+      "categories": [
+        "Şampiyonluk"
+      ],
+      "intro": "Türkiye futbol tarihinin bu sayfasında sezonları, kişileri ve kupaları ayrı izlerle keşfet.",
+      "expansion": "five-mode-2026-10",
+      "tasks": [
+        {
+          "id": "TN-14-01",
+          "prompt": "1959’daki ilk Millî Lig sezonunun gol kralı kimdi?",
+          "options": [
+            {
+              "id": "0996ca336616",
+              "label": "Metin Oktay"
+            },
+            {
+              "id": "89e6b8f75296",
+              "label": "Lefter Küçükandonyadis"
+            },
+            {
+              "id": "975381d2ac10",
+              "label": "Şeref Has"
+            },
+            {
+              "id": "dc6b28ed9c09",
+              "label": "Can Bartu"
+            }
+          ],
+          "requiredCount": 1,
+          "hint": "Kulüp şampiyonluğu ile bireysel gol krallığını ayır.",
+          "contentVersion": 1,
+          "expansion": "five-mode-2026-10",
+          "rewardPolicy": "mode_default",
+          "chapterId": "TN-14",
+          "mechanic": "legend",
+          "question": "1959’daki ilk Millî Lig sezonunun gol kralı kimdi?",
+          "serverValidated": true,
+          "slots": [],
+          "role": ""
+        },
+        {
+          "id": "TN-14-02",
+          "prompt": "Lefter Küçükandonyadis, Türkiye’de en çok hangi kulüple özdeşleşti?",
+          "options": [
+            {
+              "id": "91dbe6542766",
+              "label": "Vefa"
+            },
+            {
+              "id": "9569dd20b005",
+              "label": "Fenerbahçe"
+            },
+            {
+              "id": "be1a822e7e4c",
+              "label": "Galatasaray"
+            },
+            {
+              "id": "cd4a8a38d200",
+              "label": "Beşiktaş"
+            }
+          ],
+          "requiredCount": 1,
+          "hint": "İtalya ve Fransa yıllarını değil, Türkiye’deki uzun dönemini düşün.",
+          "contentVersion": 1,
+          "expansion": "five-mode-2026-10",
+          "rewardPolicy": "mode_default",
+          "chapterId": "TN-14",
+          "mechanic": "season",
+          "question": "Lefter Küçükandonyadis, Türkiye’de en çok hangi kulüple özdeşleşti?",
+          "serverValidated": true,
+          "slots": [],
+          "role": ""
+        }
+      ]
+    },
+    {
+      "id": "TN-15",
+      "title": "Eskişehirspor’un Anadolu Yükselişi",
+      "era": "1970/71",
+      "card": "1970/71",
+      "categories": [
+        "Anadolu"
+      ],
+      "intro": "Türkiye futbol tarihinin bu sayfasında sezonları, kişileri ve kupaları ayrı izlerle keşfet.",
+      "expansion": "five-mode-2026-10",
+      "tasks": [
+        {
+          "id": "TN-15-01",
+          "prompt": "Eskişehirspor 1970/71 Türkiye Kupası finalinde hangi rakibini geçti?",
+          "options": [
+            {
+              "id": "118a1d8c01db",
+              "label": "Galatasaray"
+            },
+            {
+              "id": "738c276a9bee",
+              "label": "Fenerbahçe"
+            },
+            {
+              "id": "8c02dfa25196",
+              "label": "Altay"
+            },
+            {
+              "id": "f8ea45f227df",
+              "label": "Bursaspor"
+            }
+          ],
+          "requiredCount": 1,
+          "hint": "Lig tablosunu değil, iki ayaklı kupa finalini düşün.",
+          "contentVersion": 1,
+          "expansion": "five-mode-2026-10",
+          "rewardPolicy": "mode_default",
+          "chapterId": "TN-15",
+          "mechanic": "route",
+          "question": "Eskişehirspor 1970/71 Türkiye Kupası finalinde hangi rakibini geçti?",
+          "serverValidated": true,
+          "slots": [
+            "Final rakibi"
+          ],
+          "role": ""
+        },
+        {
+          "id": "TN-15-02",
+          "prompt": "Eskişehirspor 1970/71 Cumhurbaşkanlığı Kupası’nı hangi rakibine karşı kazandı?",
+          "options": [
+            {
+              "id": "ec8daa44fe35",
+              "label": "Galatasaray"
+            },
+            {
+              "id": "f3cf15cb27b6",
+              "label": "Beşiktaş"
+            },
+            {
+              "id": "fbcc2a685ad1",
+              "label": "Fenerbahçe"
+            },
+            {
+              "id": "fedddc5a3766",
+              "label": "Bursaspor"
+            }
+          ],
+          "requiredCount": 1,
+          "hint": "Türkiye Kupası finali ile sezonun diğer kupa maçını ayır.",
+          "contentVersion": 1,
+          "expansion": "five-mode-2026-10",
+          "rewardPolicy": "mode_default",
+          "chapterId": "TN-15",
+          "mechanic": "season",
+          "question": "Eskişehirspor 1970/71 Cumhurbaşkanlığı Kupası’nı hangi rakibine karşı kazandı?",
+          "serverValidated": true,
+          "slots": [],
+          "role": ""
+        }
+      ]
+    }
+  ],
+  "international": [
+    {
+      "id": "IG-41",
+      "prompt": "1970 Dünya Kupası finalinde Brezilya’nın ilk 11 kalecisi kimdi?",
+      "options": [
+        {
+          "id": "01cd98b24b59",
+          "label": "Leão"
+        },
+        {
+          "id": "2936a38a2b96",
+          "label": "Gilmar"
+        },
+        {
+          "id": "65dcdd106916",
+          "label": "Ado"
+        },
+        {
+          "id": "6b075a3071d8",
+          "label": "Félix"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Maç kadrosundaki yedekleri değil, başlangıç kalecisini ara.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 41,
+      "chapterId": 1,
+      "date": "1970-06-21",
+      "competition": "Dünya Kupası 1970",
+      "round": "Final",
+      "home": {
+        "id": "Brezilya",
+        "name": "Brezilya"
+      },
+      "away": {
+        "id": "İtalya",
+        "name": "İtalya"
+      },
+      "type": "xi",
+      "title": "Brezilya – İtalya",
+      "intro": "Millî formalarla yazılan bir hatıra. Bu karşılaşmanın izini sür ve sorulan anı keşfet.",
+      "clock": "Millî takım arşivi",
+      "difficulty": "Orta",
+      "lineup": {
+        "club": "Brezilya",
+        "formation": "4-3-3",
+        "rows": [
+          [
+            "?"
+          ],
+          [
+            "Carlos Alberto",
+            "Brito",
+            "Piazza",
+            "Everaldo"
+          ],
+          [
+            "Clodoaldo",
+            "Gérson",
+            "Rivellino"
+          ],
+          [
+            "Jairzinho",
+            "Tostão",
+            "Pelé"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "IG-42",
+      "prompt": "Katar’ın 2019 Asya Kupası yarı final ve final rakiplerini sırala.",
+      "options": [
+        {
+          "id": "05a6d7b8127b",
+          "label": "Japonya"
+        },
+        {
+          "id": "72ced6cd8c84",
+          "label": "Birleşik Arap Emirlikleri"
+        },
+        {
+          "id": "89c4a9e24561",
+          "label": "Irak"
+        },
+        {
+          "id": "ad74708e286f",
+          "label": "İran"
+        },
+        {
+          "id": "e6e748c6517d",
+          "label": "Güney Kore"
+        }
+      ],
+      "requiredCount": 2,
+      "hint": "Çeyrek finali atla; son iki turun rakiplerini yerleştir.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 42,
+      "chapterId": 3,
+      "date": "2019-02-01",
+      "competition": "Asya Kupası 2019",
+      "round": "Final",
+      "home": {
+        "id": "Katar",
+        "name": "Katar"
+      },
+      "away": {
+        "id": "Japonya",
+        "name": "Japonya"
+      },
+      "type": "route",
+      "title": "Katar – Japonya",
+      "intro": "Millî formalarla yazılan bir hatıra. Bu karşılaşmanın izini sür ve sorulan anı keşfet.",
+      "clock": "Millî takım arşivi",
+      "difficulty": "Orta",
+      "slots": [
+        "Yarı final",
+        "Final"
+      ]
+    },
+    {
+      "id": "IG-43",
+      "prompt": "Meksika’nın 2-0’dan döndüğü 2011 Gold Cup finalindeki dört golcüyü sırala.",
+      "options": [
+        {
+          "id": "2bbb89384c9f",
+          "label": "Pablo Barrera · ilk golü"
+        },
+        {
+          "id": "3d6ca5b5a048",
+          "label": "Andrés Guardado"
+        },
+        {
+          "id": "3e9aae30b1bf",
+          "label": "Giovani dos Santos"
+        },
+        {
+          "id": "5411e5e21e99",
+          "label": "Pablo Barrera · ikinci golü"
+        }
+      ],
+      "requiredCount": 4,
+      "hint": "Aynı oyuncunun iki golü ayrı karttır; takımın gol sırasını kur.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 43,
+      "chapterId": 3,
+      "date": "2011-06-25",
+      "competition": "Gold Cup 2011",
+      "round": "Final",
+      "home": {
+        "id": "Meksika",
+        "name": "Meksika"
+      },
+      "away": {
+        "id": "ABD",
+        "name": "ABD"
+      },
+      "type": "timeline",
+      "title": "Meksika – ABD",
+      "intro": "Millî formalarla yazılan bir hatıra. Bu karşılaşmanın izini sür ve sorulan anı keşfet.",
+      "clock": "Millî takım arşivi",
+      "difficulty": "Orta"
+    },
+    {
+      "id": "IG-44",
+      "prompt": "2022 Dünya Kupası’nda Japonya’nın İspanya karşısındaki galibiyet golünü kim attı?",
+      "options": [
+        {
+          "id": "24eb6a4a67bb",
+          "label": "Daizen Maeda"
+        },
+        {
+          "id": "53202f50485d",
+          "label": "Ao Tanaka"
+        },
+        {
+          "id": "71aea5c19a43",
+          "label": "Ritsu Dōan"
+        },
+        {
+          "id": "720931c99199",
+          "label": "Kaoru Mitoma"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Beraberlik golü ile öne geçiren golü birbirinden ayır.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 44,
+      "chapterId": 4,
+      "date": "2022-12-01",
+      "competition": "Dünya Kupası 2022",
+      "round": "Grup",
+      "home": {
+        "id": "Japonya",
+        "name": "Japonya"
+      },
+      "away": {
+        "id": "İspanya",
+        "name": "İspanya"
+      },
+      "type": "critical",
+      "title": "Japonya – İspanya",
+      "intro": "Millî formalarla yazılan bir hatıra. Bu karşılaşmanın izini sür ve sorulan anı keşfet.",
+      "clock": "Millî takım arşivi",
+      "difficulty": "Orta"
+    }
+  ],
+  "dynasties": [
+    {
+      "id": "DY-17",
+      "number": 17,
+      "chapterId": 2,
+      "club": "Boca Juniors",
+      "period": "2000–2003",
+      "title": "Güney Amerika’nın izi",
+      "intro": "Bir kulübün yıllara yayılan başarısını kupalar ve teknik yönetim üzerinden keşfet.",
+      "taskIds": [
+        "DY-17-01",
+        "DY-17-02"
+      ],
+      "expansion": "five-mode-2026-10"
+    },
+    {
+      "id": "DY-18",
+      "number": 18,
+      "chapterId": 2,
+      "club": "Al Ahly",
+      "period": "2005–2008",
+      "title": "Kahire’den kıtaya",
+      "intro": "Bir kulübün yıllara yayılan başarısını kupalar ve teknik yönetim üzerinden keşfet.",
+      "taskIds": [
+        "DY-18-01",
+        "DY-18-02"
+      ],
+      "expansion": "five-mode-2026-10"
+    },
+    {
+      "id": "DY-19",
+      "number": 19,
+      "chapterId": 2,
+      "club": "Galatasaray",
+      "period": "1996–2000",
+      "title": "İstanbul’da süreklilik",
+      "intro": "Bir kulübün yıllara yayılan başarısını kupalar ve teknik yönetim üzerinden keşfet.",
+      "taskIds": [
+        "DY-19-01",
+        "DY-19-02"
+      ],
+      "expansion": "five-mode-2026-10"
+    }
+  ],
+  "dynastyTasks": [
+    {
+      "id": "DY-17-01",
+      "prompt": "Boca Juniors’ın 2000–2003 arasında Libertadores’i kazandığı üç yılı seç.",
+      "options": [
+        {
+          "id": "04688474000a",
+          "label": "1999"
+        },
+        {
+          "id": "23ce598473c1",
+          "label": "2003"
+        },
+        {
+          "id": "357cd610c29f",
+          "label": "2001"
+        },
+        {
+          "id": "95a153a321bc",
+          "label": "1998"
+        },
+        {
+          "id": "adbe074f5748",
+          "label": "2000"
+        },
+        {
+          "id": "f2322fe9f132",
+          "label": "2002"
+        }
+      ],
+      "requiredCount": 3,
+      "hint": "Dönemin başlangıç ve bitiş sınırlarını koru.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 33,
+      "dynastyId": "DY-17",
+      "stage": 1,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Yükseliş",
+      "slots": []
+    },
+    {
+      "id": "DY-17-02",
+      "prompt": "Boca Juniors’ın 2000 ve 2003 Libertadores zaferlerinde görev alan ünlü teknik direktör kimdi?",
+      "options": [
+        {
+          "id": "3da40598eeac",
+          "label": "Marcelo Bielsa"
+        },
+        {
+          "id": "3db9c0deb127",
+          "label": "Alfio Basile"
+        },
+        {
+          "id": "447a6444493e",
+          "label": "Carlos Bianchi"
+        },
+        {
+          "id": "d1fba4c2dc28",
+          "label": "Ramón Díaz"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Oyuncuyu değil, dönemin teknik direktörünü ara.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 34,
+      "dynastyId": "DY-17",
+      "stage": 2,
+      "mechanic": "squad",
+      "interaction": "single",
+      "title": "Zirve",
+      "slots": []
+    },
+    {
+      "id": "DY-18-01",
+      "prompt": "Al Ahly’nin 2005–2008 döneminde CAF Şampiyonlar Ligi’ni kazandığı üç yılı seç.",
+      "options": [
+        {
+          "id": "095fa5dc6904",
+          "label": "2007"
+        },
+        {
+          "id": "46e12fd796b1",
+          "label": "2008"
+        },
+        {
+          "id": "652fd5ef7e00",
+          "label": "2005"
+        },
+        {
+          "id": "84629ab20f34",
+          "label": "2006"
+        },
+        {
+          "id": "95ee7da6c86f",
+          "label": "2009"
+        },
+        {
+          "id": "ecf925a93e3e",
+          "label": "2004"
+        }
+      ],
+      "requiredCount": 3,
+      "hint": "Finale katılmak ve kupayı kazanmak farklıdır.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 35,
+      "dynastyId": "DY-18",
+      "stage": 1,
+      "mechanic": "trophies",
+      "interaction": "multi",
+      "title": "Yükseliş",
+      "slots": []
+    },
+    {
+      "id": "DY-18-02",
+      "prompt": "Al Ahly’nin 2006 CAF Şampiyonlar Ligi finalindeki rakibi hangi kulüptü?",
+      "options": [
+        {
+          "id": "298215482475",
+          "label": "Espérance"
+        },
+        {
+          "id": "440ec567c4e2",
+          "label": "Étoile du Sahel"
+        },
+        {
+          "id": "64cb8da595e4",
+          "label": "Coton Sport"
+        },
+        {
+          "id": "fa948d076e1b",
+          "label": "CS Sfaxien"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "İki ayaklı finalin aynı sezon içindeki rakibini düşün.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 36,
+      "dynastyId": "DY-18",
+      "stage": 2,
+      "mechanic": "route",
+      "interaction": "single",
+      "title": "Zirve",
+      "slots": []
+    },
+    {
+      "id": "DY-19-01",
+      "prompt": "Galatasaray, 1996/97–1999/2000 döneminde lig şampiyonluğunu üst üste kaç kez kazandı?",
+      "options": [
+        {
+          "id": "2a2acfbdf45c",
+          "label": "2"
+        },
+        {
+          "id": "44a496c96080",
+          "label": "4"
+        },
+        {
+          "id": "5e353eaae9c6",
+          "label": "5"
+        },
+        {
+          "id": "8df2851c2705",
+          "label": "3"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Başlangıç ve bitiş sezonları da hesaba katılır.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 37,
+      "dynastyId": "DY-19",
+      "stage": 1,
+      "mechanic": "records",
+      "interaction": "single",
+      "title": "Yükseliş",
+      "slots": []
+    },
+    {
+      "id": "DY-19-02",
+      "prompt": "Bu dört lig şampiyonluğunda Galatasaray’ın teknik direktörü kimdi?",
+      "options": [
+        {
+          "id": "3952d9ca0618",
+          "label": "Fatih Terim"
+        },
+        {
+          "id": "add8cc8f69ec",
+          "label": "Mircea Lucescu"
+        },
+        {
+          "id": "cfdd7807bdf6",
+          "label": "Gheorghe Hagi"
+        },
+        {
+          "id": "f6fde382456b",
+          "label": "Mustafa Denizli"
+        }
+      ],
+      "requiredCount": 1,
+      "hint": "Oyunculuk rolü ile teknik direktörlük görevini ayır.",
+      "contentVersion": 1,
+      "expansion": "five-mode-2026-10",
+      "rewardPolicy": "mode_default",
+      "number": 38,
+      "dynastyId": "DY-19",
+      "stage": 2,
+      "mechanic": "tactics",
+      "interaction": "single",
+      "title": "Zirve",
+      "slots": []
+    }
+  ]
+}

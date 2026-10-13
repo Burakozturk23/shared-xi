@@ -1,0 +1,367 @@
+{
+  "DY-01-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "barca",
+        "url": "https://www.uefa.com/uefachampionsleague/match/302813/"
+      }
+    ]
+  },
+  "DY-01-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "six",
+        "url": "https://www.fcbarcelona.com/en/football/first-team/noticies/1650113/todays-special-2009-the-year-of-six-trophies"
+      }
+    ]
+  },
+  "DY-02-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "2016",
+      "2017",
+      "2018"
+    ],
+    "sources": [
+      {
+        "name": "finals",
+        "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      }
+    ]
+  },
+  "DY-02-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "isco",
+        "url": "https://www.uefa.com/uefachampionsleague/match/2019641/"
+      }
+    ]
+  },
+  "DY-03-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "arsenal",
+        "url": "https://www.premierleague.com/en/tables/premier-league/2003-04/all-matchweeks"
+      }
+    ]
+  },
+  "DY-03-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "lehmann",
+        "url": "https://www.arsenal.com/men/jens-lehmann-aiWrt9g2Yxah"
+      }
+    ]
+  },
+  "DY-04-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "sacchi",
+        "url": "https://www.uefa.com/news/0253-0d81cb410c87-4115a0f26160-1000--arrigo-sacchi-s-case-for-greatness/"
+      }
+    ]
+  },
+  "DY-04-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "1989",
+      "1990",
+      "1994"
+    ],
+    "sources": [
+      {
+        "name": "milan",
+        "url": "https://it.uefa.com/uefachampionsleague/news/023a-0e973c61b04c-9fdf234c6fd0-1000--madrid-1957-cardiff-2017-60-anni-di-finali-italiane/"
+      },
+      {
+        "name": "finals",
+        "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      }
+    ]
+  },
+  "DY-05-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "ajax_tactics",
+        "url": "https://www.uefa.com/news-media/news/0218-0e9b869a861e-556622f75175-1000--european-football-in-the-1970s/"
+      }
+    ]
+  },
+  "DY-05-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "ajax",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff54908f6-5927d0a16600-1000--the-greatest-teams-of-all-time-ajax-1971-73/"
+      }
+    ]
+  },
+  "DY-06-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "1956",
+      "1957",
+      "1958",
+      "1959",
+      "1960"
+    ],
+    "sources": [
+      {
+        "name": "madrid",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+      }
+    ]
+  },
+  "DY-06-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "madrid",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+      }
+    ]
+  },
+  "DY-07-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "finals",
+        "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      }
+    ]
+  },
+  "DY-07-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "bbc",
+        "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8162a5d698-6892fce36d5b-1000--italy-s-bbc-spell-out-programme-for-solidity/"
+      }
+    ]
+  },
+  "DY-08-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "bayern11",
+        "url": "https://www.bundesliga.com/en/bundesliga/news/story-of-bayern-munich-record-breaking-11-year-reign-as-bundesliga-champions-27081"
+      }
+    ]
+  },
+  "DY-08-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "2013",
+      "2020"
+    ],
+    "sources": [
+      {
+        "name": "finals",
+        "url": "https://editorial.uefa.com/resources/0282-18407a7a3056-fed61d05639b-1000/ucl_202223_finals_md13.pdf"
+      }
+    ]
+  },
+  "DY-09-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "united",
+        "url": "https://www.manutd.com/en/club/history/history-by-decade/1990-1999"
+      }
+    ]
+  },
+  "DY-09-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "class92",
+        "url": "https://www.manutd.com/en/academy/academy-history"
+      }
+    ]
+  },
+  "DY-10-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "tff",
+        "url": "https://www.tff.org/Default.aspx?pageID=545"
+      }
+    ]
+  },
+  "DY-10-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "tff",
+        "url": "https://www.tff.org/Default.aspx?pageID=545"
+      }
+    ]
+  },
+  "DY-11-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "1961",
+      "1962"
+    ],
+    "sources": [
+      {
+        "name": "benfica",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0219-0e8c04f35082-a8df3b001065-1000--eusebio-stars-in-benfica-s-second-triumph/"
+      }
+    ]
+  },
+  "DY-11-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "coluna",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a045944ea-75ee25be6a88-1000--1961-62-eusebio-strikes-gold-for-benfica/"
+      }
+    ]
+  },
+  "DY-12-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "lyon",
+        "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+      }
+    ]
+  },
+  "DY-12-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "lyon",
+        "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+      }
+    ]
+  },
+  "DY-13-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "stones",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0282-183fa8a707c0-4056c043e3d1-1000--in-the-zone-city-s-win-analysed/"
+      }
+    ]
+  },
+  "DY-13-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "city",
+        "url": "https://www.mancity.com/news/mens/man-city-champions-league-winners-treble-premier-league-fa-cup-63822026"
+      }
+    ]
+  },
+  "DY-14-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "hungary",
+        "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+      }
+    ]
+  },
+  "DY-14-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "25 Kasım 1953",
+      "20 Haziran 1954",
+      "4 Temmuz 1954"
+    ],
+    "sources": [
+      {
+        "name": "hungary",
+        "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+      },
+      {
+        "name": "wc54",
+        "url": "https://inside.fifa.com/en/tournaments/mens/worldcup/qatar2022/news/the-finals-that-made-history"
+      }
+    ]
+  },
+  "DY-15-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "Libero",
+      "Kaleci",
+      "Santrfor"
+    ],
+    "sources": [
+      {
+        "name": "bayernroles",
+        "url": "https://fcbayern.com/de/club/historie/meilensteine-seit-1900/1966-bis-1979-goldene-jahre"
+      }
+    ]
+  },
+  "DY-15-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "1974",
+      "1975",
+      "1976"
+    ],
+    "sources": [
+      {
+        "name": "bayernfinals",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff546eab3-5cb419e6b81a-1000--the-greatest-teams-of-all-time-bayern-1973-76/"
+      }
+    ]
+  },
+  "DY-16-01": {
+    "reviewedAt": "2026-10-11",
+    "periods": [
+      "1977",
+      "1978",
+      "1981",
+      "1984"
+    ],
+    "sources": [
+      {
+        "name": "liverpool",
+        "url": "https://www.uefa.com/news/0275-15201acb75e7-c57250f46a12-1000--liverpool-and-real-madrid-s-finals/"
+      }
+    ]
+  },
+  "DY-16-02": {
+    "reviewedAt": "2026-10-11",
+    "periods": [],
+    "sources": [
+      {
+        "name": "grobbelaar",
+        "url": "https://www.uefa.com/uefachampionsleague/news/0244-0e98ae2983be-b3a08537e2b8-1000--liverpool-and-roma-relish-semi-final-opportunity/"
+      }
+    ]
+  }
+}

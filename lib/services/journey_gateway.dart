@@ -16,8 +16,9 @@ abstract interface class JourneyGateway {
 
 class FirebaseJourneyGateway implements JourneyGateway {
   final RewardedAdsPlayer player;
-  FirebaseJourneyGateway({RewardedAdsPlayer? player})
+  FirebaseJourneyGateway({RewardedAdsPlayer? player, this.whatIf = false})
     : player = player ?? AdMobRewardedAdsPlayer();
+  final bool whatIf;
   String? _uid;
   Future<Map<String, dynamic>> _call(
     String name,
@@ -57,16 +58,16 @@ class FirebaseJourneyGateway implements JourneyGateway {
     String action, [
     Map<String, dynamic> input = const {},
   ]) => _call(switch (action) {
-    'status' => 'getPlayerJourney',
-    'submit' => 'submitPlayerJourney',
-    'hint' => 'buyPlayerJourneyHint',
-    'favorites' => 'setJourneyShowcase',
+    'status' => whatIf ? 'getWhatIf' : 'getPlayerJourney',
+    'submit' => whatIf ? 'submitWhatIf' : 'submitPlayerJourney',
+    'hint' => whatIf ? 'buyWhatIfHint' : 'buyPlayerJourneyHint',
+    'favorites' => whatIf ? 'setWhatIfShowcase' : 'setJourneyShowcase',
     _ => throw ArgumentError('Unknown journey action'),
   }, input);
 
   @override
   Future<void> watch(String placement, {Map<String, dynamic> context = const {}}) async {
-    final status = await _call('getPlayerJourney', {});
+    final status = await call('status');
     final pro = status['pro'] == true;
     if (!pro && (!player.supported || await player.testMode)) {
       throw StateError('Ödüllü reklam henüz hazır değil. Ücretsiz ipucu veya coin desteğiyle devam edebilirsin.');

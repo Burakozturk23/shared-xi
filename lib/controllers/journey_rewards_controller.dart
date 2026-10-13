@@ -65,6 +65,22 @@ class JourneyRewardsController extends ChangeNotifier {
     });
     unawaited(refresh());
   }
+  Future<Map<String, dynamic>> verify(String journeyId, JourneyTask task, List<String> answers) async {
+    if (!linked) throw StateError('Bu görev için Google hesabına bağlan. Seçimin cihazda saklandı.');
+    try {
+      final reply = await gateway.call('submit', {'version':1, 'journeyId':journeyId,
+        'taskId':task.id, 'answers':answers});
+      if (!linked) throw StateError('Hesap değişti. Ekranı yeniden aç.');
+      final result = rewardMap(rewardMap(reply['results'])[task.id]);
+      if (result['story'] is! String) throw StateError('Sunucu bu görevi henüz doğrulamadı. Seçimin saklandı.');
+      data = reply;
+      _notify();
+      return result;
+    } on FirebaseFunctionsException catch (e) {
+      if (e.code == 'invalid-argument') throw StateError('Cevap doğru değil. Yeniden deneyebilirsin.');
+      rethrow;
+    }
+  }
   Future<void> refresh() async {
     if (_disposed) return;
     if (!linked) {

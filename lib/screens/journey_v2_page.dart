@@ -1,4 +1,5 @@
 import '../controllers/journey_rewards_controller.dart';
+import '../services/auth_service.dart';
 import '../widgets/journey_reward_card.dart';
 import 'journey_passport_page.dart';
 import '../app/route_appearance.dart';
@@ -41,7 +42,8 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
     try {
       final game = widget.controller ?? JourneyV2Controller(
         journey: (await loadJourneyChapter(widget.chapterId)).firstWhere((j) => j.id == widget.journeyId),
-        store: LocalJourneyV2Store(),
+        store: LocalJourneyV2Store(scope: widget.chapterId == 'chapter_5_expansion' ? 'expansion.${AuthService.uid ?? "guest"}' : null),
+        verify: (task, answers) => _rewards.verify(widget.journeyId, task, answers),
         onSolved: (task, answers) => _rewards.enqueue(widget.journeyId,task,answers),
       );
       if (!mounted) { if (widget.controller == null) game.dispose(); return; }
@@ -200,6 +202,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         icon: const Icon(Icons.lightbulb_outline_rounded), label: Text(game.hintVisible ? 'İpucu açık' : 'İpucu · Ücretsiz')),
       if (game.hintVisible) PitchPanel(child: Text(task.hint)),
       const SizedBox(height:8),
+      if (!task.serverValidated) ...[
       OutlinedButton.icon(onPressed:_rewards.busy || _rewards.hints(task.id)['ad']==true || _rewards.hints(task.id)['coin']==true
         ? null : ()=>_rewards.action('story_hint',{'journeyId':widget.journeyId,'taskId':task.id},ad:true),
         icon:Icon(_rewards.pro ? Icons.workspace_premium : Icons.play_circle_outline),
@@ -207,13 +210,15 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       TextButton.icon(onPressed:_rewards.busy || _rewards.hints(task.id)['coin']==true ? null : ()=>_buyHint(game),
         icon:const Icon(Icons.toll),label:const Text('Ek destek · 10 Coin')),
       if (_rewards.hints(task.id).isNotEmpty) PitchPanel(child:Text(_assistance(game))),
+      ],
+      if (task.serverValidated) const PitchPanel(child: Text('Dört aşama tamamlanınca: 20 Coin + 40 XP. Sekiz kariyerin tamamında: ayrıca 80 Coin + 120 XP.')),
       if (_rewards.message!=null) Text(_rewards.message!),
       const SizedBox(height: 12), const Text('Süre sınırı yok. Yanlış seçimde tekrar deneyebilirsin.', textAlign: TextAlign.center),
     ];
   }
   Set<String> _eliminated(JourneyV2Controller game) {
     final h=_rewards.hints(game.task.id), task=game.task;
-    if (task.isTimeline || h.isEmpty) return {};
+    if (task.serverValidated || task.isTimeline || h.isEmpty) return {};
     final wrong=task.options.where((o)=>!task.answerKeys.contains(o.key));
     if (h['coin']==true) return wrong.map((o)=>o.key).toSet();
     if (task.type.name=='missingClub') return {};
@@ -246,7 +251,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       const SizedBox(height: 12), Text(game.checkpoint!.complete ? 'Yolculuk tamamlandı!' : 'Aşama tamamlandı!', style: Theme.of(context).textTheme.headlineSmall),
       const SizedBox(height: 12),
       Text('Bu dönemin izi', style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: 8), Text(game.task.explanation),
+      const SizedBox(height: 8), Text(game.explanation),
       if (game.checkpoint!.complete) ...[const SizedBox(height: 16), const Text('Dört görevi çözdün. Oyuncu listesinde yolculuğuna devam edebilirsin.')],
     ])), const SizedBox(height: 18),
     if (game.checkpoint!.complete) ...[

@@ -8,12 +8,14 @@ class StoryJourneyPage extends StatefulWidget {
   final String appBarTitle;
   final List<StoryChapter> chapters;
   final String completionText;
+  final Widget? archiveAction;
 
   const StoryJourneyPage({
     super.key,
     required this.appBarTitle,
     required this.chapters,
     required this.completionText,
+    this.archiveAction,
   });
 
   @override
@@ -70,7 +72,7 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
     final scene = _controller.currentScene;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.appBarTitle), centerTitle: true),
+      appBar: AppBar(title: Text(widget.appBarTitle), centerTitle: true, actions: [if (widget.archiveAction != null) widget.archiveAction!]),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -323,7 +325,7 @@ class _StoryJourneyPageState extends State<StoryJourneyPage> {
       appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Hikaye Tamamlandı'),
-          centerTitle: true),
+          centerTitle: true, actions: [if (widget.archiveAction != null) widget.archiveAction!]),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

@@ -75,7 +75,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
     final collected=chapterIds.where(complete.contains).length;
     final paid=rewardMap(_rewards.rewards['chapter__$_chapter'])['settled']==true;
     final doubled=rewardMap(_rewards.rewards['double__$_chapter'])['settled']==true;
-    final badge=AchievementCatalog.byId['journey_chapter_$_chapter']!;
+    final badge=AchievementCatalog.byId['journey_chapter_$_chapter'];
     return Scaffold(appBar:AppBar(title:const Text('Kariyer Pasaportu'),actions:[
       IconButton(tooltip:'Yenile',onPressed:_rewards.busy ? null : _load,icon:const Icon(Icons.sync)),
     ]),body:SafeArea(child:_loading ? const Center(child:CircularProgressIndicator()) : _failed
@@ -90,26 +90,26 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
           const SizedBox(height:16),
           Text(_rewards.legend ? 'Linkball Kariyer Efsanesi' : 'Her kariyer bir iz bırakır.',style:Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height:12),
-          Text('$count / 32 kariyer damgası',style:Theme.of(context).textTheme.titleMedium),
+          Text('$count / 40 kariyer damgası',style:Theme.of(context).textTheme.titleMedium),
           const SizedBox(height:10),
-          LinearProgressIndicator(value:count/32,borderRadius:BorderRadius.circular(8),minHeight:6),
+          LinearProgressIndicator(value:count/40,borderRadius:BorderRadius.circular(8),minHeight:6),
           const SizedBox(height:12),
           const Text('Dört görevi çöz, oyuncunun damgasını kazan. Üç favorini profil vitrinine taşı.'),
           const SizedBox(height:12),
-          const Text('Her kariyer 20 Coin + 40 XP\nHer bölüm 80 Coin + 120 XP',style:TextStyle(fontWeight:FontWeight.w600)),
+          const Text('Her kariyer: 20 Coin + 40 XP\nHer bölüm: 80 Coin + 120 XP\nÖdüller ilk tamamlamada bir kez verilir.',style:TextStyle(fontWeight:FontWeight.w600)),
         ])),
         if(_rewards.busy) const Padding(padding:EdgeInsets.symmetric(vertical:12),child:LinearProgressIndicator()),
         if(_rewards.message!=null) Padding(padding:const EdgeInsets.symmetric(vertical:12),child:Text(_rewards.message!)),
         const PitchSectionTitle('Koleksiyon sayfaları'),
-        Wrap(spacing:8,runSpacing:8,children:[for(var n=1;n<=4;n++) ChoiceChip(
+        Wrap(spacing:8,runSpacing:8,children:[for(var n=1;n<=5;n++) ChoiceChip(
           label:Text('Bölüm $n'),selected:_chapter==n,onSelected:(_)=>setState(()=>_chapter=n),
         )]),
         const SizedBox(height:16),
         PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
-          Row(children:[AchievementBadgeEmblem(definition:badge,unlocked:collected==8,size:64),
+          Row(children:[if (badge != null) AchievementBadgeEmblem(definition:badge,unlocked:collected==8,size:64) else const Icon(Icons.auto_stories, size:64),
             const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-              Text(badge.title,style:Theme.of(context).textTheme.titleMedium),
-              Text('$collected / 8 damga · Bölüm rozeti'),
+              Text(badge?.title ?? 'Sınırları Aşanlar',style:Theme.of(context).textTheme.titleMedium),
+              Text('$collected / 8 damga'),
             ])),
           ]),
           const SizedBox(height:12),
@@ -145,7 +145,7 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
           const SizedBox(height:12),
           Text('Linkball Kariyer Efsanesi',textAlign:TextAlign.center,style:Theme.of(context).textTheme.titleLarge),
           const SizedBox(height:8),
-          Text(_rewards.legend ? 'Unvanın ve altın vitrin çerçeven açıldı.' : '32 damgada kalıcı unvan ve altın vitrin çerçevesi.',textAlign:TextAlign.center),
+          Text(_rewards.legend ? 'Unvanın ve altın vitrin çerçeven açıldı.' : 'İlk 32 kariyer damgasında kalıcı unvan ve altın vitrin çerçevesi.',textAlign:TextAlign.center),
           const SizedBox(height:8),
           const Text('Final ödülü · 150 Coin + 300 XP',textAlign:TextAlign.center),
         ])),

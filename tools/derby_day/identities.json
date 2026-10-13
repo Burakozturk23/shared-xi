@@ -1,0 +1,596 @@
+{
+  "114": {
+    "clubId": 114,
+    "canonicalName": "Besiktas JK",
+    "canonicalKey": "existing:114",
+    "displayName": "Beşiktaş",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "141": {
+    "clubId": 141,
+    "canonicalName": "Galatasaray",
+    "canonicalKey": "existing:141",
+    "displayName": "Galatasaray",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "36": {
+    "clubId": 36,
+    "canonicalName": "Fenerbahce",
+    "canonicalKey": "existing:36",
+    "displayName": "Fenerbahçe",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "1467": {
+    "clubId": 1467,
+    "canonicalName": "Göztepe",
+    "canonicalKey": "existing:1467",
+    "displayName": "Göztepe",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "2375": {
+    "clubId": 2375,
+    "canonicalName": "Altay SK",
+    "canonicalKey": "existing:2375",
+    "displayName": "Altay",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "3.Lig Grup 4"
+  },
+  "2330": {
+    "clubId": 2330,
+    "canonicalName": "Karsiyaka",
+    "canonicalKey": "existing:2330",
+    "displayName": "Karşıyaka",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "3.Lig Grup 4"
+  },
+  "868": {
+    "clubId": 868,
+    "canonicalName": "MKE Ankaragücü",
+    "canonicalKey": "existing:868",
+    "displayName": "Ankaragücü",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "2.Lig Beyaz"
+  },
+  "820": {
+    "clubId": 820,
+    "canonicalName": "Genclerbirligi Ankara",
+    "canonicalKey": "existing:820",
+    "displayName": "Gençlerbirliği",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "449": {
+    "clubId": 449,
+    "canonicalName": "Trabzonspor",
+    "canonicalKey": "existing:449",
+    "displayName": "Trabzonspor",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "31": {
+    "clubId": 31,
+    "canonicalName": "Liverpool FC",
+    "canonicalKey": "existing:31",
+    "displayName": "Liverpool",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "985": {
+    "clubId": 985,
+    "canonicalName": "Manchester United",
+    "canonicalKey": "existing:985",
+    "displayName": "Manchester United",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "281": {
+    "clubId": 281,
+    "canonicalName": "Manchester City",
+    "canonicalKey": "existing:281",
+    "displayName": "Manchester City",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "11": {
+    "clubId": 11,
+    "canonicalName": "Arsenal FC",
+    "canonicalKey": "existing:11",
+    "displayName": "Arsenal",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "148": {
+    "clubId": 148,
+    "canonicalName": "Tottenham Hotspur",
+    "canonicalKey": "existing:148",
+    "displayName": "Tottenham",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "29": {
+    "clubId": 29,
+    "canonicalName": "Everton FC",
+    "canonicalKey": "existing:29",
+    "displayName": "Everton",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "631": {
+    "clubId": 631,
+    "canonicalName": "Chelsea FC",
+    "canonicalKey": "existing:631",
+    "displayName": "Chelsea",
+    "country": "İngiltere",
+    "databaseCountry": "England",
+    "databaseCompetition": "Premier League"
+  },
+  "418": {
+    "clubId": 418,
+    "canonicalName": "Real Madrid",
+    "canonicalKey": "existing:418",
+    "displayName": "Real Madrid",
+    "country": "İspanya",
+    "databaseCountry": "Spain",
+    "databaseCompetition": "LaLiga"
+  },
+  "131": {
+    "clubId": 131,
+    "canonicalName": "FC Barcelona",
+    "canonicalKey": "existing:131",
+    "displayName": "Barcelona",
+    "country": "İspanya",
+    "databaseCountry": "Spain",
+    "databaseCompetition": "LaLiga"
+  },
+  "13": {
+    "clubId": 13,
+    "canonicalName": "Atlético de Madrid",
+    "canonicalKey": "existing:13",
+    "displayName": "Atlético Madrid",
+    "country": "İspanya",
+    "databaseCountry": "Spain",
+    "databaseCompetition": "LaLiga"
+  },
+  "368": {
+    "clubId": 368,
+    "canonicalName": "Sevilla FC",
+    "canonicalKey": "existing:368",
+    "displayName": "Sevilla",
+    "country": "İspanya",
+    "databaseCountry": "Spain",
+    "databaseCompetition": "LaLiga"
+  },
+  "150": {
+    "clubId": 150,
+    "canonicalName": "Real Betis Balompié",
+    "canonicalKey": "existing:150",
+    "displayName": "Real Betis",
+    "country": "İspanya",
+    "databaseCountry": "Spain",
+    "databaseCompetition": "LaLiga"
+  },
+  "5": {
+    "clubId": 5,
+    "canonicalName": "AC Milan",
+    "canonicalKey": "existing:5",
+    "displayName": "Milan",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "46": {
+    "clubId": 46,
+    "canonicalName": "Inter Milan",
+    "canonicalKey": "existing:46",
+    "displayName": "Inter",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "506": {
+    "clubId": 506,
+    "canonicalName": "Juventus FC",
+    "canonicalKey": "existing:506",
+    "displayName": "Juventus",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "12": {
+    "clubId": 12,
+    "canonicalName": "AS Roma",
+    "canonicalKey": "existing:12",
+    "displayName": "Roma",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "398": {
+    "clubId": 398,
+    "canonicalName": "SS Lazio",
+    "canonicalKey": "existing:398",
+    "displayName": "Lazio",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "6195": {
+    "clubId": 6195,
+    "canonicalName": "SSC Napoli",
+    "canonicalKey": "existing:6195",
+    "displayName": "Napoli",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "416": {
+    "clubId": 416,
+    "canonicalName": "Torino FC",
+    "canonicalKey": "existing:416",
+    "displayName": "Torino",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "27": {
+    "clubId": 27,
+    "canonicalName": "Bayern Munich",
+    "canonicalKey": "existing:27",
+    "displayName": "Bayern Münih",
+    "country": "Almanya",
+    "databaseCountry": "Germany",
+    "databaseCompetition": "Bundesliga"
+  },
+  "16": {
+    "clubId": 16,
+    "canonicalName": "Borussia Dortmund",
+    "canonicalKey": "existing:16",
+    "displayName": "Borussia Dortmund",
+    "country": "Almanya",
+    "databaseCountry": "Germany",
+    "databaseCompetition": "Bundesliga"
+  },
+  "33": {
+    "clubId": 33,
+    "canonicalName": "FC Schalke 04",
+    "canonicalKey": "existing:33",
+    "displayName": "Schalke 04",
+    "country": "Almanya",
+    "databaseCountry": "Germany",
+    "databaseCompetition": "2. Bundesliga"
+  },
+  "583": {
+    "clubId": 583,
+    "canonicalName": "Paris Saint-Germain",
+    "canonicalKey": "existing:583",
+    "displayName": "Paris Saint-Germain",
+    "country": "Fransa",
+    "databaseCountry": "France",
+    "databaseCompetition": "Ligue 1"
+  },
+  "244": {
+    "clubId": 244,
+    "canonicalName": "Olympique Marseille",
+    "canonicalKey": "existing:244",
+    "displayName": "Marseille",
+    "country": "Fransa",
+    "databaseCountry": "France",
+    "databaseCompetition": "Ligue 1"
+  },
+  "610": {
+    "clubId": 610,
+    "canonicalName": "Ajax Amsterdam",
+    "canonicalKey": "existing:610",
+    "displayName": "Ajax",
+    "country": "Hollanda",
+    "databaseCountry": "Netherlands",
+    "databaseCompetition": "Eredivisie"
+  },
+  "234": {
+    "clubId": 234,
+    "canonicalName": "Feyenoord Rotterdam",
+    "canonicalKey": "existing:234",
+    "displayName": "Feyenoord",
+    "country": "Hollanda",
+    "databaseCountry": "Netherlands",
+    "databaseCompetition": "Eredivisie"
+  },
+  "294": {
+    "clubId": 294,
+    "canonicalName": "SL Benfica",
+    "canonicalKey": "existing:294",
+    "displayName": "Benfica",
+    "country": "Portekiz",
+    "databaseCountry": "Portugal",
+    "databaseCompetition": "Liga Portugal"
+  },
+  "720": {
+    "clubId": 720,
+    "canonicalName": "FC Porto",
+    "canonicalKey": "existing:720",
+    "displayName": "Porto",
+    "country": "Portekiz",
+    "databaseCountry": "Portugal",
+    "databaseCompetition": "Liga Portugal"
+  },
+  "336": {
+    "clubId": 336,
+    "canonicalName": "Sporting CP",
+    "canonicalKey": "existing:336",
+    "displayName": "Sporting",
+    "country": "Portekiz",
+    "databaseCountry": "Portugal",
+    "databaseCompetition": "Liga Portugal"
+  },
+  "683": {
+    "clubId": 683,
+    "canonicalName": "Olympiacos Piraeus",
+    "canonicalKey": "existing:683",
+    "displayName": "Olympiacos",
+    "country": "Yunanistan",
+    "databaseCountry": "Greece",
+    "databaseCompetition": "Super League 1"
+  },
+  "265": {
+    "clubId": 265,
+    "canonicalName": "Panathinaikos FC",
+    "canonicalKey": "existing:265",
+    "displayName": "Panathinaikos",
+    "country": "Yunanistan",
+    "databaseCountry": "Greece",
+    "databaseCompetition": "Super League 1"
+  },
+  "58": {
+    "clubId": 58,
+    "canonicalName": "RSC Anderlecht",
+    "canonicalKey": "existing:58",
+    "displayName": "Anderlecht",
+    "country": "Belçika",
+    "databaseCountry": "Belgium",
+    "databaseCompetition": "Jupiler Pro League"
+  },
+  "3057": {
+    "clubId": 3057,
+    "canonicalName": "Standard Liège",
+    "canonicalKey": "existing:3057",
+    "displayName": "Standard Liège",
+    "country": "Belçika",
+    "databaseCountry": "Belgium",
+    "databaseCompetition": "Jupiler Pro League"
+  },
+  "371": {
+    "clubId": 371,
+    "canonicalName": "Celtic FC",
+    "canonicalKey": "existing:371",
+    "displayName": "Celtic",
+    "country": "İskoçya",
+    "databaseCountry": "Scotland",
+    "databaseCompetition": "Scottish Premiership"
+  },
+  "124": {
+    "clubId": 124,
+    "canonicalName": "Rangers FC",
+    "canonicalKey": "existing:124",
+    "displayName": "Rangers",
+    "country": "İskoçya",
+    "databaseCountry": "Scotland",
+    "databaseCompetition": "Scottish Premiership"
+  },
+  "614": {
+    "clubId": 614,
+    "canonicalName": "CR Flamengo",
+    "canonicalKey": "existing:614",
+    "displayName": "Flamengo",
+    "country": "Brezilya",
+    "databaseCountry": "Brazil",
+    "databaseCompetition": "Campeonato Brasileiro Série A"
+  },
+  "2462": {
+    "clubId": 2462,
+    "canonicalName": "Fluminense Football Club",
+    "canonicalKey": "existing:2462",
+    "displayName": "Fluminense",
+    "country": "Brezilya",
+    "databaseCountry": "Brazil",
+    "databaseCompetition": "Campeonato Brasileiro Série A"
+  },
+  "199": {
+    "clubId": 199,
+    "canonicalName": "Sport Club Corinthians Paulista",
+    "canonicalKey": "existing:199",
+    "displayName": "Corinthians",
+    "country": "Brezilya",
+    "databaseCountry": "Brazil",
+    "databaseCompetition": "Campeonato Brasileiro Série A"
+  },
+  "1023": {
+    "clubId": 1023,
+    "canonicalName": "Sociedade Esportiva Palmeiras",
+    "canonicalKey": "existing:1023",
+    "displayName": "Palmeiras",
+    "country": "Brezilya",
+    "databaseCountry": "Brazil",
+    "databaseCompetition": "Campeonato Brasileiro Série A"
+  },
+  "189": {
+    "clubId": 189,
+    "canonicalName": "CA Boca Juniors",
+    "canonicalKey": "existing:189",
+    "displayName": "Boca Juniors",
+    "country": "Arjantin",
+    "databaseCountry": "Argentina",
+    "databaseCompetition": "Torneo Clausura"
+  },
+  "209": {
+    "clubId": 209,
+    "canonicalName": "CA River Plate",
+    "canonicalKey": "existing:209",
+    "displayName": "River Plate",
+    "country": "Arjantin",
+    "databaseCountry": "Argentina",
+    "databaseCompetition": "Torneo Clausura"
+  },
+  "159": {
+    "clubId": 159,
+    "canonicalName": "Red Star Belgrade",
+    "canonicalKey": "existing:159",
+    "displayName": "Kızılyıldız",
+    "country": "Sırbistan",
+    "databaseCountry": "",
+    "databaseCompetition": "Brazil Paulista A1"
+  },
+  "669": {
+    "clubId": 669,
+    "canonicalName": "FK Partizan Belgrade",
+    "canonicalKey": "existing:669",
+    "displayName": "Partizan",
+    "country": "Sırbistan",
+    "databaseCountry": "",
+    "databaseCompetition": "MLS"
+  },
+  "252": {
+    "clubId": 252,
+    "canonicalName": "Genoa CFC",
+    "canonicalKey": "existing:252",
+    "displayName": "Genoa",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie A"
+  },
+  "1038": {
+    "clubId": 1038,
+    "canonicalName": "UC Sampdoria",
+    "canonicalKey": "existing:1038",
+    "displayName": "Sampdoria",
+    "country": "İtalya",
+    "databaseCountry": "Italy",
+    "databaseCompetition": "Serie B"
+  },
+  "210": {
+    "clubId": 210,
+    "canonicalName": "Grêmio Foot-Ball Porto Alegrense",
+    "canonicalKey": "existing:210",
+    "displayName": "Grêmio",
+    "country": "Brezilya",
+    "databaseCountry": "Brazil",
+    "databaseCompetition": "Campeonato Brasileiro Série A"
+  },
+  "6600": {
+    "clubId": 6600,
+    "canonicalName": "Sport Club Internacional",
+    "canonicalKey": "existing:6600",
+    "displayName": "Internacional",
+    "country": "Brezilya",
+    "databaseCountry": "Brazil",
+    "databaseCompetition": "Campeonato Brasileiro Série A"
+  },
+  "1418": {
+    "clubId": 1418,
+    "canonicalName": "CA Rosario Central",
+    "canonicalKey": "existing:1418",
+    "displayName": "Rosario Central",
+    "country": "Arjantin",
+    "databaseCountry": "Argentina",
+    "databaseCompetition": "Torneo Clausura"
+  },
+  "1286": {
+    "clubId": 1286,
+    "canonicalName": "CA Newell\\",
+    "canonicalKey": "existing:1286",
+    "displayName": "Newell’s Old Boys",
+    "country": "Arjantin",
+    "databaseCountry": "Argentina",
+    "databaseCompetition": "Torneo Clausura"
+  },
+  "3840": {
+    "clubId": 3840,
+    "canonicalName": "Adana Demirspor",
+    "canonicalKey": "existing:3840",
+    "displayName": "Adana Demirspor",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "1.Lig"
+  },
+  "6": {
+    "clubId": 6,
+    "canonicalName": "Adanaspor",
+    "canonicalKey": "existing:6",
+    "displayName": "Adanaspor",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "2.Lig Kirmizi"
+  },
+  "120": {
+    "clubId": 120,
+    "canonicalName": "Kocaelispor",
+    "canonicalKey": "existing:120",
+    "displayName": "Kocaelispor",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "Süper Lig"
+  },
+  "2463": {
+    "clubId": 2463,
+    "canonicalName": "Sakaryaspor",
+    "canonicalKey": "existing:2463",
+    "displayName": "Sakaryaspor",
+    "country": "Türkiye",
+    "databaseCountry": "Türkiye",
+    "databaseCompetition": "1.Lig"
+  },
+  "1000000861": {
+    "clubId": 1000000861,
+    "canonicalName": "Peñarol",
+    "canonicalKey": "tm:861",
+    "displayName": "Peñarol",
+    "country": "Uruguay",
+    "databaseCountry": "",
+    "databaseCompetition": ""
+  },
+  "1000000866": {
+    "clubId": 1000000866,
+    "canonicalName": "Nacional",
+    "canonicalKey": "tm:866",
+    "displayName": "Nacional",
+    "country": "Uruguay",
+    "databaseCountry": "",
+    "databaseCompetition": ""
+  },
+  "3631": {
+    "clubId": 3631,
+    "canonicalName": "CF América",
+    "canonicalKey": "existing:3631",
+    "displayName": "Club América",
+    "country": "Meksika",
+    "databaseCountry": "Mexico",
+    "databaseCompetition": "Liga MX Apertura"
+  },
+  "6711": {
+    "clubId": 6711,
+    "canonicalName": "Deportivo Guadalajara",
+    "canonicalKey": "existing:6711",
+    "displayName": "Chivas",
+    "country": "Meksika",
+    "databaseCountry": "Mexico",
+    "databaseCompetition": "Liga MX Apertura"
+  }
+}

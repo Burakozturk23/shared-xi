@@ -55,8 +55,8 @@ test("expanded server and Flutter catalog retain all legacy IDs and agree on tar
   const old = [...achievementBlock().matchAll(/id: "([a-z0-9_]+)",\s*signal: "([a-z0-9_]+)",\s*target: (\d+)/g)]
       .map((m) => ({id: m[1], signal: m[2], target: Number(m[3])}));
   const all = [...old, ...additions];
-  assert.equal(all.length, 59);
-  assert.equal(new Set(all.map((r) => r.id)).size, 59);
+  assert.equal(all.length, 63);
+  assert.equal(new Set(all.map((r) => r.id)).size, 63);
   const dart = fs.readFileSync(path.join(__dirname, "../../lib/models/achievement_catalog.dart"), "utf8");
   for (const d of all) {
     const block = dart.slice(dart.indexOf("id: '" + d.id + "'"));

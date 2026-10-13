@@ -6,7 +6,9 @@ for rel in ["android/key.properties", "android/upload-keystore.jks"]:
     if not (ROOT / rel).exists():
         errors.append("Missing: " + rel)
 gradle = (ROOT / "android/app/build.gradle.kts").read_text(encoding="utf-8")
-if 'signingConfig = signingConfigs.getByName("release")' not in gradle:
+release_signing = 'signingConfig = signingConfigs.getByName("release")'
+explicit_local_signing = 'signingConfig = signingConfigs.getByName(if (localReleaseApk) "debug" else "release")'
+if release_signing not in gradle and explicit_local_signing not in gradle:
     errors.append("Release signing config missing")
 if 'signingConfig = signingConfigs.getByName("debug")' in gradle:
     errors.append("Debug release signing remains")

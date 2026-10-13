@@ -60,7 +60,7 @@ function harness(initial = wallet()) {
     economyConfig: require("../economy_config"),
     lbGetEconomyConfig: async () => require("../economy_config").DEFAULT_CONFIG,
     httpsV2: {HttpsError, onCall: (options, handler) => ({options, handler})},
-    admin: {database: () => db},
+    getDatabase: () => db,
     Date: {now: () => now},
     LB_ECONOMY_VERSION: 1,
     LB_PREMIUM_VERSION: 1,

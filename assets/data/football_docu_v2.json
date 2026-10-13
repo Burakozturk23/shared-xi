@@ -1,0 +1,1873 @@
+{
+  "version": 2,
+  "storageVersion": 1,
+  "chapters": [
+    "Mucizenin doğuşu",
+    "Güç, karar ve kırılma anları",
+    "Çöküş, taraftar ve yeniden doğuş"
+  ],
+  "episodes": [
+    {
+      "id": "DOC-01",
+      "number": 1,
+      "chapterId": 1,
+      "club": "Leicester City",
+      "period": "2015/16",
+      "title": "İmkânsız Sezon",
+      "theme": "Mucize",
+      "intro": "Bir sezon önce ligde kalmaya çalışan Leicester için yeni takvim, bildik beklentilerle açıldı. Haftalar ilerledikçe puan tablosu başka bir hikâye anlatmaya başladı. Bu dosya, büyük kulüplerin gölgesinden çıkan takımın yolunu iki ayrı kayıt üzerinden takip ediyor. Önce sezon bilançosunu inceleyecek, sonra şampiyonluk yarışının kapanışına gideceksin. Tribündeki kutlamaların arkasında hangi sayılar ve hangi dış gelişme vardı? Arşivin parçalarını birleştirirken beklentilerle gerçekleşenleri birbirinden ayır. Son kararını kanıtlara dayanarak ver.",
+      "taskIds": [
+        "DOC-01-01",
+        "DOC-01-02"
+      ]
+    },
+    {
+      "id": "DOC-02",
+      "number": 2,
+      "chapterId": 1,
+      "club": "Napoli",
+      "period": "1986/87",
+      "title": "Güneyin Yükselişi",
+      "theme": "Kimlik",
+      "intro": "İtalya’nın güneyinde futbol, bir şehrin kendini anlatma yollarından biriydi. Napoli’nin bu sezonunu araştırırken yalnızca tribündeki coşkuyu değil, sahadaki başrolleri ve kulübün başarı kayıtlarını da izleyeceksin. Dosyanın ilk kısmı bir futbolcunun kimliğine, ikinci kısmı sezonun resmî bilançosuna odaklanıyor. Aynı yıl içinde farklı turnuvaların yolları kesişebilir; her birinin sonucu ayrı okunmalı. Şehrin hafızasında yer eden bu dönemi, isimlerle kupalar arasındaki bağı kurarak yeniden keşfet. İlk kanıt seni bekliyor.",
+      "taskIds": [
+        "DOC-02-01",
+        "DOC-02-02"
+      ]
+    },
+    {
+      "id": "DOC-03",
+      "number": 3,
+      "chapterId": 1,
+      "club": "Manchester City",
+      "period": "2011/12",
+      "title": "Son Düdüğe Kadar",
+      "theme": "Kırılma",
+      "intro": "Bir lig sezonunun bütün ağırlığı son maçın son bölümüne sığabilir mi? Manchester’da takvim kapanırken farklı sahalardaki sonuçlar aynı yarışın parçalarıydı. Bu belgeselde saatin akışına ve bir hücumun kurulmasına yakından bakacaksın. İlk araştırma olayların hangi sırada yaşandığını soruyor. İkinci araştırma ise herkesin hatırladığı görüntünün hemen öncesine dönüyor. Golün sahibiyle o pozisyonu hazırlayan kişiyi ayırmak önemli. Son düdüğe yaklaşırken kararını seslere ya da hatıralara değil, olay kaydına dayandır.",
+      "taskIds": [
+        "DOC-03-01",
+        "DOC-03-02"
+      ]
+    },
+    {
+      "id": "DOC-04",
+      "number": 4,
+      "chapterId": 1,
+      "club": "Manchester United",
+      "period": "1992–1999",
+      "title": "Altyapıdan Zirveye",
+      "theme": "Kimlik",
+      "intro": "Bir kulübün genç oyuncuları, yıllar içinde büyük sahnelerin tanıdık yüzlerine dönüşür. Manchester United’ın bu dosyası da altyapıdan gelen kuşağın çevresinde şekilleniyor. Ancak anlatılan her başarı aynı turnuvaya ait değil, hatırlanan her son vuruş da hücumu başlatan dokunuş değil. Önce sezonu özetleyen bir manşeti inceleyeceksin. Ardından bir finalin duran toplarına dönerek oyuncuların katkılarını ayıracaksın. Takım hikâyesiyle bireysel rolü birlikte okuduğunda, kısa bir maç özetinde görünmeyen bağlantılar ortaya çıkacak.",
+      "taskIds": [
+        "DOC-04-01",
+        "DOC-04-02"
+      ]
+    },
+    {
+      "id": "DOC-05",
+      "number": 5,
+      "chapterId": 1,
+      "club": "Arsenal",
+      "period": "2003/04",
+      "title": "Bir Sezonun Karnesi",
+      "theme": "Mucize",
+      "intro": "Bir sezonu tek bir sıfatla anlatmak kolaydır; o sıfatın arkasındaki tabloyu okumak ise dikkat ister. Arsenal’ın bu dosyasında oyuncu isimlerinden önce sayılar konuşuyor. Maç adedi, toplanan puan ve sonuç türleri aynı kaydın farklı sütunlarıdır. İlk araştırmada istatistik parçalarını doğru alanlara yerleştirecek, ikinci araştırmada sezon hakkında yazılmış bir manşeti sınayacaksın. Bir sütundaki bilgiyi diğerinin yerine kullanma. Böylece hafızandaki büyük hikâyeyi, resmî lig bilançosuyla karşılaştırarak kendi kanıt dosyanı oluşturabilirsin.",
+      "taskIds": [
+        "DOC-05-01",
+        "DOC-05-02"
+      ]
+    },
+    {
+      "id": "DOC-06",
+      "number": 6,
+      "chapterId": 1,
+      "club": "Liverpool",
+      "period": "2018–2020",
+      "title": "Anfield’da Yeniden Doğuş",
+      "theme": "Yeniden doğuş",
+      "intro": "Anfield’ın hafızasında bazı geceler bir sezonu aşar. Bu dosya, Avrupa maçlarıyla lig yarışının iç içe geçtiği bir döneme bakıyor. Farklı tarihlerdeki başarıları tek bir anmış gibi okumadan, aralarındaki sırayı kuracaksın. Sonra kadronun başındaki kişinin kimliğini araştıracaksın. İlk görevde olayların zaman içindeki yerleri, ikinci görevde teknik ekibin başrolü önemli. Tribünlerin hatırladığı görüntüler sana eşlik edebilir; yine de belgeselin kurgusunu tamamlayan şey doğrulanmış kayıtların birbirini hangi sırayla izlediği olacak.",
+      "taskIds": [
+        "DOC-06-01",
+        "DOC-06-02"
+      ]
+    },
+    {
+      "id": "DOC-07",
+      "number": 7,
+      "chapterId": 1,
+      "club": "Ajax",
+      "period": "1994/95",
+      "title": "Gençlerin Avrupa Sahnesi",
+      "theme": "Kırılma",
+      "intro": "Genç bir takım, Avrupa finalinin deneyimli rakiplerle dolu sahnesine çıktı. Ajax’ın bu dosyası kadro listesinden çok maç içindeki bir değişikliğe odaklanıyor. Önce belirleyici golün sahibini araştıracak, ardından o oyuncunun maça nasıl dahil olduğunu inceleyeceksin. Skor çizelgesiyle oyuncu değişikliği çizelgesi birbirini tamamlar, fakat aynı bilgiyi vermez. Bu iki kaydı ayrı ayrı okumak belgeselin anahtarı. Son bölümde yaşananları başlangıç kadrosuyla karıştırmadan, teknik kararın saha içindeki izini takip etmeye hazır ol.",
+      "taskIds": [
+        "DOC-07-01",
+        "DOC-07-02"
+      ]
+    },
+    {
+      "id": "DOC-08",
+      "number": 8,
+      "chapterId": 1,
+      "club": "Nottingham Forest",
+      "period": "1977–1980",
+      "title": "Alt Ligden Avrupa Zirvesine",
+      "theme": "Mucize",
+      "intro": "Bir kulübün yükselişini yalnızca son kupasıyla anlatırsan, öncesindeki basamaklar kaybolur. Nottingham Forest’ın dosyası tam da bu basamakları yeniden kuruyor. Ligler arasında hareket eden bir takımın ulusal ve kıtasal yarışlara nasıl ulaştığını inceleyeceksin. İlk görev olay zincirini, ikinci görev bu dönemin saha kenarındaki ismini konu alıyor. Turnuvaların o yıllardaki adlarına dikkat et; bugünün futbol sözlüğünü geçmişe doğrudan taşımak yanıltabilir. Başlangıç noktasıyla en büyük sahne arasındaki yolu arşiv kartlarıyla görünür hale getir.",
+      "taskIds": [
+        "DOC-08-01",
+        "DOC-08-02"
+      ]
+    },
+    {
+      "id": "DOC-09",
+      "number": 9,
+      "chapterId": 2,
+      "club": "Porto",
+      "period": "2002–2004",
+      "title": "Porto’nun İki Avrupa Baharı",
+      "theme": "Mucize",
+      "intro": "Avrupa futbolunda kupaların adları değişebilir, fakat her turnuvanın kendi yolu vardır. Porto’nun bu döneminde birbirine yakın tarihlerde oynanan iki final, aynı hikâyenin farklı sayfalarını oluşturuyor. İlk araştırmada bu sayfaları doğru sıraya koyacaksın. İkinci araştırmada belirli bir finalin karşılaşma kaydını tamamlayacaksın. Önceki sezonun rakibini sonraki sezonun finaline taşımamak önemli. Takımın yükselişini yalnızca bir teknik direktörün adıyla özetlemek yerine, hangi turnuvanın ne zaman ve nasıl sonuçlandığını iki somut kanıt üzerinden takip et.",
+      "taskIds": [
+        "DOC-09-01",
+        "DOC-09-02"
+      ]
+    },
+    {
+      "id": "DOC-10",
+      "number": 10,
+      "chapterId": 2,
+      "club": "Inter",
+      "period": "2009/10",
+      "title": "Bir Sezon, Üç Kupa",
+      "theme": "Kırılma",
+      "intro": "Bir sezon boyunca farklı yarışlarda kalabilmek, farklı türden sınavları geçmeyi gerektirir. Inter’in dosyasında lig haftaları, ulusal kupa maçları ve Avrupa eleme turları birbirine yaklaşır. Önce sezonun başarı belgelerini ayıracak, ardından final yolundaki belirleyici eşleşmelerden birini inceleyeceksin. Her büyük maç final değildir; her kazanılan kupa da aynı takvim sınırına ait olmayabilir. Bu araştırmada önemli olan zaferleri büyütmek değil, onları doğru turnuva ve aşamalarla eşleştirmek. Sezonun haritasını iki kanıt üzerinden birlikte kuracağız.",
+      "taskIds": [
+        "DOC-10-01",
+        "DOC-10-02"
+      ]
+    },
+    {
+      "id": "DOC-11",
+      "number": 11,
+      "chapterId": 2,
+      "club": "Atlético Madrid",
+      "period": "2013/14",
+      "title": "Camp Nou’da Son Perde",
+      "theme": "Kırılma",
+      "intro": "Lig takviminin son haftasında, deplasmandaki bir karşılaşma bütün yarışın merkezine yerleşti. Atlético Madrid’in bu dosyasında sezon boyunca yaşananlardan çok son günün kayıtlarını inceleyeceksin. Önce gol olaylarının sırasını kuracak, ardından maçın resmî sonucunu seçeceksin. Bir golün yaratığı duyguyla son düdükteki durum aynı olmayabilir. Belgeselin kurgusu bu değişimi takip ediyor. Hangi olayın önce geldiğine, hangi bilginin maç sonuna ait olduğuna dikkat ederek sezonun kapanış sayfasını kendi kanıtlarınla oluştur. Araştırma sahadaki ilk değişimle başlıyor.",
+      "taskIds": [
+        "DOC-11-01",
+        "DOC-11-02"
+      ]
+    },
+    {
+      "id": "DOC-12",
+      "number": 12,
+      "chapterId": 2,
+      "club": "Kaiserslautern",
+      "period": "1997/98",
+      "title": "Beklentilerin Ötesinde",
+      "theme": "Mucize",
+      "intro": "Bir takımın ligdeki konumunu anlamak için yalnızca o sezonun tablosuna bakmak bazen yetmez. Kaiserslautern’in dosyası, kulübün önceki basamağıyla yeni sezonunu birlikte düşünmeni istiyor. İlk araştırmada teknik ekibin başındaki kişiyi bulacaksın. İkinci araştırmada ligler arasındaki geçiş hakkında yazılmış kesin bir iddiayı inceleyeceksin. Başarı hikâyeleri anlatılırken yükseliş yılıyla üst ligde oynanan yıl birbirine karışabilir. Burada amaç bir efsaneyi tekrar etmek değil, dönem sınırları belirli bir anlatıyı kayıtlarla sınamak. Başlangıç noktası teknik direktörün kimliği.",
+      "taskIds": [
+        "DOC-12-01",
+        "DOC-12-02"
+      ]
+    },
+    {
+      "id": "DOC-13",
+      "number": 13,
+      "chapterId": 2,
+      "club": "Montpellier",
+      "period": "2011/12",
+      "title": "Güç Dengesine Meydan Okuyanlar",
+      "theme": "Mucize",
+      "intro": "Bir lig yarışında beklentilerle puan tablosu her zaman aynı hikâyeyi anlatmaz. Montpellier’nin dosyası, sezonun son sıralamasını ve kadronun hücumdaki önemli bir ismini birlikte inceliyor. Önce şampiyonluk yarışının diğer ucundaki takımı bulacak, ardından bir futbolcunun o sezondaki kaydını takip edeceksin. Gol sayısı bir oyuncuyu tanımlarken sonraki transferi ikinci bir iz olabilir. Bu iki kanıt aynı döneme bağlanmalı. Büyük kulüpler hakkındaki varsayımları bir kenara bırakıp resmî sonuçların çizdiği yolu izle. Araştırma puan tablosunda başlayacak.",
+      "taskIds": [
+        "DOC-13-01",
+        "DOC-13-02"
+      ]
+    },
+    {
+      "id": "DOC-14",
+      "number": 14,
+      "chapterId": 2,
+      "club": "Barcelona – Real Madrid",
+      "period": "2010",
+      "title": "Pasın İzleri",
+      "theme": "Kırılma",
+      "intro": "Bazı maçların görüntüleri, yıllar içinde o maçın resmî kaydı kadar tanınır hale gelir. Barcelona ile Real Madrid’in bu buluşmasında da kutlamalar, oyuncular ve goller hafızalarda iç içe geçmiştir. Önce tek bir manşetin doğruluğunu sorgulayacak, sonra gol kayıtlarını oyuncularla eşleştireceksin. Bir futbolcunun ünlü bir fotoğrafta yer alması, skor çizelgesinde de yer aldığı anlamına gelmez. Bu dosya hatırlanan görüntüyle kaydedilen olayı ayırmanı istiyor. Her kartı kendi olayına bağlayarak karşılaşmanın kurgusunu yeniden oluştur. Kamera şimdi sahaya dönüyor.",
+      "taskIds": [
+        "DOC-14-01",
+        "DOC-14-02"
+      ]
+    },
+    {
+      "id": "DOC-15",
+      "number": 15,
+      "chapterId": 2,
+      "club": "Trabzonspor – Liverpool",
+      "period": "1976",
+      "title": "Karadeniz’de Bir Avrupa Gecesi",
+      "theme": "Kimlik",
+      "intro": "Avrupa kupaları, büyük futbol merkezlerinin dışında da güçlü hatıralar bıraktı. Bu dosyada Trabzonspor’un bir karşılaşması hakkında anlatılanları, yer ve oyuncu kayıtları üzerinden araştıracaksın. İlk görev bir stadyum iddiasını sorguluyor. İkinci görev ise maçın belirleyici vuruşunun sahibini arıyor. İki ayaklı bir turun hangi maçından söz edildiğini bilmek önemli; ilk karşılaşmanın bilgisi rövanşın bilgisiyle değiştirilemez. Şehir hafızasını resmî kayıtlarla buluştururken önce nerede olduğumuzu, sonra sahadaki rolü netleştireceğiz. Kanıt dosyasını aç ve ilk manşeti değerlendir.",
+      "taskIds": [
+        "DOC-15-01",
+        "DOC-15-02"
+      ]
+    },
+    {
+      "id": "DOC-16",
+      "number": 16,
+      "chapterId": 2,
+      "club": "Sampdoria",
+      "period": "1990/91",
+      "title": "Gol İkizlerinin Sezonu",
+      "theme": "Kimlik",
+      "intro": "Futbol tarihinde bazı ortaklıklar, tek tek oyuncuların adından daha güçlü bir ifadeyle hatırlanır. Sampdoria’nın bu dosyası da bir hücum ikilisinin çevresinde açılıyor. İlk araştırmada yalnızca bir yıldızı değil, birlikte anılan iki futbolcuyu bulacaksın. İkinci araştırmada ise kulübün lig tarihine ilişkin bir manşeti sınayacaksın. Kadrodaki her önemli oyuncu aynı lakabın parçası değildir. İsimleri seçerken somut ortaklığa, başarıyı değerlendirirken belirli sezonun kayıtlarına odaklan. Böylece bireysel kimlikle kulübün tarihsel konumunu aynı dosyada bir araya getireceksin.",
+      "taskIds": [
+        "DOC-16-01",
+        "DOC-16-02"
+      ]
+    },
+    {
+      "id": "DOC-17",
+      "number": 17,
+      "chapterId": 3,
+      "club": "Bayer Leverkusen",
+      "period": "2023/24",
+      "title": "Sezonun İki Yüzü",
+      "theme": "Kırılma",
+      "intro": "Uzun bir sezonun istatistikleri etkileyici olabilir; yine de tek bir turnuvanın bilançosu bütün takvimi anlatmaz. Leverkusen’in bu dosyası kapsam ayrımına odaklanıyor. İlk araştırmada lig tablosunun sonuç sütunlarını tamamlayacaksın. İkinci araştırmada farklı organizasyonları bir araya getiren geniş bir manşeti sınayacaksın. Bir yarıştaki kaydı başka bir yarışın finaline taşımak kolay bir hata. Belgesel kurgusu boyunca bu sınırı koruyarak rakamların hangi maçları kapsadığını düşün. Büyük bir başarıyı doğru anlatmak, sınırlarını da doğru çizmekle başlar.",
+      "taskIds": [
+        "DOC-17-01",
+        "DOC-17-02"
+      ]
+    },
+    {
+      "id": "DOC-18",
+      "number": 18,
+      "chapterId": 3,
+      "club": "AFC Wimbledon",
+      "period": "2002–2020",
+      "title": "Taraftarların Yeniden Kurduğu Kulüp",
+      "theme": "Taraftar",
+      "intro": "Bir futbol kulübünün hikâyesi bazen transferlerle değil, taraftarların ortak kararıyla yön değiştirir. AFC Wimbledon’ın dosyası sahadaki yükseliş kadar kulübün nasıl var olduğuna da bakıyor. İlk araştırmada kuruluş, lig basamağı ve stadyumla ilgili olayları sıralayacaksın. İkinci araştırmada taraftar sahipliğini temsil eden kurumu bulacaksın. Eski kulübün geçmişiyle yeni kulübün kuruluş tarihini birbirine karıştırmamak önemli. Aynı adın etrafındaki aidiyeti incelerken somut kurumsal kayıtları kullan. Bu kez kanıtlar tribünlerden ve yönetim belgelerinden de geliyor.",
+      "taskIds": [
+        "DOC-18-01",
+        "DOC-18-02"
+      ]
+    },
+    {
+      "id": "DOC-19",
+      "number": 19,
+      "chapterId": 3,
+      "club": "Wigan Athletic",
+      "period": "2012/13",
+      "title": "Aynı Sezonun İki Defteri",
+      "theme": "Kırılma",
+      "intro": "Bir takımın sezonu tek bir sonuçla özetlenebilir mi? Wigan’ın dosyası, farklı yarışların aynı takvimde birbirinden ayrı hikâyeler yazabildiğini gösteriyor. Önce bir finalin belirleyici oyuncusunu araştıracak, sonra lig hakkında yazılmış bir iddiayı değerlendireceksin. Kupa maçındaki başarı ile puan tablosundaki konum birbirinin yerine geçmez. Bu iki defteri ayrı tutmak belgeselin temel yaklaşımı. Takımın hangi turnuvada ne yaşadığını kanıtlarla birleştirirken kutlama görüntülerinin ötesine bak. İlk sahnede zaman daralıyor ve finalin son bölümü başlıyor.",
+      "taskIds": [
+        "DOC-19-01",
+        "DOC-19-02"
+      ]
+    },
+    {
+      "id": "DOC-20",
+      "number": 20,
+      "chapterId": 3,
+      "club": "Leeds United",
+      "period": "2001–2004",
+      "title": "Avrupa’dan Alt Lige",
+      "theme": "Yeniden doğuş",
+      "intro": "Avrupa gecelerinde görünen başarı, bir kulübün bütün durumunu anlatmayabilir. Leeds’in bu dosyasında saha içindeki yükselişle yönetim tarafındaki gelişmeler aynı zaman çizgisinde yer alıyor. Önce sportif ve kurumsal olayların sırasını kuracak, sonra Avrupa yolculuğunun belirli bir eşleşmesini araştıracaksın. Mali krizin başlamasıyla bir kurtarma işleminin gerçekleşmesi aynı tarih değildir. Bu ayrımı korumak, belirsiz bir anlatıyı somut belgelere dönüştürür. Dosyanın amacı kişilere niyet atfetmek değil, kayda geçmiş gelişmelerin birbirini nasıl izlediğini dikkatle ortaya koymak.",
+      "taskIds": [
+        "DOC-20-01",
+        "DOC-20-02"
+      ]
+    },
+    {
+      "id": "DOC-21",
+      "number": 21,
+      "chapterId": 3,
+      "club": "Borussia Dortmund",
+      "period": "2005–2013",
+      "title": "Sarı Duvarın Dönüşü",
+      "theme": "Yeniden doğuş",
+      "intro": "Bir kulübün yeniden güçlenmesi, yalnızca sahadaki bir değişiklikle açıklanamaz. Dortmund’un dosyası yönetimsel zorlukları, teknik ekip dönemini ve Avrupa sahnesini aynı anlatıda birleştiriyor. İlk araştırmada olayların sırasını kuracaksın. İkinci araştırmada belirli bir sezonun ulusal başarı belgelerini seçeceksin. Farklı yıllardaki kupaları bir araya getirmemek ve mali gelişmeleri maç sonuçlarıyla karıştırmamak önemli. Tribündeki büyük kalabalığın arkasında, zaman içinde birbirini izleyen somut kararlar ve sonuçlar var. Kanıt kartlarını kullanarak bu dönüşümün takvimini adım adım oluştur.",
+      "taskIds": [
+        "DOC-21-01",
+        "DOC-21-02"
+      ]
+    },
+    {
+      "id": "DOC-22",
+      "number": 22,
+      "chapterId": 3,
+      "club": "Celtic",
+      "period": "1967",
+      "title": "Yerel Kadronun Avrupa Yolculuğu",
+      "theme": "Kimlik",
+      "intro": "Bir futbol takımının oyuncu kökenleri, bazen büyük bir finalin anlatısında özel yer tutar. Celtic’in bu dosyası yerel bağları güçlü bir kadronun Avrupa sahnesine açıldığı dönemi inceliyor. İlk araştırmada final belgesinin rakip, skor ve şehir alanlarını tamamlayacaksın. İkinci araştırmada takımın saha kenarındaki sorumlusunu bulacaksın. Dönemin kupasının adını bugünkü organizasyonla ilişkilendirirken tarihsel bağlamı koru. Kadro kökenleri hakkında geniş genellemeler yapmak yerine belirli final kaydını kullanacağız. Birkaç ayrı kanıt bir araya geldiğinde hikâyenin çerçevesi netleşecek.",
+      "taskIds": [
+        "DOC-22-01",
+        "DOC-22-02"
+      ]
+    },
+    {
+      "id": "DOC-23",
+      "number": 23,
+      "chapterId": 3,
+      "club": "Gençlerbirliği",
+      "period": "2003/04",
+      "title": "Ankara’dan Avrupa’ya",
+      "theme": "Kimlik",
+      "intro": "Ankara’dan başlayan bir Avrupa yolculuğu, farklı ülkelerin takımlarıyla karşılaşmalar üzerinden ilerledi. Gençlerbirliği’nin dosyasında önce bu yolun duraklarını sıraya koyacaksın. Ardından başkentte oynanan belirli bir maçın gol kaydına bakacaksın. Aynı oyuncunun farklı turlarda gol atmış olması mümkün; bu nedenle tarih ve rakip bilgisi önem taşıyor. Tur atlamakla tek maçı kazanmayı da ayrı tutmalısın. Bu belgesel bir sezonun bütün sonuçlarını ezberletmek yerine yolculuğun sırasını ve bir gecenin somut ayrıntısını birleştirmeni istiyor.",
+      "taskIds": [
+        "DOC-23-01",
+        "DOC-23-02"
+      ]
+    },
+    {
+      "id": "DOC-24",
+      "number": 24,
+      "chapterId": 3,
+      "club": "Athletic Club",
+      "period": "2024",
+      "title": "Kırk Yıl Sonra",
+      "theme": "Taraftar",
+      "intro": "Uzun bir bekleyişin ardından bir final, kulübün ve kentin bütün dikkatini aynı yere topladı. Athletic Club’ın bu dosyası maçın son anlarıyla resmî sonuç kaydını birlikte inceliyor. İlk araştırmada belirleyici vuruşun sahibini bulacaksın. İkinci araştırmada ise farklı maç evrelerinin skorlarını doğru alanlara yerleştireceksin. Bir penaltı serisinin toplamını maçın gol toplamına eklememek önemli. Belgeselin kapanışında kutlamanın ardındaki iki ayrı kayıt netleşecek. Önce oyuncunun rolünü, sonra sonuçların hangi evreyi anlattığını araştırarak bu final dosyasını tamamla.",
+      "taskIds": [
+        "DOC-24-01",
+        "DOC-24-02"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "DOC-01-01",
+      "number": 1,
+      "episodeId": "DOC-01",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "2015/16 Leicester sezonunun resmî Premier League bilançosunda galibiyet, beraberlik ve mağlubiyet sayıları nasıl eşleşir?",
+      "hint": "Puan tablosunda 38 maç ve 81 puana odaklan.",
+      "options": [
+        {
+          "id": "c0d47a2466a1d",
+          "label": "3"
+        },
+        {
+          "id": "c2a01a0381534",
+          "label": "23"
+        },
+        {
+          "id": "c93debe222831",
+          "label": "12"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [
+        "Galibiyet",
+        "Beraberlik",
+        "Mağlubiyet"
+      ]
+    },
+    {
+      "id": "DOC-01-02",
+      "number": 2,
+      "episodeId": "DOC-01",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "Leicester şampiyonluğunu, kendi maçını oynamadan kesinleştiren 2 Mayıs 2016 karşılaşması ve skor hangisiydi?",
+      "hint": "Leicester oynarken değil, Londra’daki beraberliğin ardından kutladı.",
+      "options": [
+        {
+          "id": "c2916cc6f0857",
+          "label": "Chelsea 0-0 Tottenham Hotspur"
+        },
+        {
+          "id": "c8f96c3761ba9",
+          "label": "Tottenham Hotspur 2-1 Chelsea"
+        },
+        {
+          "id": "cff1ebc09fdfa",
+          "label": "Chelsea 1-0 Tottenham Hotspur"
+        },
+        {
+          "id": "cf1bbdd6ca0c1",
+          "label": "Chelsea 2-2 Tottenham Hotspur"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-02-01",
+      "number": 3,
+      "episodeId": "DOC-02",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "Napoli’nin 1986/87 tarihindeki ilk Serie A şampiyonluğunun simgesi olan Arjantinli on numara kimdi?",
+      "hint": "1984’te Napoli’ye katılan futbolcuyu düşün.",
+      "options": [
+        {
+          "id": "cbdfbc9596674",
+          "label": "Jorge Valdano"
+        },
+        {
+          "id": "c29677537db7d",
+          "label": "Gabriel Batistuta",
+          "playerId": 4000000045
+        },
+        {
+          "id": "c03f3ecb738da",
+          "label": "Claudio Caniggia"
+        },
+        {
+          "id": "cc5073912187b",
+          "label": "Diego Maradona",
+          "playerId": 4000000035
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-02-02",
+      "number": 4,
+      "episodeId": "DOC-02",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "multi",
+      "prompt": "Napoli 1986/87 sezonunu hangi iki büyük ulusal kupayı kazanarak tamamladı?",
+      "hint": "Biri lig, diğeri İtalya’nın eleme usulü kupası.",
+      "options": [
+        {
+          "id": "c8d537f74f759",
+          "label": "UEFA Kupası"
+        },
+        {
+          "id": "ced1030378a20",
+          "label": "Coppa Italia"
+        },
+        {
+          "id": "c856020b67bf8",
+          "label": "İtalya Süper Kupası"
+        },
+        {
+          "id": "c6d1ab6a0be78",
+          "label": "Serie A"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": []
+    },
+    {
+      "id": "DOC-03-01",
+      "number": 5,
+      "episodeId": "DOC-03",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Manchester City’nin QPR maçının sonunda gelen iki golünü doğru kronolojik sırayla diz.",
+      "hint": "Önce beraberlik, ardından şampiyonluk golü geldi.",
+      "options": [
+        {
+          "id": "cb68fb0a8d02a",
+          "label": "Sergio Agüero’nun golü"
+        },
+        {
+          "id": "cde0b254a18fa",
+          "label": "Edin Džeko’nun golü"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": []
+    },
+    {
+      "id": "DOC-03-02",
+      "number": 6,
+      "episodeId": "DOC-03",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "QPR karşısındaki son Manchester City golünde bitirici pası veren futbolcu kimdi?",
+      "hint": "Golü atan oyuncu Agüero’ydu; hazırlayanı bul.",
+      "options": [
+        {
+          "id": "cbf7eb972a88b",
+          "label": "Samir Nasri"
+        },
+        {
+          "id": "ceac686422844",
+          "label": "Mario Balotelli"
+        },
+        {
+          "id": "c51d3b2bd20e4",
+          "label": "David Silva"
+        },
+        {
+          "id": "cd0616eac8b99",
+          "label": "Carlos Tévez"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-04-01",
+      "number": 7,
+      "episodeId": "DOC-04",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“Manchester United’ın 1998/99 üçlemesi Premier League, FA Cup ve UEFA Şampiyonlar Ligi’nden oluşur.” Bu manşet doğru mu?",
+      "hint": "Üç turnuvanın o sezonki kazananlarını birlikte değerlendir.",
+      "options": [
+        {
+          "id": "ccfc69604482c",
+          "label": "Yanlış"
+        },
+        {
+          "id": "cc1edd746b0ca",
+          "label": "Doğru"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-04-02",
+      "number": 8,
+      "episodeId": "DOC-04",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "Class of 92 kuşağından, 1999 finalinde iki duraklama zamanı golünün geldiği kornerleri kullanan oyuncu kimdi?",
+      "hint": "Orta saha ve sağ çizgideki efsane ismi düşün.",
+      "options": [
+        {
+          "id": "cedf27acc858d",
+          "label": "Paul Scholes",
+          "playerId": 4000000026
+        },
+        {
+          "id": "c5fd986e51c43",
+          "label": "David Beckham",
+          "playerId": 4000000023
+        },
+        {
+          "id": "c99fa78d7a903",
+          "label": "Nicky Butt"
+        },
+        {
+          "id": "c7bcae6764298",
+          "label": "Ryan Giggs",
+          "playerId": 4000000059
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-05-01",
+      "number": 9,
+      "episodeId": "DOC-05",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "Arsenal’in 2003/04 Premier League puan tablosundaki üç temel sayıyı doğru eşleştir.",
+      "hint": "Ligin resmî tablosunda Pld, Pts ve L alanlarına bak.",
+      "options": [
+        {
+          "id": "c185fa620d792",
+          "label": "38"
+        },
+        {
+          "id": "cf47167648388",
+          "label": "0"
+        },
+        {
+          "id": "c0683541b7224",
+          "label": "90"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [
+        "Oynanan maç",
+        "Puan",
+        "Mağlubiyet"
+      ]
+    },
+    {
+      "id": "DOC-05-02",
+      "number": 10,
+      "episodeId": "DOC-05",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“Arsenal lig şampiyonluğunu 12 beraberlikle tamamladı” iddiası doğru mu?",
+      "hint": "38 maç içinde hiç mağlubiyet yoktu; kalan sonuçları düşün.",
+      "options": [
+        {
+          "id": "c8fb98294f474",
+          "label": "Yanlış"
+        },
+        {
+          "id": "c61ca1b5e0a0e",
+          "label": "Doğru"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-06-01",
+      "number": 11,
+      "episodeId": "DOC-06",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Liverpool’un bu üç başarısını en eskiden en yeniye sırala.",
+      "hint": "Eleme turu, Avrupa finali ve sonraki lig sezonunu karşılaştır.",
+      "options": [
+        {
+          "id": "cabfc0c165509",
+          "label": "Avrupa finali"
+        },
+        {
+          "id": "cf40f18096ed8",
+          "label": "Lig şampiyonluğu"
+        },
+        {
+          "id": "c600e50a92f48",
+          "label": "Barcelona rövanşı"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-06-02",
+      "number": 12,
+      "episodeId": "DOC-06",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "2018–2020 Liverpool dönüşümünün teknik direktörü kimdi?",
+      "hint": "Takımın gegenpressing yaklaşımını öne çıkaran Alman çalıştırıcı.",
+      "options": [
+        {
+          "id": "c25d0da7af9ca",
+          "label": "Jürgen Klopp",
+          "playerId": 4000000080
+        },
+        {
+          "id": "c8bf0f178a550",
+          "label": "Rafael Benítez",
+          "playerId": 4000000097
+        },
+        {
+          "id": "c5f38e00f3170",
+          "label": "Brendan Rodgers"
+        },
+        {
+          "id": "cd21be8c507d8",
+          "label": "Kenny Dalglish"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-07-01",
+      "number": 13,
+      "episodeId": "DOC-07",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "evidence",
+      "interaction": "single",
+      "prompt": "1995 Ajax–Milan finalinin UEFA gol kaydını tamamla: galibiyet golünü hangi oyuncu attı?",
+      "hint": "Sonradan oyuna giren bir hücum oyuncusunu ara.",
+      "options": [
+        {
+          "id": "c7ece830d91a9",
+          "label": "Jari Litmanen"
+        },
+        {
+          "id": "c7923ad05f356",
+          "label": "Patrick Kluivert"
+        },
+        {
+          "id": "cbd3fe4549dda",
+          "label": "Marc Overmars"
+        },
+        {
+          "id": "c3ffb6ef70e48",
+          "label": "Nwankwo Kanu"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-07-02",
+      "number": 14,
+      "episodeId": "DOC-07",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "turning",
+      "interaction": "match",
+      "prompt": "Galibiyet golünün sahibi Kluivert için UEFA değişiklik kaydını tamamla. Hangi dakikada, kimin yerine oyuna girdi?",
+      "hint": "Golün dakikasını oyuncu değişikliğinin dakikasıyla karıştırma.",
+      "options": [
+        {
+          "id": "c3220ed408f45",
+          "label": "Clarence Seedorf"
+        },
+        {
+          "id": "c36ff7f39d8b7",
+          "label": "Jari Litmanen"
+        },
+        {
+          "id": "cfe59c8f99e35",
+          "label": "70. dakika"
+        },
+        {
+          "id": "cb2b194c90bea",
+          "label": "53. dakika"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [
+        "Kluivert’in oyuna girdiği dakika",
+        "Yerine çıktığı futbolcu"
+      ]
+    },
+    {
+      "id": "DOC-08-01",
+      "number": 15,
+      "episodeId": "DOC-08",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Nottingham Forest’ın yükselişindeki üç aşamayı doğru sırala.",
+      "hint": "Önce ligler arası yükseliş, en son kıta kupası.",
+      "options": [
+        {
+          "id": "c0ccba85947c9",
+          "label": "İlk Avrupa Kupası şampiyonluğu"
+        },
+        {
+          "id": "c74e2a3c65084",
+          "label": "Birinci lige yükseliş"
+        },
+        {
+          "id": "cd9d9828f1872",
+          "label": "İngiltere lig şampiyonluğu"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-08-02",
+      "number": 16,
+      "episodeId": "DOC-08",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "Forest’ın 1979 ve 1980 Avrupa şampiyonluklarının teknik direktörü kimdi?",
+      "hint": "Peter Taylor ile birlikte çalışan meşhur İngiliz menajer.",
+      "options": [
+        {
+          "id": "cd42044379cbd",
+          "label": "Brian Clough"
+        },
+        {
+          "id": "c61b0944268dc",
+          "label": "Bob Paisley"
+        },
+        {
+          "id": "c391053513f69",
+          "label": "Ron Greenwood"
+        },
+        {
+          "id": "c01bfe5148682",
+          "label": "Bobby Robson"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-09-01",
+      "number": 17,
+      "episodeId": "DOC-09",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Porto’nun iki Avrupa kupası zaferini gerçekleşme sırasına koy.",
+      "hint": "İki final arka arkaya gelen sezonlarda oynandı.",
+      "options": [
+        {
+          "id": "c24c59d01933f",
+          "label": "Şampiyonlar Ligi zaferi"
+        },
+        {
+          "id": "c167641b4b7b6",
+          "label": "UEFA Kupası zaferi"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": []
+    },
+    {
+      "id": "DOC-09-02",
+      "number": 18,
+      "episodeId": "DOC-09",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "2004 Şampiyonlar Ligi finalinde Porto’nun mağlup ettiği takım ve maç skoru nedir?",
+      "hint": "Final Almanya’nın Gelsenkirchen kentinde oynandı.",
+      "options": [
+        {
+          "id": "c884b5024b03e",
+          "label": "Deportivo La Coruña"
+        },
+        {
+          "id": "cbac1609ed629",
+          "label": "2-0"
+        },
+        {
+          "id": "c2532fb84641a",
+          "label": "3-0"
+        },
+        {
+          "id": "c6e9b6ff36ef4",
+          "label": "Monaco"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [
+        "Final rakibi",
+        "Porto lehine final skoru"
+      ]
+    },
+    {
+      "id": "DOC-10-01",
+      "number": 19,
+      "episodeId": "DOC-10",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "multi",
+      "prompt": "Inter’in 2009/10 sezonundaki üçlemesini hangi üç kupa oluşturdu?",
+      "hint": "İtalya’daki iki kupa ile bir Avrupa kupasını birlikte düşün.",
+      "options": [
+        {
+          "id": "c2d4363dc7fa4",
+          "label": "Serie A"
+        },
+        {
+          "id": "c02e34d95fdb2",
+          "label": "UEFA Şampiyonlar Ligi"
+        },
+        {
+          "id": "c56843a3e1f34",
+          "label": "İtalya Süper Kupası"
+        },
+        {
+          "id": "c6b356a6b28e1",
+          "label": "Coppa Italia"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-10-02",
+      "number": 20,
+      "episodeId": "DOC-10",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "2010 Şampiyonlar Ligi yarı finalinde Inter hangi İspanyol kulübünü eledi?",
+      "hint": "Mourinho’nun savunma planıyla hatırlanan yarı final.",
+      "options": [
+        {
+          "id": "c1f689b0a6507",
+          "label": "Valencia"
+        },
+        {
+          "id": "c3301ff175ae1",
+          "label": "Sevilla"
+        },
+        {
+          "id": "c3e9463befa40",
+          "label": "Real Madrid"
+        },
+        {
+          "id": "c42a85130d436",
+          "label": "Barcelona"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-11-01",
+      "number": 21,
+      "episodeId": "DOC-11",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "17 Mayıs 2014 Barcelona–Atlético Madrid maçındaki golcüleri olay sırasına koy.",
+      "hint": "Ev sahibi takımın golü ile deplasman takımının golünü ayır.",
+      "options": [
+        {
+          "id": "c9919cb27a655",
+          "label": "Diego Godín’in golü"
+        },
+        {
+          "id": "c28970f28eba0",
+          "label": "Alexis Sánchez’in golü"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": []
+    },
+    {
+      "id": "DOC-11-02",
+      "number": 22,
+      "episodeId": "DOC-11",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "Atlético’ya 2013/14 lig şampiyonluğunu getiren son hafta Barcelona maçının sonucu neydi?",
+      "hint": "Atlético için beraberlik yetiyordu.",
+      "options": [
+        {
+          "id": "c50bb027b37fc",
+          "label": "Barcelona 0-1 Atlético Madrid"
+        },
+        {
+          "id": "c5f94748666d7",
+          "label": "Barcelona 2-2 Atlético Madrid"
+        },
+        {
+          "id": "c103420b6d1b3",
+          "label": "Barcelona 1-2 Atlético Madrid"
+        },
+        {
+          "id": "cff8feaec600b",
+          "label": "Barcelona 1-1 Atlético Madrid"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-12-01",
+      "number": 23,
+      "episodeId": "DOC-12",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "Kaiserslautern’i 1997/98 Bundesliga şampiyonluğuna taşıyan teknik direktör kimdi?",
+      "hint": "Daha sonra Yunanistan ile EURO 2004 kazanan Alman çalıştırıcı.",
+      "options": [
+        {
+          "id": "cfcfaa3fce16a",
+          "label": "Ottmar Hitzfeld"
+        },
+        {
+          "id": "c32a019bc61ec",
+          "label": "Otto Rehhagel"
+        },
+        {
+          "id": "cf9d7b81d6296",
+          "label": "Jupp Heynckes"
+        },
+        {
+          "id": "c5befee5723d4",
+          "label": "Christoph Daum"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-12-02",
+      "number": 24,
+      "episodeId": "DOC-12",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“Kaiserslautern 1997/98 lig şampiyonluğunu, yükseldiği ilk Bundesliga sezonunda kazandı.” Bu iddia doğru mu?",
+      "hint": "Yükseliş sezonu ile üst ligdeki ilk sezon aynı değildir.",
+      "options": [
+        {
+          "id": "c2dc7f588930e",
+          "label": "Doğru"
+        },
+        {
+          "id": "ca054d4936c77",
+          "label": "Yanlış"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-13-01",
+      "number": 25,
+      "episodeId": "DOC-13",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "evidence",
+      "interaction": "single",
+      "prompt": "Montpellier’nin 2011/12 Ligue 1 şampiyonluğunda lig ikincisi hangi takımdı?",
+      "hint": "Şampiyonluk yarışının büyük bütçeli rakibi.",
+      "options": [
+        {
+          "id": "cf599dda05aa0",
+          "label": "Lyon"
+        },
+        {
+          "id": "c96722612d510",
+          "label": "Paris Saint-Germain"
+        },
+        {
+          "id": "c7121af64128c",
+          "label": "Lille"
+        },
+        {
+          "id": "cef9095c89f90",
+          "label": "Marseille"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-13-02",
+      "number": 26,
+      "episodeId": "DOC-13",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "Montpellier şampiyonluk sezonunda ligde 21 gol atan ve sonraki sezon Arsenal’e giden forvet kimdi?",
+      "hint": "Fransız santrforun sonraki kulübü Arsenal.",
+      "options": [
+        {
+          "id": "ca927fca50da8",
+          "label": "Kevin Gameiro",
+          "playerId": 27389
+        },
+        {
+          "id": "c1bdee5e65281",
+          "label": "Olivier Giroud",
+          "playerId": 82442
+        },
+        {
+          "id": "c92b976314fc8",
+          "label": "Karim Benzema",
+          "playerId": 18922
+        },
+        {
+          "id": "c19be318f3c9b",
+          "label": "Loïc Rémy",
+          "playerId": 45121
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-14-01",
+      "number": 27,
+      "episodeId": "DOC-14",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "2010’daki 5-0 Barcelona–Real Madrid maçında “Gerard Piqué gol attı” manşeti doğru mu?",
+      "hint": "Golcü listesi ile kutlama görüntülerini karıştırma.",
+      "options": [
+        {
+          "id": "c919a251ceffe",
+          "label": "Doğru"
+        },
+        {
+          "id": "c12899bdfe071",
+          "label": "Yanlış"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-14-02",
+      "number": 28,
+      "episodeId": "DOC-14",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "Barcelona’nın 5-0 galibiyetinde iki gol atan oyuncu ve son golün sahibi hangi ikiliydi?",
+      "hint": "Bir futbolcu iki gol attı; son gol yedekten gelen bir oyuncudan geldi.",
+      "options": [
+        {
+          "id": "ce71e9a3e72a7",
+          "label": "David Villa"
+        },
+        {
+          "id": "c626aabc9dc5d",
+          "label": "Jeffrén Suárez"
+        },
+        {
+          "id": "cef4a24e9081c",
+          "label": "Lionel Messi"
+        },
+        {
+          "id": "c1b0964cde587",
+          "label": "Pedro"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [
+        "İki gol atan futbolcu",
+        "Son golü atan futbolcu"
+      ]
+    },
+    {
+      "id": "DOC-15-01",
+      "number": 29,
+      "episodeId": "DOC-15",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“20 Ekim 1976 Trabzonspor–Liverpool karşılaşması Wembley’de oynandı.” Bu manşet doğru mu?",
+      "hint": "İki ayaklı turun ilk maçının ev sahibi kaydını düşün.",
+      "options": [
+        {
+          "id": "c70e474a1ef35",
+          "label": "Yanlış"
+        },
+        {
+          "id": "c26fca6c14e0f",
+          "label": "Doğru"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-15-02",
+      "number": 30,
+      "episodeId": "DOC-15",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "20 Ekim 1976’da Trabzonspor’un Liverpool’u 1-0 yendiği maçtaki penaltıyı kim gole çevirdi?",
+      "hint": "Takımın kaptanı, Dozer lakabıyla anılıyordu.",
+      "options": [
+        {
+          "id": "c697bc1be531b",
+          "label": "Ali Kemal Denizci"
+        },
+        {
+          "id": "c42a545bc7701",
+          "label": "Necmi Perekli"
+        },
+        {
+          "id": "cb0eab9255c6c",
+          "label": "Cemil Usta"
+        },
+        {
+          "id": "c59f5a8dc74f8",
+          "label": "Hüseyin Tok"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-16-01",
+      "number": 31,
+      "episodeId": "DOC-16",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "person",
+      "interaction": "multi",
+      "prompt": "1990/91 Sampdoria takımında “Gol İkizleri” olarak bilinen forvet ikilisi kimdi?",
+      "hint": "İkisi de daha sonra futbol dünyasında teknik adam olarak anıldı.",
+      "options": [
+        {
+          "id": "cc571ed4826a5",
+          "label": "Attilio Lombardo"
+        },
+        {
+          "id": "c707f9979e3d8",
+          "label": "Roberto Mancini",
+          "playerId": 4000000091
+        },
+        {
+          "id": "ce94d422ea175",
+          "label": "Gianluca Vialli"
+        },
+        {
+          "id": "c5d32760aeef2",
+          "label": "Toninho Cerezo"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": []
+    },
+    {
+      "id": "DOC-16-02",
+      "number": 32,
+      "episodeId": "DOC-16",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“Sampdoria 1990/91 sezonunda kulüp tarihinin ilk Serie A şampiyonluğunu kazandı.” Bu iddia doğru mu?",
+      "hint": "Kupa başarılarıyla lig şampiyonluklarını ayrı değerlendir.",
+      "options": [
+        {
+          "id": "c89c61d58b61e",
+          "label": "Doğru"
+        },
+        {
+          "id": "cd680b8833296",
+          "label": "Yanlış"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-17-01",
+      "number": 33,
+      "episodeId": "DOC-17",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "Leverkusen’in 2023/24 Bundesliga sezonundaki 34 maçının sonuç dağılımını eşleştir.",
+      "hint": "Bir sezon boyunca ligde hiç kaybetmedi.",
+      "options": [
+        {
+          "id": "c08f751b23aa9",
+          "label": "0"
+        },
+        {
+          "id": "c3a3309926c2b",
+          "label": "6"
+        },
+        {
+          "id": "c7c98cd5ebdcf",
+          "label": "28"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [
+        "Galibiyet",
+        "Beraberlik",
+        "Mağlubiyet"
+      ]
+    },
+    {
+      "id": "DOC-17-02",
+      "number": 34,
+      "episodeId": "DOC-17",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“Leverkusen 2023/24 sezonunu Avrupa Ligi dahil üç kupayla tamamladı.” Bu manşet doğru mu?",
+      "hint": "Lig karnesi tek başına Avrupa finalinin sonucunu kanıtlamaz.",
+      "options": [
+        {
+          "id": "cc82794b2794c",
+          "label": "Doğru"
+        },
+        {
+          "id": "c9b2f57147baa",
+          "label": "Yanlış"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-18-01",
+      "number": 35,
+      "episodeId": "DOC-18",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "AFC Wimbledon’ın üç dönüm noktasını gerçekleşme sırasına koy.",
+      "hint": "Kuruluş, lig basamakları ve stadyum projesi farklı tarihlerdedir.",
+      "options": [
+        {
+          "id": "cb3c2af8fc61a",
+          "label": "Yeni Plough Lane’in açılışı"
+        },
+        {
+          "id": "cc9117d7bf2bf",
+          "label": "AFC Wimbledon’ın kuruluşu"
+        },
+        {
+          "id": "c53a4432808a5",
+          "label": "Football League’e yükseliş"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-18-02",
+      "number": 36,
+      "episodeId": "DOC-18",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "evidence",
+      "interaction": "single",
+      "prompt": "Kulübün 2024 strateji belgesinde AFC Wimbledon’ın taraftar sahipliğini temsil eden kuruluş hangisidir?",
+      "hint": "Kulüp içindeki taraftar sahipliği ile ulusal futbol kuruluşlarını ayır.",
+      "options": [
+        {
+          "id": "ce494d76fb877",
+          "label": "The Football Association"
+        },
+        {
+          "id": "ce2f75404b6f4",
+          "label": "The Dons Trust"
+        },
+        {
+          "id": "cd714e3c5bc76",
+          "label": "Supporters Direct"
+        },
+        {
+          "id": "cdad8900a3a15",
+          "label": "Football Supporters’ Association"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-19-01",
+      "number": 37,
+      "episodeId": "DOC-19",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "2013 FA Cup finalinde Manchester City’ye karşı galibiyet golünü atan futbolcu kimdi?",
+      "hint": "Finalin son dakikalarında kafa golü geldi.",
+      "options": [
+        {
+          "id": "c1b8520c46f56",
+          "label": "Ben Watson"
+        },
+        {
+          "id": "c2ae8231e85ad",
+          "label": "Shaun Maloney"
+        },
+        {
+          "id": "c7d04acdaac69",
+          "label": "Callum McManaman"
+        },
+        {
+          "id": "c32070a3d8f66",
+          "label": "Arouna Koné"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-19-02",
+      "number": 38,
+      "episodeId": "DOC-19",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "headline",
+      "interaction": "boolean",
+      "prompt": "“Wigan 2012/13 sezonunda FA Cup’ı kazanırken Premier League’de de kaldı.” Bu manşet doğru mu?",
+      "hint": "Kupa turnuvası ile lig sıralaması ayrı kayıtlardır.",
+      "options": [
+        {
+          "id": "c9bc56dc65025",
+          "label": "Doğru"
+        },
+        {
+          "id": "c737d4b54da0a",
+          "label": "Yanlış"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-20-01",
+      "number": 39,
+      "episodeId": "DOC-20",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Leeds’in Avrupa yarı finalini, 2004 kurtarma amaçlı kulüp devrini ve ligden düşüşünü sırala.",
+      "hint": "Kulüp devri Mart 2004’teydi; sezon sonuyla karşılaştır.",
+      "options": [
+        {
+          "id": "c2c3591f9004d",
+          "label": "Premier League’den düşüş"
+        },
+        {
+          "id": "c5108468f3e35",
+          "label": "Şampiyonlar Ligi yarı finali"
+        },
+        {
+          "id": "c68cf9adb039c",
+          "label": "Kurtarma amaçlı kulüp devri"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-20-02",
+      "number": 40,
+      "episodeId": "DOC-20",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "evidence",
+      "interaction": "single",
+      "prompt": "Leeds United’ın 2000/01 Şampiyonlar Ligi yarı finalinde elendiği İspanyol kulüp hangisiydi?",
+      "hint": "Kulüp daha sonra 2004 UEFA Kupası’nı kazandı.",
+      "options": [
+        {
+          "id": "cd1fe8d628cb8",
+          "label": "Deportivo La Coruña"
+        },
+        {
+          "id": "cd8821299ec00",
+          "label": "Real Madrid"
+        },
+        {
+          "id": "c0a5fee6a2547",
+          "label": "Valencia"
+        },
+        {
+          "id": "ca9d62a4399a1",
+          "label": "Barcelona"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-21-01",
+      "number": 41,
+      "episodeId": "DOC-21",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Dortmund’un mali krizini, Klopp döneminin başlangıcını ve 2013 Avrupa finalini sırala.",
+      "hint": "Ekonomik toparlanma ve teknik ekip değişimi farklı aşamalardır.",
+      "options": [
+        {
+          "id": "ce0f77d2d6610",
+          "label": "Yeni teknik direktör döneminin başlangıcı"
+        },
+        {
+          "id": "c50d7ede2fb13",
+          "label": "Wembley’de Avrupa finali"
+        },
+        {
+          "id": "ca8386bf606a8",
+          "label": "İflasın eşiğindeki mali kriz"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-21-02",
+      "number": 42,
+      "episodeId": "DOC-21",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "multi",
+      "prompt": "Dortmund 2011/12 sezonunda hangi iki ulusal kupayı birlikte kazandı?",
+      "hint": "Lig şampiyonluğu ve ulusal kupa birlikte alındı.",
+      "options": [
+        {
+          "id": "cacc9e0a8f813",
+          "label": "Bundesliga"
+        },
+        {
+          "id": "cc0bafefa39a7",
+          "label": "Almanya Süper Kupası"
+        },
+        {
+          "id": "c658968f7597f",
+          "label": "UEFA Şampiyonlar Ligi"
+        },
+        {
+          "id": "c8d8c8ef693bc",
+          "label": "DFB-Pokal"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": []
+    },
+    {
+      "id": "DOC-22-01",
+      "number": 43,
+      "episodeId": "DOC-22",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "Celtic’in 1967 Avrupa finalinde rakibi, sonucu ve oynanan kenti eşleştir.",
+      "hint": "UEFA kaydında başkent Portekiz’dedir.",
+      "options": [
+        {
+          "id": "c82bd7b849a2f",
+          "label": "Lizbon"
+        },
+        {
+          "id": "c028c1adf25b3",
+          "label": "Madrid"
+        },
+        {
+          "id": "c4ba94abcd0c7",
+          "label": "2-1"
+        },
+        {
+          "id": "cf809c248f225",
+          "label": "Inter"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": [
+        "Final rakibi",
+        "Celtic lehine final skoru",
+        "Final şehri"
+      ]
+    },
+    {
+      "id": "DOC-22-02",
+      "number": 44,
+      "episodeId": "DOC-22",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "person",
+      "interaction": "single",
+      "prompt": "Celtic’i 1967 Avrupa Kupası şampiyonluğuna taşıyan teknik direktör kimdi?",
+      "hint": "İskoç futbolunun en tanınan teknik adamlarından biri.",
+      "options": [
+        {
+          "id": "c665a7e7a7a2a",
+          "label": "Matt Busby"
+        },
+        {
+          "id": "cccb840915cab",
+          "label": "Bill Shankly"
+        },
+        {
+          "id": "c0455a494eb7d",
+          "label": "Jock Stein"
+        },
+        {
+          "id": "cc0d5be048f5e",
+          "label": "Bill Nicholson"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-23-01",
+      "number": 45,
+      "episodeId": "DOC-23",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "timeline",
+      "interaction": "order",
+      "prompt": "Gençlerbirliği’nin 2003/04 UEFA Kupası’nda Valencia turundan önce elediği üç rakibi sırala.",
+      "hint": "İlk turdan üçüncü tura doğru ilerle; kulüplerin ülkesinden tek başına sonuç çıkarma.",
+      "options": [
+        {
+          "id": "c310e2b0563a6",
+          "label": "Sporting CP"
+        },
+        {
+          "id": "c1adca5a399da",
+          "label": "Parma"
+        },
+        {
+          "id": "c19f9c800387e",
+          "label": "Blackburn Rovers"
+        }
+      ],
+      "requiredCount": 3,
+      "slots": []
+    },
+    {
+      "id": "DOC-23-02",
+      "number": 46,
+      "episodeId": "DOC-23",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "Gençlerbirliği’nin 11 Mart 2004’te Ankara’da Valencia’yı 1-0 yendiği maçta penaltıyı atan futbolcu kimdi?",
+      "hint": "UEFA maç raporu 12. dakikadaki penaltıya işaret ediyor.",
+      "options": [
+        {
+          "id": "c0b99bb07ce81",
+          "label": "Filip Daems"
+        },
+        {
+          "id": "c5ce15a09b39f",
+          "label": "Mustafa Özkan"
+        },
+        {
+          "id": "ce85a0a939979",
+          "label": "Josip Skoko"
+        },
+        {
+          "id": "c82357918994f",
+          "label": "Souleymane Youla"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-24-01",
+      "number": 47,
+      "episodeId": "DOC-24",
+      "stage": 1,
+      "title": "Araştırma 1",
+      "contentVersion": 2,
+      "difficulty": "kolay",
+      "mechanic": "turning",
+      "interaction": "single",
+      "prompt": "Athletic Club’ın Mallorca’ya karşı 2024 Copa del Rey finalindeki penaltı serisini bitiren son golü kim attı?",
+      "hint": "Takımın dördüncü başarılı seri penaltısını düşün.",
+      "options": [
+        {
+          "id": "c035997a799c1",
+          "label": "Nico Williams"
+        },
+        {
+          "id": "c5b4ae2374832",
+          "label": "Iñaki Williams"
+        },
+        {
+          "id": "cc455d54d11b4",
+          "label": "Oihan Sancet"
+        },
+        {
+          "id": "c71ba828e904e",
+          "label": "Álex Berenguer"
+        }
+      ],
+      "requiredCount": 1,
+      "slots": []
+    },
+    {
+      "id": "DOC-24-02",
+      "number": 48,
+      "episodeId": "DOC-24",
+      "stage": 2,
+      "title": "Araştırma 2",
+      "contentVersion": 2,
+      "difficulty": "orta",
+      "mechanic": "evidence",
+      "interaction": "match",
+      "prompt": "Athletic Club’ın 2024 Copa del Rey finalindeki normal+uzatma sonu skoru ve seri sonucu neydi?",
+      "hint": "Maç skoru ile penaltı serisi skoru farklıdır.",
+      "options": [
+        {
+          "id": "c6d450ccff678",
+          "label": "1-1"
+        },
+        {
+          "id": "ce627232a23c7",
+          "label": "4-2"
+        },
+        {
+          "id": "cf99044999338",
+          "label": "2-1"
+        },
+        {
+          "id": "c2b8a78020db7",
+          "label": "5-4"
+        }
+      ],
+      "requiredCount": 2,
+      "slots": [
+        "120 dakika sonu",
+        "Athletic lehine penaltı serisi"
+      ]
+    }
+  ],
+  "economy": {
+    "task": {
+      "coins": 8,
+      "xp": 20
+    },
+    "hintCoins": 6,
+    "milestones": [
+      {
+        "count": 8,
+        "coins": 40,
+        "xp": 100
+      },
+      {
+        "count": 16,
+        "coins": 60,
+        "xp": 150
+      },
+      {
+        "count": 24,
+        "coins": 80,
+        "xp": 200
+      }
+    ]
+  }
+}

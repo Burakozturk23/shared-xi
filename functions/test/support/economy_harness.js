@@ -75,8 +75,9 @@ function harness(initial = {}) {
     "firebase-functions/logger": {warn: () => {}, info: () => {}, error: () => {}},
     "firebase-functions/v2/https": {HttpsError, onCall: registration, onRequest: registration},
     "firebase-functions/v2/database": {onValueWritten: registration},
-    "firebase-admin": {initializeApp: () => {}, database: () => db,
-      auth: () => ({getUser: async () => ({providerData: [{providerId: "google.com"}]})})},
+    "firebase-admin/app": {initializeApp: () => {}},
+    "firebase-admin/database": {getDatabase: () => db},
+    "firebase-admin/auth": {getAuth: () => ({getUser: async () => ({providerData: [{providerId: "google.com"}]})})},
     "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async () => ({
       evaluate: () => ({getString: () => JSON.stringify(remote)}),
     })})},

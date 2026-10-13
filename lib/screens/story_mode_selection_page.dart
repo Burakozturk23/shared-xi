@@ -40,28 +40,28 @@ const List<StorySubMode> storySubModes = [
   ),
   StorySubMode(
     title: 'Türk Futbolu: Nostalji',
-    subtitle: 'Türk futbolunun altın yılları',
+    subtitle: '15 dönem · 30 görev · Nostalji Albümü',
     icon: Icons.history_edu,
   ),
   StorySubMode(
     title: 'International Glory',
-    subtitle: 'Milli takım zaferleri',
+    subtitle: '44 maç · 4 bölüm · Milletler Albümü',
     icon: Icons.public,
   ),
   StorySubMode(
     title: 'Dynasties',
-    subtitle: 'Bir dönemi domine eden kulüpler',
+    subtitle: '19 hanedanlık · 38 görev · Hanedanlıklar Atlası',
     icon: Icons.castle,
   ),
   StorySubMode(
     title: 'Football Docu-Series',
-    subtitle: 'Belgesel tadında futbol hikayeleri',
+    subtitle: '24 belgesel · 48 görev · Belgesel Arşivi',
     icon: Icons.movie_creation,
   ),
   StorySubMode(
     title: 'Derby Day',
-    subtitle: 'Tarihi rekabetlerin içine gir',
-    icon: Icons.sports_kabaddi,
+    subtitle: '48 rekabet · 16 ülke · Derbi Pasaportu',
+    icon: Icons.public,
   ),
 ];
 
@@ -88,7 +88,8 @@ class StoryModeSelectionPage extends StatelessWidget {
             onTap: () => GameLauncher.open(context, GameEntry(
               title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
               icon: storySubModes[i].icon, page: pages[i],
-              requiresRepository: i != 0, modern: i == 0,
+              // Story modes own their bundled catalogs; they need no player DB warm-up.
+              requiresRepository: false, modern: true,
             )),
           ),
         ),

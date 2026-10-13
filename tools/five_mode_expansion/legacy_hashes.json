@@ -1,0 +1,15 @@
+{
+  "assets/data/player_journey_chapter_four.json": "17f1b333056ae8f6dc38b5cf3a3a05fb6aa99624e01cb15bc09b76e79f593b75",
+  "assets/data/player_journey_chapter_three.json": "c6911f540fd7244cb846d5bd056eb68bdaba9fa1954bb86c89f3d21d3bd5d294",
+  "assets/data/player_journey_chapter_two.json": "a1f035abd8940b4604ca2f28d9cdf4bc7e4014a7ed736f2843d562e6c1f001ad",
+  "assets/data/player_journey_chapter_one.json": "91458454428315b8405a65c29f6a8839ed89ca94f8f14f15cb511c7f28fb169f",
+  "assets/data/ucl_moments_v2.json": "68ee85cb492ecf8921ab2d31d15a08de28b059281e875a5988bde8c87562a8fb",
+  "assets/data/turkish_nostalgia_v2.json": "0d70d848377f64786900809ff582e8c44d99127bc4ea51a5f7e3238f8bc22f0b",
+  "assets/data/international_glory_v2.json": "27f16d89a6347d3ff596f76c573a55e7ce937e626d7af75de92265a235c377fe",
+  "assets/data/dynasties_v2.json": "e01fc0a04cd450fa4a2f9f045a8704f7692686b122a54863e7b3e26e99cfd35b",
+  "functions/config/journey_catalog.json": "e882e4feedc18d801bdcbe2e23d92878ec1f203db000ac7d62cf59bc98f5aea7",
+  "functions/config/ucl_catalog.json": "4fff0e3abe9825f83cb6160b9ad2777b15fb2a203335c3b0b2c3478fa6cd38c9",
+  "functions/config/nostalgia_catalog.json": "0d70d848377f64786900809ff582e8c44d99127bc4ea51a5f7e3238f8bc22f0b",
+  "functions/config/international_catalog.json": "effecd4e1406c8249d7558d264e84e5ce64c8201e4d48c5914bbd74bc721f18a",
+  "functions/config/dynasties_catalog.json": "1f28ecfa73350339c98bc51427dd92c9ee69286ffe749dc6f6dd99396ed9e0d4"
+}
