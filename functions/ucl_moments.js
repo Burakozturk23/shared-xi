@@ -18,6 +18,23 @@ function accepts(match, answers) {
 function createService({db, grantCoins, grantXp, now = Date.now}) {
   const ref = (uid) => db.ref("uclMomentsState/" + uid);
   const get = async (uid) => stateOf((await ref(uid).get()).val());
+  function accrue(s) {
+    const earn = (id, coins, xp) => {
+      s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
+    };
+    for (const m of catalog.matches) {
+      if (s.completed[m.id]) earn(m.id, catalog.economy.match.coins, catalog.economy.match.xp);
+    }
+    const count = catalog.matches.filter((m) => s.completed[m.id]).length;
+    for (const milestone of catalog.economy.milestones) {
+      if (count >= milestone.count) earn("milestone_" + milestone.count, milestone.coins, milestone.xp);
+    }
+    return s;
+  }
+  async function reconcile(uid) {
+    // Only server-confirmed progress is eligible. Preserve every existing receipt.
+    await ref(uid).transaction((raw) => accrue(stateOf(raw)));
+  }
   async function settle(uid) {
     const s = await get(uid);
     for (const [id, reward] of Object.entries(s.rewards)) {
@@ -32,6 +49,7 @@ function createService({db, grantCoins, grantXp, now = Date.now}) {
     }
   }
   async function status(uid, eligible = true) {
+    await reconcile(uid);
     if (eligible) await settle(uid);
     const s = await get(uid);
     const results = Object.fromEntries(Object.keys(s.completed).filter((id) => Object.hasOwn(matches, id))
@@ -48,14 +66,7 @@ function createService({db, grantCoins, grantXp, now = Date.now}) {
     await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       s.completed[match.id] ||= now();
-      const earn = (id, coins, xp) => {
-        s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
-      };
-      if (!match.expansion) earn(match.id, catalog.economy.match.coins, catalog.economy.match.xp);
-      const count = baseCatalog.matches.filter((m) => s.completed[m.id]).length;
-      for (const milestone of catalog.economy.milestones) {
-        if (count >= milestone.count) earn("milestone_" + milestone.count, milestone.coins, milestone.xp);
-      }
+      accrue(s);
       return s;
     });
     return {correct: true, ...await status(uid, eligible)};

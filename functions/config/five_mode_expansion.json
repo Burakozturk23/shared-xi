@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "five-mode-2026-10",
-  "rewardPolicy": "pending",
+  "rewardPolicy": "mode_default",
   "journey": {
     "version": 2,
     "chapterId": "chapter_5_expansion",
@@ -11,7 +11,7 @@
         "name": "Pelé",
         "playerId": 4000000065,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-33_v2_1",
@@ -41,7 +41,7 @@
             "hint": "Altyapı dönemini değil, ilk profesyonel A takımını düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Santos FC",
               "story": "Doğru cevap: Santos FC.",
@@ -88,7 +88,7 @@
             "hint": "İsveç’te düzenlenen turnuvayı hatırla.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "1958",
               "story": "Doğru cevap: 1958.",
@@ -140,7 +140,7 @@
             "hint": "Güney Amerika kupası ile Dünya Kupası yıllarını ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "1962, 1963",
               "story": "Doğru cevap: 1962, 1963.",
@@ -192,7 +192,7 @@
             "hint": "Kulüp yolculuğunu millî takım turnuvalarıyla karıştırma.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Santos FC → New York Cosmos",
               "story": "Doğru cevap: Santos FC, New York Cosmos.",
@@ -218,7 +218,7 @@
         "name": "Diego Maradona",
         "playerId": 4000000035,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-34_v2_1",
@@ -248,7 +248,7 @@
             "hint": "Buenos Aires’teki ilk A takım dönemini düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Argentinos Juniors",
               "story": "Doğru cevap: Argentinos Juniors.",
@@ -295,7 +295,7 @@
             "hint": "İlk Avrupa transferini, daha sonraki İtalya yıllarından ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "FC Barcelona",
               "story": "Doğru cevap: FC Barcelona.",
@@ -342,7 +342,7 @@
             "hint": "Napoli’deki ilk lig kupasını, ikinci şampiyonluktan ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "1986/87",
               "story": "Doğru cevap: 1986/87.",
@@ -404,7 +404,7 @@
             "hint": "İlk İtalya dönemine ulaştığında rotayı bitir; sonraki dönüşleri ekleme.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Argentinos Juniors → Boca Juniors → Barcelona → Napoli",
               "story": "Doğru cevap: Argentinos Juniors, Boca Juniors, Barcelona, Napoli.",
@@ -430,7 +430,7 @@
         "name": "Ronaldo Nazário",
         "playerId": 3140,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-35_v2_1",
@@ -460,7 +460,7 @@
             "hint": "Avrupa öncesindeki Brezilya A takımını ara.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Cruzeiro",
               "story": "Doğru cevap: Cruzeiro.",
@@ -507,7 +507,7 @@
             "hint": "İspanya öncesindeki Hollanda dönemini düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "PSV Eindhoven",
               "story": "Doğru cevap: PSV Eindhoven.",
@@ -554,7 +554,7 @@
             "hint": "1997 yazındaki İtalya transferini, sonraki İtalya dönüşünden ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Inter",
               "story": "Doğru cevap: Inter.",
@@ -621,7 +621,7 @@
             "hint": "İlk Madrid dönemine kadar olan kulüpleri seç ve sırala.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Cruzeiro → PSV → Barcelona → Inter → Real Madrid",
               "story": "Doğru cevap: Cruzeiro, PSV, Barcelona, Inter, Real Madrid.",
@@ -647,7 +647,7 @@
         "name": "Gianluigi Buffon",
         "playerId": 5023,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-36_v2_1",
@@ -677,7 +677,7 @@
             "hint": "Genç kalecinin 1990’lardaki A takım dönemini düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Parma",
               "story": "Doğru cevap: Parma.",
@@ -724,7 +724,7 @@
             "hint": "2001’deki transfer ile 2019’daki geri dönüşü ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Juventus",
               "story": "Doğru cevap: Juventus.",
@@ -771,7 +771,7 @@
             "hint": "Bir sezonluk Fransa deneyimine odaklan.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Paris Saint-Germain",
               "story": "Doğru cevap: Paris Saint-Germain.",
@@ -818,7 +818,7 @@
             "hint": "Son kariyer durağını değil, Fransa’dan hemen sonraki dönüşü ara.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Juventus",
               "story": "Doğru cevap: Juventus.",
@@ -844,7 +844,7 @@
         "name": "Gheorghe Hagi",
         "playerId": 4000000002,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-37_v2_1",
@@ -874,7 +874,7 @@
             "hint": "Romanya’dan sonraki ilk ülkesini ve transfer yılını düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Real Madrid",
               "story": "Doğru cevap: Real Madrid.",
@@ -921,7 +921,7 @@
             "hint": "1994 Dünya Kupası sonrasındaki iki sezonu hatırla.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "FC Barcelona",
               "story": "Doğru cevap: FC Barcelona.",
@@ -968,7 +968,7 @@
             "hint": "Futbolcu olarak geldiği kulübü düşün; teknik direktörlük dönemlerini ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Galatasaray",
               "story": "Doğru cevap: Galatasaray.",
@@ -1030,7 +1030,7 @@
             "hint": "Verilen dört durağı ilk katıldığı yıllara göre sırala.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Real Madrid → Brescia → Barcelona → Galatasaray",
               "story": "Doğru cevap: Real Madrid, Brescia, Barcelona, Galatasaray.",
@@ -1056,7 +1056,7 @@
         "name": "Alex de Souza",
         "playerId": 4000000110,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-38_v2_1",
@@ -1086,7 +1086,7 @@
             "hint": "1990’lardaki ilk A takım dönemini düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Coritiba",
               "story": "Doğru cevap: Coritiba.",
@@ -1139,7 +1139,7 @@
             "hint": "Türkiye transferinden hemen önceki sezonu ara.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Cruzeiro",
               "story": "Doğru cevap: Cruzeiro.",
@@ -1192,7 +1192,7 @@
             "hint": "2004 yazındaki ilk Türkiye transferini düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Fenerbahçe",
               "story": "Doğru cevap: Fenerbahçe.",
@@ -1245,7 +1245,7 @@
             "hint": "Kariyer başlangıcı ile son dönem arasındaki bağlantıyı hatırla.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Coritiba",
               "story": "Doğru cevap: Coritiba.",
@@ -1277,7 +1277,7 @@
         "name": "Ricardo Quaresma",
         "playerId": 4188,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-39_v2_1",
@@ -1307,7 +1307,7 @@
             "hint": "2003 yazındaki İspanya transferini düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "FC Barcelona",
               "story": "Doğru cevap: FC Barcelona.",
@@ -1354,7 +1354,7 @@
             "hint": "İlk Türkiye döneminden önceki Portekiz dönüşüne odaklan.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "FC Porto",
               "story": "Doğru cevap: FC Porto.",
@@ -1401,7 +1401,7 @@
             "hint": "İlk İstanbul transferini ikinci gelişinden ayır.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Beşiktaş",
               "story": "Doğru cevap: Beşiktaş.",
@@ -1448,7 +1448,7 @@
             "hint": "2019 yazındaki İstanbul içi transferi hatırla.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Kasımpaşa",
               "story": "Doğru cevap: Kasımpaşa.",
@@ -1474,7 +1474,7 @@
         "name": "Burak Yılmaz",
         "playerId": 4000000108,
         "expansion": "five-mode-2026-10",
-        "rewardPolicy": "pending",
+        "rewardPolicy": "mode_default",
         "tasks": [
           {
             "id": "PJ-40_v2_1",
@@ -1504,7 +1504,7 @@
             "hint": "İlk profesyonel A takım ile ilk büyük transfer aynı durak değil.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Antalyaspor",
               "story": "Doğru cevap: Antalyaspor.",
@@ -1551,7 +1551,7 @@
             "hint": "2010 yılındaki kulüp değişimine odaklan.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Trabzonspor",
               "story": "Doğru cevap: Trabzonspor.",
@@ -1598,7 +1598,7 @@
             "hint": "2012 yazındaki transferi, daha sonraki geri dönüşlerle karıştırma.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Galatasaray",
               "story": "Doğru cevap: Galatasaray.",
@@ -1645,7 +1645,7 @@
             "hint": "Takvim yılını değil, tamamlanan lig sezonunu düşün.",
             "contentVersion": 1,
             "expansion": "five-mode-2026-10",
-            "rewardPolicy": "pending",
+            "rewardPolicy": "mode_default",
             "result": {
               "answer": "Lille OSC",
               "story": "Doğru cevap: Lille OSC.",
@@ -1697,7 +1697,7 @@
       "hint": "Sorudaki finali ve oyuncunun o karşılaşmadaki rolünü düşün.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Daniele Massaro",
         "story": "Doğru cevap: Daniele Massaro.",
@@ -1760,7 +1760,7 @@
       "hint": "Sorudaki finali ve oyuncunun o karşılaşmadaki rolünü düşün.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Helmuth Duckadam",
         "story": "Doğru cevap: Helmuth Duckadam.",
@@ -1826,7 +1826,7 @@
       "hint": "Sorudaki finali ve oyuncunun o karşılaşmadaki rolünü düşün.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Rodri",
         "story": "Doğru cevap: Rodri.",
@@ -1907,7 +1907,7 @@
           "hint": "İlk ulusal lig sezonunun iki ayaklı finalini düşün.",
           "contentVersion": 1,
           "expansion": "five-mode-2026-10",
-          "rewardPolicy": "pending",
+          "rewardPolicy": "mode_default",
           "result": {
             "answer": "Fenerbahçe",
             "story": "Doğru cevap: Fenerbahçe.",
@@ -1965,7 +1965,7 @@
           "hint": "İlk karşılaşmanın sonucunu değil, rövanşı ara.",
           "contentVersion": 1,
           "expansion": "five-mode-2026-10",
-          "rewardPolicy": "pending",
+          "rewardPolicy": "mode_default",
           "result": {
             "answer": "Fenerbahçe 4-0 Galatasaray",
             "story": "Doğru cevap: Fenerbahçe 4-0 Galatasaray.",
@@ -2036,7 +2036,7 @@
           "hint": "Kulüp şampiyonluğu ile bireysel gol krallığını ayır.",
           "contentVersion": 1,
           "expansion": "five-mode-2026-10",
-          "rewardPolicy": "pending",
+          "rewardPolicy": "mode_default",
           "result": {
             "answer": "Metin Oktay",
             "story": "Doğru cevap: Metin Oktay.",
@@ -2094,7 +2094,7 @@
           "hint": "İtalya ve Fransa yıllarını değil, Türkiye’deki uzun dönemini düşün.",
           "contentVersion": 1,
           "expansion": "five-mode-2026-10",
-          "rewardPolicy": "pending",
+          "rewardPolicy": "mode_default",
           "result": {
             "answer": "Fenerbahçe",
             "story": "Doğru cevap: Fenerbahçe.",
@@ -2165,7 +2165,7 @@
           "hint": "Lig tablosunu değil, iki ayaklı kupa finalini düşün.",
           "contentVersion": 1,
           "expansion": "five-mode-2026-10",
-          "rewardPolicy": "pending",
+          "rewardPolicy": "mode_default",
           "result": {
             "answer": "Bursaspor",
             "story": "Doğru cevap: Bursaspor.",
@@ -2225,7 +2225,7 @@
           "hint": "Türkiye Kupası finali ile sezonun diğer kupa maçını ayır.",
           "contentVersion": 1,
           "expansion": "five-mode-2026-10",
-          "rewardPolicy": "pending",
+          "rewardPolicy": "mode_default",
           "result": {
             "answer": "Galatasaray",
             "story": "Doğru cevap: Galatasaray.",
@@ -2287,7 +2287,7 @@
       "hint": "Maç kadrosundaki yedekleri değil, başlangıç kalecisini ara.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Félix",
         "story": "Doğru cevap: Félix.",
@@ -2389,7 +2389,7 @@
       "hint": "Çeyrek finali atla; son iki turun rakiplerini yerleştir.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Birleşik Arap Emirlikleri → Japonya",
         "story": "Doğru cevap: Birleşik Arap Emirlikleri, Japonya.",
@@ -2468,7 +2468,7 @@
       "hint": "Aynı oyuncunun iki golü ayrı karttır; takımın gol sırasını kur.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Pablo Barrera · ilk golü → Andrés Guardado → Pablo Barrera · ikinci golü → Giovani dos Santos",
         "story": "Doğru cevap: Pablo Barrera · ilk golü, Andrés Guardado, Pablo Barrera · ikinci golü, Giovani dos Santos.",
@@ -2551,7 +2551,7 @@
       "hint": "Beraberlik golü ile öne geçiren golü birbirinden ayır.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Ao Tanaka",
         "story": "Doğru cevap: Ao Tanaka.",
@@ -2676,7 +2676,7 @@
       "hint": "Dönemin başlangıç ve bitiş sınırlarını koru.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "2000, 2001, 2003",
         "story": "Doğru cevap: 2000, 2001, 2003.",
@@ -2731,7 +2731,7 @@
       "hint": "Oyuncuyu değil, dönemin teknik direktörünü ara.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Carlos Bianchi",
         "story": "Doğru cevap: Carlos Bianchi.",
@@ -2790,7 +2790,7 @@
       "hint": "Finale katılmak ve kupayı kazanmak farklıdır.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "2005, 2006, 2008",
         "story": "Doğru cevap: 2005, 2006, 2008.",
@@ -2839,7 +2839,7 @@
       "hint": "İki ayaklı finalin aynı sezon içindeki rakibini düşün.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "CS Sfaxien",
         "story": "Doğru cevap: CS Sfaxien.",
@@ -2888,7 +2888,7 @@
       "hint": "Başlangıç ve bitiş sezonları da hesaba katılır.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "4",
         "story": "Doğru cevap: 4.",
@@ -2937,7 +2937,7 @@
       "hint": "Oyunculuk rolü ile teknik direktörlük görevini ayır.",
       "contentVersion": 1,
       "expansion": "five-mode-2026-10",
-      "rewardPolicy": "pending",
+      "rewardPolicy": "mode_default",
       "result": {
         "answer": "Fatih Terim",
         "story": "Doğru cevap: Fatih Terim.",

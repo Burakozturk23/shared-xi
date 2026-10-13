@@ -8,8 +8,8 @@ Proje klasöründe çalıştır. Açık değişikliklerin varsa önce kaydet/com
 ```powershell
 git status --short
 git fetch origin
-git switch codex/five-mode-expansion
-git pull --ff-only origin codex/five-mode-expansion
+git switch codex/expansion-rewards
+git pull --ff-only origin codex/expansion-rewards
 flutter pub get
 if ($LASTEXITCODE -ne 0) { throw "Flutter paketleri kurulamadı" }
 ```
@@ -47,14 +47,17 @@ flutter devices
 flutter run --no-enable-impeller
 ```
 
-Hikâye modlarında Player Journey → Bölüm 5: Yeni İzler; UCL → yeni üç final;
+Hikâye modlarında Player Journey → Bölüm 5: Sınırları Aşanlar; UCL → yeni üç final;
 Nostalji → son üç bölüm; International Glory → 1970/2019/2011/2022 ek maçları;
 Dynasties → Boca Juniors, Al Ahly, Galatasaray.
 
 Google hesabıyla yeni bir kariyer sorusu çöz. Bağlantıyı kapatıp seçim yap;
 uygulamayı yeniden açtığında seçimin kaldığını kontrol et. Bağlantıyı açıp yeniden
-gönder; ikinci kez Coin/XP bekleme. Yeni 51 görevin ödülleri PDF gereği henüz
-tanımlanmadı. Eski tamamlanmalar ve ödüller korunmalı.
+gönder; ikinci kez Coin/XP bekleme. Yeni 51 görev kendi modunun Coin/XP sistemini kullanır. Önceden sunucuda
+tamamlanan genişleme görevlerinin eksik ödülleri Eşitle ile bir kez eklenir.
+Eski tamamlanmalar ve ödüller korunmalı. Nostalji 15 bölüm / 30 görev,
+International Glory 44 maç göstermeli. Yalnız Firebase deploy etmek telefondaki
+ekranları güncellemez: çalışan uygulamayı durdurup flutter run ile yeniden kur.
 
 Fiziksel cihaz için:
 

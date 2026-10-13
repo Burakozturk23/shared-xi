@@ -18,7 +18,7 @@ for t in tasks:
  opts={o.get('id',o.get('key')):o['label'] for o in t['options']}
  assert len(opts)==len(t['options']) and len(set(opts.values()))==len(opts)
  assert len(t['answerKeys'])==t['requiredCount'] and set(t['answerKeys'])<=opts.keys()
- assert t['rewardPolicy']=='pending' and t['hint'] and t['result']['story'] and t['result']['sources']
+ assert t['rewardPolicy']=='mode_default' and t['hint'] and t['result']['story'] and t['result']['sources']
  assert all(s['url'].startswith('https://') for s in t['result']['sources'])
  if t.get('type') not in ['timeline'] and t.get('interaction')!='order':
   assert len(opts)-len(t['answerKeys'])>=3,t['id']

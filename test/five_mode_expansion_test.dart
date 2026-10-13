@@ -28,6 +28,7 @@ import 'package:shared_xi/screens/ucl_moments_page.dart';
 import 'package:shared_xi/screens/international_glory_page.dart';
 import 'package:shared_xi/screens/dynasties_page.dart';
 import 'package:shared_xi/screens/turkish_nostalgia_page.dart';
+import 'package:shared_xi/screens/story_mode_selection_page.dart';
 import 'journey_v2_test.dart' show MemoryJourneyStore;
 import 'ucl_moments_test.dart' show MemoryUclStore;
 import 'international_glory_test.dart' show MemoryInternationalStore;
@@ -46,7 +47,7 @@ class ExpansionGateway implements UclGateway, InternationalGateway, DynastiesGat
   final String mode;
   final int version;
   bool offline=false;
-  final Map<String,dynamic> results={}, completed={};
+  final Map<String,dynamic> results={}, completed={}, rewards={};
   @override Future<Map<String,dynamic>> call(String action,[Map<String,dynamic> input=const{}]) async {
     if(offline) throw StateError('offline');
     if(action=='submit') {
@@ -55,10 +56,11 @@ class ExpansionGateway implements UclGateway, InternationalGateway, DynastiesGat
       if(t['interaction']=='multi'){a.sort();b.sort();}
       if(jsonEncode(a)!=jsonEncode(b))return {'correct':false};
       results[t['id'] as String]=t['result'];completed[t['id'] as String]=1;
+      rewards[t['id'] as String]={'coins':mode=='nostalgia'?6:8,'xp':mode=='nostalgia'?15:20,'settled':true};
     }
     return {'version':version,'correct':true,'results':Map<String,dynamic>.from(results),
       'completed':Map<String,dynamic>.from(completed),'seals':<String,dynamic>{},
-      'rewards':<String,dynamic>{},'rewardEligible':true};
+      'rewards':Map<String,dynamic>.from(rewards),'rewardEligible':true};
   }
 }
 void main() {
@@ -76,6 +78,9 @@ void main() {
     expect((await UclCatalog.load()).matches.length,37);
     expect((await InternationalCatalog.load()).matches.length,44);
     expect((await NostalgiaCatalog.load()).tasks.length,30);
+    expect(storySubModes.firstWhere((m)=>m.title=='Türk Futbolu: Nostalji').subtitle,contains('15 dönem · 30 görev'));
+    expect(storySubModes.firstWhere((m)=>m.title=='International Glory').subtitle,contains('44 maç'));
+    expect(storySubModes.firstWhere((m)=>m.title=='Dynasties').subtitle,contains('19 hanedanlık · 38 görev'));
     expect((await DynastiesCatalog.load()).tasks.length,38);
   });
   test('new careers save offline selection and cannot advance without server; concurrent submit is single',() async {
@@ -133,9 +138,51 @@ void main() {
       else{c.choose(keys.single);}
       expect(c.canSubmit,true);await c.submit();expect(c.phase,'result');
     }
-    expect(c.count,4);expect(c.coins,0);
+    expect(c.count,4);expect(c.coins,32);
   });
   for(final light in [false,true]) {
+    testWidgets('expanded archives, album totals and paid results at 320px light=$light',(tester)async{
+      tester.view.physicalSize=const Size(320,844);tester.view.devicePixelRatio=1;
+      addTearDown(tester.view.resetPhysicalSize);addTearDown(tester.view.resetDevicePixelRatio);
+      final loaded=await tester.runAsync(()async=><Object>[await NostalgiaCatalog.load(),await InternationalCatalog.load()]);
+      final tn=TurkishNostalgiaController(catalog:loaded![0] as NostalgiaCatalog,store:MemoryStore(),gateway:ExpansionGateway('nostalgia',2));
+      final ig=InternationalGloryController(catalog:loaded[1] as InternationalCatalog,store:MemoryInternationalStore(),gateway:ExpansionGateway('international',2));
+      await tn.load();await ig.load();
+      final key=GlobalKey();
+      Future<void> mount(Widget page)async{
+        await tester.pumpWidget(MaterialApp(theme:light?OrtakSahaTheme.light:OrtakSahaTheme.dark,
+          builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:const TextScaler.linear(1.8)),child:RepaintBoundary(key:key,child:child!)),home:page));
+        await tester.pumpAndSettle();
+      }
+      Future<void> reveal(Finder finder)async{
+        await tester.scrollUntilVisible(finder,250,scrollable:find.byType(Scrollable).first,maxScrolls:80);
+        await tester.pumpAndSettle();expect(tester.takeException(),isNull);
+      }
+      await mount(TurkishNostalgiaPage(controller:tn));
+      expect(find.textContaining('15 bölüm · 30 görev'),findsOneWidget);
+      await screenshot(tester,key,'reward-nostalgia-archive-$light');
+      await reveal(find.text('Anadolu'));await tester.tap(find.text('Anadolu'));await tester.pumpAndSettle();
+      await reveal(find.text('Eskişehirspor’un Anadolu Yükselişi'));
+      await screenshot(tester,key,'reward-nostalgia-filter-$light');
+      tn.open('TN-13');tn.start();tn.choose((privateTasks('nostalgia').first['answerKeys'] as List).single as String);await tn.submit();
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListView).first,const Offset(0,5000));await tester.pumpAndSettle();
+      await reveal(find.textContaining('Yeni görev: 6 Coin + 15 XP'));
+      expect(tn.coins,6);expect(find.textContaining('henüz tanımlanmadı'),findsNothing);
+      await screenshot(tester,key,'reward-nostalgia-result-$light');
+      await mount(InternationalGloryPage(controller:ig));
+      expect(find.textContaining('44 karşılaşma'),findsOneWidget);
+      await screenshot(tester,key,'reward-international-archive-$light');
+      await reveal(find.byKey(const ValueKey('ig-album')));await tester.tap(find.byKey(const ValueKey('ig-album')));await tester.pumpAndSettle();
+      await reveal(find.text('0 / 12 hatıra'));
+      await screenshot(tester,key,'reward-international-album-$light');
+      ig.open('IG-41');ig.start();ig.choose((privateTasks('international').first['answerKeys'] as List).single as String);await ig.submit();await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListView).first,const Offset(0,5000));await tester.pumpAndSettle();
+      await reveal(find.textContaining('İlk tamamlama ödülü alındı: 8 coin + 20 XP'));
+      expect(ig.coins,8);expect(find.textContaining('henüz tanımlanmadı'),findsNothing);
+      await screenshot(tester,key,'reward-international-result-$light');
+      await tester.pumpWidget(const SizedBox());tn.dispose();ig.dispose();
+    });
     testWidgets('five new mode tasks open at 320px / 180%, light=$light',(tester)async{
       tester.view.physicalSize=const Size(320,844);tester.view.devicePixelRatio=1;
       addTearDown(tester.view.resetPhysicalSize);addTearDown(tester.view.resetDevicePixelRatio);

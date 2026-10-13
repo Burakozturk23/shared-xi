@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../app/game_catalog.dart';
-import '../services/five_mode_expansion.dart';
 import '../services/auth_service.dart';
 import '../app/game_launcher.dart';
 import '../models/player.dart';
@@ -51,7 +50,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
             const SizedBox(height: 12), LinearProgressIndicator(value: doneCount / chapter.journeys.length),
             const SizedBox(height: 10), Text(chapter.number == 5 ? 'İstediğin futbolcuyu seç. Her kariyerde dört aşama sırayla açılır.' : 'İlk iki futbolcudan istediğini seç. Her tamamlanan kariyer yeni bir futbolcu açar.'),
             const SizedBox(height: 10),
-            Text(chapter.number == 5 ? expansionRewardNotice : 'Her kariyer: 20 Coin + 40 XP\n8 kariyerin tamamı: ayrıca 80 Coin + 120 XP'),
+            Text('Her kariyer: 20 Coin + 40 XP\n8 kariyerin tamamı: ayrıca 80 Coin + 120 XP'),
           ])), const SizedBox(height: 20),
           if (doneCount > 0) ...[
             const PitchPanel(child: Text('Önceki ilerlemen korunuyor. Eski sürümde bitirdiğin bir kariyerin damgası pasaportunda görünmüyorsa, dört görevini yeniden çözerek sunucu ödülünü açabilirsin. Kazanılmış Coin ve XP tekrar verilmez.')),

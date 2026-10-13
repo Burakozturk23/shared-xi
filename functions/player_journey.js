@@ -46,6 +46,18 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   function counts(state) {
     return baseCatalog.chapters.map((c) => c.journeys.filter((j) => state.journeys[j.id]?.solved === 4).length);
   }
+  function accrue(s) {
+    for (const c of chapters) {
+      for (const j of c.journeys) {
+        if (s.journeys[j.id]?.solved === 4) earned(s, "player__" + j.id, 20, 40);
+      }
+      if (c.journeys.every((j) => s.journeys[j.id]?.solved === 4)) {
+        earned(s, "chapter__" + (chapters.indexOf(c) + 1), 80, 120);
+      }
+    }
+    // Original 32-career finale and badge requirements remain stable.
+    if (counts(s).every((n) => n === 8)) earned(s, "final", 150, 300);
+  }
   async function settle(uid) {
     const state = await get(uid);
     for (const [id, reward] of Object.entries(state.rewards)) {
@@ -59,6 +71,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     await projectBadges(uid, counts(state));
   }
   async function status(uid) {
+    await change(uid, accrue);
     await settle(uid);
     const s = await get(uid);
     const completed = Object.keys(journeys).filter((id) => s.journeys[id]?.solved === 4);
@@ -77,13 +90,8 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
       const progress = s.journeys[journey.id] ||= {solved: 0};
       if (index > progress.solved) fail("failed-precondition", "Önceki aşamaların eşitlenmesi bekleniyor.");
       if (index === progress.solved) progress.solved++;
-      if (progress.solved === 4) {
-        progress.completedAt ||= now();
-        if (!journey.expansion) earned(s, "player__" + journey.id, 20, 40);
-      }
-      const totals = counts(s);
-      for (let i = 0; i < 4; i++) if (totals[i] === 8) earned(s, "chapter__" + (i + 1), 80, 120);
-      if (totals.every((n) => n === 8)) earned(s, "final", 150, 300);
+      if (progress.solved === 4) progress.completedAt ||= now();
+      accrue(s);
     });
     return status(uid);
   }
@@ -116,7 +124,9 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     const s = await get(uid);
     if (placement === "story_double") {
       const chapter = input.chapter;
-      if (!Number.isInteger(chapter) || chapter < 1 || chapter > 4) fail("invalid-argument", "Geçersiz bölüm.");
+      if (!Number.isInteger(chapter) || chapter < 1 || chapter > chapters.length) {
+        fail("invalid-argument", "Geçersiz bölüm.");
+      }
       if (!s.rewards["chapter__" + chapter]?.settled || s.rewards["double__" + chapter]) {
         fail("failed-precondition", "Bölüm bonusu hazır değil veya zaten alındı.");
       }

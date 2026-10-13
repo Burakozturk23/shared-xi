@@ -29,6 +29,23 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   function available(s, t) {
     return t.stage === 1 || !!s.completed[t.dynastyId + "-01"];
   }
+  function accrue(s) {
+    const earn = (id, coins, xp) => {
+      s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
+    };
+    for (const t of catalog.tasks) {
+      if (s.completed[t.id]) earn(t.id, catalog.economy.task.coins, catalog.economy.task.xp);
+    }
+    const count = completedDynasties(s).length;
+    for (const m of catalog.economy.milestones) {
+      if (count >= m.count) earn("milestone_" + m.count, m.coins, m.xp);
+    }
+    return s;
+  }
+  async function reconcile(uid) {
+    // Only server-confirmed progress is eligible. Preserve every existing receipt.
+    await ref(uid).transaction((raw) => accrue(stateOf(raw)));
+  }
   async function settle(uid) {
     const s = await get(uid);
     for (const [id, r] of Object.entries(s.rewards)) {
@@ -50,6 +67,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     return {text: "Elenen seçenekler: " + excluded.map((o) => o.label).join(", ")};
   }
   async function status(uid, eligible = true) {
+    await reconcile(uid);
     if (eligible) await settle(uid);
     const s = await get(uid); const seals = completedDynasties(s);
     return {version: catalog.version, rewardEligible: eligible, pro: eligible && await isPro(uid),
@@ -70,12 +88,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       const s = stateOf(raw);
       if (!available(s, t)) return raw; // A cold null snapshot must be retried by RTDB.
       s.completed[t.id] ||= now();
-      const earn = (id, coins, xp) => {
-        s.rewards[id] ||= {coins, xp, earnedAt: now(), settled: false};
-      };
-      if (!t.expansion) earn(t.id, catalog.economy.task.coins, catalog.economy.task.xp);
-      const count = completedDynasties(s).filter((d) => !d.expansion).length;
-      for (const m of catalog.economy.milestones) if (count >= m.count) earn("milestone_" + m.count, m.coins, m.xp);
+      accrue(s);
       return s;
     });
     if (!stateOf(tx.snapshot.val()).completed[t.id]) {
