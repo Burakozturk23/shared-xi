@@ -8,8 +8,8 @@ Proje klasöründe çalıştır. Açık değişikliklerin varsa önce kaydet/com
 ```powershell
 git status --short
 git fetch origin
-git switch codex/expansion-rewards
-git pull --ff-only origin codex/expansion-rewards
+git switch codex/latest-android-apk
+git pull --ff-only origin codex/latest-android-apk
 flutter pub get
 if ($LASTEXITCODE -ne 0) { throw "Flutter paketleri kurulamadı" }
 ```
