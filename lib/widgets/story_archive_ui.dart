@@ -51,7 +51,8 @@ class StoryArchiveProgress extends StatelessWidget {
         value: total == 0 ? 0 : (completed / total).clamp(0.0, 1.0),
         minHeight: 6, borderRadius: BorderRadius.circular(8),
         color: p.accent, backgroundColor: p.raised,
-        semanticsLabel: label, semanticsValue: '$completed / $total',
+        // Keep the progress role's numeric percentage value from Flutter.
+        semanticsLabel: '$label, $completed / $total',
       ),
     ]);
   }
