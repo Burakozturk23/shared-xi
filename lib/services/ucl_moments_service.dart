@@ -19,7 +19,7 @@ class FirebaseUclGateway implements UclGateway {
     final result = await FirebaseFunctions.instanceFor(app: Firebase.app(), region: 'europe-west1')
         .httpsCallable(action == 'status' ? 'getUclMoments' : 'submitUclMoment',
             options: HttpsCallableOptions(timeout: const Duration(seconds: 15)))
-        .call(input);
+        .call({...input, 'energyClientVersion': 1});
     if (AuthService.uid != uid) throw StateError('Hesap değişti. Ekranı yeniden aç.');
     return uclMap(result.data);
   }

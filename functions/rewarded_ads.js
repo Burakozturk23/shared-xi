@@ -1,7 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
-  "story_hint", "story_double", "what_if_hint", "what_if_double"]);
+  "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint"]);
 const TICKET_MS = 20 * 60000;
 const RETENTION_MS = 48 * 3600000;
 class RewardError extends Error {
@@ -29,7 +29,7 @@ function day(state, key) {
   return state.days[key] ||= {earned: 0, issued: 0};
 }
 function reserved(state, key, now) {
-  return Object.values(state.tickets).filter((t) => t.dayKey === key && t.status === "pending" &&
+  return Object.values(state.tickets).filter((t) => (t.counterKey || t.dayKey) === key && t.status === "pending" &&
     t.expiresAt > now).length;
 }
 function prune(state, now) {
@@ -50,7 +50,8 @@ function policyOf(config, units, platform) {
 // settled via the existing idempotent wallet, with a durable retryable outbox.
 function createService({db, getConfig, units, grantCoins, isLinked, isPro, now = Date.now,
   randomId = () => crypto.randomBytes(24).toString("hex"), prepareDailyReward, settleDailyReward,
-  prepareStoryReward, settleStoryReward, prepareWhatIfReward, settleWhatIfReward}) {
+  prepareStoryReward, settleStoryReward, prepareWhatIfReward, settleWhatIfReward,
+  prepareEnergyReward, settleEnergyReward, prepareQuizReward, settleQuizReward}) {
   const ref = (uid) => db.ref("rewardedAdState/" + uid);
   async function transact(uid, change) {
     let error;
@@ -73,7 +74,16 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     if (!Object.keys(state.pending).length) return;
     const linked = await isLinked(uid);
     for (const [id, receipt] of Object.entries(state.pending)) {
-      if (receipt.placement.startsWith("what_if_")) {
+      if (receipt.placement === "energy_refill") {
+        try {
+          await settleEnergyReward(uid, receipt);
+        } catch (error) {
+          if (error.code === "failed-precondition") continue; // capacity: durable pending bonus
+          throw error;
+        }
+      } else if (receipt.placement === "quiz_hint") {
+        await settleQuizReward(uid, receipt);
+      } else if (receipt.placement.startsWith("what_if_")) {
         if (!settleWhatIfReward) continue;
         await settleWhatIfReward(uid, receipt);
       } else if (receipt.placement.startsWith("story_")) {
@@ -109,7 +119,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     const pro = await isPro(uid);
     const ticket = ticketId ? state.tickets[ticketId] : Object.values(state.tickets)
         .filter((t) => !t.placement.startsWith("daily_") && !t.placement.startsWith("story_") &&
-          !t.placement.startsWith("what_if_") &&
+          !t.placement.startsWith("what_if_") && !["energy_refill", "quiz_hint"].includes(t.placement) &&
           (t.status === "verified" || t.status === "pending" && t.expiresAt > time))
         .sort((a, b) => b.createdAt - a.createdAt)[0];
     return {ok: true, dayKey: key, resetTimeZone: "Europe/Istanbul", pro,
@@ -138,20 +148,31 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     const whatIf = placement.startsWith("what_if_");
     const story = placement.startsWith("story_") || whatIf;
     if (story && !await isLinked(uid)) fail("permission-denied", "Google hesabına bağlan.");
-    const benefit = whatIf ? await prepareWhatIfReward?.(uid, placement, context) :
+    const special = ["energy_refill", "quiz_hint"].includes(placement);
+    const benefit = placement === "energy_refill" ? await prepareEnergyReward?.(uid) :
+      placement === "quiz_hint" ? await prepareQuizReward?.(uid) : whatIf ? await prepareWhatIfReward?.(uid,
+          placement, context) :
       story ? await prepareStoryReward?.(uid, placement, context) : placement.startsWith("daily_") ?
       await prepareDailyReward?.(uid, placement, context) : null;
-    if ((story || placement.startsWith("daily_")) && !benefit) fail("failed-precondition", "Bonus hazır değil.");
+    if ((special || story || placement.startsWith("daily_")) && !benefit) {
+      fail("failed-precondition",
+          "Bonus hazır değil.");
+    }
     const time = now();
     const policy = policyOf(await getConfig(), units, platform);
     // Story uses its own opt-in placements, not the disabled generic coin source.
     if (story) {
       policy.enabled = true; policy.limit = 4; policy.configId = whatIf ? "what-if-v1" : "journey-v1";
     }
+    if (special) {
+      policy.enabled = true; policy.limit = placement === "energy_refill" ? 2 : 1;
+      policy.configId = "energy-quiz-v1";
+    }
     const pro = await isPro(uid);
     if (!policy.enabled) fail("failed-precondition", "Bonuslar şu anda kapalı.");
     if (!pro && !policy.unitId) fail("failed-precondition", "Reklam bağlantısı henüz hazır değil.");
     const key = dayKey(time);
+    const counterKey = special ? key + "__" + placement : key;
     const id = randomId();
     const state = await transact(uid, (s) => {
       prune(s, time);
@@ -160,18 +181,21 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         (["verified", "credited"].includes(t.status) || t.status === "pending" && t.expiresAt > time))) {
         fail("already-exists", "Bu bonus zaten alındı veya doğrulanıyor.");
       }
-      const d = day(s, key);
-      if (d.earned + reserved(s, key, time) >= policy.limit) {
+      const d = day(s, counterKey);
+      if (d.earned + reserved(s, counterKey, time) >= policy.limit) {
         fail("resource-exhausted", "Günlük bonus sınırına ulaştın.");
       }
       if (d.issued >= 12 || s.lastIssuedAt > time - 30000) {
         fail("resource-exhausted", "Kısa bir süre sonra tekrar dene.");
       }
       // One outstanding watch at a time across both placements/devices.
-      if (reserved(s, key, time) > 0) fail("failed-precondition", "Önceki reklamın doğrulaması bekleniyor.");
+      if (Object.values(s.tickets).some((t) => t.status === "pending" && t.expiresAt > time)) {
+        fail("failed-precondition", "Önceki reklamın doğrulaması bekleniyor.");
+      }
       s.lastIssuedAt = time;
       d.issued += 1;
-      const ticket = {id, requestId, placement, dayKey: key, amount: benefit ? benefit.amount : policy.amount,
+      const ticket = {id, requestId, placement, dayKey: key, counterKey,
+        amount: benefit ? benefit.amount : policy.amount,
         ...(benefit ? {context: benefit.context, claimKey: benefit.claimKey} : {}),
         configId: policy.configId, dailyLimit: policy.limit, unitId: policy.unitId,
         createdAt: time, expiresAt: time + TICKET_MS, status: pro ? "verified" : "pending",
@@ -208,6 +232,9 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
           time - event.timestamp > 24 * 3600000 || t.sourceType !== "rewarded_coin") {
         fail("permission-denied", "Reward ticket expired");
       }
+      if (t.status === "cancelled" && ["energy_refill", "quiz_hint"].includes(t.placement)) {
+        fail("permission-denied", "Reward ticket cancelled");
+      }
       const transactionHash = hash(event.transaction_id);
       if (["verified", "credited"].includes(t.status)) {
         if (t.transactionHash !== transactionHash) fail("already-exists", "Ticket already used");
@@ -216,7 +243,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
       if (Object.values(s.tickets).some((other) => other.transactionHash === transactionHash)) {
         fail("already-exists", "Transaction already used");
       }
-      const d = day(s, t.dayKey);
+      const d = day(s, t.counterKey || t.dayKey);
       if (d.earned >= t.dailyLimit) fail("resource-exhausted", "Daily limit reached");
       d.earned += 1;
       t.status = "verified";

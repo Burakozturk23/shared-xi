@@ -569,6 +569,26 @@ class AchievementCatalog {
       category: AchievementCategory.mastery, tier: AchievementTier.gold, signal: 'what_if_total', target: 24, iconKey: 'what_if_all'),
     AchievementDefinition(id: 'what_if_dual', title: 'İki Yüzlü Tarih', description: 'What If içinde 12 hikâyenin iki sonunu da keşfet.',
       category: AchievementCategory.mastery, tier: AchievementTier.platinum, signal: 'what_if_dual', target: 12, iconKey: 'what_if_dual'),
+    AchievementDefinition(
+      id: 'daily_question_30',
+      title: 'Her Gün Futbol',
+      description: '30 farklı günde Günün Sorusu’na katıl.',
+      category: AchievementCategory.daily,
+      tier: AchievementTier.silver,
+      signal: 'daily_question_days',
+      target: 30,
+      iconKey: 'daily_streak',
+    ),
+    AchievementDefinition(
+      id: 'daily_question_100',
+      title: 'Bilginin Müdavimi',
+      description: '100 farklı günde Günün Sorusu’na katıl.',
+      category: AchievementCategory.daily,
+      tier: AchievementTier.gold,
+      signal: 'daily_question_days',
+      target: 100,
+      iconKey: 'daily_streak',
+    ),
   ];
 
   static final Map<String, AchievementDefinition> byId =

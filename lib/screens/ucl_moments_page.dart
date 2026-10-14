@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +26,15 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
   bool _collection = false;
   String _filter = 'all';
   final _scroll = ScrollController();
+  Future<void> _startWithEnergy() async {
+    final controller = _c;
+    final id = controller?.activeId;
+    if (controller == null || id == null) return;
+    if (widget.controller != null || await StoryEnergyAccess.open(context, 'ucl', id)) {
+      if (!mounted || _c != controller || controller.activeId != id) return;
+      controller.start(); _top();
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -139,7 +149,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
       ]),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
         child: PitchRow(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
-          onTap: c.busy ? null : () { _open(c.activeId!); c.start(); })),
+          onTap: c.busy ? null : () { _open(c.activeId!); _startWithEnergy(); })),
       const SizedBox(height: 20),
       Wrap(spacing: 8, runSpacing: 8, children: [
         ChoiceChip(label: const Text('Tüm geceler'), selected: !_collection, onSelected: (_) => setState(() => _collection = false)),
@@ -167,7 +177,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
       const SizedBox(height: 20), PitchRow(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
       const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
       if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text('İlk tamamlama: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
-      const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ucl-start'), onPressed: c.busy ? null : () { c.start(); _top(); },
+      const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ucl-start'), onPressed: c.busy ? null : () { _startWithEnergy(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Bu geceye katıl'))];
   }
   List<Widget> _task(UclMomentsController c) {

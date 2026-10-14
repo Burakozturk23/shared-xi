@@ -314,6 +314,9 @@
       ".read": false,
       ".write": false
     },
+    "runtimeConfig": {".read": false, ".write": false},
+    "dailyQuestionPrivate": {".read": false, ".write": false},
+    "dailyQuestionState": {".read": false, ".write": false},
     "whatIfState": {
       ".read": false,
       ".write": false

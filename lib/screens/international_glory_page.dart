@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,15 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
   bool _collection = false;
   String _filter = 'all';
   final _scroll = ScrollController();
+  Future<void> _startWithEnergy() async {
+    final controller = _c;
+    final id = controller?.activeId;
+    if (controller == null || id == null) return;
+    if (widget.controller != null || await StoryEnergyAccess.open(context, 'international', id)) {
+      if (!mounted || _c != controller || controller.activeId != id) return;
+      controller.start(); _top();
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -142,7 +152,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
         child: Text('Maçlar ücretsiz. Coin ve XP almak için misafir hesabını Google’a bağla.')),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
         child: StoryArchiveEntry(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
-          onTap: c.busy ? null : () { _open(c.activeId!); c.start(); })),
+          onTap: c.busy ? null : () { _open(c.activeId!); _startWithEnergy(); })),
       const SizedBox(height: 20),
       Wrap(spacing: 8, runSpacing: 8, children: [
         ChoiceChip(label: const Text('Maç arşivi'), selected: !_collection, onSelected: (_) { setState(() => _collection = false); _top(); }),
@@ -186,7 +196,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
       const SizedBox(height: 20), StoryArchiveEntry(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
       const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
       if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text('İlk tamamlama: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
-      const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ig-start'), onPressed: c.busy ? null : () { c.start(); _top(); },
+      const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ig-start'), onPressed: c.busy ? null : () { _startWithEnergy(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Karşılaşmaya katıl'))];
   }
   List<Widget> _task(InternationalGloryController c) {

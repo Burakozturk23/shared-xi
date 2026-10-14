@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,15 @@ class _FootballDocuPageState extends State<FootballDocuPage> {
   bool _collection = false;
   String _filter = 'all', _theme = 'all', _progress = 'all';
   final _scroll = ScrollController(keepScrollOffset: false);
+  Future<void> _startWithEnergy() async {
+    final controller = _c;
+    final id = controller?.activeId;
+    if (controller == null || id == null) return;
+    if (widget.controller != null || await StoryEnergyAccess.open(context, 'docu', id)) {
+      if (!mounted || _c != controller || controller.activeId != id) return;
+      controller.start(); _top();
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -166,7 +176,7 @@ class _FootballDocuPageState extends State<FootballDocuPage> {
       if(c.pending.isNotEmpty) Padding(padding:const EdgeInsets.only(top:12),child:Text('${c.pending.length} cevap doğrulama bekliyor. Bağlantı geldiğinde Eşitle’ye dokun.')),
       if(c.activeId!=null&&!c.results.containsKey(c.activeId)) Padding(padding:const EdgeInsets.only(top:12),child:PitchRow(
         title:'Kaldığın yerden',subtitle:'${c.catalog.episode(c.active!.episodeId).text('club')} · ${c.active!.text('title')}',icon:Icons.play_circle_outline,
-        onTap:c.busy?null:(){_open(c.activeId!);c.start();})),
+        onTap:c.busy?null:(){_open(c.activeId!);_startWithEnergy();})),
       if(_collection)...[
         const PitchSectionTitle('Arşiv kilometre taşları'),
         for(final raw in c.catalog.economy['milestones'] as List) Padding(padding:const EdgeInsets.only(bottom:8),child:PitchPanel(
@@ -217,7 +227,7 @@ class _FootballDocuPageState extends State<FootballDocuPage> {
         onTap:c.busy||!c.available(c.catalog.byId(id))?null:()=>_open(id))),
       const SizedBox(height:12),Text('${t.text('title')} · ${t.label}',style:Theme.of(context).textTheme.titleMedium),
       const SizedBox(height:10),const Text('Ücretsiz ipucu ve sınırsız deneme. Seçimlerin cihazda saklanır; ilerleme ve ödül bağlantı olduğunda doğrulanır.'),
-      const SizedBox(height:20),FilledButton.icon(key:const ValueKey('docu-start'),onPressed:c.busy?null:(){c.start();_top();},icon:const Icon(Icons.play_arrow),label:Text('${t.text('title')} görevine başla')),
+      const SizedBox(height:20),FilledButton.icon(key:const ValueKey('docu-start'),onPressed:c.busy?null:(){_startWithEnergy();_top();},icon:const Icon(Icons.play_arrow),label:Text('${t.text('title')} görevine başla')),
     ];
   }
   List<Widget> _task(FootballDocuController c) {

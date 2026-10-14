@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -29,6 +30,15 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
   String? _uid, _error;
   String _filter = 'Tümü';
   int _generation = 0;
+  Future<void> _startWithEnergy() async {
+    final controller = _c;
+    final id = controller?.activeId;
+    if (controller == null || id == null) return;
+    if (widget.controller != null || await StoryEnergyAccess.open(context, 'nostalgia', id)) {
+      if (!mounted || _c != controller || controller.activeId != id) return;
+      controller.start(); _top();
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -314,7 +324,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
       onPressed: c.busy
           ? null
           : () {
-              c.start();
+              _startWithEnergy();
               _top();
             },
       child: Text(c.taskIndex == 1 ? 'İkinci göreve devam et' : 'Döneme gir'),
