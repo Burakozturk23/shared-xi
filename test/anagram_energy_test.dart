@@ -158,4 +158,17 @@ void main() {
     user = 'alice';
     expect(await alice.read(), 'alice-game');
   });
+
+  test('returning to a free game after account change locks the old screen', () async {
+    SharedPreferences.setMockInitialValues({});
+    String user = 'alice';
+    energy.enabled = false;
+    final c = AnagramController(catalog: catalog, energyAccess: energy,
+      store: LocalAnagramStore(userId: 'alice', currentUser: () => user));
+    addTearDown(c.dispose);
+    await c.initialize(); expect(c.ready, isTrue);
+    user = 'bob';
+    await c.revalidate(); expect(c.ready, isFalse);
+    expect(energy.charges, 0);
+  });
 }

@@ -86,10 +86,9 @@ class AnagramController extends ChangeNotifier {
       await _admit();
     }
   }, needsAccess: false);
-  Future<void> revalidate() => _run(() async {
-    ready = false;
-    await _admit();
-  }, needsAccess: false);
+  // Re-read through the account guard even for a free/legacy game. A screen
+  // left in memory must not expose another account's save after sign-out.
+  Future<void> revalidate() => initialize();
   Future<void> restart() => _run(_newSession, needsAccess: false);
   Future<void> guess(String value) => _run(() async {
     final s = session;
