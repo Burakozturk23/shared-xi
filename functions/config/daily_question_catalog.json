@@ -2494,41 +2494,15 @@
       "difficulty": "medium"
     },
     {
-      "id": "q_transfer_gerrard__real",
-      "category": "transfer",
-      "prompt": "2005 Avrupa finalinde Gerrard ile aynı takımda oynayan orta sahayı seç.",
-      "options": [
-        "Luka Modrić",
-        "Xabi Alonso",
-        "Toni Kroos"
-      ],
-      "answer": 1,
-      "explanation": "Xabi Alonso 2005 finalinde Liverpool kadrosundaydı.",
-      "sources": [
-        {
-          "label": "Tarihsel kayıt • gerrard",
-          "url": "https://www.liverpoolfc.com/info/steven-gerrard"
-        },
-        {
-          "label": "Tarihsel kayıt • makelele",
-          "url": "https://www.chelseafc.com/en/claude-makelele"
-        }
-      ],
-      "sourceId": "gerrard__real",
-      "provenance": "existing_story_catalog",
-      "review": "inherited",
-      "difficulty": "hard"
-    },
-    {
       "id": "q_transfer_zidane__real",
       "category": "transfer",
       "prompt": "Bordeaux → ? → Real Madrid: boş durağı tamamla.",
       "options": [
-        "Napoli",
         "Lazio",
-        "Juventus"
+        "Juventus",
+        "Napoli"
       ],
-      "answer": 2,
+      "answer": 1,
       "explanation": "Zidane Juventus’ta 1996-2001 arasında oynadı.",
       "sources": [
         {
@@ -2546,11 +2520,11 @@
       "category": "transfer",
       "prompt": "Real Madrid ve Barcelona A takımlarında oynamış ismi seç.",
       "options": [
-        "Luís Figo",
+        "Ryan Giggs",
         "Francesco Totti",
-        "Ryan Giggs"
+        "Luís Figo"
       ],
-      "answer": 0,
+      "answer": 2,
       "explanation": "Figo iki kulübün de A takımında oynadı.",
       "sources": [
         {
@@ -2572,11 +2546,11 @@
       "category": "transfer",
       "prompt": "Zlatan’ın Malmö’den sonra katıldığı kulüp hangisiydi?",
       "options": [
-        "PSV",
         "Ajax",
+        "PSV",
         "Feyenoord"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Zlatan 2001’de Ajax’a transfer oldu.",
       "sources": [
         {
@@ -2587,40 +2561,18 @@
       "sourceId": "zlatan__real",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
-    },
-    {
-      "id": "q_transfer_rooney__real",
-      "category": "transfer",
-      "prompt": "2010-11 United kadrosunda Rooney ile oynayan kanat oyuncusunu seç.",
-      "options": [
-        "Gareth Bale",
-        "Eden Hazard",
-        "Nani"
-      ],
-      "answer": 2,
-      "explanation": "Nani 2010-11 sezonunda Manchester United kadrosundaydı.",
-      "sources": [
-        {
-          "label": "Tarihsel kayıt • united",
-          "url": "https://www.manutd.com/en/club/history/history-by-decade/2000-2009"
-        }
-      ],
-      "sourceId": "rooney__real",
-      "provenance": "existing_story_catalog",
-      "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_transfer_laudrup__real",
       "category": "transfer",
       "prompt": "Laudrup 1989’da Barcelona’ya hangi kulüpten geldi?",
       "options": [
-        "Juventus",
         "Inter",
+        "Juventus",
         "Roma"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Laudrup Juventus’tan Barcelona’ya geldi.",
       "sources": [
         {
@@ -2638,11 +2590,11 @@
       "category": "transfer",
       "prompt": "Dinamo Zagreb → ? → Real Madrid zincirindeki İngiliz kulübü hangisi?",
       "options": [
+        "West Ham",
         "Everton",
-        "Tottenham",
-        "West Ham"
+        "Tottenham"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Modrić 2008-2012 arasında Tottenham’da oynadı.",
       "sources": [
         {
@@ -2651,36 +2603,6 @@
         }
       ],
       "sourceId": "modric__real",
-      "provenance": "existing_story_catalog",
-      "review": "inherited",
-      "difficulty": "easy"
-    },
-    {
-      "id": "q_transfer_baresi__real",
-      "category": "transfer",
-      "prompt": "1990’larda Milan savunmasında Baresi ile birlikte oynayan ismi seç.",
-      "options": [
-        "Carles Puyol",
-        "Javier Zanetti",
-        "Paolo Maldini"
-      ],
-      "answer": 2,
-      "explanation": "Baresi ve Maldini Milan savunmasında birlikte oynadı.",
-      "sources": [
-        {
-          "label": "Tarihsel kayıt • maldini",
-          "url": "https://www.acmilan.com/en/club/legends/player/paolo-maldini"
-        },
-        {
-          "label": "Tarihsel kayıt • milan",
-          "url": "https://www.acmilan.com/en/club/legends/champions"
-        },
-        {
-          "label": "Inter • Giuseppe Baresi arşivi",
-          "url": "https://www.inter.it/en/archivio_giocatore/G0038/giuseppe-baresi"
-        }
-      ],
-      "sourceId": "baresi__real",
       "provenance": "existing_story_catalog",
       "review": "inherited",
       "difficulty": "easy"
@@ -2756,63 +2678,15 @@
       "difficulty": "easy"
     },
     {
-      "id": "q_transfer_ronaldo_nazario__real",
-      "category": "transfer",
-      "prompt": "1999-2000 Inter kadrosunda Ronaldo ile bulunan İtalyan santrforu seç.",
-      "options": [
-        "Christian Vieri",
-        "Francesco Totti",
-        "Alessandro Del Piero"
-      ],
-      "answer": 0,
-      "explanation": "Vieri 1999’da Inter’e katıldı ve Ronaldo ile aynı kadroda yer aldı.",
-      "sources": [
-        {
-          "label": "Tarihsel kayıt • ronaldo",
-          "url": "https://www.inter.it/en/archivio_giocatore/G0556"
-        }
-      ],
-      "sourceId": "ronaldo_nazario__real",
-      "provenance": "existing_story_catalog",
-      "review": "inherited",
-      "difficulty": "easy"
-    },
-    {
-      "id": "q_transfer_makelele__real",
-      "category": "transfer",
-      "prompt": "2004-05 Chelsea’de Makélélé ile birlikte oynayan savunmacıyı seç.",
-      "options": [
-        "Sergio Ramos",
-        "John Terry",
-        "Nemanja Vidić"
-      ],
-      "answer": 1,
-      "explanation": "Terry o sezon Chelsea savunmasının merkezindeydi.",
-      "sources": [
-        {
-          "label": "Tarihsel kayıt • makelele",
-          "url": "https://www.chelseafc.com/en/claude-makelele"
-        },
-        {
-          "label": "Tarihsel kayıt • zidane",
-          "url": "https://www.realmadrid.com/en-US/the-club/history/football-legends/zinedine-zidane"
-        }
-      ],
-      "sourceId": "makelele__real",
-      "provenance": "existing_story_catalog",
-      "review": "inherited",
-      "difficulty": "easy"
-    },
-    {
       "id": "q_transfer_chelsea_duo__real",
       "category": "transfer",
       "prompt": "Chelsea ve Liverpool formalarını giymiş İspanyol santrforu seç.",
       "options": [
-        "Raúl",
+        "Fernando Torres",
         "David Villa",
-        "Fernando Torres"
+        "Raúl"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Torres Liverpool ve Chelsea’de oynadı.",
       "sources": [
         {
@@ -2827,18 +2701,18 @@
       "sourceId": "chelsea_duo__real",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_transfer_de_gea__real",
       "category": "transfer",
       "prompt": "De Gea 2011’de United’a hangi kulüpten geldi?",
       "options": [
-        "Atlético Madrid",
         "Sevilla",
+        "Atlético Madrid",
         "Valencia"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "De Gea Atlético Madrid’den Manchester United’a geçti.",
       "sources": [
         {
@@ -2849,18 +2723,18 @@
       "sourceId": "de_gea__real",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_transfer_lukaku__real",
       "category": "transfer",
       "prompt": "Lukaku’nun 2019’da Inter’e gelmeden önceki kulübünü bul.",
       "options": [
+        "Liverpool",
         "Arsenal",
-        "Manchester United",
-        "Liverpool"
+        "Manchester United"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Lukaku 2019’da United’dan Inter’e geçti.",
       "sources": [
         {
@@ -2871,18 +2745,18 @@
       "sourceId": "lukaku__real",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_transfer_ronaldinho__real",
       "category": "transfer",
       "prompt": "Ronaldinho 2003’te Barcelona’ya hangi kulüpten geldi?",
       "options": [
-        "Marseille",
+        "PSG",
         "Lyon",
-        "PSG"
+        "Marseille"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Ronaldinho PSG’den Barcelona’ya geçti.",
       "sources": [
         {
@@ -2893,18 +2767,18 @@
       "sourceId": "ronaldinho__real",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_03",
       "category": "ucl",
       "prompt": "2008-05-21 · Manchester United – Chelsea · Anelka'nın son penaltısını kurtararak seriyi bitiren kaleci kimdi?",
       "options": [
-        "Edwin van der Sar",
         "Nemanja Vidić",
+        "Edwin van der Sar",
         "Petr Čech"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Van der Sar son vuruşu kurtardı. Manchester United penaltı serisini 6–5 kazandı.",
       "sources": [
         {
@@ -2915,18 +2789,18 @@
       "sourceId": "ucl_03",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_04",
       "category": "ucl",
       "prompt": "2014-05-24 · Real Madrid – Atlético Madrid · 90+3'te kafa vuruşuyla beraberliği getirip finali uzatmaya taşıyan kimdi?",
       "options": [
+        "Karim Benzema",
         "Gareth Bale",
-        "Sergio Ramos",
-        "Karim Benzema"
+        "Sergio Ramos"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Ramos'un golü 90 dakikayı 1–1'e getirdi. Real Madrid uzatmada üç gol daha buldu.",
       "sources": [
         {
@@ -2944,11 +2818,11 @@
       "category": "ucl",
       "prompt": "2013-05-25 · Dortmund – Bayern Münih · 89. dakikada Bayern'in galibiyet golünü kim attı?",
       "options": [
-        "Thomas Müller",
+        "Arjen Robben",
         "Mario Mandžukić",
-        "Arjen Robben"
+        "Thomas Müller"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Mandžukić ve Gündoğan'ın gollerinden sonra Robben son sözü söyledi.",
       "sources": [
         {
@@ -2966,11 +2840,11 @@
       "category": "ucl",
       "prompt": "2017-03-08 · Barcelona – Paris Saint-Germain · Ek sürede son golü atarak Barcelona'yı çeyrek finale taşıyan kimdi?",
       "options": [
-        "Sergi Roberto",
         "Lionel Messi",
+        "Sergi Roberto",
         "Neymar"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Sergi Roberto, Neymar'ın ortasını tamamladı. Barcelona iki maç toplamında 6–5 ile tur atladı.",
       "sources": [
         {
@@ -2981,18 +2855,18 @@
       "sourceId": "ucl_06",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_08",
       "category": "ucl",
       "prompt": "2019-05-08 · Ajax – Tottenham · İkinci yarıda hat-trick yaparak Tottenham'ı finale taşıyan kimdi?",
       "options": [
+        "Christian Eriksen",
         "Harry Kane",
-        "Lucas Moura",
-        "Christian Eriksen"
+        "Lucas Moura"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Lucas Moura üç gol attı. Toplam skor 3–3'tü; Tottenham o dönemki deplasman golü kuralıyla ilerledi.",
       "sources": [
         {
@@ -3003,18 +2877,18 @@
       "sourceId": "ucl_08",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_09",
       "category": "ucl",
       "prompt": "2019-05-07 · Liverpool – Barcelona · Hızlı kullanılan korneri gole çeviren kimdi?",
       "options": [
-        "Georginio Wijnaldum",
+        "Divock Origi",
         "Jordan Henderson",
-        "Divock Origi"
+        "Georginio Wijnaldum"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Alexander-Arnold'un çabuk kornerini Origi tamamladı. Liverpool toplamda 4–3 ile finale çıktı.",
       "sources": [
         {
@@ -3025,18 +2899,18 @@
       "sourceId": "ucl_09",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_10",
       "category": "ucl",
       "prompt": "2004-04-07 · Deportivo – Milan · Rövanşın maç sonu skoru neydi?",
       "options": [
-        "Deportivo 4–0 Milan",
         "Deportivo 4–1 Milan",
+        "Deportivo 4–0 Milan",
         "Deportivo 3–0 Milan"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "İlk maçı 4–1 kaybeden Deportivo, rövanşı 4–0 kazanıp toplamda 5–4 ile ilerledi.",
       "sources": [
         {
@@ -3047,18 +2921,18 @@
       "sourceId": "ucl_10",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_11",
       "category": "ucl",
       "prompt": "2009-05-06 · Chelsea – Barcelona · Ek sürede Barcelona'ya beraberliği getiren golü kim attı?",
       "options": [
+        "Samuel Eto'o",
         "Lionel Messi",
-        "Andrés Iniesta",
-        "Samuel Eto'o"
+        "Andrés Iniesta"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Iniesta'nın golüyle iki maç toplamı 1–1 oldu. Barcelona dönemin deplasman golü kuralıyla finale çıktı.",
       "sources": [
         {
@@ -3069,18 +2943,18 @@
       "sourceId": "ucl_11",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_12",
       "category": "ucl",
       "prompt": "2010-04-28 · Barcelona – Inter · İki maç toplamında Inter lehine sonuç neydi?",
       "options": [
-        "Inter 4–2 Barcelona",
+        "Inter 3–2 Barcelona",
         "Inter 2–1 Barcelona",
-        "Inter 3–2 Barcelona"
+        "Inter 4–2 Barcelona"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Barcelona rövanşı 1–0 kazandı; ilk maçı 3–1 kazanan Inter toplamda 3–2 ile tur atladı.",
       "sources": [
         {
@@ -3091,18 +2965,18 @@
       "sourceId": "ucl_12",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_ucl_ucl_14",
       "category": "ucl",
       "prompt": "2008-02-20 · Fenerbahçe – Sevilla · 87. dakikada Fenerbahçe'yi 3–2 öne geçiren kimdi?",
       "options": [
-        "Semih Şentürk",
         "Alex de Souza",
+        "Semih Şentürk",
         "Diego Lugano"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Oyuna sonradan giren Semih Şentürk ilk maçın galibiyet golünü attı.",
       "sources": [
         {
@@ -3113,18 +2987,18 @@
       "sourceId": "ucl_14",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_ucl_ucl_15",
       "category": "ucl",
       "prompt": "2017-12-06 · RB Leipzig – Beşiktaş · Beşiktaş'a son dakikada galibiyeti getiren kimdi?",
       "options": [
+        "Ryan Babel",
         "Álvaro Negredo",
-        "Talisca",
-        "Ryan Babel"
+        "Talisca"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Talisca'nın golü Beşiktaş'ın grup aşamasını yenilgisiz tamamlamasını sağladı.",
       "sources": [
         {
@@ -3135,18 +3009,18 @@
       "sourceId": "ucl_15",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_ucl_ucl_16",
       "category": "ucl",
       "prompt": "2013-03-12 · Schalke – Galatasaray · Ek sürede Galatasaray'ın galibiyet golünü kim attı?",
       "options": [
-        "Hamit Altıntop",
+        "Umut Bulut",
         "Burak Yılmaz",
-        "Umut Bulut"
+        "Hamit Altıntop"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Umut Bulut son golü attı. Galatasaray iki maç toplamında 4–3 ile çeyrek finale çıktı.",
       "sources": [
         {
@@ -3164,11 +3038,11 @@
       "category": "ucl",
       "prompt": "2018-04-10 · Roma – Barcelona · Roma'nın üçüncü golünü atan kimdi?",
       "options": [
-        "Kostas Manolas",
         "Daniele De Rossi",
+        "Kostas Manolas",
         "Edin Džeko"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Manolas'ın kafa golü toplam skoru 4–4 yaptı. Roma dönemin deplasman golü kuralıyla yarı finale çıktı.",
       "sources": [
         {
@@ -3186,11 +3060,11 @@
       "category": "ucl",
       "prompt": "2013-04-24 · Dortmund – Real Madrid · Dortmund'un dört golünün tamamını kim attı?",
       "options": [
+        "Marco Reus",
         "İlkay Gündoğan",
-        "Robert Lewandowski",
-        "Marco Reus"
+        "Robert Lewandowski"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Lewandowski dördüncü golünü penaltıdan attı; Dortmund rövanş öncesi üstünlük kurdu.",
       "sources": [
         {
@@ -3208,11 +3082,11 @@
       "category": "ucl",
       "prompt": "2003-04-23 · Manchester United – Real Madrid · Real Madrid adına hat-trick yapan futbolcu kimdi?",
       "options": [
-        "Zinédine Zidane",
+        "Ronaldo Nazário",
         "Luís Figo",
-        "Ronaldo Nazário"
+        "Zinédine Zidane"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Ronaldo Nazário üç gol attı. Manchester United geceyi kazansa da Real Madrid toplamda 6–5 ile ilerledi.",
       "sources": [
         {
@@ -3230,11 +3104,11 @@
       "category": "ucl",
       "prompt": "2016-11-23 · Beşiktaş – Benfica · Soyunma odasına gidilirken ilk yarı skoru neydi?",
       "options": [
-        "Beşiktaş 0–3 Benfica",
         "Beşiktaş 1–3 Benfica",
+        "Beşiktaş 0–3 Benfica",
         "Beşiktaş 1–2 Benfica"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "İlk yarı 0–3 bitti. Beşiktaş ikinci yarıda Tosun, Quaresma ve Aboubakar ile beraberliği yakaladı.",
       "sources": [
         {
@@ -3252,11 +3126,11 @@
       "category": "ucl",
       "prompt": "1996-10-30 · Manchester United – Fenerbahçe · Fenerbahçe'nin maçtaki tek golünü kim attı?",
       "options": [
+        "Aykut Kocaman",
         "Tayfun Korkut",
-        "Elvir Bolić",
-        "Aykut Kocaman"
+        "Elvir Bolić"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Bolić'in golüyle Fenerbahçe, Manchester United'ı Old Trafford'da mağlup etti.",
       "sources": [
         {
@@ -3267,18 +3141,18 @@
       "sourceId": "ucl_21",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_22",
       "category": "ucl",
       "prompt": "2012-05-19 · Bayern Münih – Chelsea · Hem beraberlik golünü hem de serinin son penaltısını atan kimdi?",
       "options": [
-        "Frank Lampard",
+        "Didier Drogba",
         "Salomon Kalou",
-        "Didier Drogba"
+        "Frank Lampard"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Drogba 88'de eşitledi. Chelsea penaltı serisini 4–3 kazanırken son vuruşu da o yaptı.",
       "sources": [
         {
@@ -3289,18 +3163,18 @@
       "sourceId": "ucl_22",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_23",
       "category": "ucl",
       "prompt": "2020-08-14 · Barcelona – Bayern Münih · Tek maç üzerinden oynanan çeyrek finalin skoru neydi?",
       "options": [
-        "Barcelona 2–8 Bayern Münih",
         "Barcelona 1–7 Bayern Münih",
+        "Barcelona 2–8 Bayern Münih",
         "Barcelona 2–6 Bayern Münih"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Bayern Münih 8–2 kazandı. Bu çeyrek final pandemi dönemindeki Lizbon tek maç formatında oynandı.",
       "sources": [
         {
@@ -3311,18 +3185,18 @@
       "sourceId": "ucl_23",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_24",
       "category": "ucl",
       "prompt": "2018-05-26 · Real Madrid – Liverpool · Real Madrid'in başlangıç 11'indeki eksik sağ beki seç.",
       "options": [
+        "Nacho",
         "Achraf Hakimi",
-        "Dani Carvajal",
-        "Nacho"
+        "Dani Carvajal"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Carvajal ilk 11'de başladı; sakatlanınca yerini Nacho aldı. Real Madrid 3–1 kazandı.",
       "sources": [
         {
@@ -3337,18 +3211,18 @@
       "sourceId": "ucl_24",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_25",
       "category": "ucl",
       "prompt": "1972-05-31 · Ajax – Inter · Ajax'ın başlangıç 11'indeki eksik 7 numara kimdi?",
       "options": [
-        "Arnold Mühren",
+        "Johan Neeskens",
         "Johan Boskamp",
-        "Johan Neeskens"
+        "Arnold Mühren"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Ajax, Cruyff'un iki golüyle Avrupa Şampiyon Kulüpler Kupası'nı kazandı. Neeskens başlangıç 11'indeydi.",
       "sources": [
         {
@@ -3359,18 +3233,18 @@
       "sourceId": "ucl_25",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_ucl_ucl_26",
       "category": "ucl",
       "prompt": "2004-05-26 · Monaco – Porto · Porto'nun başlangıç 11'indeki eksik hücum oyuncusu kimdi?",
       "options": [
-        "Carlos Alberto",
         "Benni McCarthy",
+        "Carlos Alberto",
         "Dmitri Alenichev"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Carlos Alberto ilk 11'deydi ve ilk golü attı. Porto üç golle kupaya ulaştı.",
       "sources": [
         {
@@ -3392,11 +3266,11 @@
       "category": "ucl",
       "prompt": "2007-05-23 · Milan – Liverpool · Milan'ın finaldeki iki golünü de kim attı?",
       "options": [
+        "Kaká",
         "Alberto Gilardino",
-        "Filippo Inzaghi",
-        "Kaká"
+        "Filippo Inzaghi"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Inzaghi'nin iki golü Milan'a kupayı getirdi; Liverpool'un geç golü sonucu değiştirmedi.",
       "sources": [
         {
@@ -3414,11 +3288,11 @@
       "category": "ucl",
       "prompt": "2009-05-27 · Barcelona – Manchester United · Barcelona'nın başlangıç 11'indeki eksik oyuncuyu seç.",
       "options": [
-        "Seydou Keita",
+        "Yaya Touré",
         "Dani Alves",
-        "Yaya Touré"
+        "Seydou Keita"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Yaya Touré savunmada başladı. Eto'o ve Messi'nin golleri Barcelona'ya kupayı getirdi.",
       "sources": [
         {
@@ -3433,18 +3307,18 @@
       "sourceId": "ucl_28",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_29",
       "category": "ucl",
       "prompt": "2010-05-22 · Bayern Münih – Inter · Inter'in iki golünü de atan kimdi?",
       "options": [
-        "Diego Milito",
         "Goran Pandev",
+        "Diego Milito",
         "Wesley Sneijder"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Milito iki gol attı. Inter bu zaferle sezonu lig, kupa ve Avrupa şampiyonluğuyla tamamladı.",
       "sources": [
         {
@@ -3455,18 +3329,18 @@
       "sourceId": "ucl_29",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_30",
       "category": "ucl",
       "prompt": "2011-05-28 · Barcelona – Manchester United · Barcelona'nın başlangıç 11'indeki eksik hücum oyuncusunu seç.",
       "options": [
+        "Seydou Keita",
         "Ibrahim Afellay",
-        "David Villa",
-        "Seydou Keita"
+        "David Villa"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Villa ilk 11'deydi ve Barcelona'nın üçüncü golünü attı.",
       "sources": [
         {
@@ -3481,18 +3355,18 @@
       "sourceId": "ucl_30",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_31",
       "category": "ucl",
       "prompt": "2015-06-06 · Juventus – Barcelona · Barcelona'nın başlangıç 11'indeki eksik orta saha kimdi?",
       "options": [
-        "Sergi Roberto",
+        "Ivan Rakitić",
         "Rafinha",
-        "Ivan Rakitić"
+        "Sergi Roberto"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Rakitić ilk 11'de başladı ve ilk golü attı. Xavi sonradan oyuna girdi.",
       "sources": [
         {
@@ -3507,18 +3381,18 @@
       "sourceId": "ucl_31",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_32",
       "category": "ucl",
       "prompt": "2016-05-28 · Real Madrid – Atlético Madrid · Penaltı serisinin son vuruşunu gole çeviren kimdi?",
       "options": [
-        "Cristiano Ronaldo",
         "Gareth Bale",
+        "Cristiano Ronaldo",
         "Luka Modrić"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Real Madrid penaltıları 5–3 kazandı; seriyi Cristiano Ronaldo'nun vuruşu bitirdi.",
       "sources": [
         {
@@ -3529,18 +3403,18 @@
       "sourceId": "ucl_32",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_ucl_ucl_33",
       "category": "ucl",
       "prompt": "2017-06-03 · Juventus – Real Madrid · Real Madrid adına iki gol atan oyuncu kimdi?",
       "options": [
+        "Casemiro",
         "Marco Asensio",
-        "Cristiano Ronaldo",
-        "Casemiro"
+        "Cristiano Ronaldo"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Cristiano Ronaldo iki gol attı. Real Madrid üst üste ikinci kez kupayı kazandı.",
       "sources": [
         {
@@ -3551,18 +3425,18 @@
       "sourceId": "ucl_33",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_ucl_ucl_34",
       "category": "ucl",
       "prompt": "2019-06-01 · Tottenham – Liverpool · Tottenham'ın başlangıç 11'indeki eksik santrforu seç.",
       "options": [
-        "Lucas Moura",
+        "Harry Kane",
         "Fernando Llorente",
-        "Harry Kane"
+        "Lucas Moura"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Kane başlangıç kadrosundaydı; Lucas Moura yedek başladı. Liverpool Salah ve Origi ile kazandı.",
       "sources": [
         {
@@ -3577,18 +3451,18 @@
       "sourceId": "ucl_34",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_ucl_UCL-35",
       "category": "ucl",
       "prompt": "1994-05-18 · AC Milan – Barcelona · 1994 Atina finalinde Milan’ın ilk iki golünü hangi futbolcu attı?",
       "options": [
-        "Daniele Massaro",
         "Dejan Savićević",
+        "Daniele Massaro",
         "Marcel Desailly"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Doğru cevap: Daniele Massaro.",
       "sources": [
         {
@@ -3601,18 +3475,18 @@
       "sourceId": "UCL-35",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_ucl_UCL-36",
       "category": "ucl",
       "prompt": "1986-05-07 · Steaua Bükreş – Barcelona · 1986 Avrupa Kupası finali penaltı serisinde Barcelona’nın dört vuruşunu da kurtaran kaleci kimdi?",
       "options": [
+        "Silviu Lung",
         "Dumitru Stângaciu",
-        "Helmuth Duckadam",
-        "Silviu Lung"
+        "Helmuth Duckadam"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Doğru cevap: Helmuth Duckadam.",
       "sources": [
         {
@@ -3632,11 +3506,11 @@
       "category": "ucl",
       "prompt": "2023-06-10 · Manchester City – Inter · Manchester City’ye ilk Şampiyonlar Ligi şampiyonluğunu getiren final golünü kim attı?",
       "options": [
-        "İlkay Gündoğan",
+        "Rodri",
         "Erling Haaland",
-        "Rodri"
+        "İlkay Gündoğan"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Doğru cevap: Rodri.",
       "sources": [
         {
@@ -3656,11 +3530,11 @@
       "category": "international",
       "prompt": "1986-06-22 · Arjantin – İngiltere · Arjantin’in ünlü solo golünü atan futbolcu kimdi?",
       "options": [
-        "Diego Maradona",
         "Jorge Burruchaga",
+        "Diego Maradona",
         "Gary Lineker"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Diego Maradona. Solo golüyle öne çıkan Arjantin, çeyrek finali 2-1 kazanarak yoluna devam etti.",
       "sources": [
         {
@@ -3678,11 +3552,11 @@
       "category": "international",
       "prompt": "2022-12-18 · Arjantin – Fransa · Arjantin’in şampiyonluğunu kesinleştiren son seri penaltısını kim attı?",
       "options": [
+        "Lionel Messi",
         "Leandro Paredes",
-        "Gonzalo Montiel",
-        "Lionel Messi"
+        "Gonzalo Montiel"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Gonzalo Montiel. Normal süre 2-2, uzatma 3-3 bitti. Montiel’in son vuruşuyla seri Arjantin lehine 4-2 tamamlandı.",
       "sources": [
         {
@@ -3700,11 +3574,11 @@
       "category": "international",
       "prompt": "2006-07-09 · İtalya – Fransa · Uzatmalarda kırmızı kart gören Fransız kaptan kimdi?",
       "options": [
-        "Patrick Vieira",
+        "Zinedine Zidane",
         "Thierry Henry",
-        "Zinedine Zidane"
+        "Patrick Vieira"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Zinedine Zidane. Fransa kaptanı uzatmalarda oyun dışında kaldı. İtalya, 1-1 biten finali penaltı serisiyle kazandı.",
       "sources": [
         {
@@ -3722,11 +3596,11 @@
       "category": "international",
       "prompt": "1998-06-30 · Arjantin – İngiltere · İngiltere’nin son seri penaltısını kim kullanıp kaçırdı?",
       "options": [
-        "David Batty",
         "Alan Shearer",
+        "David Batty",
         "Paul Merson"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "David Batty. Batty’nin son vuruşunu Roa kurtardı. Arjantin seriyi 4-3 kazanarak çeyrek finale çıktı.",
       "sources": [
         {
@@ -3737,18 +3611,18 @@
       "sourceId": "ig2_06",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_07",
       "category": "international",
       "prompt": "2014-06-13 · Hollanda – İspanya · Hollanda’nın uçarak kafa vuruşuyla beraberliği sağlayan ismi kimdi?",
       "options": [
+        "Daley Blind",
         "Wesley Sneijder",
-        "Robin van Persie",
-        "Daley Blind"
+        "Robin van Persie"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Robin van Persie. Van Persie’nin kafa golü Hollanda’ya beraberliği getirdi; karşılaşma 5-1 tamamlandı.",
       "sources": [
         {
@@ -3759,18 +3633,18 @@
       "sourceId": "ig2_07",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_09",
       "category": "international",
       "prompt": "1994-07-17 · Brezilya – İtalya · İtalya’nın son seri penaltısını üstten dışarı atan kimdi?",
       "options": [
-        "Demetrio Albertini",
+        "Roberto Baggio",
         "Daniele Massaro",
-        "Roberto Baggio"
+        "Demetrio Albertini"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Roberto Baggio. Baggio’nun vuruşu üstten dışarı gitti. Golsüz finalin ardından Brezilya penaltılarda 3-2 üstünlük sağladı.",
       "sources": [
         {
@@ -3781,18 +3655,18 @@
       "sourceId": "ig2_09",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_10",
       "category": "international",
       "prompt": "2002-06-30 · Brezilya – Almanya · Finalde iki gol atarak Brezilya’yı şampiyon yapan isim kimdi?",
       "options": [
-        "Ronaldo Nazário",
         "Kleberson",
+        "Ronaldo Nazário",
         "Ronaldinho"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Ronaldo Nazário. Ronaldo finalin iki golünü de atarak Brezilya’nın 2-0 galibiyetini sağladı.",
       "sources": [
         {
@@ -3803,18 +3677,18 @@
       "sourceId": "ig2_10",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_11",
       "category": "international",
       "prompt": "2004-07-04 · Portekiz – Yunanistan · Yunanistan’a şampiyonluğu getiren final golünü kim attı?",
       "options": [
+        "Traianos Dellas",
         "Giorgos Karagounis",
-        "Angelos Charisteas",
-        "Traianos Dellas"
+        "Angelos Charisteas"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Angelos Charisteas. Charisteas’ın kafa golü, ev sahibi Portekiz karşısında Yunanistan’a kupayı getirdi.",
       "sources": [
         {
@@ -3825,18 +3699,18 @@
       "sourceId": "ig2_11",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_13",
       "category": "international",
       "prompt": "2016-07-10 · Portekiz – Fransa · Uzatmalarda kupayı getiren golü kim attı?",
       "options": [
-        "Ricardo Quaresma",
+        "Éder",
         "Cristiano Ronaldo",
-        "Éder"
+        "Ricardo Quaresma"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Éder. Normal süre golsüz bitti. Éder’in uzatmalardaki golü Portekiz’e ilk Avrupa şampiyonluğunu getirdi.",
       "sources": [
         {
@@ -3854,11 +3728,11 @@
       "category": "international",
       "prompt": "2012-07-01 · İspanya – İtalya · İspanya’nın ilk 11’inde başlayıp sonradan Torres’e yerini bırakan hücumcu kimdi?",
       "options": [
-        "Cesc Fàbregas",
         "Fernando Torres",
+        "Cesc Fàbregas",
         "Pedro Rodríguez"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Cesc Fàbregas. Fàbregas başlangıç on birindeydi ve 75. dakikada yerini Torres’e bıraktı. İspanya finali 4-0 kazandı.",
       "sources": [
         {
@@ -3876,11 +3750,11 @@
       "category": "international",
       "prompt": "2021-07-11 · İtalya – İngiltere · İngiltere’nin penaltı serisinde direğe vuran ismi kimdi?",
       "options": [
+        "Harry Kane",
         "Jadon Sancho",
-        "Marcus Rashford",
-        "Harry Kane"
+        "Marcus Rashford"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Marcus Rashford. Rashford direğe vurdu. Donnarumma, Sancho ve Saka’nın penaltılarını kurtardı.",
       "sources": [
         {
@@ -3891,18 +3765,18 @@
       "sourceId": "ig2_16",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_international_ig2_17",
       "category": "international",
       "prompt": "2004-07-01 · Yunanistan – Çekya · Uzatmalarda gümüş golü atan Yunan savunmacı kimdi?",
       "options": [
-        "Angelos Charisteas",
+        "Traianos Dellas",
         "Takis Fyssas",
-        "Traianos Dellas"
+        "Angelos Charisteas"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Traianos Dellas. Gümüş gol kuralı: İlk uzatma devresi sonunda önde olan Yunanistan finale çıktı.",
       "sources": [
         {
@@ -3913,18 +3787,18 @@
       "sourceId": "ig2_17",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_international_ig2_18",
       "category": "international",
       "prompt": "2000-06-29 · Hollanda – İtalya · Seride “Cucchiaio” aşırtmasını yapan İtalyan futbolcu kimdi?",
       "options": [
-        "Francesco Totti",
         "Alessandro Del Piero",
+        "Francesco Totti",
         "Luigi Di Biagio"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Francesco Totti. Totti’nin aşırtma vuruşu penaltı serisindeydi. İtalya seriyi 3-1 kazanarak finale çıktı.",
       "sources": [
         {
@@ -3935,18 +3809,18 @@
       "sourceId": "ig2_18",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_international_ig2_20",
       "category": "international",
       "prompt": "1988-06-25 · Hollanda – SSCB · Finalde dar açıdan unutulmaz vole golünü atan kimdi?",
       "options": [
+        "Frank Rijkaard",
         "Ronald Koeman",
-        "Marco van Basten",
-        "Frank Rijkaard"
+        "Marco van Basten"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Marco van Basten. Van Basten’in dar açıdan volesi, Hollanda’nın finaldeki ikinci golüydü.",
       "sources": [
         {
@@ -3957,18 +3831,18 @@
       "sourceId": "ig2_20",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_international_ig2_21",
       "category": "international",
       "prompt": "2012-02-12 · Zambiya – Fildişi Sahili · Zambiya’ya kupayı getiren son seri penaltısını kim attı?",
       "options": [
-        "Emmanuel Mayuka",
+        "Stoppila Sunzu",
         "Kennedy Mweene",
-        "Stoppila Sunzu"
+        "Emmanuel Mayuka"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Stoppila Sunzu. Sunzu son vuruşu gole çevirdi. Zambiya golsüz finalin ardından uzun seriyi 8-7 kazandı.",
       "sources": [
         {
@@ -3979,18 +3853,18 @@
       "sourceId": "ig2_21",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_international_ig2_23",
       "category": "international",
       "prompt": "2022-02-06 · Senegal – Mısır · Senegal’in şampiyonluğunu kesinleştiren seri penaltısını kim attı?",
       "options": [
-        "Sadio Mané",
         "Bamba Dieng",
+        "Sadio Mané",
         "Abdou Diallo"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Sadio Mané. Turnuvanın adı AFCON 2021; final 2022’de oynandı. Maç içindeki kaçan penaltı ile son seri vuruşu farklıdır.",
       "sources": [
         {
@@ -4001,18 +3875,18 @@
       "sourceId": "ig2_23",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_international_ig2_24",
       "category": "international",
       "prompt": "2021-07-10 · Arjantin – Brezilya · Finalin tek golünü atan Arjantinli futbolcu kimdi?",
       "options": [
+        "Lionel Messi",
         "Lautaro Martínez",
-        "Ángel Di María",
-        "Lionel Messi"
+        "Ángel Di María"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Ángel Di María. Di María’nın golü finaldeki tek gol oldu. Arjantin 1-0 kazanarak kupaya ulaştı.",
       "sources": [
         {
@@ -4023,18 +3897,18 @@
       "sourceId": "ig2_24",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_international_ig2_25",
       "category": "international",
       "prompt": "2016-06-26 · Şili – Arjantin · Şili’nin finalde ilk 11 başlayan kalecisi kimdi?",
       "options": [
-        "Johnny Herrera",
+        "Claudio Bravo",
         "Cristopher Toselli",
-        "Claudio Bravo"
+        "Johnny Herrera"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Claudio Bravo. Bravo finalin başlangıç kalecisiydi. Şili, golsüz normal süre ve uzatmadan sonra seriyi 4-2 kazandı.",
       "sources": [
         {
@@ -4045,18 +3919,18 @@
       "sourceId": "ig2_25",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_international_ig2_28",
       "category": "international",
       "prompt": "2007-07-29 · Irak – Suudi Arabistan · Irak’ın finalde ilk 11’deki takım kaptanı kimdi?",
       "options": [
-        "Younis Mahmoud",
         "Hawar Mulla Mohammed",
+        "Younis Mahmoud",
         "Noor Sabri"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Younis Mahmoud. Younis Mahmoud ilk on birin kaptanıydı. Finalin tek golünü de atarak Irak’a kupayı getirdi.",
       "sources": [
         {
@@ -4078,11 +3952,11 @@
       "category": "international",
       "prompt": "1999-07-04 · Arjantin – Kolombiya · Maç sırasında üç penaltı kaçıran Arjantinli kimdi?",
       "options": [
+        "Ariel Ortega",
         "Hernán Crespo",
-        "Martín Palermo",
-        "Ariel Ortega"
+        "Martín Palermo"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Martín Palermo. Bu olay penaltı serisi değil, maç içindeki üç ayrı penaltıdır.",
       "sources": [
         {
@@ -4104,11 +3978,11 @@
       "category": "international",
       "prompt": "2018-06-30 · Fransa – Arjantin · Fransa’ya beraberliği getiren ünlü vole golünü kim attı?",
       "options": [
-        "Paul Pogba",
+        "Benjamin Pavard",
         "Antoine Griezmann",
-        "Benjamin Pavard"
+        "Paul Pogba"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Benjamin Pavard. Pavard’ın volesi skoru 2-2 yaptı. Fransa son 16 karşılaşmasını 4-3 kazandı.",
       "sources": [
         {
@@ -4126,11 +4000,11 @@
       "category": "international",
       "prompt": "2022-11-22 · Arjantin – Suudi Arabistan · Suudi Arabistan’ın galibiyet golünü kim attı?",
       "options": [
-        "Salem Al-Dawsari",
         "Firas Al-Buraikan",
+        "Salem Al-Dawsari",
         "Mohammed Kanno"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Salem Al-Dawsari. Suudi Arabistan, Al-Shehri ve Al-Dawsari’nin golleriyle geriden gelerek 2-1 kazandı.",
       "sources": [
         {
@@ -4148,11 +4022,11 @@
       "category": "international",
       "prompt": "2022-12-09 · Hollanda – Arjantin · Arjantin’in turu garantileyen son seri penaltısını kim attı?",
       "options": [
+        "Gonzalo Montiel",
         "Leandro Paredes",
-        "Lautaro Martínez",
-        "Gonzalo Montiel"
+        "Lautaro Martínez"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Lautaro Martínez. Normal süre ve uzatma 2-2 bitti. Lautaro Martínez’in son seri vuruşuyla Arjantin yarı finale yükseldi.",
       "sources": [
         {
@@ -4170,11 +4044,11 @@
       "category": "international",
       "prompt": "2022-12-09 · Hırvatistan – Brezilya · Hırvatistan’ın çeyrek finaldeki başlangıç kalecisi kimdi?",
       "options": [
-        "Ivo Grbić",
+        "Dominik Livaković",
         "Danijel Subašić",
-        "Dominik Livaković"
+        "Ivo Grbić"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Dominik Livaković. Livaković başlangıç on birindeydi. Hırvatistan normal süresi golsüz, uzatması 1-1 biten maçı seriyle kazandı.",
       "sources": [
         {
@@ -4185,18 +4059,18 @@
       "sourceId": "ig2_35",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_37",
       "category": "international",
       "prompt": "2024-06-18 · Türkiye – Gürcistan · Türkiye’nin başlangıç 11’inde sol bek oynayan isim kimdi?",
       "options": [
-        "Ferdi Kadıoğlu",
         "Eren Elmalı",
+        "Ferdi Kadıoğlu",
         "Rıdvan Yılmaz"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Ferdi Kadıoğlu. Ferdi Kadıoğlu başlangıç on birinin sol bek bölgesindeydi. Türkiye grup açılışını 3-1 kazandı.",
       "sources": [
         {
@@ -4207,18 +4081,18 @@
       "sourceId": "ig2_37",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_ig2_38",
       "category": "international",
       "prompt": "2024-06-26 · Türkiye – Çekya · Türkiye’nin son bölümdeki galibiyet golünü kim attı?",
       "options": [
+        "Arda Güler",
         "Hakan Çalhanoğlu",
-        "Cenk Tosun",
-        "Arda Güler"
+        "Cenk Tosun"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Cenk Tosun. Tosun’un son bölümdeki golü, Türkiye’ye 2-1 galibiyeti ve son 16 biletini getirdi.",
       "sources": [
         {
@@ -4229,18 +4103,18 @@
       "sourceId": "ig2_38",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_IG-41",
       "category": "international",
       "prompt": "1970-06-21 · Brezilya – İtalya · 1970 Dünya Kupası finalinde Brezilya’nın ilk 11 kalecisi kimdi?",
       "options": [
-        "Gilmar",
+        "Félix",
         "Leão",
-        "Félix"
+        "Gilmar"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Doğru cevap: Félix.",
       "sources": [
         {
@@ -4259,18 +4133,18 @@
       "sourceId": "IG-41",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_international_IG-44",
       "category": "international",
       "prompt": "2022-12-01 · Japonya – İspanya · 2022 Dünya Kupası’nda Japonya’nın İspanya karşısındaki galibiyet golünü kim attı?",
       "options": [
-        "Ao Tanaka",
         "Daizen Maeda",
+        "Ao Tanaka",
         "Ritsu Dōan"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Doğru cevap: Ao Tanaka.",
       "sources": [
         {
@@ -4283,18 +4157,18 @@
       "sourceId": "IG-44",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_turkey_tn2_c01_t1",
       "category": "turkey",
       "prompt": "Göztepe, Fuar Şehirleri Kupası’nda hangi sezonda yarı finale yükseldi?",
       "options": [
+        "1967–68",
         "1966–67",
-        "1968–69",
-        "1967–68"
+        "1968–69"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Göztepe 1968–69 Fuar Şehirleri Kupası’nda yarı finale ulaştı.",
       "sources": [
         {
@@ -4316,13 +4190,13 @@
     {
       "id": "q_turkey_tn2_c01_t2",
       "category": "turkey",
-      "prompt": "Yarı finaldeki Macar rakibini doğru tura yerleştir.",
+      "prompt": "1968–69 Fuar Şehirleri Kupası yarı finalinde Göztepe’nin rakibi hangi Macar kulübüydü?",
       "options": [
-        "Vasas",
+        "Újpest Dózsa",
         "Ferencváros",
-        "Újpest Dózsa"
+        "Vasas"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Yarı final rakibi Újpest Dózsa idi. Çeyrek finalde Hamburg çekildi; bu tur sahada kazanılan maçlar olarak sayılmaz.",
       "sources": [
         {
@@ -4346,11 +4220,11 @@
       "category": "turkey",
       "prompt": "Trabzonspor’un ilk Türkiye 1. Futbol Ligi şampiyonluğu hangi sezonda geldi?",
       "options": [
-        "1975–76",
         "1973–74",
+        "1975–76",
         "1974–75"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Trabzonspor ilk lig şampiyonluğunu 1975–76 sezonunda kazandı.",
       "sources": [
         {
@@ -4367,18 +4241,18 @@
       "sourceId": "tn2_c02_t1",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_turkey_tn2_c02_t2",
       "category": "turkey",
-      "prompt": "İlk şampiyonlukta takımı yöneten teknik direktörü seç.",
+      "prompt": "Trabzonspor’u 1975–76 sezonundaki ilk lig şampiyonluğuna taşıyan teknik direktör kimdi?",
       "options": [
+        "Gündüz Kılıç",
         "Özkan Sümer",
-        "Ahmet Suat Özyazıcı",
-        "Gündüz Kılıç"
+        "Ahmet Suat Özyazıcı"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Şampiyonluğu getiren teknik direktör Ahmet Suat Özyazıcı idi. Bu rol, maç ilk 11’inden ayrıdır.",
       "sources": [
         {
@@ -4395,18 +4269,18 @@
       "sourceId": "tn2_c02_t2",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_turkey_tn2_c03_t1",
       "category": "turkey",
       "prompt": "Fenerbahçe 1988–89 lig sezonunda toplam kaç gol attı?",
       "options": [
-        "100",
+        "103",
         "93",
-        "103"
+        "100"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Fenerbahçe ligde 103 gol attı; bu sayı yalnızca lig maçlarını kapsar.",
       "sources": [
         {
@@ -4418,18 +4292,18 @@
       "sourceId": "tn2_c03_t1",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_turkey_tn2_c03_t2",
       "category": "turkey",
-      "prompt": "Bu sezon 29 golle ligin gol kralı olan Fenerbahçeli kimdi?",
+      "prompt": "1988–89 sezonunda 29 golle ligin gol kralı olan Fenerbahçeli futbolcu kimdi?",
       "options": [
-        "Aykut Kocaman",
         "Rıdvan Dilmen",
+        "Aykut Kocaman",
         "Hasan Vezir"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "1988–89 gol kralı 29 gol atan Aykut Kocaman’dı.",
       "sources": [
         {
@@ -4441,18 +4315,18 @@
       "sourceId": "tn2_c03_t2",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_turkey_tn2_c04_t1",
       "category": "turkey",
       "prompt": "Metin Tekin ve Ali Gültiken’le anılan hücum üçlüsünün üçüncü ismini seç.",
       "options": [
+        "Sergen Yalçın",
         "Mehmet Özdilek",
-        "Feyyaz Uçar",
-        "Sergen Yalçın"
+        "Feyyaz Uçar"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Üçlü, Metin Tekin, Ali Gültiken ve Feyyaz Uçar’dan oluşur. Bir dönem birlikteliğidir; belirli bir maçın ilk 11’i değildir.",
       "sources": [
         {
@@ -4469,18 +4343,18 @@
       "sourceId": "tn2_c04_t1",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_turkey_tn2_c04_t2",
       "category": "turkey",
       "prompt": "Beşiktaş 1991–92 lig sezonunu kaç mağlubiyetle bitirdi?",
       "options": [
-        "2",
+        "0",
         "1",
-        "0"
+        "2"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Beşiktaş 1991–92 sezonunu yenilgisiz tamamladı.",
       "sources": [
         {
@@ -4492,18 +4366,18 @@
       "sourceId": "tn2_c04_t2",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_turkey_tn2_c05_t1",
       "category": "turkey",
       "prompt": "5 Mayıs 1996’da Avni Aker’de Fenerbahçe’nin galibiyet golünü atan kimdi?",
       "options": [
-        "Aykut Kocaman",
         "Oğuz Çetin",
+        "Aykut Kocaman",
         "Elvir Bolić"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Aykut Kocaman’ın son bölümdeki golü skoru 2–1 yaptı. Oğuz Çetin eşitlik golünü atmıştı.",
       "sources": [
         {
@@ -4520,18 +4394,18 @@
       "sourceId": "tn2_c05_t1",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_turkey_tn2_c05_t2",
       "category": "turkey",
       "prompt": "1995–96 Türkiye 1. Futbol Ligi şampiyonu hangi takımdı?",
       "options": [
+        "Galatasaray",
         "Trabzonspor",
-        "Fenerbahçe",
-        "Galatasaray"
+        "Fenerbahçe"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Sezonu Fenerbahçe şampiyon tamamladı.",
       "sources": [
         {
@@ -4543,18 +4417,18 @@
       "sourceId": "tn2_c05_t2",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_turkey_tn2_c07_t1",
       "category": "turkey",
-      "prompt": "Türkiye’yi Senegal karşısında altın golle yarı finale taşıyan kimdi?",
+      "prompt": "2002 Dünya Kupası’nda Türkiye’yi Senegal karşısında altın golle yarı finale taşıyan kimdi?",
       "options": [
-        "Hakan Şükür",
+        "İlhan Mansız",
         "Hasan Şaş",
-        "İlhan Mansız"
+        "Hakan Şükür"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Senegal karşısındaki altın gol İlhan Mansız’dan geldi.",
       "sources": [
         {
@@ -4571,13 +4445,13 @@
     {
       "id": "q_turkey_tn2_c08_t1",
       "category": "turkey",
-      "prompt": "Fenerbahçe’yi bu sezon Şampiyonlar Ligi çeyrek finaline taşıyan teknik direktör kimdi?",
+      "prompt": "Fenerbahçe’yi 2007–08 sezonunda Şampiyonlar Ligi çeyrek finaline taşıyan teknik direktör kimdi?",
       "options": [
-        "Zico",
         "Christoph Daum",
+        "Zico",
         "Luis Aragonés"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Takımın teknik direktörü Zico idi.",
       "sources": [
         {
@@ -4599,13 +4473,13 @@
     {
       "id": "q_turkey_tn2_c09_t2",
       "category": "turkey",
-      "prompt": "Hırvatistan’a karşı uzatmanın son anlarında beraberliği sağlayan kimdi?",
+      "prompt": "EURO 2008 çeyrek finalinde Türkiye’nin Hırvatistan karşısındaki uzatma beraberliğini sağlayan kimdi?",
       "options": [
+        "Arda Turan",
         "Nihat Kahveci",
-        "Semih Şentürk",
-        "Arda Turan"
+        "Semih Şentürk"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Beraberlik golünü Semih Şentürk attı; Türkiye penaltı serisinde turu geçti.",
       "sources": [
         {
@@ -4624,11 +4498,11 @@
       "category": "turkey",
       "prompt": "2009–10 sezonunda ilk lig şampiyonluğunu kazanan Anadolu takımı hangisiydi?",
       "options": [
-        "Eskişehirspor",
+        "Bursaspor",
         "Sivasspor",
-        "Bursaspor"
+        "Eskişehirspor"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Bursaspor 2009–10 sezonunda ilk lig şampiyonluğuna ulaştı.",
       "sources": [
         {
@@ -4645,13 +4519,13 @@
     {
       "id": "q_turkey_tn2_c10_t2",
       "category": "turkey",
-      "prompt": "Bu şampiyonluğu kazanan takımın teknik direktörü kimdi?",
+      "prompt": "Bursaspor’u 2009–10 sezonunda lig şampiyonluğuna taşıyan teknik direktör kimdi?",
       "options": [
-        "Ertuğrul Sağlam",
         "Bülent Uygun",
+        "Ertuğrul Sağlam",
         "Aykut Kocaman"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Bursaspor şampiyonluğu Ertuğrul Sağlam yönetiminde kazandı.",
       "sources": [
         {
@@ -4670,11 +4544,11 @@
       "category": "turkey",
       "prompt": "2013’te Drogba ile aynı sezon Galatasaray’a gelen Hollandalı yıldızı seç.",
       "options": [
+        "Rafael van der Vaart",
         "Dirk Kuyt",
-        "Wesley Sneijder",
-        "Rafael van der Vaart"
+        "Wesley Sneijder"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Wesley Sneijder transferi Ocak 2013’te duyuruldu. Bu bir sezon kadrosu bilgisidir.",
       "sources": [
         {
@@ -4686,18 +4560,18 @@
       "sourceId": "tn2_c11_t2",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_turkey_tn2_c12_t1",
       "category": "turkey",
-      "prompt": "Beşiktaş, Şampiyonlar Ligi grubunu kaç puanla lider bitirdi?",
+      "prompt": "Beşiktaş, 2017–18 Şampiyonlar Ligi grubunu kaç puanla lider bitirdi?",
       "options": [
-        "13",
+        "14",
         "12",
-        "14"
+        "13"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Beşiktaş dört galibiyet ve iki beraberlikle 14 puan topladı.",
       "sources": [
         {
@@ -4709,18 +4583,18 @@
       "sourceId": "tn2_c12_t1",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_turkey_tn2_c12_t2",
       "category": "turkey",
       "prompt": "2017 Porto deplasmanında uzak mesafeden gol atan Türk forvet kimdi?",
       "options": [
-        "Cenk Tosun",
         "Burak Yılmaz",
+        "Cenk Tosun",
         "Mustafa Pektemek"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Cenk Tosun, Porto deplasmanında ceza alanı dışından gol attı.",
       "sources": [
         {
@@ -4732,18 +4606,18 @@
       "sourceId": "tn2_c12_t2",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_turkey_TN-13-01",
       "category": "turkey",
       "prompt": "Türkiye 1. Futbol Ligi’nin 1959’daki ilk şampiyonu hangi kulüptü?",
       "options": [
+        "Göztepe",
         "Beşiktaş",
-        "Fenerbahçe",
-        "Göztepe"
+        "Fenerbahçe"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Doğru cevap: Fenerbahçe.",
       "sources": [
         {
@@ -4756,18 +4630,18 @@
       "sourceId": "TN-13-01",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_turkey_TN-13-02",
       "category": "turkey",
       "prompt": "1959 iki ayaklı Millî Lig finalinin ikinci maçı kaç kaç bitti?",
       "options": [
-        "Fenerbahçe 2-0 Galatasaray",
+        "Fenerbahçe 4-0 Galatasaray",
         "Fenerbahçe 4-1 Galatasaray",
-        "Fenerbahçe 4-0 Galatasaray"
+        "Fenerbahçe 2-0 Galatasaray"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Doğru cevap: Fenerbahçe 4-0 Galatasaray.",
       "sources": [
         {
@@ -4780,18 +4654,18 @@
       "sourceId": "TN-13-02",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_turkey_TN-14-01",
       "category": "turkey",
       "prompt": "1959’daki ilk Millî Lig sezonunun gol kralı kimdi?",
       "options": [
-        "Metin Oktay",
         "Lefter Küçükandonyadis",
+        "Metin Oktay",
         "Şeref Has"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Doğru cevap: Metin Oktay.",
       "sources": [
         {
@@ -4811,11 +4685,11 @@
       "category": "turkey",
       "prompt": "Lefter Küçükandonyadis, Türkiye’de en çok hangi kulüple özdeşleşti?",
       "options": [
+        "Galatasaray",
         "Vefa",
-        "Fenerbahçe",
-        "Galatasaray"
+        "Fenerbahçe"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Doğru cevap: Fenerbahçe.",
       "sources": [
         {
@@ -4835,11 +4709,11 @@
       "category": "turkey",
       "prompt": "Eskişehirspor 1970/71 Türkiye Kupası finalinde hangi rakibini geçti?",
       "options": [
-        "Fenerbahçe",
+        "Bursaspor",
         "Galatasaray",
-        "Bursaspor"
+        "Fenerbahçe"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Doğru cevap: Bursaspor.",
       "sources": [
         {
@@ -4852,18 +4726,18 @@
       "sourceId": "TN-15-01",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_turkey_TN-15-02",
       "category": "turkey",
       "prompt": "Eskişehirspor 1970/71 Cumhurbaşkanlığı Kupası’nı hangi rakibine karşı kazandı?",
       "options": [
-        "Galatasaray",
         "Beşiktaş",
+        "Galatasaray",
         "Fenerbahçe"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Doğru cevap: Galatasaray.",
       "sources": [
         {
@@ -4876,18 +4750,18 @@
       "sourceId": "TN-15-02",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-01",
       "category": "derby",
       "prompt": "Beşiktaş – Galatasaray · 2017’de Beşiktaş, 2021’de Galatasaray formasıyla maç kaydı bulunan Hollandalı hücumcu kim?",
       "options": [
+        "Dirk Kuyt",
         "Robin van Persie",
-        "Ryan Babel",
-        "Dirk Kuyt"
+        "Ryan Babel"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Beşiktaş’ın Mayıs 2017 maç kaydı ve Galatasaray’ın Mayıs 2021 derbi raporu Ryan Babel’i iki farklı formayla kaydeder.",
       "sources": [
         {
@@ -4902,18 +4776,18 @@
       "sourceId": "DER-01",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-02",
       "category": "derby",
       "prompt": "Fenerbahçe – Galatasaray · 6 Kasım 2002 lig derbisinin skoru neydi? Sıra: Fenerbahçe – Galatasaray.",
       "options": [
-        "3–0",
+        "6–0",
         "4–0",
-        "6–0"
+        "3–0"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "TFF kaydında 6 Kasım 2002 karşılaşması Fenerbahçe 6–0 Galatasaray olarak yer alır.",
       "sources": [
         {
@@ -4924,18 +4798,18 @@
       "sourceId": "DER-02",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-03",
       "category": "derby",
       "prompt": "Beşiktaş – Fenerbahçe · 17 Nisan 2005’te Beşiktaş’ın 4–3 kazandığı derbide maçın son bölümünde kaleye geçen saha oyuncusu kimdi?",
       "options": [
-        "Daniel Pancu",
         "Sergen Yalçın",
+        "Daniel Pancu",
         "Tümer Metin"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Kaleci kırmızı kart gördükten sonra kaleyi Daniel Pancu korudu. Beşiktaş’ın müze kaydı, eldivenleri bu karşılaşmayla ilişkilendirir.",
       "sources": [
         {
@@ -4946,18 +4820,18 @@
       "sourceId": "DER-03",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-05",
       "category": "derby",
       "prompt": "Göztepe – Karşıyaka · Göztepe’nin Ocak 2020’de açılan yeni stadının adı nedir?",
       "options": [
+        "Alsancak Mustafa Denizli",
         "Atatürk Olimpiyat",
-        "Gürsel Aksel",
-        "Alsancak Mustafa Denizli"
+        "Gürsel Aksel"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Gürsel Aksel Stadyumu Ocak 2020’de açıldı. Bu soru tarihsel açılış adını sorar.",
       "sources": [
         {
@@ -4972,18 +4846,18 @@
       "sourceId": "DER-05",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_derby_DER-06",
       "category": "derby",
       "prompt": "Altay – Karşıyaka · 17 Mayıs 2010 yükselme grubu maçında Altay ile Karşıyaka kaç kaç berabere kaldı?",
       "options": [
-        "2–2",
+        "0–0",
         "3–3",
-        "0–0"
+        "2–2"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "TFF’nin yükselme grubu raporuna göre 17 Mayıs 2010’da Karşıyaka ile Altay golsüz berabere kaldı.",
       "sources": [
         {
@@ -4994,18 +4868,18 @@
       "sourceId": "DER-06",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_derby_DER-07",
       "category": "derby",
       "prompt": "Ankaragücü – Gençlerbirliği · 2006’da Gençlerbirliği, 2009’da Ankaragücü kadrosunda bulunan hücum oyuncusu kim?",
       "options": [
-        "Mehmet Çakır",
         "Gökhan Töre",
+        "Mehmet Çakır",
         "Volkan Şen"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "TFF’nin 2006 maç kaydında Mehmet Çakır Gençlerbirliği tarafında bulunur; oyuncu geçmişi Eylül 2009 Ankaragücü kiralık transferini doğrular.",
       "sources": [
         {
@@ -5020,18 +4894,18 @@
       "sourceId": "DER-07",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_derby_DER-08",
       "category": "derby",
       "prompt": "Trabzonspor – Fenerbahçe · 5 Mayıs 2010 Türkiye Kupası finalinin skoru neydi? Sıra: Trabzonspor – Fenerbahçe.",
       "options": [
+        "4–2",
         "2–1",
-        "3–1",
-        "4–2"
+        "3–1"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Trabzonspor, Şanlıurfa’daki finalde Fenerbahçe’yi 3–1 yenerek Türkiye Kupası’nı kazandı.",
       "sources": [
         {
@@ -5049,11 +4923,11 @@
       "category": "derby",
       "prompt": "Trabzonspor – Galatasaray · 14 Mayıs 2025 Türkiye Kupası finalinde Galatasaray’ın Trabzonspor’a attığı üç golün ikisini kim kaydetti?",
       "options": [
-        "Barış Alper Yılmaz",
+        "Victor Osimhen",
         "Yunus Akgün",
-        "Victor Osimhen"
+        "Barış Alper Yılmaz"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "TFF raporunda Barış Alper Yılmaz’ın 5. dakikadaki golünü, Victor Osimhen’in 46 ve 63. dakika golleri izler.",
       "sources": [
         {
@@ -5071,11 +4945,11 @@
       "category": "derby",
       "prompt": "Manchester United – Manchester City · 23 Ekim 2011 derbisinin skoru neydi? Sıra: Manchester United – Manchester City.",
       "options": [
-        "1–6",
         "2–5",
+        "1–6",
         "0–3"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Manchester City’nin arşivi, 23 Ekim 2011 Old Trafford derbisini 6–1 deplasman galibiyeti olarak kaydeder.",
       "sources": [
         {
@@ -5093,11 +4967,11 @@
       "category": "derby",
       "prompt": "Arsenal – Tottenham · 2001 yazında Tottenham’dan ayrılıp Arsenal’e katılan İngiliz stoper kimdi?",
       "options": [
+        "Ledley King",
         "Rio Ferdinand",
-        "Sol Campbell",
-        "Ledley King"
+        "Sol Campbell"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Tottenham’ın 3 Temmuz 2001 tarihli duyurusu, Sol Campbell’ın Arsenal’e katıldığını bildirir.",
       "sources": [
         {
@@ -5115,11 +4989,11 @@
       "category": "derby",
       "prompt": "Liverpool – Everton · Everton 1892’de Anfield’dan ayrıldıktan sonra hangi stada taşındı?",
       "options": [
-        "Craven Cottage",
+        "Goodison Park",
         "Highbury",
-        "Goodison Park"
+        "Craven Cottage"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Everton’ın tarih arşivine göre Goodison Park, 24 Ağustos 1892’de açıldı. Soru 1892’deki taşınmayı sorar.",
       "sources": [
         {
@@ -5137,11 +5011,11 @@
       "category": "derby",
       "prompt": "Chelsea – Arsenal · 2004’te Chelsea’ye, 2015’te Arsenal’e katılan Çek kaleci kim?",
       "options": [
-        "Petr Čech",
         "Jens Lehmann",
+        "Petr Čech",
         "Thibaut Courtois"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Arsenal’in oyuncu arşivi, Petr Čech’in Chelsea’ye 2004’te ve Arsenal’e 2015’te katıldığını anlatır.",
       "sources": [
         {
@@ -5152,18 +5026,18 @@
       "sourceId": "DER-15",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-16",
       "category": "derby",
       "prompt": "Chelsea – Tottenham · Leicester’ın şampiyonluğunu kesinleştiren 2 Mayıs 2016 Chelsea – Tottenham maçının skoru neydi?",
       "options": [
+        "1–1",
         "3–3",
-        "2–2",
-        "1–1"
+        "2–2"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Stamford Bridge’deki maç 2–2 bitti. Bu beraberlikle Leicester’ın 2015–16 Premier League şampiyonluğu kesinleşti.",
       "sources": [
         {
@@ -5174,18 +5048,18 @@
       "sourceId": "DER-16",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-17",
       "category": "derby",
       "prompt": "Arsenal – Manchester United · Manchester United’ın Arsenal’i 8–2 yendiği 28 Ağustos 2011 maçında hat-trick yapan kimdi?",
       "options": [
-        "Nani",
+        "Wayne Rooney",
         "Ashley Young",
-        "Wayne Rooney"
+        "Nani"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "UEFA’nın maç raporuna göre Wayne Rooney üç gol atarak 8–2’lik galibiyette hat-trick yaptı.",
       "sources": [
         {
@@ -5196,18 +5070,18 @@
       "sourceId": "DER-17",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-18",
       "category": "derby",
       "prompt": "Liverpool – Chelsea · 3 Mayıs 2005 Şampiyonlar Ligi yarı final rövanşının skoru neydi? Sıra: Liverpool – Chelsea.",
       "options": [
-        "1–0",
         "0–0",
+        "1–0",
         "2–0"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Liverpool, Anfield’daki rövanşı Luis García’nın golüyle 1–0 kazandı ve İstanbul finaline yükseldi.",
       "sources": [
         {
@@ -5218,18 +5092,18 @@
       "sourceId": "DER-18",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-19",
       "category": "derby",
       "prompt": "Real Madrid – Barcelona · 10 Mart 2007’de 3–3 biten El Clásico’da Barcelona’nın üç golünü de kim attı?",
       "options": [
+        "Samuel Eto’o",
         "Ronaldinho",
-        "Lionel Messi",
-        "Samuel Eto’o"
+        "Lionel Messi"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Lionel Messi, 10 Mart 2007’de Real Madrid karşısında üç gol atarak ilk Barcelona hat-trick’ini yaptı.",
       "sources": [
         {
@@ -5240,18 +5114,18 @@
       "sourceId": "DER-19",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-20",
       "category": "derby",
       "prompt": "Atlético Madrid – Real Madrid · 2014 Şampiyonlar Ligi finali uzatmalar dâhil nasıl bitti? Sıra: Real Madrid – Atlético Madrid.",
       "options": [
-        "3–1",
+        "4–1",
         "1–1",
-        "4–1"
+        "3–1"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Lizbon finalinde normal süre 1–1 bitti. Real Madrid uzatmada üç gol daha buldu ve 4–1 kazandı.",
       "sources": [
         {
@@ -5269,11 +5143,11 @@
       "category": "derby",
       "prompt": "Sevilla – Real Betis · Real Betis 2023–24 sezonundaki iç saha maçlarını hangi tarihî stadında oynadı?",
       "options": [
-        "Benito Villamarín",
         "Ramón Sánchez-Pizjuán",
+        "Benito Villamarín",
         "Riazor"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Real Betis’in 2023–24 seyirci raporu iç saha maçlarını Benito Villamarín başlığı altında listeler.",
       "sources": [
         {
@@ -5291,11 +5165,11 @@
       "category": "derby",
       "prompt": "Milan – Inter · 2006–07 Inter ve 2010–11 Milan şampiyon kadrolarında bulunan İsveçli forvet kim?",
       "options": [
+        "Alexander Isak",
         "Marcus Berg",
-        "Zlatan Ibrahimović",
-        "Alexander Isak"
+        "Zlatan Ibrahimović"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Inter’in arşivi ve Milan’ın dönüş duyurusu Zlatan Ibrahimović’in iki kulüpteki dönemlerini doğrular.",
       "sources": [
         {
@@ -5310,18 +5184,18 @@
       "sourceId": "DER-22",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-23",
       "category": "derby",
       "prompt": "Juventus – Inter · Juventus – Inter rekabeti için “Derby d’Italia” adını 1967’de kullanan gazeteci kimdi?",
       "options": [
-        "Gianni Mura",
+        "Gianni Brera",
         "Candido Cannavò",
-        "Gianni Brera"
+        "Gianni Mura"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Inter’in tarih yazısına göre Derby d’Italia ifadesini 1967’de Gianni Brera ortaya attı.",
       "sources": [
         {
@@ -5332,18 +5206,18 @@
       "sourceId": "DER-23",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-24",
       "category": "derby",
       "prompt": "Roma – Lazio · 26 Mayıs 2013 İtalya Kupası finalinde Lazio’ya Roma karşısında kupayı getiren 71. dakika golünü kim attı?",
       "options": [
-        "Senad Lulić",
         "Antonio Candreva",
+        "Senad Lulić",
         "Miroslav Klose"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Senad Lulić’in 71. dakikadaki golüyle Lazio finali 1–0 kazandı.",
       "sources": [
         {
@@ -5354,18 +5228,18 @@
       "sourceId": "DER-24",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-25",
       "category": "derby",
       "prompt": "Juventus – Milan · 2003 Şampiyonlar Ligi finalinde Juventus – Milan, penaltı atışlarından önce 120 dakika sonunda kaç kaçtı?",
       "options": [
+        "3–2",
         "1–1",
-        "0–0",
-        "3–2"
+        "0–0"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "120 dakika 0–0 tamamlandı. Milan penaltı serisini 3–2 kazandı; bu iki skor ayrı kayıtlardır.",
       "sources": [
         {
@@ -5376,18 +5250,18 @@
       "sourceId": "DER-25",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-27",
       "category": "derby",
       "prompt": "Juventus – Torino · Torino’nun 17 Ekim 1926’da açılan tarihî stadının adı nedir?",
       "options": [
-        "Olimpico di Roma",
+        "Filadelfia",
         "San Paolo",
-        "Filadelfia"
+        "Olimpico di Roma"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Torino kulübünün tarihçesinde Filadelfia’nın açılışı 17 Ekim 1926 olarak kaydedilir.",
       "sources": [
         {
@@ -5398,18 +5272,18 @@
       "sourceId": "DER-27",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-28",
       "category": "derby",
       "prompt": "Bayern Münih – Borussia Dortmund · 2013 Şampiyonlar Ligi finalinin skoru neydi? Sıra: Bayern Münih – Borussia Dortmund.",
       "options": [
-        "2–1",
         "1–0",
+        "2–1",
         "2–0"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "UEFA final kaydı Dortmund 1–2 Bayern sonucunu verir. Soruda Bayern önce yazıldığı için cevap 2–1’dir.",
       "sources": [
         {
@@ -5420,18 +5294,18 @@
       "sourceId": "DER-28",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_derby_DER-29",
       "category": "derby",
       "prompt": "Borussia Dortmund – Schalke 04 · Revierderby, Almanya’nın hangi sanayi bölgesinin rekabetidir?",
       "options": [
+        "Bavyera",
         "Saksonya",
-        "Ruhr",
-        "Bavyera"
+        "Ruhr"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Bundesliga’nın bölge tarihi, Dortmund ve Schalke rekabetini Ruhr futbol kültürü içinde anlatır.",
       "sources": [
         {
@@ -5442,18 +5316,18 @@
       "sourceId": "DER-29",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_derby_DER-30",
       "category": "derby",
       "prompt": "Paris Saint-Germain – Marseille · Marseille’in Haziran 1937’de taşındığı stadın adı nedir?",
       "options": [
-        "Parc des Princes",
+        "Stade Vélodrome",
         "Stade Gerland",
-        "Stade Vélodrome"
+        "Parc des Princes"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Marseille’in resmî kulüp tarihi, Haziran 1937’de Stade Vélodrome’a taşınıldığını belirtir.",
       "sources": [
         {
@@ -5464,18 +5338,18 @@
       "sourceId": "DER-30",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "hard"
     },
     {
       "id": "q_derby_DER-31",
       "category": "derby",
       "prompt": "Ajax – Feyenoord · 7 Nisan 2024 De Klassieker maçının skoru neydi? Sıra: Feyenoord – Ajax.",
       "options": [
-        "6–0",
         "3–1",
+        "6–0",
         "4–0"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Ajax’ın 7 Nisan 2024 tarihli maç kaydı, Feyenoord deplasmanındaki 6–0 mağlubiyeti doğrular.",
       "sources": [
         {
@@ -5493,11 +5367,11 @@
       "category": "derby",
       "prompt": "Benfica – Porto · 11 Mayıs 2013’te Kelvin’in son dakika golüyle biten maçın skoru neydi? Sıra: Porto – Benfica.",
       "options": [
+        "3–2",
         "1–0",
-        "2–1",
-        "3–2"
+        "2–1"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "UEFA raporunda Porto’nun Benfica’yı Kelvin’in geç golüyle 2–1 yenerek liderliği aldığı anlatılır.",
       "sources": [
         {
@@ -5515,11 +5389,11 @@
       "category": "derby",
       "prompt": "Sporting – Benfica · 2000 yazında Benfica’dan ayrılıp Sporting’e katılan Portekizli hücumcu kimdi?",
       "options": [
-        "Rui Costa",
+        "João Pinto",
         "Pauleta",
-        "João Pinto"
+        "Rui Costa"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "UEFA’nın Sporting arşivi, João Pinto’nun Benfica’dan ayrıldıktan sonra 2000 yazında Sporting’e katıldığını doğrular.",
       "sources": [
         {
@@ -5537,11 +5411,11 @@
       "category": "derby",
       "prompt": "Sporting – Porto · Sporting’in 2001–02 lig sezonunda 42 gol atıp Avrupa Altın Ayakkabı ödülünü alan forveti kimdi?",
       "options": [
-        "Mário Jardel",
         "João Pinto",
+        "Mário Jardel",
         "Pedro Barbosa"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Sporting’in müze kaydı, Jardel’in 2001–02 liginde 30 maçta 42 golle Altın Ayakkabı kazandığını belirtir.",
       "sources": [
         {
@@ -5559,11 +5433,11 @@
       "category": "derby",
       "prompt": "Olympiacos – Panathinaikos · Panathinaikos 1918’de hangi sembolü amblem olarak benimsedi?",
       "options": [
+        "Çapa",
         "Kartal",
-        "Üç yapraklı yonca",
-        "Çapa"
+        "Üç yapraklı yonca"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Panathinaikos’un resmî tarihçesi, yoncanın 1918’de kulüp sembolü olduğunu kaydeder.",
       "sources": [
         {
@@ -5581,11 +5455,11 @@
       "category": "derby",
       "prompt": "Anderlecht – Standard Liège · Standard Liège’in Rue de la Centrale adresindeki stadı hangi adla tanınır?",
       "options": [
-        "Bosuil",
+        "Sclessin",
         "Lotto Park",
-        "Sclessin"
+        "Bosuil"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Standard Liège’in resmî stadyum ziyaret sayfası adresi Le Stade de Sclessin olarak verir.",
       "sources": [
         {
@@ -5596,18 +5470,18 @@
       "sourceId": "DER-36",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-38",
       "category": "derby",
       "prompt": "Flamengo – Fluminense · 25 Haziran 1995’teki, Renato Gaúcho’nun “göbek golü” ile hatırlanan Fla-Flu hangi statta oynandı?",
       "options": [
-        "Maracanã",
         "Mineirão",
+        "Maracanã",
         "Beira-Rio"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Fluminense’nin Maracanã maçları arşivi, 1995 şampiyonluğunu getiren Fla-Flu’yu bu statta oynanan unutulmaz maçlar arasında anlatır.",
       "sources": [
         {
@@ -5618,18 +5492,18 @@
       "sourceId": "DER-38",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-39",
       "category": "derby",
       "prompt": "Corinthians – Palmeiras · 2018 Paulista finalinin 8 Nisan’daki rövanşı, penaltılardan önce nasıl bitti? Sıra: Palmeiras – Corinthians.",
       "options": [
+        "1–1",
         "1–2",
-        "0–1",
-        "1–1"
+        "0–1"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Corinthians rövanşı 1–0 kazandı. İki maçın toplamı eşitlendiği için penaltılara gidildi; Corinthians seriyi 4–3 kazandı.",
       "sources": [
         {
@@ -5640,18 +5514,18 @@
       "sourceId": "DER-39",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-40",
       "category": "derby",
       "prompt": "Boca Juniors – River Plate · 2018 Libertadores finalinin Madrid’deki rövanşı uzatmalar dâhil nasıl bitti? Sıra: River Plate – Boca Juniors.",
       "options": [
-        "5–3",
+        "3–1",
         "1–1",
-        "3–1"
+        "5–3"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "River Plate Madrid’deki rövanşı 3–1, finali toplamda 5–3 kazandı. Maç sonucu ile toplam skor aynı değildir.",
       "sources": [
         {
@@ -5662,18 +5536,18 @@
       "sourceId": "DER-40",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-41",
       "category": "derby",
       "prompt": "Kızılyıldız – Partizan · 5 Ocak 1947’deki ilk Ebedî Derbi’de Kızılyıldız hangi skorla kazandı? Sıra: Kızılyıldız – Partizan.",
       "options": [
-        "4–3",
         "2–1",
+        "4–3",
         "3–2"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Kulübün tarih arşivi ilk maçı Partizan 3–4 Kızılyıldız olarak kaydeder. Kızılyıldız’ın skorunu önce yazınca cevap 4–3’tür.",
       "sources": [
         {
@@ -5684,18 +5558,18 @@
       "sourceId": "DER-41",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "medium"
+      "difficulty": "easy"
     },
     {
       "id": "q_derby_DER-42",
       "category": "derby",
       "prompt": "Genoa – Sampdoria · Derby della Lanterna’nın iki takımının da evi olan tarihî stadyum hangisidir?",
       "options": [
+        "Renato Dall’Ara",
         "Stadio Olimpico",
-        "Luigi Ferraris",
-        "Renato Dall’Ara"
+        "Luigi Ferraris"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Lega Serie A’nın Genoa – Sampdoria kupa maçı belgesi karşılaşma yerini Luigi Ferraris olarak gösterir.",
       "sources": [
         {
@@ -5713,11 +5587,11 @@
       "category": "derby",
       "prompt": "Grêmio – Internacional · 12 Şubat 1989 Gre-Nal derbisinin skoru neydi? Sıra: Internacional – Grêmio.",
       "options": [
-        "2–2",
+        "2–1",
         "1–0",
-        "2–1"
+        "2–2"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Internacional’in tarih arşivine göre Nilson’un iki golüyle maç 2–1’e döndü. Karşılaşma Beira-Rio’da oynandı.",
       "sources": [
         {
@@ -5735,11 +5609,11 @@
       "category": "derby",
       "prompt": "Adana Demirspor – Adanaspor · 2015’te Adana Demirspor’da bulunan, 2020–21’de Adanaspor forması giyen savunmacı kim?",
       "options": [
-        "Hakan Çinemre",
         "Tayyip Talha Sanuç",
+        "Hakan Çinemre",
         "Emre Akbaba"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "TFF’nin Mart 2015 millî takım listesi Hakan Çinemre’yi Adana Demirspor oyuncusu olarak kaydeder. TFF’nin 20 Şubat 2021 Altınordu – Adanaspor maç kadrosu, Adanaspor dönemini doğrular.",
       "sources": [
         {
@@ -5754,18 +5628,18 @@
       "sourceId": "DER-45",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-46",
       "category": "derby",
       "prompt": "Kocaelispor – Sakaryaspor · 28 Mayıs 2021 2. Lig play-off finalinin skoru neydi? Sıra: Kocaelispor – Sakaryaspor.",
       "options": [
+        "1–0",
         "3–1",
-        "4–0",
-        "1–0"
+        "4–0"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "TFF play-off kaydı 28 Mayıs 2021’deki finali Kocaelispor 4–0 Sakaryaspor olarak gösterir.",
       "sources": [
         {
@@ -5776,18 +5650,18 @@
       "sourceId": "DER-46",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-47",
       "category": "derby",
       "prompt": "Peñarol – Nacional · Nacional’in tarih kayıtlarında Peñarol’a karşı 35 Clásico golüyle anılan golcü kim?",
       "options": [
-        "Fernando Morena",
+        "Atilio García",
         "Alberto Spencer",
-        "Atilio García"
+        "Fernando Morena"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Nacional’in tarih yazısı Atilio García’ya Peñarol karşısında 35 Clásico golü yazar. Sayı bu kulüp arşivinin kapsamıyla verilmiştir.",
       "sources": [
         {
@@ -5798,18 +5672,18 @@
       "sourceId": "DER-47",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "hard"
+      "difficulty": "medium"
     },
     {
       "id": "q_derby_DER-48",
       "category": "derby",
       "prompt": "Club América – Chivas · 7 Kasım 2012 tarihli resmî açıklamasında Meksikalı futbolcularla oynama geleneğini vurgulayan kulüp hangisidir?",
       "options": [
-        "Chivas",
         "Pumas UNAM",
+        "Chivas",
         "Club América"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Chivas’ın 7 Kasım 2012 açıklaması, takımın Meksikalı futbolcularla oynama geleneğini vurgular. Soru o tarihli açıklamaya dayanır.",
       "sources": [
         {
@@ -5820,7 +5694,7 @@
       "sourceId": "DER-48",
       "provenance": "existing_story_catalog",
       "review": "inherited",
-      "difficulty": "easy"
+      "difficulty": "medium"
     }
   ]
 }

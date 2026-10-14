@@ -59,7 +59,7 @@ void main() {
       addTearDown(t.view.resetPhysicalSize); addTearDown(t.view.resetDevicePixelRatio);
       final key = GlobalKey();
       await t.pumpWidget(MaterialApp(theme: light ? OrtakSahaTheme.light : OrtakSahaTheme.dark,
-        home: Scaffold(body: RepaintBoundary(key: key, child: const EnergySheet(initialData: {
+        home: RepaintBoundary(key: key, child: const Scaffold(body: EnergySheet(initialData: {
           'enabled': true, 'balance': 4, 'reserved': 0, 'serverNow': 100000, 'nextRefillAt': 1300000,
           'pro': true, 'daily': {'ads': 0, 'purchases': 0, 'pro': false}})))));
       await t.pumpAndSettle();

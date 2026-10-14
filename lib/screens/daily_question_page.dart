@@ -62,6 +62,7 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
           for (var i = 0; i < options.length; i++) Padding(padding: const EdgeInsets.only(bottom: 10), child: OutlinedButton(
             key: ValueKey('quiz-option-$i'),
             style: OutlinedButton.styleFrom(alignment: Alignment.centerLeft, padding: const EdgeInsets.all(18),
+              disabledForegroundColor: done && result['answer'] == i ? p.accent : p.muted,
               backgroundColor: (done ? result['answer'] == i : choice == i) ? p.tint : null,
               side: BorderSide(color: (done ? result['answer'] == i : choice == i) ? p.accent : p.border)),
             onPressed: busy || done || eliminated == i ? null : () => setState(() => choice = i),

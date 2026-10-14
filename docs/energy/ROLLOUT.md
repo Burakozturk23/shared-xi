@@ -18,14 +18,15 @@ Bu değişiklik ayrı daldadır; main birleştirmesi veya canlı Firebase açıl
 
 ## Katalog ve kalan kapsam — tüm PDF tamamlandı olarak değerlendirilmemeli
 
-İlk banka **241 soru** içerir: kariyer 71, UCL 33, Türkiye 24, transfer 20,
+İlk banka **236 soru** içerir: kariyer 71, UCL 33, Türkiye 24, transfer 15,
 futbolcu 23, millî takımlar 28, derbi 42. Bunlar mevcut kaynaklı hikâye kayıtlarından
 ithal edilmiştir; bu çalışmada her kaynak yeniden bağımsız olarak doğrulanmış değildir.
 Farklı zorluk etiketleri editoryal tahmindir. Kaynaklı **700 soru hedefi sürmektedir**.
 
 Her kategoride en az 13 soru bulunduğu için haftalık seçim en az 91 günde tekrar eder;
 1.200 günlük seçim testi bu garantiyi denetler. Yeni soru eklerken mevcut soru ID'leri
-korunmalı ve her kategoride geçmiş 90 günün yayınları kontrol edilmelidir.
+korunmalıdır. Günlük yayıncı, katalog değişikliklerinde de geçmiş 90 günlük gerçek
+yayın kayıtlarını dışlayarak tekrar engelini sürdürür.
 
 `node tools/daily_question/build_catalog.js` bankayı yeniden üretir. Rastgele
 üretilmiş veya kurgu What If sonları bilgi sorusu olarak kullanılmaz. Üç seçeneğe
