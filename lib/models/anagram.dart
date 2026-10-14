@@ -1,5 +1,6 @@
 import 'dart:math';
 import '../services/search_service.dart';
+import 'energy_session.dart';
 
 String anagramKey(String value) => SearchService.normalize(value)
     .replaceAll(RegExp('[^a-z]'), '').toUpperCase();
@@ -76,17 +77,22 @@ class AnagramRound {
 }
 
 class AnagramSession {
-  AnagramSession({required List<int> deck, required List<AnagramRound> rounds})
+  AnagramSession({required List<int> deck, required List<AnagramRound> rounds, this.energy})
       : deck = List.unmodifiable(deck), rounds = List.unmodifiable(rounds);
   final List<int> deck;
   final List<AnagramRound> rounds;
+  final EnergySession? energy;
   AnagramRound get current => rounds.last;
   bool finished(AnagramCatalog catalog) => rounds.length == deck.length && current.ended(catalog.player(current.playerId));
   int score(AnagramCatalog catalog) => rounds.fold(0, (sum, r) => sum + r.points(catalog.player(r.playerId)));
   int solved(AnagramCatalog catalog) => rounds.where((r) => r.won(catalog.player(r.playerId))).length;
   AnagramSession replace(AnagramRound round) => AnagramSession(deck: deck,
-    rounds: [...rounds.take(rounds.length - 1), round]);
-  Map<String, dynamic> toJson() => {'version': 1, 'deck': deck, 'rounds': rounds.map((r) => r.toJson()).toList()};
+    rounds: [...rounds.take(rounds.length - 1), round], energy: energy);
+  AnagramSession withEnergy(EnergySession admission) => AnagramSession(
+    deck: deck, rounds: rounds, energy: admission);
+  Map<String, dynamic> toJson() => {'version': 1, 'deck': deck,
+    'rounds': rounds.map((r) => r.toJson()).toList(),
+    if (energy != null) 'energy': energy!.toJson()};
   factory AnagramSession.fromJson(Map<String, dynamic> j, AnagramCatalog catalog) {
     final deck = List<int>.from(j['deck'] as List);
     final rounds = (j['rounds'] as List).map((r) => AnagramRound.fromJson(Map<String, dynamic>.from(r as Map))).toList();
@@ -102,6 +108,8 @@ class AnagramSession {
           r.guesses.take(max(0, r.guesses.length - 1)).any(p.accepts) ||
           (i < rounds.length - 1 && !r.ended(p))) throw const FormatException('Invalid round');
     }
-    return AnagramSession(deck: deck, rounds: rounds);
+    return AnagramSession(deck: deck, rounds: rounds,
+      energy: j['energy'] == null ? null : EnergySession.fromJson(
+        Map<String, dynamic>.from(j['energy'] as Map)));
   }
 }

@@ -6,7 +6,8 @@ const {select, bank} = require("../daily_question");
 const req = (n) => n.toString(16).padStart(32, "0");
 function setup() {
   const h = harness();
-  h.seed("runtimeConfig", {energy: {enabled: true, percent: 100, minClientVersion: 1}, dailyQuestion: {enabled: true}});
+  h.seed("runtimeConfig", {energy: {enabled: true, percent: 100, minClientVersion: 1,
+    sessionModes: require("../config/energy_v1.json").sessionModes}, dailyQuestion: {enabled: true}});
   return h;
 }
 async function spend(h, n, mode = "bot_loto", unitId = "session") {
@@ -19,6 +20,35 @@ test("energy is off by default and cannot change existing balances", async () =>
   const h = harness();
   assert.equal((await h.call("getEnergyStatus")).enabled, false);
   assert.equal((await h.call("startEnergySession", {})).enabled, false);
+});
+test("repeatable modes require their own rollout; rollback cancels unpaid holds", async () => {
+  const h = setup();
+  h.seed("runtimeConfig/energy", {enabled: true, percent: 100, minClientVersion: 1});
+  const input = {requestId: req(1), mode: "anagram", clientVersion: 1};
+  assert.equal((await h.call("startEnergySession", input)).enabled, false);
+  assert.equal((await h.call("getEnergyStatus")).available, 6);
+  h.seed("runtimeConfig/energy/sessionModes", ["anagram"]);
+  const started = await h.call("startEnergySession", input);
+  assert.equal(started.session.status, "reserved");
+  assert.equal((await h.call("startEnergySession", {...input, mode: "bot_loto"})).enabled, false);
+  h.seed("runtimeConfig/energy/sessionModes", []);
+  assert.equal((await h.call("confirmEnergySession", {sessionId: req(1)})).enabled, false);
+  assert.equal((await h.call("getEnergyStatus")).available, 6);
+  assert.equal((await h.call("resumeEnergySession", {sessionId: req(1), mode: "anagram"})).enabled, false);
+});
+test("Anagram uses one idempotent session for all eight questions and no new XP", async () => {
+  const h = setup();
+  const input = {requestId: req(1), mode: "anagram", clientVersion: 1};
+  await Promise.all([1, 2].map(() => h.call("startEnergySession", input)));
+  await Promise.all([1, 2].map(() => h.call("confirmEnergySession", {sessionId: req(1)})));
+  for (let i = 0; i < 8; i++) {
+    const r = await h.call("resumeEnergySession", {sessionId: req(1), mode: "anagram"});
+    assert.equal(r.session.id, req(1)); assert.equal(r.serverNow, h.now);
+  }
+  assert.equal((await h.call("getEnergyStatus")).balance, 5);
+  assert.equal(h.read("progressionState/alice"), null);
+  h.setTime(h.now + 86400001);
+  await assert.rejects(h.call("resumeEnergySession", {sessionId: req(1), mode: "anagram"}), /yok/);
 });
 test("reservation, idempotent confirmation, hourly refill and Istanbul counters", async () => {
   const h = setup();

@@ -3,9 +3,12 @@ import '../controllers/anagram_controller.dart';
 import '../models/anagram.dart';
 import '../models/player.dart';
 import '../services/anagram_store.dart';
+import '../services/auth_service.dart';
+import '../services/session_energy_access.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/player_avatar.dart';
+import '../widgets/energy_sheet.dart';
 
 class AnagramPage extends StatefulWidget {
   const AnagramPage({super.key, this.controller});
@@ -14,19 +17,29 @@ class AnagramPage extends StatefulWidget {
   State<AnagramPage> createState() => _AnagramPageState();
 }
 
-class _AnagramPageState extends State<AnagramPage> {
+class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
   AnagramController? _game;
   final _answer = TextEditingController();
   final _scroll = ScrollController();
   bool _failed = false;
   int? _shownPlayer;
   @override
-  void initState() { super.initState(); _boot(); }
+  void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); _boot(); }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _game?.revalidate();
+  }
   Future<void> _boot() async {
     setState(() => _failed = false);
     try {
-      final game = widget.controller ?? AnagramController(
-        catalog: await loadAnagramCatalog(), store: LocalAnagramStore());
+      AnagramController? game = widget.controller;
+      if (game == null) {
+        final catalog = await loadAnagramCatalog();
+        final user = await AuthService.ensureGuestSignedIn();
+        game = AnagramController(catalog: catalog,
+          store: LocalAnagramStore(userId: user.uid, currentUser: () => AuthService.uid),
+          energyAccess: ServerSessionEnergyAccess('anagram'));
+      }
       if (!mounted) { if (widget.controller == null) game.dispose(); return; }
       _game = game;
       game.addListener(_changed);
@@ -44,6 +57,7 @@ class _AnagramPageState extends State<AnagramPage> {
   }
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _game?.removeListener(_changed);
     if (widget.controller == null) _game?.dispose();
     _answer.dispose(); _scroll.dispose(); super.dispose();
@@ -51,7 +65,7 @@ class _AnagramPageState extends State<AnagramPage> {
   Future<void> _confirm({required bool restart}) async {
     final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
       title: Text(restart ? 'Yeni seri başlatılsın mı?' : 'Cevabı açalım mı?'),
-      content: Text(restart ? 'Bu serinin yerini yeni 8 futbolcu alacak.' : 'Bu tur 0 puanla bitecek. Sonraki futbolcuyla devam edebilirsin.'),
+      content: Text(restart ? 'Bu serinin yerini yeni 8 futbolcu alacak. Enerji sistemi etkinse yeni seri 1 enerji kullanır; her soru ayrıca ücretlenmez.' : 'Bu tur 0 puanla bitecek. Sonraki futbolcuyla devam edebilirsin.'),
       actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Vazgeç')),
         FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(restart ? 'Yeni seri' : 'Cevabı göster'))],
     ));
@@ -75,7 +89,7 @@ class _AnagramPageState extends State<AnagramPage> {
           const SizedBox(height: 12),
           const Text('Doğru tur 100 puan. Her önceki yanlış −10; ülke/mevki ipucu −15; ilk harf −25 puan. Her ipucu turda bir kez kullanılabilir. Karıştırmak ücretsiz. Cevabı açmak veya üç yanlış turu 0 puanla bitirir.'),
           const SizedBox(height: 12),
-          const Text('Süre baskısı yok. İlerlemen bu cihazda saklanır. Seri puanı yalnızca bu oyuna aittir; Link Coin veya lig puanı değildir.'),
+          const Text('Sorularda süre baskısı yok. Enerji sistemi etkinse 8 soruluk yeni seri 1 enerji kullanır. Aynı hesap ve cihazda 24 saat içinde kaldığın yerden ek enerji harcamadan devam edebilirsin. Seri puanı yalnızca bu oyuna aittir; Link Coin veya lig puanı değildir.'),
           const SizedBox(height: 20),
           FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Hadi çözelim')),
         ]))));
@@ -84,7 +98,7 @@ class _AnagramPageState extends State<AnagramPage> {
     final before = game.session!.current.guesses.length;
     FocusScope.of(context).unfocus();
     await game.guess(_answer.text);
-    if (mounted && game.session!.current.guesses.length > before) setState(_answer.clear);
+    if (mounted && game.ready && game.session!.current.guesses.length > before) setState(_answer.clear);
   }
 
   @override
@@ -92,13 +106,16 @@ class _AnagramPageState extends State<AnagramPage> {
     final game = _game, session = _game?.session;
     final p = PitchColors.of(context);
     return Scaffold(appBar: AppBar(title: const Text('Anagram'), actions: [
+      if (widget.controller == null) IconButton(tooltip: 'Oyun enerjin',
+        onPressed: () => showEnergySheet(context), icon: const Icon(Icons.bolt_rounded)),
       IconButton(tooltip: 'Nasıl oynanır?', onPressed: _help, icon: const Icon(Icons.help_outline_rounded)),
-    ]), body: SafeArea(child: session == null
+    ]), body: SafeArea(child: session == null || game?.ready != true
       ? Center(child: Padding(padding: const EdgeInsets.all(24), child:
         _failed || game?.message != null ? Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('Anagram hazırlanamadı. Kaydını yeniden yükleyebilirsin.'),
+          Text(game?.message ?? 'Anagram hazırlanamadı. Kaydını yeniden yükleyebilirsin.'),
           const SizedBox(height: 12),
           FilledButton(onPressed: game?.busy == true ? null : () => game == null ? _boot() : game.initialize(), child: const Text('Tekrar dene')),
+          if (widget.controller == null) TextButton(onPressed: () => showEnergySheet(context), child: const Text('Enerji seçenekleri')),
           if (game != null) TextButton(onPressed: game.busy ? null : () => _confirm(restart: true), child: const Text('Kaydı sıfırla ve yeni seri aç')),
         ]) : const CircularProgressIndicator()))
       : ListView(controller: _scroll, padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -108,6 +125,10 @@ class _AnagramPageState extends State<AnagramPage> {
             Chip(label: Text('TUR ${session.rounds.length} / 8')),
             Chip(avatar: Icon(Icons.stars_rounded, size: 20, color: p.limeInk), label: Text('${session.score(game.catalog)} / 800 puan')),
           ]),
+          if (session.energy?.confirmed == true) Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text('8 soruluk seri açıldı · Bu seride ek enerji harcanmaz.',
+              style: Theme.of(context).textTheme.bodySmall)),
           const SizedBox(height: 12),
           if (game.message != null) Padding(padding: const EdgeInsets.only(bottom: 12),
             child: Text(game.message!, key: const ValueKey('anagram-message'), style: TextStyle(color: p.accent))),
@@ -175,7 +196,10 @@ class _AnagramPageState extends State<AnagramPage> {
       else TextButton.icon(key: const ValueKey('anagram-reveal'), onPressed: game.busy ? null : () => _confirm(restart: false),
         icon: const Icon(Icons.flag_outlined), label: const Text('Bu turu geç · Cevabı gör')),
       const SizedBox(height: 10),
-      Text('Süre yok. Seri burada seni bekler.', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+      Text(session.energy?.confirmed == true
+        ? 'Serine 24 saat içinde ücretsiz devam edebilirsin.'
+        : 'Süre yok. Seri burada seni bekler.',
+        textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
     ];
   }
 

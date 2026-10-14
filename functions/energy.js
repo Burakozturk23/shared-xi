@@ -34,7 +34,8 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     const r = {...policy.rollout, ...await getRollout()};
     const bucket = parseInt(crypto.createHash("sha256").update(uid).digest("hex").slice(0, 8), 16) % 100;
     return {active: r.enabled === true && bucket < Math.min(100, Math.max(0, r.percent)),
-      minClientVersion: r.minClientVersion};
+      minClientVersion: r.minClientVersion,
+      sessionModes: Array.isArray(r.sessionModes) ? r.sessionModes.filter((m) => policy.sessionModes.includes(m)) : []};
   }
   async function change(uid, fn) {
     let error;
@@ -69,6 +70,9 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
   async function start(uid, input) {
     const rollout = await enabled(uid);
     if (!rollout.active) return {ok: true, enabled: false};
+    if (policy.sessionModes.includes(input.mode) && !rollout.sessionModes.includes(input.mode)) {
+      return {ok: true, enabled: false};
+    }
     if (!Number.isSafeInteger(input.clientVersion) || input.clientVersion < rollout.minClientVersion) {
       fail("failed-precondition", "Enerji sistemi için uygulamayı güncelle.");
     }
@@ -105,15 +109,20 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     if (key && e.unlocked[key]) return {ok: true, enabled: true, unlocked: true, unitId: unit.id};
     const session = e.sessions[input.requestId] || Object.values(e.sessions).find((s) => s.key === key &&
         s.status === "reserved");
-    return {ok: true, enabled: true, session};
+    return {ok: true, enabled: true, serverNow: now(), session};
   }
   async function confirm(uid, input) {
-    if (!(await enabled(uid)).active) {
+    const rollout = await enabled(uid);
+    if (!rollout.active) {
       await cancel(uid, input); return {ok: true, enabled: false};
     }
     if (!requestId(input.sessionId)) fail("invalid-argument", "Geçersiz oturum.");
     const e = await change(uid, (e, state, time) => {
       const s = e.sessions[input.sessionId];
+      if (s && !s.key && !rollout.sessionModes.includes(s.mode)) {
+        if (s.status === "reserved") s.status = "cancelled";
+        return;
+      }
       if (!s || !["reserved", "confirmed"].includes(s.status)) {
         fail("failed-precondition",
             "Oyun rezervasyonu sona erdi.");
@@ -130,15 +139,23 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
       s.status = "confirmed"; s.confirmedAt = time; s.expiresAt = time + policy.resumeMs;
       if (s.key) e.unlocked[s.key] ||= {at: time};
     });
-    return {ok: true, session: e.sessions[input.sessionId]};
+    const session = e.sessions[input.sessionId];
+    if (session && !session.key && !rollout.sessionModes.includes(session.mode)) {
+      return {ok: true, enabled: false};
+    }
+    return {ok: true, serverNow: now(), session};
   }
   async function resume(uid, input) {
+    if (!requestId(input.sessionId) || !safeId(input.mode)) fail("invalid-argument", "Geçersiz oturum.");
+    const rollout = await enabled(uid);
+    if (!rollout.active || (policy.sessionModes.includes(input.mode) &&
+        !rollout.sessionModes.includes(input.mode))) return {ok: true, enabled: false};
     const e = await change(uid, () => {}); const s = e.sessions[input.sessionId];
     if (!s || s.status !== "confirmed" || s.expiresAt <= now() || s.mode !== input.mode) {
       fail("not-found",
           "Devam edilebilir oturum yok.");
     }
-    return {ok: true, enabled: true, session: s};
+    return {ok: true, enabled: true, serverNow: now(), session: s};
   }
   async function cancel(uid, input) {
     await change(uid, (e) => {
