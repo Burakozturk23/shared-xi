@@ -110,13 +110,13 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
         onPressed: () => showEnergySheet(context), icon: const Icon(Icons.bolt_rounded)),
       IconButton(tooltip: 'Nasıl oynanır?', onPressed: _help, icon: const Icon(Icons.help_outline_rounded)),
     ]), body: SafeArea(child: session == null || game?.ready != true
-      ? Center(child: Padding(padding: const EdgeInsets.all(24), child:
+      ? Center(child: SingleChildScrollView(padding: const EdgeInsets.all(24), child:
         _failed || game?.message != null ? Column(mainAxisSize: MainAxisSize.min, children: [
           Text(game?.message ?? 'Anagram hazırlanamadı. Kaydını yeniden yükleyebilirsin.'),
           const SizedBox(height: 12),
           FilledButton(onPressed: game?.busy == true ? null : () => game == null ? _boot() : game.initialize(), child: const Text('Tekrar dene')),
           if (widget.controller == null) TextButton(onPressed: () => showEnergySheet(context), child: const Text('Enerji seçenekleri')),
-          if (game != null) TextButton(onPressed: game.busy ? null : () => _confirm(restart: true), child: const Text('Kaydı sıfırla ve yeni seri aç')),
+          if (game != null) TextButton(onPressed: game.busy ? null : () => _confirm(restart: true), child: const Text('Yeni 8 futbolcuyla başla')),
         ]) : const CircularProgressIndicator()))
       : ListView(controller: _scroll, padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, children: [
