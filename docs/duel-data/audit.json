@@ -1,0 +1,2495 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-10-14",
+  "databaseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
+  "counts": {
+    "players": 36391,
+    "coaches": 5285,
+    "clubs": 4335
+  },
+  "playerFields": {
+    "players.market_value": {
+      "rows": 36391,
+      "present": 30135,
+      "zero": 16908,
+      "positive": 13227,
+      "minimum": 0.0,
+      "maximum": 200000000.0,
+      "missing_in_population": 6256,
+      "meaning": "presence_only_not_verified"
+    },
+    "players.peak_market_value": {
+      "rows": 36391,
+      "present": 30135,
+      "zero": 3544,
+      "positive": 26591,
+      "minimum": 0.0,
+      "maximum": 200000000.0,
+      "missing_in_population": 6256,
+      "meaning": "presence_only_not_verified"
+    },
+    "players.career_goals": {
+      "rows": 36391,
+      "present": 30135,
+      "zero": 4701,
+      "positive": 25434,
+      "minimum": 0,
+      "maximum": 796,
+      "missing_in_population": 6256,
+      "meaning": "presence_only_not_verified"
+    },
+    "profiles.birth_year": {
+      "rows": 13219,
+      "present": 13216,
+      "zero": 0,
+      "positive": 13216,
+      "minimum": 1924,
+      "maximum": 2010,
+      "missing_in_population": 23175,
+      "meaning": "presence_only_not_verified"
+    },
+    "profiles.height_cm": {
+      "rows": 13219,
+      "present": 6921,
+      "zero": 0,
+      "positive": 6921,
+      "minimum": 159,
+      "maximum": 206,
+      "missing_in_population": 29470,
+      "meaning": "presence_only_not_verified"
+    },
+    "profiles.international_caps": {
+      "rows": 13219,
+      "present": 6963,
+      "zero": 3102,
+      "positive": 3861,
+      "minimum": 0,
+      "maximum": 233,
+      "missing_in_population": 29428,
+      "meaning": "presence_only_not_verified"
+    },
+    "profiles.international_goals": {
+      "rows": 13219,
+      "present": 6963,
+      "zero": 4845,
+      "positive": 2118,
+      "minimum": 0,
+      "maximum": 146,
+      "missing_in_population": 29428,
+      "meaning": "presence_only_not_verified"
+    },
+    "player_stats.appearances": {
+      "rows": 6958,
+      "present": 6958,
+      "zero": 0,
+      "positive": 6958,
+      "minimum": 1,
+      "maximum": 665,
+      "missing_in_population": 29433,
+      "meaning": "presence_only_not_verified"
+    },
+    "player_stats.goals": {
+      "rows": 6958,
+      "present": 6958,
+      "zero": 610,
+      "positive": 6348,
+      "minimum": 0,
+      "maximum": 528,
+      "missing_in_population": 29433,
+      "meaning": "presence_only_not_verified"
+    },
+    "player_stats.assists": {
+      "rows": 6958,
+      "present": 6958,
+      "zero": 429,
+      "positive": 6529,
+      "minimum": 0,
+      "maximum": 224,
+      "missing_in_population": 29433,
+      "meaning": "presence_only_not_verified"
+    },
+    "player_stats.ucl_appearances": {
+      "rows": 6958,
+      "present": 6958,
+      "zero": 4049,
+      "positive": 2909,
+      "minimum": 0,
+      "maximum": 138,
+      "missing_in_population": 29433,
+      "meaning": "presence_only_not_verified"
+    }
+  },
+  "playerPositions": [
+    {
+      "value": "Defender",
+      "count": 11795
+    },
+    {
+      "value": "Midfield",
+      "count": 11225
+    },
+    {
+      "value": "Attack",
+      "count": 9969
+    },
+    {
+      "value": "Goalkeeper",
+      "count": 3402
+    }
+  ],
+  "statsCoverageClasses": [
+    {
+      "value": "PARTIAL_OR_UNKNOWN_WINDOW",
+      "count": 3715
+    },
+    {
+      "value": "LIKELY_COMPLETE_MODERN_WINDOW",
+      "count": 3243
+    }
+  ],
+  "statsFirstYears": [
+    {
+      "value": 2012,
+      "count": 2316
+    },
+    {
+      "value": 2013,
+      "count": 678
+    },
+    {
+      "value": 2014,
+      "count": 508
+    },
+    {
+      "value": 2015,
+      "count": 487
+    },
+    {
+      "value": 2016,
+      "count": 486
+    },
+    {
+      "value": 2019,
+      "count": 425
+    },
+    {
+      "value": 2017,
+      "count": 408
+    },
+    {
+      "value": 2018,
+      "count": 404
+    },
+    {
+      "value": 2020,
+      "count": 382
+    },
+    {
+      "value": 2021,
+      "count": 313
+    },
+    {
+      "value": 2022,
+      "count": 258
+    },
+    {
+      "value": 2023,
+      "count": 189
+    },
+    {
+      "value": 2024,
+      "count": 83
+    },
+    {
+      "value": 2025,
+      "count": 19
+    },
+    {
+      "value": 2026,
+      "count": 2
+    }
+  ],
+  "statsLastYears": [
+    {
+      "value": 2026,
+      "count": 2914
+    },
+    {
+      "value": 2025,
+      "count": 793
+    },
+    {
+      "value": 2024,
+      "count": 563
+    },
+    {
+      "value": 2023,
+      "count": 496
+    },
+    {
+      "value": 2021,
+      "count": 423
+    },
+    {
+      "value": 2022,
+      "count": 387
+    },
+    {
+      "value": 2019,
+      "count": 318
+    },
+    {
+      "value": 2018,
+      "count": 287
+    },
+    {
+      "value": 2020,
+      "count": 276
+    },
+    {
+      "value": 2017,
+      "count": 229
+    },
+    {
+      "value": 2016,
+      "count": 186
+    },
+    {
+      "value": 2015,
+      "count": 75
+    },
+    {
+      "value": 2014,
+      "count": 9
+    },
+    {
+      "value": 2013,
+      "count": 2
+    }
+  ],
+  "profileSourceSeasons": [
+    {
+      "value": 2026,
+      "count": 6145
+    },
+    {
+      "value": 2025,
+      "count": 3798
+    },
+    {
+      "value": 2024,
+      "count": 568
+    },
+    {
+      "value": 2023,
+      "count": 433
+    },
+    {
+      "value": 2022,
+      "count": 358
+    },
+    {
+      "value": 2021,
+      "count": 329
+    },
+    {
+      "value": 2020,
+      "count": 319
+    },
+    {
+      "value": 2019,
+      "count": 270
+    },
+    {
+      "value": 2018,
+      "count": 257
+    },
+    {
+      "value": 2017,
+      "count": 242
+    },
+    {
+      "value": 2016,
+      "count": 188
+    },
+    {
+      "value": 2015,
+      "count": 149
+    },
+    {
+      "value": null,
+      "count": 111
+    },
+    {
+      "value": 2014,
+      "count": 49
+    },
+    {
+      "value": 2013,
+      "count": 3
+    }
+  ],
+  "heightByPosition": [
+    {
+      "position": "Attack",
+      "count": 2064
+    },
+    {
+      "position": "Defender",
+      "count": 2338
+    },
+    {
+      "position": "Goalkeeper",
+      "count": 440
+    },
+    {
+      "position": "Midfield",
+      "count": 2079
+    }
+  ],
+  "dailyBirthDates": {
+    "players": 500,
+    "present": 500,
+    "idNamespace": "espn",
+    "v4IdentityMapping": "not_validated"
+  },
+  "coaches": {
+    "payloadFields": [
+      "aliases",
+      "avatarKey",
+      "clubIds",
+      "countries",
+      "id",
+      "name",
+      "rating"
+    ],
+    "nonemptyFields": {
+      "aliases": 48,
+      "avatarKey": 48,
+      "clubIds": 48,
+      "countries": 3627,
+      "id": 5285,
+      "name": 5285,
+      "rating": 5285
+    },
+    "legacyJsonMatchesSqlitePayloads": true,
+    "missingClubLinks": 5237,
+    "missingCountries": 1658,
+    "normalizedNameCollisions": [
+      {
+        "name": "admir adzem",
+        "ids": [
+          -3022,
+          -2982
+        ]
+      },
+      {
+        "name": "afshin ghotbi",
+        "ids": [
+          -4436,
+          -3557
+        ]
+      },
+      {
+        "name": "aktaporn chalitaporn",
+        "ids": [
+          -4488,
+          -3494
+        ]
+      },
+      {
+        "name": "aleksandar rankovic",
+        "ids": [
+          -2763,
+          -779
+        ]
+      },
+      {
+        "name": "aleksandar vukovic",
+        "ids": [
+          -1666,
+          -1337
+        ]
+      },
+      {
+        "name": "aleksandr khomyakov",
+        "ids": [
+          -3308,
+          -2946
+        ]
+      },
+      {
+        "name": "aleksandr storozhuk",
+        "ids": [
+          -3014,
+          -2430
+        ]
+      },
+      {
+        "name": "aleksandrs basovs",
+        "ids": [
+          -4325,
+          -3832
+        ]
+      },
+      {
+        "name": "aleksey poddubskiy",
+        "ids": [
+          -3055,
+          -2115
+        ]
+      },
+      {
+        "name": "aleksey stukalov",
+        "ids": [
+          -3912,
+          -2240
+        ]
+      },
+      {
+        "name": "ales arnol",
+        "ids": [
+          -3256,
+          -2341
+        ]
+      },
+      {
+        "name": "ales majer",
+        "ids": [
+          -2862,
+          -1345
+        ]
+      },
+      {
+        "name": "alexandre miguel crispim dos santos",
+        "ids": [
+          -4084,
+          -2711
+        ]
+      },
+      {
+        "name": "alexandre polking",
+        "ids": [
+          -3622,
+          -1996
+        ]
+      },
+      {
+        "name": "andre olsen",
+        "ids": [
+          -3965,
+          -3909
+        ]
+      },
+      {
+        "name": "andrei prepelita",
+        "ids": [
+          -3806,
+          -3305
+        ]
+      },
+      {
+        "name": "andrius lipskis",
+        "ids": [
+          -3774,
+          -3271
+        ]
+      },
+      {
+        "name": "andrius skerla",
+        "ids": [
+          -2503,
+          -2329
+        ]
+      },
+      {
+        "name": "andy king",
+        "ids": [
+          -2013,
+          -1578
+        ]
+      },
+      {
+        "name": "aniello parisi",
+        "ids": [
+          -4332,
+          -3523
+        ]
+      },
+      {
+        "name": "ante simundza",
+        "ids": [
+          -3191,
+          -987
+        ]
+      },
+      {
+        "name": "anton soltis",
+        "ids": [
+          -2570,
+          -2248
+        ]
+      },
+      {
+        "name": "anzor kighuradze",
+        "ids": [
+          -4795,
+          -3314
+        ]
+      },
+      {
+        "name": "armend dallku",
+        "ids": [
+          -4834,
+          -4647
+        ]
+      },
+      {
+        "name": "artem radkov",
+        "ids": [
+          -2431,
+          -876
+        ]
+      },
+      {
+        "name": "bartolome marquez lopez",
+        "ids": [
+          -2536,
+          -610
+        ]
+      },
+      {
+        "name": "besnik hasi",
+        "ids": [
+          -1517,
+          -367
+        ]
+      },
+      {
+        "name": "bozidar bandovic",
+        "ids": [
+          -3349,
+          -2017
+        ]
+      },
+      {
+        "name": "branko nisevic",
+        "ids": [
+          -3707,
+          -3109
+        ]
+      },
+      {
+        "name": "bronislav cervenka",
+        "ids": [
+          -3006,
+          -2791
+        ]
+      },
+      {
+        "name": "brunello iacopetta",
+        "ids": [
+          -4209,
+          -4138
+        ]
+      },
+      {
+        "name": "bruno genesio",
+        "ids": [
+          -148,
+          -79
+        ]
+      },
+      {
+        "name": "cagdas cavus",
+        "ids": [
+          -692,
+          -688
+        ]
+      },
+      {
+        "name": "cedomir janevski",
+        "ids": [
+          -3411,
+          -2400
+        ]
+      },
+      {
+        "name": "chokri khatoui",
+        "ids": [
+          -4977,
+          -4645
+        ]
+      },
+      {
+        "name": "christian heinle",
+        "ids": [
+          -4008,
+          -3209
+        ]
+      },
+      {
+        "name": "christophe pelissier",
+        "ids": [
+          -765,
+          -538
+        ]
+      },
+      {
+        "name": "constantin galca",
+        "ids": [
+          -1933,
+          -1122
+        ]
+      },
+      {
+        "name": "damir canadi",
+        "ids": [
+          -4136,
+          -3459
+        ]
+      },
+      {
+        "name": "dan brimsvik",
+        "ids": [
+          -3199,
+          -2714
+        ]
+      },
+      {
+        "name": "daniel mysliwiec",
+        "ids": [
+          -1744,
+          -1573
+        ]
+      },
+      {
+        "name": "daniel ogunmodede",
+        "ids": [
+          -4930,
+          -4754
+        ]
+      },
+      {
+        "name": "danny rohl",
+        "ids": [
+          -637,
+          -577
+        ]
+      },
+      {
+        "name": "darije kalezic",
+        "ids": [
+          -2800,
+          -1526
+        ]
+      },
+      {
+        "name": "david gonzalez",
+        "ids": [
+          -3501,
+          -740
+        ]
+      },
+      {
+        "name": "david holoubek",
+        "ids": [
+          -3994,
+          -2660
+        ]
+      },
+      {
+        "name": "david horejs",
+        "ids": [
+          -1436,
+          -1253
+        ]
+      },
+      {
+        "name": "david hubert",
+        "ids": [
+          -597,
+          -188
+        ]
+      },
+      {
+        "name": "david marques afonso",
+        "ids": [
+          -3895,
+          -3445
+        ]
+      },
+      {
+        "name": "davy arnaud",
+        "ids": [
+          -2523,
+          -1256
+        ]
+      },
+      {
+        "name": "dawid kroczek",
+        "ids": [
+          -1328,
+          -845
+        ]
+      },
+      {
+        "name": "dean klafuric",
+        "ids": [
+          -3910,
+          -2527
+        ]
+      },
+      {
+        "name": "dejan stankovic",
+        "ids": [
+          -403,
+          -385
+        ]
+      },
+      {
+        "name": "diego martinez",
+        "ids": [
+          -1341,
+          -1048
+        ]
+      },
+      {
+        "name": "diogo peral",
+        "ids": [
+          -4610,
+          -4101
+        ]
+      },
+      {
+        "name": "dragan skocic",
+        "ids": [
+          -1432,
+          -511
+        ]
+      },
+      {
+        "name": "dusan kerkez",
+        "ids": [
+          -2284,
+          -1062
+        ]
+      },
+      {
+        "name": "dusan kosic",
+        "ids": [
+          -2808,
+          -2304
+        ]
+      },
+      {
+        "name": "dusko vranesevic",
+        "ids": [
+          -4279,
+          -3246
+        ]
+      },
+      {
+        "name": "emerse fae",
+        "ids": [
+          -346,
+          -278
+        ]
+      },
+      {
+        "name": "enrico maassen",
+        "ids": [
+          -618,
+          -475
+        ]
+      },
+      {
+        "name": "even sel",
+        "ids": [
+          -3905,
+          -1686
+        ]
+      },
+      {
+        "name": "fedja dudic",
+        "ids": [
+          -3904,
+          -2645
+        ]
+      },
+      {
+        "name": "felice mazzu",
+        "ids": [
+          -1182,
+          -479
+        ]
+      },
+      {
+        "name": "fernando ortiz",
+        "ids": [
+          -780,
+          -724
+        ]
+      },
+      {
+        "name": "frank peereboom",
+        "ids": [
+          -2293,
+          -2102
+        ]
+      },
+      {
+        "name": "frederic taquin",
+        "ids": [
+          -1742,
+          -937
+        ]
+      },
+      {
+        "name": "gaetan englebert",
+        "ids": [
+          -3651,
+          -1820
+        ]
+      },
+      {
+        "name": "gary haveron",
+        "ids": [
+          -3324,
+          -2199
+        ]
+      },
+      {
+        "name": "goncalo feio",
+        "ids": [
+          -1841,
+          -667
+        ]
+      },
+      {
+        "name": "goran tufegdzic",
+        "ids": [
+          -3174,
+          -1226
+        ]
+      },
+      {
+        "name": "gregory dufrennes",
+        "ids": [
+          -3284,
+          -2498
+        ]
+      },
+      {
+        "name": "gustavo alvarez",
+        "ids": [
+          -1785,
+          -638
+        ]
+      },
+      {
+        "name": "gyorgy bognar",
+        "ids": [
+          -1767,
+          -906
+        ]
+      },
+      {
+        "name": "habib beye",
+        "ids": [
+          -347,
+          -203
+        ]
+      },
+      {
+        "name": "haim silvas",
+        "ids": [
+          -3234,
+          -1460
+        ]
+      },
+      {
+        "name": "hakan kutlu",
+        "ids": [
+          -3117,
+          -949
+        ]
+      },
+      {
+        "name": "hallgrimur jonasson",
+        "ids": [
+          -3820,
+          -2870
+        ]
+      },
+      {
+        "name": "hayk milkon",
+        "ids": [
+          -2575,
+          -2451
+        ]
+      },
+      {
+        "name": "henok goitom",
+        "ids": [
+          -3546,
+          -2173
+        ]
+      },
+      {
+        "name": "hikmet karaman",
+        "ids": [
+          -3720,
+          -893
+        ]
+      },
+      {
+        "name": "ibrahim uzulmez",
+        "ids": [
+          -2193,
+          -1251
+        ]
+      },
+      {
+        "name": "ignacio ithurralde saez",
+        "ids": [
+          -2794,
+          -2712
+        ]
+      },
+      {
+        "name": "igor jovicevic",
+        "ids": [
+          -1919,
+          -594
+        ]
+      },
+      {
+        "name": "igor kovalevich",
+        "ids": [
+          -3659,
+          -2276
+        ]
+      },
+      {
+        "name": "igor osinkin",
+        "ids": [
+          -2673,
+          -1078
+        ]
+      },
+      {
+        "name": "igor picusceac",
+        "ids": [
+          -4244,
+          -2863
+        ]
+      },
+      {
+        "name": "igor prins",
+        "ids": [
+          -3824,
+          -3310
+        ]
+      },
+      {
+        "name": "igor stimac",
+        "ids": [
+          -2589,
+          -1876
+        ]
+      },
+      {
+        "name": "ilir daja",
+        "ids": [
+          -3628,
+          -2129
+        ]
+      },
+      {
+        "name": "ismail kartal",
+        "ids": [
+          -302,
+          -74
+        ]
+      },
+      {
+        "name": "issame charai",
+        "ids": [
+          -992,
+          -928
+        ]
+      },
+      {
+        "name": "istvan szabo",
+        "ids": [
+          -3460,
+          -2378
+        ]
+      },
+      {
+        "name": "ivan bionchik",
+        "ids": [
+          -3682,
+          -2539
+        ]
+      },
+      {
+        "name": "ivan boskovic",
+        "ids": [
+          -3662,
+          -2038
+        ]
+      },
+      {
+        "name": "ivan brnovic",
+        "ids": [
+          -4277,
+          -1411
+        ]
+      },
+      {
+        "name": "ivan fedyk",
+        "ids": [
+          -3925,
+          -2130
+        ]
+      },
+      {
+        "name": "jacek zielinski",
+        "ids": [
+          -1642,
+          -1021
+        ]
+      },
+      {
+        "name": "jaime de la pava marquez",
+        "ids": [
+          -3808,
+          -2157
+        ]
+      },
+      {
+        "name": "james merriman",
+        "ids": [
+          -4558,
+          -3916
+        ]
+      },
+      {
+        "name": "jaroslav vesely",
+        "ids": [
+          -2945,
+          -1842
+        ]
+      },
+      {
+        "name": "jens gjesing",
+        "ids": [
+          -4151,
+          -3950
+        ]
+      },
+      {
+        "name": "jens hartel",
+        "ids": [
+          -4078,
+          -2520
+        ]
+      },
+      {
+        "name": "jindrich trpisovsky",
+        "ids": [
+          -485,
+          -274
+        ]
+      },
+      {
+        "name": "jovan damjanovic",
+        "ids": [
+          -1992,
+          -1184
+        ]
+      },
+      {
+        "name": "jurgen kerber",
+        "ids": [
+          -3341,
+          -3188
+        ]
+      },
+      {
+        "name": "jussi leppalahti",
+        "ids": [
+          -3204,
+          -3203
+        ]
+      },
+      {
+        "name": "kazimierz moskal",
+        "ids": [
+          -2829,
+          -2759
+        ]
+      },
+      {
+        "name": "kenan kocak",
+        "ids": [
+          -2066,
+          -2019
+        ]
+      },
+      {
+        "name": "kirill novikov",
+        "ids": [
+          -3141,
+          -2799
+        ]
+      },
+      {
+        "name": "kresimir rezic",
+        "ids": [
+          -2899,
+          -1580
+        ]
+      },
+      {
+        "name": "kristaps dislers",
+        "ids": [
+          -4367,
+          -3573
+        ]
+      },
+      {
+        "name": "krunoslav jurcic",
+        "ids": [
+          -985,
+          -566
+        ]
+      },
+      {
+        "name": "laurent courtois",
+        "ids": [
+          -978,
+          -889
+        ]
+      },
+      {
+        "name": "lee grant",
+        "ids": [
+          -1459,
+          -505
+        ]
+      },
+      {
+        "name": "levan korghalidze",
+        "ids": [
+          -4075,
+          -1714
+        ]
+      },
+      {
+        "name": "lorcan fitzgerald",
+        "ids": [
+          -4602,
+          -3429
+        ]
+      },
+      {
+        "name": "lubos kozel",
+        "ids": [
+          -1308,
+          -843
+        ]
+      },
+      {
+        "name": "ludovic magnin",
+        "ids": [
+          -1819,
+          -572
+        ]
+      },
+      {
+        "name": "luigi bizzotto",
+        "ids": [
+          -5131,
+          -5032
+        ]
+      },
+      {
+        "name": "luis castro",
+        "ids": [
+          -423,
+          -372
+        ]
+      },
+      {
+        "name": "luis garcia",
+        "ids": [
+          -2937,
+          -694
+        ]
+      },
+      {
+        "name": "luis garcia plaza",
+        "ids": [
+          -452,
+          -351
+        ]
+      },
+      {
+        "name": "maciej skorza",
+        "ids": [
+          -1192,
+          -932
+        ]
+      },
+      {
+        "name": "magnus powell",
+        "ids": [
+          -2590,
+          -2251
+        ]
+      },
+      {
+        "name": "makoto teguramori",
+        "ids": [
+          -2984,
+          -1789
+        ]
+      },
+      {
+        "name": "marc thome",
+        "ids": [
+          -4741,
+          -4513
+        ]
+      },
+      {
+        "name": "marcel koller",
+        "ids": [
+          -2822,
+          -528
+        ]
+      },
+      {
+        "name": "marcelo straccia",
+        "ids": [
+          -2979,
+          -2579
+        ]
+      },
+      {
+        "name": "mario carevic",
+        "ids": [
+          -1824,
+          -1802
+        ]
+      },
+      {
+        "name": "mario cvitanovic",
+        "ids": [
+          -2591,
+          -1500
+        ]
+      },
+      {
+        "name": "mario ivankovic",
+        "ids": [
+          -4376,
+          -1343
+        ]
+      },
+      {
+        "name": "mario kovacevic",
+        "ids": [
+          -247,
+          -211
+        ]
+      },
+      {
+        "name": "marius stankevicius",
+        "ids": [
+          -3224,
+          -2792
+        ]
+      },
+      {
+        "name": "mariusz misiura",
+        "ids": [
+          -1631,
+          -1466
+        ]
+      },
+      {
+        "name": "marko jaksic",
+        "ids": [
+          -2287,
+          -2068
+        ]
+      },
+      {
+        "name": "marko maksimovic",
+        "ids": [
+          -4466,
+          -2905
+        ]
+      },
+      {
+        "name": "markus schopp",
+        "ids": [
+          -3056,
+          -758
+        ]
+      },
+      {
+        "name": "martin falk",
+        "ids": [
+          -2723,
+          -1586
+        ]
+      },
+      {
+        "name": "martin hysky",
+        "ids": [
+          -1775,
+          -1061
+        ]
+      },
+      {
+        "name": "martin nash",
+        "ids": [
+          -3860,
+          -3240
+        ]
+      },
+      {
+        "name": "mate gerliczki",
+        "ids": [
+          -3091,
+          -1916
+        ]
+      },
+      {
+        "name": "mehdi el alaoui",
+        "ids": [
+          -4996,
+          -4362
+        ]
+      },
+      {
+        "name": "mehmet altiparmak",
+        "ids": [
+          -1633,
+          -554
+        ]
+      },
+      {
+        "name": "michal gasparik",
+        "ids": [
+          -1157,
+          -923
+        ]
+      },
+      {
+        "name": "mike matkovich",
+        "ids": [
+          -1338,
+          -331
+        ]
+      },
+      {
+        "name": "mikulas radvanyi",
+        "ids": [
+          -3850,
+          -2998
+        ]
+      },
+      {
+        "name": "milan ristic",
+        "ids": [
+          -2247,
+          -1045
+        ]
+      },
+      {
+        "name": "milija savovic",
+        "ids": [
+          -3332,
+          -2077
+        ]
+      },
+      {
+        "name": "milorad pekovic",
+        "ids": [
+          -3726,
+          -2679
+        ]
+      },
+      {
+        "name": "milos joksic",
+        "ids": [
+          -3610,
+          -3426
+        ]
+      },
+      {
+        "name": "milos kruscic",
+        "ids": [
+          -3375,
+          -3001
+        ]
+      },
+      {
+        "name": "miodrag dzudovic",
+        "ids": [
+          -4306,
+          -3080
+        ]
+      },
+      {
+        "name": "miroslav koubek",
+        "ids": [
+          -749,
+          -380
+        ]
+      },
+      {
+        "name": "miroslav tanjga",
+        "ids": [
+          -2514,
+          -2346
+        ]
+      },
+      {
+        "name": "mislav karoglan",
+        "ids": [
+          -3540,
+          -942
+        ]
+      },
+      {
+        "name": "mladen bartulovic",
+        "ids": [
+          -1671,
+          -1099
+        ]
+      },
+      {
+        "name": "mladen dodic",
+        "ids": [
+          -3615,
+          -3422
+        ]
+      },
+      {
+        "name": "mohamed ouahbi",
+        "ids": [
+          -1455,
+          -155
+        ]
+      },
+      {
+        "name": "mustafa dalci",
+        "ids": [
+          -1723,
+          -1572
+        ]
+      },
+      {
+        "name": "mustafa gursel",
+        "ids": [
+          -1536,
+          -877
+        ]
+      },
+      {
+        "name": "nedim jusufbegovic",
+        "ids": [
+          -4503,
+          -3146
+        ]
+      },
+      {
+        "name": "nemanja glusica",
+        "ids": [
+          -4945,
+          -4779
+        ]
+      },
+      {
+        "name": "nemanja miljanovic",
+        "ids": [
+          -3346,
+          -2995
+        ]
+      },
+      {
+        "name": "nenad brnovic",
+        "ids": [
+          -3881,
+          -2865
+        ]
+      },
+      {
+        "name": "nikica jelavic",
+        "ids": [
+          -1925,
+          -1707
+        ]
+      },
+      {
+        "name": "nikita andreev",
+        "ids": [
+          -2623,
+          -2433
+        ]
+      },
+      {
+        "name": "nikola safaric",
+        "ids": [
+          -1239,
+          -1016
+        ]
+      },
+      {
+        "name": "oleg kononov",
+        "ids": [
+          -1796,
+          -1020
+        ]
+      },
+      {
+        "name": "oleg vasilenko",
+        "ids": [
+          -2133,
+          -1277
+        ]
+      },
+      {
+        "name": "omari tetradze",
+        "ids": [
+          -2731,
+          -2171
+        ]
+      },
+      {
+        "name": "onur cinel",
+        "ids": [
+          -1210,
+          -1172
+        ]
+      },
+      {
+        "name": "oscar garcia junyent",
+        "ids": [
+          -2067,
+          -607
+        ]
+      },
+      {
+        "name": "osman ozkoylu",
+        "ids": [
+          -810,
+          -519
+        ]
+      },
+      {
+        "name": "pauli poulsen",
+        "ids": [
+          -4918,
+          -4709
+        ]
+      },
+      {
+        "name": "pavel dochev",
+        "ids": [
+          -2745,
+          -2096
+        ]
+      },
+      {
+        "name": "pavol stano",
+        "ids": [
+          -2008,
+          -1602
+        ]
+      },
+      {
+        "name": "philippe clement",
+        "ids": [
+          -5008,
+          -97
+        ]
+      },
+      {
+        "name": "pierpaolo bisoli",
+        "ids": [
+          -2841,
+          -1511
+        ]
+      },
+      {
+        "name": "polat cetin",
+        "ids": [
+          -4702,
+          -3783
+        ]
+      },
+      {
+        "name": "radomir kokovic",
+        "ids": [
+          -2122,
+          -1689
+        ]
+      },
+      {
+        "name": "radoslav kovac",
+        "ids": [
+          -2121,
+          -521
+        ]
+      },
+      {
+        "name": "radovan curcic",
+        "ids": [
+          -3279,
+          -2701
+        ]
+      },
+      {
+        "name": "ratko dostanic",
+        "ids": [
+          -3431,
+          -2023
+        ]
+      },
+      {
+        "name": "recep ucar",
+        "ids": [
+          -624,
+          -352
+        ]
+      },
+      {
+        "name": "rene weiler",
+        "ids": [
+          -1072,
+          -878
+        ]
+      },
+      {
+        "name": "ricardo pancaldo",
+        "ids": [
+          -3353,
+          -1921
+        ]
+      },
+      {
+        "name": "rinat alyuetov",
+        "ids": [
+          -3814,
+          -2912
+        ]
+      },
+      {
+        "name": "robert ilyes",
+        "ids": [
+          -3423,
+          -1849
+        ]
+      },
+      {
+        "name": "roberto breda",
+        "ids": [
+          -3158,
+          -1317
+        ]
+      },
+      {
+        "name": "robin asterhed",
+        "ids": [
+          -3571,
+          -3555
+        ]
+      },
+      {
+        "name": "roman kozhukhovskyi",
+        "ids": [
+          -4148,
+          -3886
+        ]
+      },
+      {
+        "name": "roman skuhravy",
+        "ids": [
+          -2175,
+          -2002
+        ]
+      },
+      {
+        "name": "ronald ramirez",
+        "ids": [
+          -2900,
+          -1961
+        ]
+      },
+      {
+        "name": "ruaidhri higgins",
+        "ids": [
+          -3177,
+          -1675
+        ]
+      },
+      {
+        "name": "rudiger rehm",
+        "ids": [
+          -2236,
+          -2043
+        ]
+      },
+      {
+        "name": "rui vitor da silva ferreira",
+        "ids": [
+          -2803,
+          -1834
+        ]
+      },
+      {
+        "name": "runar kristinsson",
+        "ids": [
+          -3570,
+          -3010
+        ]
+      },
+      {
+        "name": "sabri lamouchi",
+        "ids": [
+          -1780,
+          -745
+        ]
+      },
+      {
+        "name": "said chiba",
+        "ids": [
+          -3381,
+          -2107
+        ]
+      },
+      {
+        "name": "sait karafirtinalar",
+        "ids": [
+          -4641,
+          -2014
+        ]
+      },
+      {
+        "name": "sami ugurlu",
+        "ids": [
+          -2410,
+          -602
+        ]
+      },
+      {
+        "name": "sander duits",
+        "ids": [
+          -2035,
+          -1506
+        ]
+      },
+      {
+        "name": "sandro perkovic",
+        "ids": [
+          -2331,
+          -1238
+        ]
+      },
+      {
+        "name": "sasa ilic",
+        "ids": [
+          -3301,
+          -1462
+        ]
+      },
+      {
+        "name": "sead babaca",
+        "ids": [
+          -4416,
+          -4210
+        ]
+      },
+      {
+        "name": "sead ramovic",
+        "ids": [
+          -3544,
+          -2511
+        ]
+      },
+      {
+        "name": "sedat agcay",
+        "ids": [
+          -1516,
+          -1140
+        ]
+      },
+      {
+        "name": "sergey pervushin",
+        "ids": [
+          -3372,
+          -3244
+        ]
+      },
+      {
+        "name": "sergey tashuev",
+        "ids": [
+          -2255,
+          -1607
+        ]
+      },
+      {
+        "name": "sergey yuran",
+        "ids": [
+          -2641,
+          -2202
+        ]
+      },
+      {
+        "name": "serkan ozbalta",
+        "ids": [
+          -695,
+          -660
+        ]
+      },
+      {
+        "name": "servet cetin",
+        "ids": [
+          -1537,
+          -1111
+        ]
+      },
+      {
+        "name": "sharon mimer",
+        "ids": [
+          -3883,
+          -2135
+        ]
+      },
+      {
+        "name": "silvijo cabraja",
+        "ids": [
+          -2804,
+          -1103
+        ]
+      },
+      {
+        "name": "simon rozman",
+        "ids": [
+          -3293,
+          -1612
+        ]
+      },
+      {
+        "name": "sinan kaloglu",
+        "ids": [
+          -1522,
+          -1418
+        ]
+      },
+      {
+        "name": "slaven kovacevic",
+        "ids": [
+          -4228,
+          -3031
+        ]
+      },
+      {
+        "name": "slavisa jokanovic",
+        "ids": [
+          -1956,
+          -591
+        ]
+      },
+      {
+        "name": "slavko matic",
+        "ids": [
+          -4092,
+          -1312
+        ]
+      },
+      {
+        "name": "slobodan draskovic",
+        "ids": [
+          -4619,
+          -3568
+        ]
+      },
+      {
+        "name": "srdjan tufegdzic",
+        "ids": [
+          -3964,
+          -2543
+        ]
+      },
+      {
+        "name": "stanislav suvorov",
+        "ids": [
+          -4390,
+          -4017
+        ]
+      },
+      {
+        "name": "stefan markulik",
+        "ids": [
+          -2659,
+          -2227
+        ]
+      },
+      {
+        "name": "stefano ceci",
+        "ids": [
+          -5122,
+          -5089
+        ]
+      },
+      {
+        "name": "stefano de angelis",
+        "ids": [
+          -4234,
+          -3168
+        ]
+      },
+      {
+        "name": "steven pressley",
+        "ids": [
+          -3042,
+          -1561
+        ]
+      },
+      {
+        "name": "stevie grieve",
+        "ids": [
+          -3303,
+          -1901
+        ]
+      },
+      {
+        "name": "stjepan tomas",
+        "ids": [
+          -3316,
+          -1266
+        ]
+      },
+      {
+        "name": "tamer mostafa",
+        "ids": [
+          -3899,
+          -3793
+        ]
+      },
+      {
+        "name": "temur ketsbaia",
+        "ids": [
+          -2884,
+          -2197
+        ]
+      },
+      {
+        "name": "thierry debes",
+        "ids": [
+          -2394,
+          -2273
+        ]
+      },
+      {
+        "name": "timur kapadze",
+        "ids": [
+          -2114,
+          -1787
+        ]
+      },
+      {
+        "name": "tomas janotka",
+        "ids": [
+          -1822,
+          -1315
+        ]
+      },
+      {
+        "name": "toni korkeakunnas",
+        "ids": [
+          -3858,
+          -3057
+        ]
+      },
+      {
+        "name": "ugur ucar",
+        "ids": [
+          -2572,
+          -2224
+        ]
+      },
+      {
+        "name": "ulf kristiansson",
+        "ids": [
+          -2668,
+          -2177
+        ]
+      },
+      {
+        "name": "uwe rosler",
+        "ids": [
+          -1189,
+          -778
+        ]
+      },
+      {
+        "name": "vadim abramov",
+        "ids": [
+          -3657,
+          -2534
+        ]
+      },
+      {
+        "name": "vadim garanin",
+        "ids": [
+          -2603,
+          -2385
+        ]
+      },
+      {
+        "name": "vahe gevorgyan",
+        "ids": [
+          -4049,
+          -2183
+        ]
+      },
+      {
+        "name": "vanni sartini",
+        "ids": [
+          -3550,
+          -526
+        ]
+      },
+      {
+        "name": "viktors morozs",
+        "ids": [
+          -1571,
+          -1032
+        ]
+      },
+      {
+        "name": "viorel frunza",
+        "ids": [
+          -5051,
+          -4380
+        ]
+      },
+      {
+        "name": "vladimer kakashvili",
+        "ids": [
+          -4126,
+          -2309
+        ]
+      },
+      {
+        "name": "vladimir cheburin",
+        "ids": [
+          -3971,
+          -1401
+        ]
+      },
+      {
+        "name": "vladimir cifranic",
+        "ids": [
+          -4113,
+          -3201
+        ]
+      },
+      {
+        "name": "vladimir ivic",
+        "ids": [
+          -1280,
+          -250
+        ]
+      },
+      {
+        "name": "vladimir radenkovic",
+        "ids": [
+          -3222,
+          -2125
+        ]
+      },
+      {
+        "name": "vladimir weiss",
+        "ids": [
+          -1369,
+          -704
+        ]
+      },
+      {
+        "name": "vuk rasovic",
+        "ids": [
+          -2830,
+          -794
+        ]
+      },
+      {
+        "name": "vyacheslav gerashchenko",
+        "ids": [
+          -4654,
+          -4319
+        ]
+      },
+      {
+        "name": "young-min lee",
+        "ids": [
+          -3457,
+          -2460
+        ]
+      },
+      {
+        "name": "zdenko frtala",
+        "ids": [
+          -1975,
+          -1877
+        ]
+      },
+      {
+        "name": "zdravko dragicevic",
+        "ids": [
+          -3735,
+          -3685
+        ]
+      },
+      {
+        "name": "zeljko kopic",
+        "ids": [
+          -1880,
+          -1130
+        ]
+      },
+      {
+        "name": "zeljko ljubenovic",
+        "ids": [
+          -3760,
+          -3675
+        ]
+      },
+      {
+        "name": "zeljko petrovic",
+        "ids": [
+          -3134,
+          -1079
+        ]
+      },
+      {
+        "name": "zeljko sopic",
+        "ids": [
+          -2848,
+          -1141
+        ]
+      },
+      {
+        "name": "zhuoxiang deng",
+        "ids": [
+          -2357,
+          -2321
+        ]
+      },
+      {
+        "name": "zoran vasiljevic",
+        "ids": [
+          -2569,
+          -1860
+        ]
+      },
+      {
+        "name": "zoran zeljkovic",
+        "ids": [
+          -2482,
+          -633
+        ]
+      },
+      {
+        "name": "zsolt hornyak",
+        "ids": [
+          -2076,
+          -980
+        ]
+      }
+    ],
+    "invalidClubLinks": [],
+    "warning": "rating is not a verified win, appearance or trophy statistic; club links have no tenure dates"
+  },
+  "palmaresManagerIdentityCandidates": [
+    {
+      "name": "Alex Ferguson",
+      "candidateIds": [
+        -5277
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Pep Guardiola",
+      "candidateIds": [
+        -1
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Carlo Ancelotti",
+      "candidateIds": [
+        -9
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "José Mourinho",
+      "candidateIds": [
+        -28
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Ottmar Hitzfeld",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Luis Enrique",
+      "candidateIds": [
+        -6
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Bob Paisley",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Louis van Gaal",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Arsène Wenger",
+      "candidateIds": [
+        -5279
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Marcello Lippi",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Fabio Capello",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Jürgen Klopp",
+      "candidateIds": [
+        -5278
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Hansi Flick",
+      "candidateIds": [
+        -4
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Jupp Heynckes",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Rafael Benítez",
+      "candidateIds": [
+        -181
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Rinus Michels",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Unai Emery",
+      "candidateIds": [
+        -10
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Thomas Tuchel",
+      "candidateIds": [
+        -16
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Zinedine Zidane",
+      "candidateIds": [
+        -5284
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Antonio Conte",
+      "candidateIds": [
+        -31
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Diego Simeone",
+      "candidateIds": [
+        -53
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Didier Deschamps",
+      "candidateIds": [
+        -20
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Arrigo Sacchi",
+      "candidateIds": [],
+      "status": "not_found_by_name_or_alias"
+    },
+    {
+      "name": "Mikel Arteta",
+      "candidateIds": [
+        -3
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Arne Slot",
+      "candidateIds": [
+        -19
+      ],
+      "status": "needs_identity_review"
+    },
+    {
+      "name": "Joachim Löw",
+      "candidateIds": [
+        -5280
+      ],
+      "status": "needs_identity_review"
+    }
+  ],
+  "reviewedSupplement": {
+    "entities": 31,
+    "facts": 31,
+    "events": 66,
+    "unmapped": [
+      "manager:bob-paisley",
+      "manager:ottmar-hitzfeld",
+      "manager:jupp-heynckes",
+      "manager:arrigo-sacchi",
+      "player:pavel-nedved",
+      "manager:louis-van-gaal",
+      "manager:marcello-lippi",
+      "manager:fabio-capello",
+      "manager:rinus-michels"
+    ],
+    "metrics": [
+      {
+        "metric": "manager_european_cup_titles",
+        "reviewedEntities": 19,
+        "mappedEntities": 11,
+        "cutoffs": [
+          "2025-12-31"
+        ],
+        "enabled": false,
+        "blockers": [
+          "population_coverage_not_complete",
+          "game_balance_not_evaluated",
+          "no_runtime_integration"
+        ]
+      },
+      {
+        "metric": "manager_turkish_league_titles",
+        "reviewedEntities": 1,
+        "mappedEntities": 1,
+        "cutoffs": [
+          "2019-05-19"
+        ],
+        "enabled": false,
+        "blockers": [
+          "population_coverage_not_complete",
+          "game_balance_not_evaluated",
+          "no_runtime_integration"
+        ]
+      },
+      {
+        "metric": "player_ballon_dor",
+        "reviewedEntities": 10,
+        "mappedEntities": 9,
+        "cutoffs": [
+          "2025-12-31"
+        ],
+        "enabled": false,
+        "blockers": [
+          "population_coverage_not_complete",
+          "game_balance_not_evaluated",
+          "no_runtime_integration"
+        ]
+      },
+      {
+        "metric": "player_senior_caps",
+        "reviewedEntities": 1,
+        "mappedEntities": 1,
+        "cutoffs": [
+          "2018-03-23"
+        ],
+        "enabled": false,
+        "blockers": [
+          "population_coverage_not_complete",
+          "game_balance_not_evaluated",
+          "no_runtime_integration"
+        ]
+      }
+    ]
+  },
+  "blockingFindings": [
+    {
+      "id": "buffon_caps_conflict",
+      "observed": {
+        "id": 5023,
+        "name": "Gianluigi Buffon",
+        "international_caps": 0
+      },
+      "reviewedValue": 176,
+      "source": "figc_buffon",
+      "resolution": "corrected_in_supplement_runtime_patch_pending"
+    },
+    {
+      "id": "partial_career_windows",
+      "resolution": "do_not_label_aggregates_all_time"
+    },
+    {
+      "id": "unknown_is_not_zero",
+      "resolution": "legacy_default_zero_requires_metric_specific_review"
+    },
+    {
+      "id": "coach_honours_missing",
+      "resolution": "use_role_specific_season_events_not_rating"
+    },
+    {
+      "id": "source_date_mismatch",
+      "resolution": "do_not_mix_historical_snapshots_with_current_totals"
+    }
+  ]
+}
