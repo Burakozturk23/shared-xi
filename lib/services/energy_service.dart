@@ -89,7 +89,7 @@ class EnergyService {
       }
       throw StateError('Bonus doğrulanıyor. Biraz sonra yenile; hakkın sunucuda saklanıyor.');
     } catch (_) {
-      if (ticket != null && !shown && !pro) {
+      if (ticket != null && !shown) {
         try { await call('cancelRewardedAd', {'ticketId': ticket.id}); } catch (_) {}
       }
       rethrow;
