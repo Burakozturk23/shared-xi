@@ -6,20 +6,34 @@ const DAY = 86400000;
 const fail = (code, message) => {
   throw new RewardError(code, message);
 };
-function select(day) {
+function select(day, previousIds = []) {
   const date = new Date(day + "T00:00:00Z");
   const category = categories[(date.getUTCDay() + 6) % 7];
   const pool = bank.questions.filter((q) => q.category === category);
   // One category per weekday; every category has >=13 entries (>=91 days).
   const week = Math.floor((date.getTime() - Date.UTC(2026, 0, 5)) / (7 * DAY));
-  return pool[((week % pool.length) + pool.length) % pool.length];
+  const offset = ((week % pool.length) + pool.length) % pool.length;
+  const excluded = new Set(previousIds);
+  for (let i = 0; i < pool.length; i++) {
+    const q = pool[(offset + i) % pool.length];
+    if (!excluded.has(q.id)) return q;
+  }
+  fail("failed-precondition", "Bu kategori için yeni soru hazırlanıyor.");
 }
 const normalize = (raw) => ({answers: {}, hints: {}, pending: {}, total: 0, streak: 0, lastDay: "", ...raw});
 function createService({db, grantCoins, grantXp, projectBadges, isLinked, isPro, enabled, now = Date.now}) {
   async function current() {
     if (!await enabled()) fail("failed-precondition", "Günün Sorusu henüz açılmadı.");
     const day = dayKey(now());
-    const selected = select(day);
+    const existing = (await db.ref("dailyQuestionPrivate/" + day).get()).val();
+    if (existing) return existing;
+    // Persisted publication history also prevents repeats after a catalog update.
+    const today = Date.parse(day + "T00:00:00Z");
+    const history = await Promise.all(Array.from({length: 90}, async (_, i) => {
+      const date = new Date(today - (i + 1) * DAY).toISOString().slice(0, 10);
+      return (await db.ref("dailyQuestionPrivate/" + date).get()).val()?.id;
+    }));
+    const selected = select(day, history.filter(Boolean));
     const tx = await db.ref("dailyQuestionPrivate/" + day).transaction((raw) => raw || {...selected, day,
       version: bank.version});
     return tx.snapshot.val();

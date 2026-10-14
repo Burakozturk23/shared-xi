@@ -171,3 +171,62 @@ test("interrupted quiz reward projection retries coin and XP exactly once", asyn
   assert.equal(h.read("progressionState/alice/lifetimeXp"), 10);
   assert.equal(Object.keys(h.read("dailyQuestionState/alice/pending")).length, 0);
 });
+
+
+test("old clients cannot open story ad hints before energy access", async () => {
+  const h = setup();
+  await assert.rejects(h.call("prepareRewardedAd", {platform: "android", placement: "story_hint",
+    requestId: req(1), context: {journeyId: "messi", taskId: "messi_v2_1"}}), /güncelle/);
+  await assert.rejects(h.call("prepareRewardedAd", {platform: "android", placement: "story_hint",
+    energyClientVersion: 1, requestId: req(1), context: {journeyId: "messi", taskId: "messi_v2_1"}}), /aç/);
+});
+
+test("midnight resets allowances without refilling energy; Pro bonus is once per Istanbul day", async () => {
+  const h = setup(); h.setTime("2026-10-14T20:50:00Z");
+  const service = require("../energy").createService({db: h.db, normalize: h.context.lbEconomyState,
+    now: () => h.now, isPro: async () => true,
+    getRollout: async () => ({enabled: true, percent: 100, minClientVersion: 1})});
+  for (let n = 1; n <= 6; n++) await spend(h, n);
+  await Promise.all([service.proBonus("alice"), service.proBonus("alice")]);
+  assert.equal((await service.status("alice")).balance, 2);
+  h.setTime("2026-10-14T21:01:00Z");
+  const next = await service.status("alice");
+  assert.equal(next.balance, 2); assert.equal(next.daily.pro, false);
+  await service.proBonus("alice");
+  assert.equal((await service.status("alice")).balance, 4);
+  h.setTime("2026-10-14T21:50:00Z");
+  assert.equal((await service.status("alice")).balance, 5);
+});
+
+test("a verified bonus waits at capacity then settles once; no energy or quiz reward mints SP", async () => {
+  const h = setup(); const service = h.context.lbEnergyService();
+  const receipt = {id: "capacity_receipt", context: {day: "2026-09-20"}};
+  await assert.rejects(service.settleReward("alice", receipt), /bekliyor/);
+  await spend(h, 1); await spend(h, 2);
+  await service.settleReward("alice", receipt); await service.settleReward("alice", receipt);
+  assert.equal((await service.status("alice")).balance, 6);
+  const q = await h.call("getDailyQuestion");
+  await h.call("submitDailyQuestion", {day: q.question.day, questionId: q.question.id, option: 0});
+  const engine = require("../season_pass");
+  const score = engine.points(h.read("economyState/alice/claims"), engine.seasonAt(h.now), h.now);
+  assert.equal(score.sp, 0); assert.equal(score.todaySp, 0);
+});
+
+test("30-day participation badge is projected by the quiz, not a client claim", async () => {
+  const h = setup();
+  h.seed("dailyQuestionState/alice", {total: 29, streak: 2, lastDay: "2026-09-19"});
+  const q = await h.call("getDailyQuestion");
+  await h.call("submitDailyQuestion", {day: q.question.day, questionId: q.question.id, option: 0});
+  assert.ok(h.read("userAchievements/alice/daily_question_30"));
+  assert.equal(h.read("userAchievements/alice/daily_question_100"), null);
+});
+
+
+test("publication history prevents a repeat even when a new catalog would select an old question", async () => {
+  const h = setup();
+  const q = select("2026-09-20");
+  h.seed("dailyQuestionPrivate/2026-09-13", {id: q.id});
+  const shown = await h.call("getDailyQuestion");
+  assert.notEqual(shown.question.id, q.id);
+  assert.equal((await h.call("getDailyQuestion")).question.id, shown.question.id);
+});

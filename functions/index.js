@@ -8735,6 +8735,11 @@ function lbRewardedCallable(action) {
     const service = lbRewardedService();
     try {
       if (action === "prepare") {
+        if (input.placement === "story_hint") {
+          await lbEnergyService().requireStory(uid, "journey", input.context?.journeyId, input.energyClientVersion);
+        } else if (input.placement === "what_if_hint") {
+          await lbEnergyService().requireStory(uid, "what_if", input.context?.scenarioId, input.energyClientVersion);
+        }
         return await service.prepare(uid, input.platform, input.placement, input.requestId, input.context);
       }
       if (action === "cancel") return await service.cancel(uid, input.ticketId);
