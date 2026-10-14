@@ -43,6 +43,7 @@ class FirebaseJourneyGateway implements JourneyGateway {
             )
             .call({
               ...input,
+              'energyClientVersion': 1,
               'platform': defaultTargetPlatform == TargetPlatform.iOS
                   ? 'ios'
                   : 'android',

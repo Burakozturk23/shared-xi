@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +30,15 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
   String _country = 'all', _club = 'all', _progress = 'all', _mechanic = 'all', _query = '';
   final _search = TextEditingController();
   final _scroll = ScrollController(keepScrollOffset: false);
+  Future<void> _startWithEnergy() async {
+    final controller = _c;
+    final id = controller?.activeId;
+    if (controller == null || id == null) return;
+    if (widget.controller != null || await StoryEnergyAccess.open(context, 'derby', id)) {
+      if (!mounted || _c != controller || controller.activeId != id) return;
+      controller.start(); _top();
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -163,7 +173,7 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
         _filter('İlerleme',_progress,['all','Tamamlanan','Keşfedilecek'],(v)=>_progress=v),const SizedBox(height:12),
         TextButton(onPressed:(){_search.clear();setState((){_country=_club=_mechanic=_progress='all';_query='';});},child:const Text('Filtreleri temizle')),
       ]),
-      if(c.activeId!=null&&!c.results.containsKey(c.activeId)) Padding(padding:const EdgeInsets.symmetric(vertical:12),child:PitchRow(title:'Kaldığın yerden',subtitle:c.active!.text('title'),icon:Icons.play_circle_outline,onTap:c.busy?null:(){_open(c.activeId!);c.start();})),
+      if(c.activeId!=null&&!c.results.containsKey(c.activeId)) Padding(padding:const EdgeInsets.symmetric(vertical:12),child:PitchRow(title:'Kaldığın yerden',subtitle:c.active!.text('title'),icon:Icons.play_circle_outline,onTap:c.busy?null:(){_open(c.activeId!);_startWithEnergy();})),
       Text('${visible.length} rekabet',key:const ValueKey('derby-visible-count')),
       if(visible.isEmpty) const Padding(padding:EdgeInsets.symmetric(vertical:24),child:Text('Bu filtrelerde rekabet bulunamadı. Aramayı veya filtreleri değiştir.')),
       for(final country in c.catalog.countries) ...[
@@ -183,7 +193,7 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
     final t=c.active!;
     return [_hero('${t.text('country')} · ${t.text('city')}',t.text('title'),t.text('intro')),
       const SizedBox(height:20),PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(_icon(t.mechanic),size:32),const SizedBox(height:12),Text(t.label,style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:10),const Text('Bir görev, bir pasaport damgası. Ücretsiz ipucu ve sınırsız deneme. İlerleme ve ödül bağlantı olduğunda doğrulanır.')])),
-      const SizedBox(height:20),FilledButton.icon(key:const ValueKey('derby-start'),onPressed:c.busy?null:(){c.start();_top();},icon:const Icon(Icons.play_arrow),label:const Text('Derbiye başla'))];
+      const SizedBox(height:20),FilledButton.icon(key:const ValueKey('derby-start'),onPressed:c.busy?null:(){_startWithEnergy();_top();},icon:const Icon(Icons.play_arrow),label:const Text('Derbiye başla'))];
   }
   Widget _scene(DerbyDayController c) {
     final t=c.active!;

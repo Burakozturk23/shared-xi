@@ -383,5 +383,27 @@
     "tier": "platinum",
     "iconKey": "what_if_dual",
     "reward": 0
+  },
+  {
+    "id": "daily_question_30",
+    "title": "Her Gün Futbol",
+    "description": "30 farklı günde Günün Sorusu’na katıl.",
+    "signal": "daily_question_days",
+    "target": 30,
+    "category": "daily",
+    "tier": "silver",
+    "iconKey": "daily_streak",
+    "reward": 0
+  },
+  {
+    "id": "daily_question_100",
+    "title": "Bilginin Müdavimi",
+    "description": "100 farklı günde Günün Sorusu’na katıl.",
+    "signal": "daily_question_days",
+    "target": 100,
+    "category": "daily",
+    "tier": "gold",
+    "iconKey": "daily_streak",
+    "reward": 0
   }
 ]

@@ -5984,6 +5984,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    energy: data.energy && typeof data.energy === "object" ? data.energy : {},
     storeUses: data.storeUses && typeof data.storeUses === "object" ? {...data.storeUses} : {},
     squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
       data.squadChallenge : {},
@@ -8270,6 +8271,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["coinPurchaseRate/" + uid] = null;
 
   updates["economyState/" + uid] = null;
+  updates["dailyQuestionState/" + uid] = null;
   updates["rewardedAdState/" + uid] = null;
   updates["dailyMatchState/" + uid] = null;
   updates["journeyRewardState/" + uid] = null;
@@ -8696,6 +8698,10 @@ function lbRewardedService() {
     const db = getDatabase();
     lbRewardedInstance = require("./rewarded_ads").createService({
       db, getConfig: lbGetEconomyConfig,
+      prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
+      settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
+      prepareQuizReward: (uid) => lbDailyQuestionService().prepareHint(uid),
+      settleQuizReward: (uid, receipt) => lbDailyQuestionService().settleHint(uid, receipt),
       prepareWhatIfReward: (uid, placement, context) => lbWhatIfService().prepareReward(uid, placement, context),
       settleWhatIfReward: (uid, receipt) => lbWhatIfService().settleReward(uid, receipt),
       prepareStoryReward: (uid, placement, context) => lbJourneyService().prepareReward(uid, placement, context),
@@ -9020,6 +9026,10 @@ function lbJourneyCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     lbRequireGoogleLinked(request);
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "journey", request.data?.journeyId,
+            request.data?.energyClientVersion);
+      }
       const uid = request.auth.uid;
       const service = lbJourneyService();
       if (action === "status") {
@@ -9090,6 +9100,10 @@ function lbWhatIfCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     lbRequireGoogleLinked(request);
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "what_if", request.data?.scenarioId,
+            request.data?.energyClientVersion);
+      }
       const uid = request.auth.uid;
       const service = lbWhatIfService();
       if (action === "status") {
@@ -9138,6 +9152,10 @@ function lbUclCallable(action) {
     if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
     let eligible = true;
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "ucl", request.data?.matchId,
+            request.data?.energyClientVersion);
+      }
       lbRequireGoogleLinked(request);
     } catch (_) {
       eligible = false;
@@ -9208,6 +9226,10 @@ function lbNostalgiaCallable(action) {
     if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
     let eligible = true;
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "nostalgia", request.data?.taskId,
+            request.data?.energyClientVersion);
+      }
       lbRequireGoogleLinked(request);
     } catch (_) {
       eligible = false;
@@ -9278,6 +9300,10 @@ function lbInternationalCallable(action) {
     if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
     let eligible = true;
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "international", request.data?.matchId,
+            request.data?.energyClientVersion);
+      }
       lbRequireGoogleLinked(request);
     } catch (_) {
       eligible = false;
@@ -9351,6 +9377,10 @@ function lbDynastiesCallable(action) {
     if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
     let eligible = true;
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "dynasties", request.data?.taskId,
+            request.data?.energyClientVersion);
+      }
       lbRequireGoogleLinked(request);
     } catch (_) {
       eligible = false;
@@ -9425,6 +9455,10 @@ function lbFootballDocuCallable(action) {
     if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
     let eligible = true;
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "docu", request.data?.taskId,
+            request.data?.energyClientVersion);
+      }
       lbRequireGoogleLinked(request);
     } catch (_) {
       eligible = false;
@@ -9499,6 +9533,10 @@ function lbDerbyDayCallable(action) {
     if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
     let eligible = true;
     try {
+      if (action === "submit" || action === "hint") {
+        await lbEnergyService().requireStory(request.auth.uid, "derby", request.data?.taskId,
+            request.data?.energyClientVersion);
+      }
       lbRequireGoogleLinked(request);
     } catch (_) {
       eligible = false;
@@ -9521,3 +9559,82 @@ exports.submitDerbyDay = lbDerbyDayCallable("submit");
 
 
 exports.buyDerbyDayHint = lbDerbyDayCallable("hint");
+
+// ENERGY_V1: disabled by default; an Admin-owned rollout enables selected users.
+function lbEnergyService() {
+  const db = getDatabase();
+  return require("./energy").createService({db, normalize: lbEconomyState, project: lbEconomyProject,
+    now: () => Date.now(),
+    getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
+  });
+}
+function lbEnergyCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (action === "purchase") lbRequireGoogleLinked(request);
+    try {
+      if (action === "status") await lbRewardedService().settle(request.auth.uid);
+      return await lbEnergyService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code,
+            error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getEnergyStatus = lbEnergyCallable("status");
+exports.startEnergySession = lbEnergyCallable("start");
+exports.confirmEnergySession = lbEnergyCallable("confirm");
+exports.resumeEnergySession = lbEnergyCallable("resume");
+exports.cancelEnergySession = lbEnergyCallable("cancel");
+exports.purchaseEnergy = lbEnergyCallable("purchase");
+exports.claimProEnergyBonus = lbEnergyCallable("proBonus");
+
+function lbDailyQuestionService() {
+  const db = getDatabase();
+  return require("./daily_question").createService({db, now: () => Date.now(),
+    enabled: async () => (await db.ref("runtimeConfig/dailyQuestion/enabled").get()).val() === true,
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    },
+    isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp; s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now}; s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+    projectBadges: (uid, total) => lbAchievementMergeSignals(db, uid, {daily_question_days: total}, "daily_question"),
+  });
+}
+function lbDailyQuestionCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      if (action === "status") await lbRewardedService().settle(request.auth.uid);
+      return await lbDailyQuestionService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code,
+            error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getDailyQuestion = lbDailyQuestionCallable("status");
+exports.submitDailyQuestion = lbDailyQuestionCallable("submit");
+// Preflight only. An actual elimination always requires a verified SSV/Pro ticket.
+exports.prepareDailyQuestionHint = lbDailyQuestionCallable("prepareHint");

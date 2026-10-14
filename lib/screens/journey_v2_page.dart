@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import '../controllers/journey_rewards_controller.dart';
 import '../services/auth_service.dart';
 import '../widgets/journey_reward_card.dart';
@@ -133,7 +134,9 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       )]),
     ]));
   }
-  void _openTask(String? id) {
+  Future<void> _openTask(String? id) async {
+    if (id != null && widget.controller == null && !await StoryEnergyAccess.open(context, 'journey', widget.journeyId)) return;
+    if (!mounted) return;
     setState(() => _openedTask = id);
     if (_scroll.hasClients) _scroll.jumpTo(0);
   }

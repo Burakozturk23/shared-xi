@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'package:flutter/material.dart';
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
@@ -22,7 +23,8 @@ class AppHomePage extends StatelessWidget {
       key: const PageStorageKey('home'),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       children: [
-        Text('Bugün sahada.', style: Theme.of(context).textTheme.headlineMedium),
+        Row(children: [Expanded(child: Text('Bugün sahada.', style: Theme.of(context).textTheme.headlineMedium)),
+          IconButton(tooltip: 'Oyun enerjin', onPressed: () => showEnergySheet(context), icon: const Icon(Icons.bolt_rounded))]),
         const SizedBox(height: 6),
         Text('Yeni bir gün, yeni futbol bulmacaları.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: p.muted)),
@@ -64,6 +66,10 @@ class AppHomePage extends StatelessWidget {
           PitchAction(label: 'Maçları gör', secondary: true,
             onPressed: () => _open(context, GameCatalog.daily)),
         ])),
+        const SizedBox(height: 12),
+        PitchRow(title: 'Günün Sorusu', subtitle: 'Üç seçenek · Tek cevap · 0 enerji',
+          icon: Icons.quiz_outlined, highlight: true,
+          onTap: () => _open(context, GameCatalog.dailyQuestion)),
         const SizedBox(height: 12),
         PitchRow(title: 'Ortak Oyuncu Keşfi', subtitle: 'İki kulüp seç, bağlantıyı bul.',
           icon: Icons.link_rounded, highlight: true,

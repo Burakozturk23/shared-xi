@@ -1,3 +1,4 @@
+import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,6 +42,8 @@ class _WhatIfPageState extends State<WhatIfPage> {
   @override
   void dispose(){c?.removeListener(_changed);if(widget.controller==null)c?.dispose();super.dispose();}
   Future<void> _open(WhatIfScenario s) async {
+    if (widget.controller == null && !await StoryEnergyAccess.open(context, 'what_if', s.id)) return;
+    if (!mounted) return;
     await Navigator.of(context).push(LinkballRoute(builder:(_)=>WhatIfPlayPage(controller:c!,scenario:s)));
     if(mounted)unawaited(c!.sync());
   }

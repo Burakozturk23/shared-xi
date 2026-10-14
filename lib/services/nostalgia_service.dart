@@ -44,7 +44,7 @@ class FirebaseNostalgiaGateway implements NostalgiaGateway {
                 timeout: const Duration(seconds: 15),
               ),
             )
-            .call(input);
+            .call({...input, 'energyClientVersion': 1});
     if (AuthService.uid != uid) {
       throw StateError('Hesap değişti. Ekranı yeniden aç.');
     }

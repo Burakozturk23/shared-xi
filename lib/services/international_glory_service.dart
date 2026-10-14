@@ -19,7 +19,7 @@ class FirebaseInternationalGateway implements InternationalGateway {
     final result = await FirebaseFunctions.instanceFor(app: Firebase.app(), region: 'europe-west1')
         .httpsCallable(action == 'status' ? 'getInternationalGlory' : action == 'hint' ? 'buyInternationalGloryHint' : 'submitInternationalGlory',
             options: HttpsCallableOptions(timeout: const Duration(seconds: 15)))
-        .call(input);
+        .call({...input, 'energyClientVersion': 1});
     if (AuthService.uid != uid) throw StateError('Hesap değişti. Ekranı yeniden aç.');
     return igMap(result.data);
   }
