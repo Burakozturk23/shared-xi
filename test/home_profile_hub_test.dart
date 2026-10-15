@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/controllers/home_resources_controller.dart';
@@ -75,6 +76,16 @@ Future<void> capture(WidgetTester t, String name) async {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final (family, path) in [
+      ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
+    ]) {
+      await (FontLoader(family)..addFont(rootBundle.load(path))).load();
+    }
+  });
   for (final light in [false, true]) {
     testWidgets(
       'home groups daily games and opens every entry; theme light=$light',
@@ -106,7 +117,8 @@ void main() {
         expect(selected, GameCatalog.discovery);
         await capture(t, 'home-hub-${light ? 'light' : 'dark'}');
         for (final game in GameCatalog.dailyGames) {
-          await t.ensureVisible(find.text(game.title));
+          await t.scrollUntilVisible(find.text(game.title), 150);
+          await t.pumpAndSettle();
           await t.tap(find.text(game.title));
           expect(selected, game);
         }
@@ -155,10 +167,13 @@ void main() {
         await capture(t, 'profile-hub-${light ? 'light' : 'dark'}');
         await t.tap(find.text('İsmi düzenle'));
         expect(edited, true);
+        await t.scrollUntilVisible(find.text('İlerleme & Görevler'), 150);
+        await t.pumpAndSettle();
         await t.tap(find.text('İlerleme & Görevler'));
         expect(selected, isA<ProgressionCenterPage>());
         expect(find.text('Hanedanlıklar Atlası'), findsNothing);
-        await t.ensureVisible(find.text('Hikâye koleksiyonlarım'));
+        await t.scrollUntilVisible(find.text('Hikâye koleksiyonlarım'), 150);
+        await t.pumpAndSettle();
         await t.tap(find.text('Hikâye koleksiyonlarım'));
         expect(selected, isA<StoryCollectionsPage>());
         await open(t, page, light: light, width: 320, scale: 2);
@@ -179,6 +194,7 @@ void main() {
       await capture(t, 'profile-story-collections');
       for (final entry in StoryCollectionsPage.collections) {
         await t.scrollUntilVisible(find.text(entry.title), 150);
+        await t.pumpAndSettle();
         await t.tap(find.text(entry.title));
         expect(selected, same(entry.page));
       }
