@@ -35,7 +35,14 @@ function resolveFixture(m) {
     (m.importance || 0) + Math.min(answers.length, 15);
   return {...m, homeClubId, awayClubId, sharedCount: answers.length, target: 3, priority, catalogKey: key};
 }
-const initial = (raw) => ({sessions: {}, pending: {}, progress: {}, streak: 0, lastWin: "", lastRepair: "", ...raw});
+function initial(raw) {
+  const state = {sessions: {}, pending: {}, progress: {}, streak: 0, lastWin: "", lastRepair: "", ...raw};
+  // RTDB drops empty arrays too: a newly created match has no found/wrong nodes.
+  state.sessions = Object.fromEntries(Object.entries(state.sessions || {}).map(([key, session]) =>
+    [key, {...session, found: Array.isArray(session.found) ? session.found : [],
+      wrong: Array.isArray(session.wrong) ? session.wrong : []}]));
+  return state;
+}
 function coins(found, total) {
   return found < 3 ? 0 : 15 + Math.min(found * 5, 30) + (found === total ? 15 : 0);
 }

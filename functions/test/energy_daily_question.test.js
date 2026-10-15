@@ -314,3 +314,19 @@ test("RTDB empty maps: first reservation confirms once and survives later sessio
   assert.equal(v.balance, 6); assert.equal(v.reserved, 0);
   assert.equal(h.read("economyState/alice/energy/sessions"), null);
 });
+
+test("RTDB empty maps: daily question keeps its feature gate and settles one answer once", async () => {
+  const off = harness({}, {omitEmptyObjects: true});
+  await assert.rejects(off.call("getDailyQuestion"),
+      (e) => e.code === "failed-precondition" && /henüz açılmadı/.test(e.message));
+  const h = setup({omitEmptyObjects: true});
+  const shown = await h.call("getDailyQuestion");
+  const input = {day: shown.question.day, questionId: shown.question.id,
+    option: select(shown.question.day).answer};
+  await h.call("submitDailyQuestion", input);
+  const result = await h.call("getDailyQuestion");
+  assert.equal(result.result.correct, true); assert.equal(result.pendingRewards, 0);
+  await h.call("submitDailyQuestion", input);
+  assert.equal(h.read("economyState/alice/balances/coins"), 8);
+  assert.equal(h.read("progressionState/alice/lifetimeXp"), 10);
+});
