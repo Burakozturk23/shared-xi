@@ -1,0 +1,529 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster",
+  "sha256": "752dd3485c19f0774c99573fbb889731a839e10fb9a06a6bac775c880bdfe45e",
+  "retrievedAt": "2026-10-15T13:11:44.801236+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 Spanish LALIGA",
+    "type": 14357,
+    "name": "2026-27 LALIGA"
+  },
+  "team": {
+    "id": "83",
+    "name": "Barcelona",
+    "displayName": "Barcelona"
+  },
+  "athletes": [
+    {
+      "id": "131634",
+      "displayName": "Wojciech Szczesny",
+      "fullName": "Wojciech Szczesny",
+      "shortName": "W. Szczesny",
+      "dateOfBirth": "1990-04-18T07:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Poland",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "187946",
+      "displayName": "Dominik Livakovic",
+      "fullName": "Dominik Livakovic",
+      "shortName": "D. Livakovic",
+      "dateOfBirth": "1995-01-09T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Croatia",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "297362",
+      "displayName": "Joan García",
+      "fullName": "Joan García",
+      "shortName": "J. García",
+      "dateOfBirth": "2001-05-04T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403576",
+      "displayName": "Iker Rodríguez",
+      "fullName": "Iker Rodríguez",
+      "shortName": "I. Rodríguez",
+      "dateOfBirth": "2008-02-22T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Spain",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403587",
+      "displayName": "Eder Aller",
+      "fullName": "Eder Aller",
+      "shortName": "E. Aller",
+      "dateOfBirth": "2007-04-04T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "128714",
+      "displayName": "Eric García",
+      "fullName": "Eric García",
+      "shortName": "E. García",
+      "dateOfBirth": "2001-01-09T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "176399",
+      "displayName": "João Cancelo",
+      "fullName": "João Cancelo",
+      "shortName": "J. Cancelo",
+      "dateOfBirth": "1994-05-27T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "186430",
+      "displayName": "Andreas Christensen",
+      "fullName": "Andreas Christensen",
+      "shortName": "A. Christensen",
+      "dateOfBirth": "1996-04-10T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Denmark",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "231692",
+      "displayName": "Jules Koundé",
+      "fullName": "Jules Koundé",
+      "shortName": "J. Koundé",
+      "dateOfBirth": "1998-11-12T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "312015",
+      "displayName": "Gerard Martín",
+      "fullName": "Gerard Martín",
+      "shortName": "G. Martín",
+      "dateOfBirth": "2002-02-26T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "323703",
+      "displayName": "Alejandro Balde",
+      "fullName": "Alejandro Balde",
+      "shortName": "A. Balde",
+      "dateOfBirth": "2003-10-18T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "368992",
+      "displayName": "Pau Cubarsí",
+      "fullName": "Pau Cubarsí",
+      "shortName": "P. Cubarsí",
+      "dateOfBirth": "2007-01-22T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403582",
+      "displayName": "Xavi Espart",
+      "fullName": "Xavi Espart",
+      "shortName": "X. Espart",
+      "dateOfBirth": "2007-05-21T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "416511",
+      "displayName": "Jordi Pesquer",
+      "fullName": "Jordi Pesquer",
+      "shortName": "J. Pesquer",
+      "dateOfBirth": "2009-01-26T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "219022",
+      "displayName": "Frenkie de Jong",
+      "fullName": "Frenkie de Jong",
+      "shortName": "F. de Jong",
+      "dateOfBirth": "1997-05-12T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Netherlands",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "227765",
+      "displayName": "Dani Olmo",
+      "fullName": "Dani Olmo",
+      "shortName": "D. Olmo",
+      "dateOfBirth": "1998-05-07T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "231828",
+      "displayName": "Rodri",
+      "fullName": "Rodri",
+      "shortName": "Rodri",
+      "dateOfBirth": "1996-06-22T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "250465",
+      "displayName": "Pedri",
+      "fullName": "Pedri",
+      "shortName": "Pedri",
+      "dateOfBirth": "2002-11-25T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "323702",
+      "displayName": "Gavi",
+      "fullName": "Gavi",
+      "shortName": "Gavi",
+      "dateOfBirth": "2004-08-05T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "354334",
+      "displayName": "Fermín López",
+      "fullName": "Fermín López",
+      "shortName": "F. López",
+      "dateOfBirth": "2003-05-11T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "376423",
+      "displayName": "Marc Bernal",
+      "fullName": "Marc Bernal",
+      "shortName": "M. Bernal",
+      "dateOfBirth": "2007-05-26T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403575",
+      "displayName": "Brian Fariñas",
+      "fullName": "Brian Fariñas",
+      "shortName": "B. Fariñas",
+      "dateOfBirth": "2006-02-09T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "217289",
+      "displayName": "Gabriel Jesus",
+      "fullName": "Gabriel Jesus",
+      "shortName": "G. Jesus",
+      "dateOfBirth": "1997-04-03T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "231050",
+      "displayName": "Raphinha",
+      "fullName": "Raphinha",
+      "shortName": "Raphinha",
+      "dateOfBirth": "1996-12-14T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "268782",
+      "displayName": "Anthony Gordon",
+      "fullName": "Anthony Gordon",
+      "shortName": "A. Gordon",
+      "dateOfBirth": "2001-02-24T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "274913",
+      "displayName": "Karim Adeyemi",
+      "fullName": "Karim Adeyemi",
+      "shortName": "K. Adeyemi",
+      "dateOfBirth": "2002-01-18T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "331152",
+      "displayName": "Roony Bardghji",
+      "fullName": "Roony Bardghji",
+      "shortName": "R. Bardghji",
+      "dateOfBirth": "2005-11-15T08:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Sweden",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "362150",
+      "displayName": "Lamine Yamal",
+      "fullName": "Lamine Yamal",
+      "shortName": "L. Yamal",
+      "dateOfBirth": "2007-07-13T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "365318",
+      "displayName": "Jesse Bisiwu",
+      "fullName": "Jesse Bisiwu",
+      "shortName": "J. Bisiwu",
+      "dateOfBirth": "2008-01-22T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399200",
+      "displayName": "Hamza Abdelkarim",
+      "fullName": "Hamza Abdelkarim",
+      "shortName": "H. Abdelkarim",
+      "dateOfBirth": "2008-01-01T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Egypt",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

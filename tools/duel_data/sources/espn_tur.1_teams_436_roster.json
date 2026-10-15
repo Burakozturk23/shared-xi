@@ -1,0 +1,512 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/436/roster",
+  "sha256": "88d0e3b36e6c039c5d556960bd59f1189d707687507c3cb98945857a84ef32d4",
+  "retrievedAt": "2026-10-15T13:11:53.568785+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 Turkish Super Lig",
+    "type": 14382,
+    "name": "2026-27 Turkish Super Lig"
+  },
+  "team": {
+    "id": "436",
+    "name": "Fenerbahce",
+    "displayName": "Fenerbahce"
+  },
+  "athletes": [
+    {
+      "id": "124880",
+      "displayName": "Mert Günok",
+      "fullName": "Mert Günok",
+      "shortName": "M. Günok",
+      "dateOfBirth": "1989-03-01T08:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "176948",
+      "displayName": "Ederson",
+      "fullName": "Ederson",
+      "shortName": "Ederson",
+      "dateOfBirth": "1993-08-17T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "275128",
+      "displayName": "Tarik Cetin",
+      "fullName": "Tarik Cetin",
+      "shortName": "T. Cetin",
+      "dateOfBirth": "1997-01-08T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "3126788",
+      "displayName": "Kuzey Sapaz",
+      "fullName": "Kuzey Sapaz",
+      "shortName": "K. Sapaz",
+      "dateOfBirth": null,
+      "height": null,
+      "displayHeight": null,
+      "citizenship": null,
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "159248",
+      "displayName": "Nathan Aké",
+      "fullName": "Nathan Aké",
+      "shortName": "N. Aké",
+      "dateOfBirth": "1995-02-18T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Netherlands",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "175195",
+      "displayName": "Milan Skriniar",
+      "fullName": "Milan Skriniar",
+      "shortName": "M. Skriniar",
+      "dateOfBirth": "1995-02-11T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Slovakia",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "222670",
+      "displayName": "Nélson Semedo",
+      "fullName": "Nélson Semedo",
+      "shortName": "N. Semedo",
+      "dateOfBirth": "1993-11-16T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "266002",
+      "displayName": "Mert Müldür",
+      "fullName": "Mert Müldür",
+      "shortName": "M. Müldür",
+      "dateOfBirth": "1999-04-03T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "290511",
+      "displayName": "Munir Mercan",
+      "fullName": "Munir Mercan",
+      "shortName": "M. Mercan",
+      "dateOfBirth": "2000-12-10T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "304866",
+      "displayName": "Jayden Oosterwolde",
+      "fullName": "Jayden Oosterwolde",
+      "shortName": "J. Oosterwolde",
+      "dateOfBirth": "2001-04-26T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Netherlands",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "320982",
+      "displayName": "Archie Brown",
+      "fullName": "Archie Brown",
+      "shortName": "A. Brown",
+      "dateOfBirth": "2002-05-28T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "340186",
+      "displayName": "Yiğit Demir",
+      "fullName": "Yiğit Demir",
+      "shortName": "Y. Demir",
+      "dateOfBirth": "2004-08-02T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "357205",
+      "displayName": "Kojo Peprah Oppong",
+      "fullName": "Kojo Peprah Oppong",
+      "shortName": "K. Oppong",
+      "dateOfBirth": "2004-06-04T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Ghana",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "380332",
+      "displayName": "Ognjen Mimovic",
+      "fullName": "Ognjen Mimovic",
+      "shortName": "O. Mimovic",
+      "dateOfBirth": "2004-08-17T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Serbia",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "173556",
+      "displayName": "N'Golo Kanté",
+      "fullName": "N'Golo Kanté",
+      "shortName": "N. Kanté",
+      "dateOfBirth": "1991-03-29T08:00Z",
+      "height": 66.0,
+      "displayHeight": "5' 6\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "195821",
+      "displayName": "Marco Asensio",
+      "fullName": "Marco Asensio",
+      "shortName": "M. Asensio",
+      "dateOfBirth": "1996-01-21T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "211923",
+      "displayName": "Irfan Can Kahveci",
+      "fullName": "Irfan Can Kahveci",
+      "shortName": "I. Kahveci",
+      "dateOfBirth": "1995-07-15T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "248676",
+      "displayName": "Matteo Guendouzi",
+      "fullName": "Matteo Guendouzi",
+      "shortName": "M. Guendouzi",
+      "dateOfBirth": "1999-04-14T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "261302",
+      "displayName": "Mert Yandas",
+      "fullName": "Mert Yandas",
+      "shortName": "M. Yandas",
+      "dateOfBirth": "1994-08-19T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "305629",
+      "displayName": "Ismail Yüksek",
+      "fullName": "Ismail Yüksek",
+      "shortName": "I. Yüksek",
+      "dateOfBirth": "1999-01-26T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "311984",
+      "displayName": "Bartug Elmaz",
+      "fullName": "Bartug Elmaz",
+      "shortName": "B. Elmaz",
+      "dateOfBirth": "2003-02-19T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "139437",
+      "displayName": "Romelu Lukaku",
+      "fullName": "Romelu Lukaku",
+      "shortName": "R. Lukaku",
+      "dateOfBirth": "1993-05-13T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "240209",
+      "displayName": "Vedat Muriqi",
+      "fullName": "Vedat Muriqi",
+      "shortName": "V. Muriqi",
+      "dateOfBirth": "1994-04-24T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Kosovo",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "276221",
+      "displayName": "Mason Greenwood",
+      "fullName": "Mason Greenwood",
+      "shortName": "M. Greenwood",
+      "dateOfBirth": "2001-10-01T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "306789",
+      "displayName": "Kerem Aktürkoglu",
+      "fullName": "Kerem Aktürkoglu",
+      "shortName": "K. Aktürkoglu",
+      "dateOfBirth": "1998-10-21T07:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "322813",
+      "displayName": "Oguz Aydin",
+      "fullName": "Oguz Aydin",
+      "shortName": "O. Aydin",
+      "dateOfBirth": "2000-10-27T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "329486",
+      "displayName": "Nene Dorgeles",
+      "fullName": "Nene Dorgeles",
+      "shortName": "N. Dorgeles",
+      "dateOfBirth": "2002-12-23T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Mali",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "416476",
+      "displayName": "Alaettin Ekici",
+      "fullName": "Alaettin Ekici",
+      "shortName": "A. Ekici",
+      "dateOfBirth": "2009-01-01T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Türkiye",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "3144698",
+      "displayName": "Yi̇Ği̇T Çolak",
+      "fullName": "Yi̇Ği̇T Çolak",
+      "shortName": "Y. Çolak",
+      "dateOfBirth": null,
+      "height": null,
+      "displayHeight": null,
+      "citizenship": null,
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

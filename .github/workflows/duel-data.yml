@@ -1,0 +1,27 @@
+name: Duel data contract
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Reproduce package without network
+        run: python tools/duel_data/build_runtime.py --check
+      - name: Validate reviewed sources and integration
+        run: python -m unittest discover -s tools/duel_data -p 'test_*.py'
+      - name: Validate server data contract
+        run: node --test functions/test/duel_data.test.js

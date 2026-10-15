@@ -1,0 +1,65 @@
+{
+  "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/22.json",
+  "sha256": "cd68b20941aebee27b76c40c89a5eec81a731dde762ed2d9f637799587892fd8",
+  "retrievedAt": "2026-10-15T13:12:03.601285+00:00",
+  "provider": "statsbomb",
+  "matches": [
+    {
+      "match_id": 18236,
+      "match_date": "2011-05-28",
+      "home_team": {
+        "home_team_id": 217,
+        "home_team_name": "Barcelona",
+        "home_team_gender": "male",
+        "home_team_group": null,
+        "country": {
+          "id": 214,
+          "name": "Spain"
+        },
+        "managers": [
+          {
+            "id": 36,
+            "name": "Josep Guardiola i Sala",
+            "nickname": "Pep Guardiola",
+            "dob": "1971-01-18",
+            "country": {
+              "id": 214,
+              "name": "Spain"
+            }
+          }
+        ]
+      },
+      "away_team": {
+        "away_team_id": 39,
+        "away_team_name": "Manchester United",
+        "away_team_gender": "male",
+        "away_team_group": null,
+        "country": {
+          "id": 68,
+          "name": "England"
+        },
+        "managers": [
+          {
+            "id": 790,
+            "name": "Alex Ferguson",
+            "nickname": null,
+            "dob": "1941-12-31",
+            "country": {
+              "id": 201,
+              "name": "Scotland"
+            }
+          }
+        ]
+      },
+      "competition": {
+        "competition_id": 16,
+        "country_name": "Europe",
+        "competition_name": "Champions League"
+      },
+      "season": {
+        "season_id": 22,
+        "season_name": "2010/2011"
+      }
+    }
+  ]
+}

@@ -1,0 +1,444 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/teams/160/roster",
+  "sha256": "b3e0577d60f8c2c73ef593e9eb93967010b4dbd02b223ca1853ffa29954fe0df",
+  "retrievedAt": "2026-10-15T13:11:58.063934+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 French Ligue 1",
+    "type": 14252,
+    "name": "2026-27 Ligue 1"
+  },
+  "team": {
+    "id": "160",
+    "name": "Paris Saint-Germain",
+    "displayName": "Paris Saint-Germain"
+  },
+  "athletes": [
+    {
+      "id": "248699",
+      "displayName": "Matvei Safonov",
+      "fullName": "Matvei Safonov",
+      "shortName": "M. Safonov",
+      "dateOfBirth": "1999-02-25T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Russia",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "288925",
+      "displayName": "Lucas Chevalier",
+      "fullName": "Lucas Chevalier",
+      "shortName": "L. Chevalier",
+      "dateOfBirth": "2001-11-06T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "France",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "387725",
+      "displayName": "Alessandro Longoni",
+      "fullName": "Alessandro Longoni",
+      "shortName": "A. Longoni",
+      "dateOfBirth": "2008-01-31T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Italy",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "3143886",
+      "displayName": "Adam Mouak",
+      "fullName": "Adam Mouak",
+      "shortName": "A. Mouak",
+      "dateOfBirth": null,
+      "height": null,
+      "displayHeight": null,
+      "citizenship": null,
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "159047",
+      "displayName": "Marquinhos",
+      "fullName": "Marquinhos",
+      "shortName": "Marquinhos",
+      "dateOfBirth": "1994-05-14T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "160115",
+      "displayName": "Lucas Digne",
+      "fullName": "Lucas Digne",
+      "shortName": "L. Digne",
+      "dateOfBirth": "1993-07-20T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "196200",
+      "displayName": "Lucas Hernández",
+      "fullName": "Lucas Hernández",
+      "shortName": "L. Hernández",
+      "dateOfBirth": "1996-02-14T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "240233",
+      "displayName": "Achraf Hakimi",
+      "fullName": "Achraf Hakimi",
+      "shortName": "A. Hakimi",
+      "dateOfBirth": "1998-11-04T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Morocco",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "287005",
+      "displayName": "Willian Pacho",
+      "fullName": "Willian Pacho",
+      "shortName": "W. Pacho",
+      "dateOfBirth": "2001-10-16T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Ecuador",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "290591",
+      "displayName": "Nuno Mendes",
+      "fullName": "Nuno Mendes",
+      "shortName": "N. Mendes",
+      "dateOfBirth": "2002-06-19T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "304503",
+      "displayName": "Illia Zabarnyi",
+      "fullName": "Illia Zabarnyi",
+      "shortName": "I. Zabarnyi",
+      "dateOfBirth": "2002-09-01T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Ukraine",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "316128",
+      "displayName": "Lucas Beraldo",
+      "fullName": "Lucas Beraldo",
+      "shortName": "L. Beraldo",
+      "dateOfBirth": "2003-11-24T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "214596",
+      "displayName": "Fabián Ruiz",
+      "fullName": "Fabián Ruiz",
+      "shortName": "F. Ruiz",
+      "dateOfBirth": "1996-04-03T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "288897",
+      "displayName": "Vitinha",
+      "fullName": "Vitinha",
+      "shortName": "Vitinha",
+      "dateOfBirth": "2000-02-13T08:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "329690",
+      "displayName": "Maghnes Akliouche",
+      "fullName": "Maghnes Akliouche",
+      "shortName": "M. Akliouche",
+      "dateOfBirth": "2002-02-25T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "345581",
+      "displayName": "Warren Zaïre-Emery",
+      "fullName": "Warren Zaïre-Emery",
+      "shortName": "W. Zaïre-Emery",
+      "dateOfBirth": "2006-03-08T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "355061",
+      "displayName": "João Neves",
+      "fullName": "João Neves",
+      "shortName": "J. Neves",
+      "dateOfBirth": "2004-09-27T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "379088",
+      "displayName": "Senny Mayulu",
+      "fullName": "Senny Mayulu",
+      "shortName": "S. Mayulu",
+      "dateOfBirth": "2006-05-17T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403578",
+      "displayName": "Dro Fernández",
+      "fullName": "Dro Fernández",
+      "shortName": "D. Fernández",
+      "dateOfBirth": "2008-01-12T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "229744",
+      "displayName": "Ousmane Dembélé",
+      "fullName": "Ousmane Dembélé",
+      "shortName": "O. Dembélé",
+      "dateOfBirth": "1997-05-15T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "France",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "265869",
+      "displayName": "Ferran Torres",
+      "fullName": "Ferran Torres",
+      "shortName": "F. Torres",
+      "dateOfBirth": "2000-02-29T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "274745",
+      "displayName": "Khvicha Kvaratskhelia",
+      "fullName": "Khvicha Kvaratskhelia",
+      "shortName": "K. Kvaratskhelia",
+      "dateOfBirth": "2001-02-12T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Georgia",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "336388",
+      "displayName": "Désiré Doué",
+      "fullName": "Désiré Doué",
+      "shortName": "D. Doué",
+      "dateOfBirth": "2005-06-03T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "France",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "353363",
+      "displayName": "Mika Godts",
+      "fullName": "Mika Godts",
+      "shortName": "M. Godts",
+      "dateOfBirth": "2005-06-07T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403419",
+      "displayName": "Quentin Ndjantou",
+      "fullName": "Quentin Ndjantou",
+      "shortName": "Q. Ndjantou",
+      "dateOfBirth": "2007-07-23T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "France",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

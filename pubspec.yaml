@@ -66,6 +66,7 @@ flutter:
     - assets/data/five_mode_expansion.json
     - assets/data/derby_day_v2.json
     - assets/data/what_if_v2.json
+    - assets/data/duel/
     - assets/data/player_journey_chapter_one.json
     - assets/data/player_journey_chapter_two.json
     - assets/data/player_journey_chapter_three.json

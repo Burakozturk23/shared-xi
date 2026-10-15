@@ -1,0 +1,529 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/363/roster",
+  "sha256": "e653a2bc6738585df1e2c0257834ff294c4f557855c9785021b99b79f1fd44f1",
+  "retrievedAt": "2026-10-15T13:11:49.248324+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 English Premier League",
+    "type": 14308,
+    "name": "2026-27 English Premier League"
+  },
+  "team": {
+    "id": "363",
+    "name": "Chelsea",
+    "displayName": "Chelsea"
+  },
+  "athletes": [
+    {
+      "id": "158626",
+      "displayName": "Emiliano Martínez",
+      "fullName": "Emiliano Martínez",
+      "shortName": "E. Martínez",
+      "dateOfBirth": "1992-09-02T07:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "286774",
+      "displayName": "Gaga Slonina",
+      "fullName": "Gaga Slonina",
+      "shortName": "G. Slonina",
+      "dateOfBirth": "2004-05-15T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "300049",
+      "displayName": "Teddy Sharman-Lowe",
+      "fullName": "Teddy Sharman-Lowe",
+      "shortName": "T. Sharman-Lowe",
+      "dateOfBirth": "2003-03-30T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "England",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "332343",
+      "displayName": "Mike Penders",
+      "fullName": "Mike Penders",
+      "shortName": "M. Penders",
+      "dateOfBirth": "2005-07-31T07:00Z",
+      "height": 79.0,
+      "displayHeight": "6' 7\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "189007",
+      "displayName": "Reece James",
+      "fullName": "Reece James",
+      "shortName": "R. James",
+      "dateOfBirth": "1999-12-08T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "265918",
+      "displayName": "Maxence Lacroix",
+      "fullName": "Maxence Lacroix",
+      "shortName": "M. Lacroix",
+      "dateOfBirth": "2000-04-06T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "270190",
+      "displayName": "Wesley Fofana",
+      "fullName": "Wesley Fofana",
+      "shortName": "W. Fofana",
+      "dateOfBirth": "2000-12-17T08:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "296410",
+      "displayName": "Levi Colwill",
+      "fullName": "Levi Colwill",
+      "shortName": "L. Colwill",
+      "dateOfBirth": "2003-02-26T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "300331",
+      "displayName": "Pep Chavarría",
+      "fullName": "Pep Chavarría",
+      "shortName": "P. Chavarría",
+      "dateOfBirth": "1998-04-10T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "308947",
+      "displayName": "Malo Gusto",
+      "fullName": "Malo Gusto",
+      "shortName": "M. Gusto",
+      "dateOfBirth": "2003-05-19T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "353951",
+      "displayName": "Jorrel Hato",
+      "fullName": "Jorrel Hato",
+      "shortName": "J. Hato",
+      "dateOfBirth": "2006-03-07T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Netherlands",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "362486",
+      "displayName": "Marco Palestra",
+      "fullName": "Marco Palestra",
+      "shortName": "M. Palestra",
+      "dateOfBirth": "2005-03-03T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "363218",
+      "displayName": "Aaron Anselmino",
+      "fullName": "Aaron Anselmino",
+      "shortName": "A. Anselmino",
+      "dateOfBirth": "2005-04-29T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "368317",
+      "displayName": "Josh Acheampong",
+      "fullName": "Josh Acheampong",
+      "shortName": "J. Acheampong",
+      "dateOfBirth": "2006-05-05T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "408508",
+      "displayName": "Olutayo Subuloye",
+      "fullName": "Olutayo Subuloye",
+      "shortName": "O. Subuloye",
+      "dateOfBirth": "2007-12-18T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "127262",
+      "displayName": "Jordan Henderson",
+      "fullName": "Jordan Henderson",
+      "shortName": "J. Henderson",
+      "dateOfBirth": "1990-06-17T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "265653",
+      "displayName": "Morgan Rogers",
+      "fullName": "Morgan Rogers",
+      "shortName": "M. Rogers",
+      "dateOfBirth": "2002-07-26T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "289877",
+      "displayName": "Moisés Caicedo",
+      "fullName": "Moisés Caicedo",
+      "shortName": "M. Caicedo",
+      "dateOfBirth": "2001-11-02T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Ecuador",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "296395",
+      "displayName": "Cole Palmer",
+      "fullName": "Cole Palmer",
+      "shortName": "C. Palmer",
+      "dateOfBirth": "2002-05-06T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "308217",
+      "displayName": "Romeo Lavia",
+      "fullName": "Romeo Lavia",
+      "shortName": "R. Lavia",
+      "dateOfBirth": "2004-01-06T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "320760",
+      "displayName": "Valentín Barco",
+      "fullName": "Valentín Barco",
+      "shortName": "V. Barco",
+      "dateOfBirth": "2004-07-23T07:00Z",
+      "height": 67.0,
+      "displayHeight": "5' 7\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "376274",
+      "displayName": "Geovany Quenda",
+      "fullName": "Geovany Quenda",
+      "shortName": "G. Quenda",
+      "dateOfBirth": "2007-04-30T07:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399562",
+      "displayName": "Mahdi Nicoll-Jazuli",
+      "fullName": "Mahdi Nicoll-Jazuli",
+      "shortName": "M. Nicoll-Jazuli",
+      "dateOfBirth": "2010-01-06T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399564",
+      "displayName": "Reggie Watson",
+      "fullName": "Reggie Watson",
+      "shortName": "R. Watson",
+      "dateOfBirth": "2010-01-26T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "115271",
+      "displayName": "Danny Welbeck",
+      "fullName": "Danny Welbeck",
+      "shortName": "D. Welbeck",
+      "dateOfBirth": "1990-11-26T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "256115",
+      "displayName": "Pedro Neto",
+      "fullName": "Pedro Neto",
+      "shortName": "P. Neto",
+      "dateOfBirth": "2000-03-09T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "284960",
+      "displayName": "João Pedro",
+      "fullName": "João Pedro",
+      "shortName": "João Pedro",
+      "dateOfBirth": "2001-09-26T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "304871",
+      "displayName": "Emmanuel Emegha",
+      "fullName": "Emmanuel Emegha",
+      "shortName": "E. Emegha",
+      "dateOfBirth": "2003-02-03T08:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Netherlands",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "339879",
+      "displayName": "Jamie Gittens",
+      "fullName": "Jamie Gittens",
+      "shortName": "J. Gittens",
+      "dateOfBirth": "2004-08-08T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "376481",
+      "displayName": "Estêvão",
+      "fullName": "Estêvão",
+      "shortName": "Estêvão",
+      "dateOfBirth": "2007-04-24T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

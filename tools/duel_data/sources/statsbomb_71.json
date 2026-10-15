@@ -1,0 +1,65 @@
+{
+  "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/71.json",
+  "sha256": "8b93c9f4aea3157bed17c799798020f42e0f0b5bbf58de4e9aa4b64103a35aa0",
+  "retrievedAt": "2026-10-15T13:12:07.306357+00:00",
+  "provider": "statsbomb",
+  "matches": [
+    {
+      "match_id": 3750235,
+      "match_date": "1972-05-31",
+      "home_team": {
+        "home_team_id": 806,
+        "home_team_name": "Ajax",
+        "home_team_gender": "male",
+        "home_team_group": null,
+        "country": {
+          "id": 160,
+          "name": "Netherlands"
+        },
+        "managers": [
+          {
+            "id": 1001760,
+            "name": "Ștefan Kovács",
+            "nickname": null,
+            "dob": "1920-10-02",
+            "country": {
+              "id": 187,
+              "name": "Romania"
+            }
+          }
+        ]
+      },
+      "away_team": {
+        "away_team_id": 238,
+        "away_team_name": "Inter Milan",
+        "away_team_gender": "male",
+        "away_team_group": null,
+        "country": {
+          "id": 112,
+          "name": "Italy"
+        },
+        "managers": [
+          {
+            "id": 1001761,
+            "name": "Giovanni Invernizzi",
+            "nickname": null,
+            "dob": "1931-08-26",
+            "country": {
+              "id": 112,
+              "name": "Italy"
+            }
+          }
+        ]
+      },
+      "competition": {
+        "competition_id": 16,
+        "country_name": "Europe",
+        "competition_name": "Champions League"
+      },
+      "season": {
+        "season_id": 71,
+        "season_name": "1971/1972"
+      }
+    }
+  ]
+}

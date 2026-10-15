@@ -1,0 +1,65 @@
+{
+  "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/44.json",
+  "sha256": "4313089c2d57af11368bc6b32cdd939f0124d6b8c8b085d4f190b8de5db88fbd",
+  "retrievedAt": "2026-10-15T13:12:07.306912+00:00",
+  "provider": "statsbomb",
+  "matches": [
+    {
+      "match_id": 3752619,
+      "match_date": "2004-05-26",
+      "home_team": {
+        "home_team_id": 129,
+        "home_team_name": "AS Monaco",
+        "home_team_gender": "male",
+        "home_team_group": null,
+        "country": {
+          "id": 150,
+          "name": "Monaco"
+        },
+        "managers": [
+          {
+            "id": 545,
+            "name": "Didier Deschamps",
+            "nickname": null,
+            "dob": "1968-10-15",
+            "country": {
+              "id": 78,
+              "name": "France"
+            }
+          }
+        ]
+      },
+      "away_team": {
+        "away_team_id": 256,
+        "away_team_name": "FC Porto",
+        "away_team_gender": "male",
+        "away_team_group": null,
+        "country": {
+          "id": 183,
+          "name": "Portugal"
+        },
+        "managers": [
+          {
+            "id": 383,
+            "name": "José Mario Felix dos Santos Mourinho",
+            "nickname": "José Mourinho",
+            "dob": "1963-01-26",
+            "country": {
+              "id": 183,
+              "name": "Portugal"
+            }
+          }
+        ]
+      },
+      "competition": {
+        "competition_id": 16,
+        "country_name": "Europe",
+        "competition_name": "Champions League"
+      },
+      "season": {
+        "season_id": 44,
+        "season_name": "2003/2004"
+      }
+    }
+  ]
+}
