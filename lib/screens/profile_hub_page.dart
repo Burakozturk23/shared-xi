@@ -10,6 +10,7 @@ import 'store_page.dart';
 import 'community_center_page.dart';
 import 'progression_center_page.dart';
 import 'app_settings_page.dart';
+import 'story_collections_page.dart';
 
 class ProfileHubPage extends StatefulWidget {
   const ProfileHubPage({super.key});
@@ -19,9 +20,8 @@ class ProfileHubPage extends StatefulWidget {
 
 class _ProfileHubPageState extends State<ProfileHubPage> {
   Future<void> _open(Widget page, {bool modern = false}) async {
-    await Navigator.of(
-      context,
-    ).push(LinkballRoute(builder: (_) => page, modern: modern));
+    await Navigator.of(context)
+        .push(LinkballRoute(builder: (_) => page, modern: modern));
     if (mounted) setState(() {});
   }
 
@@ -36,7 +36,7 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       children: [
         Text(
-          'Futbol yolculuğun.',
+          'Oyuncu alanın.',
           style: Theme.of(context).textTheme.headlineLarge,
         ),
         const SizedBox(height: 24),
@@ -89,7 +89,7 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
             ],
           ),
         ),
-        const PitchSectionTitle('Oyuncu alanın'),
+        const PitchSectionTitle('Profilin ve ilerlemen'),
         PitchRow(
           title: 'Profilim ve istatistikler',
           subtitle: 'Başarıların, avatarların ve maç geçmişin',
@@ -101,6 +101,13 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
           title: 'Görevler ve ödüller',
           icon: Icons.task_alt_rounded,
           onTap: () => _open(const ProgressionCenterPage(), modern: true),
+        ),
+        const SizedBox(height: 16),
+        PitchRow(
+          title: 'Hikâye koleksiyonlarım',
+          subtitle: 'Damgaların, kartların ve maç hatıraların',
+          icon: Icons.auto_stories_outlined,
+          onTap: () => _open(const StoryCollectionsPage(), modern: true),
         ),
         const SizedBox(height: 16),
         PitchRow(

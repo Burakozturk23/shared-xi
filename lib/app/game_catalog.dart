@@ -1,4 +1,5 @@
 import '../screens/daily_question_page.dart';
+
 import 'package:flutter/material.dart';
 
 import '../screens/football_calendar_page.dart';
@@ -62,9 +63,13 @@ class GameGroup {
 
 class GameCatalog {
   static const dailyQuestion = GameEntry(
-    title: 'Günün Sorusu', subtitle: 'Tek soru, üç seçenek · 0 enerji',
-    icon: Icons.quiz_outlined, page: DailyQuestionPage(),
-    requiresRepository: false, requiresAuth: true, modern: true,
+    title: 'Günün Sorusu',
+    subtitle: 'Tek soru, üç seçenek · 0 enerji',
+    icon: Icons.quiz_outlined,
+    page: DailyQuestionPage(),
+    requiresRepository: false,
+    requiresAuth: true,
+    modern: true,
   );
   static const daily = GameEntry(
     title: 'Günün Maçları',
@@ -83,6 +88,8 @@ class GameCatalog {
     requiresRepository: false,
     modern: true,
   );
+  static const dailyGames = <GameEntry>[dailyFootballer, daily, dailyQuestion];
+
   static const discovery = GameEntry(
     title: 'Ortak Oyuncu Keşfi',
     subtitle: 'İki kulüp veya kulüp ve ülke seç',

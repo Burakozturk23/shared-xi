@@ -12,7 +12,8 @@ import 'history_archive_page.dart';
 import '../models/history_record.dart';
 
 class UclMomentsPage extends StatefulWidget {
-  const UclMomentsPage({super.key, this.controller});
+  const UclMomentsPage({super.key, this.controller, this.openCollection = false});
+  final bool openCollection;
   final UclMomentsController? controller;
   @override
   State<UclMomentsPage> createState() => _UclMomentsPageState();
@@ -23,7 +24,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
   String? _uid;
   String? _loadError;
   int _generation = 0;
-  bool _collection = false;
+  late bool _collection = widget.openCollection;
   String _filter = 'all';
   final _scroll = ScrollController();
   Future<void> _startWithEnergy() async {
