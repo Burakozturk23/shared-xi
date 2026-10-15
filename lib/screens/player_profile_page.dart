@@ -1,12 +1,11 @@
-import 'derby_day_page.dart';
-import 'football_docu_page.dart';
-import 'dynasties_page.dart';
-import 'international_glory_page.dart';
-import 'turkish_nostalgia_page.dart';
-import '../widgets/what_if_profile_showcase.dart';
-import '../widgets/journey_profile_showcase.dart';
+import 'story_collections_page.dart';
+import 'app_settings_page.dart';
+import 'privacy_account_page.dart';
+import '../widgets/pitch_ui.dart';
 import '../widgets/nickname_edit_dialog.dart';
+
 import 'package:flutter/material.dart';
+
 import '../widgets/profile_kit.dart';
 import '../models/store_collection.dart';
 
@@ -44,6 +43,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
   bool _booting = true;
   String? _bootError;
   Stream<PremiumEntitlement>? _premiumStream;
+  Stream<UserProfile?>? _profileStream;
 
   @override
   void initState() {
@@ -56,6 +56,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
       await AuthService.ensureSignedIn();
       await ProfileService.ensureCanonicalProfile();
       await ProfileRuntimeAuditService.auditCurrentProfile();
+      _profileStream = ProfileService.watchMyProfile();
       if (AuthService.isGoogleAccount) {
         _premiumStream = PremiumService.watchStatus();
       }
@@ -88,23 +89,30 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
   }
 
   Future<void> _openAvatarPicker(UserProfile profile) async {
-    await Navigator.push<void>(context, LinkballRoute(
-      modern: true,
-      builder: (_) => AvatarCollectionPage(
-        initialState: AvatarOwnershipState(
-          selectedAvatarId: profile.avatarId,
-          ownedAvatarIds: profile.ownedAvatarIds,
+    await Navigator.push<void>(
+      context,
+      LinkballRoute(
+        modern: true,
+        builder: (_) => AvatarCollectionPage(
+          initialState: AvatarOwnershipState(
+            selectedAvatarId: profile.avatarId,
+            ownedAvatarIds: profile.ownedAvatarIds,
+          ),
+          onSelect: AvatarService.selectAvatar,
+          onReload: AvatarService.fetchMyAvatarState,
+          onVisitStore: (id) async {
+            await Navigator.push<void>(
+              context,
+              LinkballRoute(
+                modern: true,
+                builder: (_) =>
+                    StorePage(initialTab: 'avatar', initialAvatarId: id),
+              ),
+            );
+          },
         ),
-        onSelect: AvatarService.selectAvatar,
-        onReload: AvatarService.fetchMyAvatarState,
-        onVisitStore: (id) async {
-          await Navigator.push<void>(context, LinkballRoute(
-            modern: true,
-            builder: (_) => StorePage(initialTab: 'avatar', initialAvatarId: id),
-          ));
-        },
       ),
-    ));
+    );
   }
 
   Future<void> _upgradeToGoogle() async {
@@ -121,6 +129,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
       if (mounted) {
         setState(() {
           _premiumStream = PremiumService.watchStatus();
+          _profileStream = ProfileService.watchMyProfile();
         });
       }
     }
@@ -144,7 +153,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
               },
             )
           : StreamBuilder<UserProfile?>(
-              stream: ProfileService.watchMyProfile(),
+              stream: _profileStream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return EmptyState(
@@ -184,135 +193,18 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                           });
                         }
                       },
-                      child: ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                        children: [
-                          if (profile.nicknameNeedsSetup)
-                            _NicknameSetupWarning(
-                              onTap: () => _editNickname(profile),
-                            ),
-                          if (profile.nicknameNeedsSetup)
-                            const SizedBox(height: 12),
-                          _ProfileHero(
-                            profile: profile,
-                            proActive: premium.active,
-                            onEditNickname: () => _editNickname(profile),
-                            onEditAvatar: () => _openAvatarPicker(profile),
-                          ),
-                          const SizedBox(height: 16),
-                          if (!profile.isPersistent)
-                            _GoogleUpgradeCard(onTap: _upgradeToGoogle),
-                          if (!profile.isPersistent) const SizedBox(height: 16),
-                          _StatsCard(profile: profile),
-                          const SizedBox(height: 16),
-                          if (profile.isPersistent)
-                            _ProInsightsCard(
-                              profile: profile,
-                              entitlement: premium,
-                              onUpgrade: () => Navigator.push<void>(
-                                context,
-                                LinkballRoute(
-                                  modern: true,
-                                  builder: (_) => const PremiumPage(),
-                                ),
-                              ),
-                            ),
-                          if (profile.isPersistent) const SizedBox(height: 16),
-                          if (profile.isPersistent)
-                            const AchievementProfilePreviewCard(),
-                          if (profile.isPersistent) const SizedBox(height: 16),
-                          if (profile.isPersistent) JourneyProfileShowcase(key: ValueKey(AuthService.uid)),
-                          WhatIfProfileShowcase(key: ValueKey('what-if-${AuthService.uid}')),
-                          ListTile(leading: const Icon(Icons.castle_outlined), title: const Text('Hanedanlıklar Atlası'), subtitle: const Text('16 mühür · Futbol Tarihçisi'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DynastiesPage(openAtlas: true)))),
-                          ListTile(leading: const Icon(Icons.movie_filter_outlined), title: const Text('Belgesel Arşivi'), subtitle: const Text('24 dosya · Futbolun perde arkası'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FootballDocuPage(openCollection: true)))),
-                          ListTile(leading: const Icon(Icons.public), title: const Text('Derbi Pasaportu'), subtitle: const Text('48 rekabet · 16 ülke'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DerbyDayPage(openCollection: true)))),
-                          ListTile(leading: const Icon(Icons.public), title: const Text('Milletler Albümü'), subtitle: const Text('44 millî karşılaşma hatırası'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(LinkballRoute<void>(builder: (_) => const InternationalGloryPage(openAlbum: true)))),
-                          ListTile(
-                            leading: const Icon(Icons.collections_bookmark_outlined),
-                            title: const Text('Nostalji Albümü'),
-                            subtitle: const Text('Türk futbolundan 15 dönem hatırası'),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () => Navigator.of(context).push(LinkballRoute<void>(
-                              builder: (_) => const TurkishNostalgiaPage(showAlbum: true))),
-                          ),
-                          if (profile.isPersistent) const SizedBox(height: 16),
-                          if (profile.isPersistent)
-                            _ProgressionShortcutCard(
-                              onTap: () {
-                                Navigator.push<void>(
-                                  context,
-                                  LinkballRoute(
-                                    modern: true,
-                                    builder: (_) =>
-                                        const ProgressionCenterPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          if (profile.isPersistent) const SizedBox(height: 16),
-                          if (profile.isPersistent)
-                            _FriendsShortcutCard(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  LinkballRoute(
-                                    modern: true,
-                                    builder: (_) => const FriendsPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          if (profile.isPersistent) const SizedBox(height: 16),
-                          if (profile.isPersistent)
-                            _SafetyShortcutCard(
-                              onTap: () {
-                                Navigator.push<void>(
-                                  context,
-                                  LinkballRoute(
-                                    modern: true,
-                                    builder: (_) =>
-                                        const SocialSafetyCenterPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          if (profile.isPersistent) const SizedBox(height: 16),
-                          _StoreShortcutCard(
-                            isPersistent: profile.isPersistent,
-                            onTap: () {
-                              Navigator.push<void>(
-                                context,
-                                LinkballRoute(
-                                  modern: true,
-                                  builder: (_) => const StorePage(),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _AvatarCollectionCard(
-                            profile: profile,
-                            onTap: () => _openAvatarPicker(profile),
-                          ),
-                          const SizedBox(height: 16),
-                          _RecentMatchesCard(profile: profile),
-                          const SizedBox(height: 16),
-                          Card(
-                            child: ListTile(
-                              title: const Text('Topluluk'),
-                              leading: const Icon(Icons.forum_outlined),
-                              trailing: const Icon(Icons.chevron_right_rounded),
-                              onTap: () => Navigator.push(
-                                context,
-                                LinkballRoute(
-                                  modern: true,
-                                  builder: (_) => const CommunityCenterPage(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: PlayerProfileBody(
+                        profile: profile,
+                        premium: premium,
+                        onEditNickname: () => _editNickname(profile),
+                        onEditAvatar: () => _openAvatarPicker(profile),
+                        onLinkAccount: _upgradeToGoogle,
+                        onOpen: (page) =>
+                            Navigator.of(context)
+                                .push(LinkballRoute(builder: (_) => page)),
+                        badgePreview: profile.isPersistent
+                            ? const AchievementProfilePreviewCard()
+                            : null,
                       ),
                     );
                   },
@@ -323,163 +215,214 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
   }
 }
 
-class _ProfileHero extends StatelessWidget {
+/// Presentation stays independent of Firebase subscriptions and route lifetime.
+class PlayerProfileBody extends StatelessWidget {
+  const PlayerProfileBody({
+    super.key,
+    required this.profile,
+    required this.onEditNickname,
+    required this.onEditAvatar,
+    required this.onLinkAccount,
+    required this.onOpen,
+    this.premium = const PremiumEntitlement.inactive(),
+    this.badgePreview,
+  });
   final UserProfile profile;
-  final bool proActive;
-  final VoidCallback onEditNickname;
-  final VoidCallback onEditAvatar;
+  final PremiumEntitlement premium;
+  final VoidCallback onEditNickname, onEditAvatar, onLinkAccount;
+  final ValueChanged<Widget> onOpen;
+  final Widget? badgePreview;
+  @override
+  Widget build(BuildContext context) => ListView(
+    key: const PageStorageKey('player-profile'),
+    physics: const AlwaysScrollableScrollPhysics(),
+    padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+    children: [
+      if (profile.nicknameNeedsSetup) ...[
+        _NicknameSetupWarning(onTap: onEditNickname),
+        const SizedBox(height: 12),
+      ],
+      _ProfileHero(
+        profile: profile,
+        proActive: premium.active,
+        onEditNickname: onEditNickname,
+        onEditAvatar: onEditAvatar,
+      ),
+      if (!profile.isPersistent) ...[
+        const SizedBox(height: 12),
+        _GoogleUpgradeCard(onTap: onLinkAccount),
+      ],
+      const PitchSectionTitle('Hedeflerin ve başarıların'),
+      _ProgressionShortcutCard(
+        onTap: () => onOpen(const ProgressionCenterPage()),
+      ),
+      if (badgePreview != null) ...[const SizedBox(height: 10), badgePreview!],
+      const SizedBox(height: 10),
+      PitchPanel(
+        padding: EdgeInsets.zero,
+        child: ExpansionTile(
+          key: const PageStorageKey('profile-performance'),
+          leading: const Icon(Icons.bar_chart_rounded),
+          title: const Text('Maç istatistiklerim'),
+          subtitle: Text(
+            '${profile.elo} Elo · ${profile.played} maç · ${profile.wins} galibiyet',
+          ),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [
+            _StatsCard(profile: profile),
+            _RecentMatchesCard(profile: profile),
+            if (premium.active)
+              _ProInsightsCard(
+                profile: profile,
+                entitlement: premium,
+                onUpgrade: () => onOpen(const PremiumPage()),
+              ),
+          ],
+        ),
+      ),
+      const PitchSectionTitle('Tarzın ve koleksiyonların'),
+      _AvatarCollectionCard(profile: profile, onTap: onEditAvatar),
+      const SizedBox(height: 10),
+      PitchRow(
+        title: 'Hikâye koleksiyonlarım',
+        subtitle: '8 hikâyeden damgalar, kartlar ve hatıralar',
+        icon: Icons.auto_stories_outlined,
+        highlight: true,
+        onTap: () => onOpen(const StoryCollectionsPage()),
+      ),
+      const SizedBox(height: 10),
+      _StoreShortcutCard(
+        isPersistent: profile.isPersistent,
+        onTap: () => onOpen(const StorePage()),
+      ),
+      const PitchSectionTitle('Birlikte oyna'),
+      if (profile.isPersistent) ...[
+        _FriendsShortcutCard(onTap: () => onOpen(const FriendsPage())),
+        const SizedBox(height: 10),
+      ],
+      PitchRow(
+        title: 'Topluluk',
+        subtitle: 'Oyuncularla buluş, yeni rekabetler keşfet',
+        icon: Icons.forum_outlined,
+        onTap: () => onOpen(const CommunityCenterPage()),
+      ),
+      const PitchSectionTitle('Hesabın ve tercihlerin'),
+      PitchRow(
+        title: 'Linkball Pro',
+        subtitle: premium.active
+            ? 'Üyeliğini ve avantajlarını yönet'
+            : 'Pro avantajlarını keşfet',
+        icon: Icons.workspace_premium_outlined,
+        onTap: () => onOpen(const PremiumPage()),
+      ),
+      if (profile.isPersistent) ...[
+        const SizedBox(height: 10),
+        _SafetyShortcutCard(
+          onTap: () => onOpen(const SocialSafetyCenterPage()),
+        ),
+      ],
+      const SizedBox(height: 10),
+      PitchRow(
+        title: 'Gizlilik ve hesap',
+        subtitle: 'Verilerini ve hesap tercihlerini yönet',
+        icon: Icons.privacy_tip_outlined,
+        onTap: () => onOpen(const PrivacyAccountPage()),
+      ),
+      const SizedBox(height: 10),
+      PitchRow(
+        title: 'Uygulama ayarları',
+        subtitle: 'Tema, dil, ses ve titreşim',
+        icon: Icons.settings_outlined,
+        onTap: () => onOpen(const AppSettingsPage()),
+      ),
+    ],
+  );
+}
 
+class _ProfileHero extends StatelessWidget {
   const _ProfileHero({
     required this.profile,
     required this.proActive,
     required this.onEditNickname,
     required this.onEditAvatar,
   });
-
+  final UserProfile profile;
+  final bool proActive;
+  final VoidCallback onEditNickname, onEditAvatar;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(proActive ? 4 : 0),
-                  decoration: proActive
-                      ? BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 3,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary.withValues(alpha: 0.28),
-                              blurRadius: 18,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: UserAvatarBadge(
-                    avatarId: profile.avatarId,
-                    radius: 48,
-                  ),
-                ),
-                Positioned(
-                  right: -4,
-                  bottom: -4,
-                  child: Material(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: onEditAvatar,
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Icon(
-                          Icons.edit_rounded,
-                          size: 17,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+    final p = PitchColors.of(context);
+    return PitchPanel(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              UserAvatarBadge(avatarId: profile.avatarId, radius: 32),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      proActive ? 'LINKBALL PRO' : 'OYUNCU KARTIN',
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: p.accent, letterSpacing: 1),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      profile.displayName,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    if (profile.normalizedName?.isNotEmpty == true)
+                      Text(
+                        '@${profile.normalizedName}',
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: p.muted),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (profileKit(profile.kitId) case final kit?) ...[
-              const SizedBox(height: 8),
-              ProfileKitView(kit: kit, size: 104),
-              Text(kit.title, style: Theme.of(context).textTheme.labelSmall),
-            ],
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Text(
-                    profile.displayName,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Takma adı düzenle',
-                  onPressed: onEditNickname,
-                  icon: const Icon(Icons.edit_outlined),
-                ),
-              ],
-            ),
-            if (profile.normalizedName?.isNotEmpty == true)
-              Text(
-                '@${profile.normalizedName}',
-                style: TextStyle(
-                  color: Theme.of(context).hintColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            if (proActive) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.36),
-                  ),
-                ),
-                child: Text(
-                  'LINKBALL PRO',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.8,
-                  ),
+                  ],
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            profile.isPersistent
+                ? 'Hesabın bağlı · İlerlemen seninle'
+                : 'Konuk oyuncu · Hesabını bağlayabilirsin',
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: p.muted),
+          ),
+          if (profileKit(profile.kitId) case final kit?) ...[
             const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(
-                color: profile.isPersistent
-                    ? PitchColors.of(context).success.withValues(alpha: 0.14)
-                    : PitchColors.of(context).muted.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                profile.isPersistent
-                    ? 'Google ile bağlı · kalıcı profil'
-                    : 'Misafir profil · bu cihazla sınırlı',
-                style: TextStyle(
-                  color: profile.isPersistent
-                      ? PitchColors.of(context).success
-                      : PitchColors.of(context).muted,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+            Row(
+              children: [
+                ProfileKitView(kit: kit, size: 48),
+                const SizedBox(width: 12),
+                Expanded(child: Text(kit.title)),
+              ],
             ),
           ],
-        ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              OutlinedButton.icon(
+                onPressed: onEditNickname,
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: const Text('İsmi düzenle'),
+              ),
+              TextButton.icon(
+                onPressed: onEditAvatar,
+                icon: const Icon(Icons.face_outlined, size: 18),
+                label: const Text('Avatarı değiştir'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -648,9 +591,8 @@ class _ProInsightsCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.12),
+                    color: Theme.of(context).colorScheme.primary
+                        .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -893,7 +835,9 @@ class _AvatarCollectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final owned = UserAvatarCatalog.all.where((a) => profile.ownedAvatarIds.contains(a.id)).length;
+    final owned = UserAvatarCatalog.all
+        .where((a) => profile.ownedAvatarIds.contains(a.id))
+        .length;
     final total = UserAvatarCatalog.all.length;
 
     return Card(
@@ -1070,9 +1014,8 @@ class _SafetyShortcutCard extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: 0.12),
+            color: Theme.of(context).colorScheme.primary
+                .withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(
@@ -1107,9 +1050,8 @@ class _FriendsShortcutCard extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: 0.12),
+            color: Theme.of(context).colorScheme.primary
+                .withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(

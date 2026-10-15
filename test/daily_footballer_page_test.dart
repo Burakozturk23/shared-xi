@@ -78,15 +78,16 @@ void main() {
   for (final light in [false, true]) {
     testWidgets('home and clue cards fit ${light ? 'light' : 'dark'} at normal and large text', (tester) async {
       GameEntry? selected;
-      await open(tester, Scaffold(body: SafeArea(child: AppHomePage(onOpen: (entry) => selected = entry))), light: light);
+      await open(tester, Scaffold(body: SafeArea(child: AppHomePage(loadResources: false, onOpen: (entry) => selected = entry))), light: light);
       expect(find.text('Tüm oyunları keşfet'), findsNothing);
-      await tester.tap(find.text('Futbolcuyu bul'));
+      await tester.ensureVisible(find.text('Günün Futbolcusu'));
+      await tester.tap(find.text('Günün Futbolcusu'));
       expect(selected, same(GameCatalog.dailyFootballer));
       expect(selected!.requiresRepository, isFalse);
       expect(selected!.requiresAuth, isFalse);
       await capture(tester, 'home-footballer-${light ? 'light' : 'dark'}');
-      await tester.scrollUntilVisible(find.text('Ortak Oyuncu Keşfi'), 150);
-      await tester.tap(find.text('Ortak Oyuncu Keşfi'));
+      await tester.ensureVisible(find.text('Bağlantıyı keşfet'));
+      await tester.tap(find.text('Bağlantıyı keşfet'));
       expect(selected, same(GameCatalog.discovery));
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -120,7 +121,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
-      await open(tester, Scaffold(body: SafeArea(child: AppHomePage(onOpen: (_) {}))),
+      await open(tester, Scaffold(body: SafeArea(child: AppHomePage(loadResources: false, onOpen: (_) {}))),
         light: light, width: 320, scale: 1.8);
       await tester.scrollUntilVisible(find.text('Günlük ödül ve görevler'), 250);
       expect(tester.takeException(), isNull);

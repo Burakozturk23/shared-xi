@@ -72,10 +72,10 @@ class _AppShellState extends State<AppShell> {
     final p = PitchColors.of(context);
     final hubHeader = _index == 1 || _index == 2;
     final pages = <Widget>[
-      const AppHomePage(),
+      AppHomePage(active: _index == 0, loadResources: widget.observeAuth),
       const GamesCatalogPage(),
       OnlineHubPage(),
-      ProfileHubPage(),
+      ProfileHubPage(key: ValueKey(AuthService.uid)),
     ];
     return PopScope(
       canPop: _index == 0,
