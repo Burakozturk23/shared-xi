@@ -15,6 +15,15 @@ Bu değişiklik ayrı daldadır; main birleştirmesi veya canlı Firebase açıl
 - `energy_refill` ve `quiz_hint` için ayrı günlük sayaçlar; mevcut imzalı AdMob SSV ve sunucuda doğrulanmış Pro. İptal edilmiş yeni yerleşimler ödül vermez. Kapasite dolarsa doğrulanmış enerji makbuzu bekler; kaybolmaz.
 - Ana ekran erişimi, açık/koyu tema uyumlu enerji paneli ve Günün Sorusu ekranı.
 - Yeni özel veri yolları kapalı güvenlik kurallarıyla korunur; hesap silme `dailyQuestionState` ve cüzdandaki enerjiyi kaldırır.
+- İkinci paket: Anagram'da 8 soruluk seri tek enerji oturumudur. Deste ve istek kimliği
+  onaydan önce diske yazılır; kayıp onay yanıtı aynı kimlikle tekrar edilir. Aynı hesap
+  ve cihazda 24 saat içinde devam ikinci enerji harcamaz. Süresi dolan seri sessizce
+  yeniden satın alınmaz; kullanıcı yeni seri seçer. Tamamlanmış sonuç ekranı ücretsizdir.
+- Anagram kayıtları hesap bazında ayrılır. Eski cihaz kaydı ilk açan hesaba bir kez
+  taşınır; bu serinin devamı ücretsizdir. Sonraki yeni seri sunucu erişimine tabidir.
+  Cihazlar arası oyun ilerlemesi senkronizasyonu bu pakette yoktur.
+- Normal/bot oturumları global bayrağa ek olarak `energy.sessionModes` listesinde
+  açıkça seçilmelidir. Liste varsayılan olarak boştur; yalnızca tamamlanan mod açılır.
 
 ## Katalog ve kalan kapsam — tüm PDF tamamlandı olarak değerlendirilmemeli
 
@@ -33,12 +42,13 @@ yayın kayıtlarını dışlayarak tekrar engelini sürdürür.
 indirgeme, tek doğru cevap ve kaynak zorunludur. Yeni bağımsız içerikler için kaynak,
 tarih/para birimi ve editoryal onay eklenmeden canlı bankaya alınmamalıdır.
 
-**Bot ve normal oyunlar/Club Manager:** bu pakette motorun mod sözlüğü ve oturum API'si
-hazırdır; her yerel oyunun durum kaydı, 24 saatlik gerçek oyun devamı ve yeniden
-başlatma entegrasyonu henüz tamamlanmadı. Bu modlarda yeni ücretlendirme veya XP
-aktif edilmez. Özellikle Anagram'ın 8 sorusunu tek oturum ve Club Manager'ın resmî
-fikstürünü tek maç olarak bağlamak sonraki mod paketinin yayın şartıdır. Yerel
-sonuç beyanını güvenilir kabul eden XP callable'ı eklenmemiştir.
+**Bot ve diğer normal oyunlar/Club Manager:** Anagram dışındaki yerel oyunların durum
+kaydı, 24 saatlik gerçek oyun devamı ve yeniden başlatma entegrasyonu henüz
+tamamlanmadı. Bu modlar `sessionModes` listesine eklenmemelidir. Club Manager'ın
+resmî fikstürünü tek maç olarak bağlamak sonraki mod paketinin yayın şartıdır.
+Anagram dahil yerel sonuçlar henüz sunucuda doğrulanmadığından yeni XP verilmez.
+Eski veya değiştirilmiş APK'da yerel alıştırma oynamayı sunucudan engellemek mümkün
+değildir; bu istemciler için doğrulanmamış sonuç ödülü sağlayan bir API açılmaz.
 
 **Yerel eski ilerleme:** sunucuda karşılığı olmayan çevrimdışı eski açılışlar otomatik
 olarak kanıtlanamaz. Tam yayından önce bu hesapların mevcut senkronizasyonu tamamlanmalı;
@@ -57,7 +67,7 @@ sunucuda görülen geçmiş hakları korur; kanıtsız yerel kayıtları doğrul
 ```json
 {
   "runtimeConfig": {
-    "energy": {"enabled": true, "percent": 5, "minClientVersion": 1},
+    "energy": {"enabled": true, "percent": 5, "minClientVersion": 1, "sessionModes": []},
     "dailyQuestion": {"enabled": true}
   }
 }
@@ -67,6 +77,9 @@ sunucuda görülen geçmiş hakları korur; kanıtsız yerel kayıtları doğrul
 tüm hesaplar. Kodun varsayılanı `enabled:false, percent:0`; eksik ayar da kapalıdır.
 `minClientVersion`, uygulama sürüm numarası değil enerji protokolü sürümüdür.
 Eski APK, pilot gruptaysa hikâye cevap/ücretli ipucu çağrılarında güncelleme mesajı alır.
+Anagram cihaz kontrolleri de geçtiğinde yalnızca `sessionModes: ["anagram"]` açılır.
+Listeyi tekrar boşaltmak, onaylanmamış Anagram rezervasyonunu ücretlendirmeden iptal
+eder. Önceden serisi açılmış kullanıcı aynı seriyi ücretsiz tamamlayabilir.
 
 5. Gerçek cihazda App Check, AdMob SSV, reklam iptali, geç makbuz, dolu kapasite,
    geçersiz/süresi dolmuş Pro ve Google'a misafir yükseltmesini kontrol et.
@@ -88,3 +101,8 @@ aynı sürümden dağıtılmalıdır. En güvenlisi test projesinde tam Function
 - Günün Sorusu/enerji ekran görüntüleri: `.dart_tool/energy_qa/`.
 - GitHub Actions'ın mevcut Android debug APK gate'i.
 - Fiziksel cihaz/gerçek reklam kontrolleri otomatik test sonucu olarak iddia edilmez.
+
+İlk paket `5d319069` / Actions `38576954004`: 404 Flutter testi, analyze,
+Functions lint/test ve Android debug APK derlemesi başarılıdır.
+Anagram paketinin ek regresyonları: 8 tur/tek ücret, uygulama dönüşü, kayıp onay,
+disk hatası, süre aşımı, eski kayıt, rollout kapatma ve hesap değişimi.

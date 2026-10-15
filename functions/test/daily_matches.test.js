@@ -7,8 +7,8 @@ const {createService: createAds, dayKey} = require("../rewarded_ads");
 const {defaults} = require("../economy_config");
 const catalog = require("../config/daily_catalog.json");
 const unit = "ca-app-pub-1234567890123456/1234567890";
-function setup() {
-  const h = harness();
+function setup(options) {
+  const h = harness({}, options);
   let linked = true;
   const service = createService({db: h.db, now: () => h.now, isLinked: async () => linked,
     grantCoins: (...args) => h.context.lbProgressionGrantCoins(h.db, ...args)});
@@ -121,4 +121,35 @@ test("anonymous base and doubled rewards wait for same-account linking, then set
   const {event} = await s.ad("daily_double", session.key); await s.ads.accept(event);
   assert.equal(s.wallet(), 0); assert.equal((await s.service.status("alice")).pendingCoins, 60);
   s.setLinked(true); await s.service.status("alice"); await s.service.status("alice"); assert.equal(s.wallet(), 60);
+});
+
+test("RTDB empty arrays: new daily match supports resume, hints, answers and one reward", async () => {
+  const s = setup({omitEmptyObjects: true});
+  await s.put();
+  const {session} = await s.service.start("alice", 1);
+  assert.deepEqual(session.found, []); assert.deepEqual(session.wrong, []);
+  assert.equal(s.h.read("dailyMatchState/alice/sessions/" + session.key + "/found"), null);
+  assert.equal(s.h.read("dailyMatchState/alice/sessions/" + session.key + "/wrong"), null);
+  assert.equal((await s.service.start("alice", 1)).session.key, session.key);
+  assert.equal((await s.service.status("alice")).matches[0].session.foundPlayers.length, 0);
+  const hinted = await s.service.play("alice", {key: session.key, action: "hint"});
+  assert.ok(hinted.session.hint);
+  await s.answer(session.key);
+  const result = await s.service.play("alice", {key: session.key, action: "finish"});
+  assert.equal(result.session.reward, 30); assert.equal(s.wallet(), 30);
+  await s.service.play("alice", {key: session.key, action: "finish"});
+  assert.equal(s.wallet(), 30);
+});
+
+test("RTDB empty arrays: wrong answers and an immediate finish do not crash or grant coins", async () => {
+  const s = setup({omitEmptyObjects: true});
+  await s.put(undefined, [s.fixture(1), s.fixture(2)]);
+  const first = (await s.service.start("alice", 1)).session;
+  for (const answer of ["unknown1", "unknown2", "unknown3"]) {
+    await s.service.play("alice", {key: first.key, action: "answer", answer});
+  }
+  assert.equal((await s.service.start("alice", 1)).session.finished, true);
+  const second = (await s.service.start("alice", 2)).session;
+  const ended = await s.service.play("alice", {key: second.key, action: "finish"});
+  assert.equal(ended.session.reward, 0); assert.equal(s.wallet(), 0);
 });

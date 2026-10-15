@@ -4,9 +4,10 @@ const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
 const {select, bank} = require("../daily_question");
 const req = (n) => n.toString(16).padStart(32, "0");
-function setup() {
-  const h = harness();
-  h.seed("runtimeConfig", {energy: {enabled: true, percent: 100, minClientVersion: 1}, dailyQuestion: {enabled: true}});
+function setup(options) {
+  const h = harness({}, options);
+  h.seed("runtimeConfig", {energy: {enabled: true, percent: 100, minClientVersion: 1,
+    sessionModes: require("../config/energy_v1.json").sessionModes}, dailyQuestion: {enabled: true}});
   return h;
 }
 async function spend(h, n, mode = "bot_loto", unitId = "session") {
@@ -19,6 +20,35 @@ test("energy is off by default and cannot change existing balances", async () =>
   const h = harness();
   assert.equal((await h.call("getEnergyStatus")).enabled, false);
   assert.equal((await h.call("startEnergySession", {})).enabled, false);
+});
+test("repeatable modes require their own rollout; rollback cancels unpaid holds", async () => {
+  const h = setup();
+  h.seed("runtimeConfig/energy", {enabled: true, percent: 100, minClientVersion: 1});
+  const input = {requestId: req(1), mode: "anagram", clientVersion: 1};
+  assert.equal((await h.call("startEnergySession", input)).enabled, false);
+  assert.equal((await h.call("getEnergyStatus")).available, 6);
+  h.seed("runtimeConfig/energy/sessionModes", ["anagram"]);
+  const started = await h.call("startEnergySession", input);
+  assert.equal(started.session.status, "reserved");
+  assert.equal((await h.call("startEnergySession", {...input, mode: "bot_loto"})).enabled, false);
+  h.seed("runtimeConfig/energy/sessionModes", []);
+  assert.equal((await h.call("confirmEnergySession", {sessionId: req(1)})).enabled, false);
+  assert.equal((await h.call("getEnergyStatus")).available, 6);
+  assert.equal((await h.call("resumeEnergySession", {sessionId: req(1), mode: "anagram"})).enabled, false);
+});
+test("Anagram uses one idempotent session for all eight questions and no new XP", async () => {
+  const h = setup();
+  const input = {requestId: req(1), mode: "anagram", clientVersion: 1};
+  await Promise.all([1, 2].map(() => h.call("startEnergySession", input)));
+  await Promise.all([1, 2].map(() => h.call("confirmEnergySession", {sessionId: req(1)})));
+  for (let i = 0; i < 8; i++) {
+    const r = await h.call("resumeEnergySession", {sessionId: req(1), mode: "anagram"});
+    assert.equal(r.session.id, req(1)); assert.equal(r.serverNow, h.now);
+  }
+  assert.equal((await h.call("getEnergyStatus")).balance, 5);
+  assert.equal(h.read("progressionState/alice"), null);
+  h.setTime(h.now + 86400001);
+  await assert.rejects(h.call("resumeEnergySession", {sessionId: req(1), mode: "anagram"}), /yok/);
 });
 test("reservation, idempotent confirmation, hourly refill and Istanbul counters", async () => {
   const h = setup();
@@ -229,4 +259,74 @@ test("publication history prevents a repeat even when a new catalog would select
   const shown = await h.call("getDailyQuestion");
   assert.notEqual(shown.question.id, q.id);
   assert.equal((await h.call("getDailyQuestion")).question.id, shown.question.id);
+});
+
+test("RTDB empty maps: first status works with rollout off and preserves an existing wallet", async () => {
+  const h = harness({}, {omitEmptyObjects: true});
+  h.seed("economyState/alice", {balances: {coins: 75}});
+  for (let i = 0; i < 2; i++) {
+    const v = await h.call("getEnergyStatus");
+    assert.equal(v.enabled, false);
+    assert.equal(v.balance, 6); assert.equal(v.available, 6); assert.equal(v.reserved, 0);
+    assert.equal(v.nextRefillAt, null);
+  }
+  assert.equal(h.read("economyState/alice/energy/sessions"), null);
+  assert.equal(h.read("economyState/alice/energy/unlocked"), null);
+  assert.equal(h.read("economyState/alice/energy/receipts"), null);
+  assert.equal(h.read("economyState/alice/balances/coins"), 75);
+});
+
+test("RTDB empty maps: partial energy retains balance, refill clock and daily allowances", async () => {
+  const h = setup({omitEmptyObjects: true});
+  h.seed("economyState/alice/energy", {balance: 3, refillAt: h.now - 1800000,
+    sessions: null, unlocked: {}, receipts: null,
+    daily: {day: "2026-09-20", ads: 1, purchases: 1, pro: true}});
+  const v = await h.call("getEnergyStatus");
+  assert.equal(v.enabled, true); assert.equal(v.balance, 3); assert.equal(v.available, 3);
+  assert.equal(v.nextRefillAt, h.now + 1800000);
+  assert.equal(v.daily.ads, 1); assert.equal(v.daily.purchases, 1); assert.equal(v.daily.pro, true);
+});
+
+test("RTDB empty maps: migrated stories are free and missing sessions return the intended error", async () => {
+  const h = setup({omitEmptyObjects: true});
+  h.seed("uclMomentsState/alice/results/ucl_01", {correct: true});
+  const r = await spend(h, 1, "ucl", "ucl_01");
+  assert.equal(r.unlocked, true);
+  assert.equal(h.read("economyState/alice/energy/sessions"), null);
+  await h.context.lbEnergyService().requireStory("alice", "ucl", "ucl_01", 1);
+  await assert.rejects(h.call("resumeEnergySession", {sessionId: req(9), mode: "anagram"}),
+      (e) => e.code === "not-found");
+  assert.equal((await h.call("getEnergyStatus")).balance, 6);
+});
+
+test("RTDB empty maps: first reservation confirms once and survives later session cleanup", async () => {
+  const h = setup({omitEmptyObjects: true});
+  await h.call("getEnergyStatus");
+  const r = await h.call("startEnergySession", {requestId: req(1), mode: "anagram", clientVersion: 1});
+  assert.equal((await h.call("getEnergyStatus")).reserved, 1);
+  await h.call("confirmEnergySession", {sessionId: r.session.id});
+  await h.call("confirmEnergySession", {sessionId: r.session.id});
+  assert.equal((await h.call("getEnergyStatus")).balance, 5);
+  assert.equal((await h.call("resumeEnergySession", {sessionId: r.session.id, mode: "anagram"})).session.id,
+      r.session.id);
+  h.setTime(h.now + 2 * 86400000 + 1);
+  const v = await h.call("getEnergyStatus");
+  assert.equal(v.balance, 6); assert.equal(v.reserved, 0);
+  assert.equal(h.read("economyState/alice/energy/sessions"), null);
+});
+
+test("RTDB empty maps: daily question keeps its feature gate and settles one answer once", async () => {
+  const off = harness({}, {omitEmptyObjects: true});
+  await assert.rejects(off.call("getDailyQuestion"),
+      (e) => e.code === "failed-precondition" && /henüz açılmadı/.test(e.message));
+  const h = setup({omitEmptyObjects: true});
+  const shown = await h.call("getDailyQuestion");
+  const input = {day: shown.question.day, questionId: shown.question.id,
+    option: select(shown.question.day).answer};
+  await h.call("submitDailyQuestion", input);
+  const result = await h.call("getDailyQuestion");
+  assert.equal(result.result.correct, true); assert.equal(result.pendingRewards, 0);
+  await h.call("submitDailyQuestion", input);
+  assert.equal(h.read("economyState/alice/balances/coins"), 8);
+  assert.equal(h.read("progressionState/alice/lifetimeXp"), 10);
 });
