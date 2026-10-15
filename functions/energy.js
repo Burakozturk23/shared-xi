@@ -53,6 +53,9 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     });
     if (error) throw error;
     const state = normalize(tx.snapshot.val());
+    // RTDB omits empty maps from committed snapshots. Restore them for every
+    // caller, including status, migrated stories and missing-session checks.
+    state.energy = refreshed(state.energy, time);
     await project(db, uid, state);
     return state.energy;
   }

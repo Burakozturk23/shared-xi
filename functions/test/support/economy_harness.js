@@ -9,13 +9,20 @@ const auth = {uid: "alice", token: {firebase: {identities: {"google.com": ["alic
 // Runs the actual index.js exports. Only Firebase transport and the clock are
 // substituted. Transactions serialize conflicting calls and retry a cold null
 // callback against server data; projections remain separate writes.
-function harness(initial = {}) {
-  const tree = clone(initial);
+function harness(initial = {}, {omitEmptyObjects = false} = {}) {
+  // Opt-in RTDB persistence semantics: empty maps/null children are not stored.
+  function stored(value) {
+    if (!omitEmptyObjects || value == null || typeof value !== "object") return clone(value);
+    const entries = Object.entries(value).map(([key, child]) => [key, stored(child)])
+        .filter(([, child]) => child != null);
+    return entries.length ? Object.assign(Array.isArray(value) ? [] : {}, Object.fromEntries(entries)) : null;
+  }
+  const tree = stored(initial) || {};
   let time = Date.parse("2026-09-20T10:00:00Z");
   let remote = clone(configModule.defaults);
   let queue = Promise.resolve();
   let failPath = null;
-  const snap = (value) => ({val: () => clone(value), exists: () => value != null});
+  const snap = (value) => ({val: () => stored(value), exists: () => stored(value) != null});
   function get(key = "") {
     return key.split("/").filter(Boolean).reduce((v, p) => v && v[p], tree) ?? null;
   }
@@ -23,8 +30,9 @@ function harness(initial = {}) {
     const parts = key.split("/").filter(Boolean);
     let node = tree;
     for (const p of parts.slice(0, -1)) node = node[p] ||= {};
-    if (value == null) delete node[parts.at(-1)];
-    else node[parts.at(-1)] = clone(value);
+    const persisted = stored(value);
+    if (persisted == null) delete node[parts.at(-1)];
+    else node[parts.at(-1)] = persisted;
   }
   function maybeFail(key) {
     if (key === failPath) {
