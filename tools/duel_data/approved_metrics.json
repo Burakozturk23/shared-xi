@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "uefa:henry:international-retirement": {
+      "url": "https://www.uefa.com/uefaeuro/history/news/0254-0d7c93f328f1-51b68802845b-1000--henry-retires-as-france-s-all-time-top-scorer/",
+      "publishedAt": "2010-07-15",
+      "provider": "UEFA",
+      "retrievedAt": "2026-10-15",
+      "finding": "Final France senior career: 123 appearances and 51 goals, including friendlies."
+    },
+    "uefa:henry:retirement": {
+      "url": "https://www.uefa.com/news-media/news/021c-0e8ec1687d78-c169cffabb8f-1000--france-icon-henry-s-finest-hours/",
+      "publishedAt": "2014-12-16",
+      "provider": "UEFA",
+      "retrievedAt": "2026-10-15",
+      "finding": "Professional retirement confirmed; final match in November 2014."
+    },
+    "uefa:van-nistelrooy:retirement": {
+      "url": "https://www.uefa.com/news-media/news/01fd-0e7e2b4b13d9-7804ec355369-1000--van-nistelrooy-bows-out-on-a-high/",
+      "publishedAt": "2012-05-14",
+      "provider": "UEFA",
+      "retrievedAt": "2026-10-15",
+      "finding": "Final Netherlands senior career: 70 appearances, 34 goals; professional retirement in May 2012. Article UCL tally includes qualifying and is NOT used for F18."
+    },
+    "uefa:ucl:main-top-scorers": {
+      "url": "https://www.uefa.com/uefachampionsleague/news/0257-0e910cf2494a-5185150de9d4-1000/",
+      "publishedAt": "2026-09-10",
+      "provider": "UEFA",
+      "retrievedAt": "2026-10-15",
+      "finding": "Explicit excluding-qualifying section: Henry 50; Van Nistelrooy 56. Only these retired players are extracted; active-player 2026 totals are not backdated."
+    }
+  },
+  "metrics": [
+    {
+      "playerId": 3207,
+      "expectedName": "Thierry Henry",
+      "expectedCountry": "France",
+      "expectedPosition": "Attack",
+      "criterionId": "F15",
+      "value": 123,
+      "unit": "count",
+      "scopeId": "F15:senior_caps:v1",
+      "cutoff": "2025-12-31",
+      "status": "verified",
+      "coverage": "complete",
+      "finalCareer": true,
+      "retiredBy": "2014-12-16",
+      "sources": [
+        "uefa:henry:international-retirement",
+        "uefa:henry:retirement"
+      ]
+    },
+    {
+      "playerId": 3207,
+      "expectedName": "Thierry Henry",
+      "expectedCountry": "France",
+      "expectedPosition": "Attack",
+      "criterionId": "F16",
+      "value": 51,
+      "unit": "count",
+      "scopeId": "F16:v1",
+      "cutoff": "2025-12-31",
+      "status": "verified",
+      "coverage": "complete",
+      "finalCareer": true,
+      "retiredBy": "2014-12-16",
+      "sources": [
+        "uefa:henry:international-retirement",
+        "uefa:henry:retirement"
+      ]
+    },
+    {
+      "playerId": 3207,
+      "expectedName": "Thierry Henry",
+      "expectedCountry": "France",
+      "expectedPosition": "Attack",
+      "criterionId": "F18",
+      "value": 50,
+      "unit": "count",
+      "scopeId": "F18:v1",
+      "cutoff": "2025-12-31",
+      "status": "verified",
+      "coverage": "complete",
+      "finalCareer": true,
+      "retiredBy": "2014-12-16",
+      "sources": [
+        "uefa:henry:international-retirement",
+        "uefa:henry:retirement",
+        "uefa:ucl:main-top-scorers"
+      ]
+    },
+    {
+      "playerId": 4000000056,
+      "expectedName": "Ruud van Nistelrooy",
+      "expectedCountry": "Netherlands",
+      "expectedPosition": "Attack",
+      "criterionId": "F15",
+      "value": 70,
+      "unit": "count",
+      "scopeId": "F15:senior_caps:v1",
+      "cutoff": "2025-12-31",
+      "status": "verified",
+      "coverage": "complete",
+      "finalCareer": true,
+      "retiredBy": "2012-05-14",
+      "sources": [
+        "uefa:van-nistelrooy:retirement"
+      ]
+    },
+    {
+      "playerId": 4000000056,
+      "expectedName": "Ruud van Nistelrooy",
+      "expectedCountry": "Netherlands",
+      "expectedPosition": "Attack",
+      "criterionId": "F16",
+      "value": 34,
+      "unit": "count",
+      "scopeId": "F16:v1",
+      "cutoff": "2025-12-31",
+      "status": "verified",
+      "coverage": "complete",
+      "finalCareer": true,
+      "retiredBy": "2012-05-14",
+      "sources": [
+        "uefa:van-nistelrooy:retirement"
+      ]
+    },
+    {
+      "playerId": 4000000056,
+      "expectedName": "Ruud van Nistelrooy",
+      "expectedCountry": "Netherlands",
+      "expectedPosition": "Attack",
+      "criterionId": "F18",
+      "value": 56,
+      "unit": "count",
+      "scopeId": "F18:v1",
+      "cutoff": "2025-12-31",
+      "status": "verified",
+      "coverage": "complete",
+      "finalCareer": true,
+      "retiredBy": "2012-05-14",
+      "sources": [
+        "uefa:van-nistelrooy:retirement",
+        "uefa:ucl:main-top-scorers"
+      ]
+    }
+  ]
+}

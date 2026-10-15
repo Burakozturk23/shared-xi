@@ -1,0 +1,461 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/teams/132/roster",
+  "sha256": "6fa06133271f8f64ffdc1532ad3ffb35f71e8b8ef87b4bd5351644869bb97d5b",
+  "retrievedAt": "2026-10-15T13:11:53.641481+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 German Bundesliga",
+    "type": 14358,
+    "name": "2026-27 German Bundesliga"
+  },
+  "team": {
+    "id": "132",
+    "name": "Bayern Munich",
+    "displayName": "Bayern Munich"
+  },
+  "athletes": [
+    {
+      "id": "84774",
+      "displayName": "Manuel Neuer",
+      "fullName": "Manuel Neuer",
+      "shortName": "M. Neuer",
+      "dateOfBirth": "1986-03-27T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "113733",
+      "displayName": "Sven Ulreich",
+      "fullName": "Sven Ulreich",
+      "shortName": "S. Ulreich",
+      "dateOfBirth": "1988-08-03T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "323790",
+      "displayName": "Jonas Urbig",
+      "fullName": "Jonas Urbig",
+      "shortName": "J. Urbig",
+      "dateOfBirth": "2003-08-08T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "3110056",
+      "displayName": "David Podar-Stiube",
+      "fullName": "David Podar-Stiube",
+      "shortName": "D. Podar-Stiube",
+      "dateOfBirth": null,
+      "height": null,
+      "displayHeight": null,
+      "citizenship": null,
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "97111",
+      "displayName": "Hiroki Ito",
+      "fullName": "Hiroki Ito",
+      "shortName": "H. Ito",
+      "dateOfBirth": "1999-05-12T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Japan",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "120829",
+      "displayName": "Nathaniel Brown",
+      "fullName": "Nathaniel Brown",
+      "shortName": "N. Brown",
+      "dateOfBirth": "2003-06-16T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "157688",
+      "displayName": "Kim Min-Jae",
+      "fullName": "Kim Min-Jae",
+      "shortName": "K. Min-Jae",
+      "dateOfBirth": "1996-11-15T08:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "South Korea",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "188052",
+      "displayName": "Jonathan Tah",
+      "fullName": "Jonathan Tah",
+      "shortName": "J. Tah",
+      "dateOfBirth": "1996-02-11T08:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "222793",
+      "displayName": "Dayot Upamecano",
+      "fullName": "Dayot Upamecano",
+      "shortName": "D. Upamecano",
+      "dateOfBirth": "1998-10-27T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "236721",
+      "displayName": "Alphonso Davies",
+      "fullName": "Alphonso Davies",
+      "shortName": "A. Davies",
+      "dateOfBirth": "2000-11-02T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Canada",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "276329",
+      "displayName": "Josip Stanisic",
+      "fullName": "Josip Stanisic",
+      "shortName": "J. Stanisic",
+      "dateOfBirth": "2000-04-02T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Croatia",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "287225",
+      "displayName": "Sacha Boey",
+      "fullName": "Sacha Boey",
+      "shortName": "S. Boey",
+      "dateOfBirth": "2000-09-13T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "169189",
+      "displayName": "Konrad Laimer",
+      "fullName": "Konrad Laimer",
+      "shortName": "K. Laimer",
+      "dateOfBirth": "1997-05-27T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Austria",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "190161",
+      "displayName": "Joshua Kimmich",
+      "fullName": "Joshua Kimmich",
+      "shortName": "J. Kimmich",
+      "dateOfBirth": "1995-02-08T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "286831",
+      "displayName": "Michael Olise",
+      "fullName": "Michael Olise",
+      "shortName": "M. Olise",
+      "dateOfBirth": "2001-12-12T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "303821",
+      "displayName": "Jamal Musiala",
+      "fullName": "Jamal Musiala",
+      "shortName": "J. Musiala",
+      "dateOfBirth": "2003-02-26T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "304572",
+      "displayName": "Ismael Saibari",
+      "fullName": "Ismael Saibari",
+      "shortName": "I. Saibari",
+      "dateOfBirth": "2001-01-28T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Morocco",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "324660",
+      "displayName": "Tom Bischof",
+      "fullName": "Tom Bischof",
+      "shortName": "T. Bischof",
+      "dateOfBirth": "2005-06-28T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "359370",
+      "displayName": "Aleksandar Pavlovic",
+      "fullName": "Aleksandar Pavlovic",
+      "shortName": "A. Pavlovic",
+      "dateOfBirth": "2004-05-03T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "402841",
+      "displayName": "Lennart Karl",
+      "fullName": "Lennart Karl",
+      "shortName": "L. Karl",
+      "dateOfBirth": "2008-02-22T08:00Z",
+      "height": 66.0,
+      "displayHeight": "5' 6\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "405585",
+      "displayName": "David Daiber",
+      "fullName": "David Daiber",
+      "shortName": "David Daiber",
+      "dateOfBirth": "2007-01-10T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "409016",
+      "displayName": "Bara Sapoko Ndiaye",
+      "fullName": "Bara Sapoko Ndiaye",
+      "shortName": "B. Ndiaye",
+      "dateOfBirth": "2007-12-31T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Senegal",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "417373",
+      "displayName": "Maycon Cardozo",
+      "fullName": "Maycon Cardozo",
+      "shortName": "M. Cardozo",
+      "dateOfBirth": "2008-10-10T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Brazil",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "142200",
+      "displayName": "Harry Kane",
+      "fullName": "Harry Kane",
+      "shortName": "H. Kane",
+      "dateOfBirth": "1993-07-28T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "178980",
+      "displayName": "Serge Gnabry",
+      "fullName": "Serge Gnabry",
+      "shortName": "S. Gnabry",
+      "dateOfBirth": "1995-07-14T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Germany",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "257390",
+      "displayName": "Luis Díaz",
+      "fullName": "Luis Díaz",
+      "shortName": "L. Díaz",
+      "dateOfBirth": "1997-01-13T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Colombia",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

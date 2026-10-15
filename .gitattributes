@@ -1,2 +1,8 @@
 # Firebase Functions JavaScript and config files must use LF on all platforms.
 /functions/** text eol=lf
+
+# Duel packages and source receipts are hashed byte-for-byte on Windows too.
+/assets/data/duel/*.json text eol=lf
+/tools/duel_data/**/*.json text eol=lf
+/assets/history/lineups/*.json text eol=lf
+/docs/duel-data/integration-audit.json text eol=lf

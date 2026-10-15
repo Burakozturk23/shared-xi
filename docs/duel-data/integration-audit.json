@@ -1,0 +1,721 @@
+{
+  "version": "duel-2026-10-15.1",
+  "baseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
+  "cutoff": "2025-12-31",
+  "sourceReceipts": 24,
+  "matchedProfiles": 456,
+  "observations": 1342,
+  "unresolvedProfiles": [
+    {
+      "provider": "espn",
+      "sourcePlayerId": "399007",
+      "name": "Maalik Hashi",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "381341",
+      "name": "Ceadach O’Neill",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "381055",
+      "name": "Daniel Armer",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "362486",
+      "name": "Marco Palestra",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "376481",
+      "name": "Estêvão",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "289840",
+      "name": "Vitezslav Jaros",
+      "candidates": [
+        486604
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "355980",
+      "name": "Jérémy Jacquet",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "379855",
+      "name": "Wellity Lucky",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "380082",
+      "name": "Giovanni Leoni",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "350661",
+      "name": "Lewis Koumas",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "395890",
+      "name": "Joshua Lambie",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "328464",
+      "name": "Nico O'Reilly",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "382966",
+      "name": "Allan Elias",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "403576",
+      "name": "Iker Rodríguez",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "84349",
+      "name": "Javier Navarro",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "350351",
+      "name": "Sergio Mestre",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "330352",
+      "name": "Mario Rivas",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "388339",
+      "name": "Joan Martínez",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "376422",
+      "name": "Daniel Yañez",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "380286",
+      "name": "Carlos Espí",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "248699",
+      "name": "Matvei Safonov",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "387725",
+      "name": "Alessandro Longoni",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "288897",
+      "name": "Vitinha",
+      "candidates": [
+        334972,
+        487469,
+        586853
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "387437",
+      "name": "Filippo Mané",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "357801",
+      "name": "Konstantinos Karetsas",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "157688",
+      "name": "Kim Min-Jae",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "384305",
+      "name": "Lorenzo Torriani",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "324097",
+      "name": "Mario Gila",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "225607",
+      "name": "Christian Pulisic",
+      "candidates": [
+        315779
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "307527",
+      "name": "Yunus Musah",
+      "candidates": [
+        503991
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "403807",
+      "name": "Christian Comotto",
+      "candidates": [
+        1058363
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "377563",
+      "name": "Francesco Camarda",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "240533",
+      "name": "Josep Martínez",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "412245",
+      "name": "Mattia Marello",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "240109",
+      "name": "Aleksandar Stankovic",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "414157",
+      "name": "Stefano Mangiapoco",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "308029",
+      "name": "Andrea Cambiaso",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "397463",
+      "name": "Niccolò Rizzo",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "256715",
+      "name": "Weston McKennie",
+      "candidates": [
+        332697
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "387434",
+      "name": "Filippo Pagnucco",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "388235",
+      "name": "Mustafa Yortaç",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "217476",
+      "name": "Václav Cerný",
+      "candidates": [
+        242063
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "415732",
+      "name": "Arda Yilmaz",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "400113",
+      "name": "Furkan Koçak",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "415122",
+      "name": "Eyüp Karasu",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "392690",
+      "name": "Berat Lus",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "407331",
+      "name": "Ada Yüzgec",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "261302",
+      "name": "Mert Yandas",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "329486",
+      "name": "Nene Dorgeles",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "256444",
+      "name": "Luis Barraza",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "314952",
+      "name": "Micael",
+      "candidates": [
+        160142
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "364401",
+      "name": "Tyler Hall",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "199032",
+      "name": "Santiago Morales",
+      "candidates": [
+        3000199032
+      ],
+      "reason": "identity_not_unique_or_context_mismatch"
+    },
+    {
+      "provider": "espn",
+      "sourcePlayerId": "361433",
+      "name": "Riquelme",
+      "candidates": [],
+      "reason": "identity_not_unique_or_context_mismatch"
+    }
+  ],
+  "profileConflicts": [
+    {
+      "playerId": 1138758,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "MID"
+    },
+    {
+      "playerId": 314678,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "MID"
+    },
+    {
+      "playerId": 745200,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "MID"
+    },
+    {
+      "playerId": 119296,
+      "field": "position",
+      "canonical": "Defender",
+      "observed": "MID"
+    },
+    {
+      "playerId": 223967,
+      "field": "position",
+      "canonical": "Defender",
+      "observed": "MID"
+    },
+    {
+      "playerId": 566723,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "MID"
+    },
+    {
+      "playerId": 381950,
+      "field": "position",
+      "canonical": "Midfield",
+      "observed": "FWD"
+    },
+    {
+      "playerId": 691316,
+      "field": "position",
+      "canonical": "Midfield",
+      "observed": "FWD"
+    },
+    {
+      "playerId": 291739,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "MID"
+    },
+    {
+      "playerId": 119031,
+      "field": "position",
+      "canonical": "Midfield",
+      "observed": "DEF"
+    },
+    {
+      "playerId": 3000301345,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "DEF"
+    },
+    {
+      "playerId": 332798,
+      "field": "position",
+      "canonical": "Defender",
+      "observed": "FWD"
+    },
+    {
+      "playerId": 216603,
+      "field": "position",
+      "canonical": "Attack",
+      "observed": "MID"
+    }
+  ],
+  "matchCount": 7,
+  "appearedRows": 189,
+  "unusedRowsExcluded": 53,
+  "sourcePlayers": 193,
+  "sourceCoaches": 11,
+  "sourcePairs": 162,
+  "mappedAppearanceRows": 137,
+  "verifiedScoringFacts": 7,
+  "enabledCriteria": 0,
+  "rawStatRowsNotPromoted": {
+    "goals": 6958,
+    "assists": 6958,
+    "appearances": 6958,
+    "ucl_appearances": 6958
+  },
+  "criteria": [
+    {
+      "id": "F01",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F02",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F06",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F07",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F08",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F10",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F12",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F13",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F14",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F15",
+      "verifiedPlayers": 3,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F16",
+      "verifiedPlayers": 2,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F17",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F18",
+      "verifiedPlayers": 2,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F22",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F20",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F21",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F24",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F25",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "F29",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "T01",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "T02",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "T07",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "T09",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    },
+    {
+      "id": "T10",
+      "verifiedPlayers": 0,
+      "blockers": [
+        "insufficient_verified_pool",
+        "condition_paths_not_approved",
+        "gameplay_acceptance_pending"
+      ]
+    }
+  ]
+}

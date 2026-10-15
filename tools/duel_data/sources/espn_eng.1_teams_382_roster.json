@@ -1,0 +1,478 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/382/roster",
+  "sha256": "741031d0cc4c8100a3ebe9cd482ef82e25e52589cd9389ba0a5d413df922bf21",
+  "retrievedAt": "2026-10-15T13:11:44.793869+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 English Premier League",
+    "type": 14308,
+    "name": "2026-27 English Premier League"
+  },
+  "team": {
+    "id": "382",
+    "name": "Manchester City",
+    "displayName": "Manchester City"
+  },
+  "athletes": [
+    {
+      "id": "167192",
+      "displayName": "Gerónimo Rulli",
+      "fullName": "Gerónimo Rulli",
+      "shortName": "G. Rulli",
+      "dateOfBirth": "1992-05-20T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "177545",
+      "displayName": "Marcus Bettinelli",
+      "fullName": "Marcus Bettinelli",
+      "shortName": "M. Bettinelli",
+      "dateOfBirth": "1992-05-24T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "England",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "217092",
+      "displayName": "Gianluigi Donnarumma",
+      "fullName": "Gianluigi Donnarumma",
+      "shortName": "G. Donnarumma",
+      "dateOfBirth": "1999-02-25T08:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "413855",
+      "displayName": "Max-Edgar Chabot",
+      "fullName": "Max-Edgar Chabot",
+      "shortName": "M. Chabot",
+      "dateOfBirth": "2008-04-01T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "France",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "234878",
+      "displayName": "Rúben Dias",
+      "fullName": "Rúben Dias",
+      "shortName": "R. Dias",
+      "dateOfBirth": "1997-05-14T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "265907",
+      "displayName": "Marc Guéhi",
+      "fullName": "Marc Guéhi",
+      "shortName": "M. Guéhi",
+      "dateOfBirth": "2000-07-13T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "272512",
+      "displayName": "Rayan Aït-Nouri",
+      "fullName": "Rayan Aït-Nouri",
+      "shortName": "R. Aït-Nouri",
+      "dateOfBirth": "2001-06-06T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Algeria",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "299910",
+      "displayName": "Josko Gvardiol",
+      "fullName": "Josko Gvardiol",
+      "shortName": "J. Gvardiol",
+      "dateOfBirth": "2002-01-23T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Croatia",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "325564",
+      "displayName": "Rico Lewis",
+      "fullName": "Rico Lewis",
+      "shortName": "R. Lewis",
+      "dateOfBirth": "2004-11-21T08:00Z",
+      "height": 67.0,
+      "displayHeight": "5' 7\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "328464",
+      "displayName": "Nico O'Reilly",
+      "fullName": "Nico O'Reilly",
+      "shortName": "N. O'Reilly",
+      "dateOfBirth": "2005-03-21T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "361434",
+      "displayName": "Vitor Reis",
+      "fullName": "Vitor Reis",
+      "shortName": "Vitor Reis",
+      "dateOfBirth": "2006-01-12T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "362211",
+      "displayName": "Abdukodir Khusanov",
+      "fullName": "Abdukodir Khusanov",
+      "shortName": "A. Khusanov",
+      "dateOfBirth": "2004-02-29T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Uzbekistan",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "390094",
+      "displayName": "Kaden Braithwaite",
+      "fullName": "Kaden Braithwaite",
+      "shortName": "K. Braithwaite",
+      "dateOfBirth": "2008-02-08T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "154595",
+      "displayName": "Mateo Kovacic",
+      "fullName": "Mateo Kovacic",
+      "shortName": "M. Kovacic",
+      "dateOfBirth": "1994-05-06T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Croatia",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "238472",
+      "displayName": "Elliot Anderson",
+      "fullName": "Elliot Anderson",
+      "shortName": "E. Anderson",
+      "dateOfBirth": "2002-11-06T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "250787",
+      "displayName": "Phil Foden",
+      "fullName": "Phil Foden",
+      "shortName": "P. Foden",
+      "dateOfBirth": "2000-05-28T07:00Z",
+      "height": 67.0,
+      "displayHeight": "5' 7\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "285450",
+      "displayName": "Enzo Fernández",
+      "fullName": "Enzo Fernández",
+      "shortName": "E. Fernández",
+      "dateOfBirth": "2001-01-17T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "298008",
+      "displayName": "Rayan Cherki",
+      "fullName": "Rayan Cherki",
+      "shortName": "R. Cherki",
+      "dateOfBirth": "2003-08-17T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "303785",
+      "displayName": "Matheus Nunes",
+      "fullName": "Matheus Nunes",
+      "shortName": "M. Nunes",
+      "dateOfBirth": "1998-08-27T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "373927",
+      "displayName": "Ayyoub Bouaddi",
+      "fullName": "Ayyoub Bouaddi",
+      "shortName": "A. Bouaddi",
+      "dateOfBirth": "2007-10-02T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Morocco",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "410320",
+      "displayName": "Floyd Samba",
+      "fullName": "Floyd Samba",
+      "shortName": "F. Samba",
+      "dateOfBirth": "2009-01-15T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "253989",
+      "displayName": "Erling Haaland",
+      "fullName": "Erling Haaland",
+      "shortName": "E. Haaland",
+      "dateOfBirth": "2000-07-21T07:00Z",
+      "height": 77.0,
+      "displayHeight": "6' 5\"",
+      "citizenship": "Norway",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "268641",
+      "displayName": "Iliman Ndiaye",
+      "fullName": "Iliman Ndiaye",
+      "shortName": "I. Ndiaye",
+      "dateOfBirth": "2000-03-06T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Senegal",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "273292",
+      "displayName": "Antoine Semenyo",
+      "fullName": "Antoine Semenyo",
+      "shortName": "A. Semenyo",
+      "dateOfBirth": "2000-01-07T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Ghana",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "283672",
+      "displayName": "Jérémy Doku",
+      "fullName": "Jérémy Doku",
+      "shortName": "J. Doku",
+      "dateOfBirth": "2002-05-27T07:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "382966",
+      "displayName": "Allan Elias",
+      "fullName": "Allan Elias",
+      "shortName": "A. Elias",
+      "dateOfBirth": "2004-04-19T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "395463",
+      "displayName": "Ryan McAidoo",
+      "fullName": "Ryan McAidoo",
+      "shortName": "R. McAidoo",
+      "dateOfBirth": "2008-06-24T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

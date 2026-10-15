@@ -1,0 +1,495 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/teams/103/roster",
+  "sha256": "64e02ba196c9d50d7efe65e5815924108d001179daec588b2e798af7c8fd8d8f",
+  "retrievedAt": "2026-10-15T13:11:58.123948+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 Italian Serie A",
+    "type": 14240,
+    "name": "2026-27 Italian Serie A"
+  },
+  "team": {
+    "id": "103",
+    "name": "AC Milan",
+    "displayName": "AC Milan"
+  },
+  "athletes": [
+    {
+      "id": "143100",
+      "displayName": "Pietro Terracciano",
+      "fullName": "Pietro Terracciano",
+      "shortName": "P. Terracciano",
+      "dateOfBirth": "1990-03-08T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "189026",
+      "displayName": "Mike Maignan",
+      "fullName": "Mike Maignan",
+      "shortName": "M. Maignan",
+      "dateOfBirth": "1995-07-03T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "France",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "384305",
+      "displayName": "Lorenzo Torriani",
+      "fullName": "Lorenzo Torriani",
+      "shortName": "L. Torriani",
+      "dateOfBirth": "2005-01-31T08:00Z",
+      "height": 78.0,
+      "displayHeight": "6' 6\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403839",
+      "displayName": "Léo-Paul Bouyer",
+      "fullName": "Léo-Paul Bouyer",
+      "shortName": "L. Bouyer",
+      "dateOfBirth": "2008-08-14T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "France",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "214689",
+      "displayName": "Pervis Estupiñán",
+      "fullName": "Pervis Estupiñán",
+      "shortName": "P. Estupiñán",
+      "dateOfBirth": "1998-01-21T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Ecuador",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "236210",
+      "displayName": "Fikayo Tomori",
+      "fullName": "Fikayo Tomori",
+      "shortName": "F. Tomori",
+      "dateOfBirth": "1997-12-19T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "England",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "255922",
+      "displayName": "Matteo Gabbia",
+      "fullName": "Matteo Gabbia",
+      "shortName": "M. Gabbia",
+      "dateOfBirth": "1999-10-21T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "290375",
+      "displayName": "Strahinja Pavlovic",
+      "fullName": "Strahinja Pavlovic",
+      "shortName": "S. Pavlovic",
+      "dateOfBirth": "2001-05-24T07:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Serbia",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "303919",
+      "displayName": "Filippo Terracciano",
+      "fullName": "Filippo Terracciano",
+      "shortName": "F. Terracciano",
+      "dateOfBirth": "2003-02-08T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "309570",
+      "displayName": "Koni De Winter",
+      "fullName": "Koni De Winter",
+      "shortName": "K. De Winter",
+      "dateOfBirth": "2002-06-12T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "324097",
+      "displayName": "Mario Gila",
+      "fullName": "Mario Gila",
+      "shortName": "M. Gila",
+      "dateOfBirth": "2000-08-29T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "345637",
+      "displayName": "Davide Bartesaghi",
+      "fullName": "Davide Bartesaghi",
+      "shortName": "D. Bartesaghi",
+      "dateOfBirth": "2005-12-29T08:00Z",
+      "height": 76.0,
+      "displayHeight": "6' 4\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "388239",
+      "displayName": "Sankhoun Diawara",
+      "fullName": "Sankhoun Diawara",
+      "shortName": "S. Diawara",
+      "dateOfBirth": "2006-01-13T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "France",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "409491",
+      "displayName": "Valeri Vladimirov",
+      "fullName": "Valeri Vladimirov",
+      "shortName": "V. Vladimirov",
+      "dateOfBirth": "2008-06-05T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Bulgaria",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "76762",
+      "displayName": "Luka Modric",
+      "fullName": "Luka Modric",
+      "shortName": "L. Modric",
+      "dateOfBirth": "1985-09-09T07:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Croatia",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "176203",
+      "displayName": "Adrien Rabiot",
+      "fullName": "Adrien Rabiot",
+      "shortName": "A. Rabiot",
+      "dateOfBirth": "1995-04-03T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "France",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "186505",
+      "displayName": "Ruben Loftus-Cheek",
+      "fullName": "Ruben Loftus-Cheek",
+      "shortName": "R. Loftus-Cheek",
+      "dateOfBirth": "1996-01-23T08:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "England",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "225607",
+      "displayName": "Christian Pulisic",
+      "fullName": "Christian Pulisic",
+      "shortName": "C. Pulisic",
+      "dateOfBirth": "1998-09-18T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "303973",
+      "displayName": "Ardon Jashari",
+      "fullName": "Ardon Jashari",
+      "shortName": "A. Jashari",
+      "dateOfBirth": "2002-07-30T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Switzerland",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "307527",
+      "displayName": "Yunus Musah",
+      "fullName": "Yunus Musah",
+      "shortName": "Y. Musah",
+      "dateOfBirth": "2002-11-29T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "359754",
+      "displayName": "Alphadjo Cissè",
+      "fullName": "Alphadjo Cissè",
+      "shortName": "A. Cissè",
+      "dateOfBirth": "2006-10-22T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "403807",
+      "displayName": "Christian Comotto",
+      "fullName": "Christian Comotto",
+      "shortName": "C. Comotto",
+      "dateOfBirth": "2008-04-25T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Italy",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "228298",
+      "displayName": "Samuel Chukwueze",
+      "fullName": "Samuel Chukwueze",
+      "shortName": "S. Chukwueze",
+      "dateOfBirth": "1999-05-22T07:00Z",
+      "height": 68.0,
+      "displayHeight": "5' 8\"",
+      "citizenship": "Nigeria",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "271132",
+      "displayName": "Alexis Saelemaekers",
+      "fullName": "Alexis Saelemaekers",
+      "shortName": "A. Saelemaekers",
+      "dateOfBirth": "1999-06-27T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "288896",
+      "displayName": "Gonçalo Ramos",
+      "fullName": "Gonçalo Ramos",
+      "shortName": "G. Ramos",
+      "dateOfBirth": "2001-06-20T07:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Portugal",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "322771",
+      "displayName": "Omari Hutchinson",
+      "fullName": "Omari Hutchinson",
+      "shortName": "O. Hutchinson",
+      "dateOfBirth": "2003-10-30T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "England",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "340678",
+      "displayName": "Diego Moreira",
+      "fullName": "Diego Moreira",
+      "shortName": "D. Moreira",
+      "dateOfBirth": "2004-08-06T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Belgium",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "377563",
+      "displayName": "Francesco Camarda",
+      "fullName": "Francesco Camarda",
+      "shortName": "F. Camarda",
+      "dateOfBirth": "2008-03-10T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}

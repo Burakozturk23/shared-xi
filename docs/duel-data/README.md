@@ -1,5 +1,9 @@
 # Tek kriterli mod: oyuncu ve menajer veri çalışması
 
+**15 Ekim güncellemesi:** kaynaklı yan paket ve Flutter/Node okuyucuları eklendi.
+Güncel kapsam, doğrulanan düzeltmeler ve açık eksikler: [INTEGRATION.md](INTEGRATION.md).
+Aşağıdaki metin 14 Ekim'deki ilk araştırma durumunu kaydeder; “runtime henüz uygulanmadı” ifadeleri o tarihe aittir.
+
 Durum: **ilk denetim ve kaynaklı araştırma paketi tamamlandı; oyun verisi yayına hazır değil.**
 İnceleme tarihi: 14 Ekim 2026. Temel: `a2133482` ve V4 `v4-2026-10-05.1`.
 Bu paket yeni kriter açmaz, mevcut modları veya V4 SQLite dosyasını değiştirmez.

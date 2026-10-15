@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import '../../models/club.dart';
 import '../../models/match_entity.dart';
 import '../../models/player.dart';
+import '../../models/duel_data_catalog.dart';
 import '../../utils/country_names.dart';
 import '../search_service.dart';
+import '../duel/duel_data_service.dart';
 import 'game_data_v4_database.dart';
 import 'game_data_v4_legacy_bridge.dart';
 
@@ -30,6 +32,10 @@ class GameDataV4QueryService {
   GameDataV4Database get _source => GameDataV4Database.instance;
 
   Future<void> initialize() => _source.initialize();
+
+  /// Nullable/source-scoped data for Kadro Düellosu. Never use Player rating,
+  /// careerGoals or zero defaults as a substitute for a missing verified fact.
+  Future<DuelDataCatalog?> duelData() => DuelDataService.instance.load();
 
   Future<List<Player>> playersByIds(Iterable<int> ids) async {
     await initialize();

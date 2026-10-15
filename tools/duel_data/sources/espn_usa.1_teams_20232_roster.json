@@ -1,0 +1,597 @@
+{
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/teams/20232/roster",
+  "sha256": "079b7721d0518e3890a3c74c826d8a685775540d6a5ed0b0d89331b13478bccc",
+  "retrievedAt": "2026-10-15T13:12:02.910004+00:00",
+  "provider": "espn",
+  "season": {
+    "year": 2026,
+    "displayName": "2026 MLS",
+    "type": 13846,
+    "name": "Regular Season"
+  },
+  "team": {
+    "id": "20232",
+    "name": "Inter Miami CF",
+    "displayName": "Inter Miami CF"
+  },
+  "athletes": [
+    {
+      "id": "231059",
+      "displayName": "Dayne St. Clair",
+      "fullName": "Dayne St. Clair",
+      "shortName": "D. St. Clair",
+      "dateOfBirth": "1997-05-09T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "Canada",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "256444",
+      "displayName": "Luis Barraza",
+      "fullName": "Luis Barraza",
+      "shortName": "L. Barraza",
+      "dateOfBirth": "1996-11-08T08:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "297047",
+      "displayName": "Rocco Ríos Novo",
+      "fullName": "Rocco Ríos Novo",
+      "shortName": "R. Ríos Novo",
+      "dateOfBirth": "2002-06-04T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      }
+    },
+    {
+      "id": "231241",
+      "displayName": "Sergio Reguilón",
+      "fullName": "Sergio Reguilón",
+      "shortName": "S. Reguilón",
+      "dateOfBirth": "1996-12-16T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Spain",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "285473",
+      "displayName": "Facundo Mura",
+      "fullName": "Facundo Mura",
+      "shortName": "F. Mura",
+      "dateOfBirth": "1999-03-24T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "310279",
+      "displayName": "Maximiliano Falcón",
+      "fullName": "Maximiliano Falcón",
+      "shortName": "M. Falcón",
+      "dateOfBirth": "1997-05-01T07:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Uruguay",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "314952",
+      "displayName": "Micael",
+      "fullName": "Micael",
+      "shortName": "Micael",
+      "dateOfBirth": "2000-08-12T07:00Z",
+      "height": 75.0,
+      "displayHeight": "6' 3\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "315617",
+      "displayName": "Gonzalo Luján",
+      "fullName": "Gonzalo Luján",
+      "shortName": "G. Luján",
+      "dateOfBirth": "2001-04-27T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "316269",
+      "displayName": "Ian Fray",
+      "fullName": "Ian Fray",
+      "shortName": "I. Fray",
+      "dateOfBirth": "2002-08-31T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Jamaica",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "359239",
+      "displayName": "Israel Boatwright",
+      "fullName": "Israel Boatwright",
+      "shortName": "I. Boatwright",
+      "dateOfBirth": "2005-06-02T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Dominican Republic",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "364401",
+      "displayName": "Tyler Hall",
+      "fullName": "Tyler Hall",
+      "shortName": "T. Hall",
+      "dateOfBirth": "2006-02-05T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399951",
+      "displayName": "Cesar Abadia-Reda",
+      "fullName": "Cesar Abadia-Reda",
+      "shortName": "C. Abadia-Reda",
+      "dateOfBirth": "2006-02-21T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "USA",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "401415",
+      "displayName": "Daniel Sumalla",
+      "fullName": "Daniel Sumalla",
+      "shortName": "D. Sumalla",
+      "dateOfBirth": "2007-06-25T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "USA",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "402696",
+      "displayName": "Fricio Caicedo",
+      "fullName": "Fricio Caicedo",
+      "shortName": "F. Caicedo",
+      "dateOfBirth": "2008-04-17T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Ecuador",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "173666",
+      "displayName": "Casemiro",
+      "fullName": "Casemiro",
+      "shortName": "Casemiro",
+      "dateOfBirth": "1992-02-23T08:00Z",
+      "height": 73.0,
+      "displayHeight": "6' 1\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "174466",
+      "displayName": "Rodrigo De Paul",
+      "fullName": "Rodrigo De Paul",
+      "shortName": "R. De Paul",
+      "dateOfBirth": "1994-05-24T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "199032",
+      "displayName": "Santiago Morales",
+      "fullName": "Santiago Morales",
+      "shortName": "S. Morales",
+      "dateOfBirth": "2001-08-27T07:00Z",
+      "height": 74.0,
+      "displayHeight": "6' 2\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      }
+    },
+    {
+      "id": "290715",
+      "displayName": "David Ayala",
+      "fullName": "David Ayala",
+      "shortName": "D. Ayala",
+      "dateOfBirth": "2000-04-06T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Mexico",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "297328",
+      "displayName": "Matías Galarza",
+      "fullName": "Matías Galarza",
+      "shortName": "M. Galarza",
+      "dateOfBirth": "2002-02-11T08:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Paraguay",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "315594",
+      "displayName": "Telasco Segovia",
+      "fullName": "Telasco Segovia",
+      "shortName": "T. Segovia",
+      "dateOfBirth": "2003-04-02T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Venezuela",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "329025",
+      "displayName": "Yannick Bright",
+      "fullName": "Yannick Bright",
+      "shortName": "Y. Bright",
+      "dateOfBirth": "2001-09-03T07:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Italy",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399971",
+      "displayName": "Ian Urkidi",
+      "fullName": "Ian Urkidi",
+      "shortName": "I. Urkidi",
+      "dateOfBirth": "2007-02-21T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "USA",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "401414",
+      "displayName": "Preston Plambeck",
+      "fullName": "Preston Plambeck",
+      "shortName": "P. Plambeck",
+      "dateOfBirth": "2005-12-20T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "USA",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "406938",
+      "displayName": "Alexander Shaw",
+      "fullName": "Alexander Shaw",
+      "shortName": "A. Shaw",
+      "dateOfBirth": "2008-04-03T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      }
+    },
+    {
+      "id": "45843",
+      "displayName": "Lionel Messi",
+      "fullName": "Lionel Messi",
+      "shortName": "L. Messi",
+      "dateOfBirth": "1987-06-24T07:00Z",
+      "height": 67.0,
+      "displayHeight": "5' 7\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "125088",
+      "displayName": "Luis Suárez",
+      "fullName": "Luis Suárez",
+      "shortName": "L. Suárez",
+      "dateOfBirth": "1987-01-24T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Uruguay",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "228394",
+      "displayName": "Germán Berterame",
+      "fullName": "Germán Berterame",
+      "shortName": "G. Berterame",
+      "dateOfBirth": "1998-11-13T08:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "Mexico",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "315801",
+      "displayName": "Tadeo Allende",
+      "fullName": "Tadeo Allende",
+      "shortName": "T. Allende",
+      "dateOfBirth": "1999-02-20T08:00Z",
+      "height": 72.0,
+      "displayHeight": "6' 0\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "359953",
+      "displayName": "Lovens Delinois",
+      "fullName": "Lovens Delinois",
+      "shortName": "L. Delinois",
+      "dateOfBirth": "2004-10-05T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "Haiti",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "361433",
+      "displayName": "Riquelme",
+      "fullName": "Riquelme",
+      "shortName": "Riquelme",
+      "dateOfBirth": "2006-09-15T07:00Z",
+      "height": 69.0,
+      "displayHeight": "5' 9\"",
+      "citizenship": "Brazil",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "387661",
+      "displayName": "Mateo Silvetti",
+      "fullName": "Mateo Silvetti",
+      "shortName": "M. Silvetti",
+      "dateOfBirth": "2006-01-14T08:00Z",
+      "height": 70.0,
+      "displayHeight": "5' 10\"",
+      "citizenship": "Argentina",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399946",
+      "displayName": "Idoh Zeltzer-Zubida",
+      "fullName": "Idoh Zeltzer-Zubida",
+      "shortName": "I. Zeltzer-Zubida",
+      "dateOfBirth": "2005-02-08T08:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "USA",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "399970",
+      "displayName": "Dániel Pintér",
+      "fullName": "Dániel Pintér",
+      "shortName": "D. Pintér",
+      "dateOfBirth": "2007-06-06T07:00Z",
+      "height": 71.0,
+      "displayHeight": "5' 11\"",
+      "citizenship": "USA",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    },
+    {
+      "id": "401418",
+      "displayName": "Diego Rey",
+      "fullName": "Diego Rey",
+      "shortName": "D. Rey",
+      "dateOfBirth": "2006-04-18T07:00Z",
+      "height": null,
+      "displayHeight": null,
+      "citizenship": "USA",
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      }
+    }
+  ]
+}
