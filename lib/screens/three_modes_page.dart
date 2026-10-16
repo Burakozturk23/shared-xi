@@ -196,7 +196,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       if (!_vault) ...[
         const SizedBox(height: 8),
         PitchAction(label: '${_coach ? 'Günün hocası' : 'Günün harfi'} · ${_status['dailyUsed'] == true ? 'Tekrar oyna' : 'Ücretsiz'}',
-          secondary: true, icon: Icons.today_rounded, onPressed: !_canStart ? null : () => _start('daily')),
+          secondary: true, icon: Icons.today_rounded, onPressed: !_canStart || _status['dailyUnavailable'] == true ? null : () => _start('daily')),
+        if (_status['dailyUnavailable'] == true) const Text('Günlük içerik güncelleniyor; yarın yeniden açılacak. Rulet ve koleksiyon kullanılabilir.'),
         const Padding(padding: EdgeInsets.only(top: 8), child: Text('Günlük hedef ve formasyon herkes için aynı. İstanbul saatine göre gece yarısında yenilenir.')),
       ],
       const SizedBox(height: 16),

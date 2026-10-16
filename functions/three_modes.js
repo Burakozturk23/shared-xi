@@ -148,7 +148,16 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const s = await read(uid); const linked = await isLinked(uid);
     const inventory = (await db.ref("economyState/" + uid + "/inventory").get()).val() || {};
     const active = sessionOf(s.sessions[s.active[input.mode]]);
-    const dailyGame = input.mode !== "squad_vault" ? await daily(input.mode) : null;
+    let dailyGame = null; let dailyUnavailable = false;
+    if (input.mode !== "squad_vault") {
+      try {
+        dailyGame = await daily(input.mode);
+      } catch (error) {
+        if (error.code !== "failed-precondition") throw error;
+        // A frozen previous-version daily must not block roulette or archives.
+        dailyUnavailable = true;
+      }
+    }
     const current = active && active.version === catalog.version && !active.finished && active.expiresAt > now() &&
       (active.entry !== "daily" || active.day === dayKey(now())) ? sessionView(active) : null;
     const exposeRecord = (r) => r ? {...r,
@@ -167,7 +176,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
             links: t.links[id].map((e) => ({club: clubs.get(e.clubId).name, date: e.date, sources: e.sources}))})) : [],
       avatarOwned: !!inventory[t.avatarId], avatarChoice: s.avatarChoices[t.id] || null}));
     return {ok: true, version: catalog.version, mode: input.mode, entries: list, session: current,
-      daily: dailyGame, dailyUsed: !!s.daily[`${input.mode}__${dayKey(now())}`], linked,
+      daily: dailyGame, dailyUnavailable, dailyUsed: !!s.daily[`${input.mode}__${dayKey(now())}`], linked,
       pendingRewards: Object.keys(s.pending).length, leagueSnapshot: catalog.leagueSnapshot};
   }
   async function start(uid, input) {

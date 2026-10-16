@@ -244,3 +244,13 @@ test("RTDB numeric map/array conversion never counts null slots and preserves pa
   assert.equal(record.bestLineup.filter(Boolean).length, 1);
   assert.equal(record.bestLineup[3].id, sparse[3]);
 });
+test("a previous-version daily is closed without blocking normal games and collections", async () => {
+  const h = harness();
+  h.seed("threeModeDaily/letter11__2026-09-20", {day: "2026-09-20", target: "obsolete",
+    formation: "433", version: "old-release"});
+  const status = await h.call("getThreeMode", {mode: "letter11"});
+  assert.equal(status.dailyUnavailable, true); assert.equal(status.daily, null);
+  assert.ok(status.entries.length > 0);
+  await assert.rejects(start(h, "letter11", {entry: "daily"}), {code: "failed-precondition"});
+  assert.ok((await start(h, "letter11")).session);
+});
