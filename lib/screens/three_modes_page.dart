@@ -3,6 +3,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import '../data/country_flags.dart';
 import '../models/coach.dart';
+import '../models/club.dart';
+import '../widgets/club_badge.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/three_modes_service.dart';
 import '../widgets/coach_avatar.dart';
@@ -11,6 +13,13 @@ import '../widgets/pitch_ui.dart';
 List<Map<String, dynamic>> _maps(dynamic v) =>
     (v is List ? v : const []).map(rewardMap).toList();
 List<String> _strings(dynamic v) => (v is List ? v : const []).map((x) => '$x').toList();
+String _medal(Map<String, dynamic> r) => r['mastery'] == true ? 'Ustalık' :
+    (r['best'] as num? ?? 0) >= 11 ? 'Altın' : (r['best'] as num? ?? 0) >= 8 ? 'Gümüş' :
+    (r['best'] as num? ?? 0) >= 5 ? 'Bronz' : 'Madalyanı kazan';
+String _nextMedal(Map<String, dynamic> r) => r['mastery'] == true ? 'Tüm madalyalar tamam' :
+    (r['best'] as num? ?? 0) >= 11 ? 'Sıradaki: ipucusuz ustalık' :
+    (r['best'] as num? ?? 0) >= 8 ? 'Sıradaki: 11 oyuncu' :
+    (r['best'] as num? ?? 0) >= 5 ? 'Sıradaki: 8 oyuncu' : 'Sıradaki: 5 oyuncu';
 String _formation(String v) => v.split('').join('-');
 const _positions = {'GK': 'Kaleci', 'DEF': 'Defans', 'MID': 'Orta saha', 'FWD': 'Hücum'};
 
@@ -30,7 +39,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   List<Map<String, dynamic>> _results = [];
   Timer? _debounce;
   int _generation = 0, _slot = 0;
-  bool _busy = true, _searching = false, _archive = false;
+  bool _busy = true, _searching = false, _archive = false, _showHub = false;
   String? _error;
   String _form = '433', _difficulty = '';
   bool get _vault => widget.mode == 'squad_vault';
@@ -38,7 +47,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   String get _title => _vault ? 'Kadro Kasası' : _coach ? 'Hoca 11' : 'Harf 11';
   String get _version => '${_status['version']}';
   bool get _finished => _session['finished'] == true;
-  bool get _playing => _session.isNotEmpty;
+  bool get _playing => _session.isNotEmpty && !_showHub;
+  bool get _canStart => !_busy && (_session.isEmpty || _finished);
   @override
   void initState() { super.initState(); _load(); }
   @override
@@ -64,7 +74,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       'entry': entry, 'formation': _form, if (_difficulty.isNotEmpty) 'difficulty': _difficulty,
       if (target != null) 'target': target, if (league != null) 'league': league});
     if (!mounted) return;
-    setState(() { _session = rewardMap(r['session']); _archive = false; _slot = 0; _clearSearch(); });
+    setState(() { _session = rewardMap(r['session']); _archive = false; _showHub = false; _slot = 0; _clearSearch(); });
   });
   Future<void> _act(String action, [Map<String, dynamic> extra = const {}]) => _run(() async {
     final r = await _service.mutate('actThreeMode', {'mode': widget.mode, 'version': _version,
@@ -120,7 +130,10 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_title), actions: [IconButton(tooltip: 'Yenile',
+    appBar: AppBar(title: Text(_title), actions: [
+      if (_playing && !_finished) IconButton(tooltip: 'Koleksiyonu incele', onPressed: _busy ? null :
+        () => setState(() { _showHub = true; _archive = true; }), icon: const Icon(Icons.collections_bookmark_outlined)),
+      IconButton(tooltip: 'Yenile',
       onPressed: _busy ? null : _load, icon: const Icon(Icons.refresh_rounded))]),
     body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
       child: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 32), children: [
@@ -137,6 +150,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
 
   List<Widget> _home() {
     final entries = _maps(_status['entries']);
+    final energy = rewardMap(_status['energy']);
+    if (_vault) entries.sort((a, b) => '${a['league']}'.compareTo('${b['league']}'));
     final completed = entries.where((e) => rewardMap(e['record'])['solved'] == true).length;
     return [
       PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -149,12 +164,20 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           : _coach ? 'Hocasıyla gerçekten çalışmış futbolculardan kadronu kur. Doğrulanamayan bağlar yanlış sayılmaz.'
           : 'Adı, soyadı veya bilinen lakabı verilen harfle başlayan futbolcularla kadronu kur.'),
         const SizedBox(height: 12),
+        if (energy.isNotEmpty) Text(energy['enabled'] == true
+          ? 'Enerji: ${energy['available']} / ${energy['capacity']}' : 'Enerji sistemi şu anda kapalı · ücretsiz oyun'),
         Text('$completed / ${entries.length} ${_vault ? 'kasa' : _coach ? 'hoca' : 'harf'} koleksiyonunda'),
         const SizedBox(height: 8),
         const Text('Yeni oyun: enerji sistemi açıkken 1 enerji. Devam etmek ve arşivi incelemek ücretsiz.'),
         const Text('Her oyunda 1 ücretsiz + en fazla 2 reklamlı ipucu. İpucunu kullanmak ustalığı/yıldızı etkiler.'),
       ])),
       const SizedBox(height: 16),
+      if (_session.isNotEmpty && !_finished) ...[
+        PitchAction(label: 'Kayıtlı oyuna devam et · ücretsiz', onPressed: _busy ? null :
+          () => setState(() => _showHub = false)),
+        const Text('Yeni bir oyun başlatmadan önce mevcut oturumu bitir.'),
+        const SizedBox(height: 12),
+      ],
       if (!_vault) ...[
         Wrap(spacing: 8, runSpacing: 8, children: ['433', '442', '352', '4231', '451'].map((f) => ChoiceChip(
           label: Text(_formation(f)), selected: _form == f,
@@ -169,11 +192,11 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       ],
       const SizedBox(height: 12),
       PitchAction(label: _vault ? 'Rastgele kasa aç' : _coach ? 'Hoca ruleti' : 'Harf ruleti',
-        icon: Icons.shuffle_rounded, onPressed: _busy ? null : () => _start('random')),
+        icon: Icons.shuffle_rounded, onPressed: !_canStart ? null : () => _start('random')),
       if (!_vault) ...[
         const SizedBox(height: 8),
         PitchAction(label: '${_coach ? 'Günün hocası' : 'Günün harfi'} · ${_status['dailyUsed'] == true ? 'Tekrar oyna' : 'Ücretsiz'}',
-          secondary: true, icon: Icons.today_rounded, onPressed: _busy ? null : () => _start('daily')),
+          secondary: true, icon: Icons.today_rounded, onPressed: !_canStart ? null : () => _start('daily')),
         const Padding(padding: EdgeInsets.only(top: 8), child: Text('Günlük hedef ve formasyon herkes için aynı. İstanbul saatine göre gece yarısında yenilenir.')),
       ],
       const SizedBox(height: 16),
@@ -187,13 +210,16 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           Text('Ligler veri sürümüne aittir: ${_status['leagueSnapshot']}. Lig bilindiği için en fazla 4 yıldız.'),
           const SizedBox(height: 8),
           Wrap(spacing: 8, runSpacing: 8, children: entries.map((e) => '${e['league']}').toSet().map((league) =>
-            ActionChip(label: Text(league), onPressed: _busy ? null : () => _start('league', league: league))).toList()),
+            ActionChip(label: Text('$league · ${entries.where((e) => e['league'] == league && rewardMap(e['record'])['solved'] == true).length}/${entries.where((e) => e['league'] == league).length}'), onPressed: !_canStart ? null : () => _start('league', league: league))).toList()),
         ],
         PitchSectionTitle(_vault ? 'Kulüpler' : 'Koleksiyon'),
         Text(_vault ? '1 / 3 / 5 yıldız ödülleri bir kez kazanılır: toplam 25 coin + 50 XP. İlk 5 farklı kasa: +30 coin + 50 XP.'
           : '5 / 8 / 11 oyuncu ve ustalık madalyaları: toplam 40 coin + 80 XP. Ustalık: 11 oyuncu, sıfır ipucu, en fazla 3 yanlış.'),
         const SizedBox(height: 12),
-        for (final e in entries) Padding(padding: const EdgeInsets.only(bottom: 8), child: _entry(e)),
+        for (var i = 0; i < entries.length; i++) ...[
+          if (_vault && (i == 0 || entries[i - 1]['league'] != entries[i]['league'])) PitchSectionTitle('${entries[i]['league']}'),
+          Padding(padding: const EdgeInsets.only(bottom: 8), child: _entry(entries[i])),
+        ],
       ],
       if (_status['linked'] != true) const Padding(padding: EdgeInsets.only(top: 12),
         child: Text('Misafir ilerlemen saklanır. Coin ve XP ödüllerini almak için aynı hesabı Google’a bağla.')),
@@ -203,26 +229,41 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   Widget _entry(Map<String, dynamic> e) {
     final r = rewardMap(e['record']);
     return PitchRow(title: '${e['name']}', icon: _vault ? Icons.shield_outlined : Icons.military_tech_outlined,
-      leading: _coach ? CoachAvatar(coach: Coach(id: '${e['portraitId'] ?? e['id']}', name: '${e['name']}', countries: const [], clubIds: const [])) : null,
+      leading: _coach ? CoachAvatar(coach: Coach(id: '${e['portraitId'] ?? e['id']}', name: '${e['name']}', countries: const [], clubIds: const [])) :
+        _vault && r['solved'] == true ? _clubBadge(e) : null,
       subtitle: _vault ? '${e['league']} · ${r['best'] ?? 0} yıldız' :
-        '${r['best'] ?? 0}/11${r['mastery'] == true ? ' · Ustalık' : ''} · ${_strings(e['formations']).map(_formation).join(' / ')}',
+        '${r['best'] ?? 0}/11 · ${_medal(r)} · ${_nextMedal(r)}',
       onTap: _busy ? null : () => _showEntry(e),
     );
   }
+  Widget _clubBadge(Map<String, dynamic> c) => ClubBadge(club: Club(id: int.tryParse('${c['id']}') ?? 0,
+    name: '${c['name']}', league: '${c['league'] ?? ''}', country: '${c['country'] ?? ''}', badgeKey: c['badgeKey'] as String?));
+
   Future<void> _showEntry(Map<String, dynamic> e) async {
     final r = rewardMap(e['record']);
     final result = await showModalBottomSheet<String>(context: context, isScrollControlled: true,
       showDragHandle: true, builder: (ctx) => SafeArea(child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24), child: Column(mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (_vault && r['solved'] == true) _clubBadge(e),
           Text('${e['name']}', style: Theme.of(ctx).textTheme.headlineSmall),
           Text(_vault ? 'En iyi: ${r['best'] ?? 0} yıldız' : 'En iyi: ${r['best'] ?? 0}/11 · ${r['mastery'] == true ? 'Ustalık' : 'Geliştirilebilir'}'),
+          if (!_vault) Text('${_medal(r)} · ${_nextMedal(r)}'),
+          if (_coach && e['avatarId'] != null) Text(e['avatarOwned'] == true ? 'Avatar sende' : 'Avatar kilitli'),
           if (r['bestFormation'] != null) Text(_formation('${r['bestFormation']}')),
           for (final p in _maps(r['bestLineup'])) if (p.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6),
             child: Text('${p['name']} · ${_positions[p['position']] ?? p['position']} · ${p['country']}')),
+          if (r['lastLineup'] != null) ExpansionTile(title: const Text('Son kadron'), children: [
+            for (final p in _maps(r['lastLineup'])) if (p.isNotEmpty) ListTile(dense: true,
+              title: Text('${p['name']}'), subtitle: Text('${p['country']} · ${_positions[p['position']]}')),
+          ]),
+          if (_coach && _maps(e['bestEvidence']).isNotEmpty) ExpansionTile(title: const Text('Kadro bağlantıları'), children: [
+            for (final p in _maps(e['bestEvidence'])) ListTile(title: Text('${p['name']}'),
+              subtitle: SelectableText(_maps(p['links']).map((l) => '${l['club']} · ${l['date']}\n${_strings(l['sources']).join('\n')}').join('\n'))),
+          ]),
           const SizedBox(height: 16),
           if (!_vault || r['solved'] == true) PitchAction(label: 'Bu hedefle oyna',
-            onPressed: () => Navigator.pop(ctx, 'play')),
+            onPressed: _canStart ? () => Navigator.pop(ctx, 'play') : null),
           if (_vault && r['solved'] != true) const Text('Kulübü rastgele veya lig kasasında çözerek arşivde aç.'),
           if (_coach && r['mastery'] == true && e['avatarId'] != null && e['avatarChoice'] == null) ...[
             const SizedBox(height: 16), const Text('Ustalık ödülünü bir kez seç. Avatar zaten sende ise sabit coin karşılığı verilir.'),
@@ -250,6 +291,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     return [
       PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         if (_coach) CoachAvatar(coach: Coach(id: '${_session['portraitId'] ?? ''}', name: '${_session['title']}', countries: const [], clubIds: const [])),
+        if (_vault && _session['club'] is Map) _clubBadge(rewardMap(_session['club'])),
         Text('${_session['title']}', style: Theme.of(context).textTheme.headlineSmall),
         if ('${_session['context'] ?? ''}'.isNotEmpty) Text('${_session['context']}'),
         if (_vault) Text('${_session['historyNote']}'),
@@ -352,6 +394,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         Text(_vault ? '${r['score']} yıldız' : r['mastery'] == true ? 'Ustalık kazandın!' : '${r['score']}/11 kadro',
           style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 8),
+        if (!_vault && _strings(r['newMedals']).isNotEmpty) Text('Yeni madalyalar: ${_strings(r['newMedals']).map((m) => {'1': 'Bronz', '2': 'Gümüş', '3': 'Altın', '4': 'Ustalık'}[m] ?? m).join(', ')}'),
         Text('Bu oyunda yeni ödül: ${r['coins']} coin · ${r['xp']} XP'),
         Text(_vault ? 'Aynı kulübün yıldız ödülleri tüm kasa çeşitlerinde ortaktır.' : 'Aynı hedefin madalyaları rulet, günlük ve arşivde ortaktır.'),
         if (_status['linked'] != true) const Text('Ödüllerin bekliyor. Aynı misafir hesabını Google’a bağlayınca aktarılır.'),

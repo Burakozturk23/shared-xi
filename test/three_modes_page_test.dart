@@ -106,7 +106,7 @@ void main() {
     final vault = FakeModes('squad_vault', active: true); await open(t, vault);
     await t.scrollUntilVisible(find.byType(TextField), 250, scrollable: find.byType(Scrollable).first);
     await t.enterText(find.byType(TextField), 'Arsenal'); await t.pump(const Duration(milliseconds: 400)); await t.pumpAndSettle();
-    await t.ensureVisible(find.text('Arsenal')); await t.tap(find.text('Arsenal')); await t.pumpAndSettle();
+    await t.ensureVisible(find.widgetWithText(ListTile, 'Arsenal')); await t.tap(find.widgetWithText(ListTile, 'Arsenal')); await t.pumpAndSettle();
     expect(vault.lastMutation!['action'], 'guess'); expect(vault.lastMutation!['clubId'], 1);
   });
 }

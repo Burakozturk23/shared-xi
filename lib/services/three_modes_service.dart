@@ -32,6 +32,7 @@ class ThreeModesService {
     Map<String, dynamic>? recovered;
     if (prefs.containsKey(key)) recovered = await _replay(prefs, key);
     final status = await _transport.call('getThreeMode', {'mode': mode});
+    status['energy'] = await _transport.status();
     if (recovered?['session'] is Map) status['session'] = recovered!['session'];
     return status;
   }

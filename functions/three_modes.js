@@ -14,14 +14,19 @@ const fail = (code, message) => {
 const hash = (v) => crypto.createHash("sha256").update(v).digest("hex");
 const norm = (v) => String(v || "").toLowerCase().replaceAll("ı", "i").replaceAll("ß", "ss")
     .replaceAll("ø", "o").replaceAll("ł", "l").replaceAll("đ", "d")
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    .normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 const stateOf = (raw) => {
   const s = {...raw};
   for (const key of ["sessions", "active", "collection", "daily", "claims", "pending",
     "avatarChoices", "starts"]) s[key] ||= {};
   return s;
 };
-const sessionOf = (s) => s ? {...s, picks: s.picks || {}, actions: s.actions || {}, hints: s.hints || [],
+// RTDB may serialize numeric-key maps as arrays with null holes.
+// A hole is never a placed player or a score; normalize back to a sparse map.
+const picksOf = (raw) => Object.fromEntries(Object.entries(raw || {})
+    .filter(([slot, id]) => /^([0-9]|10)$/.test(slot) && Number.isSafeInteger(id) && players.has(id)));
+const lineupOf = (raw) => Array.from({length: 11}, (_, i) => raw?.[i] || null);
+const sessionOf = (s) => s ? {...s, picks: picksOf(s.picks), actions: s.actions || {}, hints: s.hints || [],
   guesses: s.guesses || [], revealed: s.revealed || [],
   nameHints: s.nameHints || [], adReceipts: s.adReceipts || {}} : null;
 const targetOf = (s) => targets[s.mode]?.find((x) => x.id === s.target);
@@ -141,13 +146,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     if (!MODES.has(input.mode)) fail("invalid-argument", "Geçersiz mod.");
     await settle(uid);
     const s = await read(uid); const linked = await isLinked(uid);
+    const inventory = (await db.ref("economyState/" + uid + "/inventory").get()).val() || {};
     const active = sessionOf(s.sessions[s.active[input.mode]]);
     const dailyGame = input.mode !== "squad_vault" ? await daily(input.mode) : null;
     const current = active && active.version === catalog.version && !active.finished && active.expiresAt > now() &&
       (active.entry !== "daily" || active.day === dayKey(now())) ? sessionView(active) : null;
     const exposeRecord = (r) => r ? {...r,
-      bestLineup: (r.bestLineup || []).map((id) => players.has(id) ? publicPlayer(players.get(id)) : null),
-      lastLineup: (r.lastLineup || []).map((id) => players.has(id) ? publicPlayer(players.get(id)) : null)} : null;
+      bestLineup: lineupOf(r.bestLineup).map((id) => players.has(id) ? publicPlayer(players.get(id)) : null),
+      lastLineup: lineupOf(r.lastLineup).map((id) => players.has(id) ? publicPlayer(players.get(id)) : null)} : null;
     const list = input.mode === "squad_vault" ? catalog.vaultClubs.map((id) => {
       const c = clubs.get(id); const record = s.collection[`squad_vault__${id}`];
       return {id: String(id), name: record?.solved ? c.name : "Kilitli kasa", league: c.league,
@@ -156,7 +162,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       formations: t.formations, difficulty: t.difficulty, portraitId: t.portraitId || null,
       count: t.count || Object.keys(t.links).length, record: exposeRecord(s.collection[`${input.mode}__${t.id}`]),
       avatarId: t.avatarId || null, avatarCoins: t.avatarCoins || 0,
-      avatarChoice: s.avatarChoices[t.id] || null}));
+      bestEvidence: t.links ? lineupOf(s.collection[`${input.mode}__${t.id}`]?.bestLineup)
+          .filter((id) => t.links[id]).map((id) => ({name: players.get(id).name,
+            links: t.links[id].map((e) => ({club: clubs.get(e.clubId).name, date: e.date, sources: e.sources}))})) : [],
+      avatarOwned: !!inventory[t.avatarId], avatarChoice: s.avatarChoices[t.id] || null}));
     return {ok: true, version: catalog.version, mode: input.mode, entries: list, session: current,
       daily: dailyGame, dailyUsed: !!s.daily[`${input.mode}__${dayKey(now())}`], linked,
       pendingRewards: Object.keys(s.pending).length, leagueSnapshot: catalog.leagueSnapshot};
@@ -339,6 +348,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           run.wrong++; run.feedback = "Futbolcunun harfi veya mevkisi bu slota uymuyor.";
         } else {
           run.picks[input.slot] = p.id; run.feedback = "Doğru bağlantı: " + p.name;
+          if (run.mode === "coach_xi") {
+            const proof = target.links[p.id][0];
+            run.feedback += ` · ${clubs.get(proof.clubId).name} · ${proof.date}`;
+          }
         }
       } else if (input.action === "guess" && run.mode === "squad_vault") {
         if (!clubs.has(input.clubId)) fail("invalid-argument", "Kulübü arama listesinden seç. Hakkın değişmedi.");

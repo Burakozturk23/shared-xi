@@ -222,3 +222,25 @@ test("already owned coach avatar converts to frozen coins, distinct vault archiv
   }
   assert.equal(total, 6 * 25 + 30);
 });
+test("RTDB numeric map/array conversion never counts null slots and preserves partial archives", async () => {
+  const h = harness(); let s = (await start(h, "letter11")).session;
+  s = await fill(h, s, 6);
+  const path = `economyState/alice/threeModes/sessions/${s.id}`;
+  const run = h.read(path);
+  const sparse = Array.from({length: 11}, (_, i) => run.picks[i] || null);
+  h.seed(path + "/picks", sparse);
+  s = (await h.call("resumeThreeMode", {version, mode: s.mode, sessionId: s.id})).session;
+  assert.equal(s.score, 6);
+  s = (await act(h, s, {action: "clear", slot: 0})).session;
+  assert.equal(s.score, 5);
+  s = (await act(h, s, {action: "finish"})).session;
+  assert.equal(s.result.coins, 5);
+  const key = `economyState/alice/threeModes/collection/letter11__${s.targetId}`;
+  h.seed(key + "/bestLineup", {"3": sparse[3]});
+  h.seed(key + "/lastLineup", {"3": sparse[3]});
+  const status = await h.call("getThreeMode", {mode: s.mode});
+  const record = status.entries.find((e) => e.id === s.targetId).record;
+  assert.equal(record.bestLineup.length, 11);
+  assert.equal(record.bestLineup.filter(Boolean).length, 1);
+  assert.equal(record.bestLineup[3].id, sparse[3]);
+});
