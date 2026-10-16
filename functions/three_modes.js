@@ -217,6 +217,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           fail("failed-precondition", "Dönem kısıtlı zor hoca havuzu henüz doğrulanmadı.");
         }
         if (input.entry === "random" && input.difficulty) pool = pool.filter((x) => x.difficulty === input.difficulty);
+        if (input.entry === "random" && input.formation) {
+          pool = pool.filter((x) => x.formations.includes(input.formation));
+        }
         const selected = fixed ? pool.find((x) => x.id === fixed.target) : input.entry === "archive" ?
           pool.find((x) => x.id === input.target) : pool[indexFrom(seed, pool.length)];
         if (!selected) fail("failed-precondition", "Oynanabilir içerik bulunamadı.");

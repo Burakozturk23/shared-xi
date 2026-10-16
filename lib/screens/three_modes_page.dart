@@ -249,6 +249,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           Text('${e['name']}', style: Theme.of(ctx).textTheme.headlineSmall),
           Text(_vault ? 'En iyi: ${r['best'] ?? 0} yıldız' : 'En iyi: ${r['best'] ?? 0}/11 · ${r['mastery'] == true ? 'Ustalık' : 'Geliştirilebilir'}'),
           if (!_vault) Text('${_medal(r)} · ${_nextMedal(r)}'),
+          if (!_vault) Text('Oynanabilir düzenler: ${_strings(e['formations']).map(_formation).join(' / ')}'),
           if (_coach && e['avatarId'] != null) Text(e['avatarOwned'] == true ? 'Avatar sende' : 'Avatar kilitli'),
           if (r['bestFormation'] != null) Text(_formation('${r['bestFormation']}')),
           for (final p in _maps(r['bestLineup'])) if (p.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6),
@@ -357,33 +358,44 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   }
 
   Widget _pitch(List<Map<String, dynamic>> slots) {
-    // Wrapping positional lines retain 48dp targets at large text scales.
+    final rows = _session['formation'] == '4231'
+        ? [['FWD', 0, 0], ['MID', 1, 3], ['MID', 4, 5], ['DEF', 6, 9], ['GK', 10, 10]]
+        : [['FWD', 0, 10], ['MID', 0, 10], ['DEF', 0, 10], ['GK', 0, 10]];
     return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(
       color: const Color(0xff103b34), border: Border.all(color: const Color(0xff4d8376)),
       borderRadius: BorderRadius.circular(20)), child: Column(children: [
-        for (final row in (_session['formation'] == '4231'
-            ? [['FWD', 0, 0], ['MID', 1, 3], ['MID', 4, 5], ['DEF', 6, 9], ['GK', 10, 10]]
-            : [['FWD', 0, 10], ['MID', 0, 10], ['DEF', 0, 10], ['GK', 0, 10]])) Padding(padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 8,
-            children: slots.where((s) => s['position'] == row[0] && (s['slot'] as int) >= (row[1] as int) && (s['slot'] as int) <= (row[2] as int)).map((s) {
-              final player = rewardMap(s['player']);
-              final country = '${s['country'] ?? player['country'] ?? ''}';
-              final chosen = !_vault && !_finished && s['slot'] == _slot;
-              return SizedBox(width: MediaQuery.textScalerOf(context).scale(1) > 1.4 ? 130 : 106,
-                child: Material(color: chosen ? const Color(0xffd3f27c) : const Color(0xff1b5146),
+        for (final row in rows) Padding(padding: const EdgeInsets.symmetric(vertical: 8),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final line = slots.where((s) => s['position'] == row[0] &&
+              (s['slot'] as num) >= (row[1] as int) && (s['slot'] as num) <= (row[2] as int)).toList();
+            // Preserve the formation at ordinary type sizes; wrap for accessibility.
+            final width = MediaQuery.textScalerOf(context).scale(1) > 1.4 ? 130.0 :
+              ((constraints.maxWidth - 6 * (line.length - 1)) / line.length).clamp(48.0, 106.0).toDouble();
+            return Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 8,
+              children: line.map((s) {
+                final player = rewardMap(s['player']);
+                final country = '${s['country'] ?? player['country'] ?? ''}';
+                final chosen = !_vault && !_finished && s['slot'] == _slot;
+                return SizedBox(width: width, child: Material(
+                  color: chosen ? const Color(0xffd3f27c) : const Color(0xff1b5146),
                   borderRadius: BorderRadius.circular(10), child: InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: _busy || _vault || _finished ? null : () => setState(() { _slot = (s['slot'] as num).toInt(); }),
                     child: Padding(padding: const EdgeInsets.all(8), child: Column(children: [
-                      Text(_positions[row[0]]!, style: TextStyle(fontSize: 11, color: chosen ? Colors.black87 : Colors.white70)),
+                      Text(_positions[row[0]]!, textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 11, color: chosen ? Colors.black87 : Colors.white70)),
                       const SizedBox(height: 4),
-                      if (country.isNotEmpty) Text(flagFor(country), style: const TextStyle(fontSize: 22)),
-                      Text(player.isNotEmpty ? '${player['name']}' : _vault ? country.isEmpty ? '🔒' : country : '+ Seç',
+                      if (country.isNotEmpty) Semantics(label: country, child: ExcludeSemantics(
+                        child: Text(flagFor(country), style: const TextStyle(fontSize: 22, fontFamily: 'Noto Color Emoji')))),
+                      if (_vault && country.isEmpty && player.isEmpty)
+                        const Icon(Icons.lock_outline_rounded, color: Colors.white70, size: 24)
+                      else Text(player.isNotEmpty ? '${player['name']}' : _vault ? country : '+ Seç',
                         textAlign: TextAlign.center, style: TextStyle(color: chosen ? Colors.black : Colors.white)),
                     ])),
                   )),
-              );
-            }).toList())),
+                );
+              }).toList());
+          })),
       ]));
   }
   List<Widget> _result() {

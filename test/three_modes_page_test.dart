@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -65,6 +66,10 @@ Future<void> capture(WidgetTester t, String name) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
+    final emoji = File('/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf');
+    if (emoji.existsSync()) {
+      await (FontLoader('Noto Color Emoji')..addFont(emoji.readAsBytes().then((b) => ByteData.sublistView(b)))).load();
+    }
     for (final entry in [('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'), ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
       ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf')]) {
       await (FontLoader(entry.$1)..addFont(rootBundle.load(entry.$2))).load();
