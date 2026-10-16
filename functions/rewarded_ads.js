@@ -1,7 +1,8 @@
 "use strict";
 const crypto = require("node:crypto");
+const THREE_HINTS = ["coach11_hint", "letter11_hint", "vault_hint"];
 const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
-  "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint"]);
+  "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint", ...THREE_HINTS]);
 const TICKET_MS = 20 * 60000;
 const RETENTION_MS = 48 * 3600000;
 class RewardError extends Error {
@@ -51,7 +52,8 @@ function policyOf(config, units, platform) {
 function createService({db, getConfig, units, grantCoins, isLinked, isPro, now = Date.now,
   randomId = () => crypto.randomBytes(24).toString("hex"), prepareDailyReward, settleDailyReward,
   prepareStoryReward, settleStoryReward, prepareWhatIfReward, settleWhatIfReward,
-  prepareEnergyReward, settleEnergyReward, prepareQuizReward, settleQuizReward}) {
+  prepareEnergyReward, settleEnergyReward, prepareQuizReward, settleQuizReward,
+  prepareThreeReward, settleThreeReward}) {
   const ref = (uid) => db.ref("rewardedAdState/" + uid);
   async function transact(uid, change) {
     let error;
@@ -81,6 +83,8 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
           if (error.code === "failed-precondition") continue; // capacity: durable pending bonus
           throw error;
         }
+      } else if (THREE_HINTS.includes(receipt.placement)) {
+        await settleThreeReward(uid, receipt);
       } else if (receipt.placement === "quiz_hint") {
         await settleQuizReward(uid, receipt);
       } else if (receipt.placement.startsWith("what_if_")) {
@@ -119,7 +123,8 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     const pro = await isPro(uid);
     const ticket = ticketId ? state.tickets[ticketId] : Object.values(state.tickets)
         .filter((t) => !t.placement.startsWith("daily_") && !t.placement.startsWith("story_") &&
-          !t.placement.startsWith("what_if_") && !["energy_refill", "quiz_hint"].includes(t.placement) &&
+          !t.placement.startsWith("what_if_") &&
+          !["energy_refill", "quiz_hint", ...THREE_HINTS].includes(t.placement) &&
           (t.status === "verified" || t.status === "pending" && t.expiresAt > time))
         .sort((a, b) => b.createdAt - a.createdAt)[0];
     return {ok: true, dayKey: key, resetTimeZone: "Europe/Istanbul", pro,
@@ -142,14 +147,18 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
           .some(([key, value]) => context?.[key] !== value)) {
         fail("invalid-argument", "Reklam görevi eşleşmiyor.");
       }
+      if (THREE_HINTS.includes(placement) && existing.context?.sessionId !== context?.sessionId) {
+        fail("invalid-argument", "Reklam oturumu eşleşmiyor.");
+      }
       await settle(uid);
       return {ok: true, pro: existing.sourceType === "pro_daily_bonus", userId: uid, ticket: publicTicket(existing)};
     }
     const whatIf = placement.startsWith("what_if_");
     const story = placement.startsWith("story_") || whatIf;
     if (story && !await isLinked(uid)) fail("permission-denied", "Google hesabına bağlan.");
-    const special = ["energy_refill", "quiz_hint"].includes(placement);
-    const benefit = placement === "energy_refill" ? await prepareEnergyReward?.(uid) :
+    const special = ["energy_refill", "quiz_hint", ...THREE_HINTS].includes(placement);
+    const benefit = THREE_HINTS.includes(placement) ? await prepareThreeReward?.(uid, placement, context) :
+      placement === "energy_refill" ? await prepareEnergyReward?.(uid) :
       placement === "quiz_hint" ? await prepareQuizReward?.(uid) : whatIf ? await prepareWhatIfReward?.(uid,
           placement, context) :
       story ? await prepareStoryReward?.(uid, placement, context) : placement.startsWith("daily_") ?
@@ -165,8 +174,11 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
       policy.enabled = true; policy.limit = 4; policy.configId = whatIf ? "what-if-v1" : "journey-v1";
     }
     if (special) {
-      policy.enabled = true; policy.limit = placement === "energy_refill" ? 2 : 1;
-      policy.configId = "energy-quiz-v1";
+      policy.enabled = true;
+      policy.limit = THREE_HINTS.includes(placement) ?
+        require("./config/three_modes_catalog.json").policy.hintDailyLimit :
+        placement === "energy_refill" ? 2 : 1;
+      policy.configId = THREE_HINTS.includes(placement) ? "three-modes-hints-v1" : "energy-quiz-v1";
     }
     const pro = await isPro(uid);
     if (!policy.enabled) fail("failed-precondition", "Bonuslar şu anda kapalı.");
@@ -232,7 +244,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
           time - event.timestamp > 24 * 3600000 || t.sourceType !== "rewarded_coin") {
         fail("permission-denied", "Reward ticket expired");
       }
-      if (t.status === "cancelled" && ["energy_refill", "quiz_hint"].includes(t.placement)) {
+      if (t.status === "cancelled" && ["energy_refill", "quiz_hint", ...THREE_HINTS].includes(t.placement)) {
         fail("permission-denied", "Reward ticket cancelled");
       }
       const transactionHash = hash(event.transaction_id);

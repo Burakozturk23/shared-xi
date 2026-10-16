@@ -63,7 +63,7 @@ class EnergyService {
     return result;
   }
 
-  Future<void> watch(String placement, {required bool pro}) async {
+  Future<void> watch(String placement, {required bool pro, Map<String, dynamic>? context}) async {
     final player = AdMobRewardedAdsPlayer();
     if (!pro && (!player.supported || await player.testMode)) {
       throw StateError('Ödüllü reklam henüz hazır değil. Bonus hakkın kullanılmadı.');
@@ -73,7 +73,7 @@ class EnergyService {
     var shown = false;
     try {
       if (!pro) loaded = await player.load();
-      final prepared = await call('prepareRewardedAd', {'placement': placement, 'requestId': requestId()});
+      final prepared = await call('prepareRewardedAd', {'placement': placement, 'requestId': requestId(), if (context != null) 'context': context});
       ticket = RewardedAdTicket.fromMap(rewardMap(prepared['ticket']), userId: '${prepared['userId']}');
       if (prepared['pro'] == true) return;
       if (loaded == null) throw StateError('Üyelik bilgisi değişti. Tekrar dene.');

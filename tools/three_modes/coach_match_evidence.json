@@ -1,0 +1,3852 @@
+{
+  "baseDatabaseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
+  "coaches": [
+    {
+      "birthDate": "1967-06-16",
+      "canonicalId": null,
+      "key": "statsbomb:coach:94",
+      "name": "Jürgen Klopp",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_4"
+    },
+    {
+      "birthDate": "1972-06-23",
+      "canonicalId": null,
+      "key": "statsbomb:coach:56",
+      "name": "Zinédine Zidane",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_1"
+    },
+    {
+      "birthDate": "1941-12-31",
+      "canonicalId": null,
+      "key": "statsbomb:coach:790",
+      "name": "Alex Ferguson",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_41"
+    },
+    {
+      "birthDate": "1971-01-18",
+      "canonicalId": null,
+      "key": "statsbomb:coach:36",
+      "name": "Josep Guardiola i Sala",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_41"
+    },
+    {
+      "birthDate": "1967-08-11",
+      "canonicalId": null,
+      "key": "statsbomb:coach:181",
+      "name": "Massimiliano Allegri",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_26"
+    },
+    {
+      "birthDate": "1970-05-08",
+      "canonicalId": null,
+      "key": "statsbomb:coach:793",
+      "name": "Luis Enrique Martínez García",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_26"
+    },
+    {
+      "birthDate": "1972-03-02",
+      "canonicalId": null,
+      "key": "statsbomb:coach:81",
+      "name": "Mauricio Roberto Pochettino Trossero",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_4"
+    },
+    {
+      "birthDate": "1963-01-26",
+      "canonicalId": null,
+      "key": "statsbomb:coach:383",
+      "name": "José Mario Felix dos Santos Mourinho",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_44"
+    },
+    {
+      "birthDate": "1968-10-15",
+      "canonicalId": null,
+      "key": "statsbomb:coach:545",
+      "name": "Didier Deschamps",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_44"
+    },
+    {
+      "birthDate": "1920-10-02",
+      "canonicalId": null,
+      "key": "statsbomb:coach:1001760",
+      "name": "Ștefan Kovács",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_71"
+    },
+    {
+      "birthDate": "1931-08-26",
+      "canonicalId": null,
+      "key": "statsbomb:coach:1001761",
+      "name": "Giovanni Invernizzi",
+      "role": "head_coach",
+      "source": "receipt:statsbomb_71"
+    }
+  ],
+  "appearances": [
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 37838,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3471",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 3333,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3473",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 119296,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3493",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 148455,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3531",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 61651,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3532",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 131789,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3535",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 49499,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3567",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 200512,
+      "positions": [
+        21,
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3629",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 85864,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3630",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 234803,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3655",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 314353,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3664",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 139208,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3669",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 43530,
+      "positions": [
+        17,
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4090",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 85288,
+      "positions": [
+        19
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4926",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 25557,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5201",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5202",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 8198,
+      "positions": [
+        24,
+        21,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5207",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 27992,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5463",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 164770,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5485",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 16306,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5539",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 44501,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5552",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 31909,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5574",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 79422,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5597",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        23,
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5719",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 138927,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5721",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 39381,
+      "positions": [
+        19,
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:6399",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 418,
+      "coachKey": "statsbomb:coach:56",
+      "coverage": "single_official_match",
+      "date": "2018-05-26",
+      "matchId": "statsbomb:18245",
+      "participated": true,
+      "playerId": 18922,
+      "positions": [
+        22,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19677",
+      "sources": [
+        "receipt:statsbomb_1",
+        "statsbomb:lineups:18245"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        24,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3058",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 33544,
+      "positions": [
+        17,
+        12,
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3267",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 3332,
+      "positions": [
+        22,
+        25
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3538",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 3878,
+      "positions": [
+        11,
+        9
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4751",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 33706,
+      "positions": [
+        2,
+        12
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:8281",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 3516,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15036",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 4000000026,
+      "positions": [
+        9
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15666",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 61891,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:18239",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 5285,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20008",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 4000000069,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20171",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 4000000073,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20172",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        21,
+        16,
+        11
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20173",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 4000000059,
+      "positions": [
+        9,
+        11,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20175",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 65278,
+      "positions": [
+        21,
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3958",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 15951,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4324",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 15760,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4891",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 65230,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5203",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 18944,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5213",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 7600,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5216",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 28003,
+      "positions": [
+        17,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5503",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 19981,
+      "positions": [
+        3,
+        2,
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5506",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 7980,
+      "positions": [
+        23,
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:12737",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 4000000027,
+      "positions": [
+        2,
+        3,
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20125",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 7607,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20131",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 5486,
+      "positions": [
+        17,
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20169",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": 7589,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20176",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2011-05-28",
+      "matchId": "statsbomb:18236",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20177",
+      "sources": [
+        "receipt:statsbomb_22",
+        "statsbomb:lineups:18236"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 128223,
+      "positions": [
+        24
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3477",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 35564,
+      "positions": [
+        24
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3486",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 112302,
+      "positions": [
+        25
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3579",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 2865,
+      "positions": [
+        2,
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5541",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 7109,
+      "positions": [
+        3,
+        4
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:6943",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 5023,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:6949",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 39983,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:7173",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 37666,
+      "positions": [
+        25
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:8206",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 243714,
+      "positions": [
+        6,
+        19
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:8217",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 44716,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:8294",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 5817,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19849",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 122153,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20004",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 5285,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20008",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 506,
+      "coachKey": "statsbomb:coach:181",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 4276,
+      "positions": [
+        22
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20666",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 65278,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3958",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 68290,
+      "positions": [
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4320",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 15951,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4324",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 65230,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5203",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 69751,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5211",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 18944,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5213",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 7600,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5216",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 44352,
+      "positions": [
+        23,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5246",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 32467,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5470",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 28003,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5503",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 19981,
+      "positions": [
+        5,
+        5,
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5506",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 5404,
+      "positions": [
+        13,
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:10609",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 74857,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20055",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:793",
+      "coverage": "single_official_match",
+      "date": "2015-06-06",
+      "matchId": "statsbomb:18242",
+      "participated": true,
+      "playerId": 7607,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20131",
+      "sources": [
+        "receipt:statsbomb_26",
+        "statsbomb:lineups:18242"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 69633,
+      "positions": [
+        17,
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3043",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 43250,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3077",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 249126,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3082",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        21,
+        22,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3083",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 46001,
+      "positions": [
+        9,
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3091",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 207929,
+      "positions": [
+        19,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3094",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 17965,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3099",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 95810,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3308",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 35564,
+      "positions": [
+        16,
+        22
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3486",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 50174,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3594",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 77100,
+      "positions": [
+        15,
+        12
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3745",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 132098,
+      "positions": [
+        23,
+        24
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:10955",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 175722,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:10956",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 148,
+      "coachKey": "statsbomb:coach:81",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 42710,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20005",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 225693,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3247",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 3333,
+      "positions": [
+        15,
+        12,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3473",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 256178,
+      "positions": [
+        16,
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3495",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 82105,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3502",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 148455,
+      "positions": [
+        17,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3531",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 61651,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3532",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 131789,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3535",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 49499,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3567",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 200512,
+      "positions": [
+        21,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3629",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 234803,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3655",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 314353,
+      "positions": [
+        2,
+        12
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3664",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 139208,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3669",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 148368,
+      "positions": [
+        23,
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4747",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 31,
+      "coachKey": "statsbomb:coach:94",
+      "coverage": "single_official_match",
+      "date": "2019-06-01",
+      "matchId": "statsbomb:22912",
+      "participated": true,
+      "playerId": 105470,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5547",
+      "sources": [
+        "receipt:statsbomb_4",
+        "statsbomb:lineups:22912"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 13091,
+      "positions": [
+        2,
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3087",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 65278,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3958",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 65230,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5203",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 18944,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5213",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 7600,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5216",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 28003,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5503",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 3207,
+      "positions": [
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15516",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4257,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19298",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4000000027,
+      "positions": [
+        3,
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20125",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 7607,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20131",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 5486,
+      "positions": [
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20169",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 7589,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20176",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 131,
+      "coachKey": "statsbomb:coach:36",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 3359,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:25854",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 3332,
+      "positions": [
+        12,
+        16,
+        12,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:3538",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 3878,
+      "positions": [
+        10,
+        9
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:4751",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 8198,
+      "positions": [
+        23,
+        24,
+        16,
+        12
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:5207",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 3516,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15036",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4000000026,
+      "positions": [
+        11
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15666",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 3540,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:16890",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 65,
+      "positions": [
+        16,
+        22
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19892",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 5285,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20008",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4000000069,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20171",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4000000073,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20172",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        13,
+        16
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20173",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4000000059,
+      "positions": [
+        16,
+        12,
+        11
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20175",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": 4276,
+      "positions": [
+        15,
+        22,
+        24
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20666",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 985,
+      "coachKey": "statsbomb:coach:790",
+      "coverage": "single_official_match",
+      "date": "2009-05-27",
+      "matchId": "statsbomb:3750201",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:38411",
+      "sources": [
+        "receipt:statsbomb_41",
+        "statsbomb:lineups:3750201"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 9828,
+      "positions": [
+        5,
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:10805",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15009",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        3,
+        4
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:15667",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        10,
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:17725",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        19
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19757",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        15,
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19760",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        2,
+        7
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:19762",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 9831,
+      "positions": [
+        6,
+        8
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20069",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        24,
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20163",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 9811,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40845",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 3091,
+      "positions": [
+        22,
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40846",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        22
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40849",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        24
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40850",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 720,
+      "coachKey": "statsbomb:coach:383",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        19,
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40851",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 5285,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20008",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20130",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20336",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:20520",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:25878",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 6985,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:26140",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": 5293,
+      "positions": [
+        5,
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:26481",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40841",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40842",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        3,
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40843",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40844",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40847",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40848",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 162,
+      "coachKey": "statsbomb:coach:545",
+      "coverage": "single_official_match",
+      "date": "2004-05-26",
+      "matchId": "statsbomb:3752619",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40852",
+      "sources": [
+        "receipt:statsbomb_44",
+        "statsbomb:lineups:3752619"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": 4000000036,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39713",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39716",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        13
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39719",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39720",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        10
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39721",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39723",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        15
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39724",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39726",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39728",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39729",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 610,
+      "coachKey": "statsbomb:coach:1001760",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39734",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        6
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39714",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        3
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39715",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        23
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39717",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        2
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39718",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        1
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39722",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        11
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39725",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39727",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39730",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        21
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39731",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        19
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39732",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        9
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:39733",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        17
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40094",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    },
+    {
+      "clubId": 46,
+      "coachKey": "statsbomb:coach:1001761",
+      "coverage": "single_official_match",
+      "date": "1972-05-31",
+      "matchId": "statsbomb:3750235",
+      "participated": true,
+      "playerId": null,
+      "positions": [
+        5
+      ],
+      "role": "head_coach",
+      "sourcePlayerKey": "statsbomb:player:40095",
+      "sources": [
+        "receipt:statsbomb_71",
+        "statsbomb:lineups:3750235"
+      ],
+      "status": "source_verified"
+    }
+  ],
+  "sources": {
+    "receipt:statsbomb_1": {
+      "provider": "statsbomb",
+      "receiptSha256": "52b75c911dec5624e9c0ee23ff242a794f2a14814bb1e64d2f332630fb1815ae",
+      "retrievedAt": "2026-10-15T13:12:03.548128+00:00",
+      "sha256": "53bb99a0f603816cea50986e255fb51841376c6c655a57de44642541b46c495a",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/1.json"
+    },
+    "receipt:statsbomb_22": {
+      "provider": "statsbomb",
+      "receiptSha256": "33738a12f1b6a03c8d93dcc179f9638086438acb7013e5bf925f2c2d671076d3",
+      "retrievedAt": "2026-10-15T13:12:03.601285+00:00",
+      "sha256": "cd68b20941aebee27b76c40c89a5eec81a731dde762ed2d9f637799587892fd8",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/22.json"
+    },
+    "receipt:statsbomb_26": {
+      "provider": "statsbomb",
+      "receiptSha256": "7082ceae79214d44a6bbbdbc030182a7988d0059056f09ccc52d3c960e5c7723",
+      "retrievedAt": "2026-10-15T13:12:07.264954+00:00",
+      "sha256": "d7776327dc611da04b70c2bb362b5c154acde4f388c897a25aa13a92a5aa7be9",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/26.json"
+    },
+    "receipt:statsbomb_4": {
+      "provider": "statsbomb",
+      "receiptSha256": "da2b652bc5758e514f00bb9a78e0f284c674d7356de5b3b3502ca079cd6cd382",
+      "retrievedAt": "2026-10-15T13:12:03.600353+00:00",
+      "sha256": "eb1f3c0872ce01094f0378e5d80c9782164964d82917a23ae76a93e9c0b0da8e",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/4.json"
+    },
+    "receipt:statsbomb_41": {
+      "provider": "statsbomb",
+      "receiptSha256": "51778cc82bdb4aa8488a9676f169f81d60dcf30c97c842458631648ccd9ee144",
+      "retrievedAt": "2026-10-15T13:12:07.313901+00:00",
+      "sha256": "019a57928448032d8c1bc3e02d67704ecabb544469376e2c27636b732fc8e24c",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/41.json"
+    },
+    "receipt:statsbomb_44": {
+      "provider": "statsbomb",
+      "receiptSha256": "347cd677c6a6664aa813dc50678baf03251efbffed2a73f56b17c6b3a955e6ec",
+      "retrievedAt": "2026-10-15T13:12:07.306912+00:00",
+      "sha256": "4313089c2d57af11368bc6b32cdd939f0124d6b8c8b085d4f190b8de5db88fbd",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/44.json"
+    },
+    "receipt:statsbomb_71": {
+      "provider": "statsbomb",
+      "receiptSha256": "4eaf2acf91c6dbfd9c5e7ac1273604c3d0bc376abb73105e02e01b73b30296e7",
+      "retrievedAt": "2026-10-15T13:12:07.306357+00:00",
+      "sha256": "8b93c9f4aea3157bed17c799798020f42e0f0b5bbf58de4e9aa4b64103a35aa0",
+      "url": "https://raw.githubusercontent.com/hudl/open-data/master/data/matches/16/71.json"
+    },
+    "statsbomb:lineups:18236": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:03.601285+00:00",
+      "sha256": "a8dfa34565551003f935d96b73d1f1fb72ff299abc710273b48c4ac02b4e311d",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/18236.json"
+    },
+    "statsbomb:lineups:18242": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:07.264954+00:00",
+      "sha256": "42c952a9555f13b760362f57ab0d01691addbd8dcafab497c042abb29a9d67d2",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/18242.json"
+    },
+    "statsbomb:lineups:18245": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:03.548128+00:00",
+      "sha256": "4b085881cf0d33b716897bd55b557eb50c959e9c9561d480af097c55e029458c",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/18245.json"
+    },
+    "statsbomb:lineups:22912": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:03.600353+00:00",
+      "sha256": "00387e7b0873d2694c3297892e039c7f0412867fcf4f7bc689246235072684e7",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/22912.json"
+    },
+    "statsbomb:lineups:3750201": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:07.313901+00:00",
+      "sha256": "b3b6612bde48b94deb9196312a428a6d5c1cc3c5aeae7361b3858c7c4162e2ee",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/3750201.json"
+    },
+    "statsbomb:lineups:3750235": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:07.306357+00:00",
+      "sha256": "43a2b670736fcd7c303bb78cc30ed5e069757ff627b3a4fceabf51b12214f032",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/3750235.json"
+    },
+    "statsbomb:lineups:3752619": {
+      "provider": "statsbomb",
+      "retrievedAt": "2026-10-15T13:12:07.306912+00:00",
+      "sha256": "1ae1a58d390fa9bc371eaca72bb292105a74ecd9d22c9d8d4b827ba8e85aab19",
+      "url": "https://github.com/hudl/open-data/blob/master/data/lineups/3752619.json"
+    }
+  }
+}

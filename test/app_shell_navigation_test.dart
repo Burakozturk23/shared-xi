@@ -36,9 +36,9 @@ void main() {
         'Kadro & Yönetim': [
           'Club Manager',
           'Squad Challenge',
-          'Teknik Direktör XI',
+          'Hoca 11',
           'Kadro Kasası',
-          'Letter 11',
+          'Harf 11',
         ],
         'Kariyer & Oyuncu': [
           'Günün Futbolcusu',
@@ -119,9 +119,9 @@ void main() {
       expect(find.text('Club Manager'), findsOneWidget);
       expect(find.text('Vs Bot'), findsNothing);
       expect(find.byType(TextField), findsNothing);
-      expect(find.text('Letter 11'), findsOneWidget);
+      expect(find.text('Harf 11'), findsOneWidget);
       expect(find.text('Squad Challenge'), findsOneWidget);
-      expect(find.text('Teknik Direktör XI'), findsOneWidget);
+      expect(find.text('Hoca 11'), findsOneWidget);
       expect(find.text('Kadro Kasası'), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();

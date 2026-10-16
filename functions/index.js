@@ -5984,6 +5984,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    threeModes: data.threeModes && typeof data.threeModes === "object" ? data.threeModes : {},
     energy: data.energy && typeof data.energy === "object" ? data.energy : {},
     storeUses: data.storeUses && typeof data.storeUses === "object" ? {...data.storeUses} : {},
     squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
@@ -8700,6 +8701,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
+      prepareThreeReward: (uid, placement, context) => lbThreeModesService().prepareHint(uid, placement, context),
+      settleThreeReward: (uid, receipt) => lbThreeModesService().settleHint(uid, receipt),
       prepareQuizReward: (uid) => lbDailyQuestionService().prepareHint(uid),
       settleQuizReward: (uid, receipt) => lbDailyQuestionService().settleHint(uid, receipt),
       prepareWhatIfReward: (uid, placement, context) => lbWhatIfService().prepareReward(uid, placement, context),
@@ -9643,3 +9646,50 @@ exports.getDailyQuestion = lbDailyQuestionCallable("status");
 exports.submitDailyQuestion = lbDailyQuestionCallable("submit");
 // Preflight only. An actual elimination always requires a verified SSV/Pro ticket.
 exports.prepareDailyQuestionHint = lbDailyQuestionCallable("prepareHint");
+
+
+function lbThreeModesService() {
+  const db = getDatabase();
+  return require("./three_modes").createService({db, normalize: lbEconomyState, project: lbEconomyProject,
+    now: () => Date.now(),
+    getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    },
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    grantXp: async (uid, id, xp) => {
+      const now = Date.now();
+      const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+        const s = lbProgressionState(raw, now);
+        if (!s.journeyClaims[id]) {
+          s.lifetimeXp += xp; s.season.xp += xp;
+          s.journeyClaims[id] = {xp, claimedAt: now}; s.updatedAt = now;
+        }
+        return s;
+      });
+      await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+          await lbProgressionPremiumBenefits(db, uid), now);
+    },
+  });
+}
+function lbThreeModesCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      if (["status", "resume"].includes(action)) await lbRewardedService().settle(request.auth.uid);
+      return await lbThreeModesService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getThreeMode = lbThreeModesCallable("status");
+exports.startThreeMode = lbThreeModesCallable("start");
+exports.actThreeMode = lbThreeModesCallable("act");
+exports.searchThreeMode = lbThreeModesCallable("search");
+exports.resumeThreeMode = lbThreeModesCallable("resume");
+exports.claimCoachMastery = lbThreeModesCallable("chooseAvatar");
