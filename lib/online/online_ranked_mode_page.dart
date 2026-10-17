@@ -1,3 +1,4 @@
+import 'career_transfer_online_page.dart';
 import 'package:flutter/material.dart';
 
 import '../models/grid_sub_type.dart';
@@ -16,6 +17,9 @@ class OnlineRankedModePage extends StatelessWidget {
   void _open(BuildContext context, OnlinePlayMode mode) {
     final Widget page;
     switch (mode) {
+      case OnlinePlayMode.careerRace:
+      case OnlinePlayMode.transferDuel:
+        page = CareerTransferOnlinePage(mode: mode.wireName, ranked: true);
       case OnlinePlayMode.sharedXi:
       case OnlinePlayMode.clubCountry:
         page = const RandomMatchPage(autoStart: true);
