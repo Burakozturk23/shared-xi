@@ -160,7 +160,7 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
           onReorder: (old, next) { if (!_busy && ordering) _reorder(stops, old, next > old ? next - 1 : next); },
           itemBuilder: (context, i) {
             final stop = stops[i]; final correctness = _session['correctness'] is List ? _session['correctness'] as List : [];
-            return Card(key: ValueKey(stop['id']), child: ListTile(
+            return Card(key: ValueKey<String>('${stop['id']}'), child: ListTile(
               leading: ordering && !_busy ? ReorderableDragStartListener(index: i, child: const Icon(Icons.drag_handle)) : ClubBadge(club: Club.fromJson(rewardMap(stop['club'])), size: 32),
               title: Text('${rewardMap(stop['club'])['name']}${stop['visit'] == null ? '' : ' · ${stop['visit']}. dönem'}'),
               subtitle: correctness.length == stops.length ? Text(correctness[i] == true ? 'Doğru pozisyon' : 'Yerini değiştir') : null,

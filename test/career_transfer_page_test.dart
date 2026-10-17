@@ -102,8 +102,11 @@ void main() {
     await t.enterText(find.byType(TextField), 'Ronaldo'); await t.pump(const Duration(milliseconds: 400)); await t.pump();
     await t.ensureVisible(find.text('Cristiano Ronaldo')); await t.tap(find.text('Cristiano Ronaldo')); await t.pump();
     expect(f.mutation!['playerId'], 8198);
-    await t.drag(find.byType(ListView).first, const Offset(0, 700));
     await t.pumpAndSettle();
+    final outerScroll = t.state<ScrollableState>(find.byType(Scrollable).first);
+    outerScroll.position.jumpTo(0);
+    await t.pumpAndSettle();
+    expect(find.text('2 / 2 · Kariyeri sırala'), findsOneWidget);
     expect(find.byKey(const ValueKey('period_a')), findsOneWidget);
     expect(find.byKey(const ValueKey('period_c')), findsOneWidget);
     await t.pumpWidget(const SizedBox());
