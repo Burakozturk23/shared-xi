@@ -9804,7 +9804,7 @@ async function lbCareerTransferGrantXp(uid, id, xp) {
       await lbProgressionPremiumBenefits(db, uid), time);
 }
 async function lbSettleCareerTransferRanked(room) {
-  if (room.status !== "finished" || !room.ranked || !room.guest || room.host === room.guest) return;
+  if (room.settled || room.status !== "finished" || !room.ranked || !room.guest || room.host === room.guest) return;
   const db = getDatabase(); const time = Date.now(); const mode = room.mode;
   const userSnaps = await Promise.all([db.ref("users/" + room.host).get(), db.ref("users/" + room.guest).get()]);
   const tx = await db.ref("rankedState").transaction((raw) => {
@@ -9846,6 +9846,8 @@ async function lbSettleCareerTransferRanked(room) {
       await lbCareerTransferGrantXp(uid, key, xp);
     }
   }
+  // Mark only after both players' mirrors and idempotent payments succeeded.
+  await db.ref(`careerTransferOnline/${mode}/rooms/${room.id}/settled`).set(true);
 }
 function lbCareerTransferOnlineService() {
   const db = getDatabase();

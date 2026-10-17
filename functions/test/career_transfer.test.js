@@ -128,3 +128,45 @@ test("lost XP projection repairs the outbox without a second Coin payment", asyn
   assert.equal(h.read("economyState/alice/balances/coins"), 6);
   assert.equal(h.read("progressionState/alice/lifetimeXp"), 12);
 });
+test("SSV cancellation, replay and two credits share one solo hint budget across phases", async () => {
+  const h = harness({}, {omitEmptyObjects: true});
+  const service = h.context.lbCareerTransferService();
+  const unit = "ca-app-pub-1234567890123456/1234567890";
+  const ads = require("../rewarded_ads").createService({db: h.db, now: () => h.now,
+    getConfig: async () => require("../economy_config").defaults, units: {android: unit},
+    isLinked: async () => false, isPro: async () => false,
+    prepareThreeReward: service.prepareHint, settleThreeReward: service.settleHint,
+    grantCoins: async () => assert.fail("Hint cannot mint coins"),
+  });
+  let s = await start(h, "career"); const p = puzzle(h, s);
+  const prepare = () => ads.prepare("alice", "android", "career_hint", id(), {sessionId: s.id});
+  const event = (t) => ({user_id: "alice", custom_data: t.id, ad_unit: unit, timestamp: h.now,
+    transaction_id: id(), reward_amount: "999999"});
+  let {ticket} = await prepare(); await ads.cancel("alice", ticket.id);
+  await assert.rejects(ads.accept(event(ticket)), {code: "permission-denied"});
+  assert.equal(privateRun(h, s).adCredits, 0);
+  for (let i = 0; i < 2; i++) {
+    h.setTime(h.now + 31000); ({ticket} = await prepare());
+    const receipt = event(ticket); await ads.accept(receipt); await ads.accept(receipt);
+  }
+  s = await act(h, s, {action: "hint", hint: "country"});
+  s = await act(h, s, {action: "guess", playerId: p.playerId});
+  s = await act(h, s, {action: "hint", hint: "connection"});
+  s = await act(h, s, {action: "hint", hint: "years"});
+  assert.equal(s.hints.length, 3); assert.equal(s.adCredits, 0);
+  await assert.rejects(prepare(), {code: "failed-precondition"});
+  await assert.rejects(act(h, s, {action: "hint", hint: "short"}), {code: "resource-exhausted"});
+});
+test("expired first attempt is archived and cannot regain transfer reward or career mastery", async () => {
+  const h = harness(); let s = await start(h, "transfer"); const p = puzzle(h, s);
+  h.setTime(h.now + 86400001);
+  const status = await h.call("getCareerTransfer", {mode: "transfer"});
+  assert.equal(status.session.finished, true); assert.equal(status.collection.length, 1);
+  s = await start(h, "transfer", {target: p.id}); s = await solve(h, s);
+  assert.equal(s.result.coins, 0);
+  s = await start(h, "career"); const c = puzzle(h, s);
+  h.setTime(h.now + 86400001);
+  await h.call("getCareerTransfer", {mode: "career"});
+  s = await start(h, "career", {target: c.id}); s = await solve(h, s);
+  assert.equal(s.result.coins, 8); assert.equal(s.result.medal, 3);
+});

@@ -42,6 +42,10 @@ function sessionView(raw) {
     v.correctness = s.correctness;
     if (s.finished) v.solution = p.stops.map((x) => ({...x, club: clubs.get(x.clubId)}));
   } else {
+    const first = [...player.name].findIndex((c) => /\p{L}/u.test(c));
+    const letter = s.hints.some((h) => h.kind === "letter");
+    v.maskedName = [...player.name].map((c, i) => /\p{L}/u.test(c) ?
+      s.finished || letter && i === first ? c : "_" : c).join(" ");
     v.transfer = {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year};
     if (s.finished) v.transfer = {...v.transfer, eventId: p.id, date: p.date, source: p.source};
   }
@@ -142,6 +146,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   async function status(uid, input) {
     if (!MODES.includes(input.mode)) fail("invalid-argument", "Geçersiz mod.");
+    await change(uid, (s, _, time) => {
+      const expired = runOf(s.sessions[s.active[input.mode]]);
+      if (expired && !expired.finished && expired.expiresAt <= time) {
+        finish(s, expired, time); s.sessions[expired.id] = expired;
+      }
+    });
     await settle(uid); const s = await read(uid);
     const active = runOf(s.sessions[s.active[input.mode]]);
     const e = normalize((await db.ref("economyState/" + uid).get()).val());
@@ -162,6 +172,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       pendingCoins: Object.values(s.pending).reduce((n, r) => n + r.coins, 0) +
         Object.values(s.payments).filter((p) => !p.paid).reduce((n, p) => n + p.coins, 0),
       coins: e.balances.coins, longestStreak: s.longestStreak,
+      badges: input.mode === "transfer" ? [
+        {id: "files_10", title: "Transfer Arşivcisi", target: 10, progress: Object.entries(s.collection)
+          .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
+        {id: "files_50", title: "Transfer Uzmanı", target: 50, progress: Object.entries(s.collection)
+          .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
+        {id: "streak_5", title: "Keskin Dedektif", target: 5, progress: s.longestStreak},
+        {id: "streak_10", title: "Kusursuz Seri", target: 10, progress: s.longestStreak},
+      ].map((b) => ({...b, earned: b.progress >= b.target})) : [],
       inventory: boosts.map((id) => ({id, quantity: e.inventory[id]?.quantity || 0}))};
   }
   async function start(uid, input) {
@@ -180,6 +198,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       }
       const active = runOf(s.sessions[s.active[input.mode]]);
       if (active && !active.finished && active.expiresAt > time) fail("already-exists", "Önce kayıtlı oyunu bitir.");
+      if (active && !active.finished && active.expiresAt <= time) {
+        finish(s, active, time); s.sessions[active.id] = active;
+      }
       let candidates = pool(input.mode).filter((p) => input.mode !== "career" || p.difficulty === difficulty);
       if (input.target) {
         if (!s.collection[`${input.mode}__${input.target}`]?.last) fail("permission-denied", "Önce arşive ekle.");
@@ -330,7 +351,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function prepareHint(uid, placement, context) {
     const s = await read(uid); const run = runOf(s.sessions[context?.sessionId]);
     if (!run || `${run.mode}_hint` !== placement || run.finished || run.expiresAt <= now() ||
-        run.adGranted >= 2 || run.hints.length >= 3) fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
+        run.adGranted >= 2 || run.hints.length + run.adCredits + (run.freeUsed ? 0 : 1) >= 3) {
+      fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
+    }
     return {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
       context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}};
   }
@@ -338,7 +361,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     await change(uid, (s, _, time) => {
       const run = runOf(s.sessions[receipt.context?.sessionId]);
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= time ||
-          run.adReceipts[receipt.id] || run.adGranted >= 2 || run.adGranted !== receipt.context.credit) return;
+          run.adReceipts[receipt.id] || run.hints.length >= 3 || run.adGranted >= 2 ||
+          run.adGranted !== receipt.context.credit) return;
       run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true; s.sessions[run.id] = run;
     });
   }

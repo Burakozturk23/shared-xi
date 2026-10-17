@@ -172,6 +172,8 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
       ] else PitchPanel(child: Column(children: [ClubBadge(club: Club.fromJson(rewardMap(transfer['from'])), size: 48), Text('${rewardMap(transfer['from'])['name']}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
         const Icon(Icons.south_rounded), ClubBadge(club: Club.fromJson(rewardMap(transfer['to'])), size: 48), Text('${rewardMap(transfer['to'])['name']}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8), Text('${transfer['year']}', style: Theme.of(context).textTheme.headlineSmall)])),
+      if (!_career && !_finished) Padding(padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text('${_session['maskedName'] ?? 'Gizemli futbolcu'}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge)),
       if (_session['player'] != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('${rewardMap(_session['player'])['name']}', style: Theme.of(context).textTheme.headlineSmall)),
       if ('${_session['feedback'] ?? ''}'.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('${_session['feedback']}')),
       if (!_finished && !ordering) ...[
@@ -226,6 +228,9 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
     Text(_career ? 'Kariyer Arşivi' : 'Transfer Dosyaları', style: Theme.of(context).textTheme.headlineSmall),
     Text('Bekleyen ödül: ${_status['pendingCoins']} Link Coin'),
     if (!_career) Text('En uzun seri: ${_status['longestStreak']}'),
+    Wrap(spacing: 8, children: [for (final b in _maps(_status['badges'])) Chip(
+      avatar: Icon(b['earned'] == true ? Icons.emoji_events : Icons.lock_outline, size: 18),
+      label: Text('${b['title']} · ${b['progress']} / ${b['target']}'))]),
     TextButton(onPressed: () => setState(() => _archive = false), child: Text(_active ? 'Oyuna dön · ücretsiz' : 'Oyuna dön')),
     if (_maps(_status['collection']).isEmpty) const Text('Tamamladığın dosyalar burada saklanır.'),
     for (final r in _maps(_status['collection'])) Card(child: ExpansionTile(

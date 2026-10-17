@@ -9,6 +9,7 @@
 - Transferler HIGH güven, tarih/yıl/yön, kıdemli kulüp, kimlik tekilleştirme ve görünür ipucunun tek yanıt vermesi kontrolünden geçer. Ücret ve kiralık türü kaynakta yok; gösterilmez.
 - Güven, mevcut V4 kaynağının güven seviyesidir. Bu paket tüm satırlar için bağımsız dış kaynak araştırması yapmaz. Katalog kaynak alanı bunu açıkça belirtir.
 - Solo: üç geçerli yanlış; belirsiz/tanınmayan isim hak tüketmez. Kariyerde iki sıralama kontrolü; üç yanlış sonrası ödülsüz alıştırma. Transfer seri çarpanı 1 / 1.2 / 1.5 / 2, yalnızca puana uygulanır.
+- Transfer Dosyaları rozetleri: 10/50 farklı çözülen dosya ve 5/10 doğru seri; yalnızca koleksiyon rozeti, ek Coin yok.
 - Yerel Coin kaldırıldı. Kariyer 3+2+3+4C ve iki katı XP; transfer 2+1+1+2C. Kariyer ustalığı ilk resmî Normal/Efsane oturumunda; transfer ekonomisi ilk oturumda kilitlenir.
 - İki solo mod aynı 36C/72XP günlük bütçeyi kullanır. Kalıcı kuyruk, ilk kazanılma sırasına göre sonraki açılışta/sonraki gün ödenir. Coin ve XP ayrı idempotent makbuzlarla onarılır. Misafir ödülü kaydedilir, bağlı hesapta aktarılır.
 - Oturum oluşturma, ilk deneme kaydı ve tek enerji kesimi aynı RTDB işleminde atomiktir; ayrı rezervasyon/confirm arasındaki kayıp pencere yoktur. İstemci istek günlüğünü göndermeden önce diske yazar. 24 saat devam; 0 enerji yeni içeriği göstermez.

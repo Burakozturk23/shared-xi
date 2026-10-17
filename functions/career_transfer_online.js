@@ -248,7 +248,7 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
       s.rooms[room.id] = room;
     });
     const room = roomOf(s.rooms[input.roomId]);
-    if (room.status === "finished" && room.ranked) await settleRanked(room);
+    if (room.status === "finished" && room.ranked && !room.settled) await settleRanked(room);
     return {room: view(room, uid, now())};
   }
   async function sweep() {
@@ -269,7 +269,7 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
         }
       });
       for (const room of Object.values(state.rooms)) {
-        if (room.status === "finished" && room.ranked) await settleRanked(room);
+        if (room.status === "finished" && room.ranked && !room.settled) await settleRanked(room);
       }
     }
   }

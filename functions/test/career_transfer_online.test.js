@@ -115,3 +115,17 @@ test("all score/time ties draw; explicit leave and blocked pairing never reward"
   await assert.rejects(enter(h, "bob", "career_race", "join", a.code), {code: "permission-denied"});
   assert.equal((await act(h, "alice", a, "leave")).status, "cancelled");
 });
+test("scheduled reconcile closes silent matches and does not repeat settled projections", async () => {
+  const h = harness(); let r = await pair(h, "transfer_duel", true);
+  r = await play(h, r);
+  assert.equal(read(h, r).settled, true);
+  const profile = h.read("users/alice"); const coins = h.read("economyState/alice/balances/coins");
+  h.setTime(h.now + 60000);
+  await h.call("reconcileCareerTransferOnline");
+  assert.deepEqual(h.read("users/alice"), profile);
+  assert.equal(h.read("economyState/alice/balances/coins"), coins);
+  r = await pair(h, "career_race", true);
+  h.setTime(h.now + 65000);
+  await h.call("reconcileCareerTransferOnline");
+  assert.equal(read(h, r).status, "forfeit");
+});

@@ -66,9 +66,15 @@ class CareerTransferService {
     final status = await transport.call('getCareerTransfer', {'mode': mode == 'career_race' ? 'career' : 'transfer'});
     final roomId = prefs.getString('career_transfer.room.${user.uid}.$mode');
     if (roomId != null) {
-      final r = await transport.call('actCareerTransferOnline', {'mode': mode, 'version': status['version'],
-        'roomId': roomId, 'action': 'poll'});
-      status['room'] = r['room'];
+      try {
+        final r = await transport.call('actCareerTransferOnline', {'mode': mode, 'version': status['version'],
+          'roomId': roomId, 'action': 'poll'});
+        status['room'] = r['room'];
+      } on FirebaseFunctionsException catch (e) {
+        if (!['not-found', 'permission-denied'].contains(e.code)) rethrow;
+        _checkOwner(user.uid);
+        await prefs.remove('career_transfer.room.${user.uid}.$mode');
+      }
     }
     _checkOwner(user.uid);
     return status;
