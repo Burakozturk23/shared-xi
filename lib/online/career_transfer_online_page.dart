@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
 import '../widgets/friend_match_invite_button.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/fake_club_options.dart';
 import 'online_mode_catalog.dart';
 
 List<Map<String, dynamic>> _rows(dynamic v) => (v is List ? v : const []).map(rewardMap).toList();
@@ -19,8 +20,8 @@ class CareerTransferOnlinePage extends StatefulWidget {
   State<CareerTransferOnlinePage> createState() => _CareerTransferOnlinePageState();
 }
 class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> with WidgetsBindingObserver {
-  late final _service = widget.service ?? CareerTransferService(mysteryChain: widget.mode == 'mystery_duel');
-  Map<String, dynamic> _room = {};
+  late final _service = widget.service ?? CareerTransferService(mysteryChain: widget.mode == 'mystery_duel', fakeClub: widget.mode == 'fake_club_duel');
+  Map<String, dynamic> _room = {}, _availability = {};
   String _version = '';
   String? _error;
   bool _busy = true, _polling = false, _resumed = true, _canPop = false, _accountChanged = false;
@@ -35,6 +36,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   bool get _playing => _room['status'] == 'playing';
   bool get _waiting => _room['status'] == 'waiting';
   bool get _finished => ['finished', 'forfeit', 'cancelled'].contains(_room['status']);
+  bool get _fakeClub => widget.mode == 'fake_club_duel';
+  bool get _enabled => !_fakeClub || _availability[widget.ranked ? 'ranked' : 'friends'] == true;
   bool get _mystery => widget.mode == 'mystery_duel';
   bool get _career => widget.mode == 'career_race';
   int get _now => (_room['serverNow'] as num? ?? 0).toInt() + DateTime.now().difference(_received).inMilliseconds;
@@ -74,7 +77,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   Future<void> _load() => _run(() async {
     final status = await _service.onlineLoad(widget.mode);
     if (!mounted || _accountChanged) return;
-    setState(() { _version = '${status['version']}'; _accept(rewardMap(status['room'])); });
+    setState(() { _version = '${status['version']}'; _availability = rewardMap(status['availability']); _accept(rewardMap(status['room'])); });
     if (_room.isEmpty && widget.joinCode != null) await _enterImpl('join', code: widget.joinCode);
   });
   Future<void> _enterImpl(String action, {String? code}) async {
@@ -131,9 +134,9 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   }
   @override
   Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (didPop, _) { if (!didPop) _leave(); },
-    child: Scaffold(appBar: AppBar(title: Text(_mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu'), actions: [
+    child: Scaffold(appBar: AppBar(title: Text(_fakeClub ? 'Sahte Kulüp Düellosu' : _mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu'), actions: [
       if (_waiting && _room['host'] == true && _room['ranked'] != true)
-        FriendMatchInviteButton(mode: _mystery ? OnlinePlayMode.mysteryDuel : _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
+        FriendMatchInviteButton(mode: _fakeClub ? OnlinePlayMode.fakeClubDuel : _mystery ? OnlinePlayMode.mysteryDuel : _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
       IconButton(tooltip: 'Yeniden bağlan', onPressed: _busy || _accountChanged ? null : _load, icon: const Icon(Icons.refresh))]),
       body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
         child: ListView(padding: const EdgeInsets.all(16), children: [
@@ -153,18 +156,19 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
       Text(_room['status'] == 'forfeit' ? 'Hükmen sonuç' : _room['status'] == 'cancelled' ? 'Oda kapandı' :
         {'win': 'Kazandın', 'draw': 'Berabere', 'loss': 'Rakibin kazandı'}[_room['result']] ?? 'Maç bitti', style: Theme.of(context).textTheme.headlineSmall),
       Text('${rewardMap(_room['mine'])['score'] ?? 0} – ${rewardMap(_room['theirs'])['score'] ?? 0}'),
-      Text(_room['rewardEligible'] == true ? 'Günün ilk 5 geçerli dereceli maçı ortak ödül sınırına tabidir.' : 'Bu maçtan Coin / XP / ELO ödülü yok.'),
+      Text(_room['rewardEligible'] == true ? 'Günün ilk 5 geçerli dereceli maçı ortak ödül sınırına tabidir.' : _fakeClub && _room['ranked'] == true ? 'Coin / XP hakkı yok. Dereceli sonuç ELO ve istatistiklere işlenir.' : 'Bu maçtan Coin / XP / ELO ödülü yok.'),
       if (_room['rewardEligible'] == true) const Text('Galibiyet 3C / 8XP · beraberlik 2C / 6XP · mağlubiyet 1C / 4XP'),
       for (final r in _rows(_room['rounds'])) Padding(padding: const EdgeInsets.only(top: 8),
-        child: Text('Tur: ${r['kind']} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan')),
+        child: Text('Tur: ${r['kind'] == 'fake_club_duel' ? 'Sahte Kulüp' : r['kind']} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan${r['explanation'] != null ? '\n${r['explanation']}' : ''}')),
     ])),
     const SizedBox(height: 12),
-    Text(_mystery ? '5 gizemli futbolcu · her tur 30 saniye' : _career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye', style: Theme.of(context).textTheme.titleLarge),
+    Text(_fakeClub ? '10 futbolcu · her tur 10 saniye · can sınırı yok' : _mystery ? '5 gizemli futbolcu · her tur 30 saniye' : _career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye', style: Theme.of(context).textTheme.titleLarge),
     const Text('Enerji, reklam ve destek yok. Her tur tek kesin cevap. Doğruluk ve hız puan getirir.'),
-    if (widget.ranked) FilledButton(onPressed: _busy || _version.isEmpty ? null : () => _enter('ranked'), child: const Text('Dereceli rakip bul')) else ...[
-      FilledButton(onPressed: _busy || _version.isEmpty ? null : () => _enter('create'), child: const Text('Arkadaş odası oluştur')),
+    if (!_enabled) const Text('Bu eşleşme türü henüz açılmadı. Doğrulama tamamlanınca kullanılabilir olacak.'),
+    if (widget.ranked) FilledButton(onPressed: _busy || _version.isEmpty || !_enabled ? null : () => _enter('ranked'), child: const Text('Dereceli rakip bul')) else ...[
+      FilledButton(onPressed: _busy || _version.isEmpty || !_enabled ? null : () => _enter('create'), child: const Text('Arkadaş odası oluştur')),
       TextField(controller: _code, textCapitalization: TextCapitalization.characters, maxLength: 8, decoration: const InputDecoration(labelText: 'Oda kodu')),
-      OutlinedButton(onPressed: _busy || _version.isEmpty ? null : () => _enter('join', code: _code.text), child: const Text('Odaya katıl')),
+      OutlinedButton(onPressed: _busy || _version.isEmpty || !_enabled ? null : () => _enter('join', code: _code.text), child: const Text('Odaya katıl')),
     ],
   ];
   List<Widget> _game() {
@@ -196,6 +200,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
             IconButton(tooltip: 'Yukarı taşı', onPressed: locked || i == 0 ? null : () => setState(() { final p = _order.removeAt(i); _order.insert(i - 1, p); }), icon: const Icon(Icons.arrow_upward)),
             IconButton(tooltip: 'Aşağı taşı', onPressed: locked || i == _order.length - 1 ? null : () => setState(() { final p = _order.removeAt(i); _order.insert(i + 1, p); }), icon: const Icon(Icons.arrow_downward)),
           ])),
+        ] else if (_fakeClub) ...[
+          const Text('Hangi kulüpte oynamadı?'), const SizedBox(height: 12),
+          FakeClubOptions(options: _rows(q['options']), selectedId: (_selected as num?)?.toInt(),
+            fakeClubId: (_room['reveal'] as num?)?.toInt(), onSelected: locked ? null : (id) => setState(() => _selected = id)),
+          if (_room['explanation'] != null) Text('${_room['explanation']}'),
         ] else for (final p in _rows(q['options'])) Card(child: ListTile(title: Text('${p['name']}'), selected: _selected == p['id'],
           leading: Icon(_selected == p['id'] ? Icons.radio_button_checked : Icons.radio_button_off), onTap: locked ? null : () => setState(() => _selected = p['id']))),
         FilledButton(onPressed: locked || q['kind'] != 'order' && _selected == null ? null : _answer, child: const Text('Kesin cevabımı gönder')),

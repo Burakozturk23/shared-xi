@@ -588,6 +588,7 @@ const LB_RANKED_MODES = {
   career_race: "careerTransferOnline/career_race/rooms",
   transfer_duel: "careerTransferOnline/transfer_duel/rooms",
   mystery_duel: "careerTransferOnline/mystery_duel/rooms",
+  fake_club_duel: "careerTransferOnline/fake_club_duel/rooms",
 };
 
 /**
@@ -662,6 +663,7 @@ function lbRankedModeStats(raw) {
     career_race: lbRankedModeStat(data.career_race),
     transfer_duel: lbRankedModeStat(data.transfer_duel),
     mystery_duel: lbRankedModeStat(data.mystery_duel),
+    fake_club_duel: lbRankedModeStat(data.fake_club_duel),
   };
 }
 
@@ -1039,7 +1041,7 @@ exports.submitRankedResult = httpsV2.onCall(
       }
 
       const match = matchSnap.val();
-      if (["career_race", "transfer_duel", "mystery_duel"].includes(mode)) {
+      if (["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"].includes(mode)) {
         if (![match.host, match.guest].includes(uid)) {
           throw new httpsV2.HttpsError("permission-denied", "Bu maçın oyuncusu değilsin.");
         }
@@ -2379,7 +2381,7 @@ exports.unblockUser = httpsV2.onCall(
 const LB_SOCIAL_INVITE_TTL_MS = 10 * 60 * 1000;
 const LB_SOCIAL_MAX_INCOMING_MATCH_INVITES = 20;
 const LB_SOCIAL_INVITE_MODES = new Set([
-  "career_race", "transfer_duel", "mystery_duel",
+  "career_race", "transfer_duel", "mystery_duel", "fake_club_duel",
   "club_club",
   "club_country",
   "grid_classic",
@@ -2471,7 +2473,7 @@ async function lbSocialValidateInviteRoom(
     roomCode,
     senderProfile,
 ) {
-  if (["career_race", "transfer_duel", "mystery_duel"].includes(mode)) {
+  if (["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"].includes(mode)) {
     const room = (await db.ref(`careerTransferOnline/${mode}/rooms/${roomCode}`).get()).val();
     if (!room || room.host !== uid || room.ranked || room.status !== "waiting" ||
         room.createdAt + 300000 <= Date.now()) {
@@ -6009,6 +6011,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
     mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
     careerTransfer: data.careerTransfer && typeof data.careerTransfer === "object" ? data.careerTransfer : {},
     threeModes: data.threeModes && typeof data.threeModes === "object" ? data.threeModes : {},
@@ -7611,6 +7614,7 @@ function lbMissionState(raw, now) {
       processed: {...rawProcessed},
       claims: {...rawClaims},
     },
+    externalDailyClaims: {...(data.externalDailyClaims || {})},
     generalClaims: {...rawGeneralClaims},
     createdAt: lbProgressionNumber(data.createdAt),
     updatedAt: lbProgressionNumber(data.updatedAt),
@@ -7754,9 +7758,7 @@ function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFI
     dailyClaimLimit: config.sources.daily_mission.dailyLimit,
     daily: daily,
     general: general,
-    dailyCompletedCount: daily.filter(
-        (mission) => mission.claimed,
-    ).length,
+    dailyCompletedCount: Object.keys(state.daily.claims).length,
     generalCompletedCount: Object.keys(
         state.generalClaims,
     ).length,
@@ -8415,7 +8417,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["friendRequestsIncoming/" + uid] = null;
   updates["friendRequestsOutgoing/" + uid] = null;
   updates["friends/" + uid] = null;
-  for (const mode of ["career_race", "transfer_duel", "mystery_duel"]) {
+  for (const mode of ["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"]) {
     const root = `careerTransferOnline/${mode}`;
     const online = (await db.ref(root).get()).val() || {};
     updates[`${root}/active/${uid}`] = null;
@@ -8746,12 +8748,14 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => ["mystery_hint", "chain_hint"].includes(placement) ?
+      prepareThreeReward: (uid, placement, context) => placement === "fake_club_hint" ?
+        lbFakeClubService().prepareHint(uid, placement, context) : ["mystery_hint", "chain_hint"].includes(placement) ?
         lbMysteryChainService().prepareHint(uid, placement, context) :
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "fake_club_hint" ?
+        lbFakeClubService().settleHint(uid, receipt) : ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
         lbMysteryChainService().settleHint(uid, receipt) :
           ["career_hint", "transfer_hint"].includes(receipt.placement) ?
         lbCareerTransferService().settleHint(uid, receipt) : lbThreeModesService().settleHint(uid, receipt),
@@ -9814,7 +9818,8 @@ async function lbCareerTransferGrantXp(uid, id, xp) {
       await lbProgressionPremiumBenefits(db, uid), time);
 }
 async function lbSettleCareerTransferRanked(room) {
-  if (room.settled || room.status !== "finished" || !room.ranked || !room.guest || room.host === room.guest) return;
+  if (room.settled || !(room.status === "finished" || room.mode === "fake_club_duel" && room.status === "forfeit") ||
+    !room.ranked || !room.guest || room.host === room.guest) return;
   const db = getDatabase(); const time = Date.now(); const mode = room.mode;
   const userSnaps = await Promise.all([db.ref("users/" + room.host).get(), db.ref("users/" + room.guest).get()]);
   const tx = await db.ref("rankedState").transaction((raw) => {
@@ -9824,17 +9829,19 @@ async function lbSettleCareerTransferRanked(room) {
     const ar = lbRankedResultName(room.host, room.winner); const br = lbRankedResultName(room.guest, room.winner);
     const ae = lbRankedNextElo(a.elo, b.elo, lbRankedResultScore(ar));
     const be = lbRankedNextElo(b.elo, a.elo, lbRankedResultScore(br));
-    const participated = (uid) => mode !== "mystery_duel" || Object.keys(room.answers?.[uid] || {}).length > 0;
-    const rewardEligible = {[room.host]: participated(room.host) &&
+    const participated = (uid) => !["mystery_duel", "fake_club_duel"].includes(mode) ||
+      Object.keys(room.answers?.[uid] || {}).length > 0;
+    const rewardEligible = {[room.host]: room.status === "finished" && participated(room.host) &&
       lbRankedRewardCount(s, room.host, room.finishedAt) < 5,
-    [room.guest]: participated(room.guest) && lbRankedRewardCount(s, room.guest, room.finishedAt) < 5};
+    [room.guest]: room.status === "finished" &&
+      participated(room.guest) && lbRankedRewardCount(s, room.guest, room.finishedAt) < 5};
     s.profiles[room.host] = lbRankedNextProfile(a, ar, mode, ae, time);
     s.profiles[room.guest] = lbRankedNextProfile(b, br, mode, be, time);
     s.settlements[mode][room.id] = {matchId: room.id, mode, player1Uid: room.host, player2Uid: room.guest,
       winnerUid: room.winner || null, player1Result: ar, player2Result: br, player1EloBefore: a.elo,
       player2EloBefore: b.elo, player1EloAfter: ae, player2EloAfter: be, player1EloDelta: ae - a.elo,
       player2EloDelta: be - b.elo, serverValidated: true, validationVersion: 2,
-      settledAt: room.finishedAt, rewardEligible,
+      settledAt: room.finishedAt, rewardEligible, forfeit: room.status === "forfeit",
       participants: {[room.host]: participated(room.host), [room.guest]: participated(room.guest)}};
     return s;
   });
@@ -9870,6 +9877,7 @@ function lbCareerTransferOnlineService() {
       return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
     },
     blocked: async (uid) => new Set(Object.keys((await db.ref("blocks/" + uid).get()).val() || {})),
+    getFakePolicy: async () => (await db.ref("runtimeConfig/fakeClub").get()).val() || {},
     settleRanked: lbSettleCareerTransferRanked});
 }
 function lbCareerTransferOnlineCallable(action) {
@@ -9922,3 +9930,58 @@ exports.getMysteryChain = lbMysteryChainCallable("status");
 exports.startMysteryChain = lbMysteryChainCallable("start");
 exports.actMysteryChain = lbMysteryChainCallable("act");
 exports.searchMysteryChain = lbMysteryChainCallable("search");
+
+
+// Shares the exact missionState transaction/claim limit with existing daily missions.
+// A durable reservation survives midnight and wallet/XP failures; guest claims cannot
+// be replayed on a different account or moved into a fresh day's budget.
+async function lbFakeClubDailyClaim(uid, day) {
+  const db = getDatabase(); const time = Date.now(); const config = await lbGetEconomyConfig();
+  const id = `fc_daily__${day}`;
+  const tx = await db.ref("missionState/" + uid).transaction((raw) => {
+    const s = lbMissionState(raw, time);
+    if (s.externalDailyClaims[id]) return s;
+    if (s.daily.dateKey !== day || !config.sources.daily_mission.enabled ||
+      Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) return s;
+    s.daily.claims.daily_fake_club = {claimedAt: time, rewardCoins: 2, economyConfigId: config.configId};
+    s.externalDailyClaims[id] = {day, coins: 2, xp: 4, at: time, configId: config.configId};
+    s.updatedAt = time; return s;
+  });
+  const state = lbMissionState(tx.snapshot.val(), time); const claim = state.externalDailyClaims[id];
+  if (!claim) return day !== lbProgressionDateKey(time) ? "expired" : "pending";
+  await lbProgressionGrantCoins(db, uid, id, "mission_reward", day + "__daily_fake_club", 2, claim.configId);
+  await lbCareerTransferGrantXp(uid, id, 4);
+  await lbMissionProject(db, uid, state, config);
+  return "paid";
+}
+function lbFakeClubService() {
+  const db = getDatabase();
+  return require("./fake_club").createService({db, normalize: lbEconomyState, project: lbEconomyProject,
+    now: () => Date.now(),
+    getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    getPolicy: async () => (await db.ref("runtimeConfig/fakeClub").get()).val() || {},
+    isLinked: async (uid) => {
+      const u = await getAuth().getUser(uid);
+      return !u.disabled && u.providerData.some((p) => p.providerId === "google.com");
+    },
+    dailyClaim: lbFakeClubDailyClaim,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp,
+  });
+}
+function lbFakeClubCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      if (action === "status") await lbRewardedService().settle(request.auth.uid);
+      return await lbFakeClubService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getFakeClub = lbFakeClubCallable("status");
+exports.startFakeClub = lbFakeClubCallable("start");
+exports.actFakeClub = lbFakeClubCallable("act");

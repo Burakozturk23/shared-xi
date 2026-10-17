@@ -1,0 +1,630 @@
+{
+  "schema": 1,
+  "policy": "Explicit complete retired first-team career review only. Existing avatar biographies retain their review provenance. Ten additional full senior-career tables rechecked on 2026-10-17. No LIKELY_COMPLETE_MODERN_WINDOW inference. Reserve/youth and manager-only records excluded. All V4 links, even uncertain ones, additionally block fake candidates.",
+  "players": [
+    {
+      "playerId": 4000000075,
+      "name": "Luis Enrique",
+      "seniorClubIds": [
+        2448,
+        418,
+        131
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luis_Enrique"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000077,
+      "name": "İsmail Kartal",
+      "seniorClubIds": [
+        518,
+        524,
+        36,
+        833,
+        6
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C4%B0smail_Kartal"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000078,
+      "name": "Okan Buruk",
+      "seniorClubIds": [
+        141,
+        46,
+        114,
+        6890
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Okan_Buruk"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000079,
+      "name": "Alex Ferguson",
+      "seniorClubIds": [
+        1000003031,
+        2578,
+        1270,
+        124,
+        1191,
+        1000001192
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_Ferguson"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000080,
+      "name": "Jürgen Klopp",
+      "seniorClubIds": [
+        5000000000,
+        5000000001,
+        5000000002,
+        39
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/J%C3%BCrgen_Klopp"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000081,
+      "name": "Arsène Wenger",
+      "seniorClubIds": [
+        5000000003,
+        1774,
+        5000000004,
+        667
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ars%C3%A8ne_Wenger"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000082,
+      "name": "Carlo Ancelotti",
+      "seniorClubIds": [
+        130,
+        12,
+        5
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Carlo_Ancelotti"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000083,
+      "name": "Hansi Flick",
+      "seniorClubIds": [
+        254,
+        27,
+        3,
+        5000000005
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hansi_Flick"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000085,
+      "name": "Diego Simeone",
+      "seniorClubIds": [
+        1029,
+        4172,
+        368,
+        13,
+        46,
+        398,
+        1444
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Diego_Simeone"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000086,
+      "name": "Unai Emery",
+      "seniorClubIds": [
+        681,
+        1000002929,
+        1176,
+        1244,
+        5000000014
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Unai_Emery"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000088,
+      "name": "Luciano Spalletti",
+      "seniorClubIds": [
+        5000000006,
+        20519,
+        3522,
+        4104,
+        749
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luciano_Spalletti"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000090,
+      "name": "Massimiliano Allegri",
+      "seniorClubIds": [
+        5000000007,
+        1210,
+        4172,
+        5174,
+        2921,
+        1390,
+        839,
+        3037,
+        6195,
+        1307,
+        5000000008
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Massimiliano_Allegri"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000091,
+      "name": "Roberto Mancini",
+      "seniorClubIds": [
+        1025,
+        1038,
+        398,
+        1003
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_Mancini"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000092,
+      "name": "Joachim Löw",
+      "seniorClubIds": [
+        60,
+        79,
+        24,
+        48,
+        1277,
+        242,
+        5000000009
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Joachim_L%C3%B6w"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000093,
+      "name": "Abdullah Avcı",
+      "seniorClubIds": [
+        6646,
+        126,
+        12452,
+        3202,
+        10484,
+        924,
+        5000000010,
+        5000000011,
+        5000000012
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Abdullah_Avc%C4%B1"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000096,
+      "name": "Vicente del Bosque",
+      "seniorClubIds": [
+        418,
+        2502,
+        993
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Vicente_del_Bosque"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000098,
+      "name": "Claudio Ranieri",
+      "seniorClubIds": [
+        12,
+        4097,
+        1627,
+        458
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Claudio_Ranieri"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000099,
+      "name": "Enzo Maresca",
+      "seniorClubIds": [
+        984,
+        506,
+        1025,
+        1408,
+        430,
+        368,
+        683,
+        1084,
+        1038,
+        458,
+        276
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Enzo_Maresca"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000100,
+      "name": "Rafael Márquez",
+      "seniorClubIds": [
+        8590,
+        162,
+        131,
+        623,
+        4941,
+        276
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rafael_M%C3%A1rquez"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000101,
+      "name": "Jefferson Farfán",
+      "seniorClubIds": [
+        1000000184,
+        383,
+        33,
+        1000002524,
+        932
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jefferson_Farf%C3%A1n"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000103,
+      "name": "Peter Schmeichel",
+      "seniorClubIds": [
+        5000000017,
+        1894,
+        206,
+        985,
+        336,
+        405,
+        281
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Peter_Schmeichel"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000104,
+      "name": "Cafu",
+      "seniorClubIds": [
+        585,
+        142,
+        10492,
+        1023,
+        12,
+        5
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cafu"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000105,
+      "name": "Metin Oktay",
+      "seniorClubIds": [
+        3842,
+        141,
+        458
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Metin_Oktay"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000108,
+      "name": "Burak Yılmaz",
+      "seniorClubIds": [
+        589,
+        114,
+        1267,
+        36,
+        825,
+        449,
+        141,
+        3176,
+        1082,
+        385
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Burak_Y%C4%B1lmaz"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000110,
+      "name": "Alex de Souza",
+      "seniorClubIds": [
+        776,
+        1023,
+        130,
+        614,
+        609,
+        36
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_(footballer%2C_born_1977)"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000111,
+      "name": "Micah Richards",
+      "seniorClubIds": [
+        281,
+        430,
+        405
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Micah_Richards"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/avatar-careers-2026-10-05.json",
+      "reviewedAt": "2026-10-05"
+    },
+    {
+      "playerId": 4000000023,
+      "name": "David Beckham",
+      "seniorClubIds": [
+        5,
+        418,
+        466,
+        583,
+        985,
+        1061
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/David_Beckham"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000028,
+      "name": "Kaká",
+      "seniorClubIds": [
+        5,
+        418,
+        585,
+        45604
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kak%C3%A1"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000030,
+      "name": "Didier Deschamps",
+      "seniorClubIds": [
+        40,
+        244,
+        506,
+        631,
+        995,
+        1049
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Didier_Deschamps"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000031,
+      "name": "Dennis Bergkamp",
+      "seniorClubIds": [
+        11,
+        46,
+        610
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dennis_Bergkamp"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000032,
+      "name": "Patrick Vieira",
+      "seniorClubIds": [
+        5,
+        11,
+        46,
+        281,
+        506,
+        895
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Patrick_Vieira"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000034,
+      "name": "Alan Shearer",
+      "seniorClubIds": [
+        164,
+        180,
+        762
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alan_Shearer"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000035,
+      "name": "Diego Maradona",
+      "seniorClubIds": [
+        131,
+        189,
+        368,
+        1030,
+        1286,
+        6195
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Diego_Maradona"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000040,
+      "name": "Michel Platini",
+      "seniorClubIds": [
+        506,
+        618,
+        1159
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Michel_Platini"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000044,
+      "name": "Roberto Baggio",
+      "seniorClubIds": [
+        5,
+        19,
+        46,
+        430,
+        506,
+        1025,
+        2655
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Roberto_Baggio"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/notable-players-2026-09-30.json",
+      "reviewedAt": "2026-10-17"
+    },
+    {
+      "playerId": 4000000049,
+      "name": "Andriy Shevchenko",
+      "seniorClubIds": [
+        338,
+        5,
+        631
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Andriy_Shevchenko"
+      ],
+      "coverage": "REVIEWED_COMPLETE_RETIRED",
+      "evidenceFile": "tools/data_platform_v4/patches/legend-portrait-players-2026-10-01.json",
+      "reviewedAt": "2026-10-17"
+    }
+  ]
+}

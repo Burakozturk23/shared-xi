@@ -3,13 +3,28 @@ const crypto = require("node:crypto");
 const {RewardError} = require("./rewarded_ads");
 const {catalog, players, clubs, shuffled, validId, playerView} = require("./career_transfer");
 const mysteryCatalog = require("./config/mystery_chain_catalog.json");
-const MODES = ["career_race", "transfer_duel", "mystery_duel"];
-const modeVersion = (mode) => mode === "mystery_duel" ? mysteryCatalog.version : catalog.version;
+const fakeClub = require("./fake_club");
+const MODES = ["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"];
+const modeVersion = (mode) => mode === "fake_club_duel" ? fakeClub.catalog.version :
+  mode === "mystery_duel" ? mysteryCatalog.version : catalog.version;
 const hash = (v) => crypto.createHash("sha256").update(v).digest("hex");
 const fail = (c, m) => {
   throw new RewardError(c, m);
 };
-function questions(mode, seed) {
+function questions(mode, seed, policy = fakeClub.policyOf({})) {
+  if (mode === "fake_club_duel") {
+    const run = {id: seed, mode: "fake_speed", answers: 0, usedPlayers: []}; const bank = [];
+    for (let i = 0; i < 10; i++) {
+      const q = fakeClub.pick(fakeClub.catalog, run, policy);
+      if (!q) fail("failed-precondition", "On farklı doğrulanmış futbolcu bulunamadı.");
+      run.usedPlayers.push(q.playerId); run.answers++;
+      bank.push({id: q.questionId, kind: "fake_club_duel", duration: 10000, answer: q.fakeClubId,
+        explanation: fakeClub.explanation(q), evidence: q.evidence,
+        public: {player: q.player, dataVersion: q.dataVersion, difficulty: q.difficulty,
+          options: q.options.map(({popularity, ...club}) => club)}});
+    }
+    return bank;
+  }
   if (mode === "mystery_duel") {
     return shuffled(mysteryCatalog.mystery, seed).slice(0, 5).map((p, i) => {
       const options = shuffled(p.options.filter((id) => id !== p.playerId), seed + i).slice(0, 3);
@@ -106,11 +121,14 @@ function view(room, uid, time) {
       v.question = {kind: q.kind, ...q.public};
       if (q.kind === "mystery_duel") {
         v.question.hints = (q.timedHints || []).slice(0, Math.floor((time - clock.start) / 10000));
+      }
+      if (["mystery_duel", "fake_club_duel"].includes(q.kind)) {
         v.roundToken = hash(room.id + "|" + index + "|" + room.version + "|" + clock.start);
       }
     }
     v.submitted = !!a;
-    if (time >= clock.end) {
+    if (time >= clock.end || room.mode === "fake_club_duel" && a && room.answers[other]?.[index]) {
+      if (q.explanation) v.explanation = q.explanation;
       v.reveal = q.answer; v.opponentAnswer = room.answers[other]?.[index]?.value ?? null;
       v.correct = a?.correct || false;
     }
@@ -118,13 +136,14 @@ function view(room, uid, time) {
   if (["finished", "forfeit"].includes(room.status)) {
     v.result = room.winner == null ? "draw" : room.winner === uid ? "win" : "loss";
     v.rewardEligible = room.status === "finished" && room.ranked &&
-      (room.mode !== "mystery_duel" || Object.keys(room.answers[uid] || {}).length > 0);
+      (!["mystery_duel", "fake_club_duel"].includes(room.mode) || Object.keys(room.answers[uid] || {}).length > 0);
     v.rounds = room.questions.map((q, i) => ({kind: q.kind, ...q.public, answer: q.answer,
+      ...(q.explanation ? {explanation: q.explanation, evidence: q.evidence} : {}),
       mine: room.answers[uid]?.[i] || null, theirs: room.answers[other]?.[i] || null}));
   }
   return v;
 }
-function createService({db, isLinked, blocked, settleRanked, now = Date.now,
+function createService({db, isLinked, blocked, settleRanked, getFakePolicy = async () => ({}), now = Date.now,
   random = () => crypto.randomBytes(16).toString("hex")}) {
   async function change(mode, fn) {
     let error; const time = now();
@@ -154,7 +173,12 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
     if (input.action === "join" && !/^[A-F0-9]{8}$/.test(input.code || "")) {
       fail("invalid-argument", "Oda kodu 8 karakter.");
     }
-    const seed = random(); const bank = questions(input.mode, seed);
+    const policy = fakeClub.policyOf(await getFakePolicy());
+    if (input.mode === "fake_club_duel" && input.action !== "resume" &&
+      (!policy.dataEnabled || !policy.friendsEnabled || input.action === "ranked" && !policy.rankedEnabled)) {
+      fail("failed-precondition", "Sahte Kulüp Düellosu bu eşleşme türünde henüz açılmadı.");
+    }
+    const seed = random(); const bank = input.action === "resume" ? [] : questions(input.mode, seed, policy);
     // Block lists are read server-side; clients cannot choose opponents in ranked.
     const denied = await blocked(uid);
     const fingerprint = hash(JSON.stringify([input.action, input.code || null]));
@@ -228,7 +252,7 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
         input.roundToken ?? null]));
       if (input.requestId && room.receipts[uid + input.requestId]) {
         if (room.receipts[uid + input.requestId] !== fingerprint) fail("invalid-argument", "İstek başka cevaba ait.");
-        return;
+        advance(room, time); s.rooms[room.id] = room; return;
       }
       advance(room, time);
       if (input.action === "leave") {
@@ -242,7 +266,7 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
           fail("failed-precondition", "Tur açık değil.");
         }
         const q = room.questions[input.round]; const clock = timing(room, input.round);
-        if (room.mode === "mystery_duel" && input.roundToken !==
+        if (["mystery_duel", "fake_club_duel"].includes(room.mode) && input.roundToken !==
             hash(room.id + "|" + input.round + "|" + room.version + "|" + clock.start)) {
           fail("failed-precondition", "Tur kimliği güncel değil. Yeniden bağlan.");
         }
@@ -272,7 +296,10 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
       s.rooms[room.id] = room;
     });
     const room = roomOf(s.rooms[input.roomId]);
-    if (room.status === "finished" && room.ranked && !room.settled) await settleRanked(room);
+    if ((room.status === "finished" || room.mode === "fake_club_duel" && room.status === "forfeit") &&
+        room.ranked && !room.settled) {
+      await settleRanked(room);
+    }
     return {room: view(room, uid, now())};
   }
   async function sweep() {
@@ -293,7 +320,10 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
         }
       });
       for (const room of Object.values(state.rooms)) {
-        if (room.status === "finished" && room.ranked && !room.settled) await settleRanked(room);
+        if ((room.status === "finished" || room.mode === "fake_club_duel" && room.status === "forfeit") &&
+        room.ranked && !room.settled) {
+          await settleRanked(room);
+        }
       }
     }
   }
