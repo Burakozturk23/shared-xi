@@ -211,17 +211,19 @@ class GameCatalog {
       requiresRepository: false,
     ),
     GameEntry(
-      title: 'Mystery Player',
+      title: 'Gizemli Futbolcu',
       subtitle: 'İpuçlarından gizemli oyuncuyu bul',
       icon: Icons.help_outline_rounded,
       page: MysteryPlayerPage(),
+      requiresRepository: false,
       category: 'Kariyer & Oyuncu',
     ),
     GameEntry(
-      title: 'Chain',
+      title: 'Kariyer Zinciri',
       subtitle: 'Kulüpler arasında oyuncu zinciri',
       icon: Icons.link_rounded,
       page: ChainModeSelectionPage(),
+      requiresRepository: false,
       category: 'Kariyer & Oyuncu',
     ),
     GameEntry(

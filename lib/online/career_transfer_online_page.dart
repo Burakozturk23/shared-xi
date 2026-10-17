@@ -19,7 +19,7 @@ class CareerTransferOnlinePage extends StatefulWidget {
   State<CareerTransferOnlinePage> createState() => _CareerTransferOnlinePageState();
 }
 class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> with WidgetsBindingObserver {
-  late final _service = widget.service ?? CareerTransferService();
+  late final _service = widget.service ?? CareerTransferService(mysteryChain: widget.mode == 'mystery_duel');
   Map<String, dynamic> _room = {};
   String _version = '';
   String? _error;
@@ -35,6 +35,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   bool get _playing => _room['status'] == 'playing';
   bool get _waiting => _room['status'] == 'waiting';
   bool get _finished => ['finished', 'forfeit', 'cancelled'].contains(_room['status']);
+  bool get _mystery => widget.mode == 'mystery_duel';
   bool get _career => widget.mode == 'career_race';
   int get _now => (_room['serverNow'] as num? ?? 0).toInt() + DateTime.now().difference(_received).inMilliseconds;
   @override
@@ -96,7 +97,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   Future<void> _answer() => _run(() async {
     final q = rewardMap(_room['question']);
     final r = await _service.mutate('actCareerTransferOnline', {'mode': widget.mode, 'version': _version,
-      'roomId': _room['id'], 'action': 'answer', 'round': _room['round'],
+      'roomId': _room['id'], 'action': 'answer', 'round': _room['round'], 'roundToken': _room['roundToken'],
       'answer': q['kind'] == 'order' ? _order.map((x) => x['id']).toList() : _selected});
     if (mounted && !_accountChanged) setState(() => _accept(rewardMap(r['room'])));
   });
@@ -130,9 +131,9 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   }
   @override
   Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (didPop, _) { if (!didPop) _leave(); },
-    child: Scaffold(appBar: AppBar(title: Text(_career ? 'Kariyer Yarışı' : 'Transfer Düellosu'), actions: [
+    child: Scaffold(appBar: AppBar(title: Text(_mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu'), actions: [
       if (_waiting && _room['host'] == true && _room['ranked'] != true)
-        FriendMatchInviteButton(mode: _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
+        FriendMatchInviteButton(mode: _mystery ? OnlinePlayMode.mysteryDuel : _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
       IconButton(tooltip: 'Yeniden bağlan', onPressed: _busy || _accountChanged ? null : _load, icon: const Icon(Icons.refresh))]),
       body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
         child: ListView(padding: const EdgeInsets.all(16), children: [
@@ -158,7 +159,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
         child: Text('Tur: ${r['kind']} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan')),
     ])),
     const SizedBox(height: 12),
-    Text(_career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye', style: Theme.of(context).textTheme.titleLarge),
+    Text(_mystery ? '5 gizemli futbolcu · her tur 30 saniye' : _career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye', style: Theme.of(context).textTheme.titleLarge),
     const Text('Enerji, reklam ve destek yok. Her tur tek kesin cevap. Doğruluk ve hız puan getirir.'),
     if (widget.ranked) FilledButton(onPressed: _busy || _version.isEmpty ? null : () => _enter('ranked'), child: const Text('Dereceli rakip bul')) else ...[
       FilledButton(onPressed: _busy || _version.isEmpty ? null : () => _enter('create'), child: const Text('Arkadaş odası oluştur')),
@@ -175,6 +176,13 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
       Text('Sen ${rewardMap(_room['mine'])['score'] ?? 0} · Rakip ${rewardMap(_room['theirs'])['score'] ?? 0}'),
       const SizedBox(height: 16),
       if (before || q.isEmpty) const Text('Tur başlıyor…') else ...[
+        if (q['kind'] == 'mystery_duel') ...[
+          PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('${q['country']} · ${q['position']}', style: Theme.of(context).textTheme.titleLarge),
+            const Text('10. ve 20. saniyede iki rakibe aynı yeni bilgi açılır.'),
+            for (final hint in (q['hints'] as List? ?? const [])) Padding(padding: const EdgeInsets.only(top: 8), child: Text('$hint')),
+          ])),
+        ],
         if (q['player'] != null) Text('${rewardMap(q['player'])['name']}', style: Theme.of(context).textTheme.titleLarge),
         if (q['route'] is List) Text((q['route'] as List).join(' → ')),
         if (q['kind'] == 'transfer') ...[
