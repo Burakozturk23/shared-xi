@@ -174,9 +174,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       coins: e.balances.coins, longestStreak: s.longestStreak,
       badges: input.mode === "transfer" ? [
         {id: "files_10", title: "Transfer Arşivcisi", target: 10, progress: Object.entries(s.collection)
-          .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
+            .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
         {id: "files_50", title: "Transfer Uzmanı", target: 50, progress: Object.entries(s.collection)
-          .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
+            .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
         {id: "streak_5", title: "Keskin Dedektif", target: 5, progress: s.longestStreak},
         {id: "streak_10", title: "Kusursuz Seri", target: 10, progress: s.longestStreak},
       ].map((b) => ({...b, earned: b.progress >= b.target})) : [],
