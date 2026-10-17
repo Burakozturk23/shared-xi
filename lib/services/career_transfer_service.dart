@@ -6,8 +6,9 @@ import 'auth_service.dart';
 import 'energy_service.dart';
 
 class CareerTransferService {
-  CareerTransferService({EnergyService? transport}) : transport = transport ?? EnergyService();
+  CareerTransferService({EnergyService? transport, this.mysteryChain = false}) : transport = transport ?? EnergyService();
   final EnergyService transport;
+  final bool mysteryChain;
   String? owner;
   void _checkOwner(String uid) {
     if (AuthService.uid != uid || owner != null && owner != uid) {
@@ -40,7 +41,7 @@ class CareerTransferService {
     final prefs = await SharedPreferences.getInstance();
     final key = 'career_transfer.pending.${user.uid}.$mode';
     if (prefs.containsKey(key)) await _replay(prefs, key, user.uid);
-    final result = await transport.call('getCareerTransfer', {'mode': mode});
+    final result = await transport.call(mysteryChain ? 'getMysteryChain' : 'getCareerTransfer', {'mode': mode});
     result['energy'] = await transport.status();
     _checkOwner(user.uid);
     return result;
@@ -63,7 +64,8 @@ class CareerTransferService {
     final prefs = await SharedPreferences.getInstance();
     final key = 'career_transfer.pending.${user.uid}.$mode';
     if (prefs.containsKey(key)) await _replay(prefs, key, user.uid);
-    final status = await transport.call('getCareerTransfer', {'mode': mode == 'career_race' ? 'career' : 'transfer'});
+    final status = await transport.call(mode == 'mystery_duel' ? 'getMysteryChain' : 'getCareerTransfer',
+      {'mode': mode == 'mystery_duel' ? 'mystery' : mode == 'career_race' ? 'career' : 'transfer'});
     final roomId = prefs.getString('career_transfer.room.${user.uid}.$mode');
     if (roomId != null) {
       try {
@@ -80,9 +82,9 @@ class CareerTransferService {
     return status;
   }
   Future<Map<String, dynamic>> poll(Map<String, dynamic> input) => transport.call('actCareerTransferOnline', input);
-  Future<Map<String, dynamic>> search(Map<String, dynamic> input) => transport.call('searchCareerTransfer', input);
+  Future<Map<String, dynamic>> search(Map<String, dynamic> input) => transport.call(mysteryChain ? 'searchMysteryChain' : 'searchCareerTransfer', input);
   Future<void> watchHint(String mode, String sessionId) async {
     final status = await transport.call('getRewardedAdStatus');
-    await transport.watch('${mode}_hint', pro: status['pro'] == true, context: {'sessionId': sessionId});
+    await transport.watch('${mode == 'mastermind' ? 'chain' : mode}_hint', pro: status['pro'] == true, context: {'sessionId': sessionId});
   }
 }

@@ -209,7 +209,7 @@ class _Illustration extends StatelessWidget {
               (
                 Icons.search_rounded,
                 'Bilmeceyi çöz',
-                'Mystery Player · Kadro Kasası',
+                'Gizemli Futbolcu · Kadro Kasası',
               ),
               (
                 Icons.text_fields_rounded,

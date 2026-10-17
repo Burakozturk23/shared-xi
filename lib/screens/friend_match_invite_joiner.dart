@@ -42,6 +42,7 @@ class FriendMatchInviteJoiner {
 
     switch (mode) {
       case OnlinePlayMode.careerRace:
+      case OnlinePlayMode.mysteryDuel:
       case OnlinePlayMode.transferDuel:
         if (!context.mounted) return;
         await Navigator.push(context, MaterialPageRoute(builder: (_) => CareerTransferOnlinePage(

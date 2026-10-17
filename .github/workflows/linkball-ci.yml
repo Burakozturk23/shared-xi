@@ -91,6 +91,9 @@ jobs:
           node tools/daily_question/build_catalog.js
           git diff --exit-code -- functions/config/daily_question_catalog.json
 
+      - name: Verify mystery and chain catalog
+        run: python3 tools/mystery_chain/build_catalog.py --check
+
       - name: Verify career and transfer catalog
         run: python3 tools/career_transfer/build_catalog.py --check
 
@@ -120,6 +123,16 @@ jobs:
 
       - name: Run Flutter tests
         run: flutter test --reporter expanded --dart-define=UPDATE_FIVE_SCREENSHOTS=true
+
+      - name: Upload mystery and chain previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mystery-chain-previews
+          path: .dart_tool/mystery_chain_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload career and transfer previews
         if: always()

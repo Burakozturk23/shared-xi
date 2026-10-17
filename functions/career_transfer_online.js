@@ -2,12 +2,23 @@
 const crypto = require("node:crypto");
 const {RewardError} = require("./rewarded_ads");
 const {catalog, players, clubs, shuffled, validId, playerView} = require("./career_transfer");
-const MODES = ["career_race", "transfer_duel"];
+const mysteryCatalog = require("./config/mystery_chain_catalog.json");
+const MODES = ["career_race", "transfer_duel", "mystery_duel"];
+const modeVersion = (mode) => mode === "mystery_duel" ? mysteryCatalog.version : catalog.version;
 const hash = (v) => crypto.createHash("sha256").update(v).digest("hex");
 const fail = (c, m) => {
   throw new RewardError(c, m);
 };
 function questions(mode, seed) {
+  if (mode === "mystery_duel") {
+    return shuffled(mysteryCatalog.mystery, seed).slice(0, 5).map((p, i) => {
+      const options = shuffled(p.options.filter((id) => id !== p.playerId), seed + i).slice(0, 3);
+      return {id: p.id, kind: "mystery_duel", duration: 30000, answer: p.playerId,
+        timedHints: [p.hints[0].text, p.hints[1].text],
+        public: {country: p.country, position: p.position,
+          options: shuffled([p.playerId, ...options], seed + i).map((id) => playerView(players.get(id)))}};
+    });
+  }
   if (mode === "transfer_duel") {
     return shuffled(catalog.transfers, seed).slice(0, 5).map((p) => ({
       id: p.id, kind: "transfer", duration: 30000, answer: p.playerId,
@@ -90,7 +101,14 @@ function view(room, uid, time) {
     const q = room.questions[index]; const clock = timing(room, index);
     const a = room.answers[uid]?.[index];
     v.round = index; v.startsAt = clock.start; v.deadline = clock.end;
-    if (time >= clock.start) v.question = {kind: q.kind, ...q.public};
+    if (time >= clock.start) {
+      v.questionId = hash(room.id + "|" + index + "|" + q.id);
+      v.question = {kind: q.kind, ...q.public};
+      if (q.kind === "mystery_duel") {
+        v.question.hints = (q.timedHints || []).slice(0, Math.floor((time - clock.start) / 10000));
+        v.roundToken = hash(room.id + "|" + index + "|" + room.version + "|" + clock.start);
+      }
+    }
     v.submitted = !!a;
     if (time >= clock.end) {
       v.reveal = q.answer; v.opponentAnswer = room.answers[other]?.[index]?.value ?? null;
@@ -99,7 +117,8 @@ function view(room, uid, time) {
   }
   if (["finished", "forfeit"].includes(room.status)) {
     v.result = room.winner == null ? "draw" : room.winner === uid ? "win" : "loss";
-    v.rewardEligible = room.status === "finished" && room.ranked;
+    v.rewardEligible = room.status === "finished" && room.ranked &&
+      (room.mode !== "mystery_duel" || Object.keys(room.answers[uid] || {}).length > 0);
     v.rounds = room.questions.map((q, i) => ({kind: q.kind, ...q.public, answer: q.answer,
       mine: room.answers[uid]?.[i] || null, theirs: room.answers[other]?.[i] || null}));
   }
@@ -122,7 +141,7 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
     return {rooms: {}, queue: {}, active: {}, requests: {}, ...tx.snapshot.val()};
   }
   function check(input) {
-    if (!MODES.includes(input.mode) || input.version !== catalog.version) {
+    if (!MODES.includes(input.mode) || input.version !== modeVersion(input.mode)) {
       fail("failed-precondition", "Online sürüm güncellendi; yeniden aç.");
     }
   }
@@ -186,7 +205,7 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
         const code = hash(uid + input.requestId).slice(0, 8).toUpperCase();
         if (s.rooms[code]) fail("already-exists", "Yeni oda isteği oluştur.");
         room = {id: code, code, host: uid, guest: null, ranked: input.action === "ranked", blocked: [...denied],
-          status: "waiting", mode: input.mode, version: catalog.version, questions: bank, createdAt: time,
+          status: "waiting", mode: input.mode, version: modeVersion(input.mode), questions: bank, createdAt: time,
           answers: {}, receipts: {}, presence: {[uid]: time}};
         if (room.ranked) s.queue[uid] = {id: code, at: time};
       }
@@ -205,7 +224,8 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
     const s = await change(input.mode, (s, time) => {
       const room = roomOf(s.rooms[input.roomId]);
       if (!room || ![room.host, room.guest].includes(uid)) fail("permission-denied", "Bu maçın oyuncusu değilsin.");
-      const fingerprint = hash(JSON.stringify([input.action, input.round ?? null, input.answer ?? null]));
+      const fingerprint = hash(JSON.stringify([input.action, input.round ?? null, input.answer ?? null,
+        input.roundToken ?? null]));
       if (input.requestId && room.receipts[uid + input.requestId]) {
         if (room.receipts[uid + input.requestId] !== fingerprint) fail("invalid-argument", "İstek başka cevaba ait.");
         return;
@@ -222,6 +242,10 @@ function createService({db, isLinked, blocked, settleRanked, now = Date.now,
           fail("failed-precondition", "Tur açık değil.");
         }
         const q = room.questions[input.round]; const clock = timing(room, input.round);
+        if (room.mode === "mystery_duel" && input.roundToken !==
+            hash(room.id + "|" + input.round + "|" + room.version + "|" + clock.start)) {
+          fail("failed-precondition", "Tur kimliği güncel değil. Yeniden bağlan.");
+        }
         if (time < clock.start || time >= clock.end) {
           fail("failed-precondition", "Tur süresi dışında cevap kabul edilmez.");
         }

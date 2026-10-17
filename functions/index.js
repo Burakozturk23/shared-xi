@@ -587,6 +587,7 @@ const LB_RANKED_MODES = {
   five: "fiveMatches",
   career_race: "careerTransferOnline/career_race/rooms",
   transfer_duel: "careerTransferOnline/transfer_duel/rooms",
+  mystery_duel: "careerTransferOnline/mystery_duel/rooms",
 };
 
 /**
@@ -660,6 +661,7 @@ function lbRankedModeStats(raw) {
     five: lbRankedModeStat(data.five),
     career_race: lbRankedModeStat(data.career_race),
     transfer_duel: lbRankedModeStat(data.transfer_duel),
+    mystery_duel: lbRankedModeStat(data.mystery_duel),
   };
 }
 
@@ -1037,7 +1039,7 @@ exports.submitRankedResult = httpsV2.onCall(
       }
 
       const match = matchSnap.val();
-      if (["career_race", "transfer_duel"].includes(mode)) {
+      if (["career_race", "transfer_duel", "mystery_duel"].includes(mode)) {
         if (![match.host, match.guest].includes(uid)) {
           throw new httpsV2.HttpsError("permission-denied", "Bu maçın oyuncusu değilsin.");
         }
@@ -2377,7 +2379,7 @@ exports.unblockUser = httpsV2.onCall(
 const LB_SOCIAL_INVITE_TTL_MS = 10 * 60 * 1000;
 const LB_SOCIAL_MAX_INCOMING_MATCH_INVITES = 20;
 const LB_SOCIAL_INVITE_MODES = new Set([
-  "career_race", "transfer_duel",
+  "career_race", "transfer_duel", "mystery_duel",
   "club_club",
   "club_country",
   "grid_classic",
@@ -2469,7 +2471,7 @@ async function lbSocialValidateInviteRoom(
     roomCode,
     senderProfile,
 ) {
-  if (["career_race", "transfer_duel"].includes(mode)) {
+  if (["career_race", "transfer_duel", "mystery_duel"].includes(mode)) {
     const room = (await db.ref(`careerTransferOnline/${mode}/rooms/${roomCode}`).get()).val();
     if (!room || room.host !== uid || room.ranked || room.status !== "waiting" ||
         room.createdAt + 300000 <= Date.now()) {
@@ -6007,6 +6009,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
     careerTransfer: data.careerTransfer && typeof data.careerTransfer === "object" ? data.careerTransfer : {},
     threeModes: data.threeModes && typeof data.threeModes === "object" ? data.threeModes : {},
     energy: data.energy && typeof data.energy === "object" ? data.energy : {},
@@ -8412,7 +8415,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["friendRequestsIncoming/" + uid] = null;
   updates["friendRequestsOutgoing/" + uid] = null;
   updates["friends/" + uid] = null;
-  for (const mode of ["career_race", "transfer_duel"]) {
+  for (const mode of ["career_race", "transfer_duel", "mystery_duel"]) {
     const root = `careerTransferOnline/${mode}`;
     const online = (await db.ref(root).get()).val() || {};
     updates[`${root}/active/${uid}`] = null;
@@ -8743,10 +8746,14 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => ["career_hint", "transfer_hint"].includes(placement) ?
+      prepareThreeReward: (uid, placement, context) => ["mystery_hint", "chain_hint"].includes(placement) ?
+        lbMysteryChainService().prepareHint(uid, placement, context) :
+          ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => ["career_hint", "transfer_hint"].includes(receipt.placement) ?
+      settleThreeReward: (uid, receipt) => ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
+        lbMysteryChainService().settleHint(uid, receipt) :
+          ["career_hint", "transfer_hint"].includes(receipt.placement) ?
         lbCareerTransferService().settleHint(uid, receipt) : lbThreeModesService().settleHint(uid, receipt),
       prepareQuizReward: (uid) => lbDailyQuestionService().prepareHint(uid),
       settleQuizReward: (uid, receipt) => lbDailyQuestionService().settleHint(uid, receipt),
@@ -8796,7 +8803,9 @@ function lbRewardedCallable(action) {
       }
       return await service.status(uid, input.platform, input.ticketId);
     } catch (error) {
-      if (error instanceof RewardError) throw new httpsV2.HttpsError(error.code, error.message);
+      if (error instanceof RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
       throw error;
     }
   });
@@ -9789,7 +9798,8 @@ function lbRankedRewardCount(state, uid, time) {
   const day = require("./rewarded_ads").dayKey(time);
   return Object.values(state.settlements || {}).flatMap((m) => Object.values(m || {}))
       .filter((s) => s.serverValidated === true && s.forfeit !== true &&
-        [s.player1Uid, s.player2Uid].includes(uid) && require("./rewarded_ads").dayKey(s.settledAt) === day).length;
+        [s.player1Uid, s.player2Uid].includes(uid) && s.participants?.[uid] !== false &&
+        require("./rewarded_ads").dayKey(s.settledAt) === day).length;
 }
 async function lbCareerTransferGrantXp(uid, id, xp) {
   const db = getDatabase(); const time = Date.now();
@@ -9814,15 +9824,18 @@ async function lbSettleCareerTransferRanked(room) {
     const ar = lbRankedResultName(room.host, room.winner); const br = lbRankedResultName(room.guest, room.winner);
     const ae = lbRankedNextElo(a.elo, b.elo, lbRankedResultScore(ar));
     const be = lbRankedNextElo(b.elo, a.elo, lbRankedResultScore(br));
-    const rewardEligible = {[room.host]: lbRankedRewardCount(s, room.host, room.finishedAt) < 5,
-      [room.guest]: lbRankedRewardCount(s, room.guest, room.finishedAt) < 5};
+    const participated = (uid) => mode !== "mystery_duel" || Object.keys(room.answers?.[uid] || {}).length > 0;
+    const rewardEligible = {[room.host]: participated(room.host) &&
+      lbRankedRewardCount(s, room.host, room.finishedAt) < 5,
+    [room.guest]: participated(room.guest) && lbRankedRewardCount(s, room.guest, room.finishedAt) < 5};
     s.profiles[room.host] = lbRankedNextProfile(a, ar, mode, ae, time);
     s.profiles[room.guest] = lbRankedNextProfile(b, br, mode, be, time);
     s.settlements[mode][room.id] = {matchId: room.id, mode, player1Uid: room.host, player2Uid: room.guest,
       winnerUid: room.winner || null, player1Result: ar, player2Result: br, player1EloBefore: a.elo,
       player2EloBefore: b.elo, player1EloAfter: ae, player2EloAfter: be, player1EloDelta: ae - a.elo,
       player2EloDelta: be - b.elo, serverValidated: true, validationVersion: 2,
-      settledAt: room.finishedAt, rewardEligible};
+      settledAt: room.finishedAt, rewardEligible,
+      participants: {[room.host]: participated(room.host), [room.guest]: participated(room.guest)}};
     return s;
   });
   const s = tx.snapshot.val(); const settlement = s.settlements[mode][room.id];
@@ -9877,3 +9890,35 @@ exports.actCareerTransferOnline = lbCareerTransferOnlineCallable("act");
 
 exports.reconcileCareerTransferOnline = onSchedule({region: "europe-west1", schedule: "every 1 minutes",
   timeZone: "Europe/Istanbul"}, async () => lbCareerTransferOnlineService().sweep());
+
+function lbMysteryChainService() {
+  const db = getDatabase();
+  return require("./mystery_chain").createService({db, normalize: lbEconomyState, project: lbEconomyProject,
+    now: () => Date.now(),
+    getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    getPolicy: async () => (await db.ref("runtimeConfig/mysteryChain").get()).val() || {},
+    isLinked: async (uid) => {
+      const u = await getAuth().getUser(uid);
+      return !u.disabled && u.providerData.some((p) => p.providerId === "google.com");
+    },
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp,
+  });
+}
+function lbMysteryChainCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      if (action === "status") await lbRewardedService().settle(request.auth.uid);
+      return await lbMysteryChainService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getMysteryChain = lbMysteryChainCallable("status");
+exports.startMysteryChain = lbMysteryChainCallable("start");
+exports.actMysteryChain = lbMysteryChainCallable("act");
+exports.searchMysteryChain = lbMysteryChainCallable("search");

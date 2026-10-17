@@ -346,7 +346,7 @@ class _StorePageState extends State<StorePage> {
               const SizedBox(height: 12),
               if (_tab == 'boost')
                 const Text(
-                  'Tek kişilik Futbol Lingo, Mystery Player ve Transfer Detective için. Her destek bir turda bir kez kullanılır. 3’lü paketler daha uygundur.',
+                  'Tek kişilik Futbol Lingo, Gizemli Futbolcu ve Transfer Detective için. Her destek bir turda bir kez kullanılır. 3’lü paketler daha uygundur.',
                 ),
               if (_tab == 'avatar') ...[
                 const Text(

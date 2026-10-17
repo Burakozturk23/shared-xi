@@ -24,7 +24,7 @@ class ChainModeSelectionPage extends StatelessWidget {
           _tile(
             context,
             icon: Icons.psychology,
-            title: 'Mastermind (Par)',
+            title: 'Zincir Ustalığı',
             subtitle: 'Süre yok. En az hamleyle bitir — Par skorlaması.',
             mode: ChainGameMode.mastermind,
           ),
@@ -32,8 +32,8 @@ class ChainModeSelectionPage extends StatelessWidget {
           _tile(
             context,
             icon: Icons.timer,
-            title: 'Blitz',
-            subtitle: '60 sn. Hızlı geçerli köprüler, +5 sn bonus, seri.',
+            title: 'Zincir Sprinti',
+            subtitle: '60 sn başlangıç · zincir başına +5 sn · en fazla 180 sn.',
             mode: ChainGameMode.blitz,
           ),
         ],

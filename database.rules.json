@@ -2,6 +2,7 @@
   "rules": {
     ".read": false,
     ".write": false,
+    "mysteryChainCatalogs": {".read": false, ".write": false},
     "careerTransferOnline": {
       ".read": false,
       ".write": false
