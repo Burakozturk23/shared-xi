@@ -18,6 +18,7 @@ class OnlineRankedModePage extends StatelessWidget {
     final Widget page;
     switch (mode) {
       case OnlinePlayMode.careerRace:
+      case OnlinePlayMode.fakeClubDuel:
       case OnlinePlayMode.mysteryDuel:
       case OnlinePlayMode.transferDuel:
         page = CareerTransferOnlinePage(mode: mode.wireName, ranked: true);

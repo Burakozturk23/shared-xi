@@ -227,10 +227,11 @@ class GameCatalog {
       category: 'Kariyer & Oyuncu',
     ),
     GameEntry(
-      title: 'Fake Club',
+      title: 'Sahte Kulüp',
       subtitle: 'Oynamadığı kulübü bul',
       icon: Icons.shield_outlined,
       page: OddClubModeSelectionPage(),
+      requiresRepository: false,
       category: 'Kariyer & Oyuncu',
     ),
     GameEntry(

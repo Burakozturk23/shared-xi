@@ -46,7 +46,7 @@ void main() {
           'Transfer Detective',
           'Gizemli Futbolcu',
           'Kariyer Zinciri',
-          'Fake Club',
+          'Sahte Kulüp',
         ],
         'Harf & Kelime': ['Futbol Lingo', 'Passaparola', 'Anagram'],
         'Hız & Eşleştirme': ['Burst', 'Pyramid', 'Matching'],

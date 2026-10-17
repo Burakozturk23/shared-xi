@@ -42,6 +42,7 @@ class FriendMatchInviteJoiner {
 
     switch (mode) {
       case OnlinePlayMode.careerRace:
+      case OnlinePlayMode.fakeClubDuel:
       case OnlinePlayMode.mysteryDuel:
       case OnlinePlayMode.transferDuel:
         if (!context.mounted) return;

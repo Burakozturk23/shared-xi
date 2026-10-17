@@ -1,6 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
-const THREE_HINTS = ["mystery_hint", "chain_hint", "career_hint", "transfer_hint",
+const THREE_HINTS = ["fake_club_hint", "mystery_hint", "chain_hint", "career_hint", "transfer_hint",
   "coach11_hint", "letter11_hint", "vault_hint"];
 const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
   "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint", ...THREE_HINTS]);

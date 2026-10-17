@@ -16,11 +16,13 @@ enum OnlinePlayMode {
   careerRace,
   transferDuel,
   mysteryDuel,
+  fakeClubDuel,
 }
 
 extension OnlinePlayModeX on OnlinePlayMode {
   String get title {
     switch (this) {
+      case OnlinePlayMode.fakeClubDuel: return 'Sahte Kulüp Düellosu';
       case OnlinePlayMode.mysteryDuel: return 'Gizem Düellosu';
       case OnlinePlayMode.careerRace: return 'Kariyer Yarışı';
       case OnlinePlayMode.transferDuel: return 'Transfer Düellosu';
@@ -47,6 +49,7 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   String get subtitle {
     switch (this) {
+      case OnlinePlayMode.fakeClubDuel: return '10 soru · sahte kulübü bul';
       case OnlinePlayMode.mysteryDuel: return '5 futbolcu · eş zamanlı ipuçları';
       case OnlinePlayMode.careerRace: return '6 tur · eksik kulüp, kronoloji ve gizemli kariyer';
       case OnlinePlayMode.transferDuel: return '5 transfer · doğruluk ve hız yarışı';
@@ -73,6 +76,7 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   IconData get icon {
     switch (this) {
+      case OnlinePlayMode.fakeClubDuel: return Icons.policy_outlined;
       case OnlinePlayMode.mysteryDuel: return Icons.person_search_outlined;
       case OnlinePlayMode.careerRace: return Icons.route;
       case OnlinePlayMode.transferDuel: return Icons.travel_explore;
@@ -99,6 +103,7 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   Color get color {
     switch (this) {
+      case OnlinePlayMode.fakeClubDuel: return const Color(0xFFCCFF00);
       case OnlinePlayMode.mysteryDuel: return const Color(0xFF26C6DA);
       case OnlinePlayMode.careerRace: return const Color(0xFF26C6DA);
       case OnlinePlayMode.transferDuel: return const Color(0xFFCDDC39);
@@ -126,6 +131,7 @@ extension OnlinePlayModeX on OnlinePlayMode {
   /// Matchmaking / oda RTDB alanı için kısa kod.
   String get wireName {
     switch (this) {
+      case OnlinePlayMode.fakeClubDuel: return 'fake_club_duel';
       case OnlinePlayMode.mysteryDuel: return 'mystery_duel';
       case OnlinePlayMode.careerRace: return 'career_race';
       case OnlinePlayMode.transferDuel: return 'transfer_duel';
@@ -153,6 +159,7 @@ extension OnlinePlayModeX on OnlinePlayMode {
   static OnlinePlayMode? fromWire(String? value) {
     switch (value) {
       case 'career_race': return OnlinePlayMode.careerRace;
+      case 'fake_club_duel': return OnlinePlayMode.fakeClubDuel;
       case 'mystery_duel': return OnlinePlayMode.mysteryDuel;
       case 'transfer_duel': return OnlinePlayMode.transferDuel;
       case 'club_club':

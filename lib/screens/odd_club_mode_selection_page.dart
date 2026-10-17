@@ -11,8 +11,7 @@ class OddClubModeSelectionPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Sahte Kulüp')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
             const Text('Hangi modla oynamak istersin?',
                 style: TextStyle(fontSize: 16)),
@@ -23,7 +22,7 @@ class OddClubModeSelectionPage extends StatelessWidget {
                 leading: const Icon(Icons.all_inclusive, size: 32),
                 title: const Text('Sonsuz Seri',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                subtitle: const Text('Süre yok, sadece yanlış yapmadan devam et'),
+                subtitle: const Text('Süresiz · 3 can · 1 ücretsiz 50/50 · kalıcı rekor'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
                   context,
@@ -38,9 +37,9 @@ class OddClubModeSelectionPage extends StatelessWidget {
               child: ListTile(
                 contentPadding: const EdgeInsets.all(16),
                 leading: const Icon(Icons.timer, size: 32),
-                title: const Text('Süreli Mod',
+                title: const Text('Hız Serisi',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                subtitle: const Text('Her soru için 10 saniye, adrenalin yüksek'),
+                subtitle: const Text('10 soru · soru başına 10 saniye · 3 can · yardımsız'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
                   context,
