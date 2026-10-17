@@ -13,11 +13,15 @@ enum OnlinePlayMode {
   cinko,
   loto,
   clubManager,
+  careerRace,
+  transferDuel,
 }
 
 extension OnlinePlayModeX on OnlinePlayMode {
   String get title {
     switch (this) {
+      case OnlinePlayMode.careerRace: return 'Kariyer Yarışı';
+      case OnlinePlayMode.transferDuel: return 'Transfer Düellosu';
       case OnlinePlayMode.sharedXi:
         return 'Kulüp × Kulüp';
       case OnlinePlayMode.clubCountry:
@@ -41,6 +45,8 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   String get subtitle {
     switch (this) {
+      case OnlinePlayMode.careerRace: return '6 tur · eksik kulüp, kronoloji ve gizemli kariyer';
+      case OnlinePlayMode.transferDuel: return '5 transfer · doğruluk ve hız yarışı';
       case OnlinePlayMode.sharedXi:
         return 'İki takımın ortak oyuncularını bul';
       case OnlinePlayMode.clubCountry:
@@ -64,6 +70,8 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   IconData get icon {
     switch (this) {
+      case OnlinePlayMode.careerRace: return Icons.route;
+      case OnlinePlayMode.transferDuel: return Icons.travel_explore;
       case OnlinePlayMode.sharedXi:
         return Icons.shield_outlined;
       case OnlinePlayMode.clubCountry:
@@ -87,6 +95,8 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   Color get color {
     switch (this) {
+      case OnlinePlayMode.careerRace: return const Color(0xFF26C6DA);
+      case OnlinePlayMode.transferDuel: return const Color(0xFFCDDC39);
       case OnlinePlayMode.sharedXi:
         return const Color(0xFFFFB300);
       case OnlinePlayMode.clubCountry:
@@ -111,6 +121,8 @@ extension OnlinePlayModeX on OnlinePlayMode {
   /// Matchmaking / oda RTDB alanı için kısa kod.
   String get wireName {
     switch (this) {
+      case OnlinePlayMode.careerRace: return 'career_race';
+      case OnlinePlayMode.transferDuel: return 'transfer_duel';
       case OnlinePlayMode.sharedXi:
         return 'club_club';
       case OnlinePlayMode.clubCountry:
@@ -134,6 +146,8 @@ extension OnlinePlayModeX on OnlinePlayMode {
 
   static OnlinePlayMode? fromWire(String? value) {
     switch (value) {
+      case 'career_race': return OnlinePlayMode.careerRace;
+      case 'transfer_duel': return OnlinePlayMode.transferDuel;
       case 'club_club':
       case 'shared_xi':
       case 'sharedXi':

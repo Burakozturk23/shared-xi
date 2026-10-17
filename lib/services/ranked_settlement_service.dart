@@ -64,7 +64,7 @@ class RankedSettlementService {
       throw ArgumentError.value(matchId, 'matchId', 'Boş maç kimliği');
     }
 
-    const allowedModes = {'shared_xi', 'grid', 'cinko', 'five'};
+    const allowedModes = {'shared_xi', 'grid', 'cinko', 'five', 'career_race', 'transfer_duel'};
     if (!allowedModes.contains(safeMode)) {
       throw ArgumentError.value(mode, 'mode', 'Bilinmeyen dereceli mod');
     }

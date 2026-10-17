@@ -1,3 +1,4 @@
+import '../online/career_transfer_online_page.dart';
 import 'package:flutter/material.dart';
 
 import '../models/friend_models.dart';
@@ -40,6 +41,12 @@ class FriendMatchInviteJoiner {
     }
 
     switch (mode) {
+      case OnlinePlayMode.careerRace:
+      case OnlinePlayMode.transferDuel:
+        if (!context.mounted) return;
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => CareerTransferOnlinePage(
+          mode: mode.wireName, joinCode: invite.roomCode)));
+        return;
       case OnlinePlayMode.sharedXi:
       case OnlinePlayMode.clubCountry:
         final joined = await RoomService.joinRoom(
