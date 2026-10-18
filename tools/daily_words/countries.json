@@ -1,0 +1,392 @@
+[
+  {
+    "key": "England",
+    "name": "İngiltere",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "France",
+    "name": "Fransa",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Germany",
+    "name": "Almanya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Spain",
+    "name": "İspanya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Italy",
+    "name": "İtalya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Portugal",
+    "name": "Portekiz",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Netherlands",
+    "name": "Hollanda",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Belgium",
+    "name": "Belçika",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Croatia",
+    "name": "Hırvatistan",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Serbia",
+    "name": "Sırbistan",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Poland",
+    "name": "Polonya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Sweden",
+    "name": "İsveç",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Denmark",
+    "name": "Danimarka",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Switzerland",
+    "name": "İsviçre",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Austria",
+    "name": "Avusturya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Wales",
+    "name": "Galler",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Scotland",
+    "name": "İskoçya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Türkiye",
+    "name": "Türkiye",
+    "continent": "Avrupa / Asya"
+  },
+  {
+    "key": "Ukraine",
+    "name": "Ukrayna",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Russia",
+    "name": "Rusya",
+    "continent": "Avrupa / Asya"
+  },
+  {
+    "key": "Norway",
+    "name": "Norveç",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Albania",
+    "name": "Arnavutluk",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Slovenia",
+    "name": "Slovenya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Kosovo",
+    "name": "Kosova",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Bulgaria",
+    "name": "Bulgaristan",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Romania",
+    "name": "Romanya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Greece",
+    "name": "Yunanistan",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Hungary",
+    "name": "Macaristan",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Czech Republic",
+    "name": "Çekya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Slovakia",
+    "name": "Slovakya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Ireland",
+    "name": "İrlanda",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Finland",
+    "name": "Finlandiya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Iceland",
+    "name": "İzlanda",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Malta",
+    "name": "Malta",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Brazil",
+    "name": "Brezilya",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Argentina",
+    "name": "Arjantin",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Uruguay",
+    "name": "Uruguay",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Colombia",
+    "name": "Kolombiya",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Chile",
+    "name": "Şili",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Paraguay",
+    "name": "Paraguay",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Peru",
+    "name": "Peru",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Ecuador",
+    "name": "Ekvador",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Venezuela",
+    "name": "Venezuela",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Bolivia",
+    "name": "Bolivya",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Mexico",
+    "name": "Meksika",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Canada",
+    "name": "Kanada",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Jamaica",
+    "name": "Jamaika",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Cuba",
+    "name": "Küba",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Haiti",
+    "name": "Haiti",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Nigeria",
+    "name": "Nijerya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Senegal",
+    "name": "Senegal",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Morocco",
+    "name": "Fas",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Egypt",
+    "name": "Mısır",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Ghana",
+    "name": "Gana",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Algeria",
+    "name": "Cezayir",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Cameroon",
+    "name": "Kamerun",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Tunisia",
+    "name": "Tunus",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Mali",
+    "name": "Mali",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Gabon",
+    "name": "Gabon",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Togo",
+    "name": "Togo",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Benin",
+    "name": "Benin",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Niger",
+    "name": "Nijer",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Kenya",
+    "name": "Kenya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Sudan",
+    "name": "Sudan",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Rwanda",
+    "name": "Ruanda",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Uganda",
+    "name": "Uganda",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Angola",
+    "name": "Angola",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Libya",
+    "name": "Libya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Japan",
+    "name": "Japonya",
+    "continent": "Asya"
+  },
+  {
+    "key": "Iran",
+    "name": "İran",
+    "continent": "Asya"
+  },
+  {
+    "key": "Iraq",
+    "name": "Irak",
+    "continent": "Asya"
+  },
+  {
+    "key": "Qatar",
+    "name": "Katar",
+    "continent": "Asya"
+  },
+  {
+    "key": "China",
+    "name": "Çin",
+    "continent": "Asya"
+  },
+  {
+    "key": "Syria",
+    "name": "Suriye",
+    "continent": "Asya"
+  },
+  {
+    "key": "Jordan",
+    "name": "Ürdün",
+    "continent": "Asya"
+  },
+  {
+    "key": "Oman",
+    "name": "Umman",
+    "continent": "Asya"
+  },
+  {
+    "key": "Nepal",
+    "name": "Nepal",
+    "continent": "Asya"
+  },
+  {
+    "key": "Bhutan",
+    "name": "Butan",
+    "continent": "Asya"
+  }
+]

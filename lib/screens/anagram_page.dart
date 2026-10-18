@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'daily_words_page.dart';
 import '../controllers/anagram_controller.dart';
 import '../models/anagram.dart';
 import '../models/player.dart';
@@ -11,8 +12,9 @@ import '../widgets/player_avatar.dart';
 import '../widgets/energy_sheet.dart';
 
 class AnagramPage extends StatefulWidget {
-  const AnagramPage({super.key, this.controller});
+  const AnagramPage({super.key, this.controller, this.practice = false});
   final AnagramController? controller;
+  final bool practice;
   @override
   State<AnagramPage> createState() => _AnagramPageState();
 }
@@ -24,7 +26,7 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
   bool _failed = false;
   int? _shownPlayer;
   @override
-  void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); _boot(); }
+  void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); if (widget.practice || widget.controller != null) _boot(); }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _game?.revalidate();
@@ -103,6 +105,25 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.practice && widget.controller == null) {
+      return Scaffold(appBar: AppBar(title: const Text('Anagram')), body: SafeArea(child: ListView(
+        padding: const EdgeInsets.all(20), children: [
+          Text('Harflerden futbolcuya', style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 20),
+          Card(child: ListTile(contentPadding: const EdgeInsets.all(16), leading: const Icon(Icons.today),
+            title: const Text('Günün Anagramı'), subtitle: const Text('3 sabit futbolcu · 0 enerji · Günlük üçleme'),
+            trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const DailyWordsPage(mode: 'daily_anagram'))))),
+          const SizedBox(height: 12),
+          Card(child: ListTile(contentPadding: const EdgeInsets.all(16), leading: const Icon(Icons.shuffle),
+            title: const Text('Sekizli Pratik'), subtitle: const Text('8 futbolcu · Kişisel puan · Doğrudan Coin / XP yok'),
+            trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const AnagramPage(practice: true))))),
+          const SizedBox(height: 12),
+          const Text('Pratikte enerji sistemi etkinse oturum başına 1 enerji kullanılır. Günlük oyun her zaman ücretsizdir.'),
+        ])));
+    }
+
     final game = _game, session = _game?.session;
     final p = PitchColors.of(context);
     return Scaffold(appBar: AppBar(title: const Text('Anagram'), actions: [

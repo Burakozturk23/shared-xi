@@ -8302,6 +8302,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
 
   updates["economyState/" + uid] = null;
   updates["dailyQuestionState/" + uid] = null;
+  updates["dailyWordState/" + uid] = null;
   updates["rewardedAdState/" + uid] = null;
   updates["dailyMatchState/" + uid] = null;
   updates["journeyRewardState/" + uid] = null;
@@ -9985,3 +9986,40 @@ function lbFakeClubCallable(action) {
 exports.getFakeClub = lbFakeClubCallable("status");
 exports.startFakeClub = lbFakeClubCallable("start");
 exports.actFakeClub = lbFakeClubCallable("act");
+
+// Official daily word games share one account transaction and a durable reward outbox.
+function lbDailyWordsService() {
+  const db = getDatabase();
+  return require("./daily_words").createService({db, now: () => Date.now(),
+    getPolicy: async () => (await db.ref("runtimeConfig/dailyWords").get()).val() || {},
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    },
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
+}
+function lbDailyWordsCallable(action, mode) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbDailyWordsService()[action](request.auth.uid,
+          {...request.data, ...(mode ? {mode} : {})});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getDailyWords = lbDailyWordsCallable("status");
+exports.actDailyWords = lbDailyWordsCallable("act");
+exports.getDailyWordsHistory = lbDailyWordsCallable("history");
+exports.getDailyLingo = lbDailyWordsCallable("status", "daily_lingo");
+exports.submitDailyLingo = lbDailyWordsCallable("act", "daily_lingo");
+exports.getDailyPassaparola = lbDailyWordsCallable("status", "passa_daily");
+exports.submitDailyPassaparola = lbDailyWordsCallable("act", "passa_daily");
+exports.getWeeklyPassaparola = lbDailyWordsCallable("status", "passa_weekly");
+exports.submitWeeklyPassaparola = lbDailyWordsCallable("act", "passa_weekly");
+exports.getDailyAnagram = lbDailyWordsCallable("status", "daily_anagram");
+exports.submitDailyAnagram = lbDailyWordsCallable("act", "daily_anagram");

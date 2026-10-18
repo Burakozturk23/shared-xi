@@ -1,0 +1,1626 @@
+{
+  "reviewedAt": "2026-10-17",
+  "basis": "Bundled V4 canonical identity, country and position; explicit playable token review. No current-club claims.",
+  "players": [
+    {
+      "id": 28396,
+      "name": "Edin Dzeko",
+      "answer": "DZEKO",
+      "difficulty": 1
+    },
+    {
+      "id": 27992,
+      "name": "Luka Modrić",
+      "answer": "MODRIC",
+      "difficulty": 1
+    },
+    {
+      "id": 82442,
+      "name": "Olivier Giroud",
+      "answer": "GIROUD",
+      "difficulty": 1
+    },
+    {
+      "id": 128223,
+      "name": "Álvaro Morata",
+      "answer": "MORATA",
+      "difficulty": 1
+    },
+    {
+      "id": 73734,
+      "name": "Steven Nzonzi",
+      "answer": "NZONZI",
+      "difficulty": 1
+    },
+    {
+      "id": 35664,
+      "name": "Mesut Özil",
+      "answer": "OZIL",
+      "difficulty": 1
+    },
+    {
+      "id": 48280,
+      "name": "Edinson Cavani",
+      "answer": "CAVANI",
+      "difficulty": 1
+    },
+    {
+      "id": 59016,
+      "name": "David Alaba",
+      "answer": "ALABA",
+      "difficulty": 1
+    },
+    {
+      "id": 68290,
+      "name": "Neymar",
+      "answer": "NEYMAR",
+      "difficulty": 1
+    },
+    {
+      "id": 17259,
+      "name": "Manuel Neuer",
+      "answer": "NEUER",
+      "difficulty": 1
+    },
+    {
+      "id": 111455,
+      "name": "Granit Xhaka",
+      "answer": "XHAKA",
+      "difficulty": 1
+    },
+    {
+      "id": 12282,
+      "name": "Daley Blind",
+      "answer": "BLIND",
+      "difficulty": 1
+    },
+    {
+      "id": 44162,
+      "name": "Miralem Pjanić",
+      "answer": "PJANIC",
+      "difficulty": 1
+    },
+    {
+      "id": 25508,
+      "name": "Salvatore Sirigu",
+      "answer": "SIRIGU",
+      "difficulty": 1
+    },
+    {
+      "id": 56331,
+      "name": "Bas Dost",
+      "answer": "DOST",
+      "difficulty": 1
+    },
+    {
+      "id": 22068,
+      "name": "Franck Ribéry",
+      "answer": "RIBERY",
+      "difficulty": 1
+    },
+    {
+      "id": 74229,
+      "name": "Koke",
+      "answer": "KOKE",
+      "difficulty": 1
+    },
+    {
+      "id": 121483,
+      "name": "Jan Oblak",
+      "answer": "OBLAK",
+      "difficulty": 1
+    },
+    {
+      "id": 182913,
+      "name": "Adrien Rabiot",
+      "answer": "RABIOT",
+      "difficulty": 1
+    },
+    {
+      "id": 3333,
+      "name": "James Milner",
+      "answer": "MILNER",
+      "difficulty": 1
+    },
+    {
+      "id": 51118,
+      "name": "Adil Rami",
+      "answer": "RAMI",
+      "difficulty": 1
+    },
+    {
+      "id": 217111,
+      "name": "Hakim Ziyech",
+      "answer": "ZIYECH",
+      "difficulty": 1
+    },
+    {
+      "id": 127032,
+      "name": "Serge Aurier",
+      "answer": "AURIER",
+      "difficulty": 1
+    },
+    {
+      "id": 85288,
+      "name": "Isco",
+      "answer": "ISCO",
+      "difficulty": 1
+    },
+    {
+      "id": 122153,
+      "name": "Paul Pogba",
+      "answer": "POGBA",
+      "difficulty": 1
+    },
+    {
+      "id": 167850,
+      "name": "Memphis Depay",
+      "answer": "DEPAY",
+      "difficulty": 1
+    },
+    {
+      "id": 159471,
+      "name": "Serge Gnabry",
+      "answer": "GNABRY",
+      "difficulty": 1
+    },
+    {
+      "id": 206050,
+      "name": "Paulo Dybala",
+      "answer": "DYBALA",
+      "difficulty": 1
+    },
+    {
+      "id": 171424,
+      "name": "Riyad Mahrez",
+      "answer": "MAHREZ",
+      "difficulty": 1
+    },
+    {
+      "id": 255901,
+      "name": "Rodrigo De Paul",
+      "answer": "DEPAUL",
+      "difficulty": 1
+    },
+    {
+      "id": 16135,
+      "name": "Ryan Babel",
+      "answer": "BABEL",
+      "difficulty": 1
+    },
+    {
+      "id": 164770,
+      "name": "Raphaël Varane",
+      "answer": "VARANE",
+      "difficulty": 1
+    },
+    {
+      "id": 148368,
+      "name": "Divock Origi",
+      "answer": "ORIGI",
+      "difficulty": 1
+    },
+    {
+      "id": 398073,
+      "name": "Achraf Hakimi",
+      "answer": "HAKIMI",
+      "difficulty": 1
+    },
+    {
+      "id": 33866,
+      "name": "Steven Defour",
+      "answer": "DEFOUR",
+      "difficulty": 1
+    },
+    {
+      "id": 5658,
+      "name": "Petr Cech",
+      "answer": "CECH",
+      "difficulty": 1
+    },
+    {
+      "id": 243714,
+      "name": "Kingsley Coman",
+      "answer": "COMAN",
+      "difficulty": 1
+    },
+    {
+      "id": 133179,
+      "name": "Marten de Roon",
+      "answer": "DEROON",
+      "difficulty": 1
+    },
+    {
+      "id": 126664,
+      "name": "Lucas Digne",
+      "answer": "DIGNE",
+      "difficulty": 1
+    },
+    {
+      "id": 148928,
+      "name": "Saúl Ñíguez",
+      "answer": "NIGUEZ",
+      "difficulty": 1
+    },
+    {
+      "id": 119228,
+      "name": "Luis Muriel",
+      "answer": "MURIEL",
+      "difficulty": 1
+    },
+    {
+      "id": 59561,
+      "name": "Dani Parejo",
+      "answer": "PAREJO",
+      "difficulty": 1
+    },
+    {
+      "id": 307058,
+      "name": "Mehdi Taremi",
+      "answer": "TAREMI",
+      "difficulty": 1
+    },
+    {
+      "id": 230784,
+      "name": "Thomas Partey",
+      "answer": "PARTEY",
+      "difficulty": 1
+    },
+    {
+      "id": 19041,
+      "name": "Gökhan Inler",
+      "answer": "INLER",
+      "difficulty": 1
+    },
+    {
+      "id": 18935,
+      "name": "Samir Nasri",
+      "answer": "NASRI",
+      "difficulty": 1
+    },
+    {
+      "id": 34784,
+      "name": "Lasse Schöne",
+      "answer": "SCHONE",
+      "difficulty": 1
+    },
+    {
+      "id": 15452,
+      "name": "Raúl Albiol",
+      "answer": "ALBIOL",
+      "difficulty": 1
+    },
+    {
+      "id": 191891,
+      "name": "Arkadiusz Milik",
+      "answer": "MILIK",
+      "difficulty": 1
+    },
+    {
+      "id": 2219,
+      "name": "Philipp Lahm",
+      "answer": "LAHM",
+      "difficulty": 1
+    },
+    {
+      "id": 45121,
+      "name": "Loïc Rémy",
+      "answer": "REMY",
+      "difficulty": 1
+    },
+    {
+      "id": 131075,
+      "name": "Francesco Acerbi",
+      "answer": "ACERBI",
+      "difficulty": 1
+    },
+    {
+      "id": 67082,
+      "name": "Vitolo",
+      "answer": "VITOLO",
+      "difficulty": 1
+    },
+    {
+      "id": 186590,
+      "name": "John Stones",
+      "answer": "STONES",
+      "difficulty": 1
+    },
+    {
+      "id": 4257,
+      "name": "Samuel Eto'o",
+      "answer": "ETOO",
+      "difficulty": 1
+    },
+    {
+      "id": 31909,
+      "name": "Toni Kroos",
+      "answer": "KROOS",
+      "difficulty": 1
+    },
+    {
+      "id": 143812,
+      "name": "Matías Vecino",
+      "answer": "VECINO",
+      "difficulty": 1
+    },
+    {
+      "id": 59597,
+      "name": "Maciej Rybus",
+      "answer": "RYBUS",
+      "difficulty": 1
+    },
+    {
+      "id": 7451,
+      "name": "Mikel Arteta",
+      "answer": "ARTETA",
+      "difficulty": 1
+    },
+    {
+      "id": 130756,
+      "name": "Giannelli Imbula",
+      "answer": "IMBULA",
+      "difficulty": 1
+    },
+    {
+      "id": 175722,
+      "name": "Eric Dier",
+      "answer": "DIER",
+      "difficulty": 1
+    },
+    {
+      "id": 58576,
+      "name": "Miguel Layún",
+      "answer": "LAYUN",
+      "difficulty": 1
+    },
+    {
+      "id": 237662,
+      "name": "Breel Embolo",
+      "answer": "EMBOLO",
+      "difficulty": 1
+    },
+    {
+      "id": 182381,
+      "name": "Quincy Promes",
+      "answer": "PROMES",
+      "difficulty": 1
+    },
+    {
+      "id": 46552,
+      "name": "Kamil Glik",
+      "answer": "GLIK",
+      "difficulty": 1
+    },
+    {
+      "id": 284730,
+      "name": "Manuel Akanji",
+      "answer": "AKANJI",
+      "difficulty": 1
+    },
+    {
+      "id": 96754,
+      "name": "Fabio Borini",
+      "answer": "BORINI",
+      "difficulty": 1
+    },
+    {
+      "id": 63463,
+      "name": "Daniel Wass",
+      "answer": "WASS",
+      "difficulty": 1
+    },
+    {
+      "id": 242631,
+      "name": "Alex Iwobi",
+      "answer": "IWOBI",
+      "difficulty": 1
+    },
+    {
+      "id": 5023,
+      "name": "Gianluigi Buffon",
+      "answer": "BUFFON",
+      "difficulty": 1
+    },
+    {
+      "id": 46972,
+      "name": "Teemu Pukki",
+      "answer": "PUKKI",
+      "difficulty": 1
+    },
+    {
+      "id": 4170,
+      "name": "Marco Di Vaio",
+      "answer": "DIVAIO",
+      "difficulty": 1
+    },
+    {
+      "id": 200056,
+      "name": "Elseid Hysaj",
+      "answer": "HYSAJ",
+      "difficulty": 1
+    },
+    {
+      "id": 59631,
+      "name": "Nacer Chadli",
+      "answer": "CHADLI",
+      "difficulty": 1
+    },
+    {
+      "id": 39381,
+      "name": "Gareth Bale",
+      "answer": "BALE",
+      "difficulty": 1
+    },
+    {
+      "id": 124502,
+      "name": "Matthias Ginter",
+      "answer": "GINTER",
+      "difficulty": 1
+    },
+    {
+      "id": 109217,
+      "name": "Edin Visca",
+      "answer": "VISCA",
+      "difficulty": 1
+    },
+    {
+      "id": 353366,
+      "name": "Benjamin Pavard",
+      "answer": "PAVARD",
+      "difficulty": 1
+    },
+    {
+      "id": 411975,
+      "name": "Jules Koundé",
+      "answer": "KOUNDE",
+      "difficulty": 1
+    },
+    {
+      "id": 81455,
+      "name": "Juan Iturbe",
+      "answer": "ITURBE",
+      "difficulty": 1
+    },
+    {
+      "id": 39333,
+      "name": "Caner Erkin",
+      "answer": "ERKIN",
+      "difficulty": 1
+    },
+    {
+      "id": 242086,
+      "name": "Patrik Schick",
+      "answer": "SCHICK",
+      "difficulty": 1
+    },
+    {
+      "id": 59377,
+      "name": "David de Gea",
+      "answer": "DEGEA",
+      "difficulty": 1
+    },
+    {
+      "id": 5797,
+      "name": "Christian Vieri",
+      "answer": "VIERI",
+      "difficulty": 1
+    },
+    {
+      "id": 70934,
+      "name": "Nolito",
+      "answer": "NOLITO",
+      "difficulty": 1
+    },
+    {
+      "id": 16136,
+      "name": "Dante",
+      "answer": "DANTE",
+      "difficulty": 1
+    },
+    {
+      "id": 38497,
+      "name": "Jeremain Lens",
+      "answer": "LENS",
+      "difficulty": 1
+    },
+    {
+      "id": 44675,
+      "name": "Bojan Krkic",
+      "answer": "KRKIC",
+      "difficulty": 1
+    },
+    {
+      "id": 170934,
+      "name": "Mario Lemina",
+      "answer": "LEMINA",
+      "difficulty": 1
+    },
+    {
+      "id": 37838,
+      "name": "Dejan Lovren",
+      "answer": "LOVREN",
+      "difficulty": 1
+    },
+    {
+      "id": 45320,
+      "name": "Ángel Di María",
+      "answer": "DIMARIA",
+      "difficulty": 2
+    },
+    {
+      "id": 88755,
+      "name": "Kevin De Bruyne",
+      "answer": "DEBRUYNE",
+      "difficulty": 2
+    },
+    {
+      "id": 32467,
+      "name": "Ivan Rakitic",
+      "answer": "RAKITIC",
+      "difficulty": 2
+    },
+    {
+      "id": 42460,
+      "name": "Ivan Perišić",
+      "answer": "PERISIC",
+      "difficulty": 2
+    },
+    {
+      "id": 69633,
+      "name": "Christian Eriksen",
+      "answer": "ERIKSEN",
+      "difficulty": 2
+    },
+    {
+      "id": 54781,
+      "name": "Nicolás Otamendi",
+      "answer": "OTAMENDI",
+      "difficulty": 2
+    },
+    {
+      "id": 161056,
+      "name": "Joshua Kimmich",
+      "answer": "KIMMICH",
+      "difficulty": 2
+    },
+    {
+      "id": 18922,
+      "name": "Karim Benzema",
+      "answer": "BENZEMA",
+      "difficulty": 2
+    },
+    {
+      "id": 39983,
+      "name": "Leonardo Bonucci",
+      "answer": "BONUCCI",
+      "difficulty": 2
+    },
+    {
+      "id": 51471,
+      "name": "Mateo Kovacic",
+      "answer": "KOVACIC",
+      "difficulty": 2
+    },
+    {
+      "id": 8806,
+      "name": "Cesc Fàbregas",
+      "answer": "FABREGAS",
+      "difficulty": 2
+    },
+    {
+      "id": 65230,
+      "name": "Sergio Busquets",
+      "answer": "BUSQUETS",
+      "difficulty": 2
+    },
+    {
+      "id": 105521,
+      "name": "Ciro Immobile",
+      "answer": "IMMOBILE",
+      "difficulty": 2
+    },
+    {
+      "id": 16306,
+      "name": "Casemiro",
+      "answer": "CASEMIRO",
+      "difficulty": 2
+    },
+    {
+      "id": 52769,
+      "name": "Willian",
+      "answer": "WILLIAN",
+      "difficulty": 2
+    },
+    {
+      "id": 153084,
+      "name": "Leon Goretzka",
+      "answer": "GORETZKA",
+      "difficulty": 2
+    },
+    {
+      "id": 258923,
+      "name": "Marcus Rashford",
+      "answer": "RASHFORD",
+      "difficulty": 2
+    },
+    {
+      "id": 61253,
+      "name": "José Callejón",
+      "answer": "CALLEJON",
+      "difficulty": 2
+    },
+    {
+      "id": 58205,
+      "name": "André Schürrle",
+      "answer": "SCHURRLE",
+      "difficulty": 2
+    },
+    {
+      "id": 39728,
+      "name": "Mats Hummels",
+      "answer": "HUMMELS",
+      "difficulty": 2
+    },
+    {
+      "id": 44058,
+      "name": "Wojciech Szczesny",
+      "answer": "SZCZESNY",
+      "difficulty": 2
+    },
+    {
+      "id": 182712,
+      "name": "João Cancelo",
+      "answer": "CANCELO",
+      "difficulty": 2
+    },
+    {
+      "id": 238407,
+      "name": "Alexander Sørloth",
+      "answer": "SORLOTH",
+      "difficulty": 2
+    },
+    {
+      "id": 63531,
+      "name": "Kwadwo Asamoah",
+      "answer": "ASAMOAH",
+      "difficulty": 2
+    },
+    {
+      "id": 58088,
+      "name": "Fernando Muslera",
+      "answer": "MUSLERA",
+      "difficulty": 2
+    },
+    {
+      "id": 255942,
+      "name": "Nicolò Barella",
+      "answer": "BARELLA",
+      "difficulty": 2
+    },
+    {
+      "id": 182932,
+      "name": "Davy Klaassen",
+      "answer": "KLAASSEN",
+      "difficulty": 2
+    },
+    {
+      "id": 129554,
+      "name": "Steven Berghuis",
+      "answer": "BERGHUIS",
+      "difficulty": 2
+    },
+    {
+      "id": 309400,
+      "name": "Kai Havertz",
+      "answer": "HAVERTZ",
+      "difficulty": 2
+    },
+    {
+      "id": 20506,
+      "name": "Andrés Guardado",
+      "answer": "GUARDADO",
+      "difficulty": 2
+    },
+    {
+      "id": 118022,
+      "name": "Younès Belhanda",
+      "answer": "BELHANDA",
+      "difficulty": 2
+    },
+    {
+      "id": 167799,
+      "name": "Pierre-Emile Højbjerg",
+      "answer": "HOJBJERG",
+      "difficulty": 2
+    },
+    {
+      "id": 66058,
+      "name": "Admir Mehmedi",
+      "answer": "MEHMEDI",
+      "difficulty": 2
+    },
+    {
+      "id": 85148,
+      "name": "Julian Draxler",
+      "answer": "DRAXLER",
+      "difficulty": 2
+    },
+    {
+      "id": 126716,
+      "name": "Paco Alcácer",
+      "answer": "ALCACER",
+      "difficulty": 2
+    },
+    {
+      "id": 228645,
+      "name": "Wout Weghorst",
+      "answer": "WEGHORST",
+      "difficulty": 2
+    },
+    {
+      "id": 433049,
+      "name": "Youssef En-Nesyri",
+      "answer": "ENNESYRI",
+      "difficulty": 2
+    },
+    {
+      "id": 34870,
+      "name": "Roberto Soldado",
+      "answer": "SOLDADO",
+      "difficulty": 2
+    },
+    {
+      "id": 144028,
+      "name": "Leandro Trossard",
+      "answer": "TROSSARD",
+      "difficulty": 2
+    },
+    {
+      "id": 130365,
+      "name": "Alessandro Florenzi",
+      "answer": "FLORENZI",
+      "difficulty": 2
+    },
+    {
+      "id": 148252,
+      "name": "Remo Freuler",
+      "answer": "FREULER",
+      "difficulty": 2
+    },
+    {
+      "id": 54906,
+      "name": "Matteo Darmian",
+      "answer": "DARMIAN",
+      "difficulty": 2
+    },
+    {
+      "id": 100986,
+      "name": "Thomas Meunier",
+      "answer": "MEUNIER",
+      "difficulty": 2
+    },
+    {
+      "id": 48015,
+      "name": "Lukas Hradecky",
+      "answer": "HRADECKY",
+      "difficulty": 2
+    },
+    {
+      "id": 316264,
+      "name": "Martin Ødegaard",
+      "answer": "ODEGAARD",
+      "difficulty": 2
+    },
+    {
+      "id": 57162,
+      "name": "Sofiane Feghouli",
+      "answer": "FEGHOULI",
+      "difficulty": 2
+    },
+    {
+      "id": 321528,
+      "name": "Denzel Dumfries",
+      "answer": "DUMFRIES",
+      "difficulty": 2
+    },
+    {
+      "id": 44367,
+      "name": "Roman Eremenko",
+      "answer": "EREMENKO",
+      "difficulty": 2
+    },
+    {
+      "id": 411295,
+      "name": "Raphinha",
+      "answer": "RAPHINHA",
+      "difficulty": 2
+    },
+    {
+      "id": 129476,
+      "name": "Gerard Deulofeu",
+      "answer": "DEULOFEU",
+      "difficulty": 2
+    },
+    {
+      "id": 7109,
+      "name": "Andrea Barzagli",
+      "answer": "BARZAGLI",
+      "difficulty": 2
+    },
+    {
+      "id": 204069,
+      "name": "Milan Škriniar",
+      "answer": "SKRINIAR",
+      "difficulty": 2
+    },
+    {
+      "id": 60577,
+      "name": "Nicolas N'Koulou",
+      "answer": "NKOULOU",
+      "difficulty": 2
+    },
+    {
+      "id": 45624,
+      "name": "Aurélien Chedjou",
+      "answer": "CHEDJOU",
+      "difficulty": 2
+    },
+    {
+      "id": 418560,
+      "name": "Erling Haaland",
+      "answer": "HAALAND",
+      "difficulty": 2
+    },
+    {
+      "id": 86792,
+      "name": "Xherdan Shaqiri",
+      "answer": "SHAQIRI",
+      "difficulty": 2
+    },
+    {
+      "id": 67063,
+      "name": "Danny Welbeck",
+      "answer": "WELBECK",
+      "difficulty": 2
+    },
+    {
+      "id": 9967,
+      "name": "Blerim Dzemaili",
+      "answer": "DZEMAILI",
+      "difficulty": 2
+    },
+    {
+      "id": 105470,
+      "name": "Alisson",
+      "answer": "ALISSON",
+      "difficulty": 2
+    },
+    {
+      "id": 44624,
+      "name": "Dieumerci Mbokani",
+      "answer": "MBOKANI",
+      "difficulty": 2
+    },
+    {
+      "id": 4176,
+      "name": "Valeri Bozhinov",
+      "answer": "BOZHINOV",
+      "difficulty": 2
+    },
+    {
+      "id": 16975,
+      "name": "Marco Cassetti",
+      "answer": "CASSETTI",
+      "difficulty": 2
+    },
+    {
+      "id": 104752,
+      "name": "Konstantinos Manolas",
+      "answer": "MANOLAS",
+      "difficulty": 2
+    },
+    {
+      "id": 15799,
+      "name": "Santi Cazorla",
+      "answer": "CAZORLA",
+      "difficulty": 2
+    },
+    {
+      "id": 17396,
+      "name": "Mathieu Flamini",
+      "answer": "FLAMINI",
+      "difficulty": 2
+    },
+    {
+      "id": 332697,
+      "name": "Weston McKennie",
+      "answer": "MCKENNIE",
+      "difficulty": 2
+    },
+    {
+      "id": 19819,
+      "name": "Raffael",
+      "answer": "RAFFAEL",
+      "difficulty": 2
+    },
+    {
+      "id": 401923,
+      "name": "Victor Osimhen",
+      "answer": "OSIMHEN",
+      "difficulty": 2
+    },
+    {
+      "id": 192735,
+      "name": "Stanislav Lobotka",
+      "answer": "LOBOTKA",
+      "difficulty": 2
+    },
+    {
+      "id": 95810,
+      "name": "Kieran Trippier",
+      "answer": "TRIPPIER",
+      "difficulty": 2
+    },
+    {
+      "id": 354361,
+      "name": "Frank Anguissa",
+      "answer": "ANGUISSA",
+      "difficulty": 2
+    },
+    {
+      "id": 4182,
+      "name": "Claude Makélélé",
+      "answer": "MAKELELE",
+      "difficulty": 2
+    },
+    {
+      "id": 50219,
+      "name": "Simon Mignolet",
+      "answer": "MIGNOLET",
+      "difficulty": 2
+    },
+    {
+      "id": 15185,
+      "name": "Lukas Podolski",
+      "answer": "PODOLSKI",
+      "difficulty": 2
+    },
+    {
+      "id": 77760,
+      "name": "Victor Wanyama",
+      "answer": "WANYAMA",
+      "difficulty": 2
+    },
+    {
+      "id": 189441,
+      "name": "Lucas Ocampos",
+      "answer": "OCAMPOS",
+      "difficulty": 2
+    },
+    {
+      "id": 88590,
+      "name": "Shkodran Mustafi",
+      "answer": "MUSTAFI",
+      "difficulty": 2
+    },
+    {
+      "id": 48002,
+      "name": "Angelo Ogbonna",
+      "answer": "OGBONNA",
+      "difficulty": 2
+    },
+    {
+      "id": 324503,
+      "name": "Vangelis Pavlidis",
+      "answer": "PAVLIDIS",
+      "difficulty": 2
+    },
+    {
+      "id": 412363,
+      "name": "Rodrygo",
+      "answer": "RODRYGO",
+      "difficulty": 2
+    },
+    {
+      "id": 111630,
+      "name": "Erik Lamela",
+      "answer": "LAMELA",
+      "difficulty": 2
+    },
+    {
+      "id": 223967,
+      "name": "Konrad Laimer",
+      "answer": "LAIMER",
+      "difficulty": 2
+    },
+    {
+      "id": 22141,
+      "name": "Antonio Mirante",
+      "answer": "MIRANTE",
+      "difficulty": 2
+    },
+    {
+      "id": 156617,
+      "name": "Marcelo Brozović",
+      "answer": "BROZOVIC",
+      "difficulty": 2
+    },
+    {
+      "id": 273132,
+      "name": "Robin Gosens",
+      "answer": "GOSENS",
+      "difficulty": 2
+    },
+    {
+      "id": 131978,
+      "name": "Ross Barkley",
+      "answer": "BARKLEY",
+      "difficulty": 2
+    },
+    {
+      "id": 28261,
+      "name": "José Manuel Jurado",
+      "answer": "JURADO",
+      "difficulty": 2
+    },
+    {
+      "id": 184892,
+      "name": "Florian Thauvin",
+      "answer": "THAUVIN",
+      "difficulty": 2
+    },
+    {
+      "id": 3112,
+      "name": "James Beattie",
+      "answer": "BEATTIE",
+      "difficulty": 2
+    },
+    {
+      "id": 3509,
+      "name": "Mohamed Kallon",
+      "answer": "KALLON",
+      "difficulty": 2
+    },
+    {
+      "id": 125781,
+      "name": "Antoine Griezmann",
+      "answer": "GRIEZMANN",
+      "difficulty": 3
+    },
+    {
+      "id": 55735,
+      "name": "Henrikh Mkhitaryan",
+      "answer": "MKHITARYAN",
+      "difficulty": 3
+    },
+    {
+      "id": 34572,
+      "name": "Mario Mandzukic",
+      "answer": "MANDZUKIC",
+      "difficulty": 3
+    },
+    {
+      "id": 45184,
+      "name": "Grzegorz Krychowiak",
+      "answer": "KRYCHOWIAK",
+      "difficulty": 3
+    },
+    {
+      "id": 249565,
+      "name": "Youri Tielemans",
+      "answer": "TIELEMANS",
+      "difficulty": 3
+    },
+    {
+      "id": 43250,
+      "name": "Jan Vertonghen",
+      "answer": "VERTONGHEN",
+      "difficulty": 3
+    },
+    {
+      "id": 93128,
+      "name": "Kalidou Koulibaly",
+      "answer": "KOULIBALY",
+      "difficulty": 3
+    },
+    {
+      "id": 41384,
+      "name": "Marko Arnautovic",
+      "answer": "ARNAUTOVIC",
+      "difficulty": 3
+    },
+    {
+      "id": 179184,
+      "name": "Michy Batshuayi",
+      "answer": "BATSHUAYI",
+      "difficulty": 3
+    },
+    {
+      "id": 38410,
+      "name": "Daniel Caligiuri",
+      "answer": "CALIGIURI",
+      "difficulty": 3
+    },
+    {
+      "id": 147487,
+      "name": "Vincent Aboubakar",
+      "answer": "ABOUBAKAR",
+      "difficulty": 3
+    },
+    {
+      "id": 109256,
+      "name": "Haris Seferovic",
+      "answer": "SEFEROVIC",
+      "difficulty": 3
+    },
+    {
+      "id": 162571,
+      "name": "Anastasios Bakasetas",
+      "answer": "BAKASETAS",
+      "difficulty": 3
+    },
+    {
+      "id": 94529,
+      "name": "Stephan El Shaarawy",
+      "answer": "ELSHAARAWY",
+      "difficulty": 3
+    },
+    {
+      "id": 73491,
+      "name": "Danny Drinkwater",
+      "answer": "DRINKWATER",
+      "difficulty": 3
+    },
+    {
+      "id": 146854,
+      "name": "Wissam Ben Yedder",
+      "answer": "BENYEDDER",
+      "difficulty": 3
+    },
+    {
+      "id": 74857,
+      "name": "Marc-André ter Stegen",
+      "answer": "TERSTEGEN",
+      "difficulty": 3
+    },
+    {
+      "id": 94005,
+      "name": "Sead Kolasinac",
+      "answer": "KOLASINAC",
+      "difficulty": 3
+    },
+    {
+      "id": 5762,
+      "name": "Mauro Camoranesi",
+      "answer": "CAMORANESI",
+      "difficulty": 3
+    },
+    {
+      "id": 284732,
+      "name": "Ramy Bensebaini",
+      "answer": "BENSEBAINI",
+      "difficulty": 3
+    },
+    {
+      "id": 69015,
+      "name": "Andriy Yarmolenko",
+      "answer": "YARMOLENKO",
+      "difficulty": 3
+    },
+    {
+      "id": 50935,
+      "name": "Chicharito",
+      "answer": "CHICHARITO",
+      "difficulty": 3
+    },
+    {
+      "id": 20586,
+      "name": "Urby Emanuelson",
+      "answer": "EMANUELSON",
+      "difficulty": 3
+    },
+    {
+      "id": 169880,
+      "name": "Giovanni Di Lorenzo",
+      "answer": "DILORENZO",
+      "difficulty": 3
+    },
+    {
+      "id": 93720,
+      "name": "Alexandre Lacazette",
+      "answer": "LACAZETTE",
+      "difficulty": 3
+    },
+    {
+      "id": 351478,
+      "name": "Mikel Oyarzabal",
+      "answer": "OYARZABAL",
+      "difficulty": 3
+    },
+    {
+      "id": 3137,
+      "name": "Jesper Grønkjær",
+      "answer": "GRONKJAER",
+      "difficulty": 3
+    },
+    {
+      "id": 221958,
+      "name": "Roman Yaremchuk",
+      "answer": "YAREMCHUK",
+      "difficulty": 3
+    },
+    {
+      "id": 127189,
+      "name": "Geoffrey Kondogbia",
+      "answer": "KONDOGBIA",
+      "difficulty": 3
+    },
+    {
+      "id": 47893,
+      "name": "William Vainqueur",
+      "answer": "VAINQUEUR",
+      "difficulty": 3
+    },
+    {
+      "id": 199248,
+      "name": "Bryan Cristante",
+      "answer": "CRISTANTE",
+      "difficulty": 3
+    },
+    {
+      "id": 5757,
+      "name": "Gianluca Zambrotta",
+      "answer": "ZAMBROTTA",
+      "difficulty": 3
+    },
+    {
+      "id": 5017,
+      "name": "Niklas Moisander",
+      "answer": "MOISANDER",
+      "difficulty": 3
+    },
+    {
+      "id": 3852,
+      "name": "Fernando Cavenaghi",
+      "answer": "CAVENAGHI",
+      "difficulty": 3
+    },
+    {
+      "id": 9487,
+      "name": "Shota Arveladze",
+      "answer": "ARVELADZE",
+      "difficulty": 3
+    },
+    {
+      "id": 165513,
+      "name": "Berat Djimsiti",
+      "answer": "DJIMSITI",
+      "difficulty": 3
+    },
+    {
+      "id": 283196,
+      "name": "Kasper Dolberg",
+      "answer": "DOLBERG",
+      "difficulty": 3
+    },
+    {
+      "id": 176553,
+      "name": "Aymeric Laporte",
+      "answer": "LAPORTE",
+      "difficulty": 3
+    },
+    {
+      "id": 157849,
+      "name": "Lukasz Teodorczyk",
+      "answer": "TEODORCZYK",
+      "difficulty": 3
+    },
+    {
+      "id": 33481,
+      "name": "Gervinho",
+      "answer": "GERVINHO",
+      "difficulty": 3
+    },
+    {
+      "id": 82009,
+      "name": "Kevin Volland",
+      "answer": "VOLLAND",
+      "difficulty": 3
+    },
+    {
+      "id": 190393,
+      "name": "Corentin Tolisso",
+      "answer": "TOLISSO",
+      "difficulty": 3
+    },
+    {
+      "id": 59970,
+      "name": "Taras Stepanenko",
+      "answer": "STEPANENKO",
+      "difficulty": 3
+    },
+    {
+      "id": 354362,
+      "name": "Rodrigo Bentancur",
+      "answer": "BENTANCUR",
+      "difficulty": 3
+    },
+    {
+      "id": 96533,
+      "name": "Youssef El Arabi",
+      "answer": "ELARABI",
+      "difficulty": 3
+    },
+    {
+      "id": 46104,
+      "name": "Stevan Jovetić",
+      "answer": "JOVETIC",
+      "difficulty": 3
+    },
+    {
+      "id": 3127,
+      "name": "Mikael Forssell",
+      "answer": "FORSSELL",
+      "difficulty": 3
+    },
+    {
+      "id": 3373,
+      "name": "Ronaldinho",
+      "answer": "RONALDINHO",
+      "difficulty": 3
+    },
+    {
+      "id": 4549,
+      "name": "Jan Kromkamp",
+      "answer": "KROMKAMP",
+      "difficulty": 3
+    },
+    {
+      "id": 5379,
+      "name": "Aleksey Smertin",
+      "answer": "SMERTIN",
+      "difficulty": 3
+    },
+    {
+      "id": 318077,
+      "name": "Lucas Torreira",
+      "answer": "TORREIRA",
+      "difficulty": 3
+    },
+    {
+      "id": 344695,
+      "name": "Dayot Upamecano",
+      "answer": "UPAMECANO",
+      "difficulty": 3
+    },
+    {
+      "id": 46635,
+      "name": "Igor Smolnikov",
+      "answer": "SMOLNIKOV",
+      "difficulty": 3
+    },
+    {
+      "id": 79522,
+      "name": "Yuto Nagatomo",
+      "answer": "NAGATOMO",
+      "difficulty": 3
+    },
+    {
+      "id": 184573,
+      "name": "Victor Lindelöf",
+      "answer": "LINDELOF",
+      "difficulty": 3
+    },
+    {
+      "id": 3507,
+      "name": "Christian Abbiati",
+      "answer": "ABBIATI",
+      "difficulty": 3
+    },
+    {
+      "id": 315969,
+      "name": "Scott McTominay",
+      "answer": "MCTOMINAY",
+      "difficulty": 3
+    },
+    {
+      "id": 131225,
+      "name": "Nicolás Tagliafico",
+      "answer": "TAGLIAFICO",
+      "difficulty": 3
+    },
+    {
+      "id": 42678,
+      "name": "Salvatore Bocchetti",
+      "answer": "BOCCHETTI",
+      "difficulty": 3
+    },
+    {
+      "id": 265088,
+      "name": "Manuel Locatelli",
+      "answer": "LOCATELLI",
+      "difficulty": 3
+    },
+    {
+      "id": 406040,
+      "name": "Ademola Lookman",
+      "answer": "LOOKMAN",
+      "difficulty": 3
+    },
+    {
+      "id": 15904,
+      "name": "Thomas Vermaelen",
+      "answer": "VERMAELEN",
+      "difficulty": 3
+    },
+    {
+      "id": 6833,
+      "name": "Zdenek Grygera",
+      "answer": "GRYGERA",
+      "difficulty": 3
+    },
+    {
+      "id": 1667,
+      "name": "Diego Benaglio",
+      "answer": "BENAGLIO",
+      "difficulty": 3
+    },
+    {
+      "id": 188077,
+      "name": "Ryan Christie",
+      "answer": "CHRISTIE",
+      "difficulty": 3
+    },
+    {
+      "id": 263918,
+      "name": "Aleksandr Golovin",
+      "answer": "GOLOVIN",
+      "difficulty": 3
+    },
+    {
+      "id": 47082,
+      "name": "Daniel Sturridge",
+      "answer": "STURRIDGE",
+      "difficulty": 3
+    },
+    {
+      "id": 272855,
+      "name": "Paul Onuachu",
+      "answer": "ONUACHU",
+      "difficulty": 3
+    },
+    {
+      "id": 401922,
+      "name": "Samuel Chukwueze",
+      "answer": "CHUKWUEZE",
+      "difficulty": 3
+    },
+    {
+      "id": 127048,
+      "name": "Cédric Bakambu",
+      "answer": "BAKAMBU",
+      "difficulty": 3
+    },
+    {
+      "id": 112343,
+      "name": "Manolo Gabbiadini",
+      "answer": "GABBIADINI",
+      "difficulty": 3
+    },
+    {
+      "id": 57071,
+      "name": "Péter Gulácsi",
+      "answer": "GULACSI",
+      "difficulty": 3
+    },
+    {
+      "id": 58124,
+      "name": "Julian Schieber",
+      "answer": "SCHIEBER",
+      "difficulty": 3
+    },
+    {
+      "id": 257455,
+      "name": "João Palhinha",
+      "answer": "PALHINHA",
+      "difficulty": 3
+    },
+    {
+      "id": 45146,
+      "name": "Mario Balotelli",
+      "answer": "BALOTELLI",
+      "difficulty": 3
+    },
+    {
+      "id": 108830,
+      "name": "Aymen Abdennour",
+      "answer": "ABDENNOUR",
+      "difficulty": 3
+    },
+    {
+      "id": 329517,
+      "name": "Georgios Masouras",
+      "answer": "MASOURAS",
+      "difficulty": 3
+    },
+    {
+      "id": 221899,
+      "name": "Léo Baptistão",
+      "answer": "BAPTISTAO",
+      "difficulty": 3
+    },
+    {
+      "id": 193082,
+      "name": "Alejandro Grimaldo",
+      "answer": "GRIMALDO",
+      "difficulty": 3
+    },
+    {
+      "id": 1396,
+      "name": "Ewerthon",
+      "answer": "EWERTHON",
+      "difficulty": 3
+    },
+    {
+      "id": 3272,
+      "name": "David Unsworth",
+      "answer": "UNSWORTH",
+      "difficulty": 3
+    },
+    {
+      "id": 4362,
+      "name": "Jan Vennegoor of Hesselink",
+      "answer": "HESSELINK",
+      "difficulty": 3
+    },
+    {
+      "id": 16621,
+      "name": "Manuel Almunia",
+      "answer": "ALMUNIA",
+      "difficulty": 3
+    },
+    {
+      "id": 45709,
+      "name": "Danilinho",
+      "answer": "DANILINHO",
+      "difficulty": 3
+    },
+    {
+      "id": 56360,
+      "name": "Jan Simunek",
+      "answer": "SIMUNEK",
+      "difficulty": 3
+    },
+    {
+      "id": 19981,
+      "name": "Javier Mascherano",
+      "answer": "MASCHERANO",
+      "difficulty": 3
+    },
+    {
+      "id": 136610,
+      "name": "Papy Djilobodji",
+      "answer": "DJILOBODJI",
+      "difficulty": 3
+    },
+    {
+      "id": 60890,
+      "name": "Fabián Orellana",
+      "answer": "ORELLANA",
+      "difficulty": 3
+    },
+    {
+      "id": 264372,
+      "name": "Viktor Tsygankov",
+      "answer": "TSYGANKOV",
+      "difficulty": 3
+    },
+    {
+      "id": 195736,
+      "name": "Florian Grillitsch",
+      "answer": "GRILLITSCH",
+      "difficulty": 3
+    }
+  ]
+}

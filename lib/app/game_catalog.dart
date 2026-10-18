@@ -1,3 +1,4 @@
+import '../screens/daily_words_page.dart';
 import '../screens/daily_question_page.dart';
 
 import 'package:flutter/material.dart';
@@ -88,7 +89,13 @@ class GameCatalog {
     requiresRepository: false,
     modern: true,
   );
-  static const dailyGames = <GameEntry>[dailyFootballer, daily, dailyQuestion];
+  static const dailyLingo = GameEntry(title: 'Günün Lingo’su', subtitle: 'Tek kelime, 6 tahmin · 0 enerji',
+    icon: Icons.text_fields_rounded, page: FutbolLingoPage(), requiresRepository: false, modern: true);
+  static const dailyPassa = GameEntry(title: 'Mini Passaparola', subtitle: '7 harf, sınırsız düşünme · 0 enerji',
+    icon: Icons.abc_rounded, page: PassaparolaPage(), requiresRepository: false, modern: true);
+  static const dailyAnagram = GameEntry(title: 'Günün Anagramı', subtitle: '3 futbolcu, karışık harfler · 0 enerji',
+    icon: Icons.shuffle_rounded, page: DailyWordsPage(mode: 'daily_anagram'), requiresRepository: false, modern: true);
+  static const dailyGames = <GameEntry>[dailyFootballer, daily, dailyQuestion, dailyLingo, dailyPassa, dailyAnagram];
 
   static const discovery = GameEntry(
     title: 'Ortak Oyuncu Keşfi',
@@ -236,7 +243,7 @@ class GameCatalog {
     ),
     GameEntry(
       title: 'Futbol Lingo',
-      subtitle: 'Kategori seç, futbol kelimesini çöz',
+      subtitle: 'Günün sabit kelimesi · 6 tahmin · 0 enerji',
       icon: Icons.text_fields_rounded,
       page: FutbolLingoPage(),
       category: 'Harf & Kelime',
@@ -244,14 +251,15 @@ class GameCatalog {
     ),
     GameEntry(
       title: 'Passaparola',
-      subtitle: '29 harf, futbol soruları',
+      subtitle: 'Günlük 7 harf · Haftalık 29 harf',
       icon: Icons.abc_rounded,
       page: PassaparolaPage(),
+      requiresRepository: false,
       category: 'Harf & Kelime',
     ),
     GameEntry(
       title: 'Anagram',
-      subtitle: 'Harfleri çöz, 8 futbolcuyu bul',
+      subtitle: 'Günlük 3 futbolcu · Sekizli pratik',
       icon: Icons.shuffle_rounded,
       page: AnagramPage(),
       category: 'Harf & Kelime',

@@ -91,6 +91,9 @@ jobs:
           node tools/daily_question/build_catalog.js
           git diff --exit-code -- functions/config/daily_question_catalog.json
 
+      - name: Verify daily word trio calendar and reviewed bank
+        run: python3 tools/daily_words/build_catalog.py --check
+
       - name: Verify fake club catalog
         run: python3 tools/fake_club/build_catalog.py --check
 
@@ -126,6 +129,15 @@ jobs:
 
       - name: Run Flutter tests
         run: flutter test --reporter expanded --dart-define=UPDATE_FIVE_SCREENSHOTS=true
+
+      - name: Upload daily word trio previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-word-trio-previews
+          path: .dart_tool/daily_words_qa/
+          include-hidden-files: true
+          retention-days: 7
 
       - name: Upload fake club previews
         if: always()

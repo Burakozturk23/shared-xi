@@ -1,0 +1,402 @@
+{
+  "sourceSha256": "2a0daf2aa9613d5d688bb4fb0aedb383accad46b3fb60c5e8d080d32fe91fd77",
+  "count": 79,
+  "decision": "Retired from official daily/weekly. Every new question has its own proof; no unchecked legacy text or aliases copied.",
+  "questions": [
+    {
+      "id": "a_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "a_club_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "a_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "a_player_04",
+      "decision": "retired",
+      "reason": "Adebayor wrongly described as French"
+    },
+    {
+      "id": "b_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "b_club_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "b_club_03",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "b_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "b_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "c_stadium_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "c_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "c_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "c_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "c_ced_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "c_ced_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "d_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "d_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "d_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "e_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "e_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "e_player_02",
+      "decision": "retired",
+      "reason": "Eder is not the intended surname; ambiguous target"
+    },
+    {
+      "id": "f_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "f_trophy_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "f_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "g_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "g_manager_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "g_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "h_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "h_player_02",
+      "decision": "retired",
+      "reason": "Kane violates H; prompt asks surname but letter needs full name"
+    },
+    {
+      "id": "h_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "i_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "i_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "i_dot_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "i_dot_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "j_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "j_player_01",
+      "decision": "retired",
+      "reason": "Gabriel Jesus incorrectly linked to Barcelona"
+    },
+    {
+      "id": "j_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "k_manager_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "k_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "k_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "l_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "l_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "l_player_02",
+      "decision": "retired",
+      "reason": "Modric violates L; prompt asks surname but letter needs full name"
+    },
+    {
+      "id": "m_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "m_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "m_club_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "m_club_03",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "n_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "n_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "o_stadium_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "o_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "o_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "p_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "p_manager_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "p_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "r_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "r_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "r_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "s_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "s_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "s_trophy_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "s_ced_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "s_ced_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "t_club_01",
+      "decision": "retired",
+      "reason": "Answer appears inside prompt"
+    },
+    {
+      "id": "t_club_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "t_player_01",
+      "decision": "retired",
+      "reason": "Henry violates T"
+    },
+    {
+      "id": "u_trophy_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "u_club_01",
+      "decision": "retired",
+      "reason": "Answer appears inside prompt"
+    },
+    {
+      "id": "u_umlaut_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "v_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "v_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "v_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "y_club_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "y_player_01",
+      "decision": "retired",
+      "reason": "Yasin Oztekin incorrectly linked to Besiktas"
+    },
+    {
+      "id": "z_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "z_player_02",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "o_umlaut_player_01",
+      "decision": "retired",
+      "reason": "Unversioned clue; broad aliases and/or undated wording replaced by explicit reviewed snapshot."
+    },
+    {
+      "id": "o_umlaut_player_02",
+      "decision": "retired",
+      "reason": "Toprak violates Ö"
+    },
+    {
+      "id": "u_umlaut_player_02",
+      "decision": "retired",
+      "reason": "Bulent does not begin with Ü"
+    }
+  ]
+}

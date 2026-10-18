@@ -34,11 +34,14 @@ void main() {
   });
   tearDown(() => game.dispose());
   test('curated pool, normalized names, repeated letters and shuffled deck', () {
-    expect(catalog.players.length, 64);
+    expect(catalog.players.length, greaterThanOrEqualTo(270));
     final guler = catalog.player(861410);
     expect(guler.accepts('güler'), isTrue);
     expect(guler.accepts('Arda Guler'), isTrue);
     expect(anagramKey('Özil, Çalhanoğlu'), 'OZILCALHANOGLU');
+    final gronkjaer = catalog.players.firstWhere((p) => p.name == 'Jesper Grønkjær');
+    expect(gronkjaer.accepts('GRØNKJÆR'), isTrue);
+    expect(gronkjaer.accepts('Jesper Gronkjaer'), isTrue);
     for (final player in catalog.players) {
       String? previous;
       for (var seed = 0; seed < 20; seed++) {
