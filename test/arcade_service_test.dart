@@ -22,12 +22,12 @@ class ArcadeWire extends EnergyService {
     calls.add({'name': name, ...input});
     void apply(Map<String,dynamic> event) {
       if (seen.add('${event['requestId']}')) {
-        if (event['revision'] != run['revision']) throw FirebaseFunctionsException(code: 'aborted');
+        if (event['revision'] != run['revision']) throw FirebaseFunctionsException(code: 'aborted', message: 'revision changed');
         run = BurstOffline(kit).apply(run,event)..remove('pendingValidation');
       }
     }
-    if (name == 'actArcade' && acceptedButLost) {apply(input); acceptedButLost = false; throw FirebaseFunctionsException(code: 'unavailable');}
-    if (fail) throw FirebaseFunctionsException(code: 'unavailable');
+    if (name == 'actArcade' && acceptedButLost) {apply(input); acceptedButLost = false; throw FirebaseFunctionsException(code: 'unavailable', message: 'offline');}
+    if (fail) throw FirebaseFunctionsException(code: 'unavailable', message: 'offline');
     if (name == 'actArcade') apply(input);
     if (name == 'replayArcade') for (final e in input['events'] as List) {apply(rewardMap(e));}
     beforeReturn?.call();

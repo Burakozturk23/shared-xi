@@ -76,6 +76,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     try {final value = await service.load(widget.mode); if (mounted) setState(() => accept(value));}
     catch (e) {if (mounted) setState(() => error = '$e');}
     finally {if (mounted) setState(() => busy = false);}
+    if (mounted && showRecords && active && run['paused'] != true && !offline) unawaited(act('pause'));
   }
   Future<void> act(String action, [Map<String, dynamic> more = const {}]) async {
     if (busy || offline) return;
@@ -152,7 +153,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       scaffoldBackgroundColor: _ink, colorScheme: const ColorScheme.dark(primary: _lime, secondary: _lime, secondaryContainer: Color(0xFF334825), onSecondaryContainer: _lime, surface: _panel),
       inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder())),
       child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 96 : 64, title: Text(showRecords ? '$title Rekor Merkezi' : title, maxLines: 2, style: const TextStyle(fontSize: 18)), actions: [
-        IconButton(tooltip: 'Rekor Merkezi', onPressed: () => setState(() => showRecords = !showRecords), icon: const Icon(Icons.emoji_events_outlined)),
+        IconButton(tooltip: 'Rekor Merkezi', onPressed: busy ? null : () async {
+          if (active && run['paused'] != true && !offline) await act('pause');
+          if (mounted) setState(() => showRecords = !showRecords);
+        }, icon: const Icon(Icons.emoji_events_outlined)),
         IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh)),
       ]), body: SafeArea(child: Column(children: [
         if (busy) const LinearProgressIndicator(minHeight: 2),
@@ -337,6 +341,12 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     ]),
     if (widget.mode == 'matching') ExpansionTile(title: const Text('Kariyer bağları ve kaynaklar'), children: _rows(run['proof']).map((p) =>
       ListTile(title: Text('${p['player']} → ${p['club']}'), subtitle: SelectableText((p['sources'] as List? ?? []).join('\n')))).toList()),
+    button('Tekrar oyna', () {
+      setState(() {style = '${run['style'] ?? 'speed'}'; pairType = '${run['pairType'] ?? 'clubClub'}'; difficulty = '${run['difficulty'] ?? 'normal'}';});
+      unawaited(prepare());
+    }),
+    TextButton(onPressed: () => Navigator.of(context).maybePop(), child: const Text('Ana sayfa')),
+    const Text('Yeni seçim için aşağıdaki ayarları değiştirebilirsin.'),
     const Divider(height: 32),
   ];
   String _medalLabel(String key) {
@@ -353,7 +363,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       for (final r in records) panel(widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}'),
         widget.mode == 'matching' ? 'En az hamle: ${r['bestMoves'] ?? '—'}\nEn iyi süre: ${r['bestTimeMs'] == null ? '—' : (_n(r['bestTimeMs']) / 1000).round()} sn\n${r['sessions']} oyun' :
           'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}\nOrtalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}'),
-      if (rewardMap(data['legacy']).isNotEmpty) panel('Eski sürüm rekoru', rewardMap(data['legacy']).entries.map((e) => '${e.key}: ${e.value}').join('\n')),
+      if (rewardMap(data['legacy']).isNotEmpty) panel('Bu cihazın eski sürüm rekoru', rewardMap(data['legacy']).entries.map((e) => '${e.key}: ${e.value}').join('\n')),
       for (final e in rewardMap(data['medals']).entries.where((e) => e.key.startsWith(widget.mode)))
         ListTile(leading: const Icon(Icons.military_tech, color: _lime), title: Text(_medalLabel(e.key)),
           subtitle: Text('${rewardMap(e.value)['coins']} Coin · ${rewardMap(data['paid'])[e.key] == true ? 'Ödendi' : 'Bekliyor'}')),

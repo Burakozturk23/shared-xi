@@ -8,9 +8,9 @@ import 'package:shared_xi/screens/arcade_page.dart';
 import 'package:shared_xi/services/arcade_service.dart';
 
 class ArcadeFixture extends ArcadeService {
-  ArcadeFixture({this.stage = 'game', this.difficulty = 'normal', this.style = 'speed', this.offline = false});
+  ArcadeFixture({this.stage = 'game', this.difficulty = 'normal', this.style = 'speed', this.offline = false, this.offlinePlayable = false});
   String stage, difficulty, style;
-  bool offline;
+  bool offline, offlinePlayable;
   Map<String, dynamic>? sent;
   Map<String, dynamic> session(String mode) {
     final finished = stage == 'result'; final easy = difficulty == 'easy';
@@ -42,7 +42,7 @@ class ArcadeFixture extends ArcadeService {
   }
   @override
   Future<Map<String, dynamic>> load(String mode) async => {'version': 'test-v1', 'availability': {'enabled': true, 'rewardsEnabled': true},
-    'linked': true, 'energyCost': 1, 'offline': offline, if (offline) 'notice': 'Bağlantı yok. Kayıt korunuyor.',
+    'linked': true, 'energyCost': 1, 'offline': offline, 'offlinePlayable': offlinePlayable, if (offline) 'notice': 'Bağlantı yok. Kayıt korunuyor.',
     'session': stage == 'intro' ? null : session(mode), 'records': {'one': {'mode': mode, 'difficulty': difficulty, 'style': style,
       'pairType': 'clubClub', 'bestScore': 1350, 'bestRounds': 2, 'bestStreak': 6, 'bestCorrect': 6, 'sessions': 3, 'bestMoves': 12, 'bestTimeMs': 34000}},
     'medals': {}, 'paid': {}, 'pendingCoins': 0, 'recent': [], 'legacy': mode == 'burst' ? {'blitz': 45} : {}};
@@ -136,4 +136,15 @@ void main() {
     expect(cardButtons.every((b) => b.onPressed == null), isTrue);
     await t.pumpWidget(const SizedBox.shrink()); await t.pump();
   });
+  testWidgets('offline Burst remains playable while canonical rewards wait for verification', (t) async {
+    final fixture = ArcadeFixture(offline: true, offlinePlayable: true);
+    await mount(t, fixture, 'burst');
+    expect(t.widget<TextField>(find.byType(TextField)).enabled, isTrue);
+    await capture(t, 'burst_offline');
+    await t.enterText(find.byType(TextField), 'Ronaldo');
+    await t.ensureVisible(find.text('Cevabı kontrol et')); await t.tap(find.text('Cevabı kontrol et')); await t.pumpAndSettle();
+    expect(fixture.sent?['query'], 'Ronaldo'); expect(fixture.sent?['elapsedMs'], isA<int>());
+    await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+  });
+
 }
