@@ -22,6 +22,7 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
   let remote = clone(configModule.defaults);
   let queue = Promise.resolve();
   let failPath = null;
+  const linkedUsers = {};
   const snap = (value) => ({val: () => stored(value), exists: () => stored(value) != null});
   function get(key = "") {
     return key.split("/").filter(Boolean).reduce((v, p) => v && v[p], tree) ?? null;
@@ -85,7 +86,9 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     "firebase-functions/v2/database": {onValueWritten: registration},
     "firebase-admin/app": {initializeApp: () => {}},
     "firebase-admin/database": {getDatabase: () => db},
-    "firebase-admin/auth": {getAuth: () => ({getUser: async () => ({providerData: [{providerId: "google.com"}]})})},
+    "firebase-admin/auth": {getAuth: () => ({getUser: async (uid) => ({
+      providerData: linkedUsers[uid] === false ? [] : [{providerId: "google.com"}],
+    })})},
     "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async () => ({
       evaluate: () => ({getString: () => JSON.stringify(remote)}),
     })})},
@@ -104,6 +107,7 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     seed: set,
     db, context,
     failNext: (key) => failPath = key,
+    setLinked: (uid, value) => linkedUsers[uid] = value,
     setTime: (v) => time = typeof v === "string" ? Date.parse(v) : v,
     get now() {
       return time;

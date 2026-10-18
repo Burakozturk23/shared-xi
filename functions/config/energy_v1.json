@@ -8,9 +8,77 @@
   "adLimit": 2,
   "purchaseLimit": 2,
   "proAmount": 2,
-  "packages": {"small": {"coins": 25, "energy": 2}, "large": {"coins": 60, "energy": 5}},
-  "rollout": {"enabled": false, "percent": 0, "minClientVersion": 1, "sessionModes": []},
-  "xp": {"enabled": false, "bot": {"win": 12, "draw": 6, "loss": 4, "dailyCap": 60}, "normal": {"complete": 8, "dailyCap": 40}, "manager": {"complete": 12, "dailyCap": 36}},
-  "sessionModes": ["bot_loto", "bot_race", "bot_classic", "bot_reverse", "bot_random_grid", "bot_cinko", "bot_five", "club_manager", "coach_xi", "squad_vault", "letter11", "career", "transfer", "mystery", "chain", "fake_club", "lingo", "passaparola", "anagram", "burst", "pyramid", "matching", "this_or_that", "higher_lower", "blind_ranking"],
-  "freeModes": ["daily_question", "daily_footballer", "daily_matches", "discovery", "squad_challenge", "ranked", "private_match"]
+  "packages": {
+    "small": {
+      "coins": 25,
+      "energy": 2
+    },
+    "large": {
+      "coins": 60,
+      "energy": 5
+    }
+  },
+  "rollout": {
+    "enabled": false,
+    "percent": 0,
+    "minClientVersion": 1,
+    "sessionModes": []
+  },
+  "xp": {
+    "enabled": false,
+    "bot": {
+      "win": 12,
+      "draw": 6,
+      "loss": 4,
+      "dailyCap": 60
+    },
+    "normal": {
+      "complete": 8,
+      "dailyCap": 40
+    },
+    "manager": {
+      "complete": 12,
+      "dailyCap": 36
+    }
+  },
+  "sessionModes": [
+    "bot_loto",
+    "bot_race",
+    "bot_classic",
+    "bot_reverse",
+    "bot_random_grid",
+    "bot_cinko",
+    "bot_five",
+    "club_manager",
+    "coach_xi",
+    "squad_vault",
+    "letter11",
+    "career",
+    "transfer",
+    "mystery",
+    "chain",
+    "fake_club",
+    "anagram",
+    "burst",
+    "pyramid",
+    "matching",
+    "this_or_that",
+    "higher_lower",
+    "blind_ranking"
+  ],
+  "freeModes": [
+    "daily_question",
+    "daily_footballer",
+    "daily_matches",
+    "discovery",
+    "squad_challenge",
+    "ranked",
+    "private_match",
+    "daily_lingo",
+    "passa_daily",
+    "passa_weekly",
+    "daily_anagram",
+    "lingo",
+    "passaparola"
+  ]
 }

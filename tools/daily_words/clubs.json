@@ -1,0 +1,237 @@
+[
+  {
+    "id": 11,
+    "answer": "ARSENAL",
+    "name": "Arsenal FC"
+  },
+  {
+    "id": 610,
+    "answer": "AJAX",
+    "name": "Ajax Amsterdam"
+  },
+  {
+    "id": 131,
+    "answer": "BARCELONA",
+    "name": "FC Barcelona"
+  },
+  {
+    "id": 27,
+    "answer": "BAYERN",
+    "name": "Bayern Munich"
+  },
+  {
+    "id": 114,
+    "answer": "BESIKTAS",
+    "name": "Besiktas JK"
+  },
+  {
+    "id": 631,
+    "answer": "CHELSEA",
+    "name": "Chelsea FC"
+  },
+  {
+    "id": 29,
+    "answer": "EVERTON",
+    "name": "Everton FC"
+  },
+  {
+    "id": 506,
+    "answer": "JUVENTUS",
+    "name": "Juventus FC"
+  },
+  {
+    "id": 31,
+    "answer": "LIVERPOOL",
+    "name": "Liverpool FC"
+  },
+  {
+    "id": 5,
+    "answer": "MILAN",
+    "name": "AC Milan"
+  },
+  {
+    "id": 6195,
+    "answer": "NAPOLI",
+    "name": "SSC Napoli"
+  },
+  {
+    "id": 720,
+    "answer": "PORTO",
+    "name": "FC Porto"
+  },
+  {
+    "id": 294,
+    "answer": "BENFICA",
+    "name": "SL Benfica"
+  },
+  {
+    "id": 336,
+    "answer": "SPORTING",
+    "name": "Sporting CP"
+  },
+  {
+    "id": 368,
+    "answer": "SEVILLA",
+    "name": "Sevilla FC"
+  },
+  {
+    "id": 1049,
+    "answer": "VALENCIA",
+    "name": "Valencia CF"
+  },
+  {
+    "id": 371,
+    "answer": "CELTIC",
+    "name": "Celtic FC"
+  },
+  {
+    "id": 124,
+    "answer": "RANGERS",
+    "name": "Rangers FC"
+  },
+  {
+    "id": 150,
+    "answer": "BETIS",
+    "name": "Real Betis Balompié"
+  },
+  {
+    "id": 800,
+    "answer": "ATALANTA",
+    "name": "Atalanta BC"
+  },
+  {
+    "id": 1025,
+    "answer": "BOLOGNA",
+    "name": "Bologna FC 1909"
+  },
+  {
+    "id": 416,
+    "answer": "TORINO",
+    "name": "Torino FC"
+  },
+  {
+    "id": 130,
+    "answer": "PARMA",
+    "name": "Parma Calcio 1913"
+  },
+  {
+    "id": 252,
+    "answer": "GENOA",
+    "name": "Genoa CFC"
+  },
+  {
+    "id": 398,
+    "answer": "LAZIO",
+    "name": "SS Lazio"
+  },
+  {
+    "id": 12,
+    "answer": "ROMA",
+    "name": "AS Roma"
+  },
+  {
+    "id": 931,
+    "answer": "FULHAM",
+    "name": "Fulham FC"
+  },
+  {
+    "id": 1148,
+    "answer": "BRENTFORD",
+    "name": "Brentford FC"
+  },
+  {
+    "id": 762,
+    "answer": "NEWCASTLE",
+    "name": "Newcastle United"
+  },
+  {
+    "id": 1041,
+    "answer": "LYON",
+    "name": "Olympique Lyon"
+  },
+  {
+    "id": 244,
+    "answer": "MARSEILLE",
+    "name": "Olympique Marseille"
+  },
+  {
+    "id": 162,
+    "answer": "MONACO",
+    "name": "AS Monaco"
+  },
+  {
+    "id": 417,
+    "answer": "NICE",
+    "name": "OGC Nice"
+  },
+  {
+    "id": 1082,
+    "answer": "LILLE",
+    "name": "LOSC Lille"
+  },
+  {
+    "id": 826,
+    "answer": "LENS",
+    "name": "RC Lens"
+  },
+  {
+    "id": 273,
+    "answer": "RENNES",
+    "name": "Stade Rennais FC"
+  },
+  {
+    "id": 995,
+    "answer": "NANTES",
+    "name": "FC Nantes"
+  },
+  {
+    "id": 415,
+    "answer": "TOULOUSE",
+    "name": "FC Toulouse"
+  },
+  {
+    "id": 40,
+    "answer": "BORDEAUX",
+    "name": "FC Girondins Bordeaux"
+  },
+  {
+    "id": 16,
+    "answer": "DORTMUND",
+    "name": "Borussia Dortmund"
+  },
+  {
+    "id": 23826,
+    "answer": "LEIPZIG",
+    "name": "RB Leipzig"
+  },
+  {
+    "id": 82,
+    "answer": "WOLFSBURG",
+    "name": "VfL Wolfsburg"
+  },
+  {
+    "id": 79,
+    "answer": "STUTTGART",
+    "name": "VfB Stuttgart"
+  },
+  {
+    "id": 86,
+    "answer": "BREMEN",
+    "name": "SV Werder Bremen"
+  },
+  {
+    "id": 41,
+    "answer": "HAMBURG",
+    "name": "Hamburger SV"
+  },
+  {
+    "id": 33,
+    "answer": "SCHALKE",
+    "name": "FC Schalke 04"
+  },
+  {
+    "id": 35,
+    "answer": "STPAULI",
+    "name": "FC St. Pauli"
+  }
+]

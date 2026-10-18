@@ -1,0 +1,4030 @@
+{
+  "reviewedAt": "2026-10-17",
+  "questions": [
+    {
+      "id": "pa-p125781-0",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Griezmann' olan futbolcunun tam adı?",
+      "answer": "Antoine Griezmann",
+      "acceptedAnswers": [
+        "ANTOINEGRIEZMANN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 125781,
+        "name": "Antoine Griezmann",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Antoine Griezmann · Fransa. Bu soruda istenen cevap: Antoine Griezmann."
+    },
+    {
+      "id": "pa-p40433-0",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Şili. Adının devamı 'Sánchez' olan futbolcunun tam adı?",
+      "answer": "Alexis Sánchez",
+      "acceptedAnswers": [
+        "ALEXISSANCHEZ"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 40433,
+        "name": "Alexis Sánchez",
+        "country": "Chile",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Alexis Sánchez · Şili. Bu soruda istenen cevap: Alexis Sánchez."
+    },
+    {
+      "id": "pa-p58864-0",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Gabon. 'Pierre-Emerick …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Aubameyang",
+      "acceptedAnswers": [
+        "AUBAMEYANG"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 58864,
+        "name": "Pierre-Emerick Aubameyang",
+        "country": "Gabon",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Pierre-Emerick Aubameyang · Gabon. Bu soruda istenen cevap: Aubameyang."
+    },
+    {
+      "id": "pa-p37666-0",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Şili. Adının devamı 'Vidal' olan futbolcunun tam adı?",
+      "answer": "Arturo Vidal",
+      "acceptedAnswers": [
+        "ARTUROVIDAL"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 37666,
+        "name": "Arturo Vidal",
+        "country": "Chile",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Arturo Vidal · Şili. Bu soruda istenen cevap: Arturo Vidal."
+    },
+    {
+      "id": "pa-p59016-0",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Avusturya. 'David …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Alaba",
+      "acceptedAnswers": [
+        "ALABA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 59016,
+        "name": "David Alaba",
+        "country": "Austria",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "David Alaba · Avusturya. Bu soruda istenen cevap: Alaba."
+    },
+    {
+      "id": "pa-p60444-0",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Thiago …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Alcántara",
+      "acceptedAnswers": [
+        "ALCANTARA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 60444,
+        "name": "Thiago Alcántara",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Thiago Alcántara · İspanya. Bu soruda istenen cevap: Alcántara."
+    },
+    {
+      "id": "pa-p88755-1",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. 'Kevin De …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Bruyne",
+      "acceptedAnswers": [
+        "BRUYNE"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 88755,
+        "name": "Kevin De Bruyne",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Kevin De Bruyne · Belçika. Bu soruda istenen cevap: Bruyne."
+    },
+    {
+      "id": "pa-p241641-1",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. Adının devamı 'Silva' olan futbolcunun tam adı?",
+      "answer": "Bernardo Silva",
+      "acceptedAnswers": [
+        "BERNARDOSILVA"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 241641,
+        "name": "Bernardo Silva",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Bernardo Silva · Portekiz. Bu soruda istenen cevap: Bernardo Silva."
+    },
+    {
+      "id": "pa-p18922-1",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Karim …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Benzema",
+      "acceptedAnswers": [
+        "BENZEMA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 18922,
+        "name": "Karim Benzema",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Karim Benzema · Fransa. Bu soruda istenen cevap: Benzema."
+    },
+    {
+      "id": "pa-p39983-1",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İtalya. 'Leonardo …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Bonucci",
+      "acceptedAnswers": [
+        "BONUCCI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 39983,
+        "name": "Leonardo Bonucci",
+        "country": "Italy",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Leonardo Bonucci · İtalya. Bu soruda istenen cevap: Bonucci."
+    },
+    {
+      "id": "pa-p240306-1",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. Adının devamı 'Fernandes' olan futbolcunun tam adı?",
+      "answer": "Bruno Fernandes",
+      "acceptedAnswers": [
+        "BRUNOFERNANDES"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 240306,
+        "name": "Bruno Fernandes",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Bruno Fernandes · Portekiz. Bu soruda istenen cevap: Bruno Fernandes."
+    },
+    {
+      "id": "pa-p65230-1",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Sergio …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Busquets",
+      "acceptedAnswers": [
+        "BUSQUETS"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 65230,
+        "name": "Sergio Busquets",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Sergio Busquets · İspanya. Bu soruda istenen cevap: Busquets."
+    },
+    {
+      "id": "pa-p8198-2",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. Adının devamı 'Ronaldo' olan futbolcunun tam adı?",
+      "answer": "Cristiano Ronaldo",
+      "acceptedAnswers": [
+        "CRISTIANORONALDO"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 8198,
+        "name": "Cristiano Ronaldo",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Cristiano Ronaldo · Portekiz. Bu soruda istenen cevap: Cristiano Ronaldo."
+    },
+    {
+      "id": "pa-p69633-2",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Danimarka. Adının devamı 'Eriksen' olan futbolcunun tam adı?",
+      "answer": "Christian Eriksen",
+      "acceptedAnswers": [
+        "CHRISTIANERIKSEN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 69633,
+        "name": "Christian Eriksen",
+        "country": "Denmark",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Christian Eriksen · Danimarka. Bu soruda istenen cevap: Christian Eriksen."
+    },
+    {
+      "id": "pa-p91970-2",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Kolombiya. 'Juan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Cuadrado",
+      "acceptedAnswers": [
+        "CUADRADO"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 91970,
+        "name": "Juan Cuadrado",
+        "country": "Colombia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Juan Cuadrado · Kolombiya. Bu soruda istenen cevap: Cuadrado."
+    },
+    {
+      "id": "pa-p48280-2",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Uruguay. 'Edinson …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Cavani",
+      "acceptedAnswers": [
+        "CAVANI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 48280,
+        "name": "Edinson Cavani",
+        "country": "Uruguay",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Edinson Cavani · Uruguay. Bu soruda istenen cevap: Cavani."
+    },
+    {
+      "id": "pa-p44779-2",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Diego …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Costa",
+      "acceptedAnswers": [
+        "COSTA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 44779,
+        "name": "Diego Costa",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Diego Costa · İspanya. Bu soruda istenen cevap: Costa."
+    },
+    {
+      "id": "pa-p27511-2",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. 'Gary …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Cahill",
+      "acceptedAnswers": [
+        "CAHILL"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 27511,
+        "name": "Gary Cahill",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Gary Cahill · İngiltere. Bu soruda istenen cevap: Cahill."
+    },
+    {
+      "id": "pa-p126414-3",
+      "revision": 1,
+      "letter": "Ç",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Hakan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çalhanoğlu",
+      "acceptedAnswers": [
+        "CALHANOGLU"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 126414,
+        "name": "Hakan Çalhanoğlu",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hakan Çalhanoğlu · Türkiye. Bu soruda istenen cevap: Çalhanoğlu."
+    },
+    {
+      "id": "pa-p251075-3",
+      "revision": 1,
+      "letter": "Ç",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Zeki …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çelik",
+      "acceptedAnswers": [
+        "CELIK"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 251075,
+        "name": "Zeki Çelik",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Zeki Çelik · Türkiye. Bu soruda istenen cevap: Çelik."
+    },
+    {
+      "id": "pa-p292199-3",
+      "revision": 1,
+      "letter": "Ç",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Uğurcan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çakır",
+      "acceptedAnswers": [
+        "CAKIR"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 292199,
+        "name": "Uğurcan Çakır",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Uğurcan Çakır · Türkiye. Bu soruda istenen cevap: Çakır."
+    },
+    {
+      "id": "pa-p320141-3",
+      "revision": 1,
+      "letter": "Ç",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Söyüncü' olan futbolcunun tam adı?",
+      "answer": "Çağlar Söyüncü",
+      "acceptedAnswers": [
+        "CAGLARSOYUNCU"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 320141,
+        "name": "Çağlar Söyüncü",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Çağlar Söyüncü · Türkiye. Bu soruda istenen cevap: Çağlar Söyüncü."
+    },
+    {
+      "id": "pa-p29403-3",
+      "revision": 1,
+      "letter": "Ç",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Mehmet …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çoğum",
+      "acceptedAnswers": [
+        "COGUM"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 29403,
+        "name": "Mehmet Çoğum",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mehmet Çoğum · Türkiye. Bu soruda istenen cevap: Çoğum."
+    },
+    {
+      "id": "pa-p21680-3",
+      "revision": 1,
+      "letter": "Ç",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Önder …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çengel",
+      "acceptedAnswers": [
+        "CENGEL"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 21680,
+        "name": "Önder Çengel",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Önder Çengel · Türkiye. Bu soruda istenen cevap: Çengel."
+    },
+    {
+      "id": "pa-p28396-4",
+      "revision": 1,
+      "letter": "D",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Bosnia-Herzegovina. 'Edin …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Dzeko",
+      "acceptedAnswers": [
+        "DZEKO"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 28396,
+        "name": "Edin Dzeko",
+        "country": "Bosnia-Herzegovina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Edin Dzeko · Bosnia-Herzegovina. Bu soruda istenen cevap: Dzeko."
+    },
+    {
+      "id": "pa-p36139-4",
+      "revision": 1,
+      "letter": "D",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Sırbistan. Adının devamı 'Tadić' olan futbolcunun tam adı?",
+      "answer": "Dušan Tadić",
+      "acceptedAnswers": [
+        "DUSANTADIC"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 36139,
+        "name": "Dušan Tadić",
+        "country": "Serbia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Dušan Tadić · Sırbistan. Bu soruda istenen cevap: Dušan Tadić."
+    },
+    {
+      "id": "pa-p56416-4",
+      "revision": 1,
+      "letter": "D",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. Adının devamı 'Mertens' olan futbolcunun tam adı?",
+      "answer": "Dries Mertens",
+      "acceptedAnswers": [
+        "DRIESMERTENS"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 56416,
+        "name": "Dries Mertens",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Dries Mertens · Belçika. Bu soruda istenen cevap: Dries Mertens."
+    },
+    {
+      "id": "pa-p59016-4",
+      "revision": 1,
+      "letter": "D",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Avusturya. Adının devamı 'Alaba' olan futbolcunun tam adı?",
+      "answer": "David Alaba",
+      "acceptedAnswers": [
+        "DAVIDALABA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 59016,
+        "name": "David Alaba",
+        "country": "Austria",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "David Alaba · Avusturya. Bu soruda istenen cevap: David Alaba."
+    },
+    {
+      "id": "pa-p139208-4",
+      "revision": 1,
+      "letter": "D",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hollanda. 'Virgil van …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Dijk",
+      "acceptedAnswers": [
+        "DIJK"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 139208,
+        "name": "Virgil van Dijk",
+        "country": "Netherlands",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Virgil van Dijk · Hollanda. Bu soruda istenen cevap: Dijk."
+    },
+    {
+      "id": "pa-p44779-4",
+      "revision": 1,
+      "letter": "D",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. Adının devamı 'Costa' olan futbolcunun tam adı?",
+      "answer": "Diego Costa",
+      "acceptedAnswers": [
+        "DIEGOCOSTA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 44779,
+        "name": "Diego Costa",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Diego Costa · İspanya. Bu soruda istenen cevap: Diego Costa."
+    },
+    {
+      "id": "pa-p28396-5",
+      "revision": 1,
+      "letter": "E",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Bosnia-Herzegovina. Adının devamı 'Dzeko' olan futbolcunun tam adı?",
+      "answer": "Edin Dzeko",
+      "acceptedAnswers": [
+        "EDINDZEKO"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 28396,
+        "name": "Edin Dzeko",
+        "country": "Bosnia-Herzegovina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Edin Dzeko · Bosnia-Herzegovina. Bu soruda istenen cevap: Edin Dzeko."
+    },
+    {
+      "id": "pa-p69633-5",
+      "revision": 1,
+      "letter": "E",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Danimarka. 'Christian …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Eriksen",
+      "acceptedAnswers": [
+        "ERIKSEN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 69633,
+        "name": "Christian Eriksen",
+        "country": "Denmark",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Christian Eriksen · Danimarka. Bu soruda istenen cevap: Eriksen."
+    },
+    {
+      "id": "pa-p48280-5",
+      "revision": 1,
+      "letter": "E",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Uruguay. Adının devamı 'Cavani' olan futbolcunun tam adı?",
+      "answer": "Edinson Cavani",
+      "acceptedAnswers": [
+        "EDINSONCAVANI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 48280,
+        "name": "Edinson Cavani",
+        "country": "Uruguay",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Edinson Cavani · Uruguay. Bu soruda istenen cevap: Edinson Cavani."
+    },
+    {
+      "id": "pa-p93935-5",
+      "revision": 1,
+      "letter": "E",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Sergio …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Escudero",
+      "acceptedAnswers": [
+        "ESCUDERO"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 93935,
+        "name": "Sergio Escudero",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Sergio Escudero · İspanya. Bu soruda istenen cevap: Escudero."
+    },
+    {
+      "id": "pa-p119296-5",
+      "revision": 1,
+      "letter": "E",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. Adının devamı 'Can' olan futbolcunun tam adı?",
+      "answer": "Emre Can",
+      "acceptedAnswers": [
+        "EMRECAN"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 119296,
+        "name": "Emre Can",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Emre Can · Almanya. Bu soruda istenen cevap: Emre Can."
+    },
+    {
+      "id": "pa-p45660-5",
+      "revision": 1,
+      "letter": "E",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Kamerun. Adının devamı 'Choupo-Moting' olan futbolcunun tam adı?",
+      "answer": "Eric-Maxim Choupo-Moting",
+      "acceptedAnswers": [
+        "ERICMAXIMCHOUPOMOTING"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 45660,
+        "name": "Eric-Maxim Choupo-Moting",
+        "country": "Cameroon",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Eric-Maxim Choupo-Moting · Kamerun. Bu soruda istenen cevap: Eric-Maxim Choupo-Moting."
+    },
+    {
+      "id": "pa-p240306-6",
+      "revision": 1,
+      "letter": "F",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. 'Bruno …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Fernandes",
+      "acceptedAnswers": [
+        "FERNANDES"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 240306,
+        "name": "Bruno Fernandes",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Bruno Fernandes · Portekiz. Bu soruda istenen cevap: Fernandes."
+    },
+    {
+      "id": "pa-p8806-6",
+      "revision": 1,
+      "letter": "F",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Cesc …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Fàbregas",
+      "acceptedAnswers": [
+        "FABREGAS"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 8806,
+        "name": "Cesc Fàbregas",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Cesc Fàbregas · İspanya. Bu soruda istenen cevap: Fàbregas."
+    },
+    {
+      "id": "pa-p22068-6",
+      "revision": 1,
+      "letter": "F",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Ribéry' olan futbolcunun tam adı?",
+      "answer": "Franck Ribéry",
+      "acceptedAnswers": [
+        "FRANCKRIBERY"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 22068,
+        "name": "Franck Ribéry",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Franck Ribéry · Fransa. Bu soruda istenen cevap: Franck Ribéry."
+    },
+    {
+      "id": "pa-p7767-6",
+      "revision": 1,
+      "letter": "F",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. Adının devamı 'Torres' olan futbolcunun tam adı?",
+      "answer": "Fernando Torres",
+      "acceptedAnswers": [
+        "FERNANDOTORRES"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 7767,
+        "name": "Fernando Torres",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Fernando Torres · İspanya. Bu soruda istenen cevap: Fernando Torres."
+    },
+    {
+      "id": "pa-p131789-6",
+      "revision": 1,
+      "letter": "F",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Brezilya. 'Roberto …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Firmino",
+      "acceptedAnswers": [
+        "FIRMINO"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 131789,
+        "name": "Roberto Firmino",
+        "country": "Brazil",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Roberto Firmino · Brezilya. Bu soruda istenen cevap: Firmino."
+    },
+    {
+      "id": "pa-p161011-6",
+      "revision": 1,
+      "letter": "F",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Sırbistan. Adının devamı 'Kostić' olan futbolcunun tam adı?",
+      "answer": "Filip Kostić",
+      "acceptedAnswers": [
+        "FILIPKOSTIC"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 161011,
+        "name": "Filip Kostić",
+        "country": "Serbia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Filip Kostić · Sırbistan. Bu soruda istenen cevap: Filip Kostić."
+    },
+    {
+      "id": "pa-p125781-7",
+      "revision": 1,
+      "letter": "G",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Antoine …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Griezmann",
+      "acceptedAnswers": [
+        "GRIEZMANN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 125781,
+        "name": "Antoine Griezmann",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Antoine Griezmann · Fransa. Bu soruda istenen cevap: Griezmann."
+    },
+    {
+      "id": "pa-p82442-7",
+      "revision": 1,
+      "letter": "G",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Olivier …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Giroud",
+      "acceptedAnswers": [
+        "GIROUD"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 82442,
+        "name": "Olivier Giroud",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Olivier Giroud · Fransa. Bu soruda istenen cevap: Giroud."
+    },
+    {
+      "id": "pa-p53622-7",
+      "revision": 1,
+      "letter": "G",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'İlkay …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Gündoğan",
+      "acceptedAnswers": [
+        "GUNDOGAN"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 53622,
+        "name": "İlkay Gündoğan",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İlkay Gündoğan · Almanya. Bu soruda istenen cevap: Gündoğan."
+    },
+    {
+      "id": "pa-p39153-7",
+      "revision": 1,
+      "letter": "G",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. Adının devamı 'Higuaín' olan futbolcunun tam adı?",
+      "answer": "Gonzalo Higuaín",
+      "acceptedAnswers": [
+        "GONZALOHIGUAIN"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 39153,
+        "name": "Gonzalo Higuaín",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Gonzalo Higuaín · Arjantin. Bu soruda istenen cevap: Gonzalo Higuaín."
+    },
+    {
+      "id": "pa-p27511-7",
+      "revision": 1,
+      "letter": "G",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. Adının devamı 'Cahill' olan futbolcunun tam adı?",
+      "answer": "Gary Cahill",
+      "acceptedAnswers": [
+        "GARYCAHILL"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 27511,
+        "name": "Gary Cahill",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Gary Cahill · İngiltere. Bu soruda istenen cevap: Gary Cahill."
+    },
+    {
+      "id": "pa-p111455-7",
+      "revision": 1,
+      "letter": "G",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İsviçre. Adının devamı 'Xhaka' olan futbolcunun tam adı?",
+      "answer": "Granit Xhaka",
+      "acceptedAnswers": [
+        "GRANITXHAKA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 111455,
+        "name": "Granit Xhaka",
+        "country": "Switzerland",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Granit Xhaka · İsviçre. Bu soruda istenen cevap: Granit Xhaka."
+    },
+    {
+      "id": "pa-p53622-8",
+      "revision": 1,
+      "letter": "Ğ",
+      "rule": "contains",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'İlkay …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Gündoğan",
+      "acceptedAnswers": [
+        "GUNDOGAN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 53622,
+        "name": "İlkay Gündoğan",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İlkay Gündoğan · Almanya. Bu soruda istenen cevap: Gündoğan."
+    },
+    {
+      "id": "pa-p126414-8",
+      "revision": 1,
+      "letter": "Ğ",
+      "rule": "contains",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Hakan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çalhanoğlu",
+      "acceptedAnswers": [
+        "CALHANOGLU"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 126414,
+        "name": "Hakan Çalhanoğlu",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hakan Çalhanoğlu · Türkiye. Bu soruda istenen cevap: Çalhanoğlu."
+    },
+    {
+      "id": "pa-p382528-8",
+      "revision": 1,
+      "letter": "Ğ",
+      "rule": "contains",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Kerem …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Aktürkoğlu",
+      "acceptedAnswers": [
+        "AKTURKOGLU"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 382528,
+        "name": "Kerem Aktürkoğlu",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Kerem Aktürkoğlu · Türkiye. Bu soruda istenen cevap: Aktürkoğlu."
+    },
+    {
+      "id": "pa-p3703-8",
+      "revision": 1,
+      "letter": "Ğ",
+      "rule": "contains",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Tugay …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Kerimoğlu",
+      "acceptedAnswers": [
+        "KERIMOGLU"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3703,
+        "name": "Tugay Kerimoğlu",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Tugay Kerimoğlu · Türkiye. Bu soruda istenen cevap: Kerimoğlu."
+    },
+    {
+      "id": "pa-p4752-8",
+      "revision": 1,
+      "letter": "Ğ",
+      "rule": "contains",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Oktay …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Derelioğlu",
+      "acceptedAnswers": [
+        "DERELIOGLU"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 4752,
+        "name": "Oktay Derelioğlu",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Oktay Derelioğlu · Türkiye. Bu soruda istenen cevap: Derelioğlu."
+    },
+    {
+      "id": "pa-p320141-8",
+      "revision": 1,
+      "letter": "Ğ",
+      "rule": "contains",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. '… Söyüncü' adlı futbolcunun eksik isim parçası?",
+      "answer": "Çağlar",
+      "acceptedAnswers": [
+        "CAGLAR"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 320141,
+        "name": "Çağlar Söyüncü",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Çağlar Söyüncü · Türkiye. Bu soruda istenen cevap: Çağlar."
+    },
+    {
+      "id": "pa-p132098-9",
+      "revision": 1,
+      "letter": "H",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. Adının devamı 'Kane' olan futbolcunun tam adı?",
+      "answer": "Harry Kane",
+      "acceptedAnswers": [
+        "HARRYKANE"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 132098,
+        "name": "Harry Kane",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Harry Kane · İngiltere. Bu soruda istenen cevap: Harry Kane."
+    },
+    {
+      "id": "pa-p55735-9",
+      "revision": 1,
+      "letter": "H",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Armenia. Adının devamı 'Mkhitaryan' olan futbolcunun tam adı?",
+      "answer": "Henrikh Mkhitaryan",
+      "acceptedAnswers": [
+        "HENRIKHMKHITARYAN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 55735,
+        "name": "Henrikh Mkhitaryan",
+        "country": "Armenia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Henrikh Mkhitaryan · Armenia. Bu soruda istenen cevap: Henrikh Mkhitaryan."
+    },
+    {
+      "id": "pa-p126414-9",
+      "revision": 1,
+      "letter": "H",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Çalhanoğlu' olan futbolcunun tam adı?",
+      "answer": "Hakan Çalhanoğlu",
+      "acceptedAnswers": [
+        "HAKANCALHANOGLU"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 126414,
+        "name": "Hakan Çalhanoğlu",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hakan Çalhanoğlu · Türkiye. Bu soruda istenen cevap: Hakan Çalhanoğlu."
+    },
+    {
+      "id": "pa-p39153-9",
+      "revision": 1,
+      "letter": "H",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. 'Gonzalo …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Higuaín",
+      "acceptedAnswers": [
+        "HIGUAIN"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 39153,
+        "name": "Gonzalo Higuaín",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Gonzalo Higuaín · Arjantin. Bu soruda istenen cevap: Higuaín."
+    },
+    {
+      "id": "pa-p61651-9",
+      "revision": 1,
+      "letter": "H",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. 'Jordan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Henderson",
+      "acceptedAnswers": [
+        "HENDERSON"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 61651,
+        "name": "Jordan Henderson",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Jordan Henderson · İngiltere. Bu soruda istenen cevap: Henderson."
+    },
+    {
+      "id": "pa-p40204-9",
+      "revision": 1,
+      "letter": "H",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. 'Joe …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Hart",
+      "acceptedAnswers": [
+        "HART"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 40204,
+        "name": "Joe Hart",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Joe Hart · İngiltere. Bu soruda istenen cevap: Hart."
+    },
+    {
+      "id": "pa-p32467-10",
+      "revision": 1,
+      "letter": "I",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. Adının devamı 'Rakitic' olan futbolcunun tam adı?",
+      "answer": "Ivan Rakitic",
+      "acceptedAnswers": [
+        "IVANRAKITIC"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 32467,
+        "name": "Ivan Rakitic",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ivan Rakitic · Hırvatistan. Bu soruda istenen cevap: Ivan Rakitic."
+    },
+    {
+      "id": "pa-p42460-10",
+      "revision": 1,
+      "letter": "I",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. Adının devamı 'Perišić' olan futbolcunun tam adı?",
+      "answer": "Ivan Perišić",
+      "acceptedAnswers": [
+        "IVANPERISIC"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 42460,
+        "name": "Ivan Perišić",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ivan Perišić · Hırvatistan. Bu soruda istenen cevap: Ivan Perišić."
+    },
+    {
+      "id": "pa-p105521-10",
+      "revision": 1,
+      "letter": "I",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İtalya. 'Ciro …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Immobile",
+      "acceptedAnswers": [
+        "IMMOBILE"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 105521,
+        "name": "Ciro Immobile",
+        "country": "Italy",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ciro Immobile · İtalya. Bu soruda istenen cevap: Immobile."
+    },
+    {
+      "id": "pa-p126665-10",
+      "revision": 1,
+      "letter": "I",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Senegal. Adının devamı 'Gueye' olan futbolcunun tam adı?",
+      "answer": "Idrissa Gueye",
+      "acceptedAnswers": [
+        "IDRISSAGUEYE"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 126665,
+        "name": "Idrissa Gueye",
+        "country": "Senegal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Idrissa Gueye · Senegal. Bu soruda istenen cevap: Idrissa Gueye."
+    },
+    {
+      "id": "pa-p3455-10",
+      "revision": 1,
+      "letter": "I",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İsveç. 'Zlatan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ibrahimović",
+      "acceptedAnswers": [
+        "IBRAHIMOVIC"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3455,
+        "name": "Zlatan Ibrahimović",
+        "country": "Sweden",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Zlatan Ibrahimović · İsveç. Bu soruda istenen cevap: Ibrahimović."
+    },
+    {
+      "id": "pa-p3979-10",
+      "revision": 1,
+      "letter": "I",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. Adının devamı 'Casillas' olan futbolcunun tam adı?",
+      "answer": "Iker Casillas",
+      "acceptedAnswers": [
+        "IKERCASILLAS"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3979,
+        "name": "Iker Casillas",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Iker Casillas · İspanya. Bu soruda istenen cevap: Iker Casillas."
+    },
+    {
+      "id": "pa-p53622-11",
+      "revision": 1,
+      "letter": "İ",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. Adının devamı 'Gündoğan' olan futbolcunun tam adı?",
+      "answer": "İlkay Gündoğan",
+      "acceptedAnswers": [
+        "ILKAYGUNDOGAN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 53622,
+        "name": "İlkay Gündoğan",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İlkay Gündoğan · Almanya. Bu soruda istenen cevap: İlkay Gündoğan."
+    },
+    {
+      "id": "pa-p216603-11",
+      "revision": 1,
+      "letter": "İ",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Can Kahveci' olan futbolcunun tam adı?",
+      "answer": "İrfan Can Kahveci",
+      "acceptedAnswers": [
+        "IRFANCANKAHVECI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 216603,
+        "name": "İrfan Can Kahveci",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İrfan Can Kahveci · Türkiye. Bu soruda istenen cevap: İrfan Can Kahveci."
+    },
+    {
+      "id": "pa-p6875-11",
+      "revision": 1,
+      "letter": "İ",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Mansız' olan futbolcunun tam adı?",
+      "answer": "İlhan Mansız",
+      "acceptedAnswers": [
+        "ILHANMANSIZ"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 6875,
+        "name": "İlhan Mansız",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İlhan Mansız · Türkiye. Bu soruda istenen cevap: İlhan Mansız."
+    },
+    {
+      "id": "pa-p613725-11",
+      "revision": 1,
+      "letter": "İ",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Yüksek' olan futbolcunun tam adı?",
+      "answer": "İsmail Yüksek",
+      "acceptedAnswers": [
+        "ISMAILYUKSEK"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 613725,
+        "name": "İsmail Yüksek",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İsmail Yüksek · Türkiye. Bu soruda istenen cevap: İsmail Yüksek."
+    },
+    {
+      "id": "pa-p7044-11",
+      "revision": 1,
+      "letter": "İ",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Kahraman' olan futbolcunun tam adı?",
+      "answer": "İlyas Kahraman",
+      "acceptedAnswers": [
+        "ILYASKAHRAMAN"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 7044,
+        "name": "İlyas Kahraman",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İlyas Kahraman · Türkiye. Bu soruda istenen cevap: İlyas Kahraman."
+    },
+    {
+      "id": "pa-p8707-11",
+      "revision": 1,
+      "letter": "İ",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Erbay' olan futbolcunun tam adı?",
+      "answer": "İlker Erbay",
+      "acceptedAnswers": [
+        "ILKERERBAY"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 8707,
+        "name": "İlker Erbay",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "İlker Erbay · Türkiye. Bu soruda istenen cevap: İlker Erbay."
+    },
+    {
+      "id": "pa-p91970-12",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Kolombiya. Adının devamı 'Cuadrado' olan futbolcunun tam adı?",
+      "answer": "Juan Cuadrado",
+      "acceptedAnswers": [
+        "JUANCUADRADO"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 91970,
+        "name": "Juan Cuadrado",
+        "country": "Colombia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Juan Cuadrado · Kolombiya. Bu soruda istenen cevap: Juan Cuadrado."
+    },
+    {
+      "id": "pa-p29364-12",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. Adının devamı 'Moutinho' olan futbolcunun tam adı?",
+      "answer": "João Moutinho",
+      "acceptedAnswers": [
+        "JOAOMOUTINHO"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 29364,
+        "name": "João Moutinho",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "João Moutinho · Portekiz. Bu soruda istenen cevap: João Moutinho."
+    },
+    {
+      "id": "pa-p161056-12",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. Adının devamı 'Kimmich' olan futbolcunun tam adı?",
+      "answer": "Joshua Kimmich",
+      "acceptedAnswers": [
+        "JOSHUAKIMMICH"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 161056,
+        "name": "Joshua Kimmich",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Joshua Kimmich · Almanya. Bu soruda istenen cevap: Joshua Kimmich."
+    },
+    {
+      "id": "pa-p61651-12",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. Adının devamı 'Henderson' olan futbolcunun tam adı?",
+      "answer": "Jordan Henderson",
+      "acceptedAnswers": [
+        "JORDANHENDERSON"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 61651,
+        "name": "Jordan Henderson",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Jordan Henderson · İngiltere. Bu soruda istenen cevap: Jordan Henderson."
+    },
+    {
+      "id": "pa-p72522-12",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hollanda. 'Luuk de …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Jong",
+      "acceptedAnswers": [
+        "JONG"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 72522,
+        "name": "Luuk de Jong",
+        "country": "Netherlands",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Luuk de Jong · Hollanda. Bu soruda istenen cevap: Jong."
+    },
+    {
+      "id": "pa-p26485-12",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. Adının devamı 'Boateng' olan futbolcunun tam adı?",
+      "answer": "Jérôme Boateng",
+      "acceptedAnswers": [
+        "JEROMEBOATENG"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 26485,
+        "name": "Jérôme Boateng",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Jérôme Boateng · Almanya. Bu soruda istenen cevap: Jérôme Boateng."
+    },
+    {
+      "id": "pa-p88755-13",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. Adının devamı 'De Bruyne' olan futbolcunun tam adı?",
+      "answer": "Kevin De Bruyne",
+      "acceptedAnswers": [
+        "KEVINDEBRUYNE"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 88755,
+        "name": "Kevin De Bruyne",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Kevin De Bruyne · Belçika. Bu soruda istenen cevap: Kevin De Bruyne."
+    },
+    {
+      "id": "pa-p132098-13",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. 'Harry …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Kane",
+      "acceptedAnswers": [
+        "KANE"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 132098,
+        "name": "Harry Kane",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Harry Kane · İngiltere. Bu soruda istenen cevap: Kane."
+    },
+    {
+      "id": "pa-p342229-13",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Mbappé' olan futbolcunun tam adı?",
+      "answer": "Kylian Mbappé",
+      "acceptedAnswers": [
+        "KYLIANMBAPPE"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 342229,
+        "name": "Kylian Mbappé",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Kylian Mbappé · Fransa. Bu soruda istenen cevap: Kylian Mbappé."
+    },
+    {
+      "id": "pa-p161056-13",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'Joshua …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Kimmich",
+      "acceptedAnswers": [
+        "KIMMICH"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 161056,
+        "name": "Joshua Kimmich",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Joshua Kimmich · Almanya. Bu soruda istenen cevap: Kimmich."
+    },
+    {
+      "id": "pa-p18922-13",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Benzema' olan futbolcunun tam adı?",
+      "answer": "Karim Benzema",
+      "acceptedAnswers": [
+        "KARIMBENZEMA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 18922,
+        "name": "Karim Benzema",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Karim Benzema · Fransa. Bu soruda istenen cevap: Karim Benzema."
+    },
+    {
+      "id": "pa-p51471-13",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. 'Mateo …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Kovacic",
+      "acceptedAnswers": [
+        "KOVACIC"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 51471,
+        "name": "Mateo Kovacic",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mateo Kovacic · Hırvatistan. Bu soruda istenen cevap: Kovacic."
+    },
+    {
+      "id": "pa-p38253-14",
+      "revision": 1,
+      "letter": "L",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Polonya. 'Robert …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Lewandowski",
+      "acceptedAnswers": [
+        "LEWANDOWSKI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 38253,
+        "name": "Robert Lewandowski",
+        "country": "Poland",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Robert Lewandowski · Polonya. Bu soruda istenen cevap: Lewandowski."
+    },
+    {
+      "id": "pa-p28003-14",
+      "revision": 1,
+      "letter": "L",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. Adının devamı 'Messi' olan futbolcunun tam adı?",
+      "answer": "Lionel Messi",
+      "acceptedAnswers": [
+        "LIONELMESSI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 28003,
+        "name": "Lionel Messi",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Lionel Messi · Arjantin. Bu soruda istenen cevap: Lionel Messi."
+    },
+    {
+      "id": "pa-p27992-14",
+      "revision": 1,
+      "letter": "L",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. Adının devamı 'Modrić' olan futbolcunun tam adı?",
+      "answer": "Luka Modrić",
+      "acceptedAnswers": [
+        "LUKAMODRIC"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 27992,
+        "name": "Luka Modrić",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Luka Modrić · Hırvatistan. Bu soruda istenen cevap: Luka Modrić."
+    },
+    {
+      "id": "pa-p96341-14",
+      "revision": 1,
+      "letter": "L",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. 'Romelu …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Lukaku",
+      "acceptedAnswers": [
+        "LUKAKU"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 96341,
+        "name": "Romelu Lukaku",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Romelu Lukaku · Belçika. Bu soruda istenen cevap: Lukaku."
+    },
+    {
+      "id": "pa-p44352-14",
+      "revision": 1,
+      "letter": "L",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Uruguay. Adının devamı 'Suárez' olan futbolcunun tam adı?",
+      "answer": "Luis Suárez",
+      "acceptedAnswers": [
+        "LUISSUAREZ"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 44352,
+        "name": "Luis Suárez",
+        "country": "Uruguay",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Luis Suárez · Uruguay. Bu soruda istenen cevap: Luis Suárez."
+    },
+    {
+      "id": "pa-p39983-14",
+      "revision": 1,
+      "letter": "L",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İtalya. Adının devamı 'Bonucci' olan futbolcunun tam adı?",
+      "answer": "Leonardo Bonucci",
+      "acceptedAnswers": [
+        "LEONARDOBONUCCI"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 39983,
+        "name": "Leonardo Bonucci",
+        "country": "Italy",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Leonardo Bonucci · İtalya. Bu soruda istenen cevap: Leonardo Bonucci."
+    },
+    {
+      "id": "pa-p148455-15",
+      "revision": 1,
+      "letter": "M",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Mısır. Adının devamı 'Salah' olan futbolcunun tam adı?",
+      "answer": "Mohamed Salah",
+      "acceptedAnswers": [
+        "MOHAMEDSALAH"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 148455,
+        "name": "Mohamed Salah",
+        "country": "Egypt",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mohamed Salah · Mısır. Bu soruda istenen cevap: Mohamed Salah."
+    },
+    {
+      "id": "pa-p28003-15",
+      "revision": 1,
+      "letter": "M",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. 'Lionel …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Messi",
+      "acceptedAnswers": [
+        "MESSI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 28003,
+        "name": "Lionel Messi",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Lionel Messi · Arjantin. Bu soruda istenen cevap: Messi."
+    },
+    {
+      "id": "pa-p45320-15",
+      "revision": 1,
+      "letter": "M",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. 'Ángel Di …' adlı futbolcunun eksik isim parçası?",
+      "answer": "María",
+      "acceptedAnswers": [
+        "MARIA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 45320,
+        "name": "Ángel Di María",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ángel Di María · Arjantin. Bu soruda istenen cevap: María."
+    },
+    {
+      "id": "pa-p27992-15",
+      "revision": 1,
+      "letter": "M",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. 'Luka …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Modrić",
+      "acceptedAnswers": [
+        "MODRIC"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 27992,
+        "name": "Luka Modrić",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Luka Modrić · Hırvatistan. Bu soruda istenen cevap: Modrić."
+    },
+    {
+      "id": "pa-p58358-15",
+      "revision": 1,
+      "letter": "M",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'Thomas …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Müller",
+      "acceptedAnswers": [
+        "MULLER"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 58358,
+        "name": "Thomas Müller",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Thomas Müller · Almanya. Bu soruda istenen cevap: Müller."
+    },
+    {
+      "id": "pa-p128223-15",
+      "revision": 1,
+      "letter": "M",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Álvaro …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Morata",
+      "acceptedAnswers": [
+        "MORATA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 128223,
+        "name": "Álvaro Morata",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Álvaro Morata · İspanya. Bu soruda istenen cevap: Morata."
+    },
+    {
+      "id": "pa-p54781-16",
+      "revision": 1,
+      "letter": "N",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. Adının devamı 'Otamendi' olan futbolcunun tam adı?",
+      "answer": "Nicolás Otamendi",
+      "acceptedAnswers": [
+        "NICOLASOTAMENDI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 54781,
+        "name": "Nicolás Otamendi",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Nicolás Otamendi · Arjantin. Bu soruda istenen cevap: Nicolás Otamendi."
+    },
+    {
+      "id": "pa-p73734-16",
+      "revision": 1,
+      "letter": "N",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Steven …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Nzonzi",
+      "acceptedAnswers": [
+        "NZONZI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 73734,
+        "name": "Steven Nzonzi",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Steven Nzonzi · Fransa. Bu soruda istenen cevap: Nzonzi."
+    },
+    {
+      "id": "pa-p17259-16",
+      "revision": 1,
+      "letter": "N",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'Manuel …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Neuer",
+      "acceptedAnswers": [
+        "NEUER"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 17259,
+        "name": "Manuel Neuer",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Manuel Neuer · Almanya. Bu soruda istenen cevap: Neuer."
+    },
+    {
+      "id": "pa-p18644-16",
+      "revision": 1,
+      "letter": "N",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Álvaro …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Negredo",
+      "acceptedAnswers": [
+        "NEGREDO"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 18644,
+        "name": "Álvaro Negredo",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Álvaro Negredo · İspanya. Bu soruda istenen cevap: Negredo."
+    },
+    {
+      "id": "pa-p74683-16",
+      "revision": 1,
+      "letter": "N",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Sırbistan. Adının devamı 'Matić' olan futbolcunun tam adı?",
+      "answer": "Nemanja Matić",
+      "acceptedAnswers": [
+        "NEMANJAMATIC"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 74683,
+        "name": "Nemanja Matić",
+        "country": "Serbia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Nemanja Matić · Sırbistan. Bu soruda istenen cevap: Nemanja Matić."
+    },
+    {
+      "id": "pa-p255942-16",
+      "revision": 1,
+      "letter": "N",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İtalya. Adının devamı 'Barella' olan futbolcunun tam adı?",
+      "answer": "Nicolò Barella",
+      "acceptedAnswers": [
+        "NICOLOBARELLA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 255942,
+        "name": "Nicolò Barella",
+        "country": "Italy",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Nicolò Barella · İtalya. Bu soruda istenen cevap: Nicolò Barella."
+    },
+    {
+      "id": "pa-p82442-17",
+      "revision": 1,
+      "letter": "O",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Giroud' olan futbolcunun tam adı?",
+      "answer": "Olivier Giroud",
+      "acceptedAnswers": [
+        "OLIVIERGIROUD"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 82442,
+        "name": "Olivier Giroud",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Olivier Giroud · Fransa. Bu soruda istenen cevap: Olivier Giroud."
+    },
+    {
+      "id": "pa-p54781-17",
+      "revision": 1,
+      "letter": "O",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Arjantin. 'Nicolás …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Otamendi",
+      "acceptedAnswers": [
+        "OTAMENDI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 54781,
+        "name": "Nicolás Otamendi",
+        "country": "Argentina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Nicolás Otamendi · Arjantin. Bu soruda istenen cevap: Otamendi."
+    },
+    {
+      "id": "pa-p121483-17",
+      "revision": 1,
+      "letter": "O",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Slovenya. 'Jan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Oblak",
+      "acceptedAnswers": [
+        "OBLAK"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 121483,
+        "name": "Jan Oblak",
+        "country": "Slovenia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Jan Oblak · Slovenya. Bu soruda istenen cevap: Oblak."
+    },
+    {
+      "id": "pa-p288230-17",
+      "revision": 1,
+      "letter": "O",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Dembélé' olan futbolcunun tam adı?",
+      "answer": "Ousmane Dembélé",
+      "acceptedAnswers": [
+        "OUSMANEDEMBELE"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 288230,
+        "name": "Ousmane Dembélé",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ousmane Dembélé · Fransa. Bu soruda istenen cevap: Ousmane Dembélé."
+    },
+    {
+      "id": "pa-p148368-17",
+      "revision": 1,
+      "letter": "O",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. 'Divock …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Origi",
+      "acceptedAnswers": [
+        "ORIGI"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 148368,
+        "name": "Divock Origi",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Divock Origi · Belçika. Bu soruda istenen cevap: Origi."
+    },
+    {
+      "id": "pa-p193592-17",
+      "revision": 1,
+      "letter": "O",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İsveç. 'Kristoffer …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Olsson",
+      "acceptedAnswers": [
+        "OLSSON"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 193592,
+        "name": "Kristoffer Olsson",
+        "country": "Sweden",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Kristoffer Olsson · İsveç. Bu soruda istenen cevap: Olsson."
+    },
+    {
+      "id": "pa-p35664-18",
+      "revision": 1,
+      "letter": "Ö",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'Mesut …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Özil",
+      "acceptedAnswers": [
+        "OZIL"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 35664,
+        "name": "Mesut Özil",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mesut Özil · Almanya. Bu soruda istenen cevap: Özil."
+    },
+    {
+      "id": "pa-p43512-18",
+      "revision": 1,
+      "letter": "Ö",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Toprak' olan futbolcunun tam adı?",
+      "answer": "Ömer Toprak",
+      "acceptedAnswers": [
+        "OMERTOPRAK"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 43512,
+        "name": "Ömer Toprak",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ömer Toprak · Türkiye. Bu soruda istenen cevap: Ömer Toprak."
+    },
+    {
+      "id": "pa-p3504-18",
+      "revision": 1,
+      "letter": "Ö",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Alpay …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Özalan",
+      "acceptedAnswers": [
+        "OZALAN"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3504,
+        "name": "Alpay Özalan",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Alpay Özalan · Türkiye. Bu soruda istenen cevap: Özalan."
+    },
+    {
+      "id": "pa-p6933-18",
+      "revision": 1,
+      "letter": "Ö",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Ümit …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Özat",
+      "acceptedAnswers": [
+        "OZAT"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 6933,
+        "name": "Ümit Özat",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ümit Özat · Türkiye. Bu soruda istenen cevap: Özat."
+    },
+    {
+      "id": "pa-p244940-18",
+      "revision": 1,
+      "letter": "Ö",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Salih …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Özcan",
+      "acceptedAnswers": [
+        "OZCAN"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 244940,
+        "name": "Salih Özcan",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Salih Özcan · Türkiye. Bu soruda istenen cevap: Özcan."
+    },
+    {
+      "id": "pa-p31867-18",
+      "revision": 1,
+      "letter": "Ö",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Turkey. 'Yasin …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Öztekin",
+      "acceptedAnswers": [
+        "OZTEKIN"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 31867,
+        "name": "Yasin Öztekin",
+        "country": "Turkey",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Yasin Öztekin · Turkey. Bu soruda istenen cevap: Öztekin."
+    },
+    {
+      "id": "pa-p42460-19",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. 'Ivan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Perišić",
+      "acceptedAnswers": [
+        "PERISIC"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 42460,
+        "name": "Ivan Perišić",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ivan Perišić · Hırvatistan. Bu soruda istenen cevap: Perišić."
+    },
+    {
+      "id": "pa-p58864-19",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Gabon. Adının devamı 'Aubameyang' olan futbolcunun tam adı?",
+      "answer": "Pierre-Emerick Aubameyang",
+      "acceptedAnswers": [
+        "PIERREEMERICKAUBAMEYANG"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 58864,
+        "name": "Pierre-Emerick Aubameyang",
+        "country": "Gabon",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Pierre-Emerick Aubameyang · Gabon. Bu soruda istenen cevap: Pierre-Emerick Aubameyang."
+    },
+    {
+      "id": "pa-p181136-19",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Polonya. Adının devamı 'Zielinski' olan futbolcunun tam adı?",
+      "answer": "Piotr Zielinski",
+      "acceptedAnswers": [
+        "PIOTRZIELINSKI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 181136,
+        "name": "Piotr Zielinski",
+        "country": "Poland",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Piotr Zielinski · Polonya. Bu soruda istenen cevap: Piotr Zielinski."
+    },
+    {
+      "id": "pa-p44162-19",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Bosnia-Herzegovina. 'Miralem …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Pjanić",
+      "acceptedAnswers": [
+        "PJANIC"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 44162,
+        "name": "Miralem Pjanić",
+        "country": "Bosnia-Herzegovina",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Miralem Pjanić · Bosnia-Herzegovina. Bu soruda istenen cevap: Pjanić."
+    },
+    {
+      "id": "pa-p205938-19",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. 'Mario …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Pašalić",
+      "acceptedAnswers": [
+        "PASALIC"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 205938,
+        "name": "Mario Pašalić",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mario Pašalić · Hırvatistan. Bu soruda istenen cevap: Pašalić."
+    },
+    {
+      "id": "pa-p34322-19",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Yunanistan. 'Sokratis …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Papastathopoulos",
+      "acceptedAnswers": [
+        "PAPASTATHOPOULOS"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 34322,
+        "name": "Sokratis Papastathopoulos",
+        "country": "Greece",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Sokratis Papastathopoulos · Yunanistan. Bu soruda istenen cevap: Papastathopoulos."
+    },
+    {
+      "id": "pa-p38253-20",
+      "revision": 1,
+      "letter": "R",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Polonya. Adının devamı 'Lewandowski' olan futbolcunun tam adı?",
+      "answer": "Robert Lewandowski",
+      "acceptedAnswers": [
+        "ROBERTLEWANDOWSKI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 38253,
+        "name": "Robert Lewandowski",
+        "country": "Poland",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Robert Lewandowski · Polonya. Bu soruda istenen cevap: Robert Lewandowski."
+    },
+    {
+      "id": "pa-p8198-20",
+      "revision": 1,
+      "letter": "R",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. 'Cristiano …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ronaldo",
+      "acceptedAnswers": [
+        "RONALDO"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 8198,
+        "name": "Cristiano Ronaldo",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Cristiano Ronaldo · Portekiz. Bu soruda istenen cevap: Ronaldo."
+    },
+    {
+      "id": "pa-p96341-20",
+      "revision": 1,
+      "letter": "R",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. Adının devamı 'Lukaku' olan futbolcunun tam adı?",
+      "answer": "Romelu Lukaku",
+      "acceptedAnswers": [
+        "ROMELULUKAKU"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 96341,
+        "name": "Romelu Lukaku",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Romelu Lukaku · Belçika. Bu soruda istenen cevap: Romelu Lukaku."
+    },
+    {
+      "id": "pa-p32467-20",
+      "revision": 1,
+      "letter": "R",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hırvatistan. 'Ivan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Rakitic",
+      "acceptedAnswers": [
+        "RAKITIC"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 32467,
+        "name": "Ivan Rakitic",
+        "country": "Croatia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ivan Rakitic · Hırvatistan. Bu soruda istenen cevap: Rakitic."
+    },
+    {
+      "id": "pa-p134425-20",
+      "revision": 1,
+      "letter": "R",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. Adının devamı 'Sterling' olan futbolcunun tam adı?",
+      "answer": "Raheem Sterling",
+      "acceptedAnswers": [
+        "RAHEEMSTERLING"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 134425,
+        "name": "Raheem Sterling",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Raheem Sterling · İngiltere. Bu soruda istenen cevap: Raheem Sterling."
+    },
+    {
+      "id": "pa-p25557-20",
+      "revision": 1,
+      "letter": "R",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. 'Sergio …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ramos",
+      "acceptedAnswers": [
+        "RAMOS"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 25557,
+        "name": "Sergio Ramos",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Sergio Ramos · İspanya. Bu soruda istenen cevap: Ramos."
+    },
+    {
+      "id": "pa-p148455-21",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Mısır. 'Mohamed …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Salah",
+      "acceptedAnswers": [
+        "SALAH"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 148455,
+        "name": "Mohamed Salah",
+        "country": "Egypt",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mohamed Salah · Mısır. Bu soruda istenen cevap: Salah."
+    },
+    {
+      "id": "pa-p40433-21",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Şili. 'Alexis …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Sánchez",
+      "acceptedAnswers": [
+        "SANCHEZ"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 40433,
+        "name": "Alexis Sánchez",
+        "country": "Chile",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Alexis Sánchez · Şili. Bu soruda istenen cevap: Sánchez."
+    },
+    {
+      "id": "pa-p44352-21",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Uruguay. 'Luis …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Suárez",
+      "acceptedAnswers": [
+        "SUAREZ"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 44352,
+        "name": "Luis Suárez",
+        "country": "Uruguay",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Luis Suárez · Uruguay. Bu soruda istenen cevap: Suárez."
+    },
+    {
+      "id": "pa-p134425-21",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. 'Raheem …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Sterling",
+      "acceptedAnswers": [
+        "STERLING"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 134425,
+        "name": "Raheem Sterling",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Raheem Sterling · İngiltere. Bu soruda istenen cevap: Sterling."
+    },
+    {
+      "id": "pa-p73734-21",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. Adının devamı 'Nzonzi' olan futbolcunun tam adı?",
+      "answer": "Steven Nzonzi",
+      "acceptedAnswers": [
+        "STEVENNZONZI"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 73734,
+        "name": "Steven Nzonzi",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Steven Nzonzi · Fransa. Bu soruda istenen cevap: Steven Nzonzi."
+    },
+    {
+      "id": "pa-p241641-21",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Portekiz. 'Bernardo …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Silva",
+      "acceptedAnswers": [
+        "SILVA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 241641,
+        "name": "Bernardo Silva",
+        "country": "Portugal",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Bernardo Silva · Portekiz. Bu soruda istenen cevap: Silva."
+    },
+    {
+      "id": "pa-p3363-22",
+      "revision": 1,
+      "letter": "Ş",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Hakan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Şükür",
+      "acceptedAnswers": [
+        "SUKUR"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3363,
+        "name": "Hakan Şükür",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hakan Şükür · Türkiye. Bu soruda istenen cevap: Şükür."
+    },
+    {
+      "id": "pa-p4000000014-22",
+      "revision": 1,
+      "letter": "Ş",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Güneş' olan futbolcunun tam adı?",
+      "answer": "Şenol Güneş",
+      "acceptedAnswers": [
+        "SENOLGUNES"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 4000000014,
+        "name": "Şenol Güneş",
+        "country": "Türkiye",
+        "source": "reviewed-player",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Şenol Güneş · Türkiye. Bu soruda istenen cevap: Şenol Güneş."
+    },
+    {
+      "id": "pa-p4000000016-22",
+      "revision": 1,
+      "letter": "Ş",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Tuncay …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Şanlı",
+      "acceptedAnswers": [
+        "SANLI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 4000000016,
+        "name": "Tuncay Şanlı",
+        "country": "Türkiye",
+        "source": "reviewed-player",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Tuncay Şanlı · Türkiye. Bu soruda istenen cevap: Şanlı."
+    },
+    {
+      "id": "pa-p169873-22",
+      "revision": 1,
+      "letter": "Ş",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Özbayraklı' olan futbolcunun tam adı?",
+      "answer": "Şener Özbayraklı",
+      "acceptedAnswers": [
+        "SENEROZBAYRAKLI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 169873,
+        "name": "Şener Özbayraklı",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Şener Özbayraklı · Türkiye. Bu soruda istenen cevap: Şener Özbayraklı."
+    },
+    {
+      "id": "pa-p514887-22",
+      "revision": 1,
+      "letter": "Ş",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Aral …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Şimşir",
+      "acceptedAnswers": [
+        "SIMSIR"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 514887,
+        "name": "Aral Şimşir",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Aral Şimşir · Türkiye. Bu soruda istenen cevap: Şimşir."
+    },
+    {
+      "id": "pa-p330871-22",
+      "revision": 1,
+      "letter": "Ş",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Muhammed …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Şengezer",
+      "acceptedAnswers": [
+        "SENGEZER"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 330871,
+        "name": "Muhammed Şengezer",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Muhammed Şengezer · Türkiye. Bu soruda istenen cevap: Şengezer."
+    },
+    {
+      "id": "pa-p58358-23",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. Adının devamı 'Müller' olan futbolcunun tam adı?",
+      "answer": "Thomas Müller",
+      "acceptedAnswers": [
+        "THOMASMULLER"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 58358,
+        "name": "Thomas Müller",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Thomas Müller · Almanya. Bu soruda istenen cevap: Thomas Müller."
+    },
+    {
+      "id": "pa-p36139-23",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Sırbistan. 'Dušan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Tadić",
+      "acceptedAnswers": [
+        "TADIC"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 36139,
+        "name": "Dušan Tadić",
+        "country": "Serbia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Dušan Tadić · Sırbistan. Bu soruda istenen cevap: Tadić."
+    },
+    {
+      "id": "pa-p60444-23",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İspanya. Adının devamı 'Alcántara' olan futbolcunun tam adı?",
+      "answer": "Thiago Alcántara",
+      "acceptedAnswers": [
+        "THIAGOALCANTARA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 60444,
+        "name": "Thiago Alcántara",
+        "country": "Spain",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Thiago Alcántara · İspanya. Bu soruda istenen cevap: Thiago Alcántara."
+    },
+    {
+      "id": "pa-p108390-23",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. Adının devamı 'Courtois' olan futbolcunun tam adı?",
+      "answer": "Thibaut Courtois",
+      "acceptedAnswers": [
+        "THIBAUTCOURTOIS"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 108390,
+        "name": "Thibaut Courtois",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Thibaut Courtois · Belçika. Bu soruda istenen cevap: Thibaut Courtois."
+    },
+    {
+      "id": "pa-p29241-23",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Brezilya. Adının devamı 'Silva' olan futbolcunun tam adı?",
+      "answer": "Thiago Silva",
+      "acceptedAnswers": [
+        "THIAGOSILVA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 29241,
+        "name": "Thiago Silva",
+        "country": "Brazil",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Thiago Silva · Brezilya. Bu soruda istenen cevap: Thiago Silva."
+    },
+    {
+      "id": "pa-p249565-23",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. 'Youri …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Tielemans",
+      "acceptedAnswers": [
+        "TIELEMANS"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 249565,
+        "name": "Youri Tielemans",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Youri Tielemans · Belçika. Bu soruda istenen cevap: Tielemans."
+    },
+    {
+      "id": "pa-p20586-24",
+      "revision": 1,
+      "letter": "U",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hollanda. Adının devamı 'Emanuelson' olan futbolcunun tam adı?",
+      "answer": "Urby Emanuelson",
+      "acceptedAnswers": [
+        "URBYEMANUELSON"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 20586,
+        "name": "Urby Emanuelson",
+        "country": "Netherlands",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Urby Emanuelson · Hollanda. Bu soruda istenen cevap: Urby Emanuelson."
+    },
+    {
+      "id": "pa-p112935-24",
+      "revision": 1,
+      "letter": "U",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Almanya. 'Mark …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Uth",
+      "acceptedAnswers": [
+        "UTH"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 112935,
+        "name": "Mark Uth",
+        "country": "Germany",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Mark Uth · Almanya. Bu soruda istenen cevap: Uth."
+    },
+    {
+      "id": "pa-p17323-24",
+      "revision": 1,
+      "letter": "U",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hollanda. Adının devamı 'Yıldırım' olan futbolcunun tam adı?",
+      "answer": "Uğur Yıldırım",
+      "acceptedAnswers": [
+        "UGURYILDIRIM"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 17323,
+        "name": "Uğur Yıldırım",
+        "country": "Netherlands",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Uğur Yıldırım · Hollanda. Bu soruda istenen cevap: Uğur Yıldırım."
+    },
+    {
+      "id": "pa-p54402-24",
+      "revision": 1,
+      "letter": "U",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Bayraktar' olan futbolcunun tam adı?",
+      "answer": "Ufuk Bayraktar",
+      "acceptedAnswers": [
+        "UFUKBAYRAKTAR"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 54402,
+        "name": "Ufuk Bayraktar",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ufuk Bayraktar · Türkiye. Bu soruda istenen cevap: Ufuk Bayraktar."
+    },
+    {
+      "id": "pa-p344695-24",
+      "revision": 1,
+      "letter": "U",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Dayot …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Upamecano",
+      "acceptedAnswers": [
+        "UPAMECANO"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 344695,
+        "name": "Dayot Upamecano",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Dayot Upamecano · Fransa. Bu soruda istenen cevap: Upamecano."
+    },
+    {
+      "id": "pa-p3272-24",
+      "revision": 1,
+      "letter": "U",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İngiltere. 'David …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Unsworth",
+      "acceptedAnswers": [
+        "UNSWORTH"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3272,
+        "name": "David Unsworth",
+        "country": "England",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "David Unsworth · İngiltere. Bu soruda istenen cevap: Unsworth."
+    },
+    {
+      "id": "pa-p341647-25",
+      "revision": 1,
+      "letter": "Ü",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Cengiz …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ünder",
+      "acceptedAnswers": [
+        "UNDER"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 341647,
+        "name": "Cengiz Ünder",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Cengiz Ünder · Türkiye. Bu soruda istenen cevap: Ünder."
+    },
+    {
+      "id": "pa-p251106-25",
+      "revision": 1,
+      "letter": "Ü",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Enes …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ünal",
+      "acceptedAnswers": [
+        "UNAL"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 251106,
+        "name": "Enes Ünal",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Enes Ünal · Türkiye. Bu soruda istenen cevap: Ünal."
+    },
+    {
+      "id": "pa-p3378-25",
+      "revision": 1,
+      "letter": "Ü",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. Adının devamı 'Karan' olan futbolcunun tam adı?",
+      "answer": "Ümit Karan",
+      "acceptedAnswers": [
+        "UMITKARAN"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3378,
+        "name": "Ümit Karan",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ümit Karan · Türkiye. Bu soruda istenen cevap: Ümit Karan."
+    },
+    {
+      "id": "pa-p4000000107-25",
+      "revision": 1,
+      "letter": "Ü",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Turkey. Adının devamı 'Davala' olan futbolcunun tam adı?",
+      "answer": "Ümit Davala",
+      "acceptedAnswers": [
+        "UMITDAVALA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 4000000107,
+        "name": "Ümit Davala",
+        "country": "Turkey",
+        "source": "reviewed-player",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Ümit Davala · Turkey. Bu soruda istenen cevap: Ümit Davala."
+    },
+    {
+      "id": "pa-p8050-25",
+      "revision": 1,
+      "letter": "Ü",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Hakan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ünsal",
+      "acceptedAnswers": [
+        "UNSAL"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 8050,
+        "name": "Hakan Ünsal",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hakan Ünsal · Türkiye. Bu soruda istenen cevap: Ünsal."
+    },
+    {
+      "id": "pa-p440653-25",
+      "revision": 1,
+      "letter": "Ü",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Türkiye. 'Oğulcan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ülgün",
+      "acceptedAnswers": [
+        "ULGUN"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 440653,
+        "name": "Oğulcan Ülgün",
+        "country": "Türkiye",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Oğulcan Ülgün · Türkiye. Bu soruda istenen cevap: Ülgün."
+    },
+    {
+      "id": "pa-p37666-26",
+      "revision": 1,
+      "letter": "V",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Şili. 'Arturo …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Vidal",
+      "acceptedAnswers": [
+        "VIDAL"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 37666,
+        "name": "Arturo Vidal",
+        "country": "Chile",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Arturo Vidal · Şili. Bu soruda istenen cevap: Vidal."
+    },
+    {
+      "id": "pa-p139208-26",
+      "revision": 1,
+      "letter": "V",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Hollanda. 'Virgil … Dijk' adlı futbolcunun eksik isim parçası?",
+      "answer": "van",
+      "acceptedAnswers": [
+        "VAN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 139208,
+        "name": "Virgil van Dijk",
+        "country": "Netherlands",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Virgil van Dijk · Hollanda. Bu soruda istenen cevap: van."
+    },
+    {
+      "id": "pa-p43250-26",
+      "revision": 1,
+      "letter": "V",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. 'Jan …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Vertonghen",
+      "acceptedAnswers": [
+        "VERTONGHEN"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 43250,
+        "name": "Jan Vertonghen",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Jan Vertonghen · Belçika. Bu soruda istenen cevap: Vertonghen."
+    },
+    {
+      "id": "pa-p164770-26",
+      "revision": 1,
+      "letter": "V",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Raphaël …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Varane",
+      "acceptedAnswers": [
+        "VARANE"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 164770,
+        "name": "Raphaël Varane",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Raphaël Varane · Fransa. Bu soruda istenen cevap: Varane."
+    },
+    {
+      "id": "pa-p137576-26",
+      "revision": 1,
+      "letter": "V",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. 'Hans …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Vanaken",
+      "acceptedAnswers": [
+        "VANAKEN"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 137576,
+        "name": "Hans Vanaken",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hans Vanaken · Belçika. Bu soruda istenen cevap: Vanaken."
+    },
+    {
+      "id": "pa-p147487-26",
+      "revision": 1,
+      "letter": "V",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Kamerun. Adının devamı 'Aboubakar' olan futbolcunun tam adı?",
+      "answer": "Vincent Aboubakar",
+      "acceptedAnswers": [
+        "VINCENTABOUBAKAR"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 147487,
+        "name": "Vincent Aboubakar",
+        "country": "Cameroon",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Vincent Aboubakar · Kamerun. Bu soruda istenen cevap: Vincent Aboubakar."
+    },
+    {
+      "id": "pa-p249565-27",
+      "revision": 1,
+      "letter": "Y",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. Adının devamı 'Tielemans' olan futbolcunun tam adı?",
+      "answer": "Youri Tielemans",
+      "acceptedAnswers": [
+        "YOURITIELEMANS"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 249565,
+        "name": "Youri Tielemans",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Youri Tielemans · Belçika. Bu soruda istenen cevap: Youri Tielemans."
+    },
+    {
+      "id": "pa-p42205-27",
+      "revision": 1,
+      "letter": "Y",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İsviçre. Adının devamı 'Sommer' olan futbolcunun tam adı?",
+      "answer": "Yann Sommer",
+      "acceptedAnswers": [
+        "YANNSOMMER"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 42205,
+        "name": "Yann Sommer",
+        "country": "Switzerland",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Yann Sommer · İsviçre. Bu soruda istenen cevap: Yann Sommer."
+    },
+    {
+      "id": "pa-p118022-27",
+      "revision": 1,
+      "letter": "Y",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fas. Adının devamı 'Belhanda' olan futbolcunun tam adı?",
+      "answer": "Younès Belhanda",
+      "acceptedAnswers": [
+        "YOUNESBELHANDA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 118022,
+        "name": "Younès Belhanda",
+        "country": "Morocco",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Younès Belhanda · Fas. Bu soruda istenen cevap: Younès Belhanda."
+    },
+    {
+      "id": "pa-p433049-27",
+      "revision": 1,
+      "letter": "Y",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fas. Adının devamı 'En-Nesyri' olan futbolcunun tam adı?",
+      "answer": "Youssef En-Nesyri",
+      "acceptedAnswers": [
+        "YOUSSEFENNESYRI"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 433049,
+        "name": "Youssef En-Nesyri",
+        "country": "Morocco",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Youssef En-Nesyri · Fas. Bu soruda istenen cevap: Youssef En-Nesyri."
+    },
+    {
+      "id": "pa-p140776-27",
+      "revision": 1,
+      "letter": "Y",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Belçika. Adının devamı 'Carrasco' olan futbolcunun tam adı?",
+      "answer": "Yannick Carrasco",
+      "acceptedAnswers": [
+        "YANNICKCARRASCO"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 140776,
+        "name": "Yannick Carrasco",
+        "country": "Belgium",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Yannick Carrasco · Belçika. Bu soruda istenen cevap: Yannick Carrasco."
+    },
+    {
+      "id": "pa-p146854-27",
+      "revision": 1,
+      "letter": "Y",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fransa. 'Wissam Ben …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Yedder",
+      "acceptedAnswers": [
+        "YEDDER"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 146854,
+        "name": "Wissam Ben Yedder",
+        "country": "France",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Wissam Ben Yedder · Fransa. Bu soruda istenen cevap: Yedder."
+    },
+    {
+      "id": "pa-p181136-28",
+      "revision": 1,
+      "letter": "Z",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Polonya. 'Piotr …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Zielinski",
+      "acceptedAnswers": [
+        "ZIELINSKI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 181136,
+        "name": "Piotr Zielinski",
+        "country": "Poland",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Piotr Zielinski · Polonya. Bu soruda istenen cevap: Zielinski."
+    },
+    {
+      "id": "pa-p217111-28",
+      "revision": 1,
+      "letter": "Z",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Fas. 'Hakim …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Ziyech",
+      "acceptedAnswers": [
+        "ZIYECH"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 217111,
+        "name": "Hakim Ziyech",
+        "country": "Morocco",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Hakim Ziyech · Fas. Bu soruda istenen cevap: Ziyech."
+    },
+    {
+      "id": "pa-p3455-28",
+      "revision": 1,
+      "letter": "Z",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İsveç. Adının devamı 'Ibrahimović' olan futbolcunun tam adı?",
+      "answer": "Zlatan Ibrahimović",
+      "acceptedAnswers": [
+        "ZLATANIBRAHIMOVIC"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 3455,
+        "name": "Zlatan Ibrahimović",
+        "country": "Sweden",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Zlatan Ibrahimović · İsveç. Bu soruda istenen cevap: Zlatan Ibrahimović."
+    },
+    {
+      "id": "pa-p73794-28",
+      "revision": 1,
+      "letter": "Z",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: Kolombiya. 'Duván …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Zapata",
+      "acceptedAnswers": [
+        "ZAPATA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 73794,
+        "name": "Duván Zapata",
+        "country": "Colombia",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Duván Zapata · Kolombiya. Bu soruda istenen cevap: Zapata."
+    },
+    {
+      "id": "pa-p6036-28",
+      "revision": 1,
+      "letter": "Z",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İtalya. 'Marco …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Zamboni",
+      "acceptedAnswers": [
+        "ZAMBONI"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 6036,
+        "name": "Marco Zamboni",
+        "country": "Italy",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Marco Zamboni · İtalya. Bu soruda istenen cevap: Zamboni."
+    },
+    {
+      "id": "pa-p5757-28",
+      "revision": 1,
+      "letter": "Z",
+      "rule": "start_with",
+      "category": "player",
+      "prompt": "Ülke: İtalya. 'Gianluca …' adlı futbolcunun eksik isim parçası?",
+      "answer": "Zambrotta",
+      "acceptedAnswers": [
+        "ZAMBROTTA"
+      ],
+      "difficulty": 3,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 5757,
+        "name": "Gianluca Zambrotta",
+        "country": "Italy",
+        "source": "v4",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Gianluca Zambrotta · İtalya. Bu soruda istenen cevap: Zambrotta."
+    },
+    {
+      "id": "pa-review-1",
+      "revision": 1,
+      "letter": "C",
+      "rule": "start_with",
+      "category": "stadium",
+      "prompt": "Barcelona’nın 24 Eylül 1957’de açılan stadının sponsordan bağımsız adı?",
+      "answer": "Camp Nou",
+      "acceptedAnswers": [
+        "CAMPNOU"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "source_review",
+        "source": "https://www.fcbarcelona.com/en/club/news/4295206/firsts-at-spotify-camp-nou",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Camp Nou"
+    },
+    {
+      "id": "pa-review-2",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "free",
+      "prompt": "Savunmadan çıkan top gol olmadan kale çizgisini tamamen geçtiğinde kullanılan köşe vuruşunun yaygın adı?",
+      "answer": "Korner",
+      "acceptedAnswers": [
+        "KORNER"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "source_review",
+        "source": "https://www.theifab.com/laws/latest/the-corner-kick/",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Korner"
+    },
+    {
+      "id": "pa-review-3",
+      "revision": 1,
+      "letter": "T",
+      "rule": "start_with",
+      "category": "free",
+      "prompt": "Top taç çizgisini tamamen geçtiğinde iki elle başın gerisinden yapılan yeniden başlatma?",
+      "answer": "Taç",
+      "acceptedAnswers": [
+        "TAC"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "source_review",
+        "source": "https://www.theifab.com/laws/latest/the-throw-in/",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Taç"
+    },
+    {
+      "id": "pa-review-4",
+      "revision": 1,
+      "letter": "P",
+      "rule": "start_with",
+      "category": "free",
+      "prompt": "Ceza alanındaki doğrudan serbest vuruş gerektiren ihlal için 11 metreden kullanılan vuruş?",
+      "answer": "Penaltı",
+      "acceptedAnswers": [
+        "PENALTI"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "source_review",
+        "source": "https://www.theifab.com/laws/latest/the-penalty-kick/",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Penaltı"
+    },
+    {
+      "id": "pa-review-5",
+      "revision": 1,
+      "letter": "K",
+      "rule": "start_with",
+      "category": "manager",
+      "prompt": "Liverpool’u 2019 Şampiyonlar Ligi şampiyonluğuna taşıyan Jürgen adlı teknik direktörün soyadı?",
+      "answer": "Klopp",
+      "acceptedAnswers": [
+        "KLOPP"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "source_review",
+        "source": "https://www.reuters.com/sports/soccer/klopps-achievements-liverpool-2024-05-19/",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Klopp"
+    },
+    {
+      "id": "pa-country-68290",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "country",
+      "prompt": "Neymar hangi ülkenin futbolcusudur?",
+      "answer": "Brezilya",
+      "acceptedAnswers": [
+        "BREZILYA"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 68290,
+        "country": "Brazil",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Neymar · Brezilya."
+    },
+    {
+      "id": "pa-country-28003",
+      "revision": 1,
+      "letter": "A",
+      "rule": "start_with",
+      "category": "country",
+      "prompt": "Lionel Messi hangi ülkenin futbolcusudur?",
+      "answer": "Arjantin",
+      "acceptedAnswers": [
+        "ARJANTIN"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_identity",
+        "playerId": 28003,
+        "country": "Argentina",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Lionel Messi · Arjantin."
+    },
+    {
+      "id": "pa-club-506",
+      "revision": 1,
+      "letter": "J",
+      "rule": "start_with",
+      "category": "club",
+      "prompt": "İtalya kulübü: 'J••••••s' (8 harf). Eksik kulüp adını tamamla.",
+      "answer": "Juventus",
+      "acceptedAnswers": [
+        "JUVENTUS"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_club",
+        "clubId": 506,
+        "name": "Juventus FC",
+        "country": "Italy",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Juventus FC"
+    },
+    {
+      "id": "pa-club-131",
+      "revision": 1,
+      "letter": "B",
+      "rule": "start_with",
+      "category": "club",
+      "prompt": "İspanya kulübü: 'B•••••••a' (9 harf). Eksik kulüp adını tamamla.",
+      "answer": "Barcelona",
+      "acceptedAnswers": [
+        "BARCELONA"
+      ],
+      "difficulty": 2,
+      "proof": {
+        "kind": "v4_club",
+        "clubId": 131,
+        "name": "FC Barcelona",
+        "country": "Spain",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "FC Barcelona"
+    },
+    {
+      "id": "pa-league-seriea",
+      "revision": 1,
+      "letter": "S",
+      "rule": "start_with",
+      "category": "trophy",
+      "prompt": "İtalya’nın en üst düzey futbol liginin adı?",
+      "answer": "Serie A",
+      "acceptedAnswers": [
+        "SERIEA"
+      ],
+      "difficulty": 1,
+      "proof": {
+        "kind": "v4_club",
+        "clubId": 506,
+        "competition": "Serie A",
+        "reviewedAt": "2026-10-17"
+      },
+      "explanation": "Serie A"
+    }
+  ]
+}

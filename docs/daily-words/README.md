@@ -1,0 +1,52 @@
+# Daily word games V1
+
+Implements `Lingo_V1.pdf`, `Passaparola_V1.pdf` and `Anagram_Gunluk_V1.pdf` on top of the fake-club V1 branch (PR #57). Existing navigation names remain; the daily hub also links to the three daily games.
+
+## Rules and rewards
+
+| Mode | Official session | Coin / XP |
+| --- | --- | --- |
+| Daily Lingo | One category word, 4–9 letters, six valid dictionary guesses; context hint after three guesses | Win 3/6; six incorrect guesses 0/2 |
+| Mini Passaparola | Seven distinct letters, untimed; one pass per question | 7 correct 3/6; 5–6 2/4; 3–4 1/2; active 0–2 0/1 |
+| Weekly Passaparola | All 29 Turkish letters including Ğ, 240 server seconds; Monday renewal | 16+ correct 2/6; 1–15 0/3; zero 0/0 |
+| Daily Anagram | Three footballers, three unique guesses each; 100/90/80 points, country/position −15, first letter −25 | 3/2/1 correct: 3/6, 2/4, 1/2; active zero correct 0/1 |
+
+Daily renewal is 00:00 Europe/Istanbul. The three valid daily results award a single additional 2 Coin / 4 XP; maximum daily total is 11/22. Weekly rewards are separate. Give-up, reveal-only and passive sessions cannot earn the daily bonus. All official modes use zero energy and have no ad/store advantage. Eight-question Anagram practice retains its existing energy guard and has no Coin/XP rewards.
+
+The server pins each date/week globally before account play. Session identity, question, revision and request fingerprint are checked on every mutation. Duplicate successful requests acknowledge the existing result, including after midnight. All three daily results and bonus eligibility share one UID transaction. Reward outbox entries use the existing idempotent Coin and XP ledgers and recover after partial failures. Guests retain progress under their UID; rewards settle after that same UID is linked to Google.
+
+Client caches contain public projections only. Pending request IDs and payloads survive restart. Offline views are read-only; account changes clear the page and cannot reuse another UID's cache. Weekly time continues in the background. The server remains authoritative for timeout and day rollover. Archive results cannot be edited or rewarded again. Share text contains outcome symbols and counters, never answers.
+
+## Reviewed data
+
+`tools/daily_words/build_catalog.py` deterministically compiles the checked-in source files and verifies them against the bundled V4 SQLite database:
+
+- 270 distinct canonical footballers, 90 per difficulty, with explicit playable tokens and full-name aliases. Colliding surname/mononym targets are excluded. Country, position and identity are checked against V4, not independently re-researched for every player.
+- 184 sourced Passaparola questions; at least six per letter with two per difficulty. Rare letters use explicit identity prompts. Ğ uses a contains rule; other letters require the answer to begin with the displayed letter. Aliases must obey that rule.
+- The previous seed contains 79 questions, despite the PDF's approximate count. `legacy_audit.json` records every retired ID and the known misleading facts/letter mismatches. That seed is no longer used by official play.
+- 90 explicit daily packs, 2026-10-17 through 2027-01-14, plus 14 Monday weekly packs. Lingo targets and all 270 daily Anagram players do not repeat within this calendar. Daily category/difficulty rhythms and Passaparola difficulty quotas are validated.
+- Practice grows to 317 players while retaining all original 64 entries, order and IDs, so saved legacy decks remain valid.
+
+Run `python3 tools/daily_words/build_catalog.py --check` and `python3 tools/anagram/verify.py`. To extend the calendar, review new source content and regenerate the explicit published dates. A missing date fails closed; there is no random fallback. Do not delete or rewrite already pinned packs in `dailyWordPrivate` when publishing a new catalog version.
+
+## Rollout and rollback
+
+Default policy at `runtimeConfig/dailyWords` is:
+
+```json
+{"enabled": false, "rewardsEnabled": false, "disabledQuestions": []}
+```
+
+Deploy the callable Functions and RTDB rules to the test project before enabling test play. The rules deny all direct client access to `dailyWordPrivate` and `dailyWordState`; authenticated App Check callable endpoints are the access path. Existing energy rollout separately governs practice; official mode IDs and old Lingo/Passaparola IDs are free modes.
+
+Enable `enabled` in the test project while leaving rewards off for initial smoke checks. Results completed while rewards are off do not retroactively mint rewards when the flag changes. Validate rewards with fresh test UIDs/dates after enabling the reward flag in the test environment. Do not enable production until the release checks below are complete.
+
+Set `enabled:false` to stop new actions while preserving progress/history. `rewardsEnabled:false` prevents new entitlements; previously earned outbox entries are still settled so an owed reward is not silently lost. Add a published question ID to `disabledQuestions` to void an unfinished affected pack: it earns no reward/bonus and does not count as a failed streak day completion. Completed results are preserved. Removing the ID does not grant a second official attempt. Anagram uses the published per-day `questionId`, not the player ID. Account deletion removes private daily progress as well as existing account data.
+
+## Validation and release checks
+
+Local: 437 Functions tests pass, including 17 daily-word tests; Functions lint and both data checks pass. Tests cover duplicate-letter grading, all calendar quotas, same-pack accounts, all reward thresholds, one-pass queues, aliases/Ğ, timeout, midnight, stale devices, retry fingerprints, guest linking, reward recovery, disabled questions and safe shuffle.
+
+Flutter service tests cover lost-response replay, account-switch races and cache isolation. Widget tests cover all four official screens in light/dark themes, game/hint/result/archive states, 320 px at 1.8 text scaling, input, weekly start and practice navigation. CI collects these previews and runs the full Flutter suite, analyzer and Android debug compile. CI results and visual review are recorded in the PR; do not infer their outcome from the local server result above.
+
+Not yet performed: Firebase emulator end-to-end runs with production Auth/App Check/RTDB rules; two physical devices on the same account; guest-to-Google upgrade on device; offline/reconnect across Istanbul midnight; Android background weekly timeout. These are release checks, not covered by an in-memory server harness or mocked widget tests. No production deployment or main-branch merge is included in this change.

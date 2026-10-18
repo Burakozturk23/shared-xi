@@ -1,0 +1,642 @@
+[
+  {
+    "id": 28003,
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "country": "Argentina",
+    "position": "Attack",
+    "aliases": [
+      "Lionel Messi"
+    ]
+  },
+  {
+    "id": 8198,
+    "name": "Cristiano Ronaldo",
+    "answer": "CRISTIANO",
+    "country": "Portugal",
+    "position": "Attack",
+    "aliases": [
+      "Cristiano Ronaldo"
+    ]
+  },
+  {
+    "id": 342229,
+    "name": "Kylian Mbappé",
+    "answer": "MBAPPE",
+    "country": "France",
+    "position": "Attack",
+    "aliases": [
+      "Kylian Mbappé"
+    ]
+  },
+  {
+    "id": 418560,
+    "name": "Erling Haaland",
+    "answer": "HAALAND",
+    "country": "Norway",
+    "position": "Attack",
+    "aliases": [
+      "Erling Haaland"
+    ]
+  },
+  {
+    "id": 937958,
+    "name": "Lamine Yamal",
+    "answer": "YAMAL",
+    "country": "Spain",
+    "position": "Attack",
+    "aliases": [
+      "Lamine Yamal"
+    ]
+  },
+  {
+    "id": 861410,
+    "name": "Arda Güler",
+    "answer": "GULER",
+    "country": "Türkiye",
+    "position": "Midfield",
+    "aliases": [
+      "Arda Güler"
+    ]
+  },
+  {
+    "id": 845654,
+    "name": "Kenan Yıldız",
+    "answer": "YILDIZ",
+    "country": "Türkiye",
+    "position": "Attack",
+    "aliases": [
+      "Kenan Yıldız"
+    ]
+  },
+  {
+    "id": 126414,
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "country": "Türkiye",
+    "position": "Midfield",
+    "aliases": [
+      "Hakan Çalhanoğlu"
+    ]
+  },
+  {
+    "id": 401923,
+    "name": "Victor Osimhen",
+    "answer": "OSIMHEN",
+    "country": "Nigeria",
+    "position": "Attack",
+    "aliases": [
+      "Victor Osimhen"
+    ]
+  },
+  {
+    "id": 68863,
+    "name": "Mauro Icardi",
+    "answer": "ICARDI",
+    "country": "Argentina",
+    "position": "Attack",
+    "aliases": [
+      "Mauro Icardi"
+    ]
+  },
+  {
+    "id": 58088,
+    "name": "Fernando Muslera",
+    "answer": "MUSLERA",
+    "country": "Uruguay",
+    "position": "Goalkeeper",
+    "aliases": [
+      "Fernando Muslera"
+    ]
+  },
+  {
+    "id": 4188,
+    "name": "Ricardo Quaresma",
+    "answer": "QUARESMA",
+    "country": "Portugal",
+    "position": "Attack",
+    "aliases": [
+      "Ricardo Quaresma"
+    ]
+  },
+  {
+    "id": 258626,
+    "name": "Talisca",
+    "answer": "TALISCA",
+    "country": "Brazil",
+    "position": "Midfield",
+    "aliases": [
+      "Talisca"
+    ]
+  },
+  {
+    "id": 4000000110,
+    "name": "Alex de Souza",
+    "answer": "ALEX",
+    "country": "Brazil",
+    "position": "Midfield",
+    "aliases": [
+      "Alex de Souza"
+    ]
+  },
+  {
+    "id": 4000000004,
+    "name": "Sergen Yalçın",
+    "answer": "SERGEN",
+    "country": "Türkiye",
+    "position": "Midfield",
+    "aliases": [
+      "Sergen Yalçın"
+    ]
+  },
+  {
+    "id": 35664,
+    "name": "Mesut Özil",
+    "answer": "OZIL",
+    "country": "Germany",
+    "position": "Midfield",
+    "aliases": [
+      "Mesut Özil"
+    ]
+  },
+  {
+    "id": 3924,
+    "name": "Didier Drogba",
+    "answer": "DROGBA",
+    "country": "Cote d'Ivoire",
+    "position": "Attack",
+    "aliases": [
+      "Didier Drogba"
+    ]
+  },
+  {
+    "id": 4673,
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "country": "Netherlands",
+    "position": "Midfield",
+    "aliases": [
+      "Wesley Sneijder"
+    ]
+  },
+  {
+    "id": 68290,
+    "name": "Neymar",
+    "answer": "NEYMAR",
+    "country": "Brazil",
+    "position": "Midfield",
+    "aliases": [
+      "Neymar"
+    ]
+  },
+  {
+    "id": 148455,
+    "name": "Mohamed Salah",
+    "answer": "SALAH",
+    "country": "Egypt",
+    "position": "Attack",
+    "aliases": [
+      "Mohamed Salah"
+    ]
+  },
+  {
+    "id": 18922,
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "country": "France",
+    "position": "Attack",
+    "aliases": [
+      "Karim Benzema"
+    ]
+  },
+  {
+    "id": 27992,
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "country": "Croatia",
+    "position": "Midfield",
+    "aliases": [
+      "Luka Modric"
+    ]
+  },
+  {
+    "id": 3455,
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "country": "Sweden",
+    "position": "Attack",
+    "aliases": [
+      "Zlatan Ibrahimovic"
+    ]
+  },
+  {
+    "id": 39381,
+    "name": "Gareth Bale",
+    "answer": "BALE",
+    "country": "Wales",
+    "position": "Attack",
+    "aliases": [
+      "Gareth Bale"
+    ]
+  },
+  {
+    "id": 44352,
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "country": "Uruguay",
+    "position": "Attack",
+    "aliases": [
+      "Luis Suarez"
+    ]
+  },
+  {
+    "id": 38253,
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "country": "Poland",
+    "position": "Attack",
+    "aliases": [
+      "Robert Lewandowski"
+    ]
+  },
+  {
+    "id": 88755,
+    "name": "Kevin De Bruyne",
+    "answer": "DEBRUYNE",
+    "country": "Belgium",
+    "position": "Midfield",
+    "aliases": [
+      "Kevin De Bruyne"
+    ]
+  },
+  {
+    "id": 132098,
+    "name": "Harry Kane",
+    "answer": "KANE",
+    "country": "England",
+    "position": "Attack",
+    "aliases": [
+      "Harry Kane"
+    ]
+  },
+  {
+    "id": 433177,
+    "name": "Bukayo Saka",
+    "answer": "SAKA",
+    "country": "England",
+    "position": "Attack",
+    "aliases": [
+      "Bukayo Saka"
+    ]
+  },
+  {
+    "id": 581678,
+    "name": "Jude Bellingham",
+    "answer": "BELLINGHAM",
+    "country": "England",
+    "position": "Midfield",
+    "aliases": [
+      "Jude Bellingham"
+    ]
+  },
+  {
+    "id": 240306,
+    "name": "Bruno Fernandes",
+    "answer": "FERNANDES",
+    "country": "Portugal",
+    "position": "Midfield",
+    "aliases": [
+      "Bruno Fernandes"
+    ]
+  },
+  {
+    "id": 25557,
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "country": "Spain",
+    "position": "Defender",
+    "aliases": [
+      "Sergio Ramos"
+    ]
+  },
+  {
+    "id": 139208,
+    "name": "Virgil van Dijk",
+    "answer": "VANDIJK",
+    "country": "Netherlands",
+    "position": "Defender",
+    "aliases": [
+      "Virgil van Dijk"
+    ]
+  },
+  {
+    "id": 17259,
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "country": "Germany",
+    "position": "Goalkeeper",
+    "aliases": [
+      "Manuel Neuer"
+    ]
+  },
+  {
+    "id": 5023,
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "country": "Italy",
+    "position": "Goalkeeper",
+    "aliases": [
+      "Gianluigi Buffon"
+    ]
+  },
+  {
+    "id": 3979,
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "country": "Spain",
+    "position": "Goalkeeper",
+    "aliases": [
+      "Iker Casillas"
+    ]
+  },
+  {
+    "id": 5658,
+    "name": "Petr Cech",
+    "answer": "CECH",
+    "country": "Czech Republic",
+    "position": "Goalkeeper",
+    "aliases": [
+      "Petr Cech"
+    ]
+  },
+  {
+    "id": 7600,
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "country": "Spain",
+    "position": "Midfield",
+    "aliases": [
+      "Andres Iniesta"
+    ]
+  },
+  {
+    "id": 7607,
+    "name": "Xavi",
+    "answer": "XAVI",
+    "country": "Spain",
+    "position": "Midfield",
+    "aliases": [
+      "Xavi Hernandez"
+    ]
+  },
+  {
+    "id": 5817,
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "country": "Italy",
+    "position": "Midfield",
+    "aliases": [
+      "Andrea Pirlo"
+    ]
+  },
+  {
+    "id": 4000000025,
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "country": "Italy",
+    "position": "Midfield",
+    "aliases": [
+      "Francesco Totti"
+    ]
+  },
+  {
+    "id": 4000000024,
+    "name": "Paolo Maldini",
+    "answer": "MALDINI",
+    "country": "Italy",
+    "position": "Defender",
+    "aliases": [
+      "Paolo Maldini"
+    ]
+  },
+  {
+    "id": 3111,
+    "name": "Zinédine Zidane",
+    "answer": "ZIDANE",
+    "country": "France",
+    "position": "Midfield",
+    "aliases": [
+      "Zinedine Zidane"
+    ]
+  },
+  {
+    "id": 3373,
+    "name": "Ronaldinho",
+    "answer": "RONALDINHO",
+    "country": "Brazil",
+    "position": "Attack",
+    "aliases": [
+      "Ronaldinho"
+    ]
+  },
+  {
+    "id": 3140,
+    "name": "Ronaldo Nazário",
+    "answer": "RONALDO",
+    "country": "Brazil",
+    "position": "Attack",
+    "aliases": [
+      "Ronaldo Nazário"
+    ]
+  },
+  {
+    "id": 3207,
+    "name": "Thierry Henry",
+    "answer": "HENRY",
+    "country": "France",
+    "position": "Attack",
+    "aliases": [
+      "Thierry Henry"
+    ]
+  },
+  {
+    "id": 4000000023,
+    "name": "David Beckham",
+    "answer": "BECKHAM",
+    "country": "England",
+    "position": "Midfield",
+    "aliases": [
+      "David Beckham"
+    ]
+  },
+  {
+    "id": 3109,
+    "name": "Steven Gerrard",
+    "answer": "GERRARD",
+    "country": "England",
+    "position": "Midfield",
+    "aliases": [
+      "Steven Gerrard"
+    ]
+  },
+  {
+    "id": 3163,
+    "name": "Frank Lampard",
+    "answer": "LAMPARD",
+    "country": "England",
+    "position": "Midfield",
+    "aliases": [
+      "Frank Lampard"
+    ]
+  },
+  {
+    "id": 3332,
+    "name": "Wayne Rooney",
+    "answer": "ROONEY",
+    "country": "England",
+    "position": "Attack",
+    "aliases": [
+      "Wayne Rooney"
+    ]
+  },
+  {
+    "id": 4360,
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "country": "Netherlands",
+    "position": "Attack",
+    "aliases": [
+      "Arjen Robben"
+    ]
+  },
+  {
+    "id": 22068,
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "country": "France",
+    "position": "Attack",
+    "aliases": [
+      "Franck Ribery"
+    ]
+  },
+  {
+    "id": 58358,
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "country": "Germany",
+    "position": "Attack",
+    "aliases": [
+      "Thomas Muller"
+    ]
+  },
+  {
+    "id": 2219,
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "country": "Germany",
+    "position": "Defender",
+    "aliases": [
+      "Philipp Lahm"
+    ]
+  },
+  {
+    "id": 4000000027,
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "country": "Spain",
+    "position": "Defender",
+    "aliases": [
+      "Carles Puyol"
+    ]
+  },
+  {
+    "id": 7767,
+    "name": "Fernando Torres",
+    "answer": "TORRES",
+    "country": "Spain",
+    "position": "Attack",
+    "aliases": [
+      "Fernando Torres"
+    ]
+  },
+  {
+    "id": 4257,
+    "name": "Samuel Eto'o",
+    "answer": "ETOO",
+    "country": "Cameroon",
+    "position": "Attack",
+    "aliases": [
+      "Samuel Eto'o"
+    ]
+  },
+  {
+    "id": 4000000046,
+    "name": "Rivaldo",
+    "answer": "RIVALDO",
+    "country": "Brazil",
+    "position": "Midfield",
+    "aliases": [
+      "Rivaldo"
+    ]
+  },
+  {
+    "id": 4000000028,
+    "name": "Kaká",
+    "answer": "KAKA",
+    "country": "Brazil",
+    "position": "Midfield",
+    "aliases": [
+      "Kaka"
+    ]
+  },
+  {
+    "id": 4000000035,
+    "name": "Diego Maradona",
+    "answer": "MARADONA",
+    "country": "Argentina",
+    "position": "Midfield",
+    "aliases": [
+      "Diego Maradona"
+    ]
+  },
+  {
+    "id": 4000000036,
+    "name": "Johan Cruyff",
+    "answer": "CRUYFF",
+    "country": "Netherlands",
+    "position": "Attack",
+    "aliases": [
+      "Johan Cruyff"
+    ]
+  },
+  {
+    "id": 4000000042,
+    "name": "Ruud Gullit",
+    "answer": "GULLIT",
+    "country": "Netherlands",
+    "position": "Midfield",
+    "aliases": [
+      "Ruud Gullit"
+    ]
+  },
+  {
+    "id": 4000000029,
+    "name": "Roberto Carlos",
+    "answer": "ROBERTOCARLOS",
+    "country": "Brazil",
+    "position": "Defender",
+    "aliases": [
+      "Roberto Carlos"
+    ]
+  },
+  {
+    "id": 7451,
+    "name": "Mikel Arteta",
+    "answer": "ARTETA",
+    "country": "Spain",
+    "position": "Midfield",
+    "aliases": [
+      "Mikel Arteta"
+    ]
+  }
+]

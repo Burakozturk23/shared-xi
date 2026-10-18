@@ -1,3 +1,5 @@
+import 'daily_words.dart';
+
 /// Passaparola soru modeli — çok kategorili.
 enum PassaparolaCategory {
   player,
@@ -55,42 +57,12 @@ class PassaparolaQuestion {
   bool matchesAnswer(String input) {
     final n = normalizeAnswer(input);
     if (n.isEmpty) return false;
-    final letterN = normalizeAnswer(letter);
-    if (letterN.isEmpty) return false;
-
-    for (final a in answers) {
-      final na = normalizeAnswer(a);
-      if (na == n) return true;
-
-      final parts = na.split(' ');
-      if (parts.length > 1 && parts.last == n) {
-        // Soyad kabulü: soyad harfle başlamalı
-        if (parts.last.startsWith(letterN)) return true;
-      }
-      // Tek kelimelik giriş, cevabın herhangi bir kelimesine eşit + harf uyumu
-      for (final p in parts) {
-        if (p == n && p.startsWith(letterN)) return true;
-      }
-    }
-    return false;
+    final key = normalizeAnswer(letter);
+    if (letter == 'Ğ' ? !n.contains(key) : !n.startsWith(key)) return false;
+    return answers.any((a) => normalizeAnswer(a) == n);
   }
 
-  static String normalizeAnswer(String s) {
-    var t = s.trim().toLowerCase();
-    t = t
-        .replaceAll('ı', 'i')
-        .replaceAll('İ', 'i')
-        .replaceAll('I', 'i')
-        .replaceAll('ğ', 'g')
-        .replaceAll('ü', 'u')
-        .replaceAll('ş', 's')
-        .replaceAll('ö', 'o')
-        .replaceAll('ç', 'c')
-        .replaceAll(RegExp(r'[^\w\s]'), '')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-    return t;
-  }
+  static String normalizeAnswer(String s) => dailyWordKey(s);
 
   factory PassaparolaQuestion.fromJson(Map<String, dynamic> json) {
     return PassaparolaQuestion(
@@ -148,7 +120,7 @@ enum LetterStatus {
 /// Türkçe Passaparola alfabesi (29 harf).
 class PassaparolaAlphabet {
   static const List<String> letters = [
-    'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'H', 'I', 'İ', 'J', 'K', 'L', 'M',
+    'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ', 'J', 'K', 'L', 'M',
     'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U', 'Ü', 'V', 'Y', 'Z',
   ];
   // Not: Q, W, X yok (Türkçe yayın formatına yakın). İstersen eklenir.

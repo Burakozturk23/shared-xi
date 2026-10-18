@@ -34,7 +34,7 @@ void main() {
   });
   tearDown(() => game.dispose());
   test('curated pool, normalized names, repeated letters and shuffled deck', () {
-    expect(catalog.players.length, 64);
+    expect(catalog.players.length, greaterThanOrEqualTo(270));
     final guler = catalog.player(861410);
     expect(guler.accepts('güler'), isTrue);
     expect(guler.accepts('Arda Guler'), isTrue);
