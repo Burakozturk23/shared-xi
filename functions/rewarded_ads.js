@@ -1,6 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
-const THREE_HINTS = ["fake_club_hint", "mystery_hint", "chain_hint", "career_hint", "transfer_hint",
+const THREE_HINTS = ["burst_survival_hint", "fake_club_hint", "mystery_hint", "chain_hint", "career_hint",
+  "transfer_hint",
   "coach11_hint", "letter11_hint", "vault_hint"];
 const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
   "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint", ...THREE_HINTS]);
@@ -177,7 +178,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     if (special) {
       policy.enabled = true;
       policy.limit = THREE_HINTS.includes(placement) ?
-        require("./config/three_modes_catalog.json").policy.hintDailyLimit :
+        Math.min(4, require("./config/three_modes_catalog.json").policy.hintDailyLimit) :
         placement === "energy_refill" ? 2 : 1;
       policy.configId = THREE_HINTS.includes(placement) ? "three-modes-hints-v1" : "energy-quiz-v1";
     }
@@ -185,7 +186,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     if (!policy.enabled) fail("failed-precondition", "Bonuslar şu anda kapalı.");
     if (!pro && !policy.unitId) fail("failed-precondition", "Reklam bağlantısı henüz hazır değil.");
     const key = dayKey(time);
-    const counterKey = special ? key + "__" + placement : key;
+    const counterKey = THREE_HINTS.includes(placement) ? key + "__solo_hints" : special ? key + "__" + placement : key;
     const id = randomId();
     const state = await transact(uid, (s) => {
       prune(s, time);
@@ -195,7 +196,13 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         fail("already-exists", "Bu bonus zaten alındı veya doğrulanıyor.");
       }
       const d = day(s, counterKey);
-      if (d.earned + reserved(s, counterKey, time) >= policy.limit) {
+      // Include old per-placement counters during the shared-cap migration.
+      const legacyHints = THREE_HINTS.includes(placement) ? THREE_HINTS.reduce((n, p) =>
+        n + (s.days[key + "__" + p]?.earned || 0), 0) : 0;
+      const oldReserved = THREE_HINTS.includes(placement) ? Object.values(s.tickets).filter((t) =>
+        t.dayKey === key && THREE_HINTS.includes(t.placement) && t.counterKey !== counterKey &&
+        t.status === "pending" && t.expiresAt > time).length : 0;
+      if (d.earned + legacyHints + oldReserved + reserved(s, counterKey, time) >= policy.limit) {
         fail("resource-exhausted", "Günlük bonus sınırına ulaştın.");
       }
       if (d.issued >= 12 || s.lastIssuedAt > time - 30000) {

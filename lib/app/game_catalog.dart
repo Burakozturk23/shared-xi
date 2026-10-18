@@ -271,6 +271,8 @@ class GameCatalog {
       subtitle: 'Hızlı futbol bilgisi oyunları',
       icon: Icons.bolt_outlined,
       page: EndlessModeSelectionPage(),
+      requiresRepository: false,
+      modern: true,
       category: 'Hız & Eşleştirme',
     ),
     GameEntry(
@@ -278,6 +280,8 @@ class GameCatalog {
       subtitle: 'Bağlantı kur, tepeye ulaş',
       icon: Icons.account_tree_outlined,
       page: PyramidPage(),
+      requiresRepository: false,
+      modern: true,
       category: 'Hız & Eşleştirme',
     ),
     GameEntry(
@@ -285,6 +289,8 @@ class GameCatalog {
       subtitle: 'Kulüp ve oyuncuyu eşleştir',
       icon: Icons.grid_view_outlined,
       page: MatchPairPage(),
+      requiresRepository: false,
+      modern: true,
       category: 'Hız & Eşleştirme',
     ),
     GameEntry(

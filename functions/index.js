@@ -6011,6 +6011,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
     fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
     mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
     careerTransfer: data.careerTransfer && typeof data.careerTransfer === "object" ? data.careerTransfer : {},
@@ -8749,13 +8750,15 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "fake_club_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "burst_survival_hint" ?
+        lbArcadeService().prepareHint(uid, placement, context) : placement === "fake_club_hint" ?
         lbFakeClubService().prepareHint(uid, placement, context) : ["mystery_hint", "chain_hint"].includes(placement) ?
         lbMysteryChainService().prepareHint(uid, placement, context) :
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "fake_club_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "burst_survival_hint" ?
+        lbArcadeService().settleHint(uid, receipt) : receipt.placement === "fake_club_hint" ?
         lbFakeClubService().settleHint(uid, receipt) : ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
         lbMysteryChainService().settleHint(uid, receipt) :
           ["career_hint", "transfer_hint"].includes(receipt.placement) ?
@@ -10023,3 +10026,53 @@ exports.getWeeklyPassaparola = lbDailyWordsCallable("status", "passa_weekly");
 exports.submitWeeklyPassaparola = lbDailyWordsCallable("act", "passa_weekly");
 exports.getDailyAnagram = lbDailyWordsCallable("status", "daily_anagram");
 exports.submitDailyAnagram = lbDailyWordsCallable("act", "daily_anagram");
+
+// Burst daily and the shared Pyramid/Matching mission use the central daily cap.
+async function lbArcadeDailyClaim(uid, day, group) {
+  if (!["burst", "logic"].includes(group)) throw new Error("Unknown arcade mission");
+  const db = getDatabase(); const time = Date.now(); const config = await lbGetEconomyConfig();
+  const id = `arcade_daily__${group}__${day}`; const mission = `daily_arcade_${group}`;
+  const tx = await db.ref("missionState/" + uid).transaction((raw) => {
+    const s = lbMissionState(raw, time);
+    if (s.externalDailyClaims[id]) return s;
+    if (s.daily.dateKey !== day || !config.sources.daily_mission.enabled ||
+      Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) return s;
+    s.daily.claims[mission] = {claimedAt: time, rewardCoins: 2, economyConfigId: config.configId};
+    s.externalDailyClaims[id] = {day, coins: 2, xp: 4, at: time, configId: config.configId};
+    s.updatedAt = time; return s;
+  });
+  const s = lbMissionState(tx.snapshot.val(), time); const claim = s.externalDailyClaims[id];
+  if (!claim) return day !== lbProgressionDateKey(time) ? "expired" : "pending";
+  await lbProgressionGrantCoins(db, uid, id, "mission_reward", day + "__" + mission, 2, claim.configId);
+  await lbCareerTransferGrantXp(uid, id, 4); await lbMissionProject(db, uid, s, config); return "paid";
+}
+function lbArcadeService() {
+  const db = getDatabase();
+  return require("./arcade").createService({db, normalize: lbEconomyState, project: lbEconomyProject,
+    now: () => Date.now(), getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    getPolicy: async () => (await db.ref("runtimeConfig/arcade").get()).val() || {},
+    isLinked: async (uid) => {
+      const u = await getAuth().getUser(uid);
+      return !u.disabled && u.providerData.some((p) => p.providerId === "google.com");
+    }, dailyClaim: lbArcadeDailyClaim,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
+}
+function lbArcadeCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      if (action === "status") await lbRewardedService().settle(request.auth.uid);
+      return await lbArcadeService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code,
+            error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getArcade = lbArcadeCallable("status");
+exports.prepareArcade = lbArcadeCallable("prepare");
+exports.actArcade = lbArcadeCallable("act");
+exports.searchArcade = lbArcadeCallable("search");
