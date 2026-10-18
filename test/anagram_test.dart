@@ -39,6 +39,9 @@ void main() {
     expect(guler.accepts('güler'), isTrue);
     expect(guler.accepts('Arda Guler'), isTrue);
     expect(anagramKey('Özil, Çalhanoğlu'), 'OZILCALHANOGLU');
+    final gronkjaer = catalog.players.firstWhere((p) => p.name == 'Jesper Grønkjær');
+    expect(gronkjaer.accepts('GRØNKJÆR'), isTrue);
+    expect(gronkjaer.accepts('Jesper Gronkjaer'), isTrue);
     for (final player in catalog.players) {
       String? previous;
       for (var seed = 0; seed < 20; seed++) {

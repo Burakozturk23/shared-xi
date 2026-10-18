@@ -24,7 +24,8 @@ class WordFixture extends DailyWordsService {
     final weekly = mode == 'passa_weekly';
     return {'mode': mode, 'period': '2026-10-19', 'packId': 'pack-test', 'contentVersion': 'dw-test',
       'revision': 3, 'serverNow': now, 'closesAt': now + 86400000, 'deadline': weekly ? now + 240000 : null,
-      'finished': result, 'index': result && anagram ? 2 : 0, 'score': anagram && result ? 270 : 0,
+      'finished': result, 'index': result && anagram ? 2 : weekly && !result ? 8 : 0,
+      'score': anagram && result ? 270 : 0,
       'attempts': result ? (lingo ? 2 : anagram ? 5 : weekly ? 29 : 7) : 0,
       'questionId': 'q-one', 'hintUsed': hint || stage == 'hint', 'hintAvailable': stage == 'hint',
       if (lingo) ...{'category': 'player', 'length': longWord ? 9 : 5,
@@ -48,7 +49,8 @@ class WordFixture extends DailyWordsService {
           'prompt': 'Ülke: Almanya. “İlkay …” adlı futbolcunun eksik isim parçası?', 'category': 'player',
           'difficulty': 2, 'passAvailable': stage != 'hint'},
         'rounds': (weekly ? PassaparolaAlphabet.letters : ['Ğ', 'H', 'L', 'A', 'B', 'Ç', 'Ü']).map((letter) => {
-          'letter': letter, 'status': result ? 'correct' : 'pending', 'passed': stage == 'hint' && letter == 'Ğ',
+          'letter': letter, 'status': result || stage == 'hint' && letter == 'H' ? 'correct' :
+            stage == 'hint' && letter == 'L' ? 'wrong' : 'pending', 'passed': stage == 'hint' && letter == 'Ğ',
           if (result) ...{'answer': 'Gündoğan', 'prompt': 'İlkay …?', 'explanation': 'İlkay Gündoğan · Almanya.'},
         }).toList(),
       },
@@ -64,7 +66,8 @@ class WordFixture extends DailyWordsService {
     if (offline) 'notice': 'Çevrimdışısın. Son kayıt gösteriliyor.',
     'session': stage == 'intro' ? null : session(mode),
     'dailyCompletion': {'daily_lingo': stage == 'result', 'passa_daily': false, 'daily_anagram': false},
-    'archive': {'streak': 4, 'days': List.generate(30, (i) => {'day': '2026-10-${(19 - i).abs().toString().padLeft(2, '0')}',
+    'archive': {'streak': 4, 'days': List.generate(30, (i) => {'day': DateTime(2026, 10, 19)
+        .subtract(Duration(days: i)).toIso8601String().substring(0, 10),
       'status': i < 4 ? 'completed' : 'missed', 'results': i < 4 ? {mode: {'medal': 'Altın', 'solved': 3}} : {}}),
       'weeks': [{'period': '2026-10-12', 'result': {'medal': 'Gümüş'}}]},
   };
@@ -115,6 +118,8 @@ void main() {
       question: 'İlkay …?', answers: ['Gündoğan']);
     expect(g.matchesAnswer('GUNDOGAN'), isTrue);
     expect(dailyWordKey('ı İ ğ Ç ö ü é ø ł'), 'IIGCOUEOL');
+    expect(dailyWordKey('Jesper GRØNKJÆR'), dailyWordKey('Jesper Grønkjær'));
+    expect(dailyWordKey('ÐðÆæŒœẞß'), 'DDAEAEOEOESSSS');
   });
   test('all share cards contain outcomes only; no solution or hidden letters', () {
     for (final mode in ['daily_lingo', 'passa_daily', 'passa_weekly', 'daily_anagram']) {

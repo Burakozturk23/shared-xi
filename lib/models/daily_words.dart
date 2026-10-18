@@ -1,6 +1,6 @@
 String dailyWordKey(String s) {
   const groups = {
-    'A': 'àáâãäåāăąÀÁÂÃÄÅĀĂĄ', 'C': 'çćčÇĆČ', 'D': 'ďđĎĐ',
+    'A': 'àáâãäåāăąÀÁÂÃÄÅĀĂĄ', 'C': 'çćčÇĆČ', 'D': 'ďđðĎĐÐ',
     'E': 'èéêëēėęěÈÉÊËĒĖĘĚ', 'G': 'ğĞ', 'I': 'ıİìíîïīÌÍÎÏĪ',
     'L': 'łŁ', 'N': 'ñńňÑŃŇ', 'O': 'òóôõöøōÒÓÔÕÖØŌ',
     'R': 'řŘ', 'S': 'şšśŞŠŚ', 'T': 'ťŤ', 'U': 'ùúûüūůÙÚÛÜŪŮ',
@@ -9,7 +9,7 @@ String dailyWordKey(String s) {
   for (final entry in groups.entries) {
     for (final c in entry.value.split('')) { s = s.replaceAll(c, entry.key); }
   }
-  return s.replaceAll('ß', 'SS').replaceAll('æ', 'AE').replaceAll('œ', 'OE')
+  return s.replaceAll(RegExp('[ßẞ]'), 'SS').replaceAll(RegExp('[æÆ]'), 'AE').replaceAll(RegExp('[œŒ]'), 'OE')
     .toUpperCase().replaceAll(RegExp('[^A-Z]'), '');
 }
 String dailyWordsTitle(String mode) => switch (mode) {

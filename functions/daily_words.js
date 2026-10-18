@@ -9,8 +9,9 @@ const hash = (v) => crypto.createHash("sha256").update(JSON.stringify(v)).digest
 const fail = (code, message) => {
   throw new RewardError(code, message);
 };
-const normalize = (raw) => String(raw || "").replace(/[ıİøØłŁßæœđĐ]/g,
-    (c) => ({ı: "i", İ: "I", ø: "o", Ø: "O", ł: "l", Ł: "L", ß: "ss", æ: "ae", œ: "oe", đ: "d", Đ: "D"})[c])
+const normalize = (raw) => String(raw || "").replace(/[ıİøØłŁßẞæÆœŒđĐðÐ]/g,
+    (c) => ({ı: "i", İ: "I", ø: "o", Ø: "O", ł: "l", Ł: "L", ß: "ss", ẞ: "SS",
+      æ: "ae", Æ: "AE", œ: "oe", Œ: "OE", đ: "d", Đ: "D", ð: "d", Ð: "D"})[c])
     .normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, "");
 const stateOf = (raw) => ({days: {}, weeks: {}, outbox: {}, paid: {}, ...raw});
 const endOfDay = (day) => Date.parse(day + "T00:00:00+03:00") + 86400000;

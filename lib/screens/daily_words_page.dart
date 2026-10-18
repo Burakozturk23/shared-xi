@@ -284,11 +284,17 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       final r = rounds[i]; final active = !_finished && i == _session['index'];
       final icon = r['status'] == 'correct' ? Icons.check : ['wrong', 'timeout'].contains(r['status']) ? Icons.close :
         r['passed'] == true ? Icons.redo : Icons.more_horiz;
+      final dark = Theme.of(context).brightness == Brightness.dark;
+      final color = r['status'] == 'correct' ? (dark ? const Color(0xff6cdda3) : const Color(0xff236847)) :
+        ['wrong', 'timeout'].contains(r['status']) ? Theme.of(context).colorScheme.error :
+        r['passed'] == true ? (dark ? const Color(0xfff2ca66) : const Color(0xff73591c)) :
+        Theme.of(context).colorScheme.onSurfaceVariant;
       return Semantics(label: '${r['letter']}, ${r['status'] == 'correct' ? 'doğru' : r['status'] == 'wrong' ? 'yanlış' : r['passed'] == true ? 'pas kullanıldı' : 'bekliyor'}${active ? ', şu anki soru' : ''}',
         excludeSemantics: true, child: Container(width: 48, margin: const EdgeInsets.only(right: 5, bottom: 5), padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: color.withAlpha(20),
             border: Border.all(color: active ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor, width: active ? 2 : 1)),
-          child: Column(children: [Text('${r['letter']}', style: const TextStyle(fontWeight: FontWeight.bold)), Icon(icon, size: 15)])));
+          child: Column(children: [Text('${r['letter']}', style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+            Icon(icon, size: 15, color: color)])));
     });
     return [
       Wrap(spacing: 16, runSpacing: 6, children: [Text('$correct doğru', style: Theme.of(context).textTheme.titleMedium),

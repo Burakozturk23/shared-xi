@@ -50,6 +50,8 @@ const coins = (h) => h.read("economyState/alice/balances/coins") || 0;
 const xp = (h) => h.read("progressionState/alice/lifetimeXp") || 0;
 
 test("LG01/03/06 PA02/04/12/21 AN02/05/10/11: entire reviewed calendar, dictionary and letter bank", () => {
+  assert.equal(normalize("Jesper GRØNKJÆR"), normalize("Jesper Grønkjær"));
+  assert.equal(normalize("ÐðÆæŒœẞß"), "DDAEAEOEOESSSS");
   assert.equal(catalog.alphabet.length, 29); assert.ok(catalog.alphabet.includes("Ğ"));
   assert.equal(catalog.players.length, 270); assert.ok(catalog.questions.length >= 174);
   assert.equal(Object.keys(catalog.daily).length, 90);

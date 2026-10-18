@@ -22,7 +22,8 @@ DAYS = 90
 
 def normalize(s):
     s = s.translate(str.maketrans({'ı': 'i', 'İ': 'I', 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L',
-        'ß': 'ss', 'æ': 'ae', 'œ': 'oe', 'đ': 'd', 'Đ': 'D'}))
+        'ß': 'ss', 'ẞ': 'SS', 'æ': 'ae', 'Æ': 'AE', 'œ': 'oe', 'Œ': 'OE',
+        'đ': 'd', 'Đ': 'D', 'ð': 'd', 'Ð': 'D'}))
     return re.sub('[^A-Z]', '', unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode().upper())
 
 

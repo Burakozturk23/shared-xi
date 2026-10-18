@@ -1,9 +1,8 @@
 import 'dart:math';
-import '../services/search_service.dart';
+import 'daily_words.dart';
 import 'energy_session.dart';
 
-String anagramKey(String value) => SearchService.normalize(value)
-    .replaceAll(RegExp('[^a-z]'), '').toUpperCase();
+String anagramKey(String value) => dailyWordKey(value);
 
 class AnagramPlayer {
   const AnagramPlayer({required this.id, required this.name, required this.answer,
