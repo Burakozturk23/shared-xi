@@ -1,3 +1,4 @@
+import 'arcade_page.dart';
 import 'package:flutter/material.dart';
 
 import '../app/route_appearance.dart';
@@ -90,6 +91,9 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
           ),
         ),
         const PitchSectionTitle('Profilin ve ilerlemen'),
+        PitchRow(title: 'Burst Rekor Merkezi', icon: Icons.bolt_outlined,
+          onTap: () => _open(const ArcadePage(mode: 'burst', recordsInitially: true))),
+        const SizedBox(height: 16),
         PitchRow(
           title: 'Profilim ve istatistikler',
           subtitle: 'Başarıların, avatarların ve maç geçmişin',

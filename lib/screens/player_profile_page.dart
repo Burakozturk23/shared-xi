@@ -1,3 +1,4 @@
+import 'arcade_page.dart';
 import 'story_collections_page.dart';
 import 'app_settings_page.dart';
 import 'privacy_account_page.dart';
@@ -253,6 +254,15 @@ class PlayerProfileBody extends StatelessWidget {
         _GoogleUpgradeCard(onTap: onLinkAccount),
       ],
       const PitchSectionTitle('Hedeflerin ve başarıların'),
+      PitchRow(title: 'Burst Rekor Merkezi', subtitle: 'Dört kombinasyon, rekorlar ve madalyalar',
+        icon: Icons.bolt_outlined, onTap: () => onOpen(const ArcadePage(mode: 'burst', recordsInitially: true))),
+      const SizedBox(height: 10),
+      for (final mode in ['pyramid', 'matching']) ...[
+        PitchRow(title: mode == 'pyramid' ? 'Pyramid rekorları' : 'Matching rekorları',
+          icon: Icons.emoji_events_outlined,
+          onTap: () => onOpen(ArcadePage(mode: mode, recordsInitially: true))),
+        const SizedBox(height: 10),
+      ],
       _ProgressionShortcutCard(
         onTap: () => onOpen(const ProgressionCenterPage()),
       ),
