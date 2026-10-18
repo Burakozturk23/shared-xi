@@ -32,7 +32,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   String? slotId, error;
   bool busy = true, showRecords = false, background = false;
   int searchEpoch = 0;
-  bool get offline => data['offline'] == true;
+  bool get offline => data['offline'] == true && data['offlinePlayable'] != true;
+  bool get local => data['offline'] == true && data['offlinePlayable'] == true;
   bool get active => run.isNotEmpty && run['phase'] == 'active' && run['finished'] != true;
   String get title => {'burst': 'Burst', 'pyramid': 'Bağlantı Piramidi', 'matching': 'Kart Eşleştirme'}[widget.mode]!;
   bool get running => active && run['paused'] != true && !offline && !background;
@@ -49,7 +50,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         (delta >= _n(run['totalRemainingMs']) || delta >= _n(run['roundRemainingMs']));
       final lockExpired = widget.mode == 'matching' && _n(run['lockUntil']) > 0 &&
         _n(run['serverNow']) + elapsed.elapsedMilliseconds >= _n(run['lockUntil']);
-      if (speedExpired || lockExpired) unawaited(act('tick'));
+      if (speedExpired || lockExpired) {unawaited(act('tick'));}
+      else if (widget.mode == 'burst' && rewardMap(data['burstKit']).isNotEmpty && elapsed.elapsedMilliseconds >= 1000) {
+        unawaited(checkpoint());
+      }
     });
   }
   @override
@@ -79,7 +83,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final beforeQuestion = rewardMap(run['question'])['id'];
     try {
       final value = await service.mutate({'mode': widget.mode, 'sessionId': run['id'],
-        'revision': run['revision'], 'action': action, 'questionId': beforeQuestion, ...more});
+        'revision': run['revision'], 'action': action, 'questionId': beforeQuestion,
+        if (widget.mode == 'burst') 'elapsedMs': run['paused'] == true ? 0 : elapsed.elapsedMilliseconds, ...more});
       if (!mounted) return;
       setState(() {
         accept(value);
@@ -91,7 +96,19 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     finally {if (mounted) setState(() => busy = false);}
     if (background && active && run['paused'] != true && !offline && action != 'pause') unawaited(act('pause'));
   }
+  Future<void> checkpoint() async {
+    if (busy || !running) return;
+    setState(() => busy = true);
+    try {
+      final value = await service.checkpoint({'mode': 'burst', 'sessionId': run['id'], 'revision': run['revision'],
+        'action': 'tick', 'questionId': rewardMap(run['question'])['id'], 'elapsedMs': elapsed.elapsedMilliseconds});
+      if (mounted) setState(() => accept(value));
+    } catch (e) {if (mounted) setState(() => error = '$e');}
+    finally {if (mounted) setState(() => busy = false);}
+    if (background && active && run['paused'] != true) unawaited(act('pause'));
+  }
   Future<void> prepare() async {
+    if (data['offline'] == true) {setState(() => error = 'Yeni oyun hazırlamak için bağlantı gerekli.'); return;}
     setState(() {busy = true; error = null;});
     try {
       final value = await service.mutate({'mode': widget.mode, 'version': data['version'],
@@ -131,10 +148,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (busy) return;
       if (run['paused'] != true) await act('pause');
       if (mounted && run['paused'] == true) Navigator.of(context).pop();
-    }, child: Theme(data: ThemeData.dark(useMaterial3: true).copyWith(
-      scaffoldBackgroundColor: _ink, colorScheme: const ColorScheme.dark(primary: _lime, surface: _panel),
+    }, child: Theme(data: ThemeData(useMaterial3: true, brightness: Brightness.dark, fontFamily: 'Inter').copyWith(
+      scaffoldBackgroundColor: _ink, colorScheme: const ColorScheme.dark(primary: _lime, secondary: _lime, secondaryContainer: Color(0xFF334825), onSecondaryContainer: _lime, surface: _panel),
       inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder())),
-      child: Scaffold(appBar: AppBar(title: Text(showRecords ? '$title Rekor Merkezi' : title), actions: [
+      child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 96 : 64, title: Text(showRecords ? '$title Rekor Merkezi' : title, maxLines: 2, style: const TextStyle(fontSize: 18)), actions: [
         IconButton(tooltip: 'Rekor Merkezi', onPressed: () => setState(() => showRecords = !showRecords), icon: const Icon(Icons.emoji_events_outlined)),
         IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh)),
       ]), body: SafeArea(child: Column(children: [
@@ -170,7 +187,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   }
   Widget panel(String heading, String body, {Widget? child}) => Card(color: _panel, margin: const EdgeInsets.only(bottom: 14),
     child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(heading, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _lime)),
+      Text(heading, style: const TextStyle(fontFamily: 'Satoshi', fontSize: 22, fontWeight: FontWeight.w800, color: _lime)),
       if (body.isNotEmpty) ...[const SizedBox(height: 10), Text(body, style: const TextStyle(height: 1.5))],
       if (child != null) child,
     ])));
@@ -196,6 +213,14 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         '${{'easy': 6, 'normal': 8, 'hard': 12}[difficulty]} çift · ${difficulty == 'easy' ? 3 : 4} sütun\nİpucu ve geri sayım yok'),
     ],
     const SizedBox(height: 12),
+    ExpansionTile(title: const Text('Başarılar ve günlük görev'), children: [Padding(padding: const EdgeInsets.all(12), child: Text(
+      widget.mode == 'burst' ? style == 'speed' ?
+        '2 / 3 / 5 tur: her derece 2 Coin + 4 XP. 7 turu yanlış ve pas olmadan bitir: Ustalık 3 Coin + 6 XP. Günde bir kez 2 tur: 2 Coin + 4 XP.' :
+        '3 / 6 / 9 tur: her derece 2 Coin + 4 XP. 12 turu ipucu ve pas olmadan, en az 3 canla bitir: Ustalık 3 Coin + 6 XP. Günde bir kez 3 tur: 2 Coin + 4 XP.' :
+      widget.mode == 'pyramid' ?
+        'Kolay 2, Normal 2, Zor 3 Coin. Zor tahtayı yanlış ve ipucu olmadan bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Matching ile ortak günde bir kez 2 Coin + 4 XP.' :
+        'Kolay 1, Normal 2, Zor 2 Coin. Zor tahtayı en fazla 24 hamlede bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Pyramid ile ortak günde bir kez 2 Coin + 4 XP.'
+    )), const Padding(padding: EdgeInsets.all(12), child: Text('Başarı ödülleri hesap başına bir kez verilir. Günlük görevler ortak görev sınırına tabidir.'))]),
     Text(data['linked'] == true ? 'Yeni oyun: ${data['energyCost'] ?? 0} enerji · Kayıtlı oyuna devam: ücretsiz' : 'Konuk alıştırması · Enerji ve Coin ödülü yok'),
     if (rewardMap(data['availability'])['enabled'] == true) button('Oyunu hazırla', prepare)
     else panel('Güncelleme hazırlanıyor', 'Bu mod henüz açılmadı. Rekorların korunuyor.'),
@@ -205,7 +230,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     if ('${run['hint'] ?? ''}'.isNotEmpty) panel('İpucu', '${run['hint']}'),
   ];
   Widget input() => Column(children: [
-    TextField(controller: answer, enabled: !busy && !offline, onChanged: search,
+    TextField(controller: answer, maxLength: 120, enabled: !busy && !offline, onChanged: search,
       decoration: const InputDecoration(labelText: 'Ad yaz veya öneriden seç', hintText: 'En az 2 harf'),
       textInputAction: TextInputAction.done, onSubmitted: (_) => submit()),
     for (final item in suggestions) ListTile(dense: true, minVerticalPadding: 10, title: Text('${item['name']}'),
@@ -230,7 +255,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       Wrap(spacing: 10, children: [
         OutlinedButton(onPressed: busy || offline || _n(run['passes']) >= 2 ? null : () => act('pass'), child: Text('Pas (${2 - _n(run['passes'])})${speed ? ' · −5 sn' : ''}')),
         if (!speed) OutlinedButton(onPressed: busy || offline || run['freeUsed'] == true && _n(run['adCredits']) == 0 ? null : () => act('hint'), child: Text(run['freeUsed'] == true ? 'İpucu (${run['adCredits']})' : 'Ücretsiz ipucu')),
-        if (!speed && _n(run['adGranted']) < 2) TextButton(onPressed: busy || offline ? null : adHint, child: const Text('Reklamla ipucu')),
+        if (!speed && _n(run['adGranted']) < 2) TextButton(onPressed: busy || offline || local ? null : adHint, child: const Text('Reklamla ipucu')),
       ]),
     ];
   }
@@ -239,9 +264,12 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final slots = _rows(board['slots']); final selected = slots.where((s) => '${s['id']}' == slotId).firstOrNull;
     final highlighted = (selected?['supports'] as List? ?? []).map((x) => '$x').toSet();
     if (selected?['row'] == 1) highlighted.add('0');
+    final boardWidth = math.max(MediaQuery.sizeOf(context).width - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 : 48.0));
     return [
       Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: const TextStyle(color: _lime)),
       const SizedBox(height: 14),
+      if (boardWidth > MediaQuery.sizeOf(context).width - 32) const Text('Büyük yazı için tahtayı yatay kaydırabilirsin.'),
+      SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: Column(children: [
       for (var row = 0; row < _n(board['levels']); row++) Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center,
         children: slots.where((s) => s['row'] == row).map((s) {
           final id = '${s['id']}'; final entity = rewardMap(filled[id]);
@@ -249,7 +277,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           final available = entity.isEmpty && supports.length == 2 && supports.every(filled.containsKey);
           return Flexible(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 135, minWidth: 48), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Semantics(label: entity.isEmpty ? 'Boş hücre ${_n(s['id']) + 1}${available ? ', seçilebilir' : ', alt destekleri doldur'}' : '${entity['name']}', button: available,
-              child: OutlinedButton(style: OutlinedButton.styleFrom(minimumSize: const Size(48, 72), padding: const EdgeInsets.all(5),
+              child: OutlinedButton(style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(48, 72), padding: const EdgeInsets.all(5),
                 foregroundColor: Colors.white, backgroundColor: id == slotId ? _lime.withValues(alpha: .22) : _panel,
                 side: BorderSide(color: highlighted.contains(id) || id == slotId ? _lime : Colors.white24)),
                 onPressed: !busy && !offline && available ? () => setState(() {slotId = id; error = null;}) : null,
@@ -257,6 +285,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
                   style: TextStyle(fontSize: 12, color: entity.isEmpty ? _lime : Colors.white))),
             ))));
         }).toList())),
+      ]))),
       if (selected != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('Bağlanması gerekenler: ${highlighted.map((id) => rewardMap(filled[id])['name']).join(' • ')}')),
       ...message(), input(),
       Wrap(spacing: 10, children: [
@@ -281,7 +310,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           final c = cards[i]; final visible = c['visible'] == true;
           // Hidden cards have no face text, image, tooltip or semantic identity.
           return Semantics(label: visible ? '${c['name']}${c['matched'] == true ? ', eşleşti' : ''}' : 'Kapalı kart ${i + 1}', button: !visible,
-            child: ExcludeSemantics(child: OutlinedButton(style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(6),
+            child: ExcludeSemantics(child: OutlinedButton(style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.all(6),
               backgroundColor: visible ? _panel : const Color(0xFF111C27),
               side: BorderSide(color: c['matched'] == true ? _lime : Colors.white24)),
               onPressed: busy || offline || locked || visible ? null : () => act('flip', {'cardId': c['id']}),
@@ -296,16 +325,26 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     panel(run['won'] == true ? 'Tamamlandı!' : 'Oyun sonucu', '${run['reason'] ?? ''}', child: Padding(padding: const EdgeInsets.only(top: 12), child: Text(
       widget.mode == 'matching' ? '${run['moves']} hamle · ${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}' :
       '${run['score']} puan · ${run['correct']} doğru${widget.mode == 'burst' ? ' · ${run['rounds']} tur' : ''}'))),
+    if (run['pendingValidation'] == true) const Text('Sonuç doğrulama bekliyor. Yenile ile eşitle.', style: TextStyle(color: Colors.amber)),
+    if (widget.mode != 'matching') Text('${_n(run['wrong'])} yanlış · ${_n(run['hints'])} ipucu${widget.mode == 'burst' ? ' · ${_n(run['passes'])} pas' : ''}'),
     Text('${_n(run['earnedCoins'])} Coin · ${_n(run['earnedCoins']) * 2} XP${run['practice'] == true ? ' · Konuk alıştırması' : ''}'),
     Text(_n(data['pendingCoins']) > 0 ? 'Ödül ödemesi bekliyor; Yenile ile eşitle.' : rewardMap(data['availability'])['rewardsEnabled'] == true ? 'Ödül durumu hesabında kayıtlı.' : 'Bu sürümde ödüller henüz açılmadı.'),
     if (widget.mode == 'burst') for (final h in _rows(run['history'])) ExpansionTile(title: Text('${h['title']}'),
       subtitle: const Text('Bulamadığın geçerli oyuncular'), children: [Padding(padding: const EdgeInsets.all(12), child: Text((h['missed'] as List? ?? []).join(' • ')))]),
-    if (widget.mode == 'pyramid') ExpansionTile(title: const Text('Doğrulanmış çözüm'), children: rewardMap(run['solution']).entries.map((e) =>
-      ListTile(title: Text('Hücre ${int.parse(e.key) + 1}: ${rewardMap(e.value)['name']}'))).toList()),
+    if (widget.mode == 'pyramid') ExpansionTile(title: const Text('Doğrulanmış çözüm'), children: [
+      ...rewardMap(run['solution']).entries.map((e) => ListTile(title: Text('Hücre ${int.parse(e.key) + 1}: ${rewardMap(e.value)['name']}'))),
+      ..._rows(run['solutionProof']).map((p) => ListTile(title: Text('Hücre ${_n(p['from']) + 1} → ${_n(p['to']) + 1}'), subtitle: Text('${p['evidence']}'))),
+    ]),
     if (widget.mode == 'matching') ExpansionTile(title: const Text('Kariyer bağları ve kaynaklar'), children: _rows(run['proof']).map((p) =>
       ListTile(title: Text('${p['player']} → ${p['club']}'), subtitle: SelectableText((p['sources'] as List? ?? []).join('\n')))).toList()),
     const Divider(height: 32),
   ];
+  String _medalLabel(String key) {
+    const labels = {'burst': 'Burst', 'pyramid': 'Pyramid', 'matching': 'Matching', 'speed': 'Hız Atağı',
+      'survival': 'Dayanıklılık', 'bronze': 'Bronz', 'silver': 'Gümüş', 'gold': 'Altın', 'master': 'Ustalık',
+      'easy': 'Bronz', 'normal': 'Gümüş', 'hard': 'Altın'};
+    return key.split(':').where((p) => p != 'v1').map((p) => labels[p] ?? p).join(' · ');
+  }
   List<Widget> records() {
     final records = rewardMap(data['records']).values.map(rewardMap).where((r) => r['mode'] == widget.mode).toList();
     return [
@@ -313,10 +352,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (records.isEmpty) const Text('Henüz tamamlanan oyun yok.'),
       for (final r in records) panel(widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}'),
         widget.mode == 'matching' ? 'En az hamle: ${r['bestMoves'] ?? '—'}\nEn iyi süre: ${r['bestTimeMs'] == null ? '—' : (_n(r['bestTimeMs']) / 1000).round()} sn\n${r['sessions']} oyun' :
-          'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun'),
+          'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}\nOrtalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}'),
       if (rewardMap(data['legacy']).isNotEmpty) panel('Eski sürüm rekoru', rewardMap(data['legacy']).entries.map((e) => '${e.key}: ${e.value}').join('\n')),
       for (final e in rewardMap(data['medals']).entries.where((e) => e.key.startsWith(widget.mode)))
-        ListTile(leading: const Icon(Icons.military_tech, color: _lime), title: Text(e.key.replaceAll(':', ' · ')),
+        ListTile(leading: const Icon(Icons.military_tech, color: _lime), title: Text(_medalLabel(e.key)),
           subtitle: Text('${rewardMap(e.value)['coins']} Coin · ${rewardMap(data['paid'])[e.key] == true ? 'Ödendi' : 'Bekliyor'}')),
       if (_rows(data['recent']).isNotEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text('Son oyunlar')),
       for (final r in _rows(data['recent'])) ListTile(title: Text(widget.mode == 'matching' ? '${r['moves']} hamle' : '${r['score']} puan'),

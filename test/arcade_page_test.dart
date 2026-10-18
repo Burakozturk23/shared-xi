@@ -78,7 +78,10 @@ Future<void> capture(WidgetTester t, String name) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
-    await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+    for (final e in [('Inter', 'assets/fonts/Inter-Body-Variable.ttf'), ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf')]) {
+      await (FontLoader(e.$1)..addFont(rootBundle.load(e.$2))).load();
+    }
   });
   for (final mode in ['burst', 'pyramid', 'matching']) {
     for (final stage in ['intro', 'prepared', 'game', 'paused', 'result']) {

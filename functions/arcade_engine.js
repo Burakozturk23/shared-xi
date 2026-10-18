@@ -1,4 +1,5 @@
 "use strict";
+const crypto = require("node:crypto");
 const {normalize} = require("./daily_words");
 const {shuffled} = require("./career_transfer");
 const {RewardError} = require("./rewarded_ads");
@@ -90,7 +91,8 @@ function tier(r) {
 function round(c, r) {
   const pool = c.burst.filter((q) => q.pairType === r.pairType && !r.used.includes(q.id) &&
     (r.style === "speed" || q.difficulty === tier(r)));
-  const q = shuffled(pool, r.id + ":" + r.used.length)[0];
+  const rank = (q) => crypto.createHash("sha256").update(`${r.id}:${r.used.length}:${q.id}`).digest("hex");
+  const q = pool.map((q) => ({q, rank: rank(q)})).sort((a, b) => a.rank.localeCompare(b.rank))[0]?.q;
   if (!q || q.answers.length < 6) {
     r.finished = true; r.reason = "Doğrulanmış soru havuzu tükendi."; return;
   }
@@ -106,8 +108,10 @@ function create(c, input, time) {
   rounds: 0, streak: 0, bestStreak: 0, moves: 0, actions: {}, history: [], filled: {}, undo: [],
   wrongInputs: {}, used: [], found: [], hinted: [], matched: [], open: [], lockUntil: 0,
   adCredits: 0, adGranted: 0, adReceipts: {}, freeUsed: false, earnedCoins: 0, rewardKeys: [], message: ""};
-  if (r.mode === "burst") round(c, r);
-  else if (r.mode === "pyramid") {
+  if (r.mode === "burst") {
+    round(c, r);
+    if (r.finished) fail("unavailable", "Doğrulanmış soru bulunamadı. Enerji harcanmadı.");
+  } else if (r.mode === "pyramid") {
     r.board = shuffled(c.pyramids.filter((b) => b.difficulty === r.difficulty), r.id)[0];
     if (!r.board || !solve(c, r.board, r.board.initial)) {
       fail("unavailable",
@@ -121,6 +125,7 @@ function hydrate(r) {
   if (!r) return null;
   for (const k of ["used", "found", "hinted", "history", "undo", "matched", "open", "rewardKeys"]) r[k] = list(r[k]);
   for (const k of ["actions", "filled", "wrongInputs", "adReceipts"]) r[k] ||= {};
+  if (r.board?.initial) r.board.initial = Object.fromEntries(Object.entries(r.board.initial).filter(([, v]) => v));
   if (r.board?.slots) r.board.slots = list(r.board.slots).map((s) => ({...s, supports: list(s.supports)}));
   if (r.board?.cards) {
     r.board.cards = list(r.board.cards); r.board.pairs = list(r.board.pairs);
@@ -301,6 +306,7 @@ function publicRun(c, raw, time) {
   v.serverNow = time; v.totalRemainingMs = Math.max(0, 120000 - r.activeMs - (r.penaltyMs || 0));
   v.roundRemainingMs = Math.max(0, 30000 - (r.activeMs - (r.roundAt || 0)));
   if (r.mode === "burst") {
+    v.roundIds = r.used; v.hintedIds = r.hinted;
     v.question = {id: question.id, left: question.left, right: question.right, difficulty: question.difficulty};
     v.found = r.found.map((id) => ({id, name: c.players[id].name}));
     if (r.finished) {

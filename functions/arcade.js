@@ -80,7 +80,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function change(uid, fn) {
     let error; const time = now();
     const tx = await db.ref(`economyState/${uid}`).transaction((raw) => {
-      error = null; const e = normalize(raw); e.arcade = state(e.arcade); e.energy = energy.refreshed(e.energy, time);
+      error = null; const e = normalize(structuredClone(raw));
+      e.arcade = state(e.arcade); e.energy = energy.refreshed(e.energy, time);
       try {
         fn(e.arcade, e, time); e.updatedAt = time; return e;
       } catch (err) {
@@ -118,10 +119,15 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       });
     }
   }
-  async function result(uid, mode) {
+  async function result(uid, mode, kitVersion) {
     const s = await read(uid); const r = hydrate(s.sessions[s.active[mode]]);
     const c = r ? await pinned(r.dataVersion) : catalog;
-    return {version: catalog.version, availability: {...defaults, ...await getPolicy()},
+    return {version: catalog.version,
+      ...(mode === "burst" && kitVersion != null && kitVersion !== c.version ? {burstKit: {
+        version: c.version, questions: c.burst,
+        players: Object.fromEntries(Object.values(c.players).map((p) => [p.id,
+          {id: p.id, name: p.name, country: p.country, countryId: p.countryId, aliases: p.aliases}])),
+      }} : {}), availability: {...defaults, ...await getPolicy()},
       energyCost: await cost(uid, mode), linked: await isLinked(uid),
       session: E.publicRun(c, r, now()), records: s.records, medals: s.claims, paid: s.paid,
       pendingCoins: Object.values(s.pending).reduce((n, p) => n + p.coins, 0), daily: s.daily,
@@ -138,16 +144,19 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       const c = await pinned(r.dataVersion); const p = {...defaults, ...await getPolicy()};
       const linked = await isLinked(uid);
       await change(uid, (s, e, t) => {
-        const live = hydrate(s.sessions[r.id]); E.tick(c, live, t);
+        const live = hydrate(s.sessions[r.id]);
+        const before = JSON.stringify([live.activeMs, live.finished, live.question?.id, live.open]);
+        E.tick(c, live, t);
         if (input.reopen && live.mode === "matching" && !live.finished) live.open = [];
         if (live.phase === "prepared" && t >= live.preparedUntil) {
           live.finished = true; live.reason = "Hazırlık süresi doldu. Enerji harcanmadı.";
           if (e.energy.sessions[live.id]?.status === "reserved") e.energy.sessions[live.id].status = "cancelled";
         }
+        if (before !== JSON.stringify([live.activeMs, live.finished, live.question?.id, live.open])) live.revision++;
         finalize(s, live, t, p.rewardsEnabled && linked && !live.practice); s.sessions[live.id] = live;
       });
     }
-    await settle(uid); return result(uid, input.mode);
+    await settle(uid); return result(uid, input.mode, input.kitVersion || "none");
   }
   async function prepare(uid, input) {
     check(input);
@@ -158,6 +167,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const p = {...defaults, ...await getPolicy()};
     if (!p.enabled) fail("failed-precondition", "Bu güncelleme henüz açılmadı.");
     const charge = await cost(uid, input.mode); const linked = await isLinked(uid);
+    const rollout = {...energy.policy.rollout, ...await getRollout()};
+    if (charge && (!Number.isSafeInteger(input.clientVersion) || input.clientVersion < rollout.minClientVersion)) {
+      fail("failed-precondition", "Enerji sistemi için uygulamayı güncelle.");
+    }
     // All expensive selection/solver work precedes the energy reservation.
     const draft = E.create(catalog, input, now());
     await db.ref(`arcadeCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
@@ -185,7 +198,86 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         !Object.values(s.active).includes(x.id)).sort((a, b) => b.createdAt - a.createdAt);
       for (const x of old.slice(30)) delete s.sessions[x.id];
     });
-    return result(uid, input.mode);
+    return result(uid, input.mode, "none");
+  }
+  function applyRequest(s, e, t, input, c, p, linked) {
+    const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "questionId",
+      "entityId", "query", "slotId", "cardId", "elapsedMs"].filter((k) => input[k] != null).map((k) => [k, input[k]]));
+    const fp = hash(JSON.stringify(canonical));
+    const r = hydrate(s.sessions[input.sessionId]);
+    if (!r || r.mode !== input.mode || !validId(input.requestId)) fail("invalid-argument", "Geçersiz olay.");
+    if (r.actions[input.requestId]) {
+      if (r.actions[input.requestId] !== fp) fail("invalid-argument", "Aynı istek değiştirilemez.");
+      return;
+    }
+    if (r.revision !== input.revision) fail("aborted", "Oyun başka cihazda değişti. Yenile.");
+    if (r.finished) fail("failed-precondition", "Oyun sona erdi.");
+    if (!p.enabled && input.action !== "finish" && input.action !== "cancel") {
+      fail("unavailable",
+          "Mod geçici olarak kapalı; kaydın korunuyor.");
+    }
+    if (input.action === "cancel" && r.phase === "prepared") {
+      r.finished = true; r.reason = "Hazırlık iptal edildi; enerji harcanmadı.";
+      if (e.energy.sessions[r.id]?.status === "reserved") e.energy.sessions[r.id].status = "cancelled";
+    } else if (input.action === "confirm") {
+      if (r.phase !== "prepared" || t >= r.preparedUntil) {
+        fail("failed-precondition",
+            "Hazırlık süresi doldu; yeniden hazırla.");
+      }
+      if (r.energyReserved) {
+        const reservation = e.energy.sessions[r.id];
+        if (!reservation || !["reserved",
+          "confirmed"].includes(reservation.status)) fail("failed-precondition", "Enerji rezervasyonu doldu.");
+        // Generic energy confirmation may have already debited this same receipt.
+        if (reservation.status === "reserved") {
+          if (e.energy.balance < 1) fail("resource-exhausted", "Enerji yetersiz.");
+          if (e.energy.balance === energy.policy.capacity) e.energy.refillAt = t;
+          e.energy.balance--; reservation.status = "confirmed"; reservation.expiresAt = t + energy.policy.resumeMs;
+        }
+        r.energyCharged = true;
+      }
+      r.phase = "active"; r.paused = false; r.startedAt = t; r.lastAt = t; r.expiresAt = t + energy.policy.resumeMs;
+    } else {
+      if (r.phase !== "active") fail("failed-precondition", "Önce hazır tahtayı başlat.");
+      let eventTime = t;
+      if (r.mode === "burst" && input.elapsedMs != null) {
+        if (!Number.isSafeInteger(input.elapsedMs) || input.elapsedMs < 0 ||
+            r.lastAt + input.elapsedMs > t + 1000) fail("invalid-argument", "Olay süresi doğrulanamadı.");
+        eventTime = r.lastAt + input.elapsedMs;
+      }
+      if (t >= r.expiresAt) {
+        r.finished = true; r.reason = "24 saatlik devam süresi doldu.";
+      }
+      E.tick(c, r, eventTime);
+      if (!r.finished) E.act(c, r, input, eventTime);
+      finalize(s, r, t, p.rewardsEnabled && linked && !r.practice);
+    }
+    r.actions[input.requestId] = fp; r.revision++;
+    // Older retries fail the revision fence; they can never execute twice.
+    const ids = Object.keys(r.actions); for (const k of ids.slice(0, Math.max(0,
+        ids.length - 1500))) delete r.actions[k];
+    s.sessions[r.id] = r;
+  }
+  async function replay(uid, input) {
+    const events = input.events;
+    if (input.mode !== "burst" || !Array.isArray(events) || !events.length || events.length > 1000) {
+      fail("invalid-argument", "Geçersiz çevrimdışı olay paketi.");
+    }
+    const saved = hydrate((await read(uid)).sessions[events[0].sessionId]);
+    if (!saved || saved.mode !== "burst") fail("not-found", "Kayıt bu hesaba ait değil.");
+    const c = await pinned(saved.dataVersion); const p = {...defaults, ...await getPolicy()};
+    const linked = await isLinked(uid);
+    await change(uid, (s, e, t) => {
+      for (const event of events) {
+        if (event.mode !== "burst" || event.sessionId !== saved.id ||
+          !["answer", "tick", "pass", "hint", "pause", "resume", "finish"].includes(event.action)) {
+          fail("invalid-argument", "Çevrimdışı paket oturum sınırını aşamaz.");
+        }
+        applyRequest(s, e, t, event, c, p, linked);
+      }
+      s.sessions[saved.id].lastAt = t;
+    });
+    await settle(uid); return result(uid, "burst");
   }
   async function act(uid, input) {
     check(input);
@@ -194,51 +286,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     if (!saved || saved.mode !== input.mode) fail("not-found", "Bu hesaba ait oturum bulunamadı.");
     const c = await pinned(saved.dataVersion); const p = {...defaults, ...await getPolicy()};
     const linked = await isLinked(uid);
-    const fp = hash(JSON.stringify(input));
     await change(uid, (s, e, t) => {
-      const r = hydrate(s.sessions[input.sessionId]);
-      if (r.actions[input.requestId]) {
-        if (r.actions[input.requestId] !== fp) fail("invalid-argument", "Aynı istek değiştirilemez.");
-        return;
-      }
-      if (r.revision !== input.revision) fail("aborted", "Oyun başka cihazda değişti. Yenile.");
-      if (r.finished) fail("failed-precondition", "Oyun sona erdi.");
-      if (!p.enabled && input.action !== "finish" && input.action !== "cancel") {
-        fail("unavailable",
-            "Mod geçici olarak kapalı; kaydın korunuyor.");
-      }
-      if (input.action === "cancel" && r.phase === "prepared") {
-        r.finished = true; r.reason = "Hazırlık iptal edildi; enerji harcanmadı.";
-        if (e.energy.sessions[r.id]?.status === "reserved") e.energy.sessions[r.id].status = "cancelled";
-      } else if (input.action === "confirm") {
-        if (r.phase !== "prepared" || t >= r.preparedUntil) {
-          fail("failed-precondition",
-              "Hazırlık süresi doldu; yeniden hazırla.");
-        }
-        if (r.energyReserved) {
-          const reservation = e.energy.sessions[r.id];
-          if (!reservation || !["reserved",
-            "confirmed"].includes(reservation.status)) fail("failed-precondition", "Enerji rezervasyonu doldu.");
-          // Generic energy confirmation may have already debited this same receipt.
-          if (reservation.status === "reserved") {
-            if (e.energy.balance < 1) fail("resource-exhausted", "Enerji yetersiz.");
-            if (e.energy.balance === energy.policy.capacity) e.energy.refillAt = t;
-            e.energy.balance--; reservation.status = "confirmed"; reservation.expiresAt = t + energy.policy.resumeMs;
-          }
-          r.energyCharged = true;
-        }
-        r.phase = "active"; r.paused = false; r.startedAt = t; r.lastAt = t; r.expiresAt = t + energy.policy.resumeMs;
-      } else {
-        if (r.phase !== "active") fail("failed-precondition", "Önce hazır tahtayı başlat.");
-        E.tick(c, r, t);
-        if (!r.finished) E.act(c, r, input, t);
-        finalize(s, r, t, p.rewardsEnabled && linked && !r.practice);
-      }
-      r.actions[input.requestId] = fp; r.revision++;
-      // Older retries fail the revision fence; they can never execute twice.
-      const ids = Object.keys(r.actions); for (const k of ids.slice(0, Math.max(0,
-          ids.length - 1500))) delete r.actions[k];
-      s.sessions[r.id] = r;
+      applyRequest(s, e, t, input, c, p, linked);
+      // Network/loading time is excluded after the server validates the monotonic event.
+      if (input.elapsedMs != null) s.sessions[input.sessionId].lastAt = t;
     });
     await settle(uid); return result(uid, input.mode);
   }
@@ -275,6 +326,6 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
     });
   }
-  return {status, prepare, act, search, settle, prepareHint, settleHint};
+  return {status, prepare, act, replay, search, settle, prepareHint, settleHint};
 }
 module.exports = {createService, defaults, catalog, finalize, recordKey};

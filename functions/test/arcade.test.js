@@ -9,7 +9,8 @@ let seq = 0; const id = () => (++seq).toString(16).padStart(32, "0");
 const setup = (options = {omitEmptyObjects: true}) => harness({runtimeConfig: {
   arcade: {enabled: true, rewardsEnabled: true}, energy: {enabled: true, percent: 100, sessionModes: ["burst",
     "pyramid", "matching"]}}}, options);
-const prepare = async (h, mode, extra = {}) => (await h.call("prepareArcade", {mode, version, requestId: id(),
+const prepare = async (h, mode, extra = {}) => (await h.call("prepareArcade", {mode, version,
+  clientVersion: 1, requestId: id(),
   ...extra})).session;
 const act = async (h, s, extra) => (await h.call("actArcade", {mode: s.mode, sessionId: s.id, requestId: id(),
   revision: s.revision, questionId: s.question?.id, ...extra})).session;
@@ -240,4 +241,48 @@ test("E: shared hint cap includes old per-mode counters before migration", async
     grantCoins: async () => {}});
   await assert.rejects(service.prepare("alice", "android", "burst_survival_hint", id(), {sessionId: s.id}),
       {code: "resource-exhausted"});
+});
+
+test("Offline: replay validates every answer/clock, pays once and rejects forged future time atomically", async () => {
+  const h = setup(); const s = await start(h, "burst", {style: "survival"});
+  const simulation = E.hydrate(raw(h, s)); const events = [];
+  for (let i = 0; i < 36; i++) {
+    const event = {mode: "burst", sessionId: s.id, requestId: id(), revision: simulation.revision,
+      action: "answer", questionId: simulation.question.id, elapsedMs: 1000,
+      entityId: simulation.question.answers.find((id) => !simulation.found.includes(id))};
+    E.tick(E.catalog, simulation, simulation.lastAt + 1000); E.act(E.catalog, simulation, event, simulation.lastAt);
+    simulation.revision++; events.push(event);
+  }
+  await assert.rejects(h.call("replayArcade", {mode: "burst", events}), {code: "invalid-argument"});
+  assert.equal(raw(h, s).correct, 0); assert.equal(h.read("economyState/alice/balances/coins"), 0);
+  h.setTime(h.now + 36000);
+  const done = await h.call("replayArcade", {mode: "burst", events});
+  assert.equal(done.session.correct, 36); assert.equal(done.session.score, simulation.score);
+  assert.equal(done.session.activeMs, 36000); assert.equal(done.session.earnedCoins, 9);
+  const coins = h.read("economyState/alice/balances/coins");
+  await h.call("replayArcade", {mode: "burst", events});
+  assert.equal(h.read("economyState/alice/balances/coins"), coins);
+});
+test("Offline: an acknowledged-but-lost prefix is skipped; cross-device branches cannot overwrite", async () => {
+  const h = setup(); let s = await start(h, "burst", {style: "survival"});
+  const first = {mode: "burst", sessionId: s.id, revision: s.revision, requestId: id(), action: "answer",
+    entityId: raw(h, s).question.answers[0], questionId: s.question.id, elapsedMs: 1000};
+  h.setTime(h.now + 1000); s = (await h.call("actArcade", {...first, platform: "android", clientVersion: 1})).session;
+  const second = {...first, revision: s.revision, requestId: id(), entityId: raw(h, s).question.answers[1]};
+  h.setTime(h.now + 1000);
+  const result = await h.call("replayArcade", {mode: "burst", events: [first, second]});
+  assert.equal(result.session.correct, 2); assert.equal(result.session.activeMs, 2000);
+  const stale = {...second, revision: s.revision, requestId: id()};
+  await assert.rejects(h.call("replayArcade", {mode: "burst", events: [stale]}), {code: "aborted"});
+  assert.equal(raw(h, s).correct, 2);
+});
+test("Offline: clock events never reset total budget and paused time is excluded", async () => {
+  const h = setup(); const s = await start(h, "burst");
+  const steps = [["tick", 30000], ["pause", 1000], ["resume", 0], ["tick", 89000]];
+  const events = steps.map(([action, elapsedMs], i) => ({mode: "burst", sessionId: s.id,
+    revision: s.revision + i, requestId: id(), action, elapsedMs}));
+  h.setTime(h.now + 180000);
+  const result = await h.call("replayArcade", {mode: "burst", events});
+  assert.equal(result.session.activeMs, 120000); assert.equal(result.session.finished, true);
+  assert.equal(result.session.totalRemainingMs, 0); assert.equal(result.session.score, 0);
 });

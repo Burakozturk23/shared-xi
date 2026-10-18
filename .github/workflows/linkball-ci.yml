@@ -95,7 +95,9 @@ jobs:
         run: python3 tools/daily_words/build_catalog.py --check
 
       - name: Verify arcade V1 catalog
-        run: python3 tools/arcade/build_catalog.py --check
+        run: |
+          python3 tools/arcade/build_catalog.py --check
+          node tools/arcade/build_vectors.js --check
 
       - name: Verify fake club catalog
         run: python3 tools/fake_club/build_catalog.py --check

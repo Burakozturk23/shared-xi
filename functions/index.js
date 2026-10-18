@@ -10076,3 +10076,5 @@ exports.getArcade = lbArcadeCallable("status");
 exports.prepareArcade = lbArcadeCallable("prepare");
 exports.actArcade = lbArcadeCallable("act");
 exports.searchArcade = lbArcadeCallable("search");
+
+exports.replayArcade = lbArcadeCallable("replay");
