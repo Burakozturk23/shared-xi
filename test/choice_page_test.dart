@@ -127,6 +127,13 @@ void main() {
     final fixture = ChoiceFixture(offline: true); await mount(t,fixture,'this_or_that');
     await t.tap(find.text('Seç: Lionel Messi')); await t.pumpAndSettle(); expect(fixture.sent?['action'],'choose');
   });
+  testWidgets('objective result exposes reference order only after completion', (t) async {
+    await mount(t,ChoiceFixture(stage: 'result'),'blind_ranking');
+    await t.ensureVisible(find.text('Doğru sıralama'));
+    await t.tap(find.text('Doğru sıralama')); await t.pumpAndSettle();
+    expect(find.textContaining('Eşit değerler aynı sırayı paylaşır'),findsOneWidget);
+    expect(t.takeException(),isNull); await capture(t,'objective_reference');
+  });
   testWidgets('PNG card includes valid bytes', (t) async {
     final r = ChoiceFixture(stage: 'result',type: 'personal',size: 10).session('blind_ranking');
     await t.runAsync(() async {

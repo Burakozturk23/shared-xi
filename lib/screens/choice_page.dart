@@ -99,10 +99,11 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sonlandır'))]));
     if (confirmed == true && mounted) await action('finish');
   }
-  Widget panel(List<Widget> children, {Color? color}) => Container(
-    margin: const EdgeInsets.only(bottom: 14), padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(color: color ?? surface, borderRadius: BorderRadius.circular(20)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children));
+  Widget panel(List<Widget> children, {Color? color}) => Padding(
+    padding: const EdgeInsets.only(bottom: 14), child: Material(
+      color: color ?? surface, borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias, child: Padding(padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children))));
   Widget heading(String text) => Padding(padding: const EdgeInsets.only(bottom: 10),
     child: Text(text, style: const TextStyle(fontFamily: 'Satoshi', fontSize: 24, fontWeight: FontWeight.w700)));
   Widget note(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 7),
@@ -237,6 +238,21 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             '${result && r['completed'] == true && r['type'] == 'objective' && p != null ? ' · ${number(rewardMap(r['values'])[p['candidateId']], '${r['metricId']}')}' : ''}',
             style: TextStyle(color: p == null ? null : Colors.white)))));
       }),
+      if (result && r['completed'] == true && r['type'] == 'objective') ExpansionTile(
+        tilePadding: EdgeInsets.zero, title: const Text('Doğru sıralama'), children: [
+          ...(() {
+            final values = rewardMap(r['values']);
+            final ordered = [...placements]..sort((a,b) => (values[b['candidateId']] as num).compareTo(values[a['candidateId']] as num));
+            return ordered.map((p) {
+              final value = values[p['candidateId']] as num;
+              final rank = ordered.where((x) => (values[x['candidateId']] as num) > value).length + 1;
+              return ListTile(contentPadding: EdgeInsets.zero,
+                title: Text('$rank. ${rewardMap(p['player'])['name']}'),
+                subtitle: Text(number(value, '${r['metricId']}')));
+            });
+          })(),
+          note('Eşit değerler aynı sırayı paylaşır; eşit çiftler puan hesabına katılmaz.'),
+        ]),
       if (!result && previewSlot != null) ...[
         button('${previewSlot! + 1}. sıraya yerleştir', data['offline'] == true ? null : () => action('place',
           {'slot': previewSlot, 'candidateId': rewardMap(r['current'])['id']})),

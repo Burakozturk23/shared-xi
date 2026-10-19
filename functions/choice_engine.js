@@ -63,7 +63,7 @@ function higherPair(c, r) {
     for (let j = i + 1; j < shuffled.length; j++) {
       let a = shuffled[i]; let b = shuffled[j];
       const gap = Math.abs(values[a] - values[b]) / Math.max(values[a], values[b]);
-      if (gap < limits[0] || gap > limits[1] || values[a] === values[b]) continue;
+      if (gap < limits[0] || gap > limits[1] || Math.round(values[a]) === Math.round(values[b])) continue;
       const higher = parseInt(hash(r.privateSeed + ":direction:" + r.history.length).slice(0, 2), 16) % 2 === 0;
       if ((values[b] > values[a]) !== higher) [a, b] = [b, a];
       r.usedIds.push(a, b);

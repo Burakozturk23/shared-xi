@@ -218,3 +218,16 @@ test("offline tournament replay is atomic, tolerates accepted prefix and rejects
   assert.equal(final.archive.length, 1); assert.equal(final.session.history.length, 15);
   await assert.rejects(act(h, final.session, {action: "undo"}), {code: "failed-precondition"});
 });
+test("interrupted XP projection repairs outbox, duplicate payload binding rejects altered event", async () => {
+  const h = setup(); let r = await start(h, "blind_ranking", {type: "personal", themeId: "favorites", size: 5});
+  for (let slot = 0; slot < 4; slot++) r = await act(h, r, {action: "place", slot, candidateId: r.current.id});
+  const event = {mode: r.mode, sessionId: r.id, revision: r.revision, requestId: id(), action: "place", slot: 4,
+    candidateId: r.current.id};
+  h.failNext("progressionProfiles/alice");
+  await assert.rejects(h.call("actChoice", event), /Simulated interrupted write/);
+  await h.call("actChoice", event); await h.call("getChoice", {mode: r.mode});
+  assert.equal(h.read("economyState/alice/balances/coins"), 4);
+  assert.equal(h.read("progressionState/alice/lifetimeXp"), 8);
+  assert.equal(h.read("economyState/alice/choice/pending"), null);
+  await assert.rejects(h.call("actChoice", {...event, slot: 3}), {code: "invalid-argument"});
+});
