@@ -1,46 +1,13 @@
-import 'career_transfer_online_page.dart';
 import 'package:flutter/material.dart';
-
-import '../models/grid_sub_type.dart';
 import 'online_mode_catalog.dart';
-import 'random_match_page.dart';
-import 'random_grid_match_page.dart';
-import 'random_five_match_page.dart';
-import 'random_cinko_match_page.dart';
-import 'random_loto_match_page.dart';
-import 'club_manager_online_lobby_page.dart';
+import 'online_mode_route.dart';
 
 /// Ranked: önce mod seç, sonra eşleş.
 class OnlineRankedModePage extends StatelessWidget {
   const OnlineRankedModePage({super.key});
 
   void _open(BuildContext context, OnlinePlayMode mode) {
-    final Widget page;
-    switch (mode) {
-      case OnlinePlayMode.careerRace:
-      case OnlinePlayMode.fakeClubDuel:
-      case OnlinePlayMode.mysteryDuel:
-      case OnlinePlayMode.transferDuel:
-        page = CareerTransferOnlinePage(mode: mode.wireName, ranked: true);
-      case OnlinePlayMode.sharedXi:
-      case OnlinePlayMode.clubCountry:
-        page = const RandomMatchPage(autoStart: true);
-      case OnlinePlayMode.gridClassic:
-        page = const RandomGridMatchPage(subType: GridSubType.classic);
-      case OnlinePlayMode.gridRandom:
-        page = const RandomGridMatchPage(subType: GridSubType.random);
-      case OnlinePlayMode.gridReverse:
-        page = const RandomGridMatchPage(subType: GridSubType.reverse);
-      case OnlinePlayMode.randomFive:
-        page = const RandomFiveMatchPage();
-      case OnlinePlayMode.cinko:
-        page = const RandomCinkoMatchPage();
-      case OnlinePlayMode.loto:
-        page = const RandomLotoMatchPage();
-      case OnlinePlayMode.clubManager:
-        // Ranked matchmaking yok — oda lobisine yönlendir
-        page = const ClubManagerOnlineLobbyPage();
-    }
+    final page = onlineModePage(mode, playKind: 'ranked');
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
   }
 

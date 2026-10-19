@@ -1,0 +1,12 @@
+{
+  "name": "pvp-rules-emulator-check",
+  "private": true,
+  "scripts": {
+    "test": "firebase emulators:exec --config ../../../firebase.pvp-test.json --project demo-pvp --only database \"node rules.cjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "4.0.1",
+    "firebase": "11.10.0",
+    "firebase-tools": "14.17.0"
+  }
+}

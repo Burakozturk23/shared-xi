@@ -656,6 +656,7 @@ function lbRankedModeStat(raw) {
 function lbRankedModeStats(raw) {
   const data = raw && typeof raw === "object" ? raw : {};
   return {
+    ...Object.fromEntries(require("./pvp_engine").MODES.map((mode) => [mode, lbRankedModeStat(data[mode])])),
     shared_xi: lbRankedModeStat(data.shared_xi),
     grid: lbRankedModeStat(data.grid),
     cinko: lbRankedModeStat(data.cinko),
@@ -1013,6 +1014,11 @@ exports.submitRankedResult = httpsV2.onCall(
       const data = request.data || {};
       const mode = String(data.mode || "");
       const matchId = String(data.matchId || "").trim();
+
+      if (["shared_xi", "grid", "cinko", "five"].includes(mode)) {
+        throw new httpsV2.HttpsError("failed-precondition",
+            "Eski online sonuç yolu kapatıldı. Güncel maç ekranını kullan.");
+      }
 
       if (!Object.prototype.hasOwnProperty.call(LB_RANKED_MODES, mode)) {
         throw new httpsV2.HttpsError(
@@ -2473,6 +2479,14 @@ async function lbSocialValidateInviteRoom(
     roomCode,
     senderProfile,
 ) {
+  if (require("./pvp_engine").MODES.includes(mode)) {
+    const room = (await db.ref(`pvpV1/${mode}/rooms/${roomCode}`).get()).val();
+    if (!room || room.host !== uid || room.playKind !== "friend" || room.status !== "waiting" ||
+      room.guest || room.createdAt + 300000 <= Date.now()) {
+      throw new httpsV2.HttpsError("failed-precondition", "Bu moda ait açık bir arkadaş odası gerekli.");
+    }
+    return;
+  }
   if (["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"].includes(mode)) {
     const room = (await db.ref(`careerTransferOnline/${mode}/rooms/${roomCode}`).get()).val();
     if (!room || room.host !== uid || room.ranked || room.status !== "waiting" ||
@@ -10110,3 +10124,121 @@ exports.getChoice = lbChoiceCallable("status");
 exports.prepareChoice = lbChoiceCallable("prepare");
 exports.actChoice = lbChoiceCallable("act");
 exports.replayChoice = lbChoiceCallable("replay");
+
+// Sum reserved, idempotent awards across both server-authoritative ranked generations.
+function lbPvpDailyAwards(state, uid, day) {
+  let coins = 0; let xp = 0;
+  for (const row of Object.values(state.settlements || {}).flatMap((m) => Object.values(m || {}))) {
+    if (!row.serverValidated || require("./rewarded_ads").dayKey(row.settledAt) !== day) continue;
+    const reward = row.rewards?.[uid];
+    if (reward) {
+      coins += reward.coins || 0; xp += reward.xp || 0;
+    } else if (row.rewardEligible?.[uid]) {
+      const result = row[row.player1Uid === uid ? "player1Result" : "player2Result"];
+      const old = {win: [3, 8], draw: [2, 6], loss: [1, 4]}[result] || [0, 0];
+      coins += old[0]; xp += old[1];
+    }
+  }
+  return {coins, xp};
+}
+// Multiplayer V1: server-only rooms; no legacy client attestation grants.
+async function lbSettlePvp(room, policy) {
+  const db = getDatabase(); const time = Date.now(); const E = require("./pvp_engine");
+  const users = [room.host, room.guest];
+  const valid = room.status === "finished" && room.rankedEligible && room.playKind === "ranked" &&
+    users.every(Boolean) && users[0] !== users[1] && room.ruleVersion === E.RULE;
+  if (!valid) {
+    return Object.fromEntries(users.filter(Boolean).map((u) => [u, {status: "none", coins: 0,
+      xp: 0, eloDelta: 0}]));
+  }
+  const authUsers = await Promise.all(users.map((uid) => getAuth().getUser(uid)));
+  if (authUsers.some((u) => u.disabled || !u.providerData.some((p) => p.providerId === "google.com"))) {
+    return Object.fromEntries(users.map((u) => [u, {status: "none", coins: 0, xp: 0, eloDelta: 0}]));
+  }
+  const mode = room.mode; const day = require("./rewarded_ads").dayKey(room.finishedAt);
+  const eligible = policy.rankedEnabled === true && room.rewardPolicy?.eloEnabled === true &&
+      policy.eloEnabled === true;
+  const rewarded = policy.rankedEnabled === true && room.rewardPolicy?.rewardsEnabled === true &&
+      policy.rewardsEnabled === true;
+  const tx = await db.ref("rankedState").transaction((raw) => {
+    const s = {...raw}; s.profiles ||= {}; s.settlements ||= {}; s.settlements[mode] ||= {}; s.pvpDaily ||= {};
+    if (s.settlements[mode][room.id]) return s;
+    const profiles = users.map((u) => lbRankedProfile(s.profiles[u])); const rewards = {};
+    for (let i = 0; i < users.length; i++) {
+      const uid = users[i]; const result = lbRankedResultName(uid, room.winnerUid);
+      const after = eligible ? lbRankedNextElo(profiles[i].elo, profiles[1 - i].elo,
+          lbRankedResultScore(result)) : profiles[i].elo;
+      if (eligible) s.profiles[uid] = lbRankedNextProfile(profiles[i], result, mode, after, time);
+      const d = (s.pvpDaily[uid] ||= {})[day] ||= {count: 0, coins: 0, xp: 0};
+      const participated = Object.values(room.audit || {}).some((e) => e.uid === uid && ["answer",
+        "squad"].includes(e.input?.action));
+      const [coins, xp] = result === "win" ? [3, 6] : result === "draw" ? [1, 3] : [0, 1];
+      const spent = lbPvpDailyAwards(s, uid, day);
+      const canReward = rewarded && participated && lbRankedRewardCount(s, uid, room.finishedAt) < 3 && d.count < 3;
+      const paidCoins = canReward ? Math.max(0, Math.min(coins, Math.min(9,
+          policy.dailyCoinCap ?? 9) - spent.coins)) : 0;
+      const paidXp = canReward ? Math.max(0, Math.min(xp, Math.min(18, policy.dailyXpCap ?? 18) - spent.xp)) : 0;
+      if (canReward) {
+        d.count++; d.coins += paidCoins; d.xp += paidXp;
+      }
+      rewards[uid] = {status: canReward || eligible ? "verified" : "none", coins: paidCoins, xp: paidXp,
+        eloDelta: after - profiles[i].elo, eloBefore: profiles[i].elo, eloAfter: after, result};
+    }
+    s.settlements[mode][room.id] = {matchId: room.id, mode, player1Uid: room.host, player2Uid: room.guest,
+      winnerUid: room.winnerUid, serverValidated: true, validationVersion: 3, ruleVersion: room.ruleVersion,
+      dataRevision: room.dataRevision, stateSignature: room.resultHash, settledAt: room.finishedAt, rewards,
+      participants: Object.fromEntries(users.map((u) => [u, Object.values(room.audit || {}).some((e) =>
+        e.uid === u && ["answer", "squad"].includes(e.input?.action))]))};
+    return s;
+  });
+  const s = tx.snapshot.val(); const result = s.settlements[mode][room.id].rewards;
+  for (const uid of users) {
+    const reward = result[uid]; const id = `pvp__${mode}__${room.id}__${uid}`;
+    if (reward.coins > 0) await lbProgressionGrantCoins(db, uid, id, "ranked_match", room.id, reward.coins, "pvp-v1");
+    if (reward.xp > 0) await lbCareerTransferGrantXp(uid, id, reward.xp);
+    if (s.profiles?.[uid]) {
+      const user = (await db.ref("users/" + uid).get()).val() || {};
+      const latest = lbRankedProfile((await db.ref("rankedState/profiles/" + uid).get()).val());
+      const other = uid === room.host ? room.guest : room.host;
+      const mirror = lbRankedUserMirror(user, latest, {matchId: room.id, result: reward.result,
+        opponentName: room.names[other], myScore: room.scores[uid], opponentScore: room.scores[other], now: time,
+        eloBefore: reward.eloBefore, eloAfter: reward.eloAfter});
+      const updates = {};
+      for (const [key, value] of Object.entries(mirror)) updates[`users/${uid}/${key}`] = value;
+      updates[`globalLeaderboard/${uid}`] = lbRankedLeaderboardProjection(user, latest, time);
+      await db.ref().update(updates);
+    }
+  }
+  return result;
+}
+function lbPvpService() {
+  const db = getDatabase();
+  return require("./pvp").createService({db, now: () => Date.now(),
+    isLinked: async (uid) => {
+      const u = await getAuth().getUser(uid); return !u.disabled && u.providerData.some((p) =>
+        p.providerId === "google.com");
+    },
+    blocked: async (uid) => new Set(Object.keys((await db.ref("blocks/" + uid).get()).val() || {})),
+    profile: async (uid) => (await db.ref("users/" + uid).get()).val() || {},
+    getPolicy: async () => (await db.ref("runtimeConfig/pvp").get()).val() || {}, settle: lbSettlePvp});
+}
+function lbPvpCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 20, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbPvpService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(
+            error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getPvp = lbPvpCallable("status");
+exports.enterPvp = lbPvpCallable("enter");
+exports.actPvp = lbPvpCallable("act");
+exports.searchPvp = lbPvpCallable("search");
+exports.reconcilePvp = onSchedule({region: "europe-west1", schedule: "every 1 minutes", maxInstances: 1},
+    async () => lbPvpService().sweep());

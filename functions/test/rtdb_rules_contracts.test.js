@@ -44,7 +44,7 @@ test("user profiles are self-only except authenticated Elo lookup", () => {
   assert.equal(user.elo[".read"], authRule);
 });
 
-test("all active matchmaking queues require a Google-linked account", () => {
+test("retired client matchmaking queues remain linked-read but deny all client writes", () => {
   const queues = [
     "queue",
     "gridQueue",
@@ -54,7 +54,7 @@ test("all active matchmaking queues require a Google-linked account", () => {
   ];
   for (const queue of queues) {
     assert.equal(rules.matchmaking[queue][".read"], googleLinkedRule, queue);
-    assert.equal(rules.matchmaking[queue][".write"], googleLinkedRule, queue);
+    assert.equal(rules.matchmaking[queue][".write"], false, queue);
   }
 });
 
@@ -73,10 +73,10 @@ test("online records cannot be listed at collection root", () => {
   }
 
   assert.equal(rules.rooms["$roomCode"][".read"], googleLinkedRule);
-  assert.equal(rules.rooms["$roomCode"][".write"], googleLinkedRule);
+  assert.equal(rules.rooms["$roomCode"][".write"], false);
 });
 
-test("match records are participant-bound and ranked flag is immutable", () => {
+test("legacy records keep read policy but deny all score, result and ranked writes", () => {
   const collections = [
     ["matches", "$matchId"],
     ["gridMatches", "$matchId"],
@@ -98,21 +98,7 @@ test("match records are participant-bound and ranked flag is immutable", () => {
         name,
     );
 
-    assert.ok(writeRule.includes(googleLinkedRule), name);
-    assert.ok(
-        writeRule.includes("data.child(\"player1Uid\").val() == auth.uid"),
-        name,
-    );
-    assert.ok(
-        writeRule.includes("newData.child(\"player2Uid\").val() == auth.uid"),
-        name,
-    );
-    assert.ok(
-        writeRule.includes(
-            "newData.child(\"ranked\").val() == data.child(\"ranked\").val()",
-        ),
-        name,
-    );
+    assert.equal(writeRule, false, name);
   }
 });
 
@@ -120,7 +106,7 @@ test("guest/daily policies stay intentionally separate from Google-only Online",
   assert.equal(rules.dailyLeaderboard[".read"], authRule);
   assert.equal(rules.users["$uid"][".write"], selfRule);
   assert.notEqual(rules.matchmaking.queue[".write"], authRule);
-  assert.equal(rules.matchmaking.queue[".write"], googleLinkedRule);
+  assert.equal(rules.matchmaking.queue[".write"], false);
 });
 
 test("nickname identity is server-authoritative", () => {
@@ -297,5 +283,12 @@ test("known RTDB top-level client paths all have explicit policy", () => {
   ];
   for (const key of expected) {
     assert.ok(Object.prototype.hasOwnProperty.call(rules, key), key);
+  }
+});
+
+test("multiplayer private referee state and pinned answer catalogs reject all client access", () => {
+  for (const key of ["pvpV1", "pvpCatalogs"]) {
+    assert.equal(rules[key][".read"], false);
+    assert.equal(rules[key][".write"], false);
   }
 });
