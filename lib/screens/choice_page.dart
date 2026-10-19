@@ -124,7 +124,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             foregroundColor: selected ? bg : Colors.white,
             backgroundColor: selected ? lime : surface,
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            textStyle: const TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w600),
             shape: const StadiumBorder(),
             side: BorderSide(color: selected ? lime : const Color(0xff607482))),
           onPressed: busy ? null : () => setState(() => change(item.$1)),
