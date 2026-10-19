@@ -114,14 +114,25 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       FilledButton(onPressed: busy ? null : onPressed,
         child: Padding(padding: const EdgeInsets.all(12), child: Text(text, textAlign: TextAlign.center))));
   Widget chips(List<(String,String)> items, String current, void Function(String) change) => Wrap(
-    spacing: 8, runSpacing: 8, children: items.map((item) => ChoiceChip(
-      label: Text(item.$2, maxLines: 3, softWrap: true), selected: current == item.$1,
-      color: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? lime : surface),
-      labelStyle: TextStyle(color: current == item.$1 ? bg : Colors.white, fontWeight: FontWeight.w600),
-      checkmarkColor: bg, shape: const StadiumBorder(),
-      side: BorderSide(color: current == item.$1 ? lime : const Color(0xff607482)),
-      labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-      onSelected: busy ? null : (_) => setState(() => change(item.$1)))).toList());
+    spacing: 8, runSpacing: 8, children: items.map((item) {
+      final selected = current == item.$1;
+      // Button height follows the wrapped label, including accessibility scaling.
+      return Semantics(selected: selected, inMutuallyExclusiveGroup: true,
+        child: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(48, 48),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            foregroundColor: selected ? bg : Colors.white,
+            backgroundColor: selected ? lime : surface,
+            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            shape: const StadiumBorder(),
+            side: BorderSide(color: selected ? lime : const Color(0xff607482))),
+          onPressed: busy ? null : () => setState(() => change(item.$1)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (selected) ...[const Icon(Icons.check, size: 18), const SizedBox(width: 8)],
+            Flexible(child: Text(item.$2, softWrap: true, textAlign: TextAlign.center)),
+          ])));
+    }).toList());
   Widget rewards() => panel([ExpansionTile(tilePadding: EdgeInsets.zero, title: const Text('Ödüller ve günlük haklar'), children: [
     note(tot ? '16 / 32 / 64 / 128 aday: 2 / 3 / 4 / 5 coin. İstanbul gününde en fazla 2 ödüllü turnuva; aynı tema ve boyut günde bir kez. Üst sınır 10 coin + 20 XP.' :
       hl ? '5 / 10 / 20 seri: 1 / 2 / 3 coin. Aynı kriterde yalnızca yeni eşiğin farkı ödenir. İstanbul gününde toplam en fazla 6 coin + 12 XP.' :

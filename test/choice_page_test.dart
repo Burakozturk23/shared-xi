@@ -91,6 +91,16 @@ void main() {
       for (final stage in ['intro','game']) {
         await mount(t,ChoiceFixture(stage: stage),mode,large: true);
         expect(t.takeException(),isNull); await capture(t,'${mode}_${stage}_large');
+        if (mode == 'blind_ranking' && stage == 'intro') {
+          await t.ensureVisible(find.text('Benim Sıralamam'));
+          await t.tap(find.text('Benim Sıralamam')); await t.pumpAndSettle();
+          expect(find.text('Genel Favoriler'), findsOneWidget);
+          expect(t.takeException(), isNull);
+          await t.ensureVisible(find.text('İstatistik Sıralaması'));
+          await t.tap(find.text('İstatistik Sıralaması')); await t.pumpAndSettle();
+          expect(find.text('Genel Favoriler'), findsNothing);
+          expect(t.takeException(), isNull);
+        }
         await t.pumpWidget(const SizedBox.shrink()); await t.pump();
       }
     });
