@@ -114,7 +114,13 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       FilledButton(onPressed: busy ? null : onPressed,
         child: Padding(padding: const EdgeInsets.all(12), child: Text(text, textAlign: TextAlign.center))));
   Widget chips(List<(String,String)> items, String current, void Function(String) change) => Wrap(
-    spacing: 8, runSpacing: 8, children: items.map((item) => ChoiceChip(label: Text(item.$2), selected: current == item.$1,
+    spacing: 8, runSpacing: 8, children: items.map((item) => ChoiceChip(
+      label: Text(item.$2, maxLines: 3, softWrap: true), selected: current == item.$1,
+      color: WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.selected) ? lime : surface),
+      labelStyle: TextStyle(color: current == item.$1 ? bg : Colors.white, fontWeight: FontWeight.w600),
+      checkmarkColor: bg, shape: const StadiumBorder(),
+      side: BorderSide(color: current == item.$1 ? lime : const Color(0xff607482)),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       onSelected: busy ? null : (_) => setState(() => change(item.$1)))).toList());
   Widget rewards() => panel([ExpansionTile(tilePadding: EdgeInsets.zero, title: const Text('Ödüller ve günlük haklar'), children: [
     note(tot ? '16 / 32 / 64 / 128 aday: 2 / 3 / 4 / 5 coin. İstanbul gününde en fazla 2 ödüllü turnuva; aynı tema ve boyut günde bir kez. Üst sınır 10 coin + 20 XP.' :
@@ -192,7 +198,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     final total = (run['size'] as num? ?? 16).toInt() - 1;
     final round = run['roundSize'];
     return panel([heading(round == 2 ? 'Final' : round == 4 ? 'Yarı final' : round == 8 ? 'Çeyrek final' : 'Son $round'),
-      note('Seçim ${count + 1} / $total'), LinearProgressIndicator(value: count / total), const SizedBox(height: 16),
+      note('Seçim ${count + 1} / $total'), LinearProgressIndicator(value: count / total, color: lime, backgroundColor: const Color(0xff344551)), const SizedBox(height: 16),
       for (final side in ['leftId','rightId']) ...[
         person(rewardMap(candidates[run[side]])), button('Seç: ${rewardMap(candidates[run[side]])['name']}',
           () => action('choose', {'candidateId': run[side]})), const SizedBox(height: 16)],
@@ -314,7 +320,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Inter'),
       appBarTheme: const AppBarTheme(backgroundColor: bg, foregroundColor: Colors.white),
       filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: lime, foregroundColor: bg))),
-      child: Scaffold(appBar: AppBar(title: Text(title), toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,
+      child: Scaffold(appBar: AppBar(title: Text(title, maxLines: 2, softWrap: true), toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,
         actions: [IconButton(tooltip: 'Koleksiyon', onPressed: busy ? null : () => setState(() => records = !records), icon: const Icon(Icons.collections_bookmark_outlined)),
           IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh))]),
         body: SafeArea(child: ListView(padding: const EdgeInsets.all(18), children: [
