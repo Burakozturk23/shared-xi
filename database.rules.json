@@ -2,6 +2,7 @@
   "rules": {
     ".read": false,
     ".write": false,
+    "choiceCatalogs": { ".read": false, ".write": false },
     "arcadeCatalogs": {".read": false, ".write": false},
     "fakeClubCatalogs": { ".read": false, ".write": false },
     "mysteryChainCatalogs": {".read": false, ".write": false},

@@ -51,7 +51,7 @@ void main() {
         'Harf & Kelime': ['Futbol Lingo', 'Passaparola', 'Anagram'],
         'Hız & Eşleştirme': ['Burst', 'Pyramid', 'Matching'],
         'Seçim & Sıralama': [
-          'This or That?',
+          'O mu Bu mu?',
           'Higher or Lower',
           'Blind Ranking',
         ],

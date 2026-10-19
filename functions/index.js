@@ -6011,6 +6011,7 @@ function lbEconomyState(raw) {
     claims: claims,
     purchases: purchases,
     inventory: inventory,
+    choice: data.choice && typeof data.choice === "object" ? data.choice : {},
     arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
     fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
     mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
@@ -10029,7 +10030,7 @@ exports.submitDailyAnagram = lbDailyWordsCallable("act", "daily_anagram");
 
 // Burst daily and the shared Pyramid/Matching mission use the central daily cap.
 async function lbArcadeDailyClaim(uid, day, group) {
-  if (!["burst", "logic"].includes(group)) throw new Error("Unknown arcade mission");
+  if (!["burst", "logic", "choice"].includes(group)) throw new Error("Unknown arcade mission");
   const db = getDatabase(); const time = Date.now(); const config = await lbGetEconomyConfig();
   const id = `arcade_daily__${group}__${day}`; const mission = `daily_arcade_${group}`;
   const tx = await db.ref("missionState/" + uid).transaction((raw) => {
@@ -10078,3 +10079,34 @@ exports.actArcade = lbArcadeCallable("act");
 exports.searchArcade = lbArcadeCallable("search");
 
 exports.replayArcade = lbArcadeCallable("replay");
+
+function lbChoiceService() {
+  const db = getDatabase();
+  return require("./choice").createService({db, normalize: lbEconomyState, project: lbEconomyProject,
+    now: () => Date.now(), getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    getPolicy: async () => (await db.ref("runtimeConfig/choice").get()).val() || {},
+    isLinked: async (uid) => {
+      const u = await getAuth().getUser(uid);
+      return !u.disabled && u.providerData.some((p) => p.providerId === "google.com");
+    }, dailyClaim: lbArcadeDailyClaim,
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
+}
+function lbChoiceCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbChoiceService()[action](request.auth.uid, request.data || {});
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code,
+            error.message);
+      }
+      throw error;
+    }
+  });
+}
+
+exports.getChoice = lbChoiceCallable("status");
+exports.prepareChoice = lbChoiceCallable("prepare");
+exports.actChoice = lbChoiceCallable("act");
+exports.replayChoice = lbChoiceCallable("replay");
