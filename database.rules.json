@@ -41,7 +41,7 @@
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid && (newData.child(\"elo\").val() == data.child(\"elo\").val() || (!data.child(\"elo\").exists() && newData.child(\"elo\").val() == 1000)) && (newData.child(\"wins\").val() == data.child(\"wins\").val() || (!data.child(\"wins\").exists() && newData.child(\"wins\").val() == 0)) && (newData.child(\"losses\").val() == data.child(\"losses\").val() || (!data.child(\"losses\").exists() && newData.child(\"losses\").val() == 0)) && (newData.child(\"draws\").val() == data.child(\"draws\").val() || (!data.child(\"draws\").exists() && newData.child(\"draws\").val() == 0))",
         "elo": {
           ".read": "auth != null"
         },

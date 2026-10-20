@@ -40,7 +40,8 @@ test("daily public/server-owned paths are explicit", () => {
 test("user profiles are self-only except authenticated Elo lookup", () => {
   const user = rules.users["$uid"];
   assert.equal(user[".read"], selfRule);
-  assert.equal(user[".write"], selfRule);
+  assert.ok(user[".write"].startsWith(selfRule + " && "));
+  assert.ok(user[".write"].includes('newData.child("elo").val() == data.child("elo").val()'));
   assert.equal(user.elo[".read"], authRule);
 });
 
@@ -104,7 +105,7 @@ test("legacy records keep read policy but deny all score, result and ranked writ
 
 test("guest/daily policies stay intentionally separate from Google-only Online", () => {
   assert.equal(rules.dailyLeaderboard[".read"], authRule);
-  assert.equal(rules.users["$uid"][".write"], selfRule);
+  assert.ok(rules.users["$uid"][".write"].startsWith(selfRule + " && "));
   assert.notEqual(rules.matchmaking.queue[".write"], authRule);
   assert.equal(rules.matchmaking.queue[".write"], false);
 });
