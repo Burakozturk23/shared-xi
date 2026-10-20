@@ -181,7 +181,6 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
     final signedIn = await Navigator.push<bool>(
       context,
       LinkballRoute(
-        modern: false,
         builder: (_) => const LinkballSignInPage(allowSkip: true),
       ),
     );

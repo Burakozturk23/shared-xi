@@ -20,7 +20,6 @@ class GameLauncher {
         final signedIn = await Navigator.of(context).push<bool>(
           LinkballRoute(
             builder: (_) => const LinkballSignInPage(allowSkip: false),
-            modern: false,
           ),
         );
         if (!context.mounted ||

@@ -178,7 +178,6 @@ class SocialAccountGate extends StatelessWidget {
         onPressed: () async {
           await Navigator.of(context).push(
             LinkballRoute<void>(
-              modern: false,
               builder: (_) => const LinkballSignInPage(allowSkip: false),
             ),
           );

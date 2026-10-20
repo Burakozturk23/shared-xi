@@ -24,7 +24,7 @@ class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
   Future<void> _connectGoogle() async {
     final signedIn = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
+      LinkballRoute(
         builder: (_) => const LinkballSignInPage(allowSkip: false),
       ),
     );

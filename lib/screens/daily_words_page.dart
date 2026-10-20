@@ -3,6 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/daily_words.dart';
+import '../app/app_feedback.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/daily_words_service.dart';
@@ -107,7 +108,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     if (!mounted || _changedAccount) return;
     setState(() { _setSession(rewardMap(response['session'])); _clock..reset()..start();
       _answer.clear(); _chosen.clear(); });
-    if (_vibrate) HapticFeedback.selectionClick();
+    if (_vibrate) AppFeedback.selection();
     final status = await _service.load(widget.mode);
     if (!mounted || _changedAccount) return;
     setState(() => _accept(status));

@@ -4,6 +4,7 @@ import '../app/app_preferences.dart';
 import '../app/app_feedback.dart';
 import '../app/route_appearance.dart';
 import '../services/ads_consent_service.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/social_ui.dart';
 import 'privacy_account_page.dart';
@@ -19,23 +20,19 @@ class AppSettingsPage extends StatefulWidget {
 class _AppSettingsPageState extends State<AppSettingsPage> {
   bool _saving = false;
   String c(String tr, String en) => appCopy(context, tr, en);
+
   Future<void> _save(Future<void> Function() action) async {
     if (_saving) return;
     setState(() => _saving = true);
     try {
       await action();
     } catch (_) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              c(
-                'Tercihin kaydedilemedi. Tekrar dene.',
-                'Could not save preference. Please retry.',
-              ),
-            ),
-          ),
-        );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(c('Tercihin kaydedilemedi. Tekrar dene.',
+            'Could not save preference. Please retry.')),
+        ));
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -43,244 +40,297 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
 
   void _open(Widget page) =>
       Navigator.of(context).push(LinkballRoute(builder: (_) => page));
+
+  String _themeName(ThemeMode mode) => switch (mode) {
+    ThemeMode.system => c('Sistemle aynı', 'Use device theme'),
+    ThemeMode.dark => c('Koyu', 'Dark'),
+    ThemeMode.light => c('Açık', 'Light'),
+  };
+  String _strengthName(HapticStrength value) => switch (value) {
+    HapticStrength.gentle => c('Hafif', 'Gentle'),
+    HapticStrength.standard => c('Standart', 'Standard'),
+    HapticStrength.strong => c('Güçlü', 'Strong'),
+  };
+
+  Future<void> _choose<T>({
+    required String title,
+    required String description,
+    required T selected,
+    required List<(T, String, String, IconData)> options,
+    required Future<void> Function(T) save,
+  }) async {
+    final value = await showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheet) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(sheet).height * .8),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(title, style: Theme.of(sheet).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(description, style: Theme.of(sheet).textTheme.bodySmall),
+                const SizedBox(height: 20),
+                for (final option in options) ...[
+                  Semantics(
+                    selected: selected == option.$1,
+                    child: _SettingRow(
+                      icon: option.$4,
+                      title: option.$2,
+                      detail: option.$3,
+                      trailing: Icon(selected == option.$1
+                        ? Icons.check_circle_rounded : Icons.circle_outlined,
+                        color: selected == option.$1 ? PitchColors.of(sheet).accent : PitchColors.of(sheet).muted),
+                      onTap: () => Navigator.pop(sheet, option.$1),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (value != null && mounted && value != selected) await _save(() => save(value));
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = PreferencesScope.of(context);
+    final colors = PitchColors.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(c('Ayarlar', 'Settings'))),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-          children: [
-            SocialHero(
-              icon: Icons.tune_rounded,
-              eyebrow: c('SENİN OYUNUN', 'YOUR GAME'),
-              title: c('Tam sana göre.', 'Make it yours.'),
-              message: c(
-                'Görünüm, dil ve oyun geri bildirimleri bu cihazda saklanır.',
-                'Appearance, language and game feedback are saved on this device.',
-              ),
-            ),
-            const SizedBox(height: 20),
-            PitchSectionTitle(c('Görünüm ve dil', 'Appearance & language')),
-            PitchPanel(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.contrast_rounded),
-                    title: Text(c('Tema', 'Theme')),
-                    subtitle: Text(switch (p.themeMode) {
-                      ThemeMode.system => c('Sistem', 'System'),
-                      ThemeMode.dark => c('Koyu', 'Dark'),
-                      ThemeMode.light => c('Açık', 'Light'),
-                    }),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _saving
-                        ? null
-                        : () => showModalBottomSheet<void>(
-                            context: context,
-                            showDragHandle: true,
-                            builder: (sheet) => SafeArea(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    for (final mode in ThemeMode.values)
-                                      ListTile(
-                                        title: Text(switch (mode) {
-                                          ThemeMode.system => c(
-                                            'Sistem',
-                                            'System',
-                                          ),
-                                          ThemeMode.dark => c('Koyu', 'Dark'),
-                                          ThemeMode.light => c('Açık', 'Light'),
-                                        }),
-                                        trailing: p.themeMode == mode
-                                            ? const Icon(Icons.check)
-                                            : null,
-                                        onTap: () {
-                                          Navigator.pop(sheet);
-                                          _save(() => p.setTheme(mode));
-                                        },
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.language_rounded),
-                    title: Text(c('Menü dili', 'Menu language')),
-                    subtitle: Text(
-                      p.languageCode == 'tr' ? 'Türkçe' : 'English',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _saving
-                        ? null
-                        : () => showModalBottomSheet<void>(
-                            context: context,
-                            showDragHandle: true,
-                            builder: (sheet) => SafeArea(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  for (final entry in const [
-                                    ('tr', 'Türkçe'),
-                                    ('en', 'English'),
-                                  ])
-                                    ListTile(
-                                      title: Text(entry.$2),
-                                      trailing: p.languageCode == entry.$1
-                                          ? const Icon(Icons.check)
-                                          : null,
-                                      onTap: () {
-                                        Navigator.pop(sheet);
-                                        _save(() => p.setLanguage(entry.$1));
-                                      },
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Text(
-                      c(
-                        'Bu paket: ayarlar, görev/rozet menüleri ve ana gezinme. Diğer ekranlar ve oyun/görev içerikleri özgün dilinde kalır.',
-                        'This release: settings, mission/badge menus and main navigation. Other screens and game/mission content retain their original language.',
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            PitchSectionTitle(c('Oyun hissi', 'Game feedback')),
-            PitchPanel(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  SwitchListTile(
-                    secondary: const Icon(Icons.volume_up_outlined),
-                    title: Text(c('Oyun sesleri', 'Game sounds')),
-                    subtitle: Text(
-                      c(
-                        'Doğru cevap ve ödüllerde kısa sistem sesi',
-                        'Short system sound for correct answers and rewards',
-                      ),
-                    ),
-                    value: p.sound,
-                    onChanged: _saving
-                        ? null
-                        : (v) => _save(() => p.setSound(v)),
-                  ),
-                  SwitchListTile(
-                    secondary: const Icon(Icons.vibration_rounded),
-                    title: Text(c('Titreşim', 'Vibration')),
-                    subtitle: Text(
-                      c(
-                        'Seçimlerde ve cevaplarda dokunsal geri bildirim',
-                        'Haptic feedback for selections and answers',
-                      ),
-                    ),
-                    value: p.haptics,
-                    onChanged: _saving
-                        ? null
-                        : (v) => _save(() => p.setHaptics(v)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+              children: [
+                PitchPanel(child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!_compactTextLayout(context)) ...[
+                      _SettingsIcon(Icons.tune_rounded),
+                      const SizedBox(width: 14),
+                    ],
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        OutlinedButton.icon(
-                          onPressed: p.sound || p.haptics
-                              ? () => AppFeedback.answer(correct: true)
-                              : null,
-                          icon: const Icon(Icons.play_arrow_rounded),
-                          label: Text(c('Geri bildirimi dene', 'Try feedback')),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          c(
-                            'Ses ve titreşim cihaz desteğine, sessiz moda ve sistem ayarlarına bağlıdır.',
-                            'Sound and vibration depend on device support, silent mode and system settings.',
-                          ),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
+                        Text(c('Oyunu kendine göre ayarla', 'Make the game yours'),
+                          style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 6),
+                        Text(c('Tercihlerin bu cihazda otomatik kaydedilir.',
+                          'Your preferences are saved automatically on this device.'),
+                          style: Theme.of(context).textTheme.bodySmall),
                       ],
+                    )),
+                  ],
+                )),
+                PitchSectionTitle(c('Genel', 'General')),
+                PitchPanel(padding: EdgeInsets.zero, child: Column(children: [
+                  _SettingRow(
+                    icon: Icons.contrast_rounded,
+                    title: c('Tema', 'Theme'),
+                    detail: _themeName(p.themeMode),
+                    onTap: _saving ? null : () => _choose<ThemeMode>(
+                      title: c('Görünümünü seç', 'Choose your appearance'),
+                      description: c('Açık, koyu veya cihazının görünümü.', 'Light, dark or your device setting.'),
+                      selected: p.themeMode,
+                      options: [
+                        (ThemeMode.system, _themeName(ThemeMode.system), c('Cihazınla birlikte değişir', 'Changes with your device'), Icons.brightness_auto_rounded),
+                        (ThemeMode.dark, _themeName(ThemeMode.dark), c('Koyu zemin, canlı detaylar', 'Dark surfaces, vivid details'), Icons.dark_mode_outlined),
+                        (ThemeMode.light, _themeName(ThemeMode.light), c('Aydınlık ve net', 'Bright and clear'), Icons.light_mode_outlined),
+                      ],
+                      save: p.setTheme,
                     ),
                   ),
-                ],
-              ),
-            ),
-            PitchSectionTitle(c('Hesap ve destek', 'Account & support')),
-            PitchPanel(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.privacy_tip_outlined),
-                    title: Text(c('Gizlilik ve hesap', 'Privacy & account')),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _open(const PrivacyAccountPage()),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.shield_outlined),
-                    title: Text(c('Oyuncu güvenliği', 'Player safety')),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _open(const SocialSafetyCenterPage()),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.notifications_outlined),
-                    title: Text(
-                      c('Bildirim tercihleri', 'Notification preferences'),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingRow(
+                    icon: Icons.language_rounded,
+                    title: c('Menü dili', 'Menu language'),
+                    detail: p.languageCode == 'tr' ? 'Türkçe' : 'English',
+                    onTap: _saving ? null : () => _choose<String>(
+                      title: c('Menü dilini seç', 'Choose your menu language'),
+                      description: c('Ayarlar ve desteklenen menüler anında değişir. Bazı oyun ve görev metinleri Türkçe kalır.',
+                        'Settings and supported menus change immediately. Some game and mission text remains in Turkish.'),
+                      selected: p.languageCode,
+                      options: const [
+                        ('tr', 'Türkçe', 'Türkçe menüler', Icons.language_rounded),
+                        ('en', 'English', 'English menus', Icons.language_rounded),
+                      ],
+                      save: p.setLanguage,
                     ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _open(const NotificationPreferencesPage()),
                   ),
+                ])),
+                PitchSectionTitle(c('Ses ve titreşim', 'Sound & vibration')),
+                PitchPanel(padding: EdgeInsets.zero, child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _SettingRow(
+                      icon: p.sound ? Icons.volume_up_outlined : Icons.volume_off_outlined,
+                      title: c('Oyun sesleri', 'Game sounds'),
+                      detail: c('Doğru cevap ve ödül sesleri', 'Correct answer and reward sounds'),
+                      trailing: Semantics(
+                        label: c('Oyun sesleri', 'Game sounds'),
+                        child: Switch(
+                        value: p.sound,
+                        onChanged: _saving ? null : (v) => _save(() => p.setSound(v)),
+                      )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: OutlinedButton.icon(
+                        style: const ButtonStyle(enableFeedback: false),
+                        key: const ValueKey('preview-sound'),
+                        onPressed: !_saving && p.sound ? () => AppFeedback.previewSound(p) : null,
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        label: Text(c('Sesi dene', 'Test sound'), textAlign: TextAlign.center),
+                      ),
+                    ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    _SettingRow(
+                      icon: Icons.vibration_rounded,
+                      title: c('Titreşim', 'Vibration'),
+                      detail: c('Seçimlerde ve cevaplarda geri bildirim', 'Feedback for selections and answers'),
+                      trailing: Semantics(
+                        label: c('Titreşim', 'Vibration'),
+                        child: Switch(
+                        value: p.haptics,
+                        onChanged: _saving ? null : (v) => _save(() => p.setHaptics(v)),
+                      )),
+                    ),
+                    _SettingRow(
+                      icon: Icons.tune_rounded,
+                      title: c('Titreşim gücü', 'Vibration strength'),
+                      detail: p.haptics ? _strengthName(p.hapticStrength) : c('Titreşimi açarak seçebilirsin', 'Enable vibration to choose'),
+                      onTap: _saving || !p.haptics ? null : () => _choose<HapticStrength>(
+                        title: c('Titreşim gücünü seç', 'Choose vibration strength'),
+                        description: c('Hissettiğin güç cihazına göre değişebilir.', 'The intensity you feel depends on your device.'),
+                        selected: p.hapticStrength,
+                        options: [
+                          (HapticStrength.gentle, _strengthName(HapticStrength.gentle), c('Kısa ve hafif dokunuş', 'A subtle tap'), Icons.touch_app_outlined),
+                          (HapticStrength.standard, _strengthName(HapticStrength.standard), c('Seçime ve cevaba göre', 'Varies with selections and answers'), Icons.vibration_rounded),
+                          (HapticStrength.strong, _strengthName(HapticStrength.strong), c('Daha belirgin geri bildirim', 'More pronounced feedback'), Icons.bolt_rounded),
+                        ],
+                        save: p.setHapticStrength,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: OutlinedButton.icon(
+                        style: const ButtonStyle(enableFeedback: false),
+                        key: const ValueKey('preview-haptics'),
+                        onPressed: !_saving && p.haptics ? () => AppFeedback.previewHaptics(p) : null,
+                        icon: const Icon(Icons.touch_app_outlined),
+                        label: Text(c('Titreşimi dene', 'Test vibration'), textAlign: TextAlign.center),
+                      ),
+                    ),
+                  ],
+                )),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
+                  child: Text(c('Ses düzeyi ve sessiz mod cihazından yönetilir. Ses ve titreşim, cihaz desteğine bağlıdır.',
+                    'Volume and silent mode are controlled by your device. Sound and vibration depend on device support.'),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.muted)),
+                ),
+                PitchSectionTitle(c('Hesap ve destek', 'Account & support')),
+                PitchPanel(padding: EdgeInsets.zero, child: Column(children: [
+                  _SettingRow(icon: Icons.privacy_tip_outlined,
+                    title: c('Gizlilik ve hesap', 'Privacy & account'),
+                    onTap: () => _open(const PrivacyAccountPage())),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingRow(icon: Icons.shield_outlined,
+                    title: c('Oyuncu güvenliği', 'Player safety'),
+                    onTap: () => _open(const SocialSafetyCenterPage())),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingRow(icon: Icons.notifications_outlined,
+                    title: c('Bildirim tercihleri', 'Notification preferences'),
+                    onTap: () => _open(const NotificationPreferencesPage())),
                   ValueListenableBuilder<bool>(
                     valueListenable: AdsConsentService.privacyOptionsRequired,
                     builder: (_, required, _) => required
-                        ? ListTile(
-                            leading: const Icon(Icons.ad_units_outlined),
-                            title: Text(
-                              c(
-                                'Reklam gizlilik tercihleri',
-                                'Ad privacy options',
-                              ),
-                            ),
-                            onTap: _saving
-                                ? null
-                                : () => _save(
-                                    AdsConsentService.showPrivacyOptions,
-                                  ),
-                          )
-                        : const SizedBox.shrink(),
+                      ? _SettingRow(icon: Icons.ad_units_outlined,
+                        title: c('Reklam gizlilik tercihleri', 'Ad privacy options'),
+                        onTap: _saving ? null : () => _save(AdsConsentService.showPrivacyOptions))
+                      : const SizedBox.shrink(),
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.sports_esports_outlined),
-                    title: Text(c('Oyunları tanı', 'Discover the games')),
-                    onTap: () => Navigator.of(context).push(
-                      LinkballRoute(
-                        builder: (route) => OnboardingPage(
-                          onComplete: () => Navigator.pop(route),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _SettingRow(icon: Icons.sports_esports_outlined,
+                    title: c('Oyunları tanı', 'Discover the games'),
+                    onTap: () => Navigator.of(context).push(LinkballRoute(
+                      builder: (route) => OnboardingPage(onComplete: () => Navigator.pop(route)),
+                    ))),
+                ])),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+// Give enlarged text room instead of splitting words beside decorative icons.
+bool _compactTextLayout(BuildContext context) =>
+    MediaQuery.sizeOf(context).width < 360 && MediaQuery.textScalerOf(context).scale(16) > 22;
+
+class _SettingsIcon extends StatelessWidget {
+  const _SettingsIcon(this.icon);
+  final IconData icon;
+  @override
+  Widget build(BuildContext context) {
+    final colors = PitchColors.of(context);
+    return Container(
+      width: 40, height: 40,
+      decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(12)),
+      child: Icon(icon, size: 22, color: colors.accent),
+    );
+  }
+}
+
+class _SettingRow extends StatelessWidget {
+  const _SettingRow({required this.icon, required this.title, this.detail, this.trailing, this.onTap});
+  final IconData icon;
+  final String title;
+  final String? detail;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  @override
+  Widget build(BuildContext context) => InkWell(
+    enableFeedback: false,
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(16),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          if (!_compactTextLayout(context)) ...[
+            _SettingsIcon(icon),
+            const SizedBox(width: 12),
+          ],
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleSmall),
+              if (detail != null) ...[
+                const SizedBox(height: 4),
+                Text(detail!, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ],
+          )),
+          const SizedBox(width: 8),
+          trailing ?? Icon(Icons.chevron_right_rounded, color: PitchColors.of(context).muted),
+        ],
+      ),
+    ),
+  );
 }
 
 class NotificationPreferencesPage extends StatelessWidget {

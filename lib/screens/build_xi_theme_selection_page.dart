@@ -107,7 +107,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
         await widget.onSignIn!(context);
       } else {
         final ok = await Navigator.of(context).push<bool>(
-          MaterialPageRoute(
+          LinkballRoute(
             builder: (_) => const LinkballSignInPage(allowSkip: false),
           ),
         );

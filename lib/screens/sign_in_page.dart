@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
+import '../app/app_copy.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/social_ui.dart';
 
 class LinkballSignInPage extends StatefulWidget {
   final bool allowSkip;
@@ -14,6 +18,7 @@ class LinkballSignInPage extends StatefulWidget {
 class _LinkballSignInPageState extends State<LinkballSignInPage> {
   bool _busy = false;
   String? _error;
+  String c(String tr, String en) => appCopy(context, tr, en);
 
   Future<void> _signIn() async {
     if (_busy) return;
@@ -32,19 +37,19 @@ class _LinkballSignInPageState extends State<LinkballSignInPage> {
 
       if (result.switchedToExistingGoogleAccount) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Mevcut Google hesabın açıldı. Bu cihazdaki geçici misafir '
-              'hesabı otomatik olarak birleştirilmedi.',
+              c('Mevcut Google hesabın açıldı. Bu cihazdaki geçici misafir hesabı otomatik olarak birleştirilmedi.',
+                'Your existing Google account is now active. The guest account on this device was not automatically merged.'),
             ),
           ),
         );
       } else if (result.linkedAnonymousAccount) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Misafir hesabın Google hesabına bağlandı. Mevcut Linkball '
-              'kimliğin korundu.',
+              c('Misafir hesabın Google hesabına bağlandı. Mevcut Linkball kimliğin korundu.',
+                'Your guest account is now linked to Google. Your Linkball identity was preserved.'),
             ),
           ),
         );
@@ -63,9 +68,9 @@ class _LinkballSignInPageState extends State<LinkballSignInPage> {
   @override
   Widget build(BuildContext context) {
     final connected = AuthService.isGoogleAccount;
-    final colors = Theme.of(context).colorScheme;
+    final colors = PitchColors.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Linkball hesabı')),
+      appBar: AppBar(title: Text(c('Linkball hesabı', 'Linkball account'))),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -73,309 +78,117 @@ class _LinkballSignInPageState extends State<LinkballSignInPage> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               children: [
-                _AccountHero(connected: connected),
+                SocialHero(
+                  icon: Icons.sports_soccer_rounded,
+                  eyebrow: connected ? c('HESABIN BAĞLI', 'ACCOUNT CONNECTED') : c('LINKBALL PROFİLİN', 'YOUR LINKBALL PROFILE'),
+                  title: connected ? c('Her zaman sahada.', 'Always in the game.') : c('Sahada iz bırak.', 'Leave your mark.'),
+                  message: c('Senin profilin. Senin rekabetin.', 'Your profile. Your competition.'),
+                ),
                 const SizedBox(height: 24),
-                Text(
-                  connected ? 'Hesabın hazır' : 'Oyunun burada devam eder',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-                ),
+                Text(connected ? c('Hesabın hazır', 'Your account is ready') : c('Oyunun burada devam eder', 'Your game continues here'),
+                  style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
-                Text(
-                  connected
-                      ? 'Online oyunlara ve kalıcı profiline bu hesapla erişebilirsin.'
-                      : 'Google hesabını bağla; rekabete katıl, arkadaşlarınla buluş ve profilini yanında taşı.',
-                  style: TextStyle(color: colors.onSurfaceVariant, height: 1.5),
-                ),
+                Text(connected
+                  ? c('Online oyunlara ve kalıcı profiline bu hesapla erişebilirsin.', 'Access online games and your persistent profile with this account.')
+                  : c('Google hesabını bağla; arkadaşlarınla oyna, profilini yanında taşı.', 'Connect Google to play with friends and take your profile with you.'),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.muted)),
                 const SizedBox(height: 20),
-                const _Benefit(
-                  icon: Icons.emoji_events_outlined,
-                  title: 'Rekabette yerini al',
-                  detail: 'Kupaların ve liderlik sıralaman tek profilde.',
-                ),
-                const _Benefit(
-                  icon: Icons.groups_2_outlined,
-                  title: 'Arkadaşlarınla sahaya çık',
-                  detail: 'Arkadaş ekle, online oyunlara katıl.',
-                ),
-                const _Benefit(
-                  icon: Icons.cloud_done_outlined,
-                  title: 'Profilin seninle gelsin',
-                  detail: 'Cihaz değiştirsen de hesabına yeniden eriş.',
-                ),
-                const SizedBox(height: 16),
-                if (_error != null)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 16),
+                PitchPanel(child: Column(children: [
+                  _Benefit(icon: Icons.emoji_events_outlined,
+                    title: c('Rekabette yerini al', 'Join the competition'),
+                    detail: c('Kupaların ve sıralaman tek profilde.', 'Your trophies and ranking in one profile.')),
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(height: 1)),
+                  _Benefit(icon: Icons.groups_2_outlined,
+                    title: c('Arkadaşlarınla sahaya çık', 'Play with friends'),
+                    detail: c('Arkadaş ekle, online oyunlara katıl.', 'Add friends and join online games.')),
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(height: 1)),
+                  _Benefit(icon: Icons.cloud_done_outlined,
+                    title: c('Profilin seninle gelsin', 'Take your profile with you'),
+                    detail: c('Yeni cihazında hesabına yeniden eriş.', 'Access your account on your next device.')),
+                ])),
+                const SizedBox(height: 24),
+                if (_error != null) ...[
+                  Semantics(liveRegion: true, child: Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: colors.errorContainer,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Semantics(
-                      liveRegion: true,
-                      child: Text(
-                        _error!,
-                        style: TextStyle(color: colors.onErrorContainer),
-                      ),
-                    ),
-                  ),
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(16)),
+                    child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer)),
+                  )),
+                  const SizedBox(height: 16),
+                ],
                 if (!connected) ...[
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      backgroundColor: colors.onSurface,
-                      foregroundColor: colors.surface,
+                      backgroundColor: colors.text,
+                      foregroundColor: colors.background,
                       minimumSize: const Size.fromHeight(56),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                     onPressed: _busy ? null : _signIn,
                     icon: _busy
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: colors.onSurfaceVariant,
-                            ),
-                          )
-                        : const Icon(Icons.login_rounded, size: 22),
-                    label: Text(
-                      _busy ? 'Bağlanıyor…' : 'Google ile devam et',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.login_rounded),
+                    label: Text(_busy ? c('Bağlanıyor…', 'Connecting…') : c('Google ile devam et', 'Continue with Google'),
+                      textAlign: TextAlign.center),
                   ),
-                  if (widget.allowSkip)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: TextButton(
-                        onPressed: _busy
-                            ? null
-                            : () => Navigator.pop(context, false),
-                        child: const Text('Şimdilik atla'),
-                      ),
-                    ),
+                  if (widget.allowSkip) ...[
+                    const SizedBox(height: 8),
+                    TextButton(onPressed: _busy ? null : () => Navigator.pop(context, false),
+                      child: Text(c('Şimdilik atla', 'Skip for now'))),
+                  ],
                 ] else
                   FilledButton.icon(
                     onPressed: () => Navigator.pop(context, true),
                     icon: const Icon(Icons.check_circle_outline_rounded),
-                    label: const Text('Devam et'),
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(56),
-                    ),
+                    label: Text(c('Devam et', 'Continue')),
                   ),
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest.withValues(
-                      alpha: 0.45,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: colors.outlineVariant.withValues(alpha: 0.5),
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.shield_outlined,
-                        size: 20,
-                        color: colors.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Sahada takma adınla görünürsün. Google e-posta adresin ve profil fotoğrafın diğer oyuncularla paylaşılmaz.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            height: 1.5,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AccountHero extends StatelessWidget {
-  const _AccountHero({required this.connected});
-  final bool connected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF123C36), Color(0xFF0B242A)],
-        ),
-        border: Border.all(color: const Color(0xFF28564F)),
-      ),
-      child: Stack(
-        children: [
-          const Positioned.fill(
-            child: ExcludeSemantics(
-              child: CustomPaint(painter: _PitchPainter()),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.sports_soccer_rounded,
-                      color: Color(0xFF53E8BE),
-                      size: 26,
-                    ),
+                    Icon(Icons.shield_outlined, size: 20, color: colors.muted),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        connected ? 'HESABIN BAĞLI' : 'SENİN LINKBALL PROFİLİN',
-                        style: const TextStyle(
-                          color: Color(0xFF91E6D0),
-                          fontSize: 11,
-                          letterSpacing: 1.3,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
+                    Expanded(child: Text(c('Oyuncular seni takma adınla görür. Google e-posta adresin ve fotoğrafın paylaşılmaz.',
+                      'Players see your nickname. Your Google email and photo are not shared with them.'),
+                      style: Theme.of(context).textTheme.bodySmall)),
                   ],
                 ),
-                const SizedBox(height: 28),
-                Text(
-                  connected
-                      ? 'Tek hesap.\nHer zaman sahada.'
-                      : 'Sahada iz bırak.',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    height: 1.12,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Senin profilin. Senin rekabetin.',
-                  style: TextStyle(
-                    color: Color(0xFFC1D8D2),
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
-}
-
-class _PitchPainter extends CustomPainter {
-  const _PitchPainter();
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF83DBBF).withValues(alpha: 0.09)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    final rect = Rect.fromLTWH(
-      size.width * .65,
-      -24,
-      size.width * .55,
-      size.height + 48,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, const Radius.circular(12)),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(rect.left, size.height / 2),
-      Offset(rect.right, size.height / 2),
-      paint,
-    );
-    canvas.drawCircle(Offset(rect.center.dx, size.height / 2), 42, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _PitchPainter oldDelegate) => false;
 }
 
 class _Benefit extends StatelessWidget {
+  const _Benefit({required this.icon, required this.title, required this.detail});
   final IconData icon;
-  final String title;
-  final String detail;
-  const _Benefit({
-    required this.icon,
-    required this.title,
-    required this.detail,
-  });
-
+  final String title, detail;
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: colors.primary, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  detail,
-                  style: TextStyle(
-                    fontSize: 12,
-                    height: 1.45,
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
+    final colors = PitchColors.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!(MediaQuery.sizeOf(context).width < 360 && MediaQuery.textScalerOf(context).scale(16) > 22)) ...[
+        Container(
+          width: 40, height: 40,
+          decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, color: colors.accent, size: 22),
+        ),
+        const SizedBox(width: 12),
         ],
-      ),
+        Expanded(child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(detail, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        )),
+      ],
     );
   }
 }
