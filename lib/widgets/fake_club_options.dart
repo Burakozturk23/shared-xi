@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/club.dart';
+import '../theme/ortak_saha_theme.dart';
 import 'club_badge.dart';
 
 /// Two columns with content-driven height, including at large text scales.
@@ -21,16 +22,16 @@ class FakeClubOptions extends StatelessWidget {
       ))),
   ]);
   Widget _card(BuildContext context, Map<String, dynamic> option) {
-    final club = Club.fromJson(option), colors = Theme.of(context).colorScheme;
+    final club = Club.fromJson(option), colors = PitchColors.of(context);
     final removed = eliminated.contains(club.id), verified = confirmed.contains(club.id);
     final revealed = fakeClubId != null, fake = fakeClubId == club.id, selected = selectedId == club.id;
     final label = revealed ? fake ? 'Sahte kulüp' : 'Oynadı' : removed ? 'Elendi · oynadı' : verified ? 'Doğrulandı · oynadı' : selected ? 'Seçildi' : 'Seç';
     final icon = revealed ? fake ? Icons.search_off : Icons.check_circle_outline :
       removed ? Icons.remove_circle_outline : verified ? Icons.verified_outlined : selected ? Icons.radio_button_checked : Icons.radio_button_off;
     return Semantics(button: true, selected: selected, label: '${club.name}, $label',
-      child: Material(color: selected || fake ? colors.primaryContainer : colors.surfaceContainerLow,
+      child: Material(color: selected || fake ? colors.tint : colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: selected || fake ? colors.primary : colors.outlineVariant)),
+          side: BorderSide(color: selected || fake ? colors.accent : colors.border)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(onTap: onSelected == null || removed || verified ? null : () => onSelected!(club.id),
           child: Padding(padding: const EdgeInsets.all(12), child: Column(mainAxisSize: MainAxisSize.min, children: [

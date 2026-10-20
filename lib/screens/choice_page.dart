@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/choice_service.dart';
 import '../widgets/player_portrait.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/game_ui.dart';
+import '../theme/ortak_saha_theme.dart';
 
 class ChoicePage extends StatefulWidget {
   const ChoicePage({super.key, required this.mode, this.service, this.initialTheme,
@@ -17,7 +20,8 @@ class ChoicePage extends StatefulWidget {
   State<ChoicePage> createState() => _ChoicePageState();
 }
 class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
-  static const bg = Color(0xff091118), surface = Color(0xff17232e), lime = Color(0xffccf566);
+  PitchColors get palette => PitchColors.of(context);
+  Color get accent => palette.accent;
   late final ChoiceService service;
   Map<String,dynamic> data = {};
   bool busy = true, records = false, configuring = false;
@@ -99,20 +103,17 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sonlandır'))]));
     if (confirmed == true && mounted) await action('finish');
   }
-  Widget panel(List<Widget> children, {Color? color}) => Padding(
-    padding: const EdgeInsets.only(bottom: 14), child: Material(
-      color: color ?? surface, borderRadius: BorderRadius.circular(20),
-      clipBehavior: Clip.antiAlias, child: Padding(padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children))));
-  Widget heading(String text) => Padding(padding: const EdgeInsets.only(bottom: 10),
-    child: Text(text, style: const TextStyle(fontFamily: 'Satoshi', fontSize: 24, fontWeight: FontWeight.w700)));
-  Widget note(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 7),
-    child: Text(text, style: const TextStyle(color: Color(0xffbecbd6), height: 1.5)));
+  Widget panel(List<Widget> children) => Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)));
+  Widget heading(String text) => Padding(padding: const EdgeInsets.only(bottom: 12),
+    child: Text(text, style: Theme.of(context).textTheme.headlineSmall));
+  Widget note(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: palette.muted)));
   Widget button(String text, VoidCallback? onPressed, {bool secondary = false}) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 5), child: secondary ? OutlinedButton(
-      onPressed: busy ? null : onPressed, child: Padding(padding: const EdgeInsets.all(12), child: Text(text, textAlign: TextAlign.center))) :
-      FilledButton(onPressed: busy ? null : onPressed,
-        child: Padding(padding: const EdgeInsets.all(12), child: Text(text, textAlign: TextAlign.center))));
+    padding: const EdgeInsets.symmetric(vertical: 6), child: secondary ? OutlinedButton(
+      onPressed: busy ? null : onPressed, child: Text(text, textAlign: TextAlign.center)) :
+      FilledButton(onPressed: busy ? null : onPressed, child: Text(text, textAlign: TextAlign.center)));
   Widget chips(List<(String,String)> items, String current, void Function(String) change) => Wrap(
     spacing: 8, runSpacing: 8, children: items.map((item) {
       final selected = current == item.$1;
@@ -122,11 +123,11 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(48, 48),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            foregroundColor: selected ? bg : Colors.white,
-            backgroundColor: selected ? lime : surface,
+            foregroundColor: selected ? accent : palette.text,
+            backgroundColor: selected ? palette.tint : palette.surface,
             textStyle: const TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w600),
-            shape: const StadiumBorder(),
-            side: BorderSide(color: selected ? lime : const Color(0xff607482))),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            side: BorderSide(color: selected ? accent : palette.border)),
           onPressed: busy ? null : () => setState(() => change(item.$1)),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             if (selected) ...[const Icon(Icons.check, size: 18), const SizedBox(width: 8)],
@@ -187,7 +188,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     final id = int.tryParse('${p['playerId'] ?? ''}');
     return Column(children: [
       if (!compact) ...[PlayerPortrait(playerId: id ?? -1, size: 72,
-        fallback: Icon(p['type'] == 'club' ? Icons.shield_outlined : Icons.person_outline, size: 48, color: lime)), const SizedBox(height: 10)],
+        fallback: Icon(p['type'] == 'club' ? Icons.shield_outlined : Icons.person_outline, size: 48, color: accent)), const SizedBox(height: 10)],
       Text('${p['name'] ?? 'Aday'}', textAlign: TextAlign.center,
         style: TextStyle(fontSize: compact ? 16 : 22, fontWeight: FontWeight.w700, fontFamily: 'Satoshi')),
       if (p['seasonKey'] != null) note('${p['seasonKey']}'),
@@ -209,7 +210,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     final total = (run['size'] as num? ?? 16).toInt() - 1;
     final round = run['roundSize'];
     return panel([heading(round == 2 ? 'Final' : round == 4 ? 'Yarı final' : round == 8 ? 'Çeyrek final' : 'Son $round'),
-      note('Seçim ${count + 1} / $total'), LinearProgressIndicator(value: count / total, color: lime, backgroundColor: const Color(0xff344551)), const SizedBox(height: 16),
+      note('Seçim ${count + 1} / $total'), LinearProgressIndicator(value: count / total, color: accent, backgroundColor: palette.raised), const SizedBox(height: 16),
       for (final side in ['leftId','rightId']) ...[
         person(rewardMap(candidates[run[side]])), button('Seç: ${rewardMap(candidates[run[side]])['name']}',
           () => action('choose', {'candidateId': run[side]})), const SizedBox(height: 16)],
@@ -226,7 +227,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       if (r['scope'] != null) note('${r['scope']}'),
       for (final side in ['left','right']) ...[
         person(rewardMap(q[side]), caption: number(q['${side}Value'], '${r['metricId']}')),
-        if (q['${side}Value'] == null) const Center(child: Text('Gizli değer', style: TextStyle(color: lime))),
+        if (q['${side}Value'] == null) Center(child: Text('Gizli değer', style: TextStyle(color: accent))),
         const SizedBox(height: 12)],
       if (r['answered'] == true) ...[
         heading(r['correct'] == true ? 'Doğru!' : 'Seri tamamlandı'),
@@ -248,12 +249,12 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         final p = placements.where((p) => p['slot'] == slot).firstOrNull;
         return Padding(padding: const EdgeInsets.only(bottom: 8), child: OutlinedButton(
           style: OutlinedButton.styleFrom(minimumSize: const Size(48, 56), alignment: Alignment.centerLeft,
-            backgroundColor: previewSlot == slot && !result ? lime.withValues(alpha: .14) : null),
+            backgroundColor: previewSlot == slot && !result ? palette.tint : null),
           onPressed: result || p != null || busy || data['offline'] == true ? null : () => setState(() => previewSlot = slot),
           child: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(
             '${slot + 1}. ${p == null ? 'Boş sıra' : rewardMap(p['player'])['name']}'
             '${result && r['completed'] == true && r['type'] == 'objective' && p != null ? ' · ${number(rewardMap(r['values'])[p['candidateId']], '${r['metricId']}')}' : ''}',
-            style: TextStyle(color: p == null ? null : Colors.white)))));
+            style: TextStyle(color: p == null ? null : palette.text)))));
       }),
       if (result && r['completed'] == true && r['type'] == 'objective') ExpansionTile(
         tilePadding: EdgeInsets.zero, title: const Text('Doğru sıralama'), children: [
@@ -325,16 +326,10 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
   }
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Theme(data: theme.copyWith(brightness: Brightness.dark, scaffoldBackgroundColor: bg,
-      colorScheme: const ColorScheme.dark(primary: lime, onPrimary: bg, surface: surface),
-      textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Inter'),
-      appBarTheme: const AppBarTheme(backgroundColor: bg, foregroundColor: Colors.white),
-      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: lime, foregroundColor: bg))),
-      child: Scaffold(appBar: AppBar(title: Text(title, maxLines: 2, softWrap: true), toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,
+    return Scaffold(appBar: AppBar(title: Text(title, maxLines: 2, softWrap: true), toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,
         actions: [IconButton(tooltip: 'Koleksiyon', onPressed: busy ? null : () => setState(() => records = !records), icon: const Icon(Icons.collections_bookmark_outlined)),
           IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh))]),
-        body: SafeArea(child: ListView(padding: const EdgeInsets.all(18), children: [
+        body: GameContent(child: ListView(padding: const EdgeInsets.all(20), children: [
           if (busy) const LinearProgressIndicator(),
           if (error != null) panel([Text(error!), button('Yeniden dene', load, secondary: true)]),
           if (data['notice'] != null) panel([note('${data['notice']}')]),
@@ -349,7 +344,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             note('Ekrandan çıkınca oyunun saklanır. Daha sonra aynı yerden devam edebilirsin.'),
             button('Oyunu sonlandır', !tot && data['offline'] == true ? null : finish, secondary: true),
           ],
-        ]))));
+        ])));
   }
 }
 String choiceDate(dynamic value) => value is num ? DateTime.fromMillisecondsSinceEpoch(value.toInt()).toLocal().toString().substring(0,16) : '';
@@ -367,9 +362,9 @@ Future<Uint8List> choiceSharePng(Map<String,dynamic> run) async {
   final painters = lines.asMap().entries.map((e) => TextPainter(text: TextSpan(text: e.value,
     style: TextStyle(fontFamily: 'Inter', fontSize: e.key == 0 ? 24 : e.key == 1 ? 34 : 26,
       fontWeight: e.key < 2 ? FontWeight.w700 : FontWeight.w400,
-      color: e.key == 0 ? const Color(0xffccf566) : Colors.white)), textDirection: TextDirection.ltr)..layout(maxWidth: 624)).toList();
+      color: e.key == 0 ? const Color(0xffC8FF3D) : Colors.white)), textDirection: TextDirection.ltr)..layout(maxWidth: 624)).toList();
   final height = (96 + painters.fold<double>(0, (n,p) => n + p.height + 24)).ceil();
-  canvas.drawRect(Rect.fromLTWH(0,0,720,height.toDouble()), Paint()..color = const Color(0xff091118));
+  canvas.drawRect(Rect.fromLTWH(0,0,720,height.toDouble()), Paint()..color = const Color(0xff0B1210));
   double y = 48;
   for (final p in painters) {p.paint(canvas, Offset(48,y)); y += p.height + 24; p.dispose();}
   final picture = recorder.endRecording(); final image = await picture.toImage(720,height);

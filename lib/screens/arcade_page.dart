@@ -3,10 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/arcade_service.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/game_ui.dart';
+import '../theme/ortak_saha_theme.dart';
 
-const _lime = Color(0xFFC9F565);
-const _ink = Color(0xFF0A1018);
-const _panel = Color(0xFF182330);
 int _n(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 List<Map<String, dynamic>> _rows(Object? value) => (value as List? ?? []).map(rewardMap).toList();
 String _difficulty(String s) => {'easy': 'Kolay', 'normal': 'Normal', 'hard': 'Zor', 'legend': 'Efsane'}[s] ?? s;
@@ -20,6 +20,8 @@ class ArcadePage extends StatefulWidget {
   State<ArcadePage> createState() => _ArcadePageState();
 }
 class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
+  PitchColors get palette => PitchColors.of(context);
+  Color get accent => palette.accent;
   late final ArcadeService service = widget.service ?? ArcadeService();
   Map<String, dynamic> data = {};
   Map<String, dynamic> get run => rewardMap(data['session']);
@@ -149,19 +151,16 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (busy) return;
       if (run['paused'] != true) await act('pause');
       if (mounted && run['paused'] == true) Navigator.of(context).pop();
-    }, child: Theme(data: ThemeData(useMaterial3: true, brightness: Brightness.dark, fontFamily: 'Inter').copyWith(
-      scaffoldBackgroundColor: _ink, colorScheme: const ColorScheme.dark(primary: _lime, secondary: _lime, secondaryContainer: Color(0xFF334825), onSecondaryContainer: _lime, surface: _panel),
-      inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder())),
-      child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 96 : 64, title: Text(showRecords ? '$title Rekor Merkezi' : title, maxLines: 2, style: const TextStyle(fontSize: 18)), actions: [
+    }, child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 96 : 64, title: Text(showRecords ? '$title Rekor Merkezi' : title, maxLines: 2), actions: [
         IconButton(tooltip: 'Rekor Merkezi', onPressed: busy ? null : () async {
           if (active && run['paused'] != true && !offline) await act('pause');
           if (mounted) setState(() => showRecords = !showRecords);
         }, icon: const Icon(Icons.emoji_events_outlined)),
         IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh)),
-      ]), body: SafeArea(child: Column(children: [
+      ]), body: GameContent(child: Column(children: [
         if (busy) const LinearProgressIndicator(minHeight: 2),
         if (error != null || data['notice'] != null) Padding(padding: const EdgeInsets.all(12),
-          child: Text(error ?? '${data['notice']}', style: const TextStyle(color: Colors.amber))),
+          child: Text(error ?? '${data['notice']}', style: TextStyle(color: palette.accent))),
         Expanded(child: ListView(padding: const EdgeInsets.fromLTRB(16, 12, 16, 28), children: [
           if (showRecords) ...records() else if (data.isNotEmpty) ...[
             if (run.isEmpty || run['finished'] == true) ...[
@@ -187,16 +186,17 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           ],
         ])),
       ]))),
-    ));
+    );
   }
-  Widget panel(String heading, String body, {Widget? child}) => Card(color: _panel, margin: const EdgeInsets.only(bottom: 14),
-    child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(heading, style: const TextStyle(fontFamily: 'Satoshi', fontSize: 22, fontWeight: FontWeight.w800, color: _lime)),
-      if (body.isNotEmpty) ...[const SizedBox(height: 10), Text(body, style: const TextStyle(height: 1.5))],
+  Widget panel(String heading, String body, {Widget? child}) => Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(heading, style: Theme.of(context).textTheme.headlineSmall),
+      if (body.isNotEmpty) ...[const SizedBox(height: 12), Text(body, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: palette.muted))],
       if (child != null) child,
     ])));
   Widget button(String text, VoidCallback onPressed) => Padding(padding: const EdgeInsets.symmetric(vertical: 8),
-    child: FilledButton(onPressed: busy || offline ? null : onPressed, style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)), child: Text(text)));
+    child: FilledButton(onPressed: busy || offline ? null : onPressed, child: Text(text, textAlign: TextAlign.center)));
   Widget choices(String label, String current, Map<String, String> options, ValueChanged<String> change) => Column(
     crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
       const SizedBox(height: 8), Wrap(spacing: 8, runSpacing: 6, children: options.entries.map((e) => ChoiceChip(
@@ -230,7 +230,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     else panel('Güncelleme hazırlanıyor', 'Bu mod henüz açılmadı. Rekorların korunuyor.'),
   ];
   List<Widget> message() => [
-    if ('${run['message'] ?? ''}'.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: Text('${run['message']}', style: const TextStyle(color: _lime))),
+    if ('${run['message'] ?? ''}'.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: Text('${run['message']}', style: TextStyle(color: accent))),
     if ('${run['hint'] ?? ''}'.isNotEmpty) panel('İpucu', '${run['hint']}'),
   ];
   Widget input() => Column(children: [
@@ -250,7 +250,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final speed = run['style'] == 'speed'; final q = rewardMap(run['question']);
     int seconds(String key) => (math.max(0, _n(run[key]) - delta) / 1000).ceil();
     return [
-      Wrap(spacing: 12, runSpacing: 8, children: [Text('${run['score']} PUAN', style: const TextStyle(color: _lime, fontWeight: FontWeight.bold)),
+      Wrap(spacing: 12, runSpacing: 8, children: [Text('${run['score']} PUAN', style: TextStyle(color: accent, fontWeight: FontWeight.bold)),
         Text('${run['rounds']} tur'), Text('Seri ${run['streak']}'),
         if (speed) Text('Toplam ${seconds('totalRemainingMs')} sn · Tur ${seconds('roundRemainingMs')} sn') else Text('♥ ${run['lives']} · Hedef 12 tur')]),
       const SizedBox(height: 16), panel('${q['left']} × ${q['right']}', '${_rows(run['found']).length}/3 oyuncu · ${_difficulty('${q['difficulty']}')}'),
@@ -268,11 +268,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final slots = _rows(board['slots']); final selected = slots.where((s) => '${s['id']}' == slotId).firstOrNull;
     final highlighted = (selected?['supports'] as List? ?? []).map((x) => '$x').toSet();
     if (selected?['row'] == 1) highlighted.add('0');
-    final boardWidth = math.max(MediaQuery.sizeOf(context).width - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 : 48.0));
+    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640) - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 : 48.0));
     return [
-      Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: const TextStyle(color: _lime)),
+      Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: TextStyle(color: accent)),
       const SizedBox(height: 14),
-      if (boardWidth > MediaQuery.sizeOf(context).width - 32) const Text('Büyük yazı için tahtayı yatay kaydırabilirsin.'),
+      if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640) - 32) const Text('Büyük yazı için tahtayı yatay kaydırabilirsin.'),
       SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: Column(children: [
       for (var row = 0; row < _n(board['levels']); row++) Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center,
         children: slots.where((s) => s['row'] == row).map((s) {
@@ -282,11 +282,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           return Flexible(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 135, minWidth: 48), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Semantics(label: entity.isEmpty ? 'Boş hücre ${_n(s['id']) + 1}${available ? ', seçilebilir' : ', alt destekleri doldur'}' : '${entity['name']}', button: available,
               child: OutlinedButton(style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(48, 72), padding: const EdgeInsets.all(5),
-                foregroundColor: Colors.white, backgroundColor: id == slotId ? _lime.withValues(alpha: .22) : _panel,
-                side: BorderSide(color: highlighted.contains(id) || id == slotId ? _lime : Colors.white24)),
+                foregroundColor: palette.text, backgroundColor: id == slotId ? palette.tint : palette.surface,
+                side: BorderSide(color: highlighted.contains(id) || id == slotId ? accent : palette.border)),
                 onPressed: !busy && !offline && available ? () => setState(() {slotId = id; error = null;}) : null,
                 child: Text(entity.isEmpty ? available ? '+' : '·' : '${entity['name']}', textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: entity.isEmpty ? _lime : Colors.white))),
+                  style: TextStyle(fontSize: 12, color: entity.isEmpty ? accent : palette.text))),
             ))));
         }).toList())),
       ]))),
@@ -304,7 +304,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final locked = _n(run['lockUntil']) > _n(run['serverNow']) + elapsed.elapsedMilliseconds;
     final seconds = ((_n(run['activeMs']) + delta) / 1000).floor();
     return [
-      Text('${run['moves']} hamle · ${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')} · ${run['correct']}/${board['count']} çift', style: const TextStyle(color: _lime)),
+      Text('${run['moves']} hamle · ${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')} · ${run['correct']}/${board['count']} çift', style: TextStyle(color: accent)),
       const SizedBox(height: 12),
       if (locked) const Padding(padding: EdgeInsets.only(bottom: 8), child: Text('Kartları hatırla…')),
       GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: cards.length,
@@ -315,13 +315,13 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           // Hidden cards have no face text, image, tooltip or semantic identity.
           return Semantics(label: visible ? '${c['name']}${c['matched'] == true ? ', eşleşti' : ''}' : 'Kapalı kart ${i + 1}', button: !visible,
             child: ExcludeSemantics(child: OutlinedButton(style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.all(6),
-              backgroundColor: visible ? _panel : const Color(0xFF111C27),
-              side: BorderSide(color: c['matched'] == true ? _lime : Colors.white24)),
+              backgroundColor: visible ? palette.surface : palette.raised,
+              side: BorderSide(color: c['matched'] == true ? accent : palette.border)),
               onPressed: busy || offline || locked || visible ? null : () => act('flip', {'cardId': c['id']}),
               child: visible ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Icon(c['type'] == 'club' ? Icons.shield_outlined : Icons.person_outline, color: _lime), const SizedBox(height: 6),
-                Text('${c['name']}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, color: Colors.white)),
-              ]) : const Icon(Icons.sports_soccer, color: Colors.white30))));
+                Icon(c['type'] == 'club' ? Icons.shield_outlined : Icons.person_outline, color: accent), const SizedBox(height: 6),
+                Text('${c['name']}', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: palette.text)),
+              ]) : Icon(Icons.sports_soccer, color: palette.muted))));
         }),
     ];
   }
@@ -329,7 +329,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     panel(run['won'] == true ? 'Tamamlandı!' : 'Oyun sonucu', '${run['reason'] ?? ''}', child: Padding(padding: const EdgeInsets.only(top: 12), child: Text(
       widget.mode == 'matching' ? '${run['moves']} hamle · ${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}' :
       '${run['score']} puan · ${run['correct']} doğru${widget.mode == 'burst' ? ' · ${run['rounds']} tur' : ''}'))),
-    if (run['pendingValidation'] == true) const Text('Sonuç doğrulama bekliyor. Yenile ile eşitle.', style: TextStyle(color: Colors.amber)),
+    if (run['pendingValidation'] == true) Text('Sonuç doğrulama bekliyor. Yenile ile eşitle.', style: TextStyle(color: accent)),
     if (widget.mode != 'matching') Text('${_n(run['wrong'])} yanlış · ${_n(run['hints'])} ipucu${widget.mode == 'burst' ? ' · ${_n(run['passes'])} pas' : ''}'),
     Text('${_n(run['earnedCoins'])} Coin · ${_n(run['earnedCoins']) * 2} XP${run['practice'] == true ? ' · Konuk alıştırması' : ''}'),
     Text(_n(data['pendingCoins']) > 0 ? 'Ödül ödemesi bekliyor; Yenile ile eşitle.' : rewardMap(data['availability'])['rewardsEnabled'] == true ? 'Ödül durumu hesabında kayıtlı.' : 'Bu sürümde ödüller henüz açılmadı.'),
@@ -365,7 +365,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}\nOrtalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}'),
       if (rewardMap(data['legacy']).isNotEmpty) panel('Bu cihazın eski sürüm rekoru', rewardMap(data['legacy']).entries.map((e) => '${e.key}: ${e.value}').join('\n')),
       for (final e in rewardMap(data['medals']).entries.where((e) => e.key.startsWith(widget.mode)))
-        ListTile(leading: const Icon(Icons.military_tech, color: _lime), title: Text(_medalLabel(e.key)),
+        ListTile(leading: Icon(Icons.military_tech, color: accent), title: Text(_medalLabel(e.key)),
           subtitle: Text('${rewardMap(e.value)['coins']} Coin · ${rewardMap(data['paid'])[e.key] == true ? 'Ödendi' : 'Bekliyor'}')),
       if (_rows(data['recent']).isNotEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text('Son oyunlar')),
       for (final r in _rows(data['recent'])) ListTile(title: Text(widget.mode == 'matching' ? '${r['moves']} hamle' : '${r['score']} puan'),

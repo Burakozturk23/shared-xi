@@ -238,6 +238,7 @@ class GameCatalog {
       subtitle: 'Oynamadığı kulübü bul',
       icon: Icons.shield_outlined,
       page: OddClubModeSelectionPage(),
+      modern: true,
       requiresRepository: false,
       category: 'Kariyer & Oyuncu',
     ),

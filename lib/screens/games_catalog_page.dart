@@ -8,6 +8,7 @@ import '../services/search_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_tile.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/game_ui.dart';
 import '../widgets/empty_state.dart';
 
 class GamesCatalogPage extends StatefulWidget {
@@ -63,10 +64,8 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (group != null) ...[
-                  Text(
-                    group.subtitle,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
+                  GameIntro(icon: group.icon, title: group.subtitle,
+                    message: 'Modunu seç ve sahaya çık.'),
                   const SizedBox(height: 8),
                 ],
                 Text(
@@ -195,7 +194,7 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
     if (group == null) return content;
     return Scaffold(
       appBar: AppBar(title: Text(group.title)),
-      body: SafeArea(top: false, child: content),
+      body: GameContent(child: content),
     );
   }
 }

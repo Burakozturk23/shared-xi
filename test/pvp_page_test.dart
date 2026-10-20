@@ -1,3 +1,4 @@
+import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -42,10 +43,10 @@ class PvpFixture extends PvpService {
   }
 }
 final boundary = GlobalKey();
-Future<void> mount(WidgetTester t,OnlinePlayMode mode,PvpFixture f,{bool large=false,bool setup=false}) async {
+Future<void> mount(WidgetTester t,OnlinePlayMode mode,PvpFixture f,{bool light=false,bool large=false,bool setup=false}) async {
   t.view.physicalSize=Size(large?320:390,1100);t.view.devicePixelRatio=1;
   addTearDown(t.view.resetPhysicalSize);addTearDown(t.view.resetDevicePixelRatio);
-  await t.pumpWidget(MaterialApp(builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(
+  await t.pumpWidget(MaterialApp(theme: light ? OrtakSahaTheme.light : OrtakSahaTheme.dark, builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(
     textScaler:TextScaler.linear(large?1.8:1)),child:child!),home:RepaintBoundary(key:boundary,
       child:PvpPage(key:UniqueKey(),mode:mode,playKind:f.ranked?'ranked':'friend',joinCode:setup?null:'AABBCCDD',service:f))));
   await t.pumpAndSettle();

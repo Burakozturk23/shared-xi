@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
 import '../widgets/friend_match_invite_button.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/game_ui.dart';
 import '../widgets/fake_club_options.dart';
 import 'online_mode_catalog.dart';
 
@@ -134,11 +135,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   }
   @override
   Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (didPop, _) { if (!didPop) _leave(); },
-    child: Scaffold(appBar: AppBar(title: Text(_fakeClub ? 'Sahte Kulüp Düellosu' : _mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu'), actions: [
+    child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 120 : 72, title: Text(_fakeClub ? 'Sahte Kulüp Düellosu' : _mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu', maxLines: 3), actions: [
       if (_waiting && _room['host'] == true && _room['ranked'] != true)
         FriendMatchInviteButton(mode: _fakeClub ? OnlinePlayMode.fakeClubDuel : _mystery ? OnlinePlayMode.mysteryDuel : _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
       IconButton(tooltip: 'Yeniden bağlan', onPressed: _busy || _accountChanged ? null : _load, icon: const Icon(Icons.refresh))]),
-      body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
+      body: GameContent(
         child: ListView(padding: const EdgeInsets.all(16), children: [
           if (_busy) const LinearProgressIndicator(),
           if (_error != null) Padding(padding: const EdgeInsets.all(8), child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))),
@@ -150,7 +151,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
             TextButton(onPressed: _busy ? null : _leave, child: const Text('Aramayı iptal et')),
           ])),
           if (_playing) ..._game(),
-        ]))))));
+        ]))));
   List<Widget> _lobby() => [
     if (_finished) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(_room['status'] == 'forfeit' ? 'Hükmen sonuç' : _room['status'] == 'cancelled' ? 'Oda kapandı' :
@@ -162,11 +163,13 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
         child: Text('Tur: ${r['kind'] == 'fake_club_duel' ? 'Sahte Kulüp' : r['kind']} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan${r['explanation'] != null ? '\n${r['explanation']}' : ''}')),
     ])),
     const SizedBox(height: 12),
-    Text(_fakeClub ? '10 futbolcu · her tur 10 saniye · can sınırı yok' : _mystery ? '5 gizemli futbolcu · her tur 30 saniye' : _career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye', style: Theme.of(context).textTheme.titleLarge),
-    const Text('Enerji, reklam ve destek yok. Her tur tek kesin cevap. Doğruluk ve hız puan getirir.'),
+    GameIntro(icon: _fakeClub ? Icons.search_off_rounded : _mystery ? Icons.person_search_outlined : _career ? Icons.route_outlined : Icons.swap_horiz_rounded, title: _fakeClub ? '10 futbolcu · her tur 10 saniye · can sınırı yok' : _mystery ? '5 gizemli futbolcu · her tur 30 saniye' : _career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye',
+      message: 'Enerji, reklam ve destek yok. Her tur tek kesin cevap. Doğruluk ve hız puan getirir.'),
+    const SizedBox(height: 20),
     if (!_enabled) const Text('Bu eşleşme türü henüz açılmadı. Doğrulama tamamlanınca kullanılabilir olacak.'),
     if (widget.ranked) FilledButton(onPressed: _busy || _version.isEmpty || !_enabled ? null : () => _enter('ranked'), child: const Text('Dereceli rakip bul')) else ...[
       FilledButton(onPressed: _busy || _version.isEmpty || !_enabled ? null : () => _enter('create'), child: const Text('Arkadaş odası oluştur')),
+      const SizedBox(height: 20),
       TextField(controller: _code, textCapitalization: TextCapitalization.characters, maxLength: 8, decoration: const InputDecoration(labelText: 'Oda kodu')),
       OutlinedButton(onPressed: _busy || _version.isEmpty || !_enabled ? null : () => _enter('join', code: _code.text), child: const Text('Odaya katıl')),
     ],
@@ -176,8 +179,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
     final seconds = (((_room['deadline'] as num? ?? _now) - _now) / 1000).ceil().clamp(0, 30);
     final locked = _busy || _room['submitted'] == true || seconds == 0 || before;
     return [
-      Text('Tur ${(_room['round'] as num? ?? 0) + 1} / ${_room['totalRounds']} · $seconds sn', style: Theme.of(context).textTheme.headlineSmall),
-      Text('Sen ${rewardMap(_room['mine'])['score'] ?? 0} · Rakip ${rewardMap(_room['theirs'])['score'] ?? 0}'),
+      PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Tur ${(_room['round'] as num? ?? 0) + 1} / ${_room['totalRounds']} · $seconds sn', style: Theme.of(context).textTheme.headlineSmall),
+      Text('Sen ${rewardMap(_room['mine'])['score'] ?? 0} · Rakip ${rewardMap(_room['theirs'])['score'] ?? 0}'),])),
       const SizedBox(height: 16),
       if (before || q.isEmpty) const Text('Tur başlıyor…') else ...[
         if (q['kind'] == 'mystery_duel') ...[
@@ -187,10 +190,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
             for (final hint in (q['hints'] as List? ?? const [])) Padding(padding: const EdgeInsets.only(top: 8), child: Text('$hint')),
           ])),
         ],
-        if (q['player'] != null) Text('${rewardMap(q['player'])['name']}', style: Theme.of(context).textTheme.titleLarge),
+        if (q['player'] != null) Padding(padding: const EdgeInsets.only(bottom: 12), child: Text('${rewardMap(q['player'])['name']}', style: Theme.of(context).textTheme.titleLarge)),
         if (q['route'] is List) Text((q['route'] as List).join(' → ')),
         if (q['kind'] == 'transfer') ...[
           PitchPanel(child: Text('${rewardMap(q['from'])['name']} → ${rewardMap(q['to'])['name']}\n${q['year']}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge)),
+          const SizedBox(height: 16),
           TextField(controller: _query, enabled: !locked, onChanged: _search, decoration: const InputDecoration(labelText: 'Futbolcu ara')),
           for (final p in _results) ListTile(title: Text('${p['name']}'), subtitle: Text('${p['country']}'), selected: _selected == p['id'],
             onTap: locked ? null : () => setState(() => _selected = p['id'])),
@@ -207,6 +211,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
           if (_room['explanation'] != null) Text('${_room['explanation']}'),
         ] else for (final p in _rows(q['options'])) Card(child: ListTile(title: Text('${p['name']}'), selected: _selected == p['id'],
           leading: Icon(_selected == p['id'] ? Icons.radio_button_checked : Icons.radio_button_off), onTap: locked ? null : () => setState(() => _selected = p['id']))),
+        const SizedBox(height: 16),
         FilledButton(onPressed: locked || q['kind'] != 'order' && _selected == null ? null : _answer, child: const Text('Kesin cevabımı gönder')),
         if (_room['submitted'] == true) const Text('Cevabın kaydedildi. Tur bitince sonuç açıklanacak.'),
         if (_room.containsKey('correct')) Text(_room['correct'] == true ? 'Doğru!' : 'Yanlış / süre doldu'),
