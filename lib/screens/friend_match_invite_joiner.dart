@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/route_appearance.dart';
 import '../models/friend_models.dart';
 import '../online/online_mode_catalog.dart';
 import '../online/online_mode_route.dart';
@@ -28,7 +29,7 @@ class FriendMatchInviteJoiner {
     }
 
     if (!context.mounted) return;
-    await Navigator.push(context, MaterialPageRoute(builder: (_) =>
+    await Navigator.push(context, LinkballRoute(modern: true, builder: (_) =>
       onlineModePage(mode, playKind: 'friend', joinCode: invite.roomCode)));
   }
 

@@ -268,11 +268,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final slots = _rows(board['slots']); final selected = slots.where((s) => '${s['id']}' == slotId).firstOrNull;
     final highlighted = (selected?['supports'] as List? ?? []).map((x) => '$x').toSet();
     if (selected?['row'] == 1) highlighted.add('0');
-    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640) - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 : 48.0));
+    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640.0) - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 : 48.0));
     return [
       Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: TextStyle(color: accent)),
       const SizedBox(height: 14),
-      if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640) - 32) const Text('Büyük yazı için tahtayı yatay kaydırabilirsin.'),
+      if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640.0) - 32) const Text('Büyük yazı için tahtayı yatay kaydırabilirsin.'),
       SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: Column(children: [
       for (var row = 0; row < _n(board['levels']); row++) Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center,
         children: slots.where((s) => s['row'] == row).map((s) {
@@ -303,12 +303,17 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final board = rewardMap(run['board']); final cards = _rows(board['cards']);
     final locked = _n(run['lockUntil']) > _n(run['serverNow']) + elapsed.elapsedMilliseconds;
     final seconds = ((_n(run['activeMs']) + delta) / 1000).floor();
+    final columns = run['difficulty'] == 'easy' ? 3 : 4;
+    final scale = MediaQuery.textScalerOf(context).scale(1);
+    final availableWidth = math.min(MediaQuery.sizeOf(context).width, 640.0) - 32;
+    final boardWidth = scale > 1.3 ? math.max(availableWidth, columns * 100.0 * scale + (columns - 1) * 8) : availableWidth;
     return [
       Text('${run['moves']} hamle · ${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')} · ${run['correct']}/${board['count']} çift', style: TextStyle(color: accent)),
       const SizedBox(height: 12),
       if (locked) const Padding(padding: EdgeInsets.only(bottom: 8), child: Text('Kartları hatırla…')),
-      GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: cards.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: run['difficulty'] == 'easy' ? 3 : 4,
+      if (boardWidth > availableWidth) const Padding(padding: EdgeInsets.only(bottom: 12), child: Text('Kartları görmek için tahtayı yatay kaydırabilirsin.')),
+      SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: cards.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns,
           crossAxisSpacing: 8, mainAxisSpacing: 8, mainAxisExtent: math.max(112, 112 * MediaQuery.textScalerOf(context).scale(1))),
         itemBuilder: (context, i) {
           final c = cards[i]; final visible = c['visible'] == true;
@@ -322,7 +327,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
                 Icon(c['type'] == 'club' ? Icons.shield_outlined : Icons.person_outline, color: accent), const SizedBox(height: 6),
                 Text('${c['name']}', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: palette.text)),
               ]) : Icon(Icons.sports_soccer, color: palette.muted))));
-        }),
+        }))),
     ];
   }
   List<Widget> result() => [

@@ -138,7 +138,7 @@ class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const OnlineRankedModePage()),
+                LinkballRoute(modern: true, builder: (_) => const OnlineRankedModePage()),
               );
             },
           ),
@@ -152,7 +152,7 @@ class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const OnlineFriendsModePage()),
+                LinkballRoute(modern: true, builder: (_) => const OnlineFriendsModePage()),
               );
             },
           ),

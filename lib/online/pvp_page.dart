@@ -172,7 +172,7 @@ class _PvpPageState extends State<PvpPage> {
                 size: 20,color: owner['uid'] == uid || selectedCell ? accent : palette.muted),
               const SizedBox(height: 4), Flexible(child: Text(labels[i],textAlign: TextAlign.center,overflow: TextOverflow.ellipsis,maxLines: 5,
                 style: const TextStyle(fontSize: 12))), if (ownerName != null) Text('$ownerName',maxLines: 1,overflow: TextOverflow.ellipsis),
-            ]))));
+            ])))));
       });
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [
       if (boardWidth > constraints.maxWidth) note('Tahtayı yatay kaydır. Tam hücre bilgisi için basılı tut.'),

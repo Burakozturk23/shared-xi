@@ -118,6 +118,13 @@ void main() {
       });
     }
   }
+  testWidgets('matching visible cards remain readable with large text', (t) async {
+    await arcade.mount(t, arcade.ArcadeFixture(stage: 'locked'), 'matching', large: true, light: true);
+    expectTheme(t, true);
+    expect(find.text('Zlatan Ibrahimović'), findsOneWidget);
+    await arcade.capture(t, 'matching_visible_light_large');
+    await t.pumpWidget(const SizedBox());
+  });
   for (final mode in ['burst', 'pyramid', 'matching']) {
     testWidgets('$mode inherits light theme across stages', (t) async {
       for (final stage in ['intro', 'prepared', 'game', 'paused', 'result']) {
