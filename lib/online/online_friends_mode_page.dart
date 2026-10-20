@@ -1,46 +1,13 @@
-import 'career_transfer_online_page.dart';
 import 'package:flutter/material.dart';
-
-import '../models/grid_sub_type.dart';
 import 'online_mode_catalog.dart';
-import 'online_lobby_page.dart';
-import 'online_grid_lobby_page.dart';
-import 'online_five_lobby_page.dart';
-import 'online_cinko_lobby_page.dart';
-import 'online_loto_lobby_page.dart';
-import 'club_manager_online_lobby_page.dart';
+import 'online_mode_route.dart';
 
 /// Arkadaş: önce mod seç, sonra oda kur / katıl.
 class OnlineFriendsModePage extends StatelessWidget {
   const OnlineFriendsModePage({super.key});
 
   void _open(BuildContext context, OnlinePlayMode mode) {
-    final Widget page;
-    switch (mode) {
-      case OnlinePlayMode.careerRace:
-      case OnlinePlayMode.fakeClubDuel:
-      case OnlinePlayMode.mysteryDuel:
-      case OnlinePlayMode.transferDuel:
-        page = CareerTransferOnlinePage(mode: mode.wireName, ranked: false);
-      case OnlinePlayMode.sharedXi:
-      case OnlinePlayMode.clubCountry:
-        // Shared XI lobby çoğu projede her iki modu da karşılar
-        page = const OnlineLobbyPage();
-      case OnlinePlayMode.gridClassic:
-        page = const OnlineGridLobbyPage(initialSubType: GridSubType.classic);
-      case OnlinePlayMode.gridRandom:
-        page = const OnlineGridLobbyPage(initialSubType: GridSubType.random);
-      case OnlinePlayMode.gridReverse:
-        page = const OnlineGridLobbyPage(initialSubType: GridSubType.reverse);
-      case OnlinePlayMode.randomFive:
-        page = const OnlineFiveLobbyPage();
-      case OnlinePlayMode.cinko:
-        page = const OnlineCinkoLobbyPage();
-      case OnlinePlayMode.loto:
-        page = const OnlineLotoLobbyPage();
-      case OnlinePlayMode.clubManager:
-        page = const ClubManagerOnlineLobbyPage();
-    }
+    final page = onlineModePage(mode, playKind: 'friend');
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
   }
 

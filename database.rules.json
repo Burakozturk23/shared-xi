@@ -2,10 +2,22 @@
   "rules": {
     ".read": false,
     ".write": false,
-    "choiceCatalogs": { ".read": false, ".write": false },
-    "arcadeCatalogs": {".read": false, ".write": false},
-    "fakeClubCatalogs": { ".read": false, ".write": false },
-    "mysteryChainCatalogs": {".read": false, ".write": false},
+    "choiceCatalogs": {
+      ".read": false,
+      ".write": false
+    },
+    "arcadeCatalogs": {
+      ".read": false,
+      ".write": false
+    },
+    "fakeClubCatalogs": {
+      ".read": false,
+      ".write": false
+    },
+    "mysteryChainCatalogs": {
+      ".read": false,
+      ".write": false
+    },
     "careerTransferOnline": {
       ".read": false,
       ".write": false
@@ -29,7 +41,7 @@
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid && (newData.child(\"elo\").val() == data.child(\"elo\").val() || (!data.child(\"elo\").exists() && newData.child(\"elo\").val() == 1000)) && (newData.child(\"wins\").val() == data.child(\"wins\").val() || (!data.child(\"wins\").exists() && newData.child(\"wins\").val() == 0)) && (newData.child(\"losses\").val() == data.child(\"losses\").val() || (!data.child(\"losses\").exists() && newData.child(\"losses\").val() == 0)) && (newData.child(\"draws\").val() == data.child(\"draws\").val() || (!data.child(\"draws\").exists() && newData.child(\"draws\").val() == 0))",
         "elo": {
           ".read": "auth != null"
         },
@@ -58,53 +70,53 @@
     "matchmaking": {
       "queue": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null"
+        ".write": false
       },
       "gridQueue": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null"
+        ".write": false
       },
       "cinkoQueue": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null"
+        ".write": false
       },
       "fiveQueue": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null"
+        ".write": false
       },
       "lotoQueue": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null"
+        ".write": false
       }
     },
     "matches": {
       "$matchId": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && (data.child(\"status\").val() == \"waiting\" || data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid)",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && ((!data.exists() && newData.child(\"player1Uid\").val() == auth.uid) || (data.exists() && (data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid || (!data.child(\"player2Uid\").exists() && data.child(\"status\").val() == \"waiting\" && newData.child(\"player2Uid\").val() == auth.uid)))) && (!data.exists() || newData.child(\"player1Uid\").val() == data.child(\"player1Uid\").val()) && (!data.exists() || ((!data.child(\"player2Uid\").exists() && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() == auth.uid)) || (data.child(\"player2Uid\").exists() && newData.child(\"player2Uid\").val() == data.child(\"player2Uid\").val()))) && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() != newData.child(\"player1Uid\").val()) && (!data.exists() || newData.child(\"ranked\").val() == data.child(\"ranked\").val())"
+        ".write": false
       }
     },
     "rooms": {
       "$roomCode": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null"
+        ".write": false
       }
     },
     "gridMatches": {
       "$matchId": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && (data.child(\"status\").val() == \"waiting\" || data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid)",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && ((!data.exists() && newData.child(\"player1Uid\").val() == auth.uid) || (data.exists() && (data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid || (!data.child(\"player2Uid\").exists() && data.child(\"status\").val() == \"waiting\" && newData.child(\"player2Uid\").val() == auth.uid)))) && (!data.exists() || newData.child(\"player1Uid\").val() == data.child(\"player1Uid\").val()) && (!data.exists() || ((!data.child(\"player2Uid\").exists() && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() == auth.uid)) || (data.child(\"player2Uid\").exists() && newData.child(\"player2Uid\").val() == data.child(\"player2Uid\").val()))) && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() != newData.child(\"player1Uid\").val()) && (!data.exists() || newData.child(\"ranked\").val() == data.child(\"ranked\").val())"
+        ".write": false
       }
     },
     "cinkoMatches": {
       "$matchId": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && (data.child(\"status\").val() == \"waiting\" || data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid)",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && ((!data.exists() && newData.child(\"player1Uid\").val() == auth.uid) || (data.exists() && (data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid || (!data.child(\"player2Uid\").exists() && data.child(\"status\").val() == \"waiting\" && newData.child(\"player2Uid\").val() == auth.uid)))) && (!data.exists() || newData.child(\"player1Uid\").val() == data.child(\"player1Uid\").val()) && (!data.exists() || ((!data.child(\"player2Uid\").exists() && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() == auth.uid)) || (data.child(\"player2Uid\").exists() && newData.child(\"player2Uid\").val() == data.child(\"player2Uid\").val()))) && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() != newData.child(\"player1Uid\").val()) && (!data.exists() || newData.child(\"ranked\").val() == data.child(\"ranked\").val())"
+        ".write": false
       }
     },
     "fiveMatches": {
       "$matchId": {
         ".read": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && (data.child(\"status\").val() == \"waiting\" || data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid)",
-        ".write": "auth != null && auth.token.firebase.identities != null && auth.token.firebase.identities[\"google.com\"] != null && ((!data.exists() && newData.child(\"player1Uid\").val() == auth.uid) || (data.exists() && (data.child(\"player1Uid\").val() == auth.uid || data.child(\"player2Uid\").val() == auth.uid || (!data.child(\"player2Uid\").exists() && data.child(\"status\").val() == \"waiting\" && newData.child(\"player2Uid\").val() == auth.uid)))) && (!data.exists() || newData.child(\"player1Uid\").val() == data.child(\"player1Uid\").val()) && (!data.exists() || ((!data.child(\"player2Uid\").exists() && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() == auth.uid)) || (data.child(\"player2Uid\").exists() && newData.child(\"player2Uid\").val() == data.child(\"player2Uid\").val()))) && (!newData.child(\"player2Uid\").exists() || newData.child(\"player2Uid\").val() != newData.child(\"player1Uid\").val()) && (!data.exists() || newData.child(\"ranked\").val() == data.child(\"ranked\").val())"
+        ".write": false
       }
     },
     "usernames": {
@@ -305,7 +317,10 @@
       ".read": false,
       ".write": false
     },
-    "derbyDayState": {".read": false, ".write": false},
+    "derbyDayState": {
+      ".read": false,
+      ".write": false
+    },
     "footballDocuState": {
       ".read": false,
       ".write": false
@@ -322,12 +337,35 @@
       ".read": false,
       ".write": false
     },
-    "runtimeConfig": {".read": false, ".write": false},
-    "dailyWordPrivate": {".read": false, ".write": false},
-    "dailyWordState": {".read": false, ".write": false},
-    "dailyQuestionPrivate": {".read": false, ".write": false},
-    "dailyQuestionState": {".read": false, ".write": false},
+    "runtimeConfig": {
+      ".read": false,
+      ".write": false
+    },
+    "dailyWordPrivate": {
+      ".read": false,
+      ".write": false
+    },
+    "dailyWordState": {
+      ".read": false,
+      ".write": false
+    },
+    "dailyQuestionPrivate": {
+      ".read": false,
+      ".write": false
+    },
+    "dailyQuestionState": {
+      ".read": false,
+      ".write": false
+    },
     "whatIfState": {
+      ".read": false,
+      ".write": false
+    },
+    "pvpV1": {
+      ".read": false,
+      ".write": false
+    },
+    "pvpCatalogs": {
       ".read": false,
       ".write": false
     }

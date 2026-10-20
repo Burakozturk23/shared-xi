@@ -14,16 +14,17 @@ class ManagerMatchService {
   static final ManagerMatchService instance = ManagerMatchService._();
   static Random _rng = Random();
 
-  double powerOf(List<ManagerPoolPlayer> xi, {ManagerTactics? tactics}) {
+  double powerOf(List<ManagerPoolPlayer> xi, {ManagerTactics? tactics, Repository? repository}) {
     if (xi.isEmpty) return 40;
     final avg = xi.fold<double>(0, (s, p) => s + p.overall) / xi.length;
+    final repo = repository ?? Repository.instance;
     final players = <Player>[];
     for (final p in xi) {
-      if (!Repository.instance.isInitialized) break;
-      final pl = Repository.instance.playerById(p.playerId);
+      if (!repo.isInitialized) break;
+      final pl = repo.playerById(p.playerId);
       if (pl != null) players.add(pl);
     }
-    final link = ManagerLinkService.instance.squadLink(players);
+    final link = ManagerLinkService.instance.squadLink(players, repository: repo);
     final linkBonus = (link * 0.35).clamp(0.0, 14.0);
     final groups = xi.map((e) => e.positionGroup).toSet();
     final balance = groups.length >= 4 ? 4.0 : groups.length.toDouble();
