@@ -22,7 +22,7 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
     final modes = OnlinePlayMode.values.where((mode) =>
       SearchService.contains('${mode.title} ${mode.subtitle}', _search.text.trim())).toList();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.ranked ? 'Rastgele eşleş' : 'Arkadaşlarınla oyna'),
+      appBar: AppBar(title: Text(widget.ranked ? 'Rastgele eşleş' : 'Arkadaşlarınla oyna', maxLines: 2),
         toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64),
       body: GameContent(child: ListView(padding: const EdgeInsets.all(20), children: [
         GameIntro(icon: widget.ranked ? Icons.public_rounded : Icons.groups_rounded,

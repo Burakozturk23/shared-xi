@@ -274,7 +274,7 @@ class _PvpPageState extends State<PvpPage> {
   @override
   Widget build(BuildContext context) => PopScope(
       canPop: room.isEmpty || done,onPopInvokedWithResult: (didPop,result) {if (!didPop) leave();},
-      child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,title: Text(widget.mode.title,maxLines: 2,softWrap: true),actions: [
+      child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,title: Text(widget.mode.title,maxLines: 3,softWrap: true),actions: [
         IconButton(tooltip: 'Yenile',onPressed: busy ? null : () {if (room.isEmpty) load(); else action('poll');},icon: const Icon(Icons.refresh))]),
         body: GameContent(child: ListView(padding: const EdgeInsets.all(16),children: [
           Text(ranked ? 'RASTGELE EŞLEŞME' : 'ARKADAŞ MAÇI',style: TextStyle(color: accent,fontWeight: FontWeight.w700)),

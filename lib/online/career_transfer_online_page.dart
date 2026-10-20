@@ -135,7 +135,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   }
   @override
   Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (didPop, _) { if (!didPop) _leave(); },
-    child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 120 : 72, title: Text(_fakeClub ? 'Sahte Kulüp Düellosu' : _mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu', maxLines: 3), actions: [
+    child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64, title: Text(_fakeClub ? 'Sahte Kulüp Düellosu' : _mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu', maxLines: 3), actions: [
       if (_waiting && _room['host'] == true && _room['ranked'] != true)
         FriendMatchInviteButton(mode: _fakeClub ? OnlinePlayMode.fakeClubDuel : _mystery ? OnlinePlayMode.mysteryDuel : _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
       IconButton(tooltip: 'Yeniden bağlan', onPressed: _busy || _accountChanged ? null : _load, icon: const Icon(Icons.refresh))]),

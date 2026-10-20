@@ -326,7 +326,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text(title, maxLines: 2, softWrap: true), toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,
+    return Scaffold(appBar: AppBar(title: Text(title, maxLines: 3, softWrap: true), toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,
         actions: [IconButton(tooltip: 'Koleksiyon', onPressed: busy ? null : () => setState(() => records = !records), icon: const Icon(Icons.collections_bookmark_outlined)),
           IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh))]),
         body: GameContent(child: ListView(padding: const EdgeInsets.all(20), children: [

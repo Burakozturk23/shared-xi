@@ -64,8 +64,9 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (group != null) ...[
-                  GameIntro(icon: group.icon, title: group.subtitle,
-                    message: 'Modunu seç ve sahaya çık.'),
+                  if (['Hız & Eşleştirme', 'Seçim & Sıralama'].contains(group.title))
+                    GameIntro(icon: group.icon, title: group.subtitle, message: 'Modunu seç ve sahaya çık.')
+                  else Text(group.subtitle, style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: 8),
                 ],
                 Text(
@@ -193,7 +194,7 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
     );
     if (group == null) return content;
     return Scaffold(
-      appBar: AppBar(title: Text(group.title)),
+      appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64, title: Text(group.title, maxLines: 2)),
       body: GameContent(child: content),
     );
   }

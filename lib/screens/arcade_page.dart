@@ -151,7 +151,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (busy) return;
       if (run['paused'] != true) await act('pause');
       if (mounted && run['paused'] == true) Navigator.of(context).pop();
-    }, child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 96 : 64, title: Text(showRecords ? '$title Rekor Merkezi' : title, maxLines: 2), actions: [
+    }, child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 144 : 64, title: Text(showRecords ? '$title Rekor Merkezi' : title, maxLines: 3), actions: [
         IconButton(tooltip: 'Rekor Merkezi', onPressed: busy ? null : () async {
           if (active && run['paused'] != true && !offline) await act('pause');
           if (mounted) setState(() => showRecords = !showRecords);
@@ -268,7 +268,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final slots = _rows(board['slots']); final selected = slots.where((s) => '${s['id']}' == slotId).firstOrNull;
     final highlighted = (selected?['supports'] as List? ?? []).map((x) => '$x').toSet();
     if (selected?['row'] == 1) highlighted.add('0');
-    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640.0) - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 : 48.0));
+    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640.0) - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 * MediaQuery.textScalerOf(context).scale(1) : 48.0));
     return [
       Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: TextStyle(color: accent)),
       const SizedBox(height: 14),
@@ -279,7 +279,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           final id = '${s['id']}'; final entity = rewardMap(filled[id]);
           final supports = (s['supports'] as List? ?? []).map((x) => '$x');
           final available = entity.isEmpty && supports.length == 2 && supports.every(filled.containsKey);
-          return Flexible(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 135, minWidth: 48), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
+          return Flexible(child: ConstrainedBox(constraints: BoxConstraints(maxWidth: 135 * MediaQuery.textScalerOf(context).scale(1), minWidth: 48), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Semantics(label: entity.isEmpty ? 'Boş hücre ${_n(s['id']) + 1}${available ? ', seçilebilir' : ', alt destekleri doldur'}' : '${entity['name']}', button: available,
               child: OutlinedButton(style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(48, 72), padding: const EdgeInsets.all(5),
                 foregroundColor: palette.text, backgroundColor: id == slotId ? palette.tint : palette.surface,
