@@ -92,11 +92,11 @@ class _PvpPageState extends State<PvpPage> {
   Widget button(String text, VoidCallback? tap, {bool secondary = false}) => Padding(padding: const EdgeInsets.symmetric(vertical: 5),
     child: secondary ? OutlinedButton(onPressed: busy ? null : tap,child: Padding(padding: const EdgeInsets.all(12),child: Text(text,textAlign: TextAlign.center))) :
     FilledButton(onPressed: busy ? null : tap,child: Padding(padding: const EdgeInsets.all(12),child: Text(text,textAlign: TextAlign.center))));
-  Widget choice(String label, String? value, List<Map<String,dynamic>> options, void Function(String) change) =>
+  Widget choice(String label, String? value, List<Map<String,dynamic>> options, void Function(String) change, {bool enabled = true}) =>
     DropdownButtonFormField<String>(key: ValueKey('$label:$value'), initialValue: options.any((p) => p['id'] == value) ? value : null,
       isExpanded: true, decoration: InputDecoration(labelText: label),
       items: options.map((p) => DropdownMenuItem(value: '${p['id']}',child: Text('${p['label'] ?? p['name']}',maxLines: 2,overflow: TextOverflow.ellipsis))).toList(),
-      onChanged: busy ? null : (v) {if (v != null) change(v);});
+      onChanged: busy || !enabled ? null : (v) {if (v != null) change(v);});
   Widget setup() {
     final available = rewardMap(data['availability'])[ranked ? 'rankedEnabled' : 'friendEnabled'] == true;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [panel([
@@ -194,7 +194,7 @@ class _PvpPageState extends State<PvpPage> {
     final pool = rows(room['pool']); final spent = pool.where((p) => xi.contains(p['id'])).fold<num>(0,(n,p) => n + (p['cost'] as num));
     return panel([heading('Aynı bütçe, senin XI’in'),note('${xi.length} / 11 oyuncu · $spent / ${room['budget']} kadro bütçesi'),
       note('Kadro bütçesi oyun içindir; Coin bakiyen kullanılmaz.'),
-      choice('Diziliş',formation,[for (final f in ['433','442','352','451']) {'id':f,'label':f.split('').join('-')}],(v) {if (room['submitted'] != true) setState(() => formation = v);}),
+      choice('Diziliş',formation,[for (final f in ['433','442','352','451']) {'id':f,'label':f.split('').join('-')}],(v) => setState(() => formation = v), enabled: room['submitted'] != true),
       for (final p in pool) CheckboxListTile(contentPadding: EdgeInsets.zero,value: xi.contains(p['id']),
         title: Text('${p['name']}'),subtitle: Text('${p['position']} · ${p['rating']} reyting · ${p['cost']} bütçe'),
         onChanged: busy || room['submitted'] == true ? null : (v) => setState(() {if (v == true) xi.add('${p['id']}'); else xi.remove(p['id']);})),
