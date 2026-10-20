@@ -119,6 +119,11 @@ jobs:
       - name: Verify three-mode catalog
         run: python3 tools/three_modes/build_catalog.py --check
 
+      - name: Verify coach honours archive
+        run: |
+          python3 tools/coach_honours/build_catalog.py --check
+          python3 -m unittest discover -s tools/coach_honours -p 'test_*.py'
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -142,6 +147,16 @@ jobs:
 
       - name: Run Flutter tests
         run: flutter test --reporter expanded --dart-define=UPDATE_FIVE_SCREENSHOTS=true
+
+      - name: Upload coach archive previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coach-archive-previews
+          path: .dart_tool/coach_archive_qa/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload standardized game previews
         if: always()

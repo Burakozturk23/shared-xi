@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../app/route_appearance.dart';
+import 'coach_honours_page.dart';
 import 'database_club_club_page.dart';
 import 'history_archive_page.dart';
 import 'database_club_country_page.dart';
@@ -15,6 +17,10 @@ class DatabaseHubPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
+            _Tile(icon: Icons.emoji_events_outlined, title: 'Hoca başarı arşivi',
+              subtitle: 'Tarihsel kupalar, ödüller ve teknik direktör profilleri',
+              onTap: () => Navigator.push(context, LinkballRoute<void>(builder: (_) => const CoachHonoursPage()))),
+            const SizedBox(height: 14),
             _Tile(icon: Icons.history, title: 'Futbol arşivi', subtitle: 'Tarihsel maçlar, goller ve sezon kadroları', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryArchivePage()))),
             const SizedBox(height: 14),
             Text(

@@ -53,6 +53,7 @@ flutter:
     # Canonical player/club runtime data is V4 SQLite only.
     # Small coach/transfer/meta JSON assets remain for legacy side-data.
     - assets/data/coaches_min.json
+    - assets/data/coach_honours_archive.json
     - assets/data/famous_transfers.json
     - assets/data/meta.json
     - assets/data/squad_challenge_catalog.json

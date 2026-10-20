@@ -1,0 +1,450 @@
+{
+  "rawCoachRows": 99,
+  "uniqueCoaches": 98,
+  "trophyRows": 80,
+  "linkedCoaches": 77,
+  "missingTrophyRows": 18,
+  "positiveHonourEntries": 175,
+  "excludedNoneCount": 62,
+  "duplicateCoachRows": [
+    {
+      "name": "Massimiliano Allegri",
+      "line": 42
+    }
+  ],
+  "duplicateTrophyRows": [],
+  "unresolvedIdentities": [
+    {
+      "name": "Aurelio Andreazzoli",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Bruno Génésio",
+      "reason": "ambiguous",
+      "candidateIds": [
+        "coach_147",
+        "coach_78"
+      ]
+    },
+    {
+      "name": "Bruno Lage",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Christian Streich",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Christophe Pélissier",
+      "reason": "ambiguous",
+      "candidateIds": [
+        "coach_537",
+        "coach_764"
+      ]
+    },
+    {
+      "name": "Frank Kramer",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Frédéric Antonetti",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Graeme Jones",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Jagoba Arrasate",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Javier Pereira",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Luis García",
+      "reason": "ambiguous",
+      "candidateIds": [
+        "coach_2936",
+        "coach_693"
+      ]
+    },
+    {
+      "name": "Markus Weinzierl",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Mark van Bommel",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Ole Gunnar Solskjaer",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Óscar García",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Pál Dárdai",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Pellegrino Matarazzo",
+      "reason": "country_conflict",
+      "candidateIds": [
+        "coach_90"
+      ]
+    },
+    {
+      "name": "Pepe Bordalás",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Robert Moreno",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Sinisa Mihajlovic",
+      "reason": "unmatched",
+      "candidateIds": []
+    },
+    {
+      "name": "Walter Mazzarri",
+      "reason": "unmatched",
+      "candidateIds": []
+    }
+  ],
+  "profileIssues": [
+    {
+      "name": "Adi Hütter",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Alessio Dionisi",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Álvaro Cervera",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Andoni Iraola",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Bruno Génésio",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Bruno Lage",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Carlo Ancelotti",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Christophe Galtier",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Christophe Pélissier",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Claudio Ranieri",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Davide Ballardini",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Eduardo Coudet",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Franck Haise",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Frédéric Antonetti",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Gerardo Seoane",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Gian Piero Gasperini",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Imanol Alguacil",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Jagoba Arrasate",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Javier Calleja",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Javier Pereira",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Jorge Sampaoli",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "José Mourinho",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Julian Nagelsmann",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Luis García",
+      "flags": [
+        "unreliable_coaching_licence",
+        "unreliable_avg_term_as_coach"
+      ]
+    },
+    {
+      "name": "Manuel Pellegrini",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Marcelino",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Markus Weinzierl",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Massimiliano Allegri",
+      "flags": [
+        "unreliable_avg_term_as_coach",
+        "unreliable_preffered_formation"
+      ]
+    },
+    {
+      "name": "Mauricio Pochettino",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Maurizio Sarri",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Michel Der Zakarian",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Niko Kovac",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Nuno Espírito Santo",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Ole Gunnar Solskjaer",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Óscar García",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Pascal Gastien",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Patrick Vieira",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Pepe Bordalás",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Pep Guardiola",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Peter Bosz",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Quique Sánchez Flores",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Rafael Benítez",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Robert Moreno",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Ronald Koeman",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Stefan Leitl",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Stefano Pioli",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Thomas Frank",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Thomas Reis",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Thomas Tuchel",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Unai Emery",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Urs Fischer",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    },
+    {
+      "name": "Vicente Moreno",
+      "flags": [
+        "unreliable_coaching_licence"
+      ]
+    }
+  ]
+}
