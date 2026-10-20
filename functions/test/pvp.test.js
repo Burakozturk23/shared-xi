@@ -240,3 +240,24 @@ test("CM07: global ranked rollout alone cannot enable unverified Manager ranked"
   await assert.rejects(enter(h, "alice", "club_manager", "search", {playKind: "ranked"}),
       {code: "failed-precondition"});
 });
+
+test("new blocks and revoked links are respected even after a room/queue was created", async () => {
+  const h = boot(); const r = await enter(h, "alice", "club_country", "create");
+  h.seed("blocks/alice/bob", true);
+  await assert.rejects(enter(h, "bob", "club_country", "join", {code: r.id}), {code: "permission-denied"});
+  const h2 = boot(); const q = await enter(h2, "alice", "cinko", "search", {playKind: "ranked"});
+  h2.seed("blocks/alice/bob", true);
+  const separate = await enter(h2, "bob", "cinko", "search", {playKind: "ranked"});
+  assert.notEqual(separate.id, q.id); assert.equal(separate.guest, null);
+  h2.setLinked("alice", false); h2.setLinked("bob", false);
+  const third = await enter(h2, "carol", "cinko", "search", {playKind: "ranked"});
+  assert.equal(third.guest, null);
+});
+test("simultaneous arrivals still share one atomic ranked room", async () => {
+  const h = boot();
+  await Promise.all([enter(h, "alice", "grid_random", "search", {playKind: "ranked"}),
+    enter(h, "bob", "grid_random", "search", {playKind: "ranked"})]);
+  const a = h.read("pvpV1/grid_random/active/alice");
+  assert.equal(h.read("pvpV1/grid_random/active/bob"), a);
+  assert.equal(h.read(`pvpV1/grid_random/rooms/${a}/status`), "ready");
+});

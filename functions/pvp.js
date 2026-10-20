@@ -91,6 +91,20 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     }
     const name = (await profile(uid)).displayName || "Oyuncu";
     const denied = await blocked(uid); const seed = random();
+    // Recheck both sides at join time: a host may block an account after opening a room.
+    // Fresh queue candidates retain their creation-time checks so simultaneous arrivals can pair.
+    const peers = new Set();
+    if (input.action === "join") {
+      const room = (await db.ref(`pvpV1/${input.mode}/rooms/${input.code}`).get()).val();
+      if (room?.host) peers.add(room.host);
+    } else if (input.action === "search") {
+      const queue = (await db.ref(`pvpV1/${input.mode}/queue`).get()).val() || {};
+      for (const peer of Object.keys(queue)) if (peer !== uid) peers.add(peer);
+    }
+    const allowedPeers = new Set();
+    await Promise.all([...peers].map(async (peer) => {
+      if (!denied.has(peer) && await isLinked(peer) && !(await blocked(peer)).has(uid)) allowedPeers.add(peer);
+    }));
     const fingerprint = hash([input.action, input.code || null, input.playKind, input.profile || "standard"]);
     if (input.action !== "resume") {
       await db.ref(`pvpCatalogs/${catalog.version}`).transaction((raw) => raw ||
@@ -135,7 +149,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
           room.guest || time >= room.createdAt + 300000 || room.host === uid || room.dataRevision !== catalog.version) {
           fail("failed-precondition", "Bu kod seçilen moda ait değil, oda dolu veya süresi doldu.");
         }
-        if (denied.has(room.host) || (room.blocked || []).includes(uid)) {
+        if (!allowedPeers.has(room.host) || denied.has(room.host) || (room.blocked || []).includes(uid)) {
           fail("permission-denied",
               "Bu odaya katılamazsın.");
         }
@@ -143,7 +157,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
         for (const [u, q] of Object.entries(s.queue)) {
           const candidate = E.hydrate(s.rooms[q.id]); const pairKey = [uid, u].sort().join("__");
           const recent = s.pairs[pairKey] || [];
-          if (u === uid || denied.has(u) || !candidate || candidate.status !== "waiting" ||
+          if (u === uid || peers.has(u) && !allowedPeers.has(u) || denied.has(u) || !candidate || candidate.status !== "waiting" ||
               candidate.dataRevision !== catalog.version ||
             (candidate.blocked || []).includes(uid) || recent.filter((t) => time - t < 86400000).length >= 2) continue;
           room = candidate; delete s.queue[u]; s.pairs[pairKey] = [...recent.filter((t) =>
