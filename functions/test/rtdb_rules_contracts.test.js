@@ -41,7 +41,7 @@ test("user profiles are self-only except authenticated Elo lookup", () => {
   const user = rules.users["$uid"];
   assert.equal(user[".read"], selfRule);
   assert.ok(user[".write"].startsWith(selfRule + " && "));
-  assert.ok(user[".write"].includes('newData.child("elo").val() == data.child("elo").val()'));
+  assert.ok(user[".write"].includes("newData.child(\"elo\").val() == data.child(\"elo\").val()"));
   assert.equal(user.elo[".read"], authRule);
 });
 

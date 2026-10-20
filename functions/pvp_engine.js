@@ -83,6 +83,11 @@ function finish(r, status, reason, time, winner) {
   r.status = status; r.reason = reason; r.finishedAt = time;
   r.winnerUid = winner === undefined ? r.scores[r.host] > r.scores[r.guest] ? r.host :
     r.scores[r.host] < r.scores[r.guest] ? r.guest : null : winner;
+  if (r.series && ["finished", "forfeit"].includes(status)) {
+    r.series.wins ||= {};
+    if (r.winnerUid) r.series.wins[r.winnerUid] = (r.series.wins[r.winnerUid] || 0) + 1;
+    else r.series.draws = (r.series.draws || 0) + 1;
+  }
   r.resultHash = hash([r.seedId, r.scores, r.owners, r.answers, r.squads, r.status, r.reason, r.winnerUid]);
 }
 function randomRound(r, time) {
@@ -233,6 +238,7 @@ function move(c, r, uid, input, time) {
   } else if (r.mode === "random_five") {
     points = r.puzzle.clubs.filter((k) => matches(c, p, k)).length; correct = points > 0;
   } else if (r.mode === "grid_classic" || r.mode === "loto") {
+    if (!/^(0|[1-9][0-9]?)$/.test(String(input.targetId))) fail("invalid-argument", "Boş bir hücre seç.");
     const i = Number(input.targetId); const size = r.mode === "loto" ? 16 : 9;
     if (!Number.isInteger(i) || i < 0 || i >= size || r.owners[i]) fail("invalid-argument", "Boş bir hücre seç.");
     if (r.mode === "loto" && !r.puzzle.players.includes(id)) {
@@ -272,7 +278,7 @@ function view(c, r, uid, time) {
     rankedEligible: r.rankedEligible === true, reward: r.settlement?.[uid] || {status:
         r.playKind === "friend" ? "none" : "pending"}};
   const q = r.puzzle;
-  if (q && !["waiting", "ready"].includes(r.status)) {
+  if (q && !["waiting", "ready", "cancelled", "expired"].includes(r.status)) {
     const criteria = (ids) => ids.map((id) => c.criteria[id]);
     if (["club_club", "club_country"].includes(r.mode)) v.criteria = criteria(q.rounds[0].criteria);
     if (r.mode === "random_five") v.criteria = criteria(q.clubs);
@@ -300,7 +306,7 @@ function view(c, r, uid, time) {
     }
   }
   if (done) {
-    v.reason = r.reason; v.winnerUid = r.winnerUid; v.finishedAt = r.finishedAt; v.resultHash = r.resultHash;
+    v.reason = r.reason; v.winnerUid = r.winnerUid || null; v.finishedAt = r.finishedAt; v.resultHash = r.resultHash;
     v.result = r.winnerUid == null ? "draw" : r.winnerUid === uid ? "win" : "loss";
     if (r.status === "finished" && q) {
       if (q.rounds) v.answers = q.rounds.map((p) => p.answers.map((id) => player(c, id)));

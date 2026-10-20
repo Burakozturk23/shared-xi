@@ -95,7 +95,9 @@ jobs:
         run: python3 tools/daily_words/build_catalog.py --check
 
       - name: Verify multiplayer V1 canonical catalog
-        run: python3 tools/pvp/build_catalog.py --check
+        run: |
+          python3 tools/pvp/build_catalog.py --check
+          python3 tools/pvp/build_vectors.py --check
 
       - name: Verify choice V1 catalog and source gates
         run: python3 tools/choice/build_catalog.py --check

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -149,17 +150,20 @@ class _PvpPageState extends State<PvpPage> {
   Widget board(int n, List<String> labels, {bool selectable = true}) => LayoutBuilder(builder: (context,constraints) {
     final scale = MediaQuery.textScalerOf(context).scale(13) / 13;
     final owners = rewardMap(room['owners']);
-    return GridView.builder(shrinkWrap: true,physics: const NeverScrollableScrollPhysics(),itemCount: labels.length,
+    final boardWidth = math.max(constraints.maxWidth, n * 112.0 * scale + (n - 1) * 6);
+    void detail(int i, String? ownerName) => showDialog<void>(context: context,builder: (_) => AlertDialog(
+      title: Text('${i + 1}. hücre'), content: Text('${labels[i]}\n${ownerName ?? 'Boş hücre'}'),
+      actions: [TextButton(onPressed: () => Navigator.pop(context),child: const Text('Kapat'))]));
+    final grid = GridView.builder(shrinkWrap: true,physics: const NeverScrollableScrollPhysics(),itemCount: labels.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: n,crossAxisSpacing: 6,mainAxisSpacing: 6,
         mainAxisExtent: (n == 5 ? 112 : 132) * scale), itemBuilder: (context,i) {
         final owner = rewardMap(owners['$i']); final selectedCell = target == '$i';
         final ownerName = rewardMap(room['names'])[owner['uid']];
         return Semantics(label: '${i + 1}. hücre, ${labels[i]}, ${ownerName ?? 'boş'}',selected: selectedCell,button: true,
           child: Material(color: selectedCell ? lime.withValues(alpha: .22) : surface,borderRadius: BorderRadius.circular(12),
-            child: InkWell(onTap: done || owner.isNotEmpty ? null : () {
+            child: InkWell(onLongPress: () => detail(i,ownerName?.toString()),onTap: done || owner.isNotEmpty ? () => detail(i,ownerName?.toString()) : () {
               if (selectable) setState(() => target = '$i');
-              else showDialog<void>(context: context,builder: (_) => AlertDialog(title: Text(labels[i]),content: Text('${ownerName ?? 'Boş hücre'}'),
-                actions: [TextButton(onPressed: () => Navigator.pop(context),child: const Text('Kapat'))]));
+              else detail(i,ownerName?.toString());
             },child: Padding(padding: const EdgeInsets.all(6),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
               Icon(owner.isNotEmpty ? Icons.check_circle_outline : selectedCell ? Icons.radio_button_checked : Icons.crop_square,
                 size: 20,color: owner['uid'] == uid || selectedCell ? lime : Colors.white70),
@@ -167,6 +171,10 @@ class _PvpPageState extends State<PvpPage> {
                 style: const TextStyle(fontSize: 12))), if (ownerName != null) Text('$ownerName',maxLines: 1,overflow: TextOverflow.ellipsis),
             ])))));
       });
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [
+      if (boardWidth > constraints.maxWidth) note('Tahtayı yatay kaydır. Tam hücre bilgisi için basılı tut.'),
+      SingleChildScrollView(scrollDirection: Axis.horizontal,child: SizedBox(width: boardWidth,child: grid)),
+    ]);
   });
   Widget chooser() => panel([
     if (selected != null) ...[
@@ -230,6 +238,7 @@ class _PvpPageState extends State<PvpPage> {
     final reward = rewardMap(room['reward']);
     return panel([heading(room['status'] == 'finished' ? room['result'] == 'win' ? 'Kazandın' : room['result'] == 'loss' ? 'Maç tamamlandı' : 'Berabere' :
       room['status'] == 'forfeit' ? 'Maç hükmen sonuçlandı' : 'Maç iptal edildi'),note('${room['reason'] ?? ''}'),
+      if (rewardMap(room['series'])['limit'] == 3) note('Seri galibiyetleri: ${rewardMap(rewardMap(room['series'])['wins']).entries.map((e) => '${rewardMap(room['names'])[e.key]} ${e.value}').join(' · ')}'),
       note(ranked ? reward['status'] == 'pending' ? 'Sonuç ve ödül doğrulaması bekleniyor.' :
         '${reward['coins'] ?? 0} Coin · ${reward['xp'] ?? 0} XP · Elo ${reward['eloDelta'] ?? 0}' : 'Dostluk maçı · Elo ve ödül yok'),
       if (room['simulation'] != null) note('Sunucuda hesaplanan gol sonucu: ${rewardMap(rewardMap(room['simulation'])['goals']).values.join(' – ')}'),

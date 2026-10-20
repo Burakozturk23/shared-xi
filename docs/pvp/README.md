@@ -26,7 +26,10 @@ Kariyer Yarışı, Transfer, Gizem ve Sahte Kulüp düellolarının oyun motorla
 ## Veri ve sürüm
 
 `tools/pvp/build_catalog.py --check` SQLite SHA'sını ve deterministik özel
-kataloğu doğrular. `data-audit.json` gerçek sayıları içerir. Kanonik solo
+kataloğu doğrular. Ülke adları CountryNames ile, kulüp ilişkileri Player.fromJson içindeki kariyer birleşimiyle eşleşir.
+`tools/pvp/build_vectors.py --check` ve `test/pvp_parity_test.dart` 243 gerçek futbolcu,
+18 ülke adı varyantı ve sekiz takım gücü üzerinden solo/online eşitliğini sınar.
+`data-audit.json` gerçek sayıları içerir. Kanonik solo
 paritesi, bütün tarihsel kayıtların dış kaynak denetiminden geçtiği anlamına
 **gelmez**. Katalog solo V4 köprüsüyle aynı ilişki kapsamını kullanır;
 trust=1 kayıtlarını sessizce başka bir veri setiyle değiştirmez.
@@ -50,19 +53,20 @@ ile iki gerçek hesapta yayın kabulü aynı şey değildir. Aşağıdakiler yay
 2. SEC10 için fiziksel cihazdan iki hesapla farming korumasının uçtan uca
    doğrulanması. App Check, UID rate limit ve çift tekrar sınırı tek başına
    aynı fiziksel cihaz kimliğinin kanıtı değildir.
-3. Manager rating/link/taktik formüllerinin solo ile ortak örneklerde
-   doğrulanması. PvP simülasyonu iki takım taktiğini simetrik değerlendirir;
+3. Manager rating/link/taktik için ortak örnek testleri ve iki gerçek takım smoke kabulü. PvP simülasyonu iki takım taktiğini simetrik değerlendirir;
    solo bot simülasyonunun byte düzeyinde aynısı olduğu iddia edilmez.
 4. Gerçek RTDB yük testi: V1 atomiklik için mod kökünde transaction yapar;
    geçmiş büyüdükçe oda/queue transaction sınırlarının ayrılması gerekir.
 5. Gerçek sunucu kesintisinde tarafsız sonuç ve eski istemci geçiş smoke'u.
-   Geçici veritabanı/katalog erişim hatası ödül üretmez ve kayıt korunur;
-   tam servis kesintisinde anında iptal garantisi verilemez.
+   Yüklenemeyen/bozuk katalog aktif maçı tarafsız iptal eder ve ödül üretmez.
+   Tam veritabanı kesintisinde yazılamadığı için anında iptal garantisi verilemez;
+   kayıt korunur, uzlaştırıcı geri geldiğinde durumu ilerletir.
 
 ## Açılış / geri alma
 
 `runtimeConfig/pvp` ve `modes/<modeId>` altında `friendEnabled`,
 `rankedEnabled`, `rewardsEnabled`, `eloEnabled` varsayılan **false**.
+Manager ranked ayrıca `managerRankedVerified: true` gerektirir; genel ranked bayrağı tek başına açamaz.
 Hiçbir canlı ayar bu değişiklikle açılmadı. Önce emülatör/staging arkadaş
 maçları; kabul kapıları geçince mod bazında kademeli ranked açılışı.
 Kapatma yeni odaları/rövanşı ve yeni ödül rezervasyonlarını engeller;
@@ -74,10 +78,11 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 
 ```sh
 python3 tools/pvp/build_catalog.py --check
+python3 tools/pvp/build_vectors.py --check
 npm --prefix functions ci
 npm --prefix functions run lint
 npm --prefix functions test
 npm --prefix tools/pvp/emulator ci
 npm --prefix tools/pvp/emulator test
-flutter test test/pvp_service_test.dart test/pvp_page_test.dart
+flutter test test/pvp_service_test.dart test/pvp_page_test.dart test/pvp_parity_test.dart
 ```

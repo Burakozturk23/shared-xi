@@ -78,7 +78,7 @@ class ManagerRatingService {
     return raw.clamp(5.0, 100.0);
   }
 
-  double clubScore(Player p, Repository repo) {
+  double clubScore(Player p, Repository repo, {int? referenceYear}) {
     final stops = p.careerTimeline;
     if (stops.isEmpty) {
       // sadece club id listesi
@@ -93,7 +93,7 @@ class ManagerRatingService {
       return n == 0 ? 25 : (sum / n).clamp(10.0, 100.0);
     }
 
-    final currentYear = DateTime.now().year;
+    final currentYear = referenceYear ?? DateTime.now().year;
     double weighted = 0;
     double weightSum = 0;
     double maxLig = 0;
@@ -133,9 +133,9 @@ class ManagerRatingService {
     return 45 + 20 * t;
   }
 
-  double lengthScore(Player p) {
+  double lengthScore(Player p, {int? referenceYear}) {
     final stops = p.careerTimeline;
-    final currentYear = DateTime.now().year;
+    final currentYear = referenceYear ?? DateTime.now().year;
     if (stops.isNotEmpty) {
       var minY = stops.first.startYear;
       var maxY = stops.first.endYear ?? currentYear;
@@ -165,11 +165,11 @@ class ManagerRatingService {
     return raw.clamp(10.0, 100.0);
   }
 
-  ManagerPlayerRating rate(Player p, {Repository? repository}) {
+  ManagerPlayerRating rate(Player p, {Repository? repository, int? referenceYear}) {
     final repo = repository ?? Repository.instance;
-    final C = clubScore(p, repo);
+    final C = clubScore(p, repo, referenceYear: referenceYear);
     final N = nationalScore(p);
-    final L = lengthScore(p);
+    final L = lengthScore(p, referenceYear: referenceYear);
     final P = peakScore(p.peakMarketValue);
     final V = varietyScore(p, repo);
 

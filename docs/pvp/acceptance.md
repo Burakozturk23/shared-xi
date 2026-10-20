@@ -22,9 +22,9 @@ Otomatik kapsam bir yayın PASS kararı değildir. Her satır staging/iki hesap 
 | CORE10 | P1 | Bitiş nedeni won/draw/forfeit/cancelled/expired ayrı raporlanır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CORE11 | P1 | Eski sürüm maç açımı ve rollback kuralı geri uyumludur. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | SEC01 | P0 | A oyuncusu B oyuncusu kimliğiyle hamle gönderemez. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
-| SEC02 | P0 | RTDB doğrudan score artışı kabul etmez. | Üretim kuralı kapalı; gerçek emülatör testi eklendi |
-| SEC03 | P0 | RTDB doğrudan winnerUid veya finished yazımını kabul etmez. | Üretim kuralı kapalı; gerçek emülatör testi eklendi |
-| SEC04 | P0 | RTDB rank/Elo veya reward ledger istemci yazımına kapalıdır. | Üretim kuralı kapalı; gerçek emülatör testi eklendi |
+| SEC02 | P0 | RTDB doğrudan score artışı kabul etmez. | Üretim kuralları gerçek RTDB emülatöründe doğrulandı (CI 300) |
+| SEC03 | P0 | RTDB doğrudan winnerUid veya finished yazımını kabul etmez. | Üretim kuralları gerçek RTDB emülatöründe doğrulandı (CI 300) |
+| SEC04 | P0 | RTDB rank/Elo veya reward ledger istemci yazımına kapalıdır. | Üretim kuralları gerçek RTDB emülatöründe doğrulandı (CI 300) |
 | SEC05 | P0 | Server playerId ilişkisini ve seed hücre kriterini kendi doğrular. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | SEC06 | P0 | Server süre ve turnUid sahibini kontrol eder. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | SEC07 | P0 | Oynanmamış veya ikinci kez kullanılan actionId yeni skor yaratmaz. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |

@@ -137,10 +137,10 @@ test("NET01-05/CORE07: reconnect clock, 30s absence, simultaneous offline and qu
   const h2 = boot(); r = await pair(h2, "club_club");
   h2.setTime(new Date(r.startsAt + 31000).toISOString()); r = await act(h2, "alice", r); assert.equal(
       r.status, "cancelled");
-  const h3 = boot(); r = await enter(h3, "alice", "club_manager", "search", {playKind: "ranked"});
+  const h3 = boot(); r = await enter(h3, "alice", "cinko", "search", {playKind: "ranked"});
   h3.setTime(new Date(r.serverNow + 31000).toISOString()); r = await act(h3, "alice", r); assert.equal(
       r.status, "expired");
-  assert.equal(h3.read("pvpV1/club_manager/queue/alice"), null);
+  assert.equal(h3.read("pvpV1/cinko/queue/alice"), null);
 });
 test("EC01/02/05/06/08: friend/guest/forfeit cannot farm rewards; retired attestation blocked", async () => {
   const h = boot(); let r = await pair(h, "random_five"); r = await act(h, "alice", r, "leave");
@@ -223,4 +223,20 @@ test("CM: deterministic result is independent of squad submission order and list
   assert.deepEqual(a, b);
   r.squads = {a, b}; const first = E.simulate(c, r); r.squads = {b, a};
   assert.deepEqual(E.simulate(c, r), first);
+});
+
+test("NET03: unavailable pinned catalog neutrally cancels without revealing answers or awarding", async () => {
+  const h = boot(); let r = await pair(h, "club_club", true);
+  h.seed(`pvpV1/club_club/rooms/${r.id}/dataRevision`, "missing-archive");
+  r = await act(h, "alice", r);
+  assert.equal(r.status, "cancelled"); assert.equal(r.winnerUid, null);
+  assert.equal(r.reward.coins, 0); assert.equal(r.reward.eloDelta, 0);
+  assert.equal(r.answers, undefined); assert.equal(h.read("rankedState"), null);
+});
+test("CM07: global ranked rollout alone cannot enable unverified Manager ranked", async () => {
+  const h = boot();
+  const s = await h.call("getPvp", base("club_manager"), auth("alice"));
+  assert.equal(s.availability.friendEnabled, true); assert.equal(s.availability.rankedEnabled, false);
+  await assert.rejects(enter(h, "alice", "club_manager", "search", {playKind: "ranked"}),
+      {code: "failed-precondition"});
 });

@@ -1,8 +1,8 @@
 {
-  "version": "pvp-v1-38f046c255a622d3",
+  "version": "pvp-v1-c82b87953cb5404a",
   "databaseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
   "players": 36391,
-  "pairs": 704,
+  "pairs": 724,
   "grids": 60,
   "cinko": 40,
   "loto": 40,

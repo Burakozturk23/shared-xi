@@ -20,6 +20,25 @@ def league_score(s):
       ('belgian,jupiler,scottish,austrian,swiss,russian premier,russia,liga mx,mls,brasileirao,argentina',58)]:
         if any(w in s for w in words.split(',')): return score
     return 42 if s.strip() else 25
+from functools import lru_cache
+@lru_cache(maxsize=None)
+def country(raw):
+    # Same display aliases as CountryNames; cross-runtime vectors verify every alias.
+    source=(ROOT/'lib/utils/country_names.dart').read_text()
+    block=source.split('_aliases = {',1)[1].split('};',1)[0]
+    aliases={m.group(2):m.group(4) for m in re.finditer(r"(['\"])(.*?)\1\s*:\s*(['\"])(.*?)\3",block)}
+    t=str(raw or '').strip();return aliases.get(t.lower().replace('ı','i'),t)
+def position_group(pos,det):
+    pos=(pos or '').strip().lower();det=(det or pos).strip().lower();raw=pos+' '+det
+    if any(k in raw for k in ['goal','keeper','kaleci']) or pos in ['g','gk']:return 'GK'
+    if any(k in raw for k in ['midfield','midfielder','orta saha','orta-saha']) or any(k in det for k in ['cdm','cam','cm','dm','am']) or pos in ['m','mf','mid']:return 'MID'
+    if ' mid' in raw or raw.startswith('mid') or 'orta' in raw:return 'MID'
+    if any(k in raw for k in ['strik','forw','forvet','second striker']) or any(k in det for k in ['cf','st']) or pos in ['f','fw','a','att']:return 'ATT'
+    if ('wing' in raw and 'back' not in raw and 'wingback' not in raw and 'wing-back' not in raw) or 'winger' in raw or det in ['lw','rw']:return 'ATT'
+    if 'attack' in raw and 'midfield' not in raw:return 'ATT'
+    if any(k in raw for k in ['defen','centre-back','center-back','center back','centre back','full-back','fullback','full back','wing-back','wingback','wing back','stoper','bek','stopper']) or any(k in det for k in ['cb','lb','rb','lwb','rwb']) or pos in ['d','df','def']:return 'DEF'
+    if 'back' in raw and 'mid' not in raw:return 'DEF'
+    return 'MID'
 def build():
     c=sqlite3.connect(f'file:{DB}?mode=ro',uri=True);c.row_factory=sqlite3.Row
     clubs={str(r['id']):dict(id=str(r['id']),name=r['name'],league=r['competition'] or '',
@@ -33,9 +52,10 @@ def build():
         start=re.search(r'\d{4}',r['start_date'] or '');end=re.search(r'\d{4}',r['end_date'] or '')
         if start: spells[r['player_id']].append((str(r['club_id']),int(start[0]),int(end[0]) if end else YEAR))
     players={}
-    for r in c.execute('select * from players order by id'):
+    for r in c.execute('select p.*,pr.detailed_position from players p left join profiles pr on pr.player_id=p.id order by p.id'):
         if r['id'] in [34601,111961]: continue  # Same canonical shadow remaps as the V4 bridge.
-        i=r['id'];ids=sorted(links[i]);ns=countries[i] or ([r['country']] if r['country'] else [])
+        i=r['id'];ids=sorted(links[i]|{x for x,_,_ in spells[i]})
+        ns=list(dict.fromkeys(country(n) for n in (countries[i] or ([r['country']] if r['country'] else [])) if country(n)))
         peak=r['peak_market_value'] or 0
         leagues={clubs[x]['league'].strip().lower() for x in ids if x in clubs and clubs[x]['league'].strip()}
         if spells[i]:
@@ -51,7 +71,7 @@ def build():
         rating=.35*cs+.2*national+.15*length+.2*(clamp(12*math.log10(peak+1),5,100) if peak>0 else 5)+.1*clamp(len(all_ids)*12+len(all_leagues)*8,10,100)
         players[str(i)]={'id':str(i),'name':r['name'],'aliases':sorted(set(aliases[i])), 'clubs':ids,
           'countries':ns,'countryKeys':sorted({key(n) for n in ns}), 'leagues':sorted(leagues),
-          'position':{'Goalkeeper':'GK','Defender':'DEF','Midfield':'MID','Attack':'ATT'}.get(r['position'],''),
+          'position':position_group(r['position'],r['detailed_position']),
           'rank':r['selection_rank'] or 999999,'rating':round(rating,1),'cost':18 if rating>=90 else 14 if rating>=80 else 10 if rating>=65 else 6,
           'linkClubs':sorted(all_ids),'linkLeagues':sorted(all_leagues)}
     criteria={};members=collections.defaultdict(set)

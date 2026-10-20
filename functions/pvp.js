@@ -29,7 +29,9 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     }
   }
   async function policy(mode) {
-    const p = await getPolicy(); return {...defaults, ...p, ...p.modes?.[mode]};
+    const p = await getPolicy(); const result = {...defaults, ...p, ...p.modes?.[mode]};
+    if (mode === "club_manager" && result.managerRankedVerified !== true) result.rankedEnabled = false;
+    return result;
   }
   async function change(mode, fn) {
     let error; const time = now();
@@ -179,7 +181,27 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
       fail("permission-denied",
           "Bu maçın katılımcısı değilsin.");
     }
-    const c = await pinned(before.dataRevision); const p = await policy(input.mode);
+    if (before.schemaVersion !== 1 || before.ruleVersion !== E.RULE) {
+      fail("failed-precondition", "Maç kural sürümü desteklenmiyor; kayıt korunuyor.");
+    }
+    let c;
+    try {
+      c = await pinned(before.dataRevision);
+    } catch (error) {
+      if (E.terminal(before)) throw error;
+      const state = await change(input.mode, (s, time) => {
+        const room = E.hydrate(s.rooms[before.id]);
+        if (!E.terminal(room)) {
+          E.finish(room, "cancelled", "Sunucu veri sürümünü doğrulayamadı. Maç tarafsız iptal edildi.", time, null);
+          room.revision++;
+          room.settlement = Object.fromEntries([room.host, room.guest].filter(Boolean).map((u) =>
+            [u, {status: "none", coins: 0, xp: 0, eloDelta: 0}]));
+          s.rooms[room.id] = room;
+        }
+      });
+      return {room: E.view(catalog, E.hydrate(state.rooms[before.id]), uid, now()), receipt: null};
+    }
+    const p = await policy(input.mode);
     const event = input.action !== "poll";
     if (event && !validId(input.actionId)) fail("invalid-argument", "Hamle kimliği gerekli.");
     const allowed = new Set(["mode", "schemaVersion", "ruleVersion", "dataRevision", "roomId",
@@ -242,9 +264,8 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
           const id = hash([seed, r.id]).slice(0, 8).toUpperCase();
           if (s.rooms[id]) fail("already-exists", "Rövanşı tekrar dene.");
           const series = structuredClone(r.series); series.wins ||= {};
-          if (r.winnerUid) series.wins[r.winnerUid] = (series.wins[r.winnerUid] || 0) + 1;
           if (series.game >= series.limit) {
-            series.id = id; series.game = 1; series.wins = {};
+            series.id = id; series.game = 1; series.wins = {}; series.draws = 0;
           } else series.game++;
           const next = E.hydrate({id, mode: r.mode, playKind: "friend", host: r.guest, guest: r.host,
             names: r.names, status: "ready", revision: 0, createdAt: time, seed, schemaVersion: 1,
