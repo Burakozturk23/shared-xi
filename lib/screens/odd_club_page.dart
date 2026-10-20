@@ -108,7 +108,7 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
   }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Sahte Kulüp'), actions: [
+    appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64, title: const Text('Sahte Kulüp', maxLines: 2), actions: [
       IconButton(tooltip: 'Kulüp Dedektifi', onPressed: _busy || _accountChanged ? null : () => setState(() => _records = !_records), icon: const Icon(Icons.workspace_premium_outlined)),
       IconButton(tooltip: 'Yenile', onPressed: _busy || _accountChanged ? null : _load, icon: const Icon(Icons.refresh)),
     ]),

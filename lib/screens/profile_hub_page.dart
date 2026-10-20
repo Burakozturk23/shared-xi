@@ -92,7 +92,7 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
         ),
         const PitchSectionTitle('Profilin ve ilerlemen'),
         PitchRow(title: 'Burst Rekor Merkezi', icon: Icons.bolt_outlined,
-          onTap: () => _open(const ArcadePage(mode: 'burst', recordsInitially: true))),
+          onTap: () => _open(const ArcadePage(mode: 'burst', recordsInitially: true), modern: true)),
         const SizedBox(height: 16),
         PitchRow(
           title: 'Profilim ve istatistikler',

@@ -1,57 +1,29 @@
 import 'package:flutter/material.dart';
-
+import '../app/route_appearance.dart';
+import '../widgets/game_ui.dart';
+import '../widgets/pitch_ui.dart';
 import 'odd_club_page.dart';
 
 class OddClubModeSelectionPage extends StatelessWidget {
   const OddClubModeSelectionPage({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sahte Kulüp')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            const Text('Hangi modla oynamak istersin?',
-                style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
-            Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: const Icon(Icons.all_inclusive, size: 32),
-                title: const Text('Sonsuz Seri',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                subtitle: const Text('Süresiz · 3 can · 1 ücretsiz 50/50 · kalıcı rekor'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const OddClubPage(timed: false),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: const Icon(Icons.timer, size: 32),
-                title: const Text('Hız Serisi',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                subtitle: const Text('10 soru · soru başına 10 saniye · 3 can · yardımsız'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const OddClubPage(timed: true),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Sahte Kulüp')),
+    body: GameContent(child: ListView(padding: const EdgeInsets.all(20), children: [
+      const GameIntro(icon: Icons.search_off_rounded, title: 'Kariyerdeki yabancıyı bul',
+        message: 'Futbolcunun oynamadığı kulübü seç. Kendi hızında ilerle veya zamana karşı yarış.'),
+      const SizedBox(height: 24),
+      Text('Oyun tarzını seç', style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: 12),
+      PitchRow(title: 'Sonsuz Seri', icon: Icons.all_inclusive, highlight: true,
+        subtitle: 'Süresiz · 3 can · 1 ücretsiz 50/50 · kalıcı rekor',
+        onTap: () => Navigator.push(context, LinkballRoute(modern: true,
+          builder: (_) => const OddClubPage(timed: false)))),
+      const SizedBox(height: 12),
+      PitchRow(title: 'Hız Serisi', icon: Icons.timer_outlined, highlight: true,
+        subtitle: '10 soru · soru başına 10 saniye · 3 can · yardımsız',
+        onTap: () => Navigator.push(context, LinkballRoute(modern: true,
+          builder: (_) => const OddClubPage(timed: true)))),
+    ])),
+  );
 }

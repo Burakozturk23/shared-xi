@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import '../widgets/pitch_ui.dart';
+import '../widgets/game_ui.dart';
+import '../theme/ortak_saha_theme.dart';
 import 'package:flutter/services.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/pvp_service.dart';
@@ -19,7 +22,8 @@ class PvpPage extends StatefulWidget {
   State<PvpPage> createState() => _PvpPageState();
 }
 class _PvpPageState extends State<PvpPage> {
-  static const bg = Color(0xff0b1220), surface = Color(0xff17232e), lime = Color(0xffccff00);
+  PitchColors get palette => PitchColors.of(context);
+  Color get accent => palette.accent;
   late final PvpService service = widget.service ?? PvpService();
   Map<String,dynamic> data = {}, room = {};
   final code = TextEditingController(), query = TextEditingController();
@@ -83,15 +87,14 @@ class _PvpPageState extends State<PvpPage> {
     } catch (e) {if (mounted) setState(() => error = '$e');}
   }
   int seconds(dynamic deadline) => (((deadline as num? ?? 0).toInt() - serverNow - clock.elapsedMilliseconds) / 1000).ceil().clamp(0, 9999);
-  Widget note(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(text,
-    style: const TextStyle(color: Color(0xffc2ced9),height: 1.45)));
-  Widget heading(String text) => Text(text, style: const TextStyle(fontSize: 23,fontWeight: FontWeight.w700,fontFamily: 'Satoshi'));
-  Widget panel(List<Widget> children) => Padding(padding: const EdgeInsets.only(bottom: 14), child: Material(
-    color: surface,borderRadius: BorderRadius.circular(18),clipBehavior: Clip.antiAlias,
-    child: Padding(padding: const EdgeInsets.all(16),child: Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: children))));
-  Widget button(String text, VoidCallback? tap, {bool secondary = false}) => Padding(padding: const EdgeInsets.symmetric(vertical: 5),
-    child: secondary ? OutlinedButton(onPressed: busy ? null : tap,child: Padding(padding: const EdgeInsets.all(12),child: Text(text,textAlign: TextAlign.center))) :
-    FilledButton(onPressed: busy ? null : tap,child: Padding(padding: const EdgeInsets.all(12),child: Text(text,textAlign: TextAlign.center))));
+  Widget note(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(text,
+    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: palette.muted)));
+  Widget heading(String text) => Text(text, style: Theme.of(context).textTheme.headlineSmall);
+  Widget panel(List<Widget> children) => Padding(padding: const EdgeInsets.only(bottom: 16),
+    child: PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)));
+  Widget button(String text, VoidCallback? tap, {bool secondary = false}) => Padding(padding: const EdgeInsets.symmetric(vertical: 6),
+    child: secondary ? OutlinedButton(onPressed: busy ? null : tap,child: Text(text,textAlign: TextAlign.center)) :
+    FilledButton(onPressed: busy ? null : tap,child: Text(text,textAlign: TextAlign.center)));
   Widget choice(String label, String? value, List<Map<String,dynamic>> options, void Function(String) change, {bool enabled = true}) =>
     DropdownButtonFormField<String>(key: ValueKey('$label:$value'), initialValue: options.any((p) => p['id'] == value) ? value : null,
       isExpanded: true, decoration: InputDecoration(labelText: label),
@@ -121,7 +124,7 @@ class _PvpPageState extends State<PvpPage> {
   Widget lobby() {
     final host = room['host'] == uid; final ready = rewardMap(room['ready']); final choices = rewardMap(room['choices']);
     return panel([heading(room['status'] == 'waiting' ? ranked ? 'Rakip aranıyor' : 'Arkadaşını bekliyorsun' : 'Maça hazırlan'),
-      if (!ranked) ...[SelectableText('${room['id']}',style: const TextStyle(fontSize: 28,color: lime,letterSpacing: 3)),
+      if (!ranked) ...[SelectableText('${room['id']}',style: TextStyle(fontSize: 28,color: accent,letterSpacing: 3)),
         button('Oda kodunu kopyala',() => Clipboard.setData(ClipboardData(text:'${room['id']}')),secondary: true),
         if (host && room['guest'] == null) FriendMatchInviteButton(mode: widget.mode,roomCode:'${room['id']}')],
       note(ranked ? '30 saniye içinde rakip bulunamazsa arama kapanır.' : 'İki oyuncu da hazır olduğunda beş saniyelik geri sayım başlar.'),
@@ -160,13 +163,13 @@ class _PvpPageState extends State<PvpPage> {
         final owner = rewardMap(owners['$i']); final selectedCell = target == '$i';
         final ownerName = rewardMap(room['names'])[owner['uid']];
         return Semantics(label: '${i + 1}. hücre, ${labels[i]}, ${ownerName ?? 'boş'}',selected: selectedCell,button: true,
-          child: Material(color: selectedCell ? lime.withValues(alpha: .22) : surface,borderRadius: BorderRadius.circular(12),
+          child: Material(color: selectedCell ? palette.tint : palette.surface,borderRadius: BorderRadius.circular(12),
             child: InkWell(onLongPress: () => detail(i,ownerName?.toString()),onTap: done || owner.isNotEmpty ? () => detail(i,ownerName?.toString()) : () {
               if (selectable) setState(() => target = '$i');
               else detail(i,ownerName?.toString());
             },child: Padding(padding: const EdgeInsets.all(6),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
               Icon(owner.isNotEmpty ? Icons.check_circle_outline : selectedCell ? Icons.radio_button_checked : Icons.crop_square,
-                size: 20,color: owner['uid'] == uid || selectedCell ? lime : Colors.white70),
+                size: 20,color: owner['uid'] == uid || selectedCell ? accent : palette.muted),
               const SizedBox(height: 4), Flexible(child: Text(labels[i],textAlign: TextAlign.center,overflow: TextOverflow.ellipsis,maxLines: 5,
                 style: const TextStyle(fontSize: 12))), if (ownerName != null) Text('$ownerName',maxLines: 1,overflow: TextOverflow.ellipsis),
             ])))));
@@ -269,19 +272,16 @@ class _PvpPageState extends State<PvpPage> {
     if (yes == true) await action('leave');
   }
   @override
-  Widget build(BuildContext context) => Theme(data: ThemeData.dark(useMaterial3: true).copyWith(
-    scaffoldBackgroundColor: bg, textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Inter'),
-    colorScheme: ColorScheme.fromSeed(seedColor: lime,brightness: Brightness.dark).copyWith(primary: lime,onPrimary: bg),
-    appBarTheme: const AppBarTheme(backgroundColor: bg,foregroundColor: Colors.white)),child: PopScope(
+  Widget build(BuildContext context) => PopScope(
       canPop: room.isEmpty || done,onPopInvokedWithResult: (didPop,result) {if (!didPop) leave();},
-      child: Scaffold(appBar: AppBar(toolbarHeight: 80,title: Text(widget.mode.title,maxLines: 2,softWrap: true),actions: [
+      child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,title: Text(widget.mode.title,maxLines: 3,softWrap: true),actions: [
         IconButton(tooltip: 'Yenile',onPressed: busy ? null : () {if (room.isEmpty) load(); else action('poll');},icon: const Icon(Icons.refresh))]),
-        body: SafeArea(child: ListView(padding: const EdgeInsets.all(16),children: [
-          Text(ranked ? 'RASTGELE EŞLEŞME' : 'ARKADAŞ MAÇI',style: const TextStyle(color: lime,fontWeight: FontWeight.w700)),
+        body: GameContent(child: ListView(padding: const EdgeInsets.all(16),children: [
+          Text(ranked ? 'RASTGELE EŞLEŞME' : 'ARKADAŞ MAÇI',style: TextStyle(color: accent,fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),if (busy && data.isEmpty && room.isEmpty) const LinearProgressIndicator(),
           if (error != null) panel([note(error!),button('Yeniden dene',() {if (room.isEmpty) load(); else action('poll');},secondary: true)]),
           if (room.isEmpty) setup() else ...[hud(),if (['waiting','ready'].contains(room['status'])) lobby()
             else if (done) outcome() else if (room['status'] == 'countdown') panel([heading('Hazır ol'),note('Aynı anda başlayacaksınız.')]) else play(),
             if (!done) button('Maçtan ayrıl',leave,secondary: true)],
-        ])))));
+        ]))));
 }
