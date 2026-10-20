@@ -116,8 +116,10 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 PitchPanel(child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SettingsIcon(Icons.tune_rounded),
-                    const SizedBox(width: 14),
+                    if (!_compactTextLayout(context)) ...[
+                      _SettingsIcon(Icons.tune_rounded),
+                      const SizedBox(width: 14),
+                    ],
                     Expanded(child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -185,6 +187,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       child: OutlinedButton.icon(
+                        style: const ButtonStyle(enableFeedback: false),
                         key: const ValueKey('preview-sound'),
                         onPressed: !_saving && p.sound ? () => AppFeedback.previewSound(p) : null,
                         icon: const Icon(Icons.play_arrow_rounded),
@@ -222,6 +225,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       child: OutlinedButton.icon(
+                        style: const ButtonStyle(enableFeedback: false),
                         key: const ValueKey('preview-haptics'),
                         onPressed: !_saving && p.haptics ? () => AppFeedback.previewHaptics(p) : null,
                         icon: const Icon(Icons.touch_app_outlined),
@@ -273,6 +277,10 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
   }
 }
 
+// Give enlarged text room instead of splitting words beside decorative icons.
+bool _compactTextLayout(BuildContext context) =>
+    MediaQuery.sizeOf(context).width < 360 && MediaQuery.textScalerOf(context).scale(16) > 22;
+
 class _SettingsIcon extends StatelessWidget {
   const _SettingsIcon(this.icon);
   final IconData icon;
@@ -296,14 +304,17 @@ class _SettingRow extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) => InkWell(
+    enableFeedback: false,
     onTap: onTap,
     borderRadius: BorderRadius.circular(16),
     child: Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          _SettingsIcon(icon),
-          const SizedBox(width: 12),
+          if (!_compactTextLayout(context)) ...[
+            _SettingsIcon(icon),
+            const SizedBox(width: 12),
+          ],
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

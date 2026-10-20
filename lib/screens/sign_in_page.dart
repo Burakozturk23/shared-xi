@@ -80,7 +80,7 @@ class _LinkballSignInPageState extends State<LinkballSignInPage> {
               children: [
                 SocialHero(
                   icon: Icons.sports_soccer_rounded,
-                  eyebrow: connected ? c('HESABIN BAĞLI', 'ACCOUNT CONNECTED') : c('SENİN LINKBALL PROFİLİN', 'YOUR LINKBALL PROFILE'),
+                  eyebrow: connected ? c('HESABIN BAĞLI', 'ACCOUNT CONNECTED') : c('LINKBALL PROFİLİN', 'YOUR LINKBALL PROFILE'),
                   title: connected ? c('Her zaman sahada.', 'Always in the game.') : c('Sahada iz bırak.', 'Leave your mark.'),
                   message: c('Senin profilin. Senin rekabetin.', 'Your profile. Your competition.'),
                 ),
@@ -172,12 +172,14 @@ class _Benefit extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (!(MediaQuery.sizeOf(context).width < 360 && MediaQuery.textScalerOf(context).scale(16) > 22)) ...[
         Container(
           width: 40, height: 40,
           decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(12)),
           child: Icon(icon, color: colors.accent, size: 22),
         ),
         const SizedBox(width: 12),
+        ],
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
