@@ -120,7 +120,6 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
     final signedIn = await Navigator.push<bool>(
       context,
       LinkballRoute(
-        modern: false,
         builder: (_) => const LinkballSignInPage(allowSkip: false),
       ),
     );

@@ -156,7 +156,9 @@ void main() {
   testWidgets('Both online play actions retain the persistent-account gate', (
     tester,
   ) async {
-    await openApp(tester);
+    final prefs = await openApp(tester);
+    await prefs.setTheme(ThemeMode.light);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Online').last);
     await tester.pumpAndSettle();
     for (final label in ['Mod seç', 'Birlikte oyna']) {
@@ -164,6 +166,7 @@ void main() {
       await tester.tap(find.text(label));
       await tester.pumpAndSettle();
       expect(find.byType(LinkballSignInPage), findsOneWidget);
+      expect(Theme.of(tester.element(find.byType(LinkballSignInPage))).brightness, Brightness.light);
       expect(
         tester
             .widget<LinkballSignInPage>(find.byType(LinkballSignInPage))

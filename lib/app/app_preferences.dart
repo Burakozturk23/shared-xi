@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum HapticStrength { gentle, standard, strong }
+
 /// Device preferences only. Does not change Firebase identity or game progress.
 class AppPreferences extends ChangeNotifier {
   AppPreferences._(this._store) {
@@ -12,6 +14,10 @@ class AppPreferences extends ChangeNotifier {
     languageCode = _store.getString('linkball.language') == 'en' ? 'en' : 'tr';
     sound = _store.getBool('linkball.sound') ?? true;
     haptics = _store.getBool('linkball.haptics') ?? true;
+    hapticStrength = HapticStrength.values.firstWhere(
+      (value) => value.name == _store.getString('linkball.haptic_strength'),
+      orElse: () => HapticStrength.standard,
+    );
     onboardingComplete =
         (_store.getInt('linkball.onboarding_version') ?? 0) > 0;
   }
@@ -19,6 +25,7 @@ class AppPreferences extends ChangeNotifier {
   final SharedPreferences _store;
   late ThemeMode themeMode;
   late String languageCode;
+  late HapticStrength hapticStrength;
   late bool sound, haptics, onboardingComplete;
   static Future<AppPreferences> load() async =>
       AppPreferences._(await SharedPreferences.getInstance());
@@ -53,6 +60,14 @@ class AppPreferences extends ChangeNotifier {
       throw StateError('Titreşim tercihi kaydedilemedi.');
     }
     haptics = value;
+    notifyListeners();
+  }
+
+  Future<void> setHapticStrength(HapticStrength value) async {
+    if (!await _store.setString('linkball.haptic_strength', value.name)) {
+      throw StateError('Titreşim tercihi kaydedilemedi.');
+    }
+    hapticStrength = value;
     notifyListeners();
   }
 

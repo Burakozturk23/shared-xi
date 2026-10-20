@@ -85,7 +85,7 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
                 label: 'Google hesabını bağla',
                 icon: Icons.login_rounded,
                 onPressed: () =>
-                    _open(const LinkballSignInPage(allowSkip: false)),
+                    _open(const LinkballSignInPage(allowSkip: false), modern: true),
               ),
             ],
           ),

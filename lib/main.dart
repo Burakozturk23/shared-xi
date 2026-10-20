@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'screens/welcome_page.dart';
 import 'screens/onboarding_page.dart';
@@ -85,10 +86,22 @@ class _SharedXIAppState extends State<SharedXIApp> {
           // A Theme boundary keeps pre-17C mode routes readable in either app theme.
           builder: (context, child) => ValueListenableBuilder<bool>(
             valueListenable: _appearance.legacy,
-            builder: (context, legacy, _) => Theme(
-              data: legacy ? AppTheme.legacyDarkTheme : Theme.of(context),
-              child: child!,
-            ),
+            builder: (context, legacy, _) {
+              final theme = legacy ? AppTheme.legacyDarkTheme : Theme.of(context);
+              final dark = theme.brightness == Brightness.dark;
+              return AnnotatedRegion<SystemUiOverlayStyle>(
+                value: SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+                  statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+                  systemNavigationBarColor: theme.scaffoldBackgroundColor,
+                  systemNavigationBarDividerColor: Colors.transparent,
+                  systemNavigationBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+                  systemNavigationBarContrastEnforced: false,
+                ),
+                child: Theme(data: theme, child: child!),
+              );
+            },
           ),
           navigatorObservers: [_appearance],
           home: _showOnboarding

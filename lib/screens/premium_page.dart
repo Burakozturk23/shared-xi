@@ -106,7 +106,6 @@ class _PremiumPageState extends State<PremiumPage> {
     final signedIn = await Navigator.push<bool>(
       context,
       LinkballRoute(
-        modern: false,
         builder: (_) => const LinkballSignInPage(allowSkip: false),
       ),
     );
