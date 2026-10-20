@@ -157,7 +157,8 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
         for (const [u, q] of Object.entries(s.queue)) {
           const candidate = E.hydrate(s.rooms[q.id]); const pairKey = [uid, u].sort().join("__");
           const recent = s.pairs[pairKey] || [];
-          if (u === uid || peers.has(u) && !allowedPeers.has(u) || denied.has(u) || !candidate || candidate.status !== "waiting" ||
+          if (u === uid || peers.has(u) && !allowedPeers.has(u) || denied.has(u) || !candidate ||
+            candidate.status !== "waiting" ||
               candidate.dataRevision !== catalog.version ||
             (candidate.blocked || []).includes(uid) || recent.filter((t) => time - t < 86400000).length >= 2) continue;
           room = candidate; delete s.queue[u]; s.pairs[pairKey] = [...recent.filter((t) =>
