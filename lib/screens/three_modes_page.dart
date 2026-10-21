@@ -1,4 +1,6 @@
 import 'dart:async';
+import '../app/route_appearance.dart';
+import 'coach_honours_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import '../data/country_flags.dart';
@@ -7,6 +9,7 @@ import '../models/club.dart';
 import '../widgets/club_badge.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/three_modes_service.dart';
+import '../services/coach_honours_service.dart';
 import '../widgets/coach_avatar.dart';
 import '../widgets/pitch_ui.dart';
 
@@ -25,9 +28,10 @@ const _positions = {'GK': 'Kaleci', 'DEF': 'Defans', 'MID': 'Orta saha', 'FWD': 
 
 /// The same server-backed contract powers all entry routes and collections.
 class ThreeModesPage extends StatefulWidget {
-  const ThreeModesPage({super.key, required this.mode, this.service});
+  const ThreeModesPage({super.key, required this.mode, this.service, this.honoursService});
   final String mode;
   final ThreeModesService? service;
+  final CoachHonoursService? honoursService;
   @override
   State<ThreeModesPage> createState() => _ThreeModesPageState();
 }
@@ -131,6 +135,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(_title), actions: [
+      if (_coach) IconButton(tooltip: 'Hoca başarı arşivi', icon: const Icon(Icons.emoji_events_outlined),
+        onPressed: () => Navigator.of(context).push(LinkballRoute<void>(builder: (_) => CoachHonoursPage(service: widget.honoursService)))),
       if (_playing && !_finished) IconButton(tooltip: 'Koleksiyonu incele', onPressed: _busy ? null :
         () => setState(() { _showHub = true; _archive = true; }), icon: const Icon(Icons.collections_bookmark_outlined)),
       IconButton(tooltip: 'Yenile',
@@ -201,6 +207,12 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         const Padding(padding: EdgeInsets.only(top: 8), child: Text('Günlük hedef ve formasyon herkes için aynı. İstanbul saatine göre gece yarısında yenilenir.')),
       ],
       const SizedBox(height: 16),
+      if (_coach) ...[
+        PitchRow(title: 'Hoca başarı arşivi', subtitle: 'Tarihsel kupalar, ödüller ve hoca profilleri',
+          icon: Icons.emoji_events_outlined, onTap: () => Navigator.of(context).push(
+            LinkballRoute<void>(builder: (_) => CoachHonoursPage(service: widget.honoursService)))),
+        const SizedBox(height: 12),
+      ],
       PitchRow(title: _vault ? 'Kasa arşivi ve ligler' : _coach ? 'Hoca koleksiyonu' : 'Harf Pasaportu',
         subtitle: 'En iyi kadrolar ve kalıcı başarılar', icon: Icons.collections_bookmark_outlined,
         onTap: () => setState(() => _archive = !_archive),
@@ -251,6 +263,9 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           Text(_vault ? 'En iyi: ${r['best'] ?? 0} yıldız' : 'En iyi: ${r['best'] ?? 0}/11 · ${r['mastery'] == true ? 'Ustalık' : 'Geliştirilebilir'}'),
           if (!_vault) Text('${_medal(r)} · ${_nextMedal(r)}'),
           if (!_vault) Text('Oynanabilir düzenler: ${_strings(e['formations']).map(_formation).join(' / ')}'),
+          if (_coach) TextButton.icon(icon: const Icon(Icons.emoji_events_outlined),
+            label: const Text('Başarı arşivinde ara'),
+            onPressed: () => Navigator.pop(ctx, 'honours')),
           if (_coach && e['avatarId'] != null) Text(e['avatarOwned'] == true ? 'Avatar sende' : 'Avatar kilitli'),
           if (r['bestFormation'] != null) Text(_formation('${r['bestFormation']}')),
           for (final p in _maps(r['bestLineup'])) if (p.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6),
@@ -278,7 +293,10 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         ]),
       )));
     if (!mounted || result == null) return;
-    if (result == 'play') { await _start('archive', target: '${e['id']}'); }
+    if (result == 'honours') {
+      await Navigator.of(context).push(LinkballRoute<void>(builder: (_) => CoachHonoursPage(
+        service: widget.honoursService, initialCoachId: '${e['portraitId'] ?? e['id']}', initialQuery: '${e['name']}')));
+    } else if (result == 'play') { await _start('archive', target: '${e['id']}'); }
     else if (await _confirm('Ödül seçimini onayla', 'Bu hedefte tek seferlik seçimin: ${result == 'avatar' ? 'avatar (zaten sahipsen coin)' : '${e['avatarCoins']} coin'}.')) {
       await _run(() async {
         final r = await _service.mutate('claimCoachMastery', {'mode': widget.mode, 'version': _version,

@@ -1,0 +1,19 @@
+{
+  "source": "User-provided archive.zip",
+  "snapshotDate": null,
+  "archiveSha256": "a8efc6c245946fda6b1cec173bc02381b3f9401f6efedd394d9b8d86dcd23729",
+  "files": [
+    {
+      "name": "all_coaches.csv",
+      "originalEncoding": "utf-8-sig",
+      "originalSha256": "5447d119b06409d8b736409b27288dbc9bd7101f7d55bedb76deabd2f0a3f47a",
+      "utf8Sha256": "5447d119b06409d8b736409b27288dbc9bd7101f7d55bedb76deabd2f0a3f47a"
+    },
+    {
+      "name": "all_trophies.csv",
+      "originalEncoding": "cp1252",
+      "originalSha256": "955c3ac36407d7c019a448503cf5a33140e7fcd033184656806f1f90cc8e0541",
+      "utf8Sha256": "77412cec8ed2075fe27d8234e59d10c220b0fc2ac0ee799072fdb6ea0f192392"
+    }
+  ]
+}

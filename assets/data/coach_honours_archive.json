@@ -1,0 +1,3943 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "source": "User-provided archive.zip",
+    "snapshotDate": null,
+    "archiveSha256": "a8efc6c245946fda6b1cec173bc02381b3f9401f6efedd394d9b8d86dcd23729",
+    "files": [
+      {
+        "name": "all_coaches.csv",
+        "originalEncoding": "utf-8-sig",
+        "originalSha256": "5447d119b06409d8b736409b27288dbc9bd7101f7d55bedb76deabd2f0a3f47a",
+        "utf8Sha256": "5447d119b06409d8b736409b27288dbc9bd7101f7d55bedb76deabd2f0a3f47a"
+      },
+      {
+        "name": "all_trophies.csv",
+        "originalEncoding": "cp1252",
+        "originalSha256": "955c3ac36407d7c019a448503cf5a33140e7fcd033184656806f1f90cc8e0541",
+        "utf8Sha256": "77412cec8ed2075fe27d8234e59d10c220b0fc2ac0ee799072fdb6ea0f192392"
+      }
+    ]
+  },
+  "competitions": [
+    {
+      "id": "Worlds_Best_Club_Coach",
+      "label": "Dünyanın en iyi kulüp teknik direktörü",
+      "category": "individual"
+    },
+    {
+      "id": "English_Champion",
+      "label": "İngiltere lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Spanish_cup_winner",
+      "label": "İspanya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Italian_champion",
+      "label": "İtalya lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Italian_Super_Cup_winner",
+      "label": "İtalya Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "FIFA_Club_World_Cup_winner",
+      "label": "FIFA Kulüpler Dünya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "German_Super_Cup_winner",
+      "label": "Almanya Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Europa_League_winner",
+      "label": "UEFA Avrupa Ligi",
+      "category": "senior"
+    },
+    {
+      "id": "Dutch_Cup_winner",
+      "label": "Hollanda Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Portuguese_Super_Cup_winner",
+      "label": "Portekiz Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "European_Under-19_champion",
+      "label": "U19 Avrupa Şampiyonası",
+      "category": "youth"
+    },
+    {
+      "id": "French_champion",
+      "label": "Fransa lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "French_league_cup_winner",
+      "label": "Fransa Lig Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "French_Super_Cup_winner",
+      "label": "Fransa Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Copa_Sudamericana_winner",
+      "label": "Copa Sudamericana",
+      "category": "senior"
+    },
+    {
+      "id": "Portuguese_league_cup_winner",
+      "label": "Portekiz Lig Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Uefa_Supercup_winner",
+      "label": "UEFA Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Champions_League_winner",
+      "label": "UEFA Şampiyonlar Ligi",
+      "category": "senior"
+    },
+    {
+      "id": "English_League_Cup_winner",
+      "label": "İngiltere Lig Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "German_Champion",
+      "label": "Almanya lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "English_Super_Cup_winner",
+      "label": "İngiltere Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Norwegian_champion",
+      "label": "Norveç lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "U21_Premier_League_champion",
+      "label": "U21 Premier League",
+      "category": "youth"
+    },
+    {
+      "id": "German_cup_winner",
+      "label": "Almanya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "English_FA_Cup_winner",
+      "label": "İngiltere FA Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Scottish_cup_winner",
+      "label": "İskoçya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Italian_cup_winner",
+      "label": "İtalya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Portuguese_champion",
+      "label": "Portekiz lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Olympic_medalist",
+      "label": "Olimpiyat madalyası (türü belirtilmemiş)",
+      "category": "medal"
+    },
+    {
+      "id": "Swedish_cup_winner",
+      "label": "İsveç Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "German_second_tier_champion",
+      "label": "Almanya 2. lig şampiyonluğu",
+      "category": "lowerTier"
+    },
+    {
+      "id": "Italienischer_Zweitligameister",
+      "label": "İtalya 2. lig şampiyonluğu",
+      "category": "lowerTier"
+    },
+    {
+      "id": "Italian_cup_winner_(Serie_C)",
+      "label": "İtalya Serie C Kupası",
+      "category": "lowerTier"
+    },
+    {
+      "id": "French_cup_winner",
+      "label": "Fransa Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Dutch_second_tier_champion",
+      "label": "Hollanda 2. lig şampiyonluğu",
+      "category": "lowerTier"
+    },
+    {
+      "id": "Copa_América_winner",
+      "label": "Copa América",
+      "category": "senior"
+    },
+    {
+      "id": "Austrian_champion",
+      "label": "Avusturya lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Israeli_champion",
+      "label": "İsrail lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Coppa_Italia_Primavera_winner",
+      "label": "İtalya Primavera Kupası",
+      "category": "youth"
+    },
+    {
+      "id": "Russian_champion",
+      "label": "Rusya lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Russian_cup_winner",
+      "label": "Rusya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Portuguese_cup_winner",
+      "label": "Portekiz Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Croatian_cup_winner",
+      "label": "Hırvatistan Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Spanish_champion",
+      "label": "İspanya lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Spanish_Super_Cup_winner",
+      "label": "İspanya Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Dutch_champion",
+      "label": "Hollanda lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Dutch_Super_Cup_winner",
+      "label": "Hollanda Süper Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "European_Under-21_champion",
+      "label": "U21 Avrupa Şampiyonası",
+      "category": "youth"
+    },
+    {
+      "id": "Ecuadorian_champion",
+      "label": "Ekvador lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Norwegian_cup_winner",
+      "label": "Norveç Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "German_Under-19_Bundesliga_champion",
+      "label": "Almanya U19 lig şampiyonluğu",
+      "category": "youth"
+    },
+    {
+      "id": "Scottish_champion",
+      "label": "İskoçya lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Scottish_league_cup_winner",
+      "label": "İskoçya Lig Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Uefa_Cup_winner",
+      "label": "UEFA Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Italienischer_Drittligameister",
+      "label": "İtalya 3. lig şampiyonluğu",
+      "category": "lowerTier"
+    },
+    {
+      "id": "Chilean_champion",
+      "label": "Şili lig şampiyonluğu",
+      "category": "senior"
+    },
+    {
+      "id": "Austrian_cup_winner",
+      "label": "Avusturya Kupası",
+      "category": "senior"
+    },
+    {
+      "id": "Italian_Supercoppa_winner_(Primavera)",
+      "label": "İtalya Primavera Süper Kupası",
+      "category": "youth"
+    },
+    {
+      "id": "Russian_Super_Cup_winner",
+      "label": "Rusya Süper Kupası",
+      "category": "senior"
+    }
+  ],
+  "coaches": [
+    {
+      "id": "coach_archive_adihutter",
+      "name": "Adi Hütter",
+      "coachId": "coach_111",
+      "aliases": [
+        "Adi Hütter"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1970-02-11",
+        "citizenship": "Austria",
+        "birthPlace": "Hohenems",
+        "snapshotClub": "Bor. M'gladbach",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.89,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 87,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_alessiodionisi",
+      "name": "Alessio Dionisi",
+      "coachId": "coach_1253",
+      "aliases": [
+        "Alessio Dionisi"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1980-04-01",
+        "citizenship": "Italy",
+        "birthPlace": "Abbadia San ...",
+        "snapshotClub": "Sassuolo",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 0.98,
+        "snapshotFormation": "4-3-1-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 29,
+      "trophySourceLine": 70,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Italienischer_Zweitligameister",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_alvarocervera",
+      "name": "Álvaro Cervera",
+      "coachId": "coach_1086",
+      "aliases": [
+        "Álvaro Cervera",
+        "Álvaro Cervera Díaz"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1965-09-20",
+        "citizenship": "Spain",
+        "birthPlace": "Santa Isabel",
+        "snapshotClub": "Cádiz CF",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2016-04-18",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.18,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 61,
+      "trophySourceLine": 20,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_andoniiraola",
+      "name": "Andoni Iraola",
+      "coachId": "coach_16",
+      "aliases": [
+        "Andoni Iraola"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1982-06-22",
+        "citizenship": "Spain",
+        "birthPlace": "Usurbil",
+        "snapshotClub": "Rayo Vallecano",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2020-08-06",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.03,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 60,
+      "trophySourceLine": 19,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_antoinekombouare",
+      "name": "Antoine Kombouaré",
+      "coachId": "coach_163",
+      "aliases": [
+        "Antoine Kombouare",
+        "Antoine Kombouaré"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-11-16",
+        "citizenship": "France",
+        "birthPlace": "Nouméa",
+        "snapshotClub": "FC Nantes",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-02-11",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.93,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 75,
+      "trophySourceLine": 55,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "French_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_aurelioandreazzoli",
+      "name": "Aurelio Andreazzoli",
+      "coachId": null,
+      "aliases": [
+        "Aurelio Andreazzoli"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1953-11-05",
+        "citizenship": "Italy",
+        "birthPlace": "Massa",
+        "snapshotClub": "FC Empoli",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-06-21",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.89,
+        "snapshotFormation": "4-3-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 37,
+      "trophySourceLine": 78,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Italienischer_Zweitligameister",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_bosvensson",
+      "name": "Bo Svensson",
+      "coachId": "coach_234",
+      "aliases": [
+        "Bo Svensson"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1979-08-04",
+        "citizenship": "Denmark",
+        "birthPlace": "Skorping",
+        "snapshotClub": "1.FSV Mainz 05",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-01-04",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.12,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 93,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_brendanrodgers",
+      "name": "Brendan Rodgers",
+      "coachId": "coach_42",
+      "aliases": [
+        "Brendan Rodgers"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1973-01-26",
+        "citizenship": "Northern Ireland",
+        "birthPlace": "Carnlough",
+        "snapshotClub": "Leicester",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2019-02-27",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.02,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 7,
+      "trophySourceLine": 28,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Scottish_cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Scottish_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Scottish_league_cup_winner",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_brunogenesio",
+      "name": "Bruno Génésio",
+      "coachId": null,
+      "aliases": [
+        "Bruno Génésio"
+      ],
+      "identityResolution": "ambiguous",
+      "profile": {
+        "birthDate": "1966-09-01",
+        "citizenship": "France",
+        "birthPlace": "Lyon",
+        "snapshotClub": "Stade Rennais",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-03-04",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.75,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 69,
+      "trophySourceLine": 48,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_brunolage",
+      "name": "Bruno Lage",
+      "coachId": null,
+      "aliases": [
+        "Bruno Lage"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1976-05-12",
+        "citizenship": "Portugal",
+        "birthPlace": "Setúbal",
+        "snapshotClub": "Wolves",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.31,
+        "snapshotFormation": "5-4-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 10,
+      "trophySourceLine": 31,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Portuguese_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Portuguese_champion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_carloancelotti",
+      "name": "Carlo Ancelotti",
+      "coachId": "coach_8",
+      "aliases": [
+        "Carlo Ancelotti"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1959-06-10",
+        "citizenship": "Italy",
+        "birthPlace": "Reggiolo",
+        "snapshotClub": "Real Madrid",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.09,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 43,
+      "trophySourceLine": 2,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Worlds_Best_Club_Coach",
+          "count": 2
+        },
+        {
+          "competitionId": "English_Champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "FIFA_Club_World_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "German_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "French_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "German_Champion",
+          "count": 1
+        },
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_christianstreich",
+      "name": "Christian Streich",
+      "coachId": null,
+      "aliases": [
+        "Christian Streich"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1965-06-11",
+        "citizenship": "Germany",
+        "birthPlace": "Weil am Rhein",
+        "snapshotClub": "SC Freiburg",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2011-12-29",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 8.68,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 91,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_christophegaltier",
+      "name": "Christophe Galtier",
+      "coachId": "coach_293",
+      "aliases": [
+        "Christophe Galtier"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1966-08-28",
+        "citizenship": "France",
+        "birthPlace": "Marseille",
+        "snapshotClub": "OGC Nice",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 3.86,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 68,
+      "trophySourceLine": 47,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "French_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "French_league_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_christophepelissier",
+      "name": "Christophe Pélissier",
+      "coachId": null,
+      "aliases": [
+        "Christophe Pélissier"
+      ],
+      "identityResolution": "ambiguous",
+      "profile": {
+        "birthDate": "1965-10-05",
+        "citizenship": "France",
+        "birthPlace": "Revel",
+        "snapshotClub": "FC Lorient",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2019-05-29",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 3.81,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 79,
+      "trophySourceLine": 59,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_claudepuel",
+      "name": "Claude Puel",
+      "coachId": "coach_414",
+      "aliases": [
+        "Claude Puel"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1961-09-02",
+        "citizenship": "France",
+        "birthPlace": "Castres",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.63,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 82,
+      "trophySourceLine": 49,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "French_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "French_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_claudioranieri",
+      "name": "Claudio Ranieri",
+      "coachId": "coach_68",
+      "aliases": [
+        "Claudio Ranieri"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1951-10-20",
+        "citizenship": "Italy",
+        "birthPlace": "Roma",
+        "snapshotClub": "Watford",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-10-04",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.3,
+        "snapshotFormation": "4-4-1-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 19,
+      "trophySourceLine": 40,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "English_Champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italienischer_Zweitligameister",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_cup_winner_(Serie_C)",
+          "count": 1
+        },
+        {
+          "competitionId": "Italienischer_Drittligameister",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_danielfarke",
+      "name": "Daniel Farke",
+      "coachId": "coach_71",
+      "aliases": [
+        "Daniel Farke"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1976-10-30",
+        "citizenship": "Germany",
+        "birthPlace": "Steinhausen",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 4.07,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 18,
+      "trophySourceLine": 39,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_davideballardini",
+      "name": "Davide Ballardini",
+      "coachId": "coach_589",
+      "aliases": [
+        "Davide Ballardini"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1964-01-06",
+        "citizenship": "Italy",
+        "birthPlace": "Ravenna",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 0.96,
+        "snapshotFormation": "3-5-2 flat"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 36,
+      "trophySourceLine": 77,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_davidmoyes",
+      "name": "David Moyes",
+      "coachId": "coach_26",
+      "aliases": [
+        "David Moyes",
+        "David William Moyes"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1963-04-25",
+        "citizenship": "Scotland",
+        "birthPlace": "Glasgow",
+        "snapshotClub": "West Ham",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2019-12-29",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 3.23,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 11,
+      "trophySourceLine": 32,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_deansmith",
+      "name": "Dean Smith",
+      "coachId": "coach_189",
+      "aliases": [
+        "Dean Smith"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1971-03-19",
+        "citizenship": "England",
+        "birthPlace": "West Bromwich",
+        "snapshotClub": "Norwich",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-11-15",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.75,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 9,
+      "trophySourceLine": 30,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_diegosimeone",
+      "name": "Diego Simeone",
+      "coachId": "coach_52",
+      "aliases": [
+        "Diego Pablo Simeone González",
+        "Diego Simeone"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1970-04-28",
+        "citizenship": "Argentina",
+        "birthPlace": "San Nicolás",
+        "snapshotClub": "Atlético Madrid",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2011-12-23",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.09,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 44,
+      "trophySourceLine": 3,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Worlds_Best_Club_Coach",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Spanish_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Spanish_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_eduardocoudet",
+      "name": "Eduardo Coudet",
+      "coachId": "coach_219",
+      "aliases": [
+        "Eduardo Coudet",
+        "Eduardo Germán Coudet"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1974-09-12",
+        "citizenship": "Argentina",
+        "birthPlace": "Buenos Aires",
+        "snapshotClub": "Celta de Vigo",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2020-11-12",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.29,
+        "snapshotFormation": "4-4-2 Diamond"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 53,
+      "trophySourceLine": 12,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_franckhaise",
+      "name": "Franck Haise",
+      "coachId": "coach_108",
+      "aliases": [
+        "Franck Haise"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1971-04-15",
+        "citizenship": "France",
+        "birthPlace": "Mont-Saint-Aignan",
+        "snapshotClub": "Lens",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2020-02-25",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.26,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 74,
+      "trophySourceLine": 54,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_franescriba",
+      "name": "Fran Escribá",
+      "coachId": "coach_1513",
+      "aliases": [
+        "Fran Escriba",
+        "Fran Escribá"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1965-05-03",
+        "citizenship": "Spain",
+        "birthPlace": "Valencia",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": "Licence trainer",
+        "snapshotAverageTermYears": 1.22,
+        "snapshotFormation": "4-4-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 62,
+      "trophySourceLine": 21,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_frankkramer",
+      "name": "Frank Kramer",
+      "coachId": null,
+      "aliases": [
+        "Frank Kramer"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1972-05-03",
+        "citizenship": "Germany",
+        "birthPlace": "Memmingen",
+        "snapshotClub": "Arm. Bielefeld",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-03-02",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.23,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 97,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_fredericantonetti",
+      "name": "Frédéric Antonetti",
+      "coachId": null,
+      "aliases": [
+        "Frédéric Antonetti"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1961-08-19",
+        "citizenship": "France",
+        "birthPlace": "Venzolasca",
+        "snapshotClub": "FC Metz",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2020-10-13",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.5,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 71,
+      "trophySourceLine": 51,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_geraldbaticle",
+      "name": "Gérald Baticle",
+      "coachId": "coach_1151",
+      "aliases": [
+        "Gérald Baticle",
+        "Gérald Edmond Louis Baticle"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1969-09-10",
+        "citizenship": "France",
+        "birthPlace": "Amiens",
+        "snapshotClub": "SCO Angers",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-05-27",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.39,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 78,
+      "trophySourceLine": 58,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_gerardoseoane",
+      "name": "Gerardo Seoane",
+      "coachId": "coach_554",
+      "aliases": [
+        "Gerardo Seoane"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1978-10-30",
+        "citizenship": "Switzerland",
+        "birthPlace": "Luzern",
+        "snapshotClub": "Bay. Leverkusen",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.5,
+        "snapshotFormation": "4-4-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 85,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_gianpierogasperini",
+      "name": "Gian Piero Gasperini",
+      "coachId": "coach_36",
+      "aliases": [
+        "Gian Piero Gasperini"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1958-01-26",
+        "citizenship": "Italy",
+        "birthPlace": "Grugliasco",
+        "snapshotClub": "Atalanta BC",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2016-06-14",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.77,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 26,
+      "trophySourceLine": 67,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_graemejones",
+      "name": "Graeme Jones",
+      "coachId": null,
+      "aliases": [
+        "Graeme Jones"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1970-03-13",
+        "citizenship": "England",
+        "birthPlace": "Gateshead",
+        "snapshotClub": "Newcastle",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-01-27",
+        "snapshotContractUntil": null,
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.51,
+        "snapshotFormation": "4-3-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 16,
+      "trophySourceLine": 37,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_grahampotter",
+      "name": "Graham Potter",
+      "coachId": "coach_131",
+      "aliases": [
+        "Graham Potter",
+        "Graham Stephen Potter"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1975-05-20",
+        "citizenship": "England",
+        "birthPlace": "Solihull",
+        "snapshotClub": "Brighton",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2019-05-20",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 3.65,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 13,
+      "trophySourceLine": 34,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Swedish_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_igortudor",
+      "name": "Igor Tudor",
+      "coachId": "coach_101",
+      "aliases": [
+        "Igor Tudor"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1978-04-16",
+        "citizenship": "Croatia",
+        "birthPlace": "Split",
+        "snapshotClub": "Hellas Verona",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-09-14",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.74,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 34,
+      "trophySourceLine": 75,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Croatian_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_imanolalguacil",
+      "name": "Imanol Alguacil",
+      "coachId": "coach_196",
+      "aliases": [
+        "Imanol Alguacil",
+        "Imanol Alguacil Barrenetxea"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1971-07-04",
+        "citizenship": "Spain",
+        "birthPlace": "Orio",
+        "snapshotClub": "Real Sociedad",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2018-12-27",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.28,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 47,
+      "trophySourceLine": 6,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_ivanjuric",
+      "name": "Ivan Juric",
+      "coachId": "coach_92",
+      "aliases": [
+        "Ivan Juric",
+        "Ivan Jurić"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1975-08-25",
+        "citizenship": "Croatia",
+        "birthPlace": "Split",
+        "snapshotClub": "Torino",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.84,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 30,
+      "trophySourceLine": 71,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_jagobaarrasate",
+      "name": "Jagoba Arrasate",
+      "coachId": null,
+      "aliases": [
+        "Jagoba Arrasate"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1978-04-22",
+        "citizenship": "Spain",
+        "birthPlace": "Berriatua",
+        "snapshotClub": "CA Osasuna",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2018-07-01",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.38,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 56,
+      "trophySourceLine": 15,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_javiercalleja",
+      "name": "Javier Calleja",
+      "coachId": "coach_800",
+      "aliases": [
+        "Javier Calleja",
+        "Javier Calleja Revilla"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1978-05-12",
+        "citizenship": "Spain",
+        "birthPlace": "Madrid",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.15,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 59,
+      "trophySourceLine": 18,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_javierpereira",
+      "name": "Javier Pereira",
+      "coachId": null,
+      "aliases": [
+        "Javier Pereira"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1966-05-13",
+        "citizenship": "Spain",
+        "birthPlace": "Badajoz",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.36,
+        "snapshotFormation": "5-3-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 55,
+      "trophySourceLine": 14,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_jessemarsch",
+      "name": "Jesse Marsch",
+      "coachId": "coach_608",
+      "aliases": [
+        "Jesse Marsch"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1973-11-08",
+        "citizenship": "United States",
+        "birthPlace": "Racine, Wisconsin",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.79,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 100,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_jocelyngourvennec",
+      "name": "Jocelyn Gourvennec",
+      "coachId": "coach_768",
+      "aliases": [
+        "Jocelyn Gourvennec"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1972-03-22",
+        "citizenship": "France",
+        "birthPlace": "Brest",
+        "snapshotClub": "LOSC Lille",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-07-05",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.12,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 66,
+      "trophySourceLine": 45,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "French_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "French_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_jorgesampaoli",
+      "name": "Jorge Sampaoli",
+      "coachId": "coach_309",
+      "aliases": [
+        "Jorge Luis Sampaoli Moya",
+        "Jorge Sampaoli"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1960-03-13",
+        "citizenship": "Argentina",
+        "birthPlace": "Casilda",
+        "snapshotClub": "Marseille",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-03-08",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.22,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 67,
+      "trophySourceLine": 46,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Copa_Sudamericana_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Copa_América_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Chilean_champion",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_josemourinho",
+      "name": "José Mourinho",
+      "coachId": "coach_27",
+      "aliases": [
+        "José Mourinho",
+        "José Mário dos Santos Mourinho Félix"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-01-26",
+        "citizenship": "Portugal",
+        "birthPlace": "Setúbal",
+        "snapshotClub": "AS Roma",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.79,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 25,
+      "trophySourceLine": 66,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Worlds_Best_Club_Coach",
+          "count": 4
+        },
+        {
+          "competitionId": "English_Champion",
+          "count": 3
+        },
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "Italian_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Portuguese_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "English_League_Cup_winner",
+          "count": 4
+        },
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Portuguese_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Portuguese_cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Spanish_champion",
+          "count": 3
+        },
+        {
+          "competitionId": "Spanish_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Uefa_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_julenlopetegui",
+      "name": "Julen Lopetegui",
+      "coachId": "coach_250",
+      "aliases": [
+        "Julen Lopetegui",
+        "Julen Lopetegui Argote"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1966-09-28",
+        "citizenship": "Spain",
+        "birthPlace": "Asteasu",
+        "snapshotClub": "Sevilla FC",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2019-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.77,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 46,
+      "trophySourceLine": 5,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "European_Under-19_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "European_Under-21_champion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_juliannagelsmann",
+      "name": "Julian Nagelsmann",
+      "coachId": "coach_20",
+      "aliases": [
+        "Julian Nagelsmann"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1987-07-23",
+        "citizenship": "Germany",
+        "birthPlace": "Landsberg am Lech",
+        "snapshotClub": "FC Bayern",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2026-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.0,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 83,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_julienstephan",
+      "name": "Julien Stéphan",
+      "coachId": "coach_514",
+      "aliases": [
+        "Julien Stéphan"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1980-09-18",
+        "citizenship": "France",
+        "birthPlace": "Rennes",
+        "snapshotClub": "R. Strasbourg",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-05-28",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.21,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 76,
+      "trophySourceLine": 56,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "French_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_jurgenklopp",
+      "name": "Jürgen Klopp",
+      "coachId": "coach_portrait_jurgen_klopp",
+      "aliases": [
+        "Jürgen Klopp"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1967-06-16",
+        "citizenship": "Germany",
+        "birthPlace": "Stuttgart",
+        "snapshotClub": "Liverpool",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2015-10-08",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 5.4,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 5,
+      "trophySourceLine": 25,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Worlds_Best_Club_Coach",
+          "count": 2
+        },
+        {
+          "competitionId": "English_Champion",
+          "count": 1
+        },
+        {
+          "competitionId": "FIFA_Club_World_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "German_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "German_Champion",
+          "count": 2
+        },
+        {
+          "competitionId": "German_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_laurentbatlles",
+      "name": "Laurent Batlles",
+      "coachId": "coach_1948",
+      "aliases": [
+        "Laurent Batlles"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1975-09-23",
+        "citizenship": "France",
+        "birthPlace": "Nantes",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.17,
+        "snapshotFormation": "3-5-2 flat"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 80,
+      "trophySourceLine": 60,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_lucagotti",
+      "name": "Luca Gotti",
+      "coachId": "coach_749",
+      "aliases": [
+        "Luca Gotti"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1967-09-13",
+        "citizenship": "Italy",
+        "birthPlace": "Adria",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.31,
+        "snapshotFormation": "3-5-2 flat"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 35,
+      "trophySourceLine": 76,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_lucianospalletti",
+      "name": "Luciano Spalletti",
+      "coachId": "coach_58",
+      "aliases": [
+        "Luciano Spalletti"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1959-03-07",
+        "citizenship": "Italy",
+        "birthPlace": "Certaldo",
+        "snapshotClub": "SSC Napoli",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.44,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 23,
+      "trophySourceLine": 64,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Italian_cup_winner_(Serie_C)",
+          "count": 1
+        },
+        {
+          "competitionId": "Russian_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Russian_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Russian_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_luisgarcia",
+      "name": "Luis García",
+      "coachId": null,
+      "aliases": [
+        "Luis García"
+      ],
+      "identityResolution": "ambiguous",
+      "profile": {
+        "birthDate": "1972-12-01",
+        "citizenship": "Spain",
+        "birthPlace": "Madrid",
+        "snapshotClub": "RCD Mallorca",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2020-08-06",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.32,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence",
+        "unreliable_avg_term_as_coach"
+      ],
+      "coachSourceLine": 58,
+      "trophySourceLine": 17,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_manuelpellegrini",
+      "name": "Manuel Pellegrini",
+      "coachId": "coach_81",
+      "aliases": [
+        "Manuel Luis Pellegrini Ripamonti",
+        "Manuel Pellegrini"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1953-09-16",
+        "citizenship": "Chile",
+        "birthPlace": "Santiago",
+        "snapshotClub": "Real Betis",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2020-08-01",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.91,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 50,
+      "trophySourceLine": 9,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "English_Champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Copa_Sudamericana_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "English_League_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Ecuadorian_champion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_marcelino",
+      "name": "Marcelino",
+      "coachId": "coach_62",
+      "aliases": [
+        "Marcelino",
+        "Marcelino García Toral"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1965-08-14",
+        "citizenship": "Spain",
+        "birthPlace": "Careñes",
+        "snapshotClub": "Athletic",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2021-01-04",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.6,
+        "snapshotFormation": "4-4-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 51,
+      "trophySourceLine": 10,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_marcelobielsa",
+      "name": "Marcelo Bielsa",
+      "coachId": "coach_109",
+      "aliases": [
+        "Marcelo Alberto Bielsa Caldera",
+        "Marcelo Bielsa"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1955-07-21",
+        "citizenship": "Argentina",
+        "birthPlace": "Rosario",
+        "snapshotClub": "Leeds",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2018-07-01",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.83,
+        "snapshotFormation": "4-1-4-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 12,
+      "trophySourceLine": 33,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Olympic_medalist",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_marcorose",
+      "name": "Marco Rose",
+      "coachId": "coach_113",
+      "aliases": [
+        "Marco Rose"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1976-09-11",
+        "citizenship": "Germany",
+        "birthPlace": "Leipzig",
+        "snapshotClub": "Bor. Dortmund",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.5,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 84,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_markusweinzierl",
+      "name": "Markus Weinzierl",
+      "coachId": null,
+      "aliases": [
+        "Markus Weinzierl"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1974-12-28",
+        "citizenship": "Germany",
+        "birthPlace": "Straubing",
+        "snapshotClub": "FC Augsburg",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-04-26",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.97,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 94,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_markvanbommel",
+      "name": "Mark van Bommel",
+      "coachId": null,
+      "aliases": [
+        "Mark van Bommel"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1977-04-22",
+        "citizenship": "Netherlands",
+        "birthPlace": "Maasbracht",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.93,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 86,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_massimilianoallegri",
+      "name": "Massimiliano Allegri",
+      "coachId": "coach_72",
+      "aliases": [
+        "Massimiliano Allegri"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1967-08-11",
+        "citizenship": "Italy",
+        "birthPlace": "Livorno",
+        "snapshotClub": "Juventus",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-05-28",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.46,
+        "snapshotFormation": null
+      },
+      "profileFlags": [
+        "unreliable_avg_term_as_coach",
+        "unreliable_preffered_formation"
+      ],
+      "coachSourceLine": 41,
+      "trophySourceLine": 62,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Italian_champion",
+          "count": 6
+        },
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 4
+        },
+        {
+          "competitionId": "Italienischer_Drittligameister",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_mauriciopochettino",
+      "name": "Mauricio Pochettino",
+      "coachId": "coach_297",
+      "aliases": [
+        "Mauricio Pochettino"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1972-03-02",
+        "citizenship": "Argentina",
+        "birthPlace": "Murphy",
+        "snapshotClub": "Paris SG",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-01-02",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.93,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 63,
+      "trophySourceLine": 42,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "French_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "French_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_mauriziosarri",
+      "name": "Maurizio Sarri",
+      "coachId": "coach_105",
+      "aliases": [
+        "Maurizio Sarri"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1959-01-10",
+        "citizenship": "Italy",
+        "birthPlace": "Napoli",
+        "snapshotClub": "Lazio",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-06-09",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.15,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 27,
+      "trophySourceLine": 68,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Italian_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_michelderzakarian",
+      "name": "Michel Der Zakarian",
+      "coachId": "coach_996",
+      "aliases": [
+        "Michel Der Zakarian"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-02-18",
+        "citizenship": "Armenia",
+        "birthPlace": "Jerewan",
+        "snapshotClub": "Stade Brestois",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-06-22",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.91,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 77,
+      "trophySourceLine": 57,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_mikelarteta",
+      "name": "Mikel Arteta",
+      "coachId": "coach_2",
+      "aliases": [
+        "Mikel Arteta"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1982-03-26",
+        "citizenship": "Spain",
+        "birthPlace": "San Sebastián",
+        "snapshotClub": "Arsenal",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2019-12-22",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.05,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 20,
+      "trophySourceLine": 27,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_nikokovac",
+      "name": "Niko Kovac",
+      "coachId": "coach_23",
+      "aliases": [
+        "Niko Kovac",
+        "Niko Kovač"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1971-10-15",
+        "citizenship": "Croatia",
+        "birthPlace": "Berlin",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.58,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 64,
+      "trophySourceLine": 43,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "German_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "German_Champion",
+          "count": 1
+        },
+        {
+          "competitionId": "German_cup_winner",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_nunoespiritosanto",
+      "name": "Nuno Espírito Santo",
+      "coachId": "coach_64",
+      "aliases": [
+        "Nuno Espírito Santo",
+        "Nuno Herlander Simões Espírito Santo"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1974-01-25",
+        "citizenship": "Portugal",
+        "birthPlace": "São Tomé",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.76,
+        "snapshotFormation": "3-4-3"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 6,
+      "trophySourceLine": 26,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_olegunnarsolskjaer",
+      "name": "Ole Gunnar Solskjaer",
+      "coachId": null,
+      "aliases": [
+        "Ole Gunnar Solskjaer"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1973-02-26",
+        "citizenship": "Norway",
+        "birthPlace": "Kristiansund",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.05,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 3,
+      "trophySourceLine": 23,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Norwegian_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "U21_Premier_League_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Norwegian_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_oliverglasner",
+      "name": "Oliver Glasner",
+      "coachId": "coach_65",
+      "aliases": [
+        "Oliver Glasner"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1974-08-28",
+        "citizenship": "Austria",
+        "birthPlace": "Salzburg",
+        "snapshotClub": "E. Frankfurt",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.52,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 89,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_olivierdalloglio",
+      "name": "Olivier Dall'Oglio",
+      "coachId": "coach_933",
+      "aliases": [
+        "Olivier Dall'Oglio",
+        "Olivier Dall’Oglio"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1964-05-16",
+        "citizenship": "France",
+        "birthPlace": "Alès",
+        "snapshotClub": "Montpellier",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-06-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.2,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 73,
+      "trophySourceLine": 53,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_oscargarcia",
+      "name": "Óscar García",
+      "coachId": null,
+      "aliases": [
+        "Óscar García"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1973-04-26",
+        "citizenship": "Spain",
+        "birthPlace": "Sabadell",
+        "snapshotClub": "Stade Reims",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-06-23",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 0.79,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 72,
+      "trophySourceLine": 52,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Austrian_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Israeli_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "Austrian_cup_winner",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_paldardai",
+      "name": "Pál Dárdai",
+      "coachId": null,
+      "aliases": [
+        "Pál Dárdai"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1976-03-16",
+        "citizenship": "Hungary",
+        "birthPlace": "Pécs",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.37,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 92,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_paolozanetti",
+      "name": "Paolo Zanetti",
+      "coachId": "coach_337",
+      "aliases": [
+        "Paolo Zanetti"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1982-12-16",
+        "citizenship": "Italy",
+        "birthPlace": "Valdagno",
+        "snapshotClub": "Venezia",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2020-08-14",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.22,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 39,
+      "trophySourceLine": 80,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_pascalgastien",
+      "name": "Pascal Gastien",
+      "coachId": "coach_1477",
+      "aliases": [
+        "Pascal Gastien"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-12-02",
+        "citizenship": "France",
+        "birthPlace": "Rochefort",
+        "snapshotClub": "Clermont Foot",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2017-09-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 4.06,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 81,
+      "trophySourceLine": 61,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_patrickvieira",
+      "name": "Patrick Vieira",
+      "coachId": "coach_261",
+      "aliases": [
+        "Patrick Donalé Vieira",
+        "Patrick Vieira"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1976-06-23",
+        "citizenship": "France",
+        "birthPlace": "Dakar",
+        "snapshotClub": "Crystal Palace",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-07-04",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.06,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 15,
+      "trophySourceLine": 36,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_pellegrinomatarazzo",
+      "name": "Pellegrino Matarazzo",
+      "coachId": null,
+      "aliases": [
+        "Pellegrino Matarazzo"
+      ],
+      "identityResolution": "country_conflict",
+      "profile": {
+        "birthDate": "1977-11-28",
+        "citizenship": "United States",
+        "birthPlace": "Wayne, New Jersey",
+        "snapshotClub": "VfB Stuttgart",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2019-12-30",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.51,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 90,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_pepebordalas",
+      "name": "Pepe Bordalás",
+      "coachId": null,
+      "aliases": [
+        "Pepe Bordalás"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1964-03-05",
+        "citizenship": "Spain",
+        "birthPlace": "Alicante",
+        "snapshotClub": "Valencia",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.57,
+        "snapshotFormation": "4-4-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 49,
+      "trophySourceLine": 8,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_pepguardiola",
+      "name": "Pep Guardiola",
+      "coachId": "coach_0",
+      "aliases": [
+        "Pep Guardiola"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1971-01-18",
+        "citizenship": "Spain",
+        "birthPlace": "Santpedor",
+        "snapshotClub": "Man City",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2016-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 3.38,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 2,
+      "trophySourceLine": 22,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Worlds_Best_Club_Coach",
+          "count": 2
+        },
+        {
+          "competitionId": "English_Champion",
+          "count": 3
+        },
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "FIFA_Club_World_Cup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "English_League_Cup_winner",
+          "count": 4
+        },
+        {
+          "competitionId": "German_Champion",
+          "count": 3
+        },
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "German_cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_champion",
+          "count": 3
+        },
+        {
+          "competitionId": "Spanish_Super_Cup_winner",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_peterbosz",
+      "name": "Peter Bosz",
+      "coachId": "coach_32",
+      "aliases": [
+        "Peter Bosz"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-11-21",
+        "citizenship": "Netherlands",
+        "birthPlace": "Apeldoorn",
+        "snapshotClub": "Olympique Lyon",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-05-29",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.52,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 65,
+      "trophySourceLine": 44,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Dutch_second_tier_champion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_quiquesanchezflores",
+      "name": "Quique Sánchez Flores",
+      "coachId": "coach_574",
+      "aliases": [
+        "Quique Sanchez Flores",
+        "Quique Sánchez Flores"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1965-02-02",
+        "citizenship": "Spain",
+        "birthPlace": "Madrid",
+        "snapshotClub": "Getafe",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2021-10-06",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.45,
+        "snapshotFormation": "5-3-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 52,
+      "trophySourceLine": 11,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Portuguese_league_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_rafaelbenitez",
+      "name": "Rafael Benítez",
+      "coachId": "coach_180",
+      "aliases": [
+        "Rafael Benítez",
+        "Rafael Benítez Maudes"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1960-04-16",
+        "citizenship": "Spain",
+        "birthPlace": "Madrid",
+        "snapshotClub": "Everton",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.91,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 8,
+      "trophySourceLine": 29,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Worlds_Best_Club_Coach",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "FIFA_Club_World_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "English_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "English_FA_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Uefa_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_ralphhasenhuttl",
+      "name": "Ralph Hasenhüttl",
+      "coachId": "coach_186",
+      "aliases": [
+        "Ralph Hasenhüttl"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1967-08-09",
+        "citizenship": "Austria",
+        "birthPlace": "Graz",
+        "snapshotClub": "Southampton",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2018-12-06",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.09,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 14,
+      "trophySourceLine": 35,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "German_second_tier_champion",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_robertmoreno",
+      "name": "Robert Moreno",
+      "coachId": null,
+      "aliases": [
+        "Robert Moreno"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1977-09-19",
+        "citizenship": "Spain",
+        "birthPlace": "Barcelona",
+        "snapshotClub": "Granada CF",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 0.44,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 57,
+      "trophySourceLine": 16,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 3
+        },
+        {
+          "competitionId": "FIFA_Club_World_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Spanish_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "Spanish_Super_Cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_robertodaversa",
+      "name": "Roberto D'Aversa",
+      "coachId": "coach_541",
+      "aliases": [
+        "Roberto D'Aversa"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1975-08-12",
+        "citizenship": "Italy",
+        "birthPlace": "Stuttgart",
+        "snapshotClub": "Sampdoria",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-04",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.54,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 33,
+      "trophySourceLine": 74,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_ronaldkoeman",
+      "name": "Ronald Koeman",
+      "coachId": "coach_69",
+      "aliases": [
+        "Ronald Koeman"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-03-21",
+        "citizenship": "Netherlands",
+        "birthPlace": "Zaandam",
+        "snapshotClub": "Without Club",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": null,
+        "snapshotContractUntil": null,
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.65,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 45,
+      "trophySourceLine": 4,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Spanish_cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Dutch_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Portuguese_Super_Cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Dutch_champion",
+          "count": 3
+        },
+        {
+          "competitionId": "Dutch_Super_Cup_winner",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_seandyche",
+      "name": "Sean Dyche",
+      "coachId": "coach_120",
+      "aliases": [
+        "Sean Dyche",
+        "Sean Mark Dyche"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1971-06-28",
+        "citizenship": "England",
+        "birthPlace": "Kettering",
+        "snapshotClub": "Burnley",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2012-10-30",
+        "snapshotContractUntil": "2025-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 4.07,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 21,
+      "trophySourceLine": 41,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_sebastianhoeness",
+      "name": "Sebastian Hoeneß",
+      "coachId": "coach_66",
+      "aliases": [
+        "Sebastian Hoeneß"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1982-05-12",
+        "citizenship": "Germany",
+        "birthPlace": "München",
+        "snapshotClub": "TSG Hoffenheim",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2020-08-02",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.64,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 88,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_simoneinzaghi",
+      "name": "Simone Inzaghi",
+      "coachId": "coach_4",
+      "aliases": [
+        "Simone Inzaghi"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1976-04-05",
+        "citizenship": "Italy",
+        "birthPlace": "Piacenza",
+        "snapshotClub": "Inter",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-06-03",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.92,
+        "snapshotFormation": "3-5-2 flat"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 22,
+      "trophySourceLine": 63,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "Italian_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Coppa_Italia_Primavera_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Italian_Supercoppa_winner_(Primavera)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_sinisamihajlovic",
+      "name": "Sinisa Mihajlovic",
+      "coachId": null,
+      "aliases": [
+        "Sinisa Mihajlovic"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1969-02-20",
+        "citizenship": "Serbia",
+        "birthPlace": "Vukovar",
+        "snapshotClub": "Bologna",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2019-01-28",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.2,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 32,
+      "trophySourceLine": 73,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_stefanleitl",
+      "name": "Stefan Leitl",
+      "coachId": "coach_499",
+      "aliases": [
+        "Stefan Leitl"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1977-08-29",
+        "citizenship": "Germany",
+        "birthPlace": "München",
+        "snapshotClub": "Greuther Fürth",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2019-02-05",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.63,
+        "snapshotFormation": "4-3-1-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 99,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_stefanocolantuono",
+      "name": "Stefano Colantuono",
+      "coachId": "coach_3376",
+      "aliases": [
+        "Stefano Colantuono"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1962-10-23",
+        "citizenship": "Italy",
+        "birthPlace": "Roma",
+        "snapshotClub": "Salernitana",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-10-17",
+        "snapshotContractUntil": "2022-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.11,
+        "snapshotFormation": "4-3-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 40,
+      "trophySourceLine": 81,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Italienischer_Zweitligameister",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_stefanopioli",
+      "name": "Stefano Pioli",
+      "coachId": "coach_104",
+      "aliases": [
+        "Stefano Pioli"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1965-10-20",
+        "citizenship": "Italy",
+        "birthPlace": "Parma",
+        "snapshotClub": "AC Milan",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2019-10-09",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.2,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 24,
+      "trophySourceLine": 65,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_steffenbaumgart",
+      "name": "Steffen Baumgart",
+      "coachId": "coach_377",
+      "aliases": [
+        "Steffen Baumgart"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1972-01-05",
+        "citizenship": "Germany",
+        "birthPlace": "Rostock",
+        "snapshotClub": "1. FC Köln",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.64,
+        "snapshotFormation": "4-1-4-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 95,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_thiagomotta",
+      "name": "Thiago Motta",
+      "coachId": "coach_59",
+      "aliases": [
+        "Thiago Motta",
+        "Thiago Motta Santon Olivares"
+      ],
+      "identityResolution": "alias",
+      "profile": {
+        "birthDate": "1982-08-28",
+        "citizenship": "Italy",
+        "birthPlace": "São Bernardo do ...",
+        "snapshotClub": "Spezia Calcio",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-08",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.56,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 38,
+      "trophySourceLine": 79,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_thomasfrank",
+      "name": "Thomas Frank",
+      "coachId": "coach_45",
+      "aliases": [
+        "Thomas Frank"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1973-10-09",
+        "citizenship": "Denmark",
+        "birthPlace": "Frederiksværk",
+        "snapshotClub": "Brentford",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2018-10-16",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.11,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 17,
+      "trophySourceLine": 38,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_thomasreis",
+      "name": "Thomas Reis",
+      "coachId": "coach_230",
+      "aliases": [
+        "Thomas Reis"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1973-10-04",
+        "citizenship": "Germany",
+        "birthPlace": "Wertheim",
+        "snapshotClub": "VfL Bochum",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2019-09-06",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 1.38,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 98,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_thomastuchel",
+      "name": "Thomas Tuchel",
+      "coachId": "coach_15",
+      "aliases": [
+        "Thomas Tuchel"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1973-08-29",
+        "citizenship": "Germany",
+        "birthPlace": "Krumbach",
+        "snapshotClub": "Chelsea",
+        "snapshotLeague": "Premier League",
+        "snapshotLeagueCountry": "England",
+        "snapshotAppointmentDate": "2021-01-26",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.28,
+        "snapshotFormation": "3-4-2-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 4,
+      "trophySourceLine": 24,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 0,
+      "honours": [
+        {
+          "competitionId": "French_champion",
+          "count": 2
+        },
+        {
+          "competitionId": "French_league_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "French_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "Uefa_Supercup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "Champions_League_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "German_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "French_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "German_Under-19_Bundesliga_champion",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_unaiemery",
+      "name": "Unai Emery",
+      "coachId": "coach_9",
+      "aliases": [
+        "Unai Emery",
+        "Unai Emery Etxegoien"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1971-11-03",
+        "citizenship": "Spain",
+        "birthPlace": "Hondarribia",
+        "snapshotClub": "Villarreal",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2020-07-23",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.03,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 48,
+      "trophySourceLine": 7,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Europa_League_winner",
+          "count": 4
+        },
+        {
+          "competitionId": "French_champion",
+          "count": 1
+        },
+        {
+          "competitionId": "French_league_cup_winner",
+          "count": 1
+        },
+        {
+          "competitionId": "French_Super_Cup_winner",
+          "count": 2
+        },
+        {
+          "competitionId": "French_cup_winner",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_ursfischer",
+      "name": "Urs Fischer",
+      "coachId": "coach_110",
+      "aliases": [
+        "Urs Fischer"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1966-02-20",
+        "citizenship": "Switzerland",
+        "birthPlace": "Zürich",
+        "snapshotClub": "Union Berlin",
+        "snapshotLeague": "Bundesliga",
+        "snapshotLeagueCountry": "Germany",
+        "snapshotAppointmentDate": "2018-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.1,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 96,
+      "trophySourceLine": null,
+      "hasTrophyRecord": false,
+      "unclassifiedCount": null,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_vicentemoreno",
+      "name": "Vicente Moreno",
+      "coachId": "coach_1979",
+      "aliases": [
+        "Vicente Moreno"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1974-10-26",
+        "citizenship": "Spain",
+        "birthPlace": "Massanassa",
+        "snapshotClub": "Espanyol",
+        "snapshotLeague": "La Liga",
+        "snapshotLeagueCountry": "Spain",
+        "snapshotAppointmentDate": "2020-08-04",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": null,
+        "snapshotAverageTermYears": 2.06,
+        "snapshotFormation": "4-2-3-1"
+      },
+      "profileFlags": [
+        "unreliable_coaching_licence"
+      ],
+      "coachSourceLine": 54,
+      "trophySourceLine": 13,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_vincenzoitaliano",
+      "name": "Vincenzo Italiano",
+      "coachId": "coach_79",
+      "aliases": [
+        "Vincenzo Italiano"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1977-12-10",
+        "citizenship": "Italy",
+        "birthPlace": "Karlsruhe",
+        "snapshotClub": "Fiorentina",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-07-01",
+        "snapshotContractUntil": "2023-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 0.88,
+        "snapshotFormation": "4-3-3 Attacking"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 28,
+      "trophySourceLine": 69,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": []
+    },
+    {
+      "id": "coach_archive_vladimirpetkovic",
+      "name": "Vladimir Petkovic",
+      "coachId": "coach_472",
+      "aliases": [
+        "Vladimir Petkovic"
+      ],
+      "identityResolution": "exact",
+      "profile": {
+        "birthDate": "1963-08-15",
+        "citizenship": "Switzerland",
+        "birthPlace": "Sarajevo",
+        "snapshotClub": "G. Bordeaux",
+        "snapshotLeague": "Ligue 1",
+        "snapshotLeagueCountry": "France",
+        "snapshotAppointmentDate": "2021-07-28",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 2.35,
+        "snapshotFormation": "3-4-1-2"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 70,
+      "trophySourceLine": 50,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "coach_archive_waltermazzarri",
+      "name": "Walter Mazzarri",
+      "coachId": null,
+      "aliases": [
+        "Walter Mazzarri"
+      ],
+      "identityResolution": "unmatched",
+      "profile": {
+        "birthDate": "1961-10-01",
+        "citizenship": "Italy",
+        "birthPlace": "San Vincenzo",
+        "snapshotClub": "Cagliari Calcio",
+        "snapshotLeague": "Serie A",
+        "snapshotLeagueCountry": "Italy",
+        "snapshotAppointmentDate": "2021-09-15",
+        "snapshotContractUntil": "2024-06-30",
+        "snapshotLicence": "UEFA Pro Licence",
+        "snapshotAverageTermYears": 1.64,
+        "snapshotFormation": "4-4-2 double 6"
+      },
+      "profileFlags": [],
+      "coachSourceLine": 31,
+      "trophySourceLine": 72,
+      "hasTrophyRecord": true,
+      "unclassifiedCount": 1,
+      "honours": [
+        {
+          "competitionId": "Italian_cup_winner",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}
