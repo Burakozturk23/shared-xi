@@ -19,7 +19,17 @@ enum OnlinePlayMode {
   fakeClubDuel,
 }
 
+const onlineModeGroups = ['Bağlantı & Grid', 'Hız & Kadro', 'Oyuncu Düelloları'];
+
 extension OnlinePlayModeX on OnlinePlayMode {
+  String get group => switch (this) {
+    OnlinePlayMode.sharedXi || OnlinePlayMode.clubCountry || OnlinePlayMode.gridClassic ||
+    OnlinePlayMode.gridRandom || OnlinePlayMode.gridReverse => onlineModeGroups[0],
+    OnlinePlayMode.randomFive || OnlinePlayMode.cinko || OnlinePlayMode.loto ||
+    OnlinePlayMode.clubManager => onlineModeGroups[1],
+    _ => onlineModeGroups[2],
+  };
+
   String get title {
     switch (this) {
       case OnlinePlayMode.fakeClubDuel: return 'Sahte Kulüp Düellosu';

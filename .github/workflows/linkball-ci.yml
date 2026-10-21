@@ -326,6 +326,16 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Upload four screen design previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: four-screen-design-previews
+          path: .dart_tool/four_screen_qa/*.png
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload Random Five widget previews
         if: always()
         uses: actions/upload-artifact@v4
