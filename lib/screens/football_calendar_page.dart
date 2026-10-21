@@ -157,7 +157,25 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
     label: Text(text, style: const TextStyle(fontSize: 12)),
     visualDensity: VisualDensity.compact,
   );
-  Widget _teams(Map<String, dynamic> m) => Row(
+  Widget _teams(Map<String, dynamic> m) => LayoutBuilder(builder: (context, constraints) {
+    if (constraints.maxWidth < 260 || MediaQuery.textScalerOf(context).scale(14) > 19) {
+      return Column(children: [
+        for (final side in ['home', 'away']) ...[
+          if (side == 'away') const Divider(height: 24),
+          Row(children: [
+            ClubIdentityBadge(
+              clubId: number(m, '${side}ClubId'),
+              clubName: '${m['${side}Name'] ?? ''}',
+              size: 48,
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Text('${m['${side}Name'] ?? ''}',
+              style: const TextStyle(fontWeight: FontWeight.w700))),
+          ]),
+        ],
+      ]);
+    }
+    return Row(
     children: [
       for (final side in ['home', 'away']) ...[
         if (side == 'away')
@@ -184,7 +202,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
         ),
       ],
     ],
-  );
+    );
+  });
   String _kickoff(Map<String, dynamic> m) {
     if (m['status'] == 'TBD') return 'Saat bekleniyor';
     final date = DateTime.tryParse(
@@ -289,7 +308,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
         const Text('Süper Lig güncellemesi bekleniyor. Diğer maçları inceleyebilirsin.'),
       ],
       if (_feed['competitions'] is List) ExpansionTile(tilePadding: EdgeInsets.zero,
-        title: const Text('Kapsanan organizasyonlar'),
+        title: const Text('Veri kapsamı'),
         children: [Text('${(_feed['competitions'] as List).join(', ')}. Süper Lig ayrıca güncellenir.')]),
       if (_feed['state'] == 'out-of-coverage') ...[
         const SizedBox(height: 8), const Text('Kayıtlı takvimin tarih aralığı sona erdi; yeni takvim bekleniyor.'),
