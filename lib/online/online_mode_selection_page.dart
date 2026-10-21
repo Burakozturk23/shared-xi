@@ -30,7 +30,7 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
       appBar: AppBar(title: Text(widget.ranked ? 'Rastgele eşleş' : 'Arkadaşlarınla oyna', maxLines: 2),
         toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64),
       body: GameContent(child: ListView(padding: const EdgeInsets.fromLTRB(24, 8, 24, 32), children: [
-        PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        if (_search.text.trim().isEmpty) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Container(padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(12)),
@@ -46,15 +46,9 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
           const SizedBox(height: 8),
           Text(widget.ranked ? 'Oyununu seç, eşleşmeye geç.' : 'Oyununu seç; oda kur veya kodla katıl.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.muted)),
-          const SizedBox(height: 16),
-          Wrap(spacing: 8, runSpacing: 8, children: [
-            _step(context, '1', 'Mod seç'),
-            _step(context, '2', widget.ranked ? 'Rakip bul' : 'Odaya katıl'),
-            _step(context, '3', 'Sahaya çık'),
-          ]),
         ])),
         const SizedBox(height: 24),
-        TextField(controller: _search, onChanged: (_) => setState(() {}),
+        TextField(key: const ValueKey('mode-search'), controller: _search, onChanged: (_) => setState(() {}),
           decoration: InputDecoration(hintText: 'Oyun veya kategori ara', prefixIcon: const Icon(Icons.search_rounded),
             suffixIcon: _search.text.isEmpty ? null : IconButton(tooltip: 'Aramayı temizle',
               onPressed: () => setState(_search.clear), icon: const Icon(Icons.close_rounded)))),
@@ -91,10 +85,4 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
     );
   }
 
-  Widget _step(BuildContext context, String number, String label) {
-    final colors = PitchColors.of(context);
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(color: colors.raised, borderRadius: BorderRadius.circular(10)),
-      child: Text('$number · $label', style: Theme.of(context).textTheme.labelSmall));
-  }
 }

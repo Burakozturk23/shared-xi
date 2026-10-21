@@ -97,11 +97,15 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     finally { if (mounted) setState(() => _busy = false); }
   }
   Future<void> _load() => _run(() async {
+    final firstLoad = _status.isEmpty;
     final status = await _service.load(widget.mode).timeout(const Duration(seconds: 30));
     if (status['availability'] is! bool) {
       throw StateError('Günlük içerik alınamadı. Yeniden bağlanmayı dene.');
     }
-    if (mounted && !_changedAccount) setState(() { _accept(status); _archive = false; });
+    if (mounted && !_changedAccount) {
+      setState(() { _accept(status); _archive = false; });
+      if (firstLoad && _scroll.hasClients) _scroll.jumpTo(0);
+    }
   });
   Future<void> _act(String action) => _run(() async {
     final response = await _service.mutate({'mode': widget.mode,
@@ -133,14 +137,20 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Bitir'))]));
     if (yes == true && mounted) await _act('giveup');
   }
+  List<Widget> _appBarActions() => [
+    IconButton(tooltip: '30 günlük arşiv', onPressed: _busy || _changedAccount || _status.isEmpty ? null :
+      () => setState(() { _records = !_records; }), icon: const Icon(Icons.calendar_month_outlined)),
+    IconButton(tooltip: 'Yenile', onPressed: _busy || _changedAccount ? null : _load, icon: const Icon(Icons.refresh)),
+  ];
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 24;
+    return Scaffold(
     appBar: AppBar(title: Text(dailyWordsTitle(widget.mode), maxLines: 2),
-      toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64, actions: [
-      IconButton(tooltip: '30 günlük arşiv', onPressed: _busy || _changedAccount || _status.isEmpty ? null :
-        () => setState(() { _records = !_records; }), icon: const Icon(Icons.calendar_month_outlined)),
-      IconButton(tooltip: 'Yenile', onPressed: _busy || _changedAccount ? null : _load, icon: const Icon(Icons.refresh)),
-    ]),
+      toolbarHeight: largeText ? 96 : 64,
+      actions: largeText ? null : _appBarActions(),
+      bottom: largeText ? PreferredSize(preferredSize: const Size.fromHeight(48),
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: _appBarActions())) : null),
     body: GameContent(child: ListView(controller: _scroll,
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 32), children: [
         if (_status.isEmpty) ...[
@@ -172,6 +182,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
           ],
         ],
       ])));
+  }
   String _errorMessage(Object error) {
     if (error is TimeoutException || error is FirebaseFunctionsException &&
         ['deadline-exceeded', 'unavailable', 'cancelled'].contains(error.code)) {
