@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/rewarded_ad_models.dart';
@@ -9,10 +10,11 @@ import 'energy_service.dart';
 /// ID/body across a lost response, restart and day boundary, always under the UID.
 class DailyWordsService {
   DailyWordsService({EnergyService? transport, Future<String> Function()? signIn,
-    String? Function()? currentUser}) : transport = transport ?? EnergyService(),
+    String? Function()? currentUser, this.requestTimeout = const Duration(seconds: 20)}) : transport = transport ?? EnergyService(),
     _signIn = signIn ?? (() async => (await AuthService.ensureGuestSignedIn()).uid),
     _currentUser = currentUser ?? (() => AuthService.uid);
   final EnergyService transport;
+  final Duration requestTimeout;
   final Future<String> Function() _signIn;
   final String? Function() _currentUser;
   String? _owner;
@@ -23,17 +25,24 @@ class DailyWordsService {
     _owner = uid;
   }
   Future<String> _identity() async {
-    final uid = _currentUser() ?? await _signIn(); _check(uid); return uid;
+    final uid = _currentUser() ?? await _signIn().timeout(requestTimeout); _check(uid); return uid;
   }
   bool _transient(Object e) => e is FirebaseFunctionsException &&
     ['unavailable', 'deadline-exceeded', 'internal', 'unknown', 'cancelled'].contains(e.code);
+  Future<Map<String, dynamic>> _call(String name, Map<String, dynamic> input) async {
+    try {
+      return await transport.call(name, input).timeout(requestTimeout);
+    } on TimeoutException {
+      throw FirebaseFunctionsException(code: 'deadline-exceeded', message: 'Bağlantı zaman aşımına uğradı. Tekrar dene.');
+    }
+  }
   String _cache(String uid, String mode) => 'daily_words.v1.$uid.$mode';
   String _pending(String uid, String mode) => '${_cache(uid, mode)}.pending';
   Future<Map<String, dynamic>> _replay(SharedPreferences prefs, String uid, String mode) async {
     final key = _pending(uid, mode);
     final request = rewardMap(jsonDecode(prefs.getString(key)!)); _check(uid);
     try {
-      final result = await transport.call('actDailyWords', request); _check(uid);
+      final result = await _call('actDailyWords', request); _check(uid);
       final cache = prefs.getString(_cache(uid, mode));
       if (cache != null) {
         final previous = rewardMap(jsonDecode(cache));
@@ -60,7 +69,7 @@ class DailyWordsService {
           notice = e.message ?? 'Bekleyen işlem uygulanmadı; güncel kayıt yüklendi.';
         }
       }
-      final result = await transport.call('getDailyWords', {'mode': mode}); _check(uid);
+      final result = await _call('getDailyWords', {'mode': mode}); _check(uid);
       final snapshot = {...result, 'offline': false, if (notice != null) 'notice': notice};
       await prefs.setString(_cache(uid, mode), jsonEncode(snapshot)); _check(uid);
       return snapshot;
@@ -81,7 +90,7 @@ class DailyWordsService {
   }
   Future<Map<String, dynamic>> history(String mode, String period) async {
     final uid = await _identity();
-    final result = await transport.call('getDailyWordsHistory', {'mode': mode, 'period': period});
+    final result = await _call('getDailyWordsHistory', {'mode': mode, 'period': period});
     _check(uid); return result;
   }
 }

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/daily_words.dart';
 import '../app/app_feedback.dart';
+import '../app/route_appearance.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/game_ui.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/daily_words_service.dart';
@@ -27,7 +30,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
   StreamSubscription<dynamic>? _auth;
   Timer? _ticker;
   Map<String, dynamic> _status = {}, _session = {};
-  bool _busy = true, _changedAccount = false, _records = false, _archive = false, _resumed = true;
+  bool _busy = false, _changedAccount = false, _records = false, _archive = false, _resumed = true;
   bool _vibrate = false;
   String? _error, _owner, _lettersKey;
   List<String> _letters = [];
@@ -39,7 +42,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
   bool get _offline => _status['offline'] == true;
   int get _now => (_session['serverNow'] as num? ?? _status['serverNow'] as num? ?? 0).toInt() + _clock.elapsedMilliseconds;
   int get _seconds => (((_session['deadline'] as num? ?? _now) - _now) / 1000).ceil().clamp(0, 240);
-  bool get _locked => _busy || _changedAccount || _offline || _archive || _finished ||
+  bool get _locked => _busy || _error != null || _changedAccount || _offline || _archive || _finished ||
     _status['availability'] != true || _weekly && _session.isNotEmpty && _seconds == 0;
   List<Map<String, dynamic>> get _rounds => _rows(_session['rounds']);
   Map<String, dynamic> get _round => _rounds.isEmpty ? {} : _rounds[(_session['index'] as num? ?? 0).toInt()];
@@ -87,16 +90,22 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     }
   }
   Future<void> _run(Future<void> Function() body) async {
-    if (!mounted || _changedAccount || _busy && _status.isNotEmpty) return;
+    if (!mounted || _changedAccount || _busy) return;
     setState(() { _busy = true; _error = null; });
     try { await body(); }
-    catch (e) { if (mounted && !_changedAccount) setState(() => _error = e is FirebaseFunctionsException ?
-      e.message : e.toString().replaceFirst('Bad state: ', '')); }
+    catch (e) { if (mounted && !_changedAccount) setState(() => _error = _errorMessage(e)); }
     finally { if (mounted) setState(() => _busy = false); }
   }
   Future<void> _load() => _run(() async {
-    final status = await _service.load(widget.mode);
-    if (mounted && !_changedAccount) setState(() { _accept(status); _archive = false; });
+    final firstLoad = _status.isEmpty;
+    final status = await _service.load(widget.mode).timeout(const Duration(seconds: 30));
+    if (status['availability'] is! bool) {
+      throw StateError('Günlük içerik alınamadı. Yeniden bağlanmayı dene.');
+    }
+    if (mounted && !_changedAccount) {
+      setState(() { _accept(status); _archive = false; });
+      if (firstLoad && _scroll.hasClients) _scroll.jumpTo(0);
+    }
   });
   Future<void> _act(String action) => _run(() async {
     final response = await _service.mutate({'mode': widget.mode,
@@ -104,18 +113,18 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       'packId': _session['packId'] ?? _status['packId'],
       'contentVersion': _session['contentVersion'] ?? _status['contentVersion'],
       'revision': _session['revision'], 'questionId': _session['questionId'],
-      'action': action, if (action == 'guess') 'answer': _answer.text});
+      'action': action, if (action == 'guess') 'answer': _answer.text}).timeout(const Duration(seconds: 30));
     if (!mounted || _changedAccount) return;
     setState(() { _setSession(rewardMap(response['session'])); _clock..reset()..start();
       _answer.clear(); _chosen.clear(); });
     if (_vibrate) AppFeedback.selection();
-    final status = await _service.load(widget.mode);
+    final status = await _service.load(widget.mode).timeout(const Duration(seconds: 30));
     if (!mounted || _changedAccount) return;
     setState(() => _accept(status));
     if (_scroll.hasClients && ['next', 'start'].contains(action)) _scroll.jumpTo(0);
   });
   Future<void> _history(String period) => _run(() async {
-    final value = await _service.history(widget.mode, period);
+    final value = await _service.history(widget.mode, period).timeout(const Duration(seconds: 30));
     if (!mounted || _changedAccount) return;
     setState(() { _archive = true; _records = false; _setSession(rewardMap(value['session'])); });
     if (_scroll.hasClients) _scroll.jumpTo(0);
@@ -128,18 +137,30 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Bitir'))]));
     if (yes == true && mounted) await _act('giveup');
   }
+  List<Widget> _appBarActions() => [
+    IconButton(tooltip: '30 günlük arşiv', onPressed: _busy || _changedAccount || _status.isEmpty ? null :
+      () => setState(() { _records = !_records; }), icon: const Icon(Icons.calendar_month_outlined)),
+    IconButton(tooltip: 'Yenile', onPressed: _busy || _changedAccount ? null : _load, icon: const Icon(Icons.refresh)),
+  ];
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(dailyWordsTitle(widget.mode)), actions: [
-      IconButton(tooltip: '30 günlük arşiv', onPressed: _busy || _changedAccount ? null :
-        () => setState(() { _records = !_records; }), icon: const Icon(Icons.calendar_month_outlined)),
-      IconButton(tooltip: 'Yenile', onPressed: _busy || _changedAccount ? null : _load, icon: const Icon(Icons.refresh)),
-    ]),
-    body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 620),
-      child: ListView(controller: _scroll, padding: const EdgeInsets.all(16), children: [
-        if (_busy) const LinearProgressIndicator(),
-        if (_error != null) Semantics(liveRegion: true, child: Padding(padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)))),
+  Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 24;
+    return Scaffold(
+    appBar: AppBar(title: Text(dailyWordsTitle(widget.mode), maxLines: 2),
+      toolbarHeight: largeText ? 96 : 64,
+      actions: largeText ? null : _appBarActions(),
+      bottom: largeText ? PreferredSize(preferredSize: const Size.fromHeight(48),
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: _appBarActions())) : null),
+    body: GameContent(child: ListView(controller: _scroll,
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32), children: [
+        if (_status.isEmpty) ...[
+          _welcome(), const SizedBox(height: 16),
+          if (_busy) _loadingPanel(),
+        ] else if (_busy) ...[
+          Semantics(label: 'Oyun eşitleniyor', child: const LinearProgressIndicator()),
+          const SizedBox(height: 12),
+        ],
+        if (_error != null) _errorPanel(),
         if (_status['notice'] != null) _notice('${_status['notice']}'),
         if (_status.isNotEmpty) ...[
           Wrap(spacing: 8, runSpacing: 4, children: [Chip(label: Text('${_session['period'] ?? _status['period']}')),
@@ -148,7 +169,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
           if (_archive) ...[const Text('Arşiv · Salt okunur · Ödülsüz görüntüleme'),
             TextButton(onPressed: _busy ? null : () { _archive = false; _load(); }, child: const Text('Bugüne dön'))],
           if (_records) ..._archivePanel() else ...[
-            if (_status['availability'] != true && !_archive) _notice('${_status['reason']}'),
+            if (_status['availability'] != true && !_archive) _notice('${_status['reason'] ?? 'Bugünün içeriği henüz hazır değil.'}'),
             if (_session.isEmpty) ..._intro() else if (_lingo) ..._lingoPanel()
             else if (_anagram) ..._anagramPanel() else ..._passaPanel(),
             if (_finished) ..._resultPanel(),
@@ -156,22 +177,75 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
               TextButton(onPressed: _locked ? null : _giveup, child: const Text('Cevabı göster / bırak')),
             const SizedBox(height: 18), ..._trioPanel(),
             if (widget.mode == 'passa_daily') OutlinedButton.icon(onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => DailyWordsPage(mode: 'passa_weekly', service: widget.service))),
+              LinkballRoute(builder: (_) => DailyWordsPage(mode: 'passa_weekly', service: widget.service))),
               icon: const Icon(Icons.timelapse), label: const Text('Haftalık Klasik · 29 harf / 240 sn')),
           ],
         ],
-      ])))));
-  Widget _notice(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(text));
+      ])));
+  }
+  String _errorMessage(Object error) {
+    if (error is TimeoutException || error is FirebaseFunctionsException &&
+        ['deadline-exceeded', 'unavailable', 'cancelled'].contains(error.code)) {
+      return 'Bağlantı tamamlanamadı. İnternetini kontrol edip tekrar dene. '
+        'Gönderilmiş bir yanıt varsa yeniden bağlanınca durumu kontrol edilir.';
+    }
+    if (error is FirebaseFunctionsException) {
+      if (['not-found', 'unimplemented'].contains(error.code)) {
+        return 'Bu günlük oyun şu anda kullanılamıyor. Biraz sonra tekrar dene.';
+      }
+      return error.message ?? 'Günlük içerik yüklenemedi. Yeniden bağlanmayı dene.';
+    }
+    if (error is StateError) return '${error.message}';
+    return 'Günlük içerik yüklenemedi. Bağlantını kontrol edip tekrar dene.';
+  }
+
+  Widget _welcome() => GameIntro(
+    icon: _lingo ? Icons.text_fields_rounded : _anagram ? Icons.shuffle_rounded : Icons.abc_rounded,
+    title: _lingo ? 'Bir kelime. Altı şans.' : _anagram ? 'Harfleri çöz, futbolcuyu bul.' :
+      _weekly ? 'Haftanın büyük çemberi' : 'Yedi harf, yedi futbol sorusu.',
+    message: _lingo ? 'Futbolcu, kulüp veya ülkeyi bul. Her tahminde harflerin konumunu keşfet.' :
+      _anagram ? 'Üç futbolcunun karışık harflerini doğru sıraya koy.' : _weekly ?
+      '29 harf, Ğ dahil. 240 saniye boyunca çöz; her soruda bir pas hakkın var. Süre arka planda da ilerler. Haftada tek resmî sonuç.' :
+      'İpuçlarını oku, harfle başlayan ya da harfi içeren cevabı bul. Süre sınırı yok; her soruda bir pas hakkın var.',
+  );
+
+  Widget _loadingPanel() => PitchPanel(child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text('Günlük içerik yükleniyor', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: 8),
+      const Text('Günün bulmacası ve kayıtlı ilerlemen kontrol ediliyor.'),
+      const SizedBox(height: 16),
+      const LinearProgressIndicator(semanticsLabel: 'Günlük içerik yükleniyor'),
+      const SizedBox(height: 16),
+      const Text('Enerji harcanmaz. Reklam ve satın alınan yardım yok.'),
+    ],
+  ));
+
+  Widget _errorPanel() => Padding(padding: const EdgeInsets.only(bottom: 16), child:
+    Semantics(liveRegion: true, child: PitchPanel(child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Align(alignment: Alignment.centerLeft, child: Icon(Icons.cloud_off_rounded,
+          color: PitchColors.of(context).muted, size: 32)),
+        const SizedBox(height: 12),
+        Text(_changedAccount ? 'Hesap değişti' : 'Bağlantıyı yeniden kuralım',
+          style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8), Text(_error!), const SizedBox(height: 16),
+        PitchAction(label: _changedAccount ? 'Geri dön' : 'Tekrar dene',
+          icon: _changedAccount ? Icons.arrow_back_rounded : Icons.refresh_rounded,
+          onPressed: _busy ? null : _changedAccount ? () => Navigator.of(context).maybePop() : _load),
+      ],
+    ))));
+
+  Widget _notice(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 8),
+    child: PitchPanel(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Icon(Icons.info_outline_rounded, color: PitchColors.of(context).accent),
+      const SizedBox(width: 12), Expanded(child: Text(text)),
+    ])));
+
   List<Widget> _intro() => _archive ? [const Text('Bu tarihte bu oyun için kayıt yok.')] : [
-    PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(_weekly ? 'Haftanın büyük çemberi' : 'Her gün, aynı bulmaca', style: Theme.of(context).textTheme.headlineSmall),
-      const SizedBox(height: 12), Text(_weekly ?
-        '29 harf, Ğ dahil. 240 saniye boyunca çöz; her soruda bir pas hakkın var. Süre arka planda da ilerler. Haftada tek resmî sonuç.' :
-        'Günlük içerik hazır olduğunda burada oynayabilirsin. Aynı tarihte herkes aynı soruları görür.'),
-      const SizedBox(height: 8), const Text('Reklam ve satın alınan yardım yok.'),
-    ])),
-    if (_weekly) ...[const SizedBox(height: 16), FilledButton(onPressed: _locked ? null : () => _act('start'),
-      child: const Text('240 saniyeyi başlat'))],
+    _welcome(),
+    if (_weekly) ...[const SizedBox(height: 16), PitchAction(onPressed: _locked ? null : () => _act('start'),
+      label: '240 saniyeyi başlat')],
   ];
   List<Widget> _lingoPanel() {
     final guesses = _rows(_session['guesses']); final length = (_session['length'] as num? ?? 5).toInt();
@@ -185,7 +259,10 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       }
     }
     return [
-      Text('$category · $length harf · ${6 - guesses.length} hak kaldı', style: Theme.of(context).textTheme.titleMedium),
+      PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('Günün kelimesi', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8), Text('$category · $length harf · ${6 - guesses.length} hak kaldı'),
+      ])),
       const SizedBox(height: 12),
       LayoutBuilder(builder: (context, constraints) {
         final scale = MediaQuery.textScalerOf(context).scale(16) / 16;
@@ -208,7 +285,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
               child: OutlinedButton(style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 10),
                 minimumSize: const Size(36, 48), backgroundColor: _markColor(keyboard[letter])),
                 onPressed: _locked ? null : () { if (dailyWordKey(_answer.text).length < length) setState(() => _answer.text += letter); },
-                child: Column(children: [Text(letter, style: const TextStyle(color: Colors.white)),
+                child: Column(children: [Text(letter, style: TextStyle(color: keyboard[letter] == null ? PitchColors.of(context).text : Colors.white)),
                   if (keyboard[letter] != null) Icon(_markIcon(keyboard[letter]), size: 12, color: Colors.white)]))))).toList()),
         Align(alignment: Alignment.centerRight, child: TextButton.icon(onPressed: _locked ? null : () {
           if (_answer.text.isNotEmpty) setState(() => _answer.text = _answer.text.substring(0, _answer.text.length - 1));
@@ -222,7 +299,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     ];
   }
   Color _markColor(String? mark) => switch (mark) {
-    'exact' => const Color(0xff236847), 'present' => const Color(0xff73591c), _ => const Color(0xff394944),
+    'exact' => const Color(0xff236847), 'present' => const Color(0xff73591c),
+    'absent' => const Color(0xff394944), _ => PitchColors.of(context).raised,
   };
   IconData _markIcon(String? mark) => switch (mark) {
     'exact' => Icons.check, 'present' => Icons.swap_horiz, _ => Icons.close,
@@ -231,7 +309,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     Semantics(label: '$semantics $letter ${mark == null ? 'boş veya gönderilmedi' : dailyWordMark(mark)}',
       excludeSemantics: true, child: Container(width: width, constraints: const BoxConstraints(minHeight: 54),
         padding: const EdgeInsets.symmetric(vertical: 5), decoration: BoxDecoration(
-          color: mark == null ? Theme.of(context).colorScheme.surface : _markColor(mark),
+          color: mark == null ? PitchColors.of(context).raised : _markColor(mark),
           border: Border.all(color: Theme.of(context).dividerColor), borderRadius: BorderRadius.circular(8)),
         child: Column(children: [Text(letter.isEmpty ? ' ' : letter, style: TextStyle(fontWeight: FontWeight.w700,
           color: mark == null ? null : Colors.white, fontSize: 18)),
@@ -305,10 +383,13 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         SwitchListTile(contentPadding: EdgeInsets.zero, value: _vibrate, onChanged: (v) => setState(() => _vibrate = v), title: const Text('Yanıtlarda titreşim')),
       ],
       const SizedBox(height: 10),
-      if (_weekly) Wrap(children: letters) else SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: letters)),
+      Wrap(spacing: 4, runSpacing: 4, children: letters),
       if (!_finished) ...[
         const SizedBox(height: 16), PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${q['letter']} ${q['rule'] == 'contains' ? 'içinde geçer' : 'ile başlar'}', style: Theme.of(context).textTheme.titleLarge),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(color: PitchColors.of(context).tint, borderRadius: BorderRadius.circular(12)),
+            child: Text('${q['letter']} ${q['rule'] == 'contains' ? 'içinde geçer' : 'ile başlar'}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: PitchColors.of(context).accent))),
           const SizedBox(height: 12), Text('${q['prompt']}', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8), Text(q['passAvailable'] == true ? '1 pas hakkın var.' : 'Pas kullanıldı. Cevapla veya boş bırak.'),
         ])), const SizedBox(height: 16), _input('Cevabın', action: 'guess'),
@@ -351,7 +432,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       const SizedBox(height: 6), Wrap(spacing: 6, children: ['daily_lingo', 'passa_daily', 'daily_anagram'].map((mode) =>
         ActionChip(avatar: Icon(completed[mode] == true ? Icons.check_circle : Icons.circle_outlined, size: 17),
           label: Text(mode == 'daily_lingo' ? 'Lingo' : mode == 'passa_daily' ? 'Mini' : 'Anagram'),
-          onPressed: mode == widget.mode ? null : () => Navigator.of(context).push(MaterialPageRoute(
+          onPressed: mode == widget.mode ? null : () => Navigator.of(context).push(LinkballRoute(
             builder: (_) => DailyWordsPage(mode: mode, service: widget.service))))).toList()),
       Text(bonus.isNotEmpty ? 'Üçleme tamamlandı · ${bonus['coins']} Coin / ${bonus['xp']} XP' :
         'Üç geçerli günlük sonuç: +2 Coin / +4 XP. Tam başarıda toplam 11 Coin / 22 XP. Haftalık ve pratik dahil değil.'),
