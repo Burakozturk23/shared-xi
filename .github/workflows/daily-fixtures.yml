@@ -1,4 +1,4 @@
-# Dört saatte bir bugün ve yarının gerçek fikstürünü RTDB’ye yazar.
+# Manual fixture sync. Cloud Scheduler is the single automatic writer (every four hours).
 name: Sync Daily Fixtures
 
 on:
@@ -7,9 +7,6 @@ on:
     paths:
       - tools/data_platform_v4/apply_notable_players.py
       - tools/data_platform_v4/patches/notable-players-2026-09-30.json
-  schedule:
-    # İstanbul günü API isteğinde açıkça belirtilir.
-    - cron: "30 */4 * * *"
   workflow_dispatch:
     inputs:
       task:
@@ -24,7 +21,7 @@ on:
 
 jobs:
   sync:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.task != 'data')
+    if: github.event_name == 'workflow_dispatch' && inputs.task != 'data'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

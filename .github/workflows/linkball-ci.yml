@@ -81,6 +81,12 @@ jobs:
           python3 tools/uploaded_portraits/verify.py
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_portrait_audit_players.py'
 
+      - name: Verify imported daily fixture snapshot
+        run: |
+          python3 -m pip install -r tools/daily_fixtures/requirements.txt
+          python3 tools/daily_fixtures/build_snapshot.py --check
+          python3 -m unittest discover -s tools/daily_fixtures -p 'test_*.py'
+
       - name: Verify daily answer catalog matches the bundled database
         run: |
           python3 tools/data_platform_v4/export_daily_catalog.py
