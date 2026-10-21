@@ -9,6 +9,7 @@ import '../models/club.dart';
 import '../widgets/club_badge.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/three_modes_service.dart';
+import '../services/coach_honours_service.dart';
 import '../widgets/coach_avatar.dart';
 import '../widgets/pitch_ui.dart';
 
@@ -27,9 +28,10 @@ const _positions = {'GK': 'Kaleci', 'DEF': 'Defans', 'MID': 'Orta saha', 'FWD': 
 
 /// The same server-backed contract powers all entry routes and collections.
 class ThreeModesPage extends StatefulWidget {
-  const ThreeModesPage({super.key, required this.mode, this.service});
+  const ThreeModesPage({super.key, required this.mode, this.service, this.honoursService});
   final String mode;
   final ThreeModesService? service;
+  final CoachHonoursService? honoursService;
   @override
   State<ThreeModesPage> createState() => _ThreeModesPageState();
 }
@@ -134,7 +136,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(_title), actions: [
       if (_coach) IconButton(tooltip: 'Hoca başarı arşivi', icon: const Icon(Icons.emoji_events_outlined),
-        onPressed: () => Navigator.of(context).push(LinkballRoute<void>(builder: (_) => const CoachHonoursPage()))),
+        onPressed: () => Navigator.of(context).push(LinkballRoute<void>(builder: (_) => CoachHonoursPage(service: widget.honoursService)))),
       if (_playing && !_finished) IconButton(tooltip: 'Koleksiyonu incele', onPressed: _busy ? null :
         () => setState(() { _showHub = true; _archive = true; }), icon: const Icon(Icons.collections_bookmark_outlined)),
       IconButton(tooltip: 'Yenile',
@@ -208,7 +210,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       if (_coach) ...[
         PitchRow(title: 'Hoca başarı arşivi', subtitle: 'Tarihsel kupalar, ödüller ve hoca profilleri',
           icon: Icons.emoji_events_outlined, onTap: () => Navigator.of(context).push(
-            LinkballRoute<void>(builder: (_) => const CoachHonoursPage()))),
+            LinkballRoute<void>(builder: (_) => CoachHonoursPage(service: widget.honoursService)))),
         const SizedBox(height: 12),
       ],
       PitchRow(title: _vault ? 'Kasa arşivi ve ligler' : _coach ? 'Hoca koleksiyonu' : 'Harf Pasaportu',
@@ -293,7 +295,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     if (!mounted || result == null) return;
     if (result == 'honours') {
       await Navigator.of(context).push(LinkballRoute<void>(builder: (_) => CoachHonoursPage(
-        initialCoachId: '${e['portraitId'] ?? e['id']}', initialQuery: '${e['name']}')));
+        service: widget.honoursService, initialCoachId: '${e['portraitId'] ?? e['id']}', initialQuery: '${e['name']}')));
     } else if (result == 'play') { await _start('archive', target: '${e['id']}'); }
     else if (await _confirm('Ödül seçimini onayla', 'Bu hedefte tek seferlik seçimin: ${result == 'avatar' ? 'avatar (zaten sahipsen coin)' : '${e['avatarCoins']} coin'}.')) {
       await _run(() async {

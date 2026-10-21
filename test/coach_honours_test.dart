@@ -116,12 +116,12 @@ void main() {
     expect(find.text('98 / 98 teknik direktör'), findsOneWidget);
   });
   testWidgets('Hoca 11 links the bundled archive without starting a game', (t) async {
-    // rootBundle decodes this >50 KB asset in a real isolate, outside the fake clock.
-    await t.runAsync(() => CoachHonoursService.instance.load());
     final fake = FakeModes('coach_xi');
-    await mount(t, ThreeModesPage(mode: 'coach_xi', service: fake));
+    await mount(t, ThreeModesPage(mode: 'coach_xi', service: fake,
+      honoursService: CoachHonoursService(bundle: ArchiveBundle(source))));
     await t.tap(find.byTooltip('Hoca başarı arşivi')); await t.pumpAndSettle();
     expect(find.byType(CoachHonoursPage), findsOneWidget);
+    expect(find.text('98 / 98 teknik direktör'), findsOneWidget);
     expect(fake.lastMutation, isNull);
   });
   for (final light in [false, true]) {
