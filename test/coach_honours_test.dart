@@ -96,7 +96,7 @@ void main() {
   testWidgets('search, filters, no results and detail navigation work offline', (t) async {
     await mount(t, CoachHonoursPage(service: CoachHonoursService(bundle: ArchiveBundle(source))));
     expect(find.text('98 / 98 teknik direktör'), findsOneWidget);
-    await t.enterText(find.byType(TextField), 'pep'); await t.pumpAndSettle();
+    await t.enterText(find.byType(TextField), 'pep guardiola'); await t.pumpAndSettle();
     expect(find.text('1 / 98 teknik direktör'), findsOneWidget);
     await t.ensureVisible(find.text('Pep Guardiola')); await t.tap(find.text('Pep Guardiola')); await t.pumpAndSettle();
     expect(find.text('Başarı defteri'), findsOneWidget);
@@ -116,6 +116,8 @@ void main() {
     expect(find.text('98 / 98 teknik direktör'), findsOneWidget);
   });
   testWidgets('Hoca 11 links the bundled archive without starting a game', (t) async {
+    // rootBundle decodes this >50 KB asset in a real isolate, outside the fake clock.
+    await t.runAsync(() => CoachHonoursService.instance.load());
     final fake = FakeModes('coach_xi');
     await mount(t, ThreeModesPage(mode: 'coach_xi', service: fake));
     await t.tap(find.byTooltip('Hoca başarı arşivi')); await t.pumpAndSettle();
