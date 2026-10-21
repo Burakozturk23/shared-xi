@@ -10,8 +10,8 @@ class CoachArchiveTests(unittest.TestCase):
         cls.coaches = {r['name']: r for r in cls.catalog['coaches']}
 
     def test_generated_files_are_reproducible(self):
-        self.assertEqual(OUTPUT.read_text(), render(self.catalog))
-        self.assertEqual(REPORT.read_text(), render(self.audit))
+        self.assertEqual(OUTPUT.read_text(encoding='utf-8'), render(self.catalog))
+        self.assertEqual(REPORT.read_text(encoding='utf-8'), render(self.audit))
 
     def test_preserves_coverage_without_inventing_zeroes(self):
         self.assertEqual((self.audit['rawCoachRows'], len(self.coaches), self.audit['trophyRows']), (99, 98, 80))

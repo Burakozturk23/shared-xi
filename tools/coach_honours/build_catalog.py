@@ -100,7 +100,7 @@ def resolve_identity(row, canonical, aliases):
 
 
 def build():
-    manifest = json.loads((HERE / 'sources/manifest.json').read_text())
+    manifest = json.loads((HERE / 'sources/manifest.json').read_text(encoding='utf-8'))
     for source in manifest['files']:
         if hashlib.sha256((HERE / 'sources' / source['name']).read_bytes()).hexdigest() != source['utf8Sha256']:
             raise ValueError(f'Source checksum mismatch: {source["name"]}')
@@ -108,7 +108,7 @@ def build():
     if headers != PROFILE_FIELDS:
         raise ValueError('Unexpected profile schema')
     trophy_headers, raw_trophies = read_csv(HERE / 'sources/all_trophies.csv')
-    definitions = json.loads((HERE / 'competitions.json').read_text())
+    definitions = json.loads((HERE / 'competitions.json').read_text(encoding='utf-8'))
     if trophy_headers[0] != 'name' or set(trophy_headers) != {'name', 'NONE', *definitions}:
         raise ValueError('Unmapped or missing trophy column')
     if any(v[1] not in {'senior', 'individual', 'youth', 'lowerTier', 'medal'} for v in definitions.values()):
@@ -117,8 +117,8 @@ def build():
     trophies, trophy_lines, trophy_duplicates = deduplicate(raw_trophies)
     if set(trophies) - set(coaches):
         raise ValueError('Trophy row without coach')
-    canonical = json.loads((ROOT / 'assets/data/coaches_min.json').read_text())
-    aliases = json.loads((HERE / 'identity_aliases.json').read_text())
+    canonical = json.loads((ROOT / 'assets/data/coaches_min.json').read_text(encoding='utf-8'))
+    aliases = json.loads((HERE / 'identity_aliases.json').read_text(encoding='utf-8'))
     if set(aliases) - {r['name'] for r in coaches.values()}:
         raise ValueError('Unused identity alias')
     records, unresolved, quality = [], [], []
