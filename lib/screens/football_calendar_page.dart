@@ -145,11 +145,15 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
       key: placement == 'daily_streak' ? null : _round?['key']?.toString(),
     );
     await _refresh();
-    if (mounted) setState(() => _message = 'Bonusun kaydedildi.');
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bonusun kaydedildi.')),
+      );
+    }
   }
 
   Widget _tag(String text, {IconData? icon}) => Chip(
-    avatar: icon == null ? null : Icon(icon, size: 16),
+    avatar: icon == null ? null : Icon(icon, size: 16, color: PitchColors.of(context).accent),
     label: Text(text, style: const TextStyle(fontSize: 12)),
     visualDensity: VisualDensity.compact,
   );
@@ -356,8 +360,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
           child: Icon(Icons.sports_soccer_rounded, color: p.accent)),
           const SizedBox(width: 12), Expanded(child: Text(_dayLabel(_data?['dayKey']?.toString()),
             style: Theme.of(context).textTheme.labelLarge?.copyWith(color: p.accent)))]),
-        const SizedBox(height: 16), Text('Maç onların. Hafıza senin.', style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 8), const Text('İki takımda da oynamış 3 futbolcuyu bul. İstersen devam et, tüm listeyi tamamla.'),
+        const SizedBox(height: 16), Text('Maç onların. Hafıza senin.', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8), const Text('İki takımda da oynamış 3 futbolcuyu bul.'),
         const SizedBox(height: 16), Wrap(spacing: 8, runSpacing: 4, children: [
           _tag('${number(_data, 'remaining')}/${number(_data, 'dailyLimit') == 0 ? 3 : number(_data, 'dailyLimit')} maç hakkı',
             icon: Icons.confirmation_number_outlined),
