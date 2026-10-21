@@ -6,27 +6,14 @@ const fail = (message) => {
 };
 const previousDay = (key, days = 1) => new Date(Date.parse(key + "T12:00:00Z") - days * 86400000)
     .toISOString().slice(0, 10);
-const norm = (value) => String(value).toLocaleLowerCase("tr").replace(/ı/g, "i").normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]/g, " ").replace(/\b(fc|cf|ac|afc|sc|jk|de)\b/g, "")
-    .replace(/\s/g, "");
-const aliases = {"Manchester United": 985, "Manchester City": 281, "Atletico Madrid": 13,
-  "Athletic Club": 621, "Real Sociedad": 681, "Inter": 46, "AC Milan": 5, "Bayern München": 27,
-  "Bayern Munich": 27, "Borussia Dortmund": 16, "Bayer Leverkusen": 15, "RB Leipzig": 23826,
-  "Borussia Mönchengladbach": 18, "Paris Saint Germain": 583, "Paris Saint-Germain": 583, "PSG": 583,
-  "Lyon": 1041, "Marseille": 244, "Monaco": 162, "Lille": 1082, "Ajax": 610, "Benfica": 294,
-  "Sporting CP": 336, "Sporting Lisbon": 336, "Celtic": 371, "Rangers": 124, "PSV Eindhoven": 383,
-  "Fenerbahce": 36, "Besiktas": 114, "Tottenham": 148, "Newcastle": 762, "West Ham": 379,
-  "Leicester": 1003, "Napoli": 6195, "Roma": 12, "Lazio": 398, "Fiorentina": 430, "Atalanta": 800,
-  "Villarreal": 1050, "Valencia": 1049, "Real Betis": 150, "Porto": 720};
-const clubNames = new Map(Object.entries(catalog.clubs).map(([id, name]) => [norm(name), Number(id)]));
-for (const [name, id] of Object.entries(aliases)) clubNames.set(norm(name), id);
+const {norm, fixtureClub} = require("./fixture_clubs");
 function resolveFixture(m) {
-  if (!m || typeof m !== "object") return null;
+  if (!m || typeof m !== "object" || m.stale === true) return null;
   if (!Number.isSafeInteger(m.fixtureId) || !Number.isFinite(Date.parse(m.kickoff)) ||
-      ![2, 3, 848, 203, 39, 140, 135, 78, 61, 88, 94, 179].includes(m.leagueId)) return null;
-  if (["PST", "CANC", "ABD", "AWD", "WO", "TBD"].includes(m.status)) return null;
-  const homeClubId = clubNames.get(norm(m.homeName));
-  const awayClubId = clubNames.get(norm(m.awayName));
+      ![2, 3, 848, 203, 39, 40, 71, 140, 135, 78, 61, 88, 94, 179].includes(m.leagueId)) return null;
+  if (!["NS", "1H", "HT", "2H", "ET", "P", "FT", "AET", "PEN", "LIVE"].includes(m.status)) return null;
+  const homeClubId = fixtureClub(m, "home");
+  const awayClubId = fixtureClub(m, "away");
   if (!homeClubId || !awayClubId || homeClubId === awayClubId) return null;
   const key = [homeClubId, awayClubId].sort((a, b) => a - b).join("-");
   const answers = catalog.pairs[key];
@@ -101,19 +88,23 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
     }));
     return rows.filter(Boolean).sort();
   }
-  async function fixtures() {
+  async function fixtureFeed() {
     const today = dayKey(now());
     const raw = (await db.ref("daily_fixtures/" + today).get()).val();
-    if (!raw || !raw.updatedAt || now() - raw.updatedAt > 30 * 3600000) return [];
-    return (Array.isArray(raw.matches) ? raw.matches : Object.values(raw.matches || {}))
-        .map(resolveFixture).filter((m) => m && dayKey(Date.parse(m.kickoff)) === today)
+    const feed = require("./daily_fixture_feed").readDay(raw, today, now());
+    const selected = feed.calendar.map(resolveFixture).filter(Boolean)
         .sort((a, b) => b.priority - a.priority || a.fixtureId - b.fixtureId).slice(0, 6);
+    return {...feed, selected};
+  }
+  async function fixtures() {
+    return (await fixtureFeed()).selected;
   }
   async function status(uid) {
     await settle(uid);
     const today = dayKey(now());
     const s = initial((await ref(uid).get()).val());
-    const matches = await fixtures();
+    const feed = await fixtureFeed();
+    const matches = feed.selected;
     for (const round of Object.values(s.sessions)) {
       if (round.day === today && round.match && !matches.some((m) => m.fixtureId === round.fixtureId)) {
         matches.push(round.match);
@@ -123,6 +114,17 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
     return {ok: true, dayKey: today, streak: missed.length === 0 && s.lastWin >= previousDay(today, 31) ? s.streak : 0,
       repairStreak: canRepair(s, today, missed) ? s.streak : 0, dailyLimit: 3,
       remaining: Math.max(0, 3 - Object.values(s.sessions).filter((x) => x.day === today).length),
+      feed: {sources: feed.sources, updatedAt: feed.updatedAt, snapshotUsed: feed.snapshotUsed,
+        snapshotUpdatedAt: feed.snapshotUpdatedAt, coverageStart: feed.coverageStart, coverageEnd: feed.coverageEnd,
+        competitions: Object.values(require("./daily_fixture_feed").snapshot.competitions).map((c) => c[1]),
+        state: matches.length ? "ready" : feed.calendar.length ? "no-playable" :
+          feed.sources.snapshot?.state === "out-of-range" ? "out-of-coverage" : "empty"},
+      calendar: feed.calendar.map((m) => ({fixtureId: m.fixtureId, homeName: m.homeName, awayName: m.awayName,
+        homeClubId: fixtureClub(m, "home") || null, awayClubId: fixtureClub(m, "away") || null,
+        leagueId: m.leagueId, leagueName: m.leagueName || "", kickoff: m.kickoff, status: m.status || "TBD",
+        homeScore: m.homeScore ?? null, awayScore: m.awayScore ?? null, isDerby: m.isDerby === true,
+        source: m.source || "api-football", stale: m.stale,
+        playable: matches.some((chosen) => chosen.fixtureId === m.fixtureId)})),
       pendingCoins: Object.values(s.pending).reduce((a, b) => a + b, 0),
       matches: matches.map(({catalogKey, ...m}) => ({...m, session: view(s.sessions[today + "_" + m.fixtureId])}))};
   }

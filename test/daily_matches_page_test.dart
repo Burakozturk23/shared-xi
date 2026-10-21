@@ -88,6 +88,25 @@ class FakeDailyGateway implements DailyMatchesGateway {
   }
 }
 
+class CalendarGateway extends FakeDailyGateway {
+  @override
+  Future<Map<String, dynamic>> call(String action, [Map<String, dynamic> input = const {}]) async {
+    final result = await super.call(action, input);
+    if (action != 'status') return result;
+    return {...result, 'feed': {
+      'state': empty ? 'no-playable' : 'ready', 'snapshotUsed': true,
+      'snapshotUpdatedAt': DateTime.utc(2026, 10, 20, 21).millisecondsSinceEpoch,
+      'sources': {'turkey': {'state': 'error'}},
+      'competitions': ['Premier League', 'Şampiyonlar Ligi'],
+    }, 'calendar': [
+      {...match, 'status': 'NS', 'source': 'api-football', 'playable': !empty},
+      {'fixtureId': 4000575370, 'homeName': 'Real Madrid', 'awayName': 'RB Leipzig',
+        'homeClubId': 418, 'awayClubId': 23826, 'leagueId': 2, 'leagueName': 'Şampiyonlar Ligi',
+        'kickoff': '2026-09-30T19:00:00Z', 'status': 'NS', 'source': 'football-data-snapshot', 'playable': false},
+    ]};
+  }
+}
+
 final previewKey = GlobalKey();
 Future<void> preview(WidgetTester tester, String name) async {
   await tester.runAsync(() async {
@@ -108,15 +127,17 @@ Future<void> open(
   WidgetTester tester,
   FakeDailyGateway gateway, {
   double scale = 1,
+  bool light = false,
+  double width = 390,
 }) async {
   SharedPreferences.setMockInitialValues({});
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = Size(width, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     MaterialApp(
-      theme: OrtakSahaTheme.dark,
+      theme: light ? OrtakSahaTheme.light : OrtakSahaTheme.dark,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(
           context,
@@ -212,4 +233,40 @@ void main() {
     expect(tester.takeException(), isNull);
     await preview(tester, 'daily-large-text');
   });
+  for (final light in [false, true]) {
+    testWidgets('calendar and playable games stay separate, filters recover; theme $light', (tester) async {
+      await open(tester, CalendarGateway(), light: light, width: light ? 320 : 390, scale: light ? 1.8 : 1);
+      expect(tester.takeException(), isNull);
+      await preview(tester, 'daily-v2-lobby-$light');
+      await tester.ensureVisible(find.text('Fikstür · 2'));
+      await tester.tap(find.text('Fikstür · 2')); await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Avrupa'));
+      await tester.tap(find.text('Avrupa')); await tester.pumpAndSettle();
+      expect(find.text('Real Madrid'), findsOneWidget);
+      expect(find.text('Ortak oyuncuları bul'), findsNothing);
+      await tester.ensureVisible(find.text('Real Madrid')); await tester.pumpAndSettle();
+      await preview(tester, 'daily-v2-calendar-$light');
+      await tester.ensureVisible(find.text('Oyna · 1'));
+      await tester.tap(find.text('Oyna · 1')); await tester.pumpAndSettle();
+      expect(find.text('Bu seçime uygun maç yok'), findsOneWidget);
+      await tester.ensureVisible(find.text('Tümünü göster'));
+      await tester.tap(find.text('Tümünü göster')); await tester.pumpAndSettle();
+      expect(find.text('Mücadeleye başla'), findsOneWidget);
+      await tester.ensureVisible(find.text('Takvim bilgisi')); await tester.pumpAndSettle();
+      await preview(tester, 'daily-v2-source-$light');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+  testWidgets('no playable games still offers an honest calendar instead of a fake game', (tester) async {
+    await open(tester, CalendarGateway()..empty = true);
+    expect(find.text('Bugün için uygun oyun bulunamadı'), findsOneWidget);
+    await tester.ensureVisible(find.text('Fikstürü incele'));
+    await tester.tap(find.text('Fikstürü incele')); await tester.pumpAndSettle();
+    expect(find.text('Real Madrid'), findsOneWidget);
+    expect(find.text('Mücadeleye başla'), findsNothing);
+    expect(find.text('Ortak oyuncuları bul'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
 }

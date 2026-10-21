@@ -1,0 +1,37 @@
+{
+  "acceptedMatches": 13846,
+  "competitions": {
+    "BL1": 1224,
+    "BSA": 1520,
+    "CL": 647,
+    "DED": 1224,
+    "ELC": 2223,
+    "FL1": 1224,
+    "PD": 1520,
+    "PL": 1520,
+    "PPL": 1224,
+    "SA": 1520
+  },
+  "coverageEnd": "2027-05-30",
+  "coverageStart": "2023-04-15",
+  "inputRows": 228381,
+  "invalidStatusObservations": 1374,
+  "outputSha256": "2a636d84081feaca99e631de5aaea2aefc95af4ae39e70ed364630b22e4f9dc3",
+  "provenance": "User-supplied export; football-data.org schema. No live subscription implied.",
+  "rejectedLatest": [],
+  "sourceParquetSha256": "8ca600e044cad0fb6733fee723d8668c7d4b145c4a5684efbb680053e89186af",
+  "sourceUpdatedAt": "2026-10-20T21:02:45Z",
+  "sourceZipSha256": "4ae08650717aef171263721bca1588cb15deba58ea7a17887d109be2ecdf291e",
+  "statuses": {
+    "AWARDED": 3,
+    "CANCELLED": 1,
+    "FINISHED": 11384,
+    "PAUSED": 1,
+    "POSTPONED": 1,
+    "SCHEDULED": 1442,
+    "TIMED": 1014
+  },
+  "supersededOrDuplicateRows": 214535,
+  "turkishLeagueIncluded": false,
+  "uniqueIds": 13846
+}

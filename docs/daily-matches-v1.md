@@ -2,12 +2,18 @@
 
 ## Deneyim
 
-Gerçek API-Football fikstürü kullanılır; UEFA Şampiyonlar Ligi, Avrupa Ligi,
-Konferans Ligi ve seçilen liglerin tanınmış kulüpleri arasından en fazla altı maç
-sunulur. Derbiler ve Avrupa maçları öne çıkar. Her iki kulüp de 51 kulüplük
-katalogda olmalı ve en az dört doğrulanmış ortak oyuncu bulunmalıdır.
-İptal/ertelenmiş ve tarihi belirsiz maçlar yeni oyunlara alınmaz. Fikstür boşsa
-hayali bir maç gösterilmez. Başlatılan maçlar aynı İstanbul günü devam ettirilebilir.
+Günün takvimi iki kaynaktan gelir: kullanıcı tarafından sağlanan Parquet dosyasının
+tekilleştirilmiş kaydı ve yalnızca Süper Lig (203) için API-Football. Takvimdeki tüm
+maçlar **Fikstür** sekmesinde, ortak oyuncu oyununa uygun en fazla altı maç **Oyna**
+sekmesinde gösterilir. Derbiler ve Avrupa maçları öne çıkar. Oyun için iki kulüp de
+51 kulüplük cevap kataloğunda olmalı ve en az dört doğrulanmış ortak oyuncu bulunmalıdır.
+Dosya dışındaki ligler veya tarihler için maç üretilmez. Ertelenmiş/iptal edilmiş,
+saati kesinleşmemiş ve Süper Lig kaydı 30 saatten eski maçlar yeni oyuna açılmaz.
+Başlatılan maçlar aynı İstanbul günü devam ettirilebilir.
+
+Dosya statik takvimdir; kaynak güncelleme tarihi ekranda görünür. Dosyayı tekrar
+okumak verinin tarihini yenilemez. Kaynak kapsamı ve yenileme adımları:
+[daily-fixture-import.md](daily-fixture-import.md).
 
 - Günde üç maç hakkı; hak başlangıçta kullanılır. Bir maçın ödülü bir kez alınır.
 - Üç doğru kazanmak için yeterli. Kullanıcı ödülünü alabilir veya devam edebilir.
@@ -48,9 +54,9 @@ flutter run --no-enable-impeller
 
 Bu çalışma sırasında canlı Firebase'e dağıtım yapılmadı. API_FOOTBALL_KEY mevcut
 Functions secret'ı olmalı. Cloud Scheduler dört saatte bir bugün/yarını yeniler;
-GitHub Actions `Sync Daily Fixtures` de `task=fixtures` ile elle çalıştırılabilir.
+GitHub Actions `Sync Daily Fixtures` yalnızca `task=fixtures` ile elle çalıştırılır; ikinci otomatik tarayıcı yoktur.
 Gerekli GitHub secrets: API_FOOTBALL_KEY, FIREBASE_SERVICE_ACCOUNT,
-FIREBASE_DATABASE_URL. API hatası eldeki fikstürü boş listeyle ezmez.
+FIREBASE_DATABASE_URL. Türkiye API hatası mevcut Türkiye kayıtlarını korur; dosyadan gelen diğer ligleri durdurmaz.
 
 ### Gerçek reklamları açma
 

@@ -23,7 +23,7 @@ class FirebaseDailyMatchesGateway implements DailyMatchesGateway {
     String name,
     Map<String, dynamic> input,
   ) async {
-    final user = await AuthService.ensureGuestSignedIn();
+    final user = await AuthService.ensureGuestSignedIn().timeout(const Duration(seconds: 20));
     if (_uid != null && _uid != user.uid)
       throw StateError('Hesap değişti. Ekranı yeniden aç.');
     _uid = user.uid;
