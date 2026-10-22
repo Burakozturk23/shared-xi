@@ -34,16 +34,16 @@ setGlobalOptions({maxInstances: 10});
 
 const apiKey = defineSecret("API_FOOTBALL_KEY");
 
-// Shared import + Süper Lig-only network feed; also used by the manual sync script.
+// Shared import + Süper Lig / Europa / Conference network feed; also used by the manual sync script.
 exports.syncDailyFixtures = onSchedule(
     {schedule: "15 6,14 * * *", timeZone: "Europe/Istanbul", secrets: [apiKey], memory: "256MiB",
       timeoutSeconds: 120, retryCount: 0},
     async () => {
-      const {runTurkeySync} = require("./daily_fixture_budget");
+      const {runSupplementalSync} = require("./daily_fixture_budget");
       const now = Date.now();
       const hour = Number(new Intl.DateTimeFormat("en-GB", {timeZone: "Europe/Istanbul", hour: "2-digit"})
           .format(now));
-      const result = await runTurkeySync({db: getDatabase(), apiKey: apiKey.value(), now,
+      const result = await runSupplementalSync({db: getDatabase(), apiKey: apiKey.value(), now,
         mode: hour >= 14 ? "refresh" : "baseline"});
       if (result.state === "error") logger.warn("Daily fixture sync", result);
       else logger.info("Daily fixture sync", result);

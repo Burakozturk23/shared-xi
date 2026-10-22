@@ -107,6 +107,25 @@ class CalendarGateway extends FakeDailyGateway {
   }
 }
 
+class EuropeanCalendarGateway extends CalendarGateway {
+  @override
+  Future<Map<String, dynamic>> call(String action, [Map<String, dynamic> input = const {}]) async {
+    final result = await super.call(action, input);
+    if (action != 'status') return result;
+    return {...result, 'matches': [], 'feed': {
+      'state': 'no-playable',
+      'sources': {'supplemental': {'state': 'ok'}},
+      'competitions': ['Süper Lig', 'Avrupa Ligi', 'Konferans Ligi'],
+    }, 'calendar': [
+      for (final (id, league, home) in [(3, 'Avrupa Ligi', 'Avrupa Ev'), (848, 'Konferans Ligi', 'Konferans Ev')])
+        {'fixtureId': id, 'leagueId': id, 'leagueName': league, 'homeName': home,
+          'awayName': 'Konuk', 'kickoff': '2026-10-22T20:00:00+03:00',
+          'status': 'NS', 'source': 'api-football', 'playable': false},
+      {...match, 'status': 'NS', 'playable': false},
+    ]};
+  }
+}
+
 final previewKey = GlobalKey();
 Future<void> preview(WidgetTester tester, String name) async {
   await tester.runAsync(() async {
@@ -277,6 +296,23 @@ void main() {
     expect(find.text('Real Madrid'), findsOneWidget);
     expect(find.text('Mücadeleye başla'), findsNothing);
     expect(find.text('Ortak oyuncuları bul'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('European cups appear in calendar and Europe filter even without eligible games', (tester) async {
+    await open(tester, EuropeanCalendarGateway(), width: 320, scale: 1.5);
+    await tester.ensureVisible(find.text('Fikstür · 3'));
+    await tester.tap(find.text('Fikstür · 3')); await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Avrupa'));
+    await tester.tap(find.text('Avrupa')); await tester.pumpAndSettle();
+    expect(find.text('Avrupa Ligi'), findsOneWidget);
+    expect(find.text('Konferans Ligi'), findsOneWidget);
+    expect(find.text('Süper Lig'), findsNothing);
+    expect(find.text('Ortak oyuncuları bul'), findsNothing);
+    await tester.ensureVisible(find.text('Konferans Ev')); await tester.pumpAndSettle();
+    await preview(tester, 'daily-europe-cups');
+    await tester.ensureVisible(find.text('Takvim bilgisi')); await tester.pumpAndSettle();
+    expect(find.textContaining('güncellemesi bekleniyor'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

@@ -1,4 +1,4 @@
-# Manual Turkey sync shares the Cloud Scheduler's three-request daily budget.
+# Manual supplemental league sync shares the Cloud Scheduler's three-request daily budget.
 name: Sync Daily Fixtures
 
 on:
@@ -14,8 +14,13 @@ on:
         type: choice
         options: [fixtures, data]
         default: fixtures
+      mode:
+        description: "baseline: bugün/yarın; refresh: yalnız bugün (mevcut bütçeden)"
+        type: choice
+        options: [baseline, refresh]
+        default: baseline
       date:
-        description: "Bugün veya yarın YYYY-MM-DD (boş = bugün+yarın); günlük bütçe uygulanır"
+        description: "Bugün veya yarın YYYY-MM-DD (boş = seçilen moda göre); günlük bütçe uygulanır"
         required: false
         default: ""
 
@@ -40,6 +45,7 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          FIXTURE_SYNC_MODE: ${{ inputs.mode }}
           FIXTURE_DATE: ${{ github.event.inputs.date }}
         run: node scripts/sync-daily-fixtures.js
 

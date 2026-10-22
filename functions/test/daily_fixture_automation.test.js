@@ -1,7 +1,7 @@
 "use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const {runTurkeySync} = require("../daily_fixture_budget");
+const {runSupplementalSync} = require("../daily_fixture_budget");
 const {publishSnapshot, HANDLE} = require("../daily_fixture_import");
 const {snapshot, readDay, syncDay} = require("../daily_fixture_feed");
 const {createService} = require("../daily_matches");
@@ -29,13 +29,13 @@ test("concurrent/repeated/manual jobs share a hard three-request limit and clien
   h.setTime(morning);
   const counter = {calls: 0};
   const options = {db: h.db, apiKey: "test", now: morning, request: response(counter)};
-  await Promise.all(Array.from({length: 10}, () => runTurkeySync(options)));
+  await Promise.all(Array.from({length: 10}, () => runSupplementalSync(options)));
   // Complete a slot skipped due to another job holding the global lease.
-  await runTurkeySync(options);
+  await runSupplementalSync(options);
   assert.equal(counter.calls, 2);
-  await runTurkeySync({...options, now: afternoon, mode: "refresh"});
+  await runSupplementalSync({...options, now: afternoon, mode: "refresh"});
   assert.equal(counter.calls, 3);
-  for (let i = 0; i < 10; i++) await runTurkeySync({...options, now: afternoon + 3600000});
+  for (let i = 0; i < 10; i++) await runSupplementalSync({...options, now: afternoon + 3600000});
   assert.equal(counter.calls, 3);
   assert.equal(h.read("daily_fixture_control/turkey").used, 3);
   const service = createService({db: h.db, now: () => morning, grantCoins: async () => {}, isLinked: async () => true});
@@ -46,26 +46,26 @@ test("empty match day needs two calls; errors consume quota and have only one re
   for (const fail of [false, true]) {
     const h = harness(); const counter = {calls: 0};
     const options = {db: h.db, apiKey: "test", now: morning, request: response(counter, {empty: true, fail})};
-    await runTurkeySync(options);
-    await runTurkeySync(options);
+    await runSupplementalSync(options);
+    await runSupplementalSync(options);
     assert.equal(counter.calls, 2);
-    await runTurkeySync({...options, mode: "refresh", now: afternoon});
+    await runSupplementalSync({...options, mode: "refresh", now: afternoon});
     assert.equal(counter.calls, fail ? 3 : 2);
-    await runTurkeySync({...options, mode: "refresh", now: afternoon + 3600000});
+    await runSupplementalSync({...options, mode: "refresh", now: afternoon + 3600000});
     assert.equal(counter.calls, fail ? 3 : 2);
   }
 });
 test("reservation failure makes no HTTP call; keys are optional and budget follows Istanbul", async () => {
   const h = harness(); const counter = {calls: 0};
   const options = {db: h.db, apiKey: "test", now: morning, request: response(counter, {empty: true})};
-  await runTurkeySync({...options, apiKey: undefined});
+  await runSupplementalSync({...options, apiKey: undefined});
   assert.equal(counter.calls, 0);
   h.failNext("daily_fixture_control/turkey");
-  await assert.rejects(runTurkeySync(options));
+  await assert.rejects(runSupplementalSync(options));
   assert.equal(counter.calls, 0);
-  await assert.rejects(runTurkeySync({...options, date: "2025-10-21"}));
-  await runTurkeySync(options);
-  await runTurkeySync({...options, now: Date.parse("2026-10-21T21:10:00Z")});
+  await assert.rejects(runSupplementalSync({...options, date: "2025-10-21"}));
+  await runSupplementalSync(options);
+  await runSupplementalSync({...options, now: Date.parse("2026-10-21T21:10:00Z")});
   assert.equal(counter.calls, 4);
   assert.equal(h.read("daily_fixture_control/turkey").day, "2026-10-22");
   assert.equal(h.read("daily_fixture_control/turkey").used, 2);
@@ -116,7 +116,7 @@ test("import interrupted between days can resume, and simultaneous Turkey writes
   assert.ok(h.read("daily_fixtures/2026-10-21"));
   await Promise.all([
     publishSnapshot({db: h.db, data, now: morning + 1000}),
-    runTurkeySync({db: h.db, apiKey: "test", now: morning + 1000, request: response(counter)}),
+    runSupplementalSync({db: h.db, apiKey: "test", now: morning + 1000, request: response(counter)}),
   ]);
   assert.equal(h.read("daily_fixture_control/kaggle").lastSuccessAt, morning + 1000);
   const saved = h.read("daily_fixtures/2026-10-21");

@@ -13,6 +13,11 @@ const WEIGHT = {2: 100, 3: 70, 848: 50, 203: 55, 39: 45, 140: 45, 135: 40, 78: 4
 const DERBIES = new Set(["36-141", "114-141", "36-114", "131-418", "13-418", "281-985", "31-985",
   "29-31", "11-148", "5-46", "12-398", "16-27", "244-583", "294-720"]);
 const rows = (value) => Array.isArray(value) ? value : Object.values(value || {});
+const SUPPLEMENTAL = {203: ["Süper Lig", "Turkey"], 3: ["Avrupa Ligi", "World"],
+  848: ["Konferans Ligi", "World"]};
+const isSupplemental = (m) => Object.hasOwn(SUPPLEMENTAL, m?.leagueId);
+const API_STATUSES = new Set(["TBD", "NS", "1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT",
+  "FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO", "LIVE"]);
 function assertDate(date) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
       new Date(date + "T12:00:00Z").toISOString().slice(0, 10) !== date) throw Error("Invalid fixture date");
@@ -51,46 +56,58 @@ function hasImported(raw) {
   return raw?.sources?.snapshot?.provider === "kaggle" &&
     raw.sources.snapshot.updatedAt >= Date.parse(snapshot.sourceUpdatedAt);
 }
-function mergeCalendar(previous, calendar, date, meta, now, turkey = null, turkeyMeta = null) {
+function mergeCalendar(previous, calendar, date, meta, now, supplemental = null, supplementalMeta = null) {
   const old = rows(previous?.matches);
   const replacements = calendar.map((m) => {
     const prior = old.find((v) => v.source === m.source && v.sourceFixtureId === m.sourceFixtureId) ||
       old.find((v) => Number.isFinite(Date.parse(v.kickoff)) && eventKey(m) && eventKey(v) === eventKey(m));
     return prior ? {...m, fixtureId: prior.fixtureId} : m;
   });
-  const cachedTurkey = old.filter((m) => m.leagueId === 203 &&
+  const cached = old.filter((m) => isSupplemental(m) &&
     Number.isFinite(Date.parse(m.kickoff)) && dayKey(Date.parse(m.kickoff)) === date);
-  const matches = [...replacements, ...(turkey ?? cachedTurkey)]
+  const extra = supplemental ?? cached;
+  const matches = [...replacements, ...extra]
       .sort((a, b) => b.importance - a.importance || a.fixtureId - b.fixtureId);
   return {updatedAt: now, matches, topMatch: matches[0] || null, sources: {snapshot: meta,
-    turkey: turkeyMeta || previous?.sources?.turkey || {state: "pending",
-      updatedAt: cachedTurkey.length ? previous?.updatedAt || 0 : 0, count: cachedTurkey.length}}};
+    supplemental: supplementalMeta || previous?.sources?.supplemental || {state: "pending", updatedAt: 0},
+    // Keep the Turkey metadata contract for already installed clients.
+    turkey: supplementalMeta ? {...supplementalMeta,
+      updatedAt: supplemental === null ? previous?.sources?.turkey?.updatedAt || supplementalMeta.updatedAt :
+        supplementalMeta.updatedAt, count: extra.filter((m) => m.leagueId === 203).length} :
+      previous?.sources?.turkey || {state: "pending", updatedAt: 0, count: 0}}};
 }
-async function fetchTurkey(date, apiKey, request = fetch) {
+async function fetchSupplemental(date, apiKey, request = fetch) {
   assertDate(date);
-  const year = Number(date.slice(0, 4)) - (Number(date.slice(5, 7)) < 7 ? 1 : 0);
-  const query = new URLSearchParams({date, league: "203", season: String(year), timezone: "Europe/Istanbul"});
+  // One date query covers all three competitions; never one request per league/match.
+  const query = new URLSearchParams({date, timezone: "Europe/Istanbul"});
   const response = await request("https://v3.football.api-sports.io/fixtures?" + query,
       {headers: {"x-apisports-key": apiKey}, signal: AbortSignal.timeout(15000)});
-  if (!response.ok) throw Error("Turkey fixture HTTP " + response.status);
+  if (!response.ok) throw Error("Supplemental fixture HTTP " + response.status);
   const body = await response.json();
-  if (!Array.isArray(body.response) || body.errors && Object.keys(body.errors).length) {
-    throw Error("Turkey fixture request rejected");
+  if (!Array.isArray(body.response) || body.errors && Object.keys(body.errors).length ||
+      body.paging?.total > 1 || body.paging?.current > 1 ||
+      body.results != null && body.results !== body.response.length) {
+    throw Error("Supplemental fixture request rejected or incomplete");
   }
   const matches = [];
+  const seen = new Set();
   for (const item of body.response) {
+    if (!Object.hasOwn(SUPPLEMENTAL, item?.league?.id)) continue;
     const f = item.fixture;
     const h = item.teams?.home;
     const a = item.teams?.away;
-    if (item.league?.id !== 203 || !Number.isSafeInteger(f?.id) || f.id <= 0 || f.id >= 4000000000 ||
-        !Number.isFinite(Date.parse(f.date)) || !h?.name || !a?.name || !f.status?.short ||
-        !Number.isSafeInteger(h.id) || !Number.isSafeInteger(a.id) || h.id === a.id) {
-      throw Error("Invalid Turkey fixture response");
+    if (!Number.isSafeInteger(f?.id) || f.id <= 0 || f.id >= 4000000000 || seen.has(f.id) ||
+        !Number.isFinite(Date.parse(f.date)) || !h?.name || !a?.name || !API_STATUSES.has(f.status?.short) ||
+        !Number.isSafeInteger(h.id) || !Number.isSafeInteger(a.id) || h.id <= 0 || a.id <= 0 || h.id === a.id ||
+        [item.goals?.home, item.goals?.away].some((s) => s != null && (!Number.isSafeInteger(s) || s < 0))) {
+      throw Error("Invalid supplemental fixture response");
     }
-    if (dayKey(Date.parse(f.date)) !== date) throw Error("Unexpected Turkey fixture day");
+    if (dayKey(Date.parse(f.date)) !== date) throw Error("Unexpected supplemental fixture day");
+    seen.add(f.id);
+    const [leagueName, leagueCountry] = SUPPLEMENTAL[item.league.id];
     matches.push(decorate({fixtureId: f.id, sourceFixtureId: f.id, source: "api-football",
       homeApiId: h.id, awayApiId: a.id, homeName: h.name, awayName: a.name,
-      leagueId: 203, leagueName: "Süper Lig", leagueCountry: "Turkey", kickoff: f.date,
+      leagueId: item.league.id, leagueName, leagueCountry, kickoff: f.date,
       status: f.status.short, homeScore: item.goals?.home ?? null, awayScore: item.goals?.away ?? null}));
   }
   return matches;
@@ -102,11 +119,11 @@ function eventKey(m) {
 }
 async function syncDay({db, date, apiKey, request = fetch, now = Date.now()}) {
   assertDate(date);
-  let turkey = null;
+  let supplemental = null;
   let state = "unconfigured";
   if (apiKey) {
     try {
-      turkey = await fetchTurkey(date, apiKey, request); state = "ok";
+      supplemental = await fetchSupplemental(date, apiKey, request); state = "ok";
     } catch (_) {
       state = "error";
     }
@@ -116,15 +133,23 @@ async function syncDay({db, date, apiKey, request = fetch, now = Date.now()}) {
   const tx = await ref.transaction((previous) => {
     const imported = hasImported(previous);
     const currentCalendar = imported ? rows(previous.matches).filter((m) => m.source === snapshot.provider) : calendar;
-    const cachedTurkey = rows(previous?.matches).filter((m) => m.leagueId === 203);
-    const previousTurkey = previous?.sources?.turkey;
-    const newerTurkey = previousTurkey?.attemptedAt > now;
-    const turkeyMeta = newerTurkey ? previousTurkey : {state, attemptedAt: now,
-      updatedAt: turkey ? now : previousTurkey?.updatedAt || (cachedTurkey.length ? previous?.updatedAt || 0 : 0),
-      count: (turkey ?? cachedTurkey).length};
+    const cached = rows(previous?.matches).filter(isSupplemental);
+    const previousMeta = previous?.sources?.supplemental;
+    const newer = previousMeta?.attemptedAt > now;
+    // An unsuccessful first upgrade must not claim the old Turkey fetch covered Europe.
+    if (!supplemental && !previousMeta) {
+      const merged = mergeCalendar(previous, currentCalendar, date,
+          imported ? previous.sources.snapshot : snapshotMeta(snapshot, date, calendar.length), now);
+      merged.sources.supplemental = {state, attemptedAt: now, updatedAt: 0, count: cached.length};
+      merged.sources.turkey = {...merged.sources.turkey, state};
+      return merged;
+    }
+    const supplementalMeta = newer ? previousMeta : {state, attemptedAt: now,
+      updatedAt: supplemental ? now : previousMeta?.updatedAt || 0,
+      count: (supplemental ?? cached).length, competitions: Object.values(SUPPLEMENTAL).map((c) => c[0])};
     return mergeCalendar(previous, currentCalendar, date,
         imported ? previous.sources.snapshot : snapshotMeta(snapshot, date, calendar.length), now,
-        newerTurkey ? null : turkey, turkeyMeta);
+        newer ? null : supplemental, supplementalMeta);
   });
   return tx.snapshot.val();
 }
@@ -139,13 +164,14 @@ function readDay(raw, date, now) {
     turkey: {state: recent ? "legacy" : "pending", updatedAt: recent ? raw.updatedAt : 0},
   };
   const input = recent ? rows(raw.matches) : [...bundled,
-    ...rows(raw?.matches).filter((m) => m.leagueId === 203)];
+    ...rows(raw?.matches).filter(isSupplemental)];
   const unique = new Map();
   for (const match of input) {
     if (!match || !Number.isSafeInteger(match.fixtureId) || match.fixtureId <= 0 ||
         !Number.isFinite(Date.parse(match.kickoff)) || dayKey(Date.parse(match.kickoff)) !== date) continue;
-    const turkeyTime = sources.turkey?.updatedAt || 0;
-    const stale = match.leagueId === 203 ? now - turkeyTime > 30 * 3600000 :
+    const sourceTime = sources.supplemental?.updatedAt ||
+      (match.leagueId === 203 ? sources.turkey?.updatedAt : 0) || 0;
+    const stale = isSupplemental(match) ? now - sourceTime > 30 * 3600000 || sourceTime > now + 300000 :
       match.source !== "football-data-snapshot" && !recent;
     unique.set(match.fixtureId, {...match, stale});
   }
@@ -155,7 +181,8 @@ function readDay(raw, date, now) {
     snapshotUpdatedAt: imported ? sources.snapshot.updatedAt : Date.parse(snapshot.sourceUpdatedAt),
     coverageStart: imported ? sources.snapshot.coverageStart : snapshot.coverageStart,
     coverageEnd: imported ? sources.snapshot.coverageEnd : snapshot.coverageEnd,
-    competitions: imported ? sources.snapshot.competitions : Object.values(snapshot.competitions).map((c) => c[1])};
+    competitions: [...new Set([...(imported ? sources.snapshot.competitions :
+      Object.values(snapshot.competitions).map((c) => c[1])), ...Object.values(SUPPLEMENTAL).map((c) => c[0])])]};
 }
-module.exports = {snapshotDay, fetchTurkey, syncDay, rows, snapshot, eventKey, readDay,
-  expandRows, snapshotMeta, mergeCalendar, STATUS};
+module.exports = {snapshotDay, fetchSupplemental, syncDay, rows, snapshot, eventKey, readDay,
+  expandRows, snapshotMeta, mergeCalendar, STATUS, SUPPLEMENTAL, isSupplemental};
