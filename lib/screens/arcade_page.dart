@@ -5,6 +5,7 @@ import '../models/rewarded_ad_models.dart';
 import '../services/arcade_service.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
 
 int _n(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
@@ -38,7 +39,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   bool get local => data['offline'] == true && data['offlinePlayable'] == true;
   bool get active => run.isNotEmpty && run['phase'] == 'active' && run['finished'] != true;
   String get title => {'burst': 'Burst', 'pyramid': 'Bağlantı Piramidi', 'matching': 'Kart Eşleştirme'}[widget.mode]!;
-  bool get running => active && run['paused'] != true && !offline && !background;
+  bool get running => active && run['paused'] != true && !offline && !background && error == null;
   int get delta => running ? elapsed.elapsedMilliseconds : 0;
   @override
   void initState() {
@@ -47,7 +48,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     ticker = Timer.periodic(const Duration(milliseconds: 200), (_) {
       if (!mounted || !active) return;
       setState(() {});
-      if (busy || offline || background || run['paused'] == true) return;
+      if (busy || error != null || offline || background || run['paused'] == true) return;
       final speedExpired = widget.mode == 'burst' && run['style'] == 'speed' &&
         (delta >= _n(run['totalRemainingMs']) || delta >= _n(run['roundRemainingMs']));
       final lockExpired = widget.mode == 'matching' && _n(run['lockUntil']) > 0 &&
@@ -66,7 +67,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     background = state != AppLifecycleState.resumed;
-    if (background && active && run['paused'] != true && !busy) unawaited(act('pause'));
+    if (error == null && background && active && run['paused'] != true && !busy) unawaited(act('pause'));
     if (!background && !busy) unawaited(load());
   }
   void accept(Map<String, dynamic> value) {
@@ -76,12 +77,12 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   Future<void> load() async {
     if (mounted) setState(() {busy = true; error = null;});
     try {final value = await service.load(widget.mode); if (mounted) setState(() => accept(value));}
-    catch (e) {if (mounted) setState(() => error = '$e');}
+    catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
-    if (mounted && showRecords && active && run['paused'] != true && !offline) unawaited(act('pause'));
+    if (mounted && error == null && showRecords && active && run['paused'] != true && !offline) unawaited(act('pause'));
   }
   Future<void> act(String action, [Map<String, dynamic> more = const {}]) async {
-    if (busy || offline) return;
+    if (busy || offline || error != null) return;
     setState(() {busy = true; error = null;});
     final beforeQuestion = rewardMap(run['question'])['id'];
     try {
@@ -95,9 +96,9 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           answer.clear(); suggestions = []; searchEpoch++;
         }
       });
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
-    if (background && active && run['paused'] != true && !offline && action != 'pause') unawaited(act('pause'));
+    if (error == null && background && active && run['paused'] != true && !offline && action != 'pause') unawaited(act('pause'));
   }
   Future<void> checkpoint() async {
     if (busy || !running) return;
@@ -106,18 +107,19 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       final value = await service.checkpoint({'mode': 'burst', 'sessionId': run['id'], 'revision': run['revision'],
         'action': 'tick', 'questionId': rewardMap(run['question'])['id'], 'elapsedMs': elapsed.elapsedMilliseconds});
       if (mounted) setState(() => accept(value));
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
-    if (background && active && run['paused'] != true) unawaited(act('pause'));
+    if (error == null && background && active && run['paused'] != true) unawaited(act('pause'));
   }
   Future<void> prepare() async {
+    if (busy || error != null) return;
     if (data['offline'] == true) {setState(() => error = 'Yeni oyun hazırlamak için bağlantı gerekli.'); return;}
     setState(() {busy = true; error = null;});
     try {
       final value = await service.mutate({'mode': widget.mode, 'version': data['version'],
         'difficulty': difficulty, 'style': style, 'pairType': pairType}, prepare: true);
       if (mounted) setState(() {accept(value); showRecords = false;});
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
   }
   void search(String text) {
@@ -140,13 +142,13 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   Future<void> adHint() async {
     setState(() {busy = true; error = null;});
     try {await service.watch('${run['id']}');}
-    catch (e) {if (mounted) setState(() => error = '$e');}
+    catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
     if (mounted) await load();
   }
   @override
   Widget build(BuildContext context) {
-    return PopScope(canPop: !active, onPopInvokedWithResult: (didPop, result) async {
+    return PopScope(canPop: !active || error != null || offline, onPopInvokedWithResult: (didPop, result) async {
       if (didPop) return;
       if (busy) return;
       if (run['paused'] != true) await act('pause');
@@ -159,10 +161,15 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh)),
       ]), body: GameContent(child: Column(children: [
         if (busy) const LinearProgressIndicator(minHeight: 2),
-        if (error != null || data['notice'] != null) Padding(padding: const EdgeInsets.all(12),
-          child: Text(error ?? '${data['notice']}', style: TextStyle(color: palette.accent))),
+
         Expanded(child: ListView(padding: const EdgeInsets.fromLTRB(16, 12, 16, 28), children: [
-          if (showRecords) ...records() else if (data.isNotEmpty) ...[
+          if (data.isEmpty) ...[GameIntro(
+            icon: widget.mode == 'burst' ? Icons.bolt_outlined : widget.mode == 'pyramid' ? Icons.account_tree_outlined : Icons.grid_view_outlined,
+            title: title, message: widget.mode == 'burst' ? 'Ortak bağları bul, serini büyüt.' : widget.mode == 'pyramid' ?
+              'Oyuncularla bağlantıları tamamla ve zirveye ulaş.' : 'Oyuncuları kulüpleriyle eşleştir.'), const SizedBox(height: 16)],
+          if (error != null) GameErrorPanel(message: error!, onRetry: busy ? null : load),
+          if (data['notice'] != null) panel('Oyun durumu', '${data['notice']}'),
+          if (showRecords && data.isNotEmpty) ...records() else if (data.isNotEmpty) ...[
             if (run.isEmpty || run['finished'] == true) ...[
               if (run['finished'] == true) ...result(), ...setup(),
             ] else ...[

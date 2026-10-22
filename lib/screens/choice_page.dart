@@ -7,6 +7,7 @@ import '../services/choice_service.dart';
 import '../widgets/player_portrait.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
 
 class ChoicePage extends StatefulWidget {
@@ -56,6 +57,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       if (tot) category = '${run['type'] ?? category}';
       else if (!hl) {type = '${run['type'] ?? type}'; personalId = '${run['themeId'] ?? personalId}';}
     }
+    if (run.isEmpty && !tot && !hl && !metrics.any((m) => m['gatePassed'] == true)) type = 'personal';
     final available = themes.where((t) => t['type'] == category).toList();
     if (!available.any((t) => t['id'] == themeId) && available.isNotEmpty) themeId = '${available.first['id']}';
     if (!metrics.any((m) => m['id'] == metricId) && metrics.isNotEmpty) metricId = '${metrics.first['id']}';
@@ -69,22 +71,22 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         if (more) {older.addAll(rows(data['archive']));} else {older.clear();}
         data = result; selections(); previewSlot = null;
       });
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
   }
   Future<void> action(String action, [Map<String,dynamic> extra = const {}]) async {
-    if (busy) return;
+    if (busy || error != null) return;
     setState(() {busy = true; error = null;});
     try {
       final result = await service.mutate({'mode': widget.mode, 'sessionId': run['id'],
         'revision': run['revision'], 'action': action, ...extra});
       if (!mounted) return;
       setState(() {data = result; previewSlot = null; configuring = false;});
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
   }
   Future<void> prepare() async {
-    if (busy) return;
+    if (busy || error != null) return;
     setState(() {busy = true; error = null;});
     try {
       final result = await service.mutate({'mode': widget.mode, 'version': data['version'],
@@ -92,7 +94,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         if (hl) 'metricId': metricId,
         if (!tot && !hl) ...{'size': size, 'type': type, if (type == 'personal') 'themeId': personalId else 'metricId': metricId}}, prepare: true);
       if (mounted) setState(() {data = result; configuring = false;});
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
   }
   Future<void> finish() async {
@@ -156,6 +158,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         note(tot ? 'Doğru cevap yok. İki adaydan favorini seç; tek şampiyona ulaş.' : hl ?
           'Gizli değer daha yüksek mi, daha düşük mü? İlk yanlış seriyi bitirir. Süre sınırı yok.' :
           'Oyuncular birer birer açılır. Boş bir sıra seçip onayla. Kilitlenen sıra değişmez.'),
+        if (hl && !metrics.any((m) => m['gatePassed'] == true))
+          note('İstatistikler incelemede. Doğrulanmış bir karşılaştırma havuzu yayımlandığında bu oyun açılacak. Enerji harcanmaz.'),
         if (tot) ...[
           chips(const [('player','Oyuncular'),('club','Kulüpler')], category, (v) {
             category = v; themeId = themes.firstWhere((t) => t['type'] == v)['id']; size = 16;
@@ -305,7 +309,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             catch (_) {if (mounted) ScaffoldMessenger.of(this.context).showSnackBar(
               const SnackBar(content: Text('PNG paylaşımı bu cihazda kullanılamıyor.')));}
           }, child: const Text('Paylaş / kaydet'))]));
-    } catch (e) {if (mounted) setState(() => error = 'Kart oluşturulamadı: $e');}
+    } catch (e) {if (mounted) setState(() => error = 'Kart oluşturulamadı. Tekrar dene.');}
   }
   Widget collection() {
     final best = rewardMap(data['records']).values.map(rewardMap).where((r) => r['mode'] == widget.mode).toList();
@@ -331,7 +335,11 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
           IconButton(tooltip: 'Yenile', onPressed: busy ? null : load, icon: const Icon(Icons.refresh))]),
         body: GameContent(child: ListView(padding: const EdgeInsets.all(20), children: [
           if (busy) const LinearProgressIndicator(),
-          if (error != null) panel([Text(error!), button('Yeniden dene', load, secondary: true)]),
+          if (data.isEmpty) ...[GameIntro(
+            icon: tot ? Icons.compare_arrows_rounded : hl ? Icons.swap_vert_rounded : Icons.format_list_numbered_rounded,
+            title: title, message: tot ? 'Favorilerini seç ve şampiyonunu belirle.' : hl ?
+              'İstatistikleri karşılaştır ve serini büyüt.' : 'Oyuncuları gör, boş sıralara yerleştir.'), const SizedBox(height: 16)],
+          if (error != null) GameErrorPanel(message: error!, onRetry: busy ? null : load),
           if (data['notice'] != null) panel([note('${data['notice']}')]),
           if (data.isNotEmpty) if (records) collection() else if (configuring || run.isEmpty) setup()
           else if (run['finished'] == true) outcome(run)

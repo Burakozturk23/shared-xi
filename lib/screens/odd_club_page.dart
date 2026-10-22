@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:cloud_functions/cloud_functions.dart';
+import '../services/game_error.dart';
+import '../widgets/game_ui.dart';
 import 'package:flutter/material.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
@@ -72,7 +73,7 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     if (_accountChanged || !mounted) return;
     setState(() { _busy = true; _error = null; });
     try { await body(); } catch (e) {
-      if (mounted) setState(() => _error = e is FirebaseFunctionsException ? e.message : e.toString().replaceFirst('Bad state: ', ''));
+      if (mounted) setState(() => _error = gameErrorMessage(e));
     } finally { if (mounted) setState(() => _busy = false); }
   }
   Future<void> _load() => _run(() async {
@@ -115,7 +116,9 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
       child: ListView(controller: _scroll, padding: const EdgeInsets.all(16), children: [
         if (_busy) const LinearProgressIndicator(),
-        if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))),
+        if (_status.isEmpty) ...[const GameIntro(icon: Icons.policy_outlined, title: 'Dört kulüp. Biri sahte.',
+          message: 'Futbolcunun kariyerini incele ve oynamadığı kulübü bul.'), const SizedBox(height: 16)],
+        if (_error != null) GameErrorPanel(message: _error!, accountChanged: _accountChanged, onRetry: _busy ? null : _load),
         if (_status.isNotEmpty) ...[
           Wrap(spacing: 12, runSpacing: 8, children: [Chip(label: Text(_subtitle)), Chip(label: Text('${_status['coins']} Link Coin')),
             Chip(label: Text('${rewardMap(_status['energy'])['available'] ?? '—'} enerji'))]),

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:cloud_functions/cloud_functions.dart';
+import '../services/game_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/daily_words.dart';
@@ -183,21 +183,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         ],
       ])));
   }
-  String _errorMessage(Object error) {
-    if (error is TimeoutException || error is FirebaseFunctionsException &&
-        ['deadline-exceeded', 'unavailable', 'cancelled'].contains(error.code)) {
-      return 'Bağlantı tamamlanamadı. İnternetini kontrol edip tekrar dene. '
-        'Gönderilmiş bir yanıt varsa yeniden bağlanınca durumu kontrol edilir.';
-    }
-    if (error is FirebaseFunctionsException) {
-      if (['not-found', 'unimplemented'].contains(error.code)) {
-        return 'Bu günlük oyun şu anda kullanılamıyor. Biraz sonra tekrar dene.';
-      }
-      return error.message ?? 'Günlük içerik yüklenemedi. Yeniden bağlanmayı dene.';
-    }
-    if (error is StateError) return '${error.message}';
-    return 'Günlük içerik yüklenemedi. Bağlantını kontrol edip tekrar dene.';
-  }
+  String _errorMessage(Object error) => gameErrorMessage(error);
 
   Widget _welcome() => GameIntro(
     icon: _lingo ? Icons.text_fields_rounded : _anagram ? Icons.shuffle_rounded : Icons.abc_rounded,
@@ -221,20 +207,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     ],
   ));
 
-  Widget _errorPanel() => Padding(padding: const EdgeInsets.only(bottom: 16), child:
-    Semantics(liveRegion: true, child: PitchPanel(child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Align(alignment: Alignment.centerLeft, child: Icon(Icons.cloud_off_rounded,
-          color: PitchColors.of(context).muted, size: 32)),
-        const SizedBox(height: 12),
-        Text(_changedAccount ? 'Hesap değişti' : 'Bağlantıyı yeniden kuralım',
-          style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8), Text(_error!), const SizedBox(height: 16),
-        PitchAction(label: _changedAccount ? 'Geri dön' : 'Tekrar dene',
-          icon: _changedAccount ? Icons.arrow_back_rounded : Icons.refresh_rounded,
-          onPressed: _busy ? null : _changedAccount ? () => Navigator.of(context).maybePop() : _load),
-      ],
-    ))));
+  Widget _errorPanel() => GameErrorPanel(message: _error!, accountChanged: _changedAccount,
+    onRetry: _busy ? null : _load);
 
   Widget _notice(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 8),
     child: PitchPanel(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
