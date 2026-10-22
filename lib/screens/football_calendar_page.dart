@@ -291,7 +291,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
 
   Widget _sourceInfo() {
     final sources = rewardMap(_feed['sources']);
-    final turkey = rewardMap(sources['turkey']);
+    final supplemental = rewardMap(sources['supplemental']);
+    final apiState = supplemental['state'] ?? 'pending';
     final snapshot = _feed['snapshotUpdatedAt'] != null;
     final updated = (_feed['snapshotUpdatedAt'] as num?)?.toInt();
     return PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -303,13 +304,14 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
         ? 'Takvim kaydı: ${_dayLabel(DateTime.fromMillisecondsSinceEpoch(updated, isUtc: true)
             .add(const Duration(hours: 3)).toIso8601String())}. Maç saatleri değişebilir.'
         : 'Saatler Türkiye saatine göredir. Son alınan fikstür gösterilir.'),
-      if (['error', 'unconfigured', 'pending'].contains(turkey['state'])) ...[
+      if (['error', 'unconfigured', 'pending'].contains(apiState)) ...[
         const SizedBox(height: 8),
-        const Text('Süper Lig güncellemesi bekleniyor. Diğer maçları inceleyebilirsin.'),
+        const Text('Süper Lig, Avrupa Ligi ve Konferans Ligi güncellemesi bekleniyor.'),
       ],
       if (_feed['competitions'] is List) ExpansionTile(tilePadding: EdgeInsets.zero,
         title: const Text('Veri kapsamı'),
-        children: [Text('${(_feed['competitions'] as List).join(', ')}. Süper Lig ayrıca güncellenir.')]),
+        children: [Text('${(_feed['competitions'] as List).join(', ')}.'),
+          const Text('Süper Lig, Avrupa Ligi ve Konferans Ligi ayrı kaynaktan günlük güncellenir. Anlık skor sunulmaz.')]),
       if (_feed['state'] == 'out-of-coverage') ...[
         const SizedBox(height: 8), const Text('Kayıtlı takvimin tarih aralığı sona erdi; yeni takvim bekleniyor.'),
       ],

@@ -1,4 +1,4 @@
-# Günün Maçları: takvim dosyası ve Süper Lig
+# Günün Maçları: Kaggle ve tamamlayıcı API takvimi
 
 ## İçeri aktarılan dosya
 
@@ -37,17 +37,23 @@ eski maç kimliği korunarak o gün başlamış oyunların ikinci kez açılmas�
 Kaynak durumu, boş takvim, filtre sonucu ve ortak oyuncu yetersizliği ayrı durumlardır.
 Coin, hak, cevap doğrulama, misafir ödülleri ve seri hesapları sunucuda kalır.
 
-## Türkiye bağlantısı
+## API-Football: Kaggle dışındaki önemli organizasyonlar
+
+API takvimi Süper Lig (203), UEFA Avrupa Ligi (3) ve UEFA Konferans Ligi (848) içerir.
+`GET /fixtures?date=YYYY-MM-DD&timezone=Europe/Istanbul` günün maçlarını **tek istekte** getirir.
+Sunucu yalnızca bu üç organizasyonu kabul eder; Kaggle'ın kapsadığı ligler API cevabından
+tekrar eklenmez. Lig veya maç başına istek, sezon keşfi, kadro/istatistik isteği yapılmaz.
+Bu sabit izin listesi ileride bilinçli olarak genişletilebilir; tüm dünya ligleri uygulamaya taşınmaz.
 
 Hem Cloud Scheduler hem elle çalıştırılan script aynı `daily_fixture_budget.js` korumasını kullanır.
-Tek otomatik Türkiye görevi `syncDailyFixtures`, Europe/Istanbul saatine göre:
+Tek otomatik API görevi `syncDailyFixtures`, Europe/Istanbul saatine göre:
 
-- 06:15: bugün ve yarın, toplam iki istek.
-- 14:15: bugün tamamlanmamış/iptal edilmemiş bir Türkiye maçı varsa bir ek istek.
-  Sabah isteği başarısızsa veya veri yoksa bu hak kurtarma için kullanılır.
-- Normal tüketim 2–3 istek/gün; hata, manuel çalışma ve eşzamanlı görevler dahil bu modun
-  üst sınırı İstanbul günü başına **3 gerçek istek girişimidir**. Diğer modların/API araçlarının
-  kullanımı bu bütçenin dışındadır.
+- 06:15: bugün ve yarın için birer toplu sorgu, toplam iki istek.
+- 14:15: bugün bu üç organizasyondan birinde henüz bitmemiş maç varsa bir ek toplu sorgu.
+  Sabah isteği başarısızsa veya yeni kapsam henüz alınmadıysa bu hak kurtarma için kullanılır.
+- Normal tüketim 2–3 istek/gün; hatalar, manuel çalışmalar ve eşzamanlı görevler dahil
+  **üç organizasyonun toplam üst sınırı İstanbul günü başına 3 gerçek istek girişimidir**.
+  Başka modların/API araçlarının kullanımı bu bütçenin dışındadır.
 
 İstekten önce RTDB transaction ile hak ayrılır. Hata/zaman aşımı da tüketim sayılır; aynı başarılı
 iş tekrar sorgulanmaz. Başarısız iş en erken bir saat sonra ve en fazla bir kez daha denenebilir,
@@ -55,14 +61,26 @@ ancak üç istek sınırını aşamaz. Global 90 saniyelik kilit eşzamanlı ça
 kilit sona erer, harcanmış hak iade edilmez. Scheduler otomatik hata tekrarları kapalıdır.
 İstemci yenilemesi yalnızca Firebase'den okur, API-Football çağırmaz.
 
-Her istekte
-`league=203`, sezon başlangıç yılı, İstanbul tarihi ve saat dilimi gönderilir.
+Geçişte aynı gün harcanmış hakları sıfırlamamak için bütçe yolu `daily_fixture_control/turkey`
+olarak korunur; bu düğüm artık **üç ligin toplamını** sayar. İş anahtarları `supplemental_` öneki
+kullanır: önceki Süper Lig sorgusu yeni kapsam için başarılı sayılmaz, ancak harcadığı kota korunur.
+Günlük 3 hak zaten kullanıldıysa bir sonraki İstanbul gününe kadar ek sorgu yapılmaz.
+
 API anahtarı yalnızca sunucudaki `API_FOOTBALL_KEY` secret'ında / script ortamındadır.
-Başka ligler için API-Football isteği yapılmaz. API kotası/HTTP/veri hatasında eski
-Türkiye kayıtları korunur; 30 saatten eski kayıt yeni oyuna açılmaz. Dosya içe aktarımı sürer.
-Başarılı boş API cevabı ise o gün için Türkiye maçlarını doğru biçimde boşaltır.
-GitHub `Sync Daily Fixtures` Türkiye için yalnızca manuel çalışır ve aynı bütçeye tabidir.
-`date` verilirse yalnızca bugün/yarın kabul edilir. Başarılı istekler aynı gün tekrar zorlanamaz.
+HTTP, kota, şema, yanlış gün veya eksik/sayfalanmış cevapta son geçerli API takvimi korunur;
+arka arkaya ek sayfa/lig istekleri yapılmaz. Başarılı ve tam boş cevap ise o günkü üç ligi temizler.
+Kaggle aktarımı üç ligin kayıtlarını ve `sources.supplemental` kaynak tarihini korur.
+30 saatten eski API kaydı fikstürde uyarıyla görünür, yeni oyuna açılmaz.
+Eski kurulu istemciler için `sources.turkey` alanı da korunur.
+
+Takvimdeki bütün maçlar Fikstür'de gösterilir. Avrupa filtresi Şampiyonlar Ligi, Avrupa Ligi ve
+Konferans Ligi'ni kapsar. Oyna sekmesine yalnızca doğrulanmış yeterli ortak oyuncusu bulunan
+maçlar alınır; turnuvanın eklenmesi her eşleşmeyi otomatik oynanabilir yapmaz. Bu akış anlık skor
+servisi değildir; maç boyunca düzenli skor sorgulamaz.
+
+GitHub `Sync Daily Fixtures` yalnızca manuel çalışır, aynı bütçeye tabidir:
+`task=fixtures`, `mode=baseline` bugün/yarın; `mode=refresh` yalnız bugün.
+İsteğe bağlı `date` bugün/yarın olabilir; refresh için yalnız bugün kabul edilir.
 
 ## Kaggle otomatik aktarımı
 
@@ -74,7 +92,7 @@ GitHub zamanlayıcıları gecikebilir; yayıncının notebook saatine ilişkin g
 2. En güncel gözlemleri tekilleştirir. Boş skorlar sıfıra çevrilmez.
 3. Kaynak tarihi, şema, kimlik, tarih aralığı, takım ve skor alanlarını doğrular.
 4. Bugün + 14 günün maçlarını RTDB'ye yazar. Yeni APK veya günlük Functions deploy gerekmez.
-   Her günün yazılması transaction'dır; aynı günün Türkiye kaydı ve başlamış maç kimlikleri korunur.
+   Her günün yazılması transaction'dır; aynı günün tamamlayıcı API kayıtları ve başlamış maç kimlikleri korunur.
    Geçmiş günler değiştirilmez; geçmiş seri/oynanabilirlik şartları sonradan oluşturulmaz.
 5. Boş günleri açıkça kaydeder; başka güne ertelenen maç eski gününde kalmaz.
 
@@ -114,7 +132,7 @@ CI aynı paketi kaynaktan üretip hash eşitliğini kontrol eder.
 ## Yayına geçiş
 
 Bu değişiklikler kod ve veri paketidir; canlı dağıtım yapıldığı anlamına gelmez.
-Önce güncel `codex/daily-fixtures-auto-sync` dalını alın. Otomatik Kaggle cron'unun
+Önce güncel `codex/daily-european-fixtures` dalını alın. Otomatik Kaggle cron'unun
 başlaması için bu iş akışı deponun **varsayılan dalına** birleştirilmiş olmalıdır.
 Birleştirmeden önce Actions > Import Kaggle Football Calendar > Run workflow üzerinden
 bu dal seçilerek elle çalıştırılabilir (workflow varsayılan dalda henüz yoksa Actions arayüzünde
@@ -126,7 +144,7 @@ GitHub > Settings > Secrets and variables > Actions altında:
 - `FIREBASE_DATABASE_URL`: Firebase Console'daki Realtime Database adresi.
 - `KAGGLE_API_TOKEN`: herkese açık indirmede gerekmedi; Kaggle hesap/onay isterse kendi
   Kaggle Settings > API token'ınızı secret olarak ekleyin. Koda veya sohbete yapıştırmayın.
-- `API_FOOTBALL_KEY`: yalnızca eski manuel Türkiye workflow'unu kullanacaksanız gerekir.
+- `API_FOOTBALL_KEY`: yalnızca eski manuel API workflow'unu kullanacaksanız gerekir.
   Cloud Scheduler ise aşağıdaki Firebase secret'ını kullanır.
 
 Firebase hesabına yetkili yerel terminalde giriş yaptıktan sonra:
@@ -141,15 +159,16 @@ flutter run
 `API_FOOTBALL_KEY` zaten tanımlıysa yeniden eklemeyin. Tanımlı değilse
 `firebase functions:secrets:set API_FOOTBALL_KEY` komutu gizli giriş ister.
 Dağıtılan durum servisi, zamanlayıcı henüz çalışmamışsa paketlenmiş takvimi okuyabilir.
-Türkiye yenilemesi için zamanlayıcının ilk çalışmasını bekleyin veya GitHub Actions'ta
-bu dalı seçerek `Sync Daily Fixtures`, `task=fixtures` çalıştırın. Bu manuel iş
+Üç organizasyonun yenilemesi için zamanlayıcının ilk çalışmasını bekleyin veya GitHub Actions'ta
+bu dalı seçerek `Sync Daily Fixtures`, `task=fixtures`, `mode=refresh`, tarih boş çalıştırın.
+Bu, dağıtımdan sonra bugünün maçlarını kalan bütçe içinden almak içindir; yeni kota oluşturmaz. Bu manuel iş
 API_FOOTBALL_KEY, FIREBASE_SERVICE_ACCOUNT ve FIREBASE_DATABASE_URL secrets gerektirir.
-Gerçek abonelikte 2026 sezonuna erişim/kota, canlı servis üzerinde ayrıca doğrulanmalıdır.
+Gerçek abonelikte güncel maçlara ve üç organizasyona erişim/kota, canlı servis üzerinde ayrıca doğrulanmalıdır.
 
 Dağıtımdan sonra `Import Kaggle Football Calendar` için Run workflow ile ilk aktarımı başlatın.
 Başarılı logda `state: ok`, 15 gün, geçerli maç sayısı ve kaynak tarihi görülmeli.
 Firebase `daily_fixture_control/kaggle/lastSuccessAt` güncellenmeli; uygulamadaki Takvim bilgisi
-yeni kaynağın tarihini göstermeli. Türkiye görevinin loglarında `ok/error/unconfigured/skipped`
+yeni kaynağın tarihini göstermeli. API görevinin loglarında `ok/error/unconfigured/skipped`
 durumu, `daily_fixture_control/turkey/used` altında ise 0–3 arasında tüketim görülür.
 Kaggle adımı hata verirse Actions loglarını kontrol edin; mevcut takvim silinmez.
 
@@ -162,6 +181,7 @@ node scripts/publish-daily-calendar.js "$env:TEMP\linkball-calendar.json" --chec
 ```
 
 Kaynak şemaları:
+- https://www.api-football.com/news/post/how-to-use-firebase-with-api-football-real-time-data-integration
 - https://www.kaggle.com/datasets/adrianjuliusaluoch/live-european-football-match-results
 - https://github.com/Kaggle/kagglehub
 - https://docs.football-data.org/general/v4/match.html

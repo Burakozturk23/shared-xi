@@ -1,7 +1,7 @@
 "use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const {snapshotDay, fetchTurkey, syncDay, readDay, snapshot} = require("../daily_fixture_feed");
+const {snapshotDay, fetchSupplemental, syncDay, readDay, snapshot} = require("../daily_fixture_feed");
 const {resolveFixture, createService} = require("../daily_matches");
 const {harness} = require("./support/economy_harness");
 const date = "2026-10-21";
@@ -24,24 +24,36 @@ test("import has unique namespaced IDs, correct days, and provider-specific club
   assert.deepEqual(snapshotDay("2026-10-22"), []);
   assert.throws(() => snapshotDay("2026-02-31"));
 });
-test("API-Football is restricted to Super Lig, Istanbul day and season starting year", async () => {
+test("one date request includes three supplemental leagues and excludes Kaggle competitions", async () => {
   let url;
   const request = async (input, options) => {
     url = new URL(input); assert.equal(options.headers["x-apisports-key"], "test-key");
     assert.ok(options.signal); return {ok: true, json: async () => ({response: [apiRow], errors: []})};
   };
-  const matches = await fetchTurkey(date, "test-key", request);
-  assert.equal(url.searchParams.get("league"), "203");
-  assert.equal(url.searchParams.get("season"), "2026");
+  const matches = await fetchSupplemental(date, "test-key", request);
+  assert.equal(url.searchParams.has("league"), false);
+  assert.equal(url.searchParams.has("season"), false);
   assert.equal(url.searchParams.get("timezone"), "Europe/Istanbul");
   assert.equal(matches[0].fixtureId, 123);
-  await fetchTurkey("2027-01-03", "test-key", async (input) => {
-    assert.equal(new URL(input).searchParams.get("season"), "2026");
+  await fetchSupplemental("2027-01-03", "test-key", async (input) => {
+    assert.equal(new URL(input).searchParams.get("date"), "2027-01-03");
     return {ok: true, json: async () => ({response: [], errors: []})};
   });
-  await assert.rejects(fetchTurkey(date, "k", reply([{...apiRow, league: {id: 39}}])));
-  await assert.rejects(fetchTurkey(date, "k", reply([], {requests: "quota"})));
-  await assert.rejects(fetchTurkey(date, "k", reply([{...apiRow,
+  assert.deepEqual(await fetchSupplemental(date, "k", reply([{...apiRow, league: {id: 39}}])), []);
+  const all = await fetchSupplemental(date, "k", reply([apiRow,
+    {...apiRow, fixture: {...apiRow.fixture, id: 124}, league: {id: 3}},
+    {...apiRow, fixture: {...apiRow.fixture, id: 125}, league: {id: 848}},
+    {...apiRow, fixture: {...apiRow.fixture, id: 126}, league: {id: 2}},
+  ]));
+  assert.deepEqual(all.map((m) => m.leagueId), [203, 3, 848]);
+  assert.equal(all[1].leagueName, "Avrupa Ligi");
+  assert.equal(all[2].leagueName, "Konferans Ligi");
+  assert.equal(all[2].homeScore, null);
+  await assert.rejects(fetchSupplemental(date, "k", reply([apiRow, apiRow])));
+  await assert.rejects(fetchSupplemental(date, "k", async () => ({ok: true,
+    json: async () => ({response: [], results: 5, paging: {current: 1, total: 2}})})));
+  await assert.rejects(fetchSupplemental(date, "k", reply([], {requests: "quota"})));
+  await assert.rejects(fetchSupplemental(date, "k", reply([{...apiRow,
     fixture: {...apiRow.fixture, date: "2026-10-22T20:00:00+03:00"}}])));
 });
 test("Turkey failure preserves Turkey and snapshot timestamps while importing other competitions", async () => {

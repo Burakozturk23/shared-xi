@@ -1,12 +1,13 @@
 "use strict";
 const {randomUUID} = require("node:crypto");
 const {dayKey} = require("./rewarded_ads");
-const {syncDay, rows} = require("./daily_fixture_feed");
+const {syncDay, rows, isSupplemental} = require("./daily_fixture_feed");
 const LIMIT = 3;
 const LEASE_MS = 90000;
 const RETRY_MS = 3600000;
 
 // Reserve BEFORE the HTTP call. Timeouts/crashes consume a request too.
+// Keep the legacy /turkey control path so upgrading does not reset spent quota.
 // One transaction covers both the global lease and all of today's request slots.
 async function reserve(db, day, slot, now) {
   const token = randomUUID();
@@ -29,7 +30,7 @@ async function release(db, day, slot, token, result) {
     return {...state, lock: null, slots: {...state.slots, [slot]: {...state.slots[slot], state: result}}};
   });
 }
-async function runTurkeySync({db, apiKey, mode = "baseline", date, now = Date.now(), request = fetch}) {
+async function runSupplementalSync({db, apiKey, mode = "baseline", date, now = Date.now(), request = fetch}) {
   if (!["baseline", "refresh"].includes(mode)) throw Error("Invalid sync mode");
   const today = dayKey(now);
   const tomorrow = dayKey(now + 86400000);
@@ -39,14 +40,14 @@ async function runTurkeySync({db, apiKey, mode = "baseline", date, now = Date.no
   if (mode === "refresh") {
     if (date && date !== today) throw Error("Refresh is limited to today");
     const raw = (await db.ref("daily_fixtures/" + today).get()).val();
-    const hasMatch = rows(raw?.matches).some((m) => m.leagueId === 203 &&
-      !["FT", "AET", "PEN", "CANC", "PST", "AWD"].includes(m.status));
+    const hasMatch = rows(raw?.matches).some((m) => isSupplemental(m) &&
+      !["FT", "AET", "PEN", "CANC", "PST", "AWD", "WO", "ABD"].includes(m.status));
     // An unsuccessful/missing morning request gets one recovery opportunity.
-    if (!hasMatch && raw?.sources?.turkey?.state === "ok") dates = [];
+    if (!hasMatch && raw?.sources?.supplemental?.state === "ok") dates = [];
   }
   const results = [];
   for (const target of dates) {
-    const slot = mode + "_" + target;
+    const slot = "supplemental_" + mode + "_" + target;
     const token = await reserve(db, today, slot, now);
     if (!token) {
       results.push({date: target, state: "skipped"});
@@ -55,12 +56,12 @@ async function runTurkeySync({db, apiKey, mode = "baseline", date, now = Date.no
     let state = "error";
     try {
       const result = await syncDay({db, date: target, apiKey, now, request});
-      state = result.sources.turkey.state;
-      results.push({date: target, state, matches: result.sources.turkey.count});
+      state = result.sources.supplemental.state;
+      results.push({date: target, state, matches: result.sources.supplemental.count});
     } finally {
       await release(db, today, slot, token, state);
     }
   }
   return {state: results.some((r) => r.state === "error") ? "error" : "ok", results};
 }
-module.exports = {runTurkeySync, LIMIT};
+module.exports = {runSupplementalSync, LIMIT};
