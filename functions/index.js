@@ -36,17 +36,17 @@ const apiKey = defineSecret("API_FOOTBALL_KEY");
 
 // Shared import + Süper Lig-only network feed; also used by the manual sync script.
 exports.syncDailyFixtures = onSchedule(
-    {schedule: "0 */4 * * *", timeZone: "Europe/Istanbul", secrets: [apiKey], memory: "256MiB"},
+    {schedule: "15 6,14 * * *", timeZone: "Europe/Istanbul", secrets: [apiKey], memory: "256MiB",
+      timeoutSeconds: 120, retryCount: 0},
     async () => {
-      const {syncDay} = require("./daily_fixture_feed");
-      const {dayKey} = require("./rewarded_ads");
+      const {runTurkeySync} = require("./daily_fixture_budget");
       const now = Date.now();
-      for (const time of [now, now + 86400000]) {
-        const date = dayKey(time);
-        const result = await syncDay({db: getDatabase(), date, apiKey: apiKey.value(), now});
-        logger.info("Daily fixture sync", {date, count: result.matches?.length || 0,
-          turkey: result.sources.turkey.state});
-      }
+      const hour = Number(new Intl.DateTimeFormat("en-GB", {timeZone: "Europe/Istanbul", hour: "2-digit"})
+          .format(now));
+      const result = await runTurkeySync({db: getDatabase(), apiKey: apiKey.value(), now,
+        mode: hour >= 14 ? "refresh" : "baseline"});
+      if (result.state === "error") logger.warn("Daily fixture sync", result);
+      else logger.info("Daily fixture sync", result);
     },
 );
 // LINKBALL_05B_DAILY_AUTHORITY_START

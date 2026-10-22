@@ -1,4 +1,4 @@
-# Manual fixture sync. Cloud Scheduler is the single automatic writer (every four hours).
+# Manual Turkey sync shares the Cloud Scheduler's three-request daily budget.
 name: Sync Daily Fixtures
 
 on:
@@ -15,7 +15,7 @@ on:
         options: [fixtures, data]
         default: fixtures
       date:
-        description: "Opsiyonel tek gun YYYY-MM-DD (bos = bugun+yarin)"
+        description: "Bugün veya yarın YYYY-MM-DD (boş = bugün+yarın); günlük bütçe uygulanır"
         required: false
         default: ""
 
@@ -33,10 +33,7 @@ jobs:
           node-version: "24"
 
       - name: Install script deps
-        run: |
-          cd scripts
-          npm init -y
-          npm install firebase-admin@^13
+        run: npm --prefix functions ci
 
       - name: Run sync
         env:

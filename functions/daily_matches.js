@@ -116,7 +116,7 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
       remaining: Math.max(0, 3 - Object.values(s.sessions).filter((x) => x.day === today).length),
       feed: {sources: feed.sources, updatedAt: feed.updatedAt, snapshotUsed: feed.snapshotUsed,
         snapshotUpdatedAt: feed.snapshotUpdatedAt, coverageStart: feed.coverageStart, coverageEnd: feed.coverageEnd,
-        competitions: Object.values(require("./daily_fixture_feed").snapshot.competitions).map((c) => c[1]),
+        competitions: feed.competitions,
         state: matches.length ? "ready" : feed.calendar.length ? "no-playable" :
           feed.sources.snapshot?.state === "out-of-range" ? "out-of-coverage" : "empty"},
       calendar: feed.calendar.map((m) => ({fixtureId: m.fixtureId, homeName: m.homeName, awayName: m.awayName,

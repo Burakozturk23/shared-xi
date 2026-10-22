@@ -2,8 +2,8 @@
 
 ## Deneyim
 
-Günün takvimi iki kaynaktan gelir: kullanıcı tarafından sağlanan Parquet dosyasının
-tekilleştirilmiş kaydı ve yalnızca Süper Lig (203) için API-Football. Takvimdeki tüm
+Günün takvimi iki kaynaktan gelir: Kaggle'dan günlük indirilen Parquet dosyasının
+tekilleştirilmiş kaydı (paketlenmiş ZIP çevrimdışı yedektir) ve yalnızca Süper Lig (203) için API-Football. Takvimdeki tüm
 maçlar **Fikstür** sekmesinde, ortak oyuncu oyununa uygun en fazla altı maç **Oyna**
 sekmesinde gösterilir. Derbiler ve Avrupa maçları öne çıkar. Oyun için iki kulüp de
 51 kulüplük cevap kataloğunda olmalı ve en az dört doğrulanmış ortak oyuncu bulunmalıdır.
@@ -11,8 +11,8 @@ Dosya dışındaki ligler veya tarihler için maç üretilmez. Ertelenmiş/iptal
 saati kesinleşmemiş ve Süper Lig kaydı 30 saatten eski maçlar yeni oyuna açılmaz.
 Başlatılan maçlar aynı İstanbul günü devam ettirilebilir.
 
-Dosya statik takvimdir; kaynak güncelleme tarihi ekranda görünür. Dosyayı tekrar
-okumak verinin tarihini yenilemez. Kaynak kapsamı ve yenileme adımları:
+Kaggle otomasyonu en yeni dosyayı sunucuya aktarır; kaynak güncelleme tarihi ekranda görünür.
+Aynı dosyayı tekrar okumak verinin tarihini yenilemez. Kaynak kapsamı ve kurulum adımları:
 [daily-fixture-import.md](daily-fixture-import.md).
 
 - Günde üç maç hakkı; hak başlangıçta kullanılır. Bir maçın ödülü bir kez alınır.
@@ -53,8 +53,11 @@ flutter run --no-enable-impeller
 ```
 
 Bu çalışma sırasında canlı Firebase'e dağıtım yapılmadı. API_FOOTBALL_KEY mevcut
-Functions secret'ı olmalı. Cloud Scheduler dört saatte bir bugün/yarını yeniler;
-GitHub Actions `Sync Daily Fixtures` yalnızca `task=fixtures` ile elle çalıştırılır; ikinci otomatik tarayıcı yoktur.
+Functions secret'ı olmalı. Cloud Scheduler 06:15 TSİ'de bugün/yarını yeniler;
+14:15'te maç varsa veya sabah isteği başarısızsa tek ek kontrol yapar. Hatalı ve manuel
+denemeler dahil Türkiye için günlük üst sınır üç istektir.
+GitHub Actions `Import Kaggle Football Calendar` 04:47 TSİ'de diğer organizasyonları yeniler;
+API-Football kotası tüketmez. `Sync Daily Fixtures` yalnızca `task=fixtures` ile elle çalıştırılır.
 Gerekli GitHub secrets: API_FOOTBALL_KEY, FIREBASE_SERVICE_ACCOUNT,
 FIREBASE_DATABASE_URL. Türkiye API hatası mevcut Türkiye kayıtlarını korur; dosyadan gelen diğer ligleri durdurmaz.
 

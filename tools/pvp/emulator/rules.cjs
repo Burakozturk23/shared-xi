@@ -17,7 +17,8 @@ const {ref, get, set, update} = require("firebase/database");
           uid === "anonymous" ? {firebase: {sign_in_provider: "anonymous"}} :
             {firebase: {sign_in_provider: "google.com", identities: {"google.com": [uid]}}});
       const db = context.database();
-      for (const path of ["pvpV1", "pvpV1/club_club/rooms/ABCD1234", "pvpCatalogs/private", "rankedState"]) {
+      for (const path of ["pvpV1", "pvpV1/club_club/rooms/ABCD1234", "pvpCatalogs/private", "rankedState",
+        "daily_fixture_control/turkey", "daily_fixture_control/kaggle"]) {
         await assertFails(get(ref(db, path))); assertions++;
         await assertFails(set(ref(db, path), {scores: {alice: 999}, winnerUid: uid, status: "finished"})); assertions++;
       }
