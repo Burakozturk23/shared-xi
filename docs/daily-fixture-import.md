@@ -186,3 +186,24 @@ Kaynak şemaları:
 - https://github.com/Kaggle/kagglehub
 - https://docs.football-data.org/general/v4/match.html
 - https://www.api-football.com/news/post/how-to-get-all-fixtures-data-from-one-league
+
+## Senkronizasyon kurulumu hatalarını ayırma
+
+Firebase Admin 14 ile scriptler `firebase-admin/app` ve `firebase-admin/database`
+girişlerini kullanır. Eski `admin.credential.cert`, `admin.database`, `admin.app`
+çağrıları desteklenmediği için #122 çalışması genel bir exit code 1 ile kapanıyordu.
+Bu çağrılar iki aktarım scriptinde de ortak modüler bağlantıyla değiştirildi.
+Hata mesajları secret değerini veya ham sağlayıcı cevabını yazmadan aşağıdaki kodları verir:
+
+- `MISSING_SERVICE_ACCOUNT`: GitHub `FIREBASE_SERVICE_ACCOUNT` secret'ı yok/boş.
+- `INVALID_SERVICE_ACCOUNT_JSON`: secret eksik JSON, dosya yolu veya farklı içerik taşıyor.
+- `INVALID_SERVICE_ACCOUNT_KEY`: JSON'daki hizmet hesabı alanları/private key geçersiz.
+- `MISSING_DATABASE_URL` / `INVALID_DATABASE_URL`: RTDB kök URL'si eksik veya yanlış biçimde.
+- `stage=fixture-sync`: yerel kurulum geçildi; veritabanı erişimi/giriş parametreleri kontrol edilir.
+- Bilinen Firebase yetki/ağ hata kodları ayrıca gösterilir; ham hata ve anahtarlar loglanmaz.
+
+Bu script düzeltmesini denemek için eski çalışmada **Re-run jobs** kullanmayın; bu eski commit'i
+tekrarlar. Actions > Sync Daily Fixtures > Run workflow üzerinden
+`codex/daily-european-fixtures`, `task=fixtures`, `mode=refresh`, boş tarih ile **yeni çalışma**
+başlatın. Script değişikliği için Functions'ı yeniden dağıtmak gerekmez; daha önceki sunucu
+entegrasyonu/secret değişikliği henüz dağıtılmadıysa onun dağıtımı yine gereklidir.
