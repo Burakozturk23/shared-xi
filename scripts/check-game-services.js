@@ -32,7 +32,7 @@ async function main() {
   for (const [group, names] of Object.entries(groups)) {
     const results = await Promise.all(names.map((n) => probe(n, {project: process.env.FIREBASE_PROJECT_ID || "sharedix"})));
     for (const r of results) {
-      console.log(`${r.state === "PRESENT_AUTH_REQUIRED" ? "PASS" : "FAIL"} ${group}/${r.name}: ${r.state}`);
+      console.log(`${r.state === "PRESENT_AUTH_REQUIRED" ? "PASS" : "FAIL"} ${group}/${r.name}: ${r.state}${r.http ? ` (HTTP ${r.http})` : ""}`);
       failed ||= r.state !== "PRESENT_AUTH_REQUIRED";
     }
   }

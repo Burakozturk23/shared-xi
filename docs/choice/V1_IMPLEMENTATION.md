@@ -35,8 +35,12 @@ challenge. Android PNG sharing opens the OS chooser only on explicit user action
 `tools/choice/build_catalog.py --check` reproduces the audited catalog from the V4
 SQLite SHA and `reviews.json`. Density checks are not source verification.
 
-- All 8 statistical criteria currently fail the source/scope approval gate.
-  They remain visibly locked, including Higher or Lower and objective Blind Ranking.
+- The original 8 statistical criteria still fail the source/scope approval gate.
+  They remain visibly locked. PR69 adds two separate historical UEFA criteria for
+  Higher or Lower and objective Blind Ranking: appearances and goals in the
+  2022/23 handbook, including qualifiers, restricted to 145 verified identities
+  from its 70+ appearance table. Scope, edition and source are visible in game.
+  See `../reviews/fourteen-modes-2026-10-22.md` for the complete source audit.
   The existing numeric database columns alone do not establish career/senior/recorded
   scope, snapshot provenance or reliable zero values.
 - All 768 original tournament highlights are unreviewed. Unverified season and

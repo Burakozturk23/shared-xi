@@ -275,11 +275,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final slots = _rows(board['slots']); final selected = slots.where((s) => '${s['id']}' == slotId).firstOrNull;
     final highlighted = (selected?['supports'] as List? ?? []).map((x) => '$x').toSet();
     if (selected?['row'] == 1) highlighted.add('0');
-    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640.0) - 32, _n(board['levels']) * (MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 100.0 * MediaQuery.textScalerOf(context).scale(1) : 48.0));
+    final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640.0) - 32, _n(board['levels']) * 110.0 * MediaQuery.textScalerOf(context).scale(1));
     return [
       Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: TextStyle(color: accent)),
       const SizedBox(height: 14),
-      if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640.0) - 32) const Text('Büyük yazı için tahtayı yatay kaydırabilirsin.'),
+      if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640.0) - 32) const Text('Tüm hücreleri görmek için tahtayı yatay kaydırabilirsin.'),
       SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: Column(children: [
       for (var row = 0; row < _n(board['levels']); row++) Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center,
         children: slots.where((s) => s['row'] == row).map((s) {

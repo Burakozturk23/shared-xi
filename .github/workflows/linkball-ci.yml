@@ -504,6 +504,14 @@ jobs:
       - name: Lint Functions
         run: npm run lint
 
+      - name: Parse reviewed PowerShell deployment helper
+        shell: pwsh
+        run: |
+          $parseTokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$env:GITHUB_WORKSPACE/scripts/deploy-reviewed-games.ps1", [ref]$parseTokens, [ref]$parseErrors) | Out-Null
+          if ($parseErrors.Count -gt 0) { $parseErrors | Write-Error; exit 1 }
+
       - name: Test Functions contracts
         run: npm test
 

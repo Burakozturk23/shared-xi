@@ -60,7 +60,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     if (run.isEmpty && !tot && !hl && !metrics.any((m) => m['gatePassed'] == true)) type = 'personal';
     final available = themes.where((t) => t['type'] == category).toList();
     if (!available.any((t) => t['id'] == themeId) && available.isNotEmpty) themeId = '${available.first['id']}';
-    if (!metrics.any((m) => m['id'] == metricId) && metrics.isNotEmpty) metricId = '${metrics.first['id']}';
+    if (!metrics.any((m) => m['id'] == metricId) && metrics.isNotEmpty) metricId = '${(metrics.where((m) => m['gatePassed'] == true).firstOrNull ?? metrics.first)['id']}';
   }
   Future<void> load({bool more = false}) async {
     if (mounted) setState(() {busy = true; error = null;});
@@ -225,10 +225,22 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     final value = (n as num).toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
     return (metric ?? metricId ?? '').contains('market_value') ? '€$value' : value;
   }
+  List<Widget> metricContext(Map<String,dynamic> r) {
+    final m = rewardMap(r['metric']).isNotEmpty ? rewardMap(r['metric']) :
+      metrics.where((m) => m['id'] == r['metricId']).firstOrNull ?? <String,dynamic>{};
+    return [
+      if (m['label'] != null && r['mode'] == 'blind_ranking') note('${m['label']}'),
+      if (m['scopeLabel'] != null) note('${m['scopeLabel']}'),
+      if (m['poolLabel'] != null) note('${m['poolLabel']}'),
+      if (m['sources'] is List && (m['sources'] as List).isNotEmpty)
+        ExpansionTile(tilePadding: EdgeInsets.zero, title: Text('Kaynak · ${m['edition'] ?? 'İstatistik'}'),
+          children: [for (final source in m['sources'] as List) SelectableText('$source')]),
+    ];
+  }
   Widget higher(Map<String,dynamic> r) {
-    final q = rewardMap(r['question']); final metric = metrics.where((m) => m['id'] == r['metricId']).firstOrNull;
+    final q = rewardMap(r['question']); final metric = rewardMap(r['metric']).isNotEmpty ? rewardMap(r['metric']) : metrics.where((m) => m['id'] == r['metricId']).firstOrNull;
     return panel([heading('${r['streak'] ?? 0} doğru seri'), note('${metric?['label'] ?? 'İstatistik karşılaştırması'}'),
-      if (r['scope'] != null) note('${r['scope']}'),
+      ...metricContext(r),
       for (final side in ['left','right']) ...[
         person(rewardMap(q[side]), caption: number(q['${side}Value'], '${r['metricId']}')),
         if (q['${side}Value'] == null) Center(child: Text('Gizli değer', style: TextStyle(color: accent))),
@@ -246,6 +258,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     final placements = rows(r['placements']); final count = (r['size'] as num? ?? 5).toInt();
     return panel([
       heading(result ? r['completed'] != true ? 'Liste tamamlanmadı' : r['type'] == 'personal' ? 'Benim Sıralamam' : 'Sıralama sonucu' : '${placements.length + 1} / $count oyuncu'),
+      if (r['type'] == 'objective') ...metricContext(r),
       if (!result) ...[person(rewardMap(r['current'])), note('Bir boş sıra seç, ardından onayla. Sonraki oyuncu henüz gizli.')],
       if (result && r['completed'] == true && r['type'] == 'objective') ...[heading('${r['score']} / 100'),
         note('${r['exactMatches']} tam sıra · ${r['comparable']} karşılaştırılabilir çift')],

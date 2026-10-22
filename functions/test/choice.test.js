@@ -38,8 +38,9 @@ test("choice catalog: eight distinct themes, exact formats, no 128-club option",
   }
 });
 test("choice content gates never mark unreviewed statistics or cards as verified", () => {
-  assert.equal(Object.values(E.catalog.metrics).length, 8);
-  for (const m of Object.values(E.catalog.metrics)) {
+  const unreviewed = Object.values(E.catalog.metrics).filter((m) => !m.id.startsWith("uefa_ec_ucl_2023_"));
+  assert.equal(unreviewed.length, 8);
+  for (const m of unreviewed) {
     assert.equal(m.gatePassed, false); assert.throws(() => E.create(E.catalog,
         {mode: "higher_lower", metricId: m.id, requestId: id()}, 1));
   }
@@ -230,4 +231,50 @@ test("interrupted XP projection repairs outbox, duplicate payload binding reject
   assert.equal(h.read("progressionState/alice/lifetimeXp"), 8);
   assert.equal(h.read("economyState/alice/choice/pending"), null);
   await assert.rejects(h.call("actChoice", {...event, slot: 3}), {code: "invalid-argument"});
+});
+
+test("UEFA historical metrics have verified identities, explicit scope, and playable production pools", () => {
+  const source = require("../../tools/choice/uefa_2023_snapshot.json");
+  const accepted = new Map(source.rows.map((r) => [r.playerId, r]));
+  assert.equal(accepted.size, 145);
+  assert.ok(source.excluded.some((r) =>
+    r.sourceName === "Deco" && r.reason === "nationality_mismatch"));
+  for (const field of ["appearances", "goals"]) {
+    const metricId = `uefa_ec_ucl_2023_${field}`; const m = E.catalog.metrics[metricId];
+    assert.equal(m.gatePassed, true); assert.ok(m.scopeLabel.includes("elemeler"));
+    assert.equal(m.sourceSha256, source.sourceSha256);
+    for (const row of m.groups[source.scopeId]) {
+      assert.equal(row.value, accepted.get(row.id)[field]); assert.ok(E.catalog.players[row.id]);
+    }
+    for (let i = 0; i < 20; i++) {
+      const r = E.create(E.catalog, {mode: "higher_lower", metricId, requestId: id()}, 1);
+      r.phase = "active";
+      for (let turn = 0; turn < 20; turn++) {
+        assert.equal(r.finished, false, "pool must support the twenty-streak tier");
+        const pub = E.publicRun(E.catalog, r);
+        assert.equal(pub.question[pub.question.knownSide === 0 ? "rightValue" : "leftValue"], undefined);
+        assert.equal(pub.metric.groups, undefined); assert.equal(pub.metric.sourceColumn, undefined);
+        assert.equal(pub.metric.edition, "2022/23 UEFA arşivi");
+        E.act(E.catalog, r, {action: "guess", questionId: r.question.id,
+          direction: r.question.knownSide === 0 ? (r.question.rightValue > r.question.leftValue ? "higher" : "lower") :
+            (r.question.leftValue > r.question.rightValue ? "higher" : "lower")});
+        assert.equal(r.correct, true);
+        if (turn < 19) E.act(E.catalog, r, {action: "next"});
+      }
+      assert.equal(new Set(r.usedIds).size, r.usedIds.length);
+      for (const size of [5, 10]) {
+        const ranked = E.create(E.catalog,
+            {mode: "blind_ranking", type: "objective", size, metricId, requestId: id()}, 1);
+        ranked.phase = "active";
+        const pub = E.publicRun(E.catalog, ranked);
+        assert.equal(pub.values, undefined); assert.equal(pub.orderedCandidateIds, undefined);
+        assert.ok(pub.metric.scopeLabel.includes("1955–2023"));
+        for (let slot = 0; slot < size; slot++) {
+          E.act(E.catalog, ranked,
+              {action: "place", slot, candidateId: ranked.orderedCandidateIds[slot]});
+        }
+        assert.equal(ranked.finished, true); assert.ok(ranked.score >= 0 && ranked.score <= 100);
+      }
+    }
+  }
 });

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,6 +56,23 @@ class RecoverChoice extends choice.ChoiceFixture {
   @override
   Future<Map<String,dynamic>> load(String mode, {int offset = 0}) async { gate.check(); return super.load(mode, offset: offset); }
 }
+class UefaChoice extends choice.ChoiceFixture {
+  UefaChoice({super.stage = 'intro'});
+  final production = jsonDecode(File('functions/config/choice_catalog.json').readAsStringSync()) as Map;
+  @override
+  Future<Map<String,dynamic>> load(String mode, {int offset = 0}) async {
+    final result = await super.load(mode, offset: offset);
+    final metrics = (production['metrics'] as Map).values.map((m) => Map<String,dynamic>.from(m as Map)..remove('groups')).toList();
+    (result['catalog'] as Map)['metrics'] = metrics;
+    if (result['session'] is Map) {
+      final run = result['session'] as Map;
+      run['metricId'] = 'uefa_ec_ucl_2023_appearances';
+      run['metric'] = metrics.firstWhere((m) => m['id'] == run['metricId']);
+      if (mode == 'higher_lower') (run['question'] as Map)['leftValue'] = 163;
+    }
+    return result;
+  }
+}
 class ExpiredArcade extends arcade.ArcadeFixture {
   int writes = 0;
   @override
@@ -103,7 +122,7 @@ void main() {
         expect(t.takeException(), isNull);
         await qa.capture(t, 'review_${mode}_error_$light');
         gate.failing = false;
-        await t.ensureVisible(find.text('Tekrar dene')); await t.tap(find.text('Tekrar dene'));
+        await t.ensureVisible(find.text('Tekrar dene')); await t.pump(); await t.tap(find.text('Tekrar dene'));
         await t.pump(); await t.pump(const Duration(milliseconds: 100));
         expect(gate.reads, 2);
         expect(find.byType(GameErrorPanel), findsNothing);
@@ -151,6 +170,23 @@ void main() {
       }
     }
   });
+  for (final mode in ['higher_lower', 'blind_ranking']) {
+    testWidgets('$mode production criteria select a verified metric and display historical scope', (t) async {
+      final service = UefaChoice();
+      await choice.mount(t, service, mode);
+      final selected = t.widgetList<RadioListTile<String>>(find.byType(RadioListTile<String>)).where((w) => w.value == w.groupValue).single;
+      expect(selected.value, 'uefa_ec_ucl_2023_appearances');
+      await t.ensureVisible(find.text('Oyunu hazırla')); await t.pump();
+      await t.tap(find.text('Oyunu hazırla')); await t.pumpAndSettle();
+      expect(service.sent?['metricId'], 'uefa_ec_ucl_2023_appearances');
+      await choice.mount(t, UefaChoice(stage: 'game'), mode, light: true, large: true);
+      expect(find.textContaining('1955–2023'), findsOneWidget);
+      expect(find.textContaining('145 doğrulanmış futbolcu'), findsOneWidget);
+      await choice.capture(t, '${mode}_verified_uefa_large');
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    });
+  }
   testWidgets('unreviewed ranking defaults to playable personal lists while statistical gate stays closed', (t) async {
     await choice.mount(t, choice.ChoiceFixture(stage: 'intro', gated: true), 'blind_ranking');
     expect(find.text('Favorilerini sırala. Bu listede doğru sıra, puan veya rekor yok.'), findsOneWidget);
