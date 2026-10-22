@@ -1,0 +1,41 @@
+name: Import Kaggle Football Calendar
+
+on:
+  schedule:
+    # 04:47 Europe/Istanbul. Scheduled workflows run from the default branch.
+    - cron: '47 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-kaggle-calendar
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned importer and Functions dependencies
+        run: |
+          python -m pip install -r tools/daily_fixtures/requirements-sync.txt
+          npm --prefix functions ci
+      - name: Download and validate latest Kaggle file
+        env:
+          # Optional for public datasets; required if Kaggle requests consent/authentication.
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: python tools/daily_fixtures/download_latest.py --output "$RUNNER_TEMP/calendar.json"
+      - name: Publish calendar without replacing Turkey or deploying code
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+        run: node scripts/publish-daily-calendar.js "$RUNNER_TEMP/calendar.json"

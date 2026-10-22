@@ -16,9 +16,10 @@ const act = async (h, uid, r, action = "poll", extra = {}) => (await h.call("act
   roomId: r.id, action, revision: r.revision, ...(action === "poll" ? {} : {actionId: id()}), ...extra},
 auth(uid))).room;
 const raw = (h, r) => h.read(`pvpV1/${r.mode}/rooms/${r.id}`);
-async function pair(h, mode, ranked = false, names = ["alice", "bob"]) {
+async function pair(h, mode, ranked = false, names = ["alice", "bob"], seed = null) {
   const [a, b] = names; const extra = {playKind: ranked ? "ranked" : "friend"};
   let r = await enter(h, a, mode, ranked ? "search" : "create", extra);
+  if (seed) h.seed(`pvpV1/${mode}/rooms/${r.id}/seed`, seed);
   r = await enter(h, b, mode, ranked ? "search" : "join", {...extra, code: r.id});
   if (!ranked && ["club_club", "club_country"].includes(mode)) {
     const p = c.pairs.find((p) => p.answers.length >= 8 && p.criteria[1].startsWith(
@@ -101,7 +102,9 @@ test("GT01-05: reverse axes require all three canonical relationships; 4 axes en
   assert.throws(() => E.move(c, r, r.turnUid, {targetId: "r7", criterionId: r.puzzle.rows[0]}, 5002));
 });
 test("RF01-05/CI02-04: server computes club points and all eligible cells; indexes are rejected", async () => {
-  const h = boot(); let r = await pair(h, "random_five"); const q = raw(h, r).puzzle;
+  // This assertion needs a multi-club witness; an arbitrary random draw need not have one.
+  const h = boot(); let r = await pair(h, "random_five", false, ["alice", "bob"], "multi-club-score");
+  const q = raw(h, r).puzzle;
   const p = Object.values(c.players).find((p) => q.clubs.filter((k) => E.matches(c, p, k)).length >= 2);
   r = await act(h, "alice", r, "answer", {playerId: p.id});
   assert.equal(r.scores.alice, q.clubs.filter((k) => E.matches(c, p, k)).length);
