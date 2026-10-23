@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:cloud_functions/cloud_functions.dart';
+import '../services/game_error.dart';
+import '../widgets/game_ui.dart';
 import 'package:flutter/material.dart';
 import '../models/rewarded_ad_models.dart';
 import '../models/club.dart';
@@ -60,7 +61,7 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
     if (_accountChanged) return;
     setState(() { _busy = true; _error = null; });
     try { await body(); }
-    catch (e) { if (mounted) setState(() => _error = e is FirebaseFunctionsException ? e.message : e.toString().replaceFirst('Bad state: ', '')); }
+    catch (e) { if (mounted) setState(() => _error = gameErrorMessage(e)); }
     finally { if (mounted) setState(() => _busy = false); }
   }
   Future<void> _load() => _run(() async {
@@ -109,27 +110,33 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
   Future<void> _hint(String kind, {String? boost}) => _act('hint', {'hint': kind, if (boost != null) 'boost': boost});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_title), actions: [
+    appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 112 : 64, title: Text(_title, maxLines: 3), actions: [
       IconButton(tooltip: 'Arşiv', onPressed: _busy ? null : () async { await _load(); if (mounted) setState(() => _archive = !_archive); }, icon: const Icon(Icons.collections_bookmark_outlined)),
       IconButton(tooltip: 'Yenile', onPressed: _busy || _accountChanged ? null : _load, icon: const Icon(Icons.refresh))]),
     body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
       child: ListView(padding: const EdgeInsets.all(16), children: [
         if (_busy) const LinearProgressIndicator(),
-        if (_error != null) PitchPanel(child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))),
+        if (_status.isEmpty) ...[
+          GameIntro(icon: _career ? Icons.route_outlined : Icons.travel_explore, title: _title,
+            message: _career ? 'Kulüp izlerini takip et, futbolcuyu bul.' : 'İki kulüp ve bir yıl. Transferin gizli ismini bul.'),
+          const SizedBox(height: 16),
+        ],
+        if (_error != null) GameErrorPanel(message: _error!, accountChanged: _accountChanged, onRetry: _busy ? null : _load),
         if (_status.isNotEmpty) ...[
-          Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('${_status['coins']} Link Coin · '
-            '${rewardMap(_status['energy'])['available'] ?? '—'} enerji')),
+          GameStats(items: [(Icons.toll_outlined, '${_status['coins']} Link Coin'),
+            (Icons.bolt_outlined, '${rewardMap(_status['energy'])['available'] ?? '—'} enerji')]),
           if (_archive) ..._collection() else if (_session.isNotEmpty) ..._game() else ..._home(),
         ],
       ])))),
   );
   List<Widget> _home() => [
-    PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Icon(_career ? Icons.route : Icons.travel_explore, size: 42), const SizedBox(height: 12),
-      Text(_career ? 'Bir futbolcu. Bir kariyer.' : 'İki kulüp. Bir transfer.', style: Theme.of(context).textTheme.headlineSmall),
-      const SizedBox(height: 8), Text(_career ? 'Futbolcuyu bul, kariyerinden seçilen kulüpleri sırala. Üç tahmin, iki sıralama kontrolü.'
+    GameIntro(icon: _career ? Icons.route_outlined : Icons.travel_explore,
+      title: _career ? 'Bir futbolcu. Bir kariyer.' : 'İki kulüp. Bir transfer.',
+      message: _career ? 'Futbolcuyu bul, kariyerinden seçilen kulüpleri sırala. Üç tahmin, iki sıralama kontrolü.'
         : 'Kulüp yönü ve yıldan futbolcuyu bul. Her dosyada üç tahmin hakkın var.'),
-      const SizedBox(height: 12),
+    const SizedBox(height: 12),
+    PitchPanel(child: ExpansionTile(tilePadding: EdgeInsets.zero, title: const Text('Kurallar ve kazanımlar'),
+      expandedCrossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(_career ? 'Futbolcu başına en fazla 12 Link Coin / 24 XP. Başlangıç seviyesinde ustalık yok.' : 'Transfer başına ilk resmî denemede en fazla 6 Link Coin / 12 XP.'),
       const Text('İki modun ortak ödül sınırı: günde 36 Link Coin / 72 XP. Fazlası bekleyen ödül olarak saklanır.'),
       const Text('1 ücretsiz + 2 reklamlı ipucu; mevcut destek stoğun da aynı üç slotu kullanır.'),
@@ -146,12 +153,14 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
     final ordering = _session['phase'] == 'order';
     final result = rewardMap(_session['result']);
     return [
-      Text(_finished ? 'Dosya tamamlandı' : ordering ? '2 / 2 · Kariyeri sırala' : 'Futbolcuyu bul', style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: 8),
-      Wrap(spacing: 16, children: [Text('Tahmin: ${3 - (_session['wrong'] as num? ?? 0)} / 3'),
-        if (_career) Text('Kontrol: ${_session['checks']} / 2'), Text('Puan: ${_session['score']}'),
-        if (!_career) Text('Seri: ${_session['streak']}')]),
-      const SizedBox(height: 12),
+      GameIntro(icon: _finished ? Icons.task_alt_rounded : _career ? Icons.route_outlined : Icons.travel_explore,
+        title: _finished ? 'Dosya tamamlandı' : ordering ? '2 / 2 · Kariyeri sırala' : 'Futbolcuyu bul',
+        message: _career ? ordering ? 'Kulüpleri en eski dönemden en yeniye yerleştir.' :
+          'Bu kulüplerde forma giyen futbolcuyu keşfet.' : 'Kulüpleri ve transfer yılını incele. Bu yolculuk kime ait?'),
+      GameStats(items: [(Icons.favorite_border, 'Tahmin: ${3 - (_session['wrong'] as num? ?? 0)} / 3'),
+        if (_career) (Icons.checklist_rounded, 'Kontrol: ${_session['checks']} / 2'),
+        (Icons.stars_outlined, 'Puan: ${_session['score']}'),
+        if (!_career) (Icons.local_fire_department_outlined, 'Seri: ${_session['streak']}')]),
       if (_career) ...[
         const Text('Kariyerinden seçilen kulüpleri sırala.'),
         if (ordering) const Text('En eskiden en yeniye sürükle. Ok düğmelerini de kullanabilirsin.'),
@@ -160,18 +169,33 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
           onReorder: (old, next) { if (!_busy && ordering) _reorder(stops, old, next > old ? next - 1 : next); },
           itemBuilder: (context, i) {
             final stop = stops[i]; final correctness = _session['correctness'] is List ? _session['correctness'] as List : [];
-            return Card(key: ValueKey<String>('${stop['id']}'), child: ListTile(
-              leading: ordering && !_busy ? ReorderableDragStartListener(index: i, child: const Icon(Icons.drag_handle)) : ClubBadge(club: Club.fromJson(rewardMap(stop['club'])), size: 32),
-              title: Text('${rewardMap(stop['club'])['name']}${stop['visit'] == null ? '' : ' · ${stop['visit']}. dönem'}'),
-              subtitle: correctness.length == stops.length ? Text(correctness[i] == true ? 'Doğru pozisyon' : 'Yerini değiştir') : null,
-              trailing: ordering ? Row(mainAxisSize: MainAxisSize.min, children: [
-                IconButton(tooltip: 'Yukarı taşı', onPressed: _busy || i == 0 ? null : () => _reorder(stops, i, i - 1), icon: const Icon(Icons.arrow_upward)),
-                IconButton(tooltip: 'Aşağı taşı', onPressed: _busy || i == stops.length - 1 ? null : () => _reorder(stops, i, i + 1), icon: const Icon(Icons.arrow_downward)),
-              ]) : null));
+            return Padding(key: ValueKey<String>('${stop['id']}'), padding: const EdgeInsets.only(bottom: 8),
+              child: PitchPanel(padding: const EdgeInsets.all(12), child: Column(children: [
+                Row(children: [
+                  if (ordering && !_busy) ReorderableDragStartListener(index: i, child: const Padding(
+                    padding: EdgeInsets.only(right: 8), child: Icon(Icons.drag_handle))),
+                  ClubBadge(club: Club.fromJson(rewardMap(stop['club'])), size: 36),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('${rewardMap(stop['club'])['name']}', style: Theme.of(context).textTheme.titleMedium),
+                    if (stop['visit'] != null) Text('${stop['visit']}. dönem', style: Theme.of(context).textTheme.bodySmall),
+                    if (correctness.length == stops.length) Text(correctness[i] == true ? 'Doğru pozisyon' : 'Yerini değiştir'),
+                  ])),
+                ]),
+                if (ordering) Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  IconButton(tooltip: 'Yukarı taşı', onPressed: _busy || i == 0 ? null : () => _reorder(stops, i, i - 1), icon: const Icon(Icons.arrow_upward)),
+                  IconButton(tooltip: 'Aşağı taşı', onPressed: _busy || i == stops.length - 1 ? null : () => _reorder(stops, i, i + 1), icon: const Icon(Icons.arrow_downward)),
+                ]),
+              ])));
           }),
-      ] else PitchPanel(child: Column(children: [ClubBadge(club: Club.fromJson(rewardMap(transfer['from'])), size: 48), Text('${rewardMap(transfer['from'])['name']}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
-        const Icon(Icons.south_rounded), ClubBadge(club: Club.fromJson(rewardMap(transfer['to'])), size: 48), Text('${rewardMap(transfer['to'])['name']}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8), Text('${transfer['year']}', style: Theme.of(context).textTheme.headlineSmall)])),
+      ] else PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text('TRANSFER DOSYASI · ${transfer['year']}', style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 20),
+        _transferClub(rewardMap(transfer['from']), 'AYRILDIĞI KULÜP'),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Align(
+          alignment: Alignment.centerLeft, child: Icon(Icons.south_rounded))),
+        _transferClub(rewardMap(transfer['to']), 'KATILDIĞI KULÜP'),
+      ])),
       if (!_career && !_finished) Padding(padding: const EdgeInsets.symmetric(vertical: 16),
         child: Text('${_session['maskedName'] ?? 'Gizemli futbolcu'}', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge)),
       if (_session['player'] != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('${rewardMap(_session['player'])['name']}', style: Theme.of(context).textTheme.headlineSmall)),
@@ -203,6 +227,13 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
       ] else TextButton(onPressed: _busy ? null : _skip, child: Text(_career ? 'Oyunu bitir' : 'Pas geç / dosyayı kapat')),
     ];
   }
+  Widget _transferClub(Map<String, dynamic> club, String label) => Row(children: [
+    ClubBadge(club: Club.fromJson(club), size: 48), const SizedBox(width: 16),
+    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label, style: Theme.of(context).textTheme.labelSmall), const SizedBox(height: 4),
+      Text('${club['name']}', style: Theme.of(context).textTheme.titleLarge),
+    ])),
+  ]);
   void _reorder(List<Map<String, dynamic>> stops, int old, int next) {
     final order = stops.map((x) => x['id']).toList(); order.insert(next, order.removeAt(old));
     _act('reorder', {'order': order});

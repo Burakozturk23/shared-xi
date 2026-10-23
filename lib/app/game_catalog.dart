@@ -208,6 +208,8 @@ class GameCatalog {
       icon: Icons.route_outlined,
       page: CareerPuzzlePage(),
       category: 'Kariyer & Oyuncu',
+      modern: true,
+      requiresRepository: false,
     ),
     GameEntry(
       title: 'Transfer Detective',
@@ -216,6 +218,7 @@ class GameCatalog {
       page: TransferDetectivePage(),
       category: 'Kariyer & Oyuncu',
       requiresRepository: false,
+      modern: true,
     ),
     GameEntry(
       title: 'Gizemli Futbolcu',
@@ -224,6 +227,7 @@ class GameCatalog {
       page: MysteryPlayerPage(),
       requiresRepository: false,
       category: 'Kariyer & Oyuncu',
+      modern: true,
     ),
     GameEntry(
       title: 'Kariyer Zinciri',
@@ -232,6 +236,7 @@ class GameCatalog {
       page: ChainModeSelectionPage(),
       requiresRepository: false,
       category: 'Kariyer & Oyuncu',
+      modern: true,
     ),
     GameEntry(
       title: 'Sahte Kulüp',
@@ -249,6 +254,7 @@ class GameCatalog {
       page: FutbolLingoPage(),
       category: 'Harf & Kelime',
       requiresRepository: false,
+      modern: true,
     ),
     GameEntry(
       title: 'Passaparola',
@@ -257,6 +263,7 @@ class GameCatalog {
       page: PassaparolaPage(),
       requiresRepository: false,
       category: 'Harf & Kelime',
+      modern: true,
     ),
     GameEntry(
       title: 'Anagram',

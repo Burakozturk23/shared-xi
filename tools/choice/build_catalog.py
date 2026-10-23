@@ -50,6 +50,10 @@ for field,label,table,unit in specs:
  reason='' if gate else ('Kaynak ve kapsam incelemesi bekleniyor.' if viable else 'Karşılaştırılabilir havuz yetersiz.')
  metrics[field]={'id':field,'label':label,'sourceTable':table,'sourceColumn':field,'unit':unit,'status':'ready' if gate else 'needs_review','gatePassed':gate,'reason':reason,'groups':viable if gate else {},'sources':review.get('sources',[])}
  audit[field]={'totalIdentities':total,'unknownCount':missing,'nullRate':round(missing/max(1,total),4),'invalidCount':invalid,'positiveCount':len(values),'distinctValues':len(set(values)),'comparableGroups':{k:len(v) for k,v in viable.items()},'eligibleCount':sum(map(len,viable.values())),'distinctPairs':pairs,'tieRate':round(sum(n*(n-1)//2 for n in collections.Counter(values).values())/max(1,len(values)*(len(values)-1)//2),4),'sourceReviewed':reviewed,'gatePassed':gate,'reason':reason}
+# Independent, source-attributed historical criteria. Original eight gates stay intact.
+from verified_snapshot import load_metrics
+verified_metrics, verified_audit = load_metrics(players, aliases)
+metrics.update(verified_metrics); audit.update(verified_audit)
 files=['prime_battles_32','era_clash_64','position_rivalry_64','super_lig_legends_64','ucl_dynasties_64','historical_season_kings_64','turkish_peak_squads_64','city_derby_rivalries_64']
 titles=['Zirve Sezonlar','Efsane vs Modern','Rol Kapışması','Süper Lig Efsaneleri','Avrupa Hanedanlıkları','Tarihsel Sezon Kralları','Türk Futbolunun Zirve Kadroları','Şehir ve Derbi Rekabetleri']
 themes={};candidates={};unresolved=[]

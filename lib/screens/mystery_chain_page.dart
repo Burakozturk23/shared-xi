@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:cloud_functions/cloud_functions.dart';
+import '../services/game_error.dart';
+import '../widgets/game_ui.dart';
 import 'package:flutter/material.dart';
 import '../models/club.dart';
 import '../models/rewarded_ad_models.dart';
@@ -74,7 +75,7 @@ class _MysteryChainPageState extends State<MysteryChainPage> with WidgetsBinding
     if (_accountChanged) return;
     setState(() { _busy = true; _error = null; });
     try { await body(); } catch (e) {
-      if (mounted) setState(() => _error = e is FirebaseFunctionsException ? e.message : e.toString().replaceFirst('Bad state: ', ''));
+      if (mounted) setState(() => _error = gameErrorMessage(e));
     } finally { if (mounted) setState(() => _busy = false); }
   }
   Future<void> _load() => _run(() async {
@@ -135,7 +136,7 @@ class _MysteryChainPageState extends State<MysteryChainPage> with WidgetsBinding
         Text('${club['name']}', style: Theme.of(context).textTheme.titleMedium)]))]));
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_title), actions: [
+    appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 112 : 64, title: Text(_title, maxLines: 3), actions: [
       IconButton(tooltip: _mystery ? 'Oyuncu Dosyaları' : 'Zincir Arşivi', onPressed: _busy || _accountChanged ? null : () async {
         await _load(); if (mounted && !_accountChanged) setState(() => _archive = !_archive);
       }, icon: const Icon(Icons.collections_bookmark_outlined)),
@@ -144,10 +145,14 @@ class _MysteryChainPageState extends State<MysteryChainPage> with WidgetsBinding
     body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640),
       child: ListView(controller: _scroll, padding: const EdgeInsets.all(16), children: [
         if (_busy) const LinearProgressIndicator(),
-        if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))),
+        if (_status.isEmpty) ...[GameIntro(
+          icon: _mystery ? Icons.person_search_outlined : Icons.hub_outlined, title: _title,
+          message: _mystery ? 'İpuçlarını birleştir, gizli futbolcuyu keşfet.' : 'Futbolcuların kariyerleriyle kulüpler arasında bağ kur.'),
+          const SizedBox(height: 16)],
+        if (_error != null) GameErrorPanel(message: _error!, accountChanged: _accountChanged, onRetry: _busy ? null : _load),
         if (_status.isNotEmpty) ...[
-          Wrap(spacing: 16, children: [Chip(label: Text('${_status['coins']} Link Coin')),
-            Chip(label: Text('${rewardMap(_status['energy'])['available'] ?? '—'} enerji'))]),
+          GameStats(items: [(Icons.toll_outlined, '${_status['coins']} Link Coin'),
+            (Icons.bolt_outlined, '${rewardMap(_status['energy'])['available'] ?? '—'} enerji')]),
           const SizedBox(height: 12),
           if (_archive) ..._collection() else if (_session.isEmpty) ..._home() else ..._game(),
         ],

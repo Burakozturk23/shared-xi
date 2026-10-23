@@ -86,7 +86,7 @@ void main() {
         expect(t.takeException(), isNull);
         await capture(t, '${mode}_loading_$large');
         await t.pump(const Duration(seconds: 31)); await t.pumpAndSettle();
-        expect(find.text('Bağlantıyı yeniden kuralım'), findsOneWidget);
+        expect(find.text('Oyunla bağlantı kurulamadı'), findsOneWidget);
         expect(find.byType(LinearProgressIndicator), findsNothing);
         await t.ensureVisible(find.text('Tekrar dene')); await t.pumpAndSettle();
         await capture(t, '${mode}_error_$large');

@@ -201,6 +201,11 @@ function publicRun(c, raw) {
       Object.assign(out, {score: r.score, exactMatches: r.exactMatches, comparable: r.comparable, values: r.values});
     }
   }
+  if (r.metricId && c.metrics[r.metricId]) {
+    const m = c.metrics[r.metricId];
+    out.metric = Object.fromEntries(["id", "label", "unit", "scopeLabel", "poolLabel", "edition", "sources"]
+        .filter((key) => m[key] != null).map((key) => [key, m[key]]));
+  }
   return out;
 }
 module.exports = {catalog, fail, hash, list, modes, hydrate, bracket, score, create, act, publicRun, higherPair};
