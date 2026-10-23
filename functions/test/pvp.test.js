@@ -264,3 +264,21 @@ test("simultaneous arrivals still share one atomic ranked room", async () => {
   assert.equal(h.read("pvpV1/grid_random/active/bob"), a);
   assert.equal(h.read(`pvpV1/grid_random/rooms/${a}/status`), "ready");
 });
+
+for (const mode of E.MODES) for (const ranked of [false, true]) {
+  test(`${mode}/${ranked ? "ranked" : "friend"}: enter, ready, resume and leave preserve the mode`, async () => {
+    const h = boot();
+    if (mode === "club_manager" && ranked) {
+      await assert.rejects(enter(h, "alice", mode, "search", {playKind: "ranked"}), {code: "failed-precondition"});
+      return; // The production verification gate must never be bypassed by the menu.
+    }
+    const r = await pair(h, mode, ranked);
+    assert.equal(r.mode, mode); assert.equal(r.playKind, ranked ? "ranked" : "friend");
+    assert.equal(r.status, "playing");
+    const resumed = await enter(h, "alice", mode, "resume", {playKind: r.playKind});
+    assert.equal(resumed.id, r.id); assert.equal(resumed.startsAt, r.startsAt);
+    const end = await act(h, "alice", resumed, "leave");
+    assert.equal(end.status, "forfeit");
+    assert.equal(h.read("economyState/alice/balances/coins"), null);
+  });
+}

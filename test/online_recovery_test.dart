@@ -2,6 +2,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/online/career_transfer_online_page.dart';
+import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/online/online_mode_catalog.dart';
 import 'package:shared_xi/online/online_mode_route.dart';
 import 'package:shared_xi/online/pvp_page.dart';
@@ -28,7 +29,7 @@ class RecoverPvp extends pvp.PvpFixture {
   }
   @override
   Future<Map<String, dynamic>> act(Map<String, dynamic> room, String action, [Map<String, dynamic> extra = const {}]) async {
-    if (failPoll) { polls++; throw FirebaseFunctionsException(code: 'unavailable'); }
+    if (failPoll) { polls++; throw FirebaseFunctionsException(code: 'unavailable', message: 'offline'); }
     return super.act(room, action, extra);
   }
 }
@@ -54,7 +55,7 @@ class RecoverDuel extends design.DuelFixture {
   @override
   Future<Map<String, dynamic>> poll(Map<String, dynamic> input) async {
     polls++;
-    if (failPoll) throw FirebaseFunctionsException(code: 'unavailable');
+    if (failPoll) throw FirebaseFunctionsException(code: 'unavailable', message: 'offline');
     return {'room': room};
   }
 }
@@ -117,6 +118,12 @@ void main() {
     await t.pump();
     expect(service.polls, greaterThan(polls));
     await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+  });
+  test('online entry points use the current theme without loading the solo database', () {
+    for (final entry in [GameCatalog.onlineFriends, GameCatalog.onlineRanked]) {
+      expect(entry.modern, isTrue); expect(entry.requiresRepository, isFalse);
+      expect(entry.requiresPersistentAccount, isTrue);
+    }
   });
   test('all thirteen routes preserve mode and play kind', () {
     for (final mode in OnlinePlayMode.values) {
