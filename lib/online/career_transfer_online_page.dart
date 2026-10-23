@@ -230,8 +230,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
         ] else if (q['kind'] == 'order') ...[
           const Text('En eskiden en yeniye sırala'),
           for (var i = 0; i < _order.length; i++) Padding(padding: const EdgeInsets.only(top: 10), child: PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text('${i + 1}. ${_order[i]['name']}'), Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            IconButton(tooltip: 'Yukarı taşı', onPressed: locked || i == 0 ? null : () => setState(() { final p = _order.removeAt(i); _order.insert(i - 1, p); }), icon: const Icon(Icons.arrow_upward)),
-            IconButton(tooltip: 'Aşağı taşı', onPressed: locked || i == _order.length - 1 ? null : () => setState(() { final p = _order.removeAt(i); _order.insert(i + 1, p); }), icon: const Icon(Icons.arrow_downward)),
+            IconButton(key: ValueKey('order-up-${_order[i]['id']}'), tooltip: 'Yukarı taşı', onPressed: locked || i == 0 ? null : () => setState(() { final p = _order.removeAt(i); _order.insert(i - 1, p); }), icon: const Icon(Icons.arrow_upward)),
+            IconButton(key: ValueKey('order-down-${_order[i]['id']}'), tooltip: 'Aşağı taşı', onPressed: locked || i == _order.length - 1 ? null : () => setState(() { final p = _order.removeAt(i); _order.insert(i + 1, p); }), icon: const Icon(Icons.arrow_downward)),
           ])]))),
         ] else if (_fakeClub) ...[
           const Text('Hangi kulüpte oynamadı?'), const SizedBox(height: 12),

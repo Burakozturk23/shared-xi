@@ -29,7 +29,7 @@ class RecoverPvp extends pvp.PvpFixture {
   }
   @override
   Future<Map<String, dynamic>> act(Map<String, dynamic> room, String action, [Map<String, dynamic> extra = const {}]) async {
-    if (failPoll) { polls++; throw FirebaseFunctionsException(code: 'unavailable', message: 'offline'); }
+    if (failPoll) { polls++; throw FirebaseFunctionsException(code: ranked ? 'failed-precondition' : 'unavailable', message: 'offline'); }
     return super.act(room, action, extra);
   }
 }
@@ -137,7 +137,7 @@ void main() {
     testWidgets('career chronology keeps full names and submits the reordered period IDs $large', (t) async {
       final fixture = OrderDuel();
       await design.mount(t, CareerTransferOnlinePage(mode: 'career_race', service: fixture), light: large, large: large);
-      await tapVisible(t, find.byTooltip('Aşağı taşı').first);
+      await tapVisible(t, find.byKey(const ValueKey('order-down-first')));
       expect(t.takeException(), isNull);
       await design.capture(t, 'career_online_order_${large ? 'large' : 'normal'}');
       await tapVisible(t, find.text('Kesin cevabımı gönder'));

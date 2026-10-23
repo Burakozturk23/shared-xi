@@ -57,7 +57,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     foreground = state == AppLifecycleState.resumed;
     if (foreground && connected && !busy && room.isNotEmpty && !done) action('poll');
   }
-  Future<void> run(Future<Map<String,dynamic>> Function() task) async {
+  Future<void> run(Future<Map<String,dynamic>> Function() task, {bool userAction = false}) async {
     if (busy || accountChanged) return; setState(() {busy = true; error = null; feedback = null;});
     try {
       final response = await task(); if (!mounted) return;
@@ -79,7 +79,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       });
     } catch (e) {if (mounted) setState(() {
       accountChanged = e is StateError && '${e.message}'.startsWith('Hesap değişti');
-      final business = room.isNotEmpty && e is FirebaseFunctionsException &&
+      final business = userAction && room.isNotEmpty && e is FirebaseFunctionsException &&
         ['invalid-argument','failed-precondition','already-exists','aborted','resource-exhausted'].contains(e.code);
       if (business) {feedback = gameErrorMessage(e);} else {error = gameErrorMessage(e); connected = false;}
       if (accountChanged) {room = {}; data = {}; results = []; selected = null; searchSerial++;}
@@ -96,9 +96,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     if (action == 'join' && !validRoomCode(roomCode ?? '')) {
       setState(() => feedback = '8 karakterli geçerli oda kodunu gir.'); return;
     }
-    await run(() => service.enter(mode, widget.playKind, action, code: roomCode?.trim().toUpperCase(), profile: profile));
+    await run(() => service.enter(mode, widget.playKind, action, code: roomCode?.trim().toUpperCase(), profile: profile), userAction: true);
   }
-  Future<void> action(String action, [Map<String,dynamic> extra = const {}]) => run(() => service.act(room, action, extra));
+  Future<void> action(String action, [Map<String,dynamic> extra = const {}]) => run(() => service.act(room, action, extra), userAction: action != 'poll');
   Future<void> search() async {
     if (!connected || busy) return;
     final serial = ++searchSerial; final text = query.text.trim();
@@ -252,7 +252,11 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           ...rewardMap(room['owners']).entries.map((e) => note('${e.key}: ${rewardMap(room['names'])[rewardMap(e.value)['uid']]}'))]),
       ] else if (mode == 'cinko' || mode == 'loto') ...[
         board(mode == 'cinko' ? 5 : 4,criteria.map((k) => '${k['label']}').toList(),selectable: mode == 'loto'),const SizedBox(height: 14),
-      ] else panel([for (final k in criteria) heading('${k['label']}')]),
+      ] else panel([for (var i = 0; i < criteria.length; i++) Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Icon(Icons.sports_soccer_outlined, color: accent, size: 20), const SizedBox(width: 12),
+          Expanded(child: Text('${criteria[i]['label']}', style: Theme.of(context).textTheme.titleMedium)),
+        ]))]),
       if (mode == 'loto') panel([heading('Tahtanın futbolcuları'), if (target != null) note('Seçilen hücre: ${criteria[int.parse(target!)]['label']}'),
         ...rows(room['players']).map((p) => ListTile(contentPadding: EdgeInsets.zero,title: Text('${p['name']}'),
           selected: selected?['id'] == p['id'],enabled: !rewardMap(room['used']).containsKey(p['id']),onTap: () => setState(() => selected = p))),
