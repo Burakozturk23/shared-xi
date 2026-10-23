@@ -131,6 +131,10 @@ void main() {
         final scroll = t.state<ScrollableState>(find.byType(Scrollable).first);
         scroll.position.jumpTo(0); await t.pump();
         await qa.capture(t, 'review_${mode}_game_$light');
+        if (mode == 'pyramid') {
+          final apex = t.getRect(find.byWidgetPredicate((w) => w is Semantics && w.properties.label == 'Zlatan Ibrahimović').first);
+          expect(apex.center.dx, closeTo(t.view.physicalSize.width / t.view.devicePixelRatio / 2, 2));
+        }
         await t.drag(find.byType(Scrollable).first, const Offset(0, -600)); await t.pump();
         expect(t.takeException(), isNull);
         await t.pumpWidget(const SizedBox());
@@ -174,8 +178,8 @@ void main() {
     testWidgets('$mode production criteria select a verified metric and display historical scope', (t) async {
       final service = UefaChoice();
       await choice.mount(t, service, mode);
-      final selected = t.widgetList<RadioListTile<String>>(find.byType(RadioListTile<String>)).where((w) => w.value == w.groupValue).single;
-      expect(selected.value, 'uefa_ec_ucl_2023_appearances');
+      expect(find.byType(GameErrorPanel), findsNothing);
+      expect(t.widget<FilledButton>(find.widgetWithText(FilledButton, 'Oyunu hazırla')).onPressed, isNotNull);
       await t.ensureVisible(find.text('Oyunu hazırla')); await t.pump();
       await t.tap(find.text('Oyunu hazırla')); await t.pumpAndSettle();
       expect(service.sent?['metricId'], 'uefa_ec_ucl_2023_appearances');

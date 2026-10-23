@@ -30,6 +30,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   final elapsed = Stopwatch();
   Timer? ticker;
   Timer? debounce;
+  ScrollController? pyramidScroll;
   List<Map<String, dynamic>> suggestions = [];
   String difficulty = 'normal', style = 'speed', pairType = 'clubClub';
   String? slotId, error;
@@ -61,7 +62,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   }
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this); ticker?.cancel(); debounce?.cancel(); answer.dispose();
+    WidgetsBinding.instance.removeObserver(this); ticker?.cancel(); debounce?.cancel(); answer.dispose(); pyramidScroll?.dispose();
     super.dispose();
   }
   @override
@@ -276,11 +277,12 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     final highlighted = (selected?['supports'] as List? ?? []).map((x) => '$x').toSet();
     if (selected?['row'] == 1) highlighted.add('0');
     final boardWidth = math.max(math.min(MediaQuery.sizeOf(context).width, 640.0) - 32, _n(board['levels']) * 110.0 * MediaQuery.textScalerOf(context).scale(1));
+    pyramidScroll ??= ScrollController(initialScrollOffset: math.max(0, (boardWidth - (math.min(MediaQuery.sizeOf(context).width, 640.0) - 32)) / 2));
     return [
       Text('♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan', style: TextStyle(color: accent)),
       const SizedBox(height: 14),
       if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640.0) - 32) const Text('Tüm hücreleri görmek için tahtayı yatay kaydırabilirsin.'),
-      SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: Column(children: [
+      SingleChildScrollView(controller: pyramidScroll, scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: Column(children: [
       for (var row = 0; row < _n(board['levels']); row++) Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center,
         children: slots.where((s) => s['row'] == row).map((s) {
           final id = '${s['id']}'; final entity = rewardMap(filled[id]);
