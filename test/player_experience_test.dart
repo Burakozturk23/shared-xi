@@ -345,7 +345,7 @@ void main() {
       expect(find.text('Henüz hazır ödül yok'), findsOneWidget);
       await t.tap(find.text('Tüm görevleri göster')); await t.pumpAndSettle();
       final rankedButton = find.descendant(of: find.byKey(const ValueKey('mission-daily_ranked_play_3')),
-        matching: find.byType(OutlinedButton));
+        matching: find.byWidgetPredicate((w) => w is OutlinedButton));
       await reveal(t, rankedButton);
       await capture(t, key, 'missions-ranked-${large ? 'light-large' : 'dark-normal'}');
       await t.tap(rankedButton); await t.pump();

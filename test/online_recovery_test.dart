@@ -65,7 +65,7 @@ class OrderDuel extends design.DuelFixture {
   @override
   Future<Map<String, dynamic>> onlineLoad(String mode) async {
     final status = await super.onlineLoad(mode);
-    (status['room'] as Map).addAll({'round': 3, 'question': {'kind': 'order', 'options': [
+    (status['room'] as Map<String, dynamic>).addAll({'round': 3, 'question': {'kind': 'order', 'options': [
       {'id': 'first', 'name': 'Borussia Mönchengladbach (1. dönem)'},
       {'id': 'second', 'name': 'Manchester United'},
       {'id': 'third', 'name': 'Borussia Mönchengladbach (2. dönem)'},

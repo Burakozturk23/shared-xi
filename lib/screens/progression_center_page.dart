@@ -469,8 +469,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         LinearProgressIndicator(value: m.ratio, minHeight: 8,
           borderRadius: BorderRadius.circular(8),
           color: socialAccent(context),
-          semanticsLabel: m.title,
-          semanticsValue: '${m.progress} / ${m.target}',
+          semanticsLabel: '${m.title}: ${m.progress} / ${m.target}',
         ),
         const SizedBox(height: 8),
         Wrap(
