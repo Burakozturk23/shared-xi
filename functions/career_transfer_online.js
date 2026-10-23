@@ -92,7 +92,11 @@ function outcome(room) {
   const delta = a.score - b.score || a.correct - b.correct || b.elapsed - a.elapsed;
   return delta > 0 ? room.host : delta < 0 ? room.guest : null;
 }
+const expiresAt = (room) => room.createdAt + (room.ranked ? 30000 : 300000);
 function advance(room, time) {
+  if (room.status === "waiting" && time >= expiresAt(room)) {
+    room.status = "cancelled"; room.finishedAt = expiresAt(room);
+  }
   if (room.status !== "playing") return;
   const end = timing(room, room.questions.length - 1).end;
   // A participant missing for 60s forfeits before even a late final poll.
@@ -108,7 +112,8 @@ function advance(room, time) {
 function view(room, uid, time) {
   const other = uid === room.host ? room.guest : room.host;
   const v = {id: room.id, code: room.code, mode: room.mode, ranked: room.ranked, status: room.status,
-    serverNow: time, host: uid === room.host, opponent: other || null, version: room.version,
+    serverNow: time, expiresAt: expiresAt(room), host: uid === room.host,
+    opponent: other || null, version: room.version,
     totalRounds: room.questions.length, startedAt: room.startedAt || null,
     mine: totals(room, uid, time), theirs: other ? totals(room, other, time) : null};
   if (room.status === "playing") {
@@ -181,6 +186,18 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
     const seed = random(); const bank = input.action === "resume" ? [] : questions(input.mode, seed, policy);
     // Block lists are read server-side; clients cannot choose opponents in ranked.
     const denied = await blocked(uid);
+    const peers = new Set();
+    if (input.action === "join") {
+      const room = (await db.ref(`careerTransferOnline/${input.mode}/rooms/${input.code}`).get()).val();
+      if (room?.host) peers.add(room.host);
+    } else if (input.action === "ranked") {
+      const queue = (await db.ref(`careerTransferOnline/${input.mode}/queue`).get()).val() || {};
+      for (const peer of Object.keys(queue)) if (peer !== uid) peers.add(peer);
+    }
+    const allowedPeers = new Set();
+    await Promise.all([...peers].map(async (peer) => {
+      if (!denied.has(peer) && await isLinked(peer) && !(await blocked(peer)).has(uid)) allowedPeers.add(peer);
+    }));
     const fingerprint = hash(JSON.stringify([input.action, input.code || null]));
     const s = await change(input.mode, (s, time) => {
       const key = uid + "__" + input.requestId;
@@ -192,7 +209,11 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
       const old = roomOf(s.rooms[s.active[uid]]);
       if (old) {
         advance(old, time); s.rooms[old.id] = old;
-        if (old.status === "playing" || old.status === "waiting" && old.createdAt + 300000 > time) {
+        if (old.status === "playing" || old.status === "waiting") {
+          if (input.action !== "resume" && (old.ranked !== (input.action === "ranked") ||
+              input.action === "join" && input.code !== old.code)) {
+            fail("already-exists", "Bu modda devam eden başka maçın var. Önce kayıtlı maçını tamamla veya iptal et.");
+          }
           s.requests[key] = {id: old.id, fingerprint}; return;
         }
         if (input.action === "resume") {
@@ -206,7 +227,7 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
         if (!room || room.ranked || room.status !== "waiting" || room.createdAt + 300000 <= time || room.host === uid) {
           fail("failed-precondition", "Oda dolu, süresi dolmuş veya bulunamadı.");
         }
-        if (denied.has(room.host) || (room.blocked || []).includes(uid)) {
+        if (!allowedPeers.has(room.host) || denied.has(room.host) || (room.blocked || []).includes(uid)) {
           fail("permission-denied", "Bu odaya katılamazsın.");
         }
       } else if (input.action === "ranked") {
@@ -215,7 +236,8 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
             delete s.queue[id]; continue;
           }
           const candidate = roomOf(s.rooms[entry.id]);
-          if (id !== uid && !denied.has(id) && candidate?.status === "waiting" &&
+          if (id !== uid && !denied.has(id) && (!peers.has(id) || allowedPeers.has(id)) &&
+              candidate?.status === "waiting" && expiresAt(candidate) > time &&
               !(candidate.blocked || []).includes(uid)) {
             room = candidate; delete s.queue[id]; break;
           }
@@ -288,10 +310,9 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
           score: correct ? 100 + Math.floor(50 * (q.duration - elapsed) / q.duration) : 0};
       }
       room.presence[uid] = time;
-      if (room.status === "waiting" && room.createdAt + 300000 <= time) {
-        room.status = "cancelled"; delete s.queue[uid];
-      }
-      if (room.status === "waiting" && room.ranked) s.queue[uid] = {id: room.id, at: time};
+      if (room.status !== "waiting") delete s.queue[uid];
+      // Polling is presence, not an extension of the 30-second matchmaking window.
+      if (room.status === "waiting" && room.ranked) s.queue[uid] = {id: room.id, at: room.createdAt};
       if (input.requestId) room.receipts[uid + input.requestId] = fingerprint;
       s.rooms[room.id] = room;
     });
@@ -307,7 +328,6 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
       const state = await change(mode, (s, time) => {
         for (const [id, raw] of Object.entries(s.rooms)) {
           const room = roomOf(raw); advance(room, time);
-          if (room.status === "waiting" && room.createdAt + 300000 <= time) room.status = "cancelled";
           s.rooms[id] = room;
           if (room.createdAt + 7 * 86400000 < time) {
             delete s.rooms[id];

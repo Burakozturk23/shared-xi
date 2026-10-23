@@ -32,8 +32,8 @@ void main() {
     await a.load('club_country'); wire.loseReply = true;
     await expectLater(a.enter('club_country','friend','create'),throwsA(isA<FirebaseFunctionsException>()));
     final b = PvpService(transport:wire,currentUser:() => 'alice');
-    await b.load('club_country');
-    await b.enter('club_country','friend','resume');
+    final recovered = await b.load('club_country');
+    expect((recovered['room'] as Map)['id'], 'AABBCCDD');
     expect(wire.requests[0],wire.requests[1]); expect(wire.applied,hasLength(1));
     expect((await SharedPreferences.getInstance()).getString('pvp.v1.alice.club_country.pending'),isNull);
   });

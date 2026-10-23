@@ -151,6 +151,13 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
               child: StreamBuilder<List<FriendshipEdge>>(
                 stream: FriendsService.watchFriends(),
                 builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(
+                      mainAxisSize: MainAxisSize.min, children: [
+                        const Text('Arkadaş listesi yüklenemedi. Oda kodunu paylaşabilir veya tekrar deneyebilirsin.'),
+                        TextButton(onPressed: () => setState(() {}), child: const Text('Tekrar dene')),
+                      ])));
+                  }
                   if (!snapshot.hasData) {
                     return const Center(
                       child: CircularProgressIndicator(),
@@ -186,7 +193,8 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                           final profile = profileSnapshot.data;
 
                           return Card(
-                            child: ListTile(
+                            child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [ListTile(
+                              contentPadding: EdgeInsets.zero,
                               leading: UserAvatarBadge(
                                 avatarId:
                                     profile?.avatarId ?? 'starter_ball',
@@ -201,14 +209,15 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                                 ),
                               ),
                               subtitle: profile == null
-                                  ? const Text('Profil hazırlanıyor…')
+                                  ? Text(profileSnapshot.connectionState == ConnectionState.done ? 'Profil yüklenemedi.' : 'Profil hazırlanıyor…')
                                   : Text(
                                       '@${profile.normalizedName} · '
                                       '${profile.elo} Elo',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                              trailing: busy
+                            ),
+                              busy
                                   ? const SizedBox(
                                       width: 22,
                                       height: 22,
@@ -218,12 +227,12 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                                     )
                                   : FilledButton(
                                       onPressed:
-                                          sent ? null : () => _send(uid),
+                                          sent || profile == null ? null : () => _send(uid),
                                       child: Text(
                                         sent ? 'Gönderildi' : 'Davet Et',
                                       ),
                                     ),
-                            ),
+                            ])),
                           );
                         },
                       );

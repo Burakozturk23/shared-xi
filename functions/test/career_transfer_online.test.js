@@ -129,3 +129,38 @@ test("scheduled reconcile closes silent matches and does not repeat settled proj
   await h.call("reconcileCareerTransferOnline");
   assert.equal(read(h, r).status, "forfeit");
 });
+
+for (const mode of ["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"]) {
+  test(`${mode}: ranked polling cannot prolong the queue; expiry permits a fresh search`, async () => {
+    const h = harness({runtimeConfig: {fakeClub: {dataEnabled: true, friendsEnabled: true, rankedEnabled: true}}});
+    const v = mode === "fake_club_duel" ? require("../fake_club").catalog.version :
+      mode === "mystery_duel" ? require("../config/mystery_chain_catalog.json").version : version;
+    const search = async () => (await h.call("enterCareerTransferOnline",
+        {mode, version: v, action: "ranked", requestId: id()}, auth("alice"))).room;
+    const first = await search(); const began = h.now;
+    for (const offset of [10000, 20000, 29999, 30000]) {
+      h.setTime(began + offset);
+      const r = (await h.call("actCareerTransferOnline",
+          {mode, version: v, roomId: first.id, action: "poll"}, auth("alice"))).room;
+      assert.equal(r.status, offset < 30000 ? "waiting" : "cancelled");
+      assert.equal(r.expiresAt, began + 30000);
+    }
+    assert.equal(h.read(`careerTransferOnline/${mode}/queue/alice`), null);
+    const next = await search(); assert.notEqual(next.id, first.id); assert.equal(next.status, "waiting");
+  });
+  test(`${mode}: fresh host block and play-kind boundary are enforced`, async () => {
+    const h = harness({runtimeConfig: {fakeClub: {dataEnabled: true, friendsEnabled: true, rankedEnabled: true}}});
+    const v = mode === "fake_club_duel" ? require("../fake_club").catalog.version :
+      mode === "mystery_duel" ? require("../config/mystery_chain_catalog.json").version : version;
+    const call = (uid, action, code) => h.call("enterCareerTransferOnline",
+        {mode, version: v, action, code, requestId: id()}, auth(uid));
+    const {room} = await call("alice", "create");
+    h.seed("blocks/alice/bob", true);
+    await assert.rejects(call("bob", "join", room.code), {code: "permission-denied"});
+    await assert.rejects(call("alice", "ranked"), {code: "already-exists"});
+    assert.equal((await call("alice", "resume")).room.id, room.id);
+    h.setTime(h.now + 300000);
+    await h.context.exports.reconcileCareerTransferOnline();
+    assert.equal(h.read(`careerTransferOnline/${mode}/rooms/${room.id}/status`), "cancelled");
+  });
+}

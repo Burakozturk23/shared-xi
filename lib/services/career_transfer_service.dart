@@ -6,13 +6,15 @@ import 'auth_service.dart';
 import 'energy_service.dart';
 
 class CareerTransferService {
-  CareerTransferService({EnergyService? transport, this.mysteryChain = false, this.fakeClub = false}) : transport = transport ?? EnergyService();
+  CareerTransferService({EnergyService? transport, this.mysteryChain = false, this.fakeClub = false, String? Function()? currentUser})
+      : transport = transport ?? EnergyService(), currentUser = currentUser ?? (() => AuthService.uid);
   final EnergyService transport;
+  final String? Function() currentUser;
   final bool mysteryChain;
   final bool fakeClub;
   String? owner;
-  void _checkOwner(String uid) {
-    if (AuthService.uid != uid || owner != null && owner != uid) {
+  void _checkOwner(String? uid) {
+    if (uid == null || currentUser() != uid || owner != null && owner != uid) {
       throw StateError('Hesap değişti. Ekranı yeniden aç.');
     }
     owner = uid;
@@ -27,9 +29,12 @@ class CareerTransferService {
         final room = rewardMap(result['room']);
         await prefs.setString('career_transfer.room.$uid.${room['mode']}', '${room['id']}');
       }
+      _checkOwner(uid);
       await prefs.remove(key);
+      _checkOwner(uid);
       return result;
     } on FirebaseFunctionsException catch (e) {
+      _checkOwner(uid);
       if (!['unavailable', 'deadline-exceeded', 'internal', 'unknown', 'cancelled'].contains(e.code)) {
         await prefs.remove(key);
       }
@@ -82,8 +87,13 @@ class CareerTransferService {
     _checkOwner(user.uid);
     return status;
   }
-  Future<Map<String, dynamic>> poll(Map<String, dynamic> input) => transport.call('actCareerTransferOnline', input);
-  Future<Map<String, dynamic>> search(Map<String, dynamic> input) => transport.call(mysteryChain ? 'searchMysteryChain' : 'searchCareerTransfer', input);
+  Future<Map<String, dynamic>> _read(String call, Map<String, dynamic> input) async {
+    final uid = currentUser(); _checkOwner(uid);
+    final result = await transport.call(call, input);
+    _checkOwner(uid); return result;
+  }
+  Future<Map<String, dynamic>> poll(Map<String, dynamic> input) => _read('actCareerTransferOnline', input);
+  Future<Map<String, dynamic>> search(Map<String, dynamic> input) => _read(mysteryChain ? 'searchMysteryChain' : 'searchCareerTransfer', input);
   Future<void> watchHint(String mode, String sessionId) async {
     final status = await transport.call('getRewardedAdStatus');
     await transport.watch('${mode == 'fake_endless' ? 'fake_club' : mode == 'mastermind' ? 'chain' : mode}_hint', pro: status['pro'] == true, context: {'sessionId': sessionId});
