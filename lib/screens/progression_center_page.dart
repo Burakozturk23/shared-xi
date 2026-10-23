@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import '../app/app_copy.dart';
 import '../app/app_feedback.dart';
+import '../app/game_catalog.dart';
+import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
 import '../models/mission_models.dart';
 import '../models/progression_models.dart';
 import '../services/experience/progress_gateway.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/game_ui.dart';
 import '../widgets/social_ui.dart';
 import 'achievements_page.dart';
 import 'season_pass_page.dart';
@@ -14,8 +17,10 @@ class ProgressionCenterPage extends StatefulWidget {
   const ProgressionCenterPage({
     super.key,
     this.gateway = const ProgressGateway(),
+    this.openGame = GameLauncher.open,
   });
   final ProgressGateway gateway;
+  final Future<void> Function(BuildContext, GameEntry) openGame;
   @override
   State<ProgressionCenterPage> createState() => _ProgressionCenterPageState();
 }
@@ -27,6 +32,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
   bool _loading = false, _claiming = false, _error = false;
   MissionKind _kind = MissionKind.daily;
   bool _readyOnly = false;
+  bool _openingGame = false;
   String c(String tr, String en) => appCopy(context, tr, en);
   @override
   void initState() {
@@ -129,10 +135,34 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     }
   }
 
+  GameEntry? _gameFor(MissionItem mission) {
+    if (mission.id == 'daily_challenge_1') return GameCatalog.daily;
+    if (mission.id == 'daily_ranked_play_3' ||
+        mission.id == 'daily_ranked_win_1' ||
+        mission.chainId == 'ranked_played' ||
+        mission.chainId == 'ranked_wins') return GameCatalog.onlineRanked;
+    return null;
+  }
+
+  Future<void> _openMission(MissionItem mission) async {
+    final game = _gameFor(mission);
+    if (game == null || _openingGame || _loading || _claiming) return;
+    setState(() => _openingGame = true);
+    try {
+      await widget.openGame(context, game);
+    } finally {
+      if (mounted) {
+        setState(() => _openingGame = false);
+        await _load();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(c('İlerleme ve Görevler', 'Progress & Missions')),
+      toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,
+      title: Text(c('İlerleme ve Görevler', 'Progress & Missions'), maxLines: 3),
       actions: [
         IconButton(
           tooltip: c('Yenile', 'Refresh'),
@@ -141,7 +171,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         ),
       ],
     ),
-    body: SafeArea(
+    body: GameContent(
       child: !widget.gateway.connected
           ? SocialAccountGate(
               title: c(
@@ -307,11 +337,13 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         const SizedBox(height: 12),
         if (visible.isEmpty)
           SocialNotice(
-            title: c('Burada görev yok', 'No missions here'),
-            message: c(
+            title: _readyOnly ? c('Henüz hazır ödül yok', 'No rewards ready yet') : c('Burada görev yok', 'No missions here'),
+            message: _readyOnly ? c('Devam eden hedeflerini görmek için tüm görevleri aç.', 'View all missions to continue your goals.') : c(
               'Diğer filtreye bakabilir veya daha sonra yenileyebilirsin.',
               'Try another filter or refresh later.',
             ),
+            actionLabel: c('Tüm görevleri göster', 'Show all missions'),
+            onAction: _readyOnly ? () => setState(() => _readyOnly = false) : null,
           ),
         for (final mission in visible)
           Padding(
@@ -412,6 +444,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     ),
   );
   Widget _mission(MissionItem m) => PitchPanel(
+    key: ValueKey('mission-${m.id}'),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -433,13 +466,18 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         const SizedBox(height: 8),
         Text(m.description),
         const SizedBox(height: 14),
-        LinearProgressIndicator(value: m.ratio, minHeight: 6),
+        LinearProgressIndicator(value: m.ratio, minHeight: 8,
+          borderRadius: BorderRadius.circular(8),
+          color: socialAccent(context),
+          semanticsLabel: m.title,
+          semanticsValue: '${m.progress} / ${m.target}',
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 10,
           runSpacing: 6,
           children: [
-            Text('${m.progress}/${m.target}'),
+            SocialStatus('${m.progress} / ${m.target}'),
             if (m.stageCount > 0)
               Text(
                 c(
@@ -471,13 +509,26 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
             onPressed: _loading || _claiming ? null : () => _claim(m),
             child: Text(c('Ödülü al', 'Claim reward')),
           )
-        else
+        else ...[
+          SocialStatus(c('Devam ediyor', 'In progress')),
+          const SizedBox(height: 8),
           Text(
             c(
-              'Oynadıkça ilerlemen burada güncellenir.',
-              'Your progress updates here as you play.',
+              'Tamamlanan oyunlar doğrulandıktan sonra ilerlemen güncellenir.',
+              'Progress updates after completed games are verified.',
             ),
           ),
+          if (_gameFor(m) != null) ...[
+            const SizedBox(height: 12),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              onPressed: _loading || _claiming || _openingGame ? null : () => _openMission(m),
+              icon: Icon(m.id == 'daily_challenge_1' ? Icons.calendar_today_outlined : Icons.public_rounded),
+              label: Text(m.id == 'daily_challenge_1'
+                ? c('Günün maçlarına git', 'Open today’s matches')
+                : c('Online modları aç', 'Open online modes')),
+            )),
+          ],
+        ],
       ],
     ),
   );

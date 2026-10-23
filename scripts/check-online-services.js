@@ -3,9 +3,10 @@ const {probe} = require("./check-game-services");
 const callables = ["getPvp", "enterPvp", "actPvp", "searchPvp", "enterCareerTransferOnline",
   "actCareerTransferOnline", "getCareerTransfer", "getMysteryChain", "getFakeClub", "searchCareerTransfer"];
 const scheduled = ["reconcilePvp", "reconcileCareerTransferOnline"];
+const triggers = ["syncRankedMissions"];
 async function main() {
   if (process.argv.includes("--deploy-targets")) {
-    console.log([...callables, ...scheduled].map((n) => `functions:${n}`).join(",")); return;
+    console.log([...callables, ...scheduled, ...triggers].map((n) => `functions:${n}`).join(",")); return;
   }
   let missing = false;
   for (let i = 0; i < callables.length; i += 4) {
@@ -19,4 +20,4 @@ async function main() {
   process.exitCode = missing ? 1 : 0;
 }
 if (require.main === module) main().catch(() => { console.error("Online service check failed."); process.exitCode = 1; });
-module.exports = {callables, scheduled};
+module.exports = {callables, scheduled, triggers};

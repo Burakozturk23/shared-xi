@@ -136,7 +136,11 @@ void main() {
   for (final large in [false, true]) {
     testWidgets('career chronology keeps full names and submits the reordered period IDs $large', (t) async {
       final fixture = OrderDuel();
+      expect((await fixture.onlineLoad('career_race'))['room']['question']['kind'], 'order');
       await design.mount(t, CareerTransferOnlinePage(mode: 'career_race', service: fixture), light: large, large: large);
+      expect(find.byType(GameErrorPanel), findsNothing);
+      await design.capture(t, 'career_online_order_initial_${large ? 'large' : 'normal'}');
+      await reveal(t, find.text('En eskiden en yeniye sırala'));
       await tapVisible(t, find.byKey(const ValueKey('order-down-first')));
       expect(t.takeException(), isNull);
       await design.capture(t, 'career_online_order_${large ? 'large' : 'normal'}');

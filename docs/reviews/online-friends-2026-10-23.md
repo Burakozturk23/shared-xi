@@ -14,6 +14,9 @@ PR #70, PR #69 üzerine kuruludur. Üretim Firebase projesinde bu çalışma sı
 - Katılımda oda sahibinin güncel engel listesi ve hesap bağlantısı kontrol edilir. Devam eden arkadaş maçından sessizce ranked akışına geçilmez.
 - Kronoloji kartları büyük yazıda isimleri sıkıştırmaz; sıralama dönem kimlikleriyle gönderilir. Arkadaş davet listesi bağlantı hatasında sonsuz yükleme göstermez.
 
+- Beşinci görseldeki İlerleme ve Görevler ekranı: sınırlandırılmış içerik genişliği, büyük yazıya uyumlu başlık, erişilebilir ilerleme çubuğu, görev durumu, hazır ödül filtresini temizleme ve ilgili oyuna geçiş. Oyundan dönüşte sunucu verisi yenilenir.
+- PvP sonuçlarının günlük galibiyet görevine ulaşmaması düzeltildi. Yeni kayıtlar ortak sonuç alanlarını yazar; bekleyen eski PvP olayları gömülü sonuçtan okunur. Tekrarlanan olaylar ikinci kez sayılmaz; mevcut ödül/Elo kapıları değişmez. Daha önce işlenmiş görev olayları geriye dönük yeniden hesaplanmaz.
+
 ## Mod bazında kapsam
 
 | Mod | Arkadaş / online UI | Oyun sözleşmesi | Üretim kabulü |
@@ -52,6 +55,6 @@ flutter pub get
 flutter run
 ```
 
-Betik Functions lint/test çalıştırır, 10 callable ve 2 zamanlanmış görevi 4'lü gruplar hâlinde yayımlar. Yönlendirme kontrolü başarısızsa bayrakları değiştirmez. `-EnableOnlineModes` PvP arkadaş/ranked ve Sahte Kulüp veri/arkadaş/ranked girişlerini açar; mevcut mod bazlı kapatmalar, ödül/Elo politikaları ve Menajer doğrulama kapısı korunur. Önce yalnızca kontrol için `powershell -File .\scripts\deploy-online-games.ps1 -CheckOnly` kullanılabilir.
+Betik Functions lint/test çalıştırır, 10 callable, 2 zamanlanmış görev ve sıralamalı görev eşitleme tetikleyicisini 4'lü gruplar hâlinde yayımlar. Yönlendirme kontrolü başarısızsa bayrakları değiştirmez. `-EnableOnlineModes` PvP arkadaş/ranked ve Sahte Kulüp veri/arkadaş/ranked girişlerini açar; mevcut mod bazlı kapatmalar, ödül/Elo politikaları ve Menajer doğrulama kapısı korunur. Önce yalnızca kontrol için `powershell -File .\scripts\deploy-online-games.ps1 -CheckOnly` kullanılabilir.
 
 Üretimde iki bağlı hesapla her mod için oda oluştur/katıl, ranked eşleşme, oyunu bitirme, bağlantıyı kesip geri dönme ve tekrar giriş kontrol edilmelidir. Menajer ranked bayrağı bu test yapılmadan açılmamalıdır.
