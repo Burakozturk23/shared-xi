@@ -63,7 +63,7 @@ class UefaChoice extends choice.ChoiceFixture {
   Future<Map<String,dynamic>> load(String mode, {int offset = 0}) async {
     final result = await super.load(mode, offset: offset);
     final metrics = (production['metrics'] as Map).values.map((m) => Map<String,dynamic>.from(m as Map)..remove('groups')).toList();
-    (result['catalog'] as Map)['metrics'] = metrics;
+    result['catalog'] = {...Map<String,dynamic>.from(result['catalog'] as Map), 'metrics': metrics};
     if (result['session'] is Map) {
       final run = result['session'] as Map;
       run['metricId'] = 'uefa_ec_ucl_2023_appearances';
