@@ -162,6 +162,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
           if (!_connected && (_playing || _waiting)) const Text('Sunucudaki süre devam eder. Yeniden bağlanabilir veya geri dönebilirsin.'),
           if (_feedback != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Semantics(liveRegion: true, child: Text(_feedback!))),
           if ((_room.isEmpty || _finished) && _version.isNotEmpty && _error == null) ..._lobby(),
+          if ((_playing || _waiting) && _ranked != widget.ranked) Padding(padding: const EdgeInsets.only(bottom: 12),
+            child: Text(_ranked ? 'Kayıtlı dereceli maçına devam ediyorsun.' : 'Kayıtlı arkadaş maçına devam ediyorsun.')),
           if (_waiting) PitchPanel(child: Column(children: [
             const CircularProgressIndicator(), const SizedBox(height: 16),
             Text(_ranked ? 'Rakip aranıyor…' : 'Arkadaşını bekliyorsun', style: Theme.of(context).textTheme.headlineSmall),
@@ -184,8 +186,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
         child: Text('Tur: ${{'fake_club_duel':'Sahte Kulüp', 'mystery_duel':'Gizem', 'transfer':'Transfer', 'order':'Kronoloji', 'missing':'Eksik kulüp', 'mystery':'Gizemli kariyer'}[r['kind']] ?? 'Soru'} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan${r['explanation'] != null ? '\n${r['explanation']}' : ''}')),
     ])),
     const SizedBox(height: 12),
-    GameIntro(icon: _fakeClub ? Icons.search_off_rounded : _mystery ? Icons.person_search_outlined : _career ? Icons.route_outlined : Icons.swap_horiz_rounded, title: _fakeClub ? '10 futbolcu · her tur 10 saniye · can sınırı yok' : _mystery ? '5 gizemli futbolcu · her tur 30 saniye' : _career ? '6 tur · eksik kulüp, kronoloji, gizemli kariyer' : '5 transfer · her tur 30 saniye',
-      message: 'Enerji, reklam ve destek yok. Her tur tek kesin cevap. Doğruluk ve hız puan getirir.'),
+    GameIntro(icon: _fakeClub ? Icons.search_off_rounded : _mystery ? Icons.person_search_outlined : _career ? Icons.route_outlined : Icons.swap_horiz_rounded,
+      title: _fakeClub ? 'Sahte kulübü bul' : _mystery ? 'İpuçlarını takip et' : _career ? 'Kariyerleri çöz' : 'Transferi tanı',
+      message: _fakeClub ? '10 futbolcu · her tur 10 saniye · can sınırı yok.' : _mystery ? '5 gizemli futbolcu · her tur 30 saniye.' :
+        _career ? '6 tur: eksik kulüp, kronoloji ve gizemli kariyer. Doğruluk ve hız puan getirir.' : '5 transfer · her tur 30 saniye.'),
+    const GameStats(items: [(Icons.check_circle_outline, 'Tek kesin cevap'), (Icons.bolt_outlined, 'Enerji harcanmaz')]),
     const SizedBox(height: 20),
     if (!_enabled) const Text('Bu eşleşme türü henüz açılmadı. Doğrulama tamamlanınca kullanılabilir olacak.'),
     if (widget.ranked) FilledButton(onPressed: _busy || !_connected || _version.isEmpty || !_enabled ? null : () => _enter('ranked'), child: const Text('Dereceli rakip bul')) else ...[

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../models/friend_models.dart';
@@ -65,6 +66,7 @@ class _FriendInviteSheet extends StatefulWidget {
 }
 
 class _FriendInviteSheetState extends State<_FriendInviteSheet> {
+  late Stream<List<FriendshipEdge>> _friends = FriendsService.watchFriends();
   final Map<String, Future<PublicFriendProfile?>> _profiles = {};
   final Set<String> _busy = <String>{};
   final Set<String> _sent = <String>{};
@@ -149,13 +151,13 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
             const Divider(height: 1),
             Expanded(
               child: StreamBuilder<List<FriendshipEdge>>(
-                stream: FriendsService.watchFriends(),
+                stream: _friends,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(
                       mainAxisSize: MainAxisSize.min, children: [
                         const Text('Arkadaş listesi yüklenemedi. Oda kodunu paylaşabilir veya tekrar deneyebilirsin.'),
-                        TextButton(onPressed: () => setState(() {}), child: const Text('Tekrar dene')),
+                        TextButton(onPressed: () => setState(() { _profiles.clear(); _friends = FriendsService.watchFriends(); }), child: const Text('Tekrar dene')),
                       ])));
                   }
                   if (!snapshot.hasData) {
@@ -217,6 +219,8 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                             ),
+                              if (profile == null && profileSnapshot.connectionState == ConnectionState.done)
+                                TextButton(onPressed: () => setState(() => _profiles.remove(uid)), child: const Text('Profili yeniden yükle')),
                               busy
                                   ? const SizedBox(
                                       width: 22,

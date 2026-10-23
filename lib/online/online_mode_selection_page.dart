@@ -25,6 +25,7 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
   @override
   Widget build(BuildContext context) {
     final colors = PitchColors.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(16) > 24;
     final modes = OnlinePlayMode.values.where((mode) =>
       (_group == null || mode.group == _group) &&
       SearchService.contains('${mode.title} ${mode.subtitle} ${mode.group}', _search.text.trim())).toList();
@@ -40,7 +41,7 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
             onSelected: (_) => setState(() => _ranked = ranked)),
         ]),
         const SizedBox(height: 16),
-        if (_search.text.trim().isEmpty) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        if (_search.text.trim().isEmpty && !largeText) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Container(padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(12)),
@@ -57,6 +58,7 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
           Text(_ranked ? 'Aynı sorular, aynı süre. Modunu seç ve rakibini bul.' : 'Aynı modu seçin; oda kur veya arkadaşının koduyla katıl. Dostluk maçları sıralamanı etkilemez.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.muted)),
         ])),
+        if (_search.text.trim().isEmpty && largeText) Text(_ranked ? 'Modunu seç, rakibini bul.' : 'Modunu seç; oda kur veya kodla katıl.'),
         const SizedBox(height: 24),
         TextField(key: const ValueKey('mode-search'), controller: _search, onChanged: (_) => setState(() {}),
           decoration: InputDecoration(hintText: 'Oyun veya kategori ara', prefixIcon: const Icon(Icons.search_rounded),

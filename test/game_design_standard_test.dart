@@ -90,6 +90,7 @@ void main() {
         expect(t.takeException(), isNull);
       }
       await t.tap(find.byTooltip('Aramayı temizle')); await t.pumpAndSettle();
+      await t.scrollUntilVisible(find.text('13 mod'), 200, scrollable: find.byType(Scrollable).first);
       expect(find.text('13 mod'), findsOneWidget);
     });
   }

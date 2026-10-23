@@ -63,12 +63,18 @@ void main() {
         await t.ensureVisible(chip); await t.tap(chip); await t.pumpAndSettle();
         expect(find.text('${i == 0 ? 5 : 4} mod'), findsOneWidget);
       }
+      t.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
+      await t.pump();
+      await t.scrollUntilVisible(find.byType(TextField), 200, scrollable: find.byType(Scrollable).first);
       await t.enterText(find.byType(TextField), 'bulunamayan oyun');
       await t.pumpAndSettle();
       expect(find.text('0 mod'), findsOneWidget);
       await t.ensureVisible(find.text('Filtreleri temizle'));
       await t.tap(find.text('Filtreleri temizle')); await t.pumpAndSettle();
       expect(find.text('13 mod'), findsOneWidget);
+      t.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
+      await t.pump();
+      await t.scrollUntilVisible(find.byType(TextField), 200, scrollable: find.byType(Scrollable).first);
       expect(t.widget<TextField>(find.byType(TextField)).controller!.text, isEmpty);
       expect(t.takeException(), isNull);
       await mount(t, OnlineModeSelectionPage(ranked: ranked), light: true);

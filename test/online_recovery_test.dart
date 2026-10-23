@@ -59,8 +59,34 @@ class RecoverDuel extends design.DuelFixture {
     return {'room': room};
   }
 }
+class OrderDuel extends design.DuelFixture {
+  OrderDuel() : super('career_race', 'playing');
+  Map<String, dynamic>? answer;
+  @override
+  Future<Map<String, dynamic>> onlineLoad(String mode) async {
+    final status = await super.onlineLoad(mode);
+    (status['room'] as Map).addAll({'round': 3, 'question': {'kind': 'order', 'options': [
+      {'id': 'first', 'name': 'Borussia Mönchengladbach (1. dönem)'},
+      {'id': 'second', 'name': 'Manchester United'},
+      {'id': 'third', 'name': 'Borussia Mönchengladbach (2. dönem)'},
+    ]}});
+    return status;
+  }
+  @override
+  Future<Map<String, dynamic>> mutate(String call, Map<String, dynamic> input) async {
+    answer = input;
+    final status = await onlineLoad(mode);
+    (status['room'] as Map)['submitted'] = true;
+    return {'room': status['room']};
+  }
+}
+Future<void> reveal(WidgetTester t, Finder finder) async {
+  t.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
+  await t.pump();
+  await t.scrollUntilVisible(finder, 220, scrollable: find.byType(Scrollable).first, maxScrolls: 30);
+}
 Future<void> tapVisible(WidgetTester t, Finder finder) async {
-  await t.ensureVisible(finder); await t.pump(); await t.tap(finder); await t.pump();
+  await reveal(t, finder); await t.pump(); await t.tap(finder); await t.pump();
   await t.pump(const Duration(milliseconds: 200));
 }
 void main() {
@@ -81,10 +107,12 @@ void main() {
         expect(find.byType(GameErrorPanel), findsNothing);
         if (!ranked) {
           final field = find.descendant(of: find.byType(RoomCodeField), matching: find.byType(TextField));
-          await t.ensureVisible(field); await t.enterText(field, 'AB'); await t.pump();
+          await reveal(t, field); await t.enterText(field, 'AB'); await t.pump();
           final label = isPvp ? 'Koda katıl' : 'Odaya katıl';
           final button = find.widgetWithText(OutlinedButton, label);
+          await reveal(t, button);
           expect(t.widget<OutlinedButton>(button).onPressed, isNull);
+          await reveal(t, field);
           await t.enterText(field, 'abcd1234'); await t.pump();
           await tapVisible(t, button);
           expect(find.byType(OnlineRoomCode), findsOneWidget);
@@ -95,6 +123,7 @@ void main() {
         expect(isPvp ? p.joins : d.joins, 1);
         p.failPoll = true; d.failPoll = true;
         await t.pump(const Duration(seconds: 6)); await t.pump();
+        await reveal(t, find.byType(GameErrorPanel));
         expect(find.byType(GameErrorPanel), findsOneWidget);
         final polls = isPvp ? p.polls : d.polls;
         await t.pump(const Duration(seconds: 18)); await t.pump();
@@ -104,6 +133,20 @@ void main() {
       });
     }
   }
+  for (final large in [false, true]) {
+    testWidgets('career chronology keeps full names and submits the reordered period IDs $large', (t) async {
+      final fixture = OrderDuel();
+      await design.mount(t, CareerTransferOnlinePage(mode: 'career_race', service: fixture), light: large, large: large);
+      await tapVisible(t, find.byTooltip('Aşağı taşı').first);
+      expect(t.takeException(), isNull);
+      await design.capture(t, 'career_online_order_${large ? 'large' : 'normal'}');
+      await tapVisible(t, find.text('Kesin cevabımı gönder'));
+      expect(fixture.answer?['answer'], ['second', 'first', 'third']);
+      expect(fixture.answer?['round'], 3);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+    });
+  }
   testWidgets('invite is consumed once and background polling stops', (t) async {
     final service = RecoverPvp()..failLoad = false;
     await design.mount(t, PvpPage(mode: OnlinePlayMode.sharedXi, playKind: 'friend', joinCode: 'ABCD1234', service: service));
@@ -111,9 +154,13 @@ void main() {
     await tapVisible(t, find.byTooltip('Yenile'));
     expect(service.joins, 1);
     final polls = service.polls;
+    t.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    t.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     t.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
     await t.pump(const Duration(seconds: 18));
     expect(service.polls, polls);
+    t.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    t.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     t.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await t.pump();
     expect(service.polls, greaterThan(polls));

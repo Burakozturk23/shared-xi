@@ -123,8 +123,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       onChanged: busy || !connected || !enabled ? null : (v) {if (v != null) change(v);});
   Widget setup() {
     final available = rewardMap(data['availability'])[ranked ? 'rankedEnabled' : 'friendEnabled'] == true;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [panel([
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [
       GameIntro(icon: widget.mode.icon, title: ranked ? 'Eşit koşullarda yarış' : 'Arkadaşınla karşılaş', message: widget.mode.subtitle),
+      const SizedBox(height: 16), panel([
       note(ranked ? 'Aynı soru, aynı süre. Maç sonucu sunucuda doğrulanır.' : 'Oda koduyla katıl. Dostluk maçında Elo, Coin ve XP değişmez.'),
       if (!available) note(ranked ? 'Bu modda dereceli eşleşme şu anda kapalı.' : 'Bu modda arkadaş odaları şu anda kapalı.'),
       if (data['linked'] == false) note('Online maç için profilinden Google hesabını bağla.'),
