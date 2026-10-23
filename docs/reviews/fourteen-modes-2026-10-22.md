@@ -13,9 +13,11 @@ adres yok). Firebase kodunda bu fonksiyonlar europe-west1 bölgesinde mevcut.
 API-Football anahtarı bu oyun servisleriyle ilgili değil. İstemcide NOT_FOUND
 metnini değiştirmek tek başına işlevsel çözüm değildir.
 
-Sonraki kontrolde daha önce mevcut olan Career/Energy/Reward uçları HTML 500
-döndü; eksik aileler 404 kaldı. Bu nedenle canlı servislerin sağlıklı olduğu
-varsayılmıyor. Yayın sonrası kontrol HTTP durumunu gösterir ve başarısızlıkta durur.
+Ara kontrolde Career/Energy/Reward uçları HTML 500 döndü. 23 Ekim son kontrolünde
+Career ve Energy yeniden callable 401 döndü; MysteryChain, FakeClub, DailyWords,
+Arcade ve Choice aileleri hâlâ 404. Geçici 500 yanıtının nedeni yetkili sunucu
+logları olmadan doğrulanamaz. Yayın sonrası kontrol HTTP durumunu gösterir ve
+başarısızlıkta durur. Kimliksiz 401 gerçek oyun başarısı anlamına gelmez.
 
 - Career, Transfer, Mystery, Chain, Lingo ve Passaparola katalog girişleri eski
   tema sınırını kullanıyordu. Günlük kısayol ve katalog aynı temayı kullanır.
@@ -34,23 +36,35 @@ varsayılmıyor. Yayın sonrası kontrol HTTP durumunu gösterir ve başarısız
 
 | No / resim son eki | Mod | Saptanan sorun | Kod doğrulaması | Canlı engel |
 |---|---|---|---|---|
-| 1 / 181442 | Kariyer Bulmacası | Eski tema ve düz oyun düzeni | CI bekleniyor | Güncel APK ile cihaz kontrolü |
-| 2 / 181624 | Transfer Dedektifi | Eski tema ve transfer kartı | CI bekleniyor | Güncel APK ile cihaz kontrolü |
-| 3 / 181633 | Gizemli Futbolcu | Ham NOT_FOUND, eski tema | CI bekleniyor | get/start/act/searchMysteryChain yayını |
-| 4 / 181645 | Zincir Ustalığı | Ham NOT_FOUND, eski tema | CI bekleniyor | Aynı MysteryChain servisleri |
-| 5 / 181657 | Sahte Kulüp | Ham NOT_FOUND | CI bekleniyor | FakeClub yayını + soloEnabled |
-| 6 / 181706 | Günün Lingo'su | Servis yok, katalogdan mavi buton | CI bekleniyor | DailyWords yayını + enabled |
-| 7 / 181710 | Mini Passaparola | Servis yok, katalogdan mavi buton | CI bekleniyor | Aynı DailyWords servisleri |
-| 8 / 181720 | Günün Anagramı | Servis yok | CI bekleniyor | Aynı DailyWords servisleri |
-| 9 / 181749 | Burst | SDK stack trace; hata sonrası timer riski | CI bekleniyor | Arcade yayını + enabled |
-| 10 / 181753 | Bağlantı Piramidi | SDK stack trace; dar hücrelerde bölünen adlar | CI bekleniyor | Aynı Arcade servisleri |
-| 11 / 181758 | Kart Eşleştirme | SDK stack trace; dar hücrelerde bölünen adlar | CI bekleniyor | Aynı Arcade servisleri |
-| 12 / 181808 | O mu Bu mu? | SDK stack trace | CI bekleniyor | Choice yayını + enabled; temalar ödülsüz alıştırma |
-| 13 / 181815 | Higher or Lower | SDK stack trace + onaysız ölçütler | CI bekleniyor | Choice yayını + enabled; 145 kişilik iki UEFA ölçütü hazır |
-| 14 / 181821 | Blind Ranking | SDK stack trace + varsayılan kilitli seçenek | CI bekleniyor | Choice yayını + enabled; kişisel liste ve iki UEFA ölçütü hazır; eski 8 ölçüt kilitli |
+| 1 / 181442 | Kariyer Bulmacası | Eski tema ve düz oyun düzeni | PASS¹ | Güncel APK ile cihaz kontrolü |
+| 2 / 181624 | Transfer Dedektifi | Eski tema ve transfer kartı | PASS¹ | Güncel APK ile cihaz kontrolü |
+| 3 / 181633 | Gizemli Futbolcu | Ham NOT_FOUND, eski tema | PASS¹ | get/start/act/searchMysteryChain yayını |
+| 4 / 181645 | Zincir Ustalığı | Ham NOT_FOUND, eski tema | PASS¹ | Aynı MysteryChain servisleri |
+| 5 / 181657 | Sahte Kulüp | Ham NOT_FOUND | PASS¹ | FakeClub yayını + soloEnabled |
+| 6 / 181706 | Günün Lingo'su | Servis yok, katalogdan mavi buton | PASS¹ | DailyWords yayını + enabled |
+| 7 / 181710 | Mini Passaparola | Servis yok, katalogdan mavi buton | PASS¹ | Aynı DailyWords servisleri |
+| 8 / 181720 | Günün Anagramı | Servis yok | PASS¹ | Aynı DailyWords servisleri |
+| 9 / 181749 | Burst | SDK stack trace; hata sonrası timer riski | PASS¹ | Arcade yayını + enabled |
+| 10 / 181753 | Bağlantı Piramidi | SDK stack trace; dar hücrelerde bölünen adlar | PASS¹ | Aynı Arcade servisleri |
+| 11 / 181758 | Kart Eşleştirme | SDK stack trace; dar hücrelerde bölünen adlar | PASS¹ | Aynı Arcade servisleri |
+| 12 / 181808 | O mu Bu mu? | SDK stack trace | PASS¹ | Choice yayını + enabled; temalar ödülsüz alıştırma |
+| 13 / 181815 | Higher or Lower | SDK stack trace + onaysız ölçütler | PASS¹ | Choice yayını + enabled; 145 kişilik iki UEFA ölçütü hazır |
+| 14 / 181821 | Blind Ranking | SDK stack trace + varsayılan kilitli seçenek | PASS¹ | Choice yayını + enabled; kişisel liste ve iki UEFA ölçütü hazır; eski 8 ölçüt kilitli |
 
 Paylaşılan ekran nedeniyle Zincir Sprinti, Sahte Kulüp Hız Serisi ve Haftalık
 Passaparola da hata/kurtarma, açık/koyu tema, 320px/1.8 yazı testine dahil.
+
+¹ Referans koşu: [CI #325](https://github.com/Burakozturk23/shared-xi/actions/runs/39894386611),
+`8415c900`. Flutter analizi ve test adımı geçti; Functions kalite kontrolü ve
+çok oyunculu RTDB emülatör kontrolü geçti. Açık/koyu tema ve büyük yazı görüntüleri
+ayrıca incelendi. PASS canlı yayın anlamına gelmez. Sonraki görsel iyileştirmeler ve
+Android derlemesi için [PR69 kontrolleri](https://github.com/Burakozturk23/shared-xi/pull/69/checks)
+esas alınır.
+
+Son görsel kontrol: Piramit tahtası ilk açılışta ortalanır ve uzun adlar için
+hücre genişliği korunur. UEFA oyunlarında arşiv yılı görünür kalır; kapsam/kaynak
+ayrıntıları açılır bölümdedir. Kullanıma açık iki ölçüt önce gösterilir, incelemedeki
+sekiz ölçüt ayrı açılır listede kalır ve seçilemez.
 
 ## Doğrulama kapsamı
 
