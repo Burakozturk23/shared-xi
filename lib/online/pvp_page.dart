@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
 import '../theme/ortak_saha_theme.dart';
-import 'package:flutter/services.dart';
+import '../widgets/online_ui.dart';
+import '../services/game_error.dart';
+import '../app/route_appearance.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/pvp_service.dart';
 import '../widgets/player_portrait.dart';
@@ -21,7 +24,7 @@ class PvpPage extends StatefulWidget {
   @override
   State<PvpPage> createState() => _PvpPageState();
 }
-class _PvpPageState extends State<PvpPage> {
+class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   PitchColors get palette => PitchColors.of(context);
   Color get accent => palette.accent;
   late final PvpService service = widget.service ?? PvpService();
@@ -29,33 +32,39 @@ class _PvpPageState extends State<PvpPage> {
   final code = TextEditingController(), query = TextEditingController();
   List<Map<String,dynamic>> results = [];
   Map<String,dynamic>? selected;
-  String? target, criterion, error;
+  String? target, criterion, error, feedback;
   String profile = 'standard', formation = '433';
   final Set<String> xi = {};
   double press = .5, tempo = .5, width = .5;
-  bool busy = false, connected = true;
+  bool busy = false, connected = true, foreground = true, joinedFromInvite = false, accountChanged = false;
   Timer? poller, ticker;
   final clock = Stopwatch();
   int serverNow = 0, searchSerial = 0;
-  bool get ranked => widget.playKind == 'ranked';
+  bool get ranked => room.isNotEmpty ? room['playKind'] == 'ranked' : widget.playKind == 'ranked';
   String get mode => widget.mode.wireName;
   String get uid => '${room['myUid']}';
   bool get done => ['finished','cancelled','forfeit','expired'].contains(room['status']);
   List<Map<String,dynamic>> rows(dynamic value) => (value is List ? value : value is Map ? value.values.toList() : <dynamic>[]).map(rewardMap).toList();
   @override
-  void initState() {super.initState(); load();
-    poller = Timer.periodic(const Duration(seconds: 6), (_) {if (room.isNotEmpty && !busy && (!done || room['playKind'] == 'friend' || rewardMap(room['reward'])['status'] == 'pending')) action('poll');});
-    ticker = Timer.periodic(const Duration(seconds: 1), (_) {if (mounted && room.isNotEmpty && !done) setState(() {});});
+  void initState() {super.initState(); WidgetsBinding.instance.addObserver(this); load();
+    poller = Timer.periodic(const Duration(seconds: 6), (_) {if (room.isNotEmpty && foreground && connected && !accountChanged && !busy && (!done || room['playKind'] == 'friend' || rewardMap(room['reward'])['status'] == 'pending')) action('poll');});
+    ticker = Timer.periodic(const Duration(seconds: 1), (_) {if (mounted && foreground && room.isNotEmpty && !done) setState(() {});});
   }
   @override
-  void dispose() {poller?.cancel(); ticker?.cancel(); code.dispose(); query.dispose(); super.dispose();}
-  Future<void> run(Future<Map<String,dynamic>> Function() task) async {
-    if (busy) return; setState(() {busy = true; error = null;});
+  void dispose() {WidgetsBinding.instance.removeObserver(this); poller?.cancel(); ticker?.cancel(); code.dispose(); query.dispose(); super.dispose();}
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    foreground = state == AppLifecycleState.resumed;
+    if (foreground && connected && !busy && room.isNotEmpty && !done) action('poll');
+  }
+  Future<void> run(Future<Map<String,dynamic>> Function() task, {bool userAction = false}) async {
+    if (busy || accountChanged) return; setState(() {busy = true; error = null; feedback = null;});
     try {
       final response = await task(); if (!mounted) return;
       setState(() {connected = true;
+        if (response.containsKey('availability')) data = response;
         if (response['room'] != null) {final next = rewardMap(response['room']);
-          if (next['id'] != room['id']) {xi.clear(); target = null; criterion = null; selected = null; results = []; query.clear();}
+          if (next['id'] != room['id'] || next['round'] != room['round']) {searchSerial++; xi.clear(); target = null; criterion = null; selected = null; results = []; query.clear();}
           room = next;
           final squad = rewardMap(room['mySquad']);
           if (squad.isNotEmpty) {
@@ -64,27 +73,39 @@ class _PvpPageState extends State<PvpPage> {
             press = (t['press'] as num).toDouble(); tempo = (t['tempo'] as num).toDouble(); width = (t['width'] as num).toDouble();
           }
           serverNow = (room['serverNow'] as num? ?? 0).toInt(); clock..reset()..start();}
-        else {data = response;}
         final receipt = rewardMap(response['receipt']);
-        if (receipt['correct'] == false) error = 'Bu futbolcu kriteri karşılamıyor.';
+        if (receipt['correct'] == false) feedback = 'Bu futbolcu kriteri karşılamıyor.';
         if (receipt['accepted'] == true && receipt.containsKey('correct')) {selected = null; results = []; query.clear();}
       });
-    } catch (e) {if (mounted) setState(() {error = '$e'.replaceFirst('Exception: ', ''); connected = !(e is FirebaseFunctionsException && ['unavailable','deadline-exceeded','internal','unknown'].contains(e.code));});}
+    } catch (e) {if (mounted) setState(() {
+      accountChanged = e is StateError && '${e.message}'.startsWith('Hesap değişti');
+      final business = userAction && room.isNotEmpty && e is FirebaseFunctionsException &&
+        ['invalid-argument','failed-precondition','already-exists','aborted','resource-exhausted'].contains(e.code);
+      if (business) {feedback = gameErrorMessage(e);} else {error = gameErrorMessage(e); connected = false;}
+      if (accountChanged) {room = {}; data = {}; results = []; selected = null; searchSerial++;}
+    });}
     finally {if (mounted) setState(() => busy = false);}
   }
   Future<void> load() async {
     await run(() => service.load(mode));
-    if (mounted && widget.joinCode != null && data.isNotEmpty) await enter('join', roomCode: widget.joinCode);
+    if (mounted && connected && !joinedFromInvite && widget.joinCode != null && data.isNotEmpty && room.isEmpty) {
+      joinedFromInvite = true; await enter('join', roomCode: widget.joinCode);
+    }
   }
-  Future<void> enter(String action, {String? roomCode}) => run(() => service.enter(mode, widget.playKind, action,
-    code: roomCode, profile: profile));
-  Future<void> action(String action, [Map<String,dynamic> extra = const {}]) => run(() => service.act(room, action, extra));
+  Future<void> enter(String action, {String? roomCode}) async {
+    if (action == 'join' && !validRoomCode(roomCode ?? '')) {
+      setState(() => feedback = '8 karakterli geçerli oda kodunu gir.'); return;
+    }
+    await run(() => service.enter(mode, widget.playKind, action, code: roomCode?.trim().toUpperCase(), profile: profile), userAction: true);
+  }
+  Future<void> action(String action, [Map<String,dynamic> extra = const {}]) => run(() => service.act(room, action, extra), userAction: action != 'poll');
   Future<void> search() async {
+    if (!connected || busy) return;
     final serial = ++searchSerial; final text = query.text.trim();
     if (text.length < 2) return;
     try {final found = await service.search(mode, text, roomId: room['id']);
       if (mounted && serial == searchSerial) setState(() {results = found; selected = null;});
-    } catch (e) {if (mounted) setState(() => error = '$e');}
+    } catch (e) {if (mounted && serial == searchSerial) setState(() => feedback = gameErrorMessage(e));}
   }
   int seconds(dynamic deadline) => (((deadline as num? ?? 0).toInt() - serverNow - clock.elapsedMilliseconds) / 1000).ceil().clamp(0, 9999);
   Widget note(String text) => Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(text,
@@ -93,26 +114,32 @@ class _PvpPageState extends State<PvpPage> {
   Widget panel(List<Widget> children) => Padding(padding: const EdgeInsets.only(bottom: 16),
     child: PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)));
   Widget button(String text, VoidCallback? tap, {bool secondary = false}) => Padding(padding: const EdgeInsets.symmetric(vertical: 6),
-    child: secondary ? OutlinedButton(onPressed: busy ? null : tap,child: Text(text,textAlign: TextAlign.center)) :
-    FilledButton(onPressed: busy ? null : tap,child: Text(text,textAlign: TextAlign.center)));
+    child: secondary ? OutlinedButton(onPressed: busy || !connected ? null : tap,child: Text(text,textAlign: TextAlign.center)) :
+    FilledButton(onPressed: busy || !connected ? null : tap,child: Text(text,textAlign: TextAlign.center)));
   Widget choice(String label, String? value, List<Map<String,dynamic>> options, void Function(String) change, {bool enabled = true}) =>
     DropdownButtonFormField<String>(key: ValueKey('$label:$value'), initialValue: options.any((p) => p['id'] == value) ? value : null,
       isExpanded: true, decoration: InputDecoration(labelText: label),
       items: options.map((p) => DropdownMenuItem(value: '${p['id']}',child: Text('${p['label'] ?? p['name']}',maxLines: 2,overflow: TextOverflow.ellipsis))).toList(),
-      onChanged: busy || !enabled ? null : (v) {if (v != null) change(v);});
+      onChanged: busy || !connected || !enabled ? null : (v) {if (v != null) change(v);});
   Widget setup() {
     final available = rewardMap(data['availability'])[ranked ? 'rankedEnabled' : 'friendEnabled'] == true;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [panel([
-      heading(ranked ? 'Eşit koşullarda yarış' : 'Arkadaşınla karşılaş'), note(widget.mode.subtitle),
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch,children: [
+      GameIntro(icon: widget.mode.icon, title: ranked ? 'Eşit koşullarda yarış' : 'Arkadaşınla karşılaş', message: widget.mode.subtitle),
+      const SizedBox(height: 16), panel([
       note(ranked ? 'Aynı soru, aynı süre. Maç sonucu sunucuda doğrulanır.' : 'Oda koduyla katıl. Dostluk maçında Elo, Coin ve XP değişmez.'),
-      if (!available) note(ranked ? 'Sıralamalı maç yakında. Bu mod henüz açılmadı.' : 'Arkadaş güncellemesi henüz kullanıma açılmadı.'),
+      if (!available) note(ranked ? 'Bu modda dereceli eşleşme şu anda kapalı.' : 'Bu modda arkadaş odaları şu anda kapalı.'),
       if (data['linked'] == false) note('Online maç için profilinden Google hesabını bağla.'),
       if (data['activeId'] != null && data['activePlayKind'] == widget.playKind) button('Kayıtlı maça devam et', () => enter('resume')),
+      if (data['activeId'] != null && data['activePlayKind'] != widget.playKind) ...[
+        note('Bu modda diğer eşleşme türünde kayıtlı bir maçın var.'),
+        button('Kayıtlı maç ekranını aç', () => Navigator.of(context).pushReplacement(LinkballRoute(modern: true,
+          builder: (_) => PvpPage(mode: widget.mode, playKind: '${data['activePlayKind']}', service: service))), secondary: true),
+      ],
       if (!ranked) ...[
         choice('Maç profili',profile,[{'id':'standard','label':'Tek maç'},{'id':'series3','label':'Üç maçlık seri'}],(v) => setState(() => profile = v)),
         const SizedBox(height: 12), button('Oda oluştur',available && data['linked'] == true ? () => enter('create') : null),
-        TextField(controller: code,decoration: const InputDecoration(labelText: '8 karakterli oda kodu'),textCapitalization: TextCapitalization.characters,maxLength: 8),
-        button('Koda katıl',available && data['linked'] == true ? () => enter('join',roomCode: code.text.trim().toUpperCase()) : null,secondary: true),
+        RoomCodeField(controller: code, enabled: !busy && connected, onChanged: (_) => setState(() {})),
+        button('Koda katıl',available && data['linked'] == true && validRoomCode(code.text) ? () => enter('join',roomCode: code.text.trim().toUpperCase()) : null,secondary: true),
       ] else button('Rakip ara',available && data['linked'] == true ? () => enter('search') : null),
     ]), if (rows(data['history']).isNotEmpty) panel([heading('Son maçların'),
       ...rows(data['history']).where((r) => r['playKind'] == widget.playKind).map((r) => ListTile(contentPadding: EdgeInsets.zero,
@@ -124,8 +151,7 @@ class _PvpPageState extends State<PvpPage> {
   Widget lobby() {
     final host = room['host'] == uid; final ready = rewardMap(room['ready']); final choices = rewardMap(room['choices']);
     return panel([heading(room['status'] == 'waiting' ? ranked ? 'Rakip aranıyor' : 'Arkadaşını bekliyorsun' : 'Maça hazırlan'),
-      if (!ranked) ...[SelectableText('${room['id']}',style: TextStyle(fontSize: 28,color: accent,letterSpacing: 3)),
-        button('Oda kodunu kopyala',() => Clipboard.setData(ClipboardData(text:'${room['id']}')),secondary: true),
+      if (!ranked) ...[OnlineRoomCode(code: '${room['id']}'),
         if (host && room['guest'] == null) FriendMatchInviteButton(mode: widget.mode,roomCode:'${room['id']}')],
       note(ranked ? '30 saniye içinde rakip bulunamazsa arama kapanır.' : 'İki oyuncu da hazır olduğunda beş saniyelik geri sayım başlar.'),
       ...rewardMap(room['names']).entries.map((e) => note('${e.value} · ${ready[e.key] == true ? 'Hazır' : 'Bekliyor'}')),
@@ -145,7 +171,7 @@ class _PvpPageState extends State<PvpPage> {
       if (!done) note(room['status'] == 'countdown' ? 'Başlıyor: ${seconds(room['startsAt'])}' :
         turnMode ? '${turn == uid ? 'Senin sıran' : 'Rakibinin sırası'} · ${seconds(room['turnDeadline'])} sn' :
         '${seconds(room[mode == 'grid_random' ? 'roundDeadline' : 'endsAt'])} sn'),
-      if (!connected) note('Bağlantı kesildi. Sunucu saati devam ediyor; yeniden bağlanılıyor.'),
+      if (!connected) note('Bağlantı kesildi. Sunucudaki süre devam eder. Yeniden dene ile maçını kontrol et.'),
       if (mode == 'grid_random' && !done) note('Tur ${(room['round'] as num? ?? 0) + 1} / 5 · Her oyuncuya bir cevap hakkı'),
       if (rewardMap(room['series'])['limit'] == 3) note('Seri maçı ${rewardMap(room['series'])['game']} / 3'),
     ]);
@@ -165,7 +191,7 @@ class _PvpPageState extends State<PvpPage> {
         return Semantics(label: '${i + 1}. hücre, ${labels[i]}, ${ownerName ?? 'boş'}',selected: selectedCell,button: true,
           child: Material(color: selectedCell ? palette.tint : palette.surface,borderRadius: BorderRadius.circular(12),
             child: InkWell(onLongPress: () => detail(i,ownerName?.toString()),onTap: done || owner.isNotEmpty ? () => detail(i,ownerName?.toString()) : () {
-              if (selectable) setState(() => target = '$i');
+              if (selectable && connected && !busy) setState(() => target = '$i');
               else detail(i,ownerName?.toString());
             },child: Padding(padding: const EdgeInsets.all(6),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
               Icon(owner.isNotEmpty ? Icons.check_circle_outline : selectedCell ? Icons.radio_button_checked : Icons.crop_square,
@@ -184,7 +210,7 @@ class _PvpPageState extends State<PvpPage> {
       PlayerPortrait(playerId: int.tryParse('${selected!['id']}') ?? -1,size: 64,fallback: const Icon(Icons.person,size: 48)),note('${selected!['name']}'),
     ],
     TextField(controller: query,onChanged: (_) => setState(() {selected = null; results = []; searchSerial++;}),onSubmitted: (_) => search(),decoration: InputDecoration(labelText: 'Futbolcu ara',suffixIcon: IconButton(
-      tooltip: 'Ara',onPressed: search,icon: const Icon(Icons.search)))),
+      tooltip: 'Ara',onPressed: !connected || busy ? null : search,icon: const Icon(Icons.search)))),
     ...results.map((p) => ListTile(contentPadding: EdgeInsets.zero,title: Text('${p['name']}'),subtitle: Text('${p['country']} · ${p['position']}'),
       selected: selected?['id'] == p['id'],onTap: () => setState(() {selected = p; results = []; query.text = '${p['name']}';}))),
     button('Cevabı gönder',selected == null || room['submitted'] == true ||
@@ -200,9 +226,9 @@ class _PvpPageState extends State<PvpPage> {
       choice('Diziliş',formation,[for (final f in ['433','442','352','451']) {'id':f,'label':f.split('').join('-')}],(v) => setState(() => formation = v), enabled: room['submitted'] != true),
       for (final p in pool) CheckboxListTile(contentPadding: EdgeInsets.zero,value: xi.contains(p['id']),
         title: Text('${p['name']}'),subtitle: Text('${p['position']} · ${p['rating']} reyting · ${p['cost']} bütçe'),
-        onChanged: busy || room['submitted'] == true ? null : (v) => setState(() {if (v == true) xi.add('${p['id']}'); else xi.remove(p['id']);})),
+        onChanged: busy || !connected || room['submitted'] == true ? null : (v) => setState(() {if (v == true) xi.add('${p['id']}'); else xi.remove(p['id']);})),
       for (final t in [('Press',press),('Tempo',tempo),('Genişlik',width)]) ...[note(t.$1),Slider(value: t.$2,divisions: 4,
-        label: '${(t.$2*100).round()}',onChanged: room['submitted'] == true ? null : (v) => setState(() {
+        label: '${(t.$2*100).round()}',onChanged: busy || !connected || room['submitted'] == true ? null : (v) => setState(() {
           if (t.$1 == 'Press') press = v; else if (t.$1 == 'Tempo') tempo = v; else width = v;
         }))],
       button(room['submitted'] == true ? 'Kadro kilitlendi' : 'XI ve taktiği kilitle',xi.length != 11 || spent > (room['budget'] as num? ?? 120) || room['submitted'] == true ? null :
@@ -226,7 +252,11 @@ class _PvpPageState extends State<PvpPage> {
           ...rewardMap(room['owners']).entries.map((e) => note('${e.key}: ${rewardMap(room['names'])[rewardMap(e.value)['uid']]}'))]),
       ] else if (mode == 'cinko' || mode == 'loto') ...[
         board(mode == 'cinko' ? 5 : 4,criteria.map((k) => '${k['label']}').toList(),selectable: mode == 'loto'),const SizedBox(height: 14),
-      ] else panel([for (final k in criteria) heading('${k['label']}')]),
+      ] else panel([for (var i = 0; i < criteria.length; i++) Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Icon(Icons.sports_soccer_outlined, color: accent, size: 20), const SizedBox(width: 12),
+          Expanded(child: Text('${criteria[i]['label']}', style: Theme.of(context).textTheme.titleMedium)),
+        ]))]),
       if (mode == 'loto') panel([heading('Tahtanın futbolcuları'), if (target != null) note('Seçilen hücre: ${criteria[int.parse(target!)]['label']}'),
         ...rows(room['players']).map((p) => ListTile(contentPadding: EdgeInsets.zero,title: Text('${p['name']}'),
           selected: selected?['id'] == p['id'],enabled: !rewardMap(room['used']).containsKey(p['id']),onTap: () => setState(() => selected = p))),
@@ -265,22 +295,26 @@ class _PvpPageState extends State<PvpPage> {
     ]);
   }
   Future<void> leave() async {
+    if (busy) return;
     final yes = await showDialog<bool>(context: context,builder: (_) => AlertDialog(title: const Text('Maçtan ayrıl?'),
-      content: const Text('Devam eden maçtan ayrılmak hükmen sonuca yol açar.'),actions: [
+      content: Text(['waiting','ready'].contains(room['status']) ? 'Oda veya eşleşme araman iptal edilir.' : 'Devam eden maçtan ayrılmak hükmen sonuca yol açar.'),actions: [
         TextButton(onPressed: () => Navigator.pop(context,false),child: const Text('Vazgeç')),
         FilledButton(onPressed: () => Navigator.pop(context,true),child: const Text('Ayrıl'))]));
     if (yes == true) await action('leave');
   }
   @override
   Widget build(BuildContext context) => PopScope(
-      canPop: room.isEmpty || done,onPopInvokedWithResult: (didPop,result) {if (!didPop) leave();},
+      canPop: room.isEmpty || done || !connected || accountChanged,onPopInvokedWithResult: (didPop,result) {if (!didPop) leave();},
       child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,title: Text(widget.mode.title,maxLines: 3,softWrap: true),actions: [
-        IconButton(tooltip: 'Yenile',onPressed: busy ? null : () {if (room.isEmpty) load(); else action('poll');},icon: const Icon(Icons.refresh))]),
+        IconButton(tooltip: 'Yenile',onPressed: busy || accountChanged ? null : () {if (room.isEmpty) load(); else action('poll');},icon: const Icon(Icons.refresh))]),
         body: GameContent(child: ListView(padding: const EdgeInsets.all(16),children: [
           Text(ranked ? 'RASTGELE EŞLEŞME' : 'ARKADAŞ MAÇI',style: TextStyle(color: accent,fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),if (busy && data.isEmpty && room.isEmpty) const LinearProgressIndicator(),
-          if (error != null) panel([note(error!),button('Yeniden dene',() {if (room.isEmpty) load(); else action('poll');},secondary: true)]),
-          if (room.isEmpty) setup() else ...[hud(),if (['waiting','ready'].contains(room['status'])) lobby()
+          if (error != null) GameErrorPanel(message: error!, accountChanged: accountChanged,
+            onRetry: busy || accountChanged ? null : () {if (room.isEmpty) load(); else action('poll');}),
+          if (feedback != null) panel([Semantics(liveRegion: true, child: note(feedback!))]),
+          if (room.isEmpty && data.isNotEmpty && error == null) setup(),
+          if (room.isNotEmpty) ...[hud(),if (['waiting','ready'].contains(room['status'])) lobby()
             else if (done) outcome() else if (room['status'] == 'countdown') panel([heading('Hazır ol'),note('Aynı anda başlayacaksınız.')]) else play(),
             if (!done) button('Maçtan ayrıl',leave,secondary: true)],
         ]))));

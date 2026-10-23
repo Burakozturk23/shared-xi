@@ -61,7 +61,7 @@ class _OnlineModeHubPageState extends State<OnlineModeHubPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Online maçlar, kupa ve ilerideki arkadaş sistemi '
+                        'Online maçların, kupaların ve arkadaş listen '
                         'Google hesabına bağlı Linkball profilinde tutulur.',
                         textAlign: TextAlign.center,
                         style: TextStyle(

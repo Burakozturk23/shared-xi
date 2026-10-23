@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../models/friend_models.dart';
@@ -65,6 +66,7 @@ class _FriendInviteSheet extends StatefulWidget {
 }
 
 class _FriendInviteSheetState extends State<_FriendInviteSheet> {
+  late Stream<List<FriendshipEdge>> _friends = FriendsService.watchFriends();
   final Map<String, Future<PublicFriendProfile?>> _profiles = {};
   final Set<String> _busy = <String>{};
   final Set<String> _sent = <String>{};
@@ -149,8 +151,15 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
             const Divider(height: 1),
             Expanded(
               child: StreamBuilder<List<FriendshipEdge>>(
-                stream: FriendsService.watchFriends(),
+                stream: _friends,
                 builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(
+                      mainAxisSize: MainAxisSize.min, children: [
+                        const Text('Arkadaş listesi yüklenemedi. Oda kodunu paylaşabilir veya tekrar deneyebilirsin.'),
+                        TextButton(onPressed: () => setState(() { _profiles.clear(); _friends = FriendsService.watchFriends(); }), child: const Text('Tekrar dene')),
+                      ])));
+                  }
                   if (!snapshot.hasData) {
                     return const Center(
                       child: CircularProgressIndicator(),
@@ -186,7 +195,8 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                           final profile = profileSnapshot.data;
 
                           return Card(
-                            child: ListTile(
+                            child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [ListTile(
+                              contentPadding: EdgeInsets.zero,
                               leading: UserAvatarBadge(
                                 avatarId:
                                     profile?.avatarId ?? 'starter_ball',
@@ -201,14 +211,17 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                                 ),
                               ),
                               subtitle: profile == null
-                                  ? const Text('Profil hazırlanıyor…')
+                                  ? Text(profileSnapshot.connectionState == ConnectionState.done ? 'Profil yüklenemedi.' : 'Profil hazırlanıyor…')
                                   : Text(
                                       '@${profile.normalizedName} · '
                                       '${profile.elo} Elo',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                              trailing: busy
+                            ),
+                              if (profile == null && profileSnapshot.connectionState == ConnectionState.done)
+                                TextButton(onPressed: () => setState(() => _profiles.remove(uid)), child: const Text('Profili yeniden yükle')),
+                              busy
                                   ? const SizedBox(
                                       width: 22,
                                       height: 22,
@@ -218,12 +231,12 @@ class _FriendInviteSheetState extends State<_FriendInviteSheet> {
                                     )
                                   : FilledButton(
                                       onPressed:
-                                          sent ? null : () => _send(uid),
+                                          sent || profile == null ? null : () => _send(uid),
                                       child: Text(
                                         sent ? 'Gönderildi' : 'Davet Et',
                                       ),
                                     ),
-                            ),
+                            ])),
                           );
                         },
                       );

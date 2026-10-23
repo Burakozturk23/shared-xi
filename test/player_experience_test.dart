@@ -10,6 +10,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/app/app_preferences.dart';
 import 'package:shared_xi/app/app_feedback.dart';
+import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/models/achievement_models.dart';
 import 'package:shared_xi/models/economy_models.dart';
 import 'package:shared_xi/models/mission_models.dart';
@@ -77,6 +78,8 @@ MissionProfile missionFixture({bool claimed = false}) =>
 class ProgressFake extends ProgressGateway {
   bool fail = false;
   int claims = 0;
+  int reads = 0;
+  MissionProfile? missionData;
   Completer<MissionClaimResult>? pending;
   @override
   bool get connected => true;
@@ -87,7 +90,10 @@ class ProgressFake extends ProgressGateway {
   }
 
   @override
-  Future<MissionProfile> missions() async => missionFixture();
+  Future<MissionProfile> missions() async {
+    reads++;
+    return missionData ?? missionFixture();
+  }
   @override
   Future<MissionClaimResult> claimMission(String id) async {
     claims++;
@@ -317,6 +323,45 @@ void main() {
     expect(p.languageCode, 'en');
     expect(find.text('Menu language'), findsOneWidget);
   });
+  for (final large in [false, true]) {
+    testWidgets('daily mission cards filter, launch correct games and refresh on return $large', (t) async {
+      final g = ProgressFake()..missionData = MissionProfile.fromMap({
+        'daily': [
+          for (final (id, title, target) in [
+            ('daily_ranked_play_3', 'Bugün 3 sıralamalı maç oyna', 3),
+            ('daily_ranked_win_1', 'Bugün 1 sıralamalı maç kazan', 1),
+            ('daily_challenge_1', 'Günlük Mücadeleyi tamamla', 1),
+          ]) {'id': id, 'title': title, 'kind': 'daily', 'target': target,
+            'description': 'Oyununu tamamla, ilerlemeni burada takip et.', 'rewardCoins': 20},
+        ],
+      });
+      final opened = <GameEntry>[];
+      final pending = Completer<void>();
+      final key = await open(t, ProgressionCenterPage(gateway: g,
+        openGame: (_, game) { opened.add(game); return pending.future; }), dark: !large, large: large);
+      await reveal(t, find.text('Ödülü hazır'));
+      await t.tap(find.text('Ödülü hazır')); await t.pumpAndSettle();
+      await reveal(t, find.text('Tüm görevleri göster'));
+      expect(find.text('Henüz hazır ödül yok'), findsOneWidget);
+      await t.tap(find.text('Tüm görevleri göster')); await t.pumpAndSettle();
+      final rankedButton = find.descendant(of: find.byKey(const ValueKey('mission-daily_ranked_play_3')),
+        matching: find.byWidgetPredicate((w) => w is OutlinedButton));
+      await reveal(t, rankedButton);
+      await capture(t, key, 'missions-ranked-${large ? 'light-large' : 'dark-normal'}');
+      await t.tap(rankedButton); await t.pump();
+      expect(opened, [GameCatalog.onlineRanked]);
+      expect(t.widget<OutlinedButton>(rankedButton).onPressed, isNull);
+      pending.complete(); await t.pumpAndSettle();
+      expect(g.reads, 2);
+      await reveal(t, find.text('Günün maçlarına git'));
+      await capture(t, key, 'missions-daily-${large ? 'light-large' : 'dark-normal'}');
+      await t.tap(find.text('Günün maçlarına git')); await t.pumpAndSettle();
+      expect(opened, [GameCatalog.onlineRanked, GameCatalog.daily]);
+      expect(g.reads, 3);
+      expect(g.claims, 0);
+      expect(t.takeException(), isNull);
+    });
+  }
   testWidgets('mission claim locks duplicate taps and uses server result', (
     t,
   ) async {

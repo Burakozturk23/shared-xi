@@ -23,10 +23,17 @@ class PvpService {
   }
   Future<Map<String,dynamic>> load(String mode) async {
     final uid = currentUser();
-    if (uid != null) check(uid);
+    check(uid);
     final r = await transport.call('getPvp', protocol(mode));
-    if (uid != null) check(uid);
-    revision = '${r['dataRevision']}'; return r;
+    check(uid);
+    revision = '${r['dataRevision']}';
+    final prefs = await SharedPreferences.getInstance(); check(uid);
+    if (prefs.containsKey('pvp.v1.$uid.$mode.pending')) {
+      // Replay the persisted action before accepting a new intention after retry/restart.
+      final recovered = await send('actPvp', mode, {'action': 'poll'});
+      if (recovered['room'] != null) r['room'] = recovered['room'];
+    }
+    return r;
   }
   Future<Map<String,dynamic>> send(String call, String mode, Map<String,dynamic> input) async {
     final uid = currentUser(); check(uid);

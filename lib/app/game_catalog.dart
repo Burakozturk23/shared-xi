@@ -1,4 +1,6 @@
 import '../screens/daily_words_page.dart';
+import '../online/online_friends_mode_page.dart';
+import '../online/online_ranked_mode_page.dart';
 import '../screens/daily_question_page.dart';
 
 import 'package:flutter/material.dart';
@@ -63,6 +65,10 @@ class GameGroup {
 }
 
 class GameCatalog {
+  static const onlineRanked = GameEntry(title: 'Rastgele eşleş', subtitle: '', icon: Icons.public_rounded,
+    page: OnlineRankedModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true);
+  static const onlineFriends = GameEntry(title: 'Arkadaşlarınla oyna', subtitle: '', icon: Icons.groups_outlined,
+    page: OnlineFriendsModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true);
   static const dailyQuestion = GameEntry(
     title: 'Günün Sorusu',
     subtitle: 'Tek soru, üç seçenek · 0 enerji',

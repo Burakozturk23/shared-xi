@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
-import '../online/online_friends_mode_page.dart';
-import '../online/online_ranked_mode_page.dart';
 import '../services/auth_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_tile.dart';
@@ -80,13 +78,7 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
               PitchAction(
                 label: 'Mod seç',
                 onPressed: () => _open(
-                  const GameEntry(
-                    title: 'Rastgele eşleş',
-                    subtitle: '',
-                    icon: Icons.public_rounded,
-                    page: OnlineRankedModePage(),
-                    requiresPersistentAccount: true,
-                  ),
+                  GameCatalog.onlineRanked,
                 ),
               ),
             ],
@@ -114,13 +106,7 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
                 secondary: true,
                 neutral: true,
                 onPressed: () => _open(
-                  const GameEntry(
-                    title: 'Arkadaşlarınla oyna',
-                    subtitle: '',
-                    icon: Icons.groups_outlined,
-                    page: OnlineFriendsModePage(),
-                    requiresPersistentAccount: true,
-                  ),
+                  GameCatalog.onlineFriends,
                 ),
               ),
             ],

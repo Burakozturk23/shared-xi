@@ -12,7 +12,7 @@ import 'package:shared_xi/screens/games_catalog_page.dart';
 import 'package:shared_xi/screens/odd_club_mode_selection_page.dart';
 import 'package:shared_xi/screens/odd_club_page.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
-import 'package:shared_xi/widgets/pitch_ui.dart';
+import 'package:shared_xi/widgets/online_ui.dart';
 import 'arcade_page_test.dart' as arcade;
 import 'choice_page_test.dart' as choice;
 import 'pvp_page_test.dart' as pvp;
@@ -86,10 +86,11 @@ void main() {
       await capture(t, 'menu_${ranked}_light_large');
       for (final mode in OnlinePlayMode.values) {
         await t.enterText(find.byType(TextField), mode.title); await t.pumpAndSettle();
-        expect(find.descendant(of: find.byType(PitchRow), matching: find.text(mode.title)), findsOneWidget);
+        expect(find.descendant(of: find.byType(OnlineModeTile), matching: find.text(mode.title)), findsOneWidget);
         expect(t.takeException(), isNull);
       }
       await t.tap(find.byTooltip('Aramayı temizle')); await t.pumpAndSettle();
+      await t.scrollUntilVisible(find.text('13 mod'), 200, scrollable: find.byType(Scrollable).first);
       expect(find.text('13 mod'), findsOneWidget);
     });
   }
@@ -117,7 +118,7 @@ void main() {
         for (final stage in ['setup', 'waiting', 'playing', 'finished']) {
           await mount(t, CareerTransferOnlinePage(key: UniqueKey(), mode: mode, service: DuelFixture(mode, stage)), light: light, large: light);
           expectTheme(t, light);
-          if (stage == 'waiting') expect(find.text('Oda kodun: ABCD1234'), findsOneWidget);
+          if (stage == 'waiting') expect(find.text('ABCD1234'), findsOneWidget);
           if (stage == 'playing') expect(find.textContaining('Tur 1 /'), findsOneWidget);
           if (stage == 'finished') expect(find.text('Kazandın'), findsOneWidget);
           if (stage == 'setup') expect(find.text('Arkadaş odası oluştur'), findsOneWidget);

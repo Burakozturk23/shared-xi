@@ -7870,16 +7870,18 @@ exports.syncRankedMissions = onValueWritten(
       const participants = [
         {
           uid: String(settlement.player1Uid || ""),
-          result: String(settlement.player1Result || ""),
+          result: String(settlement.player1Result ||
+            settlement.rewards?.[settlement.player1Uid]?.result || ""),
         },
         {
           uid: String(settlement.player2Uid || ""),
-          result: String(settlement.player2Result || ""),
+          result: String(settlement.player2Result ||
+            settlement.rewards?.[settlement.player2Uid]?.result || ""),
         },
       ];
 
       for (const participant of participants) {
-        if (!participant.uid) continue;
+        if (!participant.uid || !["win", "draw", "loss"].includes(participant.result)) continue;
         if (!await lbAchievementEligible(
             db,
             participant.uid,
@@ -9988,6 +9990,7 @@ async function lbSettlePvp(room, policy) {
     }
     s.settlements[mode][room.id] = {matchId: room.id, mode, player1Uid: room.host, player2Uid: room.guest,
       winnerUid: room.winnerUid, serverValidated: true, validationVersion: 3, ruleVersion: room.ruleVersion,
+      player1Result: rewards[room.host].result, player2Result: rewards[room.guest].result,
       dataRevision: room.dataRevision, stateSignature: room.resultHash, settledAt: room.finishedAt, rewards,
       participants: Object.fromEntries(users.map((u) => [u, Object.values(room.audit || {}).some((e) =>
         e.uid === u && ["answer", "squad"].includes(e.input?.action))]))};

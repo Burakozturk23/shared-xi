@@ -32,8 +32,8 @@ void main() {
     await a.load('club_country'); wire.loseReply = true;
     await expectLater(a.enter('club_country','friend','create'),throwsA(isA<FirebaseFunctionsException>()));
     final b = PvpService(transport:wire,currentUser:() => 'alice');
-    await b.load('club_country');
-    await b.enter('club_country','friend','resume');
+    final recovered = await b.load('club_country');
+    expect((recovered['room'] as Map)['id'], 'AABBCCDD');
     expect(wire.requests[0],wire.requests[1]); expect(wire.applied,hasLength(1));
     expect((await SharedPreferences.getInstance()).getString('pvp.v1.alice.club_country.pending'),isNull);
   });
@@ -46,6 +46,13 @@ void main() {
     expect(prefs.getString('pvp.v1.alice.cinko.pending'),isNotNull);
     expect(prefs.getString('pvp.v1.bob.cinko.pending'),isNull);
     await expectLater(service.load('cinko'),throwsStateError);
+  });
+  test('logout during status cannot expose the response or replay a pending intention', () async {
+    String? uid = 'alice'; final wire = PvpWire();
+    final service = PvpService(transport: wire, currentUser: () => uid);
+    wire.duringCall = () => uid = null;
+    await expectLater(service.load('club_club'), throwsStateError);
+    expect(wire.requests, isEmpty);
   });
   test('a different account does not replay the previous account action', () async {
     final wire = PvpWire()..loseReply = true;
