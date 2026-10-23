@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/online/career_transfer_online_page.dart';
 import 'package:shared_xi/app/game_catalog.dart';
@@ -91,6 +92,15 @@ Future<void> tapVisible(WidgetTester t, Finder finder) async {
 }
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    for (final font in [
+      ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
+      ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
+    ]) {
+      await (FontLoader(font.$1)..addFont(rootBundle.load(font.$2))).load();
+    }
+  });
   for (final mode in OnlinePlayMode.values) {
     for (final ranked in [false, true]) {
       testWidgets('${mode.wireName} ${ranked ? 'ranked' : 'friend'} recovers, validates code and stops failed polling', (t) async {
