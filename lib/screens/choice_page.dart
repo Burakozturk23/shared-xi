@@ -176,12 +176,18 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
           if (type == 'personal') ...[note('Favorilerini sırala. Bu listede doğru sıra, puan veya rekor yok.'),
             chips(rows(catalog['personal']).map((t) => ('${t['id']}', '${t['label']}')).toList(), personalId, (v) => personalId = v)],
         ],
-        if (hl || !tot && type == 'objective') ...metrics.map((m) => RadioListTile<String>(
-          contentPadding: EdgeInsets.zero, value: '${m['id']}', groupValue: metricId,
-          title: Text('${m['label'] ?? m['id']}'), subtitle: Text(m['gatePassed'] == true ?
-            '${m['unit'] ?? ''} · ${m['scopeLabel'] ?? m['scope'] ?? ''}' : '${m['reason'] ?? 'Kaynak doğrulaması bekleniyor.'}'),
-          secondary: m['gatePassed'] == true ? null : const Icon(Icons.lock_outline),
-          onChanged: busy ? null : (v) => setState(() => metricId = v))),
+        if (hl || !tot && type == 'objective') ...[
+          ...metrics.where((m) => m['gatePassed'] == true).map((m) => RadioListTile<String>(
+            contentPadding: EdgeInsets.zero, value: '${m['id']}', groupValue: metricId,
+            title: Text('${m['label'] ?? m['id']}'), subtitle: Text('${m['unit'] ?? ''} · ${m['edition'] ?? m['scope'] ?? ''}'),
+            onChanged: busy ? null : (v) => setState(() => metricId = v))),
+          if (metrics.any((m) => m['gatePassed'] != true)) ExpansionTile(
+            tilePadding: EdgeInsets.zero, leading: const Icon(Icons.lock_outline),
+            title: Text('İncelemedeki ölçütler (${metrics.where((m) => m['gatePassed'] != true).length})'),
+            children: metrics.where((m) => m['gatePassed'] != true).map((m) => ListTile(
+              contentPadding: EdgeInsets.zero, title: Text('${m['label'] ?? m['id']}'),
+              subtitle: Text('${m['reason'] ?? 'Kaynak doğrulaması bekleniyor.'}'))).toList()),
+        ],
         note('Yeni oyun: ${tot && !approved ? 0 : data['energyCost'] ?? 0} enerji · Kayıtlı oyuna devam: 0 enerji'),
         if (rewardMap(data['availability'])['enabled'] != true) note('Güncelleme henüz kullanıma açılmadı.'),
         button('Oyunu hazırla', canStart ? prepare : null),
@@ -230,11 +236,13 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       metrics.where((m) => m['id'] == r['metricId']).firstOrNull ?? <String,dynamic>{};
     return [
       if (m['label'] != null && r['mode'] == 'blind_ranking') note('${m['label']}'),
-      if (m['scopeLabel'] != null) note('${m['scopeLabel']}'),
-      if (m['poolLabel'] != null) note('${m['poolLabel']}'),
-      if (m['sources'] is List && (m['sources'] as List).isNotEmpty)
-        ExpansionTile(tilePadding: EdgeInsets.zero, title: Text('Kaynak · ${m['edition'] ?? 'İstatistik'}'),
-          children: [for (final source in m['sources'] as List) SelectableText('$source')]),
+      if (m['scopeLabel'] != null || m['poolLabel'] != null || (m['sources'] is List && (m['sources'] as List).isNotEmpty))
+        ExpansionTile(tilePadding: EdgeInsets.zero, title: const Text('Kapsam ve kaynak'), children: [
+          if (m['scopeLabel'] != null) note('${m['scopeLabel']}'),
+          if (m['poolLabel'] != null) note('${m['poolLabel']}'),
+          if (m['edition'] != null) note('${m['edition']}'),
+          for (final source in m['sources'] as List? ?? const []) SelectableText('$source'),
+        ]),
     ];
   }
   Widget higher(Map<String,dynamic> r) {
