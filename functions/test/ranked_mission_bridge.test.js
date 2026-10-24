@@ -10,7 +10,8 @@ test("actual PvP settlement advances daily play and win missions exactly once wi
   const h = harness({users: {alice: {displayName: "Alice"}, bob: {displayName: "Bob"}}});
   await h.context.lbSettlePvp({id: "match", mode: "club_club", host: "alice", guest: "bob",
     status: "finished", rankedEligible: true, playKind: "ranked", ruleVersion: RULE,
-    winnerUid: "alice", finishedAt: h.now, rewardPolicy: {}, audit: {}, names: {}, scores: {}},
+    winnerUid: "alice", finishedAt: h.now, rewardPolicy: {}, audit: {a: {uid: "alice", input: {action: "answer"}},
+      b: {uid: "bob", input: {action: "answer"}}}, names: {}, scores: {}},
   {rankedEnabled: true, rewardsEnabled: false, eloEnabled: false});
   const settlement = h.read("rankedState/settlements/club_club/match");
   assert.equal(settlement.player1Result, "win");

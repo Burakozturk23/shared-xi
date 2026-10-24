@@ -102,7 +102,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   function finish(s, r, time) {
     if (r.finished) return;
-    r.finished = true;
+    r.finished = true; r.finishedAt = time;
     let medal = 0;
     if (r.mode === "blitz") {
       const day = dayKey(Math.min(time, r.endAt, r.hardEndAt));

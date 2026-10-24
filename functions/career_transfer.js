@@ -128,7 +128,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     }
   }
   function finish(s, run, time) {
-    run.finished = true; run.phase = "result";
+    run.finished = true; run.phase = "result"; run.finishedAt = time;
     const record = s.collection[`${run.mode}__${run.puzzle}`];
     if (run.mode === "transfer") {
       s.streak = run.found ? s.streak + 1 : 0; run.streak = s.streak;

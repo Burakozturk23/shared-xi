@@ -106,7 +106,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   function finish(s, r, reason, time, policy) {
     if (r.finished) return;
-    r.finished = true; r.reason = reason;
+    r.finished = true; r.reason = reason; r.finishedAt = time;
     const rec = record(s, r); rec.sessions++;
     if (r.mode === "fake_speed" && r.answers === 10) {
       const tier = r.correct === 10 ? 4 : r.correct >= 9 ? 3 : r.correct >= 8 ? 2 : r.correct >= 5 ? 1 : 0;

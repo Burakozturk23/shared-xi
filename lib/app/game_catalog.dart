@@ -65,6 +65,29 @@ class GameGroup {
 }
 
 class GameCatalog {
+  // Server route keys are allowlisted here; arbitrary server URLs cannot navigate.
+  static GameEntry? missionRoute(String key) {
+    if (key == 'online_ranked') return onlineRanked;
+    if (key == 'daily_matches') return daily;
+    if (key == 'daily_lingo') return dailyLingo;
+    if (key == 'passa_daily') return dailyPassa;
+    if (key == 'daily_anagram') return dailyAnagram;
+    if (key == 'passa_weekly') return const GameEntry(title: 'Haftalık Passaparola',
+      subtitle: '29 harf', icon: Icons.abc_rounded, page: DailyWordsPage(mode: 'passa_weekly'),
+      requiresRepository: false, modern: true);
+    const titles = <String, String>{
+      'coach11': 'Hoca 11', 'vault': 'Kadro Kasası', 'letter11': 'Harf 11',
+      'career': 'Career Puzzle', 'transfer': 'Transfer Detective', 'mystery': 'Gizemli Futbolcu',
+      'chain': 'Kariyer Zinciri', 'fake_endless': 'Sahte Kulüp', 'matching': 'Matching',
+      'pyramid': 'Pyramid', 'burst_survival': 'Burst', 'this_or_that': 'O mu Bu mu?',
+      'higher_lower': 'Higher or Lower', 'blind_ranking': 'Blind Ranking',
+      'squad_challenge': 'Squad Challenge',
+    };
+    final title = titles[key];
+    for (final game in games) { if (title != null && game.title == title) return game; }
+    return null;
+  }
+
   static const onlineRanked = GameEntry(title: 'Rastgele eşleş', subtitle: '', icon: Icons.public_rounded,
     page: OnlineRankedModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true);
   static const onlineFriends = GameEntry(title: 'Arkadaşlarınla oyna', subtitle: '', icon: Icons.groups_outlined,

@@ -135,18 +135,29 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     }
   }
 
-  GameEntry? _gameFor(MissionItem mission) {
-    if (mission.id == 'daily_challenge_1') return GameCatalog.daily;
-    if (mission.id == 'daily_ranked_play_3' ||
-        mission.id == 'daily_ranked_win_1' ||
-        mission.chainId == 'ranked_played' ||
-        mission.chainId == 'ranked_wins') return GameCatalog.onlineRanked;
-    return null;
-  }
+  GameEntry? _gameFor(MissionItem mission) => GameCatalog.missionRoute(mission.routeKey);
+
+  bool _hasRoute(MissionItem m) => _gameFor(m) != null ||
+    ['solo_catalog', 'word_catalog'].contains(m.routeKey);
 
   Future<void> _openMission(MissionItem mission) async {
-    final game = _gameFor(mission);
-    if (game == null || _openingGame || _loading || _claiming) return;
+    if (_openingGame || _loading || _claiming) return;
+    GameEntry? game = _gameFor(mission);
+    if (game == null && _hasRoute(mission)) {
+      final options = mission.routeKey == 'word_catalog'
+        ? [GameCatalog.dailyLingo, GameCatalog.dailyPassa, GameCatalog.dailyAnagram]
+        : GameCatalog.games.where((g) => g != GameCatalog.vsBot).toList();
+      game = await showModalBottomSheet<GameEntry>(context: context, isScrollControlled: true,
+        builder: (sheetContext) => SafeArea(child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * .7,
+          child: ListView(children: [
+            Padding(padding: const EdgeInsets.all(20), child: Text(c('Bir mod seç', 'Choose a mode'),
+              style: Theme.of(sheetContext).textTheme.titleLarge)),
+            for (final option in options) ListTile(leading: Icon(option.icon), title: Text(option.title),
+              subtitle: Text(option.subtitle), onTap: () => Navigator.pop(sheetContext, option)),
+          ]))));
+    }
+    if (game == null || !mounted) return;
     setState(() => _openingGame = true);
     try {
       await widget.openGame(context, game);
@@ -205,7 +216,8 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     final p = _progression!;
     final m = _missions!;
     final list =
-        List<MissionItem>.of(_kind == MissionKind.daily ? m.daily : m.general)
+        List<MissionItem>.of(_kind == MissionKind.daily ? m.daily :
+          _kind == MissionKind.weekly ? m.weekly : m.general)
           ..sort(
             (a, b) =>
                 (a.claimed
@@ -310,7 +322,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 label: Text(
                   kind == MissionKind.daily
                       ? c('Günlük', 'Daily')
-                      : c('Kariyer', 'Career'),
+                      : kind == MissionKind.weekly ? c('Haftalık', 'Weekly') : c('Kariyer', 'Career'),
                 ),
                 selected: _kind == kind,
                 onSelected: (_) => setState(() => _kind = kind),
@@ -329,12 +341,21 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                   '${m.dailyCompletedCount}/${m.dailyClaimLimit} ödül alındı · Türkiye saatiyle 00.00’da yenilenir.',
                   '${m.dailyCompletedCount}/${m.dailyClaimLimit} rewards claimed · Resets at 00:00 Türkiye time.',
                 )
+              : _kind == MissionKind.weekly
+                ? c('${m.weeklyCompletedCount}/${m.weeklyClaimLimit} ödül · Pazartesi 00.00’da yenilenir · +0 XP / +0 SP',
+                    '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} rewards · Resets Monday at 00:00 Türkiye time · +0 XP / +0 SP')
               : c(
-                  'Aşamaları tamamla, sıradaki hedefi aç. Ödülünü alınca sezon puanı da kazanırsın (günlük SP sınırı içinde).',
+                  'Aşamaları tamamla, sıradaki hedefi aç. Her kartta kazanacağın ödüller gösterilir.',
                   'Complete stages to unlock the next goal.',
                 ),
         ),
         const SizedBox(height: 12),
+        if (m.availabilityNotice.isNotEmpty) Padding(
+          padding: const EdgeInsets.only(bottom: 12), child: Text(m.availabilityNotice)),
+        if (_kind == MissionKind.weekly && !m.weeklyEnabled) Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(c('Haftalık ödüller henüz açılmadı. İlerlemen korunur.',
+            'Weekly rewards are not yet available. Your progress is saved.'))),
         if (visible.isEmpty)
           SocialNotice(
             title: _readyOnly ? c('Henüz hazır ödül yok', 'No rewards ready yet') : c('Burada görev yok', 'No missions here'),
@@ -443,7 +464,12 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
       ],
     ),
   );
-  Widget _mission(MissionItem m) => PitchPanel(
+  Widget _mission(MissionItem m) => m.claimed ? PitchPanel(
+    key: ValueKey('mission-${m.id}'), child: Row(children: [
+      Icon(Icons.check_circle_outline, color: socialAccent(context)),
+      const SizedBox(width: 10), Expanded(child: Text(m.title)),
+      const SizedBox(width: 8), Flexible(child: Text(c('Ödül alındı', 'Reward claimed'))),
+    ])) : PitchPanel(
     key: ValueKey('mission-${m.id}'),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,7 +511,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 ),
               ),
             SocialStatus('+${m.rewardCoins} Link Coin'),
-            SocialStatus('+${m.kind == MissionKind.daily ? 30 : 50} SP'),
+            if (m.rewardSp > 0) SocialStatus('+${m.rewardSp} SP'),
           ],
         ),
         const SizedBox(height: 12),
@@ -495,8 +521,8 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
           Text(
             m.limitReached
                 ? c(
-                    'Günlük ödül limitine ulaştın',
-                    'Daily reward limit reached',
+                    'Bu dönemin ödül limitine ulaştın',
+                    'Reward limit for this period reached',
                   )
                 : c(
                     'Bu görev şu anda kapalı',
@@ -509,22 +535,13 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
             child: Text(c('Ödülü al', 'Claim reward')),
           )
         else ...[
-          SocialStatus(c('Devam ediyor', 'In progress')),
-          const SizedBox(height: 8),
-          Text(
-            c(
-              'Tamamlanan oyunlar doğrulandıktan sonra ilerlemen güncellenir.',
-              'Progress updates after completed games are verified.',
-            ),
-          ),
-          if (_gameFor(m) != null) ...[
+          SocialStatus(m.progress > 0 ? c('Devam ediyor', 'In progress') : c('Başlamaya hazır', 'Ready to start')),
+          if (_hasRoute(m)) ...[
             const SizedBox(height: 12),
             SizedBox(width: double.infinity, child: OutlinedButton.icon(
               onPressed: _loading || _claiming || _openingGame ? null : () => _openMission(m),
-              icon: Icon(m.id == 'daily_challenge_1' ? Icons.calendar_today_outlined : Icons.public_rounded),
-              label: Text(m.id == 'daily_challenge_1'
-                ? c('Günün maçlarına git', 'Open today’s matches')
-                : c('Online modları aç', 'Open online modes')),
+              icon: Icon(_gameFor(m)?.icon ?? Icons.sports_soccer_outlined),
+              label: Text(c('Oyuna git', 'Open game')),
             )),
           ],
         ],
