@@ -141,9 +141,9 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Bitir'))]));
     if (yes == true) await act(run['phase'] == 'prepared' ? 'cancel' : 'finish');
   }
-  Future<void> adHint() async {
+  Future<void> adHint({String? boostId}) async {
     setState(() {busy = true; error = null;});
-    try {await service.watch('${run['id']}');}
+    try {await service.watch('${run['id']}', boostId: boostId);}
     catch (e) {if (mounted) setState(() => error = gameErrorMessage(e));}
     finally {if (mounted) setState(() => busy = false);}
     if (mounted) await load();
@@ -269,7 +269,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         OutlinedButton(onPressed: busy || offline || _n(run['passes']) >= 2 ? null : () => act('pass'), child: Text('Pas (${2 - _n(run['passes'])})${speed ? ' · −5 sn' : ''}')),
         if (!speed && rewardMap(run['support'])['version'] == 1)
           PaidHintButton(session: run, sku: 'boost_basic', label: 'Ek bilgi', disabled: busy || offline || local,
-            onUse: (payment) => act('hint', payment), onWatch: adHint)
+            onUse: (payment) => act('hint', payment), onWatch: () => adHint(boostId: 'boost_basic'))
         else if (!speed) OutlinedButton(onPressed: busy || offline || run['freeUsed'] == true && _n(run['adCredits']) == 0 ? null : () => act('hint'), child: Text(run['freeUsed'] == true ? 'İpucu (${run['adCredits']})' : 'Ücretsiz ipucu')),
         if (!speed && rewardMap(run['support'])['version'] != 1 && _n(run['adGranted']) < 2) TextButton(onPressed: busy || offline || local ? null : adHint, child: const Text('Reklamla ipucu')),
       ]),

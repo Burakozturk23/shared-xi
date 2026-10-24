@@ -452,11 +452,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function prepareHint(uid, placement, context) {
     const expected = {coach11_hint: "coach_xi", letter11_hint: "letter11", vault_hint: "squad_vault"}[placement];
     const s = await read(uid); const run = sessionOf(s.sessions[context?.sessionId]);
-    if (!expected || !run || run.mode !== expected || run.finished || run.expiresAt <= now() || run.adGranted >= 2) {
+    if (!expected || !run || run.mode !== expected || run.finished || run.expiresAt <= now() || run.adGranted >= 2 ||
+        B.paid(run) && run.hints.length + run.adCredits >= 3) {
       fail("failed-precondition", "Bu oyun için reklamlı ipucu hakkı yok.");
     }
     return B.adBenefit(run, {amount: 0, claimKey: `three_hint_${run.id}_${run.adGranted}`,
-      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}});
+      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}}, context?.boostId);
   }
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
@@ -464,11 +465,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       // A late receipt cannot modify another run or convert into coins.
       const canApply = run && run.hints.length + run.adCredits < 3 &&
         run.adGranted < (run.boostPolicy?.daily ? 1 : 2) && run.adGranted === receipt.context.credit;
-      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) return;
+      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) {
+        if (run) s.sessions[run.id] = run; return;
+      }
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= now()) return;
       if (run.adReceipts[receipt.id]) return;
       if (run.adGranted >= 2 || run.adGranted !== receipt.context.credit) return;
-      run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true;
+      B.grantAd(run, receipt);
       // Watching only grants credit; mastery changes when a hint is consumed.
       s.sessions[run.id] = run;
     });

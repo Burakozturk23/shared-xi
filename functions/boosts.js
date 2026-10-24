@@ -46,8 +46,14 @@ function pin(run, policy) {
   run.boostUses = {}; run.assisted = false;
 }
 const paid = (run) => run?.boostPolicy?.version === VERSION;
+function adCredits(run, sku) {
+  const typed = Object.values(run.adProducts || {}).reduce((sum, n) => sum + n, 0);
+  return (run.adProducts?.[sku] || 0) + Math.max(0, (run.adCredits || 0) - typed);
+}
 function view(run) {
   return paid(run) ? {version: VERSION, products: Object.values(run.boostPolicy.products),
+    adCreditsByProduct: Object.fromEntries(Object.keys(run.boostPolicy.products).map((sku) =>
+      [sku, products[sku].ads ? adCredits(run, sku) : 0])),
     adLimit: run.boostPolicy.daily ? 1 : 2,
     adRemaining: Math.max(0, (run.boostPolicy.daily ? 1 : 2) - (run.adGranted || 0)), assisted: run.assisted === true,
     resultLabel: run.assisted ? "Yardımlı" : "Yardımsız", masteryEligible: !run.assisted} : null;
@@ -95,21 +101,41 @@ function consume(e, run, input, sku, target, result, time) {
       priceCoins: product.priceCoins, balanceBefore: before, balanceAfter: e.balances.coins,
       purchasedAt: time, economyConfigId: "boosts-v1", consumed: true};
   } else if (source === "ad") {
-    if (!product.ads || !(run.adCredits > 0)) fail("resource-exhausted", "Bu ipucu için doğrulanmış reklam hakkı yok.");
+    if (!product.ads || !(adCredits(run, sku) > 0)) {
+      fail("resource-exhausted", "Bu destek türü için doğrulanmış reklam hakkı yok.");
+    }
+    if (run.adProducts?.[sku] > 0) run.adProducts[sku]--;
     run.adCredits--;
   } else fail("invalid-argument", "Çantadan, Coin veya doğrulanmış reklam seç.");
   run.assisted = true; run.masteryEligible = false; run.leaderboardEligible = false;
   run.boostUses[key] = receipt; e.storeUses["boost__" + key] = receipt; e.updatedAt = time;
 }
-function adBenefit(run, benefit) {
+function adBenefit(run, benefit, sku) {
   if (!paid(run)) return benefit;
+  sku ||= Object.keys(run.boostPolicy.products).find((id) => products[id].ads);
+  if (!run.boostPolicy.products[sku]?.ads) fail("permission-denied", "Bu destek reklamla alınamaz.");
   if (run.adGranted >= (run.boostPolicy.daily ? 1 : 2)) fail("resource-exhausted", "Bu oyunun reklam hakkı doldu.");
-  return {...benefit, requireVerifiedAd: true, context: {...benefit.context, boostPolicyVersion: VERSION}};
+  return {...benefit, requireVerifiedAd: true, context: {...benefit.context, boostPolicyVersion: VERSION,
+    boostId: sku, modeId: modeOf(run), puzzleVersion: run.version || run.dataVersion || run.graphVersion}};
+}
+function grantAd(run, receipt) {
+  const sku = receipt.context?.boostId;
+  if (paid(run) && sku) {
+    if (!run.boostPolicy.products[sku]?.ads || receipt.context.modeId !== modeOf(run)) {
+      fail("failed-precondition", "Reklam hakkının oyun veya destek türü eşleşmiyor.");
+    }
+    run.adProducts ||= {}; run.adProducts[sku] = (run.adProducts[sku] || 0) + 1;
+  }
+  run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true;
 }
 // A verified ad arriving after expiry remains owned; it becomes a basic stock
 // unit instead of disappearing. If stock is full, keep the SSV outbox pending.
 function recoverAd(e, run, receipt, time, sku = "boost_basic", canApply = true) {
   if (receipt.context?.boostPolicyVersion !== VERSION) return false;
+  if (receipt.context.boostId) {
+    if (!products[receipt.context.boostId]?.ads) fail("failed-precondition", "Geçersiz reklam destek türü.");
+    sku = receipt.context.boostId;
+  }
   const key = "boost_ad_recovery__" + receipt.id;
   if (e.storeUses[key] || run?.adReceipts?.[receipt.id]) return true;
   if (canApply && run && !run.finished && run.expiresAt > time) return false;
@@ -118,6 +144,10 @@ function recoverAd(e, run, receipt, time, sku = "boost_basic", canApply = true) 
   e.inventory[sku] = {...item, itemId: sku, itemType: "boost", quantity: quantity + 1,
     sourceType: "verified_ad", sourceId: receipt.id, acquiredAt: item?.acquiredAt || time};
   e.storeUses[key] = {itemId: sku, source: "verified_ad_recovery", usedAt: time};
+  if (run) {
+    run.adGranted = (run.adGranted || 0) + 1;
+    run.adReceipts ||= {}; run.adReceipts[receipt.id] = true;
+  }
   return true;
 }
 const offers = specs.filter(([id]) => !["first_letter", "last_letter", "anagram"].includes(id)).flatMap(
@@ -131,4 +161,4 @@ const offers = specs.filter(([id]) => !["first_letter", "last_letter", "anagram"
       modes: Object.keys(modes).filter((mode) => modes[mode].includes(id)),
     })));
 module.exports = {VERSION, products, modes, offers, enabled, policyFor, pin, paid, view,
-  paymentFingerprint, consume, adBenefit, recoverAd};
+  paymentFingerprint, consume, adBenefit, grantAd, recoverAd};

@@ -402,7 +402,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const c = await pinned(r.graphVersion);
     if (!nextHint(r, graphOf(c), c)) fail("failed-precondition", "Bu konumda yeni köprü ipucu yok.");
     return B.adBenefit(r, {amount: 0, claimKey: `mc_hint_${r.id}_${r.adGranted}`,
-      context: {sessionId: r.id, mode: r.mode, credit: r.adGranted}});
+      context: {sessionId: r.id, mode: r.mode, credit: r.adGranted}}, context?.boostId);
   }
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
@@ -410,12 +410,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const canApply = r && r.optionalHints + r.adCredits < 3 && r.adGranted < 2 &&
         r.adGranted === receipt.context.credit;
       const sku = receipt.context?.mode === "mystery" ? "boost_basic" : "boost_connection";
-      if (B.recoverAd(e, r, receipt, time, sku, canApply)) return;
+      if (B.recoverAd(e, r, receipt, time, sku, canApply)) {
+        if (r) s.sessions[r.id] = r; return;
+      }
       if (!r || r.mode !== receipt.context?.mode || r.mode === "blitz" || r.finished || r.expiresAt <= time ||
           r.adReceipts[receipt.id] || r.adGranted >= 2 ||
           r.optionalHints + r.adCredits + (B.paid(r) || r.freeUsed ? 0 : 1) >= 3 ||
           r.adGranted !== receipt.context.credit) return;
-      r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
+      B.grantAd(r, receipt); s.sessions[r.id] = r;
     });
   }
   return {status, start, act, search, settle, prepareHint, settleHint};

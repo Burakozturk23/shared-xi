@@ -103,8 +103,8 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
       }
     });
   }
-  Future<void> _watch() => _run(() async {
-    await _service.watchHint(widget.mode, '${_session['id']}');
+  Future<void> _watch({String? boostId}) => _run(() async {
+    await _service.watchHint(widget.mode, '${_session['id']}', boostId: boostId);
     final r = await _service.load(widget.mode);
     if (mounted && !_accountChanged) setState(() { _status = r; _session = rewardMap(r['session']); });
   });
@@ -251,7 +251,7 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
       for (final e in available) PaidHintButton(session: _session,
         sku: !_career && hints.length == 2 ? 'boost_first_letter' : ordering ? 'boost_connection' : 'boost_basic',
         label: !_career ? ['Ülke bilgisi', 'Mevki bilgisi', 'İlk harf'][hints.length] : e.value,
-        disabled: _busy, onUse: (payment) => _act('hint', {'hint': e.key, ...payment}), onWatch: _watch),
+        disabled: _busy, onUse: (payment) => _act('hint', {'hint': e.key, ...payment}), onWatch: () => _watch(boostId: !_career && hints.length == 2 ? 'boost_first_letter' : ordering ? 'boost_connection' : 'boost_basic')),
     ];
     final credit = _session['freeHint'] == true || (_session['adCredits'] as num? ?? 0) > 0;
     return [const SizedBox(height: 12), Text('İpucu · ${hints.length} / 3'),

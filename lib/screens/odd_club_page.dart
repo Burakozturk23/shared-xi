@@ -96,8 +96,8 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     if (mounted && !_accountChanged) setState(() => _accept(status));
     if (action == 'next' && _scroll.hasClients) _scroll.jumpTo(0);
   });
-  Future<void> _watch() => _run(() async {
-    await _service.watchHint(_mode, '${_session['id']}');
+  Future<void> _watch({String? boostId}) => _run(() async {
+    await _service.watchHint(_mode, '${_session['id']}', boostId: boostId);
     final r = await _service.load(_mode);
     if (mounted && !_accountChanged) setState(() => _accept(r));
   });
@@ -193,10 +193,10 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     const SizedBox(height: 12),
     if (_session['free5050'] == true)
       PaidHintButton(session: _session, sku: 'boost_eliminate', label: 'Tek seçenek ele', disabled: locked,
-        onUse: (payment) => _act('fifty', payment), onWatch: _watch),
+        onUse: (payment) => _act('fifty', payment), onWatch: () => _watch(boostId: 'boost_eliminate')),
     if ((_session['traceRemaining'] as num? ?? 0) > 0 && _session['traceAvailable'] == true)
       PaidHintButton(session: _session, sku: 'boost_connection', label: 'Kariyer İzi', disabled: locked,
-        onUse: (payment) => _act('trace', payment), onWatch: _watch),
+        onUse: (payment) => _act('trace', payment), onWatch: () => _watch(boostId: 'boost_connection')),
   ] : [
     const SizedBox(height: 12),
     OutlinedButton.icon(onPressed: locked || _session['free5050'] != true ? null : () => _act('fifty'),

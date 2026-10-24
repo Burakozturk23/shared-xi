@@ -126,8 +126,8 @@ class _MysteryChainPageState extends State<MysteryChainPage> with WidgetsBinding
       if (mounted && !_accountChanged) setState(() { _selected = player; _clubs = _rows(r['clubs']); _results = []; _generation++; });
     });
   }
-  Future<void> _watch() => _run(() async {
-    await _service.watchHint(widget.mode, '${_session['id']}');
+  Future<void> _watch({String? boostId}) => _run(() async {
+    await _service.watchHint(widget.mode, '${_session['id']}', boostId: boostId);
     final r = await _service.load(widget.mode);
     if (mounted && !_accountChanged) setState(() { _status = r; _accept(rewardMap(r['session'])); });
   });
@@ -241,7 +241,7 @@ class _MysteryChainPageState extends State<MysteryChainPage> with WidgetsBinding
       const SizedBox(height: 12), Text('Destek çantası · $count / 3'),
       PaidHintButton(session: _session, sku: _mystery ? 'boost_basic' : 'boost_connection',
         label: _mystery ? 'Yeni bilgi aç' : 'Geçerli köprü ipucu', disabled: disabled,
-        onUse: (payment) => _act('hint', payment), onWatch: _watch),
+        onUse: (payment) => _act('hint', payment), onWatch: () => _watch(boostId: _mystery ? 'boost_basic' : 'boost_connection')),
     ];
     final credit = _session['freeHint'] == true || (_session['adCredits'] as num? ?? 0) > 0;
     return [const SizedBox(height: 16), Text('İsteğe bağlı ipucu · $count / 3'),

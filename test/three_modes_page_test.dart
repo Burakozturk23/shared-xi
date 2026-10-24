@@ -43,7 +43,7 @@ class FakeModes extends ThreeModesService {
       'country': 'Argentina', 'position': 'FWD', 'league': 'Premier League'}]};
   }
   @override
-  Future<void> watchHint(String mode, String sessionId) async {}
+  Future<void> watchHint(String mode, String sessionId, {String? boostId}) async {}
 }
 final boundary = GlobalKey();
 Future<void> open(WidgetTester t, FakeModes f, {double width = 390, double scale = 1, bool light = false}) async {

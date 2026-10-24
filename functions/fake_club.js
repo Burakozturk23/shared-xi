@@ -316,22 +316,28 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   async function prepareHint(uid, placement, context) {
     const r = runOf((await read(uid)).sessions[context?.sessionId]);
+    const sku = context?.boostId || "boost_connection";
+    const eliminate = B.paid(r) && sku === "boost_eliminate";
     if (placement !== "fake_club_hint" || !r || r.mode !== "fake_endless" || r.finished ||
-      r.answered || r.expiresAt <= now() || r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.traceOnQuestion) {
-      fail("failed-precondition", "Bu oyunda yeni Kariyer İzi hakkı yok.");
+      r.answered || r.expiresAt <= now() || r.adGranted >= 2 || (eliminate ?
+        r.freeUsed || r.adProducts?.boost_eliminate > 0 : r.traceUsed + r.adCredits >= 2 || r.traceOnQuestion)) {
+      fail("failed-precondition", "Bu oyunda seçilen destek için yeni reklam hakkı yok.");
     }
     return B.adBenefit(r, {amount: 0, claimKey: `fc_hint_${r.id}_${r.adGranted}`,
-      context: {sessionId: r.id, credit: r.adGranted}});
+      context: {sessionId: r.id, credit: r.adGranted}}, sku);
   }
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
-      const canApply = r && r.traceUsed + r.adCredits < 2 && r.adGranted < 2 &&
-        r.adGranted === receipt.context.credit;
-      if (B.recoverAd(e, r, receipt, time, "boost_connection", canApply)) return;
+      const eliminate = B.paid(r) && receipt.context?.boostId === "boost_eliminate";
+      const canApply = r && r.adGranted < 2 && r.adGranted === receipt.context.credit &&
+        (eliminate ? !r.freeUsed && !(r.adProducts?.boost_eliminate > 0) : r.traceUsed + r.adCredits < 2);
+      if (B.recoverAd(e, r, receipt, time, "boost_connection", canApply)) {
+        if (r) s.sessions[r.id] = r; return;
+      }
       if (!r || r.mode !== "fake_endless" || r.finished || r.expiresAt <= time || r.adReceipts[receipt.id] ||
-        r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.adGranted !== receipt.context.credit) return;
-      r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
+        !canApply) return;
+      B.grantAd(r, receipt); s.sessions[r.id] = r;
     });
   }
   return {status, start, act, settle, prepareHint, settleHint};

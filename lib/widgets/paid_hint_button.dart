@@ -48,7 +48,8 @@ class _PaidHintButtonState extends State<PaidHintButton> {
       final source = await showModalBottomSheet<String>(context: context,
         isScrollControlled: true, useSafeArea: true,
         builder: (_) => _SupportSheet(label: widget.label, product: quote,
-          credits: (widget.session['adCredits'] as num? ?? 0).toInt(),
+          credits: (rewardMap(rewardMap(widget.session['support'])['adCreditsByProduct'])[widget.sku]
+            as num? ?? widget.session['adCredits'] as num? ?? 0).toInt(),
           canWatch: widget.onWatch != null &&
             (widget.session['adGranted'] as num? ?? 0) <
               (rewardMap(widget.session['support'])['adLimit'] as num? ?? 2) &&

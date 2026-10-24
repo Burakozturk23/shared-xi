@@ -62,3 +62,10 @@ Açık işler: diğer günlük/kelime/keşif modları; sekiz hikâye ailesinin �
 Yeni yerel kontroller: sekiz hikâye ailesi ve iki içerik uygunluğu testi PASS. Tam sunucu test koşusu: 590/590 PASS, lint PASS. Yeni commit CI sonucu ayrıca doğrulanacak. 142 kabul kriterinin tamamı henüz doğrulanmadı; NOT_RUN satırları topluca PASS yapılmadı.
 
 Kalan ana kapsam: günlük/kelime/keşif destekleri, sekiz hikâye ailesinde ücretli yardım ve Pro göçü, yerel Grid ve yedi bot modu için sunucu oturumları, Matching/Choice antrenman destekleri, Club Manager ve Squad Challenge destekleri, canlı online sağlık gözlemcisi, tam mod/kabul matrisi ve gerçek cihaz SSV/iki hesap kabulü. Üretim dağıtımı, rollout açılışı veya PR birleştirme yapılmadı.
+
+
+## Checkpoint 4 — Reklam ürün bağlama
+
+Reklam biletleri pilot oturumlarda seçilen boostId, modeId, runId ve puzzleVersion taşır. Ürün başına hak sayacı başka SKU ile harcanamaz; panel yalnız seçili ürünün hakkını gösterir. Aynı reklam requestId ile ürün değiştirme, farklı destek harcama, güçlü destek reklamı ve mevcut aşamada kullanılamayan ürün reklamı reddedilir. Geciken SSV aşama değişimine denk gelirse seçilen ürün stokta korunur ve oturum reklam kotasına yazılır. Önceden kazanılmış türsüz haklar göç sırasında korunur.
+
+Pro istemci yolunda yeni destekler gerçek reklam yükler; eski oturumun Pro avantajı korunur. Yedi yeni sunucu senaryosuyla 597/597 Functions testi ve lint PASS. Üç mobil taşıma testi ve ürün bazlı panel testi eklendi; CI bekleniyor. Bu değişiklik yeni mod ailesi açmaz; checkpoint 3 kapsam eksikleri devam eder.

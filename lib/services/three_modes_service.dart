@@ -52,11 +52,11 @@ class ThreeModesService {
   Future<Map<String, dynamic>> search(Map<String, dynamic> input) =>
       _transport.call('searchThreeMode', input);
 
-  Future<void> watchHint(String mode, String sessionId) async {
+  Future<void> watchHint(String mode, String sessionId, {String? boostId}) async {
     final status = await _transport.call('getRewardedAdStatus');
     await _transport.watch(
       {'coach_xi': 'coach11_hint', 'letter11': 'letter11_hint', 'squad_vault': 'vault_hint'}[mode]!,
-      pro: status['pro'] == true, context: {'sessionId': sessionId},
+      pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId},
     );
   }
 }

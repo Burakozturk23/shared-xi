@@ -127,8 +127,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       if (mounted) await _act('finish');
     }
   }
-  Future<void> _watch() => _run(() async {
-    await _service.watchHint(widget.mode, '${_session['id']}');
+  Future<void> _watch({String? boostId}) => _run(() async {
+    await _service.watchHint(widget.mode, '${_session['id']}', boostId: boostId);
     final r = await _service.load(widget.mode);
     if (mounted) setState(() { _status = r; _session = rewardMap(r['session']); });
   });
@@ -358,7 +358,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
               sku: _vault && h.key == 'player' ? 'boost_strong' : ['club', 'years'].contains(h.key) ? 'boost_connection' : 'boost_basic',
               label: h.value, disabled: _busy || _maps(_session['hints']).length >= 3 ||
                 (!_vault && _slot == null) || (_vault && h.key == 'league' && _session['league'] != null),
-              onUse: (payment) => _act('hint', {'hint': h.key, 'slot': _slot, ...payment}), onWatch: _watch),
+              onUse: (payment) => _act('hint', {'hint': h.key, 'slot': _slot, ...payment}), onWatch: () => _watch(boostId: _vault && h.key == 'player' ? 'boost_strong' : ['club', 'years'].contains(h.key) ? 'boost_connection' : 'boost_basic')),
         ] else ...[
         Text(_session['freeHint'] == true ? '1 ücretsiz ipucun hazır.' : '${_session['adCredits']} reklamlı ipucun hazır.'),
         Wrap(spacing: 8, children: (_vault ? {'flag': 'Bayrak −1★', 'league': 'Lig −1★', 'player': 'Oyuncu −2★'}

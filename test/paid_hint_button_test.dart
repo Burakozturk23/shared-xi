@@ -69,4 +69,16 @@ void main() {
     await t.tap(find.text('Çantamdan kullan · 1 adet')); await t.pumpAndSettle();
     expect(used, false);
   });
+  testWidgets('a credit for another product is not offered as payment', (t) async {
+    await t.pumpWidget(MaterialApp(home: Scaffold(body: PaidHintButton(
+      session: {'id': 'run', 'revision': 1, 'adCredits': 1, 'support': {'version': 1,
+        'adCreditsByProduct': {'boost_basic': 0, 'boost_connection': 1},
+        'products': [{'id': 'boost_basic', 'priceCoins': 25, 'ads': true}]}},
+      sku: 'boost_basic', label: 'Ülke', currentUser: () => 'alice',
+      loadBalance: () async => {'stock': 0}, onUse: (_) async {},
+    ))));
+    await t.tap(find.byType(OutlinedButton)); await t.pumpAndSettle();
+    expect(find.text('Doğrulanmış reklam hakkını kullan · 1'), findsNothing);
+    expect(find.text('Coin ile al ve kullan · 25 Coin'), findsOneWidget);
+  });
 }

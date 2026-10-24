@@ -364,19 +364,28 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         run.adGranted >= 2 || run.hints.length + run.adCredits + (B.paid(run) || run.freeUsed ? 0 : 1) >= 3) {
       fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
     }
+    const sku = run.mode === "transfer" && run.hints.length === 2 ? "boost_first_letter" :
+      run.phase === "order" ? "boost_connection" : "boost_basic";
+    if (B.paid(run) && context?.boostId && context.boostId !== sku) {
+      fail("failed-precondition", "Bu aşamada seçilen destek kullanılamaz.");
+    }
     return B.adBenefit(run, {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
-      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}});
+      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}}, sku);
   }
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const run = runOf(s.sessions[receipt.context?.sessionId]);
+      const sku = run?.mode === "transfer" && run.hints.length === 2 ? "boost_first_letter" :
+        run?.phase === "order" ? "boost_connection" : "boost_basic";
       const canApply = run && run.hints.length + run.adCredits < 3 && run.adGranted < 2 &&
-        run.adGranted === receipt.context.credit;
-      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) return;
+        run.adGranted === receipt.context.credit && (!receipt.context.boostId || receipt.context.boostId === sku);
+      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) {
+        if (run) s.sessions[run.id] = run; return;
+      }
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= time ||
           run.adReceipts[receipt.id] || run.hints.length >= 3 || run.adGranted >= 2 ||
           run.adGranted !== receipt.context.credit) return;
-      run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true; s.sessions[run.id] = run;
+      B.grantAd(run, receipt); s.sessions[run.id] = run;
     });
   }
   return {status, start, act, search, settle, prepareHint, settleHint};

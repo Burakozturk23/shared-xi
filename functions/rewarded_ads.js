@@ -152,9 +152,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         typeof requestId !== "string" || !/^[a-f0-9]{32}$/.test(requestId)) {
       fail("invalid-argument", "Geçersiz reklam teklifi.");
     }
-    const existing = Object.values(stateOf((await ref(uid).get()).val()).tickets)
-        .find((t) => t.requestId === requestId);
-    if (existing) {
+    const checkExisting = (existing) => {
       if (existing.placement !== placement) fail("invalid-argument", "Reklam isteği eşleşmiyor.");
       if ((placement.startsWith("story_") || placement.startsWith("what_if_")) && Object.entries(existing.context || {})
           .some(([key, value]) => context?.[key] !== value)) {
@@ -163,6 +161,15 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
       if (THREE_HINTS.includes(placement) && existing.context?.sessionId !== context?.sessionId) {
         fail("invalid-argument", "Reklam oturumu eşleşmiyor.");
       }
+      if (THREE_HINTS.includes(placement) && context?.boostId &&
+          existing.context?.boostId !== context.boostId) {
+        fail("invalid-argument", "Reklam destek türü eşleşmiyor.");
+      }
+    };
+    const existing = Object.values(stateOf((await ref(uid).get()).val()).tickets)
+        .find((t) => t.requestId === requestId);
+    if (existing) {
+      checkExisting(existing);
       await settle(uid);
       return {ok: true, pro: existing.sourceType === "pro_daily_bonus", userId: uid, ticket: publicTicket(existing)};
     }
@@ -201,7 +208,10 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     const id = randomId();
     const state = await transact(uid, (s) => {
       prune(s, time);
-      if (Object.values(s.tickets).some((t) => t.requestId === requestId)) return;
+      const prior = Object.values(s.tickets).find((t) => t.requestId === requestId);
+      if (prior) {
+        checkExisting(prior); return;
+      }
       if (benefit && Object.values(s.tickets).some((t) => t.claimKey === benefit.claimKey &&
         (["verified", "credited"].includes(t.status) || t.status === "pending" && t.expiresAt > time))) {
         fail("already-exists", "Bu bonus zaten alındı veya doğrulanıyor.");

@@ -331,15 +331,17 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       !r.question.answers.some((id) => !r.found.includes(id) &&
         !r.hinted.includes(id))) fail("failed-precondition", "Bu oturumda reklam ipucu kullanılamaz.");
     return B.adBenefit(r, {amount: 0, claimKey: `burst_hint_${r.id}_${r.adGranted}`,
-      context: {sessionId: r.id, credit: r.adGranted}});
+      context: {sessionId: r.id, credit: r.adGranted}}, context?.boostId);
   }
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, t) => {
       const r = hydrate(s.sessions[receipt.context?.sessionId]);
-      if (B.recoverAd(e, r, receipt, t)) return;
+      if (B.recoverAd(e, r, receipt, t)) {
+        if (r) s.sessions[r.id] = r; return;
+      }
       if (!r || r.mode !== "burst" || r.style !== "survival" || r.finished || r.expiresAt <= t ||
         r.adReceipts[receipt.id] || r.adGranted >= 2 || r.adGranted !== receipt.context.credit) return;
-      r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
+      B.grantAd(r, receipt); s.sessions[r.id] = r;
     });
   }
   return {status, prepare, act, replay, search, settle, prepareHint, settleHint};
