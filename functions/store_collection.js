@@ -1,7 +1,8 @@
 "use strict";
 const crypto = require("node:crypto");
 const catalog = require("./config/store_collection.json");
-const offers = Object.fromEntries(catalog.offers.map((o) => [o.offerId, Object.freeze(o)]));
+const B = require("./boosts");
+const offers = Object.fromEntries([...catalog.offers, ...B.offers].map((o) => [o.offerId, Object.freeze(o)]));
 const avatarIds = catalog.offers.filter((o) => o.itemType === "avatar").map((o) => o.itemId);
 const modes = new Set(["futbol_lingo", "mystery_player", "transfer_detective"]);
 const boosts = new Set(["boost_first_letter", "boost_last_letter", "boost_anagram"]);
@@ -16,6 +17,12 @@ function createStore({db, normalize, project, HttpsError, now = Date.now}) {
   async function purchase(uid, data) {
     const offer = offers[data.offerId];
     if (!offer || !offer.enabled) error("not-found", "Offer unavailable.");
+    if (B.offers.some((o) => o.offerId === offer.offerId)) {
+      const p = await B.policyFor(db, uid, true);
+      if (!p || !offer.modes.some((m) => p.readyModes?.[m] === true)) {
+        error("failed-precondition", "Bu destek henüz açılmadı; Coin harcanmadı.");
+      }
+    }
     if (!validKey(data.requestId)) error("invalid-argument", "A stable request ID is required.");
     if (!Number.isSafeInteger(data.expectedPriceCoins)) error("invalid-argument", "A price quote is required.");
     const key = "store__" + data.requestId;

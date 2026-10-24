@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {validId, shuffled} = require("./career_transfer");
@@ -30,7 +31,7 @@ function view(raw, time) {
     questionStartedAt: r.questionStartedAt, finished: r.finished, answered: r.answered,
     lives: r.lives, streak: r.streak, bestStreak: r.bestStreak, cleanStreak: r.cleanStreak,
     score: r.score, correct: r.correct, answers: r.answers, hintsUsed: r.hintsUsed,
-    questionNumber: r.answers + (r.answered ? 0 : 1), free5050: !r.freeUsed,
+    questionNumber: r.answers + (r.answered ? 0 : 1), free5050: !r.freeUsed, support: B.view(r),
     traceRemaining: Math.max(0, 2 - r.traceUsed), adCredits: r.adCredits,
     traceAvailable: !r.traceOnQuestion && q.realClubIds.some((id) => !r.eliminated.includes(id)),
     eliminated: r.eliminated, confirmed: r.confirmed, energyCharged: r.energyCharged,
@@ -59,7 +60,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function change(uid, fn) {
     let error; const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-      error = null; const e = normalize(raw); e.fakeClub = stateOf(e.fakeClub);
+      error = null; const e = normalize(structuredClone(raw)); e.fakeClub = stateOf(e.fakeClub);
       e.energy = energy.refreshed(e.energy, time);
       try {
         fn(e.fakeClub, e, time); return e;
@@ -85,7 +86,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     }
   }
   function record(s, r) {
-    return s.records[r.mode] ||= {bestScore: 0, bestStreak: 0, bestCorrect: 0, answers: 0, hintsUsed: 0, sessions: 0};
+    return s.records[r.mode + (r.assisted ? "__assisted" : "")] ||= {bestScore: 0, bestStreak: 0,
+      bestCorrect: 0, answers: 0, hintsUsed: 0, sessions: 0};
   }
   function award(s, r, tier, time, policy) {
     if (!policy.rewardsEnabled) return;
@@ -106,7 +108,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   function finish(s, r, reason, time, policy) {
     if (r.finished) return;
-    r.finished = true; r.reason = reason;
+    r.finished = true; r.reason = reason; r.finishedAt = time;
     const rec = record(s, r); rec.sessions++;
     if (r.mode === "fake_speed" && r.answers === 10) {
       const tier = r.correct === 10 ? 4 : r.correct >= 9 ? 3 : r.correct >= 8 ? 2 : r.correct >= 5 ? 1 : 0;
@@ -132,7 +134,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     rec.bestStreak = Math.max(rec.bestStreak, r.bestStreak); rec.bestCorrect = Math.max(rec.bestCorrect, r.correct);
     if (r.mode === "fake_endless") {
       award(s, r,
-        r.cleanStreak >= 30 ? 4 : r.streak >= 20 ? 3 : r.streak >= 10 ? 2 : r.streak >= 5 ? 1 : 0, time, policy);
+        !r.assisted && r.cleanStreak >= 30 ? 4 : r.streak >= 20 ? 3 : r.streak >= 10 ? 2 : r.streak >= 5 ?
+          1 : 0, time, policy);
     }
     daily(s, r, time, policy);
     if (r.lives <= 0 || r.mode === "fake_speed" && r.answers === 10) {
@@ -199,6 +202,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       inventory: boosts.map((id) => ({id, quantity: e.inventory[id]?.quantity || 0}))};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input); if (!validId(input.requestId)) fail("invalid-argument", "Geçersiz istek.");
     const policy = policyOf(await getPolicy());
     if (!policy.dataEnabled || !policy.soloEnabled) {
@@ -230,6 +234,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (e.energy.balance === energy.policy.capacity) e.energy.refillAt = time;
         e.energy.balance--;
       }
+      B.pin(r, boostPolicy);
       setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id; s.starts[r.id] = r.mode;
       for (const [id, prior] of Object.entries(s.sessions)) {
         if (prior.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
@@ -245,7 +250,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const c = await pinned(before.dataVersion); const policy = policyOf(await getPolicy());
     const e = await change(uid, (s, e, time) => {
       const fp = hash(JSON.stringify([input.action, input.questionId ?? null,
-        input.clubId ?? null, input.boost ?? null]));
+        input.clubId ?? null, input.boost ?? null, ...B.paymentFingerprint(input)]));
       let r = runOf(s.sessions[input.sessionId]);
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fp) fail("invalid-argument", "İstek başka işleme ait.");
@@ -276,8 +281,12 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (r.mode !== "fake_endless" || r.answered) fail("failed-precondition", "Bu oyunda yardım kapalı.");
         if (input.action === "fifty") {
           if (r.freeUsed) fail("resource-exhausted", "Oturumun ücretsiz 50/50 hakkı kullanıldı.");
-          r.eliminated = r.question.realClubIds.filter((id) => !r.confirmed.includes(id)).slice(0, 2);
-          if (r.eliminated.length !== 2) fail("failed-precondition", "Elenebilecek iki seçenek yok.");
+          r.eliminated = r.question.realClubIds.filter((id) => !r.confirmed.includes(id)).slice(0, B.paid(r) ? 1 : 2);
+          if (r.eliminated.length !== (B.paid(r) ? 1 : 2)) fail("failed-precondition", "Elenebilecek iki seçenek yok.");
+          if (B.paid(r)) {
+            B.consume(e, r, input, "boost_eliminate", "eliminate:" + r.question.questionId,
+                {eliminated: r.eliminated}, time);
+          }
           r.freeUsed = true;
         } else {
           if (r.traceUsed >= 2 || r.traceOnQuestion) {
@@ -285,7 +294,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
           }
           const id = r.question.realClubIds.find((id) => !r.eliminated.includes(id) && !r.confirmed.includes(id));
           if (!id) fail("failed-precondition", "Yeni geçerli iz yok.");
-          if (input.boost) {
+          if (B.paid(r)) {
+            B.consume(e, r, input, "boost_connection", "trace:" + r.question.questionId,
+                {clubId: id}, time);
+          } else if (input.boost) {
             if (!boosts.includes(input.boost) || !(e.inventory[input.boost]?.quantity > 0)) {
               fail("resource-exhausted", "Destek stokta yok.");
             }
@@ -308,12 +320,15 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       r.answered || r.expiresAt <= now() || r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.traceOnQuestion) {
       fail("failed-precondition", "Bu oyunda yeni Kariyer İzi hakkı yok.");
     }
-    return {amount: 0, claimKey: `fc_hint_${r.id}_${r.adGranted}`,
-      context: {sessionId: r.id, credit: r.adGranted}};
+    return B.adBenefit(r, {amount: 0, claimKey: `fc_hint_${r.id}_${r.adGranted}`,
+      context: {sessionId: r.id, credit: r.adGranted}});
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, time) => {
+    await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
+      const canApply = r && r.traceUsed + r.adCredits < 2 && r.adGranted < 2 &&
+        r.adGranted === receipt.context.credit;
+      if (B.recoverAd(e, r, receipt, time, "boost_connection", canApply)) return;
       if (!r || r.mode !== "fake_endless" || r.finished || r.expiresAt <= time || r.adReceipts[receipt.id] ||
         r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.adGranted !== receipt.context.credit) return;
       r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;

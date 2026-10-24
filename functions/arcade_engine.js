@@ -196,9 +196,11 @@ function act(c, r, input, time) {
       const player = r.question.answers.map((id) => c.players[id]).find((p) => !r.found.includes(p.id) &&
         !r.hinted.includes(p.id));
       if (!player) fail("failed-precondition", "Yeni ipucu kalmadı.");
-      if (!r.freeUsed) r.freeUsed = true;
-      else if (r.adCredits > 0) r.adCredits--;
-      else fail("resource-exhausted", "Ücretsiz ipucu kullanıldı. Doğrulanmış reklam hakkı gerekli.");
+      if (r.boostPolicy?.version !== 1) {
+        if (!r.freeUsed) r.freeUsed = true;
+        else if (r.adCredits > 0) r.adCredits--;
+        else fail("resource-exhausted", "Ücretsiz ipucu kullanıldı. Doğrulanmış reklam hakkı gerekli.");
+      }
       r.hints++; r.hinted.push(player.id);
       r.hint = player.name.split(/\s+/).map((s) => s[0] + ".").join(" ") + " · " + player.country;
     } else if (input.action === "answer") {
@@ -300,7 +302,9 @@ function act(c, r, input, time) {
 function publicRun(c, raw, time) {
   const r = hydrate(raw); if (!r) return null;
   const {question, board, filled, undo, history} = r;
-  const v = {...r};
+  const support = require("./boosts").view(r);
+  const v = {...r, ...(support ? {support} : {})};
+  delete v.boostPolicy; delete v.boostUses;
   for (const key of ["actions", "question", "board", "filled", "undo", "wrongInputs", "adReceipts", "history",
     "used", "hinted"]) delete v[key];
   v.serverNow = time; v.totalRemainingMs = Math.max(0, 120000 - r.activeMs - (r.penaltyMs || 0));

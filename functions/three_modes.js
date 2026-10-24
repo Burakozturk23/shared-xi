@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const catalog = require("./config/three_modes_catalog.json");
@@ -58,7 +59,7 @@ function sessionView(raw) {
   const v = {id: s.id, mode: s.mode, entry: s.entry, formation: s.formation,
     formations: target?.formations || [s.formation], revision: s.revision, finished: s.finished,
     dailyOfficial: s.dailyOfficial, expiresAt: s.expiresAt, day: s.day,
-    wrong: s.wrong, hints: s.hints, freeHint: !s.freeUsed, adCredits: s.adCredits,
+    wrong: s.wrong, hints: s.hints, freeHint: !B.paid(s) && !s.freeUsed, support: B.view(s), adCredits: s.adCredits,
     adRemaining: Math.max(0, 2 - s.adGranted), feedback: s.feedback || "", energyCharged: s.energyCharged,
     result: s.result || null};
   if (s.mode !== "squad_vault") {
@@ -97,7 +98,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
       error = null;
-      const state = normalize(raw); state.threeModes = stateOf(state.threeModes);
+      const state = normalize(structuredClone(raw)); state.threeModes = stateOf(state.threeModes);
       state.energy = energy.refreshed(state.energy, time);
       try {
         fn(state.threeModes, state, time); return state;
@@ -180,6 +181,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       pendingRewards: Object.keys(s.pending).length, leagueSnapshot: catalog.leagueSnapshot};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input);
     if (!idOk(input.requestId) || !["random", "archive", "daily", "league"].includes(input.entry)) {
       fail("invalid-argument", "Geçersiz oyun isteği.");
@@ -261,6 +263,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         Object.assign(session, {puzzle: puzzle.id, revealed: puzzle.initial, nameHints: [],
           leagueShown: input.entry === "league"});
       }
+      B.pin(session, boostPolicy);
       s.sessions[session.id] = session; s.active[input.mode] = session.id;
       s.starts[session.id] = true;
       // Collections/receipts are permanent; expired session bodies are bounded.
@@ -291,12 +294,15 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     }
     const lineup = run.mode === "squad_vault" ? puzzleOf(run).players :
       catalog.formations[run.formation].map((_, i) => run.picks[i] || null);
-    const record = {...previous, best: Math.max(previous.best || 0, value), mastery: !!previous.mastery || master,
-      bestFormation: value > (previous.best || 0) || master && !previous.mastery ? run.formation :
-        previous.bestFormation || run.formation,
+    const record = {...previous, best: run.assisted ? previous.best || 0 : Math.max(previous.best || 0, value),
+      bestAssisted: run.assisted ? Math.max(previous.bestAssisted || 0, value) : previous.bestAssisted || 0,
+      mastery: !!previous.mastery || master,
+      bestFormation: !run.assisted && value > (previous.best || 0) || master && !previous.mastery ? run.formation :
+        previous.bestFormation || (run.assisted ? "" : run.formation),
       lastLineup: lineup, lastFormation: run.formation, lastAt: time,
       solved: !!previous.solved || (run.mode === "squad_vault" ? !!run.won : value > 0),
-      bestLineup: value > (previous.best || 0) || master && !previous.mastery ? lineup : previous.bestLineup || lineup};
+      bestLineup: !run.assisted && value > (previous.best || 0) || master && !previous.mastery ?
+        lineup : previous.bestLineup || (run.assisted ? [] : lineup)};
     s.collection[key] = record;
     if (run.mode === "squad_vault" && Object.entries(s.collection)
         .filter(([k, r]) => k.startsWith("squad_vault__") && r.best >= 1).length >= 5) {
@@ -312,9 +318,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       }
     }
     if (run.dailyOfficial) {
-      s.daily[`${run.mode}__${run.day}`].result = {score: value, mastery: master, wrong: run.wrong};
+      s.daily[`${run.mode}__${run.day}`].result = {score: value, assisted: run.assisted === true,
+        mastery: master, wrong: run.wrong};
     }
-    run.result = {score: value, mastery: master, newMedals: medals, coins, xp,
+    run.result = {score: value, assisted: run.assisted === true, mastery: master, newMedals: medals, coins, xp,
       avatarAvailable: master && !!targetOf(run)?.avatarId && !s.avatarChoices[run.target]};
   }
   async function act(uid, input) {
@@ -324,7 +331,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const run = sessionOf(s.sessions[input.sessionId]);
       if (!run || run.mode !== input.mode || run.version !== catalog.version) fail("not-found", "Oturum bulunamadı.");
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.clubId ?? null,
-        input.slot ?? null, input.formation ?? null, input.hint ?? null, input.confirmReset ?? null]));
+        input.slot ?? null, input.formation ?? null, input.hint ?? null, input.confirmReset ?? null,
+        ...B.paymentFingerprint(input)]));
       if (run.actions[input.requestId]) {
         if (run.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İşlem kimliği başka cevaba ait.");
         return;
@@ -376,7 +384,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           if (run.guesses.length >= 5) finish(s, run, time);
         }
       } else if (input.action === "hint") {
-        if (run.freeUsed && run.adCredits <= 0) {
+        if (!B.paid(run) && run.freeUsed && run.adCredits <= 0) {
           fail("resource-exhausted", "İpucu için doğrulanmış reklam hakkı gerekli.");
         }
         let text;
@@ -415,7 +423,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           if (!text) fail("failed-precondition", "Doğrulanmış ipucu yok.");
           text = `Seçili mevkiye uygun, henüz bulunmamış bir futbolcu: ${text}`;
         }
-        if (!run.freeUsed) run.freeUsed = true; else run.adCredits--;
+        if (B.paid(run)) {
+          if (run.hints.length >= 3) fail("resource-exhausted", "Bu oyunun üç ipucu kullanıldı.");
+          const sku = run.mode === "squad_vault" && input.hint === "player" ? "boost_strong" :
+            ["club", "years"].includes(input.hint) ? "boost_connection" : "boost_basic";
+          B.consume(e, run, input, sku, `hint:${run.hints.length}`, {text}, time);
+        } else if (!run.freeUsed) run.freeUsed = true; else run.adCredits--;
         run.hints.push({kind: input.hint, text}); run.feedback = text;
       } else fail("invalid-argument", "Geçersiz oyun işlemi.");
       run.revision++; run.actions[input.requestId] = fingerprint; s.sessions[run.id] = run;
@@ -442,13 +455,16 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     if (!expected || !run || run.mode !== expected || run.finished || run.expiresAt <= now() || run.adGranted >= 2) {
       fail("failed-precondition", "Bu oyun için reklamlı ipucu hakkı yok.");
     }
-    return {amount: 0, claimKey: `three_hint_${run.id}_${run.adGranted}`,
-      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}};
+    return B.adBenefit(run, {amount: 0, claimKey: `three_hint_${run.id}_${run.adGranted}`,
+      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}});
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s) => {
+    await change(uid, (s, e, time) => {
       const run = sessionOf(s.sessions[receipt.context?.sessionId]);
       // A late receipt cannot modify another run or convert into coins.
+      const canApply = run && run.hints.length + run.adCredits < 3 &&
+        run.adGranted < (run.boostPolicy?.daily ? 1 : 2) && run.adGranted === receipt.context.credit;
+      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) return;
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= now()) return;
       if (run.adReceipts[receipt.id]) return;
       if (run.adGranted >= 2 || run.adGranted !== receipt.context.credit) return;

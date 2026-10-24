@@ -13,6 +13,7 @@ class StoreOffer {
   final int version;
   final String category;
   final int units;
+  final List<String> modes;
   /// App-bundled artwork without a current server offer. Never purchasable.
   final bool isPreview;
 
@@ -29,16 +30,32 @@ class StoreOffer {
     this.version = 1,
     this.category = 'classic',
     this.units = 1,
+    this.modes = const [],
     this.isPreview = false,
   });
 
   bool get isAvatar => itemType == 'avatar';
+
+  String get boostCategory => switch (itemId) {
+    'boost_first_letter' || 'boost_last_letter' || 'boost_basic' => 'Temel',
+    'boost_eliminate' || 'boost_connection' => 'Taktiksel',
+    'boost_anagram' || 'boost_strong' => 'Güçlü',
+    _ => category,
+  };
+
+  String get compatibleModes => modes.map((mode) => const {
+    'coach_xi': 'Hoca 11', 'squad_vault': 'Kadro Kasası', 'letter11': 'Harf 11',
+    'career': 'Kariyer', 'transfer': 'Transfer Detective', 'mystery': 'Gizemli Futbolcu',
+    'mastermind': 'Zincir', 'fake_endless': 'Sahte Kulüp Sonsuz',
+    'burst_survival': 'Burst Dayanıklılık', 'pyramid': 'Pyramid',
+  }[mode] ?? mode).join(' · ');
 
   factory StoreOffer.fromMap(Map<String, dynamic> data) {
     return StoreOffer(
       offerId: data['offerId']?.toString() ?? '',
       category: data['category']?.toString() ?? 'classic',
       units: _storeInt(data['units'], fallback: 1),
+      modes: data['modes'] is List ? (data['modes'] as List).map((v) => v.toString()).toList() : const [],
       title: data['title']?.toString() ?? '',
       subtitle: data['subtitle']?.toString() ?? '',
       badge: data['badge']?.toString() ?? '',

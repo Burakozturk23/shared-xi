@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const E = require("./arcade_engine");
 const energy = require("./energy");
 const {dayKey} = require("./rewarded_ads");
@@ -22,7 +23,7 @@ function check(input) {
 function finalize(s, r, time, rewarded) {
   if (!r.finished || r.recorded || r.phase !== "active") return;
   r.recorded = true; r.finishedAt = time;
-  const key = recordKey(r) + "__" + r.dataVersion;
+  const key = recordKey(r) + "__" + r.dataVersion + (r.assisted ? "__assisted" : "");
   const rec = s.records[key] ||= {mode: r.mode, style: r.style, pairType: r.pairType, difficulty: r.difficulty,
     dataVersion: r.dataVersion, sessions: 0, bestScore: 0, bestRounds: 0, bestStreak: 0, bestCorrect: 0};
   rec.sessions++; rec.bestScore = Math.max(rec.bestScore, r.score); rec.bestRounds = Math.max(rec.bestRounds, r.rounds);
@@ -159,6 +160,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     await settle(uid); return result(uid, input.mode, input.kitVersion || "none");
   }
   async function prepare(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input);
     if (!validId(input.requestId) || input.version !== catalog.version) {
       fail("invalid-argument",
@@ -173,6 +175,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     }
     // All expensive selection/solver work precedes the energy reservation.
     const draft = E.create(catalog, input, now());
+    B.pin(draft, boostPolicy);
     await db.ref(`arcadeCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
     await change(uid, (s, e, time) => {
       if (s.sessions[input.requestId]) {
@@ -202,7 +205,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   function applyRequest(s, e, t, input, c, p, linked) {
     const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "questionId",
-      "entityId", "query", "slotId", "cardId", "elapsedMs"].filter((k) => input[k] != null).map((k) => [k, input[k]]));
+      "entityId", "query", "slotId", "cardId", "elapsedMs", "boostId", "paymentSource", "expectedPriceCoins"]
+        .filter((k) => input[k] != null).map((k) => [k, input[k]]));
     const fp = hash(JSON.stringify(canonical));
     const r = hydrate(s.sessions[input.sessionId]);
     if (!r || r.mode !== input.mode || !validId(input.requestId)) fail("invalid-argument", "Geçersiz olay.");
@@ -249,7 +253,14 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         r.finished = true; r.reason = "24 saatlik devam süresi doldu.";
       }
       E.tick(c, r, eventTime);
-      if (!r.finished) E.act(c, r, input, eventTime);
+      if (!r.finished) {
+        const previousHints = r.hints;
+        E.act(c, r, input, eventTime);
+        if (input.action === "hint" && B.paid(r) && r.hints > previousHints) {
+          B.consume(e, r, input, r.mode === "pyramid" ? "boost_strong" : "boost_basic",
+              r.mode === "pyramid" ? "slot:" + input.slotId : "hint:" + previousHints, {text: r.hint}, t);
+        }
+      }
       finalize(s, r, t, p.rewardsEnabled && linked && !r.practice);
     }
     r.actions[input.requestId] = fp; r.revision++;
@@ -264,6 +275,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       fail("invalid-argument", "Geçersiz çevrimdışı olay paketi.");
     }
     const saved = hydrate((await read(uid)).sessions[events[0].sessionId]);
+    if (B.paid(saved) && events.some((e) => e.action === "hint")) {
+      fail("failed-precondition", "Ücretli destek çevrimiçi doğrulanır; hak harcanmadı.");
+    }
     if (!saved || saved.mode !== "burst") fail("not-found", "Kayıt bu hesaba ait değil.");
     const c = await pinned(saved.dataVersion); const p = {...defaults, ...await getPolicy()};
     const linked = await isLinked(uid);
@@ -316,11 +330,13 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       r.phase !== "active" || r.finished || r.expiresAt <= now() || r.adGranted >= 2 ||
       !r.question.answers.some((id) => !r.found.includes(id) &&
         !r.hinted.includes(id))) fail("failed-precondition", "Bu oturumda reklam ipucu kullanılamaz.");
-    return {amount: 0, claimKey: `burst_hint_${r.id}_${r.adGranted}`, context: {sessionId: r.id, credit: r.adGranted}};
+    return B.adBenefit(r, {amount: 0, claimKey: `burst_hint_${r.id}_${r.adGranted}`,
+      context: {sessionId: r.id, credit: r.adGranted}});
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, t) => {
+    await change(uid, (s, e, t) => {
       const r = hydrate(s.sessions[receipt.context?.sessionId]);
+      if (B.recoverAd(e, r, receipt, t)) return;
       if (!r || r.mode !== "burst" || r.style !== "survival" || r.finished || r.expiresAt <= t ||
         r.adReceipts[receipt.id] || r.adGranted >= 2 || r.adGranted !== receipt.context.credit) return;
       r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;

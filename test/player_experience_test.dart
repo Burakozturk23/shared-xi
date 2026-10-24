@@ -95,7 +95,7 @@ class ProgressFake extends ProgressGateway {
     return missionData ?? missionFixture();
   }
   @override
-  Future<MissionClaimResult> claimMission(String id) async {
+  Future<MissionClaimResult> claimMission(String id, {String periodKey = ''}) async {
     claims++;
     return pending!.future;
   }
@@ -332,7 +332,8 @@ void main() {
             ('daily_ranked_win_1', 'Bugün 1 sıralamalı maç kazan', 1),
             ('daily_challenge_1', 'Günlük Mücadeleyi tamamla', 1),
           ]) {'id': id, 'title': title, 'kind': 'daily', 'target': target,
-            'description': 'Oyununu tamamla, ilerlemeni burada takip et.', 'rewardCoins': 20},
+            'description': 'Oyununu tamamla, ilerlemeni burada takip et.', 'rewardCoins': 20,
+            'routeKey': id == 'daily_challenge_1' ? 'daily_matches' : 'online_ranked', 'rewardSp': 30},
         ],
       });
       final opened = <GameEntry>[];
@@ -353,9 +354,11 @@ void main() {
       expect(t.widget<OutlinedButton>(rankedButton).onPressed, isNull);
       pending.complete(); await t.pumpAndSettle();
       expect(g.reads, 2);
-      await reveal(t, find.text('Günün maçlarına git'));
+      final dailyButton = find.descendant(of: find.byKey(const ValueKey('mission-daily_challenge_1')),
+        matching: find.byType(OutlinedButton));
+      await reveal(t, dailyButton);
       await capture(t, key, 'missions-daily-${large ? 'light-large' : 'dark-normal'}');
-      await t.tap(find.text('Günün maçlarına git')); await t.pumpAndSettle();
+      await t.tap(dailyButton); await t.pumpAndSettle();
       expect(opened, [GameCatalog.onlineRanked, GameCatalog.daily]);
       expect(g.reads, 3);
       expect(g.claims, 0);

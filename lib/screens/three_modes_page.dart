@@ -1,3 +1,4 @@
+import '../widgets/paid_hint_button.dart';
 import 'dart:async';
 import '../app/route_appearance.dart';
 import 'coach_honours_page.dart';
@@ -350,6 +351,15 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           onPressed: _busy ? null : () => _act('clear', {'slot': _slot}),
           icon: const Icon(Icons.backspace_outlined), label: const Text('Seçili oyuncuyu kaldır')),
         const PitchSectionTitle('İpuçları'),
+        if (rewardMap(_session['support'])['version'] == 1) ...[
+          for (final h in (_vault ? {'flag': 'Bayrak −1★', 'league': 'Lig −1★', 'player': 'Oyuncu −2★'}
+            : _coach ? {'country': 'Ülke', 'club': 'Kulüp', 'years': 'Yıl'} : {'country': 'Ülke', 'club': 'Kulüp', 'league': 'Lig'}).entries)
+            PaidHintButton(session: _session,
+              sku: _vault && h.key == 'player' ? 'boost_strong' : ['club', 'years'].contains(h.key) ? 'boost_connection' : 'boost_basic',
+              label: h.value, disabled: _busy || _maps(_session['hints']).length >= 3 ||
+                (!_vault && _slot == null) || (_vault && h.key == 'league' && _session['league'] != null),
+              onUse: (payment) => _act('hint', {'hint': h.key, 'slot': _slot, ...payment}), onWatch: _watch),
+        ] else ...[
         Text(_session['freeHint'] == true ? '1 ücretsiz ipucun hazır.' : '${_session['adCredits']} reklamlı ipucun hazır.'),
         Wrap(spacing: 8, children: (_vault ? {'flag': 'Bayrak −1★', 'league': 'Lig −1★', 'player': 'Oyuncu −2★'}
           : _coach ? {'country': 'Ülke', 'club': 'Kulüp', 'years': 'Yıl'} : {'country': 'Ülke', 'club': 'Kulüp', 'league': 'Lig'})
@@ -359,6 +369,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
               () => _act('hint', {'hint': h.key, 'slot': _slot}))).toList()),
         if ((_session['adRemaining'] as num? ?? 0) > 0) TextButton.icon(onPressed: _busy ? null : _watch,
           icon: const Icon(Icons.play_circle_outline), label: Text('Reklamla ipucu hakkı al · ${_session['adRemaining']} kaldı')),
+        ] ,
         const Text('Reklam izlemek yalnızca hak kazandırır. İpucunu kullanmadıkça ustalık etkilenmez.'),
         const SizedBox(height: 16),
         PitchAction(label: !_vault && _session['score'] == 11 ? 'Kadroyu tamamla' : 'Erken bitir',

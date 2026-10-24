@@ -22,8 +22,12 @@ function points(claims, season, now) {
     const bucket = days[day] ||= {checkIn: 0, daily: 0, career: 0, match: 0};
     if (row.sourceType === "daily_reward") bucket.checkIn = 10;
     if (row.sourceType === "mission_reward") {
-      if (String(row.sourceId).startsWith("general__")) bucket.career += 50;
-      else bucket.daily = Math.min(90, bucket.daily + 30);
+      const source = String(row.sourceId);
+      if (/^general__general_(ranked_play|ranked_wins|daily_days)_\d+$/.test(source)) bucket.career += 50;
+      else if (/^\d{4}-\d{2}-\d{2}__daily_[a-z0-9_]+$/.test(source)) {
+        bucket.daily = Math.min(90, bucket.daily + 30);
+      }
+      // Weekly and new career receipts explicitly award zero SP.
     }
     // One winning fixture per day. Double-bonus receipts have their own key.
     if (row.sourceType === "daily_match" && !String(row.sourceId).includes("double")) bucket.match = 50;

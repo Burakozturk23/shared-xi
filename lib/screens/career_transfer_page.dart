@@ -1,3 +1,4 @@
+import '../widgets/paid_hint_button.dart';
 import 'dart:async';
 import '../services/game_error.dart';
 import '../widgets/game_ui.dart';
@@ -245,6 +246,13 @@ class _CareerTransferPageState extends State<CareerTransferPage> with WidgetsBin
       ? {'connection': 'Ardışık bağlantı', 'years': 'Yıl aralığı', 'short': 'Kısa dönem'}
       : {'country': 'Milliyet', 'position': 'Mevki'};
     final available = options.entries.where((e) => !hints.any((h) => h['kind'] == e.key)).toList();
+    if (rewardMap(_session['support'])['version'] == 1) return [
+      const SizedBox(height: 12), Text('Destek çantası · ${hints.length} / 3'),
+      for (final e in available) PaidHintButton(session: _session,
+        sku: !_career && hints.length == 2 ? 'boost_first_letter' : ordering ? 'boost_connection' : 'boost_basic',
+        label: !_career ? ['Ülke bilgisi', 'Mevki bilgisi', 'İlk harf'][hints.length] : e.value,
+        disabled: _busy, onUse: (payment) => _act('hint', {'hint': e.key, ...payment}), onWatch: _watch),
+    ];
     final credit = _session['freeHint'] == true || (_session['adCredits'] as num? ?? 0) > 0;
     return [const SizedBox(height: 12), Text('İpucu · ${hints.length} / 3'),
       Wrap(spacing: 8, children: [for (final e in available) OutlinedButton(onPressed: _busy || !credit ? null : () => _hint(e.key), child: Text(e.value))]),

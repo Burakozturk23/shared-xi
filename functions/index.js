@@ -6226,6 +6226,12 @@ exports.getStoreCatalog = httpsV2.onCall(
       const state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
       const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
+      const boostPolicy = await require("./boosts").policyFor(db, uid, true);
+      if (boostPolicy) {
+        offers.push(...require("./boosts").offers.filter((o) =>
+          o.modes.some((m) => boostPolicy.readyModes?.[m] === true))
+            .map((o) => ({...o, modes: o.modes.filter((m) => boostPolicy.readyModes?.[m] === true)})));
+      }
       const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
@@ -7253,6 +7259,8 @@ exports.claimDailyReward = httpsV2.onCall(
 
 // LINKBALL_16_10C_MISSION_ENGINE_START
 
+const missionV3 = require("./missions_v3");
+const missionEvents = require("./mission_events");
 const LB_MISSION_VERSION = 2;
 const LB_MISSION_DAILY_DEFINITIONS = Object.freeze([
   Object.freeze({
@@ -7416,7 +7424,7 @@ function lbMissionState(raw, now) {
       }
     }
   }
-  return {
+  return missionV3.decorate({
     pendingRewards,
     version: LB_MISSION_VERSION,
     daily: {
@@ -7436,7 +7444,7 @@ function lbMissionState(raw, now) {
     generalClaims: {...rawGeneralClaims},
     createdAt: lbProgressionNumber(data.createdAt),
     updatedAt: lbProgressionNumber(data.updatedAt),
-  };
+  }, data, currentTime);
 }
 
 /**
@@ -7504,6 +7512,9 @@ function lbMissionProjectionItem(
 
   return {
     id: definition.id,
+    routeKey: definition.metric === "dailyChallenge" || definition.metric === "dailyDays" ?
+      "daily_matches" : "online_ranked",
+    rewardSp: kind === "daily" ? 30 : 50,
     kind: kind,
     title: definition.title,
     description: String(definition.description || ""),
@@ -7557,7 +7568,7 @@ function lbMissionGeneralProjection(chain, state, totals, config) {
  * @param {Object} totals
  * @return {Object}
  */
-function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFIG) {
+function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFIG, policy = {}) {
   const daily = LB_MISSION_DAILY_DEFINITIONS.map(
       (definition) => lbMissionProjectionItem(
           definition,
@@ -7574,33 +7585,34 @@ function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFI
     dateKey: state.daily.dateKey,
     economyConfigId: config.configId,
     dailyClaimLimit: config.sources.daily_mission.dailyLimit,
-    daily: daily,
-    general: general,
+    daily: state.schemaVersion === 3 && state.daily.assigned.length ? missionV3.items(state, policy).daily : daily,
+    general: [...general, ...(state.schemaVersion === 3 ? missionV3.items(state, policy).general : [])],
+    weekly: state.schemaVersion === 3 ? missionV3.items(state, policy).weekly : [],
+    weeklyEnabled: policy.weeklyEnabled === true,
+    weekKey: state.weekly.weekKey,
+    weeklyClaimLimit: 2,
+    weeklyCompletedCount: Object.keys(state.weekly.claims || {}).length,
+    availabilityNotice: state.availabilityNotice || "",
     dailyCompletedCount: Object.keys(state.daily.claims).length,
     generalCompletedCount: Object.keys(
         state.generalClaims,
     ).length,
     updatedAt: state.updatedAt,
-    version: LB_MISSION_VERSION,
+    version: state.schemaVersion,
   };
 }
 
-/**
- * @param {Object} db
- * @param {string} uid
- * @return {Promise<Object>}
- */
 async function lbMissionEnsure(db, uid) {
+  const policy = await lbMissionV3Policy(db, uid);
   const ref = db.ref("missionState/" + uid);
   const now = Date.now();
 
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
 
-    state.createdAt = state.createdAt > 0 ?
-      state.createdAt : now;
-    state.updatedAt = state.updatedAt > 0 ?
-      state.updatedAt : now;
+    state.createdAt = state.createdAt > 0 ? state.createdAt : now;
+    state.updatedAt = now;
+    missionV3.assign(state, uid, policy.readyModes || {}, policy, now);
 
     return state;
   });
@@ -7617,7 +7629,8 @@ async function lbMissionEnsure(db, uid) {
 async function lbMissionProject(db, uid, state, config) {
   config = config || await lbGetEconomyConfig();
   const totals = await lbMissionTrustedTotals(db, uid);
-  const projection = lbMissionProjection(state, totals, config);
+  const policy = await lbMissionV3Policy(db, uid);
+  const projection = lbMissionProjection(state, totals, config, policy);
 
   await db.ref("missionProfiles/" + uid).set(projection);
   return projection;
@@ -7657,11 +7670,11 @@ async function lbMissionRecordRanked(
     }
 
     state.daily.processed[eventKey] = true;
-    state.daily.counters.rankedPlayed += 1;
-
-    if (result === "win") {
-      state.daily.counters.rankedWins += 1;
-    }
+    const modeId = ({shared_xi: "club_club", grid: "grid_classic", five: "random_five"})[mode] || mode;
+    missionV3.record(state, {uid, modeId,
+      eventId: matchId,
+      source: "ranked_settlement", result, serverFinishedAtMs: settledAt,
+      serverValidated: true, verificationVersion: 1}, now);
 
     state.createdAt = state.createdAt > 0 ?
       state.createdAt : now;
@@ -7796,11 +7809,13 @@ function lbMissionRequirePreviousStages(resolved, state) {
  * @param {string} missionId
  * @return {Promise<Object>}
  */
-async function lbMissionClaim(db, uid, missionId) {
+async function lbMissionClaim(db, uid, missionId, expectedPeriodKey) {
   const config = await lbGetEconomyConfig();
   const resolved = lbMissionDefinition(missionId, config);
-  if (!resolved) throw new httpsV2.HttpsError("invalid-argument", "Unknown mission.");
-  await lbMissionEnsure(db, uid);
+  const initial = await lbMissionEnsure(db, uid);
+  if (!resolved || initial.schemaVersion === 3 && resolved.kind === "daily") {
+    return lbMissionV3Claim(db, uid, missionId, config, expectedPeriodKey);
+  }
   await lbSettlePendingRewards(db, uid, "missionState/" + uid);
   const now = Date.now();
   const dayKey = lbProgressionDateKey(now);
@@ -7859,7 +7874,8 @@ exports.syncRankedMissions = onValueWritten(
 
       const settlement = event.data.after.val() || {};
 
-      if (settlement.serverValidated !== true) return;
+      if (settlement.serverValidated !== true || settlement.forfeit === true ||
+          settlement.rankedEligible === false) return;
 
       const db = getDatabase();
       const mode = String(event.params.mode || "");
@@ -7881,7 +7897,8 @@ exports.syncRankedMissions = onValueWritten(
       ];
 
       for (const participant of participants) {
-        if (!participant.uid || !["win", "draw", "loss"].includes(participant.result)) continue;
+        if (!participant.uid || settlement.participants?.[participant.uid] === false ||
+            !["win", "draw", "loss"].includes(participant.result)) continue;
         if (!await lbAchievementEligible(
             db,
             participant.uid,
@@ -7977,9 +7994,7 @@ exports.claimMissionReward = httpsV2.onCall(
       }
 
       const result = await lbMissionClaim(
-          getDatabase(),
-          uid,
-          missionId,
+          getDatabase(), uid, missionId, request.data?.periodKey,
       );
 
       return {
@@ -7989,6 +8004,70 @@ exports.claimMissionReward = httpsV2.onCall(
       };
     },
 );
+
+
+// Admin-owned pilot configuration. Missing mode/content readiness fails closed.
+async function lbMissionV3Policy(db, uid) {
+  const raw = (await db.ref("runtimeConfig/missionsV3").get()).val() || {};
+  const enabled = raw.enabled === true && (raw.public === true || raw.betaUids?.[uid] === true);
+  return {...raw, enabled, weeklyEnabled: enabled && raw.weeklyEnabled === true,
+    careerEnabled: enabled && raw.careerEnabled === true};
+}
+async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
+  const policy = await lbMissionV3Policy(db, uid);
+  const now = Date.now(); const nonce = crypto.randomUUID();
+  let outcome; let failure;
+  const tx = await db.ref("missionState/" + uid).transaction((raw) => {
+    outcome = null; failure = null;
+    const state = lbMissionState(raw, now);
+    try {
+      const projected = missionV3.items(state, policy);
+      const card = [...projected.daily, ...projected.weekly, ...projected.general].find((d) => d.id === missionId);
+      if (card && periodKey !== card.periodKey) {
+        throw new httpsV2.HttpsError("failed-precondition", "Görev dönemi değişti. Ekranı yenile.");
+      }
+      outcome = missionV3.claim(state, missionId, policy, now, nonce);
+    } catch (e) {
+      failure = e; return state;
+    }
+    if (!outcome) return state;
+    const key = "mission_reward__" + outcome.sourceId;
+    if (outcome.claim.nonce === nonce) {
+      state.pendingRewards[key] = lbPendingReward(
+          "mission_reward", outcome.sourceId, outcome.claim.rewardCoins, "missions-v3");
+    }
+    state.updatedAt = now; return state;
+  });
+  if (failure) throw new httpsV2.HttpsError(failure.code, failure.message);
+  if (!outcome) throw new httpsV2.HttpsError("invalid-argument", "Bilinmeyen görev. Ekranı yenile.");
+  const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
+  const profile = await lbMissionProject(db, uid, lbMissionState(tx.snapshot.val(), now), config);
+  return {granted: outcome.claim.nonce === nonce, alreadyClaimed: outcome.claim.nonce !== nonce,
+    amount: outcome.claim.rewardCoins, walletCoins: economy.balances.coins, profile,
+    missionId, periodKey: outcome.periodKey};
+}
+async function lbMissionRecordEvents(db, uid, events) {
+  if (!events.length || !await lbAchievementEligible(db, uid)) return;
+  const now = Date.now();
+  const tx = await db.ref("missionState/" + uid).transaction((raw) => {
+    const state = lbMissionState(raw, now);
+    for (const event of events) if (event.uid === uid) missionV3.record(state, event, now);
+    state.updatedAt = now; state.createdAt ||= now; return state;
+  });
+  await lbMissionProject(db, uid, lbMissionState(tx.snapshot.val(), now));
+}
+exports.syncSoloMissions = onValueWritten({ref: "/economyState/{uid}/{family}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  const {uid, family} = event.params;
+  const events = missionEvents.changedRuns(uid, family, event.data.before.val(), event.data.after.val());
+  await lbMissionRecordEvents(getDatabase(), uid, events);
+});
+exports.syncWordMissions = onValueWritten({ref: "/dailyWordState/{uid}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  const {uid} = event.params;
+  await lbMissionRecordEvents(getDatabase(), uid,
+      missionEvents.changedWords(uid, event.data.before.val(), event.data.after.val()));
+});
 
 // LINKBALL_16_10C_MISSION_ENGINE_END
 
@@ -9764,6 +9843,7 @@ async function lbFakeClubDailyClaim(uid, day) {
   const tx = await db.ref("missionState/" + uid).transaction((raw) => {
     const s = lbMissionState(raw, time);
     if (s.externalDailyClaims[id]) return s;
+    if (s.schemaVersion === 3) return s;
     if (s.daily.dateKey !== day || !config.sources.daily_mission.enabled ||
       Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) return s;
     s.daily.claims.daily_fake_club = {claimedAt: time, rewardCoins: 2, economyConfigId: config.configId};
@@ -9854,6 +9934,7 @@ async function lbArcadeDailyClaim(uid, day, group) {
   const tx = await db.ref("missionState/" + uid).transaction((raw) => {
     const s = lbMissionState(raw, time);
     if (s.externalDailyClaims[id]) return s;
+    if (s.schemaVersion === 3) return s;
     if (s.daily.dateKey !== day || !config.sources.daily_mission.enabled ||
       Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) return s;
     s.daily.claims[mission] = {claimedAt: time, rewardCoins: 2, economyConfigId: config.configId};
