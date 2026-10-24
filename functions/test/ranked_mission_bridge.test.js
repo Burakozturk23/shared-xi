@@ -45,7 +45,9 @@ test("legacy duel results retain account eligibility and server-day boundaries",
   const settlement = {serverValidated: true, settledAt: h.now, player1Uid: "alice", player2Uid: "bob",
     player1Result: "win", player2Result: "loss"};
   await h.context.exports.syncRankedMissions(event({...settlement, settledAt: h.now - 86400000}));
-  assert.equal(h.read("missionState"), null);
+  assert.equal(h.read("missionState/alice/general/counters/rankedWins"), 1);
+  assert.equal(h.read("missionState/alice/daily/counters/rankedWins"), 0);
+  assert.equal(h.read("missionState/bob"), null);
   await h.context.exports.syncRankedMissions(event(settlement));
   assert.equal(h.read("missionState/alice/daily/counters/rankedWins"), 1);
   assert.equal(h.read("missionState/bob"), null);

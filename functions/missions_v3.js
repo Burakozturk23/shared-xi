@@ -16,6 +16,7 @@ const soloModes = [
   ["burst_survival", "Burst Dayanıklılık", "arcade"], ["squad_challenge", "Kadro Mücadelesi", "squad"],
   ["daily_lingo", "Günün Lingo’su", "word"], ["passa_daily", "Mini Passaparola", "word"],
   ["daily_anagram", "Günün Anagramı", "word"], ["passa_weekly", "Haftalık Passaparola", "word"],
+  ...require("./mission_story_events").definitions.map(([, id, title]) => [id, title, "story"]),
 ];
 const dailyModes = new Set(["daily_lingo", "passa_daily", "daily_anagram"]);
 const catalog = soloModes.map(([modeId, name, family]) => ({id: "complete_" + modeId, modeId, family,
@@ -28,6 +29,9 @@ catalog.push(
       metric: "rankedPlayed", target: 2, routeKey: "online_ranked", solo: false, family: "ranked"},
     {id: "daily_ranked_win_1", title: "Bir sıralamalı maç kazan", description: "Doğrulanmış bir galibiyet kazan.",
       metric: "rankedWins", target: 1, routeKey: "online_ranked", solo: false, family: "ranked"},
+    {id: "friend_complete_one", title: "Bir arkadaş maçı tamamla",
+      description: "Aktif katıldığın bir arkadaş maçını normal bitişle tamamla.",
+      metric: "friendPlayed", target: 1, routeKey: "online_friends", solo: false, family: "friend"},
 );
 const weeklyCatalog = [
   {id: "weekly_explorer", title: "Linkball Kaşifi", description: "Beş farklı modda oyun tamamla.",
@@ -73,6 +77,7 @@ function value(bucket, definition) {
 }
 function available(d, ready, state) {
   if (d.routeKey === "online_ranked") return ready.online === true;
+  if (d.routeKey === "online_friends") return ready.friends === true;
   if (d.metric === "uniqueSoloModes") return soloModes.filter(([m]) => ready[m] === true).length >= 2;
   return ready[d.modeId] === true && (!d.once || !state.daily.modes[d.modeId]);
 }
@@ -158,7 +163,7 @@ function record(state, event, now) {
       bucket.soloModes[event.modeId] = true;
       if (mode[2] === "word") bucket.wordModes[event.modeId] = true;
       add("soloCompleted"); add("mode__" + event.modeId);
-      if (!event.assisted) add("unassistedCompleted");
+      if (!event.assisted && event.assistanceUnknown !== true) add("unassistedCompleted");
     }
   }
   return changed;

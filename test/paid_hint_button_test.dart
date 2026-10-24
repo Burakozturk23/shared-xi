@@ -5,12 +5,18 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
+import 'package:shared_xi/theme/ortak_saha_theme.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
-    final font = FontLoader('Satoshi')..addFont(rootBundle.load('assets/fonts/Satoshi-Variable.ttf'));
-    await font.load();
+    for (final (family, path) in [
+      ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
+    ]) {
+      await (FontLoader(family)..addFont(rootBundle.load(path))).load();
+    }
   });
   for (final strong in [false, true]) {
     for (final dark in [false, true]) {
@@ -20,7 +26,8 @@ void main() {
         final key = GlobalKey(); Map<String, dynamic>? used;
         final sku = strong ? 'boost_strong' : 'boost_basic';
         await t.pumpWidget(RepaintBoundary(key: key, child: MaterialApp(
-          theme: ThemeData(brightness: dark ? Brightness.dark : Brightness.light, fontFamily: 'Satoshi'),
+          debugShowCheckedModeBanner: false,
+          theme: dark ? OrtakSahaTheme.dark : OrtakSahaTheme.light,
           builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(
             textScaler: const TextScaler.linear(1.8)), child: child!),
           home: Scaffold(body: PaidHintButton(session: {'id': 'run', 'revision': 1, 'adCredits': 0,

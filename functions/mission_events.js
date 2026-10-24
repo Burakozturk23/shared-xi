@@ -60,4 +60,29 @@ function changedWords(uid, before, after) {
   }
   return events;
 }
-module.exports = {families, fromRun, changedRuns, changedWords};
+function friendResult(family, mode, id, room) {
+  if (!room || room.id !== id || room.mode !== mode || room.status !== "finished" ||
+      room.forfeit || room.cancelled || room.assisted || !room.host || !room.guest || room.host === room.guest ||
+      !Number.isSafeInteger(room.finishedAt) || room.finishedAt <= 0) return [];
+  const pvp = family === "pvpV1";
+  const allowed = require("./missions_v3").onlineModes;
+  if (pvp ? !allowed.slice(0, 9).includes(mode) || room.playKind !== "friend" ||
+      room.ruleVersion !== require("./pvp_engine").RULE || !room.resultHash :
+      family !== "careerTransferOnline" || !allowed.slice(9).includes(mode) || room.ranked !== false) return [];
+  const winner = pvp ? room.winnerUid : room.winner;
+  if (winner != null && ![room.host, room.guest].includes(winner)) return [];
+  return [room.host, room.guest].flatMap((uid) => {
+    const participated = pvp ? Object.values(room.audit || {}).some((a) => a.uid === uid &&
+      ["answer", "squad"].includes(a.input?.action)) : Object.values(room.answers?.[uid] || {})
+          .some((a) => a && Object.hasOwn(a, "value"));
+    if (!participated) return [];
+    return [{uid, eventId: family + ":" + id, modeId: mode, source: "friend_settlement",
+      result: winner == null ? "draw" : winner === uid ? "win" : "loss", participated: true,
+      serverValidated: true, verificationVersion: 1, serverFinishedAtMs: room.finishedAt}];
+  });
+}
+function changedFriends(family, mode, id, before, after) {
+  if (before?.status === "finished") return [];
+  return friendResult(family, mode, id, after);
+}
+module.exports = {families, fromRun, changedRuns, changedWords, friendResult, changedFriends};

@@ -29,6 +29,14 @@ import '../screens/anagram_page.dart';
 import '../screens/harf11_page.dart';
 import '../screens/pyramid_page.dart';
 import '../screens/story_mode_selection_page.dart';
+import '../screens/player_journey_chapter_list_page.dart';
+import '../screens/derby_day_country_page.dart';
+import '../screens/ucl_moments_page.dart';
+import '../screens/turkish_nostalgia_page.dart';
+import '../screens/international_glory_page.dart';
+import '../screens/dynasties_page.dart';
+import '../screens/football_docu_series_part_selection_page.dart';
+import '../screens/what_if_selection_page.dart';
 
 @immutable
 class GameEntry {
@@ -68,6 +76,19 @@ class GameCatalog {
   // Server route keys are allowlisted here; arbitrary server URLs cannot navigate.
   static GameEntry? missionRoute(String key) {
     if (key == 'online_ranked') return onlineRanked;
+    if (key == 'online_friends') return onlineFriends;
+    final story = <String, (String, Widget)>{
+      'player_journey': ('Oyuncu Yolculuğu', const PlayerJourneyChapterListPage()),
+      'what_if': ('What If', const WhatIfPage()),
+      'ucl_moments': ('UCL Moments', const UclMomentsPage()),
+      'nostalgia': ('Türkiye Nostaljisi', const TurkishNostalgiaPage()),
+      'international_glory': ('International Glory', const InternationalGloryPage()),
+      'dynasties': ('Hanedanlar', const DynastiesPage()),
+      'football_docu': ('Futbol Belgeseli', const FootballDocuSeriesPartSelectionPage()),
+      'derby_day': ('Derbi Günü', const DerbyDayCountryPage()),
+    }[key];
+    if (story != null) return GameEntry(title: story.$1, subtitle: 'Bir bölümü tamamla',
+      icon: Icons.menu_book_outlined, page: story.$2, modern: true);
     if (key == 'daily_matches') return daily;
     if (key == 'daily_lingo') return dailyLingo;
     if (key == 'passa_daily') return dailyPassa;

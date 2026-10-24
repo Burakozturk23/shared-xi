@@ -7603,15 +7603,16 @@ function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFI
 }
 
 async function lbMissionEnsure(db, uid) {
-  const policy = await lbMissionV3Policy(db, uid);
-  const ref = db.ref("missionState/" + uid);
   const now = Date.now();
+  const policy = await lbMissionV3Policy(db, uid, true, now);
+  const ref = db.ref("missionState/" + uid);
 
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
 
     state.createdAt = state.createdAt > 0 ? state.createdAt : now;
     state.updatedAt = now;
+    for (const event of policy.events || []) missionV3.record(state, event, now);
     missionV3.assign(state, uid, policy.readyModes || {}, policy, now);
 
     return state;
@@ -7657,24 +7658,20 @@ async function lbMissionRecordRanked(
   const currentDay = lbProgressionDateKey(now);
   const eventDay = lbProgressionDateKey(settledAt);
 
-  if (eventDay !== currentDay) return;
-
   const ref = db.ref("missionState/" + uid);
   const eventKey = "ranked__" + mode + "__" + matchId;
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
     if (state.daily.dateKey !== currentDay) return current;
 
-    if (state.daily.processed[eventKey]) {
-      return;
-    }
-
-    state.daily.processed[eventKey] = true;
+    if (eventDay === currentDay && state.daily.processed[eventKey]) return;
     const modeId = ({shared_xi: "club_club", grid: "grid_classic", five: "random_five"})[mode] || mode;
-    missionV3.record(state, {uid, modeId,
+    const changed = missionV3.record(state, {uid, modeId,
       eventId: matchId,
       source: "ranked_settlement", result, serverFinishedAtMs: settledAt,
       serverValidated: true, verificationVersion: 1}, now);
+    if (!changed) return;
+    if (eventDay === currentDay) state.daily.processed[eventKey] = true;
 
     state.createdAt = state.createdAt > 0 ?
       state.createdAt : now;
@@ -8007,10 +8004,14 @@ exports.claimMissionReward = httpsV2.onCall(
 
 
 // Admin-owned pilot configuration. Missing mode/content readiness fails closed.
-async function lbMissionV3Policy(db, uid) {
-  const raw = (await db.ref("runtimeConfig/missionsV3").get()).val() || {};
+async function lbMissionV3Policy(db, uid, checkReadiness = false, time = Date.now()) {
+  const runtime = (await db.ref("runtimeConfig").get()).val() || {};
+  const raw = runtime.missionsV3 || {};
   const enabled = raw.enabled === true && (raw.public === true || raw.betaUids?.[uid] === true);
-  return {...raw, enabled, weeklyEnabled: enabled && raw.weeklyEnabled === true,
+  const health = checkReadiness && enabled ? await require("./mission_readiness").resolve(
+      db, uid, raw.readyModes, runtime, time,
+      economyConfig.squadPolicy(await lbGetEconomyConfig()).enabled) : {};
+  return {...raw, ...health, enabled, weeklyEnabled: enabled && raw.weeklyEnabled === true,
     careerEnabled: enabled && raw.careerEnabled === true};
 }
 async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
@@ -8068,6 +8069,28 @@ exports.syncWordMissions = onValueWritten({ref: "/dailyWordState/{uid}",
   await lbMissionRecordEvents(getDatabase(), uid,
       missionEvents.changedWords(uid, event.data.before.val(), event.data.after.val()));
 });
+async function lbMissionFriendResult(family, event) {
+  const {mode, roomId} = event.params;
+  const events = missionEvents.changedFriends(family, mode, roomId,
+      event.data.before.val(), event.data.after.val());
+  for (const result of events) await lbMissionRecordEvents(getDatabase(), result.uid, [result]);
+}
+exports.syncPvpFriendMissions = onValueWritten({ref: "/pvpV1/{mode}/rooms/{roomId}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  await lbMissionFriendResult("pvpV1", event);
+});
+exports.syncDuelFriendMissions = onValueWritten({ref: "/careerTransferOnline/{mode}/rooms/{roomId}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  await lbMissionFriendResult("careerTransferOnline", event);
+});
+for (const [family] of require("./mission_story_events").definitions) {
+  exports["syncMission_" + family] = onValueWritten({ref: "/" + family + "/{uid}",
+    instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+    const {uid} = event.params;
+    await lbMissionRecordEvents(getDatabase(), uid, require("./mission_story_events")
+        .changed(uid, family, event.data.before.val(), event.data.after.val()));
+  });
+}
 
 // LINKBALL_16_10C_MISSION_ENGINE_END
 
