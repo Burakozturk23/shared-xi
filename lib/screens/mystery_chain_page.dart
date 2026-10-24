@@ -1,3 +1,4 @@
+import '../widgets/paid_hint_button.dart';
 import 'dart:async';
 import '../services/game_error.dart';
 import '../widgets/game_ui.dart';
@@ -236,6 +237,12 @@ class _MysteryChainPageState extends State<MysteryChainPage> with WidgetsBinding
   List<Widget> _help(bool disabled) {
     final count = (_session['optionalHints'] as num? ?? 0).toInt();
     if (count >= 3) return [const Text('Bu oyunun üç isteğe bağlı ipucu kullanıldı.')];
+    if (rewardMap(_session['support'])['version'] == 1) return [
+      const SizedBox(height: 12), Text('Destek çantası · $count / 3'),
+      PaidHintButton(session: _session, sku: _mystery ? 'boost_basic' : 'boost_connection',
+        label: _mystery ? 'Yeni bilgi aç' : 'Geçerli köprü ipucu', disabled: disabled,
+        onUse: (payment) => _act('hint', payment), onWatch: _watch),
+    ];
     final credit = _session['freeHint'] == true || (_session['adCredits'] as num? ?? 0) > 0;
     return [const SizedBox(height: 16), Text('İsteğe bağlı ipucu · $count / 3'),
       OutlinedButton.icon(onPressed: disabled || !credit ? null : () => _act('hint'), icon: const Icon(Icons.lightbulb_outline), label: Text(_mystery ? 'Yeni bilgi aç' : 'Geçerli köprü ipucu')),

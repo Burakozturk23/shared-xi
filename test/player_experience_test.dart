@@ -95,7 +95,7 @@ class ProgressFake extends ProgressGateway {
     return missionData ?? missionFixture();
   }
   @override
-  Future<MissionClaimResult> claimMission(String id) async {
+  Future<MissionClaimResult> claimMission(String id, {String periodKey = ''}) async {
     claims++;
     return pending!.future;
   }

@@ -6226,6 +6226,11 @@ exports.getStoreCatalog = httpsV2.onCall(
       const state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
       const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
+      const boostPolicy = await require("./boosts").policyFor(db, uid, true);
+      if (boostPolicy) {
+        offers.push(...require("./boosts").offers.filter((o) =>
+          o.modes.some((m) => boostPolicy.readyModes?.[m] === true)));
+      }
       const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
@@ -7664,7 +7669,9 @@ async function lbMissionRecordRanked(
     }
 
     state.daily.processed[eventKey] = true;
-    missionV3.record(state, {uid, modeId: ({shared_xi: "club_club", grid: "grid_classic", five: "random_five"})[mode] || mode, eventId: matchId,
+    const modeId = ({shared_xi: "club_club", grid: "grid_classic", five: "random_five"})[mode] || mode;
+    missionV3.record(state, {uid, modeId,
+      eventId: matchId,
       source: "ranked_settlement", result, serverFinishedAtMs: settledAt,
       serverValidated: true, verificationVersion: 1}, now);
 
@@ -7801,12 +7808,12 @@ function lbMissionRequirePreviousStages(resolved, state) {
  * @param {string} missionId
  * @return {Promise<Object>}
  */
-async function lbMissionClaim(db, uid, missionId) {
+async function lbMissionClaim(db, uid, missionId, expectedPeriodKey) {
   const config = await lbGetEconomyConfig();
   const resolved = lbMissionDefinition(missionId, config);
   const initial = await lbMissionEnsure(db, uid);
   if (!resolved || initial.schemaVersion === 3 && resolved.kind === "daily") {
-    return lbMissionV3Claim(db, uid, missionId, config);
+    return lbMissionV3Claim(db, uid, missionId, config, expectedPeriodKey);
   }
   await lbSettlePendingRewards(db, uid, "missionState/" + uid);
   const now = Date.now();
@@ -7986,9 +7993,7 @@ exports.claimMissionReward = httpsV2.onCall(
       }
 
       const result = await lbMissionClaim(
-          getDatabase(),
-          uid,
-          missionId,
+          getDatabase(), uid, missionId, request.data?.periodKey,
       );
 
       return {
@@ -8007,19 +8012,29 @@ async function lbMissionV3Policy(db, uid) {
   return {...raw, enabled, weeklyEnabled: enabled && raw.weeklyEnabled === true,
     careerEnabled: enabled && raw.careerEnabled === true};
 }
-async function lbMissionV3Claim(db, uid, missionId, config) {
+async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
   const policy = await lbMissionV3Policy(db, uid);
   const now = Date.now(); const nonce = crypto.randomUUID();
   let outcome; let failure;
   const tx = await db.ref("missionState/" + uid).transaction((raw) => {
     outcome = null; failure = null;
     const state = lbMissionState(raw, now);
-    try { outcome = missionV3.claim(state, missionId, policy, now, nonce); }
-    catch (e) { failure = e; return state; }
+    try {
+      const projected = missionV3.items(state, policy);
+      const card = [...projected.daily, ...projected.weekly, ...projected.general].find((d) => d.id === missionId);
+      if (card && periodKey !== card.periodKey) {
+        throw new httpsV2.HttpsError("failed-precondition", "Görev dönemi değişti. Ekranı yenile.");
+      }
+      outcome = missionV3.claim(state, missionId, policy, now, nonce);
+    } catch (e) {
+      failure = e; return state;
+    }
     if (!outcome) return state;
     const key = "mission_reward__" + outcome.sourceId;
-    if (outcome.claim.nonce === nonce) state.pendingRewards[key] = lbPendingReward(
-        "mission_reward", outcome.sourceId, outcome.claim.rewardCoins, "missions-v3");
+    if (outcome.claim.nonce === nonce) {
+      state.pendingRewards[key] = lbPendingReward(
+          "mission_reward", outcome.sourceId, outcome.claim.rewardCoins, "missions-v3");
+    }
     state.updatedAt = now; return state;
   });
   if (failure) throw new httpsV2.HttpsError(failure.code, failure.message);

@@ -5,6 +5,17 @@ const THREE_HINTS = ["burst_survival_hint", "fake_club_hint", "mystery_hint", "c
   "coach11_hint", "letter11_hint", "vault_hint"];
 const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
   "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint", ...THREE_HINTS]);
+const HINT_PLACEMENTS = new Set([...THREE_HINTS, "daily_hint", "quiz_hint", "story_hint", "what_if_hint"]);
+// Retained legacy tickets count toward the same Istanbul-day assistance budget.
+function hintCount(state, key, time, includePending) {
+  const tickets = Object.values(state.tickets).filter((t) => t.dayKey === key && HINT_PLACEMENTS.has(t.placement));
+  const earned = tickets.filter((t) => ["verified", "credited"].includes(t.status));
+  const legacySolo = (state.days[key + "__solo_hints"]?.earned || 0) + THREE_HINTS.reduce((n, p) =>
+    n + (state.days[key + "__" + p]?.earned || 0), 0);
+  return Math.max(legacySolo, earned.filter((t) => THREE_HINTS.includes(t.placement)).length) +
+    earned.filter((t) => !THREE_HINTS.includes(t.placement)).length +
+    (includePending ? tickets.filter((t) => t.status === "pending" && t.expiresAt > time).length : 0);
+}
 const TICKET_MS = 20 * 60000;
 const RETENTION_MS = 48 * 3600000;
 class RewardError extends Error {
@@ -182,7 +193,7 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         placement === "energy_refill" ? 2 : 1;
       policy.configId = THREE_HINTS.includes(placement) ? "three-modes-hints-v1" : "energy-quiz-v1";
     }
-    const pro = await isPro(uid);
+    const pro = !benefit?.requireVerifiedAd && await isPro(uid);
     if (!policy.enabled) fail("failed-precondition", "Bonuslar şu anda kapalı.");
     if (!pro && !policy.unitId) fail("failed-precondition", "Reklam bağlantısı henüz hazır değil.");
     const key = dayKey(time);
@@ -196,6 +207,9 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         fail("already-exists", "Bu bonus zaten alındı veya doğrulanıyor.");
       }
       const d = day(s, counterKey);
+      if (HINT_PLACEMENTS.has(placement) && hintCount(s, key, time, true) >= 4) {
+        fail("resource-exhausted", "Günlük dört reklamlı destek hakkın doldu.");
+      }
       // Include old per-placement counters during the shared-cap migration.
       const legacyHints = THREE_HINTS.includes(placement) ? THREE_HINTS.reduce((n, p) =>
         n + (s.days[key + "__" + p]?.earned || 0), 0) : 0;
@@ -216,7 +230,8 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
       d.issued += 1;
       const ticket = {id, requestId, placement, dayKey: key, counterKey,
         amount: benefit ? benefit.amount : policy.amount,
-        ...(benefit ? {context: benefit.context, claimKey: benefit.claimKey} : {}),
+        ...(benefit ? {context: benefit.context, claimKey: benefit.claimKey,
+          requireVerifiedAd: benefit.requireVerifiedAd === true} : {}),
         configId: policy.configId, dailyLimit: policy.limit, unitId: policy.unitId,
         createdAt: time, expiresAt: time + TICKET_MS, status: pro ? "verified" : "pending",
         sourceType: pro ? "pro_daily_bonus" : "rewarded_coin"};
@@ -264,6 +279,9 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
         fail("already-exists", "Transaction already used");
       }
       const d = day(s, t.counterKey || t.dayKey);
+      if (t.requireVerifiedAd && hintCount(s, t.dayKey, time, false) >= 4) {
+        fail("resource-exhausted", "Günlük reklamlı destek limiti doldu.");
+      }
       if (d.earned >= t.dailyLimit) fail("resource-exhausted", "Daily limit reached");
       d.earned += 1;
       t.status = "verified";

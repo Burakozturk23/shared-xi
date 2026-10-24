@@ -22,10 +22,11 @@ class MissionService {
 
   static Future<MissionProfile> fetch() async {
     await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
+    final owner = _requireGoogleAccount();
 
     final callable = _functions.httpsCallable('getMyMissions');
     final response = await callable.call();
+    if (_requireGoogleAccount() != owner) throw StateError('Hesap değişti. Görev ekranını yenile.');
     final data = _map(response.data);
     final rawProfile = data['profile'];
 
@@ -36,14 +37,16 @@ class MissionService {
     return MissionProfile.fromMap(Map<String, dynamic>.from(rawProfile));
   }
 
-  static Future<MissionClaimResult> claim(String missionId) async {
+  static Future<MissionClaimResult> claim(String missionId, {String periodKey = ''}) async {
     await CloudBootstrap.ensureInitialized();
-    _requireGoogleAccount();
+    final owner = _requireGoogleAccount();
 
     final callable = _functions.httpsCallable('claimMissionReward');
     final response = await callable.call(<String, dynamic>{
       'missionId': missionId,
+      if (periodKey.isNotEmpty) 'periodKey': periodKey,
     });
+    if (_requireGoogleAccount() != owner) throw StateError('Hesap değişti. Görev ekranını yenile.');
     final data = _map(response.data);
     final rawProfile = data['profile'];
 

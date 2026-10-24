@@ -31,3 +31,19 @@ Belgelerin tamamı ve tablolar okundu; görev UI taslağı ile boost fiyat tablo
 Görev V3 çekirdeği, solo/kelime Admin sonuç köprüsü, 5/3 kalıcı atama, haftalık 3/2, claim outbox entegrasyonu ve hafta SP ayrımı eklendi. Eski günün ilerlemesi/ödülleri geçişte korunur. Haftalık ve yeni kariyer ödülleri kapalı başlar. Görev ekranı üç sekme, sunucu rota anahtarı ve kompakt alınmış kart kullanır. Yeni 9 senaryo testi ve ilgili 19 regresyon testi geçti. Flutter/Android CI henüz çalıştırılmadı.
 
 Eksikler: hikâye/arkadaş sonuç köprüsü, rollout içerik sağlığı otomasyonu, tüm boost mod adaptörleri ve mağaza/oyun paneli, tam kabul matrisi ve gerçek cihaz SSV kontrolleri. Bu checkpoint yayın onayı veya tamamlandı beyanı değildir.
+
+## Checkpoint 2 — 24 Ekim, atomik destek ve dönem koruması
+
+Yeni `boosts.js` motoru ekonomiState işlemi içinde ürün türü, sabit fiyat, stok/Coin/doğrulanmış reklam tüketimi, ipucu kaydı ve assisted geçişini birlikte işler. Yeni pilot oturumları için Hoca 11, Kadro Kasası, Harf 11, Kariyer, Transfer, Gizem, standart Zincir, Sahte Kulüp Sonsuz, Burst Dayanıklılık ve Pyramid bağlandı. Eski oturumlar kendi politika sürümünde kalır; açık ipuçları ve eski Pro/reklam hakları değiştirilmez. Bu kapsam 65 satırın tamamı değildir.
+
+- Temel bilgi, tek seçenek eleme, bağlantı ve güçlü bilgi için tekli/üçlü mağaza teklifleri; eski üç SKU kimliği korunur. Yeni satışlar `runtimeConfig/boosts` pilot ve readyModes kapıları olmadan sunulmaz. Varsayılan kapalıdır; enerji açılmaz.
+- Ortak oyun içi panel stok/Coin/reklam seçeneklerini, güçlü destek reklam yasağını ve Yardımlı sonucunu açıklar. Gizli cevabı istemciye verip yerelde yardım üretmez.
+- Geciken doğrulanmış reklam, bitmiş oturumda uyumlu stok olarak korunur. 99 stok doluysa outbox bekler. Yeni pilot oturumunda Pro, doğrulanmamış reklam kredisi üretmez.
+- Reklamlı yardımlar İstanbul günü başına ortak dört sınırında sayılır. Günlük Three Modes oturumunda bir, normal oturumda iki reklam sınırı; güçlü destek reklamsızdır.
+- Yardımlı kayıtlar normal skor/seri/ustalık kaydından ayrılır. Mevcut ilk-bitiriş ödül kimlikleri çoğaltılmaz.
+- Görev V3 claim isteği artık karttaki periodKey değerini taşır. Dün/önceki hafta kartı yeni dönemin aynı slotunu alamaz. Hesap değişiminde eski fetch/claim yanıtı gösterilmez.
+- Önceki checkpoint'in CI hatası olan body-parser bağımlılığı 2.4.0'a güncellendi; npm audit 0 açık. Önceki checkpoint'in lint sorunları da giderildi.
+
+Yerel sunucu doğrulaması: 574 test PASS (son eklenen ortak reklam sınırı testi ayrıca tekrar koşulacak). Önceki 557 test korunur, 16 yeni ödeme/adaptör testi ve 1 dönem isteği testi eklendi. Flutter paneli için 320px/%180 açık-koyu tema, güçlü destek ve hesap değiştirme testleri eklendi; CI sonucu bekleniyor. Yerel Flutter kurulumu otomatik güvenlik denetimi tarafından beklenmeyen metadata isteği nedeniyle engellendi; kurulum tekrar denenmedi.
+
+Açık işler: diğer günlük/kelime/keşif modları; sekiz hikâye ailesinin ücretli yardım ve Pro teklif göçü; yerel Grid ve yedi bot modunun sunucu oturum köprüleri; Matching ve Choice antrenman destekleri; arkadaş/hikâye görev olay köprüleri; canlı içerik sağlığı denetimi; tüm 142 kriterin kanıtlandırılması; gerçek cihaz SSV/iki hesap kabulü. Bu ara kayıt canlı yayın onayı değildir. Mevcut taslak PR açık kalır; production config/deploy yapılmadı.

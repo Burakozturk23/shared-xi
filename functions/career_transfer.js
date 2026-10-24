@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {norm} = require("./three_modes");
@@ -28,9 +29,10 @@ function sessionView(raw) {
   const p = puzzleOf(s); const player = players.get(p.playerId);
   const v = {id: s.id, mode: s.mode, difficulty: s.difficulty, version: s.version, revision: s.revision,
     phase: s.phase, finished: s.finished, expiresAt: s.expiresAt, wrong: s.wrong, guesses: s.guesses,
-    checks: s.checks, score: s.score, found: s.found, hints: s.hints, freeHint: !s.freeUsed,
+    checks: s.checks, score: s.score, found: s.found, hints: s.hints,
+    freeHint: !B.paid(s) && !s.freeUsed, support: B.view(s),
     adCredits: s.adCredits, adRemaining: Math.max(0, 2 - s.adGranted), feedback: s.feedback || "",
-    energyCharged: s.energyCharged, masteryEligible: s.first && s.difficulty !== "beginner",
+    energyCharged: s.energyCharged, masteryEligible: !s.assisted && s.first && s.difficulty !== "beginner",
     result: s.result || null, streak: s.streak || 0};
   if (s.phase !== "guess" || s.finished) v.player = playerView(player);
   if (s.mode === "career") {
@@ -56,7 +58,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function change(uid, fn) {
     let error; const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-      error = null; const e = normalize(raw); e.careerTransfer = stateOf(e.careerTransfer);
+      error = null; const e = normalize(structuredClone(raw)); e.careerTransfer = stateOf(e.careerTransfer);
       e.energy = energy.refreshed(e.energy, time);
       try {
         fn(e.careerTransfer, e, time); return e;
@@ -131,18 +133,20 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     run.finished = true; run.phase = "result"; run.finishedAt = time;
     const record = s.collection[`${run.mode}__${run.puzzle}`];
     if (run.mode === "transfer") {
-      s.streak = run.found ? s.streak + 1 : 0; run.streak = s.streak;
-      s.longestStreak = Math.max(s.longestStreak, s.streak);
-      const multiplier = s.streak >= 4 ? 2 : s.streak === 3 ? 1.5 : s.streak === 2 ? 1.2 : 1;
+      const streakKey = run.assisted ? "assistedStreak" : "streak";
+      s[streakKey] = run.found ? (s[streakKey] || 0) + 1 : 0; run.streak = s[streakKey];
+      if (!run.assisted) s.longestStreak = Math.max(s.longestStreak, s.streak);
+      const multiplier = run.streak >= 4 ? 2 : run.streak === 3 ? 1.5 : run.streak === 2 ? 1.2 : 1;
       run.score = run.found ? Math.round(Math.max(0, 100 - run.wrong * 10 - run.hints.length * 10) * multiplier) : 0;
     }
-    record.bestScore = Math.max(record.bestScore || 0, run.score);
+    const bestKey = run.assisted ? "bestAssistedScore" : "bestScore";
+    record[bestKey] = Math.max(record[bestKey] || 0, run.score);
     record.solved = !!record.solved || run.found; record.lastAt = time;
     record.last = {wrong: run.wrong, hints: run.hints.length, checks: run.checks, score: run.score, found: run.found};
     record.attempts = (record.attempts || 0) + 1;
     if (run.first) record.firstResult = record.last;
     run.result = {coins: run.earned, xp: run.earned * 2, medal: record.medal || 0,
-      practice: !run.found, score: run.score};
+      practice: !run.found, assisted: run.assisted === true, score: run.score};
   }
   async function status(uid, input) {
     if (!MODES.includes(input.mode)) fail("invalid-argument", "Geçersiz mod.");
@@ -183,6 +187,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       inventory: boosts.map((id) => ({id, quantity: e.inventory[id]?.quantity || 0}))};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input);
     if (!validId(input.requestId)) fail("invalid-argument", "Geçersiz istek.");
     const difficulty = input.mode === "career" ? input.difficulty || "normal" : "normal";
@@ -227,6 +232,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         energyCharged: charge, earned: 0, hints: [], guesses: [], actions: {}, freeUsed: false,
         adGranted: 0, adCredits: 0, adReceipts: {}, correctness: [],
         order: p.stops ? shuffled(p.stops.map((x) => x.id), seed) : []};
+      B.pin(run, boostPolicy);
       s.sessions[run.id] = run; s.active[input.mode] = run.id; s.starts[run.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
         if (old.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
@@ -273,7 +279,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const run = runOf(s.sessions[input.sessionId]);
       if (!run || run.mode !== input.mode || run.version !== catalog.version) fail("not-found", "Oturum bulunamadı.");
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.answer ?? null,
-        input.order ?? null, input.hint ?? null, input.boost ?? null]));
+        input.order ?? null, input.hint ?? null, input.boost ?? null, ...B.paymentFingerprint(input)]));
       if (run.actions[input.requestId]) {
         if (run.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İşlem başka cevaba ait.");
         return;
@@ -320,7 +326,11 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       } else if (input.action === "hint") {
         if (run.hints.length >= 3) fail("resource-exhausted", "Bu bulmacanın üç ipucu kullanıldı.");
         const hint = hintFor(run, input);
-        if (input.boost) {
+        if (B.paid(run)) {
+          const sku = hint.kind === "letter" ? "boost_first_letter" :
+            ["connection", "years", "short"].includes(hint.kind) ? "boost_connection" : "boost_basic";
+          B.consume(e, run, input, sku, "hint:" + hint.kind, hint, time);
+        } else if (input.boost) {
           const item = e.inventory[input.boost];
           if (!boosts.includes(input.boost) || !item || item.quantity < 1) {
             fail("resource-exhausted", "Destek stokta yok.");
@@ -351,15 +361,16 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function prepareHint(uid, placement, context) {
     const s = await read(uid); const run = runOf(s.sessions[context?.sessionId]);
     if (!run || `${run.mode}_hint` !== placement || run.finished || run.expiresAt <= now() ||
-        run.adGranted >= 2 || run.hints.length + run.adCredits + (run.freeUsed ? 0 : 1) >= 3) {
+        run.adGranted >= 2 || run.hints.length + run.adCredits + (B.paid(run) || run.freeUsed ? 0 : 1) >= 3) {
       fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
     }
-    return {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
-      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}};
+    return B.adBenefit(run, {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
+      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}});
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, time) => {
+    await change(uid, (s, e, time) => {
       const run = runOf(s.sessions[receipt.context?.sessionId]);
+      if (B.recoverAd(e, run, receipt, time, "boost_basic")) return;
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= time ||
           run.adReceipts[receipt.id] || run.hints.length >= 3 || run.adGranted >= 2 ||
           run.adGranted !== receipt.context.credit) return;

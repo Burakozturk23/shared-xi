@@ -1,3 +1,4 @@
+import '../widgets/paid_hint_button.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -215,7 +216,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       choices('Oyun tarzı', style, {'speed': 'Hız Atağı', 'survival': 'Dayanıklılık'}, (v) => style = v),
       choices('Eşleşme', pairType, {'clubClub': 'Kulüp × Kulüp', 'clubCountry': 'Kulüp × Ülke'}, (v) => pairType = v),
       Text(style == 'speed' ? 'Toplam 120 sn · Tur 30 sn · Yanlış −3 sn\n2 pas: her biri −5 sn · İpucu yok' :
-        '5 can · 12 tamamlanan tur · 2 pas\n1 ücretsiz ipucu + en fazla 2 reklam ipucu\nReklam ipuçları diğer solo modlarla ortak 4/gün sınırına tabidir.'),
+        '5 can · 12 tamamlanan tur · 2 pas\nDestek seçenekleri oyun içinde gösterilir\nReklam ipuçları diğer solo modlarla ortak 4/gün sınırına tabidir.'),
     ] else ...[
       panel(widget.mode == 'pyramid' ? 'Bağları kur, zirveye ulaş.' : 'Hatırla. Eşleştir. Tamamla.', widget.mode == 'pyramid' ?
         'Her boş hücre iki alt desteğe bağlanmalı. Zirvenin altındaki iki hücre zirveye de bağlanır. Tek bir gizli cevap yok; kalan çözümü koruyan adaylar kabul edilir.' :
@@ -266,8 +267,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       ...message(), input(),
       Wrap(spacing: 10, children: [
         OutlinedButton(onPressed: busy || offline || _n(run['passes']) >= 2 ? null : () => act('pass'), child: Text('Pas (${2 - _n(run['passes'])})${speed ? ' · −5 sn' : ''}')),
-        if (!speed) OutlinedButton(onPressed: busy || offline || run['freeUsed'] == true && _n(run['adCredits']) == 0 ? null : () => act('hint'), child: Text(run['freeUsed'] == true ? 'İpucu (${run['adCredits']})' : 'Ücretsiz ipucu')),
-        if (!speed && _n(run['adGranted']) < 2) TextButton(onPressed: busy || offline || local ? null : adHint, child: const Text('Reklamla ipucu')),
+        if (!speed && rewardMap(run['support'])['version'] == 1)
+          PaidHintButton(session: run, sku: 'boost_basic', label: 'Ek bilgi', disabled: busy || offline || local,
+            onUse: (payment) => act('hint', payment), onWatch: adHint)
+        else if (!speed) OutlinedButton(onPressed: busy || offline || run['freeUsed'] == true && _n(run['adCredits']) == 0 ? null : () => act('hint'), child: Text(run['freeUsed'] == true ? 'İpucu (${run['adCredits']})' : 'Ücretsiz ipucu')),
+        if (!speed && rewardMap(run['support'])['version'] != 1 && _n(run['adGranted']) < 2) TextButton(onPressed: busy || offline || local ? null : adHint, child: const Text('Reklamla ipucu')),
       ]),
     ];
   }
@@ -302,7 +306,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (selected != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('Bağlanması gerekenler: ${highlighted.map((id) => rewardMap(filled[id])['name']).join(' • ')}')),
       ...message(), input(),
       Wrap(spacing: 10, children: [
-        OutlinedButton(onPressed: busy || offline || slotId == null || _n(run['hints']) >= (run['difficulty'] == 'hard' ? 1 : 2) ? null : () => act('hint', {'slotId': slotId}),
+        if (rewardMap(run['support'])['version'] == 1)
+          PaidHintButton(session: run, sku: 'boost_strong', label: 'Bağlantı ipucu',
+            disabled: busy || offline || slotId == null || _n(run['hints']) >= (run['difficulty'] == 'hard' ? 1 : 2),
+            onUse: (payment) => act('hint', {'slotId': slotId, ...payment}))
+        else OutlinedButton(onPressed: busy || offline || slotId == null || _n(run['hints']) >= (run['difficulty'] == 'hard' ? 1 : 2) ? null : () => act('hint', {'slotId': slotId}),
           child: Text('İpucu (${(run['difficulty'] == 'hard' ? 1 : 2) - _n(run['hints'])})')),
         TextButton(onPressed: busy || offline || run['canUndo'] != true ? null : () => act('undo'), child: const Text('Son hücreyi geri al')),
       ]),

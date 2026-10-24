@@ -1,3 +1,4 @@
+import '../widgets/paid_hint_button.dart';
 import 'dart:async';
 import '../services/game_error.dart';
 import '../widgets/game_ui.dart';
@@ -188,7 +189,15 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
       ],
     ];
   }
-  List<Widget> _help(bool locked) => [
+  List<Widget> _help(bool locked) => rewardMap(_session['support'])['version'] == 1 ? [
+    const SizedBox(height: 12),
+    if (_session['free5050'] == true)
+      PaidHintButton(session: _session, sku: 'boost_eliminate', label: 'Tek seçenek ele', disabled: locked,
+        onUse: (payment) => _act('fifty', payment), onWatch: _watch),
+    if ((_session['traceRemaining'] as num? ?? 0) > 0 && _session['traceAvailable'] == true)
+      PaidHintButton(session: _session, sku: 'boost_connection', label: 'Kariyer İzi', disabled: locked,
+        onUse: (payment) => _act('trace', payment), onWatch: _watch),
+  ] : [
     const SizedBox(height: 12),
     OutlinedButton.icon(onPressed: locked || _session['free5050'] != true ? null : () => _act('fifty'),
       icon: const Icon(Icons.filter_2), label: Text(_session['free5050'] == true ? '50/50 · oturumda 1 ücretsiz' : '50/50 kullanıldı')),

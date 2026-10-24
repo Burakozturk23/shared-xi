@@ -117,7 +117,9 @@ function assign(state, uid, ready, policy = {}, now = state.updatedAt) {
     state.daily.assigned = old.map((d) => {
       const progress = Math.max(0, value(state.daily, d) - number(d.baseline));
       if (state.daily.claims[d.id] || progress >= d.target) return d;
-      if (available(d, ready, state)) { const {unavailable, ...rest} = d; return rest; }
+      if (available(d, ready, state)) {
+        const rest = {...d}; delete rest.unavailable; return rest;
+      }
       const replacement = ordered.find((x) => x.solo && !used.has(x.id));
       if (!replacement) return {...d, unavailable: true};
       used.add(replacement.id);
@@ -149,8 +151,9 @@ function record(state, event, now) {
     bucket.processed[key] = true; changed = true;
     bucket.modes[event.modeId] = true;
     const add = (name) => bucket.counters[name] = number(bucket.counters[name]) + 1;
-    if (ranked) { add("rankedPlayed"); if (event.result === "win") add("rankedWins"); }
-    else if (friend) add("friendPlayed");
+    if (ranked) {
+      add("rankedPlayed"); if (event.result === "win") add("rankedWins");
+    } else if (friend) add("friendPlayed");
     else {
       bucket.soloModes[event.modeId] = true;
       if (mode[2] === "word") bucket.wordModes[event.modeId] = true;
@@ -169,11 +172,13 @@ function items(state, policy = {}) {
     const enabled = !d.unavailable && (kind === "daily" ? policy.enabled === true :
       kind === "weekly" ? policy.weeklyEnabled === true : policy.careerEnabled === true && number(d.rewardCoins) > 0);
     const limitReached = kind !== "general" && !claim && Object.keys(bucket.claims || {}).length >= limit;
-    return {...d, kind, progress: Math.min(progress, d.target), rawProgress: progress,
-      rewardCoins: claim?.rewardCoins ?? (kind === "daily" ? 20 : kind === "weekly" ? 25 : number(d.rewardCoins)),
-      rewardSp: kind === "daily" ? 30 : 0, rewardXp: 0, enabled, limitReached,
-      claimed: !!claim, claimedAt: claim?.claimedAt || 0,
-      claimable: enabled && !claim && !limitReached && progress >= d.target};
+    return {...d, kind, periodKey: kind === "daily" ? state.daily.dateKey :
+      kind === "weekly" ? "weekly__" + state.weekly.weekKey : "general",
+    progress: Math.min(progress, d.target), rawProgress: progress,
+    rewardCoins: claim?.rewardCoins ?? (kind === "daily" ? 20 : kind === "weekly" ? 25 : number(d.rewardCoins)),
+    rewardSp: kind === "daily" ? 30 : 0, rewardXp: 0, enabled, limitReached,
+    claimed: !!claim, claimedAt: claim?.claimedAt || 0,
+    claimable: enabled && !claim && !limitReached && progress >= d.target};
   };
   const general = extraChains.map((chain) => {
     const i = chain.targets.findIndex((n) => !state.generalClaims[chain.id + "_" + n]);
@@ -200,8 +205,10 @@ function claim(state, missionId, policy, now, nonce) {
     item.kind === "weekly" ? state.weekly.claims : state.generalClaims;
   const periodKey = item.kind === "daily" ? state.daily.dateKey :
     item.kind === "weekly" ? "weekly__" + state.weekly.weekKey : "general";
-  if (!bucket[missionId] && !item.claimable) throw new RewardError("failed-precondition",
-      "Görev tamamlanmadı, ödül kapalı veya dönem limiti doldu.");
+  if (!bucket[missionId] && !item.claimable) {
+    throw new RewardError("failed-precondition",
+        "Görev tamamlanmadı, ödül kapalı veya dönem limiti doldu.");
+  }
   const sourceId = periodKey + "__" + missionId;
   bucket[missionId] ||= {claimedAt: now, rewardCoins: item.rewardCoins, nonce, economyConfigId: "missions-v3"};
   return {item, claim: bucket[missionId], periodKey, sourceId};

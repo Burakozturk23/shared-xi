@@ -46,7 +46,9 @@ test("verified event dedupe, late-period isolation, friend and ranked separation
   M.record(s, event("old", "pyramid", now - 8 * 86400000), now);
   assert.equal(s.general.counters.soloCompleted, 2); assert.equal(s.weekly.counters.soloCompleted, 1);
   for (const patch of [{serverValidated: false}, {verificationVersion: 0}, {forfeit: true},
-    {participated: false}, {serverFinishedAtMs: now + 1}]) assert.equal(M.record(s, {...event("bad"), ...patch}, now), false);
+    {participated: false}, {serverFinishedAtMs: now + 1}]) {
+    assert.equal(M.record(s, {...event("bad"), ...patch}, now), false);
+  }
   const friend = {...event("friend", "club_club"), source: "friend_settlement", result: "win"};
   M.record(s, friend, now); assert.equal(s.daily.counters.friendPlayed, 1);
   assert.equal(s.daily.counters.rankedWins, undefined);
@@ -83,13 +85,14 @@ test("mode adapters reject partial or repeated terminal events", () => {
   assert.equal(E.changedRuns("a", "balances", {}, {sessions: {r: run}}).length, 0);
 });
 test("callable concurrency and RTDB empty-map persistence mint once", async () => {
-  const h = harness({users: {alice: {displayName: "Alice"}}, runtimeConfig: {missionsV3: policy}}, {omitEmptyObjects: true});
+  const h = harness({users: {alice: {displayName: "Alice"}}, runtimeConfig: {missionsV3: policy}},
+      {omitEmptyObjects: true});
   const first = await h.call("getMyMissions"); assert.equal(first.profile.daily.length, 5);
   for (const [m] of M.soloModes) await h.context.lbMissionRecordEvents(h.db, "alice", [event(m, m, h.now)]);
   const profile = (await h.call("getMyMissions")).profile;
   const item = profile.daily.find((d) => d.claimable); assert.ok(item);
-  const results = await Promise.all([h.call("claimMissionReward", {missionId: item.id}),
-    h.call("claimMissionReward", {missionId: item.id})]);
+  const results = await Promise.all([h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey}),
+    h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey})]);
   assert.equal(results.filter((r) => r.granted).length, 1);
   assert.equal(h.read("economyState/alice/balances/coins"), 20);
 });
@@ -101,4 +104,20 @@ test("forfeit and nonparticipation cannot advance counters", async () => {
         player1Uid: "alice", player1Result: "win", settledAt: h.now, ...extra})}}});
   }
   assert.equal(h.read("missionState/alice"), null);
+});
+
+test("stale daily and weekly card cannot claim the next period's slot", async () => {
+  const h = harness({users: {alice: {displayName: "Alice"}}, runtimeConfig: {missionsV3: policy}},
+      {omitEmptyObjects: true});
+  await h.call("getMyMissions");
+  for (const [m] of M.soloModes) await h.context.lbMissionRecordEvents(h.db, "alice", [event(m, m, h.now)]);
+  const profile = (await h.call("getMyMissions")).profile;
+  const item = profile.daily.find((d) => d.claimable);
+  for (const periodKey of [undefined, "2020-01-01", "weekly__2020-01-01"]) {
+    await assert.rejects(h.call("claimMissionReward", {missionId: item.id, periodKey}),
+        {code: "failed-precondition"});
+  }
+  assert.equal(h.read("economyState/alice/balances/coins") || 0, 0);
+  await h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey});
+  assert.equal(h.read("economyState/alice/balances/coins"), 20);
 });

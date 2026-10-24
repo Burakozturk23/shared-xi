@@ -3,6 +3,7 @@ enum MissionKind { daily, weekly, general }
 class MissionItem {
   final String id;
   final String routeKey;
+  final String periodKey;
   final String modeId;
   final int rewardSp;
   final bool unavailable;
@@ -24,6 +25,7 @@ class MissionItem {
 
   const MissionItem({
     this.routeKey = '',
+    this.periodKey = '',
     this.modeId = '',
     this.rewardSp = 0,
     this.unavailable = false,
@@ -53,6 +55,7 @@ class MissionItem {
   factory MissionItem.fromMap(Map<String, dynamic> data) {
     return MissionItem(
       routeKey: data['routeKey']?.toString() ?? '',
+      periodKey: data['periodKey']?.toString() ?? '',
       modeId: data['modeId']?.toString() ?? '',
       rewardSp: _missionInt(data['rewardSp']),
       unavailable: data['unavailable'] == true,

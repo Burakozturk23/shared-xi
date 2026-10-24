@@ -31,11 +31,12 @@ function fromRun(uid, family, id, r) {
       modeId = r.mode; valid = r.finished === true && r.eligible === true; break;
   }
   if (!valid || !modeId) return null;
-  const hints = Array.isArray(r.hints) ? r.hints.length : Number(r.hints) || 0;
+  const hints = Array.isArray(r.hints) ? r.hints.filter((h) => !h.automatic).length : Number(r.hints) || 0;
   return {uid, eventId: family + ":" + id, modeId, source: "solo_verified", result: "completed",
     serverValidated: true, verificationVersion: 1,
     serverFinishedAtMs: r.finishedAt || r.completedAt || r.result?.finishedAt,
-    assisted: r.assisted === true || hints > 0 || r.optionalHints > 0 || r.hintsUsed > 0};
+    assisted: r.assisted === true || hints > 0 || r.optionalHints > 0 || r.hintsUsed > 0 || r.hint === true ||
+      (r.rounds || []).some?.((x) => x.bio || x.first) === true};
 }
 function changedRuns(uid, family, before, after) {
   if (!families.includes(family)) return [];
@@ -47,11 +48,14 @@ function changedRuns(uid, family, before, after) {
 }
 function changedWords(uid, before, after) {
   const events = [];
-  for (const bucket of ["days", "weeks"]) for (const [period, modes] of Object.entries(after?.[bucket] || {})) {
-    for (const [mode, r] of Object.entries(bucket === "weeks" ? {passa_weekly: modes} : modes || {})) {
-      const id = period + ":" + mode;
-      if (fromRun(uid, "dailyWords", id, bucket === "weeks" ? before?.weeks?.[period] : before?.days?.[period]?.[mode])) continue;
-      const event = fromRun(uid, "dailyWords", id, r); if (event) events.push(event);
+  for (const bucket of ["days", "weeks"]) {
+    for (const [period, modes] of Object.entries(after?.[bucket] || {})) {
+      for (const [mode, r] of Object.entries(bucket === "weeks" ? {passa_weekly: modes} : modes || {})) {
+        const id = period + ":" + mode;
+        const prior = bucket === "weeks" ? before?.weeks?.[period] : before?.days?.[period]?.[mode];
+        if (fromRun(uid, "dailyWords", id, prior)) continue;
+        const event = fromRun(uid, "dailyWords", id, r); if (event) events.push(event);
+      }
     }
   }
   return events;

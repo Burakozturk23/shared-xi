@@ -102,7 +102,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 'Reward already claimed or currently unavailable.',
               );
       } else {
-        final result = await widget.gateway.claimMission(mission.id);
+        final result = await widget.gateway.claimMission(mission.id, periodKey: mission.periodKey);
         if (!mounted) return;
         setState(() => _missions = result.profile);
         granted = result.granted;
