@@ -23,7 +23,7 @@ class PaidHintButton extends StatefulWidget {
 
 class _PaidHintButtonState extends State<PaidHintButton> {
   bool _open = false;
-  String? _uid() => widget.currentUser?.call() ?? AuthService.uid;
+  String? _uid() => widget.currentUser != null ? widget.currentUser!() : AuthService.uid;
   Map<String, dynamic> get product {
     final products = rewardMap(widget.session['support'])['products'];
     for (final p in products is List ? products : const []) {
@@ -114,7 +114,7 @@ class _SupportSheetState extends State<_SupportSheet> {
             OutlinedButton(onPressed: () => Navigator.pop(context, 'ad'),
               child: Text('Doğrulanmış reklam hakkını kullan · ${widget.credits}')),
           OutlinedButton.icon(onPressed: widget.canWatch ? () => Navigator.pop(context, 'watch') : null,
-            icon: const Icon(Icons.play_circle_outline), label: const Text('Reklam izle · 1 temel destek hakkı')),
+            icon: const Icon(Icons.play_circle_outline), label: const Text('Reklam izle · 1 destek hakkı')),
           Text(widget.canWatch ? 'Günde ortak 4 hak. Reklam doğrulanınca hakkın açılır; süreli oyun saati devam eder.' :
             'Bu oyun için yeni reklam hakkı kullanılamıyor.'),
         ] else const Text('Güçlü destek reklamla alınamaz.'),

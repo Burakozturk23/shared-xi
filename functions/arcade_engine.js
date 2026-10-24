@@ -302,7 +302,8 @@ function act(c, r, input, time) {
 function publicRun(c, raw, time) {
   const r = hydrate(raw); if (!r) return null;
   const {question, board, filled, undo, history} = r;
-  const v = {...r, support: require("./boosts").view(r)};
+  const support = require("./boosts").view(r);
+  const v = {...r, ...(support ? {support} : {})};
   delete v.boostPolicy; delete v.boostUses;
   for (const key of ["actions", "question", "board", "filled", "undo", "wrongInputs", "adReceipts", "history",
     "used", "hinted"]) delete v[key];

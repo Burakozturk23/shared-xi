@@ -298,11 +298,11 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       bestAssisted: run.assisted ? Math.max(previous.bestAssisted || 0, value) : previous.bestAssisted || 0,
       mastery: !!previous.mastery || master,
       bestFormation: !run.assisted && value > (previous.best || 0) || master && !previous.mastery ? run.formation :
-        previous.bestFormation || run.formation,
+        previous.bestFormation || (run.assisted ? "" : run.formation),
       lastLineup: lineup, lastFormation: run.formation, lastAt: time,
       solved: !!previous.solved || (run.mode === "squad_vault" ? !!run.won : value > 0),
       bestLineup: !run.assisted && value > (previous.best || 0) || master && !previous.mastery ?
-        lineup : previous.bestLineup || lineup};
+        lineup : previous.bestLineup || (run.assisted ? [] : lineup)};
     s.collection[key] = record;
     if (run.mode === "squad_vault" && Object.entries(s.collection)
         .filter(([k, r]) => k.startsWith("squad_vault__") && r.best >= 1).length >= 5) {
@@ -462,7 +462,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     await change(uid, (s, e, time) => {
       const run = sessionOf(s.sessions[receipt.context?.sessionId]);
       // A late receipt cannot modify another run or convert into coins.
-      if (B.recoverAd(e, run, receipt, time, "boost_basic")) return;
+      const canApply = run && run.hints.length + run.adCredits < 3 &&
+        run.adGranted < (run.boostPolicy?.daily ? 1 : 2) && run.adGranted === receipt.context.credit;
+      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) return;
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= now()) return;
       if (run.adReceipts[receipt.id]) return;
       if (run.adGranted >= 2 || run.adGranted !== receipt.context.credit) return;

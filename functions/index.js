@@ -6229,7 +6229,8 @@ exports.getStoreCatalog = httpsV2.onCall(
       const boostPolicy = await require("./boosts").policyFor(db, uid, true);
       if (boostPolicy) {
         offers.push(...require("./boosts").offers.filter((o) =>
-          o.modes.some((m) => boostPolicy.readyModes?.[m] === true)));
+          o.modes.some((m) => boostPolicy.readyModes?.[m] === true))
+            .map((o) => ({...o, modes: o.modes.filter((m) => boostPolicy.readyModes?.[m] === true)})));
       }
       const profile = (await db.ref("users/" + uid).get()).val() || {};
 

@@ -33,7 +33,7 @@ void main() {
         await t.tap(find.byType(OutlinedButton)); await t.pumpAndSettle();
         expect(t.takeException(), isNull);
         expect(find.text('Destek çantası'), findsOneWidget);
-        if (strong) expect(find.text('Reklam izle · 1 temel destek hakkı'), findsNothing);
+        if (strong) expect(find.text('Reklam izle · 1 destek hakkı'), findsNothing);
         final coinButton = find.widgetWithText(FilledButton, 'Coin ile al ve kullan · ${strong ? 60 : 25} Coin');
         await t.ensureVisible(coinButton); await t.pumpAndSettle();
         expect(t.takeException(), isNull);

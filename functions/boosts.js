@@ -108,11 +108,11 @@ function adBenefit(run, benefit) {
 }
 // A verified ad arriving after expiry remains owned; it becomes a basic stock
 // unit instead of disappearing. If stock is full, keep the SSV outbox pending.
-function recoverAd(e, run, receipt, time, sku = "boost_basic") {
+function recoverAd(e, run, receipt, time, sku = "boost_basic", canApply = true) {
   if (receipt.context?.boostPolicyVersion !== VERSION) return false;
   const key = "boost_ad_recovery__" + receipt.id;
   if (e.storeUses[key] || run?.adReceipts?.[receipt.id]) return true;
-  if (run && !run.finished && run.expiresAt > time) return false;
+  if (canApply && run && !run.finished && run.expiresAt > time) return false;
   const item = e.inventory[sku]; const quantity = item?.quantity || 0;
   if (quantity >= 99) fail("resource-exhausted", "Çanta dolu; doğrulanmış reklam hakkı bekletiliyor.");
   e.inventory[sku] = {...item, itemId: sku, itemType: "boost", quantity: quantity + 1,

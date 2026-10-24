@@ -188,3 +188,31 @@ test("all hint placements share four Istanbul-day ads, with SSV replay and rollo
   h.setTime(h.now + 86400000);
   assert.ok((await service.prepare("alice", "android", "mystery_hint", id(), {})).ticket);
 });
+
+test("verified ad survives a concurrent paid purchase filling the active run hint limit", async () => {
+  const h = setup(); let s = await start(h);
+  const service = h.context.lbCareerTransferService();
+  const benefit = await service.prepareHint("alice", "transfer_hint", {sessionId: s.id});
+  for (let i = 0; i < 3; i++) {
+    s = (await h.call("actCareerTransfer", input(s, {boostId: i === 2 ? "boost_first_letter" :
+      "boost_basic"}))).session;
+  }
+  assert.equal(s.finished, false);
+  const receipt = {id: "b".repeat(48), context: benefit.context};
+  await service.settleHint("alice", receipt); await service.settleHint("alice", receipt);
+  assert.equal(h.read("economyState/alice/inventory/boost_basic/quantity"), 4);
+  assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`), 0);
+});
+
+test("missing mystery run recovers its original basic product, never a connection product", async () => {
+  const h = setup();
+  const s = (await h.call("startMysteryChain", {mode: "mystery", version: mc.version,
+    requestId: id()})).session;
+  const service = h.context.lbMysteryChainService();
+  const benefit = await service.prepareHint("alice", "mystery_hint", {sessionId: s.id});
+  h.seed(`economyState/alice/mysteryChain/sessions/${s.id}`, null);
+  const receipt = {id: "c".repeat(48), context: benefit.context};
+  await service.settleHint("alice", receipt); await service.settleHint("alice", receipt);
+  assert.equal(h.read("economyState/alice/inventory/boost_basic/quantity"), 4);
+  assert.equal(h.read("economyState/alice/inventory/boost_connection"), null);
+});

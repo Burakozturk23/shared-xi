@@ -326,7 +326,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
-      if (B.recoverAd(e, r, receipt, time, "boost_connection")) return;
+      const canApply = r && r.traceUsed + r.adCredits < 2 && r.adGranted < 2 &&
+        r.adGranted === receipt.context.credit;
+      if (B.recoverAd(e, r, receipt, time, "boost_connection", canApply)) return;
       if (!r || r.mode !== "fake_endless" || r.finished || r.expiresAt <= time || r.adReceipts[receipt.id] ||
         r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.adGranted !== receipt.context.credit) return;
       r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;

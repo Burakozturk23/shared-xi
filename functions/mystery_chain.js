@@ -407,7 +407,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
-      if (B.recoverAd(e, r, receipt, time, r?.mode === "mystery" ? "boost_basic" : "boost_connection")) return;
+      const canApply = r && r.optionalHints + r.adCredits < 3 && r.adGranted < 2 &&
+        r.adGranted === receipt.context.credit;
+      const sku = receipt.context?.mode === "mystery" ? "boost_basic" : "boost_connection";
+      if (B.recoverAd(e, r, receipt, time, sku, canApply)) return;
       if (!r || r.mode !== receipt.context?.mode || r.mode === "blitz" || r.finished || r.expiresAt <= time ||
           r.adReceipts[receipt.id] || r.adGranted >= 2 ||
           r.optionalHints + r.adCredits + (B.paid(r) || r.freeUsed ? 0 : 1) >= 3 ||
