@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/daily_question_page.dart';
 import 'package:shared_xi/widgets/energy_sheet.dart';
+import 'package:shared_xi/widgets/paid_hint_button.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 
 Map<String, dynamic> sample() => {
@@ -30,6 +31,25 @@ void main() {
       ('Inter','assets/fonts/Inter-Body-Variable.ttf'),('MaterialIcons','fonts/MaterialIcons-Regular.otf')]) {
       await (FontLoader(name)..addFont(rootBundle.load(path))).load();
     }
+  });
+  testWidgets('paid quiz binds displayed day and price and removes legacy Pro ad button', (t) async {
+    final value = {...sample(), 'pro': true, 'session': {'id': 'quiz-run', 'revision': 0,
+      'support': {'version': 1, 'products': [{'id': 'boost_eliminate', 'priceCoins': 35, 'ads': true}]}}};
+    Map<String, dynamic>? sent;
+    await t.pumpWidget(MaterialApp(home: DailyQuestionPage(initialData: value, request: (name, input) async {
+      expect(name, 'useDailyQuestionHint'); sent = input; return {...value, 'eliminated': 0};
+    })));
+    await t.pumpAndSettle();
+    await t.scrollUntilVisible(find.byType(PaidHintButton).hitTestable(), 200,
+      scrollable: find.byType(Scrollable).first);
+    expect(find.text('Pro ipucu · bir yanlışı ele'), findsNothing);
+    await t.widget<PaidHintButton>(find.byType(PaidHintButton)).onUse({
+      'boostId': 'boost_eliminate', 'paymentSource': 'coins', 'expectedPriceCoins': 35});
+    await t.pumpAndSettle();
+    expect(sent?['day'], '2026-10-14'); expect(sent?['questionId'], 'q_test');
+    expect(sent?['sessionId'], 'quiz-run'); expect(sent?['expectedPriceCoins'], 35);
+    expect(t.widget<PaidHintButton>(find.byType(PaidHintButton)).disabled, isTrue);
+    expect(t.takeException(), isNull);
   });
   for (final light in [false, true]) {
     testWidgets('daily quiz selects once, shows receipt, fits narrow screen light=$light', (t) async {

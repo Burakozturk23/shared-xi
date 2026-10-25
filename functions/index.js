@@ -8682,7 +8682,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "choice_training_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "daily_question_hint" ?
+        lbDailyQuestionService().prepareBoostHint(uid, placement, context) : placement === "choice_training_hint" ?
         lbChoiceService().prepareHint(uid, placement, context) : placement === "story_support_hint" ?
         lbStorySupportService().prepareHint(uid, placement, context) : placement === "daily_words_hint" ?
         lbDailyWordsService().prepareHint(uid, placement, context) : placement === "burst_survival_hint" ?
@@ -8692,7 +8693,8 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "choice_training_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "daily_question_hint" ?
+        lbDailyQuestionService().settleBoostHint(uid, receipt) : receipt.placement === "choice_training_hint" ?
         lbChoiceService().settleHint(uid, receipt) : receipt.placement === "story_support_hint" ?
         lbStorySupportService().settleHint(uid, receipt) : receipt.placement === "daily_words_hint" ?
         lbDailyWordsService().settleHint(uid, receipt) : receipt.placement === "burst_survival_hint" ?
@@ -8980,16 +8982,16 @@ exports.claimSeasonReward = lbSeasonCallable("claim");
 
 
 // Player Journey uses server-reviewed answers and durable milestone receipts.
-function lbStoryDocumentRef(db, collection) {
+function lbStoryDocumentRef(db, collection, supportMode) {
   const reference = require("./economy_document").create({db, normalize: lbEconomyState, project: lbEconomyProject,
     collection, now: () => Date.now(), shouldMigrate: async (uid) => {
-      const mode = require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
+      const mode = supportMode || require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
       const policy = (await db.ref("runtimeConfig/boosts").get()).val();
       if (!require("./boosts").enabled(policy, uid) || policy.readyModes?.[mode] !== true) return false;
       const user = await getAuth().getUser(uid);
       return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
     }});
-  const mode = require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
+  const mode = supportMode || require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
   reference.guardHint = (uid, targetId) => lbStorySupportService().guardLegacy(uid, mode, targetId);
   return reference;
 }
@@ -9653,7 +9655,8 @@ exports.claimProEnergyBonus = lbEnergyCallable("proBonus");
 
 function lbDailyQuestionService() {
   const db = getDatabase();
-  return require("./daily_question").createService({db, now: () => Date.now(),
+  return require("./daily_question").createService({db,
+    documentRef: lbStoryDocumentRef(db, "dailyQuestionState", "daily_question"), now: () => Date.now(),
     enabled: async () => (await db.ref("runtimeConfig/dailyQuestion/enabled").get()).val() === true,
     isLinked: async (uid) => {
       const user = await getAuth().getUser(uid);
@@ -9694,6 +9697,7 @@ function lbDailyQuestionCallable(action) {
 }
 exports.getDailyQuestion = lbDailyQuestionCallable("status");
 exports.submitDailyQuestion = lbDailyQuestionCallable("submit");
+exports.useDailyQuestionHint = lbDailyQuestionCallable("useHint");
 // Preflight only. An actual elimination always requires a verified SSV/Pro ticket.
 exports.prepareDailyQuestionHint = lbDailyQuestionCallable("prepareHint");
 

@@ -23,7 +23,7 @@ class Transport extends EnergyService {
   @override
   Future<Map<String, dynamic>> call(String name, [Map<String, dynamic> input = const {}]) async {
     calls.add({'name': name, ...input});
-    if (name == 'useStorySupport') {
+    if (name == 'useStorySupport' || name == 'useDailyQuestionHint') {
       used = true;
       if (loseResponse) { loseResponse = false; throw FirebaseFunctionsException(code: 'unavailable', message: 'Lost response'); }
     } else if (waitForLoad != null) { return waitForLoad!.future; }
@@ -50,6 +50,22 @@ void main() {
     await service.watch({...input, 'boostId': 'boost_basic'});
     expect(transport.calls.last['pro'], false);
     expect(transport.calls.last['placement'], 'story_support_hint');
+  });
+  test('daily quiz retries its own callable and verified placement with the same stored request', () async {
+    final transport = Transport()..loseResponse = true;
+    StorySupportService service() => StorySupportService(transport: transport, currentUser: () => 'alice',
+      useCallable: 'useDailyQuestionHint', loadCallable: 'getDailyQuestion', watchPlacement: 'daily_question_hint');
+    final input = {'mode': 'daily_question', 'targetId': 'daily_question', 'day': '2026-10-25',
+      'sessionId': 'quiz', 'revision': 0, 'boostId': 'boost_eliminate', 'paymentSource': 'coins',
+      'expectedPriceCoins': 35};
+    await expectLater(service().use(input), throwsA(isA<FirebaseFunctionsException>()));
+    await service().load('daily_question', 'daily_question');
+    expect(transport.calls[0], transport.calls[1]);
+    expect(transport.calls[1]['name'], 'useDailyQuestionHint');
+    expect(transport.calls[2]['name'], 'getDailyQuestion');
+    await service().watch({'sessionId': 'quiz', 'boostId': 'boost_eliminate'});
+    expect(transport.calls.last['placement'], 'daily_question_hint');
+    expect(transport.calls.last['pro'], false);
   });
   test('late result cannot move a paid request to another account', () async {
     var uid = 'alice'; final transport = Transport()..waitForLoad = Completer<Map<String, dynamic>>();

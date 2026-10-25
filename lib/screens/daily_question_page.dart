@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/energy_service.dart';
+import '../services/auth_service.dart';
+import '../services/story_support_service.dart';
+import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/energy_sheet.dart';
@@ -14,14 +17,24 @@ class DailyQuestionPage extends StatefulWidget {
 }
 class _DailyQuestionPageState extends State<DailyQuestionPage> {
   final service = EnergyService();
+  final _support = StorySupportService(useCallable: 'useDailyQuestionHint',
+    loadCallable: 'getDailyQuestion', watchPlacement: 'daily_question_hint');
   Map<String, dynamic>? data;
   int? choice;
   bool busy = false;
   String? error;
   @override
   void initState() { super.initState(); data = widget.initialData; if (data == null) _load(); }
-  Future<Map<String, dynamic>> _call(String name, [Map<String, dynamic> input = const {}]) =>
-      widget.request?.call(name, input) ?? service.call(name, input);
+  Future<Map<String, dynamic>> _call(String name, [Map<String, dynamic> input = const {}]) async {
+    if (widget.request != null) return widget.request!(name, input);
+    if (name == 'getDailyQuestion') {
+      if (AuthService.uid == null) await AuthService.ensureGuestSignedIn();
+      return _support.load('daily_question', 'daily_question');
+    }
+    if (name == 'useDailyQuestionHint') return _support.use({...input,
+      'mode': 'daily_question', 'targetId': 'daily_question'});
+    return service.call(name, input);
+  }
   Future<void> _run(Future<void> Function() action) async {
     if (busy) return;
     setState(() { busy = true; error = null; });
@@ -73,7 +86,18 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
             FilledButton(onPressed: busy || choice == null || choice == eliminated ? null : () => _run(() async {
               data = await _call('submitDailyQuestion', {'day': q['day'], 'questionId': q['id'], 'option': choice});
             }), child: const Text('Cevabımı gönder')),
-            TextButton.icon(onPressed: busy || eliminated != null ? null : () => _run(() async {
+            if (rewardMap(rewardMap(data?['session'])['support'])['version'] == 1)
+              PaidHintButton(session: rewardMap(data?['session']), sku: 'boost_eliminate', label: 'Bir yanlışı ele',
+                disabled: busy || error != null || eliminated != null,
+                onUse: (payment) => _run(() async {
+                  final session = rewardMap(data?['session']);
+                  data = await _call('useDailyQuestionHint', {'day': q['day'], 'questionId': q['id'],
+                    'sessionId': session['id'], 'revision': session['revision'], ...payment});
+                }), onWatch: () => _run(() async {
+                  await _support.watch({'sessionId': rewardMap(data?['session'])['id'], 'boostId': 'boost_eliminate'});
+                  data = await _call('getDailyQuestion');
+                }))
+            else TextButton.icon(onPressed: busy || eliminated != null ? null : () => _run(() async {
               await service.watch('quiz_hint', pro: data?['pro'] == true);
               data = await _call('getDailyQuestion');
             }), icon: const Icon(Icons.lightbulb_outline), label: Text(data?['pro'] == true ? 'Pro ipucu · bir yanlışı ele' : 'Reklamla bir yanlışı ele')),
@@ -81,6 +105,7 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
             const SizedBox(height: 16), PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(result['correct'] == true ? 'Futbol bilgine sağlık!' : 'Yeni bir futbol hikâyesi öğrendin.', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8), Text('+${result['coins']} Link Coin · +${result['xp']} XP'),
+              if (result['assisted'] == true) const Text('Yardımlı sonuç'),
               if (result['bonus'] == true) const Text('7 günlük seri bonusu bu ödüle dahil.'),
               if ((data?['pendingRewards'] as num? ?? 0) > 0) const Text('Ödülün bekliyor. Aynı hesabı Google’a bağladığında eşitlenir.'),
               const SizedBox(height: 12), Text('${result['explanation']}'),

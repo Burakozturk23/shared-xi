@@ -123,3 +123,12 @@ Doğrulanmış ama kullanılmamış türlenmiş reklam hakları oyun bitişi, s�
 Altı yeni antrenman testi ve beş reklam yaşam döngüsü testi dahil tam Functions koşusu: 640/640 PASS. Mobil antrenman testleri eklendi. CI #346 sunucu/RTDB/Flutter analiz geçti; hikâye paneli ve kalıcı istek testleri geçti. Dört günlük büyük yazı testi belirsiz Scrollable/finder seçimi, bir eski International Glory onay testi ekran dışı buton nedeniyle başarısızdı; görünür hedefe gerçek kaydırma ile düzeltildi. Mobil CI yeniden doğrulanacak. PowerShell kontrol betiğinin analyze seçenekleri mevcut CI ile eşitlendi; gerçek analiz hataları yine işlemi durdurur.
 
 Kalan mod kapsamı: solo Lingo/8'li Anagram; günlük soru/futbolcu/maç/mücadele/keşif; yerel Grid/yedi bot sunucu oturumları; Club Manager/Squad Challenge. Gerçek cihaz SSV/iki hesap ve tüm 142 kabul kriterinin kanıtları halen açık. Üretim dağıtımı/rollout/merge yapılmadı.
+
+
+## Checkpoint 10 — Günün Sorusu
+
+Günün Sorusu için 35 Coin/stok/doğrulanmış reklam ile sunucuda yanlış seçenek eleme eklendi. Cüzdan ve soru yardımı aynı işlemde saklanır; eski günlük kayıtlar sıralı uyumluluk aynasına taşınır. Kalıcı mobil istek kaybolan yanıtı aynı kimlikle eşitler. Günlük bir reklam ve ortak dört/gün sınırı korunur; yanıtlanmış veya günü geçmiş soru için doğrulanmış hak stokta kalır. Açılmış eski ipuçları yeniden satılmaz. Yeni oturumda eski Pro/reklam yolu kapalıdır. Yardımlı sonuç işaretlenir ve ustalık dışıdır; katılım serisi ve mevcut tekil ilk-cevap ödülleri değişmez.
+
+Beş yeni sunucu senaryosu ve tam Functions koşusu: 645/645 PASS; lint PASS. Mobil ücret/istek ve kalıcı yeniden deneme testleri eklendi; yeni commit CI sonucu bekleniyor. CI #347 (`abb64be`) Functions, RTDB, Flutter analiz ve tüm Flutter testleri PASS; Android debug derlemesi bu kayıt sırasında sürüyor.
+
+Kalan mod kapsamı: solo Lingo/8'li Anagram; günlük futbolcu/maç/mücadele/keşif; yerel Grid/yedi bot sunucu oturumları; Club Manager/Squad Challenge. Gerçek cihaz SSV/iki hesap ve 142 kabul kriterinin tamamına ait kanıtlar açık. Üretim dağıtımı/rollout/merge yapılmadı.

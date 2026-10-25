@@ -9,9 +9,12 @@ import 'energy_service.dart';
 /// A lost paid response keeps the exact request under its account and target.
 /// Loading the panel repairs that request before offering another purchase.
 class StorySupportService {
-  StorySupportService({EnergyService? transport, String? Function()? currentUser})
+  StorySupportService({EnergyService? transport, String? Function()? currentUser,
+    this.useCallable = 'useStorySupport', this.loadCallable = 'getStorySupport',
+    this.watchPlacement = 'story_support_hint'})
       : transport = transport ?? EnergyService(), _currentUser = currentUser ?? (() => AuthService.uid);
   final EnergyService transport;
+  final String useCallable, loadCallable, watchPlacement;
   final String? Function() _currentUser;
   String? _owner;
   String? get currentUser => _currentUser();
@@ -35,7 +38,7 @@ class StorySupportService {
   Future<Map<String, dynamic>> _replay(SharedPreferences prefs, String uid, String key) async {
     final input = rewardMap(jsonDecode(prefs.getString(key)!)); _check(uid);
     try {
-      final value = await _call('useStorySupport', input); _check(uid);
+      final value = await _call(useCallable, input); _check(uid);
       await prefs.remove(key); return value;
     } on FirebaseFunctionsException catch (e) {
       _check(uid);
@@ -49,7 +52,7 @@ class StorySupportService {
     final uid = _identity(); final prefs = await SharedPreferences.getInstance(); _check(uid);
     final key = _key(uid, mode, target);
     if (prefs.containsKey(key)) await _replay(prefs, uid, key);
-    final result = await _call('getStorySupport', {'mode': mode, 'targetId': target}); _check(uid);
+    final result = await _call(loadCallable, {'mode': mode, 'targetId': target}); _check(uid);
     return result;
   }
   Future<Map<String, dynamic>> use(Map<String, dynamic> input) async {
@@ -63,6 +66,6 @@ class StorySupportService {
   }
   Future<void> watch(Map<String, dynamic> input) async {
     final uid = _identity();
-    await transport.watch('story_support_hint', pro: false, context: input); _check(uid);
+    await transport.watch(watchPlacement, pro: false, context: input); _check(uid);
   }
 }

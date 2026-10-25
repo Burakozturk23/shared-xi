@@ -22,6 +22,7 @@ const modes = {
   burst_survival: ["basic"], pyramid: ["strong"], matching: ["strong"],
   daily_lingo: ["basic"], daily_anagram: ["basic", "first_letter"],
   passa_daily: ["basic"], passa_weekly: ["basic"],
+  daily_question: ["eliminate"],
   higher_lower_training: ["basic"], blind_ranking_training: ["basic"],
   player_journey: ["basic", "strong"], what_if: ["basic", "strong"], ucl_moments: ["basic", "strong"],
   nostalgia: ["basic", "strong"], international_glory: ["basic", "strong"],
