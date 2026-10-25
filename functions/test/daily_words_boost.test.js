@@ -11,8 +11,8 @@ function setup() {
     boosts: {enabled: true, betaUids: {alice: true}, readyModes: {
       daily_lingo: true, daily_anagram: true, passa_daily: true, passa_weekly: true,
     }}}, economyState: {alice: {balances: {coins: 1000}, inventory: {
-      boost_first_letter: {quantity: 2, itemType: "boost"},
-    }}}}, {omitEmptyObjects: true});
+    boost_first_letter: {quantity: 2, itemType: "boost"},
+  }}}}, {omitEmptyObjects: true});
   h.setTime(Date.parse("2026-10-19T10:00:00+03:00")); return h;
 }
 const bucket = (s) => s.mode === "passa_weekly" ? `weeks/${s.period}` : `days/${s.period}/${s.mode}`;
