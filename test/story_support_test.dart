@@ -25,7 +25,7 @@ class Transport extends EnergyService {
     calls.add({'name': name, ...input});
     if (name == 'useStorySupport') {
       used = true;
-      if (loseResponse) { loseResponse = false; throw FirebaseFunctionsException(code: 'unavailable'); }
+      if (loseResponse) { loseResponse = false; throw FirebaseFunctionsException(code: 'unavailable', message: 'Lost response'); }
     } else if (waitForLoad != null) { return waitForLoad!.future; }
     return legacy ? {'legacy': true} : publicSupport(used: used);
   }
