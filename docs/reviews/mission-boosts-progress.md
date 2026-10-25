@@ -103,3 +103,13 @@ Lingo bağlamı üçüncü geçerli tahminden sonra; Anagram ülke/mevki ve ilk 
 Yerel: mevcut 17 günlük oyun testi ve yedi yeni geçiş testi PASS; tam Functions koşusu 615/615 PASS, lint PASS. Dört mobil mod testi ve günlük reklam taşıma testi eklendi; yeni commit CI sonucuyla doğrulanacak. PowerShell kontrol/derleme betiği `scripts/verify-missions-boosts.ps1` eklendi; dağıtım veya feature flag değişikliği yapmaz.
 
 Bu adım tek başına iki ZIP'i tamamlamaz. Diğer solo Lingo/8'li Anagram, günlük soru/futbolcu/maç/mücadele/keşif; hikâye, Grid/bot, Choice ve kadro modlarının kalan geçişleri açıktır.
+
+## Checkpoint 8 — Sekiz hikâye ailesi
+
+Player Journey, What If, UCL Moments, Türkiye Nostaljisi, International Glory, Dynasties, Football Docu ve Derby Day için ortak ücretli destek paneli ve sunucu adaptörü eklendi. Sunucu, görev ve katalog özetiyle bölüm oturumunu bağlar; doğrulanmış temel/güçlü bilgi dışında ürün sunmaz. Boolean görevde cevap veren güçlü seçenek yoktur. Kilitli/tamamlanmış aşama, eski içerik, yanlış SKU/fiyat, başka hesap ve aynı istekte değiştirilmiş ödeme reddedilir. Cüzdan ve ipucu aynı işlemde; özel eski kayıt sürümlü uyumluluk aynasıdır. Kaybolan mobil yanıt aynı kalıcı istekle yeniden eşitlenir.
+
+Önceden açılan yardım ve yarım kalmış eski satın alma makbuzları korunur. Aktif eski Pro teklifinde geçiş tarihi veya abonelik başlangıç kanıtı yoksa eski hak devam eder. Yeni teklif ancak açık `proOfferCutoverAt` tarihiyle ayrılır; üretimde bu tarih veya pilot açılmadı. Yeni oturumların eski 6/10 Coin veya Pro reklam yolu ortak sunucu kontrolüyle kapatılır. İlk-bitiriş ödülleri ve arşivler aynı makbuzları kullanır. Sonuç ekranı Yardımlı bilgisini sunucudan alır; eski istemcinin raporlamadığı yardım nedeniyle hikâye sonuçları yardımsız diye sertifikalanmaz.
+
+14 yeni sunucu geçiş testi ve tam Functions koşusu: 629/629 PASS; lint PASS. Mobil kalıcı istek/hesap değişimi, 320px/%180 panel, Pro eski hak testleri eklendi. CI #344 Functions/RTDB/PowerShell sözdizimi/Flutter analiz geçti; üç günlük mod widget testi büyük yazıda ekranın altındaki butonu kaydırmadan aradığı için başarısızdı. Bu testlere gerçek kaydırma eklendi; yeni mobil CI sonucu bekleniyor. Aktif beş Journey bölümünün tamamı V2 rotasını kullanır; erişilmeyen eski yerel ekran yeni oturum köprüsü sayılmaz.
+
+Kalan: solo Lingo/8'li Anagram; günlük soru/futbolcu/maç/mücadele/keşif; yerel Grid/yedi bot sunucu oturumları; Choice antrenman; Club Manager/Squad Challenge; kullanılmadan kalan doğrulanmış reklam kredilerinin dönem/evre sonu geri kazanımı; tüm kabul kanıtları ve gerçek cihaz SSV/iki hesap. İki ZIP bütünü henüz tamamlandı olarak işaretlenmedi.

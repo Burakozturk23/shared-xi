@@ -17,8 +17,8 @@ function accepts(t, answers) {
     answers.every((a, i) => a === t.answerKeys[i]);
 }
 const completedDynasties = (s) => catalog.dynasties.filter((d) => d.taskIds.every((id) => s.completed[id]));
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("dynastiesState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("dynastiesState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function check(input) {
     if (input.version !== catalog.version) {
@@ -98,6 +98,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   }
   async function hint(uid, input, eligible = true) {
     const t = check(input);
+    await documentRef?.guardHint?.(uid, t.id);
     if (!eligible) throw new RewardError("permission-denied", "Ek yardım için Google hesabına bağlan.");
     const s = await get(uid);
     if (!available(s, t)) throw new RewardError("failed-precondition", "Önce Yükseliş görevini tamamla.");

@@ -5829,6 +5829,7 @@ function lbEconomyState(raw) {
     inventory: inventory,
     choice: data.choice && typeof data.choice === "object" ? data.choice : {},
     dailyWords: data.dailyWords && typeof data.dailyWords === "object" ? data.dailyWords : {},
+    storyStates: data.storyStates && typeof data.storyStates === "object" ? data.storyStates : {},
     arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
     fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
     mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
@@ -8681,7 +8682,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "daily_words_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "story_support_hint" ?
+        lbStorySupportService().prepareHint(uid, placement, context) : placement === "daily_words_hint" ?
         lbDailyWordsService().prepareHint(uid, placement, context) : placement === "burst_survival_hint" ?
         lbArcadeService().prepareHint(uid, placement, context) : placement === "fake_club_hint" ?
         lbFakeClubService().prepareHint(uid, placement, context) : ["mystery_hint", "chain_hint"].includes(placement) ?
@@ -8689,7 +8691,8 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "daily_words_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "story_support_hint" ?
+        lbStorySupportService().settleHint(uid, receipt) : receipt.placement === "daily_words_hint" ?
         lbDailyWordsService().settleHint(uid, receipt) : receipt.placement === "burst_survival_hint" ?
         lbArcadeService().settleHint(uid, receipt) : receipt.placement === "fake_club_hint" ?
         lbFakeClubService().settleHint(uid, receipt) : ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
@@ -8975,9 +8978,58 @@ exports.claimSeasonReward = lbSeasonCallable("claim");
 
 
 // Player Journey uses server-reviewed answers and durable milestone receipts.
+function lbStoryDocumentRef(db, collection) {
+  const reference = require("./economy_document").create({db, normalize: lbEconomyState, project: lbEconomyProject,
+    collection, now: () => Date.now(), shouldMigrate: async (uid) => {
+      const mode = require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
+      const policy = (await db.ref("runtimeConfig/boosts").get()).val();
+      if (!require("./boosts").enabled(policy, uid) || policy.readyModes?.[mode] !== true) return false;
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+  const mode = require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
+  reference.guardHint = (uid, targetId) => lbStorySupportService().guardLegacy(uid, mode, targetId);
+  return reference;
+}
+function lbStorySupportService() {
+  const db = getDatabase();
+  return require("./story_support").create({db, documentRef: (collection) => lbStoryDocumentRef(db, collection),
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    },
+    premium: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()),
+    now: () => Date.now()});
+}
+function lbStorySupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
+    try {
+      const input = request.data || {};
+      const modes = {player_journey: "journey", what_if: "what_if", ucl_moments: "ucl", nostalgia: "nostalgia",
+        international_glory: "international", dynasties: "dynasties", football_docu: "docu", derby_day: "derby"};
+      const target = require("./story_support").content(input.mode).targets[input.targetId];
+      if (!target) throw new httpsV2.HttpsError("invalid-argument", "Geçersiz hikâye görevi.");
+      if (action === "use") {
+        const unit = input.mode === "player_journey" ? target.section : input.mode === "what_if" ?
+          target.section.split("__")[0] : input.targetId;
+        await lbEnergyService().requireStory(request.auth.uid, modes[input.mode], unit, input.energyClientVersion);
+      } else await lbRewardedService().settle(request.auth.uid);
+      return await lbStorySupportService()[action](request.auth.uid, input);
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getStorySupport = lbStorySupportCallable("ensure");
+exports.useStorySupport = lbStorySupportCallable("use");
+
 function lbJourneyService() {
   const db = getDatabase();
-  return require("./player_journey").createService({db,
+  return require("./player_journey").createService({db, documentRef: lbStoryDocumentRef(db, "journeyRewardState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9057,7 +9109,7 @@ exports.setJourneyShowcase = lbJourneyCallable("favorites");
 // What If has an isolated catalog, progress and receipt namespace.
 function lbWhatIfService() {
   const db = getDatabase();
-  return require("./what_if").createService({db,
+  return require("./what_if").createService({db, documentRef: lbStoryDocumentRef(db, "whatIfState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9131,7 +9183,7 @@ exports.setWhatIfShowcase = lbWhatIfCallable("favorites");
 // UCL answers and post-match disclosures are server-owned; no client reward amounts.
 function lbUclMomentsService() {
   const db = getDatabase();
-  return require("./ucl_moments").createService({db,
+  return require("./ucl_moments").createService({db, documentRef: lbStoryDocumentRef(db, "uclMomentsState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9181,7 +9233,7 @@ exports.submitUclMoment = lbUclCallable("submit");
 // Nostalji V2 has separate progress, hint, coin and XP receipt IDs.
 function lbNostalgiaService() {
   const db = getDatabase();
-  return require("./nostalgia").createService({db,
+  return require("./nostalgia").createService({db, documentRef: lbStoryDocumentRef(db, "nostalgiaState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9257,6 +9309,7 @@ exports.buyTurkishNostalgiaHint = lbNostalgiaCallable("hint");
 function lbInternationalGloryService() {
   const db = getDatabase();
   return require("./international_glory").createService({db,
+    documentRef: lbStoryDocumentRef(db, "internationalGloryState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9333,7 +9386,7 @@ exports.buyInternationalGloryHint = lbInternationalCallable("hint");
 // Dynasties uses isolated receipts and state.
 function lbDynastiesService() {
   const db = getDatabase();
-  return require("./dynasties").createService({db,
+  return require("./dynasties").createService({db, documentRef: lbStoryDocumentRef(db, "dynastiesState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9411,7 +9464,7 @@ exports.buyDynastiesHint = lbDynastiesCallable("hint");
 // FootballDocu uses isolated receipts and state.
 function lbFootballDocuService() {
   const db = getDatabase();
-  return require("./football_docu").createService({db,
+  return require("./football_docu").createService({db, documentRef: lbStoryDocumentRef(db, "footballDocuState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9489,7 +9542,7 @@ exports.buyFootballDocuHint = lbFootballDocuCallable("hint");
 // DerbyDay uses isolated receipts and state.
 function lbDerbyDayService() {
   const db = getDatabase();
-  return require("./derby_day").createService({db,
+  return require("./derby_day").createService({db, documentRef: lbStoryDocumentRef(db, "derbyDayState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();

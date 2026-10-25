@@ -22,6 +22,9 @@ const modes = {
   burst_survival: ["basic"], pyramid: ["strong"], matching: ["strong"],
   daily_lingo: ["basic"], daily_anagram: ["basic", "first_letter"],
   passa_daily: ["basic"], passa_weekly: ["basic"],
+  player_journey: ["basic", "strong"], what_if: ["basic", "strong"], ucl_moments: ["basic", "strong"],
+  nostalgia: ["basic", "strong"], international_glory: ["basic", "strong"],
+  dynasties: ["basic", "strong"], football_docu: ["basic", "strong"], derby_day: ["basic", "strong"],
 };
 const fail = (code, message) => {
   throw new RewardError(code, message);

@@ -46,7 +46,8 @@ function changed(uid, family, before, after) {
     // Legacy clients have unreported free hints. Do not certify a clean result.
     return [{uid, eventId: family + ":" + section.id, modeId: mode, source: "solo_verified",
       result: "completed", serverValidated: true, verificationVersion: 1, serverFinishedAtMs: time,
-      assisted: section.tasks.some((id) => !!after.hints?.[id]), assistanceUnknown: true}];
+      assisted: !!after.supportAssisted?.[section.id.replace(":", "__")] ||
+        section.tasks.some((id) => !!after.hints?.[id]), assistanceUnknown: true}];
   });
 }
 function hasRemaining(mode, state) {

@@ -1,3 +1,4 @@
+import '../widgets/story_support_panel.dart';
 import '../widgets/energy_sheet.dart';
 import '../controllers/journey_rewards_controller.dart';
 import '../services/auth_service.dart';
@@ -87,9 +88,9 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         const SizedBox(height: 16),
         const Text('Her aşamada tek görev var. Seçeneklere dokun; takım arkadaşı sorusunda iki isim seç. Rota görevinde kulüpleri sırayla ekle, gerekirse yukarı ve aşağı taşı.'),
         const SizedBox(height: 12),
-        const Text('Hikâyeyi okuyabilir veya doğrudan göreve geçebilirsin. Yanlış cevap hakkını bitirmez. İlk ipucu ücretsizdir. Bir aşamayı çözünce açıklaması açılır ve ilerlemen cihazına kaydedilir. Her bölümde ilk iki futbolcu açıktır; her tamamlanan kariyer yeni bir seçenek açar.'),
+        const Text('Hikâyeyi okuyabilir veya doğrudan göreve geçebilirsin. Yanlış cevap hakkını bitirmez. Destek seçeneklerini görev ekranında görebilirsin. Bir aşamayı çözünce açıklaması açılır ve ilerlemen cihazına kaydedilir. Her bölümde ilk iki futbolcu açıktır; her tamamlanan kariyer yeni bir seçenek açar.'),
         const SizedBox(height: 12),
-        const Text('Reklam zorunlu değildir. İlk ipucu ücretsizdir. Daha güçlü yardım için reklam veya 10 coin seçebilirsin. İlk doğrulanmış kariyer bitişi 20 coin ve 40 XP verir. Bölüm ve final ödülleri de bir kez kazanılır.'),
+        const Text('Reklam zorunlu değildir. Destek seçeneklerini görev ekranında görebilirsin. Destek kullanmadan da tüm görevleri çözebilirsin. İlk doğrulanmış kariyer bitişi 20 coin ve 40 XP verir. Bölüm ve final ödülleri de bir kez kazanılır.'),
         const SizedBox(height: 20),
         FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Anladım')),
       ]))));
@@ -201,6 +202,9 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       PitchAction(key: const ValueKey('journey-submit'), label: 'Cevabı kontrol et', icon: Icons.check_rounded,
         onPressed: game.busy || game.selected.length != task.requiredCount ? null : game.submit),
       const SizedBox(height: 12),
+      StorySupportPanel(mode: 'player_journey', targetId: task.id, disabled: game.busy,
+        knownBasic: game.hintVisible ? task.hint : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       TextButton.icon(key: const ValueKey('journey-hint'), onPressed: game.busy || game.hintVisible ? null : game.hint,
         icon: const Icon(Icons.lightbulb_outline_rounded), label: Text(game.hintVisible ? 'İpucu açık' : 'İpucu · Ücretsiz')),
       if (game.hintVisible) PitchPanel(child: Text(task.hint)),
@@ -214,6 +218,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         icon:const Icon(Icons.toll),label:const Text('Ek destek · 10 Coin')),
       if (_rewards.hints(task.id).isNotEmpty) PitchPanel(child:Text(_assistance(game))),
       ],
+      ])),
       if (task.serverValidated) const PitchPanel(child: Text('Dört aşama tamamlanınca: 20 Coin + 40 XP. Sekiz kariyerin tamamında: ayrıca 80 Coin + 120 XP.')),
       if (_rewards.message!=null) Text(_rewards.message!),
       const SizedBox(height: 12), const Text('Süre sınırı yok. Yanlış seçimde tekrar deneyebilirsin.', textAlign: TextAlign.center),
@@ -249,6 +254,8 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
     if (accepted==true && mounted) await _rewards.action('hint',{'journeyId':widget.journeyId,'taskId':task.id});
   }
   List<Widget> _result(JourneyV2Controller game) => [
+      StorySupportPanel(mode: 'player_journey', targetId: game.task.id, resultOnly: true, legacy: const SizedBox.shrink()),
+
     PitchPanel(key: const ValueKey('journey-result'), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Icon(game.checkpoint!.complete ? Icons.emoji_events_outlined : Icons.check_circle_outline, size: 44, color: PitchColors.of(context).limeInk),
       const SizedBox(height: 12), Text(game.checkpoint!.complete ? 'Yolculuk tamamlandı!' : 'Aşama tamamlandı!', style: Theme.of(context).textTheme.headlineSmall),

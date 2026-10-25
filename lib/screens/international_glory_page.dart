@@ -1,3 +1,4 @@
+import '../widgets/story_support_panel.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -194,7 +195,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
     final m = c.active!;
     return [_matchHeader(m), const SizedBox(height: 20), Text(m.text('intro'), style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 20), StoryArchiveEntry(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
-      const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
+      const SizedBox(height: 16), const Text('İsteğe bağlı destek ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
       if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text('İlk tamamlama: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
       const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ig-start'), onPressed: c.busy ? null : () { _startWithEnergy(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Karşılaşmaya katıl'))];
@@ -226,6 +227,9 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
           icon: c.answers.contains(o['id']) ? Icons.radio_button_checked : Icons.radio_button_off,
           highlight: c.answers.contains(o['id']), trailing: const SizedBox.shrink(),
           onTap: c.busy ? null : () => c.choose(o['id'] as String)))),
+      StorySupportPanel(mode: 'international_glory', targetId: m.id, disabled: c.busy,
+        knownBasic: c.hintOpen ? m.text('hint') : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       TextButton.icon(key: const ValueKey('ig-hint'), onPressed: c.busy ? null : c.hint, icon: const Icon(Icons.lightbulb_outline), label: const Text('Ücretsiz ipucu')),
       if (c.hintOpen) Padding(padding: const EdgeInsets.only(bottom: 16), child: PitchPanel(child: Text(m.text('hint')))),
       if (c.hints.containsKey(m.id)) Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchPanel(child: Text(igMap(c.hints[m.id])['text']?.toString() ?? 'Yardım açıldı.'))),
@@ -234,6 +238,7 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
         final yes = await showDialog<bool>(context: context, builder: (context) => AlertDialog(title: const Text('Ek yardım'), content: Text(maxPrice == 0 ? 'Pro hesabında ücretsiz ek yardımı aç?' : 'Bu maç için ek yardımı 6 coin karşılığında aç?'), actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Vazgeç')), FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Aç'))]));
         if (yes == true && mounted && identical(c, _c)) await c.buyHint(maxPrice: maxPrice);
       }, child: Text(c.pro ? 'Pro · Ek yardım' : 'Ek yardım · 6 coin')),
+      ])),
       FilledButton(key: const ValueKey('ig-submit'), onPressed: c.busy || !c.canSubmit ? null : () async { await c.submit(); if (mounted && c.phase == 'result') _top(); },
         child: Text(c.busy ? 'Doğrulanıyor…' : 'Cevabı kontrol et')),
     ];
@@ -279,7 +284,9 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
     final reward = igMap(c.rewards[m.id]);
     final penalties = result['penalties'] as List?;
     final aggregate = result['aggregate'] as List?;
-    return [_hero('HATIRA #${m.data['number']} · ${m.year}', m.title, '${m.home}  ${result['score']}  ${m.away}',
+    return [
+      StorySupportPanel(mode: 'international_glory', targetId: m.id, resultOnly: true, legacy: const SizedBox.shrink()),
+_hero('HATIRA #${m.data['number']} · ${m.year}', m.title, '${m.home}  ${result['score']}  ${m.away}',
       footer: Row(children: [Icon(Icons.verified, color: PitchColors.of(context).accent), const SizedBox(width: 8), const Expanded(child: Text('Koleksiyonuna eklendi'))])),
       const SizedBox(height: 20), PitchPanel(key: const ValueKey('ig-result'), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(result['answer']?.toString() ?? '', style: Theme.of(context).textTheme.titleLarge),
