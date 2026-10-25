@@ -3,6 +3,7 @@ import 'package:shared_xi/services/energy_service.dart';
 import 'package:shared_xi/services/career_transfer_service.dart';
 import 'package:shared_xi/services/three_modes_service.dart';
 import 'package:shared_xi/services/arcade_service.dart';
+import 'package:shared_xi/services/daily_words_service.dart';
 
 class _Ads extends EnergyService {
   bool? skipAd;
@@ -17,6 +18,14 @@ class _Ads extends EnergyService {
 }
 
 void main() {
+  test('daily words always load a verified ad and bind the period', () async {
+    final transport = _Ads();
+    await DailyWordsService(transport: transport, currentUser: () => 'alice').watchHint(
+      {'id': 'run', 'mode': 'daily_anagram', 'period': '2026-10-19'}, 'boost_first_letter');
+    expect(transport.skipAd, false);
+    expect(transport.selection, {'sessionId': 'run', 'mode': 'daily_anagram',
+      'period': '2026-10-19', 'boostId': 'boost_first_letter'});
+  });
   for (final family in ['career', 'three', 'arcade']) {
     test('$family typed support loads a real ad for Pro while legacy rights remain', () async {
       final transport = _Ads();

@@ -48,6 +48,8 @@ class StoreOffer {
     'career': 'Kariyer', 'transfer': 'Transfer Detective', 'mystery': 'Gizemli Futbolcu',
     'mastermind': 'Zincir', 'fake_endless': 'Sahte Kulüp Sonsuz',
     'burst_survival': 'Burst Dayanıklılık', 'pyramid': 'Pyramid', 'matching': 'Kart Eşleştirme',
+    'daily_lingo': 'Günün Lingo’su', 'daily_anagram': 'Günün Anagramı',
+    'passa_daily': 'Mini Passaparola', 'passa_weekly': 'Haftalık Passaparola',
   }[mode] ?? mode).join(' · ');
 
   factory StoreOffer.fromMap(Map<String, dynamic> data) {

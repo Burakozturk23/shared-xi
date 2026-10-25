@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const catalog = require("./config/daily_words_catalog.json");
 const MODES = ["daily_lingo", "passa_daily", "daily_anagram", "passa_weekly"];
@@ -46,7 +47,7 @@ function compiled(period, weekly) {
   if (!weekly) result.dictionary = catalog.dictionaries[result.lingo.category];
   return result;
 }
-function newRun(mode, pack, time) {
+function newRun(mode, pack, time, boostPolicy) {
   const weekly = mode === "passa_weekly";
   const r = {mode, period: pack.period, packId: pack.packId, contentVersion: pack.contentVersion,
     revision: 0, startedAt: time, closesAt: endOfDay(pack.period) + (weekly ? 6 * 86400000 : 0),
@@ -62,6 +63,10 @@ function newRun(mode, pack, time) {
     r.rounds = pack.questions.map(() => ({status: "pending", passed: false}));
     r.queue = pack.questions.map((_, i) => i);
   }
+  r.id = "dw_" + hash([mode, pack.packId]).slice(0, 32); r.version = pack.contentVersion;
+  r.entry = weekly ? "weekly" : "daily"; r.expiresAt = r.deadline || r.closesAt;
+  r.adCredits = 0; r.adGranted = 0; r.adReceipts = {};
+  B.pin(r, boostPolicy);
   return r;
 }
 function restored(r) {
@@ -108,7 +113,9 @@ function finish(s, r, reason, time, policy) {
     }
   }
   const ledgerId = `dw__${r.mode}__${r.period}`;
+  if (r.assisted && medal === "Ustalık") medal = "Altın";
   r.result = {solved, coins, xp, medal, reason, score: r.score,
+    ...(B.paid(r) ? {assisted: r.assisted, masteryEligible: !r.assisted, leaderboardEligible: !r.assisted} : {}),
     eligibleForDailyBonus: r.eligible && r.mode !== "passa_weekly",
     finishedAt: time, ledgerId, rewardEnabled: policy.rewardsEnabled === true};
   if (!policy.rewardsEnabled) {
@@ -146,6 +153,10 @@ function publicRun(raw, time, paid = {}) {
     revision: r.revision, serverNow: time, closesAt: r.closesAt, deadline: r.deadline, startedAt: r.startedAt,
     finished: r.finished, index: r.index, score: r.score, attempts: r.attempts, result: r.result,
     rewardPaid: !!paid[r.result?.ledgerId]};
+  if (B.paid(r)) {
+    Object.assign(out, {id: r.id, support: B.view(r), assisted: r.assisted,
+      adCredits: r.adCredits, adGranted: r.adGranted});
+  }
   if (r.mode === "daily_lingo") {
     Object.assign(out, {category: r.puzzle.category, length: r.puzzle.answer.length, questionId: r.puzzle.id,
       guesses: r.guesses, hintUsed: r.hint, hintAvailable: r.guesses.length >= 3,
@@ -170,7 +181,8 @@ function publicRun(raw, time, paid = {}) {
     if (!r.finished) {
       const q = r.questions[r.index];
       out.question = {id: q.id, letter: q.letter, rule: q.rule, prompt: q.prompt, category: q.category,
-        difficulty: q.difficulty, passAvailable: !r.rounds[r.index].passed};
+        difficulty: q.difficulty, passAvailable: !r.rounds[r.index].passed,
+        ...(r.rounds[r.index].hint ? {hint: r.rounds[r.index].hint} : {})};
       out.questionId = q.id;
     }
   }
@@ -180,7 +192,7 @@ function archive(s, today) {
   const days = []; let streak = 0; let open = true;
   for (let n = 0; n < 30; n++) {
     const day = dayKey(endOfDay(today) - 1 - n * 86400000); const d = s.days[day] || {};
-    const complete = DAILY.some((m) => d[m]?.eligible);
+    const complete = DAILY.some((m) => d[m]?.eligible && !d[m]?.assisted);
     if (open && complete) streak++;
     else if (n > 0 || Object.values(d).some((r) => r?.eligible)) open = false;
     days.push({day, status: complete ? "completed" : DAILY.some((m) => d[m]) ? "played" : "missed",
@@ -191,27 +203,40 @@ function archive(s, today) {
   if (open) {
     for (let n = 30; n < Object.keys(s.days).length + 1; n++) {
       const d = s.days[dayKey(endOfDay(today) - 1 - n * 86400000)] || {};
-      if (!DAILY.some((m) => d[m]?.eligible)) break; streak++;
+      if (!DAILY.some((m) => d[m]?.eligible && !d[m]?.assisted)) break; streak++;
     }
   }
   return {days, streak, weeks: Object.entries(s.weeks).sort(([a], [b]) => b.localeCompare(a)).slice(0, 8)
       .map(([period, r]) => ({period, result: r.result || null}))};
 }
-function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () => ({}), now = Date.now}) {
-  const read = async (uid) => stateOf((await db.ref("dailyWordState/" + uid).get()).val());
+function createService({db, isLinked, grantCoins, grantXp, normalize: economy, project,
+  getPolicy = async () => ({}), now = Date.now}) {
+  const read = async (uid) => {
+    const canonical = (await db.ref(`economyState/${uid}/dailyWords`).get()).val();
+    return stateOf(canonical?.storageVersion === 2 ? canonical :
+      (await db.ref("dailyWordState/" + uid).get()).val());
+  };
   async function change(uid, fn) {
-    let error; const time = now();
-    const tx = await db.ref("dailyWordState/" + uid).transaction((raw) => {
-      error = null; const s = stateOf(raw);
+    let error; const time = now(); const legacy = await read(uid);
+    const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+      error = null; const e = economy(structuredClone(raw));
+      const s = stateOf(e.dailyWords?.storageVersion === 2 ? e.dailyWords : structuredClone(legacy));
       try {
-        fn(s, time); return s;
+        fn(s, time, e); s.storageVersion = 2; s.projectionRevision = (s.projectionRevision || 0) + 1;
+        e.dailyWords = s; return e;
       } catch (e) {
         error = e; return raw;
       }
     });
     if (error) throw error;
     if (!tx.committed) fail("aborted", "Aynı isteği yeniden gönder.");
-    return stateOf(tx.snapshot.val());
+    const value = tx.snapshot.val(); const s = stateOf(value.dailyWords);
+    // Compatibility mirror and existing mission trigger; a delayed projection
+    // cannot overwrite a later canonical mutation or restore an old wallet.
+    await db.ref("dailyWordState/" + uid).transaction((old) =>
+      (old?.projectionRevision || 0) > s.projectionRevision ? old : s);
+    await project(db, uid, economy(value));
+    return s;
   }
   function modeOf(input) {
     if (!MODES.includes(input.mode)) fail("invalid-argument", "Geçersiz günlük oyun."); return input.mode;
@@ -240,12 +265,13 @@ function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () 
     const mode = modeOf(input); const weekly = mode === "passa_weekly";
     const time = now(); const period = weekly ? weekKey(time) : dayKey(time);
     const policy = {...defaults, ...await getPolicy()};
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     const pack = await pinned(period, weekly, policy.enabled);
     await change(uid, (s, t) => {
       refresh(s, t, policy);
       if (!weekly && policy.enabled && pack) {
         const d = s.days[period] ||= {};
-        d[mode] ||= newRun(mode, pack, t); refresh(s, t, policy);
+        d[mode] ||= newRun(mode, pack, t, boostPolicy); refresh(s, t, policy);
       }
     });
     await settle(uid); const s = await read(uid);
@@ -267,16 +293,23 @@ function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () 
       fail("invalid-argument", "Cevap çok uzun.");
     }
     const policy = {...defaults, ...await getPolicy()};
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     const fingerprint = hash([mode, input.period, input.packId, input.contentVersion, input.revision,
+      input.questionId, input.action, input.answer, ...B.paymentFingerprint(input)]);
+    const legacyFingerprint = hash([mode, input.period, input.packId, input.contentVersion, input.revision,
       input.questionId, input.action, input.answer]);
     const pack = await pinned(input.period, weekly, false);
-    const s = await change(uid, (s, time) => {
+    const s = await change(uid, (s, time, e) => {
       const current = weekly ? weekKey(time) : dayKey(time);
       let r = restored(weekly ? s.weeks[input.period] : s.days[input.period]?.[mode]);
       refresh(s, time, policy);
       // A lost success can be acknowledged after midnight, but can never mutate the old period.
       if (r?.actions[input.requestId]) {
-        if (r.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İstek içeriği değişti."); return;
+        if (r.actions[input.requestId] !== fingerprint &&
+          (B.paid(r) || r.actions[input.requestId] !== legacyFingerprint)) {
+          fail("invalid-argument", "İstek içeriği değişti.");
+        }
+        return;
       }
       if (!policy.enabled) fail("failed-precondition", "Günlük oyunlar şu anda kapalı.");
       if (input.period !== current) fail("failed-precondition", "Gün/hafta değişti. Arşiv korunuyor; yenile.");
@@ -285,7 +318,7 @@ function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () 
       }
       if (input.action === "start" && weekly) {
         if (r) return;
-        r = newRun(mode, pack, time); s.weeks[current] = r;
+        r = newRun(mode, pack, time, boostPolicy); s.weeks[current] = r;
         refresh(s, time, policy); r.actions[input.requestId] = fingerprint; return;
       }
       if (!r) fail("failed-precondition", "Önce günlük oyunu aç.");
@@ -296,6 +329,10 @@ function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () 
       const q = r.puzzle || r.questions[r.index];
       if (input.questionId !== (q.questionId || q.id)) fail("failed-precondition", "Soru değişti. Yenile.");
       const word = normalize(input.answer);
+      if (B.paid(r) && ["hint", "bio", "first"].includes(input.action)) {
+        const info = help(r, input.action);
+        B.consume(e, r, input, info.sku, (q.questionId || q.id) + ":" + input.action, {text: info.text}, time);
+      }
       if (input.action === "giveup") {
         finish(s, r, "giveup", time, policy);
       } else if (mode === "daily_lingo") {
@@ -343,7 +380,9 @@ function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () 
         }
       } else {
         const round = r.rounds[r.index];
-        if (input.action === "pass") {
+        if (input.action === "hint" && B.paid(r)) {
+          round.hint = help(r, "hint").text;
+        } else if (input.action === "pass") {
           if (round.passed) fail("failed-precondition", "İkinci pas yok; cevapla veya bu soruyu boş bırak.");
           round.passed = true; r.queue.push(r.queue.shift());
         } else if (["guess", "skip"].includes(input.action)) {
@@ -377,6 +416,59 @@ function createService({db, isLinked, grantCoins, grantXp, getPolicy = async () 
     const r = mode === "passa_weekly" ? s.weeks[input.period] : s.days[input.period]?.[mode];
     return {session: publicRun(r, now(), s.paid), readOnly: true};
   }
-  return {status, act, history, settle};
+  function findRun(s, context) {
+    const r = context?.mode === "passa_weekly" ? s.weeks[context.period] : s.days[context?.period]?.[context?.mode];
+    return r?.id === context.sessionId ? restored(r) : null;
+  }
+  async function prepareHint(uid, placement, context) {
+    if (placement !== "daily_words_hint" || !await isLinked(uid)) fail("permission-denied", "Hesap gerekli.");
+    const policy = {...defaults, ...await getPolicy()};
+    if (!policy.enabled) fail("failed-precondition", "Günlük oyunlar şu anda kapalı.");
+    const state = await read(uid); refresh(state, now(), policy);
+    const r = findRun(state, context);
+    if (!B.paid(r) || r.finished || r.expiresAt <= now()) fail("failed-precondition", "Aktif günlük oyun yok.");
+    const action = r.mode === "daily_anagram" ? context.boostId === "boost_first_letter" ? "first" : "bio" : "hint";
+    const info = help(r, action);
+    if (context.boostId !== info.sku) fail("invalid-argument", "Destek türü uyuşmuyor.");
+    return B.adBenefit(r, {amount: 0, claimKey: `dw_hint_${r.id}_${r.adGranted}`,
+      context: {sessionId: r.id, mode: r.mode, period: r.period, questionId: info.questionId, action}}, info.sku);
+  }
+  async function settleHint(uid, receipt) {
+    const policy = {...defaults, ...await getPolicy()};
+    await change(uid, (s, time, e) => {
+      refresh(s, time, policy);
+      const r = findRun(s, receipt.context);
+      let canApply = false;
+      if (r && !r.finished && r.expiresAt > time) {
+        try {
+          canApply = help(r, receipt.context.action).questionId === receipt.context.questionId;
+        } catch (_) {
+          // A no-longer-useful verified hint is preserved as stock.
+        }
+      }
+      if (B.recoverAd(e, r, receipt, time, "boost_basic", canApply)) return;
+      if (!r || !B.paid(r)) fail("failed-precondition", "Reklam oturumu yok.");
+      if (!r.adReceipts?.[receipt.id]) B.grantAd(r, receipt);
+    });
+  }
+  return {status, act, history, settle, prepareHint, settleHint};
+}
+function help(r, action) {
+  const q = r.puzzle || r.questions[r.index]; const round = r.rounds?.[r.index];
+  if (r.mode === "daily_lingo") {
+    if (action !== "hint" || r.hint || r.guesses.length < 3) fail("failed-precondition", "İpucu henüz uygun değil.");
+    return {sku: "boost_basic", text: q.hint, questionId: q.id};
+  }
+  if (r.mode === "daily_anagram") {
+    if (!["bio", "first"].includes(action) || round.status !== "pending" || round[action]) {
+      fail("failed-precondition", "Bu ipucu açık veya soru bitmiş.");
+    }
+    return {sku: action === "first" ? "boost_first_letter" : "boost_basic",
+      text: action === "first" ? q.answer[0] : q.countryLabel + " · " + q.position, questionId: q.questionId};
+  }
+  if (action !== "hint" || round.hint || round.status !== "pending") {
+    fail("failed-precondition", "İpucu açık veya soru bitmiş.");
+  }
+  return {sku: "boost_basic", text: `Cevap ${normalize(q.answer).length} harften oluşur.`, questionId: q.id};
 }
 module.exports = {createService, catalog, compiled, normalize, feedback, weekKey, MODES, defaults};

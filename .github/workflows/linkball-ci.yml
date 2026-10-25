@@ -509,7 +509,7 @@ jobs:
         run: |
           $parseTokens = $null
           $parseErrors = $null
-          foreach ($name in @('deploy-reviewed-games.ps1', 'deploy-online-games.ps1')) {
+          foreach ($name in @('deploy-reviewed-games.ps1', 'deploy-online-games.ps1', 'verify-missions-boosts.ps1')) {
             [System.Management.Automation.Language.Parser]::ParseFile("$env:GITHUB_WORKSPACE/scripts/$name", [ref]$parseTokens, [ref]$parseErrors) | Out-Null
             if ($parseErrors.Count -gt 0) { $parseErrors | Write-Error; exit 1 }
           }

@@ -10,11 +10,12 @@ import 'package:shared_xi/screens/daily_words_page.dart';
 import 'package:shared_xi/screens/anagram_page.dart';
 import 'package:shared_xi/services/daily_words_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class WordFixture extends DailyWordsService {
-  WordFixture({this.stage = 'game', this.offline = false, this.longWord = false});
+  WordFixture({this.stage = 'game', this.offline = false, this.longWord = false, this.paid = false});
   String stage;
-  bool offline, longWord;
+  bool offline, longWord, paid;
   Map<String, dynamic>? sent;
   bool hint = false;
   String mixed = 'REGUL';
@@ -23,11 +24,15 @@ class WordFixture extends DailyWordsService {
     final result = stage == 'result'; final lingo = mode == 'daily_lingo'; final anagram = mode == 'daily_anagram';
     final weekly = mode == 'passa_weekly';
     return {'mode': mode, 'period': '2026-10-19', 'packId': 'pack-test', 'contentVersion': 'dw-test',
+      if (paid) ...{'id': 'dw-test-run', 'support': {'version': 1, 'products': [
+        {'id': 'boost_basic', 'priceCoins': 25, 'ads': true},
+        if (anagram) {'id': 'boost_first_letter', 'priceCoins': 25, 'ads': true},
+      ]}},
       'revision': 3, 'serverNow': now, 'closesAt': now + 86400000, 'deadline': weekly ? now + 240000 : null,
       'finished': result, 'index': result && anagram ? 2 : weekly && !result ? 8 : 0,
       'score': anagram && result ? 270 : 0,
       'attempts': result ? (lingo ? 2 : anagram ? 5 : weekly ? 29 : 7) : 0,
-      'questionId': 'q-one', 'hintUsed': hint || stage == 'hint', 'hintAvailable': stage == 'hint',
+      'questionId': 'q-one', 'hintUsed': hint || stage == 'hint', 'hintAvailable': paid || stage == 'hint',
       if (lingo) ...{'category': 'player', 'length': longWord ? 9 : 5,
         'guesses': stage == 'hint' ? [
           {'word': 'DZEKO', 'marks': ['absent', 'absent', 'absent', 'present', 'absent']},
@@ -131,6 +136,20 @@ void main() {
     }
   });
   for (final mode in ['daily_lingo', 'passa_daily', 'passa_weekly', 'daily_anagram']) {
+    testWidgets('$mode paid help carries quote and period and disables offline spending', (t) async {
+      final fixture = WordFixture(paid: true);
+      await mount(t, DailyWordsPage(mode: mode, service: fixture), large: true);
+      final support = t.widgetList<PaidHintButton>(find.byType(PaidHintButton)).first;
+      expect(support.disabled, isFalse); expect(support.sku, 'boost_basic');
+      await support.onUse({'boostId': 'boost_basic', 'paymentSource': 'coins', 'expectedPriceCoins': 25});
+      await t.pumpAndSettle();
+      expect(fixture.sent?['period'], '2026-10-19'); expect(fixture.sent?['revision'], 3);
+      expect(fixture.sent?['expectedPriceCoins'], 25); expect(t.takeException(), isNull);
+      await capture(t, '${mode}_paid_large');
+      await mount(t, DailyWordsPage(key: UniqueKey(), mode: mode, service: WordFixture(paid: true, offline: true)));
+      expect(t.widgetList<PaidHintButton>(find.byType(PaidHintButton)).every((b) => b.disabled), isTrue);
+      await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+    });
     for (final light in [false, true]) {
       testWidgets('$mode ${light ? 'light' : 'dark'} game/hint/result/archives', (t) async {
         for (final stage in ['game', 'hint', 'result']) {

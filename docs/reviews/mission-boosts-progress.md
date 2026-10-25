@@ -91,3 +91,15 @@ Yardımlı en iyi hamle/süre ayrı kayda yazılır, yardımsız ustalık ödül
 Beş yeni callable regresyon testi ve tam Functions koşusu: 608/608 PASS; lint ve Burst eski istemci vektör kontrolü PASS. Üç Flutter testi eklendi: 320px/%180 destek görünümü ve taşıma, yeniden açılmış öneri/kilit durumu, yardımlı sonuç etiketi. Bu yeni mobil testlerin sonucu CI'da doğrulanacak. CI #340 (`b589ad9`) Functions/RTDB ve Flutter analiz/test aşamaları PASS; bu kayıt sırasında Android derlemesi sürüyor.
 
 Güncel kalan ana kapsam: günlük/kelime/keşif destekleri, sekiz hikâye ailesinin ücretli yardım ve Pro göçü, yerel Grid ve yedi bot için sunucu oturumları, Choice antrenman destekleri, Club Manager/Squad Challenge destekleri, tüm 142 kriterin kanıtlandırılması ve gerçek cihaz SSV/iki hesap kabulü. Sağlık kontrolü gerçek maç testi yerine geçmez. Üretim dağıtımı, rollout açılışı veya PR birleştirmesi yapılmadı.
+
+## Checkpoint 7 — Günlük kelime oyunları
+
+CI #342 (`58de6e5`): Flutter analiz/test, Android debug derlemesi, Functions audit/lint/608 test ve RTDB izinleri PASS. Matching'in 320px/%180 destek ve çift önerisi ekranları incelendi; taşma görülmedi. Cihaz entegrasyonu ve imzalı sürüm çalıştırılmadı.
+
+Günlük Lingo, Günün Anagramı, Mini Passaparola ve Haftalık Passaparola için stok/Coin/doğrulanmış reklam adaptörleri eklendi. Günlük kelime kayıtları cüzdanla aynı kullanıcı işlemi altında kanonik hale gelir; eski özel kayıt ve görev tetikleyicisi sıralı sürüm kontrollü ayna olarak korunur. İpucu ve ücret tek işlemde kaydolur. Ayna veya profil yazımı kesilirse aynı istek ipucunu/ücreti çoğaltmaz. Eski kayıt, makbuz, açılmış yardım ve istek fingerprint'leri korunur; açılmış eski oturum yeni politika ile yeniden fiyatlandırılmaz.
+
+Lingo bağlamı üçüncü geçerli tahminden sonra; Anagram ülke/mevki ve ilk harf; Passaparola cevap uzunluğu yardımı sunucuda üretilir. Anagram'ın puan cezaları korunur, normal yeniden karıştırma ücretsizdir. Yardımlı günlük sonuç ve paylaşım işaretlenir; yardımsız seri/ustalığa eklenmez. Haftalık 240 saniyelik süre yardım/reklam sırasında işlemeye devam eder. Günlük reklam bir/run, haftalık iki/run ve ortak dört/gün sınırına bağlıdır. Geciken soru/bitiş SSV'si seçili SKU stoğuna bir kez döner. Yeni Pro oturumu gerçek reklam doğrulaması ister.
+
+Yerel: mevcut 17 günlük oyun testi ve yedi yeni geçiş testi PASS; tam Functions koşusu 615/615 PASS, lint PASS. Dört mobil mod testi ve günlük reklam taşıma testi eklendi; yeni commit CI sonucuyla doğrulanacak. PowerShell kontrol/derleme betiği `scripts/verify-missions-boosts.ps1` eklendi; dağıtım veya feature flag değişikliği yapmaz.
+
+Bu adım tek başına iki ZIP'i tamamlamaz. Diğer solo Lingo/8'li Anagram, günlük soru/futbolcu/maç/mücadele/keşif; hikâye, Grid/bot, Choice ve kadro modlarının kalan geçişleri açıktır.

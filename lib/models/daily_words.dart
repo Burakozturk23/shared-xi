@@ -29,5 +29,6 @@ String dailyWordsShare(Map<String, dynamic> session) {
     : rows.map((r) => r['status'] == 'correct' ? '🟩' : r['status'] == 'pending' ? '⬜' : '⬛').join();
   return 'Linkball · ${dailyWordsTitle(mode)}\n${session['period']}\n$summary\n'
     '${result['medal'] ?? 'Tamamlandı'} · ${result['solved'] ?? 0} doğru'
-    '${mode == 'daily_anagram' ? ' · ${session['score'] ?? 0}/300' : ''}';
+    '${mode == 'daily_anagram' ? ' · ${session['score'] ?? 0}/300' : ''}'
+    '${session['assisted'] == true || result['assisted'] == true ? ' · Yardımlı' : ''}';
 }

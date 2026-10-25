@@ -5828,6 +5828,7 @@ function lbEconomyState(raw) {
     purchases: purchases,
     inventory: inventory,
     choice: data.choice && typeof data.choice === "object" ? data.choice : {},
+    dailyWords: data.dailyWords && typeof data.dailyWords === "object" ? data.dailyWords : {},
     arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
     fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
     mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
@@ -8680,14 +8681,16 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "burst_survival_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "daily_words_hint" ?
+        lbDailyWordsService().prepareHint(uid, placement, context) : placement === "burst_survival_hint" ?
         lbArcadeService().prepareHint(uid, placement, context) : placement === "fake_club_hint" ?
         lbFakeClubService().prepareHint(uid, placement, context) : ["mystery_hint", "chain_hint"].includes(placement) ?
         lbMysteryChainService().prepareHint(uid, placement, context) :
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "burst_survival_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "daily_words_hint" ?
+        lbDailyWordsService().settleHint(uid, receipt) : receipt.placement === "burst_survival_hint" ?
         lbArcadeService().settleHint(uid, receipt) : receipt.placement === "fake_club_hint" ?
         lbFakeClubService().settleHint(uid, receipt) : ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
         lbMysteryChainService().settleHint(uid, receipt) :
@@ -9924,7 +9927,8 @@ exports.actFakeClub = lbFakeClubCallable("act");
 // Official daily word games share one account transaction and a durable reward outbox.
 function lbDailyWordsService() {
   const db = getDatabase();
-  return require("./daily_words").createService({db, now: () => Date.now(),
+  return require("./daily_words").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject,
     getPolicy: async () => (await db.ref("runtimeConfig/dailyWords").get()).val() || {},
     isLinked: async (uid) => {
       const user = await getAuth().getUser(uid);

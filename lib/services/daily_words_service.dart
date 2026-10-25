@@ -93,4 +93,11 @@ class DailyWordsService {
     final result = await _call('getDailyWordsHistory', {'mode': mode, 'period': period});
     _check(uid); return result;
   }
+  Future<void> watchHint(Map<String, dynamic> session, String boostId) async {
+    final uid = await _identity();
+    await transport.watch('daily_words_hint', pro: false, context: {
+      'sessionId': session['id'], 'mode': session['mode'], 'period': session['period'], 'boostId': boostId,
+    });
+    _check(uid);
+  }
 }

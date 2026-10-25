@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../widgets/paid_hint_button.dart';
 import '../services/game_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,13 +108,13 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       if (firstLoad && _scroll.hasClients) _scroll.jumpTo(0);
     }
   });
-  Future<void> _act(String action) => _run(() async {
+  Future<void> _act(String action, [Map<String, dynamic> payment = const {}]) => _run(() async {
     final response = await _service.mutate({'mode': widget.mode,
       'period': _session['period'] ?? _status['period'],
       'packId': _session['packId'] ?? _status['packId'],
       'contentVersion': _session['contentVersion'] ?? _status['contentVersion'],
       'revision': _session['revision'], 'questionId': _session['questionId'],
-      'action': action, if (action == 'guess') 'answer': _answer.text}).timeout(const Duration(seconds: 30));
+      'action': action, if (action == 'guess') 'answer': _answer.text, ...payment}).timeout(const Duration(seconds: 30));
     if (!mounted || _changedAccount) return;
     setState(() { _setSession(rewardMap(response['session'])); _clock..reset()..start();
       _answer.clear(); _chosen.clear(); });
@@ -123,6 +124,14 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     setState(() => _accept(status));
     if (_scroll.hasClients && ['next', 'start'].contains(action)) _scroll.jumpTo(0);
   });
+  Widget _paidHint(String action, String sku, String label, {bool disabled = false}) => PaidHintButton(
+    session: _session, sku: sku, label: label, disabled: _locked || disabled,
+    onUse: (payment) => _act(action, payment),
+    onWatch: () => _run(() async {
+      await _service.watchHint(_session, sku);
+      final status = await _service.load(widget.mode);
+      if (mounted && !_changedAccount) setState(() => _accept(status));
+    }));
   Future<void> _history(String period) => _run(() async {
     final value = await _service.history(widget.mode, period).timeout(const Duration(seconds: 30));
     if (!mounted || _changedAccount) return;
@@ -265,6 +274,9 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
           if (_answer.text.isNotEmpty) setState(() => _answer.text = _answer.text.substring(0, _answer.text.length - 1));
         }, icon: const Icon(Icons.backspace_outlined), label: const Text('Sil'))),
         if (_session['hintUsed'] == true) _notice('İpucu: ${_session['hint']}') else
+          if (rewardMap(_session['support'])['version'] == 1)
+            _paidHint('hint', 'boost_basic', 'Bağlam ipucu', disabled: _session['hintAvailable'] != true)
+          else
           OutlinedButton.icon(onPressed: _locked || _session['hintAvailable'] != true ? null : () => _act('hint'),
             icon: const Icon(Icons.lightbulb_outline), label: const Text('Bağlam ipucu · 3. tahminden sonra')),
         const Text('Ç/Ğ/İ/Ö/Ş/Ü ve aksanlar A–Z biçimine çevrilir. Boşluk ve noktalama sayılmaz.', style: TextStyle(fontSize: 12)),
@@ -314,8 +326,10 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         if (guesses.isNotEmpty) Semantics(liveRegion: true, child: _notice('Denemelerin: ${guesses.join(' · ')}')),
         const SizedBox(height: 12),
         if (round['bio'] == true) _notice('Ülke / mevki: ${round['hint']}') else
+          if (rewardMap(_session['support'])['version'] == 1) _paidHint('bio', 'boost_basic', 'Ülke + mevki · −15 puan') else
           OutlinedButton(onPressed: _locked ? null : () => _act('bio'), child: const Text('Ülke + mevki · −15 puan')),
         if (round['first'] == true) _notice('İlk harf: ${round['firstLetter']}') else
+          if (rewardMap(_session['support'])['version'] == 1) _paidHint('first', 'boost_first_letter', 'İlk harf · −25 puan') else
           OutlinedButton(onPressed: _locked ? null : () => _act('first'), child: const Text('İlk harf · −25 puan')),
         TextButton(onPressed: _locked ? null : () => _act('reveal'), child: const Text('Bu cevabı aç · 0 puan')),
       ] else ...[
@@ -367,6 +381,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
           const SizedBox(height: 12), Text('${q['prompt']}', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8), Text(q['passAvailable'] == true ? '1 pas hakkın var.' : 'Pas kullanıldı. Cevapla veya boş bırak.'),
         ])), const SizedBox(height: 16), _input('Cevabın', action: 'guess'),
+        if (q['hint'] != null) _notice('${q['hint']}') else
+          if (rewardMap(_session['support'])['version'] == 1) _paidHint('hint', 'boost_basic', 'Cevabın uzunluğu'),
         Wrap(spacing: 10, children: [OutlinedButton(onPressed: _locked || q['passAvailable'] != true ? null : () => _act('pass'), child: const Text('Pas')),
           TextButton(onPressed: _locked ? null : () => _act('skip'), child: const Text('Boş bırak · yanlış'))]),
       ],
@@ -380,6 +396,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     return [
       const SizedBox(height: 16), PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('${result['medal'] ?? 'Sonuç'}', style: Theme.of(context).textTheme.headlineSmall),
+        if (result['assisted'] == true) const Text('Yardımlı · Yardımsız seri ve ustalığa eklenmez.'),
         const SizedBox(height: 8), Text(reason), Text('${result['solved'] ?? 0} doğru · ${_session['attempts'] ?? 0} geçerli yanıt'),
         Text('${result['coins'] ?? 0} Link Coin · ${result['xp'] ?? 0} XP'),
         if (_lingo) Text('${_rows(_session['guesses']).length}/6 tahmin'),

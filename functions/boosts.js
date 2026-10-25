@@ -20,6 +20,8 @@ const modes = {
   career: ["basic", "connection"], transfer: ["basic", "first_letter"],
   mystery: ["basic"], mastermind: ["connection"], fake_endless: ["eliminate", "connection"],
   burst_survival: ["basic"], pyramid: ["strong"], matching: ["strong"],
+  daily_lingo: ["basic"], daily_anagram: ["basic", "first_letter"],
+  passa_daily: ["basic"], passa_weekly: ["basic"],
 };
 const fail = (code, message) => {
   throw new RewardError(code, message);
