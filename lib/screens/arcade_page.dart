@@ -394,7 +394,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     return [
       panel('Kişisel rekorların', widget.mode == 'burst' ? 'Hız Atağı ve Dayanıklılık; Kulüp × Kulüp ve Kulüp × Ülke için dört ayrı kayıt.' : 'Her zorluk için ayrı kayıt. Veriler hesabına ve içerik sürümüne bağlıdır.'),
       if (records.isEmpty) const Text('Henüz tamamlanan oyun yok.'),
-      for (final r in records) panel('${widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}')} · ${r['assisted'] == true ? 'Yardımlı' : 'Yardımsız'}',
+      for (final r in records) panel('${widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}')}${r['assisted'] == true ? ' · Yardımlı' : ''}',
         widget.mode == 'matching' ? 'En az hamle: ${r['bestMoves'] ?? '—'}\nEn iyi süre: ${r['bestTimeMs'] == null ? '—' : (_n(r['bestTimeMs']) / 1000).round()} sn\n${r['sessions']} oyun' :
           'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}\nOrtalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}'),
       if (rewardMap(data['legacy']).isNotEmpty) panel('Bu cihazın eski sürüm rekoru', rewardMap(data['legacy']).entries.map((e) => '${e.key}: ${e.value}').join('\n')),
@@ -403,7 +403,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           subtitle: Text('${rewardMap(e.value)['coins']} Coin · ${rewardMap(data['paid'])[e.key] == true ? 'Ödendi' : 'Bekliyor'}')),
       if (_rows(data['recent']).isNotEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text('Son oyunlar')),
       for (final r in _rows(data['recent'])) ListTile(title: Text(widget.mode == 'matching' ? '${r['moves']} hamle' : '${r['score']} puan'),
-        subtitle: Text('${r['style'] == 'survival' && widget.mode == 'burst' ? 'Dayanıklılık' : widget.mode == 'burst' ? 'Hız Atağı' : _difficulty('${r['difficulty']}')} · ${(_n(r['activeMs']) / 1000).round()} sn · ${r['assisted'] == true ? 'Yardımlı' : 'Yardımsız'}')),
+        subtitle: Text('${r['style'] == 'survival' && widget.mode == 'burst' ? 'Dayanıklılık' : widget.mode == 'burst' ? 'Hız Atağı' : _difficulty('${r['difficulty']}')} · ${(_n(r['activeMs']) / 1000).round()} sn${r['assisted'] == true ? ' · Yardımlı' : ''}')),
     ];
   }
 }
