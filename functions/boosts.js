@@ -22,6 +22,7 @@ const modes = {
   burst_survival: ["basic"], pyramid: ["strong"], matching: ["strong"],
   daily_lingo: ["basic"], daily_anagram: ["basic", "first_letter"],
   passa_daily: ["basic"], passa_weekly: ["basic"],
+  higher_lower_training: ["basic"], blind_ranking_training: ["basic"],
   player_journey: ["basic", "strong"], what_if: ["basic", "strong"], ucl_moments: ["basic", "strong"],
   nostalgia: ["basic", "strong"], international_glory: ["basic", "strong"],
   dynasties: ["basic", "strong"], football_docu: ["basic", "strong"], derby_day: ["basic", "strong"],
@@ -30,7 +31,8 @@ const fail = (code, message) => {
   throw new RewardError(code, message);
 };
 const digest = (x) => crypto.createHash("sha256").update(JSON.stringify(x)).digest("hex");
-const modeOf = (run) => run.mode === "burst" ? "burst_" + run.style : run.mode;
+const modeOf = (run) => run.training === true && ["higher_lower", "blind_ranking"].includes(run.mode) ?
+  run.mode + "_training" : run.mode === "burst" ? "burst_" + run.style : run.mode;
 function enabled(policy, uid) {
   return policy?.enabled === true && (policy.betaUids?.[uid] === true ||
     policy.public === true && Number.isInteger(policy.percent) &&
@@ -53,12 +55,13 @@ function pin(run, policy) {
 const paid = (run) => run?.boostPolicy?.version === VERSION;
 function adCredits(run, sku) {
   const typed = Object.values(run.adProducts || {}).reduce((sum, n) => sum + n, 0);
-  return (run.adProducts?.[sku] || 0) + Math.max(0, (run.adCredits || 0) - typed);
+  return (run.adRecoveryPending?.[sku] ? 0 : run.adProducts?.[sku] || 0) + Math.max(0, (run.adCredits || 0) - typed);
 }
 function view(run) {
   return paid(run) ? {version: VERSION, products: Object.values(run.boostPolicy.products),
     adCreditsByProduct: Object.fromEntries(Object.keys(run.boostPolicy.products).map((sku) =>
       [sku, products[sku].ads ? adCredits(run, sku) : 0])),
+    recoveryPending: Object.keys(run.adRecoveryPending || {}).filter((sku) => run.adProducts?.[sku] > 0).length > 0,
     adLimit: run.boostPolicy.daily ? 1 : 2,
     adRemaining: Math.max(0, (run.boostPolicy.daily ? 1 : 2) - (run.adGranted || 0)), assisted: run.assisted === true,
     resultLabel: run.assisted ? "Yardımlı" : "Yardımsız", masteryEligible: !run.assisted} : null;
@@ -130,8 +133,9 @@ function grantAd(run, receipt) {
       fail("failed-precondition", "Reklam hakkının oyun veya destek türü eşleşmiyor.");
     }
     run.adProducts ||= {}; run.adProducts[sku] = (run.adProducts[sku] || 0) + 1;
+    (run.adScopes ||= {})[sku] = {...receipt.context};
   }
-  run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true;
+  run.adGranted++; run.adCredits++; (run.adReceipts ||= {})[receipt.id] = true;
 }
 // A verified ad arriving after expiry remains owned; it becomes a basic stock
 // unit instead of disappearing. If stock is full, keep the SSV outbox pending.
@@ -155,6 +159,27 @@ function recoverAd(e, run, receipt, time, sku = "boost_basic", canApply = true) 
   }
   return true;
 }
+// Transfer already-verified but unused typed credit when its question/phase
+// becomes unusable. Full stock keeps the credit in the run, never blocking play
+// or allowing it to be spent on a later question. Retried transitions are safe.
+function recoverUnused(e, run, time, usable = () => true) {
+  if (!paid(run)) return;
+  for (const [sku, quantity] of Object.entries(run.adProducts || {})) {
+    if (!Number.isSafeInteger(quantity) || quantity <= 0 || !products[sku]?.ads) continue;
+    if (!run.adRecoveryPending?.[sku] && !run.finished && run.expiresAt > time &&
+      usable(sku, run.adScopes?.[sku] || {})) continue;
+    (run.adRecoveryPending ||= {})[sku] = true;
+    const item = e.inventory[sku]; const count = Math.min(quantity, Math.max(0, 99 - (item?.quantity || 0)));
+    if (!count) continue;
+    e.inventory[sku] = {...item, itemId: sku, itemType: "boost", quantity: (item?.quantity || 0) + count,
+      sourceType: "verified_ad", sourceId: run.id, acquiredAt: item?.acquiredAt || time};
+    run.adProducts[sku] -= count; run.adCredits = Math.max(0, run.adCredits - count);
+    (run.adRecovered ||= {})[sku] = (run.adRecovered?.[sku] || 0) + count;
+    const key = "boost_unused_ad__" + digest([run.id, sku, run.adRecovered[sku]]);
+    e.storeUses[key] = {itemId: sku, units: count, source: "verified_unused_ad_recovery", runId: run.id, usedAt: time};
+    if (!run.adProducts[sku]) delete run.adRecoveryPending[sku];
+  }
+}
 const offers = specs.filter(([id]) => !["first_letter", "last_letter", "anagram"].includes(id)).flatMap(
     ([id, title, price, bundle, , category], i) => [1, 3].map((units) => ({
       offerId: `boost_${id}_${units}`, itemId: "boost_" + id, itemType: "boost",
@@ -166,4 +191,4 @@ const offers = specs.filter(([id]) => !["first_letter", "last_letter", "anagram"
       modes: Object.keys(modes).filter((mode) => modes[mode].includes(id)),
     })));
 module.exports = {VERSION, products, modes, offers, enabled, policyFor, pin, paid, view,
-  paymentFingerprint, consume, adBenefit, grantAd, recoverAd};
+  paymentFingerprint, consume, adBenefit, grantAd, recoverAd, recoverUnused};

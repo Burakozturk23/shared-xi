@@ -122,3 +122,17 @@ test("story ad verifies SKU/run, prohibits strong ad and recovers late SSV once"
   const run = h.read(root + "/storyStates/derbyDayState/supportRuns/" + v.session.id);
   assert.equal(run.adGranted, 1); assert.equal((B.view(run).adCreditsByProduct.boost_basic || 0), 0);
 });
+test("story credited hint recovers on authoritative completion and survives a full bag", async () => {
+  const h = setup(); const mode = "derby_day"; const v = await load(h, mode);
+  const input = request(mode, v); const service = h.context.lbStorySupportService();
+  const benefit = await service.prepareHint("alice", "story_support_hint", input);
+  const receipt = {id: "b5".repeat(24), context: benefit.context};
+  await service.settleHint("alice", receipt);
+  const stock = root + "/inventory/boost_basic"; h.seed(stock, {quantity: 99, itemType: "boost"});
+  await h.call("submitDerbyDay", {version: require("../derby_day").catalog.version,
+    taskId: input.targetId, answers: first(mode).task.answerKeys});
+  assert.equal(h.read(root + "/storyStates/derbyDayState/supportRuns/" + v.session.id + "/adCredits"), 1);
+  h.seed(stock + "/quantity", 98); await load(h, mode); await load(h, mode);
+  assert.equal(h.read(stock + "/quantity"), 99);
+  assert.equal(h.read(root + "/storyStates/derbyDayState/supportRuns/" + v.session.id + "/adCredits"), 0);
+});

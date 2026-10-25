@@ -61,7 +61,20 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       error = null; const e = normalize(structuredClone(raw)); e.careerTransfer = stateOf(e.careerTransfer);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.careerTransfer, e, time); return e;
+        for (const r of Object.values(e.careerTransfer.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => (r.hints?.length || 0) < 3 && sku === (r.mode === "transfer" &&
+              (r.hints?.length || 0) === 2 ? "boost_first_letter" :
+              r.phase === "order" ? "boost_connection" : "boost_basic"));
+        }
+        fn(e.careerTransfer, e, time);
+        for (const r of Object.values(e.careerTransfer.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => (r.hints?.length || 0) < 3 && sku === (r.mode === "transfer" &&
+              (r.hints?.length || 0) === 2 ? "boost_first_letter" :
+              r.phase === "order" ? "boost_connection" : "boost_basic"));
+        }
+        return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -235,7 +248,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       B.pin(run, boostPolicy);
       s.sessions[run.id] = run; s.active[input.mode] = run.id; s.starts[run.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
-        if (old.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
+        if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
+          delete s.sessions[id];
+        }
       }
     });
     return {ok: true, version: catalog.version, session: sessionView(e.careerTransfer.sessions[input.requestId])};

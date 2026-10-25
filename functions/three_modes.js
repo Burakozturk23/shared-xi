@@ -101,7 +101,16 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const state = normalize(structuredClone(raw)); state.threeModes = stateOf(state.threeModes);
       state.energy = energy.refreshed(state.energy, time);
       try {
-        fn(state.threeModes, state, time); return state;
+        for (const r of Object.values(state.threeModes.sessions)) {
+          B.recoverUnused(state, r, time,
+              () => (r.hints?.length || 0) < 3);
+        }
+        fn(state.threeModes, state, time);
+        for (const r of Object.values(state.threeModes.sessions)) {
+          B.recoverUnused(state, r, time,
+              () => (r.hints?.length || 0) < 3);
+        }
+        return state;
       } catch (e) {
         error = e; return raw;
       }
@@ -269,7 +278,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       // Collections/receipts are permanent; expired session bodies are bounded.
       const obsolete = Object.values(s.sessions).filter((x) => x.expiresAt < time)
           .sort((a, b) => b.startedAt - a.startedAt).slice(20);
-      for (const x of obsolete) delete s.sessions[x.id];
+      for (const x of obsolete) if (!(x.adCredits > 0)) delete s.sessions[x.id];
     });
     return {ok: true, version: catalog.version, session: sessionView(state.threeModes.sessions[input.requestId])};
   }

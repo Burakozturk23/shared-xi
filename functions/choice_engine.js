@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const catalog = require("./config/choice_catalog.json");
 const {RewardError} = require("./rewarded_ads");
 const fail = (code, message) => {
@@ -182,6 +183,11 @@ function publicRun(c, raw) {
     "revision", "dataVersion", "createdAt", "completedAt", "finished", "completed", "practice", "earnedCoins",
     "rewardKeys", "bracketId", "size", "type", "metricId", "themeId", "scope", "streak", "answered", "correct",
     "reason", "rewardReason", "contentVerified"].filter((k) => r[k] != null).map((k) => [k, r[k]]));
+  if (r.training) {
+    Object.assign(out, {training: true, support: B.view(r), adCredits: r.adCredits, adGranted: r.adGranted});
+    const key = r.mode === "higher_lower" ? r.question?.id : r.orderedCandidateIds[r.placements.length];
+    if (r.trainingHints?.[key]) out.trainingHint = r.trainingHints[key];
+  }
   if (r.mode === "this_or_that") {
     Object.assign(out, bracket(r.orderedCandidateIds, r.history), {history: r.history,
       orderedCandidateIds: r.orderedCandidateIds,

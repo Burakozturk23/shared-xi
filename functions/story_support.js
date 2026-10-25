@@ -210,4 +210,14 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
   }
   return {enabled, ensure, use, guardLegacy, prepareHint, settleHint};
 }
-module.exports = {create, content, help};
+function recoverUnused(e, s, time) {
+  for (const r of Object.values(s.supportRuns || {})) {
+    const c = content(r.mode);
+    B.recoverUnused(e, r, time, (sku, scope) => {
+      const t = c.targets[scope.targetId];
+      return c.version === r.version && !!t && t.open(s) && !t.done(s) &&
+        !r.reveals?.[scope.targetId + ":" + sku];
+    });
+  }
+}
+module.exports = {create, content, help, recoverUnused};

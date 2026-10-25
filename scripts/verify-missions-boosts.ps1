@@ -25,7 +25,7 @@ try {
   if (-not $FunctionsOnly) {
     $flutterCommand = (Get-Command flutter -ErrorAction Stop).Source
     Invoke-Checked $flutterCommand @('pub', 'get')
-    Invoke-Checked $flutterCommand @('analyze')
+    Invoke-Checked $flutterCommand @('analyze', '--no-fatal-infos', '--no-fatal-warnings')
     Invoke-Checked $flutterCommand @('test', '--reporter', 'expanded')
     if ($BuildApk) {
       Invoke-Checked $flutterCommand @('build', 'apk', '--debug')

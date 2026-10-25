@@ -63,7 +63,16 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       error = null; const e = normalize(structuredClone(raw)); e.fakeClub = stateOf(e.fakeClub);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.fakeClub, e, time); return e;
+        for (const r of Object.values(e.fakeClub.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => sku === "boost_eliminate" ? !r.freeUsed : r.traceUsed < 2);
+        }
+        fn(e.fakeClub, e, time);
+        for (const r of Object.values(e.fakeClub.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => sku === "boost_eliminate" ? !r.freeUsed : r.traceUsed < 2);
+        }
+        return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -237,7 +246,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       B.pin(r, boostPolicy);
       setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id; s.starts[r.id] = r.mode;
       for (const [id, prior] of Object.entries(s.sessions)) {
-        if (prior.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
+        if (prior.expiresAt < time && !(prior.adCredits > 0) && !Object.values(s.active).includes(id)) {
+          delete s.sessions[id];
+        }
       }
     });
     return {session: view(e.fakeClub.sessions[input.requestId], now())};

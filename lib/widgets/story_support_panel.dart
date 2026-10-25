@@ -98,6 +98,7 @@ class _StorySupportPanelState extends State<StorySupportPanel> {
       ],
       if (_value != null) ...[
         if (support['assisted'] == true) const Text('Bu bölüm: Yardımlı'),
+        if (support['recoveryPending'] == true) const Text('Kullanılmayan reklam hakkın korunuyor. Çantanda yer açınca yenile.'),
         for (final raw in products) Builder(builder: (context) {
           final p = rewardMap(raw), sku = '${rewardMap(raw)['id']}';
           if (hints[sku] != null) return Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text('${hints[sku]}'));

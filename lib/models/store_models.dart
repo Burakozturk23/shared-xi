@@ -50,6 +50,7 @@ class StoreOffer {
     'burst_survival': 'Burst Dayanıklılık', 'pyramid': 'Pyramid', 'matching': 'Kart Eşleştirme',
     'daily_lingo': 'Günün Lingo’su', 'daily_anagram': 'Günün Anagramı',
     'passa_daily': 'Mini Passaparola', 'passa_weekly': 'Haftalık Passaparola',
+    'higher_lower_training': 'Higher or Lower Antrenman', 'blind_ranking_training': 'Blind Ranking Antrenman',
     'player_journey': 'Oyuncu Yolculuğu', 'what_if': 'What If', 'ucl_moments': 'UCL Moments',
     'nostalgia': 'Türkiye Nostaljisi', 'international_glory': 'International Glory',
     'dynasties': 'Hanedanlar', 'football_docu': 'Futbol Belgeseli', 'derby_day': 'Derbi Günü',

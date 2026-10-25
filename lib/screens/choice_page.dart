@@ -7,6 +7,7 @@ import '../services/choice_service.dart';
 import '../widgets/player_portrait.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/paid_hint_button.dart';
 import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
 
@@ -25,7 +26,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
   Color get accent => palette.accent;
   late final ChoiceService service;
   Map<String,dynamic> data = {};
-  bool busy = true, records = false, configuring = false;
+  bool busy = true, records = false, configuring = false, training = false;
   String? error, themeId, metricId;
   String category = 'player', type = 'objective', personalId = 'favorites';
   int size = 16; int? previewSlot;
@@ -52,6 +53,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
   }
   void selections() {
     if (run.isNotEmpty) {
+      training = run['training'] == true;
       themeId = run['bracketId'] ?? themeId; metricId = run['metricId'] ?? metricId;
       if (!hl) size = (run['size'] as num? ?? size).toInt();
       if (tot) category = '${run['type'] ?? category}';
@@ -91,6 +93,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     try {
       final result = await service.mutate({'mode': widget.mode, 'version': data['version'],
         if (tot) ...{'bracketId': themeId, 'size': size},
+        if (!tot && (hl || type == 'objective')) 'training': training,
         if (hl) 'metricId': metricId,
         if (!tot && !hl) ...{'size': size, 'type': type, if (type == 'personal') 'themeId': personalId else 'metricId': metricId}}, prepare: true);
       if (mounted) setState(() {data = result; configuring = false;});
@@ -188,7 +191,11 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
               contentPadding: EdgeInsets.zero, title: Text('${m['label'] ?? m['id']}'),
               subtitle: Text('${m['reason'] ?? 'Kaynak doğrulaması bekleniyor.'}'))).toList()),
         ],
-        note('Yeni oyun: ${tot && !approved ? 0 : data['energyCost'] ?? 0} enerji · Kayıtlı oyuna devam: 0 enerji'),
+        if (!tot && (hl || type == 'objective') && data['trainingAvailable'] == true)
+          SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('Antrenman'),
+            subtitle: const Text('İsteğe bağlı ücretli destek. Enerji, normal rekor, ödül ve ustalık yok.'),
+            value: training, onChanged: busy ? null : (v) => setState(() => training = v)),
+        note('Yeni oyun: ${training || tot && !approved ? 0 : data['energyCost'] ?? 0} enerji · Kayıtlı oyuna devam: 0 enerji'),
         if (rewardMap(data['availability'])['enabled'] != true) note('Güncelleme henüz kullanıma açılmadı.'),
         button('Oyunu hazırla', canStart ? prepare : null),
       ]), rewards(),
@@ -245,10 +252,28 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         ]),
     ];
   }
+  Widget trainingSupport(Map<String, dynamic> r) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    note('Antrenman · Normal rekor, ödül ve ustalığa eklenmez.'),
+    if (rewardMap(r['support'])['assisted'] == true) note('Yardımlı'),
+    if (r['trainingHint'] != null) note('${r['trainingHint']}')
+    else if (r['finished'] != true && r['answered'] != true && rewardMap(r['support'])['version'] == 1)
+      PaidHintButton(session: r, sku: 'boost_basic', label: hl ? 'İstatistik aralığı' : 'Sıra aralığı',
+        disabled: busy || error != null || data['offline'] == true,
+        onUse: (payment) => action('hint', {...payment,
+          'questionId': hl ? rewardMap(r['question'])['id'] : rewardMap(r['current'])['id']}),
+        onWatch: () async {
+          if (busy) return;
+          setState(() { busy = true; error = null; });
+          try { await service.watchHint(r, 'boost_basic'); if (mounted) await load(); }
+          catch (e) { if (mounted) setState(() { error = gameErrorMessage(e); }); }
+          finally { if (mounted) setState(() { busy = false; }); }
+        }),
+  ]);
   Widget higher(Map<String,dynamic> r) {
     final q = rewardMap(r['question']); final metric = rewardMap(r['metric']).isNotEmpty ? rewardMap(r['metric']) : metrics.where((m) => m['id'] == r['metricId']).firstOrNull;
     return panel([heading('${r['streak'] ?? 0} doğru seri'), note('${metric?['label'] ?? 'İstatistik karşılaştırması'}'),
       ...metricContext(r),
+      if (r['training'] == true) trainingSupport(r),
       for (final side in ['left','right']) ...[
         person(rewardMap(q[side]), caption: number(q['${side}Value'], '${r['metricId']}')),
         if (q['${side}Value'] == null) Center(child: Text('Gizli değer', style: TextStyle(color: accent))),
@@ -267,6 +292,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     return panel([
       heading(result ? r['completed'] != true ? 'Liste tamamlanmadı' : r['type'] == 'personal' ? 'Benim Sıralamam' : 'Sıralama sonucu' : '${placements.length + 1} / $count oyuncu'),
       if (r['type'] == 'objective') ...metricContext(r),
+      if (r['training'] == true) trainingSupport(r),
       if (!result) ...[person(rewardMap(r['current'])), note('Bir boş sıra seç, ardından onayla. Sonraki oyuncu henüz gizli.')],
       if (result && r['completed'] == true && r['type'] == 'objective') ...[heading('${r['score']} / 100'),
         note('${r['exactMatches']} tam sıra · ${r['comparable']} karşılaştırılabilir çift')],
@@ -383,6 +409,7 @@ Future<Uint8List> choiceSharePng(Map<String,dynamic> run) async {
   final lines = <String>[
     'LINKBALL', tot ? 'O mu Bu mu? · Şampiyonum' : run['type'] == 'personal' ? 'Benim Sıralamam' : 'Blind Ranking',
     choiceDate(run['completedAt']),
+    if (run['training'] == true) 'Antrenman${rewardMap(run['support'])['assisted'] == true ? ' · Yardımlı' : ''}',
     if (tot) '${rewardMap(rewardMap(run['candidates'])[run['championId']])['name']}'
     else ...placements.map((p) => '${(p['slot'] as num).toInt()+1}. ${rewardMap(p['player'])['name']}'),
     if (!tot && run['type'] == 'objective') '${run['score']} / 100 puan',

@@ -7,16 +7,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/choice_page.dart';
 import 'package:shared_xi/services/choice_service.dart';
+import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class ChoiceFixture extends ChoiceService {
-  ChoiceFixture({this.stage = 'game', this.type = 'objective', this.size = 5, this.offline = false, this.gated = false});
-  String stage, type; int size; bool offline, gated;
+  ChoiceFixture({this.stage = 'game', this.type = 'objective', this.size = 5, this.offline = false, this.gated = false, this.training = false});
+  String stage, type; int size; bool offline, gated, training;
   Map<String,dynamic>? sent;
   Map<String,dynamic> player(int i) => {'id': 'p$i', 'name': ['Lionel Messi','Cristiano Ronaldo','Zlatan Ibrahimović','Kevin De Bruyne','Kylian Mbappé'][i % 5], 'country': 'Argentina', 'position': 'Attack'};
   Map<String,dynamic> session(String mode) {
     final result = stage == 'result';
     return {'id': 'session1', 'mode': mode, 'phase': stage == 'prepared' ? 'prepared' : 'active', 'revision': 1,
       'finished': result, 'completed': result, 'createdAt': 1000, 'completedAt': result ? 100000 : null,
+      if (training) ...{'training': true, 'practice': true, 'support': {'version': 1, 'products': [
+        {'id': 'boost_basic', 'priceCoins': 25, 'ads': true}]}},
       'dataVersion': 'test-v1', 'earnedCoins': result ? 2 : 0, 'rewardKeys': [],
       if (mode == 'this_or_that') ...{'bracketId': 'prime_battles_32', 'size': 16, 'type': 'player',
         'roundSize': 16, 'leftId': 'p0', 'rightId': 'p1', 'matchNumber': 1,
@@ -77,6 +80,21 @@ void main() {
       await (FontLoader(e.$1)..addFont(rootBundle.load(e.$2))).load();
     }
   });
+  for (final mode in ['higher_lower', 'blind_ranking']) {
+    testWidgets('$mode training support binds current question and refuses offline spending', (t) async {
+      final fixture = ChoiceFixture(training: true); await mount(t, fixture, mode, large: true);
+      await t.scrollUntilVisible(find.byType(PaidHintButton).hitTestable(), 200,
+        scrollable: find.byType(Scrollable).first);
+      final button = t.widget<PaidHintButton>(find.byType(PaidHintButton));
+      expect(button.disabled, isFalse);
+      await button.onUse({'boostId': 'boost_basic', 'paymentSource': 'coins', 'expectedPriceCoins': 25});
+      await t.pumpAndSettle();
+      expect(fixture.sent?['action'], 'hint'); expect(fixture.sent?['questionId'], mode == 'higher_lower' ? 'q1' : 'p0');
+      expect(fixture.sent?['expectedPriceCoins'], 25); expect(t.takeException(), isNull);
+      await mount(t, ChoiceFixture(training: true, offline: true), mode);
+      expect(t.widget<PaidHintButton>(find.byType(PaidHintButton)).disabled, isTrue);
+    });
+  }
   for (final mode in ['this_or_that','higher_lower','blind_ranking']) {
     for (final stage in ['intro','prepared','game','result']) {
       testWidgets('$mode $stage reachable without overflow', (t) async {

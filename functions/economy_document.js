@@ -31,6 +31,7 @@ function create({db, normalize, project, collection, shouldMigrate = async () =>
         next._walletDocumentVersion = 1;
         next._projectionRevision = (current?._projectionRevision || 0) + 1;
         e.storyStates[collection] = next;
+        require("./story_support").recoverUnused(e, next, now());
         return e;
       });
       if (!result.committed) return {committed: false, snapshot: await get()};

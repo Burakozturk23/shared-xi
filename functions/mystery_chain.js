@@ -50,7 +50,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       error = null; const e = normalize(structuredClone(raw)); e.mysteryChain = stateOf(e.mysteryChain);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.mysteryChain, e, time); return e;
+        for (const r of Object.values(e.mysteryChain.sessions)) B.recoverUnused(e, r, time);
+        fn(e.mysteryChain, e, time);
+        for (const r of Object.values(e.mysteryChain.sessions)) B.recoverUnused(e, r, time); return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -247,7 +249,9 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       B.pin(r, boostPolicy);
       s.sessions[r.id] = r; s.active[input.mode] = r.id; s.starts[r.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
-        if (old.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
+        if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
+          delete s.sessions[id];
+        }
       }
     });
     await settle(uid);

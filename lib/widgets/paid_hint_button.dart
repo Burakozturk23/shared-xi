@@ -50,6 +50,7 @@ class _PaidHintButtonState extends State<PaidHintButton> {
         builder: (_) => _SupportSheet(label: widget.label, product: quote,
           credits: (rewardMap(rewardMap(widget.session['support'])['adCreditsByProduct'])[widget.sku]
             as num? ?? widget.session['adCredits'] as num? ?? 0).toInt(),
+          recoveryPending: rewardMap(widget.session['support'])['recoveryPending'] == true,
           canWatch: widget.onWatch != null &&
             (widget.session['adGranted'] as num? ?? 0) <
               (rewardMap(widget.session['support'])['adLimit'] as num? ?? 2) &&
@@ -77,11 +78,11 @@ class _PaidHintButtonState extends State<PaidHintButton> {
 
 class _SupportSheet extends StatefulWidget {
   const _SupportSheet({required this.label, required this.product,
-    required this.credits, required this.canWatch, required this.load});
+    required this.credits, required this.canWatch, required this.recoveryPending, required this.load});
   final String label;
   final Map<String, dynamic> product;
   final int credits;
-  final bool canWatch;
+  final bool canWatch, recoveryPending;
   final Future<Map<String, int>> Function() load;
   @override
   State<_SupportSheet> createState() => _SupportSheetState();
@@ -97,6 +98,7 @@ class _SupportSheetState extends State<_SupportSheet> {
         const SizedBox(height: 8), Text(widget.label, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         const Text('Kullanırsan sonuç Yardımlı olarak kaydedilir; yardımsız ustalık ve rekoruna eklenmez.'),
+        if (widget.recoveryPending) const Text('Kullanılmayan reklam hakkın korunuyor. Çantanda yer açınca oyunu yenile.'),
         const SizedBox(height: 16),
         FutureBuilder<Map<String, int>>(future: _balance, builder: (context, snapshot) {
           if (snapshot.hasError) return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

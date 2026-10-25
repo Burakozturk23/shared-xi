@@ -87,7 +87,7 @@ void main(){
     final c=InternationalGloryController(catalog:igPack(),store:MemoryInternationalStore(),gateway:gateway);
     addTearDown(c.dispose); await c.load(); c.open('ig2_01'); c.start();
     await t.pumpWidget(MaterialApp(home:InternationalGloryPage(controller:c))); await t.pumpAndSettle();
-    await t.scrollUntilVisible(find.text('Ek yardım · 6 coin'),200,scrollable:find.byType(Scrollable).last);
+    await t.scrollUntilVisible(find.text('Ek yardım · 6 coin').hitTestable(),200,scrollable:find.byType(Scrollable).first);
     await t.tap(find.text('Ek yardım · 6 coin')); await t.pumpAndSettle();
     await t.tap(find.text('Vazgeç')); await t.pumpAndSettle();
     expect(gateway.hintRequests,isEmpty);
@@ -96,7 +96,7 @@ void main(){
     expect(gateway.hintRequests.single['maxPrice'],6);
     c.pro=true; await t.pumpWidget(const SizedBox());
     await t.pumpWidget(MaterialApp(home:InternationalGloryPage(controller:c))); await t.pumpAndSettle();
-    await t.scrollUntilVisible(find.text('Pro · Ek yardım'),200,scrollable:find.byType(Scrollable).last);
+    await t.scrollUntilVisible(find.text('Pro · Ek yardım').hitTestable(),200,scrollable:find.byType(Scrollable).first);
     await t.tap(find.text('Pro · Ek yardım')); await t.pumpAndSettle();
     c.pro=false; // Entitlement changed while the free-price confirmation was open.
     await t.tap(find.text('Aç')); await t.pumpAndSettle();

@@ -106,3 +106,14 @@ test("migration retains legacy hints, history and old request fingerprints witho
   assert.equal(replay.rounds[0].bio, true); assert.equal(replay.support, undefined);
   assert.equal(h.read(root + "/balances/coins"), 1000); assert.equal(raw(h, s).revision, s.revision);
 });
+test("granted daily clue returns to stock after answer even when the SSV arrived before the answer", async () => {
+  const h = setup(); let s = await load(h, "daily_anagram"); const service = h.context.lbDailyWordsService();
+  const context = {sessionId: s.id, mode: s.mode, period: s.period, boostId: "boost_first_letter"};
+  const benefit = await service.prepareHint("alice", "daily_words_hint", context);
+  const receipt = {id: "b4".repeat(24), context: benefit.context};
+  await service.settleHint("alice", receipt); assert.equal(raw(h, s).adCredits, 1);
+  const q = raw(h, s).questions[0]; s = await act(h, s, {action: "guess", answer: q.answer});
+  await service.settleHint("alice", receipt);
+  assert.equal(h.read(root + "/inventory/boost_first_letter/quantity"), 3);
+  assert.equal(raw(h, s).adCredits, 0); assert.equal(raw(h, s).assisted, false);
+});

@@ -304,3 +304,41 @@ test("SSV arriving after the career phase changes preserves the originally selec
   assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adGranted`), 1);
   assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`), 0);
 });
+
+test("already granted career credit recovers when guess phase ends, without marking assistance", async () => {
+  const h = setup(); const s = (await h.call("startCareerTransfer", {mode: "career", version: ct.version,
+    requestId: id()})).session;
+  const service = h.context.lbCareerTransferService();
+  const benefit = await service.prepareHint("alice", "career_hint", {sessionId: s.id, boostId: "boost_basic"});
+  await service.settleHint("alice", {id: "b1".repeat(24), context: benefit.context});
+  const path = `economyState/alice/careerTransfer/sessions/${s.id}`;
+  assert.equal(h.read(path + "/adCredits"), 1);
+  const puzzle = ct.careers.find((p) => p.id === h.read(path).puzzle);
+  await h.call("actCareerTransfer", {mode: "career", version: ct.version, sessionId: s.id,
+    revision: s.revision, requestId: id(), action: "guess", playerId: puzzle.playerId});
+  await h.call("getCareerTransfer", {mode: "career"});
+  assert.equal(h.read("economyState/alice/inventory/boost_basic/quantity"), 4);
+  assert.equal(h.read(path + "/adCredits"), 0); assert.equal(h.read(path + "/assisted"), false);
+});
+test("full stock retains unused typed credit after finish, then recovers once space is available", async () => {
+  const h = setup(); let s = await start(h); const service = h.context.lbCareerTransferService();
+  const benefit = await service.prepareHint("alice", "transfer_hint", {sessionId: s.id, boostId: "boost_basic"});
+  await service.settleHint("alice", {id: "b2".repeat(24), context: benefit.context});
+  const stock = "economyState/alice/inventory/boost_basic/quantity";
+  h.seed(stock, 99); s = (await h.call("actCareerTransfer", input(s, {action: "skip"}))).session;
+  assert.equal(s.finished, true); assert.equal(s.support.recoveryPending, true);
+  assert.equal(s.support.adCreditsByProduct.boost_basic, 0);
+  assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`), 1);
+  h.seed(stock, 98); await h.call("getCareerTransfer", {mode: "transfer"});
+  await h.call("getCareerTransfer", {mode: "transfer"}); assert.equal(h.read(stock), 99);
+  assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`), 0);
+});
+test("consumed typed credit cannot recover a second stock unit at finish", async () => {
+  const h = setup(); let s = await start(h); const service = h.context.lbCareerTransferService();
+  const benefit = await service.prepareHint("alice", "transfer_hint", {sessionId: s.id, boostId: "boost_basic"});
+  await service.settleHint("alice", {id: "b3".repeat(24), context: benefit.context});
+  s = (await h.call("actCareerTransfer", input(s, {paymentSource: "ad"}))).session;
+  await h.call("actCareerTransfer", input(s, {action: "skip"}));
+  assert.equal(h.read("economyState/alice/inventory/boost_basic/quantity"), 3);
+  assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`), 0);
+});

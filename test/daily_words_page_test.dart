@@ -139,7 +139,8 @@ void main() {
     testWidgets('$mode paid help carries quote and period and disables offline spending', (t) async {
       final fixture = WordFixture(paid: true);
       await mount(t, DailyWordsPage(mode: mode, service: fixture), large: true);
-      await t.scrollUntilVisible(find.byType(PaidHintButton).first, 300);
+      await t.scrollUntilVisible(find.byWidgetPredicate((w) => w is PaidHintButton && w.sku == 'boost_basic').hitTestable(),
+        250, scrollable: find.byType(Scrollable).first, maxScrolls: 40);
       final support = t.widgetList<PaidHintButton>(find.byType(PaidHintButton)).first;
       expect(support.disabled, isFalse); expect(support.sku, 'boost_basic');
       await support.onUse({'boostId': 'boost_basic', 'paymentSource': 'coins', 'expectedPriceCoins': 25});
@@ -148,7 +149,8 @@ void main() {
       expect(fixture.sent?['expectedPriceCoins'], 25); expect(t.takeException(), isNull);
       await capture(t, '${mode}_paid_large');
       await mount(t, DailyWordsPage(key: UniqueKey(), mode: mode, service: WordFixture(paid: true, offline: true)));
-      await t.scrollUntilVisible(find.byType(PaidHintButton).first, 300);
+      await t.scrollUntilVisible(find.byWidgetPredicate((w) => w is PaidHintButton && w.sku == 'boost_basic').hitTestable(),
+        250, scrollable: find.byType(Scrollable).first, maxScrolls: 40);
       expect(t.widgetList<PaidHintButton>(find.byType(PaidHintButton)).every((b) => b.disabled), isTrue);
       await t.pumpWidget(const SizedBox.shrink()); await t.pump();
     });

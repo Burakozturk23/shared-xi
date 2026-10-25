@@ -8682,7 +8682,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "story_support_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "choice_training_hint" ?
+        lbChoiceService().prepareHint(uid, placement, context) : placement === "story_support_hint" ?
         lbStorySupportService().prepareHint(uid, placement, context) : placement === "daily_words_hint" ?
         lbDailyWordsService().prepareHint(uid, placement, context) : placement === "burst_survival_hint" ?
         lbArcadeService().prepareHint(uid, placement, context) : placement === "fake_club_hint" ?
@@ -8691,7 +8692,8 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "story_support_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "choice_training_hint" ?
+        lbChoiceService().settleHint(uid, receipt) : receipt.placement === "story_support_hint" ?
         lbStorySupportService().settleHint(uid, receipt) : receipt.placement === "daily_words_hint" ?
         lbDailyWordsService().settleHint(uid, receipt) : receipt.placement === "burst_survival_hint" ?
         lbArcadeService().settleHint(uid, receipt) : receipt.placement === "fake_club_hint" ?

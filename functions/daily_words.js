@@ -222,7 +222,21 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
       error = null; const e = economy(structuredClone(raw));
       const s = stateOf(e.dailyWords?.storageVersion === 2 ? e.dailyWords : structuredClone(legacy));
       try {
-        fn(s, time, e); s.storageVersion = 2; s.projectionRevision = (s.projectionRevision || 0) + 1;
+        fn(s, time, e);
+        const runs = [...Object.values(s.days || {}).flatMap((d) => Object.values(d)), ...Object.values(s.weeks || {})];
+        for (const run of runs) {
+          B.recoverUnused(e, run, time, (sku, scope) => {
+            try {
+              const action = scope.action || (run.mode === "daily_anagram" ?
+              sku === "boost_first_letter" ? "first" : "bio" : "hint");
+              const info = help(restored(run), action);
+              return !scope.questionId || scope.questionId === info.questionId;
+            } catch (_) {
+              return false;
+            }
+          });
+        }
+        s.storageVersion = 2; s.projectionRevision = (s.projectionRevision || 0) + 1;
         e.dailyWords = s; return e;
       } catch (e) {
         error = e; return raw;

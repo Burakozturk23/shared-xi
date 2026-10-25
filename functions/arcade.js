@@ -85,7 +85,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       error = null; const e = normalize(structuredClone(raw));
       e.arcade = state(e.arcade); e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.arcade, e, time); e.updatedAt = time; return e;
+        for (const r of Object.values(e.arcade.sessions)) B.recoverUnused(e, r, time);
+        fn(e.arcade, e, time);
+        for (const r of Object.values(e.arcade.sessions)) B.recoverUnused(e, r, time); e.updatedAt = time; return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -200,7 +202,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       s.sessions[draft.id] = draft; s.active[draft.mode] = draft.id;
       const old = Object.values(s.sessions).filter((x) => x.finished &&
         !Object.values(s.active).includes(x.id)).sort((a, b) => b.createdAt - a.createdAt);
-      for (const x of old.slice(30)) delete s.sessions[x.id];
+      for (const x of old.slice(30)) if (!(x.adCredits > 0)) delete s.sessions[x.id];
     });
     return result(uid, input.mode, "none");
   }
