@@ -113,6 +113,7 @@ function prepare(state, now) {
   }
   const sameDay = previous.day === day;
   state.squadChallenge = {
+    ...previous,
     day: day,
     freeUsed: sameDay ? previous.freeUsed || 0 : 0,
     paidUsed: sameDay ? previous.paidUsed || 0 : 0,
@@ -125,7 +126,8 @@ function prepare(state, now) {
   // the canonical wallet, so an old mission can never be rewarded again.
   const cutoff = dayKey(now - 2 * DAY);
   for (const [id, run] of Object.entries(state.squadChallenge.runs)) {
-    if (id.slice(0, 10) < cutoff && id !== state.squadChallenge.active?.id && run.status !== "active") {
+    if (id.slice(0, 10) < cutoff && id !== state.squadChallenge.active?.id &&
+        run.status !== "active" && !(run.adCredits > 0)) {
       delete state.squadChallenge.runs[id];
     }
   }
@@ -256,9 +258,14 @@ function finish(state, input, now) {
     };
     progress.completedTotal++;
   }
-  progress.bestByTheme[mission.themeId] = Math.max(progress.bestByTheme[mission.themeId] || 0, score.score);
+  const penalty = run.assisted ? run.supportPenalty || 0 : 0;
+  const finalScore = Math.max(0, score.score - penalty);
+  const records = run.assisted ? (progress.assistedBestByTheme ||= {}) : progress.bestByTheme;
+  records[mission.themeId] = Math.max(records[mission.themeId] || 0, finalScore);
   const result = {...run, status: "finished", playerIds: input.playerIds.slice(),
-    result: {...score, won: won, reward: reward, finishedAt: now}};
+    result: {...score, ...(run.boostPolicy ? {rawScore: score.score, score: finalScore, penalty,
+      assisted: run.assisted === true, masteryEligible: !run.assisted} : {}),
+    won: won, reward: reward, finishedAt: now}};
   progress.runs[run.id] = result;
   progress.active = null;
   return result;
@@ -281,6 +288,7 @@ function apply(state, action, input, now, premium, policy = DEFAULT_POLICY) {
   else if (action === "finish") run = finish(state, input, now);
   else if (action === "abandon") run = abandon(state, input, now);
   else if (action !== "status") throw new SquadError("invalid-argument", "İşlem geçersiz.");
+  require("./squad_support").recover(state, now);
   state.createdAt = state.createdAt || now;
   state.updatedAt = now;
   return {ok: true, run: run, hub: status(state, now, premium, policy)};

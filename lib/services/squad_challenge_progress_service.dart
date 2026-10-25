@@ -28,10 +28,11 @@ class SquadChallengeProgressService {
         .length;
   }
 
-  Future<void> saveScore(String themeId, int score) {
+  Future<void> saveScore(String themeId, int score, {bool assisted = false}) {
+    final recordKey = assisted ? 'sc_assisted_practice_records_v1' : _key;
     final next = _tail.then((_) async {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_key);
+      final raw = prefs.getString(recordKey);
       final rows = raw == null
           ? <String, int>{}
           : (jsonDecode(raw) as Map).map(
@@ -39,7 +40,7 @@ class SquadChallengeProgressService {
             );
       if (score > (rows[themeId] ?? -1)) {
         rows[themeId] = score;
-        if (!await prefs.setString(_key, jsonEncode(rows)))
+        if (!await prefs.setString(recordKey, jsonEncode(rows)))
           throw StateError('Rekor kaydedilemedi.');
       }
     });

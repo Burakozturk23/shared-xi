@@ -147,11 +147,14 @@ class SquadResult {
     required this.cost,
     required this.links,
     required this.countries,
+    this.assisted = false, this.penalty = 0,
   });
+  final bool assisted;
+  final int penalty;
   final bool won;
   final int reward, score, cost, links, countries;
   factory SquadResult.fromJson(Map<String, dynamic> j) => SquadResult(
-    won: j['won'] == true,
+    won: j['won'] == true, assisted: j['assisted'] == true, penalty: squadInt(j['penalty']),
     reward: squadInt(j['reward']),
     score: squadInt(j['score']),
     cost: squadInt(j['cost']),

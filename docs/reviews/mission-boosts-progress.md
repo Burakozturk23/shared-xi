@@ -132,3 +132,14 @@ Günün Sorusu için 35 Coin/stok/doğrulanmış reklam ile sunucuda yanlış se
 Beş yeni sunucu senaryosu ve tam Functions koşusu: 645/645 PASS; lint PASS. Mobil ücret/istek ve kalıcı yeniden deneme testleri eklendi; yeni commit CI sonucu bekleniyor. CI #347 (`abb64be`) Functions, RTDB, Flutter analiz ve tüm Flutter testleri PASS; Android debug derlemesi bu kayıt sırasında sürüyor.
 
 Kalan mod kapsamı: solo Lingo/8'li Anagram; günlük futbolcu/maç/mücadele/keşif; yerel Grid/yedi bot sunucu oturumları; Club Manager/Squad Challenge. Gerçek cihaz SSV/iki hesap ve 142 kabul kriterinin tamamına ait kanıtlar açık. Üretim dağıtımı/rollout/merge yapılmadı.
+
+
+## Checkpoint 11 — Squad Challenge
+
+Günlük ödüllü kadrolar ve bağlı hesap antrenmanı için gerçek katalogla doğrulanan iki destek eklendi: temel kriter listesi (en çok beş aday, 25 Coin, −10 puan) ve güçlü tek aday önerisi (60 Coin, −20 puan, reklamsız). Öneri seçilen mevkide mevcut taslağın tema, kredi, tekrar ve ülke koşullarını doğrular; komşu kulüp bağı/yeni ülke/düşük kredi sırasını ve katkıları açıklar. Otomatik oyuncu yerleştirme veya tam kadro garantisi yoktur. Her ürün kadro başına bir kez; fiyat ve puan etkisi seçimden önce görünür.
+
+Ücret, öneri, yardım bayrağı ve puan etkisi tek cüzdan işlemiyle saklanır. Kaybolan yanıt aynı kalıcı istekle kurtarılır. Günlük bir, antrenman iki ve ortak dört/gün reklam limiti kullanılır. Bitiş/terk/süre sonundaki kullanılmamış doğrulanmış hak korunur; dolu çanta oyunu kilitlemez. Günlük ilk-bitiriş ödül kimliği değişmez; yardımlı puan indirimi uygulanır ve normal rekordan ayrılır. Antrenman sunucuda sonuçlanır, Coin/XP veya günlük giriş harcamaz; yerel yardımlı rekor da ayrı kaydedilir. Hesap değişiminde geç gelen sonuç reddedilir.
+
+Altı yeni gerçek callable testi ve tam Functions koşusu: 651/651 PASS. Mevcut 15 Squad regresyonu korunur. Mobil seçilen mevki/taslak/ücret taşıma ve ayrı rekor testi eklendi; CI doğrulaması bekleniyor. CI #347 Flutter analiz/test aşamalarını geçti; sonraki commit nedeniyle Android derlemesi iptal edildi, APK PASS sayılmadı. #348 son Günün Sorusu commitini denetliyor.
+
+Kalan: solo Lingo/8'li Anagram; günlük futbolcu/maç/mücadele/keşif; Grid/yedi bot sunucu oturumları; Club Manager; tam 142 kabul kanıtı ve gerçek cihaz SSV/iki hesap. Üretim dağıtımı, rollout ve merge yapılmadı.

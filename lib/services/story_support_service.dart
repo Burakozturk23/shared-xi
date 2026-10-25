@@ -48,11 +48,11 @@ class StorySupportService {
       rethrow;
     }
   }
-  Future<Map<String, dynamic>> load(String mode, String target) async {
+  Future<Map<String, dynamic>> load(String mode, String target, {Map<String, dynamic> context = const {}}) async {
     final uid = _identity(); final prefs = await SharedPreferences.getInstance(); _check(uid);
     final key = _key(uid, mode, target);
     if (prefs.containsKey(key)) await _replay(prefs, uid, key);
-    final result = await _call(loadCallable, {'mode': mode, 'targetId': target}); _check(uid);
+    final result = await _call(loadCallable, {...context, 'mode': mode, 'targetId': target}); _check(uid);
     return result;
   }
   Future<Map<String, dynamic>> use(Map<String, dynamic> input) async {
@@ -63,6 +63,10 @@ class StorySupportService {
       throw StateError('İşlem kaydedilemedi; destek harcanmadı.');
     }
     _check(uid); return _replay(prefs, uid, key);
+  }
+  Future<Map<String, dynamic>> finish(String name, Map<String, dynamic> input) async {
+    final uid = _identity();
+    final result = await _call(name, input); _check(uid); return result;
   }
   Future<void> watch(Map<String, dynamic> input) async {
     final uid = _identity();

@@ -8672,6 +8672,36 @@ exports.startSquadChallenge = squadCallable("start");
 exports.finishSquadChallenge = squadCallable("finish");
 exports.abandonSquadChallenge = squadCallable("abandon");
 
+let lbSquadSupportInstance;
+function lbSquadSupportService() {
+  if (!lbSquadSupportInstance) {
+    lbSquadSupportInstance = require("./squad_support").createService({
+      db: getDatabase(), normalize: lbEconomyState, project: lbEconomyProject, now: () => Date.now(),
+      isLinked: async (uid) => {
+        const user = await getAuth().getUser(uid);
+        return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+      },
+    });
+  }
+  return lbSquadSupportInstance;
+}
+function lbSquadSupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbSquadSupportService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError || e instanceof require("./squad_challenge").SquadError) {
+        throw new httpsV2.HttpsError(e.code, e.message);
+      }
+      throw e;
+    }
+  });
+}
+exports.getSquadSupport = lbSquadSupportCallable("get");
+exports.useSquadSupport = lbSquadSupportCallable("use");
+exports.finishSquadPractice = lbSquadSupportCallable("finishPractice");
+
 // Monetization B: optional rewarded ads. No network IO during discovery.
 let lbRewardedInstance;
 let lbAdmobKeys;
@@ -8682,7 +8712,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "daily_question_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "squad_support_hint" ?
+        lbSquadSupportService().prepareHint(uid, placement, context) : placement === "daily_question_hint" ?
         lbDailyQuestionService().prepareBoostHint(uid, placement, context) : placement === "choice_training_hint" ?
         lbChoiceService().prepareHint(uid, placement, context) : placement === "story_support_hint" ?
         lbStorySupportService().prepareHint(uid, placement, context) : placement === "daily_words_hint" ?
@@ -8693,7 +8724,8 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "daily_question_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "squad_support_hint" ?
+        lbSquadSupportService().settleHint(uid, receipt) : receipt.placement === "daily_question_hint" ?
         lbDailyQuestionService().settleBoostHint(uid, receipt) : receipt.placement === "choice_training_hint" ?
         lbChoiceService().settleHint(uid, receipt) : receipt.placement === "story_support_hint" ?
         lbStorySupportService().settleHint(uid, receipt) : receipt.placement === "daily_words_hint" ?

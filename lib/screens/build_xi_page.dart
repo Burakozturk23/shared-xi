@@ -7,6 +7,10 @@ import '../app/app_feedback.dart';
 import '../controllers/build_xi_controller.dart';
 import '../data/build_xi_formations.dart';
 import '../models/squad_challenge.dart';
+import '../models/rewarded_ad_models.dart';
+import '../services/auth_service.dart';
+import '../services/story_support_service.dart';
+import '../widgets/paid_hint_button.dart';
 import '../services/squad_challenge_progress_service.dart';
 import '../services/squad_challenge_service.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -24,7 +28,9 @@ class BuildXiPage extends StatefulWidget {
     this.ownerId,
     this.drafts,
     this.progress,
+    this.supportService,
   });
+  final StorySupportService? supportService;
   final SquadCatalog catalog;
   final SquadTheme theme;
   final Formation formation;
@@ -46,12 +52,32 @@ class _BuildXiPageState extends State<BuildXiPage> {
   String? _error, _saveError;
   SquadResult? _result;
   int? _walletCoins;
+  late final StorySupportService _support = widget.supportService ?? StorySupportService(
+    useCallable: 'useSquadSupport', loadCallable: 'getSquadSupport', watchPlacement: 'squad_support_hint');
+  Map<String, dynamic>? _supportData;
+  String? _supportError;
+  bool _supportLoading = false;
+  String get _supportTarget => widget.run?.id ?? '${widget.theme.id}_${widget.formation.id}';
+  Map<String, dynamic> get _supportContext => {'catalogVersion': widget.catalog.version,
+    'themeId': widget.theme.id, 'formationId': widget.formation.id,
+    if (widget.run != null) 'runId': widget.run!.id};
+  Future<void> _loadSupport() async {
+    if (widget.supportService == null && AuthService.uid == null) return;
+    if (mounted) setState(() { _supportLoading = true; _supportError = null; });
+    try {
+      final value = await _support.load('squad_challenge', _supportTarget, context: _supportContext);
+      if (mounted) setState(() => _supportData = value);
+    } catch (e) { if (mounted) setState(() => _supportError = managerError(e)); }
+    finally { if (mounted) setState(() => _supportLoading = false); }
+  }
+
   bool get _rewarded => widget.run != null;
 
   @override
   void initState() {
     super.initState();
     _load();
+    _loadSupport();
   }
 
   Future<void> _load() async {
@@ -138,7 +164,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
 
   Future<void> _finish() async {
     final c = _controller!;
-    if (_busy || !c.state.isComplete) return;
+    if (_busy || _supportLoading || _supportError != null || !c.state.isComplete) return;
     if (_error == null && _rewarded && !c.meetsGoal) {
       final confirm = await showDialog<bool>(
         context: context,
@@ -174,9 +200,16 @@ class _BuildXiPageState extends State<BuildXiPage> {
           widget.run!.id,
           c.playerIds.cast<int>(),
         );
+        if (widget.gateway!.userId != widget.ownerId) throw StateError('Hesabın değişti. Görevlerine geri dön.');
         _result = response.run!.result!;
         _walletCoins = response.hub.coins;
         await _drafts.clear(widget.ownerId!, widget.run!.id);
+      } else if (_supportData?['legacy'] == false) {
+        final value = await _support.finish('finishSquadPractice', {'catalogVersion': widget.catalog.version,
+          'sessionId': rewardMap(_supportData?['session'])['id'], 'playerIds': c.playerIds.cast<int>()});
+        _supportData = value;
+        _result = SquadResult.fromJson(rewardMap(value['result']));
+        await _progress.saveScore(widget.theme.id, _result!.score, assisted: _result!.assisted);
       } else {
         final b = c.previewBreakdown();
         await _progress.saveScore(widget.theme.id, b.total);
@@ -251,6 +284,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
                             value: cheapest,
                             onChanged: (v) => update(() => cheapest = v),
                           ),
+                          if (_supportData?['legacy'] == false) _supportControls(index, (fn) { if (ctx.mounted) update(fn); }),
                           if (c.state.slotPlayers[index] != null)
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, -1),
@@ -312,6 +346,45 @@ class _BuildXiPageState extends State<BuildXiPage> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(managerError(e))));
     }
+  }
+
+  Widget _supportControls(int slot, StateSetter update) {
+    final session = rewardMap(_supportData?['session']);
+    final hints = rewardMap(_supportData?['hints']);
+    Future<void> run(Future<void> Function() action) async {
+      if (_busy) return;
+      setState(() => _busy = true); update(() {});
+      _supportError = null;
+      try { await action(); }
+      catch (e) { _supportError = managerError(e); }
+      finally { if (mounted) { setState(() => _busy = false); update(() {}); } }
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('Kriter listesi: −10 puan. Tek aday: −20 puan. Yardımlı rekor ayrı kaydolur. Her ürün kadro başına bir kez.'),
+      if (_supportError != null) ...[Text(_supportError!),
+        TextButton(onPressed: _busy ? null : () => run(_loadSupport), child: const Text('Destek işlemini eşitle'))],
+      for (final sku in ['boost_basic', 'boost_strong']) ...[
+        PaidHintButton(session: session, sku: sku,
+          label: sku == 'boost_basic' ? 'Kriterlere uygun aday listesi' : 'Bir aday öner',
+          disabled: _busy || _supportError != null || hints[sku] != null || session['finished'] == true,
+          onUse: (payment) => run(() async {
+            _supportData = await _support.use({..._supportContext, 'mode': 'squad_challenge',
+              'targetId': _supportTarget, 'sessionId': session['id'], 'revision': session['revision'],
+              'slot': slot, 'playerIds': _controller!.playerIds, ...payment});
+          }),
+          onWatch: sku == 'boost_strong' ? null : () => run(() async {
+            await _support.watch({'sessionId': session['id'], 'catalogVersion': widget.catalog.version, 'boostId': sku});
+            await _loadSupport();
+          })),
+        if (hints[sku] != null) ...[
+          Text('${rewardMap(hints[sku])['slotLabel']} · Yardım alındığındaki kadroya göre'),
+          for (final candidate in (rewardMap(hints[sku])['candidates'] as List? ?? const []))
+            Text('${rewardMap(candidate)['name']} · ${rewardMap(candidate)['cost']} kredi · '
+              '${rewardMap(candidate)['links']} bağ · ${rewardMap(candidate)['newCountries']} yeni ülke'),
+          Text('${rewardMap(hints[sku])['explanation']}'),
+        ],
+      ],
+    ]);
   }
 
   @override
@@ -430,6 +503,15 @@ class _BuildXiPageState extends State<BuildXiPage> {
             'Sonuç kesinleşene kadar kadron korunuyor. Yeniden göndermek ikinci ödül veya ücret oluşturmaz.',
           ),
         ],
+        if (_supportLoading) const LinearProgressIndicator(),
+        if (_supportError != null) ...[
+          Text(_supportError!),
+          TextButton(onPressed: _loadSupport, child: const Text('Destek işlemini eşitle')),
+        ],
+        if (_supportData?['legacy'] == false) Text(
+          rewardMap(rewardMap(_supportData?['session'])['support'])['assisted'] == true
+            ? 'Yardımlı kadro · ${_supportData?['penalty'] ?? 0} puan indirimi · Ayrı rekor'
+            : 'Oyuncu seçerken isteğe bağlı kriter listesi veya tek aday önerisi alabilirsin.'),
         if (_saveError != null) ...[
           const SizedBox(height: 12),
           Text(_saveError!),
@@ -656,6 +738,7 @@ class _BuildXiPageState extends State<BuildXiPage> {
             : 'Antrenman rekorun kaydedildi. Coin için günlük görevlere katıl.',
         textAlign: TextAlign.center,
       ),
+      if (r.assisted) Text('Yardımlı · ${r.penalty} puan indirimi · Ayrı rekor', textAlign: TextAlign.center),
       const SizedBox(height: 20),
       ManagerMetrics(
         values: [
