@@ -26,6 +26,7 @@ function finalize(s, r, time, rewarded) {
   const key = recordKey(r) + "__" + r.dataVersion + (r.assisted ? "__assisted" : "");
   const rec = s.records[key] ||= {mode: r.mode, style: r.style, pairType: r.pairType, difficulty: r.difficulty,
     dataVersion: r.dataVersion, sessions: 0, bestScore: 0, bestRounds: 0, bestStreak: 0, bestCorrect: 0};
+  rec.assisted = r.assisted === true;
   rec.sessions++; rec.bestScore = Math.max(rec.bestScore, r.score); rec.bestRounds = Math.max(rec.bestRounds, r.rounds);
   rec.bestStreak = Math.max(rec.bestStreak, r.bestStreak); rec.bestCorrect = Math.max(rec.bestCorrect, r.correct);
   if (!r.hints) rec.bestNoHintScore = Math.max(rec.bestNoHintScore || 0, r.score);
@@ -59,7 +60,7 @@ function finalize(s, r, time, rewarded) {
   } else if (r.won) {
     const coins = r.mode === "pyramid" ? {easy: 2, normal: 2, hard: 3} : {easy: 1, normal: 2, hard: 2};
     award(`${r.mode}:v1:${r.difficulty}`, coins[r.difficulty]);
-    if (r.difficulty === "hard" && (r.mode === "pyramid" ? r.wrong === 0 &&
+    if (!r.assisted && r.difficulty === "hard" && (r.mode === "pyramid" ? r.wrong === 0 &&
       r.hints === 0 : r.moves <= 24)) award(`${r.mode}:v1:master`, 3);
   }
   const qualifies = r.mode === "burst" ? r.rounds >= (r.style === "speed" ? 2 : 3) : r.won && r.difficulty !== "easy";
@@ -136,7 +137,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
           b) => b.finishedAt - a.finishedAt)
           .slice(0, 10).map((x) => ({id: x.id, score: x.score, rounds: x.rounds, moves: x.moves,
             activeMs: x.activeMs, difficulty: x.difficulty, style: x.style, pairType: x.pairType,
-            finishedAt: x.finishedAt}))};
+            finishedAt: x.finishedAt, assisted: x.assisted === true}))};
   }
   async function status(uid, input) {
     check(input);
@@ -257,8 +258,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         const previousHints = r.hints;
         E.act(c, r, input, eventTime);
         if (input.action === "hint" && B.paid(r) && r.hints > previousHints) {
-          B.consume(e, r, input, r.mode === "pyramid" ? "boost_strong" : "boost_basic",
-              r.mode === "pyramid" ? "slot:" + input.slotId : "hint:" + previousHints, {text: r.hint}, t);
+          B.consume(e, r, input, r.mode === "burst" ? "boost_basic" : "boost_strong",
+              r.mode === "pyramid" ? "slot:" + input.slotId : r.mode === "matching" ? "pair" :
+                "hint:" + previousHints, r.mode === "matching" ? r.matchingHint : {text: r.hint}, t);
         }
       }
       finalize(s, r, t, p.rewardsEnabled && linked && !r.practice);

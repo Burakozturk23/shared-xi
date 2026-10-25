@@ -7,11 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/arcade_page.dart';
 import 'package:shared_xi/services/arcade_service.dart';
+import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class ArcadeFixture extends ArcadeService {
-  ArcadeFixture({this.stage = 'game', this.difficulty = 'normal', this.style = 'speed', this.offline = false, this.offlinePlayable = false});
+  ArcadeFixture({this.stage = 'game', this.difficulty = 'normal', this.style = 'speed', this.offline = false, this.offlinePlayable = false, this.paid = false});
   String stage, difficulty, style;
-  bool offline, offlinePlayable;
+  bool offline, offlinePlayable, paid;
   Map<String, dynamic>? sent;
   Map<String, dynamic> session(String mode) {
     final finished = stage == 'result'; final easy = difficulty == 'easy';
@@ -29,7 +30,12 @@ class ArcadeFixture extends ArcadeService {
       'lives': 5, 'hints': stage == 'hint' ? 1 : 0, 'freeUsed': stage == 'hint', 'adCredits': 0, 'adGranted': 0,
       'passes': 0, 'activeMs': 20000, 'totalRemainingMs': 100000, 'roundRemainingMs': 20000, 'serverNow': 100000,
       'moves': 4, 'lockUntil': stage == 'locked' ? 101000 : 0, 'stars': finished ? 3 : 0, 'earnedCoins': finished ? 2 : 0,
-      'reason': finished ? 'Tüm bağları tamamladın!' : '', 'hint': stage == 'hint' ? 'Z. I. · Sweden' : '', 'message': '',
+      if (paid) ...{'support': {'version': 1, 'products': [{'id': 'boost_strong', 'priceCoins': 60, 'ads': false}]},
+        'assisted': finished || stage == 'suggested', 'open': stage == 'locked' ? ['card0', 'card1'] : <String>[],
+        if (stage == 'suggested') ...{'hints': 1,
+          'matchingHint': {'cards': [{'id': 'card0'}, {'id': 'card1'}]}}},
+      'reason': finished ? 'Tüm bağları tamamladın!' : '',
+      'hint': stage == 'hint' ? 'Z. I. · Sweden' : stage == 'suggested' ? '1. kart: Zlatan Ibrahimović · 2. kart: Paris Saint-Germain' : '', 'message': '',
       if (mode == 'burst') ...{'question': {'id': 'q1', 'left': 'Real Madrid', 'right': 'Chelsea', 'difficulty': 'easy'},
         'found': [{'id': 'p1', 'name': 'Eden Hazard'}],
         if (finished) 'history': [{'title': 'Real Madrid × Chelsea', 'missed': ['Arjen Robben', 'Claude Makélélé']}]},
@@ -135,6 +141,38 @@ void main() {
     expect(find.text('Kartları hatırla…'), findsOneWidget); await capture(t, 'matching_locked');
     final cardButtons = t.widgetList<OutlinedButton>(find.descendant(of: find.byType(GridView), matching: find.byType(OutlinedButton)));
     expect(cardButtons.every((b) => b.onPressed == null), isTrue);
+    await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+  });
+  testWidgets('Matching paid suggestion uses server quote without exposing closed card faces', (t) async {
+    final fixture = ArcadeFixture(paid: true); await mount(t, fixture, 'matching', large: true);
+    final support = t.widget<PaidHintButton>(find.byType(PaidHintButton));
+    expect(support.sku, 'boost_strong'); expect(support.onWatch, isNull); expect(support.disabled, isFalse);
+    expect(find.text('Tek çift önerisi · 60 Coin'), findsOneWidget);
+    expect(find.text('Zlatan Ibrahimović'), findsNothing);
+    await support.onUse({'boostId': 'boost_strong', 'paymentSource': 'coins', 'expectedPriceCoins': 60});
+    await t.pumpAndSettle();
+    expect(fixture.sent?['action'], 'hint'); expect(fixture.sent?['expectedPriceCoins'], 60);
+    expect(fixture.sent?['revision'], 3); expect(t.takeException(), isNull);
+    await capture(t, 'matching_paid_large');
+    await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+  });
+  testWidgets('Matching hint survives in UI but cannot be purchased again or during a mismatch', (t) async {
+    for (final stage in ['suggested', 'locked']) {
+      await mount(t, ArcadeFixture(paid: true, stage: stage), 'matching', large: true);
+      expect(t.widget<PaidHintButton>(find.byType(PaidHintButton)).disabled, isTrue);
+      if (stage == 'suggested') {
+        expect(find.text('Önerilen çift'), findsOneWidget);
+        final grid = find.byType(GridView);
+        expect(find.descendant(of: grid, matching: find.text('Zlatan Ibrahimović')), findsNothing);
+        await capture(t, 'matching_suggested_large');
+      }
+      expect(t.takeException(), isNull);
+    }
+    await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+  });
+  testWidgets('Matching assisted result is labelled', (t) async {
+    await mount(t, ArcadeFixture(paid: true, stage: 'result'), 'matching');
+    expect(find.text('Yardımlı sonuç · Yardımsız rekor ve ustalığa eklenmez.'), findsOneWidget);
     await t.pumpWidget(const SizedBox.shrink()); await t.pump();
   });
   testWidgets('offline Burst remains playable while canonical rewards wait for verification', (t) async {

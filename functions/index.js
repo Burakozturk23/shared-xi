@@ -8004,6 +8004,15 @@ exports.claimMissionReward = httpsV2.onCall(
 
 
 // Admin-owned pilot configuration. Missing mode/content readiness fails closed.
+exports.refreshMissionServiceHealth = onSchedule({region: "europe-west1", schedule: "every 5 minutes",
+  maxInstances: 1, timeoutSeconds: 60}, async () => {
+  const db = getDatabase();
+  const policy = (await db.ref("runtimeConfig/missionsV3").get()).val();
+  if (policy?.enabled !== true || !(policy.readyModes?.online || policy.readyModes?.friends)) return;
+  const health = await require("./mission_health").collect();
+  await db.ref("runtimeConfig/missionsV3/serviceHealth").transaction((previous) =>
+    previous?.checkedAt > health.checkedAt ? previous : health);
+});
 async function lbMissionV3Policy(db, uid, checkReadiness = false, time = Date.now()) {
   const runtime = (await db.ref("runtimeConfig").get()).val() || {};
   const raw = runtime.missionsV3 || {};

@@ -72,3 +72,22 @@ Pro istemci yolunda yeni destekler gerçek reklam yükler; eski oturumun Pro ava
 
 
 Son sonuç denetimi: Kariyer Bulmacası'nda futbolcuyu bulduktan sonra sıralama aşamasını atlama veya süre dolumu, tamamlanma görevi üretmez. Bir doğru tam sıralama ya da iki değerlendirme ile terminal sonuç gerekir. Geçersiz kılınmış oturumlar da elenir. Gerçek callable akışıyla skip/tamamlama regresyonu PASS. Son tam Functions koşusu: 598/598 PASS; lint PASS. Son mobil CI sonucu PR açıklamasında takip edilir.
+
+
+## Checkpoint 5 — Çevrimiçi servis uygunluğu
+
+`refreshMissionServiceHealth` yalnız görev pilotu ve online/arkadaş görev havuzu açıkken beş dakikada bir sekiz sabit callable adresini kimlik veya oyun verisi göndermeden kontrol eder. Önbellek on dakika geçerlidir. Eksik, gelecek tarihli, eski, 404/503 veya ağ hatalı gözlem görev atamasında sağlıklı kabul edilmez. PvP mod bayrakları ve Club Manager ranked doğrulama kapısı korunur; Career Race/Transfer Duel'un ayrı erişilebilirliği dikkate alınır. Tamamlanmamış online görev, aynı slot kimliğiyle uygun solo alternatife geçer; diğer kartlar ve kazanılmış haklar korunur.
+
+Bu yalnız routing ve yönetilen mod kapısı kontrolüdür. Kimliksiz 401 yanıtı gerçek maç, App Check, veri tabanı işlem başarısı veya eşleştirme kapasitesi kabulü değildir. Gerçek iki hesap senaryosu halen gereklidir. Gözlemci kodu eklendi; üretime dağıtılmadı.
+
+Beş yeni sağlık/fallback testi dahil son tam Functions koşusu: 603/603 PASS; lint PASS. CI #339 (`6be473a`): Flutter analizi/testleri, Android debug derlemesi, Functions ve RTDB izinleri PASS. Son eklenen sunucu kontrollerinin CI sonucu PR açıklamasında izlenir. Üretim ve kalan destek adaptörleri için tüm kapsam PASS beyanı yoktur.
+
+## Checkpoint 6 — Matching çift desteği
+
+Matching pilot oturumlarında güçlü destek (60 Coin veya mevcut stok) bir doğrulanmış futbolcu–kulüp çifti önerir. Yeni ücretsiz veya reklamlı yol yoktur; oyun başına bir öneri vardır. Sunucu kanonik kariyer kaydını ve kaynakları kontrol eder; yalnız seçilen iki kartın konumu/adı ipucunda açılır. Diğer kapalı kartların yüz bilgisi verilmez, çift otomatik tamamlanmaz ve hamle sayacı değişmez. Açık kart veya eşleşmeme beklemesi varken destek alınamaz. Yeniden bağlanınca öneri korunur; aynı isteğin tekrarı ikinci ücret üretmez.
+
+Yardımlı en iyi hamle/süre ayrı kayda yazılır, yardımsız ustalık ödülü kazanılmaz. İlk bitiriş ödülü mevcut tekil makbuzuyla korunur; daha sonra yardımsız oyun yalnız henüz kazanılmamış ustalığı alabilir. Arcade sonuç, rekor ve son oyun ekranlarında Yardımlı/Yardımsız etiketi gösterilir. Matching mağaza uyumluluk listesine yalnız pilot readyModes kapısıyla katılır; eski oturumların kuralları değişmez.
+
+Beş yeni callable regresyon testi ve tam Functions koşusu: 608/608 PASS; lint ve Burst eski istemci vektör kontrolü PASS. Üç Flutter testi eklendi: 320px/%180 destek görünümü ve taşıma, yeniden açılmış öneri/kilit durumu, yardımlı sonuç etiketi. Bu yeni mobil testlerin sonucu CI'da doğrulanacak. CI #340 (`b589ad9`) Functions/RTDB ve Flutter analiz/test aşamaları PASS; bu kayıt sırasında Android derlemesi sürüyor.
+
+Güncel kalan ana kapsam: günlük/kelime/keşif destekleri, sekiz hikâye ailesinin ücretli yardım ve Pro göçü, yerel Grid ve yedi bot için sunucu oturumları, Choice antrenman destekleri, Club Manager/Squad Challenge destekleri, tüm 142 kriterin kanıtlandırılması ve gerçek cihaz SSV/iki hesap kabulü. Sağlık kontrolü gerçek maç testi yerine geçmez. Üretim dağıtımı, rollout açılışı veya PR birleştirmesi yapılmadı.

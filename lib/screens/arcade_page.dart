@@ -318,6 +318,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   }
   List<Widget> matching() {
     final board = rewardMap(run['board']); final cards = _rows(board['cards']);
+    final suggested = _rows(rewardMap(run['matchingHint'])['cards']).map((c) => '${c['id']}').toSet();
     final locked = _n(run['lockUntil']) > _n(run['serverNow']) + elapsed.elapsedMilliseconds;
     final seconds = ((_n(run['activeMs']) + delta) / 1000).floor();
     final columns = run['difficulty'] == 'easy' ? 3 : 4;
@@ -327,6 +328,13 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     return [
       Text('${run['moves']} hamle · ${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')} · ${run['correct']}/${board['count']} çift', style: TextStyle(color: accent)),
       const SizedBox(height: 12),
+      if (rewardMap(run['support'])['version'] == 1) ...[
+        PaidHintButton(session: run, sku: 'boost_strong', label: 'Tek çift önerisi',
+          disabled: busy || offline || locked || (run['open'] as List? ?? []).isNotEmpty || _n(run['hints']) >= 1,
+          onUse: (payment) => act('hint', payment)),
+        const Text('Oyun başına bir öneri. Yardımlı rekor ayrı tutulur.'),
+      ],
+      if (suggested.isNotEmpty) panel('Önerilen çift', '${run['hint'] ?? ''}'),
       if (locked) const Padding(padding: EdgeInsets.only(bottom: 8), child: Text('Kartları hatırla…')),
       if (boardWidth > availableWidth) const Padding(padding: EdgeInsets.only(bottom: 12), child: Text('Kartları görmek için tahtayı yatay kaydırabilirsin.')),
       SingleChildScrollView(scrollDirection: Axis.horizontal, child: SizedBox(width: boardWidth, child: GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: cards.length,
@@ -335,10 +343,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         itemBuilder: (context, i) {
           final c = cards[i]; final visible = c['visible'] == true;
           // Hidden cards have no face text, image, tooltip or semantic identity.
-          return Semantics(label: visible ? '${c['name']}${c['matched'] == true ? ', eşleşti' : ''}' : 'Kapalı kart ${i + 1}', button: !visible,
+          return Semantics(label: '${visible ? '${c['name']}${c['matched'] == true ? ', eşleşti' : ''}' : 'Kapalı kart ${i + 1}'}${suggested.contains(c['id']) ? ', önerilen çift' : ''}', button: !visible,
             child: ExcludeSemantics(child: OutlinedButton(style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.all(6),
               backgroundColor: visible ? palette.surface : palette.raised,
-              side: BorderSide(color: c['matched'] == true ? accent : palette.border)),
+              side: BorderSide(color: c['matched'] == true || suggested.contains(c['id']) ? accent : palette.border,
+                width: suggested.contains(c['id']) ? 2 : 1)),
               onPressed: busy || offline || locked || visible ? null : () => act('flip', {'cardId': c['id']}),
               child: visible ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Icon(c['type'] == 'club' ? Icons.shield_outlined : Icons.person_outline, color: accent), const SizedBox(height: 6),
@@ -348,6 +357,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     ];
   }
   List<Widget> result() => [
+    if (run['assisted'] == true) const Text('Yardımlı sonuç · Yardımsız rekor ve ustalığa eklenmez.'),
     panel(run['won'] == true ? 'Tamamlandı!' : 'Oyun sonucu', '${run['reason'] ?? ''}', child: Padding(padding: const EdgeInsets.only(top: 12), child: Text(
       widget.mode == 'matching' ? '${run['moves']} hamle · ${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}' :
       '${run['score']} puan · ${run['correct']} doğru${widget.mode == 'burst' ? ' · ${run['rounds']} tur' : ''}'))),
@@ -378,11 +388,13 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     return key.split(':').where((p) => p != 'v1').map((p) => labels[p] ?? p).join(' · ');
   }
   List<Widget> records() {
-    final records = rewardMap(data['records']).values.map(rewardMap).where((r) => r['mode'] == widget.mode).toList();
+    final records = rewardMap(data['records']).entries.map((e) => {...rewardMap(e.value),
+      'assisted': rewardMap(e.value)['assisted'] == true || e.key.endsWith('__assisted')})
+      .where((r) => r['mode'] == widget.mode).toList();
     return [
       panel('Kişisel rekorların', widget.mode == 'burst' ? 'Hız Atağı ve Dayanıklılık; Kulüp × Kulüp ve Kulüp × Ülke için dört ayrı kayıt.' : 'Her zorluk için ayrı kayıt. Veriler hesabına ve içerik sürümüne bağlıdır.'),
       if (records.isEmpty) const Text('Henüz tamamlanan oyun yok.'),
-      for (final r in records) panel(widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}'),
+      for (final r in records) panel('${widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}')} · ${r['assisted'] == true ? 'Yardımlı' : 'Yardımsız'}',
         widget.mode == 'matching' ? 'En az hamle: ${r['bestMoves'] ?? '—'}\nEn iyi süre: ${r['bestTimeMs'] == null ? '—' : (_n(r['bestTimeMs']) / 1000).round()} sn\n${r['sessions']} oyun' :
           'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}\nOrtalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}'),
       if (rewardMap(data['legacy']).isNotEmpty) panel('Bu cihazın eski sürüm rekoru', rewardMap(data['legacy']).entries.map((e) => '${e.key}: ${e.value}').join('\n')),
@@ -391,7 +403,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           subtitle: Text('${rewardMap(e.value)['coins']} Coin · ${rewardMap(data['paid'])[e.key] == true ? 'Ödendi' : 'Bekliyor'}')),
       if (_rows(data['recent']).isNotEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text('Son oyunlar')),
       for (final r in _rows(data['recent'])) ListTile(title: Text(widget.mode == 'matching' ? '${r['moves']} hamle' : '${r['score']} puan'),
-        subtitle: Text('${r['style'] == 'survival' && widget.mode == 'burst' ? 'Dayanıklılık' : widget.mode == 'burst' ? 'Hız Atağı' : _difficulty('${r['difficulty']}')} · ${(_n(r['activeMs']) / 1000).round()} sn')),
+        subtitle: Text('${r['style'] == 'survival' && widget.mode == 'burst' ? 'Dayanıklılık' : widget.mode == 'burst' ? 'Hız Atağı' : _difficulty('${r['difficulty']}')} · ${(_n(r['activeMs']) / 1000).round()} sn · ${r['assisted'] == true ? 'Yardımlı' : 'Yardımsız'}')),
     ];
   }
 }

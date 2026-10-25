@@ -8,6 +8,8 @@ async function resolve(db, uid, requested, runtime, now, squadEnabled) {
   const ready = Object.fromEntries(Object.entries(requested || {}).map(([k, v]) => [k, v === true]));
   const events = [];
   const gate = (ids, live) => ids.forEach((id) => ready[id] = ready[id] === true && live);
+  const online = require("./mission_health").availability(runtime.missionsV3?.serviceHealth, runtime, now);
+  gate(["online"], online.online); gate(["friends"], online.friends);
   gate(["matching", "pyramid", "burst_survival"], runtime.arcade?.enabled === true);
   gate(["this_or_that", "blind_ranking", "higher_lower"], runtime.choice?.enabled === true);
   const fake = runtime.fakeClub;

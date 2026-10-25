@@ -47,7 +47,7 @@ class StoreOffer {
     'coach_xi': 'Hoca 11', 'squad_vault': 'Kadro Kasası', 'letter11': 'Harf 11',
     'career': 'Kariyer', 'transfer': 'Transfer Detective', 'mystery': 'Gizemli Futbolcu',
     'mastermind': 'Zincir', 'fake_endless': 'Sahte Kulüp Sonsuz',
-    'burst_survival': 'Burst Dayanıklılık', 'pyramid': 'Pyramid',
+    'burst_survival': 'Burst Dayanıklılık', 'pyramid': 'Pyramid', 'matching': 'Kart Eşleştirme',
   }[mode] ?? mode).join(' · ');
 
   factory StoreOffer.fromMap(Map<String, dynamic> data) {

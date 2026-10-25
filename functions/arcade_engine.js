@@ -278,6 +278,23 @@ function act(c, r, input, time) {
       }
     } else fail("invalid-argument", "Geçersiz Pyramid işlemi.");
   } else {
+    if (input.action === "hint") {
+      if (!require("./boosts").paid(r)) fail("failed-precondition", "Bu oyunda çift desteği açık değil.");
+      if (r.lockUntil > time || r.open.length) fail("failed-precondition", "Önce açık kartları tamamla.");
+      if (r.hints >= 1) fail("resource-exhausted", "Bu oyunun çift önerisi kullanıldı.");
+      const player = r.board.cards.find((x) => x.type === "player" && !r.matched.includes(x.pair));
+      const club = player && r.board.cards.find((x) => x.type === "club" && x.pair === player.pair);
+      const career = player && c.careers.find((x) => x.playerId === player.entityId);
+      if (!club || !career?.clubs.includes(club.entityId) || !career.sources?.length) {
+        fail("unavailable", "Doğrulanmış çift bulunamadı; destek harcanmadı.");
+      }
+      const cards = [player, club].map((x) => ({id: x.id, position: r.board.cards.indexOf(x) + 1,
+        name: x.name}));
+      r.matchingHint = {cards, sources: career.sources};
+      r.hint = cards.map((x) => `${x.position}. kart: ${x.name}`).join(" · ");
+      r.hints++;
+      return;
+    }
     if (input.action !== "flip") fail("invalid-argument", "Geçersiz Matching işlemi.");
     if (r.lockUntil > time) fail("failed-precondition", "Kartlar kapanana kadar bekle.");
     const card = r.board.cards.find((x) => x.id === input.cardId);

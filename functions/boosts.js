@@ -19,7 +19,7 @@ const modes = {
   coach_xi: ["basic", "connection"], squad_vault: ["basic", "strong"], letter11: ["basic", "connection"],
   career: ["basic", "connection"], transfer: ["basic", "first_letter"],
   mystery: ["basic"], mastermind: ["connection"], fake_endless: ["eliminate", "connection"],
-  burst_survival: ["basic"], pyramid: ["strong"],
+  burst_survival: ["basic"], pyramid: ["strong"], matching: ["strong"],
 };
 const fail = (code, message) => {
   throw new RewardError(code, message);
