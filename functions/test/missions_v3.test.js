@@ -121,3 +121,25 @@ test("stale daily and weekly card cannot claim the next period's slot", async ()
   await h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey});
   assert.equal(h.read("economyState/alice/balances/coins"), 20);
 });
+
+test("career guess followed by skip cannot masquerade as a completed ordering puzzle", async () => {
+  const h = harness({users: {alice: {displayName: "Alice"}}});
+  const catalog = require("../career_transfer").catalog;
+  let sequence = 1000; const requestId = () => (++sequence).toString(16).padStart(32, "0");
+  for (const finish of [false, true]) {
+    let run = (await h.call("startCareerTransfer", {mode: "career", version: catalog.version,
+      requestId: requestId()})).session;
+    const privateRun = h.read(`economyState/alice/careerTransfer/sessions/${run.id}`);
+    const puzzle = catalog.careers.find((p) => p.id === privateRun.puzzle);
+    const act = (action, extra = {}) => h.call("actCareerTransfer", {mode: "career", version: catalog.version,
+      sessionId: run.id, revision: run.revision, requestId: requestId(), action, ...extra});
+    run = (await act("guess", {playerId: puzzle.playerId})).session;
+    const before = h.read("economyState/alice/careerTransfer");
+    run = (await act(finish ? "order" : "skip", finish ? {order: puzzle.stops.map((s) => s.id)} : {})).session;
+    assert.equal(run.finished, true);
+    const after = h.read("economyState/alice/careerTransfer");
+    await h.context.exports.syncSoloMissions({params: {uid: "alice", family: "careerTransfer"},
+      data: {before: {val: () => before}, after: {val: () => after}}});
+    assert.equal(h.read("missionState/alice/daily/counters/mode__career"), finish ? 1 : null);
+  }
+});

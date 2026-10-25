@@ -2,7 +2,7 @@
 // Inputs are exclusively Admin-owned snapshots, never callable request.data.
 const families = ["threeModes", "careerTransfer", "mysteryChain", "fakeClub", "arcade", "choice", "squadChallenge"];
 function fromRun(uid, family, id, r) {
-  if (!r || r.cancelled || r.forfeit || r.abandoned || r.status === "abandoned") return null;
+  if (!r || r.cancelled || r.forfeit || r.abandoned || r.voided || r.status === "abandoned") return null;
   let modeId; let valid = false;
   switch (family) {
     case "threeModes":
@@ -10,7 +10,9 @@ function fromRun(uid, family, id, r) {
       valid = r.finished === true && (r.mode === "squad_vault" ? r.won === true :
         Object.values(r.picks || {}).filter(Number.isSafeInteger).length === 11); break;
     case "careerTransfer":
-      modeId = r.mode; valid = r.finished === true && r.phase === "result" && r.found === true; break;
+      modeId = r.mode; valid = r.finished === true && r.phase === "result" && r.found === true &&
+        (r.mode === "transfer" || r.checks >= 2 || r.checks === 1 && r.correctness?.length > 0 &&
+          r.correctness.every((correct) => correct === true)); break;
     case "mysteryChain":
       modeId = {mystery: "mystery", mastermind: "chain"}[r.mode];
       valid = r.finished === true && r.found === true; break;

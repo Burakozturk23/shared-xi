@@ -69,3 +69,6 @@ Kalan ana kapsam: günlük/kelime/keşif destekleri, sekiz hikâye ailesinde üc
 Reklam biletleri pilot oturumlarda seçilen boostId, modeId, runId ve puzzleVersion taşır. Ürün başına hak sayacı başka SKU ile harcanamaz; panel yalnız seçili ürünün hakkını gösterir. Aynı reklam requestId ile ürün değiştirme, farklı destek harcama, güçlü destek reklamı ve mevcut aşamada kullanılamayan ürün reklamı reddedilir. Geciken SSV aşama değişimine denk gelirse seçilen ürün stokta korunur ve oturum reklam kotasına yazılır. Önceden kazanılmış türsüz haklar göç sırasında korunur.
 
 Pro istemci yolunda yeni destekler gerçek reklam yükler; eski oturumun Pro avantajı korunur. Yedi yeni sunucu senaryosuyla 597/597 Functions testi ve lint PASS. Üç mobil taşıma testi ve ürün bazlı panel testi eklendi; CI bekleniyor. Bu değişiklik yeni mod ailesi açmaz; checkpoint 3 kapsam eksikleri devam eder.
+
+
+Son sonuç denetimi: Kariyer Bulmacası'nda futbolcuyu bulduktan sonra sıralama aşamasını atlama veya süre dolumu, tamamlanma görevi üretmez. Bir doğru tam sıralama ya da iki değerlendirme ile terminal sonuç gerekir. Geçersiz kılınmış oturumlar da elenir. Gerçek callable akışıyla skip/tamamlama regresyonu PASS. Son tam Functions koşusu: 598/598 PASS; lint PASS. Son mobil CI sonucu PR açıklamasında takip edilir.
