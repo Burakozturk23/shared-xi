@@ -143,3 +143,23 @@ Günlük ödüllü kadrolar ve bağlı hesap antrenmanı için gerçek katalogla
 Altı yeni gerçek callable testi ve tam Functions koşusu: 651/651 PASS. Mevcut 15 Squad regresyonu korunur. Mobil seçilen mevki/taslak/ücret taşıma ve ayrı rekor testi eklendi; CI doğrulaması bekleniyor. CI #347 Flutter analiz/test aşamalarını geçti; sonraki commit nedeniyle Android derlemesi iptal edildi, APK PASS sayılmadı. #348 son Günün Sorusu commitini denetliyor.
 
 Kalan: solo Lingo/8'li Anagram; günlük futbolcu/maç/mücadele/keşif; Grid/yedi bot sunucu oturumları; Club Manager; tam 142 kabul kanıtı ve gerçek cihaz SSV/iki hesap. Üretim dağıtımı, rollout ve merge yapılmadı.
+
+
+## Checkpoint 12 — 26 Ekim, Günün Maçları ve rota denetimi
+
+Günün Maçları/Takvim için ortak oyuncunun ülke/soyadı baş harfi desteği 25 Coin/stok/doğrulanmış reklama taşındı. Yeni pilot maçında ücretsiz ve eski Pro yardım yolu kapalı; başlamış eski maç aynı ipucu ve ödül haklarıyla tamamlanır. Günlük üç maç hakkı ve sabit fikstür aynı kalır. Cüzdan ile oyun tek işlemde; kaybolan yanıt kalıcı istekle tekrar eşitlenir. Günlük maç başına bir ve ortak dört/gün reklam sınırı; gece yarısı/bitiş sonrasında kullanılmayan doğrulanmış hak stokta korunur.
+
+Yardımlı sonuç mevcut tekil temel/2x Coin ödülünü korur, yardımsız seri ve ustalık sayacına eklenmez. Ekran bu ayrımı belirtir. Beş yeni callable testi ve tam Functions koşusu 656/656 PASS; eski on günlük maç regresyonu korunur. Yeni mobil ücret/revizyon testi CI bekliyor. CI #348 (`f923402`) Flutter analiz/test, Android debug derlemesi, Functions/RTDB/PowerShell kontrolü PASS. Cihaz testi ve imzalı AAB çalışmadı. Squad commitinin #349 kontrolü sürüyor.
+
+Rota denetimi: canlı katalogdaki “Futbol Lingo” ve “Günün Lingo’su” aynı `FutbolLingoPage -> DailyWordsPage(daily_lingo)` yoludur; ayrı bir solo Lingo motoru yoktur. İkisi checkpoint 7 adaptörünü kullanır. Eski `DailyChallengeGamePage` canlı katalogda yer almıyor; “Günün Maçları” doğrudan `FootballCalendarPage` açıyor. Ortak Oyuncu Keşfi salt okunur bilgi taramasıdır; zaten görünen bilgiye ücret konulmadı. ZIP'in bu girişler için istediği ayrı kapsam/ek destek varsayımları, uygulama rotalarıyla ayrıca işaretlenecek; var olmayan modu tamamlandı diye çoğaltmıyoruz.
+
+Kalan aktif geçişler: sekizli Anagram pratiği, Günün Futbolcusu, Grid üç varyantı/yedi bot ve Club Manager. Keşif kapsam kararı, tam kabul matrisi ve gerçek cihaz SSV/iki hesap kanıtları açık. İki ZIP bütünü için tamamlandı beyanı yoktur.
+
+
+## Checkpoint 13 — Sekizli Anagram pratiği
+
+Sekizli pratik için sunucu kataloğu ve 24 saatlik oturum eklendi. 317 oyunculuk mevcut katalog byte içeriğiyle korunur; sunucu sekiz farklı oyuncuyu seçer ve cevap/gelecek tur bilgisini açmaz. Açık eski yerel seri korunur; sunucu serisi başladıktan sonra eski yerel kayda dönerek yardım politikasından çıkılamaz. Yeni seri ekranında görünen enerji bedeli onaylanır; seri, makbuz ve tek enerji düşümü aynı işlemde oluşur. Yanıt kaybolduğunda aynı kalıcı istek geri yüklenir. Sekiz tur için ayrı enerji kesilmez.
+
+Ülke/mevki ve ilk harf mevcut 25 Coin SKU'larını kullanır; −15/−25 puan etkileri, üç tahmin ve sekiz tur korunur. Karıştırma ücretsiz, cevabı açmak sıfır puanla teslimiyettir. İki/seri ve ortak dört/gün doğrulanmış reklam; soru değişince kullanılamayan hak seçili ürün stoğuna geçer. Antrenman Coin/XP, günlük üçleme, liderlik veya ustalık ödülü üretmez. Yardımlı en iyi puan ayrı kaydedilir; sonuç ve paylaşım etiketlidir.
+
+Altı yeni sunucu senaryosu ve ortak günlük kelime regresyonları 31/31 PASS. Mobil sekiz tur/enerji teklifi/ücret taşıma ve kalıcı istek testleri eklendi. Tam Functions koşusu: 662/662 PASS; lint PASS. Yeni mobil CI kontrolü ayrıca kaydedilecek. Kalan aktif destek geçişleri Günün Futbolcusu, üç solo Grid/yedi bot ve Club Manager; tüm kabul kanıtları ve gerçek cihaz SSV/iki hesap açık.

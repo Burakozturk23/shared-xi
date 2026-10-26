@@ -5,6 +5,7 @@ import '../services/daily_matches_gateway.dart';
 import '../widgets/club_identity_badge.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
 
 class FootballCalendarPage extends StatefulWidget {
@@ -422,10 +423,10 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
       PitchPanel(child: ExpansionTile(tilePadding: EdgeInsets.zero, childrenPadding: const EdgeInsets.only(bottom: 8),
         title: const Text('Nasıl oynanır ve kazanılır?'), children: const [
           Text('3 doğru: 30 coin. Devam ederek ödülünü artır; tüm oyuncuları bulmak +15 coin bonus getirir. '
-            'Maç başına en fazla 60 coin.\n\nGünde 3 maç, 3 can ve maç başına 1 ücretsiz ipucu. Süre sınırı yok. '
+            'Maç başına en fazla 60 coin.\n\nGünde 3 maç ve 3 can. Süre sınırı yok. '
             'Maç hakkı başlatınca kullanılır; yarım bıraktığın maça aynı gün dönebilirsin.\n\n'
-            'Uygun olduğunda ek ipucu, 2x ödül ve seri koruması bonusları sunulur. '
-            'Tüm modlarda toplam 2 bonus/gün; Pro aynı hakları reklamsız alır.\n\n'
+            'İpucu koşulları oyun içindeki destek panelinde görünür. Yardımlı sonuç ustalık/yardımsız seriye eklenmez. '
+            '2x ödül ve seri koruması için mevcut bonus hakların korunur.\n\n'
             'Maç olmayan günler seriyi etkilemez. Oynanabilir günü kaçırırsan seri sıfırlanır; '
             '31 günü aşan aralarda yeni seri başlar.'),
         ])),
@@ -510,7 +511,15 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
               child: PitchPanel(child: Text('İpucu: ${r['hint']}')),
             ),
           const SizedBox(height: 12),
-          if (r['hintUsed'] != true)
+          if (rewardMap(r['support'])['version'] == 1)
+            PaidHintButton(session: r, sku: 'boost_basic', label: 'Ortak oyuncu ipucu',
+              disabled: _busy || _message != null || r['hintUsed'] == true,
+              onUse: (payment) => _run(() async {
+                final data = await _gateway.call('play', {'key': r['key'], 'action': 'hint',
+                  'revision': r['revision'], ...payment});
+                if (mounted) setState(() => _round = rewardMap(data['session']));
+              }), onWatch: () => _run(() => _watch('daily_match_hint')))
+          else if (r['hintUsed'] != true)
             OutlinedButton.icon(
               onPressed: _busy ? null : () => _run(() => _play('hint')),
               icon: const Icon(Icons.lightbulb_outline),
@@ -574,6 +583,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                if (r['assisted'] == true) const Text('Yardımlı sonuç · Ustalık ve yardımsız seri dışında',
+                  textAlign: TextAlign.center),
                 if (all)
                   const Text(
                     'Tüm oyuncuları bulma bonusu dahil.',

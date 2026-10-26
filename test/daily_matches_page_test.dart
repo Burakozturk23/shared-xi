@@ -8,11 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/screens/football_calendar_page.dart';
 import 'package:shared_xi/services/daily_matches_gateway.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class FakeDailyGateway implements DailyMatchesGateway {
   bool empty = false, failed = false;
   int calls = 0;
   String? lastPlacement;
+  Map<String, dynamic>? lastInput;
   final round = <String, dynamic>{
     'key': '2026-09-30_1',
     'day': '2026-09-30',
@@ -46,6 +48,7 @@ class FakeDailyGateway implements DailyMatchesGateway {
     Map<String, dynamic> input = const {},
   ]) async {
     if (failed) throw StateError('Bağlantı kurulamadı.');
+    lastInput = input;
     if (action == 'status')
       return {
         'dayKey': '2026-09-30',
@@ -183,6 +186,25 @@ void main() {
       await (FontLoader(family)..addFont(rootBundle.load(path))).load();
     }
   });
+  testWidgets('paid daily match uses canonical revision and hides legacy free hint', (tester) async {
+    final gateway = FakeDailyGateway();
+    gateway.round.addAll({'id': '2026-09-30_1', 'revision': 2, 'support': {'version': 1,
+      'products': [{'id': 'boost_basic', 'priceCoins': 25, 'ads': true}], 'adRemaining': 1}});
+    await open(tester, gateway, width: 320, scale: 1.8);
+    await tester.scrollUntilVisible(find.text('Mücadeleye başla'), 200, maxScrolls: 40);
+    await tester.pumpAndSettle(); await tester.tap(find.text('Mücadeleye başla')); await tester.pumpAndSettle();
+    final target = find.byType(PaidHintButton).hitTestable();
+    await tester.scrollUntilVisible(target, 200, scrollable: find.byType(Scrollable).first, maxScrolls: 40);
+    await tester.pumpAndSettle();
+    expect(find.text('Ücretsiz ipucunu göster'), findsNothing);
+    await tester.widget<PaidHintButton>(target).onUse({'boostId': 'boost_basic',
+      'paymentSource': 'coins', 'expectedPriceCoins': 25});
+    await tester.pumpAndSettle();
+    expect(gateway.lastInput?['revision'], 2); expect(gateway.lastInput?['key'], '2026-09-30_1');
+    expect(gateway.lastInput?['expectedPriceCoins'], 25);
+    expect(gateway.round['hintUsed'], true); expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'real fixture menu renders and three answers allow early cash-out',
     (tester) async {

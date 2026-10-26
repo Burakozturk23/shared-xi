@@ -5,6 +5,7 @@ const {RewardError, dayKey} = require("./rewarded_ads");
 const catalog = require("./config/daily_words_catalog.json");
 const MODES = ["daily_lingo", "passa_daily", "daily_anagram", "passa_weekly"];
 const DAILY = MODES.slice(0, 3);
+const isAnagram = (mode) => ["daily_anagram", "anagram_practice"].includes(mode);
 const defaults = {enabled: false, rewardsEnabled: false, disabledQuestions: []};
 const hash = (v) => crypto.createHash("sha256").update(JSON.stringify(v)).digest("hex");
 const fail = (code, message) => {
@@ -49,13 +50,14 @@ function compiled(period, weekly) {
 }
 function newRun(mode, pack, time, boostPolicy) {
   const weekly = mode === "passa_weekly";
+  const practice = mode === "anagram_practice";
   const r = {mode, period: pack.period, packId: pack.packId, contentVersion: pack.contentVersion,
     revision: 0, startedAt: time, closesAt: endOfDay(pack.period) + (weekly ? 6 * 86400000 : 0),
     deadline: weekly ? Math.min(time + 240000, endOfDay(pack.period) + 6 * 86400000) : null,
     finished: false, eligible: false, attempts: 0, index: 0, score: 0, actions: {}, result: null};
   if (mode === "daily_lingo") {
     r.puzzle = pack.lingo; r.guesses = []; r.hint = false;
-  } else if (mode === "daily_anagram") {
+  } else if (isAnagram(mode)) {
     r.questions = pack.anagram;
     r.rounds = pack.anagram.map(() => ({status: "pending", guesses: [], bio: false, first: false, score: 0}));
   } else {
@@ -64,7 +66,8 @@ function newRun(mode, pack, time, boostPolicy) {
     r.queue = pack.questions.map((_, i) => i);
   }
   r.id = "dw_" + hash([mode, pack.packId]).slice(0, 32); r.version = pack.contentVersion;
-  r.entry = weekly ? "weekly" : "daily"; r.expiresAt = r.deadline || r.closesAt;
+  if (practice) r.closesAt = time + 86400000;
+  r.entry = practice ? "solo" : weekly ? "weekly" : "daily"; r.expiresAt = r.deadline || r.closesAt;
   r.adCredits = 0; r.adGranted = 0; r.adReceipts = {};
   B.pin(r, boostPolicy);
   return r;
@@ -88,7 +91,7 @@ function finish(s, r, reason, time, policy) {
     }
     medal = solved ? r.guesses.length <= 2 && !r.hint ? "Ustalık" : r.guesses.length <= 4 ? "Altın" : "Gümüş" :
       "Tamamlandı";
-  } else if (r.mode === "daily_anagram") {
+  } else if (isAnagram(r.mode)) {
     solved = r.rounds.filter((x) => x.status === "correct").length;
     // A reveal-only day is not participation. Explicit give-up never earns the trio bonus.
     r.eligible = normal && r.attempts > 0 && r.rounds.every((x) => x.status !== "pending");
@@ -162,7 +165,7 @@ function publicRun(raw, time, paid = {}) {
       guesses: r.guesses, hintUsed: r.hint, hintAvailable: r.guesses.length >= 3,
       ...(r.hint ? {hint: r.puzzle.hint} : {}),
       ...(r.finished ? {answer: r.puzzle.answer, display: r.puzzle.display, proof: r.puzzle.proof} : {})});
-  } else if (r.mode === "daily_anagram") {
+  } else if (isAnagram(r.mode)) {
     out.rounds = r.rounds.map((round, i) => {
       const q = r.questions[i]; const ended = round.status !== "pending" || r.finished;
       return {status: round.status, guesses: round.guesses, bio: round.bio, first: round.first, score: round.score,
@@ -227,7 +230,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
         for (const run of runs) {
           B.recoverUnused(e, run, time, (sku, scope) => {
             try {
-              const action = scope.action || (run.mode === "daily_anagram" ?
+              const action = scope.action || (isAnagram(run.mode) ?
               sku === "boost_first_letter" ? "first" : "bio" : "hint");
               const info = help(restored(run), action);
               return !scope.questionId || scope.questionId === info.questionId;
@@ -361,37 +364,8 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
           r.guesses.push({word, marks: feedback(q.answer, word)}); r.attempts++;
           if (word === q.answer || r.guesses.length === 6) finish(s, r, "completed", time, policy);
         } else fail("invalid-argument", "Bu yardım günlük Lingo'da yok.");
-      } else if (mode === "daily_anagram") {
-        const round = r.rounds[r.index];
-        if (input.action === "next") {
-          if (round.status === "pending" || r.index >= 2) fail("failed-precondition", "Önce bu soruyu bitir.");
-          r.index++;
-        } else {
-          if (round.status !== "pending") fail("failed-precondition", "Bu futbolcunun sonucu kilitlendi.");
-          if (input.action === "bio") round.bio = true;
-          else if (input.action === "first") round.first = true;
-          else if (input.action === "shuffle") {
-            const shuffled = [...q.answer].map((c, i) => ({c, key: hash([r.packId, r.revision, i])}))
-                .sort((a, b) => a.key.localeCompare(b.key)).map((x) => x.c).join("");
-            q.scrambled = shuffled;
-            if (q.scrambled === q.answer) {
-              for (let shift = 1; shift < q.answer.length; shift++) {
-                q.scrambled = q.answer.slice(shift) + q.answer.slice(0, shift);
-                if (q.scrambled !== q.answer) break;
-              }
-            }
-          } else if (input.action === "reveal") round.status = "revealed";
-          else if (input.action === "guess") {
-            if (!word) fail("invalid-argument", "Bir cevap yaz. Hakkın azalmadı.");
-            if (round.guesses.includes(word)) fail("already-exists", "Bu cevabı zaten denedin. Hakkın azalmadı.");
-            round.guesses.push(word); r.attempts++;
-            if (q.aliases.includes(word)) {
-              round.status = "correct"; round.score = 100 - (round.guesses.length - 1) * 10 -
-                (round.bio ? 15 : 0) - (round.first ? 25 : 0); r.score += round.score;
-            } else if (round.guesses.length === 3) round.status = "wrong";
-          } else fail("invalid-argument", "Geçersiz Anagram işlemi.");
-          if (r.rounds.every((x) => x.status !== "pending")) finish(s, r, "completed", time, policy);
-        }
+      } else if (isAnagram(mode)) {
+        anagramAction(s, r, input, word, time, policy);
       } else {
         const round = r.rounds[r.index];
         if (input.action === "hint" && B.paid(r)) {
@@ -441,7 +415,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
     const state = await read(uid); refresh(state, now(), policy);
     const r = findRun(state, context);
     if (!B.paid(r) || r.finished || r.expiresAt <= now()) fail("failed-precondition", "Aktif günlük oyun yok.");
-    const action = r.mode === "daily_anagram" ? context.boostId === "boost_first_letter" ? "first" : "bio" : "hint";
+    const action = isAnagram(r.mode) ? context.boostId === "boost_first_letter" ? "first" : "bio" : "hint";
     const info = help(r, action);
     if (context.boostId !== info.sku) fail("invalid-argument", "Destek türü uyuşmuyor.");
     return B.adBenefit(r, {amount: 0, claimKey: `dw_hint_${r.id}_${r.adGranted}`,
@@ -467,13 +441,48 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
   }
   return {status, act, history, settle, prepareHint, settleHint};
 }
+function anagramAction(s, r, input, word, time, policy) {
+  const q = r.questions[r.index];
+  const round = r.rounds[r.index];
+  if (input.action === "next") {
+    if (round.status === "pending" || r.index >= r.questions.length - 1) {
+      fail("failed-precondition", "Önce bu soruyu bitir.");
+    }
+    r.index++;
+  } else {
+    if (round.status !== "pending") fail("failed-precondition", "Bu futbolcunun sonucu kilitlendi.");
+    if (input.action === "bio") round.bio = true;
+    else if (input.action === "first") round.first = true;
+    else if (input.action === "shuffle") {
+      const shuffled = [...q.answer].map((c, i) => ({c, key: hash([r.packId, r.revision, i])}))
+          .sort((a, b) => a.key.localeCompare(b.key)).map((x) => x.c).join("");
+      q.scrambled = shuffled;
+      if (q.scrambled === q.answer) {
+        for (let shift = 1; shift < q.answer.length; shift++) {
+          q.scrambled = q.answer.slice(shift) + q.answer.slice(0, shift);
+          if (q.scrambled !== q.answer) break;
+        }
+      }
+    } else if (input.action === "reveal") round.status = "revealed";
+    else if (input.action === "guess") {
+      if (!word) fail("invalid-argument", "Bir cevap yaz. Hakkın azalmadı.");
+      if (round.guesses.includes(word)) fail("already-exists", "Bu cevabı zaten denedin. Hakkın azalmadı.");
+      round.guesses.push(word); r.attempts++;
+      if (q.aliases.includes(word)) {
+        round.status = "correct"; round.score = 100 - (round.guesses.length - 1) * 10 -
+                (round.bio ? 15 : 0) - (round.first ? 25 : 0); r.score += round.score;
+      } else if (round.guesses.length === 3) round.status = "wrong";
+    } else fail("invalid-argument", "Geçersiz Anagram işlemi.");
+    if (r.rounds.every((x) => x.status !== "pending")) finish(s, r, "completed", time, policy);
+  }
+}
 function help(r, action) {
   const q = r.puzzle || r.questions[r.index]; const round = r.rounds?.[r.index];
   if (r.mode === "daily_lingo") {
     if (action !== "hint" || r.hint || r.guesses.length < 3) fail("failed-precondition", "İpucu henüz uygun değil.");
     return {sku: "boost_basic", text: q.hint, questionId: q.id};
   }
-  if (r.mode === "daily_anagram") {
+  if (isAnagram(r.mode)) {
     if (!["bio", "first"].includes(action) || round.status !== "pending" || round[action]) {
       fail("failed-precondition", "Bu ipucu açık veya soru bitmiş.");
     }
@@ -485,4 +494,5 @@ function help(r, action) {
   }
   return {sku: "boost_basic", text: `Cevap ${normalize(q.answer).length} harften oluşur.`, questionId: q.id};
 }
-module.exports = {createService, catalog, compiled, normalize, feedback, weekKey, MODES, defaults};
+module.exports = {createService, catalog, compiled, normalize, feedback, weekKey,
+  MODES, defaults, newRun, publicRun, help, finish, anagramAction};

@@ -23,6 +23,19 @@ class WordWire extends EnergyService {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test('eight-round practice resumes the same paid action through its separate callable', () async {
+    final wire = WordWire();
+    DailyWordsService service() => DailyWordsService(transport: wire, currentUser: () => 'alice');
+    await service().load('anagram_practice'); expect(wire.calls.last['name'], 'getAnagramPractice');
+    wire.fail = true;
+    await expectLater(service().mutate({'mode': 'anagram_practice', 'action': 'first',
+      'packId': 'practice', 'boostId': 'boost_first_letter', 'paymentSource': 'coins', 'expectedPriceCoins': 25}),
+      throwsA(isA<FirebaseFunctionsException>()));
+    final sent = wire.calls.last; expect(sent['name'], 'actAnagramPractice');
+    wire.fail = false; await service().load('anagram_practice');
+    expect(wire.calls[wire.calls.length - 2], sent);
+    expect(wire.calls.last['name'], 'getAnagramPractice');
+  });
   test('stalled transport returns cached progress and retains the exact pending request', () async {
     final wire = WordWire();
     final service = DailyWordsService(transport: wire, currentUser: () => 'alice',

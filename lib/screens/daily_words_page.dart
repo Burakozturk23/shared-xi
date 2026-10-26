@@ -38,7 +38,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
   final List<int> _chosen = [];
   bool get _weekly => widget.mode == 'passa_weekly';
   bool get _lingo => widget.mode == 'daily_lingo';
-  bool get _anagram => widget.mode == 'daily_anagram';
+  bool get _practice => widget.mode == 'anagram_practice';
+  bool get _anagram => widget.mode == 'daily_anagram' || _practice;
   bool get _finished => _session['finished'] == true;
   bool get _offline => _status['offline'] == true;
   int get _now => (_session['serverNow'] as num? ?? _status['serverNow'] as num? ?? 0).toInt() + _clock.elapsedMilliseconds;
@@ -114,7 +115,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       'packId': _session['packId'] ?? _status['packId'],
       'contentVersion': _session['contentVersion'] ?? _status['contentVersion'],
       'revision': _session['revision'], 'questionId': _session['questionId'],
-      'action': action, if (action == 'guess') 'answer': _answer.text, ...payment}).timeout(const Duration(seconds: 30));
+      'action': action, if (_practice && action == 'start') 'expectedEnergyCost': _status['energyCost'],
+      if (action == 'guess') 'answer': _answer.text, ...payment}).timeout(const Duration(seconds: 30));
     if (!mounted || _changedAccount) return;
     setState(() { _setSession(rewardMap(response['session'])); _clock..reset()..start();
       _answer.clear(); _chosen.clear(); });
@@ -141,13 +143,14 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
   Future<void> _giveup() async {
     final yes = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
       title: const Text('Cevabı gösterip bitir?'),
-      content: const Text('Bu resmî sonuç kilitlenir. Coin, XP veya üçleme hakkı kazanılmaz. Sayfadan çıkmak ise ilerlemeni korur.'),
+      content: Text(_practice ? 'Bu sekizli seri kapanır. Yeni seri ekranında görünen enerji bedeliyle başlar. Sayfadan çıkmak ilerlemeni korur.' :
+        'Bu resmî sonuç kilitlenir. Coin, XP veya üçleme hakkı kazanılmaz. Sayfadan çıkmak ise ilerlemeni korur.'),
       actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Devam et')),
         FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Bitir'))]));
     if (yes == true && mounted) await _act('giveup');
   }
   List<Widget> _appBarActions() => [
-    IconButton(tooltip: '30 günlük arşiv', onPressed: _busy || _changedAccount || _status.isEmpty ? null :
+    if (!_practice) IconButton(tooltip: '30 günlük arşiv', onPressed: _busy || _changedAccount || _status.isEmpty ? null :
       () => setState(() { _records = !_records; }), icon: const Icon(Icons.calendar_month_outlined)),
     IconButton(tooltip: 'Yenile', onPressed: _busy || _changedAccount ? null : _load, icon: const Icon(Icons.refresh)),
   ];
@@ -173,7 +176,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         if (_status['notice'] != null) _notice('${_status['notice']}'),
         if (_status.isNotEmpty) ...[
           Wrap(spacing: 8, runSpacing: 4, children: [Chip(label: Text('${_session['period'] ?? _status['period']}')),
-            const Chip(label: Text('0 enerji')), Chip(label: Text(_weekly ? '29 harf' : _lingo ? '6 tahmin' : _anagram ? '3 futbolcu' : '7 harf'))]),
+            Chip(label: Text(_practice ? 'Yeni seri: ${_status['energyCost'] ?? 0} enerji' : '0 enerji')),
+            Chip(label: Text(_weekly ? '29 harf' : _lingo ? '6 tahmin' : _practice ? '8 futbolcu' : _anagram ? '3 futbolcu' : '7 harf'))]),
           const SizedBox(height: 12),
           if (_archive) ...[const Text('Arşiv · Salt okunur · Ödülsüz görüntüleme'),
             TextButton(onPressed: _busy ? null : () { _archive = false; _load(); }, child: const Text('Bugüne dön'))],
@@ -182,9 +186,11 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
             if (_session.isEmpty) ..._intro() else if (_lingo) ..._lingoPanel()
             else if (_anagram) ..._anagramPanel() else ..._passaPanel(),
             if (_finished) ..._resultPanel(),
+            if (_practice && _finished) FilledButton(onPressed: _busy || _offline || _changedAccount || _error != null ? null :
+              () => _act('start'), child: Text('Yeni seri · ${_status['energyCost'] ?? 0} enerji')),
             if (_session.isNotEmpty && !_finished && !_archive)
               TextButton(onPressed: _locked ? null : _giveup, child: const Text('Cevabı göster / bırak')),
-            const SizedBox(height: 18), ..._trioPanel(),
+            const SizedBox(height: 18), if (!_practice) ..._trioPanel(),
             if (widget.mode == 'passa_daily') OutlinedButton.icon(onPressed: () => Navigator.of(context).push(
               LinkballRoute(builder: (_) => DailyWordsPage(mode: 'passa_weekly', service: widget.service))),
               icon: const Icon(Icons.timelapse), label: const Text('Haftalık Klasik · 29 harf / 240 sn')),
@@ -199,6 +205,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     title: _lingo ? 'Bir kelime. Altı şans.' : _anagram ? 'Harfleri çöz, futbolcuyu bul.' :
       _weekly ? 'Haftanın büyük çemberi' : 'Yedi harf, yedi futbol sorusu.',
     message: _lingo ? 'Futbolcu, kulüp veya ülkeyi bul. Her tahminde harflerin konumunu keşfet.' :
+      _practice ? '8 futbolcu, her turda 3 tahmin. 24 saat içinde aynı seriye dön. İpuçları puanı azaltır; Coin/XP ödülü yoktur.' :
       _anagram ? 'Üç futbolcunun karışık harflerini doğru sıraya koy.' : _weekly ?
       '29 harf, Ğ dahil. 240 saniye boyunca çöz; her soruda bir pas hakkın var. Süre arka planda da ilerler. Haftada tek resmî sonuç.' :
       'İpuçlarını oku, harfle başlayan ya da harfi içeren cevabı bul. Süre sınırı yok; her soruda bir pas hakkın var.',
@@ -212,7 +219,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
       const SizedBox(height: 16),
       const LinearProgressIndicator(semanticsLabel: 'Günlük içerik yükleniyor'),
       const SizedBox(height: 16),
-      const Text('Enerji harcanmaz. Reklam ve satın alınan yardım yok.'),
+      Text(_practice ? 'Seri yalnız Başlat ile açılır; yükleme enerji harcamaz.' : 'Yükleme enerji veya destek hakkı harcamaz.'),
     ],
   ));
 
@@ -227,6 +234,8 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
 
   List<Widget> _intro() => _archive ? [const Text('Bu tarihte bu oyun için kayıt yok.')] : [
     _welcome(),
+    if (_practice) ...[const SizedBox(height: 16), PitchAction(onPressed: _locked ? null : () => _act('start'),
+      label: 'Sekizli seriyi başlat · ${_status['energyCost'] ?? 0} enerji')],
     if (_weekly) ...[const SizedBox(height: 16), PitchAction(onPressed: _locked ? null : () => _act('start'),
       label: '240 saniyeyi başlat')],
   ];
@@ -312,7 +321,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
     final round = _round; final index = (_session['index'] as num? ?? 0).toInt();
     final ended = round['status'] != 'pending'; final guesses = List<String>.from(round['guesses'] as List? ?? []);
     return [
-      Text('Futbolcu ${index + 1}/3 · ${_session['score'] ?? 0}/300 puan', style: Theme.of(context).textTheme.titleLarge),
+      Text('Futbolcu ${index + 1}/${_practice ? 8 : 3} · ${_session['score'] ?? 0}/${_practice ? 800 : 300} puan', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 8), Text('${3 - guesses.length} tahmin kaldı · Süresiz'), const SizedBox(height: 16),
       if (!ended && !_finished) ...[
         Wrap(spacing: 6, runSpacing: 8, children: List.generate(_letters.length, (i) => SizedBox(width: 48,
@@ -391,7 +400,7 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
   List<Widget> _resultPanel() {
     final result = rewardMap(_session['result']);
     final reason = {'completed': 'Resmî sonuç kaydedildi.', 'timeout': 'Süre doldu; sonuç kaydedildi.',
-      'expired': 'Gün değişti; bu oyun arşivlendi.', 'giveup': 'Cevap açıldı; ödülsüz sonuç.',
+      'expired': _practice ? '24 saatlik devam süresi doldu.' : 'Gün değişti; bu oyun arşivlendi.', 'giveup': 'Cevap açıldı; ödülsüz sonuç.',
       'void': 'Soru incelemeye alındı. Bu sonuç başarısızlık veya ödüllü tamamlama sayılmaz.'}[result['reason']] ?? '';
     return [
       const SizedBox(height: 16), PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -400,10 +409,10 @@ class _DailyWordsPageState extends State<DailyWordsPage> with WidgetsBindingObse
         const SizedBox(height: 8), Text(reason), Text('${result['solved'] ?? 0} doğru · ${_session['attempts'] ?? 0} geçerli yanıt'),
         Text('${result['coins'] ?? 0} Link Coin · ${result['xp'] ?? 0} XP'),
         if (_lingo) Text('${_rows(_session['guesses']).length}/6 tahmin'),
-        if (result['rewardEnabled'] == false) const Text('Bu test aşamasında ödüller kapalı.'),
+        if (result['rewardEnabled'] == false) Text(_practice ? 'Antrenman: Coin ve XP ödülü yoktur.' : 'Bu test aşamasında ödüller kapalı.'),
         if (_status['linked'] != true && (result['xp'] as num? ?? 0) > 0)
           const Text('Ödül hakkın bu misafir hesapta saklı. Aktarmak için aynı hesabı Google’a bağla.'),
-        const SizedBox(height: 8), Text(_weekly ? 'Yeni hafta: Pazartesi 00.00 · İstanbul' : 'Yeni bulmaca: 00.00 · İstanbul'),
+        const SizedBox(height: 8), Text(_practice ? 'Yeni seri başlatabilir veya sonucunu paylaşabilirsin.' : _weekly ? 'Yeni hafta: Pazartesi 00.00 · İstanbul' : 'Yeni bulmaca: 00.00 · İstanbul'),
       ])),
       if (!_lingo) ..._rounds.map((r) => ExpansionTile(title: Text(_anagram ? '${r['name'] ?? 'Futbolcu'} · ${r['score'] ?? 0} puan' :
         '${r['letter']} · ${r['status'] == 'correct' ? 'Doğru' : 'Kapalı'}'), childrenPadding: const EdgeInsets.all(12), children: [

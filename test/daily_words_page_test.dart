@@ -21,7 +21,7 @@ class WordFixture extends DailyWordsService {
   String mixed = 'REGUL';
   final now = DateTime.now().millisecondsSinceEpoch;
   Map<String, dynamic> session(String mode) {
-    final result = stage == 'result'; final lingo = mode == 'daily_lingo'; final anagram = mode == 'daily_anagram';
+    final result = stage == 'result'; final lingo = mode == 'daily_lingo'; final anagram = ['daily_anagram', 'anagram_practice'].contains(mode);
     final weekly = mode == 'passa_weekly';
     return {'mode': mode, 'period': '2026-10-19', 'packId': 'pack-test', 'contentVersion': 'dw-test',
       if (paid) ...{'id': 'dw-test-run', 'support': {'version': 1, 'products': [
@@ -42,7 +42,7 @@ class WordFixture extends DailyWordsService {
           {'word': 'DZEKO', 'marks': ['absent', 'absent', 'absent', 'present', 'absent']},
           {'word': 'GULER', 'marks': ['exact', 'exact', 'exact', 'exact', 'exact']},
         ] : [], 'hint': 'Ülke: Türkiye', if (result) ...{'answer': 'GULER', 'display': 'Arda Güler'}},
-      if (anagram) 'rounds': List.generate(3, (i) => {
+      if (anagram) 'rounds': List.generate(mode == 'anagram_practice' ? 8 : 3, (i) => {
         'status': result ? 'correct' : 'pending', 'guesses': result ? ['GULER'] : [],
         'bio': stage == 'hint', 'first': stage == 'hint', 'score': result ? 90 : 0,
         if (i == 0 || result) ...{'questionId': 'q-$i', 'scrambledLetters': mixed},
@@ -67,7 +67,7 @@ class WordFixture extends DailyWordsService {
   @override
   Future<Map<String, dynamic>> load(String mode) async => {
     'mode': mode, 'period': '2026-10-19', 'packId': 'pack-test', 'contentVersion': 'dw-test',
-    'serverNow': now, 'availability': true, 'rewardsEnabled': true, 'linked': true, 'offline': offline,
+    'serverNow': now, 'availability': true, 'energyCost': mode == 'anagram_practice' ? 1 : 0, 'rewardsEnabled': true, 'linked': true, 'offline': offline,
     if (offline) 'notice': 'Çevrimdışısın. Son kayıt gösteriliyor.',
     'session': stage == 'intro' ? null : session(mode),
     'dailyCompletion': {'daily_lingo': stage == 'result', 'passa_daily': false, 'daily_anagram': false},
@@ -78,7 +78,8 @@ class WordFixture extends DailyWordsService {
   };
   @override
   Future<Map<String, dynamic>> mutate(Map<String, dynamic> input) async {
-    sent = input; if (input['action'] == 'hint') hint = true;
+    sent = input; if (input['action'] == 'start' && input['mode'] == 'anagram_practice') stage = 'game';
+    if (input['action'] == 'hint') hint = true;
     if (input['action'] == 'shuffle') mixed = 'LERUG';
     return {'session': session('${input['mode']}')};
   }
@@ -114,6 +115,25 @@ void main() {
       await (FontLoader(e.$1)..addFont(rootBundle.load(e.$2))).load();
     }
   });
+  testWidgets('eight-round practice quotes one series admission and sends paid hint without daily bonus UI', (t) async {
+    final fixture = WordFixture(stage: 'intro', paid: true);
+    await mount(t, DailyWordsPage(mode: 'anagram_practice', service: fixture), large: true);
+    final start = find.text('Sekizli seriyi başlat · 1 enerji');
+    await t.scrollUntilVisible(start, 200, maxScrolls: 40); await t.pumpAndSettle();
+    await t.tap(start); await t.pumpAndSettle();
+    expect(fixture.sent?['expectedEnergyCost'], 1); expect(fixture.sent?['action'], 'start');
+    expect(find.text('Günlük üçleme'), findsNothing); expect(find.byTooltip('30 günlük arşiv'), findsNothing);
+    expect(find.text('Futbolcu 1/8 · 0/800 puan'), findsOneWidget);
+    final target = find.byWidgetPredicate((w) => w is PaidHintButton && w.sku == 'boost_first_letter').hitTestable();
+    await t.scrollUntilVisible(target, 200, scrollable: find.byType(Scrollable).first, maxScrolls: 40);
+    await t.pumpAndSettle();
+    await t.widget<PaidHintButton>(target).onUse({'boostId': 'boost_first_letter',
+      'paymentSource': 'coins', 'expectedPriceCoins': 25}); await t.pumpAndSettle();
+    expect(fixture.sent?['mode'], 'anagram_practice'); expect(fixture.sent?['action'], 'first');
+    expect(fixture.sent?['expectedPriceCoins'], 25); expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink()); await t.pump();
+  });
+
   test('29 letters, explicit aliases, Ğ contains and shared normalization', () {
     expect(PassaparolaAlphabet.letters.length, 29);
     const h = PassaparolaQuestion(id: 'h', letter: 'H', category: PassaparolaCategory.player,

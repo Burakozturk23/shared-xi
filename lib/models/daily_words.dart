@@ -14,7 +14,7 @@ String dailyWordKey(String s) {
 }
 String dailyWordsTitle(String mode) => switch (mode) {
   'daily_lingo' => 'Günün Lingo’su', 'passa_daily' => 'Mini Passaparola',
-  'passa_weekly' => 'Haftalık Passaparola', _ => 'Günün Anagramı',
+  'anagram_practice' => 'Sekizli Anagram', 'passa_weekly' => 'Haftalık Passaparola', _ => 'Günün Anagramı',
 };
 String dailyWordMark(String mark) => switch (mark) {
   'exact' => 'Doğru yerde', 'present' => 'Başka yerde', _ => 'Yok veya fazla',
@@ -29,6 +29,6 @@ String dailyWordsShare(Map<String, dynamic> session) {
     : rows.map((r) => r['status'] == 'correct' ? '🟩' : r['status'] == 'pending' ? '⬜' : '⬛').join();
   return 'Linkball · ${dailyWordsTitle(mode)}\n${session['period']}\n$summary\n'
     '${result['medal'] ?? 'Tamamlandı'} · ${result['solved'] ?? 0} doğru'
-    '${mode == 'daily_anagram' ? ' · ${session['score'] ?? 0}/300' : ''}'
+    '${['daily_anagram', 'anagram_practice'].contains(mode) ? ' · ${session['score'] ?? 0}/${mode == 'anagram_practice' ? 800 : 300}' : ''}'
     '${session['assisted'] == true || result['assisted'] == true ? ' · Yardımlı' : ''}';
 }

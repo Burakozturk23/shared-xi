@@ -5829,6 +5829,7 @@ function lbEconomyState(raw) {
     inventory: inventory,
     choice: data.choice && typeof data.choice === "object" ? data.choice : {},
     dailyWords: data.dailyWords && typeof data.dailyWords === "object" ? data.dailyWords : {},
+    anagramPractice: data.anagramPractice && typeof data.anagramPractice === "object" ? data.anagramPractice : {},
     storyStates: data.storyStates && typeof data.storyStates === "object" ? data.storyStates : {},
     arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
     fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
@@ -8712,7 +8713,9 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "squad_support_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "anagram_practice_hint" ?
+        lbAnagramPracticeService().prepareHint(uid, placement, context) : placement === "daily_match_hint" ?
+        lbDailyMatchesService().prepareHint(uid, placement, context) : placement === "squad_support_hint" ?
         lbSquadSupportService().prepareHint(uid, placement, context) : placement === "daily_question_hint" ?
         lbDailyQuestionService().prepareBoostHint(uid, placement, context) : placement === "choice_training_hint" ?
         lbChoiceService().prepareHint(uid, placement, context) : placement === "story_support_hint" ?
@@ -8724,7 +8727,9 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "squad_support_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "anagram_practice_hint" ?
+        lbAnagramPracticeService().settleHint(uid, receipt) : receipt.placement === "daily_match_hint" ?
+        lbDailyMatchesService().settleHint(uid, receipt) : receipt.placement === "squad_support_hint" ?
         lbSquadSupportService().settleHint(uid, receipt) : receipt.placement === "daily_question_hint" ?
         lbDailyQuestionService().settleBoostHint(uid, receipt) : receipt.placement === "choice_training_hint" ?
         lbChoiceService().settleHint(uid, receipt) : receipt.placement === "story_support_hint" ?
@@ -8947,7 +8952,7 @@ function lbDailyMatchesService() {
   if (!lbDailyMatchesInstance) {
     const db = getDatabase();
     lbDailyMatchesInstance = require("./daily_matches").createService({
-      db,
+      db, documentRef: lbStoryDocumentRef(db, "dailyMatchState", "daily_match"), now: () => Date.now(),
       recordWin: async (uid, day, result) => {
         await lbAchievementRecordDaily(db, uid, day, result);
         await lbMissionRecordDailyChallenge(db, uid, day);
@@ -10016,6 +10021,29 @@ exports.startFakeClub = lbFakeClubCallable("start");
 exports.actFakeClub = lbFakeClubCallable("act");
 
 // Official daily word games share one account transaction and a durable reward outbox.
+function lbAnagramPracticeService() {
+  const db = getDatabase();
+  return require("./anagram_practice").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+}
+function lbAnagramPracticeCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbAnagramPracticeService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getAnagramPractice = lbAnagramPracticeCallable("status");
+exports.actAnagramPractice = lbAnagramPracticeCallable("act");
+
 function lbDailyWordsService() {
   const db = getDatabase();
   return require("./daily_words").createService({db, now: () => Date.now(), normalize: lbEconomyState,
