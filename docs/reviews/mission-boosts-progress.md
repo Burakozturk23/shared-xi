@@ -163,3 +163,14 @@ Sekizli pratik için sunucu kataloğu ve 24 saatlik oturum eklendi. 317 oyunculu
 Ülke/mevki ve ilk harf mevcut 25 Coin SKU'larını kullanır; −15/−25 puan etkileri, üç tahmin ve sekiz tur korunur. Karıştırma ücretsiz, cevabı açmak sıfır puanla teslimiyettir. İki/seri ve ortak dört/gün doğrulanmış reklam; soru değişince kullanılamayan hak seçili ürün stoğuna geçer. Antrenman Coin/XP, günlük üçleme, liderlik veya ustalık ödülü üretmez. Yardımlı en iyi puan ayrı kaydedilir; sonuç ve paylaşım etiketlidir.
 
 Altı yeni sunucu senaryosu ve ortak günlük kelime regresyonları 31/31 PASS. Mobil sekiz tur/enerji teklifi/ücret taşıma ve kalıcı istek testleri eklendi. Tam Functions koşusu: 662/662 PASS; lint PASS. Yeni mobil CI kontrolü ayrıca kaydedilecek. Kalan aktif destek geçişleri Günün Futbolcusu, üç solo Grid/yedi bot ve Club Manager; tüm kabul kanıtları ve gerçek cihaz SSV/iki hesap açık.
+
+
+## Checkpoint 14 — Günün Futbolcusu
+
+500 oyunculuk mevcut katalog ve günlük hedef permütasyonu korunarak bağlı pilot hesapları için sunucu oturumu eklendi. Altı tahmin, altı gerçek karşılaştırma alanı, reklamla tek ek tahmin ve sonucu açma akışı korunur. Yeni oturumun hedefi bitişe kadar yanıtta gönderilmez; geçmiş istemci sonuçları sunucu galibiyeti/ödülü oluşturmaz. Açık eski yerel oyun için yalnız ilk geçiş gününde sınırlı uyumluluk vardır; ertesi gün tekrar eski hak istenemez. Yerel kayıt ilk sahibiyle hesap kapsamına taşınır, hesap değişiminde geç gelen sonuçlar reddedilir.
+
+İlk geçerli tahminden sonraki isim ipucu 25 Coin/stok/doğrulanmış reklamla atomik alınır. İsim ipucu ve ek tahmin aynı günlük bir reklam hakkını ve ortak dört/gün limitini kullanır. Ek tahmin yalnız SSV doğrulamasıyla ve bir kez açılır; gün/soru aşaması geçmiş reklam stoğa döner. Yardımlı başarı normal galibiyetten ayrıdır; Coin/XP eklenmez. Kaybolan yanıt kalıcı istek kimliğiyle kurtarılır.
+
+Altı yeni sunucu senaryosu dahil tam Functions koşusu 668/668 PASS; lint PASS. Mevcut Dart hedef seçimiyle çapraz tarih vektörleri, hesap geçişi/kayıt taşıma ve 320px/%180 ücretli panel testleri eklendi; mobil CI sonucu bekleniyor. CI #350 (`03f747f`) Günün Maçları/sekizli Anagram değişikliklerinde Functions, RTDB, PowerShell, Flutter analiz/test ve Android debug derlemesi PASS. Gerçek cihaz smoke ve imzalı AAB çalışmadı.
+
+Kalan aktif geçişler üç solo Grid/yedi bot ve Club Manager. Keşif kapsam kararı, tüm 142 kabul kanıtı ve gerçek cihaz SSV/iki hesap testleri açık. Üretim dağıtımı, rollout ve merge yapılmadı.

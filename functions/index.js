@@ -5829,6 +5829,7 @@ function lbEconomyState(raw) {
     inventory: inventory,
     choice: data.choice && typeof data.choice === "object" ? data.choice : {},
     dailyWords: data.dailyWords && typeof data.dailyWords === "object" ? data.dailyWords : {},
+    dailyFootballer: data.dailyFootballer && typeof data.dailyFootballer === "object" ? data.dailyFootballer : {},
     anagramPractice: data.anagramPractice && typeof data.anagramPractice === "object" ? data.anagramPractice : {},
     storyStates: data.storyStates && typeof data.storyStates === "object" ? data.storyStates : {},
     arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
@@ -8713,7 +8714,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "anagram_practice_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "daily_footballer_hint" ?
+        lbDailyFootballerService().prepareHint(uid, placement, context) : placement === "anagram_practice_hint" ?
         lbAnagramPracticeService().prepareHint(uid, placement, context) : placement === "daily_match_hint" ?
         lbDailyMatchesService().prepareHint(uid, placement, context) : placement === "squad_support_hint" ?
         lbSquadSupportService().prepareHint(uid, placement, context) : placement === "daily_question_hint" ?
@@ -8727,7 +8729,8 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "anagram_practice_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "daily_footballer_hint" ?
+        lbDailyFootballerService().settleHint(uid, receipt) : receipt.placement === "anagram_practice_hint" ?
         lbAnagramPracticeService().settleHint(uid, receipt) : receipt.placement === "daily_match_hint" ?
         lbDailyMatchesService().settleHint(uid, receipt) : receipt.placement === "squad_support_hint" ?
         lbSquadSupportService().settleHint(uid, receipt) : receipt.placement === "daily_question_hint" ?
@@ -10021,6 +10024,28 @@ exports.startFakeClub = lbFakeClubCallable("start");
 exports.actFakeClub = lbFakeClubCallable("act");
 
 // Official daily word games share one account transaction and a durable reward outbox.
+function lbDailyFootballerService() {
+  const db = getDatabase();
+  return require("./daily_footballer").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+}
+function lbDailyFootballerCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbDailyFootballerService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getDailyFootballer = lbDailyFootballerCallable("status");
+exports.actDailyFootballer = lbDailyFootballerCallable("act");
+
 function lbAnagramPracticeService() {
   const db = getDatabase();
   return require("./anagram_practice").createService({db, now: () => Date.now(), normalize: lbEconomyState,

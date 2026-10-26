@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../controllers/daily_footballer_controller.dart';
 import '../models/daily_footballer.dart';
 import '../services/daily_footballer_store.dart';
+import '../services/auth_service.dart';
+import '../services/story_support_service.dart';
+import '../models/rewarded_ad_models.dart';
+import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
 
@@ -17,6 +21,8 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
   DailyFootballerController? _game;
   final _search = TextEditingController();
   Timer? _timer;
+  StreamSubscription<dynamic>? _auth;
+  String? _owner;
   bool _failed = false;
   String? _shownDay;
 
@@ -24,15 +30,27 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (widget.controller == null) _auth = AuthService.authStateChanges.listen((user) {
+      if (_owner != null && user?.uid != _owner && mounted) {
+        _game?.removeListener(_changed); _game?.dispose();
+        setState(() { _game = null; _failed = true; _search.clear(); });
+      }
+    });
     _boot();
     _timer = Timer.periodic(const Duration(seconds: 20), (_) => _game?.refreshDay());
   }
   Future<void> _boot() async {
     setState(() => _failed = false);
     try {
-      final game = widget.controller ?? DailyFootballerController(
-        catalog: await loadDailyFootballers(), store: LocalDailyFootballerStore(),
-        watchAd: () => watchDailyFootballerAd());
+      DailyFootballerController? game = widget.controller;
+      if (game == null) {
+        final user = await AuthService.ensureGuestSignedIn();
+        _owner = user.uid;
+        game = DailyFootballerController(catalog: await loadDailyFootballers(),
+          store: LocalDailyFootballerStore(userId: user.uid, currentUser: () => AuthService.uid),
+          server: StorySupportService(useCallable: 'actDailyFootballer', loadCallable: 'getDailyFootballer',
+            watchPlacement: 'daily_footballer_hint'), watchAd: () => watchDailyFootballerAd());
+      }
       if (!mounted) { if (widget.controller == null) game.dispose(); return; }
       _game = game;
       game.addListener(_changed);
@@ -48,12 +66,12 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
   }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _game?.refreshDay();
+    if (state == AppLifecycleState.resumed) _game?.refreshDay(force: true);
   }
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _timer?.cancel(); _search.dispose();
+    _timer?.cancel(); _auth?.cancel(); _search.dispose();
     _game?.removeListener(_changed);
     if (widget.controller == null) _game?.dispose();
     super.dispose();
@@ -71,9 +89,9 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
             ('6 tahmin', 'En az iki harf yaz ve listeden bir futbolcu seç. Aynı futbolcu ikinci kez tahmin edilemez.'),
             ('✓ Eşleşti · × Farklı', 'Ülke, kulüp, lig ve mevkiyi karşılaştır. Renklerin yanında simge ve açıklama da var.'),
             ('↑ Daha yüksek · ↓ Daha düşük', 'Oklar hedef futbolcunun yaşının veya forma numarasının, tahmininden daha yüksek ya da düşük olduğunu gösterir.'),
-            ('Reklamlı ipucu', 'İlk tahmininden sonra bir ödüllü reklamı tamamlayarak isim ipucunu bir kez açabilirsin.'),
+            ('İsim ipucu', 'İlk tahmininden sonra destek panelindeki koşullarla bir kez açılır. Yeni günlük oturumda ipucu ve ek tahmin aynı tek reklam hakkını paylaşır.'),
             ('Son bir tahmin', 'Altı yanlışın ardından ödüllü reklamla yalnızca bir ek hak alabilirsin. Sonucu görürsen oyun biter.'),
-            ('Her gün aynı bulmaca', 'Aynı veri sürümünü kullanan herkes için hedef aynıdır. Gün Türkiye saatiyle 00.00’da yenilenir; ilerlemen bu cihazda saklanır.'),
+            ('Her gün aynı bulmaca', 'Aynı veri sürümünü kullanan herkes için hedef aynıdır. Gün Türkiye saatiyle 00.00’da yenilenir; bağlı hesapta sunucu ilerlemen korunur.'),
           ]) ...[
             Text(rule.$1, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 4), Text(rule.$2), const SizedBox(height: 16),
@@ -96,6 +114,7 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
     final p = PitchColors.of(context);
     return PopScope(canPop: !(game?.busy ?? false), child: Scaffold(
       appBar: AppBar(title: const Text('Günün Futbolcusu'), actions: [
+        IconButton(tooltip: 'Yenile', onPressed: game?.busy == true ? null : () => game?.initialize(), icon: const Icon(Icons.refresh)),
         IconButton(tooltip: 'Nasıl oynanır?', onPressed: _help, icon: const Icon(Icons.help_outline_rounded)),
       ]),
       body: SafeArea(child: round == null
@@ -146,9 +165,11 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
             if (round.finished) _result(round),
             if (round.canExtra) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Text('Son bir şansın var.', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8), const Text('Altı tahmin bitti. Reklamı tamamla ve bir kez daha dene ya da sonucu gör.'),
+              const SizedBox(height: 8), Text(round.serverOwned ? 'Altı tahmin bitti. Kalan günlük reklam hakkınla ek tahmin alabilir veya sonucu görebilirsin. Ek tahmin sonucu Yardımlı yapar.' :
+                'Altı tahmin bitti. Reklamı tamamla ve bir kez daha dene ya da sonucu gör.'),
               const SizedBox(height: 12),
-              FilledButton.icon(key: const ValueKey('daily-extra'), onPressed: game.busy ? null : game.unlockExtra,
+              FilledButton.icon(key: const ValueKey('daily-extra'), onPressed: game.busy || round.serverOwned &&
+                  (rewardMap(round.serverData?['support'])['adRemaining'] as num? ?? 0) <= 0 ? null : game.unlockExtra,
                 icon: const Icon(Icons.ondemand_video_rounded), label: const Text('Reklam izle · +1 tahmin')),
               TextButton(onPressed: game.busy ? null : game.reveal, child: const Text('Sonucu gör')),
             ])),
@@ -157,9 +178,12 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
             if (!round.hintUsed && !round.finished && !round.canExtra) PitchPanel(child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Text('Bir harf, yeni bir iz.', style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 4), Text(round.guesses.isEmpty ? 'İlk tahmininden sonra isim ipucunu açabilirsin.' : 'Ödüllü reklamı tamamla, isim ipucunu aç.'),
+                const SizedBox(height: 4), Text(round.guesses.isEmpty ? 'İlk tahmininden sonra isim ipucunu açabilirsin.' : round.serverOwned ?
+                  'Destek çantası, Coin veya doğrulanmış reklam. Sonuç Yardımlı olarak kaydolur.' : 'Ödüllü reklamı tamamla, isim ipucunu aç.'),
                 const SizedBox(height: 10),
-                OutlinedButton.icon(key: const ValueKey('daily-hint'), onPressed: game.busy || !round.canHint ? null : game.unlockHint,
+                if (round.serverOwned) PaidHintButton(session: round.serverData!, sku: 'boost_basic', label: 'İsim ipucu',
+                  disabled: game.busy || game.message != null || !round.canHint, onUse: game.paidHint, onWatch: game.unlockHint)
+                else OutlinedButton.icon(key: const ValueKey('daily-hint'), onPressed: game.busy || !round.canHint ? null : game.unlockHint,
                   icon: const Icon(Icons.ondemand_video_rounded), label: const Text('Reklam izle · İpucu')),
               ],
             )),
@@ -172,7 +196,7 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
             for (var i = round.guesses.length - 1; i >= 0; i--) Padding(
               padding: const EdgeInsets.only(bottom: 12), child: _guessCard(round, i)),
             const SizedBox(height: 8),
-            Text('Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen bu cihazda saklanır.',
+            Text(round.serverOwned ? 'Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen hesabında saklanır.' : 'Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen bu cihazda saklanır.',
               style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
           ],
         )),
@@ -206,6 +230,7 @@ class _DailyFootballerPageState extends State<DailyFootballerPage> with WidgetsB
       Text(round.target.name, key: const ValueKey('daily-answer'), textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.headlineSmall),
       Text('${round.target.club} · ${round.target.country} · #${round.target.shirtNumber}', textAlign: TextAlign.center),
+      if (round.assisted) const Text('Yardımlı sonuç · Ayrı başarı kaydı', textAlign: TextAlign.center),
       const SizedBox(height: 8), const Text('Yeni futbolcu yarın seni bekliyor.', textAlign: TextAlign.center),
     ]),
   ));
