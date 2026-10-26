@@ -1,3 +1,4 @@
+import 'supported_grid_page.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -13,8 +14,8 @@ import '../widgets/player_avatar.dart';
 ///
 /// The route only starts a V4 session after it is opened from the rules page;
 /// no legacy Repository initialization is needed for this mode.
-class ClassicGridPage extends StatefulWidget {
-  const ClassicGridPage({
+class _LegacyClassicGridPage extends StatefulWidget {
+  const _LegacyClassicGridPage({
     super.key,
     this.difficulty = VsBotDifficulty.medium,
     this.controllerFactory,
@@ -24,10 +25,10 @@ class ClassicGridPage extends StatefulWidget {
   final ClassicGridBotController Function()? controllerFactory;
 
   @override
-  State<ClassicGridPage> createState() => _ClassicGridPageState();
+  State<_LegacyClassicGridPage> createState() => __LegacyClassicGridPageState();
 }
 
-class _ClassicGridPageState extends State<ClassicGridPage>
+class __LegacyClassicGridPageState extends State<_LegacyClassicGridPage>
     with WidgetsBindingObserver {
   late final ClassicGridBotController _c;
   final TextEditingController _answerController = TextEditingController();
@@ -683,5 +684,16 @@ class _ClassicGridPageState extends State<ClassicGridPage>
         ),
       ],
     );
+  }
+}
+
+class ClassicGridPage extends StatelessWidget {
+  const ClassicGridPage({super.key, this.controllerFactory, this.difficulty = VsBotDifficulty.medium});
+  final ClassicGridBotController Function()? controllerFactory;
+  final VsBotDifficulty difficulty;
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyClassicGridPage(controllerFactory: controllerFactory, difficulty: difficulty);
+    return controllerFactory != null ? legacy : SupportedGridPage(mode: 'bot_grid_classic', legacy: legacy, difficulty: difficulty.name);
   }
 }

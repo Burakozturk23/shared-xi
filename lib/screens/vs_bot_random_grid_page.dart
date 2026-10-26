@@ -1,3 +1,4 @@
+import 'supported_grid_page.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/vs_bot_random_grid_controller.dart';
@@ -6,15 +7,15 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/grid_player_identity.dart';
 
 /// Bot'a karşı rastgele grid — sheet yok, sayfa içi input.
-class VsBotRandomGridPage extends StatefulWidget {
-  const VsBotRandomGridPage({super.key, this.controllerFactory});
+class _LegacyVsBotRandomGridPage extends StatefulWidget {
+  const _LegacyVsBotRandomGridPage({super.key, this.controllerFactory});
   final VsBotRandomGridController Function()? controllerFactory;
 
   @override
-  State<VsBotRandomGridPage> createState() => _VsBotRandomGridPageState();
+  State<_LegacyVsBotRandomGridPage> createState() => __LegacyVsBotRandomGridPageState();
 }
 
-class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
+class __LegacyVsBotRandomGridPageState extends State<_LegacyVsBotRandomGridPage> {
   late final VsBotRandomGridController _c;
   final TextEditingController _pendingNameCtrl = TextEditingController();
   final TextEditingController _cellNameCtrl = TextEditingController();
@@ -617,7 +618,7 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
                   onPressed: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => VsBotRandomGridPage()),
+                        builder: (_) => _LegacyVsBotRandomGridPage()),
                   ),
                   child: Text('YENİDEN OYNA',
                       style: TextStyle(fontWeight: FontWeight.bold)),
@@ -638,5 +639,16 @@ class _VsBotRandomGridPageState extends State<VsBotRandomGridPage> {
         ),
       ),
     );
+  }
+}
+
+class VsBotRandomGridPage extends StatelessWidget {
+  const VsBotRandomGridPage({super.key, this.controllerFactory});
+  final VsBotRandomGridController Function()? controllerFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyVsBotRandomGridPage(controllerFactory: controllerFactory);
+    return controllerFactory != null ? legacy : SupportedGridPage(mode: 'bot_grid_random', legacy: legacy);
   }
 }

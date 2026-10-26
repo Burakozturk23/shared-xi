@@ -174,3 +174,16 @@ Altı yeni sunucu senaryosu ve ortak günlük kelime regresyonları 31/31 PASS. 
 Altı yeni sunucu senaryosu dahil tam Functions koşusu 668/668 PASS; lint PASS. Mevcut Dart hedef seçimiyle çapraz tarih vektörleri, hesap geçişi/kayıt taşıma ve 320px/%180 ücretli panel testleri eklendi; mobil CI sonucu bekleniyor. CI #350 (`03f747f`) Günün Maçları/sekizli Anagram değişikliklerinde Functions, RTDB, PowerShell, Flutter analiz/test ve Android debug derlemesi PASS. Gerçek cihaz smoke ve imzalı AAB çalışmadı.
 
 Kalan aktif geçişler üç solo Grid/yedi bot ve Club Manager. Keşif kapsam kararı, tüm 142 kabul kanıtı ve gerçek cihaz SSV/iki hesap testleri açık. Üretim dağıtımı, rollout ve merge yapılmadı.
+
+
+## Checkpoint 15 — Üç solo Grid ve üç bot Grid
+
+Klasik, Tersten ve Rastgele Grid için solo/bot ayrılmış altı mod kimliği ve canonical sunucu oturumları eklendi. Mevcut V4 kaynaklı oyuncu/kriter kataloğundan, seçili kulüp havuzunda dokuz farklı geçerli cevabı olan tahtalar üretilir. Popüler kulüpler ve altı lig havuzu test edilir; soru havuzu geniş doğru cevap havuzunu daraltmaz. Solo üçlünün eski seçim ekranına ana katalogdan giriş olmadığı doğrulandı; Solo Grid girişi Hız & Eşleştirme grubuna eklendi. Pilot kapalıyken eski ekranlar, açık yerel oyunda mevcut oturum korunur.
+
+Klasik kutu doğrulaması, Tersten Grid'in gerçek alternatif kulüp/milliyet/mevki cevapları ve Rastgele Grid'in üç çift/çapa/yön yerleştirmesi sunucuya taşındı. Solo mevcut 20+enderlik ve 40/eksen puanını; bot kutu/eksen başına bir puanı, üçlü galibiyetini ve mevcut bot hız/isabet kurallarını korur. Yardımlı kayıt ayrıdır. Tamamlanmayan/terk edilen oyun tamamlanma rekoru üretmez. Coin/XP, liderlik ve ustalık ödülü eklenmez; online/arkadaş mod kimlikleri reddedilir.
+
+Temel destek 25 Coin/stok/doğrulanmış reklam; adayın milliyet/mevki bilgisi veya ortak kriterin türü sunucuda üretilir. Yardım hedefi ve revizyon cüzdan işlemiyle bağlıdır; yeniden deneme çift ödeme yaratmaz. İki/oturum ve ortak dört/gün reklam sınırı korunur. Açık reklam hakkı başka hücrede harcanamaz; hedef kapanınca, iptal olunca veya oturum bitince stoğa taşınır. Mobil istek hesap kapsamında kalıcıdır, hesap değişiminde geç yanıt reddedilir.
+
+Sekiz yeni sunucu testi dahil son tam Functions koşusu 676/676 PASS; lint PASS. Üç varyant için 320px/%180 mobil panel, hedef/revizyon, pilot eski rota ve hesap değişimi testleri eklendi; mobil CI bekliyor. Günün Futbolcusu commitinin CI #351 (`38452cb`) Functions/RTDB/PowerShell, Flutter analiz/test ve Android debug PASS. Gerçek cihaz smoke/imzalı AAB çalışmadı.
+
+Kalan aktif destek geçişleri Football Loto, Takım Yarışı, Futbol Çinko, Rastgele Beşler ve Club Manager. Keşif kapsam kararı, tüm 142 kabul kanıtı ve gerçek cihaz SSV/iki hesap hâlâ açık. Üretim dağıtımı/rollout/merge yapılmadı.

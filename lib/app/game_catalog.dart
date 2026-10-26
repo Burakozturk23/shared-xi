@@ -1,3 +1,4 @@
+import '../screens/grid_mode_selection_page.dart';
 import '../screens/daily_words_page.dart';
 import '../online/online_friends_mode_page.dart';
 import '../online/online_ranked_mode_page.dart';
@@ -207,6 +208,9 @@ class GameCatalog {
   static const games = <GameEntry>[
     vsBot,
     dailyFootballer,
+    GameEntry(title: 'Solo Grid', subtitle: 'Klasik, Tersten ve Rastgele tahta',
+      icon: Icons.grid_view_rounded, page: GridModeSelectionPage(),
+      category: 'Hız & Eşleştirme', requiresRepository: true, modern: true),
     GameEntry(
       title: 'Club Manager',
       subtitle: 'Bütçe, kadro ve maç yönetimi',
