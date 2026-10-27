@@ -187,3 +187,21 @@ Temel destek 25 Coin/stok/doğrulanmış reklam; adayın milliyet/mevki bilgisi 
 Sekiz yeni sunucu testi dahil son tam Functions koşusu 676/676 PASS; lint PASS. Üç varyant için 320px/%180 mobil panel, hedef/revizyon, pilot eski rota ve hesap değişimi testleri eklendi; mobil CI bekliyor. Günün Futbolcusu commitinin CI #351 (`38452cb`) Functions/RTDB/PowerShell, Flutter analiz/test ve Android debug PASS. Gerçek cihaz smoke/imzalı AAB çalışmadı.
 
 Kalan aktif destek geçişleri Football Loto, Takım Yarışı, Futbol Çinko, Rastgele Beşler ve Club Manager. Keşif kapsam kararı, tüm 142 kabul kanıtı ve gerçek cihaz SSV/iki hesap hâlâ açık. Üretim dağıtımı/rollout/merge yapılmadı.
+
+
+## Checkpoint 16 — 27 Ekim, kalan dört bot modu ve genel kontrol
+
+CI #352 (`7e54618`) Flutter kalite kapısında tek testle kırmızıydı: Grid commit'i ana kataloğa Solo Grid girişini ekleyip oyun sayısını 23'e çıkardı, `ortak_saha_test.dart` hâlâ 22 bekliyordu (`app_shell_navigation_test.dart` zaten 23). Beklenti düzeltildi; yerel Flutter 3.47.8 koşusunda iki test ve tam paket geçti.
+
+Football Loto, Takım Yarışı, Futbol Çinko ve Rastgele Beşler için `bot_support.js` ile hesap sahipli sunucu oturumları eklendi (`bot_loto`, `bot_team_race`, `bot_cinko`, `bot_random_five`). Pilot `readyModes` kapısı kapalıyken mevcut yerel ekranlar açılır; açık yerel oyun bozulmaz.
+
+- Kurallar korunur. Loto: aynı 16 oyuncu, ayrı tahtalar, 20/15/12 sn oyuncu başı saat, sonuç sonunda açıklanır, doğru yerleştirme +10; tahtalar mevcut sunucu Loto kataloğundan bilinirlik ortalamasına göre üç zorluk dilimine ayrılır. Takım Yarışı: seçilen kulüp ve en az üç ortak oyunculu rastgele rakip, en çok 12 oyuncu, tüm ortak oyuncular bulununca tur biter, üç tur galibiyeti maçı alır; bot gecikme/isabet değerleri aynıdır. Çinko: popüler kulüp/ülke/lig havuzundan 5×5 tahta, her kutuya ayrı cevap garantisi, yalnız yatay/dikey bağlı seçim, doğru +1, yanlış −1, pas 0; bot kolayda 1, ortada 3, zorda en uzun bağlı grubu alır. Rastgele Beşler: beş ortak tahta, yanlış/uymayan cevap sırayı tüketmeden düzeltilebilir, pas 0, botun 2/3/5 tercih sınırı korunur.
+- Bot hamleleri, saatler ve tahta üretimi sunucuda tohumlu çalışır; aynı istek tekrarlanırsa sonuç değişmez. Gerçek zamanlı iki mod arka plana geçişte sunucuda duraklatılır; Loto duraklatılınca sıradaki oyuncunun adı gösterilmez.
+- Temel destek (25 Coin/stok/doğrulanmış reklam) sunucuda üretilir ve hedefe bağlanır: Loto'da oyuncunun milliyeti/mevkisi, Takım Yarışı'nda kalan ortak oyunculardan birinin bilgisi, Çinko'da seçilen açık kutu için kullanılmamış bir aday, Beşler'de bir adayın beş kulüpten kaçına uyduğu. Loto'nun saati durmadığı için destek reklamla alınamaz; panel bunu açıklar. Hedef kapanınca kullanılmamış doğrulanmış reklam hakkı stoğa geçer.
+- Yardımlı sonuçlar ayrı kayda yazılır. Coin/XP, liderlik veya ustalık ödülü yoktur; online mod kimlikleri reddedilir.
+
+Genel kontrol: 13 online wireName artık Dart kataloğundan okunarak boost whitelist'i, mağaza teklifleri ve politika sabitlemesi dışında olduğu testle korunur. `docs/specs/mission-boosts/mode-coverage.json` 65 kapsam satırının her birini mod kimliği, sunucu modülü ve test dosyasıyla eşler: 45 ücretli sunucu desteği, 13 online yalnız kozmetik, 4 kural gereği desteksiz (Zincir Sprint, Sahte Kulüp Hız, Burst Hız Atağı, This or That), 2 salt okunur ücretsiz keşif ve 1 ertelenmiş satır. Matris testle boost whitelist'iyle tutarlı tutulur.
+
+Ertelenen: Club Manager. Kadro, kasa, transfer, maç simülasyonu ve sezon tablosu tamamen cihazda çalışıyor; sunucu sahipli sezon ve ödül/sıralama kaydı yok, bedelsiz isteğe bağlı ipucu da yok. Ücretli rakip analizi ve gözlemci raporu, istemci beyanına güvenmeden ancak sezon motoru sunucuya taşındıktan sonra eklenebilir. Bu, oyun dengesini de etkileyecek ayrı bir iş olarak bırakıldı.
+
+Yerel doğrulama: Functions 685/685 PASS, lint PASS; Flutter analiz hata yok, tam Flutter paketi PASS (yeni 8 bot ekran testi ve süreli destek paneli testi dahil). Otomatik test kanıtı olan kriterler (ör. B002, B007, B008, B053, B056, B057) acceptance.json'da yine de NOT_RUN bırakıldı; gerçek cihaz SSV, iki hesap ve üretim kabulü yapılmadı. Üretim dağıtımı, rollout açılışı veya merge yapılmadı.
