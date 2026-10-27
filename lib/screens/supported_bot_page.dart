@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
@@ -79,7 +81,31 @@ class _SupportedBotPageState extends State<SupportedBotPage> with WidgetsBinding
     try { await task(); } catch (e) { if (mounted && !_accountChanged) setState(() => _error = _message(e)); }
     finally { if (mounted) setState(() => _busy = false); }
   }
-  void _accept(Map<String, dynamic> data) {
+  // Cues follow the server-confirmed session; event IDs stop polls repeating them.
+  void _sounds(Map<String, dynamic> before, Map<String, dynamic> after, String? action) {
+    final id = after['id']; if (id == null) return;
+    final same = before['id'] == id;
+    if (!same && after['finished'] != true) AppFeedback.sfx(Sfx.matchStart, eventId: 'bot:$id:start');
+    if (same && action != null) {
+      final last = rewardMap(after['last']);
+      switch ((_kind, action)) {
+        case ('loto', 'place'): AppFeedback.sfx(Sfx.slotLock);
+        case ('team_race', 'guess'): AppFeedback.sfx((after['userFound'] as num? ?? 0) > (before['userFound'] as num? ?? 0) ?
+          Sfx.answerCorrect : Sfx.answerWrong);
+        case ('cinko', 'confirm'): AppFeedback.sfx(_list2(last['wrong']).isNotEmpty ? Sfx.answerWrong :
+          _list2(last['correct']).length >= 3 ? Sfx.perfectCombo : Sfx.slotLock);
+        case ('random_five', 'guess'): AppFeedback.sfx(after['turn'] == 'user' ? Sfx.answerWrong : Sfx.answerCorrect);
+        case (_, 'next'): AppFeedback.sfx(Sfx.roundTransition);
+      }
+    }
+    if (_kind == 'loto' && after['finished'] != true && [5, 3, 1].contains(_seconds('deadline'))) {
+      AppFeedback.sfx(Sfx.countdown, eventId: 'bot:$id:cd:${after['index']}:${_seconds('deadline')}');
+    }
+    if (same && after['finished'] == true && after['completed'] == true && before['finished'] != true) {
+      AppFeedback.sfx(after['winner'] == 1 ? Sfx.champion : Sfx.whistle, eventId: 'bot:$id:end');
+    }
+  }
+  void _accept(Map<String, dynamic> data, [String? action]) {
     if (!mounted || _accountChanged) return;
     setState(() {
       final previous = _run;
@@ -90,6 +116,7 @@ class _SupportedBotPageState extends State<SupportedBotPage> with WidgetsBinding
         if (_kind != 'cinko' || _run['current'] == null) _cells.clear();
       }
       if (_hintCell != null && rewardMap(_cellsOf(_hintCell!))['playable'] != true) _hintCell = null;
+      if (!_legacy) _sounds(previous, _run, action);
     });
   }
   Future<void> _load() => _work(() async {
@@ -104,7 +131,7 @@ class _SupportedBotPageState extends State<SupportedBotPage> with WidgetsBinding
       'version': action == 'start' ? _data['version'] : _run['version'],
       if (action == 'start') 'difficulty': _difficulty,
       if (action == 'start' && widget.clubId != null) 'clubId': widget.clubId, ...extra});
-    _accept(data); _searchEpoch++; _suggestions = []; _answer.clear();
+    _accept(data, action); _searchEpoch++; _suggestions = []; _answer.clear();
   });
   Future<void> _watch(Object target) => _work(() async {
     _watching = true;

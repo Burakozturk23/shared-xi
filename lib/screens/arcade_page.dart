@@ -2,6 +2,8 @@ import '../widgets/paid_hint_button.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/arcade_service.dart';
 import '../widgets/pitch_ui.dart';
@@ -87,6 +89,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     if (busy || offline || error != null) return;
     setState(() {busy = true; error = null;});
     final beforeQuestion = rewardMap(run['question'])['id'];
+    int matched() => _rows(rewardMap(run['board'])['cards']).where((c) => c['matched'] == true).length;
+    final matchedBefore = matched();
     try {
       final value = await service.mutate({'mode': widget.mode, 'sessionId': run['id'],
         'revision': run['revision'], 'action': action, 'questionId': beforeQuestion,
@@ -94,6 +98,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (!mounted) return;
       setState(() {
         accept(value);
+        // Matching: the flip is confirmed by the server; a new pair is a combo.
+        if (action == 'flip') AppFeedback.sfx(matched() > matchedBefore ? Sfx.perfectCombo : Sfx.cardFlip);
         if (action == 'answer' || beforeQuestion != rewardMap(run['question'])['id']) {
           answer.clear(); suggestions = []; searchEpoch++;
         }

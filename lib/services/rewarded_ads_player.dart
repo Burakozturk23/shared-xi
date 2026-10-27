@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import 'ads_consent_service.dart';
 
@@ -137,6 +138,10 @@ class _AdMobLoadedAd implements LoadedRewardedAd {
     }
     final done = Completer<bool>();
     var earned = false;
+    // The ad owns the audio while it is on screen; music resumes afterwards.
+    GameAudio.instance?.suspend('rewarded_ad');
+    unawaited(done.future.then((_) {}, onError: (_) {})
+        .whenComplete(() => GameAudio.instance?.release('rewarded_ad')));
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (_) => onStarted(),
       onAdDismissedFullScreenContent: (_) {
@@ -152,11 +157,15 @@ class _AdMobLoadedAd implements LoadedRewardedAd {
         unawaited(dispose());
       },
     );
-    await ad.show(
-      onUserEarnedReward: (_, _) {
-        earned = true;
-      },
-    );
+    try {
+      await ad.show(
+        onUserEarnedReward: (_, _) {
+          earned = true;
+        },
+      );
+    } catch (error) {
+      if (!done.isCompleted) done.completeError(error);
+    }
     return done.future;
   }
 }

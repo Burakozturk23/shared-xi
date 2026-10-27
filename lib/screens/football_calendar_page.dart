@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/daily_matches_gateway.dart';
 import '../widgets/club_identity_badge.dart';
@@ -706,7 +707,9 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
                 label: 'Tekrar dene',
                 onPressed: () => _run(_refresh),
               ),
-            if (_data != null) _round == null ? _lobby() : _game(),
+            // Match list keeps the menu theme; the puzzle itself uses the puzzle theme.
+            if (_data != null) MusicScene(track: _round == null ? MusicTrack.menu : MusicTrack.puzzle,
+              child: _round == null ? _lobby() : _game()),
           ],
         ),
       ),

@@ -176,7 +176,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     _SettingRow(
                       icon: p.sound ? Icons.volume_up_outlined : Icons.volume_off_outlined,
                       title: c('Oyun sesleri', 'Game sounds'),
-                      detail: c('Doğru cevap ve ödül sesleri', 'Correct answer and reward sounds'),
+                      detail: c('Cevap, ipucu, maç ve ödül efektleri', 'Answer, hint, match and reward effects'),
                       trailing: Semantics(
                         label: c('Oyun sesleri', 'Game sounds'),
                         child: Switch(
@@ -194,6 +194,23 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                         label: Text(c('Sesi dene', 'Test sound'), textAlign: TextAlign.center),
                       ),
                     ),
+                    _VolumeRow(key: const ValueKey('sfx-volume'), label: c('Efekt seviyesi', 'Effects volume'),
+                      value: p.sfxVolume, enabled: !_saving && p.sound, onChanged: (v) => _save(() => p.setSfxVolume(v))),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    _SettingRow(
+                      icon: p.music ? Icons.music_note_outlined : Icons.music_off_outlined,
+                      title: c('Müzik', 'Music'),
+                      detail: c('Menü, hikâye ve oyun türüne göre arka plan müziği', 'Background music for menus, stories and game types'),
+                      trailing: Semantics(
+                        label: c('Müzik', 'Music'),
+                        child: Switch(
+                        key: const ValueKey('music-switch'),
+                        value: p.music,
+                        onChanged: _saving ? null : (v) => _save(() => p.setMusic(v)),
+                      )),
+                    ),
+                    _VolumeRow(key: const ValueKey('music-volume'), label: c('Müzik seviyesi', 'Music volume'),
+                      value: p.musicVolume, enabled: !_saving && p.music, onChanged: (v) => _save(() => p.setMusicVolume(v))),
                     const Divider(height: 1, indent: 16, endIndent: 16),
                     _SettingRow(
                       icon: Icons.vibration_rounded,
@@ -236,8 +253,8 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 )),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
-                  child: Text(c('Ses düzeyi ve sessiz mod cihazından yönetilir. Ses ve titreşim, cihaz desteğine bağlıdır.',
-                    'Volume and silent mode are controlled by your device. Sound and vibration depend on device support.'),
+                  child: Text(c('Müzik ve efekt seviyeleri cihaz ses düzeyine göre çalar; iPhone sessiz modda oyun sesi çıkarmaz. Reklam sırasında ve uygulama arka plandayken müzik durur.',
+                    'Music and effect levels follow your device volume; iPhone silent mode mutes game audio. Music pauses during ads and in the background.'),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.muted)),
                 ),
                 PitchSectionTitle(c('Hesap ve destek', 'Account & support')),
@@ -291,6 +308,35 @@ class _SettingsIcon extends StatelessWidget {
       width: 40, height: 40,
       decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(12)),
       child: Icon(icon, size: 22, color: colors.accent),
+    );
+  }
+}
+
+class _VolumeRow extends StatefulWidget {
+  const _VolumeRow({super.key, required this.label, required this.value, required this.enabled, required this.onChanged});
+  final String label;
+  final double value;
+  final bool enabled;
+  final ValueChanged<double> onChanged;
+  @override
+  State<_VolumeRow> createState() => _VolumeRowState();
+}
+
+// Dragging stays local; only the released value is persisted.
+class _VolumeRowState extends State<_VolumeRow> {
+  double? _drag;
+  @override
+  Widget build(BuildContext context) {
+    final value = _drag ?? widget.value;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text('${widget.label} · %${(value * 100).round()}', style: Theme.of(context).textTheme.bodyMedium),
+        Slider(value: value, divisions: 20, label: '%${(value * 100).round()}', semanticFormatterCallback: (v) =>
+            '${widget.label} %${(v * 100).round()}',
+          onChanged: widget.enabled ? (v) => setState(() => _drag = v) : null,
+          onChangeEnd: widget.enabled ? (v) { setState(() => _drag = null); widget.onChanged(v); } : null),
+      ]),
     );
   }
 }

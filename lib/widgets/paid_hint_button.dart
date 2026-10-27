@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/store_gateway.dart';
@@ -63,6 +64,13 @@ class _PaidHintButtonState extends State<PaidHintButton> {
       } else {
         await widget.onUse({'boostId': widget.sku, 'paymentSource': source,
           if (source == 'coins') 'expectedPriceCoins': quote['priceCoins']});
+        // Pages report failures in place and keep the old session; a new
+        // revision (or the button giving way to the revealed hint) is the
+        // server-confirmed reveal.
+        if (owner == _uid() && (!mounted || widget.session['id'] == sessionId &&
+            widget.session['revision'] != revision)) {
+          AppFeedback.hint();
+        }
       }
     } finally {
       if (mounted) setState(() => _open = false);

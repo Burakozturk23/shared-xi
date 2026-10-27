@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/route_appearance.dart';
 import '../models/chain_state.dart';
 import '../widgets/game_ui.dart';
@@ -22,7 +23,8 @@ class ChainModeSelectionPage extends StatelessWidget {
       const SizedBox(height: 12),
       PitchRow(title: 'Zincir Sprinti', subtitle: '60 sn başlangıç · Zincir başına +5 sn · En fazla 180 sn',
         icon: Icons.timer_outlined, highlight: true,
-        onTap: () => Navigator.push(context, LinkballRoute(builder: (_) => const ChainPage(mode: ChainGameMode.blitz)))),
+        onTap: () => Navigator.push(context, LinkballRoute(builder: (_) =>
+          const MusicScene(track: MusicTrack.rush, child: ChainPage(mode: ChainGameMode.blitz))))),
     ])),
   );
 }

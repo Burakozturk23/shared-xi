@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/route_appearance.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -23,7 +24,7 @@ class OddClubModeSelectionPage extends StatelessWidget {
       PitchRow(title: 'Hız Serisi', icon: Icons.timer_outlined, highlight: true,
         subtitle: '10 soru · soru başına 10 saniye · 3 can · yardımsız',
         onTap: () => Navigator.push(context, LinkballRoute(modern: true,
-          builder: (_) => const OddClubPage(timed: true)))),
+          builder: (_) => const MusicScene(track: MusicTrack.rush, child: OddClubPage(timed: true))))),
     ])),
   );
 }

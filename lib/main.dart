@@ -7,6 +7,7 @@ import 'screens/welcome_page.dart';
 import 'screens/onboarding_page.dart';
 import 'app/app_preferences.dart';
 import 'app/app_feedback.dart';
+import 'app/game_audio.dart';
 import 'app/route_appearance.dart';
 import 'services/cloud_bootstrap.dart';
 import 'services/ads_consent_service.dart';
@@ -20,6 +21,7 @@ Future<void> main() async {
   // Firebase and the player database remain outside this critical path.
   final preferences = await AppPreferences.load();
   AppFeedback.preferences = preferences;
+  GameAudio.instance = GameAudio(preferences: preferences, backend: AudioplayersBackend());
 
   // STEP 08D.7Q.2: do not block Welcome's first paint on Dart-side Firebase.
   // Firebase Core + App Check + telemetry start immediately after the first
@@ -28,6 +30,7 @@ Future<void> main() async {
   runApp(SharedXIApp(preferences: preferences));
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
+    GameAudio.instance?.start();
     unawaited(AdsConsentService.refresh());
     unawaited(CoinBillingService.initialize());
     debugPrint(

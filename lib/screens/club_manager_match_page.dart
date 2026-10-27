@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 
 import '../models/manager_match.dart';
 import '../models/manager_pool.dart';
@@ -84,6 +86,9 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
             userGoals: _result!.userGoals,
             oppGoals: _result!.opponentGoals,
           );
+      // Played once the result is stored; a retry of the same week stays silent.
+      AppFeedback.sfx(_result!.userGoals > 0 ? Sfx.goal : Sfx.whistle,
+        eventId: 'cm:${widget.seasonId}:${widget.fixture.week}');
     } catch (e) {
       _error = managerError(e);
     }

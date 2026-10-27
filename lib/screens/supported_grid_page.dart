@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import '../models/grid_club_pool.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
@@ -71,10 +73,27 @@ class _SupportedGridPageState extends State<SupportedGridPage> with WidgetsBindi
     try { await task(); } catch (e) { if (mounted && !_accountChanged) setState(() => _error = _message(e)); }
     finally { if (mounted) setState(() => _busy = false); }
   }
-  void _accept(Map<String, dynamic> data) {
+  // Cues follow the server-confirmed session; event IDs stop polls repeating them.
+  void _sounds(Map<String, dynamic> before, Map<String, dynamic> after, String? action) {
+    final id = after['id']; if (id == null) return;
+    final same = before['id'] == id;
+    if (!same && after['finished'] != true) AppFeedback.sfx(Sfx.matchStart, eventId: 'grid:$id:start');
+    if (same && action == 'guess') {
+      AppFeedback.sfx(after['feedback'] == 'Doğru.' ? Sfx.answerCorrect : Sfx.answerWrong);
+    } else if (same && action == 'place') {
+      AppFeedback.sfx(Sfx.slotLock);
+    }
+    if (same && after['finished'] == true && after['completed'] == true && before['finished'] != true) {
+      AppFeedback.sfx(!_bot ? Sfx.achievement : after['winner'] == 1 ? Sfx.champion : Sfx.whistle,
+        eventId: 'grid:$id:end');
+    }
+  }
+  void _accept(Map<String, dynamic> data, [String? action]) {
     if (!mounted || _accountChanged) return;
     setState(() {
+      final previous = _run;
       _data = data; _legacy = data['legacy'] == true; _run = rewardMap(data['session']);
+      if (!_legacy) _sounds(previous, _run, action);
       if (_run['turn'] != 'user' || _run['finished'] == true ||
           _target is int && (_reverse ? rewardMap(_run['axes']) : rewardMap(_run['cells'])).containsKey('$_target') ||
           _target == 'pending' && _run['pending'] == null) {
@@ -105,7 +124,7 @@ class _SupportedGridPageState extends State<SupportedGridPage> with WidgetsBindi
       'action': action, 'sessionId': _run['id'], 'revision': _run['revision'],
       'version': action == 'start' ? _data['version'] : _run['version'],
       'difficulty': widget.difficulty, ...pool, ...extra});
-    _accept(data); _searchEpoch++; _suggestions = []; _answer.clear();
+    _accept(data, action); _searchEpoch++; _suggestions = []; _answer.clear();
   });
   Future<void> _watch() => _work(() async {
     final target = _target;

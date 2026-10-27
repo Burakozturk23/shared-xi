@@ -12,7 +12,12 @@ class AppPreferences extends ChangeNotifier {
       orElse: () => ThemeMode.system,
     );
     languageCode = _store.getString('linkball.language') == 'en' ? 'en' : 'tr';
+    // `linkball.sound` keeps meaning game effects. Music is new: an install that
+    // had silenced sound starts with music off too, so nothing becomes louder.
     sound = _store.getBool('linkball.sound') ?? true;
+    music = _store.getBool('linkball.music') ?? sound;
+    musicVolume = _volume('linkball.music_volume', defaultMusicVolume);
+    sfxVolume = _volume('linkball.sfx_volume', defaultSfxVolume);
     haptics = _store.getBool('linkball.haptics') ?? true;
     hapticStrength = HapticStrength.values.firstWhere(
       (value) => value.name == _store.getString('linkball.haptic_strength'),
@@ -26,7 +31,13 @@ class AppPreferences extends ChangeNotifier {
   late ThemeMode themeMode;
   late String languageCode;
   late HapticStrength hapticStrength;
-  late bool sound, haptics, onboardingComplete;
+  late bool sound, music, haptics, onboardingComplete;
+  late double musicVolume, sfxVolume;
+  static const defaultMusicVolume = .27, defaultSfxVolume = .55;
+  double _volume(String key, double fallback) {
+    final value = _store.getDouble(key);
+    return value == null || !value.isFinite ? fallback : value.clamp(0.0, 1.0);
+  }
   static Future<AppPreferences> load() async =>
       AppPreferences._(await SharedPreferences.getInstance());
 
@@ -52,6 +63,32 @@ class AppPreferences extends ChangeNotifier {
       throw StateError('Ses tercihi kaydedilemedi.');
     }
     sound = value;
+    notifyListeners();
+  }
+
+  Future<void> setMusic(bool value) async {
+    if (!await _store.setBool('linkball.music', value)) {
+      throw StateError('Müzik tercihi kaydedilemedi.');
+    }
+    music = value;
+    notifyListeners();
+  }
+
+  Future<void> setMusicVolume(double value) async {
+    final v = value.clamp(0.0, 1.0);
+    if (!await _store.setDouble('linkball.music_volume', v)) {
+      throw StateError('Müzik seviyesi kaydedilemedi.');
+    }
+    musicVolume = v;
+    notifyListeners();
+  }
+
+  Future<void> setSfxVolume(double value) async {
+    final v = value.clamp(0.0, 1.0);
+    if (!await _store.setDouble('linkball.sfx_volume', v)) {
+      throw StateError('Efekt seviyesi kaydedilemedi.');
+    }
+    sfxVolume = v;
     notifyListeners();
   }
 

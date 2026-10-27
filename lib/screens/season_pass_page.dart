@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../app/app_copy.dart';
 import '../app/route_appearance.dart';
 import '../models/season_pass.dart';
@@ -60,6 +62,7 @@ class _SeasonPassPageState extends State<SeasonPassPage>
       final data = await widget.gateway.claim(_data!.id, t.step, lane);
       if (!mounted) return;
       setState(() => _data = data);
+      AppFeedback.reward(Sfx.coinReward);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
 import '../widgets/pitch_ui.dart';
@@ -89,7 +90,7 @@ class StoryModeSelectionPage extends StatelessWidget {
               title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
               icon: storySubModes[i].icon, page: pages[i],
               // Story modes own their bundled catalogs; they need no player DB warm-up.
-              requiresRepository: false, modern: true,
+              requiresRepository: false, modern: true, music: MusicTrack.story,
             )),
           ),
         ),

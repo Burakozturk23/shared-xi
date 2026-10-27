@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
@@ -151,6 +152,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
   }
   @override
   Widget build(BuildContext context) => PopScope(canPop: _canPop || _accountChanged || !_connected, onPopInvokedWithResult: (didPop, _) { if (!didPop) _leave(); },
+    child: MusicScene(track: _waiting ? MusicTrack.menu : MusicTrack.competitive, quiet: _waiting,
     child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64, title: Text(_fakeClub ? 'Sahte Kulüp Düellosu' : _mystery ? 'Gizem Düellosu' : _career ? 'Kariyer Yarışı' : 'Transfer Düellosu', maxLines: 3), actions: [
       if (_waiting && _room['host'] == true && _room['ranked'] != true)
         FriendMatchInviteButton(mode: _fakeClub ? OnlinePlayMode.fakeClubDuel : _mystery ? OnlinePlayMode.mysteryDuel : _career ? OnlinePlayMode.careerRace : OnlinePlayMode.transferDuel, roomCode: '${_room['code']}'),
@@ -174,7 +176,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage> wit
             TextButton(onPressed: _busy ? null : _leave, child: const Text('Aramayı iptal et')),
           ])),
           if (_playing) ..._game(),
-        ]))));
+        ])))));
   List<Widget> _lobby() => [
     if (_finished) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(_room['status'] == 'forfeit' ? 'Hükmen sonuç' : _room['status'] == 'cancelled' ? 'Oda kapandı' :

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/app_copy.dart';
 import '../app/app_feedback.dart';
 import '../app/game_catalog.dart';
@@ -89,12 +90,16 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     setState(() => _claiming = true);
     try {
       String message;
-      bool granted;
+      bool granted, levelUp = false;
       if (mission == null) {
+        final before = _progression?.level.level;
         final result = await widget.gateway.claimDaily();
         if (!mounted) return;
         setState(() => _progression = result.profile);
         granted = result.granted;
+        if (granted && before != null && result.profile.level.level > before) {
+          levelUp = true;
+        }
         message = granted
             ? '+${result.amount} Link Coin · +${result.xp} XP'
             : c(
@@ -113,7 +118,7 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 'Reward already claimed or currently unavailable.',
               );
       }
-      if (granted) AppFeedback.answer(correct: true);
+      if (granted) AppFeedback.reward(levelUp ? Sfx.levelUp : Sfx.coinReward);
       if (mounted)
         ScaffoldMessenger.of(
           context,

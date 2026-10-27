@@ -8,6 +8,8 @@ import '../widgets/game_ui.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/online_ui.dart';
 import '../services/game_error.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../app/route_appearance.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/pvp_service.dart';
@@ -65,7 +67,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         if (response.containsKey('availability')) data = response;
         if (response['room'] != null) {final next = rewardMap(response['room']);
           if (next['id'] != room['id'] || next['round'] != room['round']) {searchSerial++; xi.clear(); target = null; criterion = null; selected = null; results = []; query.clear();}
-          room = next;
+          _sounds(room, next); room = next;
           final squad = rewardMap(room['mySquad']);
           if (squad.isNotEmpty) {
             xi..clear()..addAll((squad['playerIds'] as List).map((id) => '$id'));
@@ -75,17 +77,39 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           serverNow = (room['serverNow'] as num? ?? 0).toInt(); clock..reset()..start();}
         final receipt = rewardMap(response['receipt']);
         if (receipt['correct'] == false) feedback = 'Bu futbolcu kriteri karşılamıyor.';
+        if (receipt['accepted'] == true && receipt['correct'] is bool) {
+          AppFeedback.sfx(receipt['correct'] == true ? Sfx.answerCorrect : Sfx.answerWrong);
+        }
         if (receipt['accepted'] == true && receipt.containsKey('correct')) {selected = null; results = []; query.clear();}
       });
     } catch (e) {if (mounted) setState(() {
       accountChanged = e is StateError && '${e.message}'.startsWith('Hesap değişti');
       final business = userAction && room.isNotEmpty && e is FirebaseFunctionsException &&
         ['invalid-argument','failed-precondition','already-exists','aborted','resource-exhausted'].contains(e.code);
-      if (business) {feedback = gameErrorMessage(e);} else {error = gameErrorMessage(e); connected = false;}
+      if (business) {feedback = gameErrorMessage(e);} else {
+        // Only a genuine loss of an active room plays the soft alert, once per drop.
+        if (connected && room.isNotEmpty && !done && !accountChanged) AppFeedback.sfx(Sfx.connectionAlert);
+        error = gameErrorMessage(e); connected = false;}
       if (accountChanged) {room = {}; data = {}; results = []; selected = null; searchSerial++;}
     });}
     finally {if (mounted) setState(() => busy = false);}
   }
+  // Room snapshots repeat on every poll; event IDs keep each cue to one play.
+  void _sounds(Map<String,dynamic> before, Map<String,dynamic> after) {
+    final id = after['id']; final status = after['status'];
+    if (id == null) return;
+    if (status == 'ready' && before['id'] == id && before['status'] == 'waiting') {
+      AppFeedback.sfx(Sfx.opponentJoin, eventId: 'pvp:$id:join');
+    }
+    if (status == 'playing') AppFeedback.sfx(Sfx.matchStart, eventId: 'pvp:$id:start');
+    if (['finished','forfeit'].contains(status) && before['id'] == id && before['status'] != status) {
+      AppFeedback.sfx(after['result'] == 'win' ? Sfx.champion : Sfx.whistle, eventId: 'pvp:$id:end');
+    }
+  }
+  // Waiting rooms keep a quiet menu theme; Loto and Random Five race the clock.
+  MusicTrack get _matchTrack => [OnlinePlayMode.loto, OnlinePlayMode.randomFive].contains(widget.mode) ?
+    MusicTrack.rush : MusicTrack.competitive;
+  bool get _inMatch => room.isNotEmpty && !['waiting','ready'].contains(room['status']);
   Future<void> load() async {
     await run(() => service.load(mode));
     if (mounted && connected && !joinedFromInvite && widget.joinCode != null && data.isNotEmpty && room.isEmpty) {
@@ -305,7 +329,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) => PopScope(
       canPop: room.isEmpty || done || !connected || accountChanged,onPopInvokedWithResult: (didPop,result) {if (!didPop) leave();},
-      child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,title: Text(widget.mode.title,maxLines: 3,softWrap: true),actions: [
+      child: MusicScene(track: _inMatch ? _matchTrack : MusicTrack.menu, quiet: !_inMatch, child: Scaffold(appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,title: Text(widget.mode.title,maxLines: 3,softWrap: true),actions: [
         IconButton(tooltip: 'Yenile',onPressed: busy || accountChanged ? null : () {if (room.isEmpty) load(); else action('poll');},icon: const Icon(Icons.refresh))]),
         body: GameContent(child: ListView(padding: const EdgeInsets.all(16),children: [
           Text(ranked ? 'RASTGELE EŞLEŞME' : 'ARKADAŞ MAÇI',style: TextStyle(color: accent,fontWeight: FontWeight.w700)),
@@ -317,5 +341,5 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           if (room.isNotEmpty) ...[hud(),if (['waiting','ready'].contains(room['status'])) lobby()
             else if (done) outcome() else if (room['status'] == 'countdown') panel([heading('Hazır ol'),note('Aynı anda başlayacaksınız.')]) else play(),
             if (!done) button('Maçtan ayrıl',leave,secondary: true)],
-        ]))));
+        ])))));
 }

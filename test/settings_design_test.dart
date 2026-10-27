@@ -154,6 +154,18 @@ void main() {
     expect(saved.hapticStrength, HapticStrength.strong);
     expect(saved.sound, isFalse);
     expect(saved.haptics, isTrue);
+    // Music has its own switch and volume; effects volume is disabled while effects are off.
+    final music = find.byKey(const ValueKey('music-switch'));
+    await reveal(t, music);
+    expect(t.widget<Slider>(find.descendant(of: find.byKey(const ValueKey('sfx-volume')),
+      matching: find.byType(Slider))).onChanged, isNull);
+    await t.tap(music);
+    await t.pumpAndSettle();
+    expect(prefs.music, isFalse);
+    expect((await AppPreferences.load()).music, isFalse);
+    expect(t.widget<Slider>(find.descendant(of: find.byKey(const ValueKey('music-volume')),
+      matching: find.byType(Slider))).onChanged, isNull);
+    expect(t.takeException(), isNull);
   });
 
   testWidgets('language changes account copy; canceled selections preserve preferences', (t) async {

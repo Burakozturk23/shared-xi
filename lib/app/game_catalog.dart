@@ -1,4 +1,5 @@
 import '../screens/grid_mode_selection_page.dart';
+import 'game_audio.dart';
 import '../screens/daily_words_page.dart';
 import '../online/online_friends_mode_page.dart';
 import '../online/online_ranked_mode_page.dart';
@@ -42,6 +43,8 @@ import '../screens/what_if_selection_page.dart';
 @immutable
 class GameEntry {
   const GameEntry({
+    this.music = MusicTrack.puzzle,
+    this.quietMusic = false,
     required this.title,
     required this.subtitle,
     required this.icon,
@@ -55,6 +58,9 @@ class GameEntry {
   final String title, subtitle, category;
   final IconData icon;
   final Widget page;
+  /// Background track for this entry's route (audio pack M1–M5).
+  final MusicTrack music;
+  final bool quietMusic;
   final bool requiresAuth,
       requiresPersistentAccount,
       requiresRepository,
@@ -89,7 +95,7 @@ class GameCatalog {
       'derby_day': ('Derbi Günü', const DerbyDayCountryPage()),
     }[key];
     if (story != null) return GameEntry(title: story.$1, subtitle: 'Bir bölümü tamamla',
-      icon: Icons.menu_book_outlined, page: story.$2, modern: true);
+      icon: Icons.menu_book_outlined, page: story.$2, modern: true, music: MusicTrack.story);
     if (key == 'daily_matches') return daily;
     if (key == 'daily_lingo') return dailyLingo;
     if (key == 'passa_daily') return dailyPassa;
@@ -110,10 +116,13 @@ class GameCatalog {
     return null;
   }
 
+  // Lobbies and matchmaking keep a quiet menu theme; the match page selects its own.
   static const onlineRanked = GameEntry(title: 'Rastgele eşleş', subtitle: '', icon: Icons.public_rounded,
-    page: OnlineRankedModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true);
+    page: OnlineRankedModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true,
+    music: MusicTrack.menu, quietMusic: true);
   static const onlineFriends = GameEntry(title: 'Arkadaşlarınla oyna', subtitle: '', icon: Icons.groups_outlined,
-    page: OnlineFriendsModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true);
+    page: OnlineFriendsModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true,
+    music: MusicTrack.menu, quietMusic: true);
   static const dailyQuestion = GameEntry(
     title: 'Günün Sorusu',
     subtitle: 'Tek soru, üç seçenek · 0 enerji',
@@ -130,6 +139,7 @@ class GameCatalog {
     page: FootballCalendarPage(),
     requiresAuth: true,
     modern: true,
+    music: MusicTrack.menu,
   );
   static const dailyFootballer = GameEntry(
     title: 'Günün Futbolcusu',
@@ -155,6 +165,7 @@ class GameCatalog {
     page: MatchTypeSelectionPage(),
     requiresRepository: false,
     modern: true,
+    music: MusicTrack.menu,
   );
   // User-approved groups, in their requested order. Vs Bot stands on its own.
   static const groups = <GameGroup>[
@@ -203,6 +214,7 @@ class GameCatalog {
     page: VsBotModeSelectionPage(),
     requiresRepository: false,
     modern: true,
+    music: MusicTrack.menu,
   );
   // Gameplay keeps its readiness/account gates; menus may defer data loading.
   static const games = <GameEntry>[
@@ -335,6 +347,7 @@ class GameCatalog {
       page: EndlessModeSelectionPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.rush,
       category: 'Hız & Eşleştirme',
     ),
     GameEntry(
@@ -362,6 +375,7 @@ class GameCatalog {
       page: ThisOrThatModeSelectionPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.competitive,
       category: 'Seçim & Sıralama',
     ),
     GameEntry(
@@ -371,6 +385,7 @@ class GameCatalog {
       page: HigherLowerModeSelectionPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.rush,
       category: 'Seçim & Sıralama',
     ),
     GameEntry(
@@ -390,6 +405,7 @@ class GameCatalog {
       category: 'Hikâye',
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.story,
     ),
   ];
 }

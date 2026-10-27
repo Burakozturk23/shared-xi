@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../screens/sign_in_page.dart';
 import 'app_feedback.dart';
 import 'game_catalog.dart';
+import 'game_audio.dart';
 import 'route_appearance.dart';
 
 class GameLauncher {
@@ -57,7 +58,7 @@ class GameLauncher {
       if (!context.mounted) return;
       AppFeedback.selection();
       final route = LinkballRoute<void>(
-        builder: (_) => entry.page,
+        builder: (_) => MusicScene(track: entry.music, quiet: entry.quietMusic, child: entry.page),
         modern: entry.modern,
       );
       // Only preparation is locked, not the entire lifetime of a game route.

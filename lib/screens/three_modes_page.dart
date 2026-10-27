@@ -4,6 +4,8 @@ import '../app/route_appearance.dart';
 import 'coach_honours_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../data/country_flags.dart';
 import '../models/coach.dart';
 import '../models/club.dart';
@@ -79,6 +81,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       'entry': entry, 'formation': _form, if (_difficulty.isNotEmpty) 'difficulty': _difficulty,
       if (target != null) 'target': target, if (league != null) 'league': league});
     if (!mounted) return;
+    if (entry == 'random') AppFeedback.sfx(_vault ? Sfx.cardFlip : _coach ? Sfx.coachRoulette : Sfx.cardSwipe);
     setState(() { _session = rewardMap(r['session']); _archive = false; _showHub = false; _slot = 0; _clearSearch(); });
   });
   Future<void> _act(String action, [Map<String, dynamic> extra = const {}]) => _run(() async {
@@ -87,6 +90,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     if (!mounted) return;
     setState(() {
       _session = rewardMap(r['session']); _clearSearch();
+      if (!_vault && action == 'place') AppFeedback.sfx(Sfx.slotLock);
       if (!_vault && action == 'place') {
         final empty = _maps(_session['slots']).where((s) => s['player'] == null).toList();
         if (empty.isNotEmpty) _slot = (empty.first['slot'] as num).toInt();
