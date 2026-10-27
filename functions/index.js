@@ -5830,6 +5830,7 @@ function lbEconomyState(raw) {
     choice: data.choice && typeof data.choice === "object" ? data.choice : {},
     dailyWords: data.dailyWords && typeof data.dailyWords === "object" ? data.dailyWords : {},
     gridSupport: data.gridSupport && typeof data.gridSupport === "object" ? data.gridSupport : {},
+    botSupport: data.botSupport && typeof data.botSupport === "object" ? data.botSupport : {},
     dailyFootballer: data.dailyFootballer && typeof data.dailyFootballer === "object" ? data.dailyFootballer : {},
     anagramPractice: data.anagramPractice && typeof data.anagramPractice === "object" ? data.anagramPractice : {},
     storyStates: data.storyStates && typeof data.storyStates === "object" ? data.storyStates : {},
@@ -8715,7 +8716,8 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "grid_support_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "bot_support_hint" ?
+        lbBotSupportService().prepareHint(uid, placement, context) : placement === "grid_support_hint" ?
         lbGridSupportService().prepareHint(uid, placement, context) : placement === "daily_footballer_hint" ?
         lbDailyFootballerService().prepareHint(uid, placement, context) : placement === "anagram_practice_hint" ?
         lbAnagramPracticeService().prepareHint(uid, placement, context) : placement === "daily_match_hint" ?
@@ -8731,7 +8733,8 @@ function lbRewardedService() {
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "grid_support_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "bot_support_hint" ?
+        lbBotSupportService().settleHint(uid, receipt) : receipt.placement === "grid_support_hint" ?
         lbGridSupportService().settleHint(uid, receipt) : receipt.placement === "daily_footballer_hint" ?
         lbDailyFootballerService().settleHint(uid, receipt) : receipt.placement === "anagram_practice_hint" ?
         lbAnagramPracticeService().settleHint(uid, receipt) : receipt.placement === "daily_match_hint" ?
@@ -10050,6 +10053,30 @@ exports.getGridSupport = lbGridSupportCallable("status");
 exports.actGridSupport = lbGridSupportCallable("act");
 
 exports.searchGridSupport = lbGridSupportCallable("search");
+
+// Loto, Team Race, Çinko and Random Five bot sessions share one account-owned state.
+function lbBotSupportService() {
+  const db = getDatabase();
+  return require("./bot_support").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+}
+function lbBotSupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbBotSupportService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getBotSupport = lbBotSupportCallable("status");
+exports.actBotSupport = lbBotSupportCallable("act");
+exports.searchBotSupport = lbBotSupportCallable("search");
 
 function lbDailyFootballerService() {
   const db = getDatabase();

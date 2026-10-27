@@ -69,6 +69,17 @@ void main() {
     await t.tap(find.text('Çantamdan kullan · 1 adet')); await t.pumpAndSettle();
     expect(used, false);
   });
+  testWidgets('a timed basic support without ads explains that the clock keeps running', (t) async {
+    await t.pumpWidget(MaterialApp(home: Scaffold(body: PaidHintButton(
+      session: {'id': 'run', 'revision': 1, 'support': {'version': 1, 'adLimit': 2, 'adRemaining': 2,
+        'products': [{'id': 'boost_basic', 'priceCoins': 25, 'ads': false, 'category': 'Temel'}]}},
+      sku: 'boost_basic', label: 'Ülke', currentUser: () => 'alice', onWatch: () async {},
+      loadBalance: () async => {'stock': 0}, onUse: (_) async {},
+    ))));
+    await t.tap(find.byType(OutlinedButton)); await t.pumpAndSettle();
+    expect(find.text('Reklam izle · 1 destek hakkı'), findsNothing);
+    expect(find.text('Süreli oyunda bu destek reklamla alınamaz; oyun saati durmaz.'), findsOneWidget);
+  });
   testWidgets('a credit for another product is not offered as payment', (t) async {
     await t.pumpWidget(MaterialApp(home: Scaffold(body: PaidHintButton(
       session: {'id': 'run', 'revision': 1, 'adCredits': 1, 'support': {'version': 1,

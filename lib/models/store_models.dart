@@ -53,6 +53,8 @@ class StoreOffer {
     'daily_question': 'Günün Sorusu', 'daily_match': 'Günün Maçları', 'solo_grid_classic': 'Solo Klasik Grid', 'solo_grid_reverse': 'Solo Tersten Grid',
   'solo_grid_random': 'Solo Rastgele Grid', 'bot_grid_classic': 'Bot Klasik Grid',
   'bot_grid_reverse': 'Bot Tersten Grid', 'bot_grid_random': 'Bot Rastgele Grid',
+  'bot_loto': 'Bot Football Loto', 'bot_team_race': 'Bot Takım Yarışı', 'bot_cinko': 'Bot Futbol Çinko',
+  'bot_random_five': 'Bot Rastgele Beşler',
   'daily_footballer': 'Günün Futbolcusu', 'squad_challenge': 'Kadro Mücadelesi',
     'higher_lower_training': 'Higher or Lower Antrenman', 'blind_ranking_training': 'Blind Ranking Antrenman',
     'player_journey': 'Oyuncu Yolculuğu', 'what_if': 'What If', 'ucl_moments': 'UCL Moments',

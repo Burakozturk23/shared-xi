@@ -120,7 +120,8 @@ class _SupportSheetState extends State<_SupportSheet> {
             icon: const Icon(Icons.play_circle_outline), label: const Text('Reklam izle · 1 destek hakkı')),
           Text(widget.canWatch ? 'Günde ortak 4 hak. Reklam doğrulanınca hakkın açılır; süreli oyun saati devam eder.' :
             'Bu oyun için yeni reklam hakkı kullanılamıyor.'),
-        ] else const Text('Güçlü destek reklamla alınamaz.'),
+        ] else Text(widget.product['category'] == 'Güçlü' ? 'Güçlü destek reklamla alınamaz.' :
+          'Süreli oyunda bu destek reklamla alınamaz; oyun saati durmaz.'),
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Desteksiz devam et')),
       ]),
   );

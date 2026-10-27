@@ -18,6 +18,7 @@ const products = Object.fromEntries(specs.map(([id, title, priceCoins, bundlePri
 const modes = {
   solo_grid_classic: ["basic"], solo_grid_reverse: ["basic"], solo_grid_random: ["basic"],
   bot_grid_classic: ["basic"], bot_grid_reverse: ["basic"], bot_grid_random: ["basic"],
+  bot_loto: ["basic"], bot_team_race: ["basic"], bot_cinko: ["basic"], bot_random_five: ["basic"],
   coach_xi: ["basic", "connection"], squad_vault: ["basic", "strong"], letter11: ["basic", "connection"],
   career: ["basic", "connection"], transfer: ["basic", "first_letter"],
   mystery: ["basic"], mastermind: ["connection"], fake_endless: ["eliminate", "connection"],
