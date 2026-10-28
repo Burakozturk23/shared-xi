@@ -5,11 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/screens/supported_bot_page.dart';
 import 'package:shared_xi/services/energy_service.dart';
 import 'package:shared_xi/services/story_support_service.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class BotWire extends EnergyService {
   final calls = <Map<String, dynamic>>[];
-  bool hinted = false, legacy = false, paused = false;
+  bool hinted = false, legacy = false, paused = false, finished = false;
   Completer<Map<String, dynamic>>? pending;
   static const keys = {
     'loto': 'player_0',
@@ -44,12 +45,14 @@ class BotWire extends EnergyService {
         'version': 'v',
         'mode': mode,
         'revision': hinted ? 1 : 0,
-        'finished': false,
+        'finished': finished,
+        'completed': finished,
+        if (finished) 'winner': 1,
         'turn': 'user',
         'assisted': hinted,
         'paused': paused,
-        'userScore': 0,
-        'botScore': 0,
+        'userScore': finished ? 7 : 0,
+        'botScore': finished ? 4 : 0,
         'serverNow': now,
         'hints': {if (hinted) keys[kind]!: 'Doğrulanmış bilgi'},
         'support': {
@@ -188,6 +191,36 @@ void main() {
       },
     );
   }
+  testWidgets('a won bot match ends on a winning result card', (t) async {
+    t.view.physicalSize = const Size(390, 2400);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    final wire = BotWire()..finished = true;
+    await t.pumpWidget(
+      MaterialApp(
+        home: SupportedBotPage(
+          mode: 'bot_loto',
+          legacy: const Text('Eski oyun'),
+          service: _service(wire),
+        ),
+      ),
+    );
+    await t.pump(const Duration(milliseconds: 50));
+    await t.pump();
+    final card = find.byType(HubResultCard);
+    expect(t.widget<HubResultCard>(card).tone, HubResultTone.win);
+    for (final text in ['MAÇ BİTTİ', 'Kazandın', 'Sen 7 · Bot 4']) {
+      expect(
+        find.descendant(of: card, matching: find.text(text)),
+        findsOneWidget,
+        reason: text,
+      );
+    }
+    expect(find.text('Yeni maç'), findsOneWidget);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
   testWidgets(
     'Loto places the shown player index and pauses without exposing the next player',
     (t) async {

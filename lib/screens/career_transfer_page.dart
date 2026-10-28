@@ -8,6 +8,7 @@ import '../models/club.dart';
 import '../widgets/club_badge.dart';
 import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 
 List<Map<String, dynamic>> _maps(dynamic v) =>
@@ -304,47 +305,46 @@ class _CareerTransferPageState extends State<CareerTransferPage>
           : 'Kulüp yönü ve yıldan futbolcuyu bul. Her dosyada üç tahmin hakkın var.',
     ),
     const SizedBox(height: 12),
+    if (_career) ...[
+      // "Başlangıç · 3–4 dönem" shows as name over range in the segment.
+      HubSegmented<String>(
+        label: 'Zorluk',
+        options: _levels.map(
+          (k, v) => MapEntry(k, v.replaceFirst(' · ', '\n')),
+        ),
+        value: _difficulty,
+        onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
+      ),
+      const SizedBox(height: 16),
+    ],
     PitchPanel(
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        title: const Text('Kurallar ve kazanımlar'),
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
+            'Kurallar ve kazanımlar',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          for (final rule in [
             _career
                 ? 'Futbolcu başına en fazla 12 Link Coin / 24 XP. Başlangıç seviyesinde ustalık yok.'
                 : 'Transfer başına ilk resmî denemede en fazla 6 Link Coin / 12 XP.',
-          ),
-          const Text(
             'İki modun ortak ödül sınırı: günde 36 Link Coin / 72 XP. Fazlası bekleyen ödül olarak saklanır.',
-          ),
-          const Text(
             '1 ücretsiz + 2 reklamlı ipucu; mevcut destek stoğun da aynı üç slotu kullanır.',
-          ),
-          Text(
             rewardMap(_status['energy'])['enabled'] == true
                 ? 'Yeni oyun: 1 enerji. 24 saat içinde devam ücretsiz.'
                 : 'Enerji sistemi şu anda kapalı. Yeni oyun ücretsiz.',
-          ),
-          if (_status['linked'] != true)
-            const Text(
+            if (_status['linked'] != true)
               'Ödüllerin saklanır; cüzdana aktarılması için Google hesabını bağla.',
+          ])
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: HubSpecNote(rule),
             ),
         ],
       ),
     ),
     const SizedBox(height: 16),
-    if (_career)
-      DropdownButtonFormField<String>(
-        initialValue: _difficulty,
-        isExpanded: true,
-        decoration: const InputDecoration(labelText: 'Zorluk'),
-        items: _levels.entries
-            .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-            .toList(),
-        onChanged: _busy ? null : (v) => setState(() => _difficulty = v!),
-      ),
-    const SizedBox(height: 12),
     FilledButton(
       onPressed: _busy ? null : () => _start(),
       child: Text(_career ? 'Yeni bulmaca' : 'Yeni transfer dosyası'),

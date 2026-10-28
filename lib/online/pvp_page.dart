@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/online_ui.dart';
 import '../services/game_error.dart';
@@ -911,110 +912,133 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
 
   Widget outcome() {
     final reward = rewardMap(room['reward']);
-    return panel([
-      heading(
-        room['status'] == 'finished'
-            ? room['result'] == 'win'
-                  ? 'Kazandın'
-                  : room['result'] == 'loss'
-                  ? 'Maç tamamlandı'
-                  : 'Berabere'
-            : room['status'] == 'forfeit'
-            ? 'Maç hükmen sonuçlandı'
-            : 'Maç iptal edildi',
-      ),
-      note('${room['reason'] ?? ''}'),
-      if (rewardMap(room['series'])['limit'] == 3)
-        note(
-          'Seri galibiyetleri: ${rewardMap(rewardMap(room['series'])['wins']).entries.map((e) => '${rewardMap(room['names'])[e.key]} ${e.value}').join(' · ')}',
+    final names = rewardMap(room['names']), scores = rewardMap(room['scores']);
+    final rival = room['host'] == uid ? '${room['guest']}' : '${room['host']}';
+    final won = room['status'] == 'finished' && room['result'] == 'win';
+    final verified = ranked && reward['status'] != 'pending';
+    final elo = (reward['eloDelta'] as num? ?? 0).toInt();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: HubResultCard(
+            tone: won ? HubResultTone.win : HubResultTone.neutral,
+            icon: won
+                ? Icons.emoji_events_rounded
+                : room['status'] == 'finished'
+                ? Icons.sports_score_rounded
+                : Icons.flag_rounded,
+            kicker: ranked ? 'Dereceli maç' : 'Dostluk maçı',
+            title: room['status'] == 'finished'
+                ? room['result'] == 'win'
+                      ? 'Kazandın'
+                      : room['result'] == 'loss'
+                      ? 'Maç tamamlandı'
+                      : 'Berabere'
+                : room['status'] == 'forfeit'
+                ? 'Maç hükmen sonuçlandı'
+                : 'Maç iptal edildi',
+            subtitle:
+                '${names[uid] ?? 'Sen'} ${scores[uid] ?? 0} – ${scores[rival] ?? 0} ${names[rival] ?? 'Rakip'}',
+            coins: verified ? (reward['coins'] as num?)?.toInt() : null,
+            xp: verified ? (reward['xp'] as num?)?.toInt() : null,
+            notes: [
+              if ('${room['reason'] ?? ''}'.isNotEmpty) '${room['reason']}',
+              if (verified) 'Elo ${elo > 0 ? '+' : ''}$elo',
+              if (ranked && !verified) 'Sonuç ve ödül doğrulaması bekleniyor.',
+              if (!ranked) 'Dostluk maçı · Elo ve ödül yok',
+              if (rewardMap(room['series'])['limit'] == 3)
+                'Seri galibiyetleri: ${rewardMap(rewardMap(room['series'])['wins']).entries.map((e) => '${names[e.key]} ${e.value}').join(' · ')}',
+            ],
+          ),
         ),
-      note(
-        ranked
-            ? reward['status'] == 'pending'
-                  ? 'Sonuç ve ödül doğrulaması bekleniyor.'
-                  : '${reward['coins'] ?? 0} Coin · ${reward['xp'] ?? 0} XP · Elo ${reward['eloDelta'] ?? 0}'
-            : 'Dostluk maçı · Elo ve ödül yok',
-      ),
-      if (room['simulation'] != null)
-        note(
-          'Sunucuda hesaplanan gol sonucu: ${rewardMap(rewardMap(room['simulation'])['goals']).values.join(' – ')}',
-        ),
-      if (room['witness'] != null)
-        ExpansionTile(
-          title: const Text('Örnek doğru futbolcular'),
-          children: rows(
-            room['witness'],
-          ).map((p) => ListTile(title: Text('${p['name']}'))).toList(),
-        ),
-      if (room['answers'] is List)
-        ExpansionTile(
-          title: const Text('Doğrulanmış cevaplar'),
-          children: [
-            for (final round in room['answers'] as List)
-              ...rows(round).map((p) => ListTile(title: Text('${p['name']}'))),
-          ],
-        ),
-      if (room['squads'] != null)
-        ExpansionTile(
-          title: const Text('Kilitlenen kadrolar ve taktikler'),
-          children: [
-            for (final e in rewardMap(room['squads']).entries) ...[
-              note(
-                '${rewardMap(room['names'])[e.key]} · ${rewardMap(e.value)['formation']}',
+        panel([
+          if (room['simulation'] != null)
+            note(
+              'Sunucuda hesaplanan gol sonucu: ${rewardMap(rewardMap(room['simulation'])['goals']).values.join(' – ')}',
+            ),
+          if (room['witness'] != null)
+            ExpansionTile(
+              title: const Text('Örnek doğru futbolcular'),
+              children: rows(
+                room['witness'],
+              ).map((p) => ListTile(title: Text('${p['name']}'))).toList(),
+            ),
+          if (room['answers'] is List)
+            ExpansionTile(
+              title: const Text('Doğrulanmış cevaplar'),
+              children: [
+                for (final round in room['answers'] as List)
+                  ...rows(
+                    round,
+                  ).map((p) => ListTile(title: Text('${p['name']}'))),
+              ],
+            ),
+          if (room['squads'] != null)
+            ExpansionTile(
+              title: const Text('Kilitlenen kadrolar ve taktikler'),
+              children: [
+                for (final e in rewardMap(room['squads']).entries) ...[
+                  note(
+                    '${rewardMap(room['names'])[e.key]} · ${rewardMap(e.value)['formation']}',
+                  ),
+                  for (final id
+                      in (rewardMap(e.value)['playerIds'] as List? ?? []))
+                    note(
+                      '${rows(room['pool']).where((p) => p['id'] == id).firstOrNull?['name'] ?? id}',
+                    ),
+                  note(
+                    'Press: ${rewardMap(rewardMap(e.value)['tactics'])['press']} · Tempo: ${rewardMap(rewardMap(e.value)['tactics'])['tempo']} · Genişlik: ${rewardMap(rewardMap(e.value)['tactics'])['width']}',
+                  ),
+                ],
+              ],
+            ),
+          button(
+            'Sonucu kopyala',
+            () => Clipboard.setData(
+              ClipboardData(
+                text:
+                    '${widget.mode.title} · ${ranked ? 'Sıralamalı' : 'Arkadaş'}\n'
+                    '${rewardMap(room['names']).entries.map((e) => '${e.value}: ${rewardMap(room['scores'])[e.key] ?? 0}').join(' — ')}\nMaç: ${room['id']}',
               ),
-              for (final id in (rewardMap(e.value)['playerIds'] as List? ?? []))
-                note(
-                  '${rows(room['pool']).where((p) => p['id'] == id).firstOrNull?['name'] ?? id}',
-                ),
+            ),
+            secondary: true,
+          ),
+          ExpansionTile(
+            title: const Text('Maç bilgisi'),
+            children: [
               note(
-                'Press: ${rewardMap(rewardMap(e.value)['tactics'])['press']} · Tempo: ${rewardMap(rewardMap(e.value)['tactics'])['tempo']} · Genişlik: ${rewardMap(rewardMap(e.value)['tactics'])['width']}',
+                '${room['id']} · ${room['dataRevision']} · ${room['ruleVersion']}',
               ),
             ],
-          ],
-        ),
-      button(
-        'Sonucu kopyala',
-        () => Clipboard.setData(
-          ClipboardData(
-            text:
-                '${widget.mode.title} · ${ranked ? 'Sıralamalı' : 'Arkadaş'}\n'
-                '${rewardMap(room['names']).entries.map((e) => '${e.value}: ${rewardMap(room['scores'])[e.key] ?? 0}').join(' — ')}\nMaç: ${room['id']}',
           ),
-        ),
-        secondary: true,
-      ),
-      ExpansionTile(
-        title: const Text('Maç bilgisi'),
-        children: [
-          note(
-            '${room['id']} · ${room['dataRevision']} · ${room['ruleVersion']}',
-          ),
-        ],
-      ),
-      if (!ranked && ['finished', 'forfeit'].contains(room['status']))
-        button(
-          room['nextRoom'] != null
-              ? 'Rövanş odasına geç'
-              : rewardMap(room['rematch'])[uid] == true
-              ? 'Rövanş için rakip bekleniyor'
-              : 'Rövanş iste',
-          () async {
-            if (room['nextRoom'] != null)
-              await enter('resume');
-            else
-              await action('rematch');
-          },
-        ),
-      button('Yeniden oyna', () {
-        setState(() {
-          room = {};
-          xi.clear();
-          target = null;
-          selected = null;
-        });
-        load();
-      }, secondary: true),
-    ]);
+          if (!ranked && ['finished', 'forfeit'].contains(room['status']))
+            button(
+              room['nextRoom'] != null
+                  ? 'Rövanş odasına geç'
+                  : rewardMap(room['rematch'])[uid] == true
+                  ? 'Rövanş için rakip bekleniyor'
+                  : 'Rövanş iste',
+              () async {
+                if (room['nextRoom'] != null)
+                  await enter('resume');
+                else
+                  await action('rematch');
+              },
+            ),
+          button('Yeniden oyna', () {
+            setState(() {
+              room = {};
+              xi.clear();
+              target = null;
+              selected = null;
+            });
+            load();
+          }, secondary: true),
+        ]),
+      ],
+    );
   }
 
   Future<void> leave() async {

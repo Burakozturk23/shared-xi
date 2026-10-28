@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/arcade_page.dart';
 import 'package:shared_xi/services/arcade_service.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class ArcadeFixture extends ArcadeService {
@@ -285,6 +286,30 @@ void main() {
       await (FontLoader(e.$1)..addFont(rootBundle.load(e.$2))).load();
     }
   });
+  testWidgets('setup choices are segmented controls that update the rules', (
+    t,
+  ) async {
+    await mount(t, ArcadeFixture(stage: 'intro'), 'burst');
+    expect(find.byWidgetPredicate((w) => w is HubSegmented), findsNWidgets(2));
+    expect(find.byType(ChoiceChip), findsNothing);
+    expect(find.textContaining('Toplam 120 sn'), findsOneWidget);
+    await t.ensureVisible(find.text('Dayanıklılık'));
+    await t.tap(find.text('Dayanıklılık'));
+    await t.pumpAndSettle();
+    expect(find.textContaining('Toplam 120 sn'), findsNothing);
+    expect(find.textContaining('5 can · 12 tamamlanan tur'), findsOneWidget);
+    expect(
+      t.getSemantics(find.text('Dayanıklılık')),
+      isSemantics(isSelected: true, isButton: true),
+    );
+    await mount(t, ArcadeFixture(stage: 'intro'), 'pyramid');
+    expect(find.byWidgetPredicate((w) => w is HubSegmented), findsOneWidget);
+    await t.ensureVisible(find.text('Zor'));
+    await t.tap(find.text('Zor'));
+    await t.pumpAndSettle();
+    expect(find.textContaining('1 ipucu'), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
   for (final mode in ['burst', 'pyramid', 'matching']) {
     for (final stage in ['intro', 'prepared', 'game', 'paused', 'result']) {
       testWidgets('$mode $stage is reachable and renders without overflow', (
@@ -438,6 +463,33 @@ void main() {
       await t.pump();
     },
   );
+  for (final (mode, title) in [
+    ('burst', '1350 puan'),
+    ('pyramid', '1350 puan'),
+    ('matching', '4 hamle'),
+  ]) {
+    testWidgets('$mode result is a winning result card', (t) async {
+      await mount(t, ArcadeFixture(stage: 'result'), mode);
+      final card = find.byType(HubResultCard);
+      expect(t.widget<HubResultCard>(card).tone, HubResultTone.win);
+      for (final text in [
+        'TAMAMLANDI',
+        title,
+        'Tüm bağları tamamladın!',
+        '+2 Link Coin',
+        '+4 XP',
+      ]) {
+        expect(
+          find.descendant(of: card, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+      expect(find.text('Tekrar oyna'), findsOneWidget);
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    });
+  }
   testWidgets('Matching assisted result is labelled', (t) async {
     await mount(t, ArcadeFixture(paid: true, stage: 'result'), 'matching');
     expect(

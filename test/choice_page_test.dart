@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/choice_page.dart';
 import 'package:shared_xi/services/choice_service.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class ChoiceFixture extends ChoiceService {
@@ -270,6 +271,26 @@ void main() {
       },
     );
   }
+  testWidgets('fixed setup choices are labelled segmented controls', (t) async {
+    bool segmented(Widget w) => w is HubSegmented;
+    await mount(t, ChoiceFixture(stage: 'intro'), 'blind_ranking');
+    expect(find.byWidgetPredicate(segmented), findsNWidgets(2));
+    expect(find.text('SIRALAMA TÜRÜ'), findsOneWidget);
+    expect(find.text('LİSTE'), findsOneWidget);
+    await t.ensureVisible(find.text('10 oyuncu'));
+    await t.tap(find.text('10 oyuncu'));
+    await t.pumpAndSettle();
+    expect(
+      t.getSemantics(find.text('10 oyuncu')),
+      isSemantics(isSelected: true, isButton: true),
+    );
+    await t.pumpWidget(const SizedBox.shrink());
+    await mount(t, ChoiceFixture(stage: 'intro'), 'this_or_that');
+    expect(find.byWidgetPredicate(segmented), findsNWidgets(2));
+    expect(find.text('KATEGORİ'), findsOneWidget);
+    expect(find.text('TURNUVA BOYUTU'), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
   for (final mode in ['this_or_that', 'higher_lower', 'blind_ranking']) {
     for (final stage in ['intro', 'prepared', 'game', 'result']) {
       testWidgets('$mode $stage reachable without overflow', (t) async {
@@ -330,6 +351,28 @@ void main() {
     expect(fixture.sent?['slot'], 1);
     expect(fixture.sent?['candidateId'], 'p0');
   });
+  for (final (mode, tone, kicker, title) in [
+    ('this_or_that', HubResultTone.gold, 'ŞAMPİYONUN', 'Lionel Messi'),
+    ('higher_lower', HubResultTone.good, 'SERİ TAMAMLANDI', '10 doğru'),
+    ('blind_ranking', HubResultTone.good, 'SIRALAMA SONUCU', '80 / 100'),
+  ]) {
+    testWidgets('$mode outcome leads with a result card', (t) async {
+      await mount(t, ChoiceFixture(stage: 'result'), mode);
+      final card = find.byType(HubResultCard);
+      expect(t.widget<HubResultCard>(card).tone, tone);
+      for (final text in [kicker, title, '+2 Link Coin', '+4 XP']) {
+        expect(
+          find.descendant(of: card, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+      // The score and champion live in the card only, not twice.
+      expect(find.text(title), findsOneWidget);
+      expect(find.text('Yeni oyun'), findsOneWidget);
+      expect(t.takeException(), isNull);
+    });
+  }
   testWidgets('personal ten-player result has no objective score', (t) async {
     await mount(
       t,

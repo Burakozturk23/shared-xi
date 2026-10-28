@@ -8,6 +8,7 @@ import '../models/rewarded_ad_models.dart';
 import '../services/arcade_service.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
 
@@ -486,26 +487,14 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     String current,
     Map<String, String> options,
     ValueChanged<String> change,
-  ) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-      const SizedBox(height: 8),
-      Wrap(
-        spacing: 8,
-        runSpacing: 6,
-        children: options.entries
-            .map(
-              (e) => ChoiceChip(
-                label: Text(e.value),
-                selected: current == e.key,
-                onSelected: busy ? null : (_) => setState(() => change(e.key)),
-              ),
-            )
-            .toList(),
-      ),
-      const SizedBox(height: 16),
-    ],
+  ) => Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: HubSegmented<String>(
+      label: label,
+      options: options,
+      value: current,
+      onChanged: busy ? null : (v) => setState(() => change(v)),
+    ),
   );
   List<Widget> setup() => [
     if (widget.mode == 'burst') ...[
@@ -521,7 +510,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         'clubClub': 'Kulüp × Kulüp',
         'clubCountry': 'Kulüp × Ülke',
       }, (v) => pairType = v),
-      Text(
+      HubSpecNote(
         style == 'speed'
             ? 'Toplam 120 sn · Tur 30 sn · Yanlış −3 sn\n2 pas: her biri −5 sn · İpucu yok'
             : '5 can · 12 tamamlanan tur · 2 pas\nDestek seçenekleri oyun içinde gösterilir\nReklam ipuçları diğer solo modlarla ortak 4/gün sınırına tabidir.',
@@ -540,7 +529,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         'normal': 'Normal',
         'hard': 'Zor',
       }, (v) => difficulty = v),
-      Text(
+      HubSpecNote(
         widget.mode == 'pyramid'
             ? '${difficulty == 'easy' ? '10 hücre · 5 boş' : '15 hücre · 9 boş'} · 5 can\n${difficulty == 'hard' ? 1 : 2} ipucu · Süre sınırı yok'
             : '${{'easy': 6, 'normal': 8, 'hard': 12}[difficulty]} çift · ${difficulty == 'easy' ? 3 : 4} sütun\nİpucu ve geri sayım yok',
@@ -1015,38 +1004,37 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   }
 
   List<Widget> result() => [
-    if (run['assisted'] == true)
-      const Text('Yardımlı sonuç · Yardımsız rekor ve ustalığa eklenmez.'),
-    panel(
-      run['won'] == true ? 'Tamamlandı!' : 'Oyun sonucu',
-      '${run['reason'] ?? ''}',
-      child: Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Text(
+    Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: HubResultCard(
+        tone: run['won'] == true ? HubResultTone.win : HubResultTone.neutral,
+        icon: run['won'] == true
+            ? Icons.emoji_events_rounded
+            : Icons.flag_rounded,
+        kicker: run['won'] == true ? 'Tamamlandı' : 'Oyun sonucu',
+        title: widget.mode == 'matching'
+            ? '${run['moves']} hamle'
+            : '${run['score']} puan',
+        subtitle: '${run['reason'] ?? ''}'.isEmpty ? null : '${run['reason']}',
+        coins: _n(run['earnedCoins']),
+        xp: _n(run['earnedCoins']) * 2,
+        notes: [
           widget.mode == 'matching'
-              ? '${run['moves']} hamle · ${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}'
-              : '${run['score']} puan · ${run['correct']} doğru${widget.mode == 'burst' ? ' · ${run['rounds']} tur' : ''}',
-        ),
+              ? '${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}'
+              : '${run['correct']} doğru · ${_n(run['wrong'])} yanlış · ${_n(run['hints'])} ipucu'
+                    '${widget.mode == 'burst' ? ' · ${run['rounds']} tur · ${_n(run['passes'])} pas' : ''}',
+          if (run['assisted'] == true)
+            'Yardımlı sonuç · Yardımsız rekor ve ustalığa eklenmez.',
+          if (run['pendingValidation'] == true)
+            'Sonuç doğrulama bekliyor. Yenile ile eşitle.',
+          if (run['practice'] == true) 'Konuk alıştırması',
+          _n(data['pendingCoins']) > 0
+              ? 'Ödül ödemesi bekliyor; Yenile ile eşitle.'
+              : rewardMap(data['availability'])['rewardsEnabled'] == true
+              ? 'Ödül durumu hesabında kayıtlı.'
+              : 'Bu sürümde ödüller henüz açılmadı.',
+        ],
       ),
-    ),
-    if (run['pendingValidation'] == true)
-      Text(
-        'Sonuç doğrulama bekliyor. Yenile ile eşitle.',
-        style: TextStyle(color: accent),
-      ),
-    if (widget.mode != 'matching')
-      Text(
-        '${_n(run['wrong'])} yanlış · ${_n(run['hints'])} ipucu${widget.mode == 'burst' ? ' · ${_n(run['passes'])} pas' : ''}',
-      ),
-    Text(
-      '${_n(run['earnedCoins'])} Coin · ${_n(run['earnedCoins']) * 2} XP${run['practice'] == true ? ' · Konuk alıştırması' : ''}',
-    ),
-    Text(
-      _n(data['pendingCoins']) > 0
-          ? 'Ödül ödemesi bekliyor; Yenile ile eşitle.'
-          : rewardMap(data['availability'])['rewardsEnabled'] == true
-          ? 'Ödül durumu hesabında kayıtlı.'
-          : 'Bu sürümde ödüller henüz açılmadı.',
     ),
     if (widget.mode == 'burst')
       for (final h in _rows(run['history']))

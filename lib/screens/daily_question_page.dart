@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
 import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/energy_sheet.dart';
 
@@ -269,38 +270,60 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                   ),
               ] else ...[
                 const SizedBox(height: 16),
+                HubResultCard(
+                  tone: result['correct'] == true
+                      ? HubResultTone.good
+                      : HubResultTone.neutral,
+                  icon: result['correct'] == true
+                      ? Icons.task_alt_rounded
+                      : Icons.auto_stories_rounded,
+                  kicker: result['correct'] == true
+                      ? 'Doğru cevap'
+                      : 'Yanlış cevap',
+                  title: result['correct'] == true
+                      ? 'Futbol bilgine sağlık!'
+                      : 'Yeni bir futbol hikâyesi öğrendin.',
+                  subtitle:
+                      result['correct'] == true ||
+                          result['answer'] is! int ||
+                          (result['answer'] as int) >= options.length
+                      ? null
+                      : 'Doğru cevap: ${options[result['answer'] as int]}',
+                  coins: (result['coins'] as num?)?.toInt(),
+                  xp: (result['xp'] as num?)?.toInt(),
+                  notes: [
+                    if (result['assisted'] == true) 'Yardımlı sonuç',
+                    if (result['bonus'] == true)
+                      '7 günlük seri bonusu bu ödüle dahil.',
+                    if ((data?['pendingRewards'] as num? ?? 0) > 0)
+                      'Ödülün bekliyor. Aynı hesabı Google’a bağladığında eşitlenir.',
+                  ],
+                ),
+                const SizedBox(height: 12),
                 PitchPanel(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        result['correct'] == true
-                            ? 'Futbol bilgine sağlık!'
-                            : 'Yeni bir futbol hikâyesi öğrendin.',
+                        'Bu sorunun hikâyesi',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        '+${result['coins']} Link Coin · +${result['xp']} XP',
-                      ),
-                      if (result['assisted'] == true)
-                        const Text('Yardımlı sonuç'),
-                      if (result['bonus'] == true)
-                        const Text('7 günlük seri bonusu bu ödüle dahil.'),
-                      if ((data?['pendingRewards'] as num? ?? 0) > 0)
-                        const Text(
-                          'Ödülün bekliyor. Aynı hesabı Google’a bağladığında eşitlenir.',
-                        ),
-                      const SizedBox(height: 12),
                       Text('${result['explanation']}'),
-                      const SizedBox(height: 12),
-                      const Text('Kaynaklar'),
-                      for (final source
-                          in (result['sources'] as List? ?? const []))
-                        SelectableText(
-                          '${rewardMap(source)['url']}',
-                          style: Theme.of(context).textTheme.bodySmall,
+                      if ((result['sources'] as List? ?? const [])
+                          .isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          'Kaynaklar',
+                          style: Theme.of(context).textTheme.labelLarge,
                         ),
+                        for (final source
+                            in (result['sources'] as List? ?? const []))
+                          SelectableText(
+                            '${rewardMap(source)['url']}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                      ],
                     ],
                   ),
                 ),

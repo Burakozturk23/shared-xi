@@ -3,7 +3,7 @@ import '../app/game_audio.dart';
 import '../app/route_appearance.dart';
 import '../models/chain_state.dart';
 import '../widgets/game_ui.dart';
-import '../widgets/pitch_ui.dart';
+import '../widgets/hub_ui.dart';
 import 'chain_page.dart';
 
 class ChainModeSelectionPage extends StatelessWidget {
@@ -27,11 +27,10 @@ class ChainModeSelectionPage extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
-          PitchRow(
+          ModeStyleCard(
             title: 'Zincir Ustalığı',
-            subtitle: 'Süre yok · En az hamle · PAR hedefi',
+            specs: 'Süre yok · En az hamle · PAR hedefi',
             icon: Icons.psychology_outlined,
-            highlight: true,
             onTap: () => Navigator.push(
               context,
               LinkballRoute(
@@ -40,11 +39,10 @@ class ChainModeSelectionPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          PitchRow(
+          ModeStyleCard(
             title: 'Zincir Sprinti',
-            subtitle: '60 sn başlangıç · Zincir başına +5 sn · En fazla 180 sn',
+            specs: '60 sn başlangıç · Zincir başına +5 sn · En fazla 180 sn',
             icon: Icons.timer_outlined,
-            highlight: true,
             onTap: () => Navigator.push(
               context,
               LinkballRoute(

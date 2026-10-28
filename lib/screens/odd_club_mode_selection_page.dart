@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../app/game_audio.dart';
 import '../app/route_appearance.dart';
 import '../widgets/game_ui.dart';
-import '../widgets/pitch_ui.dart';
+import '../widgets/hub_ui.dart';
 import 'odd_club_page.dart';
 
 class OddClubModeSelectionPage extends StatelessWidget {
@@ -26,11 +26,10 @@ class OddClubModeSelectionPage extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
-          PitchRow(
+          ModeStyleCard(
             title: 'Sonsuz Seri',
             icon: Icons.all_inclusive,
-            highlight: true,
-            subtitle: 'Süresiz · 3 can · 1 ücretsiz 50/50 · kalıcı rekor',
+            specs: 'Süresiz · 3 can · 1 ücretsiz 50/50 · kalıcı rekor',
             onTap: () => Navigator.push(
               context,
               LinkballRoute(
@@ -40,11 +39,10 @@ class OddClubModeSelectionPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          PitchRow(
+          ModeStyleCard(
             title: 'Hız Serisi',
             icon: Icons.timer_outlined,
-            highlight: true,
-            subtitle: '10 soru · soru başına 10 saniye · 3 can · yardımsız',
+            specs: '10 soru · soru başına 10 saniye · 3 can · yardımsız',
             onTap: () => Navigator.push(
               context,
               LinkballRoute(

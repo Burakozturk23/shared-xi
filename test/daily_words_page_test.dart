@@ -10,6 +10,7 @@ import 'package:shared_xi/screens/daily_words_page.dart';
 import 'package:shared_xi/screens/anagram_page.dart';
 import 'package:shared_xi/services/daily_words_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class WordFixture extends DailyWordsService {
@@ -479,6 +480,19 @@ void main() {
             if (stage == 'result') {
               expect(find.text('Ustalık'), findsOneWidget);
               expect(find.text('Yanıtla'), findsNothing);
+              final card = find.byType(HubResultCard);
+              expect(t.widget<HubResultCard>(card).tone, HubResultTone.gold);
+              for (final text in [
+                'RESMÎ SONUÇ',
+                '+${mode == 'passa_weekly' ? 2 : 3} Link Coin',
+                '+6 XP',
+              ]) {
+                expect(
+                  find.descendant(of: card, matching: find.text(text)),
+                  findsOneWidget,
+                  reason: text,
+                );
+              }
             }
           }
           await t.tap(find.byTooltip('30 günlük arşiv'));

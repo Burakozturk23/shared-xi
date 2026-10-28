@@ -1,5 +1,6 @@
 import 'supported_grid_page.dart';
 import '../widgets/grid_club_pool_picker.dart';
+import '../widgets/hub_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'grid_page.dart';
@@ -17,17 +18,17 @@ class GridModeSelectionPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
-            const Text(
+            Text(
               'Hangi grid türüyle oynamak istersin?',
-              style: TextStyle(fontSize: 16),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 20),
             const GridClubPoolPicker(),
             const SizedBox(height: 16),
-            _ModeTile(
+            ModeStyleCard(
               icon: Icons.grid_view,
               title: 'Klasik',
-              subtitle: 'Kriterlere uyan doğru oyuncuyu bul',
+              specs: 'Kriterlere uyan doğru oyuncuyu bul',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -39,10 +40,10 @@ class GridModeSelectionPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            _ModeTile(
+            ModeStyleCard(
               icon: Icons.swap_horiz,
               title: 'Tersten',
-              subtitle: 'Üç oyuncunun ortak kriterini bul',
+              specs: 'Üç oyuncunun ortak kriterini bul',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -54,10 +55,10 @@ class GridModeSelectionPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            _ModeTile(
+            ModeStyleCard(
               icon: Icons.shuffle,
               title: 'Rastgele Eşleşme',
-              subtitle: '3 rastgele kulüp çifti, sen yerleştir',
+              specs: '3 rastgele kulüp çifti, sen yerleştir',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -70,37 +71,6 @@ class GridModeSelectionPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ModeTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ModeTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Icon(icon, size: 32),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
       ),
     );
   }

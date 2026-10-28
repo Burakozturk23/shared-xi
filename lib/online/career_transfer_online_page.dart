@@ -8,6 +8,7 @@ import '../services/career_transfer_service.dart';
 import '../widgets/friend_match_invite_button.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/online_ui.dart';
 import '../services/game_error.dart';
 import '../widgets/fake_club_options.dart';
@@ -421,48 +422,62 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     ),
   );
   List<Widget> _lobby() => [
-    if (_finished)
-      PitchPanel(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _room['status'] == 'forfeit'
-                  ? 'Hükmen sonuç'
-                  : _room['status'] == 'cancelled'
-                  ? 'Oda kapandı'
-                  : {
-                          'win': 'Kazandın',
-                          'draw': 'Berabere',
-                          'loss': 'Rakibin kazandı',
-                        }[_room['result']] ??
-                        'Maç bitti',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(
-              '${rewardMap(_room['mine'])['score'] ?? 0} – ${rewardMap(_room['theirs'])['score'] ?? 0}',
-            ),
-            Text(
-              _room['rewardEligible'] == true
-                  ? 'Günün ilk 5 geçerli dereceli maçı ortak ödül sınırına tabidir.'
-                  : _fakeClub && _room['ranked'] == true
-                  ? 'Coin / XP hakkı yok. Dereceli sonuç ELO ve istatistiklere işlenir.'
-                  : 'Bu maçtan Coin / XP / ELO ödülü yok.',
-            ),
-            if (_room['rewardEligible'] == true)
-              const Text(
-                'Galibiyet 3C / 8XP · beraberlik 2C / 6XP · mağlubiyet 1C / 4XP',
-              ),
-            for (final r in _rows(_room['rounds']))
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'Tur: ${{'fake_club_duel': 'Sahte Kulüp', 'mystery_duel': 'Gizem', 'transfer': 'Transfer', 'order': 'Kronoloji', 'missing': 'Eksik kulüp', 'mystery': 'Gizemli kariyer'}[r['kind']] ?? 'Soru'} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan${r['explanation'] != null ? '\n${r['explanation']}' : ''}',
-                ),
-              ),
-          ],
-        ),
+    if (_finished) ...[
+      HubResultCard(
+        tone:
+            _room['status'] != 'forfeit' &&
+                _room['status'] != 'cancelled' &&
+                _room['result'] == 'win'
+            ? HubResultTone.win
+            : HubResultTone.neutral,
+        icon: _room['result'] == 'win'
+            ? Icons.emoji_events_rounded
+            : Icons.sports_score_rounded,
+        kicker: _room['ranked'] == true
+            ? 'Dereceli düello'
+            : 'Dostluk düellosu',
+        title: _room['status'] == 'forfeit'
+            ? 'Hükmen sonuç'
+            : _room['status'] == 'cancelled'
+            ? 'Oda kapandı'
+            : {
+                    'win': 'Kazandın',
+                    'draw': 'Berabere',
+                    'loss': 'Rakibin kazandı',
+                  }[_room['result']] ??
+                  'Maç bitti',
+        subtitle:
+            'Sen ${rewardMap(_room['mine'])['score'] ?? 0} – ${rewardMap(_room['theirs'])['score'] ?? 0} Rakip',
+        notes: [
+          _room['rewardEligible'] == true
+              ? 'Günün ilk 5 geçerli dereceli maçı ortak ödül sınırına tabidir.'
+              : _fakeClub && _room['ranked'] == true
+              ? 'Coin / XP hakkı yok. Dereceli sonuç ELO ve istatistiklere işlenir.'
+              : 'Bu maçtan Coin / XP / ELO ödülü yok.',
+          if (_room['rewardEligible'] == true)
+            'Galibiyet 3C / 8XP · beraberlik 2C / 6XP · mağlubiyet 1C / 4XP',
+        ],
       ),
+      if (_rows(_room['rounds']).isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: PitchPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Turlar', style: Theme.of(context).textTheme.titleMedium),
+                for (final r in _rows(_room['rounds']))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Tur: ${{'fake_club_duel': 'Sahte Kulüp', 'mystery_duel': 'Gizem', 'transfer': 'Transfer', 'order': 'Kronoloji', 'missing': 'Eksik kulüp', 'mystery': 'Gizemli kariyer'}[r['kind']] ?? 'Soru'} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan${r['explanation'] != null ? '\n${r['explanation']}' : ''}',
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+    ],
     const SizedBox(height: 12),
     GameIntro(
       icon: _fakeClub

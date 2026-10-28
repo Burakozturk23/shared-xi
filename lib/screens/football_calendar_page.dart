@@ -6,6 +6,7 @@ import '../services/daily_matches_gateway.dart';
 import '../widgets/club_identity_badge.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
 
@@ -799,81 +800,63 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
             textAlign: TextAlign.center,
           ),
         ] else ...[
-          PitchPanel(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Icon(
-                  all
-                      ? Icons.emoji_events
-                      : won
-                      ? Icons.verified
-                      : Icons.sports_soccer,
-                  size: 52,
-                  color: p.accent,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  all
-                      ? 'Kusursuz futbol hafızası!'
-                      : won
-                      ? 'Maçı kazandın!'
-                      : 'Bir sonraki maç senin.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  '${number(r, 'reward') * (r['doubled'] == true ? 2 : 1)} Link Coin',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (r['assisted'] == true)
-                  const Text(
-                    'Yardımlı sonuç · Ustalık ve yardımsız seri dışında',
-                    textAlign: TextAlign.center,
-                  ),
-                if (all)
-                  const Text(
-                    'Tüm oyuncuları bulma bonusu dahil.',
-                    textAlign: TextAlign.center,
-                  ),
-                if (won && r['doubled'] != true) ...[
-                  const SizedBox(height: 16),
-                  PitchAction(
-                    label: bonusLabel('${number(r, 'reward') * 2} coine katla'),
-                    icon: Icons.play_circle_outline,
-                    onPressed: _busy || !_bonusReady
-                        ? null
-                        : () => _run(() => _watch('daily_double')),
-                  ),
-                ],
-                if (r['doubled'] == true)
-                  const Text(
-                    '2x bonusun kaydedildi.',
-                    textAlign: TextAlign.center,
-                  ),
-                const SizedBox(height: 10),
-                OutlinedButton(
-                  onPressed: _busy
+          HubResultCard(
+            tone: all
+                ? HubResultTone.gold
+                : won
+                ? HubResultTone.win
+                : HubResultTone.neutral,
+            icon: all
+                ? Icons.emoji_events_rounded
+                : won
+                ? Icons.verified_rounded
+                : Icons.sports_soccer_rounded,
+            kicker: all
+                ? 'Tüm oyuncular bulundu'
+                : won
+                ? 'Hedef tamamlandı'
+                : 'Maç tamamlandı',
+            title: all
+                ? 'Kusursuz futbol hafızası!'
+                : won
+                ? 'Maçı kazandın!'
+                : 'Bir sonraki maç senin.',
+            subtitle: '${found.length}/${number(r, 'total')} ortak oyuncu',
+            coins: number(r, 'reward') * (r['doubled'] == true ? 2 : 1),
+            notes: [
+              if (r['assisted'] == true)
+                'Yardımlı sonuç · Ustalık ve yardımsız seri dışında',
+              if (all) 'Tüm oyuncuları bulma bonusu dahil.',
+              if (r['doubled'] == true) '2x bonusun kaydedildi.',
+            ],
+          ),
+          const SizedBox(height: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (won && r['doubled'] != true) ...[
+                PitchAction(
+                  label: bonusLabel('${number(r, 'reward') * 2} coine katla'),
+                  icon: Icons.play_circle_outline,
+                  onPressed: _busy || !_bonusReady
                       ? null
-                      : () {
-                          setState(() {
-                            _round = null;
-                            _match = null;
-                          });
-                          _run(_refresh);
-                        },
-                  child: const Text('Diğer maçlara dön'),
+                      : () => _run(() => _watch('daily_double')),
                 ),
+                const SizedBox(height: 10),
               ],
-            ),
+              OutlinedButton(
+                onPressed: _busy
+                    ? null
+                    : () {
+                        setState(() {
+                          _round = null;
+                          _match = null;
+                        });
+                        _run(_refresh);
+                      },
+                child: const Text('Diğer maçlara dön'),
+              ),
+            ],
           ),
         ],
         if (found.isNotEmpty) ...[

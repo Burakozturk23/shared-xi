@@ -8,6 +8,7 @@ import 'package:shared_xi/screens/career_transfer_page.dart';
 import 'package:shared_xi/online/career_transfer_online_page.dart';
 import 'package:shared_xi/services/career_transfer_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 
 class FakePuzzle extends CareerTransferService {
   FakePuzzle(this.mode, {this.phase = 'guess', this.active = true});
@@ -182,6 +183,43 @@ void main() {
     ]) {
       await (FontLoader(e.$1)..addFont(rootBundle.load(e.$2))).load();
     }
+  });
+  testWidgets('career difficulty is a segmented choice sent on start', (
+    t,
+  ) async {
+    final f = FakePuzzle('career', active: false);
+    await mount(t, CareerTransferPage(mode: 'career', service: f));
+    expect(find.byType(DropdownButtonFormField<String>), findsNothing);
+    expect(find.byWidgetPredicate((w) => w is HubSegmented), findsOneWidget);
+    expect(find.text('ZORLUK'), findsOneWidget);
+    // Rules are visible notes, not hidden in a collapsed tile.
+    expect(
+      find.textContaining('1 ücretsiz + 2 reklamlı ipucu'),
+      findsOneWidget,
+    );
+    await t.ensureVisible(find.text('Efsane\n8–12 dönem'));
+    await t.tap(find.text('Efsane\n8–12 dönem'));
+    await t.pump();
+    await t.ensureVisible(find.text('Yeni bulmaca'));
+    await t.tap(find.text('Yeni bulmaca'));
+    await t.pump();
+    expect(f.mutation!['difficulty'], 'legend');
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets('transfer has no difficulty choice', (t) async {
+    await mount(
+      t,
+      CareerTransferPage(
+        mode: 'transfer',
+        service: FakePuzzle('transfer', active: false),
+      ),
+    );
+    expect(find.byWidgetPredicate((w) => w is HubSegmented), findsNothing);
+    expect(
+      find.textContaining('1 ücretsiz + 2 reklamlı ipucu'),
+      findsOneWidget,
+    );
+    await t.pumpWidget(const SizedBox());
   });
   for (final mode in ['career', 'transfer']) {
     testWidgets(

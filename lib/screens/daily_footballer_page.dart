@@ -8,6 +8,7 @@ import '../services/story_support_service.dart';
 import '../models/rewarded_ad_models.dart';
 import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 
 class DailyFootballerPage extends StatefulWidget {
@@ -473,46 +474,19 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
 
   Widget _result(DailyFootballerRound round) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
-    child: PitchPanel(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Icon(
-            round.won
-                ? Icons.emoji_events_outlined
-                : Icons.sports_soccer_rounded,
-            size: 40,
-            color: PitchColors.of(context).limeInk,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            round.won ? 'Gizli ismi buldun!' : 'Bugünün dosyası kapandı.',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            round.target.name,
-            key: const ValueKey('daily-answer'),
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          Text(
-            '${round.target.club} · ${round.target.country} · #${round.target.shirtNumber}',
-            textAlign: TextAlign.center,
-          ),
-          if (round.assisted)
-            const Text(
-              'Yardımlı sonuç · Ayrı başarı kaydı',
-              textAlign: TextAlign.center,
-            ),
-          const SizedBox(height: 8),
-          const Text(
-            'Yeni futbolcu yarın seni bekliyor.',
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    child: HubResultCard(
+      tone: round.won ? HubResultTone.good : HubResultTone.neutral,
+      icon: round.won ? Icons.person_search_rounded : Icons.lock_rounded,
+      kicker: round.won ? 'Gizli ismi buldun!' : 'Bugünün dosyası kapandı',
+      title: round.target.name,
+      titleKey: const ValueKey('daily-answer'),
+      subtitle:
+          '${round.target.club} · ${round.target.country} · #${round.target.shirtNumber}',
+      notes: [
+        if (round.won) '${round.guesses.length}/${round.limit} tahminde buldun',
+        if (round.assisted) 'Yardımlı sonuç · Ayrı başarı kaydı',
+        'Yeni futbolcu yarın seni bekliyor.',
+      ],
     ),
   );
 

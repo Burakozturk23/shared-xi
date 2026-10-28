@@ -8,6 +8,7 @@ import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../services/story_support_service.dart';
+import '../widgets/game_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/pitch_ui.dart';
 
@@ -413,20 +414,8 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                   ),
                 if (!_active) ...[
                   const SizedBox(height: 16),
-                  Text(
-                    _run['completed'] == true
-                        ? (_bot
-                              ? (_run['winner'] == 1
-                                    ? 'Kazandın'
-                                    : _run['winner'] == 2
-                                    ? 'Bot kazandı'
-                                    : 'Beraberlik')
-                              : 'Tahta tamamlandı')
-                        : 'Oyun tamamlanmadan bitti',
-                  ),
-                  const Text(
-                    'Coin/XP, sıralama veya ustalık ödülü yok. Yardımlı sonuçlar ayrı tutulur.',
-                  ),
+                  serverMatchResult(_run, bot: _bot),
+                  const SizedBox(height: 12),
                   FilledButton(
                     onPressed: _busy || _data['availability'] != true
                         ? null

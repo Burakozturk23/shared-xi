@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/three_modes_page.dart';
 import 'package:shared_xi/services/three_modes_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 
 class FakeModes extends ThreeModesService {
   FakeModes(this.mode, {this.active = false});
@@ -121,6 +122,22 @@ class FakeModes extends ThreeModesService {
   }) async {}
 }
 
+/// A finished run whose result earned the Altın medal and rewards.
+class FinishedModes extends FakeModes {
+  FinishedModes(super.mode) : super(active: true);
+  @override
+  Map<String, dynamic> get session => {
+    ...super.session,
+    'finished': true,
+    'result': {
+      'score': mode == 'squad_vault' ? 4 : 11,
+      'newMedals': mode == 'squad_vault' ? [] : ['3'],
+      'coins': 10,
+      'xp': 20,
+    },
+  };
+}
+
 final boundary = GlobalKey();
 Future<void> open(
   WidgetTester t,
@@ -183,6 +200,71 @@ void main() {
       await (FontLoader(entry.$1)..addFont(rootBundle.load(entry.$2))).load();
     }
   });
+  for (final (mode, unit) in [
+    ('coach_xi', 'hoca'),
+    ('letter11', 'harf'),
+    ('squad_vault', 'kasa'),
+  ]) {
+    testWidgets('$mode landing shows a collection tile and labelled choices', (
+      t,
+    ) async {
+      await open(t, FakeModes(mode));
+      expect(find.text('KOLEKSİYON'), findsOneWidget);
+      expect(find.text('0 / 1'), findsOneWidget);
+      expect(find.text('$unit tamamlandı'), findsOneWidget);
+      final segmented = find.byWidgetPredicate((w) => w is HubSegmented);
+      if (mode == 'squad_vault') {
+        expect(segmented, findsNothing);
+        expect(find.text('FORMASYON'), findsNothing);
+      } else {
+        expect(segmented, findsOneWidget);
+        expect(find.text('ZORLUK'), findsOneWidget);
+        expect(find.text('FORMASYON'), findsOneWidget);
+        await t.ensureVisible(find.text('Kolay'));
+        await t.tap(find.text('Kolay'));
+        await t.pumpAndSettle();
+        expect(
+          t.getSemantics(find.text('Kolay')),
+          isSemantics(isSelected: true, isButton: true),
+        );
+      }
+      expect(t.takeException(), isNull);
+    });
+  }
+  for (final (mode, title, subtitle) in [
+    ('coach_xi', '11/11 kadro', 'Yeni madalya: Altın'),
+    ('letter11', '11/11 kadro', 'Yeni madalya: Altın'),
+    ('squad_vault', '4 yıldız', null),
+  ]) {
+    testWidgets('$mode finished run shows a result card', (t) async {
+      await open(t, FinishedModes(mode));
+      await t.scrollUntilVisible(
+        find.byType(HubResultCard),
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final card = find.byType(HubResultCard);
+      expect(
+        t.widget<HubResultCard>(card).tone,
+        mode == 'squad_vault' ? HubResultTone.good : HubResultTone.gold,
+      );
+      for (final text in [
+        'OYUN TAMAMLANDI',
+        title,
+        ?subtitle,
+        '+10 Link Coin',
+        '+20 XP',
+      ]) {
+        expect(
+          find.descendant(of: card, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+      await capture(t, '${mode}_result');
+      expect(t.takeException(), isNull);
+    });
+  }
   for (final mode in ['coach_xi', 'letter11', 'squad_vault']) {
     testWidgets(
       '$mode landing and resumed pitch render in both themes and large type',

@@ -9,6 +9,7 @@ import 'package:shared_xi/online/career_transfer_online_page.dart';
 import 'package:shared_xi/online/online_mode_catalog.dart';
 import 'package:shared_xi/services/career_transfer_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 
 class FakeMysteryChain extends CareerTransferService {
   FakeMysteryChain(this.mode, {this.active = true, this.finished = false});
@@ -236,6 +237,29 @@ void main() {
         await t.pumpWidget(const SizedBox());
       },
     );
+  }
+  for (final mode in ['mystery', 'mastermind', 'blitz']) {
+    testWidgets('$mode home is a hero card with a rules list', (t) async {
+      await mount(
+        t,
+        MysteryChainPage(
+          mode: mode,
+          service: FakeMysteryChain(mode, active: false),
+        ),
+      );
+      expect(find.byType(HubHeroCard), findsOneWidget);
+      expect(find.text('Kurallar ve kazanımlar'), findsOneWidget);
+      // Shared budget, reward and energy lines are each their own note.
+      expect(find.byType(HubSpecNote), findsAtLeastNWidgets(4));
+      expect(
+        find.widgetWithText(HubSpecNote, 'Gizemli Futbolcu ve iki Zincir '
+            'modu ortak günde 24 Coin / 48 XP bütçesini kullanır. Fazlası '
+            'kaybolmaz; sırada bekler.'),
+        findsOneWidget,
+      );
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    });
   }
   testWidgets(
     'M04: selected player ID is submitted and result reveals the player',

@@ -12,6 +12,7 @@ import 'package:shared_xi/screens/games_catalog_page.dart';
 import 'package:shared_xi/screens/odd_club_mode_selection_page.dart';
 import 'package:shared_xi/screens/odd_club_page.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/online_ui.dart';
 import 'arcade_page_test.dart' as arcade;
 import 'choice_page_test.dart' as choice;
@@ -238,8 +239,14 @@ void main() {
           if (stage == 'waiting') expect(find.text('ABCD1234'), findsOneWidget);
           if (stage == 'playing')
             expect(find.textContaining('Tur 1 /'), findsOneWidget);
-          if (stage == 'finished')
-            expect(find.text('Kazandın'), findsOneWidget);
+          if (stage == 'finished') {
+            final card = find.byType(HubResultCard);
+            expect(t.widget<HubResultCard>(card).tone, HubResultTone.win);
+            expect(
+              find.descendant(of: card, matching: find.text('Kazandın')),
+              findsOneWidget,
+            );
+          }
           if (stage == 'setup')
             expect(find.text('Arkadaş odası oluştur'), findsOneWidget);
           await capture(t, '${mode}_${stage}_$light');

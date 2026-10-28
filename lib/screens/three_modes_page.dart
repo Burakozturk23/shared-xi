@@ -14,6 +14,8 @@ import '../models/rewarded_ad_models.dart';
 import '../services/three_modes_service.dart';
 import '../services/coach_honours_service.dart';
 import '../widgets/coach_avatar.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 
 List<Map<String, dynamic>> _maps(dynamic v) =>
@@ -349,20 +351,49 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     final completed = entries
         .where((e) => rewardMap(e['record'])['solved'] == true)
         .length;
+    final palette = PitchColors.of(context);
+    final unit = _vault
+        ? 'kasa'
+        : _coach
+        ? 'hoca'
+        : 'harf';
+    final stats = [
+      HubStatTile(
+        label: 'Koleksiyon',
+        value: '$completed / ${entries.length}',
+        note: '$unit tamamlandı',
+      ),
+      if (energy.isNotEmpty)
+        energy['enabled'] == true
+            ? HubStatTile(
+                label: 'Enerji',
+                value: '${energy['available']} / ${energy['capacity']}',
+                note: 'yeni oyun 1 enerji',
+              )
+            : const HubStatTile(
+                label: 'Enerji',
+                value: '—',
+                note: 'sistem kapalı · ücretsiz',
+              ),
+    ];
     return [
-      PitchPanel(
+      HubHeroCard(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Icon(
-              _vault
-                  ? Icons.lock_open_rounded
-                  : _coach
-                  ? Icons.sports_rounded
-                  : Icons.abc_rounded,
-              size: 40,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: HubIconBox(
+                _vault
+                    ? Icons.lock_open_rounded
+                    : _coach
+                    ? Icons.sports_rounded
+                    : Icons.abc_rounded,
+                size: 52,
+                background: palette.background.withValues(alpha: .4),
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Text(
               _vault
                   ? 'Üç bayrak. Bir kulüp.'
@@ -378,26 +409,28 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                   : _coach
                   ? 'Hocasıyla gerçekten çalışmış futbolculardan kadronu kur. Doğrulanamayan bağlar yanlış sayılmaz.'
                   : 'Adı, soyadı veya bilinen lakabı verilen harfle başlayan futbolcularla kadronu kur.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: palette.muted),
             ),
-            const SizedBox(height: 12),
-            if (energy.isNotEmpty)
-              Text(
-                energy['enabled'] == true
-                    ? 'Enerji: ${energy['available']} / ${energy['capacity']}'
-                    : 'Enerji sistemi şu anda kapalı · ücretsiz oyun',
+            const SizedBox(height: 16),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final (i, tile) in stats.indexed) ...[
+                    if (i > 0) const SizedBox(width: 10),
+                    Expanded(child: tile),
+                  ],
+                ],
               ),
-            Text(
-              '$completed / ${entries.length} ${_vault
-                  ? 'kasa'
-                  : _coach
-                  ? 'hoca'
-                  : 'harf'} koleksiyonunda',
             ),
-            const SizedBox(height: 8),
-            const Text(
+            const SizedBox(height: 14),
+            const HubSpecNote(
               'Yeni oyun: enerji sistemi açıkken 1 enerji. Devam etmek ve arşivi incelemek ücretsiz.',
             ),
-            const Text(
+            const SizedBox(height: 6),
+            const HubSpecNote(
               'Her oyunda 1 ücretsiz + en fazla 2 reklamlı ipucu. İpucunu kullanmak ustalığı/yıldızı etkiler.',
             ),
           ],
@@ -413,6 +446,10 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         const SizedBox(height: 12),
       ],
       if (!_vault) ...[
+        // Formations stay chips: "4-2-3-1" would break mid-label in a
+        // five-way segmented control at 320 px.
+        Text('FORMASYON', style: hubCaps(context)),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -426,27 +463,19 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
               )
               .toList(),
         ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          children:
-              {
-                    '': 'Karışık',
-                    'easy': 'Kolay',
-                    'medium': 'Orta',
-                    if (!_coach) 'hard': 'Zor',
-                  }.entries
-                  .map(
-                    (d) => ChoiceChip(
-                      label: Text(d.value),
-                      selected: _difficulty == d.key,
-                      onSelected: _busy
-                          ? null
-                          : (_) => setState(() => _difficulty = d.key),
-                    ),
-                  )
-                  .toList(),
+        const SizedBox(height: 16),
+        HubSegmented<String>(
+          label: 'Zorluk',
+          options: {
+            '': 'Karışık',
+            'easy': 'Kolay',
+            'medium': 'Orta',
+            if (!_coach) 'hard': 'Zor',
+          },
+          value: _difficulty,
+          onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
         ),
+        const SizedBox(height: 8),
         if (!_coach)
           const Text(
             'Günün resmi denemesinde en az 8 oyuncu: +10 coin ve +20 XP, günde bir kez.',
@@ -1138,41 +1167,54 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
 
   List<Widget> _result() {
     final r = rewardMap(_session['result']);
+    final medals = _vault
+        ? const <String>[]
+        : _strings(r['newMedals'])
+              .map(
+                (m) =>
+                    {
+                      '1': 'Bronz',
+                      '2': 'Gümüş',
+                      '3': 'Altın',
+                      '4': 'Ustalık',
+                    }[m] ??
+                    m,
+              )
+              .toList();
+    final score = (r['score'] as num? ?? 0).toInt();
     return [
-      const PitchSectionTitle('Oyun tamamlandı'),
-      PitchPanel(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _vault
-                  ? '${r['score']} yıldız'
-                  : r['mastery'] == true
-                  ? 'Ustalık kazandın!'
-                  : '${r['score']}/11 kadro',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            if (!_vault && _strings(r['newMedals']).isNotEmpty)
-              Text(
-                'Yeni madalyalar: ${_strings(r['newMedals']).map((m) => {'1': 'Bronz', '2': 'Gümüş', '3': 'Altın', '4': 'Ustalık'}[m] ?? m).join(', ')}',
-              ),
-            Text('Bu oyunda yeni ödül: ${r['coins']} coin · ${r['xp']} XP'),
-            Text(
-              _vault
-                  ? 'Aynı kulübün yıldız ödülleri tüm kasa çeşitlerinde ortaktır.'
-                  : 'Aynı hedefin madalyaları rulet, günlük ve arşivde ortaktır.',
-            ),
-            if (_status['linked'] != true)
-              const Text(
-                'Ödüllerin bekliyor. Aynı misafir hesabını Google’a bağlayınca aktarılır.',
-              ),
-            if (r['avatarAvailable'] == true)
-              const Text(
-                'Hoca koleksiyonunda avatar veya sabit coin ödülünü seçebilirsin.',
-              ),
-          ],
-        ),
+      const SizedBox(height: 8),
+      HubResultCard(
+        tone: r['mastery'] == true || medals.isNotEmpty
+            ? HubResultTone.gold
+            : score > 0
+            ? HubResultTone.good
+            : HubResultTone.neutral,
+        icon: r['mastery'] == true || medals.isNotEmpty
+            ? Icons.military_tech_rounded
+            : _vault
+            ? Icons.lock_open_rounded
+            : Icons.groups_rounded,
+        kicker: 'Oyun tamamlandı',
+        title: _vault
+            ? '$score yıldız'
+            : r['mastery'] == true
+            ? 'Ustalık kazandın!'
+            : '$score/11 kadro',
+        subtitle: medals.isEmpty
+            ? null
+            : '${medals.length == 1 ? 'Yeni madalya' : 'Yeni madalyalar'}: ${medals.join(', ')}',
+        coins: (r['coins'] as num?)?.toInt(),
+        xp: (r['xp'] as num?)?.toInt(),
+        notes: [
+          _vault
+              ? 'Aynı kulübün yıldız ödülleri tüm kasa çeşitlerinde ortaktır.'
+              : 'Aynı hedefin madalyaları rulet, günlük ve arşivde ortaktır.',
+          if (_status['linked'] != true)
+            'Ödüllerin bekliyor. Aynı misafir hesabını Google’a bağlayınca aktarılır.',
+          if (r['avatarAvailable'] == true)
+            'Hoca koleksiyonunda avatar veya sabit coin ödülünü seçebilirsin.',
+        ],
       ),
       const SizedBox(height: 16),
       PitchAction(

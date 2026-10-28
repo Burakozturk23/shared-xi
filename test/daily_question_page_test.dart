@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/daily_question_page.dart';
 import 'package:shared_xi/widgets/energy_sheet.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 
@@ -103,6 +104,42 @@ void main() {
       expect(t.takeException(), isNull);
     },
   );
+  testWidgets('a wrong answer gets a neutral result card with the answer', (
+    t,
+  ) async {
+    t.view.physicalSize = const Size(390, 2000);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    await t.pumpWidget(
+      MaterialApp(
+        theme: OrtakSahaTheme.dark,
+        home: DailyQuestionPage(
+          initialData: {
+            ...sample(),
+            'result': {
+              'correct': false,
+              'option': 0,
+              'answer': 1,
+              'coins': 2,
+              'xp': 5,
+              'explanation': 'Göztepe 1968–69 sezonunda yarı finale ulaştı.',
+              'sources': const [],
+            },
+          },
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    final card = find.byType(HubResultCard);
+    expect(t.widget<HubResultCard>(card).tone, HubResultTone.neutral);
+    expect(find.text('YANLIŞ CEVAP'), findsOneWidget);
+    expect(find.text('Yeni bir futbol hikâyesi öğrendin.'), findsOneWidget);
+    expect(find.text('Doğru cevap: 1968–69'), findsOneWidget);
+    expect(find.text('+2 Link Coin'), findsOneWidget);
+    // Screen readers announce the verdict as soon as it appears.
+    expect(t.getSemantics(card), isSemantics(isLiveRegion: true));
+  });
   for (final light in [false, true]) {
     testWidgets(
       'daily quiz selects once, shows receipt, fits narrow screen light=$light',
@@ -165,7 +202,21 @@ void main() {
         await t.pumpAndSettle();
         expect(submits, 1);
         expect(find.text('Cevabımı gönder'), findsNothing);
-        expect(find.text('+28 Link Coin · +40 XP'), findsOneWidget);
+        final card = find.byType(HubResultCard);
+        expect(card, findsOneWidget);
+        expect(t.widget<HubResultCard>(card).tone, HubResultTone.good);
+        for (final text in [
+          'DOĞRU CEVAP',
+          '+28 Link Coin',
+          '+40 XP',
+          '7 günlük seri bonusu bu ödüle dahil.',
+        ]) {
+          expect(
+            find.descendant(of: card, matching: find.text(text)),
+            findsOneWidget,
+            reason: text,
+          );
+        }
         expect(t.takeException(), isNull);
         await t.ensureVisible(find.text('Futbol bilgine sağlık!'));
         await t.pumpAndSettle();

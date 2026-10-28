@@ -11,6 +11,7 @@ import '../widgets/game_ui.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/daily_words_service.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 
 List<Map<String, dynamic>> _rows(dynamic raw) =>
@@ -1058,45 +1059,55 @@ class _DailyWordsPageState extends State<DailyWordsPage>
               'Soru incelemeye alındı. Bu sonuç başarısızlık veya ödüllü tamamlama sayılmaz.',
         }[result['reason']] ??
         '';
+    // Official completions carry the medal tone; closed or voided runs stay neutral.
+    final official = result['reason'] == 'completed';
+    final medal = result['medal'] as String?;
+    final medalled =
+        official &&
+        const {'Bronz', 'Gümüş', 'Altın', 'Ustalık'}.contains(medal);
     return [
       const SizedBox(height: 16),
-      PitchPanel(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${result['medal'] ?? 'Sonuç'}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            if (result['assisted'] == true)
-              const Text('Yardımlı · Yardımsız seri ve ustalığa eklenmez.'),
-            const SizedBox(height: 8),
-            Text(reason),
-            Text(
-              '${result['solved'] ?? 0} doğru · ${_session['attempts'] ?? 0} geçerli yanıt',
-            ),
-            Text('${result['coins'] ?? 0} Link Coin · ${result['xp'] ?? 0} XP'),
-            if (_lingo) Text('${_rows(_session['guesses']).length}/6 tahmin'),
-            if (result['rewardEnabled'] == false)
-              Text(
-                _practice
-                    ? 'Antrenman: Coin ve XP ödülü yoktur.'
-                    : 'Bu test aşamasında ödüller kapalı.',
-              ),
-            if (_status['linked'] != true && (result['xp'] as num? ?? 0) > 0)
-              const Text(
-                'Ödül hakkın bu misafir hesapta saklı. Aktarmak için aynı hesabı Google’a bağla.',
-              ),
-            const SizedBox(height: 8),
-            Text(
-              _practice
-                  ? 'Yeni seri başlatabilir veya sonucunu paylaşabilirsin.'
-                  : _weekly
-                  ? 'Yeni hafta: Pazartesi 00.00 · İstanbul'
-                  : 'Yeni bulmaca: 00.00 · İstanbul',
-            ),
-          ],
-        ),
+      HubResultCard(
+        tone: medalled
+            ? HubResultTone.gold
+            : official
+            ? HubResultTone.good
+            : HubResultTone.neutral,
+        icon: medalled
+            ? Icons.military_tech_rounded
+            : official
+            ? Icons.task_alt_rounded
+            : Icons.flag_rounded,
+        kicker:
+            const {
+              'completed': 'Resmî sonuç',
+              'timeout': 'Süre doldu',
+              'expired': 'Arşivlendi',
+              'giveup': 'Cevap açıldı',
+              'void': 'İncelemede',
+            }[result['reason']] ??
+            'Sonuç',
+        title: medal ?? 'Sonuç',
+        subtitle: reason.isEmpty ? null : reason,
+        coins: (result['coins'] as num?)?.toInt(),
+        xp: (result['xp'] as num?)?.toInt(),
+        notes: [
+          '${result['solved'] ?? 0} doğru · ${_session['attempts'] ?? 0} geçerli yanıt'
+              '${_lingo ? ' · ${_rows(_session['guesses']).length}/6 tahmin' : ''}',
+          if (result['assisted'] == true)
+            'Yardımlı · Yardımsız seri ve ustalığa eklenmez.',
+          if (result['rewardEnabled'] == false)
+            _practice
+                ? 'Antrenman: Coin ve XP ödülü yoktur.'
+                : 'Bu test aşamasında ödüller kapalı.',
+          if (_status['linked'] != true && (result['xp'] as num? ?? 0) > 0)
+            'Ödül hakkın bu misafir hesapta saklı. Aktarmak için aynı hesabı Google’a bağla.',
+          _practice
+              ? 'Yeni seri başlatabilir veya sonucunu paylaşabilirsin.'
+              : _weekly
+              ? 'Yeni hafta: Pazartesi 00.00 · İstanbul'
+              : 'Yeni bulmaca: 00.00 · İstanbul',
+        ],
       ),
       if (!_lingo)
         ..._rounds.map(

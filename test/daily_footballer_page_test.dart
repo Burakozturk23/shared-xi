@@ -11,6 +11,7 @@ import 'package:shared_xi/models/daily_footballer.dart';
 import 'package:shared_xi/screens/app_home_page.dart';
 import 'package:shared_xi/screens/daily_footballer_page.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'daily_footballer_test.dart' show MemoryFootballerStore, sampleCatalog;
 
 final boundaryKey = GlobalKey();
@@ -117,6 +118,52 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  for (final light in [false, true]) {
+    testWidgets('a solved file shows the result card light=$light', (
+      tester,
+    ) async {
+      final game = DailyFootballerController(
+        catalog: sampleCatalog,
+        store: MemoryFootballerStore(),
+        clock: () => DateTime.utc(2026, 10, 6),
+        watchAd: () async => false,
+      );
+      addTearDown(game.dispose);
+      await open(tester, DailyFootballerPage(controller: game), light: light);
+      final target = game.round!.target;
+      await tester.enterText(
+        find.byKey(const ValueKey('daily-footballer-search')),
+        target.name,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ValueKey('guess-${target.id}')));
+      await tester.pumpAndSettle();
+      final card = find.byType(HubResultCard);
+      await tester.scrollUntilVisible(
+        card,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      expect(tester.widget<HubResultCard>(card).tone, HubResultTone.good);
+      expect(find.text('GİZLİ İSMİ BULDUN!'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.byKey(const ValueKey('daily-answer')),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget<Text>(find.byKey(const ValueKey('daily-answer'))).data,
+        target.name,
+      );
+      expect(find.text('1/6 tahminde buldun'), findsOneWidget);
+      await capture(tester, 'footballer-result-${light ? 'light' : 'dark'}');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
   for (final light in [false, true]) {
     testWidgets(
       'home and clue cards fit ${light ? 'light' : 'dark'} at normal and large text',

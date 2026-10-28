@@ -107,7 +107,7 @@ void main() {
         await tester.pumpAndSettle();
         for (
           var i = 0;
-          i < 20 && find.text('Hikâye').hitTestable().evaluate().isEmpty;
+          i < 20 && find.text('Hikâye Modu').hitTestable().evaluate().isEmpty;
           i++
         ) {
           await tester.drag(
@@ -116,13 +116,15 @@ void main() {
           );
           await tester.pumpAndSettle();
         }
-        expect(find.text('Hikâye').hitTestable(), findsOneWidget);
-        await tester.tap(find.text('Hikâye').hitTestable());
+        expect(find.text('Hikâye Modu').hitTestable(), findsOneWidget);
+        await tester.tap(find.text('Hikâye Modu').hitTestable());
         await tester.pumpAndSettle();
         expect(find.byType(StoryModeSelectionPage), findsOneWidget);
         expect(find.text('Story Mode'), findsNothing);
         expect(observer.legacy.value, isFalse);
         await snapshot(tester, key, 'hub-$variant');
+        await tester.ensureVisible(find.byKey(const ValueKey('story-mode-0')));
+        await tester.pumpAndSettle();
         await tester.tap(find.byKey(const ValueKey('story-mode-0')));
         await tester.pumpAndSettle();
         expect(find.byType(PlayerJourneyChapterListPage), findsOneWidget);

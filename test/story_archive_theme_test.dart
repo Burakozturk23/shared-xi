@@ -84,6 +84,7 @@ void main() {
           await t.scrollUntilVisible(
             find.byKey(ValueKey('story-mode-$index')),
             200,
+            scrollable: find.byType(Scrollable).first,
           );
           await t.tap(find.byKey(ValueKey('story-mode-$index')));
           await waitForArchive(t);

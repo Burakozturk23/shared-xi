@@ -6,6 +6,7 @@ import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
+import '../widgets/game_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/pitch_ui.dart';
 
@@ -366,19 +367,8 @@ class _SupportedBotPageState extends State<SupportedBotPage>
                   ),
                 if (!_active) ...[
                   const SizedBox(height: 16),
-                  Text(
-                    _run['completed'] == true
-                        ? (_run['winner'] == 1
-                              ? 'Kazandın'
-                              : _run['winner'] == 2
-                              ? 'Bot kazandı'
-                              : 'Beraberlik')
-                        : 'Oyun tamamlanmadan bitti',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const Text(
-                    'Coin/XP, sıralama veya ustalık ödülü yok. Yardımlı sonuçlar ayrı tutulur.',
-                  ),
+                  serverMatchResult(_run, bot: true),
+                  const SizedBox(height: 12),
                   FilledButton(
                     onPressed: _busy || _data['availability'] != true
                         ? null

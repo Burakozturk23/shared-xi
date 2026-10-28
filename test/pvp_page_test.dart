@@ -9,6 +9,7 @@ import 'package:shared_xi/online/online_mode_catalog.dart';
 import 'package:shared_xi/online/online_mode_route.dart';
 import 'package:shared_xi/online/pvp_page.dart';
 import 'package:shared_xi/services/pvp_service.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 
 class PvpFixture extends PvpService {
   PvpFixture({this.stage = 'playing', this.ranked = false});
@@ -242,6 +243,34 @@ void main() {
           await t.pump();
         },
       );
+  }
+  for (final ranked in [true, false]) {
+    testWidgets('finished ${ranked ? 'ranked' : 'friend'} match shows a '
+        'result card', (t) async {
+      await mount(
+        t,
+        OnlinePlayMode.sharedXi,
+        PvpFixture(ranked: ranked, stage: 'finished'),
+      );
+      final card = find.byType(HubResultCard);
+      expect(t.widget<HubResultCard>(card).tone, HubResultTone.win);
+      for (final text in [
+        ranked ? 'DERECELİ MAÇ' : 'DOSTLUK MAÇI',
+        'Kazandın',
+        'Sen 2 – 1 Arkadaşın',
+        if (ranked) ...['+3 Link Coin', '+6 XP', 'Elo +16'],
+        if (!ranked) 'Dostluk maçı · Elo ve ödül yok',
+      ]) {
+        expect(
+          find.descendant(of: card, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    });
   }
   testWidgets(
     'Club Country host and guest choices remain distinct and ranked setup never creates friend room',

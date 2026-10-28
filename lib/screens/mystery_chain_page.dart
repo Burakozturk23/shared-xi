@@ -7,7 +7,9 @@ import '../models/club.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../widgets/club_badge.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 
 List<Map<String, dynamic>> _rows(dynamic value) =>
@@ -371,19 +373,25 @@ class _MysteryChainPageState extends State<MysteryChainPage>
     ),
   );
   List<Widget> _home() => [
-    PitchPanel(
+    HubHeroCard(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(
-            _mystery
-                ? Icons.person_search_outlined
-                : _sprint
-                ? Icons.timer_outlined
-                : Icons.hub_outlined,
-            size: 40,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: HubIconBox(
+              _mystery
+                  ? Icons.person_search_outlined
+                  : _sprint
+                  ? Icons.timer_outlined
+                  : Icons.hub_outlined,
+              size: 52,
+              background: PitchColors.of(
+                context,
+              ).background.withValues(alpha: .4),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             _mystery
                 ? 'İpuçlarını birleştir.'
@@ -392,39 +400,48 @@ class _MysteryChainPageState extends State<MysteryChainPage>
                 : 'İki kulüp. Senin rotan.',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             _mystery
                 ? 'Milliyet ve mevkiyle başla. Üç geçerli tahminde futbolcuyu bul. Her yanlışta yeni bir bilgi açılır.'
                 : _sprint
                 ? '60 saniyede başla. Tamamladığın her zincir +5 saniye verir. Sayaç en fazla 75; oturum en fazla 180 saniye sürer.'
                 : 'İki kulüpte de oynamış futbolcularla köprüler kur. Futbolcu ve kulüp tekrarı yok. PAR, en kısa geçerli yolun hamle sayısıdır.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: PitchColors.of(context).muted,
+            ),
           ),
-          const SizedBox(height: 12),
+        ],
+      ),
+    ),
+    const SizedBox(height: 12),
+    PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           Text(
+            'Kurallar ve kazanımlar',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          for (final rule in [
             _sprint
                 ? 'Bir pas hakkı: −10 saniye. Saat arka planda da işler. Oyun sırasında ipucu ve reklam yok.'
                 : '1 ücretsiz + en fazla 2 reklamlı ipucu. Mevcut destek stoğu aynı üç hakkı paylaşır.',
-          ),
-          const SizedBox(height: 12),
-          Text(
             _mystery
                 ? 'İlk resmî dosyada en fazla 6 Coin / 12 XP.'
                 : _sprint
                 ? 'Günlük en iyi Sprint ile en fazla 10 Coin / 20 XP; yalnızca yeni eşikler ödenir.'
                 : 'İlk resmî kulüp çiftinde en fazla 12 Coin / 24 XP. Ters yön aynı dosyadır.',
-          ),
-          const Text(
             'Gizemli Futbolcu ve iki Zincir modu ortak günde 24 Coin / 48 XP bütçesini kullanır. Fazlası kaybolmaz; sırada bekler.',
-          ),
-          Text(
             rewardMap(_status['energy'])['enabled'] == true
                 ? 'Yeni oyun: 1 enerji. Kayıtlı oyuna devam ücretsiz.'
                 : 'Enerji sistemi şu anda kapalı; yeni oyun ücretsiz.',
-          ),
-          if (_status['linked'] != true)
-            const Text(
+            if (_status['linked'] != true)
               'Kazanımların saklanır. Cüzdana aktarılması için Google hesabını bağla.',
+          ])
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: HubSpecNote(rule),
             ),
         ],
       ),

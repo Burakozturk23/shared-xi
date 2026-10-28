@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/screens/football_calendar_page.dart';
 import 'package:shared_xi/services/daily_matches_gateway.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class FakeDailyGateway implements DailyMatchesGateway {
@@ -311,7 +312,13 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(finish);
       await tester.pumpAndSettle();
-      expect(find.text('30 Link Coin'), findsOneWidget);
+      final card = find.byType(HubResultCard);
+      expect(tester.widget<HubResultCard>(card).tone, HubResultTone.win);
+      expect(
+        find.descendant(of: card, matching: find.text('+30 Link Coin')),
+        findsOneWidget,
+      );
+      expect(find.text('Maçı kazandın!'), findsOneWidget);
       expect(find.text('Hedef tamamlandı. Maç bitti.'), findsOneWidget);
       expect(
         find.text('Hedef tamam! Ek ödül için devam edebilirsin.'),
@@ -323,7 +330,8 @@ void main() {
       await tester.tap(bonus);
       await tester.pumpAndSettle();
       expect(gateway.lastPlacement, 'daily_double');
-      expect(find.text('60 Link Coin'), findsOneWidget);
+      expect(find.text('+60 Link Coin'), findsOneWidget);
+      expect(find.text('2x bonusun kaydedildi.'), findsOneWidget);
       expect(find.text('Tekrar dene'), findsNothing);
       await tester.drag(find.byType(ListView).first, const Offset(0, 1200));
       await tester.pumpAndSettle();

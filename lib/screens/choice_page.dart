@@ -7,6 +7,7 @@ import '../services/choice_service.dart';
 import '../widgets/player_portrait.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -309,6 +310,22 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       );
     }).toList(),
   );
+
+  /// Fixed, short option sets; open-ended lists keep [chips].
+  Widget segmented(
+    String label,
+    List<(String, String)> items,
+    String current,
+    void Function(String) change,
+  ) => Padding(
+    padding: const EdgeInsets.only(top: 8, bottom: 8),
+    child: HubSegmented<String>(
+      label: label,
+      options: {for (final i in items) i.$1: i.$2},
+      value: current,
+      onChanged: busy ? null : (v) => setState(() => change(v)),
+    ),
+  );
   Widget rewards() => panel([
     ExpansionTile(
       tilePadding: EdgeInsets.zero,
@@ -379,7 +396,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
               'İstatistikler incelemede. Doğrulanmış bir karşılaştırma havuzu yayımlandığında bu oyun açılacak. Enerji harcanmaz.',
             ),
           if (tot) ...[
-            chips(
+            segmented(
+              'Kategori',
               const [('player', 'Oyuncular'), ('club', 'Kulüpler')],
               category,
               (v) {
@@ -405,7 +423,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
                           }),
                   ),
                 ),
-            chips(
+            segmented(
+              'Turnuva boyutu',
               formats
                   .map((f) => ('${f['size']}', '${f['size']} aday'))
                   .toList(),
@@ -418,7 +437,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
               ),
           ],
           if (!tot && !hl) ...[
-            chips(
+            segmented(
+              'Sıralama türü',
               const [
                 ('objective', 'İstatistik Sıralaması'),
                 ('personal', 'Benim Sıralamam'),
@@ -426,8 +446,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
               type,
               (v) => type = v,
             ),
-            const SizedBox(height: 12),
-            chips(
+            segmented(
+              'Liste',
               const [('5', '5 oyuncu'), ('10', '10 oyuncu')],
               '$size',
               (v) => size = int.parse(v),
@@ -752,11 +772,9 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     return panel([
       heading(
         result
-            ? r['completed'] != true
-                  ? 'Liste tamamlanmadı'
-                  : r['type'] == 'personal'
+            ? r['type'] == 'personal'
                   ? 'Benim Sıralamam'
-                  : 'Sıralama sonucu'
+                  : 'Senin sıralaman'
             : '${placements.length + 1} / $count oyuncu',
       ),
       if (r['type'] == 'objective') ...metricContext(r),
@@ -764,12 +782,6 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       if (!result) ...[
         person(rewardMap(r['current'])),
         note('Bir boş sıra seç, ardından onayla. Sonraki oyuncu henüz gizli.'),
-      ],
-      if (result && r['completed'] == true && r['type'] == 'objective') ...[
-        heading('${r['score']} / 100'),
-        note(
-          '${r['exactMatches']} tam sıra · ${r['comparable']} karşılaştırılabilir çift',
-        ),
       ],
       for (var slot = 0; slot < count; slot++)
         Builder(
@@ -855,44 +867,18 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
   Widget outcome(Map<String, dynamic> r, {bool archive = false}) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: resultCard(r, archive: archive),
+      ),
       if (tot)
-        panel([
-          heading(
-            r['completed'] == true ? 'Şampiyonun' : 'Turnuva sonlandırıldı',
-          ),
-          if (r['championId'] != null)
-            person(rewardMap(rewardMap(r['candidates'])[r['championId']])),
-          if (rows(r['history']).isNotEmpty && r['completed'] == true)
-            Builder(
-              builder: (context) {
-                final last = rows(r['history']).last;
-                final opponent = last['winnerId'] == last['leftId']
-                    ? last['rightId']
-                    : last['leftId'];
-                return note(
-                  'Final rakibi: ${rewardMap(rewardMap(r['candidates'])[opponent])['name']}',
-                );
-              },
-            ),
-          tree(r),
-        ])
+        panel([tree(r)])
       else if (hl)
         higher(r)
       else
         ranking(r, result: true),
-      panel([
-        if (r['rewardPending'] == true ||
-            !archive && data['pendingValidation'] == true)
-          heading('Sonuç doğrulanıyor')
-        else
-          heading(
-            '${r['earnedCoins'] ?? 0} coin · ${(r['earnedCoins'] as num? ?? 0) * 2} XP',
-          ),
-        if (r['rewardReason'] != null) note('${r['rewardReason']}'),
-        if (r['practice'] == true) note('Ödülsüz deneme oyunu.'),
-        if (r['completed'] == true && !hl)
-          button('Sonuç kartını paylaş', () => share(r), secondary: true),
-      ]),
+      if (r['completed'] == true && !hl)
+        button('Sonuç kartını paylaş', () => share(r), secondary: true),
       if (!archive)
         button(
           'Yeni oyun',
@@ -903,6 +889,71 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         ),
     ],
   );
+
+  /// Verdict of a finished run; detail panels (tree, pair, list) follow it.
+  HubResultCard resultCard(Map<String, dynamic> r, {required bool archive}) {
+    final completed = r['completed'] == true;
+    final pending =
+        r['rewardPending'] == true ||
+        !archive && data['pendingValidation'] == true;
+    final coins = (r['earnedCoins'] as num? ?? 0).toInt();
+    final candidates = rewardMap(r['candidates']);
+    String? finalist;
+    if (tot && completed && rows(r['history']).isNotEmpty) {
+      final last = rows(r['history']).last;
+      finalist =
+          '${rewardMap(candidates[last['winnerId'] == last['leftId'] ? last['rightId'] : last['leftId']])['name']}';
+    }
+    return HubResultCard(
+      tone: !completed && !hl
+          ? HubResultTone.neutral
+          : tot
+          ? HubResultTone.gold
+          : hl && (r['streak'] as num? ?? 0) == 0
+          ? HubResultTone.neutral
+          : HubResultTone.good,
+      icon: tot
+          ? Icons.emoji_events_rounded
+          : hl
+          ? Icons.trending_up_rounded
+          : Icons.format_list_numbered_rounded,
+      kicker: tot
+          ? completed
+                ? 'Şampiyonun'
+                : 'Turnuva sonlandırıldı'
+          : hl
+          ? 'Seri tamamlandı'
+          : !completed
+          ? 'Liste tamamlanmadı'
+          : r['type'] == 'personal'
+          ? 'Benim sıralamam'
+          : 'Sıralama sonucu',
+      title: tot
+          ? completed
+                ? '${rewardMap(candidates[r['championId']])['name'] ?? 'Şampiyon'}'
+                : 'Turnuva yarıda kaldı'
+          : hl
+          ? '${r['streak'] ?? 0} doğru'
+          : completed && r['type'] == 'objective'
+          ? '${r['score']} / 100'
+          : completed
+          ? 'Liste tamamlandı'
+          : 'Sıralama yarıda kaldı',
+      subtitle: finalist != null
+          ? 'Final rakibi: $finalist'
+          : !tot && !hl && completed && r['type'] == 'objective'
+          ? '${r['exactMatches']} tam sıra · ${r['comparable']} karşılaştırılabilir çift'
+          : null,
+      coins: pending ? null : coins,
+      xp: pending ? null : coins * 2,
+      notes: [
+        if (pending) 'Sonuç doğrulanıyor',
+        if (r['rewardReason'] != null) '${r['rewardReason']}',
+        if (r['practice'] == true) 'Ödülsüz deneme oyunu.',
+      ],
+    );
+  }
+
   Future<void> share(Map<String, dynamic> r) async {
     try {
       final bytes = await choiceSharePng(r);
