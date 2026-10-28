@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../models/economy_models.dart';
+import '../models/mission_models.dart';
 import '../services/auth_service.dart';
 import '../services/economy_service.dart';
 import '../services/energy_service.dart';
+import '../services/mission_service.dart';
+import '../services/progression_service.dart';
 
 typedef ResourceAccount = ({String? uid, bool linked});
 
@@ -17,6 +20,8 @@ class HomeResourcesController extends ChangeNotifier {
     required this.currentAccount,
     required this.readEnergy,
     required this.watchWallet,
+    this.readStreak,
+    this.readMissions,
   });
 
   factory HomeResourcesController.live() => HomeResourcesController(
@@ -30,6 +35,9 @@ class HomeResourcesController extends ChangeNotifier {
         (uid: AuthService.uid, linked: AuthService.isGoogleAccount),
     readEnergy: () => EnergyService().status(),
     watchWallet: EconomyService.watchWallet,
+    readStreak: () async =>
+        (await ProgressionService.fetch()).dailyReward.activeStreak,
+    readMissions: MissionService.fetch,
   );
 
   final Future<void> Function() prepare;
@@ -37,11 +45,23 @@ class HomeResourcesController extends ChangeNotifier {
   final ResourceAccount Function() currentAccount;
   final Future<Map<String, dynamic>> Function() readEnergy;
   final Stream<EconomyWallet> Function() watchWallet;
+
+  /// Live daily-reward streak; only linked accounts have one.
+  final Future<int?> Function()? readStreak;
+
+  /// Today's missions; only linked accounts have them.
+  final Future<MissionProfile> Function()? readMissions;
   StreamSubscription<ResourceAccount>? _auth;
   StreamSubscription<EconomyWallet>? _wallet;
   ResourceAccount? account;
   EconomyWallet? wallet;
   Map<String, dynamic>? energy;
+
+  /// Null hides the badge: no streak, guest account or a failed read.
+  int? streak;
+
+  /// Null hides the mission summary: guest account or a failed read.
+  MissionProfile? missions;
   bool walletFailed = false, energyFailed = false, loading = false;
   bool _disposed = false, _started = false;
   int _generation = 0, _request = 0;
@@ -83,9 +103,13 @@ class HomeResourcesController extends ChangeNotifier {
     _refill?.cancel();
     wallet = null;
     energy = null;
+    streak = null;
+    missions = null;
     walletFailed = energyFailed = false;
     loading = false;
     if (next.linked && next.uid != null) {
+      unawaited(refreshStreak());
+      unawaited(refreshMissions());
       try {
         _wallet = watchWallet().listen(
           (value) {
@@ -119,7 +143,39 @@ class HomeResourcesController extends ChangeNotifier {
       _bind(next);
       return;
     }
+    unawaited(refreshStreak());
+    unawaited(refreshMissions());
     await refreshEnergy();
+  }
+
+  Future<void> refreshStreak() async {
+    final read = readStreak;
+    if (_disposed || read == null || account?.linked != true) return;
+    final generation = _generation;
+    int? value;
+    try {
+      value = await read();
+    } catch (_) {
+      value = null;
+    }
+    if (_disposed || generation != _generation) return;
+    streak = value;
+    _emit();
+  }
+
+  Future<void> refreshMissions() async {
+    final read = readMissions;
+    if (_disposed || read == null || account?.linked != true) return;
+    final generation = _generation;
+    MissionProfile? value;
+    try {
+      value = await read();
+    } catch (_) {
+      value = null;
+    }
+    if (_disposed || generation != _generation) return;
+    missions = value;
+    _emit();
   }
 
   Future<void> refreshEnergy() async {

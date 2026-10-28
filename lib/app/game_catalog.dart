@@ -281,6 +281,13 @@ class GameCatalog {
       icon: Icons.auto_stories_outlined,
     ),
   ];
+
+  /// A category's games. Daily games live on Home, so their category pages
+  /// list only the evergreen modes.
+  static List<GameEntry> groupGames(String category) => games
+      .where((game) => game.category == category && !dailyGames.contains(game))
+      .toList();
+
   static const vsBotLabel = 'Botla oyna';
   static const vsBot = GameEntry(
     title: 'Vs Bot',

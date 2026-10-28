@@ -15,6 +15,7 @@ import 'package:shared_xi/screens/progression_center_page.dart';
 import 'package:shared_xi/screens/ucl_moments_page.dart';
 import 'package:shared_xi/services/profile_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 
 final boundary = GlobalKey();
 HomeResourcesController resources() =>
@@ -93,7 +94,7 @@ void main() {
       (t) async {
         addTearDown(t.view.resetPhysicalSize);
         addTearDown(t.view.resetDevicePixelRatio);
-        final c = resources();
+        final c = resources()..streak = 7;
         addTearDown(c.dispose);
         GameEntry? selected;
         await open(
@@ -108,8 +109,12 @@ void main() {
           ),
           light: light,
         );
-        expect(find.text('1250'), findsOneWidget);
-        expect(find.text('4 / 6'), findsOneWidget);
+        // Quick modes say which play alone and which are live.
+        expect(find.text('SOLO'), findsOneWidget);
+        expect(find.text('CANLI'), findsOneWidget);
+        // Coins and energy live in the shell app bar, not the home body.
+        expect(find.text('1.250'), findsNothing);
+        expect(find.byType(HubEconomyPills), findsNothing);
         expect(
           t.getTopLeft(find.text('Ortak Oyuncu Keşfi')).dy,
           lessThan(t.getTopLeft(find.text('Günlük Meydan Okumalar')).dy),
@@ -117,6 +122,16 @@ void main() {
         await t.tap(find.text('Bağlantıyı keşfet'));
         expect(selected, GameCatalog.discovery);
         await capture(t, 'home-hub-${light ? 'light' : 'dark'}');
+        // Günün Futbolcusu leads the daily section as the featured puzzle.
+        await t.scrollUntilVisible(find.text('GÜNÜN BULMACASI'), 150);
+        await t.pumpAndSettle();
+        expect(
+          find.ancestor(
+            of: find.text(GameCatalog.dailyFootballer.title),
+            matching: find.byKey(const ValueKey('home-featured-daily')),
+          ),
+          findsOneWidget,
+        );
         for (final game in GameCatalog.dailyGames) {
           await t.scrollUntilVisible(find.text(game.title), 150);
           await t.pumpAndSettle();
@@ -132,7 +147,7 @@ void main() {
           width: 320,
           scale: 2,
         );
-        expect(find.text('1250'), findsNothing);
+        expect(find.text('1.250'), findsNothing);
         expect(find.text('4 / 6'), findsNothing);
         await t.scrollUntilVisible(find.text('Günlük ödül ve görevler'), 250);
         expect(t.takeException(), isNull);
@@ -184,6 +199,35 @@ void main() {
       },
     );
   }
+  testWidgets('home shows the live daily streak and hides it otherwise', (
+    t,
+  ) async {
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    final c = resources()..streak = 7;
+    addTearDown(c.dispose);
+    Widget? opened;
+    await open(
+      t,
+      Scaffold(
+        body: AppHomePage(
+          resources: c,
+          loadResources: false,
+          onOpenPage: (page) => opened = page,
+        ),
+      ),
+    );
+    expect(find.text('7 günlük seri'), findsOneWidget);
+    await t.tap(find.text('7 günlük seri'));
+    expect(opened, isA<ProgressionCenterPage>());
+    c.streak = null;
+    await open(
+      t,
+      Scaffold(body: AppHomePage(resources: c, loadResources: false)),
+    );
+    expect(find.textContaining('günlük seri'), findsNothing);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
   testWidgets(
     'all eight collection links open the existing collection routes',
     (t) async {
