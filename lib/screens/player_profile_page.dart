@@ -119,9 +119,7 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
   Future<void> _upgradeToGoogle() async {
     final signedIn = await Navigator.push<bool>(
       context,
-      LinkballRoute(
-        builder: (_) => const LinkballSignInPage(allowSkip: false),
-      ),
+      LinkballRoute(builder: (_) => const LinkballSignInPage(allowSkip: false)),
     );
 
     if (signedIn == true) {
@@ -199,9 +197,9 @@ class _PlayerProfilePageState extends State<PlayerProfilePage> {
                         onEditNickname: () => _editNickname(profile),
                         onEditAvatar: () => _openAvatarPicker(profile),
                         onLinkAccount: _upgradeToGoogle,
-                        onOpen: (page) =>
-                            Navigator.of(context)
-                                .push(LinkballRoute(builder: (_) => page)),
+                        onOpen: (page) => Navigator.of(
+                          context,
+                        ).push(LinkballRoute(builder: (_) => page)),
                         badgePreview: profile.isPersistent
                             ? const AchievementProfilePreviewCard()
                             : null,
@@ -253,13 +251,20 @@ class PlayerProfileBody extends StatelessWidget {
         _GoogleUpgradeCard(onTap: onLinkAccount),
       ],
       const PitchSectionTitle('Hedeflerin ve başarıların'),
-      PitchRow(title: 'Burst Rekor Merkezi', subtitle: 'Dört kombinasyon, rekorlar ve madalyalar',
-        icon: Icons.bolt_outlined, onTap: () => onOpen(const ArcadePage(mode: 'burst', recordsInitially: true))),
+      PitchRow(
+        title: 'Burst Rekor Merkezi',
+        subtitle: 'Dört kombinasyon, rekorlar ve madalyalar',
+        icon: Icons.bolt_outlined,
+        onTap: () =>
+            onOpen(const ArcadePage(mode: 'burst', recordsInitially: true)),
+      ),
       const SizedBox(height: 10),
       for (final mode in ['pyramid', 'matching']) ...[
-        PitchRow(title: mode == 'pyramid' ? 'Pyramid rekorları' : 'Matching rekorları',
+        PitchRow(
+          title: mode == 'pyramid' ? 'Pyramid rekorları' : 'Matching rekorları',
           icon: Icons.emoji_events_outlined,
-          onTap: () => onOpen(ArcadePage(mode: mode, recordsInitially: true))),
+          onTap: () => onOpen(ArcadePage(mode: mode, recordsInitially: true)),
+        ),
         const SizedBox(height: 10),
       ],
       _ProgressionShortcutCard(
@@ -377,8 +382,10 @@ class _ProfileHero extends StatelessWidget {
                   children: [
                     Text(
                       proActive ? 'LINKBALL PRO' : 'OYUNCU KARTIN',
-                      style: Theme.of(context).textTheme.labelSmall
-                          ?.copyWith(color: p.accent, letterSpacing: 1),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: p.accent,
+                        letterSpacing: 1,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -388,8 +395,9 @@ class _ProfileHero extends StatelessWidget {
                     if (profile.normalizedName?.isNotEmpty == true)
                       Text(
                         '@${profile.normalizedName}',
-                        style: Theme.of(context).textTheme.bodySmall
-                            ?.copyWith(color: p.muted),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: p.muted),
                       ),
                   ],
                 ),
@@ -401,8 +409,9 @@ class _ProfileHero extends StatelessWidget {
             profile.isPersistent
                 ? 'Hesabın bağlı · İlerlemen seninle'
                 : 'Konuk oyuncu · Hesabını bağlayabilirsin',
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: p.muted),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: p.muted),
           ),
           if (profileKit(profile.kitId) case final kit?) ...[
             const SizedBox(height: 10),
@@ -600,8 +609,9 @@ class _ProInsightsCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary
-                        .withValues(alpha: 0.12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -1023,8 +1033,9 @@ class _SafetyShortcutCard extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary
-                .withValues(alpha: 0.12),
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(
@@ -1059,8 +1070,9 @@ class _FriendsShortcutCard extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary
-                .withValues(alpha: 0.12),
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(

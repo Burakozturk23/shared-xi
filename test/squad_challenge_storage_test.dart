@@ -34,7 +34,10 @@ void main() {
     expect((await progress.records())['theme'], 20);
     expect(await progress.legacyCompletedThemes(), 1);
     final prefs = await SharedPreferences.getInstance();
-    expect(jsonDecode(prefs.getString('sc_assisted_practice_records_v1')!)['theme'], 100);
+    expect(
+      jsonDecode(prefs.getString('sc_assisted_practice_records_v1')!)['theme'],
+      100,
+    );
   });
 
   test('Corrupt local draft cannot lock a valid server run', () async {

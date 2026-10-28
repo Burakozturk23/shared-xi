@@ -107,7 +107,10 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 'Reward already claimed or currently unavailable.',
               );
       } else {
-        final result = await widget.gateway.claimMission(mission.id, periodKey: mission.periodKey);
+        final result = await widget.gateway.claimMission(
+          mission.id,
+          periodKey: mission.periodKey,
+        );
         if (!mounted) return;
         setState(() => _missions = result.profile);
         granted = result.granted;
@@ -140,27 +143,51 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     }
   }
 
-  GameEntry? _gameFor(MissionItem mission) => GameCatalog.missionRoute(mission.routeKey);
+  GameEntry? _gameFor(MissionItem mission) =>
+      GameCatalog.missionRoute(mission.routeKey);
 
-  bool _hasRoute(MissionItem m) => _gameFor(m) != null ||
-    ['solo_catalog', 'word_catalog'].contains(m.routeKey);
+  bool _hasRoute(MissionItem m) =>
+      _gameFor(m) != null ||
+      ['solo_catalog', 'word_catalog'].contains(m.routeKey);
 
   Future<void> _openMission(MissionItem mission) async {
     if (_openingGame || _loading || _claiming) return;
     GameEntry? game = _gameFor(mission);
     if (game == null && _hasRoute(mission)) {
       final options = mission.routeKey == 'word_catalog'
-        ? [GameCatalog.dailyLingo, GameCatalog.dailyPassa, GameCatalog.dailyAnagram]
-        : GameCatalog.games.where((g) => g != GameCatalog.vsBot).toList();
-      game = await showModalBottomSheet<GameEntry>(context: context, isScrollControlled: true,
-        builder: (sheetContext) => SafeArea(child: SizedBox(
-          height: MediaQuery.sizeOf(sheetContext).height * .7,
-          child: ListView(children: [
-            Padding(padding: const EdgeInsets.all(20), child: Text(c('Bir mod seç', 'Choose a mode'),
-              style: Theme.of(sheetContext).textTheme.titleLarge)),
-            for (final option in options) ListTile(leading: Icon(option.icon), title: Text(option.title),
-              subtitle: Text(option.subtitle), onTap: () => Navigator.pop(sheetContext, option)),
-          ]))));
+          ? [
+              GameCatalog.dailyLingo,
+              GameCatalog.dailyPassa,
+              GameCatalog.dailyAnagram,
+            ]
+          : GameCatalog.games.where((g) => g != GameCatalog.vsBot).toList();
+      game = await showModalBottomSheet<GameEntry>(
+        context: context,
+        isScrollControlled: true,
+        builder: (sheetContext) => SafeArea(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * .7,
+            child: ListView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    c('Bir mod seç', 'Choose a mode'),
+                    style: Theme.of(sheetContext).textTheme.titleLarge,
+                  ),
+                ),
+                for (final option in options)
+                  ListTile(
+                    leading: Icon(option.icon),
+                    title: Text(option.title),
+                    subtitle: Text(option.subtitle),
+                    onTap: () => Navigator.pop(sheetContext, option),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
     if (game == null || !mounted) return;
     setState(() => _openingGame = true);
@@ -178,7 +205,10 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 144 : 64,
-      title: Text(c('İlerleme ve Görevler', 'Progress & Missions'), maxLines: 3),
+      title: Text(
+        c('İlerleme ve Görevler', 'Progress & Missions'),
+        maxLines: 3,
+      ),
       actions: [
         IconButton(
           tooltip: c('Yenile', 'Refresh'),
@@ -221,23 +251,27 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     final p = _progression!;
     final m = _missions!;
     final list =
-        List<MissionItem>.of(_kind == MissionKind.daily ? m.daily :
-          _kind == MissionKind.weekly ? m.weekly : m.general)
-          ..sort(
-            (a, b) =>
-                (a.claimed
+        List<MissionItem>.of(
+          _kind == MissionKind.daily
+              ? m.daily
+              : _kind == MissionKind.weekly
+              ? m.weekly
+              : m.general,
+        )..sort(
+          (a, b) =>
+              (a.claimed
+                      ? 2
+                      : a.claimable
+                      ? 0
+                      : 1)
+                  .compareTo(
+                    b.claimed
                         ? 2
-                        : a.claimable
+                        : b.claimable
                         ? 0
-                        : 1)
-                    .compareTo(
-                      b.claimed
-                          ? 2
-                          : b.claimable
-                          ? 0
-                          : 1,
-                    ),
-          );
+                        : 1,
+                  ),
+        );
     final visible = list
         .where(
           (x) =>
@@ -327,7 +361,9 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 label: Text(
                   kind == MissionKind.daily
                       ? c('Günlük', 'Daily')
-                      : kind == MissionKind.weekly ? c('Haftalık', 'Weekly') : c('Kariyer', 'Career'),
+                      : kind == MissionKind.weekly
+                      ? c('Haftalık', 'Weekly')
+                      : c('Kariyer', 'Career'),
                 ),
                 selected: _kind == kind,
                 onSelected: (_) => setState(() => _kind = kind),
@@ -347,29 +383,49 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                   '${m.dailyCompletedCount}/${m.dailyClaimLimit} rewards claimed · Resets at 00:00 Türkiye time.',
                 )
               : _kind == MissionKind.weekly
-                ? c('${m.weeklyCompletedCount}/${m.weeklyClaimLimit} ödül · Pazartesi 00.00’da yenilenir · +0 XP / +0 SP',
-                    '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} rewards · Resets Monday at 00:00 Türkiye time · +0 XP / +0 SP')
+              ? c(
+                  '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} ödül · Pazartesi 00.00’da yenilenir · +0 XP / +0 SP',
+                  '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} rewards · Resets Monday at 00:00 Türkiye time · +0 XP / +0 SP',
+                )
               : c(
                   'Aşamaları tamamla, sıradaki hedefi aç. Her kartta kazanacağın ödüller gösterilir.',
                   'Complete stages to unlock the next goal.',
                 ),
         ),
         const SizedBox(height: 12),
-        if (m.availabilityNotice.isNotEmpty) Padding(
-          padding: const EdgeInsets.only(bottom: 12), child: Text(m.availabilityNotice)),
-        if (_kind == MissionKind.weekly && !m.weeklyEnabled) Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(c('Haftalık ödüller henüz açılmadı. İlerlemen korunur.',
-            'Weekly rewards are not yet available. Your progress is saved.'))),
+        if (m.availabilityNotice.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(m.availabilityNotice),
+          ),
+        if (_kind == MissionKind.weekly && !m.weeklyEnabled)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              c(
+                'Haftalık ödüller henüz açılmadı. İlerlemen korunur.',
+                'Weekly rewards are not yet available. Your progress is saved.',
+              ),
+            ),
+          ),
         if (visible.isEmpty)
           SocialNotice(
-            title: _readyOnly ? c('Henüz hazır ödül yok', 'No rewards ready yet') : c('Burada görev yok', 'No missions here'),
-            message: _readyOnly ? c('Devam eden hedeflerini görmek için tüm görevleri aç.', 'View all missions to continue your goals.') : c(
-              'Diğer filtreye bakabilir veya daha sonra yenileyebilirsin.',
-              'Try another filter or refresh later.',
-            ),
+            title: _readyOnly
+                ? c('Henüz hazır ödül yok', 'No rewards ready yet')
+                : c('Burada görev yok', 'No missions here'),
+            message: _readyOnly
+                ? c(
+                    'Devam eden hedeflerini görmek için tüm görevleri aç.',
+                    'View all missions to continue your goals.',
+                  )
+                : c(
+                    'Diğer filtreye bakabilir veya daha sonra yenileyebilirsin.',
+                    'Try another filter or refresh later.',
+                  ),
             actionLabel: c('Tüm görevleri göster', 'Show all missions'),
-            onAction: _readyOnly ? () => setState(() => _readyOnly = false) : null,
+            onAction: _readyOnly
+                ? () => setState(() => _readyOnly = false)
+                : null,
           ),
         for (final mission in visible)
           Padding(
@@ -469,88 +525,111 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
       ],
     ),
   );
-  Widget _mission(MissionItem m) => m.claimed ? PitchPanel(
-    key: ValueKey('mission-${m.id}'), child: Row(children: [
-      Icon(Icons.check_circle_outline, color: socialAccent(context)),
-      const SizedBox(width: 10), Expanded(child: Text(m.title)),
-      const SizedBox(width: 8), Flexible(child: Text(c('Ödül alındı', 'Reward claimed'))),
-    ])) : PitchPanel(
-    key: ValueKey('mission-${m.id}'),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              m.claimed ? Icons.check_circle_outline : Icons.flag_outlined,
-              color: socialAccent(context),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                m.title,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(m.description),
-        const SizedBox(height: 14),
-        LinearProgressIndicator(value: m.ratio, minHeight: 8,
-          borderRadius: BorderRadius.circular(8),
-          color: socialAccent(context),
-          semanticsLabel: '${m.title}: ${m.progress} / ${m.target}',
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 10,
-          runSpacing: 6,
-          children: [
-            SocialStatus('${m.progress} / ${m.target}'),
-            if (m.stageCount > 0)
-              Text(
-                c(
-                  'Aşama ${m.stage}/${m.stageCount}',
-                  'Stage ${m.stage}/${m.stageCount}',
-                ),
-              ),
-            SocialStatus('+${m.rewardCoins} Link Coin'),
-            if (m.rewardSp > 0) SocialStatus('+${m.rewardSp} SP'),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (m.claimed)
-          SocialStatus(c('Ödül alındı', 'Reward claimed'), complete: true)
-        else if (!m.enabled || m.limitReached)
-          Text(
-            m.limitReached
-                ? c(
-                    'Bu dönemin ödül limitine ulaştın',
-                    'Reward limit for this period reached',
-                  )
-                : c(
-                    'Bu görev şu anda kapalı',
-                    'This mission is currently unavailable',
+  Widget _mission(MissionItem m) => m.claimed
+      ? PitchPanel(
+          key: ValueKey('mission-${m.id}'),
+          child: Row(
+            children: [
+              Icon(Icons.check_circle_outline, color: socialAccent(context)),
+              const SizedBox(width: 10),
+              Expanded(child: Text(m.title)),
+              const SizedBox(width: 8),
+              Flexible(child: Text(c('Ödül alındı', 'Reward claimed'))),
+            ],
+          ),
+        )
+      : PitchPanel(
+          key: ValueKey('mission-${m.id}'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    m.claimed
+                        ? Icons.check_circle_outline
+                        : Icons.flag_outlined,
+                    color: socialAccent(context),
                   ),
-          )
-        else if (m.claimable)
-          FilledButton(
-            onPressed: _loading || _claiming ? null : () => _claim(m),
-            child: Text(c('Ödülü al', 'Claim reward')),
-          )
-        else ...[
-          SocialStatus(m.progress > 0 ? c('Devam ediyor', 'In progress') : c('Başlamaya hazır', 'Ready to start')),
-          if (_hasRoute(m)) ...[
-            const SizedBox(height: 12),
-            SizedBox(width: double.infinity, child: OutlinedButton.icon(
-              onPressed: _loading || _claiming || _openingGame ? null : () => _openMission(m),
-              icon: Icon(_gameFor(m)?.icon ?? Icons.sports_soccer_outlined),
-              label: Text(c('Oyuna git', 'Open game')),
-            )),
-          ],
-        ],
-      ],
-    ),
-  );
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      m.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(m.description),
+              const SizedBox(height: 14),
+              LinearProgressIndicator(
+                value: m.ratio,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(8),
+                color: socialAccent(context),
+                semanticsLabel: '${m.title}: ${m.progress} / ${m.target}',
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 10,
+                runSpacing: 6,
+                children: [
+                  SocialStatus('${m.progress} / ${m.target}'),
+                  if (m.stageCount > 0)
+                    Text(
+                      c(
+                        'Aşama ${m.stage}/${m.stageCount}',
+                        'Stage ${m.stage}/${m.stageCount}',
+                      ),
+                    ),
+                  SocialStatus('+${m.rewardCoins} Link Coin'),
+                  if (m.rewardSp > 0) SocialStatus('+${m.rewardSp} SP'),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (m.claimed)
+                SocialStatus(c('Ödül alındı', 'Reward claimed'), complete: true)
+              else if (!m.enabled || m.limitReached)
+                Text(
+                  m.limitReached
+                      ? c(
+                          'Bu dönemin ödül limitine ulaştın',
+                          'Reward limit for this period reached',
+                        )
+                      : c(
+                          'Bu görev şu anda kapalı',
+                          'This mission is currently unavailable',
+                        ),
+                )
+              else if (m.claimable)
+                FilledButton(
+                  onPressed: _loading || _claiming ? null : () => _claim(m),
+                  child: Text(c('Ödülü al', 'Claim reward')),
+                )
+              else ...[
+                SocialStatus(
+                  m.progress > 0
+                      ? c('Devam ediyor', 'In progress')
+                      : c('Başlamaya hazır', 'Ready to start'),
+                ),
+                if (_hasRoute(m)) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _loading || _claiming || _openingGame
+                          ? null
+                          : () => _openMission(m),
+                      icon: Icon(
+                        _gameFor(m)?.icon ?? Icons.sports_soccer_outlined,
+                      ),
+                      label: Text(c('Oyuna git', 'Open game')),
+                    ),
+                  ),
+                ],
+              ],
+            ],
+          ),
+        );
 }

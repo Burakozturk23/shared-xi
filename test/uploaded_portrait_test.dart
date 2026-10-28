@@ -29,16 +29,40 @@ void main() {
     }
   });
 
-  testWidgets('coach-specific, reused player, and unknown portraits stay distinct', (tester) async {
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: Row(children: [
-      for (final (id, name) in [('seed_pep', 'Pep Guardiola'), ('seed_lampard', 'Frank Lampard'), ('unknown', 'Unknown')])
-        CoachAvatar(coach: Coach(id: id, name: name, countries: const [], clubIds: const [])),
-    ]))));
-    await tester.runAsync(() async { await Future<void>.delayed(const Duration(milliseconds: 400)); });
-    await tester.pumpAndSettle();
-    expect(find.byType(PortraitCrop), findsNWidgets(2));
-    expect(find.byType(PlayerPortrait), findsOneWidget);
-    expect(find.text('U'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'coach-specific, reused player, and unknown portraits stay distinct',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Row(
+              children: [
+                for (final (id, name) in [
+                  ('seed_pep', 'Pep Guardiola'),
+                  ('seed_lampard', 'Frank Lampard'),
+                  ('unknown', 'Unknown'),
+                ])
+                  CoachAvatar(
+                    coach: Coach(
+                      id: id,
+                      name: name,
+                      countries: const [],
+                      clubIds: const [],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+      });
+      await tester.pumpAndSettle();
+      expect(find.byType(PortraitCrop), findsNWidgets(2));
+      expect(find.byType(PlayerPortrait), findsOneWidget);
+      expect(find.text('U'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

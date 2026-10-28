@@ -30,8 +30,9 @@ Future<void> capture(WidgetTester tester, String name) async {
     try {
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
       await Directory('.dart_tool/five_qa').create(recursive: true);
-      await File('.dart_tool/five_qa/$name.png')
-          .writeAsBytes(bytes!.buffer.asUint8List());
+      await File(
+        '.dart_tool/five_qa/$name.png',
+      ).writeAsBytes(bytes!.buffer.asUint8List());
     } finally {
       image.dispose();
     }
@@ -58,16 +59,18 @@ Future<VsBotRandomFiveController> open(
       child: MaterialApp(
         theme: dark ? OrtakSahaTheme.dark : OrtakSahaTheme.light,
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context)
-              .copyWith(textScaler: TextScaler.linear(scale)),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(scale)),
           child: child!,
         ),
         home: navigator
             ? Builder(
                 builder: (context) => Scaffold(
                   body: TextButton(
-                    onPressed: () => Navigator.of(context)
-                        .push(MaterialPageRoute<void>(builder: (_) => page)),
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute<void>(builder: (_) => page)),
                     child: const Text('Open Five'),
                   ),
                 ),

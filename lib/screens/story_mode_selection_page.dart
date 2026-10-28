@@ -11,6 +11,7 @@ import 'international_glory_page.dart';
 import 'dynasties_page.dart';
 import 'football_docu_series_part_selection_page.dart';
 import 'what_if_selection_page.dart';
+
 class StorySubMode {
   final String title;
   final String subtitle;
@@ -72,29 +73,55 @@ class StoryModeSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const pages = <Widget>[
-      PlayerJourneyChapterListPage(), LegendsPathPartSelectionPage(),
-      UclMomentsPage(), TurkishNostalgiaPage(), InternationalGloryPage(),
-      DynastiesPage(), FootballDocuSeriesPartSelectionPage(), DerbyDayCountryPage(),
+      PlayerJourneyChapterListPage(),
+      LegendsPathPartSelectionPage(),
+      UclMomentsPage(),
+      TurkishNostalgiaPage(),
+      InternationalGloryPage(),
+      DynastiesPage(),
+      FootballDocuSeriesPartSelectionPage(),
+      DerbyDayCountryPage(),
     ];
     return Scaffold(
       appBar: AppBar(title: const Text('Hikâye')),
-      body: SafeArea(child: ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 28), children: [
-        Text('Futbolun hikâyelerine katıl.', style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 8), const Text('Bir yolculuk seç. Sahadaki izleri takip et.'),
-        const SizedBox(height: 22),
-        for (var i=0;i<storySubModes.length;i++) Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: PitchRow(key: ValueKey('story-mode-$i'), title: storySubModes[i].title,
-            subtitle: storySubModes[i].subtitle, icon: storySubModes[i].icon, highlight: true,
-            onTap: () => GameLauncher.open(context, GameEntry(
-              title: storySubModes[i].title, subtitle: storySubModes[i].subtitle,
-              icon: storySubModes[i].icon, page: pages[i],
-              // Story modes own their bundled catalogs; they need no player DB warm-up.
-              requiresRepository: false, modern: true, music: MusicTrack.story,
-            )),
-          ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          children: [
+            Text(
+              'Futbolun hikâyelerine katıl.',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            const Text('Bir yolculuk seç. Sahadaki izleri takip et.'),
+            const SizedBox(height: 22),
+            for (var i = 0; i < storySubModes.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: PitchRow(
+                  key: ValueKey('story-mode-$i'),
+                  title: storySubModes[i].title,
+                  subtitle: storySubModes[i].subtitle,
+                  icon: storySubModes[i].icon,
+                  highlight: true,
+                  onTap: () => GameLauncher.open(
+                    context,
+                    GameEntry(
+                      title: storySubModes[i].title,
+                      subtitle: storySubModes[i].subtitle,
+                      icon: storySubModes[i].icon,
+                      page: pages[i],
+                      // Story modes own their bundled catalogs; they need no player DB warm-up.
+                      requiresRepository: false,
+                      modern: true,
+                      music: MusicTrack.story,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
-      ])),
+      ),
     );
   }
 }

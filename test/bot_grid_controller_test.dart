@@ -27,11 +27,13 @@ mixin _DeferredLoad on ChangeNotifier {
   bool closed = false;
 
   void initialize() {
-    unawaited(ready.future.then((_) {
-      if (closed) return;
-      loaded = true;
-      notifyListeners();
-    }));
+    unawaited(
+      ready.future.then((_) {
+        if (closed) return;
+        loaded = true;
+        notifyListeners();
+      }),
+    );
   }
 
   @override
@@ -52,11 +54,13 @@ class _Grid extends GridController with _DeferredLoad {
     attempts++;
     return answer;
   }
+
   @override
   Player? submitPlayer(int index, Player player) {
     attempts++;
     return answer;
   }
+
   @override
   void assignPlayer(int index, Player player) {}
 }
@@ -72,6 +76,7 @@ class _RandomGrid extends RandomGridController with _DeferredLoad {
     attempts++;
     return answer;
   }
+
   @override
   void assignPlayer(int index, Player player) {}
 }
@@ -82,10 +87,8 @@ class _ReverseGrid extends ReverseGridController with _DeferredLoad {
   final correct = List<bool>.filled(3, false);
 
   @override
-  ReverseGridState get state => super.state.copyWith(
-    isLoading: !loaded,
-    rowCorrect: correct,
-  );
+  ReverseGridState get state =>
+      super.state.copyWith(isLoading: !loaded, rowCorrect: correct);
   @override
   void submitRowGuess(int row, String text) {
     attempts++;
@@ -103,13 +106,22 @@ void main() {
     final randomBot = VsBotRandomGridController(grid: random);
     final reverseBot = VsBotReverseGridController(grid: reverse);
 
-    for (final (inner, bot, initialize, loading) in <
-      (_DeferredLoad, ChangeNotifier, VoidCallback, bool Function())
-    >[
-      (classic, classicBot, classicBot.initialize, () => classicBot.isLoading),
-      (random, randomBot, randomBot.initialize, () => randomBot.isLoading),
-      (reverse, reverseBot, reverseBot.initialize, () => reverseBot.isLoading),
-    ]) {
+    for (final (inner, bot, initialize, loading)
+        in <(_DeferredLoad, ChangeNotifier, VoidCallback, bool Function())>[
+          (
+            classic,
+            classicBot,
+            classicBot.initialize,
+            () => classicBot.isLoading,
+          ),
+          (random, randomBot, randomBot.initialize, () => randomBot.isLoading),
+          (
+            reverse,
+            reverseBot,
+            reverseBot.initialize,
+            () => reverseBot.isLoading,
+          ),
+        ]) {
       final states = <bool>[];
       bot.addListener(() => states.add(loading()));
       initialize();
@@ -117,14 +129,19 @@ void main() {
       inner.ready.complete();
       await Future<void>.delayed(Duration.zero);
       expect(loading(), isFalse);
-      expect(states.last, isFalse,
-          reason: 'The page must hear about asynchronous board completion.');
+      expect(
+        states.last,
+        isFalse,
+        reason: 'The page must hear about asynchronous board completion.',
+      );
       bot.dispose();
       expect(inner.closed, isTrue);
     }
   });
 
-  testWidgets('Classic grid locks correct and wrong turns immediately', (tester) async {
+  testWidgets('Classic grid locks correct and wrong turns immediately', (
+    tester,
+  ) async {
     for (final correct in [true, false]) {
       for (final selectPlayer in [true, false]) {
         final inner = _Grid()..answer = correct ? _player : null;
@@ -147,7 +164,9 @@ void main() {
     }
   });
 
-  testWidgets('Random grid locks correct and wrong turns immediately', (tester) async {
+  testWidgets('Random grid locks correct and wrong turns immediately', (
+    tester,
+  ) async {
     for (final correct in [true, false]) {
       final inner = _RandomGrid()..answer = correct ? _player : null;
       final bot = VsBotRandomGridController(grid: inner);
@@ -165,7 +184,9 @@ void main() {
     }
   });
 
-  testWidgets('Reverse grid locks correct and wrong turns immediately', (tester) async {
+  testWidgets('Reverse grid locks correct and wrong turns immediately', (
+    tester,
+  ) async {
     for (final correct in [true, false]) {
       final inner = _ReverseGrid()..accept = correct;
       final bot = VsBotReverseGridController(grid: inner);
@@ -183,7 +204,9 @@ void main() {
     }
   });
 
-  testWidgets('Disposing during the handover cancels the pending bot move', (tester) async {
+  testWidgets('Disposing during the handover cancels the pending bot move', (
+    tester,
+  ) async {
     final inner = _Grid()..answer = _player;
     final bot = VsBotGridController(grid: inner);
     bot.initialize();

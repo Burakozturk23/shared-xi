@@ -21,8 +21,9 @@ class ProfileHubPage extends StatefulWidget {
 
 class _ProfileHubPageState extends State<ProfileHubPage> {
   Future<void> _open(Widget page, {bool modern = false}) async {
-    await Navigator.of(context)
-        .push(LinkballRoute(builder: (_) => page, modern: modern));
+    await Navigator.of(
+      context,
+    ).push(LinkballRoute(builder: (_) => page, modern: modern));
     if (mounted) setState(() {});
   }
 
@@ -84,15 +85,23 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
               PitchAction(
                 label: 'Google hesabını bağla',
                 icon: Icons.login_rounded,
-                onPressed: () =>
-                    _open(const LinkballSignInPage(allowSkip: false), modern: true),
+                onPressed: () => _open(
+                  const LinkballSignInPage(allowSkip: false),
+                  modern: true,
+                ),
               ),
             ],
           ),
         ),
         const PitchSectionTitle('Profilin ve ilerlemen'),
-        PitchRow(title: 'Burst Rekor Merkezi', icon: Icons.bolt_outlined,
-          onTap: () => _open(const ArcadePage(mode: 'burst', recordsInitially: true), modern: true)),
+        PitchRow(
+          title: 'Burst Rekor Merkezi',
+          icon: Icons.bolt_outlined,
+          onTap: () => _open(
+            const ArcadePage(mode: 'burst', recordsInitially: true),
+            modern: true,
+          ),
+        ),
         const SizedBox(height: 16),
         PitchRow(
           title: 'Profilim ve istatistikler',

@@ -120,8 +120,10 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
                     Expanded(
                       child: Text(
                         'BAĞLANTIYI SEN KUR',
-                        style: Theme.of(context).textTheme.labelSmall
-                            ?.copyWith(color: p.accent, letterSpacing: 1.2),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: p.accent,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                     ),
                   ],
@@ -134,8 +136,9 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
                 const SizedBox(height: 8),
                 Text(
                   'İki kulüp ya da bir kulüp ve ülke seç. Futbolun ortak isimlerini keşfet.',
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: p.muted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: p.muted),
                 ),
                 const SizedBox(height: 18),
                 PitchAction(
@@ -149,8 +152,9 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
           const PitchSectionTitle('Günlük Meydan Okumalar'),
           Text(
             'Her gün yeni bir futbol molası. Üç oyun da enerji harcamaz.',
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: p.muted),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: p.muted),
           ),
           const SizedBox(height: 12),
           PitchPanel(
@@ -230,8 +234,9 @@ class _DailyGameRow extends StatelessWidget {
                       2 => 'Gerçek maçlardan ortak oyuncuları çöz',
                       _ => 'Bir soru, üç seçenek. Bilgini sına',
                     },
-                    style: Theme.of(context).textTheme.bodySmall
-                        ?.copyWith(color: p.muted),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: p.muted),
                   ),
                 ],
               ),
@@ -356,14 +361,16 @@ class _ResourceTile extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               value,
-              style: Theme.of(context).textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 2),
             Text(
               note,
-              style: Theme.of(context).textTheme.labelSmall
-                  ?.copyWith(color: p.muted),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(color: p.muted),
             ),
           ],
         ),

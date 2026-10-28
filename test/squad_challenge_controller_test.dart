@@ -50,31 +50,34 @@ void main() {
     expect(c.state.slotPlayers[0], same(catalog.players[1]));
   });
 
-  test('Passportless checks all occupied countries; malformed drafts restore only legal picks', () {
-    final unique = squadFixture(unique: true);
-    final c = create(
-      data: unique,
-      draft: [12, 2, 3, 3, 99999, null, null, null, null, null, null],
-    );
-    addTearDown(c.dispose);
-    expect(c.playerIds, [
-      12,
-      null,
-      3,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ]);
-    expect(c.canAssign(1, unique.players[2]!), isFalse);
-    c.removePlayer(0);
-    c.assignPlayer(1, unique.players[2]!);
-    expect(c.state.filledCount, 2);
-  });
+  test(
+    'Passportless checks all occupied countries; malformed drafts restore only legal picks',
+    () {
+      final unique = squadFixture(unique: true);
+      final c = create(
+        data: unique,
+        draft: [12, 2, 3, 3, 99999, null, null, null, null, null, null],
+      );
+      addTearDown(c.dispose);
+      expect(c.playerIds, [
+        12,
+        null,
+        3,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+      ]);
+      expect(c.canAssign(1, unique.players[2]!), isFalse);
+      c.removePlayer(0);
+      c.assignPlayer(1, unique.players[2]!);
+      expect(c.state.filledCount, 2);
+    },
+  );
 
   test(
     'Budget overflow cannot replace a valid squad and finish locks edits',
@@ -109,43 +112,53 @@ void main() {
     },
   );
 
-  test('Every daily theme has a legal hard XI; client scores match the server contract', () {
-    final data = SquadCatalog.fromJson(
-      jsonDecode(
-        File('assets/data/squad_challenge_catalog.json').readAsStringSync(),
-      ) as Map<String, dynamic>,
-    );
-    final cases = jsonDecode(
-      File('test/support/squad_scoring_cases.json').readAsStringSync(),
-    ) as List;
-    expect(cases.length, 31);
-    expect(data.themes.length, 32);
-    expect(data.formations.length, 7);
-    for (final row in cases) {
-      final m = SquadMission.fromJson(
-        Map<String, dynamic>.from(row['mission'] as Map),
+  test(
+    'Every daily theme has a legal hard XI; client scores match the server contract',
+    () {
+      final data = SquadCatalog.fromJson(
+        jsonDecode(
+              File(
+                'assets/data/squad_challenge_catalog.json',
+              ).readAsStringSync(),
+            )
+            as Map<String, dynamic>,
       );
-      final c = BuildXiController(
-        catalog: data,
-        theme: data.themes[m.themeId]!,
-        formation: data.formations[m.formationId]!,
-        mission: m,
-      );
-      for (final (i, id) in (row['ids'] as List).indexed)
-        c.assignPlayer(i, data.players[id]!);
-      expect(c.meetsGoal, isTrue, reason: m.themeId);
-      final b = c.previewBreakdown();
-      expect(
-        {
-          'cost': b.cost,
-          'links': b.links,
-          'countries': b.countries,
-          'score': b.total,
-        },
-        row['score'],
-        reason: m.themeId,
-      );
-      c.dispose();
-    }
-  });
+      final cases =
+          jsonDecode(
+                File(
+                  'test/support/squad_scoring_cases.json',
+                ).readAsStringSync(),
+              )
+              as List;
+      expect(cases.length, 31);
+      expect(data.themes.length, 32);
+      expect(data.formations.length, 7);
+      for (final row in cases) {
+        final m = SquadMission.fromJson(
+          Map<String, dynamic>.from(row['mission'] as Map),
+        );
+        final c = BuildXiController(
+          catalog: data,
+          theme: data.themes[m.themeId]!,
+          formation: data.formations[m.formationId]!,
+          mission: m,
+        );
+        for (final (i, id) in (row['ids'] as List).indexed)
+          c.assignPlayer(i, data.players[id]!);
+        expect(c.meetsGoal, isTrue, reason: m.themeId);
+        final b = c.previewBreakdown();
+        expect(
+          {
+            'cost': b.cost,
+            'links': b.links,
+            'countries': b.countries,
+            'score': b.total,
+          },
+          row['score'],
+          reason: m.themeId,
+        );
+        c.dispose();
+      }
+    },
+  );
 }

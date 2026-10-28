@@ -94,8 +94,12 @@ class ProgressFake extends ProgressGateway {
     reads++;
     return missionData ?? missionFixture();
   }
+
   @override
-  Future<MissionClaimResult> claimMission(String id, {String periodKey = ''}) async {
+  Future<MissionClaimResult> claimMission(
+    String id, {
+    String periodKey = '',
+  }) async {
     claims++;
     return pending!.future;
   }
@@ -324,46 +328,87 @@ void main() {
     expect(find.text('Menu language'), findsOneWidget);
   });
   for (final large in [false, true]) {
-    testWidgets('daily mission cards filter, launch correct games and refresh on return $large', (t) async {
-      final g = ProgressFake()..missionData = MissionProfile.fromMap({
-        'daily': [
-          for (final (id, title, target) in [
-            ('daily_ranked_play_3', 'Bugün 3 sıralamalı maç oyna', 3),
-            ('daily_ranked_win_1', 'Bugün 1 sıralamalı maç kazan', 1),
-            ('daily_challenge_1', 'Günlük Mücadeleyi tamamla', 1),
-          ]) {'id': id, 'title': title, 'kind': 'daily', 'target': target,
-            'description': 'Oyununu tamamla, ilerlemeni burada takip et.', 'rewardCoins': 20,
-            'routeKey': id == 'daily_challenge_1' ? 'daily_matches' : 'online_ranked', 'rewardSp': 30},
-        ],
-      });
-      final opened = <GameEntry>[];
-      final pending = Completer<void>();
-      final key = await open(t, ProgressionCenterPage(gateway: g,
-        openGame: (_, game) { opened.add(game); return pending.future; }), dark: !large, large: large);
-      await reveal(t, find.text('Ödülü hazır'));
-      await t.tap(find.text('Ödülü hazır')); await t.pumpAndSettle();
-      await reveal(t, find.text('Tüm görevleri göster'));
-      expect(find.text('Henüz hazır ödül yok'), findsOneWidget);
-      await t.tap(find.text('Tüm görevleri göster')); await t.pumpAndSettle();
-      final rankedButton = find.descendant(of: find.byKey(const ValueKey('mission-daily_ranked_play_3')),
-        matching: find.byWidgetPredicate((w) => w is OutlinedButton));
-      await reveal(t, rankedButton);
-      await capture(t, key, 'missions-ranked-${large ? 'light-large' : 'dark-normal'}');
-      await t.tap(rankedButton); await t.pump();
-      expect(opened, [GameCatalog.onlineRanked]);
-      expect(t.widget<OutlinedButton>(rankedButton).onPressed, isNull);
-      pending.complete(); await t.pumpAndSettle();
-      expect(g.reads, 2);
-      final dailyButton = find.descendant(of: find.byKey(const ValueKey('mission-daily_challenge_1')),
-        matching: find.byType(OutlinedButton));
-      await reveal(t, dailyButton);
-      await capture(t, key, 'missions-daily-${large ? 'light-large' : 'dark-normal'}');
-      await t.tap(dailyButton); await t.pumpAndSettle();
-      expect(opened, [GameCatalog.onlineRanked, GameCatalog.daily]);
-      expect(g.reads, 3);
-      expect(g.claims, 0);
-      expect(t.takeException(), isNull);
-    });
+    testWidgets(
+      'daily mission cards filter, launch correct games and refresh on return $large',
+      (t) async {
+        final g = ProgressFake()
+          ..missionData = MissionProfile.fromMap({
+            'daily': [
+              for (final (id, title, target) in [
+                ('daily_ranked_play_3', 'Bugün 3 sıralamalı maç oyna', 3),
+                ('daily_ranked_win_1', 'Bugün 1 sıralamalı maç kazan', 1),
+                ('daily_challenge_1', 'Günlük Mücadeleyi tamamla', 1),
+              ])
+                {
+                  'id': id,
+                  'title': title,
+                  'kind': 'daily',
+                  'target': target,
+                  'description': 'Oyununu tamamla, ilerlemeni burada takip et.',
+                  'rewardCoins': 20,
+                  'routeKey': id == 'daily_challenge_1'
+                      ? 'daily_matches'
+                      : 'online_ranked',
+                  'rewardSp': 30,
+                },
+            ],
+          });
+        final opened = <GameEntry>[];
+        final pending = Completer<void>();
+        final key = await open(
+          t,
+          ProgressionCenterPage(
+            gateway: g,
+            openGame: (_, game) {
+              opened.add(game);
+              return pending.future;
+            },
+          ),
+          dark: !large,
+          large: large,
+        );
+        await reveal(t, find.text('Ödülü hazır'));
+        await t.tap(find.text('Ödülü hazır'));
+        await t.pumpAndSettle();
+        await reveal(t, find.text('Tüm görevleri göster'));
+        expect(find.text('Henüz hazır ödül yok'), findsOneWidget);
+        await t.tap(find.text('Tüm görevleri göster'));
+        await t.pumpAndSettle();
+        final rankedButton = find.descendant(
+          of: find.byKey(const ValueKey('mission-daily_ranked_play_3')),
+          matching: find.byWidgetPredicate((w) => w is OutlinedButton),
+        );
+        await reveal(t, rankedButton);
+        await capture(
+          t,
+          key,
+          'missions-ranked-${large ? 'light-large' : 'dark-normal'}',
+        );
+        await t.tap(rankedButton);
+        await t.pump();
+        expect(opened, [GameCatalog.onlineRanked]);
+        expect(t.widget<OutlinedButton>(rankedButton).onPressed, isNull);
+        pending.complete();
+        await t.pumpAndSettle();
+        expect(g.reads, 2);
+        final dailyButton = find.descendant(
+          of: find.byKey(const ValueKey('mission-daily_challenge_1')),
+          matching: find.byType(OutlinedButton),
+        );
+        await reveal(t, dailyButton);
+        await capture(
+          t,
+          key,
+          'missions-daily-${large ? 'light-large' : 'dark-normal'}',
+        );
+        await t.tap(dailyButton);
+        await t.pumpAndSettle();
+        expect(opened, [GameCatalog.onlineRanked, GameCatalog.daily]);
+        expect(g.reads, 3);
+        expect(g.claims, 0);
+        expect(t.takeException(), isNull);
+      },
+    );
   }
   testWidgets('mission claim locks duplicate taps and uses server result', (
     t,

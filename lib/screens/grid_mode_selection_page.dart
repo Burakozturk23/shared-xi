@@ -17,8 +17,10 @@ class GridModeSelectionPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
-            const Text('Hangi grid türüyle oynamak istersin?',
-                style: TextStyle(fontSize: 16)),
+            const Text(
+              'Hangi grid türüyle oynamak istersin?',
+              style: TextStyle(fontSize: 16),
+            ),
             const SizedBox(height: 20),
             const GridClubPoolPicker(),
             const SizedBox(height: 16),
@@ -28,7 +30,12 @@ class GridModeSelectionPage extends StatelessWidget {
               subtitle: 'Kriterlere uyan doğru oyuncuyu bul',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SupportedGridPage(mode: 'solo_grid_classic', legacy: GridPage())),
+                MaterialPageRoute(
+                  builder: (_) => const SupportedGridPage(
+                    mode: 'solo_grid_classic',
+                    legacy: GridPage(),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 14),
@@ -38,19 +45,29 @@ class GridModeSelectionPage extends StatelessWidget {
               subtitle: 'Üç oyuncunun ortak kriterini bul',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SupportedGridPage(mode: 'solo_grid_reverse', legacy: ReverseGridPage())),
+                MaterialPageRoute(
+                  builder: (_) => const SupportedGridPage(
+                    mode: 'solo_grid_reverse',
+                    legacy: ReverseGridPage(),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 14),
             _ModeTile(
-  icon: Icons.shuffle,
-  title: 'Rastgele Eşleşme',
-  subtitle: '3 rastgele kulüp çifti, sen yerleştir',
-  onTap: () => Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const SupportedGridPage(mode: 'solo_grid_random', legacy: RandomGridPage())),
-  ),
-),
+              icon: Icons.shuffle,
+              title: 'Rastgele Eşleşme',
+              subtitle: '3 rastgele kulüp çifti, sen yerleştir',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SupportedGridPage(
+                    mode: 'solo_grid_random',
+                    legacy: RandomGridPage(),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -77,8 +94,10 @@ class _ModeTile extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: Icon(icon, size: 32),
-        title: Text(title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,

@@ -77,9 +77,7 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
               const SizedBox(height: 24),
               PitchAction(
                 label: 'Mod seç',
-                onPressed: () => _open(
-                  GameCatalog.onlineRanked,
-                ),
+                onPressed: () => _open(GameCatalog.onlineRanked),
               ),
             ],
           ),
@@ -105,9 +103,7 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
                 label: 'Birlikte oyna',
                 secondary: true,
                 neutral: true,
-                onPressed: () => _open(
-                  GameCatalog.onlineFriends,
-                ),
+                onPressed: () => _open(GameCatalog.onlineFriends),
               ),
             ],
           ),

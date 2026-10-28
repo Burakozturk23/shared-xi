@@ -58,6 +58,7 @@ class GameEntry {
   final String title, subtitle, category;
   final IconData icon;
   final Widget page;
+
   /// Background track for this entry's route (audio pack M1–M5).
   final MusicTrack music;
   final bool quietMusic;
@@ -85,44 +86,93 @@ class GameCatalog {
     if (key == 'online_ranked') return onlineRanked;
     if (key == 'online_friends') return onlineFriends;
     final story = <String, (String, Widget)>{
-      'player_journey': ('Oyuncu Yolculuğu', const PlayerJourneyChapterListPage()),
+      'player_journey': (
+        'Oyuncu Yolculuğu',
+        const PlayerJourneyChapterListPage(),
+      ),
       'what_if': ('What If', const WhatIfPage()),
       'ucl_moments': ('UCL Moments', const UclMomentsPage()),
       'nostalgia': ('Türkiye Nostaljisi', const TurkishNostalgiaPage()),
-      'international_glory': ('International Glory', const InternationalGloryPage()),
+      'international_glory': (
+        'International Glory',
+        const InternationalGloryPage(),
+      ),
       'dynasties': ('Hanedanlar', const DynastiesPage()),
-      'football_docu': ('Futbol Belgeseli', const FootballDocuSeriesPartSelectionPage()),
+      'football_docu': (
+        'Futbol Belgeseli',
+        const FootballDocuSeriesPartSelectionPage(),
+      ),
       'derby_day': ('Derbi Günü', const DerbyDayCountryPage()),
     }[key];
-    if (story != null) return GameEntry(title: story.$1, subtitle: 'Bir bölümü tamamla',
-      icon: Icons.menu_book_outlined, page: story.$2, modern: true, music: MusicTrack.story);
+    if (story != null)
+      return GameEntry(
+        title: story.$1,
+        subtitle: 'Bir bölümü tamamla',
+        icon: Icons.menu_book_outlined,
+        page: story.$2,
+        modern: true,
+        music: MusicTrack.story,
+      );
     if (key == 'daily_matches') return daily;
     if (key == 'daily_lingo') return dailyLingo;
     if (key == 'passa_daily') return dailyPassa;
     if (key == 'daily_anagram') return dailyAnagram;
-    if (key == 'passa_weekly') return const GameEntry(title: 'Haftalık Passaparola',
-      subtitle: '29 harf', icon: Icons.abc_rounded, page: DailyWordsPage(mode: 'passa_weekly'),
-      requiresRepository: false, modern: true);
+    if (key == 'passa_weekly')
+      return const GameEntry(
+        title: 'Haftalık Passaparola',
+        subtitle: '29 harf',
+        icon: Icons.abc_rounded,
+        page: DailyWordsPage(mode: 'passa_weekly'),
+        requiresRepository: false,
+        modern: true,
+      );
     const titles = <String, String>{
-      'coach11': 'Hoca 11', 'vault': 'Kadro Kasası', 'letter11': 'Harf 11',
-      'career': 'Career Puzzle', 'transfer': 'Transfer Detective', 'mystery': 'Gizemli Futbolcu',
-      'chain': 'Kariyer Zinciri', 'fake_endless': 'Sahte Kulüp', 'matching': 'Matching',
-      'pyramid': 'Pyramid', 'burst_survival': 'Burst', 'this_or_that': 'O mu Bu mu?',
-      'higher_lower': 'Higher or Lower', 'blind_ranking': 'Blind Ranking',
+      'coach11': 'Hoca 11',
+      'vault': 'Kadro Kasası',
+      'letter11': 'Harf 11',
+      'career': 'Career Puzzle',
+      'transfer': 'Transfer Detective',
+      'mystery': 'Gizemli Futbolcu',
+      'chain': 'Kariyer Zinciri',
+      'fake_endless': 'Sahte Kulüp',
+      'matching': 'Matching',
+      'pyramid': 'Pyramid',
+      'burst_survival': 'Burst',
+      'this_or_that': 'O mu Bu mu?',
+      'higher_lower': 'Higher or Lower',
+      'blind_ranking': 'Blind Ranking',
       'squad_challenge': 'Squad Challenge',
     };
     final title = titles[key];
-    for (final game in games) { if (title != null && game.title == title) return game; }
+    for (final game in games) {
+      if (title != null && game.title == title) return game;
+    }
     return null;
   }
 
   // Lobbies and matchmaking keep a quiet menu theme; the match page selects its own.
-  static const onlineRanked = GameEntry(title: 'Rastgele eşleş', subtitle: '', icon: Icons.public_rounded,
-    page: OnlineRankedModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true,
-    music: MusicTrack.menu, quietMusic: true);
-  static const onlineFriends = GameEntry(title: 'Arkadaşlarınla oyna', subtitle: '', icon: Icons.groups_outlined,
-    page: OnlineFriendsModePage(), requiresPersistentAccount: true, requiresRepository: false, modern: true,
-    music: MusicTrack.menu, quietMusic: true);
+  static const onlineRanked = GameEntry(
+    title: 'Rastgele eşleş',
+    subtitle: '',
+    icon: Icons.public_rounded,
+    page: OnlineRankedModePage(),
+    requiresPersistentAccount: true,
+    requiresRepository: false,
+    modern: true,
+    music: MusicTrack.menu,
+    quietMusic: true,
+  );
+  static const onlineFriends = GameEntry(
+    title: 'Arkadaşlarınla oyna',
+    subtitle: '',
+    icon: Icons.groups_outlined,
+    page: OnlineFriendsModePage(),
+    requiresPersistentAccount: true,
+    requiresRepository: false,
+    modern: true,
+    music: MusicTrack.menu,
+    quietMusic: true,
+  );
   static const dailyQuestion = GameEntry(
     title: 'Günün Sorusu',
     subtitle: 'Tek soru, üç seçenek · 0 enerji',
@@ -150,13 +200,38 @@ class GameCatalog {
     requiresRepository: false,
     modern: true,
   );
-  static const dailyLingo = GameEntry(title: 'Günün Lingo’su', subtitle: 'Tek kelime, 6 tahmin · 0 enerji',
-    icon: Icons.text_fields_rounded, page: FutbolLingoPage(), requiresRepository: false, modern: true);
-  static const dailyPassa = GameEntry(title: 'Mini Passaparola', subtitle: '7 harf, sınırsız düşünme · 0 enerji',
-    icon: Icons.abc_rounded, page: PassaparolaPage(), requiresRepository: false, modern: true);
-  static const dailyAnagram = GameEntry(title: 'Günün Anagramı', subtitle: '3 futbolcu, karışık harfler · 0 enerji',
-    icon: Icons.shuffle_rounded, page: DailyWordsPage(mode: 'daily_anagram'), requiresRepository: false, modern: true);
-  static const dailyGames = <GameEntry>[dailyFootballer, daily, dailyQuestion, dailyLingo, dailyPassa, dailyAnagram];
+  static const dailyLingo = GameEntry(
+    title: 'Günün Lingo’su',
+    subtitle: 'Tek kelime, 6 tahmin · 0 enerji',
+    icon: Icons.text_fields_rounded,
+    page: FutbolLingoPage(),
+    requiresRepository: false,
+    modern: true,
+  );
+  static const dailyPassa = GameEntry(
+    title: 'Mini Passaparola',
+    subtitle: '7 harf, sınırsız düşünme · 0 enerji',
+    icon: Icons.abc_rounded,
+    page: PassaparolaPage(),
+    requiresRepository: false,
+    modern: true,
+  );
+  static const dailyAnagram = GameEntry(
+    title: 'Günün Anagramı',
+    subtitle: '3 futbolcu, karışık harfler · 0 enerji',
+    icon: Icons.shuffle_rounded,
+    page: DailyWordsPage(mode: 'daily_anagram'),
+    requiresRepository: false,
+    modern: true,
+  );
+  static const dailyGames = <GameEntry>[
+    dailyFootballer,
+    daily,
+    dailyQuestion,
+    dailyLingo,
+    dailyPassa,
+    dailyAnagram,
+  ];
 
   static const discovery = GameEntry(
     title: 'Ortak Oyuncu Keşfi',
@@ -220,9 +295,15 @@ class GameCatalog {
   static const games = <GameEntry>[
     vsBot,
     dailyFootballer,
-    GameEntry(title: 'Solo Grid', subtitle: 'Klasik, Tersten ve Rastgele tahta',
-      icon: Icons.grid_view_rounded, page: GridModeSelectionPage(),
-      category: 'Hız & Eşleştirme', requiresRepository: true, modern: true),
+    GameEntry(
+      title: 'Solo Grid',
+      subtitle: 'Klasik, Tersten ve Rastgele tahta',
+      icon: Icons.grid_view_rounded,
+      page: GridModeSelectionPage(),
+      category: 'Hız & Eşleştirme',
+      requiresRepository: true,
+      modern: true,
+    ),
     GameEntry(
       title: 'Club Manager',
       subtitle: 'Bütçe, kadro ve maç yönetimi',

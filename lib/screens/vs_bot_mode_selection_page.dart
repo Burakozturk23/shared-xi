@@ -50,10 +50,7 @@ class VsBotModeSelectionPage extends StatelessWidget {
             subtitle: 'Klasik, Tersten veya Rastgele Grid ile yarış.',
             icon: Icons.grid_view_rounded,
             tags: const ['3 oyun türü', 'Sıra tabanlı'],
-            onTap: () => _open(
-              context,
-              const VsBotGridModeSelectionPage(),
-            ),
+            onTap: () => _open(context, const VsBotGridModeSelectionPage()),
           ),
           const SizedBox(height: 16),
           _card(context, BotGameCatalog.cinko),

@@ -78,15 +78,39 @@ class SquadSupportTransport extends EnergyService {
   final calls = <Map<String, dynamic>>[];
   bool used = false;
   @override
-  Future<Map<String, dynamic>> call(String name, [Map<String, dynamic> input = const {}]) async {
+  Future<Map<String, dynamic>> call(
+    String name, [
+    Map<String, dynamic> input = const {},
+  ]) async {
     calls.add({'name': name, ...input});
     if (name == 'useSquadSupport') used = true;
-    return {'legacy': false, 'practice': true, 'penalty': used ? 10 : 0,
-      'session': {'id': 'practice', 'revision': used ? 1 : 0, 'support': {'version': 1, 'assisted': used,
-        'products': [{'id': 'boost_basic', 'priceCoins': 25, 'ads': true},
-          {'id': 'boost_strong', 'priceCoins': 60, 'ads': false}]}},
-      'hints': {if (used) 'boost_basic': {'slotLabel': 'Kaleci', 'explanation': 'Doğrulanmış aday',
-        'candidates': [{'name': 'Futbolcu 1', 'cost': 8, 'links': 0, 'newCountries': 1}]}}};
+    return {
+      'legacy': false,
+      'practice': true,
+      'penalty': used ? 10 : 0,
+      'session': {
+        'id': 'practice',
+        'revision': used ? 1 : 0,
+        'support': {
+          'version': 1,
+          'assisted': used,
+          'products': [
+            {'id': 'boost_basic', 'priceCoins': 25, 'ads': true},
+            {'id': 'boost_strong', 'priceCoins': 60, 'ads': false},
+          ],
+        },
+      },
+      'hints': {
+        if (used)
+          'boost_basic': {
+            'slotLabel': 'Kaleci',
+            'explanation': 'Doğrulanmış aday',
+            'candidates': [
+              {'name': 'Futbolcu 1', 'cost': 8, 'links': 0, 'newCountries': 1},
+            ],
+          },
+      },
+    };
   }
 }
 
@@ -104,29 +128,67 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
   final catalog = squadFixture();
 
-  testWidgets('Squad paid advice carries selected slot and draft; strong help has no ad', (tester) async {
-    final transport = SquadSupportTransport();
-    final support = StorySupportService(transport: transport, currentUser: () => 'alice',
-      useCallable: 'useSquadSupport', loadCallable: 'getSquadSupport', watchPlacement: 'squad_support_hint');
-    await open(tester, BuildXiPage(catalog: catalog, theme: catalog.themes.values.first,
-      formation: catalog.formations.values.first, supportService: support), size: const Size(320, 900), scale: 1.8);
-    final slot = find.byKey(const Key('squad-slot-0'));
-    await reveal(tester, slot); await tester.tap(slot); await tester.pumpAndSettle();
-    final target = find.byWidgetPredicate((w) => w is PaidHintButton && w.sku == 'boost_basic').hitTestable();
-    await tester.scrollUntilVisible(target, 200, scrollable: find.byType(Scrollable).last, maxScrolls: 30);
-    await tester.pumpAndSettle();
-    final button = tester.widget<PaidHintButton>(target);
-    await button.onUse({'boostId': 'boost_basic', 'paymentSource': 'coins', 'expectedPriceCoins': 25});
-    await tester.pumpAndSettle();
-    expect(transport.calls.last['name'], 'useSquadSupport'); expect(transport.calls.last['slot'], 0);
-    expect(transport.calls.last['playerIds'], List<int?>.filled(11, null));
-    expect(transport.calls.last['catalogVersion'], 'test-v1');
-    expect(transport.calls.last['requestId'], matches(RegExp(r'^[a-f0-9]{32}$')));
-    expect(find.text('Doğrulanmış aday'), findsOneWidget);
-    final strong = find.byWidgetPredicate((w) => w is PaidHintButton && w.sku == 'boost_strong');
-    expect(tester.widget<PaidHintButton>(strong).onWatch, isNull);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'Squad paid advice carries selected slot and draft; strong help has no ad',
+    (tester) async {
+      final transport = SquadSupportTransport();
+      final support = StorySupportService(
+        transport: transport,
+        currentUser: () => 'alice',
+        useCallable: 'useSquadSupport',
+        loadCallable: 'getSquadSupport',
+        watchPlacement: 'squad_support_hint',
+      );
+      await open(
+        tester,
+        BuildXiPage(
+          catalog: catalog,
+          theme: catalog.themes.values.first,
+          formation: catalog.formations.values.first,
+          supportService: support,
+        ),
+        size: const Size(320, 900),
+        scale: 1.8,
+      );
+      final slot = find.byKey(const Key('squad-slot-0'));
+      await reveal(tester, slot);
+      await tester.tap(slot);
+      await tester.pumpAndSettle();
+      final target = find
+          .byWidgetPredicate(
+            (w) => w is PaidHintButton && w.sku == 'boost_basic',
+          )
+          .hitTestable();
+      await tester.scrollUntilVisible(
+        target,
+        200,
+        scrollable: find.byType(Scrollable).last,
+        maxScrolls: 30,
+      );
+      await tester.pumpAndSettle();
+      final button = tester.widget<PaidHintButton>(target);
+      await button.onUse({
+        'boostId': 'boost_basic',
+        'paymentSource': 'coins',
+        'expectedPriceCoins': 25,
+      });
+      await tester.pumpAndSettle();
+      expect(transport.calls.last['name'], 'useSquadSupport');
+      expect(transport.calls.last['slot'], 0);
+      expect(transport.calls.last['playerIds'], List<int?>.filled(11, null));
+      expect(transport.calls.last['catalogVersion'], 'test-v1');
+      expect(
+        transport.calls.last['requestId'],
+        matches(RegExp(r'^[a-f0-9]{32}$')),
+      );
+      expect(find.text('Doğrulanmış aday'), findsOneWidget);
+      final strong = find.byWidgetPredicate(
+        (w) => w is PaidHintButton && w.sku == 'boost_strong',
+      );
+      expect(tester.widget<PaidHintButton>(strong).onWatch, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   for (final (size, scale, dark) in [
     (const Size(390, 844), 1.0, true),

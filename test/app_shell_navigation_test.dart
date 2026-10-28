@@ -50,11 +50,7 @@ void main() {
         ],
         'Harf & Kelime': ['Futbol Lingo', 'Passaparola', 'Anagram'],
         'Hız & Eşleştirme': ['Solo Grid', 'Burst', 'Pyramid', 'Matching'],
-        'Seçim & Sıralama': [
-          'O mu Bu mu?',
-          'Higher or Lower',
-          'Blind Ranking',
-        ],
+        'Seçim & Sıralama': ['O mu Bu mu?', 'Higher or Lower', 'Blind Ranking'],
         'Hikâye': ['Story Mode'],
       };
       expect(GameCatalog.groups.map((group) => group.title), expected.keys);
@@ -166,7 +162,10 @@ void main() {
       await tester.tap(find.text(label));
       await tester.pumpAndSettle();
       expect(find.byType(LinkballSignInPage), findsOneWidget);
-      expect(Theme.of(tester.element(find.byType(LinkballSignInPage))).brightness, Brightness.light);
+      expect(
+        Theme.of(tester.element(find.byType(LinkballSignInPage))).brightness,
+        Brightness.light,
+      );
       expect(
         tester
             .widget<LinkballSignInPage>(find.byType(LinkballSignInPage))

@@ -64,17 +64,29 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (group != null) ...[
-                  if (['Hız & Eşleştirme', 'Seçim & Sıralama'].contains(group.title))
-                    GameIntro(icon: group.icon, title: group.subtitle, message: 'Modunu seç ve sahaya çık.')
-                  else Text(group.subtitle, style: Theme.of(context).textTheme.headlineSmall),
+                  if ([
+                    'Hız & Eşleştirme',
+                    'Seçim & Sıralama',
+                  ].contains(group.title))
+                    GameIntro(
+                      icon: group.icon,
+                      title: group.subtitle,
+                      message: 'Modunu seç ve sahaya çık.',
+                    )
+                  else
+                    Text(
+                      group.subtitle,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   const SizedBox(height: 8),
                 ],
                 Text(
                   group == null
                       ? 'Bugün ne oynamak istersin?'
                       : '${entries.length} oyun seni bekliyor.',
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: PitchColors.of(context).muted),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: PitchColors.of(context).muted,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 if (group?.title != 'Kadro & Yönetim')
@@ -155,16 +167,22 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                     PitchTile(
                       title: group.title,
                       caption: group.caption,
-                      countLabel:
-                          group.title == 'Hikâye' ? '${storySubModes.length} mod' : '${GameCatalog.games.where((game) => game.category == group.title).length} oyun',
+                      countLabel: group.title == 'Hikâye'
+                          ? '${storySubModes.length} mod'
+                          : '${GameCatalog.games.where((game) => game.category == group.title).length} oyun',
                       icon: group.icon,
                       onTap: () => group.title == 'Hikâye'
-                        ? GameLauncher.open(context, GameCatalog.games.firstWhere((game) => game.category == 'Hikâye'))
-                        : Navigator.of(context).push(
-                        LinkballRoute(
-                          builder: (_) => GamesCatalogPage(group: group),
-                        ),
-                      ),
+                          ? GameLauncher.open(
+                              context,
+                              GameCatalog.games.firstWhere(
+                                (game) => game.category == 'Hikâye',
+                              ),
+                            )
+                          : Navigator.of(context).push(
+                              LinkballRoute(
+                                builder: (_) => GamesCatalogPage(group: group),
+                              ),
+                            ),
                     ),
                 ],
               ),
@@ -194,7 +212,12 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
     );
     if (group == null) return content;
     return Scaffold(
-      appBar: AppBar(toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64, title: Text(group.title, maxLines: 2)),
+      appBar: AppBar(
+        toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24
+            ? 96
+            : 64,
+        title: Text(group.title, maxLines: 2),
+      ),
       body: GameContent(child: content),
     );
   }

@@ -82,7 +82,9 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
   }
 
   Future<void> _refresh() async {
-    final data = await _gateway.call('status').timeout(const Duration(seconds: 30));
+    final data = await _gateway
+        .call('status')
+        .timeout(const Duration(seconds: 30));
     if (!mounted) return;
     setState(() {
       _data = data;
@@ -107,9 +109,9 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
   }
 
   Future<void> _start(Map<String, dynamic> match) async {
-    final data = await _gateway.call('start', {
-      'fixtureId': match['fixtureId'],
-    }).timeout(const Duration(seconds: 30));
+    final data = await _gateway
+        .call('start', {'fixtureId': match['fixtureId']})
+        .timeout(const Duration(seconds: 30));
     if (!mounted) return;
     setState(() {
       _match = match;
@@ -124,11 +126,13 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
     final text = _answer.text.trim();
     if (action == 'answer' && text.isEmpty) return;
     final before = (_round!['foundPlayers'] as List? ?? []).length;
-    final data = await _gateway.call('play', {
-      'key': _round!['key'],
-      'action': action,
-      if (action == 'answer') 'answer': text,
-    }).timeout(const Duration(seconds: 30));
+    final data = await _gateway
+        .call('play', {
+          'key': _round!['key'],
+          'action': action,
+          if (action == 'answer') 'answer': text,
+        })
+        .timeout(const Duration(seconds: 30));
     if (!mounted) return;
     setState(() {
       _round = rewardMap(data['session']);
@@ -148,64 +152,77 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
     );
     await _refresh();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bonusun kaydedildi.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Bonusun kaydedildi.')));
     }
   }
 
   Widget _tag(String text, {IconData? icon}) => Chip(
-    avatar: icon == null ? null : Icon(icon, size: 16, color: PitchColors.of(context).accent),
+    avatar: icon == null
+        ? null
+        : Icon(icon, size: 16, color: PitchColors.of(context).accent),
     label: Text(text, style: const TextStyle(fontSize: 12)),
     visualDensity: VisualDensity.compact,
   );
-  Widget _teams(Map<String, dynamic> m) => LayoutBuilder(builder: (context, constraints) {
-    if (constraints.maxWidth < 260 || MediaQuery.textScalerOf(context).scale(14) > 19) {
-      return Column(children: [
-        for (final side in ['home', 'away']) ...[
-          if (side == 'away') const Divider(height: 24),
-          Row(children: [
-            ClubIdentityBadge(
-              clubId: number(m, '${side}ClubId'),
-              clubName: '${m['${side}Name'] ?? ''}',
-              size: 48,
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Text('${m['${side}Name'] ?? ''}',
-              style: const TextStyle(fontWeight: FontWeight.w700))),
-          ]),
-        ],
-      ]);
-    }
-    return Row(
-    children: [
-      for (final side in ['home', 'away']) ...[
-        if (side == 'away')
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Text('×', style: TextStyle(fontSize: 24)),
-          ),
-        Expanded(
-          child: Column(
-            children: [
-              ClubIdentityBadge(
-                clubId: number(m, '${side}ClubId'),
-                clubName: '${m['${side}Name'] ?? ''}',
-                size: 54,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${m['${side}Name'] ?? ''}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+  Widget _teams(Map<String, dynamic> m) => LayoutBuilder(
+    builder: (context, constraints) {
+      if (constraints.maxWidth < 260 ||
+          MediaQuery.textScalerOf(context).scale(14) > 19) {
+        return Column(
+          children: [
+            for (final side in ['home', 'away']) ...[
+              if (side == 'away') const Divider(height: 24),
+              Row(
+                children: [
+                  ClubIdentityBadge(
+                    clubId: number(m, '${side}ClubId'),
+                    clubName: '${m['${side}Name'] ?? ''}',
+                    size: 48,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '${m['${side}Name'] ?? ''}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-        ),
-      ],
-    ],
-    );
-  });
+          ],
+        );
+      }
+      return Row(
+        children: [
+          for (final side in ['home', 'away']) ...[
+            if (side == 'away')
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('×', style: TextStyle(fontSize: 24)),
+              ),
+            Expanded(
+              child: Column(
+                children: [
+                  ClubIdentityBadge(
+                    clubId: number(m, '${side}ClubId'),
+                    clubName: '${m['${side}Name'] ?? ''}',
+                    size: 54,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${m['${side}Name'] ?? ''}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      );
+    },
+  );
   String _kickoff(Map<String, dynamic> m) {
     if (m['status'] == 'TBD') return 'Saat bekleniyor';
     final date = DateTime.tryParse(
@@ -269,13 +286,27 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
 
   Map<String, dynamic> get _feed => rewardMap(_data?['feed']);
   List<Map<String, dynamic>> get _calendar =>
-    (_data?['calendar'] as List? ?? _data?['matches'] as List? ?? []).map(rewardMap).toList();
+      (_data?['calendar'] as List? ?? _data?['matches'] as List? ?? [])
+          .map(rewardMap)
+          .toList();
 
   String _dayLabel(String? value) {
     final date = DateTime.tryParse(value ?? '');
     if (date == null) return 'Bugünün programı';
-    const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    const months = [
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
+    ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
@@ -283,8 +314,10 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
     if (match['stale'] == true) return 'Güncelleme bekleniyor';
     return switch (match['status']) {
       'FT' || 'AET' || 'PEN' => 'Tamamlandı',
-      'PST' => 'Ertelendi', 'CANC' => 'İptal edildi',
-      'SUSP' || 'ABD' => 'Durduruldu', 'AWD' || 'WO' => 'Hükmen sonuç',
+      'PST' => 'Ertelendi',
+      'CANC' => 'İptal edildi',
+      'SUSP' || 'ABD' => 'Durduruldu',
+      'AWD' || 'WO' => 'Hükmen sonuç',
       'TBD' => 'Saat kesinleşmedi',
       '1H' || '2H' || 'HT' || 'ET' || 'P' || 'LIVE' => 'Sürüyor · son kayıt',
       _ => 'Planlandı',
@@ -297,141 +330,348 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
     final apiState = supplemental['state'] ?? 'pending';
     final snapshot = _feed['snapshotUpdatedAt'] != null;
     final updated = (_feed['snapshotUpdatedAt'] as num?)?.toInt();
-    return PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Icon(Icons.update_rounded, size: 18, color: PitchColors.of(context).accent),
-        const SizedBox(width: 8), Expanded(child: Text('Takvim bilgisi',
-          style: Theme.of(context).textTheme.titleSmall))]),
-      const SizedBox(height: 8),
-      Text(snapshot && updated != null
-        ? 'Takvim kaydı: ${_dayLabel(DateTime.fromMillisecondsSinceEpoch(updated, isUtc: true)
-            .add(const Duration(hours: 3)).toIso8601String())}. Maç saatleri değişebilir.'
-        : 'Saatler Türkiye saatine göredir. Son alınan fikstür gösterilir.'),
-      if (['error', 'unconfigured', 'pending'].contains(apiState)) ...[
-        const SizedBox(height: 8),
-        const Text('Süper Lig, Avrupa Ligi ve Konferans Ligi güncellemesi bekleniyor.'),
-      ],
-      if (_feed['competitions'] is List) ExpansionTile(tilePadding: EdgeInsets.zero,
-        title: const Text('Veri kapsamı'),
-        children: [Text('${(_feed['competitions'] as List).join(', ')}.'),
-          const Text('Süper Lig, Avrupa Ligi ve Konferans Ligi ayrı kaynaktan günlük güncellenir. Anlık skor sunulmaz.')]),
-      if (_feed['state'] == 'out-of-coverage') ...[
-        const SizedBox(height: 8), const Text('Kayıtlı takvimin tarih aralığı sona erdi; yeni takvim bekleniyor.'),
-      ],
-    ]));
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.update_rounded,
+                size: 18,
+                color: PitchColors.of(context).accent,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Takvim bilgisi',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            snapshot && updated != null
+                ? 'Takvim kaydı: ${_dayLabel(DateTime.fromMillisecondsSinceEpoch(updated, isUtc: true).add(const Duration(hours: 3)).toIso8601String())}. Maç saatleri değişebilir.'
+                : 'Saatler Türkiye saatine göredir. Son alınan fikstür gösterilir.',
+          ),
+          if (['error', 'unconfigured', 'pending'].contains(apiState)) ...[
+            const SizedBox(height: 8),
+            const Text(
+              'Süper Lig, Avrupa Ligi ve Konferans Ligi güncellemesi bekleniyor.',
+            ),
+          ],
+          if (_feed['competitions'] is List)
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              title: const Text('Veri kapsamı'),
+              children: [
+                Text('${(_feed['competitions'] as List).join(', ')}.'),
+                const Text(
+                  'Süper Lig, Avrupa Ligi ve Konferans Ligi ayrı kaynaktan günlük güncellenir. Anlık skor sunulmaz.',
+                ),
+              ],
+            ),
+          if (_feed['state'] == 'out-of-coverage') ...[
+            const SizedBox(height: 8),
+            const Text(
+              'Kayıtlı takvimin tarih aralığı sona erdi; yeni takvim bekleniyor.',
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _calendarFixture(Map<String, dynamic> match) {
-    final playable = _matches.where((m) => m['fixtureId'] == match['fixtureId']).firstOrNull;
-    return Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchPanel(child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Wrap(spacing: 6, runSpacing: 4, children: [
-          _tag('${match['leagueName'] ?? ''}'), _tag(_kickoff(match)), _tag(_statusLabel(match)),
-        ]),
-        const SizedBox(height: 14), _teams(match), const SizedBox(height: 14),
-        if (['FT', 'AET', 'PEN'].contains(match['status']) &&
-            match['homeScore'] != null && match['awayScore'] != null)
-          Text('${match['homeScore']} – ${match['awayScore']}', textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall),
-        if (playable != null) ...[
-          const SizedBox(height: 8), PitchAction(label: 'Ortak oyuncuları bul',
-            onPressed: _busy || (rewardMap(playable['session']).isEmpty && number(_data, 'remaining') == 0)
-              ? null : () => _run(() => _start(playable))),
-        ] else Text(match['stale'] == true ? 'Yeni oyun için fikstürün güncellenmesi gerekiyor.' :
-          ['PST', 'CANC', 'SUSP', 'ABD', 'AWD', 'WO', 'TBD'].contains(match['status'])
-            ? 'Bu maç şu anda oyuna açık değil.' :
-              'Takvimde yer alıyor; bugünün ortak oyuncu oyunları arasında değil.',
-          style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
-      ],
-    )));
+    final playable = _matches
+        .where((m) => m['fixtureId'] == match['fixtureId'])
+        .firstOrNull;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: PitchPanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                _tag('${match['leagueName'] ?? ''}'),
+                _tag(_kickoff(match)),
+                _tag(_statusLabel(match)),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _teams(match),
+            const SizedBox(height: 14),
+            if (['FT', 'AET', 'PEN'].contains(match['status']) &&
+                match['homeScore'] != null &&
+                match['awayScore'] != null)
+              Text(
+                '${match['homeScore']} – ${match['awayScore']}',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            if (playable != null) ...[
+              const SizedBox(height: 8),
+              PitchAction(
+                label: 'Ortak oyuncuları bul',
+                onPressed:
+                    _busy ||
+                        (rewardMap(playable['session']).isEmpty &&
+                            number(_data, 'remaining') == 0)
+                    ? null
+                    : () => _run(() => _start(playable)),
+              ),
+            ] else
+              Text(
+                match['stale'] == true
+                    ? 'Yeni oyun için fikstürün güncellenmesi gerekiyor.'
+                    : [
+                        'PST',
+                        'CANC',
+                        'SUSP',
+                        'ABD',
+                        'AWD',
+                        'WO',
+                        'TBD',
+                      ].contains(match['status'])
+                    ? 'Bu maç şu anda oyuna açık değil.'
+                    : 'Takvimde yer alıyor; bugünün ortak oyuncu oyunları arasında değil.',
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _emptyFixtures() {
     final filtering = _filter != 'Tümü';
     final hasCalendar = _calendar.isNotEmpty;
-    final title = filtering ? 'Bu seçime uygun maç yok' : !_showCalendar && hasCalendar
-      ? 'Bugün için uygun oyun bulunamadı' : _feed.isEmpty ? 'Bu seçime uygun maç yok' :
-        'Bu kaynaklarda bugün için maç yok';
-    return Padding(padding: const EdgeInsets.only(bottom: 16), child: PitchPanel(child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Icon(Icons.event_note_rounded, size: 36, color: PitchColors.of(context).accent),
-        const SizedBox(height: 12), Text(title, textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8), Text(filtering ? 'Diğer ligleri ve maçları görmek için filtreyi temizle.' :
-          hasCalendar ? 'Oyun için iki kulüp arasında en az 4 doğrulanmış ortak oyuncu gerekiyor. Günün programını fikstürden inceleyebilirsin.' :
-          'Takvim yenilendiğinde maçlar burada görünür. Maç olmayan günler serini etkilemez.',
-          textAlign: TextAlign.center),
-        const SizedBox(height: 12),
-        PitchAction(label: filtering ? 'Tümünü göster' : hasCalendar && !_showCalendar ? 'Fikstürü incele' : 'Listeyi yenile',
-          secondary: true, onPressed: _busy ? null : () {
-            if (filtering) { setState(() => _filter = 'Tümü'); }
-            else if (hasCalendar && !_showCalendar) { setState(() => _showCalendar = true); }
-            else { _run(_refresh); }
-          }),
-      ],
-    )));
+    final title = filtering
+        ? 'Bu seçime uygun maç yok'
+        : !_showCalendar && hasCalendar
+        ? 'Bugün için uygun oyun bulunamadı'
+        : _feed.isEmpty
+        ? 'Bu seçime uygun maç yok'
+        : 'Bu kaynaklarda bugün için maç yok';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: PitchPanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Icon(
+              Icons.event_note_rounded,
+              size: 36,
+              color: PitchColors.of(context).accent,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              filtering
+                  ? 'Diğer ligleri ve maçları görmek için filtreyi temizle.'
+                  : hasCalendar
+                  ? 'Oyun için iki kulüp arasında en az 4 doğrulanmış ortak oyuncu gerekiyor. Günün programını fikstürden inceleyebilirsin.'
+                  : 'Takvim yenilendiğinde maçlar burada görünür. Maç olmayan günler serini etkilemez.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            PitchAction(
+              label: filtering
+                  ? 'Tümünü göster'
+                  : hasCalendar && !_showCalendar
+                  ? 'Fikstürü incele'
+                  : 'Listeyi yenile',
+              secondary: true,
+              onPressed: _busy
+                  ? null
+                  : () {
+                      if (filtering) {
+                        setState(() => _filter = 'Tümü');
+                      } else if (hasCalendar && !_showCalendar) {
+                        setState(() => _showCalendar = true);
+                      } else {
+                        _run(_refresh);
+                      }
+                    },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _lobby() {
     final p = PitchColors.of(context);
-    final filtered = (_showCalendar ? _calendar : _matches).where((m) =>
-      _filter == 'Tümü' || (_filter == 'Türkiye' ? m['leagueId'] == 203 :
-        _filter == 'Derbiler' ? m['isDerby'] == true : [2, 3, 848].contains(m['leagueId']))).toList();
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Container(padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: p.tint, borderRadius: BorderRadius.circular(12)),
-          child: Icon(Icons.sports_soccer_rounded, color: p.accent)),
-          const SizedBox(width: 12), Expanded(child: Text(_dayLabel(_data?['dayKey']?.toString()),
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: p.accent)))]),
-        const SizedBox(height: 16), Text('Maç onların. Hafıza senin.', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8), const Text('İki takımda da oynamış 3 futbolcuyu bul.'),
-        const SizedBox(height: 16), Wrap(spacing: 8, runSpacing: 4, children: [
-          _tag('${number(_data, 'remaining')}/${number(_data, 'dailyLimit') == 0 ? 3 : number(_data, 'dailyLimit')} maç hakkı',
-            icon: Icons.confirmation_number_outlined),
-          _tag('${number(_data, 'streak')} günlük seri', icon: Icons.local_fire_department),
-          _tag('0 enerji', icon: Icons.bolt_outlined),
-        ]),
-      ])),
-      if (number(_data, 'pendingCoins') > 0) ...[
-        const SizedBox(height: 12), PitchPanel(child: Text('${number(_data, 'pendingCoins')} coin hesabında saklanıyor. '
-          'Misafir hesabını Google’a bağladığında cüzdanına aktarılır.')),
+    final filtered = (_showCalendar ? _calendar : _matches)
+        .where(
+          (m) =>
+              _filter == 'Tümü' ||
+              (_filter == 'Türkiye'
+                  ? m['leagueId'] == 203
+                  : _filter == 'Derbiler'
+                  ? m['isDerby'] == true
+                  : [2, 3, 848].contains(m['leagueId'])),
+        )
+        .toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PitchPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: p.tint,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.sports_soccer_rounded, color: p.accent),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _dayLabel(_data?['dayKey']?.toString()),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(color: p.accent),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Maç onların. Hafıza senin.',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              const Text('İki takımda da oynamış 3 futbolcuyu bul.'),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  _tag(
+                    '${number(_data, 'remaining')}/${number(_data, 'dailyLimit') == 0 ? 3 : number(_data, 'dailyLimit')} maç hakkı',
+                    icon: Icons.confirmation_number_outlined,
+                  ),
+                  _tag(
+                    '${number(_data, 'streak')} günlük seri',
+                    icon: Icons.local_fire_department,
+                  ),
+                  _tag('0 enerji', icon: Icons.bolt_outlined),
+                ],
+              ),
+            ],
+          ),
+        ),
+        if (number(_data, 'pendingCoins') > 0) ...[
+          const SizedBox(height: 12),
+          PitchPanel(
+            child: Text(
+              '${number(_data, 'pendingCoins')} coin hesabında saklanıyor. '
+              'Misafir hesabını Google’a bağladığında cüzdanına aktarılır.',
+            ),
+          ),
+        ],
+        if (number(_data, 'repairStreak') > 0) ...[
+          const SizedBox(height: 12),
+          PitchPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  '${number(_data, 'repairStreak')} günlük serini koru',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Bugünkü galibiyetinden önce seri korumasını kullanabilirsin.',
+                ),
+                const SizedBox(height: 12),
+                PitchAction(
+                  label: bonusLabel('Serimi koru'),
+                  icon: Icons.shield_outlined,
+                  onPressed: _busy || !_bonusReady
+                      ? null
+                      : () => _run(() => _watch('daily_streak')),
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 24),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ChoiceChip(
+              label: Text('Oyna · ${_matches.length}'),
+              selected: !_showCalendar,
+              onSelected: (_) => setState(() => _showCalendar = false),
+            ),
+            ChoiceChip(
+              label: Text('Fikstür · ${_calendar.length}'),
+              selected: _showCalendar,
+              onSelected: (_) => setState(() => _showCalendar = true),
+            ),
+          ],
+        ),
+        PitchSectionTitle(
+          _showCalendar ? 'Günün programı' : 'Bugünün seçilmiş maçları',
+        ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            for (final f in ['Tümü', 'Türkiye', 'Avrupa', 'Derbiler'])
+              ChoiceChip(
+                label: Text(f),
+                selected: _filter == f,
+                onSelected: (_) => setState(() => _filter = f),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (filtered.isEmpty) _emptyFixtures(),
+        for (var i = 0; i < filtered.length; i++)
+          _showCalendar
+              ? _calendarFixture(filtered[i])
+              : _fixture(filtered[i], featured: i == 0),
+        if (_feed.isNotEmpty) ...[_sourceInfo(), const SizedBox(height: 16)],
+        PitchPanel(
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            childrenPadding: const EdgeInsets.only(bottom: 8),
+            title: const Text('Nasıl oynanır ve kazanılır?'),
+            children: const [
+              Text(
+                '3 doğru: 30 coin. Devam ederek ödülünü artır; tüm oyuncuları bulmak +15 coin bonus getirir. '
+                'Maç başına en fazla 60 coin.\n\nGünde 3 maç ve 3 can. Süre sınırı yok. '
+                'Maç hakkı başlatınca kullanılır; yarım bıraktığın maça aynı gün dönebilirsin.\n\n'
+                'İpucu koşulları oyun içindeki destek panelinde görünür. Yardımlı sonuç ustalık/yardımsız seriye eklenmez. '
+                '2x ödül ve seri koruması için mevcut bonus hakların korunur.\n\n'
+                'Maç olmayan günler seriyi etkilemez. Oynanabilir günü kaçırırsan seri sıfırlanır; '
+                '31 günü aşan aralarda yeni seri başlar.',
+              ),
+            ],
+          ),
+        ),
       ],
-      if (number(_data, 'repairStreak') > 0) ...[
-        const SizedBox(height: 12), PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text('${number(_data, 'repairStreak')} günlük serini koru', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8), const Text('Bugünkü galibiyetinden önce seri korumasını kullanabilirsin.'),
-          const SizedBox(height: 12), PitchAction(label: bonusLabel('Serimi koru'), icon: Icons.shield_outlined,
-            onPressed: _busy || !_bonusReady ? null : () => _run(() => _watch('daily_streak'))),
-        ])),
-      ],
-      const SizedBox(height: 24),
-      Wrap(spacing: 8, runSpacing: 8, children: [
-        ChoiceChip(label: Text('Oyna · ${_matches.length}'), selected: !_showCalendar,
-          onSelected: (_) => setState(() => _showCalendar = false)),
-        ChoiceChip(label: Text('Fikstür · ${_calendar.length}'), selected: _showCalendar,
-          onSelected: (_) => setState(() => _showCalendar = true)),
-      ]),
-      PitchSectionTitle(_showCalendar ? 'Günün programı' : 'Bugünün seçilmiş maçları'),
-      Wrap(spacing: 8, runSpacing: 4, children: [
-        for (final f in ['Tümü', 'Türkiye', 'Avrupa', 'Derbiler']) ChoiceChip(label: Text(f),
-          selected: _filter == f, onSelected: (_) => setState(() => _filter = f)),
-      ]),
-      const SizedBox(height: 16),
-      if (filtered.isEmpty) _emptyFixtures(),
-      for (var i = 0; i < filtered.length; i++)
-        _showCalendar ? _calendarFixture(filtered[i]) : _fixture(filtered[i], featured: i == 0),
-      if (_feed.isNotEmpty) ...[_sourceInfo(), const SizedBox(height: 16)],
-      PitchPanel(child: ExpansionTile(tilePadding: EdgeInsets.zero, childrenPadding: const EdgeInsets.only(bottom: 8),
-        title: const Text('Nasıl oynanır ve kazanılır?'), children: const [
-          Text('3 doğru: 30 coin. Devam ederek ödülünü artır; tüm oyuncuları bulmak +15 coin bonus getirir. '
-            'Maç başına en fazla 60 coin.\n\nGünde 3 maç ve 3 can. Süre sınırı yok. '
-            'Maç hakkı başlatınca kullanılır; yarım bıraktığın maça aynı gün dönebilirsin.\n\n'
-            'İpucu koşulları oyun içindeki destek panelinde görünür. Yardımlı sonuç ustalık/yardımsız seriye eklenmez. '
-            '2x ödül ve seri koruması için mevcut bonus hakların korunur.\n\n'
-            'Maç olmayan günler seriyi etkilemez. Oynanabilir günü kaçırırsan seri sıfırlanır; '
-            '31 günü aşan aralarda yeni seri başlar.'),
-        ])),
-    ]);
+    );
   }
 
   Widget _game() {
@@ -513,13 +753,23 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
             ),
           const SizedBox(height: 12),
           if (rewardMap(r['support'])['version'] == 1)
-            PaidHintButton(session: r, sku: 'boost_basic', label: 'Ortak oyuncu ipucu',
+            PaidHintButton(
+              session: r,
+              sku: 'boost_basic',
+              label: 'Ortak oyuncu ipucu',
               disabled: _busy || _message != null || r['hintUsed'] == true,
               onUse: (payment) => _run(() async {
-                final data = await _gateway.call('play', {'key': r['key'], 'action': 'hint',
-                  'revision': r['revision'], ...payment});
-                if (mounted) setState(() => _round = rewardMap(data['session']));
-              }), onWatch: () => _run(() => _watch('daily_match_hint')))
+                final data = await _gateway.call('play', {
+                  'key': r['key'],
+                  'action': 'hint',
+                  'revision': r['revision'],
+                  ...payment,
+                });
+                if (mounted)
+                  setState(() => _round = rewardMap(data['session']));
+              }),
+              onWatch: () => _run(() => _watch('daily_match_hint')),
+            )
           else if (r['hintUsed'] != true)
             OutlinedButton.icon(
               onPressed: _busy ? null : () => _run(() => _play('hint')),
@@ -584,8 +834,11 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (r['assisted'] == true) const Text('Yardımlı sonuç · Ustalık ve yardımsız seri dışında',
-                  textAlign: TextAlign.center),
+                if (r['assisted'] == true)
+                  const Text(
+                    'Yardımlı sonuç · Ustalık ve yardımsız seri dışında',
+                    textAlign: TextAlign.center,
+                  ),
                 if (all)
                   const Text(
                     'Tüm oyuncuları bulma bonusu dahil.',
@@ -653,7 +906,10 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(_round == null ? 'Günün Maçları' : 'Ortak oyuncuları bul', maxLines: 2),
+      title: Text(
+        _round == null ? 'Günün Maçları' : 'Ortak oyuncuları bul',
+        maxLines: 2,
+      ),
       toolbarHeight: MediaQuery.textScalerOf(context).scale(16) > 24 ? 96 : 64,
       leading: _round == null
           ? null
@@ -686,21 +942,44 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
           children: [
-            if (_busy && _data == null) const PitchPanel(child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Günün programı hazırlanıyor', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                SizedBox(height: 8), Text('Maç takvimi ve kayıtlı oyunların kontrol ediliyor.'),
-                SizedBox(height: 16), LinearProgressIndicator(),
-              ])),
+            if (_busy && _data == null)
+              const PitchPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Günün programı hazırlanıyor',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('Maç takvimi ve kayıtlı oyunların kontrol ediliyor.'),
+                    SizedBox(height: 16),
+                    LinearProgressIndicator(),
+                  ],
+                ),
+              ),
             if (_busy && _data != null) const LinearProgressIndicator(),
             if (_message != null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child: PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Text(_message!), const SizedBox(height: 12),
-                  if (_data != null) PitchAction(label: 'Tekrar dene', secondary: true,
-                    onPressed: _busy ? null : () => _run(_refresh)),
-                ])),
+                child: PitchPanel(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(_message!),
+                      const SizedBox(height: 12),
+                      if (_data != null)
+                        PitchAction(
+                          label: 'Tekrar dene',
+                          secondary: true,
+                          onPressed: _busy ? null : () => _run(_refresh),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             if (_data == null && !_busy)
               PitchAction(
@@ -708,8 +987,11 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
                 onPressed: () => _run(_refresh),
               ),
             // Match list keeps the menu theme; the puzzle itself uses the puzzle theme.
-            if (_data != null) MusicScene(track: _round == null ? MusicTrack.menu : MusicTrack.puzzle,
-              child: _round == null ? _lobby() : _game()),
+            if (_data != null)
+              MusicScene(
+                track: _round == null ? MusicTrack.menu : MusicTrack.puzzle,
+                child: _round == null ? _lobby() : _game(),
+              ),
           ],
         ),
       ),

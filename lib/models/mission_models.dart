@@ -64,7 +64,9 @@ class MissionItem {
       id: data['id']?.toString() ?? '',
       kind: data['kind']?.toString() == 'daily'
           ? MissionKind.daily
-          : data['kind']?.toString() == 'weekly' ? MissionKind.weekly : MissionKind.general,
+          : data['kind']?.toString() == 'weekly'
+          ? MissionKind.weekly
+          : MissionKind.general,
       title: data['title']?.toString() ?? '',
       description: data['description']?.toString() ?? '',
       progress: _missionInt(data['progress']),
@@ -96,9 +98,12 @@ class MissionProfile {
   final int version;
 
   const MissionProfile({
-    this.weekKey = '', this.availabilityNotice = '',
-    this.weekly = const [], this.weeklyClaimLimit = 2,
-    this.weeklyCompletedCount = 0, this.weeklyEnabled = false,
+    this.weekKey = '',
+    this.availabilityNotice = '',
+    this.weekly = const [],
+    this.weeklyClaimLimit = 2,
+    this.weeklyCompletedCount = 0,
+    this.weeklyEnabled = false,
     this.dailyClaimLimit = 3,
     required this.dateKey,
     required this.daily,
