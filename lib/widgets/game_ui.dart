@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/ortak_saha_theme.dart';
+import 'hub_ui.dart';
 import 'pitch_ui.dart';
 
 /// Shared spacing and readable width for setup, play, and result screens.
@@ -29,19 +30,17 @@ class GameIntro extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = PitchColors.of(context);
-    return PitchPanel(
+    // Same hero atmosphere as the hub and mode lobbies.
+    return HubHeroCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.tint,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: colors.accent, size: 24),
+          HubIconBox(
+            icon,
+            size: 52,
+            background: colors.background.withValues(alpha: .4),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(
@@ -54,6 +53,45 @@ class GameIntro extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Result of a server-run bot match or solo board ([bot] false). These runs
+/// pay no Coin/XP, so the card carries the score and that rule only.
+HubResultCard serverMatchResult(Map<String, dynamic> run, {required bool bot}) {
+  final completed = run['completed'] == true;
+  final winner = run['winner'];
+  final won = completed && (!bot || winner == 1);
+  return HubResultCard(
+    tone: !won
+        ? HubResultTone.neutral
+        : bot
+        ? HubResultTone.win
+        : HubResultTone.good,
+    icon: !completed
+        ? Icons.flag_rounded
+        : !bot
+        ? Icons.grid_view_rounded
+        : winner == 1
+        ? Icons.emoji_events_rounded
+        : winner == 2
+        ? Icons.smart_toy_rounded
+        : Icons.handshake_rounded,
+    kicker: bot ? 'Maç bitti' : 'Oyun bitti',
+    title: !completed
+        ? 'Oyun tamamlanmadan bitti'
+        : !bot
+        ? 'Tahta tamamlandı'
+        : winner == 1
+        ? 'Kazandın'
+        : winner == 2
+        ? 'Bot kazandı'
+        : 'Beraberlik',
+    subtitle:
+        'Sen ${run['userScore'] ?? 0}${bot ? ' · Bot ${run['botScore'] ?? 0}' : ''}',
+    notes: const [
+      'Coin/XP, sıralama veya ustalık ödülü yok. Yardımlı sonuçlar ayrı tutulur.',
+    ],
+  );
 }
 
 /// Scrolls with the game instead of squeezing the board below a long error.
