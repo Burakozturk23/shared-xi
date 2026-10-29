@@ -30,5 +30,6 @@ String dailyWordsShare(Map<String, dynamic> session) {
   return 'Linkball · ${dailyWordsTitle(mode)}\n${session['period']}\n$summary\n'
     '${result['medal'] ?? 'Tamamlandı'} · ${result['solved'] ?? 0} doğru'
     '${['daily_anagram', 'anagram_practice'].contains(mode) ? ' · ${session['score'] ?? 0}/${mode == 'anagram_practice' ? 800 : 300}' : ''}'
-    '${session['assisted'] == true || result['assisted'] == true ? ' · Yardımlı' : ''}';
+    // A boosted run is marked so a shared grid never passes for an unaided one.
+    '${session['assisted'] == true || result['assisted'] == true ? ' · 🧩 Yardımlı' : ''}';
 }

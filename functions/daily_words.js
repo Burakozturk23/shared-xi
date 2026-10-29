@@ -78,45 +78,58 @@ function restored(r) {
   for (const round of r.rounds) round.guesses ||= [];
   return r;
 }
+// Reward design 2026-10-29: daily word games pay habit-sized coin and more
+// XP. A boosted (assisted) run still earns, but only half the XP, at most the
+// Silver-tier coin and at most a Silver medal; the leaderboard, mastery and
+// streak already ignore it.
+const SILVER_COINS = {daily_lingo: 3, passa_daily: 1, daily_anagram: 2, anagram_practice: 2, passa_weekly: 2};
+const TOP_MEDALS = ["Ustalık", "Altın"];
+function rewardFor(r, solved) {
+  if (r.mode === "daily_lingo") {
+    if (!solved) return {coins: 0, xp: 3, medal: "Tamamlandı"};
+    const n = r.guesses.length;
+    return {coins: 3 + (n <= 3 ? 1 : 0), xp: 8,
+      medal: n <= 2 && !r.hint ? "Ustalık" : n <= 4 ? "Altın" : "Gümüş"};
+  }
+  if (isAnagram(r.mode)) {
+    const mastery = solved === 3 && r.score >= 250 && r.rounds.every((x) => !x.bio && !x.first);
+    return [{coins: 0, xp: 2, medal: "Katılım"}, {coins: 1, xp: 4, medal: "Bronz"},
+      {coins: 2, xp: 6, medal: "Gümüş"}, {coins: 3, xp: 8, medal: mastery ? "Ustalık" : "Altın"}][Math.min(solved, 3)];
+  }
+  if (r.mode === "passa_daily") {
+    return solved === 7 ? {coins: 3, xp: 8, medal: "Ustalık"} :
+      solved >= 5 ? {coins: 2, xp: 6, medal: "Altın"} :
+      solved >= 3 ? {coins: 1, xp: 4, medal: "Gümüş"} : {coins: 0, xp: 2, medal: "Katılım"};
+  }
+  // Weekly: prestige first; the coin is deliberately small.
+  return solved >= 26 ? {coins: 8, xp: 40, medal: "Ustalık"} :
+    solved >= 22 ? {coins: 4, xp: 30, medal: "Altın"} :
+    solved >= 16 ? {coins: 2, xp: 20, medal: "Gümüş"} :
+    solved >= 8 ? {coins: 1, xp: 10, medal: "Bronz"} :
+    solved > 0 ? {coins: 0, xp: 3, medal: "Bronz"} : {coins: 0, xp: 0, medal: "Katılım"};
+}
 function finish(s, r, reason, time, policy) {
   if (r.finished) return;
   r.finished = true;
-  let coins = 0; let xp = 0; let medal = "Katılım"; let solved = 0;
   const normal = ["completed", "timeout"].includes(reason);
+  let solved;
   if (r.mode === "daily_lingo") {
     solved = r.guesses.at(-1)?.word === r.puzzle.answer ? 1 : 0;
     r.eligible = normal && (solved === 1 || r.guesses.length === 6);
-    if (r.eligible) {
-      coins = solved ? 3 : 0; xp = solved ? 6 : 2;
-    }
-    medal = solved ? r.guesses.length <= 2 && !r.hint ? "Ustalık" : r.guesses.length <= 4 ? "Altın" : "Gümüş" :
-      "Tamamlandı";
-  } else if (isAnagram(r.mode)) {
+  } else {
     solved = r.rounds.filter((x) => x.status === "correct").length;
     // A reveal-only day is not participation. Explicit give-up never earns the trio bonus.
     r.eligible = normal && r.attempts > 0 && r.rounds.every((x) => x.status !== "pending");
-    if (r.eligible) {
-      coins = solved; xp = solved ? solved * 2 : 1;
-    }
-    const mastery = solved === 3 && r.score >= 250 && r.rounds.every((x) => !x.bio && !x.first);
-    medal = mastery ? "Ustalık" : solved === 3 ? "Altın" : solved === 2 ? "Gümüş" : solved === 1 ? "Bronz" : "Katılım";
-  } else {
-    solved = r.rounds.filter((x) => x.status === "correct").length;
-    r.eligible = normal && r.attempts > 0 && r.rounds.every((x) => x.status !== "pending");
-    if (r.mode === "passa_daily") {
-      if (r.eligible) {
-        coins = solved === 7 ? 3 : solved >= 5 ? 2 : solved >= 3 ? 1 : 0; xp = coins ? coins * 2 : 1;
-      }
-      medal = solved === 7 ? "Ustalık" : solved >= 5 ? "Altın" : solved >= 3 ? "Gümüş" : "Katılım";
-    } else {
-      if (r.eligible) {
-        coins = solved >= 16 ? 2 : 0; xp = solved >= 16 ? 6 : solved > 0 ? 3 : 0;
-      }
-      medal = solved >= 26 ? "Ustalık" : solved >= 22 ? "Altın" : solved >= 16 ? "Gümüş" : solved ? "Bronz" : "Katılım";
-    }
+  }
+  let {coins, xp, medal} = rewardFor(r, solved);
+  if (!r.eligible) {
+    coins = 0; xp = 0;
+  }
+  if (r.assisted) {
+    coins = Math.min(coins, SILVER_COINS[r.mode] ?? 0); xp = Math.ceil(xp / 2);
+    if (TOP_MEDALS.includes(medal)) medal = "Gümüş";
   }
   const ledgerId = `dw__${r.mode}__${r.period}`;
-  if (r.assisted && medal === "Ustalık") medal = "Altın";
   r.result = {solved, coins, xp, medal, reason, score: r.score,
     ...(B.paid(r) ? {assisted: r.assisted, masteryEligible: !r.assisted, leaderboardEligible: !r.assisted} : {}),
     eligibleForDailyBonus: r.eligible && r.mode !== "passa_weekly",

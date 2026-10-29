@@ -84,10 +84,22 @@ test("daily ad is typed, capped at one and late question SSV recovers selected s
   assert.equal(raw(h, s).adGranted, 1); assert.equal(raw(h, s).adCredits, 0);
   await assert.rejects(service.prepareHint("alice", "daily_words_hint", context), {code: "resource-exhausted"});
 });
+test("assisted Lingo keeps the solve coin but no fast-solve bonus, Gold or full XP", async () => {
+  const h = setup(); let s = await load(h, "daily_lingo");
+  const q = raw(h, s).puzzle;
+  const wrong = compiled(s.period, false).dictionary.filter((x) => x.length === q.answer.length && x !== q.answer);
+  for (let i = 0; i < 3; i++) s = await act(h, s, {action: "guess", answer: wrong[i]});
+  s = await act(h, s, paid());
+  s = await act(h, s, {action: "guess", answer: q.answer});
+  assert.equal(s.result.assisted, true); assert.equal(s.result.medal, "Gümüş");
+  assert.equal(s.result.coins, 3); assert.equal(s.result.xp, 4);
+});
 test("assisted daily finish cannot earn mastery or increase unassisted streak", async () => {
   const h = setup(); let s = await load(h, "passa_daily"); s = await act(h, s, paid());
   while (!s.finished) s = await act(h, s, {action: "guess", answer: raw(h, s).questions[s.index].answer});
-  assert.equal(s.result.medal, "Altın"); assert.equal(s.result.assisted, true);
+  // A perfect assisted Mini Passa keeps half XP, the Silver coin and medal.
+  assert.equal(s.result.medal, "Gümüş"); assert.equal(s.result.assisted, true);
+  assert.equal(s.result.coins, 1); assert.equal(s.result.xp, 4);
   assert.equal(s.result.masteryEligible, false); assert.equal(s.result.leaderboardEligible, false);
   const status = await h.call("getDailyWords", {mode: s.mode}); assert.equal(status.archive.streak, 0);
 });

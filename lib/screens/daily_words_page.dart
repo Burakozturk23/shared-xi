@@ -1305,7 +1305,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
           '${result['solved'] ?? 0} doğru · ${_session['attempts'] ?? 0} geçerli yanıt'
               '${_lingo ? ' · ${_rows(_session['guesses']).length}/6 tahmin' : ''}',
           if (result['assisted'] == true)
-            'Yardımlı · Yardımsız seri ve ustalığa eklenmez.',
+            'Yardımlı · XP yarıya iner, madalya en fazla Gümüş; seri ve ustalığa eklenmez.',
           if (result['rewardEnabled'] == false)
             _practice
                 ? 'Antrenman: Coin ve XP ödülü yoktur.'
@@ -1413,7 +1413,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
                     child: Text(
                       bonus.isNotEmpty
                           ? 'Üçleme tamamlandı · ${bonus['coins']} Coin / ${bonus['xp']} XP'
-                          : 'Üç geçerli günlük sonuç: +2 Coin / +4 XP. Tam başarıda toplam 11 Coin / 22 XP. Haftalık ve pratik dahil değil.',
+                          : 'Üç geçerli günlük sonuç: +2 Coin / +4 XP. Tam başarıda toplam 12 Coin / 28 XP. Haftalık ve pratik dahil değil.',
                       style: text.bodySmall,
                     ),
                   ),

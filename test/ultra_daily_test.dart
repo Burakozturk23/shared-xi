@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/controllers/daily_footballer_controller.dart';
+import 'package:shared_xi/models/daily_words.dart';
 import 'package:shared_xi/screens/daily_footballer_page.dart';
 import 'package:shared_xi/screens/daily_question_page.dart';
 import 'package:shared_xi/screens/daily_words_page.dart';
@@ -113,5 +114,19 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('Seçildi'), findsOneWidget);
     unawaited(Future<void>.value());
+  });
+
+  test('shared results mark assisted runs with a puzzle piece', () {
+    final session = {
+      'mode': 'passa_daily',
+      'period': '2026-10-29',
+      'rounds': [
+        {'status': 'correct'},
+      ],
+      'result': {'medal': 'Gümüş', 'solved': 1, 'assisted': true},
+    };
+    expect(dailyWordsShare(session), endsWith('Gümüş · 1 doğru · 🧩 Yardımlı'));
+    session['result'] = {'medal': 'Altın', 'solved': 1};
+    expect(dailyWordsShare(session), isNot(contains('🧩')));
   });
 }
