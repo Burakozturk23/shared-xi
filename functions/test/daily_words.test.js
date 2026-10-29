@@ -53,8 +53,8 @@ test("LG01/03/06 PA02/04/12/21 AN02/05/10/11: entire reviewed calendar, dictiona
   assert.equal(normalize("Jesper GRØNKJÆR"), normalize("Jesper Grønkjær"));
   assert.equal(normalize("ÐðÆæŒœẞß"), "DDAEAEOEOESSSS");
   assert.equal(catalog.alphabet.length, 29); assert.ok(catalog.alphabet.includes("Ğ"));
-  assert.equal(catalog.players.length, 270); assert.ok(catalog.questions.length >= 174);
-  assert.equal(Object.keys(catalog.daily).length, 90);
+  assert.equal(catalog.players.length, 540); assert.ok(catalog.questions.length >= 1000);
+  assert.equal(Object.keys(catalog.daily).length, 180); assert.equal(Object.keys(catalog.weekly).length, 27);
   const seen = new Set(); const seenLingo = new Set();
   const counts = (a) => a.reduce((m, v) => {
     m[v] = (m[v] || 0) + 1; return m;
@@ -112,7 +112,7 @@ test("closed rollout / missing future content cannot silently create a random re
   const h = setup({runtimeConfig: {}});
   assert.equal((await load(h, "daily_lingo")).availability, false);
   assert.equal((await load(h, "daily_lingo")).session, null);
-  const active = setup(); active.setTime(Date.parse("2027-02-01T10:00:00Z"));
+  const active = setup(); active.setTime(Date.parse("2027-05-01T10:00:00Z"));
   assert.equal((await load(active, "daily_anagram")).availability, false);
 });
 test("LG03/04/07/08/09/13: invalid guesses and premature hints never consume a turn or leak answer", async () => {

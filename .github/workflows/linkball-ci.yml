@@ -98,7 +98,14 @@ jobs:
           git diff --exit-code -- functions/config/daily_question_catalog.json
 
       - name: Verify daily word trio calendar and reviewed bank
-        run: python3 tools/daily_words/build_catalog.py --check
+        run: |
+          python3 tools/daily_words/generate_passaparola.py --check
+          python3 tools/daily_words/build_catalog.py --check
+          cmp assets/data/anagram_catalog.json functions/config/anagram_practice_catalog.json
+
+      # Warns 45 days and fails 14 days before the published calendar ends.
+      - name: Check daily word calendar runway
+        run: python3 tools/daily_words/check_runway.py
 
       - name: Verify multiplayer V1 canonical catalog
         run: |
