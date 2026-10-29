@@ -13,6 +13,7 @@ import '../services/auth_service.dart';
 import '../services/daily_words_service.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
 
 List<Map<String, dynamic>> _rows(dynamic raw) =>
     (raw is List ? raw : const []).map((r) => rewardMap(r)).toList();
@@ -718,11 +719,53 @@ class _DailyWordsPageState extends State<DailyWordsPage>
           if (_weekly) ...[
             const SizedBox(height: 16),
             PitchAction(
-              onPressed: _locked ? null : () => _act('start'),
+              onPressed: _locked ? null : _confirmWeeklyStart,
               label: '240 saniyeyi başlat',
             ),
           ],
         ];
+
+  /// Milliseconds until this week's round closes (Monday 00:00 Türkiye).
+  int? get _weekLeftMs {
+    final monday = DateTime.tryParse('${_status['period'] ?? ''}');
+    if (monday == null) return null;
+    final end = DateTime.utc(
+      monday.year,
+      monday.month,
+      monday.day + 7,
+    ).subtract(const Duration(hours: 3));
+    return end.millisecondsSinceEpoch - _now;
+  }
+
+  /// The weekly round is one official try a week: say so before the clock
+  /// starts, and warn when the week ends inside the 240 seconds.
+  Future<void> _confirmWeeklyStart() async {
+    final left = _weekLeftMs;
+    final short = left != null && left < 240000;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Haftalık Klasik başlasın mı?'),
+        content: Text(
+          '240 saniye, 29 harf. Haftada tek resmî hak; başlatınca süre durmaz, '
+          'uygulamadan çıksan da işler.'
+          '${short ? '\n\nHafta ${(left / 1000).ceil()} saniye sonra bitiyor; süren bununla sınırlı.' : ''}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Başlat'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && mounted && !_locked) await _act('start');
+  }
+
   List<Widget> _lingoPanel() {
     final guesses = _rows(_session['guesses']);
     final length = (_session['length'] as num? ?? 5).toInt();
@@ -1101,6 +1144,41 @@ class _DailyWordsPageState extends State<DailyWordsPage>
     ];
   }
 
+  /// Remaining time as a draining bar: amber for the last 30 seconds, red
+  /// for the last 10.
+  Widget _clockBar() {
+    final p = PitchColors.of(context);
+    final color = _seconds <= 10
+        ? Theme.of(context).colorScheme.error
+        : _seconds <= 30
+        ? hubAmber(context)
+        : p.accent;
+    return Semantics(
+      label: 'Kalan süre $_seconds saniye',
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            '$_seconds sn',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(color: color),
+          ),
+          const SizedBox(height: 6),
+          LinearProgressIndicator(
+            value: _seconds / 240,
+            minHeight: 8,
+            borderRadius: BorderRadius.circular(4),
+            color: color,
+            backgroundColor: p.raised,
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _passaPanel() {
     final q = rewardMap(_session['question']);
     final rounds = _rounds;
@@ -1178,13 +1256,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
         ],
       ),
       if (_weekly && !_finished) ...[
-        Semantics(
-          label: 'Kalan süre $_seconds saniye',
-          child: Text(
-            '$_seconds sn',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-        ),
+        _clockBar(),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           value: _vibrate,
@@ -1236,16 +1308,25 @@ class _DailyWordsPageState extends State<DailyWordsPage>
           _notice('${q['hint']}')
         else if (rewardMap(_session['support'])['version'] == 1)
           _paidHint('hint', 'boost_basic', 'Cevabın uzunluğu'),
+        // Pass and give-up sit at opposite ends so a hurried tap on Pas
+        // never marks the letter wrong.
         Wrap(
           spacing: 10,
+          runSpacing: 8,
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            OutlinedButton(
+            OutlinedButton.icon(
               onPressed: _locked || q['passAvailable'] != true
                   ? null
                   : () => _act('pass'),
-              child: const Text('Pas'),
+              icon: const Icon(Icons.redo_rounded),
+              label: const Text('Pas'),
             ),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error,
+              ),
               onPressed: _locked ? null : () => _act('skip'),
               child: const Text('Boş bırak · yanlış'),
             ),
@@ -1338,21 +1419,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
           ),
         ),
       const SizedBox(height: 12),
-      OutlinedButton.icon(
-        onPressed: () async {
-          await Clipboard.setData(
-            ClipboardData(text: dailyWordsShare(_session)),
-          );
-          if (mounted)
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Cevapsız paylaşım özeti kopyalandı.'),
-              ),
-            );
-        },
-        icon: const Icon(Icons.copy_outlined),
-        label: const Text('Sonucu paylaşmak için kopyala'),
-      ),
+      ShareResultButtons(text: dailyWordsShare(_session)),
     ];
   }
 

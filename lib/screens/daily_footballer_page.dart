@@ -10,6 +10,7 @@ import '../widgets/paid_hint_button.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
 
 class DailyFootballerPage extends StatefulWidget {
   const DailyFootballerPage({super.key, this.controller});
@@ -584,20 +585,32 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
 
   Widget _result(DailyFootballerRound round) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
-    child: HubResultCard(
-      tone: round.won ? HubResultTone.good : HubResultTone.neutral,
-      icon: round.won ? Icons.person_search_rounded : Icons.lock_rounded,
-      kicker: round.won ? 'Gizli ismi buldun!' : 'Bugünün dosyası kapandı',
-      title: round.target.name,
-      titleKey: const ValueKey('daily-answer'),
-      subtitle:
-          '${round.target.club} · ${round.target.country} · #${round.target.shirtNumber}',
-      notes: [
-        if (round.won) '${round.guesses.length}/${round.limit} tahminde buldun',
-        if (round.assisted) 'Yardımlı sonuç · Ayrı başarı kaydı',
-        'Yeni futbolcu yarın seni bekliyor.',
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _resultCard(round),
+        const SizedBox(height: 12),
+        ShareResultButtons(text: dailyFootballerShare(round)),
       ],
     ),
+  );
+
+  Widget _resultCard(DailyFootballerRound round) => HubResultCard(
+    tone: round.won ? HubResultTone.good : HubResultTone.neutral,
+    icon: round.won ? Icons.person_search_rounded : Icons.lock_rounded,
+    kicker: round.won ? 'Gizli ismi buldun!' : 'Bugünün dosyası kapandı',
+    title: round.target.name,
+    titleKey: const ValueKey('daily-answer'),
+    subtitle:
+        '${round.target.club} · ${round.target.country} · #${round.target.shirtNumber}',
+    // Server reward for a solve; absent offline or while rewards are off.
+    coins: (rewardMap(round.serverData?['reward'])['coins'] as num?)?.toInt(),
+    xp: (rewardMap(round.serverData?['reward'])['xp'] as num?)?.toInt(),
+    notes: [
+      if (round.won) '${round.guesses.length}/${round.limit} tahminde buldun',
+      if (round.assisted) 'Yardımlı sonuç · XP yarıya iner, ayrı başarı kaydı',
+      'Yeni futbolcu yarın seni bekliyor.',
+    ],
   );
 
   Widget _guessCard(DailyFootballerRound round, int index) => PitchPanel(

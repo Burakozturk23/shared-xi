@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/controllers/daily_footballer_controller.dart';
+import 'package:shared_xi/models/daily_footballer.dart';
 import 'package:shared_xi/models/daily_words.dart';
 import 'package:shared_xi/screens/daily_footballer_page.dart';
 import 'package:shared_xi/screens/daily_question_page.dart';
 import 'package:shared_xi/screens/daily_words_page.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'package:shared_xi/widgets/hub_ui.dart';
+import 'package:shared_xi/widgets/share_result.dart';
 
 import 'daily_footballer_test.dart' show MemoryFootballerStore, sampleCatalog;
 import 'daily_question_page_test.dart' show sample;
@@ -128,5 +130,85 @@ void main() {
     expect(dailyWordsShare(session), endsWith('Gümüş · 1 doğru · 🧩 Yardımlı'));
     session['result'] = {'medal': 'Altın', 'solved': 1};
     expect(dailyWordsShare(session), isNot(contains('🧩')));
+  });
+
+  testWidgets('weekly Passaparola asks before spending the one weekly try', (
+    t,
+  ) async {
+    final fixture = WordFixture(stage: 'intro');
+    await _show(t, DailyWordsPage(mode: 'passa_weekly', service: fixture));
+    await t.tap(find.text('240 saniyeyi başlat'));
+    await t.pumpAndSettle();
+    expect(find.text('Haftalık Klasik başlasın mı?'), findsOneWidget);
+    await t.tap(find.text('Vazgeç'));
+    await t.pumpAndSettle();
+    expect(fixture.sent, isNull);
+    await t.tap(find.text('240 saniyeyi başlat'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Başlat'));
+    await t.pumpAndSettle();
+    expect(fixture.sent?['action'], 'start');
+  });
+
+  testWidgets('the weekly clock drains as a bar', (t) async {
+    await _show(
+      t,
+      DailyWordsPage(
+        mode: 'passa_weekly',
+        service: WordFixture(stage: 'game'),
+      ),
+    );
+    final bar = t.widget<LinearProgressIndicator>(
+      find.descendant(
+        of: find.bySemanticsLabel(RegExp('Kalan süre')),
+        matching: find.byType(LinearProgressIndicator),
+      ),
+    );
+    expect(bar.value, closeTo(1, .01));
+  });
+
+  testWidgets('word results open the share sheet with the spoiler-free text', (
+    t,
+  ) async {
+    final shared = <String>[];
+    final previous = shareResultText;
+    shareResultText = (text) async => shared.add(text);
+    addTearDown(() => shareResultText = previous);
+    await _show(
+      t,
+      DailyWordsPage(
+        mode: 'daily_lingo',
+        service: WordFixture(stage: 'result'),
+      ),
+    );
+    await t.ensureVisible(find.text('Paylaş'));
+    await t.tap(find.text('Paylaş'));
+    expect(shared.single, startsWith('Linkball · Günün Lingo’su'));
+    expect(shared.single, isNot(contains('GULER')));
+  });
+
+  test('Günün Futbolcusu and Günün Sorusu share without the answer', () {
+    final players = sampleCatalog.players;
+    final target = players.first;
+    final round = DailyFootballerRound(
+      dayKey: '2026-10-29',
+      catalogVersion: 'test',
+      asOf: '2026-10-06',
+      target: target,
+      guesses: [players[1], target],
+    );
+    final text = dailyFootballerShare(round);
+    expect(text, contains('29.10.2026 · 2/6'));
+    expect(text.split('\n').last, '🟩🟩🟩🟩🟩🟩');
+    expect(text, isNot(contains(target.name)));
+
+    final question = {
+      ...sample(),
+      'result': {'correct': true, 'answer': 1},
+    };
+    final shared = dailyQuestionShare(question);
+    expect(shared, contains('✅ Doğru · 6 günlük seri'));
+    expect(shared, isNot(contains('Göztepe')));
+    expect(shared, isNot(contains('1968')));
   });
 }

@@ -8,6 +8,7 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/energy_sheet.dart';
+import '../widgets/share_result.dart';
 
 class DailyQuestionPage extends StatefulWidget {
   const DailyQuestionPage({super.key, this.initialData, this.request});
@@ -398,6 +399,8 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                       'Ödülün bekliyor. Aynı hesabı Google’a bağladığında eşitlenir.',
                   ],
                 ),
+                const SizedBox(height: 12),
+                ShareResultButtons(text: dailyQuestionShare(data!)),
                 const SizedBox(height: 12),
                 PitchPanel(
                   child: Column(
