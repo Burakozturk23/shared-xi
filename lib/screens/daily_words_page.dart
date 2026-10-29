@@ -206,6 +206,9 @@ class _DailyWordsPageState extends State<DailyWordsPage>
         if (!mounted || _changedAccount) return;
         setState(() {
           _setSession(rewardMap(response['session']));
+          if (response['playStreak'] != null) {
+            _status = {..._status, 'playStreak': response['playStreak']};
+          }
           _clock
             ..reset()
             ..start();
@@ -1566,7 +1569,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
     final days = _rows(data['days']);
     return [
       Text(
-        'Günlük seri · ${data['streak'] ?? 0} gün',
+        'Günlük seri · ${_status['playStreak'] ?? data['streak'] ?? 0} gün',
         style: Theme.of(context).textTheme.headlineSmall,
       ),
       const Text(

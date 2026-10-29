@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../app/game_catalog.dart';
+import '../app/app_preferences.dart';
 import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
 import '../controllers/home_resources_controller.dart';
+import '../models/daily_streak.dart';
 import '../models/mission_models.dart';
+import '../services/daily_reminders.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -39,11 +42,82 @@ class AppHomePage extends StatefulWidget {
 class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
   late final HomeResourcesController _resources =
       widget.resources ?? HomeResourcesController.live();
+  AppPreferences? _prefs;
+  DailyStreak? _seenStreak;
+  bool _offering = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _resources.addListener(_onResources);
     if (widget.loadResources) unawaited(_resources.start());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final first = _prefs == null;
+    _prefs = PreferencesScope.maybeOf(context);
+    // Every app open replans the week, even before the streak arrives.
+    if (first && _prefs != null && widget.loadResources) {
+      unawaited(DailyReminders.sync(_prefs!));
+    }
+  }
+
+  /// Replans reminders on a new streak and, once, offers them after the
+  /// first completed daily game.
+  void _onResources() {
+    final streak = _resources.streak;
+    final prefs = _prefs;
+    if (!mounted || prefs == null || streak == null) return;
+    if (identical(streak, _seenStreak)) return;
+    _seenStreak = streak;
+    unawaited(DailyReminders.sync(prefs, streak: streak));
+    if (streak.playedToday &&
+        !_offering &&
+        !prefs.reminderOffered &&
+        !prefs.notification('daily')) {
+      unawaited(_offerReminders(prefs));
+    }
+  }
+
+  Future<void> _offerReminders(AppPreferences prefs) async {
+    _offering = true;
+    await prefs.markReminderOffered();
+    if (!mounted) return;
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Serini hatırlatalım mı?'),
+        content: const Text(
+          'Akşam 20:00’de tek bir hatırlatma; pazartesi ve pazar haftalık '
+          'Passa duyurusu. Günde en fazla bir bildirim, 22:00–09:00 arası '
+          'hiç yok. Ayarlardan istediğin an kapatabilirsin.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Şimdi değil'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Hatırlat'),
+          ),
+        ],
+      ),
+    );
+    if (yes != true) return;
+    final granted = await DailyReminders.enable(prefs);
+    if (!granted && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Bildirim izni verilmedi. Telefon ayarlarından açabilirsin.',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -65,6 +139,7 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _resources.removeListener(_onResources);
     if (widget.resources == null) _resources.dispose();
     super.dispose();
   }
@@ -85,6 +160,16 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
     }
     await Navigator.of(context).push(LinkballRoute(builder: (_) => page));
     if (mounted && widget.loadResources) await _resources.refresh();
+  }
+
+  Future<void> _showStreak(DailyStreak streak) async {
+    final game = await showModalBottomSheet<GameEntry>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => _StreakSheet(streak: streak),
+    );
+    if (game != null && mounted) await _open(game);
   }
 
   @override
@@ -195,13 +280,14 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              // Live daily-reward streak; hidden when there is none.
+              // Shared play streak of the six daily games; hidden when
+              // unavailable (guest account or a failed read).
               ListenableBuilder(
                 listenable: _resources,
                 builder: (context, _) => switch (_resources.streak) {
-                  final days? => _StreakBadge(
-                    days: days,
-                    onTap: () => _page(const ProgressionCenterPage()),
+                  final streak? => _StreakBadge(
+                    streak: streak,
+                    onTap: () => _showStreak(streak),
                   ),
                   null => const SizedBox.shrink(),
                 },
@@ -477,14 +563,20 @@ class _TileGrid extends StatelessWidget {
   );
 }
 
-/// Daily-reward streak from the server; opens the progression centre.
+/// Shared play streak with today's progress; opens the streak sheet.
 class _StreakBadge extends StatelessWidget {
-  const _StreakBadge({required this.days, required this.onTap});
-  final int days;
+  const _StreakBadge({required this.streak, required this.onTap});
+  final DailyStreak streak;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) {
     final amber = hubAmber(context);
+    final s = streak;
+    final label = s.repairStreak > 0
+        ? 'Seriyi kurtar · ${s.repairStreak} gün'
+        : s.streak > 0
+        ? '${s.streak} günlük seri · ${s.played.length}/${s.total}'
+        : 'Seri başlat · ${s.played.length}/${s.total}';
     return Semantics(
       button: true,
       child: Material(
@@ -508,17 +600,126 @@ class _StreakBadge extends StatelessWidget {
                     color: amber,
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    '$days günlük seri',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: amber,
-                      fontWeight: FontWeight.w700,
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: amber,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Server game ids of the shared streak, in the home order.
+const _streakGames = <String, GameEntry>{
+  'daily_footballer': GameCatalog.dailyFootballer,
+  'daily_match': GameCatalog.daily,
+  'daily_question': GameCatalog.dailyQuestion,
+  'daily_lingo': GameCatalog.dailyLingo,
+  'passa_daily': GameCatalog.dailyPassa,
+  'daily_anagram': GameCatalog.dailyAnagram,
+};
+
+/// Today's six daily games, the streak rules and (when on) its rewards.
+/// Pops with the game to open.
+class _StreakSheet extends StatelessWidget {
+  const _StreakSheet({required this.streak});
+  final DailyStreak streak;
+  @override
+  Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final s = streak;
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              s.streak > 0 ? '${s.streak} günlük seri' : 'Günlük seri',
+              style: text.headlineSmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Günlük oyunlardan birini bitirmen o günü sayar; yardımlı '
+              'oyunlar da dahil. Gün 00:00’da (TSİ) yenilenir.',
+              style: text.bodyMedium?.copyWith(color: p.muted),
+            ),
+            if (s.best > s.streak) ...[
+              const SizedBox(height: 4),
+              Text(
+                'En uzun serin: ${s.best} gün',
+                style: text.bodySmall?.copyWith(color: p.muted),
+              ),
+            ],
+            if (s.repairStreak > 0) ...[
+              const SizedBox(height: 12),
+              PitchPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      '${s.repairStreak} günlük serin kurtarılabilir',
+                      style: text.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Bir günü kaçırdın. Haftada bir kez, Günün Maçları '
+                      'ekranında reklam izleyerek serini koruyabilirsin.',
+                    ),
+                    const SizedBox(height: 8),
+                    PitchAction(
+                      label: 'Serimi koru',
+                      icon: Icons.shield_outlined,
+                      onPressed: () =>
+                          Navigator.pop(context, GameCatalog.daily),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 16),
+            Text(
+              'Bugün ${s.played.length}/${s.total}',
+              style: text.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            for (final MapEntry(key: id, value: game) in _streakGames.entries)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  s.played.contains(id)
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  color: s.played.contains(id) ? p.success : p.muted,
+                ),
+                title: Text(game.title),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.pop(context, game),
+              ),
+            if (s.rewardsEnabled) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Her 7. günde +20 coin · +30 XP; ilk haftada 1 Temel '
+                'destek. Altısını bitirdiğin gün +5 coin · +10 XP.',
+                style: text.bodySmall?.copyWith(color: p.muted),
+              ),
+              Text(
+                'Sıradaki ödül: ${s.nextMilestone}. gün',
+                style: text.bodySmall?.copyWith(color: hubAmber(context)),
+              ),
+            ],
+          ],
         ),
       ),
     );

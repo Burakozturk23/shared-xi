@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../models/daily_streak.dart';
 import '../models/economy_models.dart';
 import '../models/mission_models.dart';
 import '../services/auth_service.dart';
+import '../services/daily_streak_service.dart';
 import '../services/economy_service.dart';
 import '../services/energy_service.dart';
 import '../services/mission_service.dart';
-import '../services/progression_service.dart';
 
 typedef ResourceAccount = ({String? uid, bool linked});
 
@@ -35,8 +36,7 @@ class HomeResourcesController extends ChangeNotifier {
         (uid: AuthService.uid, linked: AuthService.isGoogleAccount),
     readEnergy: () => EnergyService().status(),
     watchWallet: EconomyService.watchWallet,
-    readStreak: () async =>
-        (await ProgressionService.fetch()).dailyReward.activeStreak,
+    readStreak: DailyStreakService.fetch,
     readMissions: MissionService.fetch,
   );
 
@@ -46,8 +46,8 @@ class HomeResourcesController extends ChangeNotifier {
   final Future<Map<String, dynamic>> Function() readEnergy;
   final Stream<EconomyWallet> Function() watchWallet;
 
-  /// Live daily-reward streak; only linked accounts have one.
-  final Future<int?> Function()? readStreak;
+  /// Shared play streak of the six daily games; read for linked accounts.
+  final Future<DailyStreak> Function()? readStreak;
 
   /// Today's missions; only linked accounts have them.
   final Future<MissionProfile> Function()? readMissions;
@@ -58,7 +58,7 @@ class HomeResourcesController extends ChangeNotifier {
   Map<String, dynamic>? energy;
 
   /// Null hides the badge: no streak, guest account or a failed read.
-  int? streak;
+  DailyStreak? streak;
 
   /// Null hides the mission summary: guest account or a failed read.
   MissionProfile? missions;
@@ -152,7 +152,7 @@ class HomeResourcesController extends ChangeNotifier {
     final read = readStreak;
     if (_disposed || read == null || account?.linked != true) return;
     final generation = _generation;
-    int? value;
+    DailyStreak? value;
     try {
       value = await read();
     } catch (_) {

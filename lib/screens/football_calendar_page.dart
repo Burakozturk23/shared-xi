@@ -570,7 +570,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
                     icon: Icons.confirmation_number_outlined,
                   ),
                   _tag(
-                    '${number(_data, 'streak')} günlük seri',
+                    '${number(_data, _data?['playStreak'] == null ? 'streak' : 'playStreak')} günlük seri',
                     icon: Icons.local_fire_department,
                   ),
                   _tag('0 enerji', icon: Icons.bolt_outlined),
@@ -600,7 +600,8 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Bugünkü galibiyetinden önce seri korumasını kullanabilirsin.',
+                  'Bir günü kaçırdın. Günlük oyun serini haftada bir kez '
+                  'reklam izleyerek koruyabilirsin.',
                 ),
                 const SizedBox(height: 12),
                 PitchAction(

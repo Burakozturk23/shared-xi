@@ -38,6 +38,7 @@ class AppPreferences extends ChangeNotifier {
     final value = _store.getDouble(key);
     return value == null || !value.isFinite ? fallback : value.clamp(0.0, 1.0);
   }
+
   static Future<AppPreferences> load() async =>
       AppPreferences._(await SharedPreferences.getInstance());
 
@@ -123,6 +124,13 @@ class AppPreferences extends ChangeNotifier {
       throw StateError('Tercih kaydedilemedi.');
     }
     notifyListeners();
+  }
+
+  /// The one-time reminder offer after the first daily game was answered.
+  bool get reminderOffered =>
+      _store.getBool('linkball.notification.offered') ?? false;
+  Future<void> markReminderOffered() async {
+    await _store.setBool('linkball.notification.offered', true);
   }
 }
 

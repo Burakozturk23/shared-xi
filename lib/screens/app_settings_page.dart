@@ -4,6 +4,7 @@ import '../app/app_preferences.dart';
 import '../app/app_feedback.dart';
 import '../app/route_appearance.dart';
 import '../services/ads_consent_service.dart';
+import '../services/daily_reminders.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/social_ui.dart';
@@ -396,13 +397,51 @@ class NotificationPreferencesPage extends StatelessWidget {
             SocialNotice(
               title: c('Kontrol sende', 'You are in control'),
               message: c(
-                'Bildirim gönderimi henüz etkin değil. Bu seçimler yalnızca bu cihazda saklanır ve bildirim izni vermez.',
-                'Notifications are not enabled yet. These choices are saved on this device and do not grant notification permission.',
+                'Günlük oyun hatırlatıcısı bu cihazda planlanır: günde en fazla bir bildirim, 22:00–09:00 arası hiç yok. Diğer bildirimler henüz etkin değil.',
+                'The daily games reminder is scheduled on this device: at most one a day, none between 22:00 and 09:00. Other notifications are not enabled yet.',
               ),
             ),
             const SizedBox(height: 16),
+            SwitchListTile(
+              title: Text(c('Günlük oyun hatırlatıcısı', 'Daily games reminder')),
+              subtitle: Text(
+                c(
+                  'Her akşam 20:00 · Haftalık Passa: Pzt 10:00, Paz 19:00',
+                  'Every evening 20:00 · Weekly Passa: Mon 10:00, Sun 19:00',
+                ),
+              ),
+              value: p.notification('daily'),
+              onChanged: (v) async {
+                try {
+                  if (!v) {
+                    await DailyReminders.disable(p);
+                  } else if (!await DailyReminders.enable(p) &&
+                      context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          c(
+                            'Bildirim izni verilmedi. Telefon ayarlarından açabilirsin.',
+                            'Notification permission was not granted. You can allow it in system settings.',
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          c('Tercih kaydedilemedi.', 'Could not save preference.'),
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
             for (final row in [
-              ('daily', c('Günün maçları', 'Daily games')),
               ('social', c('Arkadaşlar ve davetler', 'Friends & invitations')),
               ('rewards', c('Görevler ve ödüller', 'Missions & rewards')),
             ])

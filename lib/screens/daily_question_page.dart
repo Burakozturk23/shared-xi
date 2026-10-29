@@ -247,7 +247,7 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                '${data?['streak'] ?? 0} günlük seri',
+                                '${data?['playStreak'] ?? data?['streak'] ?? 0} günlük seri',
                                 style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(color: hubAmber(context)),
                               ),
