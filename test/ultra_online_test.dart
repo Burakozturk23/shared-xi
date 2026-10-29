@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +8,7 @@ import 'package:shared_xi/online/online_mode_catalog.dart';
 import 'package:shared_xi/online/online_mode_selection_page.dart';
 import 'package:shared_xi/screens/friends_page.dart';
 import 'package:shared_xi/screens/leaderboard_page.dart';
+import 'package:shared_xi/screens/online_hub_page.dart';
 import 'package:shared_xi/services/profile_service.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 
@@ -43,6 +46,59 @@ void main() {
     expect(find.text('(5)'), findsOneWidget);
     expect(find.text('5 MOD'), findsOneWidget);
     expect(find.text('Eşleş'), findsNWidgets(OnlinePlayMode.values.length));
+  });
+
+  // Live profile and friend feeds are single-subscription streams.
+  testWidgets('switching Online and friends keeps the live ELO feed', (
+    t,
+  ) async {
+    final me = StreamController<UserProfile?>();
+    addTearDown(me.close);
+    await _show(t, OnlineModeSelectionPage(ranked: true, me: me.stream));
+    me.add(const UserProfile(uid: 'u', displayName: 'Kaptan', elo: 1240));
+    await t.pumpAndSettle();
+    expect(find.text('1.240 ELO'), findsOneWidget);
+    for (final tab in ['Arkadaşlarla', 'Online', 'Arkadaşlarla', 'Online']) {
+      await t.tap(find.text(tab));
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull, reason: tab);
+    }
+    expect(find.text('1.240 ELO'), findsOneWidget);
+  });
+
+  testWidgets('online hub survives its hero scrolling out and back', (t) async {
+    final me = StreamController<UserProfile?>();
+    final friends = StreamController<List<FriendshipEdge>>();
+    final incoming = StreamController<List<FriendRequestEdge>>();
+    addTearDown(me.close);
+    addTearDown(friends.close);
+    addTearDown(incoming.close);
+    await _show(
+      t,
+      Scaffold(
+        body: OnlineHubPage(
+          persistentAccount: true,
+          invites: Stream.value(const []),
+          me: me.stream,
+          friends: friends.stream,
+          incoming: incoming.stream,
+        ),
+      ),
+      height: 500,
+    );
+    me.add(const UserProfile(uid: 'u', displayName: 'Kaptan', elo: 1240));
+    friends.add(const [FriendshipEdge(uid: 'a')]);
+    incoming.add(const []);
+    await t.pumpAndSettle();
+    final list = find.byType(Scrollable).first;
+    for (var i = 0; i < 2; i++) {
+      await t.drag(list, const Offset(0, -3000));
+      await t.pumpAndSettle();
+      await t.drag(list, const Offset(0, 3000));
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull);
+    }
+    expect(find.text('1.240 ELO'), findsOneWidget);
   });
 
   testWidgets('friend mode menu offers rooms instead of matchmaking', (

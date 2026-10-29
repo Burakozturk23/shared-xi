@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../app/game_catalog.dart';
@@ -5,6 +7,7 @@ import '../app/game_launcher.dart';
 import '../services/auth_service.dart';
 import '../services/friends_service.dart';
 import '../services/profile_service.dart';
+import '../services/replay_stream.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_tile.dart';
 import '../widgets/hub_ui.dart';
@@ -42,9 +45,48 @@ class OnlineHubPage extends StatefulWidget {
 }
 
 class _OnlineHubPageState extends State<OnlineHubPage> {
-  Stream<UserProfile?>? _me;
-  Stream<List<FriendshipEdge>>? _friendList;
-  Stream<List<FriendRequestEdge>>? _incoming;
+  /// The feeds are single-subscription and the list drops off-screen
+  /// cards, so the page listens once and keeps the latest values.
+  final _feeds = <StreamSubscription<Object?>>[];
+  UserProfile? _me;
+  List<FriendshipEdge>? _friendList;
+  int _requests = 0;
+
+  void _listen() {
+    if (_feeds.isNotEmpty) return;
+    void watch<T>(Stream<T> feed, void Function(T) update) => _feeds.add(
+      feed.listen(
+        (value) {
+          if (mounted) setState(() => update(value));
+        },
+        // Counts and the ELO badge are decoration; a failed read hides them.
+        onError: (Object _) {},
+      ),
+    );
+    watch(widget.me ?? ProfileService.watchMyProfile(), (v) => _me = v);
+    watch(
+      widget.friends ?? FriendsService.watchFriends(),
+      (v) => _friendList = v,
+    );
+    watch(
+      widget.incoming ?? FriendsService.watchIncomingRequests(),
+      (v) => _requests = v.length,
+    );
+  }
+
+  /// A supplied invite feed is shared so the section can rebuild after
+  /// scrolling off-screen; without one it opens its own live feed.
+  late final ReplayStream<List<FriendMatchInvite>>? _invites =
+      widget.invites == null ? null : ReplayStream(widget.invites!);
+
+  @override
+  void dispose() {
+    for (final feed in _feeds) {
+      feed.cancel();
+    }
+    _invites?.dispose();
+    super.dispose();
+  }
 
   Future<void> _open(GameEntry game) async {
     await GameLauncher.open(context, game);
@@ -75,11 +117,9 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
     final p = PitchColors.of(context);
     final text = Theme.of(context).textTheme;
     final linked = widget.persistentAccount ?? AuthService.hasPersistentAccount;
-    if (linked) {
-      _me ??= widget.me ?? ProfileService.watchMyProfile();
-      _friendList ??= widget.friends ?? FriendsService.watchFriends();
-      _incoming ??= widget.incoming ?? FriendsService.watchIncomingRequests();
-    }
+    if (linked) _listen();
+    final me = _me;
+    final elo = me == null ? null : '${groupedNumber(me.elo)} ELO';
     return ListView(
       key: const PageStorageKey('online'),
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -128,22 +168,13 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
                 ),
                 child: Row(
                   children: [
-                    StreamBuilder<UserProfile?>(
-                      stream: _me,
-                      builder: (context, snapshot) {
-                        final me = snapshot.data;
-                        final elo = me == null
-                            ? null
-                            : '${groupedNumber(me.elo)} ELO';
-                        return _OpponentMarker(
-                          icon: Icons.shield_outlined,
-                          label: me?.displayName ?? 'Sen',
-                          caption: elo,
-                          description: me == null
-                              ? 'Sen'
-                              : 'Sen: ${me.displayName}, $elo',
-                        );
-                      },
+                    _OpponentMarker(
+                      icon: Icons.shield_outlined,
+                      label: me?.displayName ?? 'Sen',
+                      caption: elo,
+                      description: me == null
+                          ? 'Sen'
+                          : 'Sen: ${me.displayName}, $elo',
                     ),
                     Expanded(
                       child: Column(
@@ -214,7 +245,7 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
         if (linked)
           Padding(
             padding: const EdgeInsets.only(top: 16),
-            child: FriendMatchInvitesSection(stream: widget.invites),
+            child: FriendMatchInvitesSection(stream: _invites?.stream),
           ),
         const SizedBox(height: 16),
         PitchTileGrid(
@@ -227,31 +258,18 @@ class _OnlineHubPageState extends State<OnlineHubPage> {
               icon: Icons.emoji_events_outlined,
               onTap: () => _open(_leaderboard),
             ),
-            StreamBuilder<List<FriendshipEdge>>(
-              stream: _friendList,
-              builder: (context, friends) =>
-                  StreamBuilder<List<FriendRequestEdge>>(
-                    stream: _incoming,
-                    builder: (context, incoming) {
-                      final requests = incoming.data?.length ?? 0;
-                      return PitchTile(
-                        title: 'Arkadaşlar',
-                        description: switch (friends.data) {
-                          final list? =>
-                            '${list.length} arkadaşın var. '
-                                'İsteklerini yönet.',
-                          null => 'Arkadaş ekle, isteklerini yönet.',
-                        },
-                        caption: requests > 0
-                            ? '$requests yeni istek'
-                            : 'Listeyi aç',
-                        countLabel: 'SOSYAL',
-                        icon: Icons.people_outline_rounded,
-                        footerColor: p.limeInk,
-                        onTap: () => _open(_friends),
-                      );
-                    },
-                  ),
+            PitchTile(
+              title: 'Arkadaşlar',
+              description: switch (_friendList) {
+                final list? =>
+                  '${list.length} arkadaşın var. İsteklerini yönet.',
+                null => 'Arkadaş ekle, isteklerini yönet.',
+              },
+              caption: _requests > 0 ? '$_requests yeni istek' : 'Listeyi aç',
+              countLabel: 'SOSYAL',
+              icon: Icons.people_outline_rounded,
+              footerColor: p.limeInk,
+              onTap: () => _open(_friends),
             ),
           ],
         ),

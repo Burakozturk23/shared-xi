@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../app/route_appearance.dart';
 import '../services/auth_service.dart';
@@ -27,13 +29,33 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
   final _search = TextEditingController();
   String? _group;
   late bool _ranked = widget.ranked;
-  late final Stream<UserProfile?>? _me =
-      widget.me ??
-      (AuthService.hasPersistentAccount
-          ? ProfileService.watchMyProfile()
-          : null);
+
+  /// The profile feed is single-subscription and the badge comes and goes
+  /// with the Online/friends toggle, so the page listens once and keeps the
+  /// latest value.
+  StreamSubscription<UserProfile?>? _meFeed;
+  UserProfile? _me;
+
+  @override
+  void initState() {
+    super.initState();
+    final feed =
+        widget.me ??
+        (AuthService.hasPersistentAccount
+            ? ProfileService.watchMyProfile()
+            : null);
+    _meFeed = feed?.listen(
+      (profile) {
+        if (mounted) setState(() => _me = profile);
+      },
+      // The badge is decoration; a failed read just leaves it hidden.
+      onError: (Object _) {},
+    );
+  }
+
   @override
   void dispose() {
+    _meFeed?.cancel();
     _search.dispose();
     super.dispose();
   }
@@ -120,18 +142,11 @@ class _OnlineModeSelectionPageState extends State<OnlineModeSelectionPage> {
                           '${OnlinePlayMode.values.length} MOD',
                           style: hubCaps(context),
                         ),
-                        if (_ranked)
-                          StreamBuilder<UserProfile?>(
-                            stream: _me,
-                            builder: (context, snapshot) =>
-                                switch (snapshot.data) {
-                                  final me? => HubPill(
-                                    '${groupedNumber(me.elo)} ELO',
-                                    color: colors.limeInk,
-                                    background: colors.limeTint,
-                                  ),
-                                  null => const SizedBox.shrink(),
-                                },
+                        if (_ranked && _me != null)
+                          HubPill(
+                            '${groupedNumber(_me!.elo)} ELO',
+                            color: colors.limeInk,
+                            background: colors.limeTint,
                           ),
                       ],
                     ),
