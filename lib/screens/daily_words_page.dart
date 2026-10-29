@@ -29,6 +29,8 @@ class _DailyWordsPageState extends State<DailyWordsPage>
     with WidgetsBindingObserver {
   late final _service = widget.service ?? DailyWordsService();
   final _answer = TextEditingController();
+  final _answerFocus = FocusNode();
+  final _gameAnchor = GlobalKey();
   final _scroll = ScrollController();
   final _clock = Stopwatch();
   StreamSubscription<dynamic>? _auth;
@@ -115,6 +117,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
     _auth?.cancel();
     _ticker?.cancel();
     _answer.dispose();
+    _answerFocus.dispose();
     _scroll.dispose();
     _clock.stop();
     super.dispose();
@@ -325,35 +328,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
             if (_error != null) _errorPanel(),
             if (_status['notice'] != null) _notice('${_status['notice']}'),
             if (_status.isNotEmpty) ...[
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  Chip(
-                    label: Text('${_session['period'] ?? _status['period']}'),
-                  ),
-                  Chip(
-                    label: Text(
-                      _practice
-                          ? 'Yeni seri: ${_status['energyCost'] ?? 0} enerji'
-                          : '0 enerji',
-                    ),
-                  ),
-                  Chip(
-                    label: Text(
-                      _weekly
-                          ? '29 harf'
-                          : _lingo
-                          ? '6 tahmin'
-                          : _practice
-                          ? '8 futbolcu'
-                          : _anagram
-                          ? '3 futbolcu'
-                          : '7 harf',
-                    ),
-                  ),
-                ],
-              ),
+              _facts(),
               const SizedBox(height: 12),
               if (_archive) ...[
                 const Text('Arşiv · Salt okunur · Ödülsüz görüntüleme'),
@@ -374,6 +349,8 @@ class _DailyWordsPageState extends State<DailyWordsPage>
                   _notice(
                     '${_status['reason'] ?? 'Bugünün içeriği henüz hazır değil.'}',
                   ),
+                if (_fresh) ...[_introCard(), const SizedBox(height: 16)],
+                SizedBox(key: _gameAnchor),
                 if (_session.isEmpty)
                   ..._intro()
                 else if (_lingo)
@@ -401,17 +378,18 @@ class _DailyWordsPageState extends State<DailyWordsPage>
                 const SizedBox(height: 18),
                 if (!_practice) ..._trioPanel(),
                 if (widget.mode == 'passa_daily')
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      LinkballRoute(
-                        builder: (_) => DailyWordsPage(
-                          mode: 'passa_weekly',
-                          service: widget.service,
-                        ),
-                      ),
-                    ),
-                    icon: const Icon(Icons.timelapse),
-                    label: const Text('Haftalık Klasik · 29 harf / 240 sn'),
+                  _linkRow(
+                    icon: Icons.timelapse,
+                    title: 'Haftalık Klasik',
+                    subtitle: '29 harf / 240 sn · Haftada tek resmî sonuç',
+                    mode: 'passa_weekly',
+                  ),
+                if (widget.mode == 'daily_anagram')
+                  _linkRow(
+                    icon: Icons.track_changes_rounded,
+                    title: 'Sekizli Pratik',
+                    subtitle: '8 futbolcu · Coin / XP ödülü yok',
+                    mode: 'anagram_practice',
                   ),
               ],
             ],
@@ -423,29 +401,260 @@ class _DailyWordsPageState extends State<DailyWordsPage>
 
   String _errorMessage(Object error) => gameErrorMessage(error);
 
-  Widget _welcome() => GameIntro(
-    icon: _lingo
-        ? Icons.text_fields_rounded
-        : _anagram
-        ? Icons.shuffle_rounded
-        : Icons.abc_rounded,
-    title: _lingo
-        ? 'Bir kelime. Altı şans.'
-        : _anagram
-        ? 'Harfleri çöz, futbolcuyu bul.'
-        : _weekly
-        ? 'Haftanın büyük çemberi'
-        : 'Yedi harf, yedi futbol sorusu.',
-    message: _lingo
-        ? 'Futbolcu, kulüp veya ülkeyi bul. Her tahminde harflerin konumunu keşfet.'
+  /// A daily game no move has touched yet opens with its rules card.
+  bool get _fresh =>
+      _session.isNotEmpty &&
+      !_finished &&
+      !_archive &&
+      !_records &&
+      !_practice &&
+      !_weekly &&
+      (_session['attempts'] as num? ?? 0) == 0;
+
+  /// Date, cost and allowance as labelled tiles.
+  Widget _facts() {
+    final (label, value) = _weekly
+        ? ('HARF', '29 harf')
+        : _lingo
+        ? ('HAK', '6 tahmin')
         : _practice
-        ? '8 futbolcu, her turda 3 tahmin. 24 saat içinde aynı seriye dön. İpuçları puanı azaltır; Coin/XP ödülü yoktur.'
+        ? ('SERİ', '8 futbolcu')
         : _anagram
-        ? 'Üç futbolcunun karışık harflerini doğru sıraya koy.'
-        : _weekly
-        ? '29 harf, Ğ dahil. 240 saniye boyunca çöz; her soruda bir pas hakkın var. Süre arka planda da ilerler. Haftada tek resmî sonuç.'
-        : 'İpuçlarını oku, harfle başlayan ya da harfi içeren cevabı bul. Süre sınırı yok; her soruda bir pas hakkın var.',
+        ? ('HEDEF', '3 futbolcu')
+        : ('HARF', '7 harf');
+    final p = PitchColors.of(context);
+    Widget tile(String caption, String text, Color color) => Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        decoration: BoxDecoration(
+          color: p.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: p.border),
+        ),
+        child: Column(
+          children: [
+            Text(caption, style: hubCaps(context)),
+            const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                text,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(color: color),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tile('TARİH', '${_session['period'] ?? _status['period']}', p.text),
+          const SizedBox(width: 8),
+          tile(
+            'MALİYET',
+            _practice
+                ? 'Yeni seri: ${_status['energyCost'] ?? 0} enerji'
+                : '0 enerji',
+            p.limeInk,
+          ),
+          const SizedBox(width: 8),
+          tile(label, value, p.accent),
+        ],
+      ),
+    );
+  }
+
+  String get _introTitle => _lingo
+      ? 'Bir kelime. Altı şans.'
+      : _anagram
+      ? 'Harfleri çöz, futbolcuyu bul.'
+      : _weekly
+      ? 'Haftanın büyük çemberi'
+      : 'Yedi harf, yedi futbol sorusu.';
+
+  String get _introMessage => _lingo
+      ? 'Futbolcu, kulüp veya ülkeyi bul. Her tahminde harflerin konumunu keşfet.'
+      : _practice
+      ? '8 futbolcu, her turda 3 tahmin. 24 saat içinde aynı seriye dön. İpuçları puanı azaltır; Coin/XP ödülü yoktur.'
+      : _anagram
+      ? 'Üç futbolcunun karışık harflerini doğru sıraya koy.'
+      : _weekly
+      ? '29 harf, Ğ dahil. 240 saniye boyunca çöz; her soruda bir pas hakkın var. Süre arka planda da ilerler. Haftada tek resmî sonuç.'
+      : 'İpuçlarını oku, harfle başlayan ya da harfi içeren cevabı bul. Süre sınırı yok; her soruda bir pas hakkın var.';
+
+  IconData get _introIcon => _lingo
+      ? Icons.text_fields_rounded
+      : _anagram
+      ? Icons.shuffle_rounded
+      : Icons.abc_rounded;
+
+  /// Moves to the game below the intro and opens the keyboard.
+  void _startPlaying() {
+    final anchor = _gameAnchor.currentContext;
+    if (anchor != null) {
+      Scrollable.ensureVisible(
+        anchor,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
+    _answerFocus.requestFocus();
+  }
+
+  /// Rules card for a fresh daily game: what to solve, how it is marked and
+  /// a button that takes the player to the first move.
+  Widget _introCard() {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final round = _round;
+    final letters = '${round['scrambledLetters'] ?? ''}'.split('')
+      ..removeWhere((l) => l.trim().isEmpty);
+    Widget swatch(String label, String mark) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: _markColor(mark),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Flexible(child: Text(label, style: text.labelMedium)),
+      ],
+    );
+    Widget fact(IconData icon, String label) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 18, color: p.accent),
+        const SizedBox(width: 6),
+        Flexible(child: Text(label, style: text.labelLarge)),
+      ],
+    );
+    return HubHeroCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              HubIconBox(
+                _introIcon,
+                size: 52,
+                background: p.background.withValues(alpha: .4),
+              ),
+              HubPill(
+                'GÜNLÜK MOD',
+                color: p.limeInk,
+                background: p.limeTint,
+                dot: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(_introTitle, style: text.headlineSmall),
+          const SizedBox(height: 8),
+          Text(_introMessage, style: text.bodyMedium?.copyWith(color: p.muted)),
+          const SizedBox(height: 16),
+          Divider(height: 1, color: p.border),
+          const SizedBox(height: 14),
+          if (_lingo)
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                swatch('Doğru yer', 'exact'),
+                swatch('Yanlış yer', 'present'),
+                swatch('Yok', 'absent'),
+              ],
+            )
+          else if (_anagram) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text('KARIŞIK HARFLER', style: hubCaps(context)),
+                ),
+                Text(
+                  '${(_session['index'] as num? ?? 0).toInt() + 1} / '
+                  '${_rounds.length} futbolcu',
+                  style: text.labelLarge?.copyWith(color: p.accent),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ExcludeSemantics(
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final letter in letters)
+                    Container(
+                      width: 40,
+                      height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: p.background.withValues(alpha: .5),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: p.border),
+                      ),
+                      child: Text(letter, style: text.titleMedium),
+                    ),
+                ],
+              ),
+            ),
+          ] else
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                fact(Icons.all_inclusive_rounded, 'Süre serbest'),
+                fact(Icons.redo_rounded, '1 pas / soru'),
+              ],
+            ),
+          const SizedBox(height: 18),
+          PitchAction(
+            label: _lingo
+                ? 'Kelimeyi bulmaya başla'
+                : _anagram
+                ? 'Harfleri çözmeye başla'
+                : 'Çemberi başlat',
+            icon: Icons.play_arrow_rounded,
+            onPressed: _locked ? null : _startPlaying,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Another word mode reached from this one.
+  Widget _linkRow({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String mode,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: PitchRow(
+      title: title,
+      subtitle: subtitle,
+      icon: icon,
+      onTap: () => Navigator.of(context).push(
+        LinkballRoute(
+          builder: (_) => DailyWordsPage(mode: mode, service: widget.service),
+        ),
+      ),
+    ),
   );
+
+  Widget _welcome() =>
+      GameIntro(icon: _introIcon, title: _introTitle, message: _introMessage);
 
   Widget _loadingPanel() => PitchPanel(
     child: Column(
@@ -753,6 +962,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
     children: [
       TextField(
         controller: _answer,
+        focusNode: _answerFocus,
         enabled: !_locked,
         autocorrect: false,
         enableSuggestions: false,
@@ -1149,50 +1359,139 @@ class _DailyWordsPageState extends State<DailyWordsPage>
   List<Widget> _trioPanel() {
     final completed = rewardMap(_status['dailyCompletion']);
     final bonus = rewardMap(_status['bonus']);
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    const modes = ['daily_lingo', 'passa_daily', 'daily_anagram'];
+    final done = modes.where((m) => completed[m] == true).length;
     return [
-      Text('Günlük üçleme', style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: 6),
-      Wrap(
-        spacing: 6,
-        children: ['daily_lingo', 'passa_daily', 'daily_anagram']
-            .map(
-              (mode) => ActionChip(
-                avatar: Icon(
-                  completed[mode] == true
-                      ? Icons.check_circle
-                      : Icons.circle_outlined,
-                  size: 17,
+      PitchPanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.military_tech_outlined, color: p.accent),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text('Günlük üçleme', style: text.titleMedium),
+                    ),
+                  ],
                 ),
-                label: Text(
-                  mode == 'daily_lingo'
-                      ? 'Lingo'
-                      : mode == 'passa_daily'
-                      ? 'Mini'
-                      : 'Anagram',
-                ),
-                onPressed: mode == widget.mode
-                    ? null
-                    : () => Navigator.of(context).push(
-                        LinkballRoute(
-                          builder: (_) => DailyWordsPage(
-                            mode: mode,
-                            service: widget.service,
-                          ),
-                        ),
-                      ),
+                HubPill('$done / 3 TAMAM', color: p.accent, background: p.tint),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                for (final (i, mode) in modes.indexed) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  Expanded(child: _trioChip(mode, completed[mode] == true)),
+                ],
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: p.background.withValues(alpha: .4),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: p.border),
               ),
-            )
-            .toList(),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.stars_rounded, size: 20, color: hubAmber(context)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      bonus.isNotEmpty
+                          ? 'Üçleme tamamlandı · ${bonus['coins']} Coin / ${bonus['xp']} XP'
+                          : 'Üç geçerli günlük sonuç: +2 Coin / +4 XP. Tam başarıda toplam 11 Coin / 22 XP. Haftalık ve pratik dahil değil.',
+                      style: text.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_status['rewardsEnabled'] != true) ...[
+              const SizedBox(height: 8),
+              const Text('Bu test aşamasında Coin / XP kazanımı kapalı.'),
+            ],
+          ],
+        ),
       ),
-      Text(
-        bonus.isNotEmpty
-            ? 'Üçleme tamamlandı · ${bonus['coins']} Coin / ${bonus['xp']} XP'
-            : 'Üç geçerli günlük sonuç: +2 Coin / +4 XP. Tam başarıda toplam 11 Coin / 22 XP. Haftalık ve pratik dahil değil.',
-      ),
-      if (_status['rewardsEnabled'] != true)
-        const Text('Bu test aşamasında Coin / XP kazanımı kapalı.'),
       const SizedBox(height: 12),
     ];
+  }
+
+  /// One trio game: done, this page, or a shortcut to the other mode.
+  Widget _trioChip(String mode, bool done) {
+    final p = PitchColors.of(context);
+    final current = mode == widget.mode;
+    final label = mode == 'daily_lingo'
+        ? 'Lingo'
+        : mode == 'passa_daily'
+        ? 'Mini'
+        : 'Anagram';
+    final color = done ? p.success : (current ? p.accent : p.muted);
+    return Semantics(
+      button: !current,
+      selected: current,
+      child: Material(
+        color: current ? p.tint : Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: current ? p.accent : (done ? p.success : p.border),
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: current
+              ? null
+              : () => Navigator.of(context).push(
+                  LinkballRoute(
+                    builder: (_) =>
+                        DailyWordsPage(mode: mode, service: widget.service),
+                  ),
+                ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  done
+                      ? Icons.check_circle
+                      : current
+                      ? Icons.radio_button_checked
+                      : Icons.circle_outlined,
+                  size: 17,
+                  color: color,
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: current ? p.text : color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   List<Widget> _archivePanel() {

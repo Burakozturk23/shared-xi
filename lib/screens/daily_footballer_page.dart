@@ -225,33 +225,31 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
                   children: [
                     if (game!.busy) const LinearProgressIndicator(),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: p.accent.withValues(alpha: .4),
-                        ),
-                        gradient: LinearGradient(colors: [p.tint, p.surface]),
-                      ),
+                    HubHeroCard(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            'GÜNLÜK OYUNCU DOSYASI · ${round.dayKey.split('-').reversed.join('.')}',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelMedium?.copyWith(color: p.accent),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: HubPill(
+                              'GÜNLÜK OYUNCU DOSYASI · ${round.dayKey.split('-').reversed.join('.')}',
+                              color: p.accent,
+                              background: p.background.withValues(alpha: .4),
+                              dot: true,
+                            ),
                           ),
                           if (round.guesses.isEmpty) ...[
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 14),
                             Text(
                               'Sahadaki gizli ismi bul.',
                               style: Theme.of(context).textTheme.headlineSmall,
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               'Her tahmin yeni bir iz bırakır. Altı özelliği karşılaştır, doğru isme yaklaş.',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(color: p.muted),
                             ),
                           ],
                           const SizedBox(height: 18),
@@ -272,9 +270,25 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
                                 ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${round.guesses.length}/${round.limit} tahmin · ${round.finished ? 'Oyun tamamlandı' : '${round.remaining} hak kaldı'}',
+                          const SizedBox(height: 10),
+                          // Wraps under large text instead of squeezing.
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 4,
+                            alignment: WrapAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${round.guesses.length}/${round.limit} tahmin',
+                                style: Theme.of(context).textTheme.labelLarge,
+                              ),
+                              Text(
+                                round.finished
+                                    ? 'Oyun tamamlandı'
+                                    : '${round.remaining} hak kaldı',
+                                style: Theme.of(context).textTheme.labelLarge
+                                    ?.copyWith(color: p.accent),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -366,19 +380,43 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              'Bir harf, yeni bir iz.',
-                              style: Theme.of(context).textTheme.titleSmall,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                HubIconBox(
+                                  Icons.lightbulb_outline_rounded,
+                                  color: hubAmber(context),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Bir harf, yeni bir iz.',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleSmall,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        round.guesses.isEmpty
+                                            ? 'İlk tahmininden sonra isim ipucunu açabilirsin.'
+                                            : round.serverOwned
+                                            ? 'Destek çantası, Coin veya doğrulanmış reklam. Sonuç Yardımlı olarak kaydolur.'
+                                            : 'Ödüllü reklamı tamamla, isim ipucunu aç.',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(color: p.muted),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              round.guesses.isEmpty
-                                  ? 'İlk tahmininden sonra isim ipucunu açabilirsin.'
-                                  : round.serverOwned
-                                  ? 'Destek çantası, Coin veya doğrulanmış reklam. Sonuç Yardımlı olarak kaydolur.'
-                                  : 'Ödüllü reklamı tamamla, isim ipucunu aç.',
-                            ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             if (round.serverOwned)
                               PaidHintButton(
                                 session: round.serverData!,
@@ -403,39 +441,111 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
                           ],
                         ),
                       ),
-                    const SizedBox(height: 22),
-                    Text(
+                    HubSectionHeader(
                       'Tahminlerin',
-                      style: Theme.of(context).textTheme.titleLarge,
+                      trailing: Text('6 KRİTER', style: hubCaps(context)),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '✓ Eşleşti   × Farklı   ↑ / ↓ Hedefin yönü',
-                      style: Theme.of(context).textTheme.bodySmall,
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: [
+                        HubPill(
+                          'Eşleşti',
+                          icon: Icons.check_rounded,
+                          color: p.success,
+                          background: p.success.withValues(alpha: .12),
+                        ),
+                        HubPill(
+                          'Farklı',
+                          icon: Icons.close_rounded,
+                          color: p.error,
+                          background: p.error.withValues(alpha: .12),
+                        ),
+                        HubPill(
+                          '↑ / ↓ Hedefin yönü',
+                          icon: Icons.swap_vert_rounded,
+                          color: hubAmber(context),
+                          background: hubAmber(context).withValues(alpha: .12),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 12),
-                    if (round.guesses.isEmpty)
-                      const PitchPanel(
-                        child: Text(
-                          'İlk futbolcunu seç. Ülke, kulüp, lig, mevki, yaş ve forma numarası burada karşılaştırılacak.',
-                        ),
-                      ),
+                    if (round.guesses.isEmpty) _firstGuessPreview(),
                     for (var i = round.guesses.length - 1; i >= 0; i--)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: _guessCard(round, i),
                       ),
                     const SizedBox(height: 8),
-                    Text(
-                      round.serverOwned
-                          ? 'Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen hesabında saklanır.'
-                          : 'Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen bu cihazda saklanır.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                      textAlign: TextAlign.center,
+                    PitchPanel(
+                      child: Row(
+                        children: [
+                          Icon(Icons.lock_clock_outlined, color: p.accent),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              round.serverOwned
+                                  ? 'Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen hesabında saklanır.'
+                                  : 'Türkiye saatiyle 00.00’da yeni futbolcu. İlerlemen bu cihazda saklanır.',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
         ),
+      ),
+    );
+  }
+
+  /// Before the first guess: the six traits every guess is compared on.
+  Widget _firstGuessPreview() {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    const traits = ['ÜLKE', 'KULÜP', 'LİG', 'MEVKİ', 'YAŞ', 'FORMA'];
+    return PitchPanel(
+      child: Column(
+        children: [
+          HubIconBox(Icons.track_changes_rounded, size: 52),
+          const SizedBox(height: 12),
+          Text('İlk tahminini yap', style: text.titleMedium),
+          const SizedBox(height: 6),
+          Text(
+            'İlk futbolcunu seç. Ülke, kulüp, lig, mevki, yaş ve forma numarası burada karşılaştırılacak.',
+            textAlign: TextAlign.center,
+            style: text.bodySmall?.copyWith(color: p.muted),
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            children: [
+              for (final trait in traits)
+                Container(
+                  constraints: const BoxConstraints(minWidth: 48),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.background.withValues(alpha: .4),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: p.border),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(trait, style: hubCaps(context)),
+                      const SizedBox(height: 2),
+                      Text('–', style: text.labelLarge),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

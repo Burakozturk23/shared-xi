@@ -76,6 +76,75 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
       choice = null;
     data = fresh;
   });
+
+  /// The three answers; the chosen one carries a "Seçildi" tag until sent.
+  List<Widget> _options(
+    List<dynamic> options,
+    bool done,
+    Map<String, dynamic> result,
+    Object? eliminated,
+  ) {
+    final p = PitchColors.of(context);
+    return [
+      for (var i = 0; i < options.length; i++)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: OutlinedButton(
+            key: ValueKey('quiz-option-$i'),
+            style: OutlinedButton.styleFrom(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.all(18),
+              disabledForegroundColor: done && result['answer'] == i
+                  ? p.accent
+                  : p.muted,
+              backgroundColor: (done ? result['answer'] == i : choice == i)
+                  ? p.tint
+                  : null,
+              side: BorderSide(
+                color: (done ? result['answer'] == i : choice == i)
+                    ? p.accent
+                    : p.border,
+              ),
+            ),
+            onPressed: busy || done || eliminated == i
+                ? null
+                : () => setState(() => choice = i),
+            child: Row(
+              children: [
+                Icon(
+                  done && result['answer'] == i
+                      ? Icons.check_circle
+                      : eliminated == i
+                      ? Icons.close
+                      : choice == i
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${options[i]}',
+                    style: TextStyle(
+                      decoration: eliminated == i
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
+                  ),
+                ),
+                if (!done && choice == i)
+                  HubPill(
+                    'Seçildi',
+                    icon: Icons.check_rounded,
+                    color: p.accent,
+                    background: p.tint,
+                  ),
+              ],
+            ),
+          ),
+        ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = PitchColors.of(context);
@@ -108,32 +177,93 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            PitchPanel(
+            HubHeroCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'HER GÜN BİR FUTBOL MOLASI',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.labelSmall?.copyWith(color: p.accent),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      HubPill(
+                        'HER GÜN BİR FUTBOL MOLASI',
+                        color: p.accent,
+                        background: p.background.withValues(alpha: .4),
+                        dot: true,
+                      ),
+                      if (q['day'] != null)
+                        HubPill(
+                          '${q['day']}',
+                          icon: Icons.calendar_today_outlined,
+                          color: p.muted,
+                          background: p.background.withValues(alpha: .4),
+                        ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Text(
                     'Bir soru. Üç seçenek.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    '0 enerji · Tek cevap hakkı\nDoğru: 8 Coin + 10 XP · Yanlış: 2 Coin + 5 XP',
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 4,
+                    children: [
+                      Text(
+                        '0 enerji · Tek cevap hakkı',
+                        style: TextStyle(color: p.accent),
+                      ),
+                      Text(
+                        'Doğru: 8 Coin + 10 XP',
+                        style: TextStyle(color: p.limeInk),
+                      ),
+                      Text(
+                        'Yanlış: 2 Coin + 5 XP',
+                        style: TextStyle(color: p.muted),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '${data?['streak'] ?? 0} günlük seri · ${data?['total'] ?? 0} gün katılım',
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Her 7 günlük seride +20 Coin ve +30 XP. Yanlış cevap da serini sürdürür.',
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: p.background.withValues(alpha: .45),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: p.border),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.local_fire_department_rounded,
+                              size: 20,
+                              color: hubAmber(context),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                '${data?['streak'] ?? 0} günlük seri',
+                                style: Theme.of(context).textTheme.titleSmall
+                                    ?.copyWith(color: hubAmber(context)),
+                              ),
+                            ),
+                            Text(
+                              '${data?['total'] ?? 0} gün katılım',
+                              style: TextStyle(color: p.muted),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Her 7 günlük seride +20 Coin ve +30 XP. Yanlış cevap da serini sürdürür.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -150,66 +280,35 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
               ),
             if (q.isNotEmpty) ...[
               const SizedBox(height: 24),
-              Text(
-                '${categories[q['category']] ?? 'Futbol bilgisi'} · ${q['day']}',
-                style: TextStyle(color: p.muted),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '${q['prompt']}',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 20),
-              for (var i = 0; i < options.length; i++)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: OutlinedButton(
-                    key: ValueKey('quiz-option-$i'),
-                    style: OutlinedButton.styleFrom(
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.all(18),
-                      disabledForegroundColor: done && result['answer'] == i
-                          ? p.accent
-                          : p.muted,
-                      backgroundColor:
-                          (done ? result['answer'] == i : choice == i)
-                          ? p.tint
-                          : null,
-                      side: BorderSide(
-                        color: (done ? result['answer'] == i : choice == i)
-                            ? p.accent
-                            : p.border,
-                      ),
-                    ),
-                    onPressed: busy || done || eliminated == i
-                        ? null
-                        : () => setState(() => choice = i),
-                    child: Row(
-                      children: [
-                        Icon(
-                          done && result['answer'] == i
-                              ? Icons.check_circle
-                              : eliminated == i
-                              ? Icons.close
-                              : choice == i
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_off,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            '${options[i]}',
-                            style: TextStyle(
-                              decoration: eliminated == i
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                            ),
-                          ),
-                        ),
-                      ],
+              Row(
+                children: [
+                  Icon(Icons.flag_outlined, size: 18, color: p.accent),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      upperTr(categories[q['category']] ?? 'Futbol bilgisi'),
+                      style: hubCaps(context, color: p.accent),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              PitchPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      '${q['prompt']}',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 14),
+                    Divider(height: 1, color: p.border),
+                    const SizedBox(height: 14),
+                    ..._options(options, done, result, eliminated),
+                  ],
                 ),
+              ),
+              const SizedBox(height: 16),
               if (!done) ...[
                 FilledButton(
                   onPressed: busy || choice == null || choice == eliminated
@@ -332,6 +431,20 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                   'Yeni soru İstanbul saatiyle 00.00’da. Günün diğer oyunları seni bekliyor.',
                 ),
               ],
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Icon(Icons.schedule_rounded, size: 18, color: p.muted),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Yeni soruya kalan süre',
+                      style: TextStyle(color: p.muted),
+                    ),
+                  ),
+                  const DailyResetCountdown(),
+                ],
+              ),
             ] else if (!busy)
               TextButton(onPressed: _load, child: const Text('Tekrar dene')),
           ],
