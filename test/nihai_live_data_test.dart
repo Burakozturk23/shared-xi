@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/controllers/home_resources_controller.dart';
 import 'package:shared_xi/models/friend_models.dart';
 import 'package:shared_xi/models/mission_models.dart';
@@ -160,6 +161,36 @@ void main() {
     await t.tap(chip);
     await t.pumpAndSettle();
     expect(find.text('Harf & Kelime modlarında ara'), findsOneWidget);
+    // Category pages keep the economy in their app bar, and the daily
+    // featured word counts down to its next round.
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.byType(HubEconomyPills),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(DailyResetCountdown), findsOneWidget);
+    expect(find.text('YENİ TUR'), findsOneWidget);
+  });
+
+  testWidgets('story mode keeps the economy in its app bar', (t) async {
+    final c = _resources();
+    addTearDown(c.dispose);
+    await _show(
+      t,
+      GamesCatalogPage(
+        group: GameCatalog.groups.firstWhere((g) => g.title == 'Hikâye'),
+        resources: c,
+      ),
+    );
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.byType(HubEconomyPills),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('online hero shows the player and friend counts', (t) async {

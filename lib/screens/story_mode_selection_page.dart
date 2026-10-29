@@ -3,6 +3,7 @@ import '../app/game_audio.dart';
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
+import '../controllers/home_resources_controller.dart';
 import '../services/search_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/empty_state.dart';
@@ -77,7 +78,10 @@ const List<StorySubMode> storySubModes = [
 const storyFeaturedIndex = 2;
 
 class StoryModeSelectionPage extends StatefulWidget {
-  const StoryModeSelectionPage({super.key});
+  const StoryModeSelectionPage({super.key, this.resources});
+
+  /// Shows coins and energy in the app bar, as the shell does.
+  final HomeResourcesController? resources;
 
   @override
   State<StoryModeSelectionPage> createState() => _StoryModeSelectionPageState();
@@ -169,6 +173,21 @@ class _StoryModeSelectionPageState extends State<StoryModeSelectionPage> {
             ),
           ],
         ),
+        actions: [
+          if (widget.resources case final resources?)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: HubEconomyPills.live(context, resources),
+                  ),
+                ),
+              ),
+            ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Divider(height: 1, thickness: 1, color: p.border),

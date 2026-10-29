@@ -74,14 +74,53 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
     );
   }
 
-  void _openGroup(GameGroup group) => group.title == 'Hikâye'
-      ? GameLauncher.open(
-          context,
-          GameCatalog.games.firstWhere((game) => game.category == 'Hikâye'),
-        )
-      : Navigator.of(
-          context,
-        ).push(LinkballRoute(builder: (_) => GamesCatalogPage(group: group)));
+  void _openGroup(GameGroup group) {
+    if (group.title != 'Hikâye') {
+      Navigator.of(context).push(
+        LinkballRoute(
+          builder: (_) =>
+              GamesCatalogPage(group: group, resources: widget.resources),
+        ),
+      );
+      return;
+    }
+    final story = GameCatalog.games.firstWhere(
+      (game) => game.category == 'Hikâye',
+    );
+    // Same entry (music, preparation), with the economy in its app bar.
+    GameLauncher.open(
+      context,
+      widget.resources == null
+          ? story
+          : GameEntry(
+              title: story.title,
+              subtitle: story.subtitle,
+              icon: story.icon,
+              page: StoryModeSelectionPage(resources: widget.resources),
+              category: story.category,
+              requiresRepository: story.requiresRepository,
+              modern: story.modern,
+              music: story.music,
+            ),
+    );
+  }
+
+  /// Coins and energy in a pushed page's app bar, as in the shell.
+  List<Widget> _economyActions() => [
+    if (widget.resources case final resources?)
+      Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 150),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: HubEconomyPills.live(context, resources),
+            ),
+          ),
+        ),
+      ),
+  ];
 
   /// "All" plus one shortcut chip per category, under the search field.
   Widget _categoryChips() => SingleChildScrollView(
@@ -143,6 +182,7 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
             ),
           ],
         ),
+        actions: _economyActions(),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Divider(height: 1, thickness: 1, color: p.border),
@@ -193,7 +233,11 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
                     const SizedBox(height: 12),
                   ],
                 ] else ...[
-                  _FeaturedGame(game: featured, tag: _modeTags[featured.title]),
+                  _FeaturedGame(
+                    game: featured,
+                    tag: _modeTags[featured.title],
+                    daily: _dailyFeatured.contains(featured.title),
+                  ),
                   if (others.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.only(top: 24, bottom: 12),
@@ -238,7 +282,9 @@ class _GamesCatalogPageState extends State<GamesCatalogPage> {
   @override
   Widget build(BuildContext context) {
     final group = widget.group;
-    if (group?.title == 'Hikâye') return const StoryModeSelectionPage();
+    if (group?.title == 'Hikâye') {
+      return StoryModeSelectionPage(resources: widget.resources);
+    }
     if (group != null) return _groupPage(group);
     final query = _search.text.trim();
     final filtered = GameCatalog.games
@@ -554,10 +600,16 @@ const _featuredTitles = <String, String>{
   'Seçim & Sıralama': 'O mu Bu mu?',
 };
 
+/// Featured modes with one shared word a day, renewed at 00:00 Türkiye time.
+const _dailyFeatured = {'Futbol Lingo'};
+
 class _FeaturedGame extends StatelessWidget {
-  const _FeaturedGame({required this.game, this.tag});
+  const _FeaturedGame({required this.game, this.tag, this.daily = false});
   final GameEntry game;
   final String? tag;
+
+  /// Shows the countdown to the next daily round.
+  final bool daily;
 
   @override
   Widget build(BuildContext context) {
@@ -570,14 +622,28 @@ class _FeaturedGame extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: HubPill(
-              tag == null ? 'ÖNE ÇIKAN' : 'ÖNE ÇIKAN • $tag',
-              color: p.accent,
-              background: p.background.withValues(alpha: .4),
-              dot: true,
-            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              HubPill(
+                tag == null ? 'ÖNE ÇIKAN' : 'ÖNE ÇIKAN • $tag',
+                color: p.accent,
+                background: p.background.withValues(alpha: .4),
+                dot: true,
+              ),
+              if (daily)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('YENİ TUR', style: hubCaps(context, color: p.accent)),
+                    const SizedBox(width: 6),
+                    const DailyResetCountdown(),
+                  ],
+                ),
+            ],
           ),
           const SizedBox(height: 14),
           Row(

@@ -153,13 +153,23 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
               (
                 'Kadro',
                 Icons.account_tree_outlined,
-                () => _page(GamesCatalogPage(group: group('Kadro & Yönetim'))),
+                () => _page(
+                  GamesCatalogPage(
+                    group: group('Kadro & Yönetim'),
+                    resources: _resources,
+                  ),
+                ),
                 null,
               ),
               (
                 'Kariyer',
                 Icons.swap_horiz_rounded,
-                () => _page(GamesCatalogPage(group: group('Kariyer & Oyuncu'))),
+                () => _page(
+                  GamesCatalogPage(
+                    group: group('Kariyer & Oyuncu'),
+                    resources: _resources,
+                  ),
+                ),
                 null,
               ),
               (
