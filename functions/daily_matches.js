@@ -36,7 +36,8 @@ function initial(raw) {
 function coins(found, total) {
   return found < 3 ? 0 : 15 + Math.min(found * 5, 30) + (found === total ? 15 : 0);
 }
-function createService({db, documentRef, grantCoins, isLinked, recordWin = async () => {}, now = Date.now}) {
+function createService({db, documentRef, grantCoins, isLinked, recordWin = async () => {},
+  onPlayed = async () => {}, now = Date.now}) {
   const ref = documentRef || ((uid) => db.ref("dailyMatchState/" + uid));
   async function change(uid, fn) {
     let error;
@@ -69,10 +70,6 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
         delete state.pending[key];
       });
     }
-  }
-  function canRepair(s, today, missed) {
-    return s.streak > 0 && missed.length === 1 && s.lastWin >= previousDay(today, 31) &&
-      (!s.lastRepair || s.lastRepair <= previousDay(today, 7));
   }
   function view(session) {
     if (!session) return null;
@@ -112,6 +109,9 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
     if (Object.values(old?.sessions || {}).some((r) => B.paid(r))) await change(uid, () => {});
     const today = dayKey(now());
     const s = initial((await ref(uid).get()).val());
+    if (Object.values(s.sessions).some((r) => r.day === today && r.finished)) {
+      await onPlayed(uid, today, "daily_match");
+    }
     const feed = await fixtureFeed();
     const matches = feed.selected;
     for (const round of Object.values(s.sessions)) {
@@ -121,7 +121,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
     }
     const missed = await missedDays(s, today);
     return {ok: true, dayKey: today, streak: missed.length === 0 && s.lastWin >= previousDay(today, 31) ? s.streak : 0,
-      repairStreak: canRepair(s, today, missed) ? s.streak : 0, dailyLimit: 3,
+      dailyLimit: 3,
       remaining: Math.max(0, 3 - Object.values(s.sessions).filter((x) => x.day === today).length),
       feed: {sources: feed.sources, updatedAt: feed.updatedAt, snapshotUsed: feed.snapshotUsed,
         snapshotUpdatedAt: feed.snapshotUpdatedAt, coverageStart: feed.coverageStart, coverageEnd: feed.coverageEnd,
@@ -254,15 +254,11 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
       }
     });
     await settle(uid);
+    if (s.sessions[input.key]?.finished) await onPlayed(uid, s.sessions[input.key].day, "daily_match");
     return {ok: true, session: view(s.sessions[input.key]), streak: s.streak};
   }
   async function prepareReward(uid, placement, context) {
     const s = initial((await ref(uid).get()).val());
-    const today = dayKey(now());
-    if (placement === "daily_streak") {
-      if (!canRepair(s, today, await missedDays(s, today))) fail("Seri koruması şu anda kullanılamıyor.");
-      return {amount: 0, claimKey: "daily_streak_" + today, context: {day: today}};
-    }
     const round = getSession(s, context?.key);
     if (placement === "daily_double") {
       if (!round.finished || !round.reward || round.doubled) fail("Bu maçın 2x ödülü alınamıyor.");
@@ -274,16 +270,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
     return {amount: 0, claimKey: "daily_hint_" + round.key, context: {key: round.key}};
   }
   async function settleReward(uid, receipt) {
-    const before = initial((await ref(uid).get()).val());
-    const missed = await missedDays(before, dayKey(now()));
     await change(uid, (state) => {
-      const today = dayKey(now());
-      if (receipt.placement === "daily_streak") {
-        if (receipt.context.day === today && canRepair(state, today, missed)) {
-          state.lastWin = missed[0]; state.lastRepair = today;
-        }
-        return;
-      }
       // A late verified callback may settle a completed match after midnight.
       const round = state.sessions[receipt.context.key];
       if (!round) return;

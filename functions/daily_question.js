@@ -24,7 +24,7 @@ function select(day, previousIds = []) {
 }
 const normalize = (raw) => ({answers: {}, hints: {}, pending: {}, total: 0, streak: 0, lastDay: "", ...raw});
 function createService({db, documentRef, grantCoins, grantXp, projectBadges, isLinked, isPro, enabled,
-  now = Date.now}) {
+  onPlayed = async () => {}, ownStreakBonus = async () => true, now = Date.now}) {
   const ref = documentRef || ((uid) => db.ref("dailyQuestionState/" + uid));
   async function current() {
     if (!await enabled()) fail("failed-precondition", "Günün Sorusu henüz açılmadı.");
@@ -94,6 +94,7 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
     }
     const s = normalize((await ref(uid).get()).val());
     const result = s.answers[q.day] || null;
+    if (result) await onPlayed(uid, q.day, "daily_question");
     const safe = {day: q.day, id: q.id, version: q.version, category: q.category, prompt: q.prompt,
       options: q.options, difficulty: q.difficulty};
     // Answer/explanation/source URLs are only returned after this account submits.
@@ -117,6 +118,8 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
       fail("invalid-argument",
           "Bir seçenek seç.");
     }
+    // The shared play streak pays the weekly bonus once it is switched on.
+    const ownBonus = await ownStreakBonus();
     await change(uid, (s) => {
       if (s.answers[q.day]) {
         if (s.answers[q.day].option !== input.option) fail("already-exists", "Bugünkü cevabın kaydedildi.");
@@ -127,7 +130,7 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
       s.streak = s.lastDay === yesterday ? s.streak + 1 : 1;
       s.total += 1; s.lastDay = q.day;
       const correct = input.option === q.answer;
-      const bonus = s.streak % 7 === 0;
+      const bonus = ownBonus && s.streak % 7 === 0;
       const coins = (correct ? 8 : 2) + (bonus ? 20 : 0);
       const xp = (correct ? 10 : 5) + (bonus ? 30 : 0);
       s.answers[q.day] = {...(B.paid(s.boostRuns?.[q.day]) ?

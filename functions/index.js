@@ -8755,8 +8755,10 @@ function lbRewardedService() {
       settleWhatIfReward: (uid, receipt) => lbWhatIfService().settleReward(uid, receipt),
       prepareStoryReward: (uid, placement, context) => lbJourneyService().prepareReward(uid, placement, context),
       settleStoryReward: (uid, receipt) => lbJourneyService().settleReward(uid, receipt),
-      prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
-      settleDailyReward: (uid, receipt) => lbDailyMatchesService().settleReward(uid, receipt),
+      prepareDailyReward: (uid, placement, context) => placement === "daily_streak" ?
+        lbDailyStreakService().prepareRepair(uid) : lbDailyMatchesService().prepareReward(uid, placement, context),
+      settleDailyReward: (uid, receipt) => receipt.placement === "daily_streak" ?
+        lbDailyStreakService().settleRepair(uid, receipt) : lbDailyMatchesService().settleReward(uid, receipt),
       units: require("./config/admob.units.json"),
       now: () => Date.now(),
       grantCoins: (uid, id, source, placement, amount, configId) =>
@@ -8967,6 +8969,7 @@ function lbDailyMatchesService() {
         await lbMissionRecordDailyChallenge(db, uid, day);
       },
       grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+      onPlayed: (...args) => lbDailyStreakService().mark(...args),
       isLinked: async (uid) => {
         const user = await getAuth().getUser(uid);
         return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
@@ -8986,8 +8989,11 @@ function lbDailyMatchesCallable(action) {
       if (action === "play") return await service.play(uid, input);
       // Recover late SSV benefits when the player returns to the mode.
       const bonus = await lbRewardedService().status(uid, input.platform);
-      return {...await service.status(uid), bonus: {pro: bonus.pro, enabled: bonus.enabled,
-        testingOnly: bonus.testingOnly, remaining: bonus.remaining}};
+      // The page shows (and repairs) the shared play streak, not a per-mode one.
+      const shared = await lbDailyStreakService().status(uid);
+      return {...await service.status(uid), playStreak: shared.streak, repairStreak: shared.repairStreak,
+        bonus: {pro: bonus.pro, enabled: bonus.enabled,
+          testingOnly: bonus.testingOnly, remaining: bonus.remaining}};
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code, error.message);
@@ -9724,6 +9730,8 @@ function lbDailyQuestionService() {
           await lbProgressionPremiumBenefits(db, uid), now);
     },
     projectBadges: (uid, total) => lbAchievementMergeSignals(db, uid, {daily_question_days: total}, "daily_question"),
+    onPlayed: (...args) => lbDailyStreakService().mark(...args),
+    ownStreakBonus: async () => (await db.ref("runtimeConfig/dailyStreak/rewardsEnabled").get()).val() !== true,
   });
 }
 function lbDailyQuestionCallable(action) {
@@ -9731,7 +9739,8 @@ function lbDailyQuestionCallable(action) {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);
-      return await lbDailyQuestionService()[action](request.auth.uid, request.data || {});
+      const result = await lbDailyQuestionService()[action](request.auth.uid, request.data || {});
+      return ["status", "submit"].includes(action) ? await lbWithPlayStreak(request.auth.uid, result) : result;
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code,
@@ -10084,7 +10093,10 @@ function lbDailyFootballerService() {
     project: lbEconomyProject, isLinked: async (uid) => {
       const user = await getAuth().getUser(uid);
       return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
-    }});
+    },
+    getPolicy: async () => (await db.ref("runtimeConfig/dailyFootballer").get()).val() || {},
+    onPlayed: (...args) => lbDailyStreakService().mark(...args),
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
 }
 function lbDailyFootballerCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
@@ -10128,18 +10140,63 @@ function lbDailyWordsService() {
   return require("./daily_words").createService({db, now: () => Date.now(), normalize: lbEconomyState,
     project: lbEconomyProject,
     getPolicy: async () => (await db.ref("runtimeConfig/dailyWords").get()).val() || {},
+    onPlayed: (...args) => lbDailyStreakService().mark(...args),
     isLinked: async (uid) => {
       const user = await getAuth().getUser(uid);
       return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
     },
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
 }
+function lbDailyStreakService() {
+  const db = getDatabase();
+  const legacy = (collection, mode) => lbStoryDocumentRef(db, collection, mode);
+  return require("./daily_streak").createService({db, now: () => Date.now(), isLinked: async (uid) => {
+    const user = await getAuth().getUser(uid);
+    return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+  },
+  getPolicy: async () => (await db.ref("runtimeConfig/dailyStreak").get()).val() || {},
+  recordBest: (uid, best) => lbAchievementMergeSignals(db, uid, {best_daily_streak: best}, "daily"),
+  legacy: async (uid) => {
+    const question = (await legacy("dailyQuestionState", "daily_question")(uid).get()).val() || {};
+    const matches = (await legacy("dailyMatchState", "daily_match")(uid).get()).val() || {};
+    return [{streak: question.streak, lastDay: question.lastDay || ""},
+      {streak: matches.streak, lastDay: matches.lastWin || ""}, await lbDailyWordsService().streakSeed(uid)];
+  },
+  grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp,
+  // The first streak week leaves one basic support in the bag (idempotent per claim).
+  grantBoost: async (uid, id) => {
+    const now = Date.now(); const key = "daily_streak_boost__" + id;
+    const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+      const e = lbEconomyState(raw);
+      if (e.storeUses[key]) return;
+      const item = e.inventory.boost_basic; const quantity = item?.quantity || 0;
+      if (quantity < 99) {
+        e.inventory.boost_basic = {...item, itemId: "boost_basic", itemType: "boost", quantity: quantity + 1,
+          sourceType: "daily_streak", sourceId: id, acquiredAt: item?.acquiredAt || now};
+      }
+      e.storeUses[key] = {itemId: "boost_basic", source: "daily_streak", usedAt: now}; e.updatedAt = now;
+      return e;
+    });
+    await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  }});
+}
+// Daily pages show the shared play streak beside their own state.
+async function lbWithPlayStreak(uid, result) {
+  return {...result, playStreak: (await lbDailyStreakService().status(uid)).streak};
+}
+exports.getDailyStreak = httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true},
+    async (request) => {
+      if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+      return await lbDailyStreakService().status(request.auth.uid);
+    });
+
 function lbDailyWordsCallable(action, mode) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
-      return await lbDailyWordsService()[action](request.auth.uid,
+      const result = await lbDailyWordsService()[action](request.auth.uid,
           {...request.data, ...(mode ? {mode} : {})});
+      return action === "history" ? result : await lbWithPlayStreak(request.auth.uid, result);
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code, error.message);

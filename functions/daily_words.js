@@ -226,7 +226,7 @@ function archive(s, today) {
       .map(([period, r]) => ({period, result: r.result || null}))};
 }
 function createService({db, isLinked, grantCoins, grantXp, normalize: economy, project,
-  getPolicy = async () => ({}), now = Date.now}) {
+  getPolicy = async () => ({}), onPlayed = async () => {}, now = Date.now}) {
   const read = async (uid) => {
     const canonical = (await db.ref(`economyState/${uid}/dailyWords`).get()).val();
     return stateOf(canonical?.storageVersion === 2 ? canonical :
@@ -306,6 +306,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
     });
     await settle(uid); const s = await read(uid);
     const r = weekly ? s.weeks[period] : s.days[period]?.[mode];
+    if (!weekly) for (const m of DAILY) if (s.days[period]?.[m]?.eligible) await onPlayed(uid, period, m);
     return {mode, period, serverNow: time, availability: policy.enabled && !!pack,
       rewardsEnabled: policy.rewardsEnabled, linked: await isLinked(uid),
       reason: !policy.enabled ? "Günlük oyunlar test aşamasında; henüz açılmadı." :
@@ -404,6 +405,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
     // Return only the requested period, even when retrying an old successful action.
     const latest = await read(uid);
     const run = weekly ? latest.weeks[input.period] : latest.days[input.period]?.[mode];
+    if (!weekly && run?.eligible) await onPlayed(uid, input.period, mode);
     return {session: publicRun(run, now(), latest.paid),
       bonus: s.days[input.period]?.bonus || null};
   }
@@ -452,7 +454,13 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
       if (!r.adReceipts?.[receipt.id]) B.grantAd(r, receipt);
     });
   }
-  return {status, act, history, settle, prepareHint, settleHint};
+  // Seed for the shared play streak: the old unassisted word streak.
+  async function streakSeed(uid) {
+    const today = dayKey(now()); const s = await read(uid);
+    const done = DAILY.some((m) => s.days[today]?.[m]?.eligible && !s.days[today][m].assisted);
+    return {streak: archive(s, today).streak, lastDay: done ? today : dayKey(endOfDay(today) - 1 - 86400000)};
+  }
+  return {status, act, history, settle, prepareHint, settleHint, streakSeed};
 }
 function anagramAction(s, r, input, word, time, policy) {
   const q = r.questions[r.index];

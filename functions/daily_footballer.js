@@ -38,7 +38,7 @@ function clues(target, guess, day) {
   ];
 }
 function normalizeState(raw) {
-  const s = {days: {}, wins: {}, assistedWins: {}, ...raw};
+  const s = {days: {}, wins: {}, assistedWins: {}, outbox: {}, paid: {}, ...raw};
   for (const r of Object.values(s.days)) {
     r.guesses ||= []; r.actions ||= {};
   }
@@ -62,9 +62,18 @@ function view(r, c) {
     hintUsed: r.hintUsed, extraUsed: r.extraUsed, revealed: r.revealed, won: r.won, finished: r.finished,
     hint: r.hintUsed ? r.hint : null, target: r.finished ? r.target : null,
     support: B.view(r), assisted: r.assisted, adCredits: r.adCredits, adGranted: r.adGranted,
-    masteryEligible: !r.assisted, expiresAt: r.expiresAt};
+    masteryEligible: !r.assisted, expiresAt: r.expiresAt, reward: r.reward ?? null};
 }
-function createService({db, normalize, project, isLinked, now = Date.now}) {
+// Reward design 2026-10-30: a solve pays 3 coin / 8 XP; an assisted solve
+// keeps the coin and half the XP, as the daily word games do.
+function settleReward(s, r, policy) {
+  if (!r.finished || !r.won || r.reward) return;
+  const enabled = policy.rewardsEnabled === true;
+  r.reward = {coins: enabled ? 3 : 0, xp: enabled ? (r.assisted ? 4 : 8) : 0, rewardEnabled: enabled};
+  if (enabled) s.outbox["df__" + r.day] = {coins: r.reward.coins, xp: r.reward.xp, day: r.day};
+}
+function createService({db, normalize, project, isLinked, grantCoins, grantXp,
+  getPolicy = async () => ({}), onPlayed = async () => {}, now = Date.now}) {
   async function pinned(day) {
     const ref = db.ref("dailyFootballerPrivate/" + day); let pack = (await ref.get()).val();
     if (!pack) {
@@ -82,6 +91,20 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     });
     if (!tx.committed) fail("aborted", "Oyunu yenile.");
     await project(db, uid, normalize(tx.snapshot.val())); return normalizeState(tx.snapshot.val().dailyFootballer);
+  }
+  // Pays queued rewards; both grants are idempotent by the reward id.
+  async function settle(uid) {
+    if (!grantCoins || !await isLinked(uid)) return;
+    const s = await read(uid);
+    for (const [id, reward] of Object.entries(s.outbox)) {
+      if (reward.coins > 0) {
+        await grantCoins(uid, id, "daily_footballer_reward", reward.day, reward.coins, "daily-footballer-v1");
+      }
+      if (reward.xp > 0) await grantXp(uid, id, reward.xp);
+      await change(uid, (next) => {
+        next.paid[id] = true; delete next.outbox[id];
+      });
+    }
   }
   async function status(uid, input = {}) {
     const day = dayKey(now()); const policy = await B.policyFor(db, uid, await isLinked(uid));
@@ -104,6 +127,8 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
       B.pin(r, policy); s.days[day] = r;
     });
     if (s.legacyDay === day) return {legacy: true, legacyDay: day};
+    await settle(uid);
+    if (s.days[day]?.finished) await onPlayed(uid, day, "daily_footballer");
     return {legacy: false, availability: true, catalog: pack.catalog, session: view(s.days[day], pack.catalog),
       serverNow: now(), wins: Object.keys(s.wins).length, assistedWins: Object.keys(s.assistedWins).length};
   }
@@ -112,10 +137,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     if (!/^[a-f0-9]{32}$/.test(input.requestId || "") || input.day !== dayKey(now())) {
       fail("failed-precondition", "Günün futbolcusu değişti. Yenile.");
     }
-    const pack = await pinned(input.day);
+    const pack = await pinned(input.day); const policy = await getPolicy();
     const fp = hash([input.day, input.sessionId, input.revision, input.action, input.playerId ?? null,
       ...B.paymentFingerprint(input)]);
-    const s = await change(uid, (s, e) => {
+    await change(uid, (s, e) => {
       const r = s.days[input.day];
       if (!B.paid(r) || r.id !== input.sessionId) fail("failed-precondition", "Oturum değişti.");
       if (r.actions[input.requestId]) {
@@ -140,9 +165,13 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
         if (!canExtra(r)) fail("failed-precondition", "Önce tahminlerini tamamla.");
         r.revealed = true; r.finished = true;
       } else fail("invalid-argument", "Geçersiz işlem.");
+      settleReward(s, r, policy);
       r.revision++; r.actions[input.requestId] = fp;
     });
-    return {legacy: false, session: view(s.days[input.day], pack.catalog)};
+    await settle(uid);
+    const r = (await read(uid)).days[input.day];
+    if (r?.finished) await onPlayed(uid, input.day, "daily_footballer");
+    return {legacy: false, session: view(r, pack.catalog)};
   }
   async function prepareHint(uid, placement, input) {
     if (!await isLinked(uid) || placement !== "daily_footballer_hint") fail("permission-denied", "Hesap gerekli.");

@@ -53,7 +53,9 @@ test("assisted daily win preserves its base/double receipt but never grants unas
   const finished = await h.call("playDailyMatch", {key: r.key, action: "finish"});
   assert.equal(finished.session.reward, 30); assert.equal(finished.session.masteryEligible, false);
   assert.equal(finished.streak, 0); assert.equal(h.read(root + "/balances/coins"), 1005);
-  assert.equal(h.read("achievementState/alice"), null);
+  // No mode win or mastery; only the shared play streak, which counts assisted days by design.
+  assert.deepEqual(h.read("achievementState/alice/signals"), {best_daily_streak: 1});
+  assert.equal(h.read("achievementState/alice/dailyDates"), null);
   const svc = h.context.lbDailyMatchesService();
   const bonus = await svc.prepareReward("alice", "daily_double", {key: r.key});
   const receipt = {id: "f1".repeat(24), placement: "daily_double", context: bonus.context};
