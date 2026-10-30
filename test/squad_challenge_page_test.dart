@@ -254,21 +254,21 @@ void main() {
           progress: SquadChallengeProgressService(),
         ),
       );
-      await reveal(tester, find.text('Başla · 20 Link Coin'));
-      await tester.tap(find.text('Başla · 20 Link Coin'));
+      await reveal(tester, find.text('Başla · 10 Link Coin'));
+      await tester.tap(find.text('Başla · 10 Link Coin'));
       await tester.pumpAndSettle();
-      expect(find.text('20 Link Coinle ek deneme?'), findsOneWidget);
+      expect(find.text('10 Link Coinle ek deneme?'), findsOneWidget);
       await tester.tap(find.text('Vazgeç'));
       await tester.pumpAndSettle();
       expect(gateway.starts, 0);
       expect(gateway.coins, 100);
-      await tester.tap(find.text('Başla · 20 Link Coin'));
+      await tester.tap(find.text('Başla · 10 Link Coin'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('20 Link Coin kullan'));
+      await tester.tap(find.text('10 Link Coin kullan'));
       await tester.pumpAndSettle();
       expect(gateway.starts, 1);
-      expect(gateway.quotedPrices, [20]);
-      expect(gateway.coins, 80);
+      expect(gateway.quotedPrices, [10]);
+      expect(gateway.coins, 90);
       await select(tester, 0, 1);
       final runId = gateway.active!.id;
       await tester.binding.handlePopRoute();
@@ -280,8 +280,8 @@ void main() {
       await reveal(tester, find.text('Futbolcu 1'));
       expect(find.text('Futbolcu 1'), findsOneWidget);
       expect(gateway.starts, 1);
-      expect(gateway.quotedPrices, [20]);
-      expect(gateway.coins, 80);
+      expect(gateway.quotedPrices, [10]);
+      expect(gateway.coins, 90);
       expect(tester.takeException(), isNull);
     },
   );

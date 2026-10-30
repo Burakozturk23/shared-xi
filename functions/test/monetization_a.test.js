@@ -252,22 +252,25 @@ test("Squad applies configured price and caps while finishing an existing run at
   const day = engine.dayKey(now);
   const state = wallet(100);
   const mission = engine.missions(day, policy)[0];
+  // The configured price caps the extra attempt; it is half the mission reward.
+  assert.equal(mission.extraPrice, 13);
+  assert.equal(engine.missions(day, policy)[2].extraPrice, 15);
   const input = {missionId: mission.id, requestId: day + "__" + "a".repeat(32)};
   const first = engine.apply(state, "start", input, now, false, policy).run;
   engine.apply(state, "abandon", {runId: first.id}, now, false, policy);
   const paid = {...input, requestId: day + "__" + "b".repeat(32), payment: "coins", expectedPriceCoins: 20};
   assert.throws(() => engine.apply(state, "start", paid, now, false, policy), {code: "failed-precondition"});
   assert.equal(state.balances.coins, 100);
-  paid.expectedPriceCoins = 15;
+  paid.expectedPriceCoins = 13;
   const run = engine.apply(state, "start", paid, now, false, policy).run;
-  assert.equal(state.balances.coins, 85);
+  assert.equal(state.balances.coins, 87);
   assert.equal(engine.status(state, now, false, policy).extraRemaining, 0);
   const changed = {...policy, enabled: false, rewards: [90, 90, 90]};
   const result = engine.apply(state, "finish", {runId: run.id, playerIds: solve(run.mission)}, now, false, changed);
-  assert.equal(result.run.result.reward, 25);
-  assert.equal(state.balances.coins, 110);
+  assert.equal(result.run.result.reward, 25 + (engine.STAR_BONUS[result.run.result.stars] || 0));
+  assert.equal(state.balances.coins, 87 + result.run.result.reward);
   const receipt = state.claims["squad__" + mission.id];
-  assert.equal(receipt.balanceBefore, 85);
+  assert.equal(receipt.balanceBefore, 87);
   assert.equal(receipt.economyConfigId, policy.configId);
 });
 

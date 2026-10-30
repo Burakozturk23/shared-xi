@@ -101,19 +101,19 @@ class BuildXiController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// One club credits at most this many links (server: CLUB_LINK_CAP).
+  int get clubLinkCap => mission?.clubLinkCap ?? 3;
+
   BuildXiScoreBreakdown previewBreakdown() {
     final players = state.slotPlayers.whereType<SquadPlayer>().toList();
     if (players.isEmpty) return const BuildXiScoreBreakdown();
-    var links = 0;
-    for (var i = 0; i < 11; i++) {
-      final a = state.slotPlayers[i];
-      if (a == null) continue;
-      for (final j in formation.adjacency[i]) {
-        final b = state.slotPlayers[j];
-        if (j > i && b != null && a.clubs.any(b.clubs.contains)) links++;
-      }
-    }
-    final countries = players.expand((p) => p.countries).toSet();
+    final credit = creditLinks(state.slotPlayers, formation, clubLinkCap);
+    final links = credit.links;
+    // One country per player (the first): dual nationals count once.
+    final countries = {
+      for (final p in players)
+        if (p.countries.isNotEmpty) p.countries.first,
+    };
     final shared = <int>{};
     for (var i = 0; i < players.length; i++) {
       for (var j = i + 1; j < players.length; j++) {
@@ -129,6 +129,8 @@ class BuildXiController extends ChangeNotifier {
     return BuildXiScoreBreakdown(
       chemistry: links * 2,
       links: links,
+      rawLinks: credit.raw,
+      cappedClubs: credit.capped,
       countries: countries.length,
       cost: state.usedBudget,
       countryBonus: countries.length >= 5 ? 10 : 0,
@@ -146,9 +148,87 @@ class BuildXiController extends ChangeNotifier {
             score.countries >= mission!.countries);
   }
 
+  /// Credited links gained by putting [p] at [index] (negative if it costs
+  /// links), so the picker can show what each candidate adds.
+  int linkGainIf(int index, SquadPlayer p) {
+    final now = creditLinks(state.slotPlayers, formation, clubLinkCap).links;
+    final slots = List<SquadPlayer?>.from(state.slotPlayers)..[index] = p;
+    return creditLinks(slots, formation, clubLinkCap).links - now;
+  }
+
+  /// Neighbours of [index] that share a club with its player.
+  int linksAt(int index) {
+    final a = state.slotPlayers[index];
+    if (a == null) return 0;
+    return formation.adjacency[index].where((j) {
+      final b = state.slotPlayers[j];
+      return b != null && a.clubs.any(b.clubs.contains);
+    }).length;
+  }
+
+  /// Stars the current XI would earn on this mission (0 in practice).
+  int get previewStars {
+    final m = mission;
+    if (m == null || !state.isComplete) return 0;
+    final score = previewBreakdown();
+    return m.starsFor(score.links, score.countries);
+  }
+
   void finish() {
     if (!state.isComplete || state.isFinished) return;
     _state = state.copyWith(isFinished: true, breakdown: previewBreakdown());
     notifyListeners();
   }
+}
+
+/// Adjacent pairs sharing a club, credited so no club credits more than [cap]
+/// of them: a maximum b-matching, the same as the server's creditedLinks.
+({int links, int raw, Set<int> capped}) creditLinks(
+  List<SquadPlayer?> slots,
+  Formation formation,
+  int cap,
+) {
+  final pairs = <List<int>>[];
+  for (var i = 0; i < 11 && i < slots.length; i++) {
+    final a = slots[i];
+    if (a == null) continue;
+    for (final j in formation.adjacency[i]) {
+      final b = slots[j];
+      if (j <= i || b == null) continue;
+      final common = a.clubs.where(b.clubs.contains).toList()..sort();
+      if (common.isNotEmpty) pairs.add(common);
+    }
+  }
+  final owner = List<int?>.filled(pairs.length, null);
+  final load = <int, int>{};
+  bool augment(int e, Set<int> seen) {
+    for (final club in pairs[e]) {
+      if (!seen.add(club)) continue;
+      if ((load[club] ?? 0) < cap) {
+        load[club] = (load[club] ?? 0) + 1;
+        owner[e] = club;
+        return true;
+      }
+      for (var other = 0; other < pairs.length; other++) {
+        if (owner[other] == club && augment(other, seen)) {
+          owner[e] = club;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  var links = 0;
+  for (var e = 0; e < pairs.length; e++) {
+    if (augment(e, <int>{})) links++;
+  }
+  return (
+    links: links,
+    raw: pairs.length,
+    capped: {
+      for (final e in load.entries)
+        if (e.value >= cap) e.key,
+    },
+  );
 }

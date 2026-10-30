@@ -6,7 +6,9 @@ import '../app/app_feedback.dart';
 
 import '../controllers/build_xi_controller.dart';
 import '../data/build_xi_formations.dart';
+import '../models/build_xi_state.dart';
 import '../models/squad_challenge.dart';
+import '../widgets/hub_ui.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
@@ -316,9 +318,21 @@ class _BuildXiPageState extends State<BuildXiPage> {
                               const SizedBox(height: 6),
                               Text(p.countries.join(' · ')),
                               const SizedBox(height: 6),
-                              ManagerTag(
-                                '${c.state.costOf(p)} kredi',
-                                active: true,
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                children: [
+                                  ManagerTag(
+                                    '${c.state.costOf(p)} kredi',
+                                    active: true,
+                                  ),
+                                  if (c.linkGainIf(index, p) case final gain
+                                      when gain != 0)
+                                    ManagerTag(
+                                      gain > 0 ? '+$gain bağ' : '$gain bağ',
+                                      active: gain > 0,
+                                    ),
+                                ],
                               ),
                             ],
                           ),
@@ -486,15 +500,19 @@ class _BuildXiPageState extends State<BuildXiPage> {
             'Farklı ülkeler: ${b.countries}/${m.countries}',
             b.countries >= m.countries,
           ),
+          if (m.twoStar > 0) _stars(m, b),
+          _capHint(c, b),
           const SizedBox(height: 8),
           Text(
             'Süre sınırı yok. Çıkarsan kadron kaydedilir; aynı denemeye ücretsiz dönersin.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
-        ] else
+        ] else ...[
           const Text(
             'Mevkileri doldur, komşu oyuncular arasında ortak kulüp bağı kur. Rekorunu geliştirebilirsin.',
           ),
+          _capHint(c, b),
+        ],
         if (_error != null) ...[
           const SizedBox(height: 14),
           PitchPanel(child: Text(_error!)),
@@ -530,6 +548,66 @@ class _BuildXiPageState extends State<BuildXiPage> {
           onTap: () => _showLinks(c),
         ),
       ],
+    );
+  }
+
+  /// Star ladder for the mission; the reached step is highlighted.
+  Widget _stars(SquadMission m, BuildXiScoreBreakdown b) {
+    final p = PitchColors.of(context);
+    final reached = m.starsFor(b.links, b.countries);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        children: [
+          for (final (stars, need) in [
+            (1, m.links),
+            (2, m.twoStar),
+            (3, m.threeStar),
+          ])
+            Semantics(
+              label: '$stars yıldız: $need bağ',
+              excludeSemantics: true,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: reached >= stars ? p.tint : p.raised,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '${'★' * stars} $need bağ'
+                  '${(m.starBonus[stars] ?? 0) > 0 ? ' · +${m.starBonus[stars]}' : ''}',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: reached >= stars ? p.accent : p.muted,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Explains the per-club cap once it actually drops links.
+  Widget _capHint(BuildXiController c, BuildXiScoreBreakdown b) {
+    final lost = b.rawLinks - b.links;
+    final names = [
+      for (final id in b.cappedClubs) ?widget.catalog.clubNames[id],
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 4),
+      child: Text(
+        lost > 0
+            ? '$lost bağ sayılmadı: bir kulüp en fazla ${c.clubLinkCap} bağ verir'
+                  '${names.isEmpty ? '' : ' (${names.take(2).join(', ')} dolu)'}. '
+                  'Farklı kulüplerde birleşen oyuncular bul.'
+            : 'Her kulüp en fazla ${c.clubLinkCap} bağ verir; bağları farklı kulüplerden kur.',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: lost > 0 ? hubAmber(context) : PitchColors.of(context).muted,
+        ),
+      ),
     );
   }
 
@@ -647,7 +725,9 @@ class _BuildXiPageState extends State<BuildXiPage> {
                                         ),
                                         if (c.state.slotPlayers[i] != null)
                                           Text(
-                                            '${c.state.costOf(c.state.slotPlayers[i]!)} kredi',
+                                            '${c.state.costOf(c.state.slotPlayers[i]!)} kredi'
+                                            '${c.linksAt(i) > 0 ? ' · ${c.linksAt(i)} bağ' : ''}',
+                                            textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodySmall,
@@ -671,14 +751,21 @@ class _BuildXiPageState extends State<BuildXiPage> {
   );
 
   Future<void> _showLinks(BuildXiController c) async {
+    final b = c.previewBreakdown();
+    String club(int id) => widget.catalog.clubNames[id] ?? 'Ortak kulüp';
     final lines = <String>[];
     for (var i = 0; i < 11; i++) {
       final a = c.state.slotPlayers[i];
       if (a == null) continue;
       for (final j in widget.formation.adjacency[i]) {
-        final b = c.state.slotPlayers[j];
-        if (j > i && b != null && a.clubs.any(b.clubs.contains))
-          lines.add('${a.name} ↔ ${b.name}');
+        final other = c.state.slotPlayers[j];
+        if (j <= i || other == null) continue;
+        final shared = a.clubs.where(other.clubs.contains).toList();
+        if (shared.isEmpty) continue;
+        lines.add(
+          '${a.name} ↔ ${other.name}\n${shared.take(3).map((id) => '${club(id)}'
+              '${b.cappedClubs.contains(id) ? ' (dolu)' : ''}').join(' · ')}',
+        );
       }
     }
     await showModalBottomSheet<void>(
@@ -692,8 +779,14 @@ class _BuildXiPageState extends State<BuildXiPage> {
           children: [
             Text('Takım bağları', style: Theme.of(ctx).textTheme.titleLarge),
             const SizedBox(height: 12),
-            const Text(
-              'Dizilişte komşu iki oyuncunun aynı kulüpte oynamış olması bir bağ kazandırır. Aynı dönemde oynamaları gerekmez.',
+            Text(
+              'Dizilişte komşu iki oyuncunun aynı kulüpte oynamış olması bir bağ kazandırır; '
+              'aynı dönemde oynamaları gerekmez. Bir kulüp en fazla ${c.clubLinkCap} bağ verir.',
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Sayılan bağ: ${b.links} · Ortak kulüplü komşu: ${b.rawLinks}',
+              style: Theme.of(ctx).textTheme.titleSmall,
             ),
             const SizedBox(height: 16),
             if (lines.isEmpty) const Text('Henüz bağ kurulmadı.'),
@@ -738,6 +831,22 @@ class _BuildXiPageState extends State<BuildXiPage> {
             : 'Antrenman rekorun kaydedildi. Coin için günlük görevlere katıl.',
         textAlign: TextAlign.center,
       ),
+      if (_rewarded && r.won && r.stars > 0) ...[
+        const SizedBox(height: 8),
+        Text(
+          '★' * r.stars + '☆' * (3 - r.stars),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: hubAmber(context),
+          ),
+        ),
+        if (r.stars > 1)
+          Text(
+            'Yıldız bonusu dahil',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+      ],
       if (r.assisted) Text('Yardımlı · ${r.penalty} puan indirimi · Ayrı rekor', textAlign: TextAlign.center),
       const SizedBox(height: 20),
       ManagerMetrics(
