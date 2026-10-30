@@ -16,6 +16,7 @@ import '../services/coach_honours_service.dart';
 import '../widgets/coach_avatar.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
+import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
 
 List<Map<String, dynamic>> _maps(dynamic v) =>
@@ -73,6 +74,9 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   bool _busy = true, _searching = false, _archive = false, _showHub = false;
   String? _error;
   String _form = '433', _difficulty = '';
+
+  /// Hoca 11 collection filter by club name ('' = all clubs).
+  String _clubFilter = '';
   bool get _vault => widget.mode == 'squad_vault';
   bool get _coach => widget.mode == 'coach_xi';
   String get _title => _vault
@@ -133,17 +137,26 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     _searching = false;
   }
 
-  Future<void> _start(String entry, {String? target, String? league}) =>
-      _run(() async {
-        final r = await _service.mutate('startThreeMode', {
-          'mode': widget.mode,
-          'version': _version,
-          'entry': entry,
-          'formation': _form,
-          if (_difficulty.isNotEmpty) 'difficulty': _difficulty,
-          if (target != null) 'target': target,
-          if (league != null) 'league': league,
-        });
+  Future<void> _start(
+    String entry, {
+    String? target,
+    String? league,
+    String? spell,
+  }) => _run(() async {
+    final r = await _service.mutate('startThreeMode', {
+      'mode': widget.mode,
+      'version': _version,
+      'entry': entry,
+      'formation': _form,
+      // A chosen tenure is always the hard game.
+      if (spell != null)
+        'difficulty': 'hard'
+      else if (_difficulty.isNotEmpty)
+        'difficulty': _difficulty,
+      if (target != null) 'target': target,
+      if (league != null) 'league': league,
+      if (spell != null) 'spell': spell,
+    });
         if (!mounted) return;
         if (entry == 'random')
           AppFeedback.sfx(
@@ -470,23 +483,21 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
             '': 'Karışık',
             'easy': 'Kolay',
             'medium': 'Orta',
-            if (!_coach) 'hard': 'Zor',
+            'hard': 'Zor',
           },
           value: _difficulty,
           onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
         ),
         const SizedBox(height: 8),
-        if (!_coach)
-          const Text(
-            'Günün resmi denemesinde en az 8 oyuncu: +10 coin ve +20 XP, günde bir kez.',
-          ),
         if (_coach)
-          const Padding(
-            padding: EdgeInsets.only(top: 8),
-            child: Text(
-              '7 hoca için maç kaynakları doğrulandı. Dönem kısıtlı zor seviye henüz açık değil.',
-            ),
+          Text(
+            _difficulty == 'hard'
+                ? 'Zor: hocanın tek bir dönemi (kulüp · yıllar). Aynı hocanın başka döneminden oyuncu yanlış sayılır.'
+                : '${_maps(_status['entries']).length} hoca. Hoca dönemleri Wikidata’dan, oyuncu dönemleri kariyer kayıtlarından; en az 180 gün aynı kulüpte.',
           ),
+        const Text(
+          'Günün resmi denemesinde en az 8 oyuncu: +10 coin ve +20 XP, günde bir kez.',
+        ),
       ],
       const SizedBox(height: 12),
       PitchAction(
@@ -572,13 +583,19 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           ),
         ],
         PitchSectionTitle(_vault ? 'Kulüpler' : 'Koleksiyon'),
+        if (_coach) ...[
+          _clubChips(entries),
+          const SizedBox(height: 8),
+        ],
         Text(
           _vault
               ? '1 / 3 / 5 yıldız ödülleri bir kez kazanılır: toplam 25 coin + 50 XP. İlk 5 farklı kasa: +30 coin + 50 XP.'
               : '5 / 8 / 11 oyuncu ve ustalık madalyaları: toplam 40 coin + 80 XP. Ustalık: 11 oyuncu, sıfır ipucu, en fazla 3 yanlış.',
         ),
         const SizedBox(height: 12),
-        for (var i = 0; i < entries.length; i++) ...[
+        for (var i = 0; i < entries.length; i++)
+          if (_clubFilter.isEmpty ||
+              _strings(entries[i]['clubs']).contains(_clubFilter)) ...[
           if (_vault &&
               (i == 0 || entries[i - 1]['league'] != entries[i]['league']))
             PitchSectionTitle('${entries[i]['league']}'),
@@ -617,10 +634,53 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           : null,
       subtitle: _vault
           ? '${e['league']} · ${r['best'] ?? 0} yıldız'
+          : _coach && _strings(e['clubs']).isNotEmpty
+          ? '${_strings(e['clubs']).take(2).join(' · ')}${_strings(e['clubs']).length > 2 ? ' +${_strings(e['clubs']).length - 2}' : ''}\n'
+                '${r['best'] ?? 0}/11 · ${_medal(r)}'
           : '${r['best'] ?? 0}/11 · ${_medal(r)} · ${_nextMedal(r)}',
       onTap: _busy ? null : () => _showEntry(e),
     );
   }
+
+  /// Club chips with how many of that club's coaches have a medal.
+  Widget _clubChips(List<Map<String, dynamic>> entries) {
+    final total = <String, int>{}, done = <String, int>{};
+    for (final e in entries) {
+      final solved = ((rewardMap(e['record'])['best'] as num?) ?? 0) > 0;
+      for (final club in _strings(e['clubs'])) {
+        total[club] = (total[club] ?? 0) + 1;
+        if (solved) done[club] = (done[club] ?? 0) + 1;
+      }
+    }
+    final clubs = total.keys.where((c) => total[c]! >= 3).toList()
+      ..sort((a, b) => total[b]!.compareTo(total[a]!));
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ChoiceChip(
+          label: const Text('Tümü'),
+          selected: _clubFilter.isEmpty,
+          onSelected: (_) => setState(() => _clubFilter = ''),
+        ),
+        for (final club in clubs)
+          ChoiceChip(
+            label: Text('$club · ${done[club] ?? 0}/${total[club]}'),
+            selected: _clubFilter == club,
+            onSelected: (_) =>
+                setState(() => _clubFilter = _clubFilter == club ? '' : club),
+          ),
+      ],
+    );
+  }
+
+  /// Source ids read as their provider.
+  String _sourceLabel(Iterable<String> sources) => {
+    for (final x in sources)
+      x.startsWith('wikidata:')
+          ? 'Wikidata hoca dönemi · kariyer kaydı'
+          : 'StatsBomb maç kadrosu',
+  }.join(' · ');
 
   Widget _clubBadge(Map<String, dynamic> c) => ClubBadge(
     club: Club(
@@ -660,6 +720,23 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                 Text(
                   'Oynanabilir düzenler: ${_strings(e['formations']).map(_formation).join(' / ')}',
                 ),
+              if (_coach && _strings(e['clubs']).isNotEmpty)
+                Text('Kulüpler: ${_strings(e['clubs']).join(' · ')}'),
+              if (_coach && _maps(e['spells']).isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text('DÖNEMLER · ZOR', style: hubCaps(ctx)),
+                const SizedBox(height: 4),
+                for (final spell in _maps(e['spells']))
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.history_edu_outlined),
+                    title: Text('${spell['club']} · ${spell['period']}'),
+                    subtitle: Text('${spell['count']} oyuncu'),
+                    trailing: const Icon(Icons.play_arrow_rounded),
+                    enabled: _canStart,
+                    onTap: () => Navigator.pop(ctx, 'spell:${spell['id']}'),
+                  ),
+              ],
               if (_coach)
                 TextButton.icon(
                   icon: const Icon(Icons.emoji_events_outlined),
@@ -706,7 +783,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                           _maps(p['links'])
                               .map(
                                 (l) =>
-                                    '${l['club']} · ${l['date']}\n${_strings(l['sources']).join('\n')}',
+                                    '${l['club']} · ${l['period'] ?? l['date']}\n${_sourceLabel(_strings(l['sources']))}',
                               )
                               .join('\n'),
                         ),
@@ -765,6 +842,12 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
       );
     } else if (result == 'play') {
       await _start('archive', target: '${e['id']}');
+    } else if (result.startsWith('spell:')) {
+      await _start(
+        'archive',
+        target: '${e['id']}',
+        spell: result.substring('spell:'.length),
+      );
     } else if (await _confirm(
       'Ödül seçimini onayla',
       'Bu hedefte tek seferlik seçimin: ${result == 'avatar' ? 'avatar (zaten sahipsen coin)' : '${e['avatarCoins']} coin'}.',
@@ -803,7 +886,13 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
               '${_session['title']}',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            if ('${_session['context'] ?? ''}'.isNotEmpty)
+            if (_session['spell'] is Map) ...[
+              const SizedBox(height: 6),
+              ManagerTag(
+                'Zor · ${rewardMap(_session['spell'])['club']} · ${rewardMap(_session['spell'])['period']}',
+                active: true,
+              ),
+            ] else if ('${_session['context'] ?? ''}'.isNotEmpty)
               Text('${_session['context']}'),
             if (_vault) Text('${_session['historyNote']}'),
             if (_session['league'] != null) Text('${_session['league']}'),
@@ -1023,7 +1112,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: SelectableText(
-                  '${e['club']} · ${e['date']}\n${_strings(e['sources']).join('\n')}',
+                  '${e['club']} · ${e['period'] ?? e['date']}\n${_sourceLabel(_strings(e['sources']))}',
                 ),
               ),
           ],

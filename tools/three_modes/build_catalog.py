@@ -1,6 +1,7 @@
 """Compile source-bound Hoca 11, Harf 11 and Kadro Kasası content, offline."""
 import argparse
 from collections import Counter, defaultdict
+from datetime import date
 import hashlib
 from itertools import combinations
 import json
@@ -47,6 +48,62 @@ def initials(names):
             if ch in LETTERS: result.add(ch)
     return sorted(result)
 
+# Hoca 11 tenure pools: a player belongs to a coach when his dated V4 spell at
+# the club overlaps the coach's Wikidata tenure there by at least this much.
+MIN_OVERLAP_DAYS = 180
+SNAPSHOT = date(2026, 10, 5)  # open spells/tenures end at the V4 snapshot
+# Existing coaches keep their ids (and players' medals/avatars) and add their
+# Wikidata tenures to the StatsBomb match evidence.
+# Their Wikidata items are resolved by label from tenures.json, never typed in.
+LEGACY_LABELS = {'statsbomb_coach_94': 'Jürgen Klopp', 'statsbomb_coach_56': 'Zinedine Zidane',
+                 'statsbomb_coach_790': 'Alex Ferguson', 'statsbomb_coach_36': 'Pep Guardiola',
+                 'statsbomb_coach_181': 'Massimiliano Allegri', 'statsbomb_coach_793': 'Luis Enrique',
+                 'statsbomb_coach_81': 'Mauricio Pochettino'}
+# Wikidata labels that differ from the V4 coach name.
+COACH_NAMES = {'Zinedine Zidane': 'Zinedine Zidane'}
+
+
+def day(text, end=False):
+    if not text:
+        return None
+    if len(text) == 4:  # year-precision spells: a season boundary
+        return date(int(text), 6, 30) if end else date(int(text), 7, 1)
+    return date.fromisoformat(text[:10])
+
+
+def period(a, b):
+    return f'{a.year}' if a.year == b.year else f'{a.year}–{b.year}'
+
+
+def tenure_links(c, clubs):
+    """Coach QID -> name and player id -> dated evidence from tenures."""
+    tenures = json.loads((ROOT/'tools/coach_xi/tenures.json').read_text(encoding='utf-8'))
+    spells = defaultdict(list)
+    for r in c.execute('select player_id,club_id,start_date,end_date from career_spells'):
+        a, b = day(r['start_date']), day(r['end_date'], True) or SNAPSHOT
+        if a and b >= a:
+            spells[r['club_id']].append((r['player_id'], a, b))
+    coaches = defaultdict(lambda: {'name': None, 'links': defaultdict(list), 'tenures': []})
+    for t in tenures['tenures']:
+        if t['clubId'] not in clubs:
+            raise ValueError('Tenure club missing from V4: ' + str(t['clubId']))
+        a, b = day(t['start']), day(t['end'], True) or SNAPSHOT
+        if not a or b < a:
+            continue
+        coach = coaches[t['coachQid']]
+        coach['name'] = t['coach']
+        members = []
+        for pid, x, y in spells[t['clubId']]:
+            lo, hi = max(a, x), min(b, y)
+            if (hi - lo).days >= MIN_OVERLAP_DAYS:
+                members.append(pid)
+                coach['links'][str(pid)].append(dict(clubId=t['clubId'], date=lo.isoformat(), until=hi.isoformat(),
+                    period=period(lo, hi), sources=['wikidata:' + t['statement']]))
+        coach['tenures'].append(dict(clubId=t['clubId'], period=period(a, b), start=a.isoformat(),
+            end=b.isoformat(), players=sorted(set(members)), source='wikidata:' + t['statement']))
+    return coaches, tenures['source']
+
+
 def viable(ids, players):
     counts=Counter(players[i]['position'] for i in ids)
     return [f for f,slots in FORMATIONS.items() if all(counts[p]>=n for p,n in Counter(slots).items())]
@@ -84,19 +141,56 @@ def build():
         coach_links[a['coachKey']].setdefault(str(pid),[]).append(dict(
             clubId=a['clubId'],date=a['date'],matchId=a['matchId'],sources=a['sources']))
     offers={o['itemId']:o for o in json.loads((ROOT/'functions/config/store_collection.json').read_text())['offers']}
+    by_tenure,tenure_source=tenure_links(c,clubs)
+    v4_coaches={}
+    for r in c.execute('select payload_json from coaches'):
+        payload=json.loads(r['payload_json'])
+        for n in [payload['name']]+payload.get('aliases',[]):
+            v4_coaches.setdefault(norm(n),payload)
+    def spells_of(qid):
+        # Single tenures that can field an XI on their own: the hard mode.
+        return [dict(id=f'{t["clubId"]}_{t["start"][:4]}',clubId=t['clubId'],period=t['period'],
+                     start=t['start'],end=t['end'],
+                     players=len(t['players']),formations=viable(t['players'],players),source=t['source'])
+                for t in by_tenure[qid]['tenures'] if viable(t['players'],players)] if qid in by_tenure else []
+    def merged(*sets):
+        out=defaultdict(list)
+        for links in sets:
+            for pid,ev in links.items(): out[pid].extend(ev)
+        return {pid:sorted(ev,key=lambda e:e['date']) for pid,ev in out.items() if int(pid) in players}
     coaches=[]
+    used=set()
     for coach in evidence['coaches']:
         if coach['name'] not in COACHES: continue
         name,portrait,avatar=COACHES[coach['name']]
-        links=coach_links[coach['key']]
+        cid=coach['key'].replace(':','_')
+        found=[q for q,t in by_tenure.items() if t['name']==LEGACY_LABELS[cid]]
+        if len(found)!=1: raise ValueError('Ambiguous or missing Wikidata coach for '+name)
+        qid=found[0]; used.add(qid)
+        links=merged(coach_links[coach['key']],by_tenure[qid]['links'] if qid in by_tenure else {})
         forms=viable(map(int,links),players)
         if not forms: continue
         # Fixed release snapshot, not a runtime sale price.
         if avatar and (avatar not in offers or offers[avatar]['itemType']!='avatar'): raise ValueError('Unknown avatar')
-        cid=coach['key'].replace(':','_')
         coaches.append(dict(id=cid,name=name,portraitId=portrait,avatarId=avatar,
             avatarCoins=offers[avatar]['priceCoins'] if avatar else 0,links=links,formations=forms,
-            difficulty='easy' if len(links)>=15 else 'medium',coverage='verified_match_subset'))
+            spells=spells_of(qid),coverage='verified_match_and_tenure'))
+    for qid,t in sorted(by_tenure.items(),key=lambda kv:kv[1]['name']):
+        if qid in used: continue
+        links=merged(t['links'])
+        counts=Counter(players[int(i)]['position'] for i in links)
+        # Usable pool: 2 GK, 7 DEF, 6 MID, 5 FWD at least.
+        if not (counts['GK']>=2 and counts['DEF']>=7 and counts['MID']>=6 and counts['FWD']>=5): continue
+        forms=viable(map(int,links),players)
+        if not forms: continue
+        v4=v4_coaches.get(norm(COACH_NAMES.get(t['name'],t['name'])))
+        coaches.append(dict(id='wd_'+qid,name=t['name'],portraitId=v4['id'] if v4 else None,avatarId=None,
+            avatarCoins=0,links=links,formations=forms,spells=spells_of(qid),coverage='tenure_overlap'))
+    for coach in coaches:
+        n=len(coach['links'])
+        coach['difficulty']='easy' if n>=60 else 'medium'
+        coach['clubs']=sorted({e['clubId'] for ev in coach['links'].values() for e in ev},
+            key=lambda i:clubs[i]['name'])
     letters=[]
     for letter in LETTERS:
         ids=[p['id'] for p in players.values() if letter in p['letters'] and p['position'] and p['rank']<=12000]
@@ -151,21 +245,24 @@ def build():
         if cid in clubs:
             clubs[cid]['aliases']=alias
             clubs[cid]['search']=norm(' '.join([clubs[cid]['name']]+alias))
-    catalog=dict(schemaVersion=1,version='three-modes-2026-10-16.1',baseSha256=sha,
+    catalog=dict(schemaVersion=1,version='three-modes-2026-10-30.1',baseSha256=sha,
         formations=FORMATIONS,players=list(players.values()),clubs=list(clubs.values()),
         letters=letters,coaches=coaches,puzzles=puzzles,leagueSnapshot='v4-2026-10-05.1',
-        sources=evidence['sources'],vaultClubs=active_clubs,
+        sources={**evidence['sources'],'wikidata:tenures':tenure_source},vaultClubs=active_clubs,
         policy=dict(medals=[{'at':5,'coins':5,'xp':10},{'at':8,'coins':10,'xp':20},
             {'at':11,'coins':15,'xp':30},{'at':11,'coins':10,'xp':20,'mastery':True}],
             vault=[{'at':1,'coins':5,'xp':10},{'at':3,'coins':10,'xp':20},{'at':5,'coins':10,'xp':20}],
-            daily={'letter11':{'coins':10,'xp':20},'coach_xi':{'coins':0,'xp':0}},
+            daily={'letter11':{'coins':10,'xp':20},'coach_xi':{'coins':10,'xp':20}},
             hintCosts={'flag':1,'league':1,'player':2},hintDailyLimit=6,
             archiveBonus={'at':5,'coins':30,'xp':50},leagueKnowledgePenalty=1))
     report=dict(version=catalog['version'],players=len(players),letters=len(letters),coaches=len(coaches),
-       coachPools=[dict(name=x['name'],players=len(x['links']),formations=x['formations']) for x in coaches],
+       coachPools=[dict(name=x['name'],players=len(x['links']),formations=x['formations'],
+           spells=len(x['spells'])) for x in coaches],
+       coachRule=f'Wikidata head-coach tenure overlaps a dated V4 club spell by >= {MIN_OVERLAP_DAYS} days; '
+           'StatsBomb lineup evidence kept for the original seven coaches',
        vaultClubs=len(active_clubs),puzzles=len(puzzles),
        leagues=dict(Counter(clubs[i]['league'] for i in active_clubs)),
-       excludedCoachRule='No full XI or no canonical match identity; never use union of career clubs',
+       excludedCoachRule='No full XI from dated evidence; never use union of career clubs',
        remaining='Coach evidence is a match subset; unknown links are unverified, never a punitive wrong answer.')
     c.close()
     return catalog,report

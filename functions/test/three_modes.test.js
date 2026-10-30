@@ -39,6 +39,65 @@ test("every published letter/coach formation and vault is solvable with distinct
     assert.ok(p.quality.compatibleClubs >= 2 && p.quality.compatibleLeagueClubs >= 2);
   }
 });
+test("tenure pools: every coach has a dated source, every hard tenure fields an XI", () => {
+  assert.ok(catalog.coaches.length >= 50);
+  const ids = new Set(catalog.coaches.map((c) => c.id));
+  // The seven original coaches keep their ids, so medals and avatars survive.
+  for (const old of ["statsbomb_coach_94", "statsbomb_coach_56", "statsbomb_coach_790", "statsbomb_coach_36",
+    "statsbomb_coach_181", "statsbomb_coach_793", "statsbomb_coach_81"]) assert.ok(ids.has(old), old);
+  for (const c of catalog.coaches) {
+    for (const ev of Object.values(c.links)) {
+      for (const e of ev) {
+        assert.ok(e.sources.length && /^\d{4}-\d{2}-\d{2}$/.test(e.date), c.name);
+        assert.ok(e.sources.every((x) => catalog.sources[x] || x.startsWith("wikidata:")), c.name);
+      }
+    }
+    for (const spell of c.spells) {
+      const pool = catalog.players.filter((p) => (c.links[p.id] || []).some((e) => e.clubId === spell.clubId &&
+        e.date <= spell.end && (e.until || e.date) >= spell.start));
+      for (const f of spell.formations) {
+        for (const pos of ["GK", "DEF", "MID", "FWD"]) {
+          assert.ok(pool.filter((p) => p.position === pos).length >=
+            catalog.formations[f].filter((x) => x === pos).length, c.name + " " + spell.id);
+        }
+      }
+    }
+  }
+  assert.ok(catalog.sources["wikidata:tenures"].sha256);
+});
+
+test("hard Hoca 11 is one tenure: other-era players of the coach are wrong, the tenure's are right", async () => {
+  const h = harness();
+  const coach = catalog.coaches.find((c) => c.spells.length >= 2 &&
+    c.spells.every((x) => x.formations.includes("433")));
+  const spell = coach.spells[0];
+  const inside = (e) => e.clubId === spell.clubId && e.date <= spell.end && (e.until || e.date) >= spell.start;
+  let s = (await start(h, "coach_xi", {entry: "archive", target: coach.id, difficulty: "hard",
+    spell: spell.id})).session;
+  assert.equal(s.spell.id, spell.id); assert.match(s.context, new RegExp(spell.period));
+  const slot = s.slots.findIndex((x) => x.position !== "GK");
+  const pos = s.slots[slot].position;
+  const other = catalog.players.find((p) => p.position === pos && coach.links[p.id] &&
+    !coach.links[p.id].some(inside));
+  const right = catalog.players.find((p) => p.position === pos && (coach.links[p.id] || []).some(inside));
+  s = (await act(h, s, {action: "place", slot, playerId: other.id})).session;
+  assert.equal(s.wrong, 1); assert.match(s.feedback, /farklı dönem/);
+  s = (await act(h, s, {action: "place", slot, playerId: right.id})).session;
+  // Feedback names the player's own years inside the tenure.
+  assert.equal(s.slots[slot].player.id, right.id);
+  assert.ok(s.feedback.includes(coach.links[right.id].find(inside).period || ""));
+  assert.ok(s.slots[slot].evidence.every((e) => e.period));
+  // Random hard games only draw coaches that have a playable tenure.
+  for (let i = 0; i < 3; i++) {
+    const r = await start(h, "coach_xi", {difficulty: "hard"}).catch((e) => e);
+    if (r.session) assert.ok(r.session.spell);
+  }
+});
+
+test("the official daily Hoca 11 pays 10 coin / 20 XP at eight correct", () => {
+  assert.deepEqual(catalog.policy.daily.coach_xi, {coins: 10, xp: 20});
+});
+
 test("all three entrypoints require auth; general search does not leak correct answers via filtering", async () => {
   const h = harness();
   await assert.rejects(h.call("getThreeMode", {mode: "letter11"}, null), {code: "unauthenticated"});
@@ -76,7 +135,7 @@ test("energy charges once only after valid content, resumes free, daily first fr
   assert.equal(s.energyCharged, true); assert.equal(h.read("economyState/alice/energy/balance"), 5);
   await h.call("resumeThreeMode", {version, mode: s.mode, sessionId: s.id});
   await act(h, s, {action: "finish"});
-  await assert.rejects(start(h, "coach_xi", {difficulty: "hard"}), {code: "failed-precondition"});
+  await assert.rejects(start(h, "coach_xi", {entry: "archive", target: "missing"}), {code: "failed-precondition"});
   assert.equal(h.read("economyState/alice/energy/balance"), 5);
   h.setTime("2026-09-20T21:00:01Z");
   s = (await start(h, "letter11", {entry: "daily"})).session;

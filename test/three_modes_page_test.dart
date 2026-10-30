@@ -85,6 +85,17 @@ class FakeModes extends ThreeModesService {
         'count': 120,
         'league': 'Premier League',
         'record': null,
+        if (mode == 'coach_xi') ...{
+          'clubs': ['Manchester City', 'FC Barcelona', 'Bayern Munich'],
+          'spells': [
+            {
+              'id': '281_2016',
+              'club': 'Manchester City',
+              'period': '2016–2026',
+              'count': 80,
+            },
+          ],
+        },
       },
     ],
   };
@@ -134,6 +145,20 @@ class FinishedModes extends FakeModes {
       'newMedals': mode == 'squad_vault' ? [] : ['3'],
       'coins': 10,
       'xp': 20,
+    },
+  };
+}
+
+/// A coach whose started game is one tenure (the hard mode).
+class HardCoachModes extends FakeModes {
+  HardCoachModes() : super('coach_xi');
+  @override
+  Map<String, dynamic> get session => {
+    ...super.session,
+    'spell': {
+      'id': '281_2016',
+      'club': 'Manchester City',
+      'period': '2016–2026',
     },
   };
 }
@@ -287,6 +312,47 @@ void main() {
       },
     );
   }
+  testWidgets('a coach tenure starts the hard game and shows its era', (
+    t,
+  ) async {
+    final fake = HardCoachModes();
+    await open(t, fake);
+    final collection = find.text('Hoca koleksiyonu');
+    await t.scrollUntilVisible(
+      collection,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await t.tap(collection);
+    await t.pumpAndSettle();
+    await t.scrollUntilVisible(
+      find.text('Pep Guardiola'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await t.tap(find.text('Pep Guardiola').last);
+    await t.pumpAndSettle();
+    await capture(t, 'coach_tenure_sheet');
+    expect(
+      find.text('Kulüpler: Manchester City · FC Barcelona · Bayern Munich'),
+      findsOneWidget,
+    );
+    final spell = find.text('Manchester City · 2016–2026');
+    await t.ensureVisible(spell);
+    await t.tap(spell);
+    await t.pumpAndSettle();
+    expect(fake.lastMutation!['spell'], '281_2016');
+    expect(fake.lastMutation!['difficulty'], 'hard');
+    expect(fake.lastMutation!['entry'], 'archive');
+    await t.scrollUntilVisible(
+      find.text('Zor · Manchester City · 2016–2026'),
+      -250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Zor · Manchester City · 2016–2026'), findsOneWidget);
+    await capture(t, 'coach_tenure_game');
+    expect(t.takeException(), isNull);
+  });
   testWidgets(
     'search keeps unrelated known players visible and validates only selected identity',
     (t) async {

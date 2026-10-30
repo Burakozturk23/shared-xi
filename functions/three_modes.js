@@ -35,6 +35,18 @@ const puzzleOf = (s) => catalog.puzzles.find((p) => p.id === s.puzzle);
 const collectionKey = (s) => s.mode + "__" + s.target;
 const indexFrom = (seed, length) => parseInt(hash(seed).slice(0, 8), 16) % length;
 const publicPlayer = (p) => ({id: p.id, name: p.name, country: p.country, position: p.position});
+// Hard Hoca 11 targets one tenure: the coach at one club in one period.
+const spellOf = (s) => s.spell ? targetOf(s)?.spells?.find((x) => x.id === s.spell) : null;
+const inSpell = (e, spell) => e.clubId === spell.clubId && e.date <= spell.end &&
+  (e.until || e.date) >= spell.start;
+// Evidence the session accepts for a player: all of the coach's, or the tenure's.
+function proofs(s, id) {
+  const all = targetOf(s)?.links?.[id] || [];
+  const spell = spellOf(s);
+  return spell ? all.filter((e) => inSpell(e, spell)) : all;
+}
+const when = (e) => e.period || e.date;
+const spellLabel = (spell) => `${clubs.get(spell.clubId).name} · ${spell.period}`;
 function stars(s) {
   if (s.finished && !s.won) return 0;
   return Math.max(0, 5 - s.wrong - s.penalty);
@@ -50,7 +62,7 @@ function eligible(s, position) {
   const target = targetOf(s);
   const used = new Set(Object.values(s.picks));
   return catalog.players.filter((p) => p.position === position && !used.has(p.id) &&
-    (s.mode === "letter11" ? p.letters.includes(target.letter) : Object.hasOwn(target.links, p.id)));
+    (s.mode === "letter11" ? p.letters.includes(target.letter) : proofs(s, p.id).length > 0));
 }
 function sessionView(raw) {
   const s = sessionOf(raw);
@@ -65,15 +77,20 @@ function sessionView(raw) {
   if (s.mode !== "squad_vault") {
     v.targetId = s.target; v.title = target.name || `${target.letter} harfi`;
     v.portraitId = target.portraitId || null; v.score = score(s);
+    const spell = spellOf(s);
+    if (spell) v.spell = {id: spell.id, club: clubs.get(spell.clubId).name, period: spell.period};
     v.slots = catalog.formations[s.formation].map((pos, slot) => {
       const p = players.get(s.picks[slot]);
       return {slot, position: pos, player: p ? publicPlayer(p) : null,
-        evidence: p && s.mode === "coach_xi" ? target.links[p.id].map((e) =>
-          ({club: clubs.get(e.clubId).name, date: e.date, sources: e.sources})) : []};
+        evidence: p && s.mode === "coach_xi" ? proofs(s, p.id).map((e) =>
+          ({club: clubs.get(e.clubId).name, date: e.date, period: when(e), sources: e.sources})) : []};
     });
-    v.coverage = s.mode === "coach_xi" ?
-      "Yalnızca kaynakla doğrulanmış bağlantılar kabul edilir. Doğrulanamayan bağlantı yanlış sayılmaz." : "";
-    v.context = s.mode === "coach_xi" && s.difficulty === "easy" ?
+    v.coverage = s.mode === "coach_xi" ? (spell ?
+      "Yalnızca bu dönemde hocayla aynı kulüpte bulunan futbolcular sayılır; " +
+      "hocanın başka dönemindeki oyuncu yanlış sayılır." :
+      "Hocanın kulüp dönemi ile oyuncunun aynı kulüpteki dönemi en az 180 gün çakışmalı. " +
+      "Doğrulanamayan bağlantı yanlış sayılmaz.") : "";
+    v.context = s.mode === "coach_xi" && spell ? spellLabel(spell) : s.mode === "coach_xi" && s.difficulty === "easy" ?
       [...new Set(Object.values(target.links).flat().map((e) => clubs.get(e.clubId).name))].join(" · ") : "";
   } else {
     const puzzle = puzzleOf(s); const club = clubs.get(puzzle.clubId);
@@ -181,9 +198,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       formations: t.formations, difficulty: t.difficulty, portraitId: t.portraitId || null,
       count: t.count || Object.keys(t.links).length, record: exposeRecord(s.collection[`${input.mode}__${t.id}`]),
       avatarId: t.avatarId || null, avatarCoins: t.avatarCoins || 0,
+      clubs: (t.clubs || []).map((id) => clubs.get(id).name),
+      spells: (t.spells || []).map((x) => ({id: x.id, club: clubs.get(x.clubId).name, period: x.period,
+        count: x.players})),
       bestEvidence: t.links ? lineupOf(s.collection[`${input.mode}__${t.id}`]?.bestLineup)
           .filter((id) => t.links[id]).map((id) => ({name: players.get(id).name,
-            links: t.links[id].map((e) => ({club: clubs.get(e.clubId).name, date: e.date, sources: e.sources}))})) : [],
+            links: t.links[id].map((e) => ({club: clubs.get(e.clubId).name, date: e.date, period: when(e),
+              sources: e.sources}))})) : [],
       avatarOwned: !!inventory[t.avatarId], avatarChoice: s.avatarChoices[t.id] || null}));
     return {ok: true, version: catalog.version, mode: input.mode, entries: list, session: current,
       daily: dailyGame, dailyUnavailable, dailyUsed: !!s.daily[`${input.mode}__${dayKey(now())}`], linked,
@@ -206,7 +227,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const prior = sessionOf(s.sessions[input.requestId]);
       if (prior) {
         if (prior.startFingerprint !== hash(JSON.stringify([input.mode, input.entry, input.target || null,
-          input.formation || null, input.difficulty || null, input.league || null]))) {
+          input.formation || null, input.difficulty || null, input.league || null, input.spell || null]))) {
           fail("invalid-argument", "İstek başka oyuna ait.");
         }
         return;
@@ -217,7 +238,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           (active.entry !== "daily" || active.day === dayKey(time))) {
         fail("already-exists", "Devam eden oyunu tamamla veya erken bitir.");
       }
-      let target; let puzzle; let formation = input.formation || "433";
+      let target; let puzzle; let spell = null; let formation = input.formation || "433";
       if (input.mode === "squad_vault") {
         let pool = catalog.puzzles.filter((p) =>
           input.entry !== "league" || clubs.get(p.clubId).league === input.league);
@@ -233,10 +254,11 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         puzzle = pool[indexFrom(seed, pool.length)]; target = String(puzzle.clubId); formation = puzzle.formation;
       } else {
         let pool = targets[input.mode];
-        if (input.difficulty === "hard" && input.mode === "coach_xi") {
-          fail("failed-precondition", "Dönem kısıtlı zor hoca havuzu henüz doğrulanmadı.");
+        const hard = input.difficulty === "hard" && input.mode === "coach_xi";
+        if (hard) pool = pool.filter((x) => x.spells?.length);
+        else if (input.entry === "random" && input.difficulty) {
+          pool = pool.filter((x) => x.difficulty === input.difficulty);
         }
-        if (input.entry === "random" && input.difficulty) pool = pool.filter((x) => x.difficulty === input.difficulty);
         if (input.entry === "random" && input.formation) {
           pool = pool.filter((x) => x.formations.includes(input.formation));
         }
@@ -244,7 +266,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           pool.find((x) => x.id === input.target) : pool[indexFrom(seed, pool.length)];
         if (!selected) fail("failed-precondition", "Oynanabilir içerik bulunamadı.");
         target = selected.id;
-        formation = fixed?.formation || (selected.formations.includes(formation) ? formation : selected.formations[0]);
+        let forms = selected.formations;
+        if (hard) {
+          const spells = selected.spells;
+          spell = (input.spell && spells.find((x) => x.id === input.spell)) ||
+            spells[indexFrom(seed + "spell", spells.length)];
+          forms = spell.formations;
+        }
+        formation = fixed?.formation || (forms.includes(formation) ? formation : forms[0]);
       }
       if (!catalog.formations[formation]) fail("invalid-argument", "Formasyon bulunamadı.");
       const day = dayKey(time); const key = input.mode + "__" + day;
@@ -259,7 +288,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       // Daily ownership, content and energy charge commit together across devices.
       if (official) s.daily[key] = {sessionId: input.requestId, day, target, formation};
       const session = {startFingerprint: hash(JSON.stringify([input.mode, input.entry, input.target || null,
-        input.formation || null, input.difficulty || null, input.league || null])),
+        input.formation || null, input.difficulty || null, input.league || null, input.spell || null])),
       id: input.requestId, mode: input.mode, entry: input.entry, target, formation,
       difficulty: input.difficulty || "easy", day, dailyOfficial: official, startedAt: time,
       expiresAt: Math.min(time + energy.policy.resumeMs, input.entry === "daily" ?
@@ -268,6 +297,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       picks: {}, actions: {}, guesses: [], hints: [], wrong: 0, freeUsed: false, adGranted: 0,
       adCredits: 0, adReceipts: {}, finished: false,
       penalty: input.entry === "league" ? catalog.policy.leagueKnowledgePenalty : 0};
+      if (spell) session.spell = spell.id;
       if (puzzle) {
         Object.assign(session, {puzzle: puzzle.id, revealed: puzzle.initial, nameHints: [],
           leagueShown: input.entry === "league"});
@@ -356,7 +386,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       if (input.action === "finish") {
         finish(s, run, time);
       } else if (input.action === "formation" && run.mode !== "squad_vault") {
-        if (run.entry === "daily" || !targetOf(run).formations.includes(input.formation)) {
+        const allowed = spellOf(run)?.formations || targetOf(run).formations;
+        if (run.entry === "daily" || !allowed.includes(input.formation)) {
           fail("failed-precondition", "Bu formasyon bu oyunda kullanılamaz.");
         }
         if (Object.keys(run.picks).length && input.confirmReset !== true) {
@@ -370,16 +401,22 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         if (!p || !p.position) fail("invalid-argument", "Oyuncu kimliği/mevkisi çözülemedi. Yanlış hakkın değişmedi.");
         if (Object.values(run.picks).includes(p.id)) fail("already-exists", "Bu futbolcu zaten kadroda.");
         const target = targetOf(run);
+        const spell = spellOf(run);
         if (run.mode === "coach_xi" && !Object.hasOwn(target.links, p.id)) {
           run.feedback = "Bu hoca-futbolcu bağı henüz doğrulanmadı. Yanlış hakkın değişmedi.";
+        } else if (run.mode === "coach_xi" && spell && !proofs(run, p.id).length) {
+          // Right coach, other era: in the tenure mode that is a wrong answer.
+          const other = target.links[p.id][0];
+          run.wrong++;
+          run.feedback = `Doğru hoca, farklı dönem: ${clubs.get(other.clubId).name} · ${when(other)}.`;
         } else if (p.position !== catalog.formations[run.formation][input.slot] ||
             run.mode === "letter11" && !p.letters.includes(target.letter)) {
           run.wrong++; run.feedback = "Futbolcunun harfi veya mevkisi bu slota uymuyor.";
         } else {
           run.picks[input.slot] = p.id; run.feedback = "Doğru bağlantı: " + p.name;
           if (run.mode === "coach_xi") {
-            const proof = target.links[p.id][0];
-            run.feedback += ` · ${clubs.get(proof.clubId).name} · ${proof.date}`;
+            const proof = proofs(run, p.id)[0];
+            run.feedback += ` · ${clubs.get(proof.clubId).name} · ${when(proof)}`;
           }
         }
       } else if (input.action === "guess" && run.mode === "squad_vault") {
@@ -421,8 +458,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           if (!filtered.length) fail("failed-precondition", "Bu mevki için doğrulanmış ipucu yok.");
           const p = filtered.sort((a, b) => a.rank - b.rank)[run.hints.length % filtered.length];
           if (run.mode === "coach_xi" && ["club", "years"].includes(input.hint)) {
-            const proof = targetOf(run).links[p.id][0];
-            text = input.hint === "club" ? clubs.get(proof.clubId).name : proof.date.slice(0, 4);
+            const proof = proofs(run, p.id)[0];
+            text = input.hint === "club" ? clubs.get(proof.clubId).name : when(proof);
           } else if (run.mode === "letter11" && ["club", "league"].includes(input.hint)) {
             const c = p.clubs.map((id) => clubs.get(id)).find((c) => c && (input.hint !== "league" || c.league));
             text = input.hint === "club" ? c.name : `${c.league} (kulübün veri sürümündeki ligi)`;
