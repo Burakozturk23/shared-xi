@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/controllers/home_resources_controller.dart';
+import 'package:shared_xi/models/daily_streak.dart';
 import 'package:shared_xi/models/economy_models.dart';
 import 'package:shared_xi/screens/app_home_page.dart';
 import 'package:shared_xi/screens/player_profile_page.dart';
@@ -15,6 +16,7 @@ import 'package:shared_xi/screens/progression_center_page.dart';
 import 'package:shared_xi/screens/ucl_moments_page.dart';
 import 'package:shared_xi/services/profile_service.dart';
 import 'package:shared_xi/theme/app_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 
 final boundary = GlobalKey();
 HomeResourcesController resources() =>
@@ -51,8 +53,9 @@ Future<void> open(
     MaterialApp(
       theme: light ? AppTheme.lightTheme : AppTheme.darkTheme,
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.linear(scale)),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(scale)),
         child: child!,
       ),
       home: RepaintBoundary(key: boundary, child: page),
@@ -92,7 +95,11 @@ void main() {
       (t) async {
         addTearDown(t.view.resetPhysicalSize);
         addTearDown(t.view.resetDevicePixelRatio);
-        final c = resources();
+        final c = resources()
+          ..streak = const DailyStreak(
+            streak: 7,
+            played: ['daily_lingo', 'daily_question', 'daily_match'],
+          );
         addTearDown(c.dispose);
         GameEntry? selected;
         await open(
@@ -107,8 +114,12 @@ void main() {
           ),
           light: light,
         );
-        expect(find.text('1250'), findsOneWidget);
-        expect(find.text('4 / 6'), findsOneWidget);
+        // Quick modes say which play alone and which are live.
+        expect(find.text('SOLO'), findsOneWidget);
+        expect(find.text('CANLI'), findsOneWidget);
+        // Coins and energy live in the shell app bar, not the home body.
+        expect(find.text('1.250'), findsNothing);
+        expect(find.byType(HubEconomyPills), findsNothing);
         expect(
           t.getTopLeft(find.text('Ortak Oyuncu Keşfi')).dy,
           lessThan(t.getTopLeft(find.text('Günlük Meydan Okumalar')).dy),
@@ -116,6 +127,16 @@ void main() {
         await t.tap(find.text('Bağlantıyı keşfet'));
         expect(selected, GameCatalog.discovery);
         await capture(t, 'home-hub-${light ? 'light' : 'dark'}');
+        // Günün Futbolcusu leads the daily section as the featured puzzle.
+        await t.scrollUntilVisible(find.text('GÜNÜN BULMACASI'), 150);
+        await t.pumpAndSettle();
+        expect(
+          find.ancestor(
+            of: find.text(GameCatalog.dailyFootballer.title),
+            matching: find.byKey(const ValueKey('home-featured-daily')),
+          ),
+          findsOneWidget,
+        );
         for (final game in GameCatalog.dailyGames) {
           await t.scrollUntilVisible(find.text(game.title), 150);
           await t.pumpAndSettle();
@@ -131,7 +152,7 @@ void main() {
           width: 320,
           scale: 2,
         );
-        expect(find.text('1250'), findsNothing);
+        expect(find.text('1.250'), findsNothing);
         expect(find.text('4 / 6'), findsNothing);
         await t.scrollUntilVisible(find.text('Günlük ödül ve görevler'), 250);
         expect(t.takeException(), isNull);
@@ -183,6 +204,70 @@ void main() {
       },
     );
   }
+  testWidgets('home shows the shared play streak and hides it otherwise', (
+    t,
+  ) async {
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    final c = resources()
+      ..streak = const DailyStreak(
+        streak: 7,
+        best: 9,
+        played: ['daily_lingo', 'daily_question', 'daily_match'],
+      );
+    addTearDown(c.dispose);
+    GameEntry? opened;
+    await open(
+      t,
+      Scaffold(
+        body: AppHomePage(
+          resources: c,
+          loadResources: false,
+          onOpen: (game) => opened = game,
+        ),
+      ),
+    );
+    expect(find.text('7 günlük seri · 3/6'), findsOneWidget);
+    await t.tap(find.text('7 günlük seri · 3/6'));
+    await t.pumpAndSettle();
+    expect(find.text('Bugün 3/6'), findsOneWidget);
+    expect(find.text('En uzun serin: 9 gün'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle_rounded), findsNWidgets(3));
+    // Rewards stay unmentioned until the server flag opens them.
+    expect(find.textContaining('+20 coin'), findsNothing);
+    await t.tap(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.text(GameCatalog.dailyAnagram.title),
+      ),
+    );
+    await t.pumpAndSettle();
+    expect(opened, GameCatalog.dailyAnagram);
+
+    c.streak = const DailyStreak(streak: 0, repairStreak: 4);
+    await open(
+      t,
+      Scaffold(
+        body: AppHomePage(
+          resources: c,
+          loadResources: false,
+          onOpen: (game) => opened = game,
+        ),
+      ),
+    );
+    await t.tap(find.text('Seriyi kurtar · 4 gün'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Serimi koru'));
+    await t.pumpAndSettle();
+    expect(opened, GameCatalog.daily);
+    c.streak = null;
+    await open(
+      t,
+      Scaffold(body: AppHomePage(resources: c, loadResources: false)),
+    );
+    expect(find.textContaining('günlük seri'), findsNothing);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
   testWidgets(
     'all eight collection links open the existing collection routes',
     (t) async {

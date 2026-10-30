@@ -65,6 +65,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // flutter_local_notifications schedules with java.time on old APIs.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -118,6 +120,7 @@ dependencies {
     // Google Mobile Ads pulls WorkManager transitively; older resolved versions
     // can crash during AndroidX Startup while creating WorkDatabase.
     implementation("androidx.work:work-runtime:2.11.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
 flutter {

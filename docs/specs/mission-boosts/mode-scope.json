@@ -1,0 +1,392 @@
+[
+  {
+    "grup": "Solo",
+    "mod": "Club Manager",
+    "destek": "Rakip analizi; transfer gözlemci raporu",
+    "politika": "Yalnız solo / rekora ve lige göre kontrollü"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Squad Challenge",
+    "destek": "Kriter uyum filtresi; 1 aday tavsiyesi",
+    "politika": "Ödüllü denemede puan azalt; sahte veri yok"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Hoca 11",
+    "destek": "Ülke/mevki; hoca-oyuncu kulüp izi",
+    "politika": "0 ücretsiz; mevcut 3 ipucu slotu korunur"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Kadro Kasası",
+    "destek": "Gizli oyuncunun ülkesi veya kariyer izi",
+    "politika": "0 ücretsiz; yıldız/ustalık ayrımı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Harf 11",
+    "destek": "Uygun mevki için bir aday örneği; harf",
+    "politika": "0 ücretsiz; 11/11 ustalık ayrımı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Career Puzzle",
+    "destek": "Eksik kulüp / dönem / sıra ipucu",
+    "politika": "0 ücretsiz; mevcut seri sınırlaması korunur"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Transfer Detective",
+    "destek": "Mevki; yıl; ülke; ilk/son harf",
+    "politika": "0 ücretsiz; oturum bazlı hak"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Gizemli Futbolcu",
+    "destek": "Ek kariyer bilgisi; harf; eleme",
+    "politika": "Otomatik cevap yardımını ayrı değerlendir"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Kariyer Zinciri - Klasik",
+    "destek": "Geçerli köprü / ortak kulüp bilgisi",
+    "politika": "Yardımlı çözüm ve PAR ayrımı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Kariyer Zinciri - Sprint",
+    "destek": "Şimdilik ipucu yok",
+    "politika": "Süre / skor adaleti; zorla reklam gösterme"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Sahte Kulüp - Sonsuz Seri",
+    "destek": "Bir yanlış seçeneği ele",
+    "politika": "Yardımlı seri ayrı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Sahte Kulüp - Hız Serisi",
+    "destek": "Başlangıç V1: ipucu yok",
+    "politika": "Sıralama adaleti; reklamla duraklatma yok"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Futbol Lingo",
+    "destek": "İlk harf; son harf; harf karışımı",
+    "politika": "Mevcut SKU’ları yeniden kullan"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Passaparola - Mini/Günlük",
+    "destek": "Bir soruda bağlam veya ilk harf",
+    "politika": "Günlük ortak 1 reklam / run"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Passaparola - Haftalık",
+    "destek": "Bir soruda bağlam / harf ipucu",
+    "politika": "Ayrı hafta kilidi; süre canlı işler"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Anagram - Günlük",
+    "destek": "Ülke + mevki; ilk harf",
+    "politika": "Ücretsiz isteğe bağlı ipuçlarını kaldır"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Anagram - 8’li Pratik",
+    "destek": "Ülke + mevki; ilk harf",
+    "politika": "Skor cezası; 8 tur oturumu"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Burst - Hız Atağı",
+    "destek": "Yok",
+    "politika": "Süreli skor: yardım kapalı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Burst - Dayanıklılık",
+    "destek": "Ek bilgi; +1 can (koşullu)",
+    "politika": "Yardımlı rekor; 2 pas kuralı ayrı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Pyramid",
+    "destek": "Bağlantı / aday türü ipucu",
+    "politika": "Solvability sertifikası olmadan açma"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Matching",
+    "destek": "Tek çift önerisi",
+    "politika": "Normal en iyi hamle rekorundan ayrı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "This or That",
+    "destek": "Kişisel tercihe yardımcı ürün yok",
+    "politika": "Bilgi panosu faydalı ama kilitlenmesin"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Higher or Lower",
+    "destek": "İstatistik aralığı (antrenman)",
+    "politika": "Normal rekor ve ödül avantajı yok"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Blind Ranking",
+    "destek": "Sıra aralığı (antrenman)",
+    "politika": "Normal 100 puan/ustalık için yasak"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Ortak Oyuncu Keşfi",
+    "destek": "İsteğe bağlı bir kariyer bağlantısı",
+    "politika": "Keşif araması/temel sonuç ücretsiz"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Grid - Solo Klasik",
+    "destek": "Satır/sütun aday ipucu",
+    "politika": "Ayrı modId ve yardım bayrağı"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Grid - Solo Tersten",
+    "destek": "Ortak kriter türü",
+    "politika": "Gerçek kriter ID ile doğrulanır"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Grid - Solo Rastgele",
+    "destek": "İki kulüp için örnek kariyer bağı",
+    "politika": "Doğrudan cevabı açmayan temel ipucu"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Sorusu",
+    "destek": "1 yanlış seçeneği ele",
+    "politika": "Ödüllü reklam veya Coin; günde tek hak"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Maçları / Takvim",
+    "destek": "İki kulüp için bir kariyer/ülke ipucu",
+    "politika": "Günlük sabit sorunun rekabet ödülü ayrılır"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günlük Mücadele",
+    "destek": "Bir uygun ortak oyuncu ipucu",
+    "politika": "Liderlik tablosunda yardımlı bayrak"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Futbolcusu",
+    "destek": "İlk tahminden sonra isim/ülke ipucu",
+    "politika": "Mevcut reklamlı yardım korunur; ortak limite katılır"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Lingo’su",
+    "destek": "3. tahminden sonra bağlam ya da harf",
+    "politika": "Ücretsiz bağlam ipucu kaldır"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Mini Passaparola",
+    "destek": "Bir harfin sorusunda ek bağlam",
+    "politika": "Haftalık ile farklı oturum ID"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Anagramı",
+    "destek": "Ülke/mevki ya da ilk harf",
+    "politika": "Cevabı açıp bitir = teslimiyet; ipucu sayılmaz"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Passaparola Haftalık",
+    "destek": "Seçili soruda ek bağlam / ilk harf",
+    "politika": "240 sn saati reklam sırasında adil yönet"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Ortak Oyuncu Keşfi",
+    "destek": "İsteğe bağlı bağlantı örneği",
+    "politika": "Bilgi taraması tamamen ücretli hâle gelmez"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Player Journey",
+    "destek": "Ülke; mevki; baş harf",
+    "politika": "3 aşamalı ücretsiz yardımın yerine ücretli hak"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "WHAT IF",
+    "destek": "Tarihsel bağlam; güçlü bilgi",
+    "politika": "Ücretsiz + 10 Coin adımını aynı modele geçir"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "UCL Moments",
+    "destek": "Sezon/maç bilgisi",
+    "politika": "Bedelsiz buton kaldır; cevap değişmez"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Türk Futbolu: Nostalji",
+    "destek": "Dönem ve güçlü oyuncu/kulüp ipucu",
+    "politika": "6 Coin güçlü yardım / Pro geçişi"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "International Glory",
+    "destek": "Ülke/tur/olay bilgisi",
+    "politika": "Ücretsiz temel + Pro yardımı dönüştür"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Dynasties",
+    "destek": "Kulüp dönemi; TD/kupa bilgisi",
+    "politika": "Hikâye arşivi / geri dönme korunsun"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Football Docu-Series",
+    "destek": "Belgesel bağlamı; tarihsel olay",
+    "politika": "Tekrar ödül yok, güçlü yardım farklı seviyede"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Derby Day",
+    "destek": "Rekabet dönemi; maç/oyuncu ipucu",
+    "politika": "Ücretsiz/Pro güçlü yardım dönüştür"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Football Loto",
+    "destek": "Adayın mevki/ülke bilgisi",
+    "politika": "Bot normal skorundan ayrı; süre adil"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Takım Yarışı",
+    "destek": "Ortak oyuncuya ülke/mevki ipucu",
+    "politika": "Yardımlı sonuç normal zafer sayılmaz"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Klasik Grid",
+    "destek": "Doğrulanmış oyuncu bağlantısı",
+    "politika": "Tek kutuda oyuncu önerisi gerekiyorsa antrenman"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Tersten Grid",
+    "destek": "Kriter türünü daraltma",
+    "politika": "Alternatif doğru yanıtlar cezalandırılmamalı"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Rastgele Grid",
+    "destek": "Kulüp bağlantı örneği",
+    "politika": "Bot seviyeleri değişmeyecek"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Futbol Çinko",
+    "destek": "Uygun bir kutu için bilgi",
+    "politika": "Kural gereği pas sıfır puandır"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Rastgele Beşler",
+    "destek": "Bir adayın beş kulüpten kaçına uyduğu",
+    "politika": "Pas ve edit düzeltmesi ücretsiz normal akış"
+  },
+  {
+    "grup": "Online",
+    "mod": "Kulüp × Kulüp",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Kulüp × Ülke",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Grid - Klasik",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Grid - Rastgele",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Grid - Ters",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Rastgele Beş",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Çinko",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Football Loto",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Club Manager",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Kariyer Yarışı",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Transfer Düellosu",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Gizem Düellosu",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  },
+  {
+    "grup": "Online",
+    "mod": "Sahte Kulüp Düellosu",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı"
+  }
+]

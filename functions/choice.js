@@ -1,5 +1,6 @@
 "use strict";
 const E = require("./choice_engine");
+const B = require("./boosts");
 const energy = require("./energy");
 const {dayKey} = require("./rewarded_ads");
 const {validId} = require("./career_transfer");
@@ -21,7 +22,8 @@ function finalize(s, r, time, rewarded, c = catalog) {
   }
   if (r.completed) s.archive[r.id] = E.publicRun(c, r);
   if (!rewarded || r.practice || r.mode === "this_or_that" && !r.contentVerified) {
-    r.rewardReason = r.practice ? "Misafir/deneme oyunu; ödül yok." : "Ödüller veya içerik onayı henüz açılmadı.";
+    r.rewardReason = r.training ? "Antrenman: normal rekor, ödül ve ustalığa eklenmez." :
+      r.practice ? "Misafir/deneme oyunu; ödül yok." : "Ödüller veya içerik onayı henüz açılmadı.";
     if (r.completed) s.archive[r.id] = E.publicRun(c, r); return;
   }
   function award(id, coins) {
@@ -84,7 +86,17 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       error = null; const e = normalize(structuredClone(raw)); e.choice = state(e.choice);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.choice, e, time); e.updatedAt = time; return e;
+        fn(e.choice, e, time);
+        for (const r of Object.values(e.choice.sessions)) {
+          B.recoverUnused(e, r, time, (_, scope) => {
+            try {
+              return clue(r).target === scope.targetId;
+            } catch (_) {
+              return false;
+            }
+          });
+        }
+        e.updatedAt = time; return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -129,6 +141,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         themes: Object.values(catalog.themes).map(({formats, ...t}) => ({...t,
           formats: Object.entries(formats).map(([size, f]) => ({size: Number(size), approved: f.approved}))})),
         personal: Object.values(catalog.personal).map(({ids, ...t}) => ({...t, count: list(ids).length}))},
+      trainingAvailable: ["higher_lower", "blind_ranking"].includes(input.mode) &&
+        (await B.policyFor(db, uid, await isLinked(uid)))?.readyModes?.[input.mode + "_training"] === true,
       energyCost: await cost(uid, input.mode), linked: await isLinked(uid),
       session: decorate(E.publicRun(c, r)), records: s.records, achievements: s.claims, paid: s.paid,
       daily: s.daily[input.mode + "__" + dayFor(input.mode, now())] || {count: 0, coins: 0},
@@ -137,7 +151,16 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       nextOffset: offset + 20 < archive.length ? offset + 20 : null};
   }
   async function status(uid, input) {
-    check(input); await settle(uid); return result(uid, input);
+    check(input);
+    await change(uid, (s, _, t) => {
+      for (const r of Object.values(s.sessions)) {
+        if (r.training && !r.finished && r.expiresAt <= t) {
+          r.finished = true; r.reason = "Antrenman oturumu sona erdi.";
+          finalize(s, hydrate(r), t, false);
+        }
+      }
+    });
+    await settle(uid); return result(uid, input);
   }
   async function prepare(uid, input) {
     check(input); const p = {...defaults, ...await getPolicy()};
@@ -145,7 +168,17 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     if (!validId(input.requestId) || input.version !== catalog.version) fail("invalid-argument", "Veriyi yenile.");
     const draft = E.create(catalog, input, now()); draft.ownerUid = uid;
     const linked = await isLinked(uid);
-    const charge = draft.contentVerified === false ? 0 : await cost(uid, input.mode);
+    if (input.training != null && typeof input.training !== "boolean") fail("invalid-argument", "Geçersiz antrenman.");
+    if (input.training === true) {
+      if (!linked || !["higher_lower", "blind_ranking"].includes(draft.mode) || draft.type === "personal") {
+        fail("permission-denied", "Bu oyun antrenman desteği kullanamaz.");
+      }
+      draft.training = true; draft.expiresAt = now() + energy.policy.resumeMs;
+      draft.adCredits = 0; draft.adGranted = 0; draft.adReceipts = {}; draft.trainingHints = {};
+      B.pin(draft, await B.policyFor(db, uid, linked));
+      if (!B.paid(draft)) fail("failed-precondition", "Antrenman desteği henüz açılmadı.");
+    }
+    const charge = draft.training || draft.contentVerified === false ? 0 : await cost(uid, input.mode);
     const rollout = {...energy.policy.rollout, ...await getRollout()};
     if (charge && (!Number.isSafeInteger(input.clientVersion) || input.clientVersion < rollout.minClientVersion)) {
       fail("failed-precondition", "Uygulamayı güncelle.");
@@ -154,7 +187,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     await change(uid, (s, e, t) => {
       const existing = s.sessions[draft.id];
       if (existing) {
-        for (const k of ["mode", "size", "bracketId", "metricId", "themeId", "type"]) {
+        for (const k of ["mode", "size", "bracketId", "metricId", "themeId", "type", "training"]) {
           if ((existing[k] || null) !== (draft[k] || null)) fail("invalid-argument", "İstek seçimi değişti.");
         }
         return;
@@ -166,7 +199,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (e.energy.sessions[old.id]?.status === "reserved") e.energy.sessions[old.id].status = "cancelled";
       }
       if (charge && e.energy.balance - energy.held(e.energy) < 1) fail("resource-exhausted", "1 enerji gerekli.");
-      draft.practice = !linked || draft.contentVerified === false;
+      draft.practice = !!draft.training || !linked || draft.contentVerified === false;
       draft.preparedUntil = t + energy.policy.reservationMs; draft.energyReserved = charge === 1;
       if (charge) {
         e.energy.sessions[draft.id] = {mode: draft.mode, unitId: "session", key: "",
@@ -181,7 +214,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     if (!r || r.mode !== input.mode) fail("not-found", "Oturum bulunamadı.");
     if (!validId(input.requestId)) fail("invalid-argument", "Olay kimliği gerekli.");
     const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "candidateId",
-      "questionId", "direction", "slot"].filter((k) => input[k] != null).map((k) => [k, input[k]]));
+      "questionId", "direction", "slot",
+      ...(B.paid(r) ? ["paymentSource", "boostId", "expectedPriceCoins"] : [])]
+        .filter((k) => input[k] != null).map((k) => [k, input[k]]));
     const fp = hash(JSON.stringify(canonical));
     if (r.actions[input.requestId]) {
       if (r.actions[input.requestId] !== fp) fail("invalid-argument", "Aynı olay değiştirilemez."); return;
@@ -206,7 +241,18 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       r.phase = "active"; r.startedAt = t;
     } else {
       if (r.phase !== "active") fail("failed-precondition", "Önce başlat.");
-      E.act(c, r, input); finalize(s, r, t, policy.rewardsEnabled && linked, c);
+      if (input.action === "hint") {
+        if (!linked || !r.training || !B.paid(r)) fail("permission-denied", "Yalnız antrenmanda destek alınabilir.");
+        const info = clue(r, c);
+        if (input.questionId !== info.target) fail("aborted", "Gösterilen soru değişti. Yenile.");
+        B.consume(e, r, input, "boost_basic", info.target, {text: info.text}, t);
+        (r.trainingHints ||= {})[info.target] = info.text;
+      } else {
+        if (r.training && r.expiresAt <= t && input.action !== "finish") {
+          fail("failed-precondition", "Antrenman oturumu sona erdi. Yenile.");
+        }
+        E.act(c, r, input); finalize(s, r, t, policy.rewardsEnabled && linked, c);
+      }
     }
     r.actions[input.requestId] = fp; r.revision++; s.sessions[r.id] = r;
   }
@@ -221,7 +267,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const linked = await isLinked(uid);
     await change(uid, (s, e, t) => {
       for (const ev of events) {
-        if (ev.mode !== input.mode || ev.sessionId !== r.id || ["confirm", "cancel"].includes(ev.action)) {
+        if (ev.mode !== input.mode || ev.sessionId !== r.id || ["confirm", "cancel", "hint"].includes(ev.action)) {
           fail("invalid-argument", "Günlük oturumu uyuşmuyor.");
         }
         apply(s, e, t, ev, c, p, linked);
@@ -237,6 +283,51 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     await change(uid, (s, e, t) => apply(s, e, t, input, c, p, linked));
     await settle(uid); return result(uid, input);
   }
-  return {status, prepare, act, replay};
+  async function prepareHint(uid, placement, input) {
+    const r = hydrate((await read(uid)).sessions[input.sessionId]);
+    if (placement !== "choice_training_hint" || !await isLinked(uid) || !B.paid(r)) {
+      fail("permission-denied", "Aktif antrenman gerekli.");
+    }
+    const info = clue(r, await pinned(r.dataVersion));
+    if (r.expiresAt <= now() || input.boostId !== "boost_basic") fail("failed-precondition", "Destek kullanılamaz.");
+    return B.adBenefit(r, {amount: 0, claimKey: "choice_hint_" + r.id + "_" + r.adGranted,
+      context: {sessionId: r.id, mode: r.mode, targetId: info.target}}, "boost_basic");
+  }
+  async function settleHint(uid, receipt) {
+    const r = hydrate((await read(uid)).sessions[receipt.context?.sessionId]);
+    const c = r ? await pinned(r.dataVersion) : catalog;
+    await change(uid, (s, e, t) => {
+      const r = hydrate(s.sessions[receipt.context?.sessionId]); let canApply = false;
+      try {
+        canApply = clue(r, c).target === receipt.context?.targetId;
+      } catch (_) {/* recover stock */}
+      if (B.recoverAd(e, r, receipt, t, "boost_basic", canApply)) return;
+      if (!r.adReceipts?.[receipt.id]) B.grantAd(r, receipt);
+    });
+  }
+  return {status, prepare, act, replay, prepareHint, settleHint};
 }
-module.exports = {createService, finalize, state, dayFor, defaults};
+function clue(r, c = catalog) {
+  r = hydrate(r);
+  if (!r?.training || r.finished || r.phase !== "active" || !B.paid(r)) {
+    fail("failed-precondition", "Aktif antrenman gerekli.");
+  }
+  const target = r.mode === "higher_lower" ? r.question?.id : r.orderedCandidateIds[r.placements.length];
+  if (!target || r.answered || r.trainingHints?.[target]) fail("failed-precondition", "Bu soru için destek yok.");
+  if (r.mode === "higher_lower") {
+    const value = r.question.knownSide === 0 ? r.question.rightValue : r.question.leftValue;
+    const rows = E.list(c.metrics[r.metricId]?.groups?.[r.scope]);
+    const values = rows.map((x) => x.value);
+    if (!values.length || !Number.isFinite(value)) fail("failed-precondition", "Doğrulanmış aralık bulunamadı.");
+    const step = Math.max(1, Math.ceil((Math.max(...values) - Math.min(...values)) / 5));
+    const low = Math.floor(value / step) * step;
+    return {target, low, high: low + step, text: `Gizli değer ${low}–${low + step} aralığında.`};
+  }
+  if (r.mode !== "blind_ranking" || r.type !== "objective") fail("permission-denied", "Bu listede destek yok.");
+  const value = r.values?.[target]; const values = Object.values(r.values || {});
+  if (!Number.isFinite(value) || values.length !== r.size) fail("failed-precondition", "Doğrulanmış sıra yok.");
+  const low = Math.max(1, values.filter((v) => v > value).length);
+  const high = Math.min(r.size, values.filter((v) => v >= value).length + 1);
+  return {target, low, high, text: `İstatistik sırası ${low}–${high} aralığında (eşit değerler birlikte).`};
+}
+module.exports = {createService, finalize, state, dayFor, defaults, clue};

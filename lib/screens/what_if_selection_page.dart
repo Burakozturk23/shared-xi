@@ -1,3 +1,4 @@
+import '../widgets/story_support_panel.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -187,6 +188,7 @@ class _WhatIfPlayPageState extends State<WhatIfPlayPage>{
       ],
       if(phase=='task' && route!=null)..._task(route,locked),
       if(phase=='result' && route!=null && c.ends(s).contains(route.id))...[
+        StorySupportPanel(mode: 'what_if', targetId: route.task.id, resultOnly: true, legacy: const SizedBox.shrink()),
         _WhatIfHero(eyebrow:route.fiction?'ALTERNATİF SON · KURGU':'GERÇEK TARİH · SONUÇ',title:route.label,
           subtitle:'${c.ends(s).length}/2 son keşfedildi · ${c.ends(s).length==2?'Çift evren kartı':'Kader kartı açıldı'}'),
         const SizedBox(height:18),PitchPanel(key:const ValueKey('what-if-ending'),child:Text(route.ending,style:Theme.of(context).textTheme.bodyLarge)),
@@ -226,6 +228,9 @@ class _WhatIfPlayPageState extends State<WhatIfPlayPage>{
         await c.submit(s);if(c.phase(s)=='result')unawaited(c.sync());
       },child:const Text('Kontrol et ve sonu aç')),
       const SizedBox(height:12),
+      StorySupportPanel(mode: 'what_if', targetId: t.id, disabled: locked,
+        knownBasic: c.freeHintShown(s) ? t.hint : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if(!c.freeHintShown(s))TextButton.icon(key:const ValueKey('what-if-free-hint'),onPressed:locked?null:()=>c.freeHint(s),icon:const Icon(Icons.lightbulb_outline),label:const Text('İlk ipucu ücretsiz'))
       else _Notice(t.hint),
       if(c.hintUnlocked(s))_Notice(t.strongHint)
@@ -237,6 +242,7 @@ class _WhatIfPlayPageState extends State<WhatIfPlayPage>{
           OutlinedButton(onPressed:c.syncing||locked||!c.linked?null:()=>c.action('hint',input),child:const Text('10 Coin ile destek')),
         ]),
       ],
+      ])),
       TextButton(onPressed:locked?null:()=>c.setPhase(s,'choice'),child:const Text('Karar ekranına dön')),
     ];
   }

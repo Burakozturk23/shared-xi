@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const E = require("./arcade_engine");
 const energy = require("./energy");
 const {dayKey} = require("./rewarded_ads");
@@ -22,9 +23,10 @@ function check(input) {
 function finalize(s, r, time, rewarded) {
   if (!r.finished || r.recorded || r.phase !== "active") return;
   r.recorded = true; r.finishedAt = time;
-  const key = recordKey(r) + "__" + r.dataVersion;
+  const key = recordKey(r) + "__" + r.dataVersion + (r.assisted ? "__assisted" : "");
   const rec = s.records[key] ||= {mode: r.mode, style: r.style, pairType: r.pairType, difficulty: r.difficulty,
     dataVersion: r.dataVersion, sessions: 0, bestScore: 0, bestRounds: 0, bestStreak: 0, bestCorrect: 0};
+  rec.assisted = r.assisted === true;
   rec.sessions++; rec.bestScore = Math.max(rec.bestScore, r.score); rec.bestRounds = Math.max(rec.bestRounds, r.rounds);
   rec.bestStreak = Math.max(rec.bestStreak, r.bestStreak); rec.bestCorrect = Math.max(rec.bestCorrect, r.correct);
   if (!r.hints) rec.bestNoHintScore = Math.max(rec.bestNoHintScore || 0, r.score);
@@ -58,7 +60,7 @@ function finalize(s, r, time, rewarded) {
   } else if (r.won) {
     const coins = r.mode === "pyramid" ? {easy: 2, normal: 2, hard: 3} : {easy: 1, normal: 2, hard: 2};
     award(`${r.mode}:v1:${r.difficulty}`, coins[r.difficulty]);
-    if (r.difficulty === "hard" && (r.mode === "pyramid" ? r.wrong === 0 &&
+    if (!r.assisted && r.difficulty === "hard" && (r.mode === "pyramid" ? r.wrong === 0 &&
       r.hints === 0 : r.moves <= 24)) award(`${r.mode}:v1:master`, 3);
   }
   const qualifies = r.mode === "burst" ? r.rounds >= (r.style === "speed" ? 2 : 3) : r.won && r.difficulty !== "easy";
@@ -83,7 +85,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       error = null; const e = normalize(structuredClone(raw));
       e.arcade = state(e.arcade); e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.arcade, e, time); e.updatedAt = time; return e;
+        for (const r of Object.values(e.arcade.sessions)) B.recoverUnused(e, r, time);
+        fn(e.arcade, e, time);
+        for (const r of Object.values(e.arcade.sessions)) B.recoverUnused(e, r, time); e.updatedAt = time; return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -135,7 +139,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
           b) => b.finishedAt - a.finishedAt)
           .slice(0, 10).map((x) => ({id: x.id, score: x.score, rounds: x.rounds, moves: x.moves,
             activeMs: x.activeMs, difficulty: x.difficulty, style: x.style, pairType: x.pairType,
-            finishedAt: x.finishedAt}))};
+            finishedAt: x.finishedAt, assisted: x.assisted === true}))};
   }
   async function status(uid, input) {
     check(input);
@@ -159,6 +163,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     await settle(uid); return result(uid, input.mode, input.kitVersion || "none");
   }
   async function prepare(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input);
     if (!validId(input.requestId) || input.version !== catalog.version) {
       fail("invalid-argument",
@@ -173,6 +178,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     }
     // All expensive selection/solver work precedes the energy reservation.
     const draft = E.create(catalog, input, now());
+    B.pin(draft, boostPolicy);
     await db.ref(`arcadeCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
     await change(uid, (s, e, time) => {
       if (s.sessions[input.requestId]) {
@@ -196,13 +202,14 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       s.sessions[draft.id] = draft; s.active[draft.mode] = draft.id;
       const old = Object.values(s.sessions).filter((x) => x.finished &&
         !Object.values(s.active).includes(x.id)).sort((a, b) => b.createdAt - a.createdAt);
-      for (const x of old.slice(30)) delete s.sessions[x.id];
+      for (const x of old.slice(30)) if (!(x.adCredits > 0)) delete s.sessions[x.id];
     });
     return result(uid, input.mode, "none");
   }
   function applyRequest(s, e, t, input, c, p, linked) {
     const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "questionId",
-      "entityId", "query", "slotId", "cardId", "elapsedMs"].filter((k) => input[k] != null).map((k) => [k, input[k]]));
+      "entityId", "query", "slotId", "cardId", "elapsedMs", "boostId", "paymentSource", "expectedPriceCoins"]
+        .filter((k) => input[k] != null).map((k) => [k, input[k]]));
     const fp = hash(JSON.stringify(canonical));
     const r = hydrate(s.sessions[input.sessionId]);
     if (!r || r.mode !== input.mode || !validId(input.requestId)) fail("invalid-argument", "Geçersiz olay.");
@@ -249,7 +256,15 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         r.finished = true; r.reason = "24 saatlik devam süresi doldu.";
       }
       E.tick(c, r, eventTime);
-      if (!r.finished) E.act(c, r, input, eventTime);
+      if (!r.finished) {
+        const previousHints = r.hints;
+        E.act(c, r, input, eventTime);
+        if (input.action === "hint" && B.paid(r) && r.hints > previousHints) {
+          B.consume(e, r, input, r.mode === "burst" ? "boost_basic" : "boost_strong",
+              r.mode === "pyramid" ? "slot:" + input.slotId : r.mode === "matching" ? "pair" :
+                "hint:" + previousHints, r.mode === "matching" ? r.matchingHint : {text: r.hint}, t);
+        }
+      }
       finalize(s, r, t, p.rewardsEnabled && linked && !r.practice);
     }
     r.actions[input.requestId] = fp; r.revision++;
@@ -264,6 +279,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       fail("invalid-argument", "Geçersiz çevrimdışı olay paketi.");
     }
     const saved = hydrate((await read(uid)).sessions[events[0].sessionId]);
+    if (B.paid(saved) && events.some((e) => e.action === "hint")) {
+      fail("failed-precondition", "Ücretli destek çevrimiçi doğrulanır; hak harcanmadı.");
+    }
     if (!saved || saved.mode !== "burst") fail("not-found", "Kayıt bu hesaba ait değil.");
     const c = await pinned(saved.dataVersion); const p = {...defaults, ...await getPolicy()};
     const linked = await isLinked(uid);
@@ -316,14 +334,18 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       r.phase !== "active" || r.finished || r.expiresAt <= now() || r.adGranted >= 2 ||
       !r.question.answers.some((id) => !r.found.includes(id) &&
         !r.hinted.includes(id))) fail("failed-precondition", "Bu oturumda reklam ipucu kullanılamaz.");
-    return {amount: 0, claimKey: `burst_hint_${r.id}_${r.adGranted}`, context: {sessionId: r.id, credit: r.adGranted}};
+    return B.adBenefit(r, {amount: 0, claimKey: `burst_hint_${r.id}_${r.adGranted}`,
+      context: {sessionId: r.id, credit: r.adGranted}}, context?.boostId);
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, t) => {
+    await change(uid, (s, e, t) => {
       const r = hydrate(s.sessions[receipt.context?.sessionId]);
+      if (B.recoverAd(e, r, receipt, t)) {
+        if (r) s.sessions[r.id] = r; return;
+      }
       if (!r || r.mode !== "burst" || r.style !== "survival" || r.finished || r.expiresAt <= t ||
         r.adReceipts[receipt.id] || r.adGranted >= 2 || r.adGranted !== receipt.context.credit) return;
-      r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
+      B.grantAd(r, receipt); s.sessions[r.id] = r;
     });
   }
   return {status, prepare, act, replay, search, settle, prepareHint, settleHint};

@@ -15,8 +15,8 @@ function accepts(match, answers) {
   return Array.isArray(answers) && answers.length === match.answerKeys.length &&
     answers.every((id, i) => typeof id === "string" && id === match.answerKeys[i]);
 }
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("internationalGloryState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("internationalGloryState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function accrue(s) {
     const earn = (id, coins, xp) => {
@@ -82,6 +82,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   async function hint(uid, input, eligible = true) {
     if (input.version !== catalog.version) throw new RewardError("failed-precondition", "İçeriği güncelle.");
     const m = matchOf(input.matchId);
+    await documentRef?.guardHint?.(uid, m.id);
     if (!eligible) throw new RewardError("permission-denied", "Ek yardım için Google hesabına bağlan.");
     const s = await get(uid);
     if (!s.hints[m.id]) {

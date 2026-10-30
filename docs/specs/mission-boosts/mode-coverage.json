@@ -1,0 +1,807 @@
+[
+  {
+    "grup": "Solo",
+    "mod": "Club Manager",
+    "destek": "Rakip analizi; transfer gözlemci raporu",
+    "politika": "Yalnız solo / rekora ve lige göre kontrollü",
+    "status": "deferred",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": null,
+    "note": "Kariyer, kadro, kasa, transfer ve maç simülasyonu tamamen cihazda; sunucu sahipli sezon yok. Bedelsiz isteğe bağlı ipucu da yok. Ücretli rakip analizi/gözlemci raporu için önce sezon motorunun sunucuya taşınması gerekir."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Squad Challenge",
+    "destek": "Kriter uyum filtresi; 1 aday tavsiyesi",
+    "politika": "Ödüllü denemede puan azalt; sahte veri yok",
+    "status": "server_paid",
+    "modeIds": [
+      "squad_challenge"
+    ],
+    "serverModule": "squad_support.js",
+    "tests": "squad_support.test.js",
+    "note": "Checkpoint 11"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Hoca 11",
+    "destek": "Ülke/mevki; hoca-oyuncu kulüp izi",
+    "politika": "0 ücretsiz; mevcut 3 ipucu slotu korunur",
+    "status": "server_paid",
+    "modeIds": [
+      "coach_xi"
+    ],
+    "serverModule": "three_modes.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Kadro Kasası",
+    "destek": "Gizli oyuncunun ülkesi veya kariyer izi",
+    "politika": "0 ücretsiz; yıldız/ustalık ayrımı",
+    "status": "server_paid",
+    "modeIds": [
+      "squad_vault"
+    ],
+    "serverModule": "three_modes.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Harf 11",
+    "destek": "Uygun mevki için bir aday örneği; harf",
+    "politika": "0 ücretsiz; 11/11 ustalık ayrımı",
+    "status": "server_paid",
+    "modeIds": [
+      "letter11"
+    ],
+    "serverModule": "three_modes.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Career Puzzle",
+    "destek": "Eksik kulüp / dönem / sıra ipucu",
+    "politika": "0 ücretsiz; mevcut seri sınırlaması korunur",
+    "status": "server_paid",
+    "modeIds": [
+      "career"
+    ],
+    "serverModule": "career_transfer.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Transfer Detective",
+    "destek": "Mevki; yıl; ülke; ilk/son harf",
+    "politika": "0 ücretsiz; oturum bazlı hak",
+    "status": "server_paid",
+    "modeIds": [
+      "transfer"
+    ],
+    "serverModule": "career_transfer.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Gizemli Futbolcu",
+    "destek": "Ek kariyer bilgisi; harf; eleme",
+    "politika": "Otomatik cevap yardımını ayrı değerlendir",
+    "status": "server_paid",
+    "modeIds": [
+      "mystery"
+    ],
+    "serverModule": "mystery_chain.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Kariyer Zinciri - Klasik",
+    "destek": "Geçerli köprü / ortak kulüp bilgisi",
+    "politika": "Yardımlı çözüm ve PAR ayrımı",
+    "status": "server_paid",
+    "modeIds": [
+      "mastermind"
+    ],
+    "serverModule": "mystery_chain.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Kariyer Zinciri - Sprint",
+    "destek": "Şimdilik ipucu yok",
+    "politika": "Süre / skor adaleti; zorla reklam gösterme",
+    "status": "no_support_by_rule",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "Süreli skor; destek ürünü yok."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Sahte Kulüp - Sonsuz Seri",
+    "destek": "Bir yanlış seçeneği ele",
+    "politika": "Yardımlı seri ayrı",
+    "status": "server_paid",
+    "modeIds": [
+      "fake_endless"
+    ],
+    "serverModule": "fake_club.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Sahte Kulüp - Hız Serisi",
+    "destek": "Başlangıç V1: ipucu yok",
+    "politika": "Sıralama adaleti; reklamla duraklatma yok",
+    "status": "no_support_by_rule",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": null,
+    "note": "Sıralama adaleti; reklamla duraklatma yok."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Futbol Lingo",
+    "destek": "İlk harf; son harf; harf karışımı",
+    "politika": "Mevcut SKU’ları yeniden kullan",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_lingo"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Canlı katalogda Günün Lingo’su ile aynı rota (Checkpoint 12)."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Passaparola - Mini/Günlük",
+    "destek": "Bir soruda bağlam veya ilk harf",
+    "politika": "Günlük ortak 1 reklam / run",
+    "status": "server_paid",
+    "modeIds": [
+      "passa_daily"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Passaparola - Haftalık",
+    "destek": "Bir soruda bağlam / harf ipucu",
+    "politika": "Ayrı hafta kilidi; süre canlı işler",
+    "status": "server_paid",
+    "modeIds": [
+      "passa_weekly"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Anagram - Günlük",
+    "destek": "Ülke + mevki; ilk harf",
+    "politika": "Ücretsiz isteğe bağlı ipuçlarını kaldır",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_anagram"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Anagram - 8’li Pratik",
+    "destek": "Ülke + mevki; ilk harf",
+    "politika": "Skor cezası; 8 tur oturumu",
+    "status": "server_paid",
+    "modeIds": [
+      "anagram_practice"
+    ],
+    "serverModule": "anagram_practice.js",
+    "tests": "anagram_practice.test.js",
+    "note": "Checkpoint 13"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Burst - Hız Atağı",
+    "destek": "Yok",
+    "politika": "Süreli skor: yardım kapalı",
+    "status": "no_support_by_rule",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": null,
+    "note": "Süreli skor: yardım kapalı."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Burst - Dayanıklılık",
+    "destek": "Ek bilgi; +1 can (koşullu)",
+    "politika": "Yardımlı rekor; 2 pas kuralı ayrı",
+    "status": "server_paid",
+    "modeIds": [
+      "burst_survival"
+    ],
+    "serverModule": "arcade.js",
+    "tests": "arcade.test.js",
+    "note": "Checkpoint 2/3"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Pyramid",
+    "destek": "Bağlantı / aday türü ipucu",
+    "politika": "Solvability sertifikası olmadan açma",
+    "status": "server_paid",
+    "modeIds": [
+      "pyramid"
+    ],
+    "serverModule": "arcade.js",
+    "tests": "boosts.test.js",
+    "note": "Checkpoint 2"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Matching",
+    "destek": "Tek çift önerisi",
+    "politika": "Normal en iyi hamle rekorundan ayrı",
+    "status": "server_paid",
+    "modeIds": [
+      "matching"
+    ],
+    "serverModule": "arcade.js",
+    "tests": "matching_boost.test.js",
+    "note": "Checkpoint 6"
+  },
+  {
+    "grup": "Solo",
+    "mod": "This or That",
+    "destek": "Kişisel tercihe yardımcı ürün yok",
+    "politika": "Bilgi panosu faydalı ama kilitlenmesin",
+    "status": "no_support_by_rule",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "choice_boost.test.js",
+    "note": "Kişisel tercih; ücretli öneri yok."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Higher or Lower",
+    "destek": "İstatistik aralığı (antrenman)",
+    "politika": "Normal rekor ve ödül avantajı yok",
+    "status": "server_paid",
+    "modeIds": [
+      "higher_lower_training"
+    ],
+    "serverModule": "choice.js",
+    "tests": "choice_boost.test.js",
+    "note": "Yalnız antrenman (Checkpoint 9)."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Blind Ranking",
+    "destek": "Sıra aralığı (antrenman)",
+    "politika": "Normal 100 puan/ustalık için yasak",
+    "status": "server_paid",
+    "modeIds": [
+      "blind_ranking_training"
+    ],
+    "serverModule": "choice.js",
+    "tests": "choice_boost.test.js",
+    "note": "Yalnız objektif antrenman (Checkpoint 9)."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Ortak Oyuncu Keşfi",
+    "destek": "İsteğe bağlı bir kariyer bağlantısı",
+    "politika": "Keşif araması/temel sonuç ücretsiz",
+    "status": "free_read_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": null,
+    "note": "Salt okunur bilgi taraması; zaten görünen bilgiye ücret konmadı (Checkpoint 12)."
+  },
+  {
+    "grup": "Solo",
+    "mod": "Grid - Solo Klasik",
+    "destek": "Satır/sütun aday ipucu",
+    "politika": "Ayrı modId ve yardım bayrağı",
+    "status": "server_paid",
+    "modeIds": [
+      "solo_grid_classic"
+    ],
+    "serverModule": "grid_support.js",
+    "tests": "grid_support.test.js",
+    "note": "Checkpoint 15"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Grid - Solo Tersten",
+    "destek": "Ortak kriter türü",
+    "politika": "Gerçek kriter ID ile doğrulanır",
+    "status": "server_paid",
+    "modeIds": [
+      "solo_grid_reverse"
+    ],
+    "serverModule": "grid_support.js",
+    "tests": "grid_support.test.js",
+    "note": "Checkpoint 15"
+  },
+  {
+    "grup": "Solo",
+    "mod": "Grid - Solo Rastgele",
+    "destek": "İki kulüp için örnek kariyer bağı",
+    "politika": "Doğrudan cevabı açmayan temel ipucu",
+    "status": "server_paid",
+    "modeIds": [
+      "solo_grid_random"
+    ],
+    "serverModule": "grid_support.js",
+    "tests": "grid_support.test.js",
+    "note": "Checkpoint 15"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Sorusu",
+    "destek": "1 yanlış seçeneği ele",
+    "politika": "Ödüllü reklam veya Coin; günde tek hak",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_question"
+    ],
+    "serverModule": "daily_question.js",
+    "tests": "daily_question_boost.test.js",
+    "note": "Checkpoint 10"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Maçları / Takvim",
+    "destek": "İki kulüp için bir kariyer/ülke ipucu",
+    "politika": "Günlük sabit sorunun rekabet ödülü ayrılır",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_match"
+    ],
+    "serverModule": "daily_matches.js",
+    "tests": "daily_matches_boost.test.js",
+    "note": "Checkpoint 12"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günlük Mücadele",
+    "destek": "Bir uygun ortak oyuncu ipucu",
+    "politika": "Liderlik tablosunda yardımlı bayrak",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_match"
+    ],
+    "serverModule": "daily_matches.js",
+    "tests": "daily_matches_boost.test.js",
+    "note": "Eski DailyChallengeGamePage canlı katalogda yok; giriş Günün Maçları rotası (Checkpoint 12)."
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Futbolcusu",
+    "destek": "İlk tahminden sonra isim/ülke ipucu",
+    "politika": "Mevcut reklamlı yardım korunur; ortak limite katılır",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_footballer"
+    ],
+    "serverModule": "daily_footballer.js",
+    "tests": "daily_footballer_boost.test.js",
+    "note": "Checkpoint 14"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Lingo’su",
+    "destek": "3. tahminden sonra bağlam ya da harf",
+    "politika": "Ücretsiz bağlam ipucu kaldır",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_lingo"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Mini Passaparola",
+    "destek": "Bir harfin sorusunda ek bağlam",
+    "politika": "Haftalık ile farklı oturum ID",
+    "status": "server_paid",
+    "modeIds": [
+      "passa_daily"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Günün Anagramı",
+    "destek": "Ülke/mevki ya da ilk harf",
+    "politika": "Cevabı açıp bitir = teslimiyet; ipucu sayılmaz",
+    "status": "server_paid",
+    "modeIds": [
+      "daily_anagram"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Passaparola Haftalık",
+    "destek": "Seçili soruda ek bağlam / ilk harf",
+    "politika": "240 sn saati reklam sırasında adil yönet",
+    "status": "server_paid",
+    "modeIds": [
+      "passa_weekly"
+    ],
+    "serverModule": "daily_words.js",
+    "tests": "daily_words_boost.test.js",
+    "note": "Checkpoint 7"
+  },
+  {
+    "grup": "Günlük ve keşif",
+    "mod": "Ortak Oyuncu Keşfi",
+    "destek": "İsteğe bağlı bağlantı örneği",
+    "politika": "Bilgi taraması tamamen ücretli hâle gelmez",
+    "status": "free_read_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": null,
+    "note": "Salt okunur bilgi taraması (Checkpoint 12)."
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Player Journey",
+    "destek": "Ülke; mevki; baş harf",
+    "politika": "3 aşamalı ücretsiz yardımın yerine ücretli hak",
+    "status": "server_paid",
+    "modeIds": [
+      "player_journey"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "WHAT IF",
+    "destek": "Tarihsel bağlam; güçlü bilgi",
+    "politika": "Ücretsiz + 10 Coin adımını aynı modele geçir",
+    "status": "server_paid",
+    "modeIds": [
+      "what_if"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "UCL Moments",
+    "destek": "Sezon/maç bilgisi",
+    "politika": "Bedelsiz buton kaldır; cevap değişmez",
+    "status": "server_paid",
+    "modeIds": [
+      "ucl_moments"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Türk Futbolu: Nostalji",
+    "destek": "Dönem ve güçlü oyuncu/kulüp ipucu",
+    "politika": "6 Coin güçlü yardım / Pro geçişi",
+    "status": "server_paid",
+    "modeIds": [
+      "nostalgia"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "International Glory",
+    "destek": "Ülke/tur/olay bilgisi",
+    "politika": "Ücretsiz temel + Pro yardımı dönüştür",
+    "status": "server_paid",
+    "modeIds": [
+      "international_glory"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Dynasties",
+    "destek": "Kulüp dönemi; TD/kupa bilgisi",
+    "politika": "Hikâye arşivi / geri dönme korunsun",
+    "status": "server_paid",
+    "modeIds": [
+      "dynasties"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Football Docu-Series",
+    "destek": "Belgesel bağlamı; tarihsel olay",
+    "politika": "Tekrar ödül yok, güçlü yardım farklı seviyede",
+    "status": "server_paid",
+    "modeIds": [
+      "football_docu"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Hikâye",
+    "mod": "Derby Day",
+    "destek": "Rekabet dönemi; maç/oyuncu ipucu",
+    "politika": "Ücretsiz/Pro güçlü yardım dönüştür",
+    "status": "server_paid",
+    "modeIds": [
+      "derby_day"
+    ],
+    "serverModule": "story_support.js",
+    "tests": "story_support.test.js",
+    "note": "Checkpoint 8"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Football Loto",
+    "destek": "Adayın mevki/ülke bilgisi",
+    "politika": "Bot normal skorundan ayrı; süre adil",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_loto"
+    ],
+    "serverModule": "bot_support.js",
+    "tests": "bot_support.test.js",
+    "note": "Checkpoint 16; süreli saat durmadığı için reklamla değil, çanta/Coin ile."
+  },
+  {
+    "grup": "Bot",
+    "mod": "Takım Yarışı",
+    "destek": "Ortak oyuncuya ülke/mevki ipucu",
+    "politika": "Yardımlı sonuç normal zafer sayılmaz",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_team_race"
+    ],
+    "serverModule": "bot_support.js",
+    "tests": "bot_support.test.js",
+    "note": "Checkpoint 16"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Klasik Grid",
+    "destek": "Doğrulanmış oyuncu bağlantısı",
+    "politika": "Tek kutuda oyuncu önerisi gerekiyorsa antrenman",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_grid_classic"
+    ],
+    "serverModule": "grid_support.js",
+    "tests": "grid_support.test.js",
+    "note": "Checkpoint 15"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Tersten Grid",
+    "destek": "Kriter türünü daraltma",
+    "politika": "Alternatif doğru yanıtlar cezalandırılmamalı",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_grid_reverse"
+    ],
+    "serverModule": "grid_support.js",
+    "tests": "grid_support.test.js",
+    "note": "Checkpoint 15"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Rastgele Grid",
+    "destek": "Kulüp bağlantı örneği",
+    "politika": "Bot seviyeleri değişmeyecek",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_grid_random"
+    ],
+    "serverModule": "grid_support.js",
+    "tests": "grid_support.test.js",
+    "note": "Checkpoint 15"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Futbol Çinko",
+    "destek": "Uygun bir kutu için bilgi",
+    "politika": "Kural gereği pas sıfır puandır",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_cinko"
+    ],
+    "serverModule": "bot_support.js",
+    "tests": "bot_support.test.js",
+    "note": "Checkpoint 16"
+  },
+  {
+    "grup": "Bot",
+    "mod": "Rastgele Beşler",
+    "destek": "Bir adayın beş kulüpten kaçına uyduğu",
+    "politika": "Pas ve edit düzeltmesi ücretsiz normal akış",
+    "status": "server_paid",
+    "modeIds": [
+      "bot_random_five"
+    ],
+    "serverModule": "bot_support.js",
+    "tests": "bot_support.test.js",
+    "note": "Checkpoint 16"
+  },
+  {
+    "grup": "Online",
+    "mod": "Kulüp × Kulüp",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Kulüp × Ülke",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Grid - Klasik",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Grid - Rastgele",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Grid - Ters",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Rastgele Beş",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Çinko",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Football Loto",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Club Manager",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Kariyer Yarışı",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Transfer Düellosu",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Gizem Düellosu",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  },
+  {
+    "grup": "Online",
+    "mod": "Sahte Kulüp Düellosu",
+    "destek": "Yok - kozmetik ürün olabilir",
+    "politika": "Dereceli ve Elo oyun avantajı kapalı",
+    "status": "online_cosmetic_only",
+    "modeIds": [],
+    "serverModule": null,
+    "tests": "online_boost_gate.test.js",
+    "note": "13 wireName boost whitelist, teklif ve politika dışında."
+  }
+]

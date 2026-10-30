@@ -26,6 +26,20 @@ void main() {
     },
   );
 
+  test('Assisted practice cannot replace normal or legacy records', () async {
+    SharedPreferences.setMockInitialValues({'sc_stars_theme': 3});
+    final progress = SquadChallengeProgressService();
+    await progress.saveScore('theme', 20);
+    await progress.saveScore('theme', 100, assisted: true);
+    expect((await progress.records())['theme'], 20);
+    expect(await progress.legacyCompletedThemes(), 1);
+    final prefs = await SharedPreferences.getInstance();
+    expect(
+      jsonDecode(prefs.getString('sc_assisted_practice_records_v1')!)['theme'],
+      100,
+    );
+  });
+
   test('Corrupt local draft cannot lock a valid server run', () async {
     final prefs = await SharedPreferences.getInstance();
     final store = SquadDraftStore();

@@ -124,8 +124,15 @@ class _ClubManagerOnlineSquadPageState extends State<ClubManagerOnlineSquadPage>
       final xiA = _idsToPoolPlayers(idsOf(a));
       final xiB = _idsToPoolPlayers(idsOf(b));
       final seed = (cm['matchSeed'] as num?)?.toInt() ?? 42;
-      final powerA = ManagerMatchService.instance.powerOf(xiA);
-      final powerB = ManagerMatchService.instance.powerOf(xiB);
+      // Online keeps the server's chemistry rule (no dated spells there).
+      final powerA = ManagerMatchService.instance.powerOf(
+        xiA,
+        sharedSpells: false,
+      );
+      final powerB = ManagerMatchService.instance.powerOf(
+        xiB,
+        sharedSpells: false,
+      );
 
       final sim = ManagerMatchService.instance.simulate(
         xi: xiA,
@@ -139,6 +146,7 @@ class _ClubManagerOnlineSquadPageState extends State<ClubManagerOnlineSquadPage>
         ),
         homeName: a,
         seed: seed,
+        sharedSpells: false,
       );
 
       await ClubManagerOnlineService.instance.publishResult(

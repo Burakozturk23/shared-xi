@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../theme/ortak_saha_theme.dart';
+import 'hub_ui.dart';
 import 'pitch_ui.dart';
 
-/// Compact destination card used by the games and online hubs.
+/// Destination card used by the games and online hubs: icon and count pill,
+/// title and description, then a hairline above an accent footer link.
 class PitchTile extends StatelessWidget {
   const PitchTile({
     super.key,
@@ -12,48 +14,113 @@ class PitchTile extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.countLabel,
+    this.description,
+    this.footerColor,
+    this.featured = false,
+    this.preview,
   });
 
   final String title, caption;
-  final String? countLabel;
+  final String? countLabel, description;
+
+  /// Short content hint above the footer, e.g. "Club Manager · +4".
+  final String? preview;
   final IconData icon;
   final VoidCallback onTap;
+  final Color? footerColor;
+
+  /// Full-width hero variant (cyan atmosphere, larger title).
+  final bool featured;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 144),
-      child: PitchPanel(
-        onTap: onTap,
-        child: Column(
+  Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    // Story is the featured tile; it carries the amber story accent.
+    final amber = hubAmber(context);
+    final footer = featured ? amber : footerColor ?? p.accent;
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(icon, size: 24, color: PitchColors.of(context).accent),
-                if (countLabel != null) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      countLabel!,
-                      textAlign: TextAlign.end,
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ),
-                ],
-              ],
+            HubIconBox(
+              icon,
+              size: featured ? 48 : 44,
+              color: featured ? amber : p.accent,
+              background: featured ? amber.withValues(alpha: .12) : null,
             ),
-            const SizedBox(height: 8),
-            Text(title, style: Theme.of(context).textTheme.titleSmall),
-            const Spacer(),
-            const SizedBox(height: 16),
-            Text(caption, style: Theme.of(context).textTheme.labelSmall),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: countLabel == null
+                    ? null
+                    : HubPill(
+                        countLabel!,
+                        color: featured ? amber : p.muted,
+                        background: featured
+                            ? amber.withValues(alpha: .12)
+                            : p.raised,
+                      ),
+              ),
+            ),
           ],
         ),
-      ),
-    ),
-  );
+        const SizedBox(height: 12),
+        Text(title, style: featured ? text.titleLarge : text.titleSmall),
+        if (description != null) ...[
+          const SizedBox(height: 4),
+          Text(description!, style: text.bodySmall?.copyWith(color: p.muted)),
+        ],
+        if (!featured) const Spacer(),
+        if (preview != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            preview!,
+            style: text.labelMedium?.copyWith(
+              color: p.muted,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Divider(height: 1, thickness: 1, color: p.border),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                caption,
+                style: text.labelMedium?.copyWith(
+                  color: footer,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              featured
+                  ? Icons.arrow_forward_rounded
+                  : Icons.chevron_right_rounded,
+              size: 20,
+              color: featured ? footer : p.muted,
+            ),
+          ],
+        ),
+      ],
+    );
+    return Semantics(
+      button: true,
+      child: featured
+          ? HubHeroCard(onTap: onTap, accent: amber, child: body)
+          : ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 168),
+              child: PitchPanel(onTap: onTap, child: body),
+            ),
+    );
+  }
 }
 
 /// At most two columns. Intrinsic row heights allow wrapped and enlarged text;

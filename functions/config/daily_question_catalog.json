@@ -5695,6 +5695,1529 @@
       "provenance": "existing_story_catalog",
       "review": "inherited",
       "difficulty": "medium"
+    },
+    {
+      "id": "q_ucl_DY-01-01",
+      "category": "ucl",
+      "prompt": "2009 Şampiyonlar Ligi finalinde Xavi ve Iniesta’nın arkasında, savunma önündeki merkez orta saha rolünü kim üstlendi?",
+      "options": [
+        "Yaya Touré",
+        "Xabi Alonso",
+        "Sergio Busquets"
+      ],
+      "answer": 2,
+      "explanation": "Sergio Busquets.",
+      "sources": [
+        {
+          "name": "barca",
+          "url": "https://www.uefa.com/uefachampionsleague/match/302813/"
+        }
+      ],
+      "sourceId": "DY-01-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_ucl_DY-02-02",
+      "category": "ucl",
+      "prompt": "2017 Juventus finalinde Real Madrid’in ilk 11’inde başlayıp Gareth Bale’in yedek kaldığı hücum orta sahası kimdi?",
+      "options": [
+        "Isco",
+        "Marco Asensio",
+        "Gareth Bale"
+      ],
+      "answer": 0,
+      "explanation": "Isco.",
+      "sources": [
+        {
+          "name": "isco",
+          "url": "https://www.uefa.com/uefachampionsleague/match/2019641/"
+        }
+      ],
+      "sourceId": "DY-02-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_career_DY-03-01",
+      "category": "career",
+      "prompt": "Arsenal namağlup tamamladığı 2003/04 Premier League sezonunda kaç galibiyet ve beraberlik aldı?",
+      "options": [
+        "24 galibiyet · 14 beraberlik",
+        "26 galibiyet · 12 beraberlik",
+        "25 galibiyet · 13 beraberlik"
+      ],
+      "answer": 1,
+      "explanation": "26 galibiyet · 12 beraberlik.",
+      "sources": [
+        {
+          "name": "arsenal",
+          "url": "https://www.premierleague.com/en/tables/premier-league/2003-04/all-matchweeks"
+        }
+      ],
+      "sourceId": "DY-03-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_DY-03-02",
+      "category": "player",
+      "prompt": "Arsenal’in 2003/04 sezonundaki 38 lig maçının tamamında forma giyen kalecisi kimdi?",
+      "options": [
+        "Stuart Taylor",
+        "Manuel Almunia",
+        "Jens Lehmann"
+      ],
+      "answer": 2,
+      "explanation": "Jens Lehmann.",
+      "sources": [
+        {
+          "name": "lehmann",
+          "url": "https://www.arsenal.com/men/jens-lehmann-aiWrt9g2Yxah"
+        }
+      ],
+      "sourceId": "DY-03-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_career_DY-04-01",
+      "category": "career",
+      "prompt": "Arrigo Sacchi, Milan’da klasik adam adama savunma yerine hangi anlayışı öne çıkardı?",
+      "options": [
+        "Alan savunması ve önde konumlanan savunma hattı",
+        "Birbirinden kopuk savunma ve orta saha",
+        "Yalnızca uzun toplarla kurulan oyun"
+      ],
+      "answer": 0,
+      "explanation": "Alan savunması ve önde konumlanan savunma hattı.",
+      "sources": [
+        {
+          "name": "sacchi",
+          "url": "https://www.uefa.com/news/0253-0d81cb410c87-4115a0f26160-1000--arrigo-sacchi-s-case-for-greatness/"
+        }
+      ],
+      "sourceId": "DY-04-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DY-05-01",
+      "category": "career",
+      "prompt": "Total Futbol sisteminin temel özelliğini seç.",
+      "options": [
+        "Savunma ve hücumu bağımsız bırakmak",
+        "Pozisyon değiştirirken takımın alan ve görev düzenini korumak",
+        "Herkesi maç boyunca aynı noktada tutmak"
+      ],
+      "answer": 1,
+      "explanation": "Pozisyon değiştirirken takımın alan ve görev düzenini korumak.",
+      "sources": [
+        {
+          "name": "ajax_tactics",
+          "url": "https://www.uefa.com/news-media/news/0218-0e9b869a861e-556622f75175-1000--european-football-in-the-1970s/"
+        }
+      ],
+      "sourceId": "DY-05-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_ucl_DY-06-02",
+      "category": "ucl",
+      "prompt": "Real Madrid, Avrupa Şampiyon Kulüpler Kupası’nın ilk beş organizasyonunun kaçını kazandı?",
+      "options": [
+        "4",
+        "3",
+        "5"
+      ],
+      "answer": 2,
+      "explanation": "5.",
+      "sources": [
+        {
+          "name": "madrid",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0253-0d7ff5480c22-d63d36f4632d-1000--the-greatest-teams-of-all-time-real-madrid-1956-60/"
+        }
+      ],
+      "sourceId": "DY-06-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DY-08-01",
+      "category": "career",
+      "prompt": "Bayern Münih, 2012/13’ten 2022/23’e kadar Bundesliga’yı art arda kaç kez kazandı?",
+      "options": [
+        "11",
+        "10",
+        "12"
+      ],
+      "answer": 0,
+      "explanation": "11.",
+      "sources": [
+        {
+          "name": "bayern11",
+          "url": "https://www.bundesliga.com/en/bundesliga/news/story-of-bayern-munich-record-breaking-11-year-reign-as-bundesliga-champions-27081"
+        }
+      ],
+      "sourceId": "DY-08-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_turkey_DY-10-02",
+      "category": "turkey",
+      "prompt": "Trabzonspor’un 1975/76–1983/84 dönemindeki en uzun üst üste lig şampiyonluğu serisi kaç sezondu?",
+      "options": [
+        "2 sezon",
+        "3 sezon",
+        "4 sezon"
+      ],
+      "answer": 1,
+      "explanation": "3 sezon.",
+      "sources": [
+        {
+          "name": "tff",
+          "url": "https://www.tff.org/Default.aspx?pageID=545"
+        }
+      ],
+      "sourceId": "DY-10-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_ucl_DY-11-02",
+      "category": "ucl",
+      "prompt": "Benfica’nın 1962 Real Madrid finalinde skoru 3-3 yapan orta saha oyuncusu kimdi?",
+      "options": [
+        "Eusébio",
+        "José Águas",
+        "Mário Coluna"
+      ],
+      "answer": 2,
+      "explanation": "Mário Coluna.",
+      "sources": [
+        {
+          "name": "coluna",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a045944ea-75ee25be6a88-1000--1961-62-eusebio-strikes-gold-for-benfica/"
+        }
+      ],
+      "sourceId": "DY-11-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DY-12-01",
+      "category": "career",
+      "prompt": "Lyon 2001/02’den 2007/08’e kadar Ligue 1’i aralıksız kaç sezon kazandı?",
+      "options": [
+        "7 sezon",
+        "8 sezon",
+        "5 sezon"
+      ],
+      "answer": 0,
+      "explanation": "7 sezon.",
+      "sources": [
+        {
+          "name": "lyon",
+          "url": "https://www.uefa.com/news-media/news/01cd-0f84dbf85eeb-49ca26254d04-1000--game-sept-and-match-to-lyon/"
+        }
+      ],
+      "sourceId": "DY-12-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_DY-13-01",
+      "category": "player",
+      "prompt": "Guardiola’nın 2022/23 takımında savunmadan orta sahaya çıkarak Rodri’ye destek veren futbolcu kimdi?",
+      "options": [
+        "Rúben Dias",
+        "John Stones",
+        "Kyle Walker"
+      ],
+      "answer": 1,
+      "explanation": "John Stones.",
+      "sources": [
+        {
+          "name": "stones",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0282-183fa8a707c0-4056c043e3d1-1000--in-the-zone-city-s-win-analysed/"
+        }
+      ],
+      "sourceId": "DY-13-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_international_DY-14-01",
+      "category": "international",
+      "prompt": "1953 Wembley maçında geriye gelerek İngiliz savunmasının markaj düzenini bozan Macar santrfor kimdi?",
+      "options": [
+        "József Bozsik",
+        "Ferenc Puskás",
+        "Nándor Hidegkuti"
+      ],
+      "answer": 2,
+      "explanation": "Nándor Hidegkuti.",
+      "sources": [
+        {
+          "name": "hungary",
+          "url": "https://www.uefa.com/uefaeuro/history/news/0253-0d8026b8531a-6be6e23436d1-1000--the-greatest-teams-of-all-time-hungary-1950-56/"
+        }
+      ],
+      "sourceId": "DY-14-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_ucl_DY-16-02",
+      "category": "ucl",
+      "prompt": "Liverpool’un 1984 Roma finalindeki başlangıç kalecisi kimdi?",
+      "options": [
+        "Bruce Grobbelaar",
+        "Pepe Reina",
+        "Ray Clemence"
+      ],
+      "answer": 0,
+      "explanation": "Bruce Grobbelaar.",
+      "sources": [
+        {
+          "name": "grobbelaar",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0244-0e98ae2983be-b3a08537e2b8-1000--liverpool-and-roma-relish-semi-final-opportunity/"
+        }
+      ],
+      "sourceId": "DY-16-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DY-17-02",
+      "category": "career",
+      "prompt": "Boca Juniors’ın 2000 ve 2003 Libertadores zaferlerinde görev alan ünlü teknik direktör kimdi?",
+      "options": [
+        "Marcelo Bielsa",
+        "Carlos Bianchi",
+        "Alfio Basile"
+      ],
+      "answer": 1,
+      "explanation": "Doğru cevap: Carlos Bianchi.",
+      "sources": [
+        {
+          "name": "www.fifa.com",
+          "label": "www.fifa.com",
+          "url": "https://www.fifa.com/en/tournaments/mens/club-world-cup/usa-2025/articles/boca-juniors-club-profile-history-players-qualified",
+          "accessed": "2026-10-12"
+        }
+      ],
+      "sourceId": "DY-17-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_career_DY-18-02",
+      "category": "career",
+      "prompt": "Al Ahly’nin 2006 CAF Şampiyonlar Ligi finalindeki rakibi hangi kulüptü?",
+      "options": [
+        "Étoile du Sahel",
+        "Espérance",
+        "CS Sfaxien"
+      ],
+      "answer": 2,
+      "explanation": "Doğru cevap: CS Sfaxien.",
+      "sources": [
+        {
+          "name": "www.cafonline.com",
+          "label": "www.cafonline.com",
+          "url": "https://www.cafonline.com/caf-champions-league/news/12th-final-for-ahly-7th-for-esperance/",
+          "accessed": "2026-10-12"
+        }
+      ],
+      "sourceId": "DY-18-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_turkey_DY-19-01",
+      "category": "turkey",
+      "prompt": "Galatasaray, 1996/97–1999/2000 döneminde lig şampiyonluğunu üst üste kaç kez kazandı?",
+      "options": [
+        "4",
+        "2",
+        "5"
+      ],
+      "answer": 0,
+      "explanation": "Doğru cevap: 4.",
+      "sources": [
+        {
+          "name": "www.uefa.com",
+          "label": "www.uefa.com",
+          "url": "https://www.uefa.com/uefachampionsleague/news/025a-0eaadda797fc-0c0f0fc7a859-1000--galatasaray-used-to-glory/",
+          "accessed": "2026-10-12"
+        }
+      ],
+      "sourceId": "DY-19-01",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_turkey_DY-19-02",
+      "category": "turkey",
+      "prompt": "Galatasaray’ın 1996/97–1999/2000 arasındaki dört üst üste lig şampiyonluğunda teknik direktör kimdi?",
+      "options": [
+        "Mircea Lucescu",
+        "Fatih Terim",
+        "Gheorghe Hagi"
+      ],
+      "answer": 1,
+      "explanation": "Doğru cevap: Fatih Terim.",
+      "sources": [
+        {
+          "name": "www.uefa.com",
+          "label": "www.uefa.com",
+          "url": "https://www.uefa.com/uefachampionsleague/news/025a-0eaadda797fc-0c0f0fc7a859-1000--galatasaray-used-to-glory/",
+          "accessed": "2026-10-12"
+        }
+      ],
+      "sourceId": "DY-19-02",
+      "provenance": "dynasties_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_career_DOC-01-02",
+      "category": "career",
+      "prompt": "Leicester şampiyonluğunu, kendi maçını oynamadan kesinleştiren 2 Mayıs 2016 karşılaşması ve skor hangisiydi?",
+      "options": [
+        "Tottenham Hotspur 2-1 Chelsea",
+        "Chelsea 0-0 Tottenham Hotspur",
+        "Chelsea 2-2 Tottenham Hotspur"
+      ],
+      "answer": 2,
+      "explanation": "Chelsea 2-2 Tottenham Hotspur",
+      "sources": [
+        {
+          "name": "leicester_title",
+          "url": "https://www.premierleague.com/en/news/693680"
+        }
+      ],
+      "sourceId": "DOC-01-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_DOC-02-01",
+      "category": "player",
+      "prompt": "Napoli’nin 1986/87 tarihindeki ilk Serie A şampiyonluğunun simgesi olan Arjantinli on numara kimdi?",
+      "options": [
+        "Diego Maradona",
+        "Jorge Valdano",
+        "Gabriel Batistuta"
+      ],
+      "answer": 0,
+      "explanation": "Diego Maradona",
+      "sources": [
+        {
+          "name": "napoli_player",
+          "url": "https://www.uefa.com/news-media/news/0263-10f1fecd826a-620d5ad4272d-1000--naples-remembers-maradona-s-greatest-european-performances/"
+        }
+      ],
+      "sourceId": "DOC-02-01",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_DOC-03-02",
+      "category": "player",
+      "prompt": "2011/12 Premier League’in son haftasında QPR karşısında Manchester City’nin şampiyonluk golünden önceki pası kim verdi?",
+      "options": [
+        "Samir Nasri",
+        "Mario Balotelli",
+        "David Silva"
+      ],
+      "answer": 1,
+      "explanation": "Mario Balotelli",
+      "sources": [
+        {
+          "name": "city_assist",
+          "url": "https://www.mancity.com/citytv/mens/mario-balotelli-i-wanted-to-shoot-for-aguero-goal-9320-extended-interview-63787876"
+        }
+      ],
+      "sourceId": "DOC-03-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_DOC-04-02",
+      "category": "player",
+      "prompt": "Class of 92 kuşağından, 1999 finalinde iki duraklama zamanı golünün geldiği kornerleri kullanan oyuncu kimdi?",
+      "options": [
+        "Nicky Butt",
+        "Paul Scholes",
+        "David Beckham"
+      ],
+      "answer": 2,
+      "explanation": "David Beckham",
+      "sources": [
+        {
+          "name": "beckham",
+          "url": "https://www.manutd.com/en/news/david-beckham-the-assist-king-in-1998-99-champions-league"
+        }
+      ],
+      "sourceId": "DOC-04-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_career_DOC-06-02",
+      "category": "career",
+      "prompt": "2018–2020 Liverpool dönüşümünün teknik direktörü kimdi?",
+      "options": [
+        "Jürgen Klopp",
+        "Rafael Benítez",
+        "Brendan Rodgers"
+      ],
+      "answer": 0,
+      "explanation": "Jürgen Klopp",
+      "sources": [
+        {
+          "name": "lfc19",
+          "url": "https://www.liverpoolfc.com/info/2019-champions-league-final"
+        },
+        {
+          "name": "lfc20",
+          "url": "https://www.liverpoolfc.com/news/first-team/399866-liverpool-football-club-premier-league-champions-2019-20"
+        }
+      ],
+      "sourceId": "DOC-06-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_ucl_DOC-07-01",
+      "category": "ucl",
+      "prompt": "1995 Şampiyonlar Ligi finalinde Ajax’a Milan karşısında 1-0 galibiyeti getiren golü kim attı?",
+      "options": [
+        "Jari Litmanen",
+        "Patrick Kluivert",
+        "Marc Overmars"
+      ],
+      "answer": 1,
+      "explanation": "UEFA final raporunda Patrick Kluivert’in golü 84. dakikada kayıtlıdır.",
+      "sources": [
+        {
+          "name": "ajax_goal",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0250-0c50f0a393e2-49ba29a70f4c-1000--1994-95-kluivert-strikes-late-for-ajax/"
+        }
+      ],
+      "sourceId": "DOC-07-01",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_ucl_DOC-08-02",
+      "category": "ucl",
+      "prompt": "Forest’ın 1979 ve 1980 Avrupa şampiyonluklarının teknik direktörü kimdi?",
+      "options": [
+        "Ron Greenwood",
+        "Bob Paisley",
+        "Brian Clough"
+      ],
+      "answer": 2,
+      "explanation": "Brian Clough",
+      "sources": [
+        {
+          "name": "forest",
+          "url": "https://www.uefa.com/news-media/news/01a1-0f845bcbd001-90fd9a9328b9-1000--the-best-in-the-business/"
+        }
+      ],
+      "sourceId": "DOC-08-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_ucl_DOC-10-02",
+      "category": "ucl",
+      "prompt": "2010 Şampiyonlar Ligi yarı finalinde Inter hangi İspanyol kulübünü eledi?",
+      "options": [
+        "Barcelona",
+        "Valencia",
+        "Sevilla"
+      ],
+      "answer": 0,
+      "explanation": "Barcelona",
+      "sources": [
+        {
+          "name": "inter_semi",
+          "url": "https://www.inter.it/en/match_center/3829"
+        }
+      ],
+      "sourceId": "DOC-10-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DOC-11-02",
+      "category": "career",
+      "prompt": "Atlético’ya 2013/14 lig şampiyonluğunu getiren son hafta Barcelona maçının sonucu neydi?",
+      "options": [
+        "Barcelona 0-1 Atlético Madrid",
+        "Barcelona 1-1 Atlético Madrid",
+        "Barcelona 2-2 Atlético Madrid"
+      ],
+      "answer": 1,
+      "explanation": "Barcelona 1-1 Atlético Madrid",
+      "sources": [
+        {
+          "name": "atletico",
+          "url": "https://www.uefa.com/news-media/news/0215-0e8adc597e0f-6bf435e52eab-1000--godin-heads-atletico-to-liga-title/"
+        }
+      ],
+      "sourceId": "DOC-11-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DOC-12-01",
+      "category": "career",
+      "prompt": "Kaiserslautern’i 1997/98 Bundesliga şampiyonluğuna taşıyan teknik direktör kimdi?",
+      "options": [
+        "Jupp Heynckes",
+        "Ottmar Hitzfeld",
+        "Otto Rehhagel"
+      ],
+      "answer": 2,
+      "explanation": "Otto Rehhagel",
+      "sources": [
+        {
+          "name": "lautern",
+          "url": "https://www.bundesliga.com/en/bundesliga/news/kaiserslautern-bundesliga-club-by-club-historical-guide-rehhagel-24160"
+        }
+      ],
+      "sourceId": "DOC-12-01",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DOC-13-01",
+      "category": "career",
+      "prompt": "Montpellier’nin 2011/12 Ligue 1 şampiyonluğunda lig ikincisi hangi takımdı?",
+      "options": [
+        "Paris Saint-Germain",
+        "Lyon",
+        "Lille"
+      ],
+      "answer": 0,
+      "explanation": "Paris Saint-Germain",
+      "sources": [
+        {
+          "name": "montpellier",
+          "url": "https://www.uefa.com/news-media/news/01fd-0e7e40bb7623-afe6728daad4-1000--montpellier-win-maiden-ligue-1-title/"
+        }
+      ],
+      "sourceId": "DOC-13-01",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_DOC-13-02",
+      "category": "player",
+      "prompt": "Montpellier şampiyonluk sezonunda ligde 21 gol atan ve sonraki sezon Arsenal’e giden forvet kimdi?",
+      "options": [
+        "Kevin Gameiro",
+        "Olivier Giroud",
+        "Karim Benzema"
+      ],
+      "answer": 1,
+      "explanation": "Olivier Giroud",
+      "sources": [
+        {
+          "name": "giroud",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0201-0e81ff394add-1fe3c3ed1e3d-1000--arsenal-s-giroud-makes-rapid-return-to-montpellier/"
+        }
+      ],
+      "sourceId": "DOC-13-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_turkey_DOC-15-02",
+      "category": "turkey",
+      "prompt": "20 Ekim 1976’da Trabzonspor’un Liverpool’u 1-0 yendiği maçtaki penaltıyı kim gole çevirdi?",
+      "options": [
+        "Necmi Perekli",
+        "Ali Kemal Denizci",
+        "Cemil Usta"
+      ],
+      "answer": 2,
+      "explanation": "Cemil Usta",
+      "sources": [
+        {
+          "name": "cemil",
+          "url": "https://www.tff.org/Resources/Tamsaha/239-sayi/110-111/"
+        }
+      ],
+      "sourceId": "DOC-15-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_career_DOC-18-02",
+      "category": "career",
+      "prompt": "AFC Wimbledon’ın taraftar sahipliğini temsil eden kuruluş hangisidir?",
+      "options": [
+        "The Dons Trust",
+        "The Football Association",
+        "Supporters Direct"
+      ],
+      "answer": 0,
+      "explanation": "2024 strateji belgesinde taraftar sahipliği The Dons Trust üzerinden tanımlanır.",
+      "sources": [
+        {
+          "name": "wimbledon",
+          "url": "https://thedonstrust.org/files/AFC-WIMBLEDON-STRATEGY-2024-.pdf"
+        },
+        {
+          "name": "wimbledon_owner",
+          "url": "https://thedonstrust.org/about-us/"
+        }
+      ],
+      "sourceId": "DOC-18-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_DOC-19-01",
+      "category": "player",
+      "prompt": "2013 FA Cup finalinde Manchester City’ye karşı galibiyet golünü atan futbolcu kimdi?",
+      "options": [
+        "Shaun Maloney",
+        "Ben Watson",
+        "Callum McManaman"
+      ],
+      "answer": 1,
+      "explanation": "Ben Watson",
+      "sources": [
+        {
+          "name": "watson",
+          "url": "https://www.thefa.com/news/2013/dec/24/fatv-top-ten-number-8-wigan-1-0-man-city"
+        }
+      ],
+      "sourceId": "DOC-19-01",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_ucl_DOC-20-02",
+      "category": "ucl",
+      "prompt": "Leeds United’ın 2000/01 Şampiyonlar Ligi yarı finalinde elendiği İspanyol kulüp hangisiydi?",
+      "options": [
+        "Real Madrid",
+        "Deportivo La Coruña",
+        "Valencia"
+      ],
+      "answer": 2,
+      "explanation": "Valencia",
+      "sources": [
+        {
+          "name": "leeds_valencia",
+          "url": "https://www.uefa.com/news-media/news/0199-0e6a9470caed-9a010034d387-1000--leeds-paying-a-heavy-price/"
+        }
+      ],
+      "sourceId": "DOC-20-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_ucl_DOC-22-02",
+      "category": "ucl",
+      "prompt": "Celtic’i 1967 Avrupa Kupası şampiyonluğuna taşıyan teknik direktör kimdi?",
+      "options": [
+        "Jock Stein",
+        "Matt Busby",
+        "Bill Shankly"
+      ],
+      "answer": 0,
+      "explanation": "Jock Stein",
+      "sources": [
+        {
+          "name": "celtic",
+          "url": "https://www.uefa.com/uefachampionsleague/news/0258-0e6a053a5775-dc924599f3ea-1000--1966-67-celtic-adventure-reaps-reward/"
+        }
+      ],
+      "sourceId": "DOC-22-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_turkey_DOC-23-02",
+      "category": "turkey",
+      "prompt": "Gençlerbirliği’nin 11 Mart 2004’te Ankara’da Valencia’yı 1-0 yendiği maçta penaltıyı atan futbolcu kimdi?",
+      "options": [
+        "Mustafa Özkan",
+        "Filip Daems",
+        "Josip Skoko"
+      ],
+      "answer": 1,
+      "explanation": "Filip Daems",
+      "sources": [
+        {
+          "name": "gencler",
+          "url": "https://www.uefa.com/uefaeuropaleague/news/019b-0e6acfcb2da7-53d3cec55089-1000--daems-decisive-for-genclerbirligi/"
+        }
+      ],
+      "sourceId": "DOC-23-02",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_DOC-24-01",
+      "category": "player",
+      "prompt": "Athletic Club’ın Mallorca’ya karşı 2024 Copa del Rey finalindeki penaltı serisini bitiren son golü kim attı?",
+      "options": [
+        "Iñaki Williams",
+        "Nico Williams",
+        "Álex Berenguer"
+      ],
+      "answer": 2,
+      "explanation": "Álex Berenguer",
+      "sources": [
+        {
+          "name": "athletic",
+          "url": "https://www.athletic-club.eus/en/teams/athletic-club/2023-24/matches/1_8428/"
+        }
+      ],
+      "sourceId": "DOC-24-01",
+      "provenance": "football_docu_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000075",
+      "category": "player",
+      "prompt": "Luis Enrique · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "FC Cartagena",
+        "FC Barcelona",
+        "Real Madrid"
+      ],
+      "answer": 0,
+      "explanation": "Luis Enrique’in gözden geçirilmiş tam A takım kariyerinde FC Barcelona ve Real Madrid vardır; FC Cartagena yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Luis_Enrique"
+        }
+      ],
+      "sourceId": "4000000075",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000077",
+      "category": "player",
+      "prompt": "İsmail Kartal · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Adanaspor",
+        "Kasimpasa",
+        "Fenerbahce"
+      ],
+      "answer": 1,
+      "explanation": "İsmail Kartal’in gözden geçirilmiş tam A takım kariyerinde Adanaspor ve Fenerbahce vardır; Kasimpasa yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/%C4%B0smail_Kartal"
+        }
+      ],
+      "sourceId": "4000000077",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000078",
+      "category": "player",
+      "prompt": "Okan Buruk · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Besiktas JK",
+        "Inter Milan",
+        "Ravenna FC"
+      ],
+      "answer": 2,
+      "explanation": "Okan Buruk’in gözden geçirilmiş tam A takım kariyerinde Inter Milan ve Besiktas JK vardır; Ravenna FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Okan_Buruk"
+        }
+      ],
+      "sourceId": "4000000078",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000079",
+      "category": "player",
+      "prompt": "Alex Ferguson · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Heart of Midlothian FC",
+        "Rangers FC",
+        "Falkirk FC"
+      ],
+      "answer": 0,
+      "explanation": "Alex Ferguson’in gözden geçirilmiş tam A takım kariyerinde Rangers FC ve Falkirk FC vardır; Heart of Midlothian FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Alex_Ferguson"
+        }
+      ],
+      "sourceId": "4000000079",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000082",
+      "category": "player",
+      "prompt": "Carlo Ancelotti · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "AC Milan",
+        "AC Bra",
+        "AS Roma"
+      ],
+      "answer": 1,
+      "explanation": "Carlo Ancelotti’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve AS Roma vardır; AC Bra yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Carlo_Ancelotti"
+        }
+      ],
+      "sourceId": "4000000082",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_never_4000000083",
+      "category": "player",
+      "prompt": "Hansi Flick · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Bayern Munich",
+        "1.FC Köln",
+        "VfB Lübeck"
+      ],
+      "answer": 2,
+      "explanation": "Hansi Flick’in gözden geçirilmiş tam A takım kariyerinde 1.FC Köln ve Bayern Munich vardır; VfB Lübeck yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Hansi_Flick"
+        }
+      ],
+      "sourceId": "4000000083",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_never_4000000085",
+      "category": "player",
+      "prompt": "Diego Simeone · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "SS Monopoli 1966",
+        "Inter Milan",
+        "CA Vélez Sarsfield"
+      ],
+      "answer": 0,
+      "explanation": "Diego Simeone’in gözden geçirilmiş tam A takım kariyerinde Inter Milan ve CA Vélez Sarsfield vardır; SS Monopoli 1966 yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Diego_Simeone"
+        }
+      ],
+      "sourceId": "4000000085",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_never_4000000086",
+      "category": "player",
+      "prompt": "Unai Emery · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Real Sociedad",
+        "Burgos CF",
+        "Racing Ferrol"
+      ],
+      "answer": 1,
+      "explanation": "Unai Emery’in gözden geçirilmiş tam A takım kariyerinde Real Sociedad ve Racing Ferrol vardır; Burgos CF yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Unai_Emery"
+        }
+      ],
+      "sourceId": "4000000086",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000088",
+      "category": "player",
+      "prompt": "Luciano Spalletti · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Spezia Calcio",
+        "FC Empoli",
+        "Guidonia Montecelio 1937 FC"
+      ],
+      "answer": 2,
+      "explanation": "Luciano Spalletti’in gözden geçirilmiş tam A takım kariyerinde FC Empoli ve Spezia Calcio vardır; Guidonia Montecelio 1937 FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Luciano_Spalletti"
+        }
+      ],
+      "sourceId": "4000000088",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000090",
+      "category": "player",
+      "prompt": "Massimiliano Allegri · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Giugliano Calcio 1928",
+        "US Livorno 1915",
+        "FC Pistoiese"
+      ],
+      "answer": 0,
+      "explanation": "Massimiliano Allegri’in gözden geçirilmiş tam A takım kariyerinde US Livorno 1915 ve FC Pistoiese vardır; Giugliano Calcio 1928 yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Massimiliano_Allegri"
+        }
+      ],
+      "sourceId": "4000000090",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000091",
+      "category": "player",
+      "prompt": "Roberto Mancini · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "SS Lazio",
+        "US Pianese",
+        "Bologna FC 1909"
+      ],
+      "answer": 1,
+      "explanation": "Roberto Mancini’in gözden geçirilmiş tam A takım kariyerinde SS Lazio ve Bologna FC 1909 vardır; US Pianese yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Roberto_Mancini"
+        }
+      ],
+      "sourceId": "4000000091",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000092",
+      "category": "player",
+      "prompt": "Joachim Löw · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "VfB Stuttgart",
+        "Karlsruher SC",
+        "Alemannia Aachen"
+      ],
+      "answer": 2,
+      "explanation": "Joachim Löw’in gözden geçirilmiş tam A takım kariyerinde Karlsruher SC ve VfB Stuttgart vardır; Alemannia Aachen yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Joachim_L%C3%B6w"
+        }
+      ],
+      "sourceId": "4000000092",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000093",
+      "category": "player",
+      "prompt": "Abdullah Avcı · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Kayserispor",
+        "Caykur Rizespor",
+        "Istanbulspor"
+      ],
+      "answer": 0,
+      "explanation": "Abdullah Avcı’in gözden geçirilmiş tam A takım kariyerinde Caykur Rizespor ve Istanbulspor vardır; Kayserispor yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Abdullah_Avc%C4%B1"
+        }
+      ],
+      "sourceId": "4000000093",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000096",
+      "category": "player",
+      "prompt": "Vicente del Bosque · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Real Madrid",
+        "CD Leganés",
+        "Córdoba CF"
+      ],
+      "answer": 1,
+      "explanation": "Vicente del Bosque’in gözden geçirilmiş tam A takım kariyerinde Real Madrid ve Córdoba CF vardır; CD Leganés yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Vicente_del_Bosque"
+        }
+      ],
+      "sourceId": "4000000096",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000098",
+      "category": "player",
+      "prompt": "Claudio Ranieri · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Catania FC",
+        "Palermo FC",
+        "Genoa CFC"
+      ],
+      "answer": 2,
+      "explanation": "Claudio Ranieri’in gözden geçirilmiş tam A takım kariyerinde Palermo FC ve Catania FC vardır; Genoa CFC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Claudio_Ranieri"
+        }
+      ],
+      "sourceId": "4000000098",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000099",
+      "category": "player",
+      "prompt": "Enzo Maresca · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "AC Carpi",
+        "Juventus FC",
+        "Olympiacos Piraeus"
+      ],
+      "answer": 0,
+      "explanation": "Enzo Maresca’in gözden geçirilmiş tam A takım kariyerinde Juventus FC ve Olympiacos Piraeus vardır; AC Carpi yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Enzo_Maresca"
+        }
+      ],
+      "sourceId": "4000000099",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000100",
+      "category": "player",
+      "prompt": "Rafael Márquez · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "FC Barcelona",
+        "Austin FC",
+        "New York Red Bulls"
+      ],
+      "answer": 1,
+      "explanation": "Rafael Márquez’in gözden geçirilmiş tam A takım kariyerinde FC Barcelona ve New York Red Bulls vardır; Austin FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Rafael_M%C3%A1rquez"
+        }
+      ],
+      "sourceId": "4000000100",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000101",
+      "category": "player",
+      "prompt": "Jefferson Farfán · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "PSV Eindhoven",
+        "FC Schalke 04",
+        "SV Darmstadt 98"
+      ],
+      "answer": 2,
+      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; SV Darmstadt 98 yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Jefferson_Farf%C3%A1n"
+        }
+      ],
+      "sourceId": "4000000101",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000103",
+      "category": "player",
+      "prompt": "Peter Schmeichel · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Port Vale FC",
+        "Bröndby IF",
+        "Manchester United"
+      ],
+      "answer": 0,
+      "explanation": "Peter Schmeichel’in gözden geçirilmiş tam A takım kariyerinde Bröndby IF ve Manchester United vardır; Port Vale FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Peter_Schmeichel"
+        }
+      ],
+      "sourceId": "4000000103",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000104",
+      "category": "player",
+      "prompt": "Cafu · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "AS Roma",
+        "FC Barcelona Atlètic",
+        "Real Zaragoza"
+      ],
+      "answer": 1,
+      "explanation": "Cafu’in gözden geçirilmiş tam A takım kariyerinde AS Roma ve Real Zaragoza vardır; FC Barcelona Atlètic yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Cafu"
+        }
+      ],
+      "sourceId": "4000000104",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000108",
+      "category": "player",
+      "prompt": "Burak Yılmaz · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Galatasaray",
+        "Besiktas JK",
+        "Sivasspor"
+      ],
+      "answer": 2,
+      "explanation": "Burak Yılmaz’in gözden geçirilmiş tam A takım kariyerinde Besiktas JK ve Galatasaray vardır; Sivasspor yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Burak_Y%C4%B1lmaz"
+        }
+      ],
+      "sourceId": "4000000108",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000110",
+      "category": "player",
+      "prompt": "Alex de Souza · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Sport Club Corinthians Paulista",
+        "Fenerbahce",
+        "Cruzeiro Esporte Clube"
+      ],
+      "answer": 0,
+      "explanation": "Alex de Souza’in gözden geçirilmiş tam A takım kariyerinde Fenerbahce ve Cruzeiro Esporte Clube vardır; Sport Club Corinthians Paulista yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Alex_(footballer%2C_born_1977)"
+        }
+      ],
+      "sourceId": "4000000110",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000111",
+      "category": "player",
+      "prompt": "Micah Richards · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Manchester City",
+        "SS Maceratese 1922",
+        "Aston Villa"
+      ],
+      "answer": 1,
+      "explanation": "Micah Richards’in gözden geçirilmiş tam A takım kariyerinde Manchester City ve Aston Villa vardır; SS Maceratese 1922 yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Micah_Richards"
+        }
+      ],
+      "sourceId": "4000000111",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000023",
+      "category": "player",
+      "prompt": "David Beckham · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Manchester United",
+        "Preston North End",
+        "Blackpool FC"
+      ],
+      "answer": 2,
+      "explanation": "David Beckham’in gözden geçirilmiş tam A takım kariyerinde Preston North End ve Manchester United vardır; Blackpool FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/David_Beckham"
+        }
+      ],
+      "sourceId": "4000000023",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q_player_never_4000000028",
+      "category": "player",
+      "prompt": "Kaká · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Esporte Clube Vitória",
+        "AC Milan",
+        "São Paulo Futebol Clube"
+      ],
+      "answer": 0,
+      "explanation": "Kaká’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve São Paulo Futebol Clube vardır; Esporte Clube Vitória yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Kak%C3%A1"
+        }
+      ],
+      "sourceId": "4000000028",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_never_4000000030",
+      "category": "player",
+      "prompt": "Didier Deschamps · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Olympique Marseille",
+        "Angers SCO",
+        "Juventus FC"
+      ],
+      "answer": 1,
+      "explanation": "Didier Deschamps’in gözden geçirilmiş tam A takım kariyerinde Olympique Marseille ve Juventus FC vardır; Angers SCO yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Didier_Deschamps"
+        }
+      ],
+      "sourceId": "4000000030",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_never_4000000031",
+      "category": "player",
+      "prompt": "Dennis Bergkamp · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Inter Milan",
+        "Arsenal FC",
+        "US Avellino 1912"
+      ],
+      "answer": 2,
+      "explanation": "Dennis Bergkamp’in gözden geçirilmiş tam A takım kariyerinde Arsenal FC ve Inter Milan vardır; US Avellino 1912 yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Dennis_Bergkamp"
+        }
+      ],
+      "sourceId": "4000000031",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q_player_never_4000000032",
+      "category": "player",
+      "prompt": "Patrick Vieira · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Calcio Lecco 1912",
+        "AC Milan",
+        "Manchester City"
+      ],
+      "answer": 0,
+      "explanation": "Patrick Vieira’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Manchester City vardır; Calcio Lecco 1912 yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Patrick_Vieira"
+        }
+      ],
+      "sourceId": "4000000032",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000034",
+      "category": "player",
+      "prompt": "Alan Shearer · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Blackburn Rovers",
+        "Coventry City",
+        "Southampton FC"
+      ],
+      "answer": 1,
+      "explanation": "Alan Shearer’in gözden geçirilmiş tam A takım kariyerinde Blackburn Rovers ve Southampton FC vardır; Coventry City yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Alan_Shearer"
+        }
+      ],
+      "sourceId": "4000000034",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000035",
+      "category": "player",
+      "prompt": "Diego Maradona · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Sevilla FC",
+        "CA Boca Juniors",
+        "Cádiz CF"
+      ],
+      "answer": 2,
+      "explanation": "Diego Maradona’in gözden geçirilmiş tam A takım kariyerinde CA Boca Juniors ve Sevilla FC vardır; Cádiz CF yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Diego_Maradona"
+        }
+      ],
+      "sourceId": "4000000035",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000040",
+      "category": "player",
+      "prompt": "Michel Platini · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Virtus Francavilla Calcio",
+        "Juventus FC",
+        "AS Saint-Étienne"
+      ],
+      "answer": 0,
+      "explanation": "Michel Platini’in gözden geçirilmiş tam A takım kariyerinde Juventus FC ve AS Saint-Étienne vardır; Virtus Francavilla Calcio yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Michel_Platini"
+        }
+      ],
+      "sourceId": "4000000040",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000044",
+      "category": "player",
+      "prompt": "Roberto Baggio · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "AC Milan",
+        "AC Perugia Calcio",
+        "Juventus FC"
+      ],
+      "answer": 1,
+      "explanation": "Roberto Baggio’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Juventus FC vardır; AC Perugia Calcio yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Roberto_Baggio"
+        }
+      ],
+      "sourceId": "4000000044",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q_player_never_4000000049",
+      "category": "player",
+      "prompt": "Andriy Shevchenko · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
+      "options": [
+        "Dynamo Kyiv",
+        "AC Milan",
+        "Dagenham & Redbridge FC"
+      ],
+      "answer": 2,
+      "explanation": "Andriy Shevchenko’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Dynamo Kyiv vardır; Dagenham & Redbridge FC yoktur.",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Andriy_Shevchenko"
+        }
+      ],
+      "sourceId": "4000000049",
+      "provenance": "fake_club_catalog",
+      "review": "inherited",
+      "difficulty": "easy"
     }
   ]
 }

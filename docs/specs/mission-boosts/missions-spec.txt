@@ -1,0 +1,1180 @@
+   LINKBALL / V2
+
+
+
+
+İlerleme ve
+Görevler
+Görev Merkezi
+Geliştirme ve kabul şartnamesi
+
+
+5 günlük seçenek / 3 ödül hakkı
+
+Haftalık ve kariyer rotaları
+
+Doğrulanmış oyun olayları / Coin ve SP güvenliği
+
+
+
+
+     BUGÜNÜN ROTASI
+
+
+     3/5               günlük görev tercihi
+
+
+
+
+     Solo • Rekabet • Keşif • Haftalık • Kariyer
+
+
+
+
+DURUM: V2 tasarım / kod dağıtımı yapılmadı
+
+Kaynak: Burakozturk23/shared-xi · PR #70 inceleme dalı
+LINKBALL                                                                                                   GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 01 / ÜRÜN
+
+
+ Kapsam ve V2 kararları
+ Amaç: günlük görevleri tekdüzelikten çıkarırken kanıtlanabilir ilerleme, hesap güvenliği ve mevcut ekonomi
+ sözleşmelerini korumak.
+
+
+     ÜRÜN İLKESİ
+     Linkball'ın oyun çeşitliliği görevlerde görünür olmalı: oyuncu her gün farklı modları keşfetsin, ancak çevrimiçi galibiyet veya
+     tek seferlik günlük bulmacalar ödüle ulaşmanın zorunlu tek yolu olmasın.
+
+
+
+   Karar alanı                           V2 kuralı
+
+
+   Günlük görevler                       Her gün 5 uygun görev atanır; en fazla 3 günlük görev ödülü alınır.
+
+
+   Solo güvencesi                        Atanan 5 görevin en az 3'ü online maç gerektirmeyen, gerçekleştirilebilir görevdir.
+
+
+   Dönemler                              Günlük, Haftalık ve Kariyer; özel etkinlikler ileride ayrı bayrakla açılır.
+
+
+   Günlük değer                          Görev başına 20 Link Coin + 30 SP; görev ödülünden ek XP yok.
+
+
+   Günlük tavan                          3 × 20 = 60 Coin ve görev kaynaklı 3 × 30 = 90 SP.
+
+
+   Haftalık lansman                      Haftalık görevler ayrı ekonomik rollout ile aşamalı açılır.
+
+
+   Kariyer                               Mevcut kilometre taşları korunur; yeni mod aileleri kontrollü eklenir.
+
+
+   Güvenlik                              İlerleme yalnızca sunucuya dayalı oyun sonucu ve doğrulanabilir oturum kanıtıyla artar.
+
+
+ Kapsam dışı: oyun kurallarını değiştirme; enerji sistemini zorla etkinleştirme; bot/arkadaş maçını doğrudan ranked
+ galibiyet sayma; istemci tarafından Coin miktarı belirleme.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                   02
+LINKBALL                                                                                                     GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 02 / MEVCUT DURUM
+
+
+ Mevcut sistemin fotoğrafı
+ Kaynak dal: codex/online-friends-review / PR #70 (23 Ekim 2026). Bu bölüm canlı Firebase dağıtımı değil,
+ incelenen GitHub kodunun durumudur.
+
+
+   Bileşen                     Gözlem                                                 V2 etkisi
+
+   Görev motoru                functions/index.js içinde Mission V2; 3 sabit günlük   Günlük katalog + deterministik görev atama.
+                               görev.
+
+
+   Günlük hedefler             3 ranked maç, 1 ranked galibiyet, 1 Günlük             Solo / keşif / online / çapraz mod hedefleri.
+                               Mücadele.
+
+
+   Ödül altyapısı              Sunucuda mission_reward ledger; idempotent claim       Korunacak; yeni dönem anahtarları eklenir.
+                               ve pending reward.
+
+
+   Görev profili               MissionKind: daily, general; MissionItem yalnız Coin   weekly dönemi + dinamik görev metadata.
+                               gösterir.
+
+
+   Sezon puanı                 season_pass.js günlük mission_reward için 30 SP        Haftalık ödüllerin yanlışlıkla günlük SP sayılmasını engelle.
+                               verir.
+
+
+   Yönlendirme                 Üç sabit görevin online veya günlük ekranına           Tüm görevler için katalog tabanlı güvenli rota.
+                               yönlendirmesi.
+
+
+   Online havuz                OnlinePlayMode katalogda 13 farklı mod mevcut.         Yalnız sunucu sonucu doğrulanmış uygun modlar.
+
+
+
+ Bulunan kritik bağımlılık
+ PR #70 ranked görev ilerlemesini güvenilir PvP settlement üzerinden tekrar işlemeye karşı koruyor. V2, bu sistemi
+ silmek yerine genel bir Mission Event Bridge ile genişletmeli. Tek oyunculu modu "bitti" diye istemcinin işaretlemesi
+ ödül için yeterli değildir.
+
+
+     DAĞITIM UYARISI
+     İncelenen PR metninde üretim servis yayını ve iki gerçek hesapla uçtan uca doğrulama henüz tamamlanmış olarak
+     belirtilmiyor. Bu yüzden görevlerin erişilebilirliği gerçek servis hazırlığıyla eşleşmeli.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                              03
+LINKBALL                                                                                      GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 03 / ARAYÜZ
+
+
+ Önerilen görev merkezi ekranı
+ Kompakt görev kartları, üç sekme, gerçek ilerleme durumu ve doğrudan ilgili oyuna gitme. Görsel taslak canlı
+ veri değildir.
+
+
+
+
+        GÖREV MERKEZİ                                                                             LINKBALL / V2
+
+
+        BUGÜNÜN HEDEFLERİ
+
+        5 seçenekten istediğin 3 tanesini tamamla
+
+
+
+
+              GÜNLÜK                                HAFTALIK                     KARİYER
+
+
+
+
+            01    Bir Matching tahtası tamamla
+                  0/1                                                                                 +20 Coin · +30 SP
+
+
+
+            02    Bir online maç kazan
+                  0/1                                                                                 +20 Coin · +30 SP
+
+
+
+            03    Günün Lingo oyununu bitir
+                  1/1                                                                                         Ödülü al
+
+
+
+            04    Bir Pyramid çöz
+                  1/1                                                                                       Ödül alındı
+
+
+
+            05    İki farklı modda oyna
+                  0/2                                                                                 +20 Coin · +30 SP
+
+
+
+
+        TEMSİLİ TASARIM - CANLI OYUN VERİSİ DEĞİLDİR
+
+
+
+ Ana ekran içinde seviye / XP, Sezon Rotası ve Günlük giriş ödülü bölümleri korunur. Görev kartlarında ortak tekrar
+ metinleri kaldırılır; durumlar "Devam ediyor", "Ödülü al", "Ödül alındı" olarak açıklanır.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                      04
+LINKBALL                                                                                                 GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 04 / GÜNLÜK ROTASYON
+
+
+ Günlük görev atama algoritması
+ Türkiye saatine göre her gün değişen, gün içinde sabit kalan ve erişilebilirlik garantisi olan görev seçimi.
+
+
+   Slot                       Kaynak                                      Uygunluk ve amaç
+
+
+   1 Günün içeriği            Günlük Lingo, Anagram, Günün                O gün erişilebilir ve henüz bitmemiş günlük oyun; bitmişse solo
+                              Futbolcusu vb.                              alternatif.
+
+
+   2 Solo uzmanlığı           Matching, Pyramid, Hoca 11, Kadro Kasası    Sunucunun doğrulayabildiği tek oyunculu tamamlama hedefi.
+                              vb.
+
+
+   3 Mod keşfi                İki farklı oyun türünü bitir; solo hedef.   Online zorunlu değil; en az bir alternatif oyun yolu.
+
+
+   4 Rekabet (opsiyonel)      Bir sıralamalı maç kazan / 2 ranked maç     Ranked servis ve hesap uygun değilse solo ile değiştir.
+                              oyna.
+
+
+   5 Esnek hedef              Düşük zorlukta solo / çapraz mod / sosyal   Günlük toplam erişilebilir görev en az 3 olacak.
+                              görev.
+
+
+
+ Rastgelelik ve kararlılık
+  • Sunucu {uid, Europe/Istanbul dayKey, catalogVersion} için görev listesini bir kez üretir ve kaydeder. UI her
+     yenilendiğinde değişmez.
+
+  • Önceki günle tıpatıp aynı beş görevden kaçınılır; aynı modun birden fazla slotu doldurması sınırlandırılır.
+
+  • Kullanıcı erişimi, mod rollout bayrağı, içerik veri sağlığı ve doğrulanabilir sonuç kanalı seçim öncesi kontrol edilir.
+
+  • Bir görev gün içinde hizmet dışı kalırsa kullanıcı ilerlemesi ve önceki hakları korunarak sunucu onaylı eşdeğer görev
+     atanır.
+
+  • Kullanıcı çevrimdışıyken yerel görüntüleme yapılabilir; görev tamamlandı kabulü yalnız doğrulanmış veriden gelir.
+
+     ÖNEMLİ KABUL
+     Kullanıcı 5 görevin tamamını yapmak zorunda değildir. Ödül tavanı 3 claim'dir ve en az 3 solo erişilebilir görevin bulunması
+     zorunludur.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                        05
+LINKBALL                                                                                                GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 05 / KATALOG
+
+
+ Günlük görev kataloğu: solo
+ Görev koşulu bir oyunun gerçek bitiş kuralından gelmeli; her modda aynı "bir kez tıkla" yaklaşımı
+ kullanılmamalıdır.
+
+
+   Mod ailesi                     Örnek hedef                                                 Doğrulama ihtiyacı
+
+   Harf & Kelime                  Günün Lingo'sunu bitir; Mini Passaparola tamamla; Günün     Günlük içerik anahtarı + imzalı sonuç; günde
+                                  Anagramı çöz.                                               bir.
+
+
+   Hoca 11 / Kadro Kasası         Bir Hoca 11 oyununu veya kasayı gerçekten tamamla.          Geçerli görev oturumu + bitiş kanıtı.
+
+
+   Kariyer Bulmacası / Transfer   Bir kariyer bulmacasını veya 5 transferlik oturumu bitir.   Geçerli skor ve terminal durum.
+
+
+   Gizemli Futbolcu / Sahte       Bir futbolcuyu çöz; bir Sahte Kulüp oturumu bitir.          Sunucuda kabul edilmiş doğru çözümler /
+   Kulüp                                                                                      tamamlanma.
+
+
+   Pyramid / Matching             Bir piramidi çöz; eşleştirme tahtasını kapat.               Tam yerleşim / tüm çiftlerin bulunması.
+
+
+   Blind Ranking / This or That   5 veya 10 sıra doldur; turnuva şampiyonu belirle.           Tüm slotlar veya bracket bitişi.
+
+
+   Higher or Lower / Burst        5 doğru seri yap; Burst hedefi tamamla.                     Doğrulanmış seri eşiği / terminal skor.
+
+
+   Story Mode / Squad             Bir hikâye bölümünü veya kadro mücadelesini bitir.          Bölüm / kadro son durum makbuzu.
+   Challenge
+
+
+
+     DOĞRULAMA EŞİĞİ
+     Var olan solo modlarda güvenilir tamamlama makbuzu yoksa görev katalogda taslak olarak bulunabilir; fakat üretimde
+     atanamaz. "Başlatıldı", "sayfa açıldı" veya "oyun kapatıldı" tamamlanma değildir.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                         06
+LINKBALL                                                                                           GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 06 / ONLINE VE SOSYAL
+
+
+ Günlük görev kataloğu: rekabet
+ 13 online/arkadaş modunu tek bir "maç" sayacına indirgemeden, sonuç ve oyun türünü doğru ayrıştırmalıyız.
+
+
+   Aile                         Örnek görev                                        Sayım kuralı
+
+
+   Ranked genel                 Herhangi bir sıralamalı maç tamamla / kazan.       serverValidated settlement + rankedEligible.
+
+
+   Ortak Oyuncu / Grid          Bir online Grid veya ortak oyuncu maçı bitir.      Sonuç terminal, mod kimliği geçerli, oyuncu
+                                                                                   katılımcı.
+
+
+   Hız & Kadro                  Rastgele Beş, Çinko, Loto veya Club Manager        Normal bitiş; otomatik teslim/kaçış sayılmaz.
+                                düellosuna katıl.
+
+
+   Oyuncu Düelloları            Kariyer Yarışı, Transfer, Gizem veya Sahte Kulüp   Sunucu hakemi ile kabul edilmiş settlement.
+                                düellosu bitir.
+
+
+   Arkadaş maçı                 Bir arkadaşla maç tamamla.                         Sosyal katılım sayılır; ranked galibiyet sayılmaz.
+
+
+   Karışık rekabet              İki farklı online modda maç tamamla.               Mod kimlikleri farklı ve olaylar benzersiz.
+
+
+
+ Görev kategorileri karıştırılmamalı
+  • PvP ranked kazanma: yalnız dereceli ve sunucu doğrulamalı galibiyet.
+
+  • Arkadaş maçı tamamlama: sunucu doğrulamalı bitiş, rekabet sonucu şart değil.
+
+  • Botla Oyna: online maç olarak değil, izin verilirse ayrı solo/bot görevi olarak sayılmalı.
+
+  • Beraberlik: kazanma görevini artırmaz; tamamlanan maç görevini artırabilir.
+
+  • Hesap bağlama ve matchmaking erişimi yoksa günlük online slot otomatik solo alternatifle değiştirilir.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                    07
+LINKBALL                                                                                               GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 07 / HAFTALIK
+
+
+ Haftalık görevler
+ Orta vadeli hedefler, mod keşfi ve tekrar oynanabilirlik. Günlük görevlerin basit kopyası olmamalı.
+
+
+   Örnek görev                             Hedef                               İlerleme
+
+
+   Linkball Kaşifi                         5 farklı modda tamamlanan oyun.     Unique modeId.
+
+
+   Bulmaca Ustası                          Pyramid, Matching ve Kariyer        3 farklı onaylı mod.
+                                           Bulmacası bitir.
+
+
+   Kelime Avcısı                           3 farklı kelime oyunu tamamla.      Unique kelime ailesi.
+
+
+   Rekabetçi Ruh                           5 sıralamalı maç tamamla.           Trusted ranked settlement.
+
+
+   Futbol Ansiklopedisi                    10 farklı doğrulanmış bulmaca       Unique sessionId.
+                                           bitir.
+
+
+   Zirve Mücadelesi                        Higher or Lower'da 10 doğru seri    Verified streak threshold.
+                                           yap.
+
+
+
+ Dönem ve ödül tasarımı
+  • Hafta anahtarı: Europe/Istanbul pazartesi 00.00 - sonraki pazartesi 00.00.
+
+  • İlk V2 önerisi: 3 haftalık seçenek, en fazla 2 haftalık görev ödülü.
+
+  • Önerilen ekonomik bütçe: haftalık görev başına 25 Link Coin, haftalık toplam en fazla 50 Coin; +0 XP ve +0 SP.
+
+  • Haftalık ödüller ayrı rollout bayrağıyla KAPALI başlar; mevcut toplam ekonomi simülasyonu tamamlandıktan sonra
+     açılır.
+
+  • Dönem içinde görevler sabit; süre bitince yeni haftaya geçilir, eski ödül idempotent kayıtları korunur.
+
+     SEZON ROTASI UYUMU
+     Bugünkü season_pass.js tüm mission_reward kayıtlarını general__ değilse günlük gibi sayabiliyor. V2, weekly__ makbuzlarını
+     açıkça ayrıştırmalı; haftalık görevlerden yanlış +30 SP üretilmesini önlemeli.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                              08
+LINKBALL                                                                                          GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 08 / KARİYER
+
+
+ Kariyer görevleri: üç gelişim yolu
+ Günlük sıfırlanmayan, uzun vadeli ve aşamalı görev zincirleri. Mevcut kazanımlar ve önceki görev kimlikleri
+ korunur.
+
+
+   Gelişim yolu                 Aşamalı hedef örnekleri                                     Ödül ilkesi
+
+
+   Bilgi Ustası                 10 / 50 / 100 / 250 doğrulanmış solo oyun tamamla.          Her aşama 1 kez; Coin oranı ekonomi
+                                                                                            testinden sonra.
+
+
+   Rekabetçi                    5 / 25 / 100 / 250 ranked maç; ayrı galibiyet zinciri.      Mevcut ranked_played ve ranked_wins
+                                                                                            zincirlerini koru.
+
+
+   Koleksiyoncu                 3 / 8 / 12 farklı modda en az bir oyun tamamla.             Yalnız unique mod say; aynı mod spamı
+                                                                                            ilerletmez.
+
+
+   Günlük İstikrar              3 / 7 / 30 / 100 farklı günde günlük içerik tamamla.        Mevcut daily_days zinciri korunur.
+
+
+
+ Uyumluluk
+  • Mevcut kariyer görevleri (rankedPlayed / rankedWins / dailyDays) yeni sistemde silinmez, ödülleri yeniden
+     dağıtılmaz.
+
+  • Yeni Bilgi Ustası ve Koleksiyoncu zincirlerinin Coin ödülleri, ekonomi denetimi bitene kadar rollout KAPALI tutulur.
+
+  • Kariyer ilerlemesi toplam kullanıcı hesabıyla ilişkilidir; telefon değişince korunur.
+
+  • Eski sonuçlar ancak güvenilir kaynaklardan geriye dönük kanıtlanabiliyorsa sayılır; istemci geçmişi uydurulmaz.
+
+
+     DENEYİM AYRIMI
+     Kariyer XP ve Sezon SP aynı kavram değildir. Mevcut mission claim sadece Link Coin öder; ek XP planlanmıyorsa kartta
+     gösterilmez. SP yalnız sunucuda tanımlı makbuz tiplerinden hesaplanır.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                09
+LINKBALL                                                                                                GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 09 / COIN / SP / XP
+
+
+ Ekonomi ve ödül sözleşmesi
+ Günlük görev seçenekleri artar; toplam kazanç limiti artmaz. Yeni haftalık ödül yalnız ayrıca onaylanmış
+ ekonomi bütçesiyle açılır.
+
+
+   Kaynak                           V2 önerisi                                     Tavan ve davranış
+
+
+   Günlük görev claim               20 Link Coin + 30 SP                           3 claim/gün = 60 Coin, 90 SP.
+
+
+   Günlük giriş ödülü               Mevcut değer ve seri korunur                   Görev claim limitinden bağımsız.
+
+
+   Solo mod bitirme                 Mode-specific mevcut ödüller                   Görev claim'i ayrıca onaylı hak; çift makbuz engeli.
+
+
+   Haftalık görev                   25 Coin / claim, 0 SP, 0 XP                    2 claim/hafta = 50 Coin; başlangıçta rollout kapalı.
+
+
+   Mevcut kariyer                   Kayıtlı zincir ödül tablosu aynen              Her aşama hesap başına bir kez.
+
+
+   Yeni kariyer                     İlk lansmanda ekonomik ödül aktif değil        Ayrı bütçe ve rolloute bağlı.
+
+
+   Sezon Rotası                     Mevcut sezon puanı tavanı korunur              Genel günlük SP tavanı: 150; görev kısmı en çok 90.
+
+
+
+ Ödül idempotency
+ Önerilen makbuz biçimi: daily__{dateKey}__{missionId}, weekly__{isoWeekKey}__{missionId},
+ general__{chainId}__{stageId}. Var olan production makbuz formatı değiştirilecekse geriye dönük uyumluluk haritası
+ gereklidir; eski makbuzlar yeniden mint edilmez.
+
+ Görev talebinde istemciden amount, progress, win, SP, XP kabul edilmez. Sunucu görev tanımı ve doğrulanmış
+ counters üzerinden değerlendirme yapar.
+
+
+     ÖNEMLİ
+     Örnek görev havuzu büyüse de günlük 60 Coin / 90 görev SP limiti değişmeyecek. Haftalık 50 Coin/hafta artışı ancak
+     ekonomideki diğer kaynaklarla birlikte stres testi sonrasında etkinleştirilecek.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                      10
+LINKBALL                                                                                  GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 10 / TEKNİK MİMARİ
+
+
+ Mission Event Bridge — ortak sözleşme
+ Görev sistemi, farklı oyun motorlarından gelen güvenilir sonuçları tek bir şema ile işler.
+
+
+
+       01 OYUN SONUCU
+       Tamamlanan solo oyun veya PvP karşılaşması.
+
+
+
+
+       02 GÜVENİLİR KAYIT
+       Sunucu onaylı sonuç / doğrulanabilir oturum makbuzu.
+
+
+
+
+       03 GÖREV EŞLEŞTİRME
+       Mod, ölçüt, dönem, hesap ve uygunluk denetimi.
+
+
+
+
+       04 İDEMPOTENT İLERLEME
+       Tekil olay kimliğiyle günlük / haftalık / kariyer sayaçları.
+
+
+
+
+       05 ÖDÜL TALEBİ
+       Sunucu limitleri, Coin defteri ve Sezon Rotası hesaplaması.
+
+
+
+
+ Kanıt olmadan ödül yok
+ Solo modlar için önerilen en güvenli yaklaşım: oyun doğrulaması yapan sunucu fonksiyonunun kendi sonlandırma
+ işleminde tekil "verifiedModeCompletion" kaydı üretmesi. PvP görevleri için mevcut ranked settlement kayıtları
+ kullanılmaya devam edilir.
+
+ UI'dan gönderilen "completed=true" işareti tek başına hiçbir görev sayacını artırmamalıdır. Aynı event iki kez gelse
+ bile göreve yalnız bir kez ilerleme yazılmalıdır.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                    11
+LINKBALL                                                                                                  GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 11 / VERİ SÖZLEŞMESİ
+
+
+ Örnek event şeması ve depolama
+ Aşağıdaki alanlar uygulama yönlendirmesi için sözleşme önerisidir; mevcut üretim API'sinde hazır olduğu
+ anlamına gelmez.
+
+
+       KAYIT İLKESİ
+       Gerçek oturum kimliği ve zaman damgası sunucu tarafından üretilecek veya sunucuda doğrulanacak; yukarıdaki değerler
+       yalnız örnek şemayı gösterir.
+
+
+ {
+     "eventId": "verified-session-or-match-id",
+     "uid": "account-uid",
+     "source": "solo_verified | ranked_settlement",
+     "modeId": "matching",
+     "modeFamily": "puzzle",
+     "result": "completed",
+     "metrics": {"difficulty": "normal", "score": 0},
+     "serverFinishedAtMs": 1790000000000,
+     "verificationVersion": 1
+ }
+
+
+ Önerilen indeksler
+
+     Depo                                          Görev
+
+
+     missionState/{uid}/daily                      dayKey, assignedIds, eventIds, counters, claims, version.
+
+
+     missionState/{uid}/weekly                     weekKey, assignedIds, eventIds, counters, claims.
+
+
+     missionState/{uid}/general                    Yeni koleksiyon / mod aile sayaçları, eski zincir uyumu.
+
+
+     missionProfiles/{uid}                         Sunucu tarafından üretilmiş, salt okunur UI projection.
+
+
+     economyState/{uid}/claims                     İdempotent ödül ledger ve makbuzlar.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                12
+LINKBALL                                                                                        GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 12 / İLERLEME KURALLARI
+
+
+ Ölçütler, sayım ve kötüye kullanım önleme
+ Görevler sadece oynatılan modu değil, görevde tanımlanan eylemin gerçekten gerçekleştiğini ölçmelidir.
+
+
+   Ölçüt                        Sayım kuralı                                      Engel
+
+
+   modeCompleted                Farklı doğrulanmış bitiş eventId sayılır.         Sayfa açma / yeniden başlatma sayılmaz.
+
+
+   uniqueModes                  Farklı modeId değerleri sayılır.                  Aynı mod tekrarları ilerleme yapmaz.
+
+
+   rankedPlayed                 Ranked, serverValidated ve bitmiş maç.            Arkadaş/bot/iptal sayılmaz.
+
+
+   rankedWins                   Kayda geçmiş gerçek galibiyet.                    Beraberlik ve yenilgi sayılmaz.
+
+
+   dailyPuzzleDone              Aynı dayKey için onaylı daily content.            Yeniden başlatma / tekrar sayılmaz.
+
+
+   streakReached                Doğrulanmış en yüksek seri eşiği.                 İstemci skor beyanı sayılmaz.
+
+
+   scoreThreshold               Güvenilir bitmiş oturumun sayısal skoru.          Öznel Blind Ranking puanlamaya alınmaz.
+
+
+
+ İşleme sırası
+  • Gelen olay için serverValidated / source / uid / eventId / modeId uygunluğu incelenir.
+
+  • Olayın günlük ve haftalık dönemi sunucu saatinden çıkarılır. Geç gelmiş fakat dönemi kapanmış sonuçlar geriye
+     dönük günlük ödül oluşturmaz.
+
+  • Önce eventId kayıtları dedupe edilir, sonra ilgili günlük / haftalık / kariyer metrikleri idempotent güncellenir.
+
+  • Aynı session, birbiriyle uyumlu birden fazla görev için ilerleme sağlayabilir; fakat günlük claim en fazla 3 olur.
+
+  • Başka hesabın sonucu, engellenmiş/izinsiz hesap veya terminal olmayan maçlar reddedilir.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                        13
+LINKBALL                                                                                          GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 13 / UX
+
+
+ Arayüz, yönlendirme ve durumlar
+ Görev ekranı yeni motor kadar anlaşılır olmalı: oyuncu nereye gideceğini, ne kazanacağını ve neden
+ ilerlemediğini görmeli.
+
+
+   Durum                              Kart görünümü ve eylem
+
+
+   Henüz başlamadı                    Açık hedef + doğru mod adı + "Oyna" / "Mode git".
+
+
+   İlerliyor                          Açık hedef, sayısal sayaç ve ilerleme çubuğu.
+
+
+   Ödül hazır                         Ödülü al düğmesi belirgin, onay işlemi sırasında kilitli.
+
+
+   Ödül alındı                        Kompakt, tamamlandı işaretli ve üste yığılmayan kart.
+
+
+   Limit dolu                         Hedef oynanabilir; ödülün neden kapalı olduğu açıklanır.
+
+
+   Oyun kullanılamıyor                Alternatif uygun moda yönlendirme / doğru hata metni.
+
+
+   Senkronizasyon bekliyor            "Oyun sonucu doğrulanıyor"; uydurma tamamlanma yok.
+
+
+   Ağ hatası                          Güvenli yenileme / kaldığı yerden görüntüleme.
+
+
+
+ Erişilebilirlik ve yönlendirme
+  • 320 px en / %180 metin ölçeği; tüm görevler kaydırılabilir, düğmeler görünür.
+
+  • Teknik missionId UI'ya sabit route switch olarak gömülmez. Server metadata'daki modeId / routeKey, izinli
+     GameCatalog listesiyle eşlenir.
+
+  • Oyun ekranından dönünce profil yenilenir; ağ kesintisi olursa eski veri güncelmiş gibi gösterilmez.
+
+  • Renk tek başına durumu anlatmaz: metin, ikon ve erişilebilir semantik etiketler olmalı.
+
+  • Guest kullanıcıya hesabı bağlama açıklaması gösterilir; izin verilmeyen ödüle yönlendirme yapılmaz.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                        14
+LINKBALL                                                                                                     GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 14 / UYGULAMA PLANI
+
+
+ Mimari geçiş ve yayın sırası
+ Aşama aşama ilerleyelim: eski görev kazanımlarına dokunmadan yeni sözleşmeyi önce gölge modda
+ çalıştıracağız.
+
+
+   Faz                       Uygulama                                                        PASS kapısı
+
+
+   A / Veri denetimi         Modların sonuç kaynağı, server callable, release bayrağı,       Yalnız kanıtlanabilir görevler katalogda.
+                             yeterli veri.
+
+
+   B / Köprü                 Mission Event Bridge + receipt dedupe + PvP adaptor.            Eski ranked görevleri aynı sayıyor.
+
+
+   C / Günlük V2             5 atama / 3 claim, rotation, fallback ve claims migration.      Eski ödüller yeniden verilmez.
+
+
+   D / UI                    Günlük, Haftalık, Kariyer sekmeleri ve route metadata.          Küçük ekran, erişilebilirlik, hata durumları.
+
+
+   E / Haftalık              3 haftalık görev, 2 claim, ekonomi ayrı bayrak.                 Yanlış günlük SP ve çift Coin yok.
+
+
+   F / Kariyer               Yeni Bilgi/Koleksiyon zincirleri, geriye uyum.                  Mevcut zincirler bozulmaz.
+
+
+   G / Yayın                 Firebase emülatörü, Flutter CI, 2 gerçek hesap, kapalı pilot.   PASS olmadan tam dağıtım yok.
+
+
+
+ Sürümleme
+ Mevcut görev durum sözleşmesi Mission V2 iken hedef yeni dönemler için missionSchemaVersion=3 olabilir. Version
+ yükseltirken eski claim makbuzları, ranked sayaçları, missionProfiles okuma izni ve hesap silme temizliği korunmalıdır.
+
+
+     YAYIN GÜVENLİĞİ
+     Yeni haftalık Coin ve kariyer ekonomi seçenekleri remote config üzerinden ilk kurulumda kapalı kalır. Görev katalogu/ödül
+     politikasının yayın tarihi gerçek servis sürümüyle eşleştirilir.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                         15
+LINKBALL                                                                                              GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 15 / KABUL KRİTERLERİ
+
+
+ PASS / FAIL — Günlük atama ve erişilebilirlik
+ Bu sayfadaki 12 kontrol, V2 yayınında ayrı ayrı PASS işaretlenmelidir. Başlangıç durumu: NOT RUN.
+
+
+   Kod          Başarı koşulu                                                                                          Durum
+
+
+   A01          Katalogda 5 uygun günlük görev bulunur; sunucu atama kaydı kalıcıdır.                                  NOT RUN
+
+
+   A02          Bir günde aynı görev seti yenileme, oturum açma ve cihaz değişimiyle değişmez.                         NOT RUN
+
+
+   A03          5 görevden en az 3'ü online erişim olmadan yapılabilir.                                                NOT RUN
+
+
+   A04          Kapalı veya doğrulanmayan solo mod günlük görev olarak atanmaz.                                        NOT RUN
+
+
+   A05          Online servis hazır değilken ranked görev solo alternatife dönüşür.                                    NOT RUN
+
+
+   A06          Günlük 3 claim sınırı farklı görevlerden de aşılmaz.                                                   NOT RUN
+
+
+   A07          Dört ve beşinci görevler oynanabilir kalır, fakat ek ödül kazanılmaz.                                  NOT RUN
+
+
+   A08          Bir önceki günün 5 görevi aynen tekrar atanmaz (havuz yeterliyse).                                     NOT RUN
+
+
+   A09          Aynı mod üst üste uygunsuz biçimde atanmaz.                                                            NOT RUN
+
+
+   A10          Günlük zaten bitmiş tek-seferlik içerik erişilemez görev olarak kalmaz.                                NOT RUN
+
+
+   A11          Günlük yenileme Europe/Istanbul 00.00 ile gerçekleşir.                                                 NOT RUN
+
+
+   A12          Günlük resetten sonra eski claim yeni günün claim kotasına geçmez.                                     NOT RUN
+
+
+
+
+     KABUL PRENSİBİ
+     PASS yalnız gerçek test çıktısı, istemci ekran kontrolü veya sunucu makbuz kanıtıyla verilir. Belge tasarımı bu testleri geçtiğini
+     iddia etmez.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                      16
+LINKBALL                                                                                              GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 15 / KABUL KRİTERLERİ
+
+
+ PASS / FAIL — Solo görevler ve mod
+ tamamlanması
+ Bu sayfadaki 12 kontrol, V2 yayınında ayrı ayrı PASS işaretlenmelidir. Başlangıç durumu: NOT RUN.
+
+
+   Kod          Başarı koşulu                                                                                          Durum
+
+
+   B01          Bir Matching tahtası kapanmadan tamamlanma sayılmaz.                                                   NOT RUN
+
+
+   B02          Pyramid yanlış/yarım puzzle olarak biterse tamamlama görevini artırmaz.                                NOT RUN
+
+
+   B03          Lingo günlük içerik aynı günde tekrar sayılmaz.                                                        NOT RUN
+
+
+   B04          Anagram / Passaparola günlük içerik kimliği kontrol edilir.                                            NOT RUN
+
+
+   B05          Hoca 11 ve Kadro Kasası yalnız doğrulanmış terminal durumda sayılır.                                   NOT RUN
+
+
+   B06          This or That şampiyon belirlenmeden tamamlanmış sayılmaz.                                              NOT RUN
+
+
+   B07          Blind Ranking 5/10 slot dolmadan bitiş görevi kazanılmaz.                                              NOT RUN
+
+
+   B08          Higher or Lower seri eşiği hesaplanmış sonuçtan gelir.                                                 NOT RUN
+
+
+   B09          Farklı mod görevi aynı modeId tekrarıyla ilerlemez.                                                    NOT RUN
+
+
+   B10          Sadece oyun ekranını açmak görev ilerletmez.                                                           NOT RUN
+
+
+   B11          Bir görevde uygunsuz veri havuzu sistematik fallback / hata gösterir.                                  NOT RUN
+
+
+   B12          Solo oturum tekrar gönderilse ilerleme yalnız bir kez artar.                                           NOT RUN
+
+
+
+
+     KABUL PRENSİBİ
+     PASS yalnız gerçek test çıktısı, istemci ekran kontrolü veya sunucu makbuz kanıtıyla verilir. Belge tasarımı bu testleri geçtiğini
+     iddia etmez.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                      17
+LINKBALL                                                                                              GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 15 / KABUL KRİTERLERİ
+
+
+ PASS / FAIL — Online / arkadaş sonucu ve
+ güven
+ Bu sayfadaki 12 kontrol, V2 yayınında ayrı ayrı PASS işaretlenmelidir. Başlangıç durumu: NOT RUN.
+
+
+   Kod          Başarı koşulu                                                                                          Durum
+
+
+   C01          Ranked oynama için serverValidated settled match şarttır.                                              NOT RUN
+
+
+   C02          Ranked galibiyet yalnız gerçekten kazanan uid için artar.                                              NOT RUN
+
+
+   C03          Beraberlik ranked kazanmayı artırmaz.                                                                  NOT RUN
+
+
+   C04          Arkadaş maçı ranked görevini artırmaz.                                                                 NOT RUN
+
+
+   C05          Bot maçı ranked görevini artırmaz.                                                                     NOT RUN
+
+
+   C06          İptal/kaçış/yarım kalan PvP tamamlanmış sayılmaz.                                                      NOT RUN
+
+
+   C07          13 modun wireName eşlemesi hatasız ve izinli olur.                                                     NOT RUN
+
+
+   C08          Aynı settlement iki kez gelirse duplicate kayıt artış yapmaz.                                          NOT RUN
+
+
+   C09          Başkasının uid / matchId kombinasyonu kabul edilmez.                                                   NOT RUN
+
+
+   C10          Çevrimiçi servis kapalıysa göreve gidince boş/bozuk ekrana düşülmez.                                   NOT RUN
+
+
+   C11          Eski ranked görevler geçişte çalışmaya devam eder.                                                     NOT RUN
+
+
+   C12          İki gerçek hesapla ranked maç sonuç görevi doğrulanır.                                                 NOT RUN
+
+
+
+
+     KABUL PRENSİBİ
+     PASS yalnız gerçek test çıktısı, istemci ekran kontrolü veya sunucu makbuz kanıtıyla verilir. Belge tasarımı bu testleri geçtiğini
+     iddia etmez.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                      18
+LINKBALL                                                                                              GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 15 / KABUL KRİTERLERİ
+
+
+ PASS / FAIL — Ödül, SP ve geçiş güvenliği
+ Bu sayfadaki 12 kontrol, V2 yayınında ayrı ayrı PASS işaretlenmelidir. Başlangıç durumu: NOT RUN.
+
+
+   Kod          Başarı koşulu                                                                                          Durum
+
+
+   D01          Günlük her claim 20 Coin öder; 3 claim=60 Coin.                                                        NOT RUN
+
+
+   D02          Günlük claim her biri 30 SP üretir; max günlük görev SP=90.                                            NOT RUN
+
+
+   D03          Mevcut toplam günlük sezon puanı tavanı 150 olarak korunur.                                            NOT RUN
+
+
+   D04          Görev claim hiçbir ek XP üretmez; UI da XP yazmaz.                                                     NOT RUN
+
+
+   D05          İstemci gönderdiği amount veya progress ile ödülü değiştiremez.                                        NOT RUN
+
+
+   D06          Hızlı çift tıklama veya ağ retry ikinci Coin üretmez.                                                  NOT RUN
+
+
+   D07          Pending reward reconciliation eksik ödemeyi kurtarır, çift ödeme yapmaz.                               NOT RUN
+
+
+   D08          Eski v2 görev claims ve wallet ledger sürüm yükseltmede korunur.                                       NOT RUN
+
+
+   D09          Haftalık max 2 claim ve toplam 50 Coin bütçesi uygulanır.                                              NOT RUN
+
+
+   D10          weekly__ ödülü Sezon Rotası tarafından günlük +30 SP sayılmaz.                                         NOT RUN
+
+
+   D11          Yeni kariyer Coin ödülleri onaylanmadan kapalıdır.                                                     NOT RUN
+
+
+   D12          Daily login ve mod sonu normal ödülleri ayrı ledger kimlikleriyle işler.                               NOT RUN
+
+
+
+
+     KABUL PRENSİBİ
+     PASS yalnız gerçek test çıktısı, istemci ekran kontrolü veya sunucu makbuz kanıtıyla verilir. Belge tasarımı bu testleri geçtiğini
+     iddia etmez.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                      19
+LINKBALL                                                                                              GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 15 / KABUL KRİTERLERİ
+
+
+ PASS / FAIL — Arayüz, dayanıklılık ve son
+ kontrol
+ Bu sayfadaki 12 kontrol, V2 yayınında ayrı ayrı PASS işaretlenmelidir. Başlangıç durumu: NOT RUN.
+
+
+   Kod          Başarı koşulu                                                                                          Durum
+
+
+   E01          Günlük, Haftalık, Kariyer sekmeleri doğru filtre gösterir.                                             NOT RUN
+
+
+   E02          "Ödülü hazır" filtreli boş durumda çıkış yolu vardır.                                                  NOT RUN
+
+
+   E03          Ödülü alınan görev kompakt ve doğru durum ikonuyla görünür.                                            NOT RUN
+
+
+   E04          Ödül ekranından doğru modeId üzerinden gerçek oyuna geçilir.                                           NOT RUN
+
+
+   E05          Görevden döndükten sonra ilerleme güncellenir.                                                         NOT RUN
+
+
+   E06          Hata/çevrimdışı halinde son veri yeni gibi gösterilmez.                                                NOT RUN
+
+
+   E07          320 px ekran ve %180 yazı ölçeğinde taşma olmaz.                                                       NOT RUN
+
+
+   E08          Ekran okuyucu için görev durumu ve eylemler erişilebilir.                                              NOT RUN
+
+
+   E09          Anonim hesaba bağlı kazanım gösterilmez ve açık gerekçe sunulur.                                       NOT RUN
+
+
+   E10          Türkiye saatine göre haftalık sıfırlama pazartesi 00.00'dır.                                           NOT RUN
+
+
+   E11          Hesap silmede missionState / profile / haftalık kayıtlar temizlenir.                                   NOT RUN
+
+
+   E12          Emülatör, Firebase emulator ve gerçek cihazda kritik akış PASS.                                        NOT RUN
+
+
+
+
+     KABUL PRENSİBİ
+     PASS yalnız gerçek test çıktısı, istemci ekran kontrolü veya sunucu makbuz kanıtıyla verilir. Belge tasarımı bu testleri geçtiğini
+     iddia etmez.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                                      20
+LINKBALL                                                                                                 GÖREV MERKEZİ / V2 GELİŞTİRME
+
+
+
+
+ 16 / YAYINA HAZIRLIK
+
+
+ Teslim, kaynaklar ve go / no-go
+ Kod değişikliği ve dağıtım bu dokümanın kapsamı değildir. Bu sayfa sonraki geliştirme turunda uygulanacak net
+ kapıları listeler.
+
+
+ Yayın öncesi teslimatlar
+  • Yeni günlük / haftalık katalogu ve sunucuya kayıtlı görev rotasyon algoritması.
+
+  • Mission Event Bridge ile solo mode sonuç kaynaklarının doğrulanması, eski ranked bridge uyumu.
+
+  • Kriter / route metadata, Flutter MissionProfile V3 modeli ve yeniden tasarlanmış ekran.
+
+  • Coin ledger idempotency, weekly SP parser ayrımı ve eski mission claim göç testleri.
+
+  • Unit + integration + Functions / RTDB Emulator sonuçları, Android emulator ve gerçek cihaz smoke raporu.
+
+  • İki gerçek bağlı hesapla maç-sonuç-görev-claim döngüsü; yalnız PASS sonrası pilot rollout.
+
+
+ Repo dosyaları / incelenen teknik referanslar
+
+   Alan                                  İncelenen veya değişecek dosyalar
+
+
+   Görev motoru                          functions/index.js · functions/test/mission_contracts.test.js
+
+
+   PvP köprüsü                           functions/test/ranked_mission_bridge.test.js · lib/online/online_mode_catalog.dart
+
+
+   Sezon ekonomisi                       functions/season_pass.js · functions/config/linkball_economy.defaults.json
+
+
+   Görev UI                              lib/screens/progression_center_page.dart · lib/models/mission_models.dart
+
+
+   Katalog ve yönlendirme                lib/app/game_catalog.dart · lib/services/mission_service.dart
+
+
+   Üst sürüm                             https://github.com/Burakozturk23/shared-xi/pull/70
+
+
+
+ Go / No-Go
+ GO: 60 kabul kriteri PASS, ekonomi simülasyonu kabul, haftalık ödül bayrağı kontrollü, sunucu sürümü ile mobil build
+ uyumlu. NO-GO: client-only bitirme, yanlış SP üretimi, duplicate Coin, erişilemeyen görev veya doğrulanmamış online
+ galibiyet.
+
+
+     BELGE DURUMU
+     ÜRÜN TASARIMI / TEKNİK ŞARTNAME HAZIR. GitHub değişikliği yapılmadı. Firebase dağıtımı yapılmadı. 60 PASS/FAIL kontrolü
+     henüz çalıştırılmadı.
+
+
+
+
+Tasarım ve teknik uygulama şartnamesi · 24 Ekim 2026                                                                               21
+

@@ -15,8 +15,8 @@ function accepts(match, answers) {
   return Array.isArray(answers) && answers.length === match.answerKeys.length &&
     answers.every((id, i) => typeof id === "string" && id === match.answerKeys[i]);
 }
-function createService({db, grantCoins, grantXp, now = Date.now}) {
-  const ref = (uid) => db.ref("uclMomentsState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("uclMomentsState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function accrue(s) {
     const earn = (id, coins, xp) => {

@@ -104,6 +104,12 @@ class DailyRewardStatus {
     this.lastClaimedAtMs,
   });
 
+  /// The streak the next claim continues, or null when there is none.
+  /// [currentStreak] keeps the last claimed run; after a missed day the
+  /// server resets [nextStreak] to 1, which marks that count as stale.
+  int? get activeStreak =>
+      enabled && currentStreak > 0 && nextStreak > 1 ? currentStreak : null;
+
   factory DailyRewardStatus.fromMap(Map<String, dynamic> data) {
     return DailyRewardStatus(
       enabled: data['enabled'] != false,

@@ -1,0 +1,3851 @@
+{
+ "source": {
+  "provider": "wikidata",
+  "endpoint": "https://query.wikidata.org/sparql",
+  "query": "SELECT ?club ?coach ?coachLabel ?start ?end ?statement WHERE {\n  VALUES ?club { wd:Q9616 wd:Q8682 wd:Q7156 wd:Q1130849 wd:Q18656 wd:Q9617 wd:Q50602 wd:Q1422 wd:Q1543 wd:Q15789 wd:Q18741 wd:Q631 wd:Q483020 wd:Q41420 wd:Q6601875 wd:Q495299 wd:Q172567 wd:Q192641 wd:Q131499 wd:Q128446 wd:Q81888 }\n  ?club p:P286 ?statement . ?statement ps:P286 ?coach .\n  OPTIONAL { ?statement pq:P580 ?start } OPTIONAL { ?statement pq:P582 ?end }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }\n} ORDER BY ?club ?start",
+  "retrievedAt": "2026-10-30T03:39:54+00:00",
+  "sha256": "df0ea0a4770fe635aef6dfbbaa5f76f4ae91896367c5524f5c9637c54b8bc253",
+  "license": "CC0"
+ },
+ "clubs": {
+  "Q9616": 631,
+  "Q8682": 418,
+  "Q7156": 131,
+  "Q1130849": 31,
+  "Q18656": 985,
+  "Q9617": 11,
+  "Q50602": 281,
+  "Q1422": 506,
+  "Q1543": 5,
+  "Q15789": 27,
+  "Q18741": 148,
+  "Q631": 46,
+  "Q483020": 583,
+  "Q41420": 16,
+  "Q6601875": 36,
+  "Q495299": 141,
+  "Q172567": 114,
+  "Q192641": 449,
+  "Q131499": 294,
+  "Q128446": 720,
+  "Q81888": 610
+ },
+ "tenures": [
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "1975-10-02",
+   "end": "1976-05-30",
+   "statement": "Q1543-16C819C9-9ED6-4CDC-837C-B5B78550C7ED"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q1280931",
+   "coach": "Luigi Radice",
+   "start": "1981-07-01",
+   "end": "1982-01-24",
+   "statement": "Q1543-B555AE04-3536-46FA-9D8A-D9E87C5669AB"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q1337031",
+   "coach": "Ilario Castagner",
+   "start": "1982-07-01",
+   "end": "1984-03-26",
+   "statement": "Q1543-8AC50968-B3AF-4E87-A534-AEC48943672E"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q183108",
+   "coach": "Fabio Capello",
+   "start": "1987-04-05",
+   "end": "1987-06-30",
+   "statement": "Q1543-84977AFD-4BEE-411E-B0DC-D32006068F80"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q294259",
+   "coach": "Arrigo Sacchi",
+   "start": "1987-07-01",
+   "end": "1991-06-30",
+   "statement": "Q1543-51B2D499-E56B-4D64-A0B8-A5C53B9A91B0"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q183108",
+   "coach": "Fabio Capello",
+   "start": "1991-07-01",
+   "end": "1996-06-30",
+   "statement": "Q1543-CB444BBB-BB90-4582-916B-E30C697CA5EB"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q294259",
+   "coach": "Arrigo Sacchi",
+   "start": "1996-12-01",
+   "end": "1997-06-01",
+   "statement": "Q1543-45927BAD-2459-4E6F-AA96-440C85CE92AE"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q183108",
+   "coach": "Fabio Capello",
+   "start": "1997-07-01",
+   "end": "1998-06-30",
+   "statement": "Q1543-D44498B0-41EA-4CDF-9F11-445A8AE181D9"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "2001-11-07",
+   "end": "2009-05-31",
+   "statement": "Q1543-C19CE23A-059C-41FB-BB00-AA751D5722CE"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q46741",
+   "coach": "Leonardo Araújo",
+   "start": "2009-07-01",
+   "end": "2010-05-17",
+   "statement": "Q1543-40d4a8f4-4546-1c6a-41b3-8d776920a2be"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q354529",
+   "coach": "Massimiliano Allegri",
+   "start": "2010-06-25",
+   "end": "2014-01-13",
+   "statement": "Q1543-E823CF5B-9567-44AE-B18E-599B19927D6A"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q484909",
+   "coach": "Clarence Seedorf",
+   "start": "2014-01-16",
+   "end": "2014-06-09",
+   "statement": "Q1543-0339abe2-482b-a11c-5366-f340fa53353f"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q126503",
+   "coach": "Filippo Inzaghi",
+   "start": "2014-06-09",
+   "end": "2015-06-16",
+   "statement": "q1543-5978262F-FE3F-413F-A572-CB93C9194A4F"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q294351",
+   "coach": "Siniša Mihajlović",
+   "start": "2015-06-16",
+   "end": "2016-04-12",
+   "statement": "Q1543-ADC2305A-A44F-46A1-B792-29DED5CB6CC6"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q297768",
+   "coach": "Vincenzo Montella",
+   "start": "2016-07-01",
+   "end": "2017-11-27",
+   "statement": "Q1543-693efc2e-4fb4-1e57-4a47-b8790b7ba221"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q116980",
+   "coach": "Gennaro Gattuso",
+   "start": "2017-11-27",
+   "end": "2019-05-28",
+   "statement": "Q1543-ECDF6EB7-8896-4DC5-B9CD-9691278D2750"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q2704759",
+   "coach": "Marco Giampaolo",
+   "start": "2019-06-19",
+   "end": "2019-10-08",
+   "statement": "Q1543-19a3e604-4c9a-7487-f961-3f5877c87ac7"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q923088",
+   "coach": "Stefano Pioli",
+   "start": "2019-10-09",
+   "end": "2024-05-26",
+   "statement": "Q1543-5d6b4385-46a8-6e98-0fa1-0bc09c1f40b6"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q10346582",
+   "coach": "Paulo Fonseca",
+   "start": "2024-07-01",
+   "end": "2024-12-30",
+   "statement": "Q1543-31c40929-470a-4a9a-f44b-a1586a74389a"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q317298",
+   "coach": "Sérgio Conceição",
+   "start": "2024-12-30",
+   "end": "2025-05-29",
+   "statement": "Q1543-138e919a-4582-298b-fa53-fb6250b64888"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q354529",
+   "coach": "Massimiliano Allegri",
+   "start": "2025-05-30",
+   "end": "2026-05-25",
+   "statement": "Q1543-56618740-41f6-af51-bb67-3ba3e4370660"
+  },
+  {
+   "clubQid": "Q1543",
+   "clubId": 5,
+   "coachQid": "Q368682",
+   "coach": "Ruben Amorim",
+   "start": "2026-06-16",
+   "end": null,
+   "statement": "Q1543-7ac2b9e7-4d69-d779-ceb2-b69b2718ccf7"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q313784",
+   "coach": "Herbert Chapman",
+   "start": "1925-06-11",
+   "end": "1934-01-06",
+   "statement": "Q9617-11a11735-4207-7314-ca55-aa6838eae576"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q1389033",
+   "coach": "George Swindin",
+   "start": "1958-01-01",
+   "end": "1962-01-01",
+   "statement": "Q9617-31eb67a9-4a09-f779-eca9-5f864dae2dbf"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q1380624",
+   "coach": "Terry Neill",
+   "start": "1976-07-09",
+   "end": "1983-12-16",
+   "statement": "Q9617-48fe64fe-4131-566e-64ad-7c87353ba24e"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q726250",
+   "coach": "Don Howe",
+   "start": "1984-01-11",
+   "end": "1986-03-28",
+   "statement": "Q9617-5d26067d-4ea2-837c-bc86-5631e520c99c"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q313763",
+   "coach": "George Graham",
+   "start": "1986-05-14",
+   "end": "1995-02-21",
+   "statement": "Q9617-2facd02f-449e-a49c-713c-5a65a3cc62c7"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q373052",
+   "coach": "Bruce Rioch",
+   "start": "1995-06-08",
+   "end": "1996-08-12",
+   "statement": "Q9617-110cb6e0-458c-1e9e-c6d3-453fb77f0b6d"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q47576",
+   "coach": "Arsène Wenger",
+   "start": "1996-10-01",
+   "end": "2018-05-21",
+   "statement": "Q9617-39bca47c-441a-34f7-30e8-1858a0fb969a"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q295610",
+   "coach": "Unai Emery",
+   "start": "2018-05-23",
+   "end": "2019-11-29",
+   "statement": "q9617-BD5A9A10-BCDF-4867-A5F6-CDB2380FB412"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q10560",
+   "coach": "Freddie Ljungberg",
+   "start": "2019-11-29",
+   "end": "2019-12-20",
+   "statement": "Q9617-722fa1be-4c94-3bcd-8263-4ddc5517c0f3"
+  },
+  {
+   "clubQid": "Q9617",
+   "clubId": 11,
+   "coachQid": "Q185572",
+   "coach": "Mikel Arteta",
+   "start": "2019-12-20",
+   "end": null,
+   "statement": "Q9617-ee18dd4d-411d-d761-f987-97a072ff8f53"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q44478",
+   "coach": "Ottmar Hitzfeld",
+   "start": "1991-07-01",
+   "end": "1997-06-30",
+   "statement": "Q41420-1f999233-4932-56a5-c08b-99d303a27946"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q83106",
+   "coach": "Jürgen Klopp",
+   "start": "2008-07-01",
+   "end": "2015-06-30",
+   "statement": "q41420-42AB79FE-29D2-41BA-8B4B-485DA3E0F2DF"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q702233",
+   "coach": "Thomas Tuchel",
+   "start": "2015-07-01",
+   "end": "2017-06-30",
+   "statement": "Q41420-3ECECDFF-1349-4CA4-BC6F-6E01238B9640"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q1029982",
+   "coach": "Peter Bosz",
+   "start": "2017-07-01",
+   "end": "2017-12-09",
+   "statement": "Q41420-84aee280-4cd9-cdbf-1489-119594da1e2b"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q697397",
+   "coach": "Peter Stöger",
+   "start": "2017-12-10",
+   "end": "2018-06-30",
+   "statement": "Q41420-53785032-402b-8910-7e9e-f59d2cfe5e17"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q539920",
+   "coach": "Lucien Favre",
+   "start": "2018-07-01",
+   "end": "2020-12-13",
+   "statement": "Q41420-4ca102df-4618-4cf8-d028-faab0f3cc4f2"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q61709977",
+   "coach": "Edin Terzić",
+   "start": "2020-12-13",
+   "end": "2021-06-30",
+   "statement": "Q41420-56a6d85b-432c-2942-b7e9-3bcbc2fc11e1"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q542990",
+   "coach": "Marco Rose",
+   "start": "2021-07-01",
+   "end": "2022-05-20",
+   "statement": "Q41420-4181d2e5-411b-f97b-cb7c-8f3c99b854af"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q61709977",
+   "coach": "Edin Terzić",
+   "start": "2022-05-23",
+   "end": "2024-06-30",
+   "statement": "Q41420-f7ec2536-4905-565a-4a6c-1e49f6dae2ed"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q75857",
+   "coach": "Nuri Şahin",
+   "start": "2024-06-14",
+   "end": "2025-01-22",
+   "statement": "Q41420-a60c2e25-4142-0464-cc6f-db0c7f81a038"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q460260",
+   "coach": "Mike Tullberg",
+   "start": "2025-01-22",
+   "end": "2025-01-30",
+   "statement": "Q41420-bfbd7e01-4c4f-21a9-699c-cc5e21c304a5"
+  },
+  {
+   "clubQid": "Q41420",
+   "clubId": 16,
+   "coachQid": "Q154305",
+   "coach": "Niko Kovač",
+   "start": "2025-01-30",
+   "end": null,
+   "statement": "Q41420-775d2d99-4f95-7b53-6eac-5e57fa6e0a96"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q152107",
+   "coach": "Jupp Heynckes",
+   "start": "1987-07-01",
+   "end": "1991-10-08",
+   "statement": "Q15789-F64E442F-524F-4EF5-A34B-EB9324E1D279"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "1994-07-01",
+   "end": "1995-06-30",
+   "statement": "Q15789-509CFB96-9D9A-4EBD-967A-0042647FD984"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "1996-07-01",
+   "end": "1998-06-30",
+   "statement": "Q15789-32FC7630-D649-4CE3-B6E2-C99420C318C1"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q44478",
+   "coach": "Ottmar Hitzfeld",
+   "start": "1998-07-01",
+   "end": "2004-06-30",
+   "statement": "Q15789-981015ec-4ecd-ffae-64f5-7b1f5be57719"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q44478",
+   "coach": "Ottmar Hitzfeld",
+   "start": "2007-02-01",
+   "end": "2008-06-30",
+   "statement": "Q15789-3473ef7a-4a1d-c4fe-435e-cf8b4373ad71"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q57079",
+   "coach": "Jürgen Klinsmann",
+   "start": "2008-07-01",
+   "end": "2009-04-27",
+   "statement": "Q15789-9a35c0a4-4a07-0b6f-5516-b0a07a2f2198"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q152107",
+   "coach": "Jupp Heynckes",
+   "start": "2009-04-27",
+   "end": "2009-06-30",
+   "statement": "Q15789-A802207F-8B99-404E-A7C9-1DB42C4A3C1C"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q207431",
+   "coach": "Louis van Gaal",
+   "start": "2009-07-01",
+   "end": "2011-04-10",
+   "statement": "Q15789-7C1413A6-A818-4D85-8C2D-7B8471A03815"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q510529",
+   "coach": "Andries Jonker",
+   "start": "2011-04-11",
+   "end": "2011-06-30",
+   "statement": "Q15789-3d19c84d-4e68-c36b-a672-d0bd9789c9d3"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q152107",
+   "coach": "Jupp Heynckes",
+   "start": "2011-07-01",
+   "end": "2013-06-30",
+   "statement": "Q15789-29C581CF-FDA0-4DB6-BE9C-E24F33F4957B"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q164038",
+   "coach": "Pep Guardiola",
+   "start": "2013-06-01",
+   "end": "2016-05-30",
+   "statement": "Q15789-8642FA7A-A150-47E5-BEFC-28DE37F6E843"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "2016-07-01",
+   "end": "2017-09-28",
+   "statement": "Q15789-845816D8-2187-4EAD-8F82-052180B67617"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q152107",
+   "coach": "Jupp Heynckes",
+   "start": "2017-10-09",
+   "end": "2018-06-30",
+   "statement": "Q15789-B8845665-9D95-46FB-8096-7A9C6CCF7CA7"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q154305",
+   "coach": "Niko Kovač",
+   "start": "2018-07-01",
+   "end": "2019-11-03",
+   "statement": "Q15789-C7FE6BAF-DA5A-4C1C-A665-E66BBE925114"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q577384",
+   "coach": "Hansi Flick",
+   "start": "2019-11-03",
+   "end": "2021-06-30",
+   "statement": "Q15789-ac7e88c3-4f3c-b361-9d48-cc5c3643988c"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q21226404",
+   "coach": "Julian Nagelsmann",
+   "start": "2021-07-01",
+   "end": "2023-03-24",
+   "statement": "Q15789-723eb836-4f88-f759-a3c6-126d22755819"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q702233",
+   "coach": "Thomas Tuchel",
+   "start": "2023-03-24",
+   "end": "2024-06-30",
+   "statement": "Q15789-5c580d0c-4fb1-38e5-376e-7bbb538dacd5"
+  },
+  {
+   "clubQid": "Q15789",
+   "clubId": 27,
+   "coachQid": "Q201381",
+   "coach": "Vincent Kompany",
+   "start": "2024-07-01",
+   "end": null,
+   "statement": "Q15789-e44b0102-4c11-8b90-8395-68832eb3e116"
+  },
+  {
+   "clubQid": "Q1130849",
+   "clubId": 31,
+   "coachQid": "Q187198",
+   "coach": "Kenny Dalglish",
+   "start": "1985-05-30",
+   "end": "1991-02-21",
+   "statement": "Q1130849-5d61f7e5-474e-74d0-793d-55bbb13b3558"
+  },
+  {
+   "clubQid": "Q1130849",
+   "clubId": 31,
+   "coachQid": "Q187198",
+   "coach": "Kenny Dalglish",
+   "start": "2011-01-08",
+   "end": "2012-05-16",
+   "statement": "Q1130849-5aabd8a0-4aba-2c1a-ad04-a23768d172c1"
+  },
+  {
+   "clubQid": "Q1130849",
+   "clubId": 31,
+   "coachQid": "Q310623",
+   "coach": "Brendan Rodgers",
+   "start": "2012-06-01",
+   "end": "2015-10-04",
+   "statement": "Q1130849-05cf1a3b-4be0-2662-9c88-9aca2e7094ac"
+  },
+  {
+   "clubQid": "Q1130849",
+   "clubId": 31,
+   "coachQid": "Q83106",
+   "coach": "Jürgen Klopp",
+   "start": "2015-10-08",
+   "end": "2024-05-19",
+   "statement": "Q1130849-161fded6-4be0-da42-c3b1-9a7b0bdb51ef"
+  },
+  {
+   "clubQid": "Q1130849",
+   "clubId": 31,
+   "coachQid": "Q1029223",
+   "coach": "Arne Slot",
+   "start": "2024-06-01",
+   "end": "2026-05-30",
+   "statement": "Q1130849-8bc60705-4d63-1a47-2c3e-7531f46eb4b9"
+  },
+  {
+   "clubQid": "Q1130849",
+   "clubId": 31,
+   "coachQid": "Q317216",
+   "coach": "Andoni Iraola",
+   "start": "2026-06-04",
+   "end": null,
+   "statement": "Q1130849-e321c91b-44a7-c733-5a6b-86e613fa32f3"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q169092",
+   "coach": "Zdeněk Zeman",
+   "start": "1999-10-12",
+   "end": "2000-03-01",
+   "statement": "Q6601875-8E0AA491-0438-45DD-9EE2-1B4948886657"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q11958",
+   "coach": "Phillip Cocu",
+   "start": "2018-07-20",
+   "end": "2018-10-28",
+   "statement": "Q6601875-7f47b084-4b9c-fb04-ec02-e27e6fce9656"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q1362422",
+   "coach": "Ersun Yanal",
+   "start": "2018-12-01",
+   "end": "2020-03-04",
+   "statement": "Q6601875-52c3e22a-4e39-7031-b14e-9ca8fa739486"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q562157",
+   "coach": "Erol Bulut",
+   "start": "2020-08-05",
+   "end": "2021-03-25",
+   "statement": "Q6601875-565812e1-4564-a858-e8f0-79c9eb7fd4d9"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q202569",
+   "coach": "Emre Belözoğlu",
+   "start": "2021-03-25",
+   "end": "2021-06-01",
+   "statement": "Q6601875-2f531ea5-4623-acfa-b88b-91a6a9c5c8cb"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q556610",
+   "coach": "Vítor Pereira",
+   "start": "2021-07-02",
+   "end": "2021-12-20",
+   "statement": "Q6601875-d117030c-4ff4-7ec2-5b14-75a45e467c73"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q8080212",
+   "coach": "İsmail Kartal",
+   "start": "2022-01-12",
+   "end": "2022-06-02",
+   "statement": "Q6601875-68edb783-4b24-3d91-a1c8-c9871221ebc0"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q527550",
+   "coach": "Jorge Jesus",
+   "start": "2022-07-01",
+   "end": "2023-06-30",
+   "statement": "Q6601875-338a08ed-427c-2bd5-62b2-8c44524a884d"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q8080212",
+   "coach": "İsmail Kartal",
+   "start": "2023-07-03",
+   "end": "2024-06-30",
+   "statement": "Q6601875-4201241c-466c-5d59-3613-fef603eb580e"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2024-07-01",
+   "end": "2025-08-29",
+   "statement": "Q6601875-0ea21ef1-4f3f-7c48-467c-623f010f67f4"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q28916689",
+   "coach": "Domenico Tedesco",
+   "start": "2025-09-09",
+   "end": "2026-04-27",
+   "statement": "Q6601875-a0daeacb-49f6-cb7d-9c95-a212ec3ee566"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q130901863",
+   "coach": "Zeki Murat Göle",
+   "start": "2026-04-27",
+   "end": "2026-05-17",
+   "statement": "Q6601875-9362c4d3-4fc5-fe50-6fb3-fc6e5f78bc7d"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q8080212",
+   "coach": "İsmail Kartal",
+   "start": "2026-06-18",
+   "end": "2026-10-28",
+   "statement": "Q6601875-404a39f7-40f9-e3c9-ad8e-636a4aefc240"
+  },
+  {
+   "clubQid": "Q6601875",
+   "clubId": 36,
+   "coachQid": "Q294214",
+   "coach": "Dirk Kuyt",
+   "start": "2026-10-28",
+   "end": null,
+   "statement": "Q6601875-5aab503f-4a27-1e15-e479-aa5958f5ced5"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q310078",
+   "coach": "Helenio Herrera",
+   "start": "1960-07-01",
+   "end": "1968-06-30",
+   "statement": "Q631-D2436401-826D-409A-A138-6A5C5A38AD0A"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q310078",
+   "coach": "Helenio Herrera",
+   "start": "1973-07-01",
+   "end": "1974-02-05",
+   "statement": "Q631-84624E0C-6367-482D-83CE-59A4CA0ACDDA"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q1407829",
+   "coach": "Eugenio Bersellini",
+   "start": "1977-07-01",
+   "end": "1982-06-30",
+   "statement": "Q631-C3538ECD-276E-47D7-A0D5-F3F2EF71D1B7"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q1280931",
+   "coach": "Luigi Radice",
+   "start": "1983-07-01",
+   "end": "1984-06-30",
+   "statement": "Q631-B0A89303-DF3B-4802-8E83-9E404C0739DE"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q1337031",
+   "coach": "Ilario Castagner",
+   "start": "1984-07-01",
+   "end": "1985-11-10",
+   "statement": "Q631-33E95633-DD59-4FFC-8A98-C93EBC2C7488"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "1986-07-01",
+   "end": "1991-06-30",
+   "statement": "Q631-729A331B-1530-4326-B3DA-C9CE7738A2E9"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q645692",
+   "coach": "Ottavio Bianchi",
+   "start": "1994-07-01",
+   "end": "1995-09-25",
+   "statement": "Q631-E0B48290-CABD-4001-909E-D8AD7C3E9CE2"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q2537282",
+   "coach": "Luigi Simoni",
+   "start": "1997-07-01",
+   "end": "1998-11-30",
+   "statement": "Q631-2E0A75E6-9A39-4E95-8C0F-01C1296C6E39"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q43304",
+   "coach": "Marcello Lippi",
+   "start": "1999-07-01",
+   "end": "2000-10-01",
+   "statement": "Q631-644DB8DD-4F83-46E2-B7CE-AEF93489FEA1"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q48330",
+   "coach": "Roberto Mancini",
+   "start": "2004-07-01",
+   "end": "2008-05-29",
+   "statement": "Q631-79D727F8-3593-4CD1-A220-A014756DDA11"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2008-07-01",
+   "end": "2010-06-30",
+   "statement": "Q631-7ebac5f7-41a1-da18-e182-f5ac9ae5255c"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q235068",
+   "coach": "Claudio Ranieri",
+   "start": "2011-08-22",
+   "end": "2012-02-26",
+   "statement": "Q631-88C273A5-58E1-4A8B-8CC0-AE1CB397ECBB"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q370838",
+   "coach": "Walter Mazzarri",
+   "start": "2013-05-24",
+   "end": "2014-11-14",
+   "statement": "Q631-7F8335CD-3837-490A-81CB-B6AA3A61CE77"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q48330",
+   "coach": "Roberto Mancini",
+   "start": "2014-11-14",
+   "end": "2016-08-08",
+   "statement": "Q631-B417C09D-2C5B-4D2F-9E90-26352FEDA466"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q923088",
+   "coach": "Stefano Pioli",
+   "start": "2016-11-08",
+   "end": "2017-05-09",
+   "statement": "Q631-024B3B4F-1BDC-4F93-8EE6-E3324AE2C940"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q310813",
+   "coach": "Luciano Spalletti",
+   "start": "2017-07-01",
+   "end": "2019-06-30",
+   "statement": "Q631-c1ccd946-433d-b2c3-4e5e-6dead238bdde"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q26580",
+   "coach": "Antonio Conte",
+   "start": "2019-07-01",
+   "end": "2021-06-30",
+   "statement": "Q631-83f09adb-4faf-577e-3b0a-4fc0fe487826"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q314670",
+   "coach": "Simone Inzaghi",
+   "start": "2021-07-01",
+   "end": "2025-06-03",
+   "statement": "Q631-087c4013-4a6f-c4e0-ebe0-170ce2cede0a"
+  },
+  {
+   "clubQid": "Q631",
+   "clubId": 46,
+   "coachQid": "Q210491",
+   "coach": "Cristian Chivu",
+   "start": "2025-06-09",
+   "end": null,
+   "statement": "Q631-56e3c19e-43fc-a90c-d314-8c5f64d5e679"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q388904",
+   "coach": "Şenol Güneş",
+   "start": "2015-07-01",
+   "end": "2019-06-30",
+   "statement": "Q172567-36C91417-52BF-4F19-98C4-1567759900E2"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q26532",
+   "coach": "Abdullah Avcı",
+   "start": "2019-07-03",
+   "end": "2020-01-24",
+   "statement": "Q172567-3B3A8493-876F-4F39-B53F-1F2ADB7BF3DF"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q1388570",
+   "coach": "Sergen Yalçın",
+   "start": "2020-01-29",
+   "end": "2021-12-09",
+   "statement": "Q172567-91232445-FC54-40BF-AFF2-510F0FD547BA"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q456652",
+   "coach": "Valérien Ismaël",
+   "start": "2022-03-25",
+   "end": "2022-10-26",
+   "statement": "Q172567-7131FBD2-A266-4AFB-B941-D253761DC4F4"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q388904",
+   "coach": "Şenol Güneş",
+   "start": "2022-10-28",
+   "end": "2023-10-06",
+   "statement": "Q172567-0E21A41B-9600-454A-BEDA-7A5697B03DF7"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q18765",
+   "coach": "Burak Yılmaz",
+   "start": "2023-10-10",
+   "end": "2023-11-10",
+   "statement": "Q172567-63813def-450d-69c8-d205-a1486204003f"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q378768",
+   "coach": "Rıza Çalımbay",
+   "start": "2023-11-10",
+   "end": "2023-12-21",
+   "statement": "Q172567-2a4ce0d0-4c81-af18-cf1b-baee7e52873a"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q360687",
+   "coach": "Fernando Santos",
+   "start": "2024-01-13",
+   "end": "2024-04-13",
+   "statement": "Q172567-0c883cfa-42b6-46ca-d35a-87c2493442d9"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q173360",
+   "coach": "Giovanni van Bronckhorst",
+   "start": "2024-07-01",
+   "end": "2024-11-30",
+   "statement": "Q172567-bf4c5ef5-454d-5807-1c96-a92a3646904a"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q18976",
+   "coach": "Ole Gunnar Solskjær",
+   "start": "2025-01-19",
+   "end": "2025-08-28",
+   "statement": "Q172567-b6380189-44e0-692d-86e6-b2b4beb6a270"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q1388570",
+   "coach": "Sergen Yalçın",
+   "start": "2025-08-30",
+   "end": "2026-05-18",
+   "statement": "Q172567-c1a0517d-4404-0417-07fc-706b7b256461"
+  },
+  {
+   "clubQid": "Q172567",
+   "clubId": 114,
+   "coachQid": "Q1091404",
+   "coach": "Vincenzo Italiano",
+   "start": "2026-06-06",
+   "end": null,
+   "statement": "Q172567-54d694a3-4b8e-a6c0-43a0-b37db41ccda6"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q26262412",
+   "coach": "William Charles Lambe",
+   "start": "1912-01-01",
+   "end": "1912-08-31",
+   "statement": "Q7156-a94cb95d-436e-c893-c40f-f7ea25dcc318"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q690546",
+   "coach": "Miles Barron",
+   "start": "1912-09-01",
+   "end": "1912-12-29",
+   "statement": "Q7156-fd623cf4-494b-478a-0a75-ac79c72aa581"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1990898",
+   "coach": "Jack Alderson",
+   "start": "1912-12-30",
+   "end": "1913-01-15",
+   "statement": "Q7156-9b0c2581-4c7a-9ebb-9879-cab4170323aa"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q279258",
+   "coach": "Jack Greenwell",
+   "start": "1913-01-15",
+   "end": "1923-08-31",
+   "statement": "Q7156-77687621-496f-b2bb-ebd9-67e630a8d9e6"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q785184",
+   "coach": "Jesza Poszony",
+   "start": "1923-08-01",
+   "end": "1923-10-11",
+   "statement": "Q7156-9c8094f8-4303-0fd8-e4aa-f581e4883a50"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q4721764",
+   "coach": "Alf Spouncer",
+   "start": "1923-10-12",
+   "end": "1924-06-30",
+   "statement": "Q7156-b873c943-482e-cd97-4d05-a82c67b9e2e7"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q977859",
+   "coach": "Conyers Kirby",
+   "start": "1924-12-01",
+   "end": "1925-09-09",
+   "statement": "Q7156-ee6fb1b7-44bd-314b-5a51-1ecd66f425c5"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q78788",
+   "coach": "Richard Kohn",
+   "start": "1926-02-01",
+   "end": "1926-11-30",
+   "statement": "Q7156-e9acca23-4ad8-07e8-ed05-d6ef02d8566e"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q530513",
+   "coach": "Romà Forns",
+   "start": "1926-12-01",
+   "end": "1929-03-25",
+   "statement": "Q7156-fc44e572-4ad7-6489-7eb9-7edcad3b2463"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1680031",
+   "coach": "Jim Bellamy",
+   "start": "1929-03-26",
+   "end": "1931-06-30",
+   "statement": "Q7156-58287afd-4533-8c50-9e7a-b59fee81684a"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q518756",
+   "coach": "Ferenc Plattkó",
+   "start": "1934-07-01",
+   "end": "1935-06-30",
+   "statement": "Q7156-19d9ce5c-47fe-9fef-69d2-df124addfa15"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1789802",
+   "coach": "Patrick O'Connell",
+   "start": "1935-07-01",
+   "end": "1940-03-17",
+   "statement": "Q7156-06156315-4ec0-297f-d26b-a81c13549b49"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1706314",
+   "coach": "Josep Planas",
+   "start": "1940-03-20",
+   "end": "1941-06-30",
+   "statement": "Q7156-15e4bdd3-46ca-7327-673d-f3c4cf77fd5f"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q584525",
+   "coach": "Ramón Guzmán",
+   "start": "1941-07-01",
+   "end": "1942-01-25",
+   "statement": "Q7156-02c7b515-4ac1-c875-9459-6c4391780579"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q429464",
+   "coach": "Juan José Nogués",
+   "start": "1942-02-01",
+   "end": "1944-06-30",
+   "statement": "Q7156-0c563611-45b1-1959-392e-e09ead932654"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q342435",
+   "coach": "Josep Samitier",
+   "start": "1944-07-01",
+   "end": "1947-06-30",
+   "statement": "Q7156-36226722-4249-0bd9-4748-00d3aa24006a"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q924075",
+   "coach": "Enrique Fernández Viola",
+   "start": "1947-07-01",
+   "end": "1950-01-22",
+   "statement": "Q7156-3600e2bf-4756-048d-c3ee-ef1b7002f663"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q926520",
+   "coach": "Ramón Llorens i Pujadas",
+   "start": "1950-01-23",
+   "end": "1950-06-30",
+   "statement": "Q7156-c0e53b5b-4f20-30b2-f52c-9a57febd92dc"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q463807",
+   "coach": "Ferdinand Daučík",
+   "start": "1950-07-01",
+   "end": "1954-06-30",
+   "statement": "Q7156-e7e5bc45-4be1-ebec-1f53-aef96423f1cd"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q512865",
+   "coach": "Domènec Balmanya",
+   "start": "1956-07-01",
+   "end": "1958-04-20",
+   "statement": "Q7156-73271be3-4b76-42fe-24ea-234e5a0a07b4"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q310078",
+   "coach": "Helenio Herrera",
+   "start": "1958-04-25",
+   "end": "1960-06-30",
+   "statement": "Q7156-B31300BE-6B0F-4E70-8A2A-6AFA7E03852F"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1343686",
+   "coach": "Enric Rabassa",
+   "start": "1960-05-01",
+   "end": "1960-06-30",
+   "statement": "Q7156-34f12f31-4e24-0c63-0531-561fb0e0af9d"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q925027",
+   "coach": "Ljubiša Broćić",
+   "start": "1960-07-01",
+   "end": "1961-01-12",
+   "statement": "Q7156-a815ad17-4fd4-77d5-b805-45d9dae03c01"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1344100",
+   "coach": "Enrique Orizaola",
+   "start": "1961-01-15",
+   "end": "1961-06-30",
+   "statement": "Q7156-f29ddb0c-4eb5-9758-24a6-a4c012b78565"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1637407",
+   "coach": "Luis Miró",
+   "start": "1961-07-01",
+   "end": "1961-11-20",
+   "statement": "Q7156-43eb5060-4057-6070-30f1-ccff7ffde114"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q295732",
+   "coach": "László Kubala",
+   "start": "1961-11-25",
+   "end": "1963-01-07",
+   "statement": "Q7156-1ceb9396-473b-edf8-d635-7446a25306ae"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q974303",
+   "coach": "José Gonzalvo",
+   "start": "1963-01-08",
+   "end": "1963-06-30",
+   "statement": "Q7156-505c91f5-4ae9-4279-98d8-ae7235e12b78"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q348763",
+   "coach": "César Rodríguez Álvarez",
+   "start": "1963-07-01",
+   "end": "1964-10-15",
+   "statement": "Q7156-d4e098e7-4a58-c2ef-482c-1200e9031025"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q461440",
+   "coach": "Vicenç Sasot",
+   "start": "1964-10-16",
+   "end": "1965-06-30",
+   "statement": "Q7156-35025183-4b47-fc87-90ab-dbc19371b787"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q974823",
+   "coach": "Roque Olsen",
+   "start": "1965-07-01",
+   "end": "1967-06-30",
+   "statement": "Q7156-aee1d09a-4f6e-956e-b2c4-bbda01f90090"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q930110",
+   "coach": "Salvador Artigas",
+   "start": "1967-07-01",
+   "end": "1969-10-15",
+   "statement": "Q7156-d1a51095-4203-0b17-226d-b53cc7dbe340"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1423311",
+   "coach": "Josep Seguer",
+   "start": "1969-10-15",
+   "end": "1969-12-29",
+   "statement": "Q7156-f5875b66-472f-0f1b-8e53-cdd89726005c"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q920038",
+   "coach": "Vic Buckingham",
+   "start": "1970-01-01",
+   "end": "1971-06-30",
+   "statement": "Q7156-91436874-4d42-bfb6-0337-5e77241e4ce4"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q2154479",
+   "coach": "Rinus Michels",
+   "start": "1971-07-01",
+   "end": "1975-06-30",
+   "statement": "Q7156-4C014C2C-8746-449C-B389-D771C5C587AD"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q151105",
+   "coach": "Hennes Weisweiler",
+   "start": "1975-07-01",
+   "end": "1976-03-30",
+   "statement": "Q7156-71dacc00-418a-2a4b-ec0a-ca2ee047e198"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q32539",
+   "coach": "Laureano Ruiz",
+   "start": "1976-04-01",
+   "end": "1976-06-30",
+   "statement": "Q7156-3a1be743-4fc1-8f87-c6b6-08c5eec18448"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q2154479",
+   "coach": "Rinus Michels",
+   "start": "1976-07-01",
+   "end": "1978-06-30",
+   "statement": "Q7156-FDAB640C-9444-4914-BF25-C7089C56C5AA"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q535013",
+   "coach": "Lucien Muller",
+   "start": "1978-07-01",
+   "end": "1979-04-18",
+   "statement": "Q7156-6310ced0-40e5-0750-e45d-ff6073b53310"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q929232",
+   "coach": "Joaquim Rifé",
+   "start": "1979-04-18",
+   "end": "1980-03-06",
+   "statement": "Q7156-1c69f2ec-4566-c7a2-3687-6d35e42b1b6a"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q310078",
+   "coach": "Helenio Herrera",
+   "start": "1980-03-06",
+   "end": "1980-06-30",
+   "statement": "Q7156-6DA316CB-31CF-42FF-8C7E-62D86C67B9D7"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q310078",
+   "coach": "Helenio Herrera",
+   "start": "1980-11-06",
+   "end": "1981-06-30",
+   "statement": "Q7156-3C9E6D95-D4FC-4055-9210-FB3B7EACF56A"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q290870",
+   "coach": "Udo Lattek",
+   "start": "1981-07-01",
+   "end": "1983-03-03",
+   "statement": "Q7156-0c4e3ef2-492d-28b3-3221-9a488cf0fd9a"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q1709366",
+   "coach": "José Luis Romero",
+   "start": "1983-03-04",
+   "end": "1983-03-07",
+   "statement": "Q7156-4eb6f431-48af-89a5-aaad-6a269f1164ce"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q313277",
+   "coach": "César Luis Menotti",
+   "start": "1983-03-08",
+   "end": "1984-05-31",
+   "statement": "Q7156-6212b09e-4f60-f221-9f27-f57267513937"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q314039",
+   "coach": "Terry Venables",
+   "start": "1984-06-01",
+   "end": "1987-09-20",
+   "statement": "Q7156-487f2b1b-4da2-63df-c001-be3ab9c3f7a4"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q576614",
+   "coach": "Q576614",
+   "start": "1987-09-23",
+   "end": "1988-05-04",
+   "statement": "Q7156-db524abb-4175-32ae-b18b-379457f59e30"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q17163",
+   "coach": "Johan Cruyff",
+   "start": "1991-04-12",
+   "end": "1996-05-18",
+   "statement": "Q7156-3e64a71f-4e78-d933-910f-d03ca1530bd5"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q189587",
+   "coach": "Bobby Robson",
+   "start": "1996-07-14",
+   "end": "1997-06-30",
+   "statement": "Q7156-0e991119-4167-dc88-7786-6f59c1f1f5dd"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q207431",
+   "coach": "Louis van Gaal",
+   "start": "1997-07-01",
+   "end": "2000-05-20",
+   "statement": "Q7156-80403869-357B-4F86-8192-7E6A8E07CC39"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q714392",
+   "coach": "Lorenzo Serra Ferrer",
+   "start": "2000-07-01",
+   "end": "2001-04-23",
+   "statement": "Q7156-e82cb6da-4c73-4b19-14dc-ec8c14bcb05c"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q358414",
+   "coach": "Carles Rexach",
+   "start": "2001-04-24",
+   "end": "2002-06-30",
+   "statement": "Q7156-4f1e2fbb-4c22-ebaa-e7a3-4b5dfcfbbcf3"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q207431",
+   "coach": "Louis van Gaal",
+   "start": "2002-07-01",
+   "end": "2003-01-28",
+   "statement": "Q7156-2E0E7135-7F10-495D-A7D9-C410C68DDA69"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q606105",
+   "coach": "Antonio de la Cruz",
+   "start": "2003-01-29",
+   "end": "2003-02-02",
+   "statement": "Q7156-209fc3df-4c9f-c3e8-2803-8c2619852b47"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q349585",
+   "coach": "Radomir Antić",
+   "start": "2003-02-03",
+   "end": "2003-06-30",
+   "statement": "Q7156-cca1f984-4e71-f2c8-31af-889ef1132130"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q169098",
+   "coach": "Frank Rijkaard",
+   "start": "2003-07-01",
+   "end": "2008-06-30",
+   "statement": "Q7156-00a7da5e-4b2f-5f6f-b245-39cbfc5efd6e"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q164038",
+   "coach": "Pep Guardiola",
+   "start": "2008-06-01",
+   "end": "2012-05-30",
+   "statement": "Q7156-3a4b96ab-42fe-f9c1-af3f-51645ee5eef6"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q222924",
+   "coach": "Tito Vilanova",
+   "start": "2012-07-01",
+   "end": "2013-01-23",
+   "statement": "Q7156-6945530b-4c8e-507a-44fd-7add45208ca4"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q356773",
+   "coach": "Gerardo Martino",
+   "start": "2013-07-23",
+   "end": "2014-06-30",
+   "statement": "Q7156-f9c77329-433e-843c-3f2c-f8af81b9f9b3"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q222789",
+   "coach": "Luis Enrique",
+   "start": "2014-07-01",
+   "end": "2017-06-30",
+   "statement": "Q7156-c9b3d8d8-4cc3-8541-dd9b-a4966283be93"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q359118",
+   "coach": "Ernesto Valverde",
+   "start": "2017-07-01",
+   "end": "2020-01-13",
+   "statement": "q7156-6CC3DB90-612E-43E7-899F-ED16E2E68C14"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q2444534",
+   "coach": "Quique Setién",
+   "start": "2020-01-13",
+   "end": "2020-08-17",
+   "statement": "Q7156-334e3ae8-4d94-6058-5a35-c69a2a464a94"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q192635",
+   "coach": "Ronald Koeman",
+   "start": "2020-08-19",
+   "end": "2021-10-28",
+   "statement": "Q7156-505e1951-4eb1-2447-559a-63a50e679f63"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q17500",
+   "coach": "Xavi Hernández",
+   "start": "2021-11-06",
+   "end": "2024-06-30",
+   "statement": "Q7156-7fa09d50-4572-738d-6477-22721aee4152"
+  },
+  {
+   "clubQid": "Q7156",
+   "clubId": 131,
+   "coachQid": "Q577384",
+   "coach": "Hansi Flick",
+   "start": "2024-07-01",
+   "end": null,
+   "statement": "Q7156-4ae98728-442e-dc75-0856-2b9649873fe7"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5219775",
+   "coach": "Boris Nikolov",
+   "start": "1905-01-01",
+   "end": "1907-01-01",
+   "statement": "Q495299-148b9cfc-4d87-558d-6b18-0041b8377abb"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5372462",
+   "coach": "Emin Bülent Serdaroğlu",
+   "start": "1907-01-01",
+   "end": "1908-01-01",
+   "statement": "Q495299-e5425414-439e-7093-ae52-af39e2b40cdb"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5901483",
+   "coach": "Horace Armitage",
+   "start": "1908-01-01",
+   "end": "1911-01-01",
+   "statement": "Q495299-8cbc91a8-4cf3-aff0-1ef6-2cbe035d487b"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5372462",
+   "coach": "Emin Bülent Serdaroğlu",
+   "start": "1911-01-01",
+   "end": "1914-01-01",
+   "statement": "Q495299-d302a63f-4113-f892-cb64-b4e725f72d17"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q496959",
+   "coach": "Ali Sami Yen",
+   "start": "1916-01-01",
+   "end": "1917-01-01",
+   "statement": "Q495299-53074bc1-44ca-e40b-df89-23ea235b1110"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2446626",
+   "coach": "Billy Hunter",
+   "start": "1924-06-01",
+   "end": "1928-06-01",
+   "statement": "Q495299-bf21509f-4cdd-02c6-90f5-7a3d47f500c5"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1989888",
+   "coach": "Nihat Bekdik",
+   "start": "1928-12-31",
+   "end": "1930-04-01",
+   "statement": "Q495299-29bb31ff-4457-8619-5756-1b6f23fe7d0a"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2901468",
+   "coach": "Fred Pagnam",
+   "start": "1931-07-01",
+   "end": "1932-12-31",
+   "statement": "Q495299-661ee237-4c8e-93c1-db18-f64d477cc456"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q4342035",
+   "coach": "Syd Puddefoot",
+   "start": "1933-01-01",
+   "end": "1934-09-30",
+   "statement": "Q495299-9fbe124d-4511-8bb8-d566-8fd7acf72b5c"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q679271",
+   "coach": "Péter Szabó",
+   "start": "1936-10-01",
+   "end": "1938-09-30",
+   "statement": "Q495299-a2d7a158-49bd-1f39-f0b3-478c57010570"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q6018268",
+   "coach": "John Begget",
+   "start": "1941-06-01",
+   "end": "1945-09-30",
+   "statement": "Q495299-9f1f6b3e-421c-afb0-b6ff-e56527094d96"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q7175919",
+   "coach": "Peter Molloy",
+   "start": "1948-01-01",
+   "end": "1949-04-30",
+   "statement": "Q495299-c360fa1f-46fe-a193-ca54-a4452d0d8ce6"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5312534",
+   "coach": "Duggie Lochhead",
+   "start": "1950-09-01",
+   "end": "1952-10-18",
+   "statement": "Q495299-7573fa0b-4cc5-5555-3fe3-6eecd4f8e853"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2289900",
+   "coach": "Gündüz Kılıç",
+   "start": "1952-10-18",
+   "end": "1953-03-31",
+   "statement": "Q495299-b5c54ea2-47c6-5db0-bbbe-63cd6b8de441"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1473072",
+   "coach": "László Székely",
+   "start": "1953-10-18",
+   "end": "1954-01-30",
+   "statement": "Q495299-d0db021f-4dde-f79e-c722-13fa0072a757"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2289900",
+   "coach": "Gündüz Kılıç",
+   "start": "1954-02-01",
+   "end": "1957-06-30",
+   "statement": "Q495299-b6971fff-4b9f-d4b6-9574-4c0733337209"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q17431896",
+   "coach": "Musa Sezer",
+   "start": "1957-07-01",
+   "end": "1957-11-30",
+   "statement": "Q495299-c77db6f5-468c-6352-8211-12dd60c977d3"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5538520",
+   "coach": "George Dick",
+   "start": "1957-12-01",
+   "end": "1959-06-30",
+   "statement": "Q495299-a36222b0-43fc-6b1a-ef62-bcf5b835d87f"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2521936",
+   "coach": "Leandro Remondini",
+   "start": "1959-07-01",
+   "end": "1960-01-01",
+   "statement": "Q495299-d2d7d8da-414b-e06b-7045-57166c8f81fe"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1138348",
+   "coach": "Coşkun Özarı",
+   "start": "1960-01-01",
+   "end": "1960-04-01",
+   "statement": "Q495299-a8f30c31-4c74-8ff1-37c0-a27235bf7d84"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2289900",
+   "coach": "Gündüz Kılıç",
+   "start": "1960-07-01",
+   "end": "1963-12-01",
+   "statement": "Q495299-d93101f2-40a5-6c22-7e42-11ea55f77e77"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1138348",
+   "coach": "Coşkun Özarı",
+   "start": "1964-01-01",
+   "end": "1964-09-01",
+   "statement": "Q495299-8201b47e-483d-dca4-bf50-680d420c9bad"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2289900",
+   "coach": "Gündüz Kılıç",
+   "start": "1964-10-01",
+   "end": "1967-06-01",
+   "statement": "Q495299-0d7e8064-41af-2134-c14b-676aaeb71a4b"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q5423529",
+   "coach": "Eşfak Aykaç",
+   "start": "1967-07-01",
+   "end": "1968-06-01",
+   "statement": "Q495299-07620968-4ce6-c086-a415-ac9580ccd7b6"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q3992672",
+   "coach": "Tomislav Kaloperović",
+   "start": "1968-07-01",
+   "end": "1970-06-01",
+   "statement": "Q495299-5771f060-494f-409f-0398-6a98566e50a6"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1138348",
+   "coach": "Coşkun Özarı",
+   "start": "1970-07-01",
+   "end": "1971-06-01",
+   "statement": "Q495299-90ff921c-47a7-6c91-9a02-78262d28a15e"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q3376695",
+   "coach": "Brian Birch",
+   "start": "1971-07-01",
+   "end": "1974-06-01",
+   "statement": "Q495299-0dd294bf-4a24-fec1-0234-e11a47398857"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q6113872",
+   "coach": "Jack Mansell",
+   "start": "1974-07-01",
+   "end": "1975-06-01",
+   "statement": "Q495299-fa01d2b1-41ac-d623-0d24-45c6d1e7cbd9"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q726250",
+   "coach": "Don Howe",
+   "start": "1975-07-01",
+   "end": "1976-06-01",
+   "statement": "Q495299-03e26040-47aa-55a3-24c5-95b7752ee6e1"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1383862",
+   "coach": "Malcolm Allison",
+   "start": "1976-07-01",
+   "end": "1977-10-01",
+   "statement": "Q495299-43ec00d3-465a-9a24-286e-9d3e67a71683"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q6098371",
+   "coach": "Fethi Demircan",
+   "start": "1977-10-01",
+   "end": "1978-06-01",
+   "statement": "Q495299-e935e532-43cb-8f3e-4b85-b9555d01eb6a"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q1138348",
+   "coach": "Coşkun Özarı",
+   "start": "1978-07-01",
+   "end": "1979-09-01",
+   "statement": "Q495299-1a92b6ab-46f7-50e6-d69e-55b117dfad40"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q941740",
+   "coach": "Turgay Şeren",
+   "start": "1979-09-01",
+   "end": "1980-05-01",
+   "statement": "Q495299-222d3a8e-4d11-68da-7352-953633b94f84"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q6093910",
+   "coach": "Tamer Kaptan",
+   "start": "1980-05-01",
+   "end": "1980-06-01",
+   "statement": "Q495299-d769c271-4b5e-f71c-ca68-27a6045cc4ac"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q3376695",
+   "coach": "Brian Birch",
+   "start": "1980-06-01",
+   "end": "1981-11-21",
+   "statement": "Q495299-03ca3b69-4bdb-7d0e-2d53-b0a54f335375"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q17045839",
+   "coach": "Günay Kayarlar",
+   "start": "1981-11-21",
+   "end": "1981-12-06",
+   "statement": "Q495299-44407225-4691-d8ce-cece-116cf5434384"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q307905",
+   "coach": "Özkan Sümer",
+   "start": "1981-12-06",
+   "end": "1983-06-05",
+   "statement": "Q495299-3381feab-4c23-db19-5d45-aa8476aa134d"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q17045839",
+   "coach": "Günay Kayarlar",
+   "start": "1983-06-12",
+   "end": "1983-06-19",
+   "statement": "Q495299-44aceba0-4ab0-31f2-4d47-6f3001926978"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q360924",
+   "coach": "Tomislav Ivić",
+   "start": "1983-06-19",
+   "end": "1984-06-30",
+   "statement": "Q495299-4a4c386d-4ef9-b0df-02c8-67c24c664b89"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q523392",
+   "coach": "Jupp Derwall",
+   "start": "1984-07-01",
+   "end": "1987-06-30",
+   "statement": "Q495299-2ee268b8-4324-150c-0741-bf06189cbb7a"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q738962",
+   "coach": "Mustafa Denizli",
+   "start": "1987-06-30",
+   "end": "1989-06-30",
+   "statement": "Q495299-dfc7f852-45b4-9443-1e74-a07f70ff3155"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q509178",
+   "coach": "Sigfried Held",
+   "start": "1989-06-01",
+   "end": "1990-05-31",
+   "statement": "Q495299-b0ae7161-4010-9d6a-4838-ed633281bcc7"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q738962",
+   "coach": "Mustafa Denizli",
+   "start": "1990-06-01",
+   "end": "1992-06-30",
+   "statement": "Q495299-b3dce1b8-45bb-7fdc-651c-da1bd31e9f79"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q706759",
+   "coach": "Karl-Heinz Feldkamp",
+   "start": "1992-07-01",
+   "end": "1993-06-30",
+   "statement": "Q495299-dad47c14-469d-6f6f-e3de-b9f88c87576a"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q573510",
+   "coach": "Reiner Hollmann",
+   "start": "1993-07-01",
+   "end": "1994-05-30",
+   "statement": "Q495299-8681caaa-44dc-0dd7-b019-5795bc9b52f4"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q544634",
+   "coach": "Reinhard Saftig",
+   "start": "1994-06-01",
+   "end": "1995-03-15",
+   "statement": "Q495299-e67d25b7-4955-4e75-59e9-cb06bff8d6ca"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q6950448",
+   "coach": "Müfit Erkasap",
+   "start": "1995-03-15",
+   "end": "1995-03-31",
+   "statement": "Q495299-818f8946-459a-e0c5-af59-876f15a68484"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q310352",
+   "coach": "Graeme Souness",
+   "start": "1995-06-01",
+   "end": "1996-05-31",
+   "statement": "Q495299-e45ea645-436f-76fe-8292-c6afe11580c7"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q262203",
+   "coach": "Fatih Terim",
+   "start": "1996-06-01",
+   "end": "2000-06-30",
+   "statement": "Q495299-985cc115-4685-ed40-250e-377d5eaf4b52"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q342698",
+   "coach": "Mircea Lucescu",
+   "start": "2000-07-01",
+   "end": "2002-06-30",
+   "statement": "Q495299-c7ad68ca-4d27-2568-98df-58d1fdae92da"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q262203",
+   "coach": "Fatih Terim",
+   "start": "2002-07-01",
+   "end": "2004-03-20",
+   "statement": "Q495299-b46acfe5-4dba-c151-f327-ffa52d5a383b"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q189892",
+   "coach": "Gheorghe Hagi",
+   "start": "2004-03-20",
+   "end": "2005-06-30",
+   "statement": "Q495299-270cd2de-4be4-4179-8fc3-cf990b47e3bf"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q363141",
+   "coach": "Eric Gerets",
+   "start": "2005-07-01",
+   "end": "2007-06-30",
+   "statement": "Q495299-559700b0-47b6-9a03-e7d0-e494eeed5a82"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q706759",
+   "coach": "Karl-Heinz Feldkamp",
+   "start": "2007-07-01",
+   "end": "2008-03-30",
+   "statement": "Q495299-b6ef3a1d-4d05-efec-9365-3cdffb8223a9"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q368009",
+   "coach": "Cevat Güler",
+   "start": "2008-04-01",
+   "end": "2008-06-30",
+   "statement": "Q495299-6571194c-4bd2-9e08-27b3-be7cdb64e80c"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q550732",
+   "coach": "Michael Skibbe",
+   "start": "2008-07-01",
+   "end": "2009-02-22",
+   "statement": "Q495299-92f775b1-4d62-76e9-ab1a-57503e1267d7"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q507832",
+   "coach": "Bülent Korkmaz",
+   "start": "2009-02-22",
+   "end": "2009-06-30",
+   "statement": "Q495299-69e32dbf-4095-0611-94e8-e89c1e65827b"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q169098",
+   "coach": "Frank Rijkaard",
+   "start": "2009-07-01",
+   "end": "2010-10-17",
+   "statement": "Q495299-77cc51b2-4505-94e1-88d6-7c3012585f89"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q189892",
+   "coach": "Gheorghe Hagi",
+   "start": "2010-10-24",
+   "end": "2011-03-18",
+   "statement": "Q495299-97361b07-46f2-4db1-3c92-fe7f83dcb8e5"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q774413",
+   "coach": "Bülent Ünder",
+   "start": "2011-03-18",
+   "end": "2011-06-30",
+   "statement": "Q495299-f33a2478-4e54-4c8a-aca2-d65bc8e95173"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q262203",
+   "coach": "Fatih Terim",
+   "start": "2011-07-01",
+   "end": "2013-09-24",
+   "statement": "Q495299-147305b2-4af8-631b-252d-58a352ab7505"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q295891",
+   "coach": "Cláudio Taffarel",
+   "start": "2013-09-24",
+   "end": "2013-09-30",
+   "statement": "Q495299-f69ee9f7-41e6-64ad-6454-b71c6bb45fd7"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q48330",
+   "coach": "Roberto Mancini",
+   "start": "2013-09-30",
+   "end": "2014-06-11",
+   "statement": "Q495299-608cc46c-4900-7210-da94-3b8e91eb75e1"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q218380",
+   "coach": "Cesare Prandelli",
+   "start": "2014-07-05",
+   "end": "2014-11-27",
+   "statement": "Q495299-b1f5884f-4e51-723e-01e9-3de5e43615fd"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q295891",
+   "coach": "Cláudio Taffarel",
+   "start": "2014-11-27",
+   "end": "2014-11-30",
+   "statement": "Q495299-046ea0a9-423b-51fd-3944-7539cda24f80"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q919026",
+   "coach": "Hamza Hamzaoğlu",
+   "start": "2014-12-01",
+   "end": "2015-11-18",
+   "statement": "Q495299-7adca771-49e8-76ae-f546-9a154857cde7"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q295891",
+   "coach": "Cláudio Taffarel",
+   "start": "2015-11-18",
+   "end": "2015-11-23",
+   "statement": "Q495299-2864c6e7-4192-4f99-ee49-504051ff0068"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q738962",
+   "coach": "Mustafa Denizli",
+   "start": "2015-11-23",
+   "end": "2016-03-01",
+   "statement": "Q495299-3a90aaf3-4304-d8fc-1d71-c496e0f92f92"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q7102169",
+   "coach": "Orhan Atik",
+   "start": "2016-03-01",
+   "end": "2016-03-16",
+   "statement": "Q495299-1e14ea24-419e-9329-65bc-f2993cfa2b87"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q2485203",
+   "coach": "Jan Olde Riekerink",
+   "start": "2016-03-16",
+   "end": "2017-02-14",
+   "statement": "Q495299-8354e402-468b-ba29-2b12-c9013515a6cb"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q276544",
+   "coach": "Igor Tudor",
+   "start": "2017-02-15",
+   "end": "2017-12-18",
+   "statement": "Q495299-54f007c0-4b7e-cc6c-eed7-baf642138e7e"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q262203",
+   "coach": "Fatih Terim",
+   "start": "2017-12-22",
+   "end": "2022-01-10",
+   "statement": "Q495299-570a6641-4e7c-2377-7cff-ae8cca7b1afc"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q24082703",
+   "coach": "Domènec Torrent",
+   "start": "2022-01-14",
+   "end": "2022-06-30",
+   "statement": "Q495299-de34f3bf-46a9-2dbd-7a2f-7e3be112f23e"
+  },
+  {
+   "clubQid": "Q495299",
+   "clubId": 141,
+   "coachQid": "Q444318",
+   "coach": "Okan Buruk",
+   "start": "2022-07-01",
+   "end": null,
+   "statement": "Q495299-eed4b450-417e-e285-e3e7-23c011192784"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q221349",
+   "coach": "Harry Redknapp",
+   "start": "2008-10-26",
+   "end": "2012-06-14",
+   "statement": "Q18741-ee47ad2e-44ad-2615-af87-6ac4250bb911"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q212914",
+   "coach": "André Villas-Boas",
+   "start": "2012-07-03",
+   "end": "2013-12-16",
+   "statement": "q18741-792D3B5A-9B7A-4D54-9743-DCEA092D4A7B"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q970732",
+   "coach": "Tim Sherwood",
+   "start": "2013-12-23",
+   "end": "2014-05-13",
+   "statement": "Q18741-504b8a0c-421b-1abd-523c-54f439577cc0"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q313000",
+   "coach": "Mauricio Pochettino",
+   "start": "2014-05-27",
+   "end": "2019-11-19",
+   "statement": "Q18741-817E97B6-D70E-437B-B12C-1BD952F9C20B"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2019-11-20",
+   "end": "2021-04-19",
+   "statement": "Q18741-7fe7e865-4984-778d-7f22-2fb430c5257a"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q4459692",
+   "coach": "Ryan Mason",
+   "start": "2021-04-20",
+   "end": "2021-06-30",
+   "statement": "Q18741-83894a53-4c37-6257-d2a5-5b250a88dce4"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q372372",
+   "coach": "Nuno Espírito Santo",
+   "start": "2021-07-01",
+   "end": "2021-11-01",
+   "statement": "Q18741-83daf09d-47d5-19e9-0cf4-6e1437022beb"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q26580",
+   "coach": "Antonio Conte",
+   "start": "2021-11-02",
+   "end": "2023-03-26",
+   "statement": "Q18741-a15d2c60-4cdc-1eac-dfa7-5cecfdc53b0a"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q461177",
+   "coach": "Cristian Stellini",
+   "start": "2023-03-26",
+   "end": "2023-04-24",
+   "statement": "Q18741-59346d36-4fbf-85d3-6858-0661bb3d1b5a"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q4459692",
+   "coach": "Ryan Mason",
+   "start": "2023-04-24",
+   "end": "2023-06-30",
+   "statement": "Q18741-79c5b740-455f-af22-d31e-0cf1f1178751"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q2849301",
+   "coach": "Ange Postecoglou",
+   "start": "2023-07-01",
+   "end": "2025-06-06",
+   "statement": "Q18741-9cc0642e-43e7-39b7-5ffe-a39de4e0f229"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q13469562",
+   "coach": "Thomas Frank",
+   "start": "2025-06-13",
+   "end": "2026-02-11",
+   "statement": "Q18741-70520e70-445d-56b7-fe73-aaedfd6364e6"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q276544",
+   "coach": "Igor Tudor",
+   "start": "2026-02-14",
+   "end": "2026-03-29",
+   "statement": "Q18741-b8de334c-46eb-e14e-b06d-e771b87560d6"
+  },
+  {
+   "clubQid": "Q18741",
+   "clubId": 148,
+   "coachQid": "Q2032119",
+   "coach": "Roberto De Zerbi",
+   "start": "2026-03-31",
+   "end": null,
+   "statement": "Q18741-83c9d205-4b76-9135-36e9-873ca61076b8"
+  },
+  {
+   "clubQid": "Q50602",
+   "clubId": 281,
+   "coachQid": "Q218369",
+   "coach": "Sven-Göran Eriksson",
+   "start": "2007-07-06",
+   "end": "2008-06-02",
+   "statement": "Q50602-E526A791-35DC-47D2-A88E-98F26D36A069"
+  },
+  {
+   "clubQid": "Q50602",
+   "clubId": 281,
+   "coachQid": "Q48330",
+   "coach": "Roberto Mancini",
+   "start": "2009-12-19",
+   "end": "2013-05-13",
+   "statement": "Q50602-72E72C28-073E-430F-A39A-4532D94D0F0C"
+  },
+  {
+   "clubQid": "Q50602",
+   "clubId": 281,
+   "coachQid": "Q164038",
+   "coach": "Pep Guardiola",
+   "start": "2016-07-01",
+   "end": "2026-05-01",
+   "statement": "Q50602-6B84856C-4FBA-449A-B5DD-F6AD9191404A"
+  },
+  {
+   "clubQid": "Q50602",
+   "clubId": 281,
+   "coachQid": "Q317282",
+   "coach": "Enzo Maresca",
+   "start": "2026-06-29",
+   "end": null,
+   "statement": "Q50602-a43a4836-47a2-f882-2de0-c1d4254cd452"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q218369",
+   "coach": "Sven-Göran Eriksson",
+   "start": "1982-07-01",
+   "end": "1984-06-30",
+   "statement": "Q131499-BFE3B66B-F9FF-43DA-B387-10F9FFFFC9D1"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q218369",
+   "coach": "Sven-Göran Eriksson",
+   "start": "1989-07-01",
+   "end": "1992-06-30",
+   "statement": "Q131499-F04E084B-1E42-423A-87EF-5B80661509BB"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q2594595",
+   "coach": "Manuel José de Jesus",
+   "start": "1997-01-27",
+   "end": "1997-09-21",
+   "statement": "Q131499-45dee354-40d1-0eb9-c1ff-fe4c05f9f8b8"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q310352",
+   "coach": "Graeme Souness",
+   "start": "1997-11-02",
+   "end": "1999-05-02",
+   "statement": "Q131499-34480abd-4d3c-cd05-e7a7-1b1cd721dcac"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q152107",
+   "coach": "Jupp Heynckes",
+   "start": "1999-07-01",
+   "end": "2000-09-20",
+   "statement": "Q131499-2FBC4FA2-529A-4316-B3E9-392C1C8E7628"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2000-09-20",
+   "end": "2000-12-05",
+   "statement": "Q131499-7aa66091-4234-ef22-5fb9-9384a3fa4a42"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q611003",
+   "coach": "Toni",
+   "start": "2000-12-06",
+   "end": "2001-12-28",
+   "statement": "Q131499-792c00cc-4826-0795-38ad-5680fe1522e1"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q444073",
+   "coach": "Jesualdo Ferreira",
+   "start": "2001-12-29",
+   "end": "2002-11-25",
+   "statement": "Q131499-a708bc32-46f6-53ec-bf15-d9fcf8c66c3b"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q311227",
+   "coach": "José Antonio Camacho",
+   "start": "2002-12-02",
+   "end": "2004-06-30",
+   "statement": "Q131499-1e4bd567-4d18-db50-5470-81db42f7f702"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "2004-07-01",
+   "end": "2005-05-31",
+   "statement": "Q131499-6658B487-3175-411E-B926-3D685456C157"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q192635",
+   "coach": "Ronald Koeman",
+   "start": "2005-07-01",
+   "end": "2006-05-08",
+   "statement": "Q131499-4f6935c3-473a-292b-1fbf-998013e32b1c"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q360687",
+   "coach": "Fernando Santos",
+   "start": "2006-07-01",
+   "end": "2007-08-20",
+   "statement": "Q131499-d5acecb3-45ed-3cc7-df62-b7d17d2583b5"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q311227",
+   "coach": "José Antonio Camacho",
+   "start": "2007-08-20",
+   "end": "2008-03-09",
+   "statement": "Q131499-f1d3a369-4b63-b3a4-2df8-ddd9a73358c8"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q352313",
+   "coach": "Quique Sánchez Flores",
+   "start": "2008-05-24",
+   "end": "2009-06-08",
+   "statement": "Q131499-4678add0-437f-d374-75d9-c6bf6aa30322"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q527550",
+   "coach": "Jorge Jesus",
+   "start": "2009-07-01",
+   "end": "2015-06-30",
+   "statement": "Q131499-46f6d19c-4249-4a2c-99bc-efc6a73a3291"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q2364249",
+   "coach": "Rui Vitória",
+   "start": "2015-07-01",
+   "end": "2019-01-01",
+   "statement": "q131499-73E89953-2750-4898-A849-0145E678E4AB"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q56434101",
+   "coach": "Bruno Lage",
+   "start": "2019-01-04",
+   "end": "2020-06-30",
+   "statement": "Q131499-d1c49c73-4e47-60fe-7327-a5724b674cfb"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q976320",
+   "coach": "Nélson Veríssimo",
+   "start": "2020-06-30",
+   "end": "2020-08-02",
+   "statement": "Q131499-671bc8b1-4df1-da7f-6bc6-5b79d482e5f8"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q527550",
+   "coach": "Jorge Jesus",
+   "start": "2020-08-03",
+   "end": "2021-12-28",
+   "statement": "Q131499-67240fd5-466e-1502-6967-e742fcf320d0"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q976320",
+   "coach": "Nélson Veríssimo",
+   "start": "2021-12-28",
+   "end": "2022-06-30",
+   "statement": "Q131499-9d969f58-4564-89e9-44c5-4feae723e831"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q1424071",
+   "coach": "Roger Schmidt",
+   "start": "2022-07-01",
+   "end": "2024-08-31",
+   "statement": "Q131499-d123d48b-4336-0355-6dc6-415a0f790ea6"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q56434101",
+   "coach": "Bruno Lage",
+   "start": "2024-09-05",
+   "end": "2025-09-17",
+   "statement": "Q131499-5d769023-4adb-e043-5693-41cb47266434"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2025-09-18",
+   "end": "2026-06-10",
+   "statement": "Q131499-3688f87b-40f7-8859-bf0b-972d44fe509a"
+  },
+  {
+   "clubQid": "Q131499",
+   "clubId": 294,
+   "coachQid": "Q6757714",
+   "coach": "Marco Silva",
+   "start": "2026-06-10",
+   "end": null,
+   "statement": "Q131499-ab423b09-4e96-9d8c-6415-c058e5b57696"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q183108",
+   "coach": "Fabio Capello",
+   "start": "1996-07-01",
+   "end": "1997-06-30",
+   "statement": "Q8682-9C76F82E-F7A9-4070-9754-3D06F01F87E9"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q152107",
+   "coach": "Jupp Heynckes",
+   "start": "1997-07-01",
+   "end": "1998-06-30",
+   "statement": "Q8682-BA3D3A06-2FA0-4057-A506-EC3045C5AE51"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q183108",
+   "coach": "Fabio Capello",
+   "start": "2006-07-06",
+   "end": "2007-06-28",
+   "statement": "Q8682-2C39183C-5814-4CAC-8A6A-578B2F7F5149"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2010-07-01",
+   "end": "2013-06-30",
+   "statement": "Q8682-5422bd32-4422-b6e6-c948-d03971983a81"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "2013-07-01",
+   "end": "2015-05-25",
+   "statement": "Q8682-EFBEF2F1-0195-49B7-8F3C-636D34074695"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q1835",
+   "coach": "Zinedine Zidane",
+   "start": "2016-01-04",
+   "end": "2018-06-30",
+   "statement": "Q8682-f2ec91c7-4f35-620c-03f7-9d68a03c2f71"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q115119",
+   "coach": "Julen Lopetegui",
+   "start": "2018-07-01",
+   "end": "2018-10-29",
+   "statement": "Q8682-9c5380b2-46f3-d348-bf20-15c6f030e667"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q315471",
+   "coach": "Santiago Solari",
+   "start": "2018-10-29",
+   "end": "2019-03-11",
+   "statement": "q8682-4863D759-B704-4538-BAEE-2C8D29142E50"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q1835",
+   "coach": "Zinedine Zidane",
+   "start": "2019-03-11",
+   "end": "2021-06-30",
+   "statement": "Q8682-69b943b2-4ce1-5cf7-7e0c-855b6b7702c4"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "2021-07-01",
+   "end": "2025-05-24",
+   "statement": "Q8682-eddfa56e-4499-4569-0be9-f568cd6ff493"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q208104",
+   "coach": "Xabi Alonso",
+   "start": "2025-05-25",
+   "end": "2026-01-12",
+   "statement": "Q8682-1843a9ad-4fb2-a8c6-0661-10e305fee7ba"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2026-01-01",
+   "end": null,
+   "statement": "Q8682-4c7c2e81-4381-e8d2-00a6-e6f01bd77e8f"
+  },
+  {
+   "clubQid": "Q8682",
+   "clubId": 418,
+   "coachQid": "Q250901",
+   "coach": "Álvaro Arbeloa",
+   "start": "2026-01-13",
+   "end": "2026-01-01",
+   "statement": "Q8682-11947823-4b4f-a500-c027-ac285075d447"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q378768",
+   "coach": "Rıza Çalımbay",
+   "start": "2017-01-01",
+   "end": "2018-01-01",
+   "statement": "q192641-B093E0A5-A4D1-435B-B4DE-62D2CFAB7A52"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q334927",
+   "coach": "Ünal Karaman",
+   "start": "2018-06-01",
+   "end": "2019-12-30",
+   "statement": "Q192641-f23d3c88-466e-b1f9-765d-fa751f4582c2"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q1154427",
+   "coach": "Eddie Newton",
+   "start": "2020-07-20",
+   "end": "2020-10-31",
+   "statement": "Q192641-91b20ba3-416d-5fb1-deb3-e0cd200fa82b"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q26532",
+   "coach": "Abdullah Avcı",
+   "start": "2020-11-10",
+   "end": "2023-03-07",
+   "statement": "Q192641-9efe69f2-44b0-d448-157e-363e0dfdc25a"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q269404",
+   "coach": "Nenad Bjelica",
+   "start": "2023-04-18",
+   "end": "2023-10-12",
+   "statement": "Q192641-9c488c20-45b1-cbe6-2043-17e15fd4cf9e"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q26532",
+   "coach": "Abdullah Avcı",
+   "start": "2023-10-12",
+   "end": "2024-08-31",
+   "statement": "Q192641-ef942607-4427-6da9-9d19-a54875ac2f39"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q388904",
+   "coach": "Şenol Güneş",
+   "start": "2024-09-03",
+   "end": "2025-03-10",
+   "statement": "Q192641-7d32e8ef-423c-4535-ba48-8718c28d3ed5"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q559158",
+   "coach": "Fatih Tekke",
+   "start": "2025-03-11",
+   "end": "2026-09-01",
+   "statement": "Q192641-72dcb0b8-4f96-f503-7a8a-dfe1633430c0"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q1388923",
+   "coach": "Hüseyin Çimşir",
+   "start": "2026-09-01",
+   "end": "2026-09-17",
+   "statement": "Q192641-ba707d32-4d40-f6ce-5f30-bde081ef5347"
+  },
+  {
+   "clubQid": "Q192641",
+   "clubId": 449,
+   "coachQid": "Q2426747",
+   "coach": "Thomas Reis",
+   "start": "2026-09-17",
+   "end": null,
+   "statement": "Q192641-56e33725-4d72-6c88-8368-a949b61d2556"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q1060075",
+   "coach": "Jenő Károly",
+   "start": "1923-07-01",
+   "end": "1926-07-28",
+   "statement": "Q1422-5bfbff61-4e90-36c9-0c32-2a60928546e8"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "1976-07-01",
+   "end": "1986-05-03",
+   "statement": "Q1422-5505083E-583C-4ACD-8AC8-8EFBA0A0E7F2"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q44420",
+   "coach": "Giovanni Trapattoni",
+   "start": "1991-07-01",
+   "end": "1994-06-30",
+   "statement": "Q1422-0C463755-C2B9-43A0-8E45-EACB06344DA8"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q43304",
+   "coach": "Marcello Lippi",
+   "start": "1994-07-01",
+   "end": "1999-02-07",
+   "statement": "Q1422-D3CE5CFC-CF0F-4641-B0CA-0A0061C738B5"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "1999-02-07",
+   "end": "2001-06-30",
+   "statement": "Q1422-ADAF5750-BABB-4DEA-86FB-1F47C37F1CD4"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q43304",
+   "coach": "Marcello Lippi",
+   "start": "2001-07-01",
+   "end": "2004-05-28",
+   "statement": "Q1422-8CC430EB-0B25-4495-AD0D-F44B999726E2"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q183108",
+   "coach": "Fabio Capello",
+   "start": "2004-05-29",
+   "end": "2006-07-04",
+   "statement": "Q1422-AF5798C7-C240-4752-8783-65F19795825E"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q508711",
+   "coach": "Didier Deschamps",
+   "start": "2006-07-10",
+   "end": "2007-05-26",
+   "statement": "Q1422-DA53D334-A6E2-4005-BA92-B1B6AF7FE8B9"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q235068",
+   "coach": "Claudio Ranieri",
+   "start": "2007-07-01",
+   "end": "2009-05-18",
+   "statement": "Q1422-090AF0B5-389A-43E2-9244-E953F6534276"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q314078",
+   "coach": "Ciro Ferrara",
+   "start": "2009-05-19",
+   "end": "2010-01-28",
+   "statement": "q1422-c98bee00-4a63-4017-e59f-4e9901761642"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q316633",
+   "coach": "Alberto Zaccheroni",
+   "start": "2010-01-29",
+   "end": "2010-05-19",
+   "statement": "Q1422-1b8fbdde-4eff-50bb-12e3-3752f31b516d"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q332742",
+   "coach": "Luigi Delneri",
+   "start": "2010-05-19",
+   "end": "2011-05-31",
+   "statement": "Q1422-da418765-448f-e501-8490-58ab53f621b6"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q26580",
+   "coach": "Antonio Conte",
+   "start": "2011-07-01",
+   "end": "2012-06-30",
+   "statement": "Q1422-4bfb6973-4c85-e16a-971a-80c8a1a0139b"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q980189",
+   "coach": "Massimo Carrera",
+   "start": "2012-07-01",
+   "end": "2012-10-15",
+   "statement": "Q1422-ddda23a1-4d8b-6da4-2c76-4ad066857c8a"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q62175",
+   "coach": "Angelo Alessio",
+   "start": "2012-10-16",
+   "end": "2012-12-09",
+   "statement": "Q1422-ef01ad62-4fb5-76ff-cafb-a164e0616277"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q26580",
+   "coach": "Antonio Conte",
+   "start": "2012-12-09",
+   "end": "2014-07-15",
+   "statement": "Q1422-89a8242b-4039-a36e-218d-b0980fbd8651"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q354529",
+   "coach": "Massimiliano Allegri",
+   "start": "2014-07-16",
+   "end": "2019-06-16",
+   "statement": "q1422-73965488-4110-530c-9676-302d8ccb27b0"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q3852721",
+   "coach": "Maurizio Sarri",
+   "start": "2019-06-16",
+   "end": "2020-08-08",
+   "statement": "Q1422-3cf94383-4167-d0e6-faee-424b68d6f556"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q43926",
+   "coach": "Andrea Pirlo",
+   "start": "2020-08-08",
+   "end": "2021-06-30",
+   "statement": "Q1422-73a8e2a0-477f-1d5d-848f-647fe5506205"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q354529",
+   "coach": "Massimiliano Allegri",
+   "start": "2021-07-01",
+   "end": "2024-05-17",
+   "statement": "Q1422-f5757682-4e24-e85b-0d35-37c29b34de70"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q342484",
+   "coach": "Paolo Montero",
+   "start": "2024-05-17",
+   "end": "2024-06-30",
+   "statement": "Q1422-9ab958c4-4866-2188-4ffa-75121d3eef3a"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q191885",
+   "coach": "Thiago Motta",
+   "start": "2024-07-01",
+   "end": "2025-03-23",
+   "statement": "Q1422-a88085d3-4fea-44e7-7e39-e09031a01df3"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q276544",
+   "coach": "Igor Tudor",
+   "start": "2025-03-23",
+   "end": "2025-10-27",
+   "statement": "Q1422-c546507a-4422-7b10-1948-848735f6c400"
+  },
+  {
+   "clubQid": "Q1422",
+   "clubId": 506,
+   "coachQid": "Q310813",
+   "coach": "Luciano Spalletti",
+   "start": "2025-10-30",
+   "end": null,
+   "statement": "Q1422-5e9ef025-47ba-8f0a-5adb-0e8ad86afde8"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q283991",
+   "coach": "Georges Peyroche",
+   "start": "1979-11-01",
+   "end": "1983-06-30",
+   "statement": "Q483020-3d5ff6d2-4329-a3bd-4107-9032ff015863"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q2965174",
+   "coach": "Christian Coste",
+   "start": "1985-04-04",
+   "end": "1985-07-01",
+   "statement": "Q483020-5ff866ea-4f82-d2a6-3387-27f6471e7aa1"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q295615",
+   "coach": "Gérard Houllier",
+   "start": "1985-07-01",
+   "end": "1987-10-25",
+   "statement": "Q483020-8beb021f-4aea-5029-d646-3347470dc5d9"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q2385686",
+   "coach": "Erick Mombaerts",
+   "start": "1987-10-25",
+   "end": "1988-06-30",
+   "statement": "Q483020-352a4856-4e64-b72d-09e6-4206b822a2ea"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q360924",
+   "coach": "Tomislav Ivić",
+   "start": "1988-07-01",
+   "end": "1990-06-30",
+   "statement": "Q483020-addc219d-4494-fd7a-4dca-d34162a311ce"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q434641",
+   "coach": "Henri Michel",
+   "start": "1990-07-01",
+   "end": "1991-06-30",
+   "statement": "Q483020-85a100e1-4aa2-6e2a-fc03-942d4303f041"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q502977",
+   "coach": "Artur Jorge",
+   "start": "1991-07-01",
+   "end": "1994-06-30",
+   "statement": "Q483020-8458920b-4a7b-ca19-5762-b8cdf6dfe108"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q314861",
+   "coach": "Luis Fernandez",
+   "start": "1994-07-01",
+   "end": "1996-06-30",
+   "statement": "Q483020-104c4939-469a-b2a1-c1e6-8a72c78ff967"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q440999",
+   "coach": "Ricardo Gomes",
+   "start": "1996-07-01",
+   "end": "1998-06-30",
+   "statement": "Q483020-40c091ba-4d0b-5cf2-3153-f18ccd3dbdb2"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q312170",
+   "coach": "Alain Giresse",
+   "start": "1998-07-01",
+   "end": "1998-10-23",
+   "statement": "Q483020-c69e8190-43d0-72a1-4298-7b76167d1f47"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q502977",
+   "coach": "Artur Jorge",
+   "start": "1998-10-09",
+   "end": "1999-03-14",
+   "statement": "Q483020-20486b43-4db5-06ab-cbbe-1fac3bfc0100"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q562392",
+   "coach": "Philippe Bergeroo",
+   "start": "1999-03-15",
+   "end": "2000-12-03",
+   "statement": "Q483020-f8b36074-4f45-bd92-13ae-59519779e114"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q314861",
+   "coach": "Luis Fernandez",
+   "start": "2000-12-03",
+   "end": "2003-06-30",
+   "statement": "Q483020-0c5973eb-4552-254a-73e7-4a5c8b8b0ab6"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q463933",
+   "coach": "Vahid Halilhodžić",
+   "start": "2003-07-01",
+   "end": "2005-02-08",
+   "statement": "Q483020-33475f47-4e0f-1665-7944-c7661768d0b8"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q1360075",
+   "coach": "Laurent Fournier",
+   "start": "2005-02-09",
+   "end": "2005-12-27",
+   "statement": "Q483020-2e1220c6-4e31-b845-3afd-8a0375764db9"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q763318",
+   "coach": "Guy Lacombe",
+   "start": "2005-12-27",
+   "end": "2007-01-15",
+   "statement": "Q483020-bd66dded-4d68-078e-865e-ad901c8d2bbc"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q239958",
+   "coach": "Paul Le Guen",
+   "start": "2007-01-15",
+   "end": "2009-06-30",
+   "statement": "Q483020-d89162a4-4af5-dbe4-1250-2a5699ea762b"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q586555",
+   "coach": "Antoine Kombouaré",
+   "start": "2009-07-01",
+   "end": "2011-12-29",
+   "statement": "Q483020-97b135d9-49f1-b6a9-c780-780cc387a02d"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "2011-12-30",
+   "end": "2013-05-19",
+   "statement": "Q483020-273BFE53-60EC-4A39-9CC6-369CAB33926B"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q1839",
+   "coach": "Laurent Blanc",
+   "start": "2013-06-25",
+   "end": "2016-06-22",
+   "statement": "Q483020-23de653f-42ac-9f12-eecb-adc040d54cf7"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q295610",
+   "coach": "Unai Emery",
+   "start": "2016-07-01",
+   "end": "2018-06-30",
+   "statement": "Q483020-d214b04f-4034-1452-f8f9-afe382a1ada5"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q702233",
+   "coach": "Thomas Tuchel",
+   "start": "2018-07-01",
+   "end": "2020-12-29",
+   "statement": "Q483020-CA9539D6-9B8A-42FD-8422-7BBA5087E9C7"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q313000",
+   "coach": "Mauricio Pochettino",
+   "start": "2021-01-02",
+   "end": "2022-07-05",
+   "statement": "Q483020-b71774c5-4228-f0cc-721d-9eca0c09391f"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q129023",
+   "coach": "Christophe Galtier",
+   "start": "2022-07-05",
+   "end": "2023-06-30",
+   "statement": "Q483020-9ebf3d75-4211-f5a6-4130-a5e56c3249bd"
+  },
+  {
+   "clubQid": "Q483020",
+   "clubId": 583,
+   "coachQid": "Q222789",
+   "coach": "Luis Enrique",
+   "start": "2023-07-05",
+   "end": null,
+   "statement": "Q483020-4c85a2f6-494d-a56a-77a3-9f50f3944716"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q2154479",
+   "coach": "Rinus Michels",
+   "start": "1965-01-22",
+   "end": "1971-06-30",
+   "statement": "Q81888-72137964-D910-470D-A4F6-4EF6D12F6297"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q2154479",
+   "coach": "Rinus Michels",
+   "start": "1975-09-01",
+   "end": "1976-06-30",
+   "statement": "Q81888-D458F726-5F6F-4ABB-8853-F93EA7B0541A"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q17163",
+   "coach": "Johan Cruyff",
+   "start": "1985-06-06",
+   "end": "1988-01-04",
+   "statement": "Q81888-536e0ea0-45a3-8d41-2238-f4f6a2b4c3ea"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q207431",
+   "coach": "Louis van Gaal",
+   "start": "1991-09-29",
+   "end": "1997-06-30",
+   "statement": "Q81888-ee6ce22d-49de-732a-1343-1a524ad5cf5f"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q483629",
+   "coach": "Marco van Basten",
+   "start": "2008-07-01",
+   "end": "2009-05-06",
+   "statement": "Q81888-32945df3-485e-1541-a246-cc7541cc40c4"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q310181",
+   "coach": "Martin Jol",
+   "start": "2009-06-01",
+   "end": "2010-12-06",
+   "statement": "Q81888-beeec178-4f3b-2d77-5324-d6732010bd77"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q219657",
+   "coach": "Frank de Boer",
+   "start": "2010-12-07",
+   "end": "2016-06-30",
+   "statement": "Q81888-c9f28d6c-4ec7-6af5-dc34-4dcc05ce13fd"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q1029982",
+   "coach": "Peter Bosz",
+   "start": "2016-06-27",
+   "end": "2017-06-30",
+   "statement": "Q81888-3d88db21-416a-ca98-fcdd-b41e2a06c0b0"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q2844569",
+   "coach": "Erik ten Hag",
+   "start": "2017-12-28",
+   "end": "2022-05-15",
+   "statement": "Q81888-D85E3B80-BBB2-4448-A586-ECD13FF72422"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q348301",
+   "coach": "Alfred Schreuder",
+   "start": "2022-07-01",
+   "end": "2023-01-26",
+   "statement": "Q81888-475022a0-40c3-6e41-2cee-59d3af546111"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q946457",
+   "coach": "John Heitinga",
+   "start": "2023-02-02",
+   "end": "2023-06-01",
+   "statement": "Q81888-723e607e-43ee-f711-50d4-041d3589d47c"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q2619700",
+   "coach": "Maurice Steijn",
+   "start": "2023-07-01",
+   "end": "2023-10-23",
+   "statement": "Q81888-60175d11-475b-c966-1aef-2324d38212e0"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q216260",
+   "coach": "Hedwiges Maduro",
+   "start": "2023-10-23",
+   "end": "2023-10-30",
+   "statement": "Q81888-d6a07bcd-4e69-6c6b-f975-7b06b6c66c5c"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q529563",
+   "coach": "John van 't Schip",
+   "start": "2023-10-30",
+   "end": "2024-05-23",
+   "statement": "Q81888-4e3ce723-4b2f-efba-1bf6-bc87e3f4c422"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q106247695",
+   "coach": "Francesco Farioli",
+   "start": "2024-05-23",
+   "end": "2025-05-19",
+   "statement": "Q81888-47b0fd48-4f48-34e9-2c42-4c3f586f9333"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q946457",
+   "coach": "John Heitinga",
+   "start": "2025-05-31",
+   "end": "2025-11-06",
+   "statement": "Q81888-7f021664-46fa-d066-5420-017b65e92a74"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q690923",
+   "coach": "Fred Grim",
+   "start": "2025-11-06",
+   "end": null,
+   "statement": "Q81888-53d0b85a-4bc5-392c-fc37-9d5038b37683"
+  },
+  {
+   "clubQid": "Q81888",
+   "clubId": 610,
+   "coachQid": "Q2637295",
+   "coach": "Miguel Ángel Sánchez Muñoz",
+   "start": "2026-07-01",
+   "end": null,
+   "statement": "Q81888-855e926d-4b16-82ff-7a95-2876e16ab37d"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q235068",
+   "coach": "Claudio Ranieri",
+   "start": "2000-09-18",
+   "end": "2004-06-30",
+   "statement": "Q9616-EDF1BFD0-8782-4862-A3E7-2C9B15557D46"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2004-07-01",
+   "end": "2007-09-20",
+   "statement": "Q9616-bcd6f226-4a8d-4422-f8bf-d2f36980336d"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q174614",
+   "coach": "Carlo Ancelotti",
+   "start": "2009-07-01",
+   "end": "2011-05-22",
+   "statement": "Q9616-FC42747C-CA98-46EE-A53D-23F654F4DF97"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2013-07-01",
+   "end": "2015-12-17",
+   "statement": "Q9616-c0f4a34b-40bb-8972-2bb1-88b92063ce30"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q26580",
+   "coach": "Antonio Conte",
+   "start": "2016-07-01",
+   "end": "2018-07-13",
+   "statement": "Q9616-cd644304-4293-4b40-e8d3-3fa3c05f9ee4"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q3852721",
+   "coach": "Maurizio Sarri",
+   "start": "2018-06-14",
+   "end": "2019-06-30",
+   "statement": "Q9616-01CA9549-B41D-4BD3-85DE-CDEF5BE92C67"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q41533",
+   "coach": "Frank Lampard",
+   "start": "2019-07-03",
+   "end": "2021-01-25",
+   "statement": "Q9616-479247d2-48c4-cd33-f25d-f4a684de77a6"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q702233",
+   "coach": "Thomas Tuchel",
+   "start": "2021-01-26",
+   "end": "2022-09-07",
+   "statement": "Q9616-a0f2611e-4b46-e23a-ccc9-3efd435c7439"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q5593150",
+   "coach": "Graham Potter",
+   "start": "2022-09-08",
+   "end": "2023-04-02",
+   "statement": "Q9616-29dac49d-4bad-a1cf-0d92-78e21ee21d6f"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q440431",
+   "coach": "Bruno Saltor",
+   "start": "2023-04-03",
+   "end": "2023-04-05",
+   "statement": "Q9616-4ec0bd53-4edb-3b41-5d4c-051446767576"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q41533",
+   "coach": "Frank Lampard",
+   "start": "2023-04-06",
+   "end": "2023-06-30",
+   "statement": "Q9616-6c1bb5fb-4c95-97b9-ce77-62931271f332"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q313000",
+   "coach": "Mauricio Pochettino",
+   "start": "2023-07-01",
+   "end": "2024-06-30",
+   "statement": "Q9616-94e83b0e-4937-1fa1-c103-9476f286e82b"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q317282",
+   "coach": "Enzo Maresca",
+   "start": "2024-07-01",
+   "end": "2026-01-01",
+   "statement": "Q9616-63a453ed-4523-d934-c468-d8fa3ac2368c"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q1336865",
+   "coach": "Liam Rosenior",
+   "start": "2026-01-06",
+   "end": "2026-04-22",
+   "statement": "Q9616-3f89f8f6-43da-fe59-202b-1bd95fcd2d49"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q137668183",
+   "coach": "Calum McFarlane",
+   "start": "2026-04-22",
+   "end": "2026-06-01",
+   "statement": "Q9616-5652a9cf-40c3-b372-d885-f71cb7caec8a"
+  },
+  {
+   "clubQid": "Q9616",
+   "clubId": 631,
+   "coachQid": "Q208104",
+   "coach": "Xabi Alonso",
+   "start": "2026-07-01",
+   "end": null,
+   "statement": "Q9616-070ad15e-4683-f960-b38c-8a552eff710e"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2002-01-23",
+   "end": "2004-06-30",
+   "statement": "Q128446-177C13FC-0D44-41D3-A96E-562C9AF56669"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q212914",
+   "coach": "André Villas-Boas",
+   "start": "2010-07-01",
+   "end": "2011-06-30",
+   "statement": "Q128446-4dee2b01-47dc-e75f-7264-5418db2e3bfb"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q556610",
+   "coach": "Vítor Pereira",
+   "start": "2011-07-01",
+   "end": "2013-06-30",
+   "statement": "Q128446-2ad3d034-474b-9e19-7106-850f3fc3ac67"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q10346582",
+   "coach": "Paulo Fonseca",
+   "start": "2013-06-10",
+   "end": "2014-03-05",
+   "statement": "Q128446-0F4BFFCD-8ABE-4BB8-8AE2-87241CD4CF9A"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q15896123",
+   "coach": "Luís Castro",
+   "start": "2014-03-06",
+   "end": "2014-06-30",
+   "statement": "Q128446-5aac12c9-4d44-eeef-100e-77d745b78058"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q115119",
+   "coach": "Julen Lopetegui",
+   "start": "2014-07-01",
+   "end": "2016-01-07",
+   "statement": "Q128446-058a25d7-4ffe-566c-e326-5124e008e0cd"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q735137",
+   "coach": "Rui Barros",
+   "start": "2016-01-08",
+   "end": "2016-01-21",
+   "statement": "Q128446-f819a02f-429a-6a69-ba0e-ce87ad36a667"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q1380304",
+   "coach": "José Peseiro",
+   "start": "2016-01-22",
+   "end": "2016-06-30",
+   "statement": "Q128446-7ab3dd56-4fe1-2695-14ed-1c698d28bbe9"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q372372",
+   "coach": "Nuno Espírito Santo",
+   "start": "2016-01-22",
+   "end": "2016-06-30",
+   "statement": "Q128446-b83f92f8-4f1c-7d36-06a4-0642b57a0aa2"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q317298",
+   "coach": "Sérgio Conceição",
+   "start": "2017-07-01",
+   "end": "2024-06-30",
+   "statement": "Q128446-64949a56-4cec-5bba-da33-7c239712f197"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q126406885",
+   "coach": "Vítor Bruno",
+   "start": "2024-07-01",
+   "end": "2025-01-20",
+   "statement": "Q128446-437300bc-4b96-8a8d-b728-f7a28593e662"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q110278664",
+   "coach": "Martín Anselmi",
+   "start": "2025-01-27",
+   "end": "2025-07-02",
+   "statement": "Q128446-581098c8-46de-81d3-6162-7c20fb0729b6"
+  },
+  {
+   "clubQid": "Q128446",
+   "clubId": 720,
+   "coachQid": "Q106247695",
+   "coach": "Francesco Farioli",
+   "start": "2025-07-06",
+   "end": null,
+   "statement": "Q128446-82cec680-4994-e822-47c3-4ae31781bafa"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q44980",
+   "coach": "Alex Ferguson",
+   "start": "1986-11-06",
+   "end": "2013-06-30",
+   "statement": "Q18656-54F31B41-5AFC-4743-B56E-865FB5686D11"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q297252",
+   "coach": "David Moyes",
+   "start": "2013-07-01",
+   "end": "2014-04-22",
+   "statement": "Q18656-c717d04a-4ccc-19ff-3480-bbd896d30dab"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q207431",
+   "coach": "Louis van Gaal",
+   "start": "2014-07-01",
+   "end": "2016-05-23",
+   "statement": "Q18656-F15B93C9-7525-41AA-AA45-B6F0C1F10A76"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q79983",
+   "coach": "José Mourinho",
+   "start": "2016-05-27",
+   "end": "2018-12-18",
+   "statement": "Q18656-d87b3b9f-4ec9-b45a-8e12-051b93d8ee44"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q18976",
+   "coach": "Ole Gunnar Solskjær",
+   "start": "2018-12-19",
+   "end": "2021-11-21",
+   "statement": "Q18656-c9617066-463b-8256-7def-2543362d2b1d"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q29566",
+   "coach": "Michael Carrick",
+   "start": "2021-11-21",
+   "end": "2021-11-29",
+   "statement": "Q18656-cee77b22-4adc-e98f-580e-ea44ccc24c87"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q57902",
+   "coach": "Ralf Rangnick",
+   "start": "2021-12-03",
+   "end": "2022-05-31",
+   "statement": "Q18656-54e4d52c-40f0-3847-bd2a-237753a239fd"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q2844569",
+   "coach": "Erik ten Hag",
+   "start": "2022-07-01",
+   "end": "2024-10-28",
+   "statement": "Q18656-ca0c62a9-4aa5-1cc0-e4e5-d73aa5a60711"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q45626",
+   "coach": "Ruud van Nistelrooy",
+   "start": "2024-10-28",
+   "end": "2024-11-11",
+   "statement": "Q18656-fa4bdf7a-4759-42c1-aa0f-581532e0bc73"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q368682",
+   "coach": "Ruben Amorim",
+   "start": "2024-11-11",
+   "end": "2026-01-05",
+   "statement": "Q18656-c29b3d18-4162-f76a-346f-afe883c24bae"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q172792",
+   "coach": "Darren Fletcher",
+   "start": "2026-01-05",
+   "end": "2026-01-13",
+   "statement": "Q18656-f816da09-4129-d39a-b8f5-0ae1e36e93cc"
+  },
+  {
+   "clubQid": "Q18656",
+   "clubId": 985,
+   "coachQid": "Q29566",
+   "coach": "Michael Carrick",
+   "start": "2026-01-13",
+   "end": null,
+   "statement": "Q18656-6812bcfd-43a4-ab4a-47ad-02f455938ad3"
+  }
+ ]
+}

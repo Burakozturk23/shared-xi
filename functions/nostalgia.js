@@ -19,8 +19,8 @@ function accepts(task, answers) {
   return Array.isArray(answers) && answers.length === task.answerKeys.length &&
     answers.every((key, i) => typeof key === "string" && key === task.answerKeys[i]);
 }
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("nostalgiaState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("nostalgiaState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
     let error;
@@ -97,6 +97,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   }
   async function hint(uid, input, eligible = true) {
     const task = taskOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     if (!eligible) fail("permission-denied", "Güçlü yardım için Google hesabına bağlan.");
     const state = await get(uid);

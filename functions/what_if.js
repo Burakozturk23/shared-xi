@@ -19,8 +19,8 @@ function accepts(task, answers) {
   return task.type === "timeline" ? answers.every((a, i) => a === task.answerKeys[i]) :
     answers.every((a) => task.answerKeys.includes(a));
 }
-function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
-  const ref = (uid) => db.ref("whatIfState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("whatIfState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
     let error;
@@ -89,6 +89,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   }
   async function hint(uid, input) {
     const {task, scenario, route} = routeOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     const s = await get(uid);
     if (s.hints[task.id]?.coin || s.hints[task.id]?.ad) return status(uid);
     if (ends(s, scenario.id).includes(route.id)) fail("failed-precondition", "Bu son zaten açık.");
@@ -110,6 +111,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     }
     if (placement !== "what_if_hint") fail("invalid-argument", "Geçersiz yardım.");
     const {scenario, route, task} = routeOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (ends(s, scenario.id).includes(route.id) || s.hints[task.id]?.coin || s.hints[task.id]?.ad) {
       fail("failed-precondition", "Yardım zaten açık veya bu son keşfedildi.");
     }

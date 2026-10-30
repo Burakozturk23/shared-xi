@@ -13,7 +13,7 @@ test("Istanbul month boundary, leap year and daily SP cap", () => {
   assert.equal(seasonAt(Date.parse("2028-02-01T00:00:00Z")).endsOn, "2028-02-29");
   const now = Date.parse("2026-09-20T10:00:00Z");
   const claims = Object.fromEntries(Array.from({length: 10}, (_, i) => [i,
-    {claimedAt: now, amount: 20, sourceType: "mission_reward", sourceId: "general__" + i}]));
+    {claimedAt: now, amount: 20, sourceType: "mission_reward", sourceId: "general__general_ranked_play_" + i}]));
   assert.deepEqual(points(claims, seasonAt(now), now), {sp: 150, todaySp: 150});
 });
 test("ads, purchases, season claims, future receipts and past months do not mint SP", () => {

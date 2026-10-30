@@ -14,7 +14,13 @@ class ManagerMatchService {
   static final ManagerMatchService instance = ManagerMatchService._();
   static Random _rng = Random();
 
-  double powerOf(List<ManagerPoolPlayer> xi, {ManagerTactics? tactics, Repository? repository}) {
+  /// [sharedSpells]: see ManagerLinkService.sharedSpell (solo only).
+  double powerOf(
+    List<ManagerPoolPlayer> xi, {
+    ManagerTactics? tactics,
+    Repository? repository,
+    bool sharedSpells = true,
+  }) {
     if (xi.isEmpty) return 40;
     final avg = xi.fold<double>(0, (s, p) => s + p.overall) / xi.length;
     final repo = repository ?? Repository.instance;
@@ -24,7 +30,11 @@ class ManagerMatchService {
       final pl = repo.playerById(p.playerId);
       if (pl != null) players.add(pl);
     }
-    final link = ManagerLinkService.instance.squadLink(players, repository: repo);
+    final link = ManagerLinkService.instance.squadLink(
+      players,
+      repository: repo,
+      sharedSpells: sharedSpells,
+    );
     final linkBonus = (link * 0.35).clamp(0.0, 14.0);
     final groups = xi.map((e) => e.positionGroup).toSet();
     final balance = groups.length >= 4 ? 4.0 : groups.length.toDouble();
@@ -46,6 +56,8 @@ class ManagerMatchService {
     bool userIsHome = true,
     double homeAdvantage = 0,
     bool chargeSquadCost = true,
+    ManagerHalftimePlan halftime = ManagerHalftimePlan.keep,
+    bool sharedSpells = true,
   }) {
     if (xi.length != 11 || xi.map((p) => p.playerId).toSet().length != 11) {
       throw ArgumentError('Maç için 11 farklı oyuncu gerekli.');
@@ -53,7 +65,7 @@ class ManagerMatchService {
     if (seed != null) {
       _rng = Random(seed);
     }
-    final homeBase = powerOf(xi, tactics: tactics);
+    final homeBase = powerOf(xi, tactics: tactics, sharedSpells: sharedSpells);
     final opp =
         opponent ??
         ManagerOpponentService.instance.generate(
@@ -80,8 +92,17 @@ class ManagerMatchService {
     xgH = xgH.clamp(0.3, 4.5);
     xgA = xgA.clamp(0.3, 4.2);
 
-    final goalsH = _goalsFromXg(xgH);
-    final goalsA = _goalsFromXg(xgA);
+    // Two halves of four tries each; the first half is drawn before the
+    // half-time decision is applied, so it never changes with that choice.
+    final h1 = _goalsFromXg(xgH / 2, trials: 4);
+    final a1 = _goalsFromXg(xgA / 2, trials: 4);
+    final (mH, mA) = halftime.xg;
+    final h2 = _goalsFromXg(xgH / 2 * mH, trials: 4);
+    final a2 = _goalsFromXg(xgA / 2 * mA, trials: 4);
+    final goalsH = h1 + h2;
+    final goalsA = a1 + a2;
+    xgH = xgH / 2 * (1 + mH);
+    xgA = xgA / 2 * (1 + mA);
 
     final shotsH = max(
       goalsH,
@@ -107,12 +128,13 @@ class ManagerMatchService {
             .clamp(28.0, 72.0);
 
     final events = _buildEvents(
-      goalsH: goalsH,
-      goalsA: goalsA,
+      firstHalf: (h1, a1),
+      secondHalf: (h2, a2),
       xi: xi,
       awayName: opp.name,
       tactics: tactics,
       style: opp.style,
+      halftime: halftime,
     );
 
     var stats = ManagerMatchStats(
@@ -151,8 +173,11 @@ class ManagerMatchService {
     final spent = chargeSquadCost
         ? xi.fold<int>(0, (s, p) => s + p.costLink)
         : 0;
-    final win = goalsH > goalsA;
-    final bonus = win ? difficulty.winBonusLink : 0;
+    final bonus = goalsH > goalsA
+        ? difficulty.winBonusLink
+        : goalsH == goalsA
+        ? difficulty.drawBonusLink
+        : 0;
     final remaining = budgetLink - spent + bonus;
 
     return ManagerMatchResult(
@@ -175,6 +200,9 @@ class ManagerMatchService {
       spentOnXi: spent,
       winBonus: bonus,
       remainingAfter: remaining,
+      halfTimeUser: h1,
+      halfTimeOpponent: a1,
+      halftime: halftime,
       opponentLeague: opp.leagueHint,
       opponentStyle: opp.style.label,
       tacticsSummary:
@@ -182,9 +210,9 @@ class ManagerMatchService {
     );
   }
 
-  int _goalsFromXg(double xg) {
+  /// Fixed-count draws: [trials] Bernoulli tries.
+  int _goalsFromXg(double xg, {int trials = 8}) {
     var g = 0;
-    const trials = 8;
     final p = (xg / trials).clamp(0.02, 0.55);
     for (var i = 0; i < trials; i++) {
       if (_rng.nextDouble() < p) g++;
@@ -192,49 +220,90 @@ class ManagerMatchService {
     return g;
   }
 
+  static const _scoreWeight = {'ATT': 5.0, 'MID': 2.2, 'DEF': 0.6, 'GK': 0.02};
+  static const _assistWeight = {'ATT': 2.0, 'MID': 3.0, 'DEF': 1.0, 'GK': 0.1};
+
+  /// Weighted by position and quality; always two draws so the sequence
+  /// length does not depend on who is picked.
+  (ManagerPoolPlayer, ManagerPoolPlayer?) _scorer(List<ManagerPoolPlayer> xi) {
+    ManagerPoolPlayer pick(Map<String, double> weights, ManagerPoolPlayer? not) {
+      final pool = [
+        for (final p in xi)
+          if (p.playerId != not?.playerId)
+            (p, (weights[p.positionGroup] ?? 1) * pow(p.overall / 100, 2)),
+      ];
+      final total = pool.fold<double>(0, (s, e) => s + e.$2);
+      var roll = _rng.nextDouble() * total;
+      for (final (player, w) in pool) {
+        roll -= w;
+        if (roll <= 0) return player;
+      }
+      return pool.last.$1;
+    }
+
+    final scorer = pick(_scoreWeight, null);
+    final assisted = _rng.nextDouble() < .72;
+    final assist = pick(_assistWeight, scorer);
+    return (scorer, assisted ? assist : null);
+  }
+
   List<ManagerMatchEvent> _buildEvents({
-    required int goalsH,
-    required int goalsA,
+    required (int, int) firstHalf,
+    required (int, int) secondHalf,
     required List<ManagerPoolPlayer> xi,
     required String awayName,
     required ManagerTactics tactics,
     required OpponentStyle style,
+    required ManagerHalftimePlan halftime,
   }) {
     final events = <ManagerMatchEvent>[];
-    final attackers = xi
-        .where((p) => p.positionGroup == 'ATT' || p.positionGroup == 'MID')
-        .toList();
-    if (attackers.isEmpty) attackers.addAll(xi);
     final minutes = <int>{};
-    int uniqueMinute() {
-      var m = 5 + _rng.nextInt(85);
+    int uniqueMinute(int from, int to) {
+      var m = from + _rng.nextInt(to - from + 1);
       while (minutes.contains(m)) {
-        m = 5 + _rng.nextInt(85);
+        m = from + _rng.nextInt(to - from + 1);
       }
       minutes.add(m);
       return m;
     }
 
-    for (var i = 0; i < goalsH; i++) {
-      final scorer = attackers[_rng.nextInt(attackers.length)].name;
-      final m = uniqueMinute();
-      events.add(
-        ManagerMatchEvent(
-          minute: m,
-          text: 'GOL! $scorer net bir fırsatı gole çevirdi.',
-          isGoal: true,
-          isHome: true,
-        ),
-      );
+    // First-half goals first: their minutes and scorers never depend on the
+    // half-time decision.
+    for (final (home, away, from, to) in [
+      (firstHalf.$1, firstHalf.$2, 2, 45),
+      (secondHalf.$1, secondHalf.$2, 46, 90),
+    ]) {
+      for (var i = 0; i < home; i++) {
+        final (scorer, assist) = _scorer(xi);
+        events.add(
+          ManagerMatchEvent(
+            minute: uniqueMinute(from, to),
+            text: assist == null
+                ? 'GOL! ${scorer.name} tek başına bitirdi.'
+                : 'GOL! ${scorer.name} · asist ${assist.name}.',
+            isGoal: true,
+            isHome: true,
+          ),
+        );
+      }
+      for (var i = 0; i < away; i++) {
+        events.add(
+          ManagerMatchEvent(
+            minute: uniqueMinute(from, to),
+            text: 'GOL! $awayName hücumu skoru değiştirdi.',
+            isGoal: true,
+            isHome: false,
+          ),
+        );
+      }
     }
-    for (var i = 0; i < goalsA; i++) {
-      final m = uniqueMinute();
+    minutes.add(45);
+    if (halftime != ManagerHalftimePlan.keep) {
       events.add(
         ManagerMatchEvent(
-          minute: m,
-          text: 'GOL! $awayName hücumu skoru değiştirdi.',
-          isGoal: true,
-          isHome: false,
+          minute: 45,
+          text: 'Devre arası kararın: ${halftime.label}.',
+          isHome: true,
         ),
       );
     }
@@ -250,7 +319,7 @@ class ManagerMatchService {
     ];
     for (final line in styleLines) {
       events.add(
-        ManagerMatchEvent(minute: uniqueMinute(), text: line, isHome: true),
+        ManagerMatchEvent(minute: uniqueMinute(2, 90), text: line, isHome: true),
       );
     }
 
@@ -264,7 +333,7 @@ class ManagerMatchService {
       final n = xi[_rng.nextInt(xi.length)].name;
       events.add(
         ManagerMatchEvent(
-          minute: uniqueMinute(),
+          minute: uniqueMinute(2, 90),
           text: fillers[_rng.nextInt(fillers.length)](n),
           isHome: true,
         ),

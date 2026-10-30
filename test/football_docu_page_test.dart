@@ -10,115 +10,291 @@ import 'package:shared_xi/screens/football_docu_page.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'football_docu_test.dart';
 
-Future<void> go(WidgetTester t,Key key)async{
+Future<void> go(WidgetTester t, Key key) async {
   // Walk the lazy list without flings or gesture competition from task cards.
-  final list=t.widget<ListView>(find.byType(ListView));
-  final scroll=list.controller!;
+  final list = t.widget<ListView>(find.byType(ListView));
+  final scroll = list.controller!;
   scroll.jumpTo(0);
   await t.pumpAndSettle();
-  for(var i=0;i<200&&find.byKey(key).evaluate().isEmpty;i++){
-    scroll.jumpTo((scroll.offset+120).clamp(0,scroll.position.maxScrollExtent));
+  for (var i = 0; i < 200 && find.byKey(key).evaluate().isEmpty; i++) {
+    scroll.jumpTo(
+      (scroll.offset + 120).clamp(0, scroll.position.maxScrollExtent),
+    );
     await t.pumpAndSettle();
   }
-  expect(find.byKey(key),findsOneWidget,reason:'Missing $key at ${scroll.offset}/${scroll.position.maxScrollExtent}; children: ${(list.childrenDelegate as SliverChildListDelegate).children.map((w)=>w.key).toList()}');
+  expect(
+    find.byKey(key),
+    findsOneWidget,
+    reason:
+        'Missing $key at ${scroll.offset}/${scroll.position.maxScrollExtent}; children: ${(list.childrenDelegate as SliverChildListDelegate).children.map((w) => w.key).toList()}',
+  );
   await t.ensureVisible(find.byKey(key));
   await t.pumpAndSettle();
 }
-Future<void> shot(WidgetTester t,GlobalKey key,String name)async{
-  if(!const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS'))return;
-  await t.pumpAndSettle();await t.runAsync(()async{
-    final im=await (key.currentContext!.findRenderObject() as RenderRepaintBoundary).toImage(pixelRatio:1);
-    final bytes=await im.toByteData(format:ui.ImageByteFormat.png);
-    final file=File('.dart_tool/football_docu_qa/$name.png');await file.parent.create(recursive:true);
-    await file.writeAsBytes(bytes!.buffer.asUint8List());im.dispose();
+
+Future<void> shot(WidgetTester t, GlobalKey key, String name) async {
+  if (!const bool.fromEnvironment('UPDATE_FIVE_SCREENSHOTS')) return;
+  await t.pumpAndSettle();
+  await t.runAsync(() async {
+    final im =
+        await (key.currentContext!.findRenderObject() as RenderRepaintBoundary)
+            .toImage(pixelRatio: 1);
+    final bytes = await im.toByteData(format: ui.ImageByteFormat.png);
+    final file = File('.dart_tool/football_docu_qa/$name.png');
+    await file.parent.create(recursive: true);
+    await file.writeAsBytes(bytes!.buffer.asUint8List());
+    im.dispose();
   });
 }
-void main(){
+
+void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(()async{
-    for(final (name,path) in [('Satoshi','assets/fonts/Satoshi-Variable.ttf'),('Inter','assets/fonts/Inter-Body-Variable.ttf'),('MaterialIcons','fonts/MaterialIcons-Regular.otf')]){
+  setUpAll(() async {
+    for (final (name, path) in [
+      ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),
+      ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
+      ('MaterialIcons', 'fonts/MaterialIcons-Regular.otf'),
+    ]) {
       await (FontLoader(name)..addFont(rootBundle.load(path))).load();
     }
   });
-  for(final light in [false,true]){
-    testWidgets('FootballDocu five mechanics and archive fit 320px / 180% light=$light',(t)async{
-      t.view.physicalSize=const Size(320,844);t.view.devicePixelRatio=1;
-      addTearDown(t.view.resetPhysicalSize);addTearDown(t.view.resetDevicePixelRatio);
-      final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:FakeFootballDocuGateway());addTearDown(c.dispose);await c.load();
-      final key=GlobalKey();
-      await t.pumpWidget(MaterialApp(theme:light?OrtakSahaTheme.light:OrtakSahaTheme.dark,
-        builder:(context,child)=>MediaQuery(data:MediaQuery.of(context).copyWith(textScaler:TextScaler.linear(1.8)),child:RepaintBoundary(key:key,child:child!)),home:FootballDocuPage(controller:c)));
-      await t.pumpAndSettle();await shot(t,key,'archive-$light');
-      for(final id in ['DOC-01-01','DOC-01-02','DOC-03-01','DOC-04-01','DOC-02-01']){
-        c.open(id);await t.pumpAndSettle();
-        expect(find.text(docuPrivate(id)['result']['answer'] as String),findsNothing);
-        await go(t,const ValueKey('docu-start'));await t.tap(find.byKey(const ValueKey('docu-start')));await t.pumpAndSettle();
-        await shot(t,key,'${c.active!.mechanic}-$light');
-        final first=c.active!.interaction=='match'?const ValueKey('match-slot-0'):c.active!.interaction=='order'?const ValueKey('up-0'):ValueKey('option-${c.active!.optionIds.first}');
-        await go(t,first);await shot(t,key,'cards-${c.active!.mechanic}-$light');
-        await go(t,const ValueKey('docu-hint'));await t.tap(find.byKey(const ValueKey('docu-hint')));await t.pumpAndSettle();expect(c.hintOpen,true);
-        solve(c);await t.pumpAndSettle();await go(t,const ValueKey('docu-submit'));await t.tap(find.byKey(const ValueKey('docu-submit')));await t.pumpAndSettle();
-        expect(c.phase,'result');await go(t,const ValueKey('docu-result'));await shot(t,key,'result-${c.active!.mechanic}-$light');
-        if(c.files.containsKey(c.active!.episodeId)){await go(t,PageStorageKey('docu-sources-$id'));await t.tap(find.text('Tarihsel kaynaklar'));await t.pumpAndSettle();}expect(t.takeException(),isNull);
-      }
-      c.archive();await t.pumpAndSettle();await go(t,const ValueKey('docu-collection'));await t.tap(find.byKey(const ValueKey('docu-collection')));await t.pumpAndSettle();
-      await go(t,const ValueKey('docu-archivist'));await shot(t,key,'atlas-$light');expect(t.takeException(),isNull);
-    });
-  }
-  testWidgets('All four interactions submit through actual controls, including wrong-answer retry',(t)async{
-    final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:FakeFootballDocuGateway());addTearDown(c.dispose);await c.load();
-    await t.pumpWidget(MaterialApp(home:FootballDocuPage(controller:c)));await t.pumpAndSettle();
-    for(final id in ['DOC-01-01','DOC-01-02','DOC-03-01','DOC-04-01','DOC-10-01','DOC-02-01']){
-      c.open(id);c.start();await t.pumpAndSettle();final keys=docuStrings(docuPrivate(id)['answerKeys']);
-      if(c.active!.interaction=='single'){
-        final wrong=c.active!.optionIds.firstWhere((x)=>!keys.contains(x));
-        await go(t,ValueKey('option-$wrong'));await t.tap(find.byKey(ValueKey('option-$wrong')));await t.pumpAndSettle();
-        await go(t,const ValueKey('docu-submit'));await t.tap(find.byKey(const ValueKey('docu-submit')));await t.pumpAndSettle();expect(c.phase,'task');
-      }
-      for(var i=0;i<keys.length;i++){
-        if(c.active!.interaction=='match'){
-          await go(t,ValueKey('match-slot-$i'));await t.tap(find.byKey(ValueKey('match-slot-$i')));await t.pumpAndSettle();
-          await t.tap(find.text(c.active!.optionLabel(keys[i])).last);await t.pumpAndSettle();
-        }else if(c.active!.interaction=='order'){
-          while(c.answers.indexOf(keys[i])>i){final index=c.answers.indexOf(keys[i]);await go(t,ValueKey('up-$index'));await t.tap(find.byKey(ValueKey('up-$index')));await t.pumpAndSettle();}
-        }else{
-          await go(t,ValueKey('option-${keys[i]}'));await t.tap(find.byKey(ValueKey('option-${keys[i]}')));await t.pumpAndSettle();
+  for (final light in [false, true]) {
+    testWidgets(
+      'FootballDocu five mechanics and archive fit 320px / 180% light=$light',
+      (t) async {
+        t.view.physicalSize = const Size(320, 844);
+        t.view.devicePixelRatio = 1;
+        addTearDown(t.view.resetPhysicalSize);
+        addTearDown(t.view.resetDevicePixelRatio);
+        final c = FootballDocuController(
+          catalog: docuPack(),
+          store: MemoryFootballDocuStore(),
+          gateway: FakeFootballDocuGateway(),
+        );
+        addTearDown(c.dispose);
+        await c.load();
+        final key = GlobalKey();
+        await t.pumpWidget(
+          MaterialApp(
+            theme: light ? OrtakSahaTheme.light : OrtakSahaTheme.dark,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(1.8)),
+              child: RepaintBoundary(key: key, child: child!),
+            ),
+            home: FootballDocuPage(controller: c),
+          ),
+        );
+        await t.pumpAndSettle();
+        await shot(t, key, 'archive-$light');
+        for (final id in [
+          'DOC-01-01',
+          'DOC-01-02',
+          'DOC-03-01',
+          'DOC-04-01',
+          'DOC-02-01',
+        ]) {
+          c.open(id);
+          await t.pumpAndSettle();
+          expect(
+            find.text(docuPrivate(id)['result']['answer'] as String),
+            findsNothing,
+          );
+          await go(t, const ValueKey('docu-start'));
+          await t.tap(find.byKey(const ValueKey('docu-start')));
+          await t.pumpAndSettle();
+          await shot(t, key, '${c.active!.mechanic}-$light');
+          final first = c.active!.interaction == 'match'
+              ? const ValueKey('match-slot-0')
+              : c.active!.interaction == 'order'
+              ? const ValueKey('up-0')
+              : ValueKey('option-${c.active!.optionIds.first}');
+          await go(t, first);
+          await shot(t, key, 'cards-${c.active!.mechanic}-$light');
+          await go(t, const ValueKey('docu-hint'));
+          await t.tap(find.byKey(const ValueKey('docu-hint')));
+          await t.pumpAndSettle();
+          expect(c.hintOpen, true);
+          solve(c);
+          await t.pumpAndSettle();
+          await go(t, const ValueKey('docu-submit'));
+          await t.tap(find.byKey(const ValueKey('docu-submit')));
+          await t.pumpAndSettle();
+          expect(c.phase, 'result');
+          await go(t, const ValueKey('docu-result'));
+          await shot(t, key, 'result-${c.active!.mechanic}-$light');
+          if (c.files.containsKey(c.active!.episodeId)) {
+            await go(t, PageStorageKey('docu-sources-$id'));
+            await t.tap(find.text('Tarihsel kaynaklar'));
+            await t.pumpAndSettle();
+          }
+          expect(t.takeException(), isNull);
         }
+        c.archive();
+        await t.pumpAndSettle();
+        await go(t, const ValueKey('docu-collection'));
+        await t.tap(find.byKey(const ValueKey('docu-collection')));
+        await t.pumpAndSettle();
+        await go(t, const ValueKey('docu-archivist'));
+        await shot(t, key, 'atlas-$light');
+        expect(t.takeException(), isNull);
+      },
+    );
+  }
+  testWidgets(
+    'All four interactions submit through actual controls, including wrong-answer retry',
+    (t) async {
+      final c = FootballDocuController(
+        catalog: docuPack(),
+        store: MemoryFootballDocuStore(),
+        gateway: FakeFootballDocuGateway(),
+      );
+      addTearDown(c.dispose);
+      await c.load();
+      await t.pumpWidget(MaterialApp(home: FootballDocuPage(controller: c)));
+      await t.pumpAndSettle();
+      for (final id in [
+        'DOC-01-01',
+        'DOC-01-02',
+        'DOC-03-01',
+        'DOC-04-01',
+        'DOC-10-01',
+        'DOC-02-01',
+      ]) {
+        c.open(id);
+        c.start();
+        await t.pumpAndSettle();
+        final keys = docuStrings(docuPrivate(id)['answerKeys']);
+        if (c.active!.interaction == 'single') {
+          final wrong = c.active!.optionIds.firstWhere(
+            (x) => !keys.contains(x),
+          );
+          await go(t, ValueKey('option-$wrong'));
+          await t.tap(find.byKey(ValueKey('option-$wrong')));
+          await t.pumpAndSettle();
+          await go(t, const ValueKey('docu-submit'));
+          await t.tap(find.byKey(const ValueKey('docu-submit')));
+          await t.pumpAndSettle();
+          expect(c.phase, 'task');
+        }
+        for (var i = 0; i < keys.length; i++) {
+          if (c.active!.interaction == 'match') {
+            await go(t, ValueKey('match-slot-$i'));
+            await t.tap(find.byKey(ValueKey('match-slot-$i')));
+            await t.pumpAndSettle();
+            await t.tap(find.text(c.active!.optionLabel(keys[i])).last);
+            await t.pumpAndSettle();
+          } else if (c.active!.interaction == 'order') {
+            while (c.answers.indexOf(keys[i]) > i) {
+              final index = c.answers.indexOf(keys[i]);
+              await go(t, ValueKey('up-$index'));
+              await t.tap(find.byKey(ValueKey('up-$index')));
+              await t.pumpAndSettle();
+            }
+          } else {
+            await go(t, ValueKey('option-${keys[i]}'));
+            await t.tap(find.byKey(ValueKey('option-${keys[i]}')));
+            await t.pumpAndSettle();
+          }
+        }
+        await go(t, const ValueKey('docu-submit'));
+        await t.tap(find.byKey(const ValueKey('docu-submit')));
+        await t.pumpAndSettle();
+        expect(c.phase, 'result');
+        expect(t.takeException(), isNull);
       }
-      await go(t,const ValueKey('docu-submit'));await t.tap(find.byKey(const ValueKey('docu-submit')));await t.pumpAndSettle();expect(c.phase,'result');expect(t.takeException(),isNull);
-    }
-  });
-  testWidgets('Long-press dragging reorders events and moves each evidence card to one slot',(t)async{
-    t.view.physicalSize=const Size(800,1800);t.view.devicePixelRatio=1;
-    addTearDown(t.view.resetPhysicalSize);addTearDown(t.view.resetDevicePixelRatio);
-    final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:FakeFootballDocuGateway());
-    addTearDown(c.dispose);await c.load();c.open('DOC-03-01');c.start();
-    await t.pumpWidget(MaterialApp(home:FootballDocuPage(controller:c)));await t.pumpAndSettle();
-    final before=List<String>.from(c.answers);
-    final gesture=await t.startGesture(t.getCenter(find.byKey(ValueKey('event-${before.first}'))));
-    await t.pump(const Duration(milliseconds:600));
-    await gesture.moveTo(t.getCenter(find.byKey(ValueKey('event-${before[1]}'))));
-    await t.pump();await gesture.up();await t.pumpAndSettle();
-    expect(c.answers,[before[1],before[0],...before.skip(2)]);
-    c.open('DOC-01-01');c.start();await t.pumpAndSettle();
-    final card=c.active!.optionIds.first;
-    for(final slot in [0,1]){
-      final drag=await t.startGesture(t.getCenter(find.byType(LongPressDraggable<String>).first));
-      await t.pump(const Duration(milliseconds:600));
-      await drag.moveTo(t.getCenter(find.byKey(ValueKey('match-slot-$slot'))));
-      await t.pump();await drag.up();await t.pumpAndSettle();
-      expect(c.answers[slot],card);
-    }
-    expect(c.answers[0],isEmpty);expect(c.answers.where((x)=>x==card),hasLength(1));
-    expect(t.takeException(),isNull);
-  });
-  testWidgets('Paid help requires consent and preserves displayed free Pro price',(t)async{
-    final gateway=FakeFootballDocuGateway();final c=FootballDocuController(catalog:docuPack(),store:MemoryFootballDocuStore(),gateway:gateway);addTearDown(c.dispose);await c.load();c.open('DOC-01-01');c.start();
-    await t.pumpWidget(MaterialApp(home:FootballDocuPage(controller:c)));await t.pumpAndSettle();
-    await go(t,const ValueKey('docu-extra-help'));await t.tap(find.byKey(const ValueKey('docu-extra-help')));await t.pumpAndSettle();
-    await t.tap(find.text('Vazgeç'));await t.pumpAndSettle();expect(gateway.hintRequests,isEmpty);
-    await t.tap(find.byKey(const ValueKey('docu-extra-help')));await t.pumpAndSettle();await t.tap(find.text('Aç'));await t.pumpAndSettle();expect(gateway.hintRequests.single['maxPrice'],6);
-    c.pro=true;c.hint();await t.pumpAndSettle();await go(t,const ValueKey('docu-extra-help'));await t.tap(find.byKey(const ValueKey('docu-extra-help')));await t.pumpAndSettle();c.pro=false;
-    await t.tap(find.text('Aç'));await t.pumpAndSettle();expect(gateway.hintRequests.last['maxPrice'],0);expect(t.takeException(),isNull);
-  });
+    },
+  );
+  testWidgets(
+    'Long-press dragging reorders events and moves each evidence card to one slot',
+    (t) async {
+      t.view.physicalSize = const Size(800, 1800);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      final c = FootballDocuController(
+        catalog: docuPack(),
+        store: MemoryFootballDocuStore(),
+        gateway: FakeFootballDocuGateway(),
+      );
+      addTearDown(c.dispose);
+      await c.load();
+      c.open('DOC-03-01');
+      c.start();
+      await t.pumpWidget(MaterialApp(home: FootballDocuPage(controller: c)));
+      await t.pumpAndSettle();
+      final before = List<String>.from(c.answers);
+      final gesture = await t.startGesture(
+        t.getCenter(find.byKey(ValueKey('event-${before.first}'))),
+      );
+      await t.pump(const Duration(milliseconds: 600));
+      await gesture.moveTo(
+        t.getCenter(find.byKey(ValueKey('event-${before[1]}'))),
+      );
+      await t.pump();
+      await gesture.up();
+      await t.pumpAndSettle();
+      expect(c.answers, [before[1], before[0], ...before.skip(2)]);
+      c.open('DOC-01-01');
+      c.start();
+      await t.pumpAndSettle();
+      final card = c.active!.optionIds.first;
+      for (final slot in [0, 1]) {
+        final drag = await t.startGesture(
+          t.getCenter(find.byType(LongPressDraggable<String>).first),
+        );
+        await t.pump(const Duration(milliseconds: 600));
+        await drag.moveTo(
+          t.getCenter(find.byKey(ValueKey('match-slot-$slot'))),
+        );
+        await t.pump();
+        await drag.up();
+        await t.pumpAndSettle();
+        expect(c.answers[slot], card);
+      }
+      expect(c.answers[0], isEmpty);
+      expect(c.answers.where((x) => x == card), hasLength(1));
+      expect(t.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'Paid help requires consent and preserves displayed free Pro price',
+    (t) async {
+      final gateway = FakeFootballDocuGateway();
+      final c = FootballDocuController(
+        catalog: docuPack(),
+        store: MemoryFootballDocuStore(),
+        gateway: gateway,
+      );
+      addTearDown(c.dispose);
+      await c.load();
+      c.open('DOC-01-01');
+      c.start();
+      await t.pumpWidget(MaterialApp(home: FootballDocuPage(controller: c)));
+      await t.pumpAndSettle();
+      await go(t, const ValueKey('docu-extra-help'));
+      await t.tap(find.byKey(const ValueKey('docu-extra-help')));
+      await t.pumpAndSettle();
+      await t.tap(find.text('Vazgeç'));
+      await t.pumpAndSettle();
+      expect(gateway.hintRequests, isEmpty);
+      await t.tap(find.byKey(const ValueKey('docu-extra-help')));
+      await t.pumpAndSettle();
+      await t.tap(find.text('Aç'));
+      await t.pumpAndSettle();
+      expect(gateway.hintRequests.single['maxPrice'], 6);
+      c.pro = true;
+      c.hint();
+      await t.pumpAndSettle();
+      await go(t, const ValueKey('docu-extra-help'));
+      await t.tap(find.byKey(const ValueKey('docu-extra-help')));
+      await t.pumpAndSettle();
+      c.pro = false;
+      await t.tap(find.text('Aç'));
+      await t.pumpAndSettle();
+      expect(gateway.hintRequests.last['maxPrice'], 0);
+      expect(t.takeException(), isNull);
+    },
+  );
 }

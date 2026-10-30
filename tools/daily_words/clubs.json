@@ -233,5 +233,305 @@
     "id": 35,
     "answer": "STPAULI",
     "name": "FC St. Pauli"
+  },
+  {
+    "id": 276,
+    "answer": "VERONA",
+    "name": "Hellas Verona"
+  },
+  {
+    "id": 410,
+    "answer": "UDINESE",
+    "name": "Udinese Calcio"
+  },
+  {
+    "id": 749,
+    "answer": "EMPOLI",
+    "name": "FC Empoli"
+  },
+  {
+    "id": 3057,
+    "answer": "STANDARD",
+    "name": "Standard Liège"
+  },
+  {
+    "id": 157,
+    "answer": "GENT",
+    "name": "KAA Gent"
+  },
+  {
+    "id": 1075,
+    "answer": "BRAGA",
+    "name": "SC Braga"
+  },
+  {
+    "id": 26,
+    "answer": "BASEL",
+    "name": "FC Basel 1893"
+  },
+  {
+    "id": 200,
+    "answer": "UTRECHT",
+    "name": "FC Utrecht"
+  },
+  {
+    "id": 221,
+    "answer": "SANTOS",
+    "name": "Santos FC"
+  },
+  {
+    "id": 1390,
+    "answer": "CAGLIARI",
+    "name": "Cagliari Calcio"
+  },
+  {
+    "id": 16795,
+    "answer": "GRANADA",
+    "name": "Granada CF"
+  },
+  {
+    "id": 370,
+    "answer": "ABERDEEN",
+    "name": "Aberdeen FC"
+  },
+  {
+    "id": 1010,
+    "answer": "WATFORD",
+    "name": "Watford FC"
+  },
+  {
+    "id": 1132,
+    "answer": "BURNLEY",
+    "name": "Burnley FC"
+  },
+  {
+    "id": 1421,
+    "answer": "REIMS",
+    "name": "Stade Reims"
+  },
+  {
+    "id": 9030,
+    "answer": "BOTAFOGO",
+    "name": "Botafogo FC"
+  },
+  {
+    "id": 10484,
+    "answer": "KASIMPASA",
+    "name": "Kasimpasa"
+  },
+  {
+    "id": 3709,
+    "answer": "GETAFE",
+    "name": "Getafe CF"
+  },
+  {
+    "id": 3,
+    "answer": "KOLN",
+    "name": "1.FC Köln"
+  },
+  {
+    "id": 347,
+    "answer": "METZ",
+    "name": "FC Metz"
+  },
+  {
+    "id": 903,
+    "answer": "HIBERNIAN",
+    "name": "Hibernian FC"
+  },
+  {
+    "id": 1108,
+    "answer": "ALAVES",
+    "name": "Deportivo Alavés"
+  },
+  {
+    "id": 1158,
+    "answer": "LORIENT",
+    "name": "FC Lorient"
+  },
+  {
+    "id": 12321,
+    "answer": "GIRONA",
+    "name": "Girona FC"
+  },
+  {
+    "id": 80,
+    "answer": "BOCHUM",
+    "name": "VfL Bochum"
+  },
+  {
+    "id": 144,
+    "answer": "RIJEKA",
+    "name": "HNK Rijeka"
+  },
+  {
+    "id": 167,
+    "answer": "AUGSBURG",
+    "name": "FC Augsburg"
+  },
+  {
+    "id": 202,
+    "answer": "GRONINGEN",
+    "name": "FC Groningen"
+  },
+  {
+    "id": 232,
+    "answer": "SPARTAK",
+    "name": "Spartak Moscow"
+  },
+  {
+    "id": 237,
+    "answer": "MALLORCA",
+    "name": "RCD Mallorca"
+  },
+  {
+    "id": 940,
+    "answer": "CELTA",
+    "name": "Celta de Vigo"
+  },
+  {
+    "id": 1531,
+    "answer": "ELCHE",
+    "name": "Elche CF"
+  },
+  {
+    "id": 2832,
+    "answer": "GAZIANTEP",
+    "name": "Gaziantep FK"
+  },
+  {
+    "id": 3522,
+    "answer": "SPEZIA",
+    "name": "Spezia Calcio"
+  },
+  {
+    "id": 255,
+    "answer": "LEGIA",
+    "name": "Legia Warszawa"
+  },
+  {
+    "id": 512,
+    "answer": "STOKE",
+    "name": "Stoke City"
+  },
+  {
+    "id": 1244,
+    "answer": "LEGANES",
+    "name": "CD Leganés"
+  },
+  {
+    "id": 1467,
+    "answer": "GOZTEPE",
+    "name": "Göztepe"
+  },
+  {
+    "id": 4,
+    "answer": "NUREMBERG",
+    "name": "1.FC Nuremberg"
+  },
+  {
+    "id": 60,
+    "answer": "FREIBURG",
+    "name": "SC Freiburg"
+  },
+  {
+    "id": 681,
+    "answer": "SOCIEDAD",
+    "name": "Real Sociedad"
+  },
+  {
+    "id": 873,
+    "answer": "PALACE",
+    "name": "Crystal Palace"
+  },
+  {
+    "id": 2293,
+    "answer": "KONYASPOR",
+    "name": "Konyaspor"
+  },
+  {
+    "id": 3008,
+    "answer": "HULL",
+    "name": "Hull City"
+  },
+  {
+    "id": 44,
+    "answer": "HERTHA",
+    "name": "Hertha BSC"
+  },
+  {
+    "id": 197,
+    "answer": "SPARTA",
+    "name": "AC Sparta Prague"
+  },
+  {
+    "id": 148,
+    "answer": "TOTTENHAM",
+    "name": "Tottenham Hotspur"
+  },
+  {
+    "id": 1003,
+    "answer": "LEICESTER",
+    "name": "Leicester City"
+  },
+  {
+    "id": 1237,
+    "answer": "BRIGHTON",
+    "name": "Brighton & Hove Albion"
+  },
+  {
+    "id": 399,
+    "answer": "LEEDS",
+    "name": "Leeds United"
+  },
+  {
+    "id": 24,
+    "answer": "FRANKFURT",
+    "name": "Eintracht Frankfurt"
+  },
+  {
+    "id": 1420,
+    "answer": "ANGERS",
+    "name": "Angers SCO"
+  },
+  {
+    "id": 234,
+    "answer": "FEYENOORD",
+    "name": "Feyenoord Rotterdam"
+  },
+  {
+    "id": 317,
+    "answer": "TWENTE",
+    "name": "Twente Enschede FC"
+  },
+  {
+    "id": 964,
+    "answer": "ZENIT",
+    "name": "Zenit St. Petersburg"
+  },
+  {
+    "id": 660,
+    "answer": "SHAKHTAR",
+    "name": "Shakhtar Donetsk"
+  },
+  {
+    "id": 170,
+    "answer": "RAPID",
+    "name": "Rapid Vienna"
+  },
+  {
+    "id": 46,
+    "answer": "INTER",
+    "name": "Inter Milan"
+  },
+  {
+    "id": 621,
+    "answer": "ATHLETIC",
+    "name": "Athletic Bilbao"
+  },
+  {
+    "id": 20,
+    "answer": "BURSASPOR",
+    "name": "Bursaspor"
   }
 ]

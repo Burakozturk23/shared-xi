@@ -1,3 +1,6 @@
+import 'supported_grid_page.dart';
+import '../widgets/grid_club_pool_picker.dart';
+import '../widgets/hub_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'grid_page.dart';
@@ -13,72 +16,61 @@ class GridModeSelectionPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Grid Modu')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
-            const Text('Hangi grid türüyle oynamak istersin?',
-                style: TextStyle(fontSize: 16)),
+            Text(
+              'Hangi grid türüyle oynamak istersin?',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 20),
-            _ModeTile(
+            const GridClubPoolPicker(),
+            const SizedBox(height: 16),
+            ModeStyleCard(
               icon: Icons.grid_view,
               title: 'Klasik',
-              subtitle: 'Kriterlere uyan doğru oyuncuyu bul',
+              specs: 'Kriterlere uyan doğru oyuncuyu bul',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const GridPage()),
+                MaterialPageRoute(
+                  builder: (_) => const SupportedGridPage(
+                    mode: 'solo_grid_classic',
+                    legacy: GridPage(),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 14),
-            _ModeTile(
+            ModeStyleCard(
               icon: Icons.swap_horiz,
               title: 'Tersten',
-              subtitle: 'İki oyuncunun ortak kulübünü bul',
+              specs: 'Üç oyuncunun ortak kriterini bul',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ReverseGridPage()),
+                MaterialPageRoute(
+                  builder: (_) => const SupportedGridPage(
+                    mode: 'solo_grid_reverse',
+                    legacy: ReverseGridPage(),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 14),
-            _ModeTile(
-  icon: Icons.shuffle,
-  title: 'Rastgele Eşleşme',
-  subtitle: '3 rastgele kulüp çifti, sen yerleştir',
-  onTap: () => Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const RandomGridPage()),
-  ),
-),
+            ModeStyleCard(
+              icon: Icons.shuffle,
+              title: 'Rastgele Eşleşme',
+              specs: '3 rastgele kulüp çifti, sen yerleştir',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SupportedGridPage(
+                    mode: 'solo_grid_random',
+                    legacy: RandomGridPage(),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ModeTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ModeTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Icon(icon, size: 32),
-        title: Text(title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
       ),
     );
   }

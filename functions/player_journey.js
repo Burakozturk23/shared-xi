@@ -23,8 +23,8 @@ function accepts(task, keys) {
   return task.type === "timeline" ? keys.every((k, i) => options[k] === options[task.answerKeys[i]]) :
     keys.every((k) => task.answerKeys.includes(k));
 }
-function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
-  const ref = (uid) => db.ref("journeyRewardState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("journeyRewardState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
     let error;
@@ -109,6 +109,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   }
   async function hint(uid, input) {
     const {task, index, journey} = taskOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     const s = await get(uid);
     if (index > (s.journeys[journey.id]?.solved || 0)) fail("failed-precondition", "Önceki aşamayı eşitle.");
@@ -134,6 +135,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     }
     if (placement !== "story_hint") fail("invalid-argument", "Geçersiz yardım.");
     const {task, index, journey} = taskOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     if (index !== (s.journeys[journey.id]?.solved || 0) || s.hints[task.id]?.ad || s.hints[task.id]?.coin) {
       fail("failed-precondition", "Bu aşama için yardım hazır değil veya zaten açıldı.");

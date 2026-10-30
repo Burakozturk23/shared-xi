@@ -42,7 +42,10 @@ class RosterPatchTests(unittest.TestCase):
                     "'reviewed:avatar-careers:2026-10-05'"
                     ")"
                 ).fetchone()[0],
-                165563 + len(additions),
+                165563 + len(additions)
+                # Placeholder clubs (Transfermarkt "without club") removed later.
+                - sum(c['removedLinks'] for c in json.loads(
+                    (ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('corrections', [])),
             )
             for r in evidence['rows']:
                 if r['status'] in ('review','conflicting_rosters') and r.get('playerId'):

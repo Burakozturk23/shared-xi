@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/app_copy.dart';
 import '../app/app_feedback.dart';
 import '../models/achievement_catalog.dart';
@@ -83,7 +84,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
       if (!mounted) return;
       if (r.granted || r.alreadyClaimed)
         setState(() => _acknowledged.add(d.id));
-      if (r.granted) AppFeedback.answer(correct: true);
+      if (r.granted) AppFeedback.reward(Sfx.coinReward);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

@@ -11,7 +11,8 @@ SquadCatalog squadFixture({bool unique = false}) {
       position: slot.fallbackBroadPosition,
       detailedPosition: slot.acceptedDetailedPositions.first,
       countries: ['Ülke ${i + 1}'],
-      clubs: const [77],
+      // Two shared clubs: one club credits at most three links.
+      clubs: const [77, 78],
     );
   }
   players[12] = const SquadPlayer(
@@ -48,8 +49,14 @@ const squadMission = SquadMission(
   label: 'Isınma',
   reward: 20,
   budget: 135,
-  links: 4,
+  // Same shape as the server: shares of the 14 pairs of 4-3-3.
+  links: 6,
   countries: 3,
+  twoStar: 8,
+  threeStar: 12,
+  maxLinks: 14,
+  extraPrice: 10,
+  starBonus: {2: 5, 3: 10},
 );
 
 /// UI orchestration fake only. Currency authority/concurrency use the actual
@@ -75,7 +82,7 @@ class FakeSquadGateway extends SquadGateway {
     extraPrice: 20,
     extraRemaining: 3,
     premium: premium,
-    dailyMaxCoins: 90,
+    dailyMaxCoins: 120,
     completedTotal: finished == null ? 0 : 1,
     resetsAt: 1790024400000,
     missions: const [squadMission],
@@ -105,7 +112,7 @@ class FakeSquadGateway extends SquadGateway {
         if (free > 0) {
           free--;
         } else if (spendCoins) {
-          coins -= 20;
+          coins -= squadMission.extraPrice;
         } else {
           throw StateError('Onay gerekli.');
         }

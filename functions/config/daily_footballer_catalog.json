@@ -1,0 +1,8091 @@
+{
+  "version": "2026-10-06.1",
+  "asOf": "2026-10-06",
+  "description": "2026/27 club rosters; MLS 2026. Country follows source citizenship.",
+  "sources": [
+    {
+      "club": "Barcelona",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster",
+      "season": "2026-27 Spanish LALIGA",
+      "sha256": "0cb0739fdcee4dec8b760c67dcb2199228e7fe200905ef8a9667d2983a3f606d"
+    },
+    {
+      "club": "Real Madrid",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/86/roster",
+      "season": "2026-27 Spanish LALIGA",
+      "sha256": "e699681abaf2f18e9752615e973bbf91f262c1345dbab1df3138e44692435df7"
+    },
+    {
+      "club": "Liverpool",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/364/roster",
+      "season": "2026-27 English Premier League",
+      "sha256": "c652eb5b5fe782e30a27ee3c182e2e19daa6b0b7b7d92ec10af7651924e77a1d"
+    },
+    {
+      "club": "Manchester City",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/382/roster",
+      "season": "2026-27 English Premier League",
+      "sha256": "f746862ef25d9e9be7d699a3a60b5c0b50f239d1d786db17de4a7e5819229235"
+    },
+    {
+      "club": "Arsenal",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/359/roster",
+      "season": "2026-27 English Premier League",
+      "sha256": "4f631ccbeffe1268536b6bc43ce141341da68ad55bc80f8de8b34c922ffb0b38"
+    },
+    {
+      "club": "Chelsea",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/363/roster",
+      "season": "2026-27 English Premier League",
+      "sha256": "cc3d28fce37aba5dd2978c5b89545496266eae14641f95db6b7636b74f95cf2a"
+    },
+    {
+      "club": "Manchester United",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/360/roster",
+      "season": "2026-27 English Premier League",
+      "sha256": "01ae5adb83a42223a8338ad70faf6925d0b7ddc7592e9da39987a7f68d4292bf"
+    },
+    {
+      "club": "Galatasaray",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/432/roster",
+      "season": "2026-27 Turkish Super Lig",
+      "sha256": "3239d2175af968e1d05179de18c38ae315d3eb7c3581b1b094ec7fbd46e90c46"
+    },
+    {
+      "club": "Fenerbahçe",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/436/roster",
+      "season": "2026-27 Turkish Super Lig",
+      "sha256": "d912a41490969dd9971eeb7a4820a70f75291eb85dae41bddb85f6b185637dd9"
+    },
+    {
+      "club": "Beşiktaş",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/1895/roster",
+      "season": "2026-27 Turkish Super Lig",
+      "sha256": "6215cb976ca89e10f5acc53066d5106f471cb31922442750d05213b56508df22"
+    },
+    {
+      "club": "Bayern Münih",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/teams/132/roster",
+      "season": "2026-27 German Bundesliga",
+      "sha256": "3bfbb3eb04040fbee18c8eb33b9778a52dff3b34b331e58c11774a10c71430f6"
+    },
+    {
+      "club": "Borussia Dortmund",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/teams/124/roster",
+      "season": "2026-27 German Bundesliga",
+      "sha256": "05cea0b05ee4d965072ea9eadd115c428edcec7b00a5040b8932637f195538f2"
+    },
+    {
+      "club": "Paris Saint-Germain",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/teams/160/roster",
+      "season": "2026-27 French Ligue 1",
+      "sha256": "c8fe6826203d1aaaa6fe7e9d0aba45300512c98104c1b375b61d8ee186bd7976"
+    },
+    {
+      "club": "Inter",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/teams/110/roster",
+      "season": "2026-27 Italian Serie A",
+      "sha256": "5eb84ff447f231105426fae1247a224b03f133612bb959d355ce59281d4bbd3e"
+    },
+    {
+      "club": "Juventus",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/teams/111/roster",
+      "season": "2026-27 Italian Serie A",
+      "sha256": "5c90c253fa4780c8a50ebe7ff940cc5e9c93c5afecd83ebc99b43697e611947c"
+    },
+    {
+      "club": "Milan",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/teams/103/roster",
+      "season": "2026-27 Italian Serie A",
+      "sha256": "3d0c098bc12c9c0498111d626e364e4f3e251ebbc8771a9cd97323793c2e3c53"
+    },
+    {
+      "club": "Inter Miami",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/teams/20232/roster",
+      "season": "2026 MLS",
+      "sha256": "97777af66fbe8a4145601f344bbeba9a597feb2daa2fb8bac41a8354374a5917"
+    }
+  ],
+  "players": [
+    {
+      "id": "espn:102053",
+      "name": "Joe Gomez",
+      "aliases": [
+        "Joe Gomez",
+        "J. Gomez"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1997-05-23",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:113733",
+      "name": "Sven Ulreich",
+      "aliases": [
+        "Sven Ulreich",
+        "S. Ulreich"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "1988-08-03",
+      "shirtNumber": 26
+    },
+    {
+      "id": "espn:115271",
+      "name": "Danny Welbeck",
+      "aliases": [
+        "Danny Welbeck",
+        "D. Welbeck"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1990-11-26",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:120829",
+      "name": "Nathaniel Brown",
+      "aliases": [
+        "Nathaniel Brown",
+        "N. Brown"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2003-06-16",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:121036",
+      "name": "Carlo Pinsoglio",
+      "aliases": [
+        "Carlo Pinsoglio",
+        "C. Pinsoglio"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1990-03-16",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:124091",
+      "name": "Bruno Fernandes",
+      "aliases": [
+        "Bruno Fernandes",
+        "B. Fernandes"
+      ],
+      "country": "Portugal",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1994-09-08",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:124880",
+      "name": "Mert Günok",
+      "aliases": [
+        "Mert Günok",
+        "M. Günok"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "1989-03-01",
+      "shirtNumber": 34
+    },
+    {
+      "id": "espn:125088",
+      "name": "Luis Suárez",
+      "aliases": [
+        "Luis Suárez",
+        "L. Suárez"
+      ],
+      "country": "Uruguay",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "1987-01-24",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:127262",
+      "name": "Jordan Henderson",
+      "aliases": [
+        "Jordan Henderson",
+        "J. Henderson"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1990-06-17",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:128714",
+      "name": "Eric García",
+      "aliases": [
+        "Eric García",
+        "E. García"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2001-01-09",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:130877",
+      "name": "Karl Darlow",
+      "aliases": [
+        "Karl Darlow",
+        "K. Darlow"
+      ],
+      "country": "Wales",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1990-10-08",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:131424",
+      "name": "Ilkay Gündogan",
+      "aliases": [
+        "Ilkay Gündogan",
+        "I. Gündogan"
+      ],
+      "country": "Germany",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1990-10-24",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:131634",
+      "name": "Wojciech Szczesny",
+      "aliases": [
+        "Wojciech Szczesny",
+        "W. Szczesny"
+      ],
+      "country": "Poland",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "1990-04-18",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:134283",
+      "name": "Thibaut Courtois",
+      "aliases": [
+        "Thibaut Courtois",
+        "T. Courtois"
+      ],
+      "country": "Belgium",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "1992-05-11",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:139437",
+      "name": "Romelu Lukaku",
+      "aliases": [
+        "Romelu Lukaku",
+        "R. Lukaku"
+      ],
+      "country": "Belgium",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1993-05-13",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:142200",
+      "name": "Harry Kane",
+      "aliases": [
+        "Harry Kane",
+        "H. Kane"
+      ],
+      "country": "England",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "1993-07-28",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:143100",
+      "name": "Pietro Terracciano",
+      "aliases": [
+        "Pietro Terracciano",
+        "P. Terracciano"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1990-03-08",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:147625",
+      "name": "Henrikh Mkhitaryan",
+      "aliases": [
+        "Henrikh Mkhitaryan",
+        "H. Mkhitaryan"
+      ],
+      "country": "Armenia",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1989-01-21",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:152479",
+      "name": "Wataru Endo",
+      "aliases": [
+        "Wataru Endo",
+        "W. Endo"
+      ],
+      "country": "Japan",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1993-02-09",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:154595",
+      "name": "Mateo Kovacic",
+      "aliases": [
+        "Mateo Kovacic",
+        "M. Kovacic"
+      ],
+      "country": "Croatia",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1994-05-06",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:157073",
+      "name": "Harry Maguire",
+      "aliases": [
+        "Harry Maguire",
+        "H. Maguire"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1993-03-05",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:157688",
+      "name": "Kim Min-Jae",
+      "aliases": [
+        "Kim Min-Jae",
+        "K. Min-Jae"
+      ],
+      "country": "South Korea",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1996-11-15",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:157892",
+      "name": "Virgil van Dijk",
+      "aliases": [
+        "Virgil van Dijk",
+        "V. van Dijk"
+      ],
+      "country": "Netherlands",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1991-07-08",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:157974",
+      "name": "John Stones",
+      "aliases": [
+        "John Stones",
+        "J. Stones"
+      ],
+      "country": "England",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1994-05-28",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:158626",
+      "name": "Emiliano Martínez",
+      "aliases": [
+        "Emiliano Martínez",
+        "E. Martínez"
+      ],
+      "country": "Argentina",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1992-09-02",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:159047",
+      "name": "Marquinhos",
+      "aliases": [
+        "Marquinhos"
+      ],
+      "country": "Brazil",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "1994-05-14",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:159142",
+      "name": "Emre Can",
+      "aliases": [
+        "Emre Can",
+        "E. Can"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "1994-01-12",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:159146",
+      "name": "Kaan Ayhan",
+      "aliases": [
+        "Kaan Ayhan",
+        "K. Ayhan"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1994-11-10",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:159248",
+      "name": "Nathan Aké",
+      "aliases": [
+        "Nathan Aké",
+        "N. Aké"
+      ],
+      "country": "Netherlands",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1995-02-18",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:160115",
+      "name": "Lucas Digne",
+      "aliases": [
+        "Lucas Digne",
+        "L. Digne"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "1993-07-20",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:167127",
+      "name": "Luke Shaw",
+      "aliases": [
+        "Luke Shaw",
+        "L. Shaw"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1995-07-12",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:167192",
+      "name": "Gerónimo Rulli",
+      "aliases": [
+        "Gerónimo Rulli",
+        "G. Rulli"
+      ],
+      "country": "Argentina",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1992-05-20",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:169189",
+      "name": "Konrad Laimer",
+      "aliases": [
+        "Konrad Laimer",
+        "K. Laimer"
+      ],
+      "country": "Austria",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "1997-05-27",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:169438",
+      "name": "Antonio Rüdiger",
+      "aliases": [
+        "Antonio Rüdiger",
+        "A. Rüdiger"
+      ],
+      "country": "Germany",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1993-03-03",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:169532",
+      "name": "Kepa Arrizabalaga",
+      "aliases": [
+        "Kepa Arrizabalaga",
+        "K. Arrizabalaga"
+      ],
+      "country": "Spain",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1994-10-03",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:170785",
+      "name": "Hakan Çalhanoglu",
+      "aliases": [
+        "Hakan Çalhanoglu",
+        "H. Çalhanoglu"
+      ],
+      "country": "Türkiye",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1994-02-08",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:173556",
+      "name": "N'Golo Kanté",
+      "aliases": [
+        "N'Golo Kanté",
+        "N. Kanté"
+      ],
+      "country": "France",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1991-03-29",
+      "shirtNumber": 91
+    },
+    {
+      "id": "espn:173666",
+      "name": "Casemiro",
+      "aliases": [
+        "Casemiro"
+      ],
+      "country": "Brazil",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "1992-02-23",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:173907",
+      "name": "Marcel Sabitzer",
+      "aliases": [
+        "Marcel Sabitzer",
+        "M. Sabitzer"
+      ],
+      "country": "Austria",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "1994-03-17",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:174466",
+      "name": "Rodrigo De Paul",
+      "aliases": [
+        "Rodrigo De Paul",
+        "R. De Paul"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "1994-05-24",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:174521",
+      "name": "Patrick Drewes",
+      "aliases": [
+        "Patrick Drewes",
+        "P. Drewes"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "1993-02-04",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:174980",
+      "name": "Leandro Trossard",
+      "aliases": [
+        "Leandro Trossard",
+        "L. Trossard"
+      ],
+      "country": "Belgium",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1994-12-04",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:175195",
+      "name": "Milan Skriniar",
+      "aliases": [
+        "Milan Skriniar",
+        "M. Skriniar"
+      ],
+      "country": "Slovakia",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1995-02-11",
+      "shirtNumber": 37
+    },
+    {
+      "id": "espn:176203",
+      "name": "Adrien Rabiot",
+      "aliases": [
+        "Adrien Rabiot",
+        "A. Rabiot"
+      ],
+      "country": "France",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1995-04-03",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:176399",
+      "name": "João Cancelo",
+      "aliases": [
+        "João Cancelo",
+        "J. Cancelo"
+      ],
+      "country": "Portugal",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1994-05-27",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:176948",
+      "name": "Ederson",
+      "aliases": [
+        "Ederson"
+      ],
+      "country": "Brazil",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "1993-08-17",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:177545",
+      "name": "Marcus Bettinelli",
+      "aliases": [
+        "Marcus Bettinelli",
+        "M. Bettinelli"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1992-05-24",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:177782",
+      "name": "Piotr Zielinski",
+      "aliases": [
+        "Piotr Zielinski",
+        "P. Zielinski"
+      ],
+      "country": "Poland",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1994-05-20",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:178380",
+      "name": "Alexander Meyer",
+      "aliases": [
+        "Alexander Meyer",
+        "A. Meyer"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "1991-04-13",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:178980",
+      "name": "Serge Gnabry",
+      "aliases": [
+        "Serge Gnabry",
+        "S. Gnabry"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "1995-07-14",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:179359",
+      "name": "Arkadiusz Milik",
+      "aliases": [
+        "Arkadiusz Milik",
+        "A. Milik"
+      ],
+      "country": "Poland",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1994-02-28",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:181322",
+      "name": "Raffaele Di Gennaro",
+      "aliases": [
+        "Raffaele Di Gennaro",
+        "R. Di Gennaro"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1993-10-03",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:181673",
+      "name": "Daniele Rugani",
+      "aliases": [
+        "Daniele Rugani",
+        "D. Rugani"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1994-07-29",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:181729",
+      "name": "Mario Lemina",
+      "aliases": [
+        "Mario Lemina",
+        "M. Lemina"
+      ],
+      "country": "Gabon",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1993-09-01",
+      "shirtNumber": 99
+    },
+    {
+      "id": "espn:181836",
+      "name": "Ivan Provedel",
+      "aliases": [
+        "Ivan Provedel",
+        "I. Provedel"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1994-03-17",
+      "shirtNumber": 49
+    },
+    {
+      "id": "espn:186381",
+      "name": "Serhou Guirassy",
+      "aliases": [
+        "Serhou Guirassy",
+        "S. Guirassy"
+      ],
+      "country": "Guinea",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "1996-03-12",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:186430",
+      "name": "Andreas Christensen",
+      "aliases": [
+        "Andreas Christensen",
+        "A. Christensen"
+      ],
+      "country": "Denmark",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1996-04-10",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:186505",
+      "name": "Ruben Loftus-Cheek",
+      "aliases": [
+        "Ruben Loftus-Cheek",
+        "R. Loftus-Cheek"
+      ],
+      "country": "England",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1996-01-23",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:187638",
+      "name": "Wilfred Ndidi",
+      "aliases": [
+        "Wilfred Ndidi",
+        "W. Ndidi"
+      ],
+      "country": "Nigeria",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1996-12-16",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:187946",
+      "name": "Dominik Livakovic",
+      "aliases": [
+        "Dominik Livakovic",
+        "D. Livakovic"
+      ],
+      "country": "Croatia",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "1995-01-09",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:188052",
+      "name": "Jonathan Tah",
+      "aliases": [
+        "Jonathan Tah",
+        "J. Tah"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1996-02-11",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:189007",
+      "name": "Reece James",
+      "aliases": [
+        "Reece James",
+        "R. James"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1999-12-08",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:189026",
+      "name": "Mike Maignan",
+      "aliases": [
+        "Mike Maignan",
+        "M. Maignan"
+      ],
+      "country": "France",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1995-07-03",
+      "shirtNumber": 16
+    },
+    {
+      "id": "espn:190161",
+      "name": "Joshua Kimmich",
+      "aliases": [
+        "Joshua Kimmich",
+        "J. Kimmich"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "1995-02-08",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:190257",
+      "name": "Curtis Jones",
+      "aliases": [
+        "Curtis Jones",
+        "C. Jones"
+      ],
+      "country": "England",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2001-01-30",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:193149",
+      "name": "Abdülkerim Bardakçi",
+      "aliases": [
+        "Abdülkerim Bardakçi",
+        "A. Bardakçi"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1994-09-07",
+      "shirtNumber": 42
+    },
+    {
+      "id": "espn:193297",
+      "name": "Youri Tielemans",
+      "aliases": [
+        "Youri Tielemans",
+        "Y. Tielemans"
+      ],
+      "country": "Belgium",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1997-05-07",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:194121",
+      "name": "Freddie Woodman",
+      "aliases": [
+        "Freddie Woodman",
+        "F. Woodman"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1997-03-04",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:194748",
+      "name": "Federico Dimarco",
+      "aliases": [
+        "Federico Dimarco",
+        "F. Dimarco"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1997-11-10",
+      "shirtNumber": 32
+    },
+    {
+      "id": "espn:195821",
+      "name": "Marco Asensio",
+      "aliases": [
+        "Marco Asensio",
+        "M. Asensio"
+      ],
+      "country": "Spain",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1996-01-21",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:196176",
+      "name": "David Raya",
+      "aliases": [
+        "David Raya",
+        "D. Raya"
+      ],
+      "country": "Spain",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1995-09-15",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:196200",
+      "name": "Lucas Hernández",
+      "aliases": [
+        "Lucas Hernández",
+        "L. Hernández"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "1996-02-14",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:196876",
+      "name": "Alisson Becker",
+      "aliases": [
+        "Alisson Becker",
+        "A. Becker"
+      ],
+      "country": "Brazil",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1992-10-02",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:197105",
+      "name": "Davinson Sánchez",
+      "aliases": [
+        "Davinson Sánchez",
+        "D. Sánchez"
+      ],
+      "country": "Colombia",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1996-06-12",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:199032",
+      "name": "Santiago Morales",
+      "aliases": [
+        "Santiago Morales",
+        "S. Morales"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2007-02-09",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:199833",
+      "name": "Bernardo Silva",
+      "aliases": [
+        "Bernardo Silva",
+        "B. Silva"
+      ],
+      "country": "Portugal",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "1994-08-10",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:202641",
+      "name": "Leroy Sané",
+      "aliases": [
+        "Leroy Sané",
+        "L. Sané"
+      ],
+      "country": "Germany",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1996-01-11",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:203669",
+      "name": "Martin Ødegaard",
+      "aliases": [
+        "Martin Ødegaard",
+        "M. Ødegaard"
+      ],
+      "country": "Norway",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1998-12-17",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:204082",
+      "name": "Guglielmo Vicario",
+      "aliases": [
+        "Guglielmo Vicario",
+        "G. Vicario"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1996-10-07",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:204441",
+      "name": "Nicolò Barella",
+      "aliases": [
+        "Nicolò Barella",
+        "N. Barella"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1997-02-07",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:205081",
+      "name": "Jack Fletcher",
+      "aliases": [
+        "Jack Fletcher",
+        "J. Fletcher"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2007-03-19",
+      "shirtNumber": 38
+    },
+    {
+      "id": "espn:205750",
+      "name": "Alexander Nübel",
+      "aliases": [
+        "Alexander Nübel",
+        "A. Nübel"
+      ],
+      "country": "Germany",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "1996-09-30",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:206153",
+      "name": "Jérémie Boga",
+      "aliases": [
+        "Jérémie Boga",
+        "J. Boga"
+      ],
+      "country": "Ivory Coast",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1997-01-03",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:209581",
+      "name": "Mikel Merino",
+      "aliases": [
+        "Mikel Merino",
+        "M. Merino"
+      ],
+      "country": "Spain",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1996-06-22",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:211923",
+      "name": "Irfan Can Kahveci",
+      "aliases": [
+        "Irfan Can Kahveci",
+        "I. Kahveci"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1995-07-15",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:212973",
+      "name": "Lucas Torreira",
+      "aliases": [
+        "Lucas Torreira",
+        "L. Torreira"
+      ],
+      "country": "Uruguay",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1996-02-11",
+      "shirtNumber": 34
+    },
+    {
+      "id": "espn:213248",
+      "name": "Denzel Dumfries",
+      "aliases": [
+        "Denzel Dumfries",
+        "D. Dumfries"
+      ],
+      "country": "Netherlands",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1996-04-18",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:214562",
+      "name": "Manuel Akanji",
+      "aliases": [
+        "Manuel Akanji",
+        "M. Akanji"
+      ],
+      "country": "Switzerland",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1995-07-19",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:214596",
+      "name": "Fabián Ruiz",
+      "aliases": [
+        "Fabián Ruiz",
+        "F. Ruiz"
+      ],
+      "country": "Spain",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "1996-04-03",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:214689",
+      "name": "Pervis Estupiñán",
+      "aliases": [
+        "Pervis Estupiñán",
+        "P. Estupiñán"
+      ],
+      "country": "Ecuador",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1998-01-21",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:215378",
+      "name": "Benjamin Pavard",
+      "aliases": [
+        "Benjamin Pavard",
+        "B. Pavard"
+      ],
+      "country": "France",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1996-03-28",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:216420",
+      "name": "Amir Murillo",
+      "aliases": [
+        "Amir Murillo",
+        "A. Murillo"
+      ],
+      "country": "Panama",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1996-02-11",
+      "shirtNumber": 62
+    },
+    {
+      "id": "espn:217092",
+      "name": "Gianluigi Donnarumma",
+      "aliases": [
+        "Gianluigi Donnarumma",
+        "G. Donnarumma"
+      ],
+      "country": "Italy",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1999-02-25",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:217267",
+      "name": "Günay Güvenc",
+      "aliases": [
+        "Günay Güvenc",
+        "G. Güvenc"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "1991-06-25",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:217289",
+      "name": "Gabriel Jesus",
+      "aliases": [
+        "Gabriel Jesus",
+        "G. Jesus"
+      ],
+      "country": "Brazil",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "1997-04-03",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:217331",
+      "name": "Marcus Thuram",
+      "aliases": [
+        "Marcus Thuram",
+        "M. Thuram"
+      ],
+      "country": "France",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1997-08-06",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:217475",
+      "name": "Ferland Mendy",
+      "aliases": [
+        "Ferland Mendy",
+        "F. Mendy"
+      ],
+      "country": "France",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1995-06-08",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:217476",
+      "name": "Václav Cerný",
+      "aliases": [
+        "Václav Cerný",
+        "V. Cerný"
+      ],
+      "country": "Czechia",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1997-10-17",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:217538",
+      "name": "Manuel Locatelli",
+      "aliases": [
+        "Manuel Locatelli",
+        "M. Locatelli"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1998-01-08",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:218522",
+      "name": "Bruno Guimarães",
+      "aliases": [
+        "Bruno Guimarães",
+        "B. Guimarães"
+      ],
+      "country": "Brazil",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1997-11-16",
+      "shirtNumber": 39
+    },
+    {
+      "id": "espn:219022",
+      "name": "Frenkie de Jong",
+      "aliases": [
+        "Frenkie de Jong",
+        "F. de Jong"
+      ],
+      "country": "Netherlands",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "1997-05-12",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:219444",
+      "name": "Roland Sallai",
+      "aliases": [
+        "Roland Sallai",
+        "R. Sallai"
+      ],
+      "country": "Hungary",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1997-05-22",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:219713",
+      "name": "Lautaro Martínez",
+      "aliases": [
+        "Lautaro Martínez",
+        "L. Martínez"
+      ],
+      "country": "Argentina",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1997-08-22",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:220703",
+      "name": "Ramy Bensebaini",
+      "aliases": [
+        "Ramy Bensebaini",
+        "R. Bensebaini"
+      ],
+      "country": "Algeria",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1995-04-16",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:220705",
+      "name": "Milot Rashica",
+      "aliases": [
+        "Milot Rashica",
+        "M. Rashica"
+      ],
+      "country": "Kosovo",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1996-06-28",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:220714",
+      "name": "Waldemar Anton",
+      "aliases": [
+        "Waldemar Anton",
+        "W. Anton"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1996-07-20",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:222670",
+      "name": "Nélson Semedo",
+      "aliases": [
+        "Nélson Semedo",
+        "N. Semedo"
+      ],
+      "country": "Portugal",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1993-11-16",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:222793",
+      "name": "Dayot Upamecano",
+      "aliases": [
+        "Dayot Upamecano",
+        "D. Upamecano"
+      ],
+      "country": "France",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1998-10-27",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:222922",
+      "name": "Ugurcan Çakir",
+      "aliases": [
+        "Ugurcan Çakir",
+        "U. Çakir"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "1996-04-05",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:222991",
+      "name": "Julian Ryerson",
+      "aliases": [
+        "Julian Ryerson",
+        "J. Ryerson"
+      ],
+      "country": "Norway",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1997-11-17",
+      "shirtNumber": 26
+    },
+    {
+      "id": "espn:223532",
+      "name": "Trent Alexander-Arnold",
+      "aliases": [
+        "Trent Alexander-Arnold",
+        "T. Alexander-Arnold"
+      ],
+      "country": "England",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1998-10-07",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:225563",
+      "name": "Salih Özcan",
+      "aliases": [
+        "Salih Özcan",
+        "S. Özcan"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1998-01-11",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:225607",
+      "name": "Christian Pulisic",
+      "aliases": [
+        "Christian Pulisic",
+        "C. Pulisic"
+      ],
+      "country": "USA",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1998-09-18",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:226177",
+      "name": "Kostas Tsimikas",
+      "aliases": [
+        "Kostas Tsimikas",
+        "K. Tsimikas"
+      ],
+      "country": "Greece",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1996-05-12",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:227697",
+      "name": "Jhon Lucumí",
+      "aliases": [
+        "Jhon Lucumí",
+        "J. Lucumí"
+      ],
+      "country": "Colombia",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1998-06-26",
+      "shirtNumber": 26
+    },
+    {
+      "id": "espn:227765",
+      "name": "Dani Olmo",
+      "aliases": [
+        "Dani Olmo",
+        "D. Olmo"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "1998-05-07",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:228296",
+      "name": "Victor Osimhen",
+      "aliases": [
+        "Victor Osimhen",
+        "V. Osimhen"
+      ],
+      "country": "Nigeria",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1998-12-29",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:228298",
+      "name": "Samuel Chukwueze",
+      "aliases": [
+        "Samuel Chukwueze",
+        "S. Chukwueze"
+      ],
+      "country": "Nigeria",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1999-05-22",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:228394",
+      "name": "Germán Berterame",
+      "aliases": [
+        "Germán Berterame",
+        "G. Berterame"
+      ],
+      "country": "Mexico",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "1998-11-13",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:228402",
+      "name": "Éder Militão",
+      "aliases": [
+        "Éder Militão",
+        "É. Militão"
+      ],
+      "country": "Brazil",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1998-01-18",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:229744",
+      "name": "Ousmane Dembélé",
+      "aliases": [
+        "Ousmane Dembélé",
+        "O. Dembélé"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "F",
+      "birthDate": "1997-05-15",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:230945",
+      "name": "Marcus Rashford",
+      "aliases": [
+        "Marcus Rashford",
+        "M. Rashford"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1997-10-31",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:231050",
+      "name": "Raphinha",
+      "aliases": [
+        "Raphinha"
+      ],
+      "country": "Brazil",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "1996-12-14",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:231059",
+      "name": "Dayne St. Clair",
+      "aliases": [
+        "Dayne St. Clair",
+        "D. St. Clair"
+      ],
+      "country": "Canada",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "G",
+      "birthDate": "1997-05-09",
+      "shirtNumber": 97
+    },
+    {
+      "id": "espn:231167",
+      "name": "Mason Mount",
+      "aliases": [
+        "Mason Mount",
+        "M. Mount"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1999-01-10",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:231182",
+      "name": "Kai Havertz",
+      "aliases": [
+        "Kai Havertz",
+        "K. Havertz"
+      ],
+      "country": "Germany",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1999-06-11",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:231241",
+      "name": "Sergio Reguilón",
+      "aliases": [
+        "Sergio Reguilón",
+        "S. Reguilón"
+      ],
+      "country": "Spain",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "1996-12-16",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:231388",
+      "name": "Kylian Mbappé",
+      "aliases": [
+        "Kylian Mbappé",
+        "K. Mbappé"
+      ],
+      "country": "France",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "1998-12-20",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:231692",
+      "name": "Jules Koundé",
+      "aliases": [
+        "Jules Koundé",
+        "J. Koundé"
+      ],
+      "country": "France",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1998-11-12",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:231828",
+      "name": "Rodri",
+      "aliases": [
+        "Rodri"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "1996-06-22",
+      "shirtNumber": 16
+    },
+    {
+      "id": "espn:231859",
+      "name": "Ezri Konsa",
+      "aliases": [
+        "Ezri Konsa",
+        "E. Konsa"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1997-10-23",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:233937",
+      "name": "Lisandro Martínez",
+      "aliases": [
+        "Lisandro Martínez",
+        "L. Martínez"
+      ],
+      "country": "Argentina",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1998-01-18",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:234306",
+      "name": "Federico Chiesa",
+      "aliases": [
+        "Federico Chiesa",
+        "F. Chiesa"
+      ],
+      "country": "Italy",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1997-10-25",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:234878",
+      "name": "Rúben Dias",
+      "aliases": [
+        "Rúben Dias",
+        "R. Dias"
+      ],
+      "country": "Portugal",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1997-05-14",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:235662",
+      "name": "Alexander Isak",
+      "aliases": [
+        "Alexander Isak",
+        "A. Isak"
+      ],
+      "country": "Sweden",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1999-09-21",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:235677",
+      "name": "Dusan Vlahovic",
+      "aliases": [
+        "Dusan Vlahovic",
+        "D. Vlahovic"
+      ],
+      "country": "Serbia",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2000-01-28",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:235818",
+      "name": "Federico Valverde",
+      "aliases": [
+        "Federico Valverde",
+        "F. Valverde"
+      ],
+      "country": "Uruguay",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "1998-07-22",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:236210",
+      "name": "Fikayo Tomori",
+      "aliases": [
+        "Fikayo Tomori",
+        "F. Tomori"
+      ],
+      "country": "England",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1997-12-19",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:236322",
+      "name": "Gabriel Magalhães",
+      "aliases": [
+        "Gabriel Magalhães",
+        "G. Magalhães"
+      ],
+      "country": "Brazil",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1997-12-19",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:236721",
+      "name": "Alphonso Davies",
+      "aliases": [
+        "Alphonso Davies",
+        "A. Davies"
+      ],
+      "country": "Canada",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2000-11-02",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:238262",
+      "name": "Declan Rice",
+      "aliases": [
+        "Declan Rice",
+        "D. Rice"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1999-01-14",
+      "shirtNumber": 41
+    },
+    {
+      "id": "espn:238472",
+      "name": "Elliot Anderson",
+      "aliases": [
+        "Elliot Anderson",
+        "E. Anderson"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2002-11-06",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:238544",
+      "name": "Gregor Kobel",
+      "aliases": [
+        "Gregor Kobel",
+        "G. Kobel"
+      ],
+      "country": "Switzerland",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "1997-12-06",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:238902",
+      "name": "Diogo Dalot",
+      "aliases": [
+        "Diogo Dalot",
+        "D. Dalot"
+      ],
+      "country": "Portugal",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1999-03-18",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:239349",
+      "name": "Matthijs de Ligt",
+      "aliases": [
+        "Matthijs de Ligt",
+        "M. de Ligt"
+      ],
+      "country": "Netherlands",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1999-08-12",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:239350",
+      "name": "Noussair Mazraoui",
+      "aliases": [
+        "Noussair Mazraoui",
+        "N. Mazraoui"
+      ],
+      "country": "Morocco",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1997-11-14",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:240109",
+      "name": "Aleksandar Stankovic",
+      "aliases": [
+        "Aleksandar Stankovic",
+        "A. Stankovic"
+      ],
+      "country": "Serbia",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2005-08-03",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:240209",
+      "name": "Vedat Muriqi",
+      "aliases": [
+        "Vedat Muriqi",
+        "V. Muriqi"
+      ],
+      "country": "Kosovo",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1994-04-24",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:240233",
+      "name": "Achraf Hakimi",
+      "aliases": [
+        "Achraf Hakimi",
+        "A. Hakimi"
+      ],
+      "country": "Morocco",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "1998-11-04",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:240533",
+      "name": "Josep Martínez",
+      "aliases": [
+        "Josep Martínez",
+        "J. Martínez"
+      ],
+      "country": "Spain",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1998-05-27",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:240912",
+      "name": "Joey Veerman",
+      "aliases": [
+        "Joey Veerman",
+        "J. Veerman"
+      ],
+      "country": "Netherlands",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "1998-11-19",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:241077",
+      "name": "Ben White",
+      "aliases": [
+        "Ben White",
+        "B. White"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1997-10-08",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:241468",
+      "name": "Manuel Ugarte",
+      "aliases": [
+        "Manuel Ugarte",
+        "M. Ugarte"
+      ],
+      "country": "Uruguay",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2001-04-11",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:243787",
+      "name": "Lloyd Kelly",
+      "aliases": [
+        "Lloyd Kelly",
+        "L. Kelly"
+      ],
+      "country": "England",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1998-10-06",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:24412",
+      "name": "Juan Cabal",
+      "aliases": [
+        "Juan Cabal",
+        "J. Cabal"
+      ],
+      "country": "Colombia",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2001-01-08",
+      "shirtNumber": 32
+    },
+    {
+      "id": "espn:246532",
+      "name": "Brahim Díaz",
+      "aliases": [
+        "Brahim Díaz",
+        "B. Díaz"
+      ],
+      "country": "Morocco",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "1999-08-03",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:248676",
+      "name": "Matteo Guendouzi",
+      "aliases": [
+        "Matteo Guendouzi",
+        "M. Guendouzi"
+      ],
+      "country": "France",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1999-04-14",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:248699",
+      "name": "Matvei Safonov",
+      "aliases": [
+        "Matvei Safonov",
+        "M. Safonov"
+      ],
+      "country": "Russia",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "G",
+      "birthDate": "1999-02-25",
+      "shirtNumber": 39
+    },
+    {
+      "id": "espn:249280",
+      "name": "Alessandro Bastoni",
+      "aliases": [
+        "Alessandro Bastoni",
+        "A. Bastoni"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1999-04-13",
+      "shirtNumber": 95
+    },
+    {
+      "id": "espn:249299",
+      "name": "Alexis Mac Allister",
+      "aliases": [
+        "Alexis Mac Allister",
+        "A. Mac Allister"
+      ],
+      "country": "Argentina",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1998-12-24",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:249524",
+      "name": "Cody Gakpo",
+      "aliases": [
+        "Cody Gakpo",
+        "C. Gakpo"
+      ],
+      "country": "Netherlands",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1999-05-07",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:250183",
+      "name": "Conor Bradley",
+      "aliases": [
+        "Conor Bradley",
+        "C. Bradley"
+      ],
+      "country": "Northern Ireland",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2003-07-09",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:250465",
+      "name": "Pedri",
+      "aliases": [
+        "Pedri"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2002-11-25",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:250787",
+      "name": "Phil Foden",
+      "aliases": [
+        "Phil Foden",
+        "P. Foden"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2000-05-28",
+      "shirtNumber": 47
+    },
+    {
+      "id": "espn:251400",
+      "name": "Eberechi Eze",
+      "aliases": [
+        "Eberechi Eze",
+        "E. Eze"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1998-06-29",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:251634",
+      "name": "Ibrahima Konaté",
+      "aliases": [
+        "Ibrahima Konaté",
+        "I. Konaté"
+      ],
+      "country": "France",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1999-05-25",
+      "shirtNumber": 16
+    },
+    {
+      "id": "espn:252107",
+      "name": "Vinícius Júnior",
+      "aliases": [
+        "Vinícius Júnior"
+      ],
+      "country": "Brazil",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2000-07-12",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:252971",
+      "name": "Randal Kolo Muani",
+      "aliases": [
+        "Randal Kolo Muani",
+        "R. Kolo Muani"
+      ],
+      "country": "France",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1998-12-05",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:253989",
+      "name": "Erling Haaland",
+      "aliases": [
+        "Erling Haaland",
+        "E. Haaland"
+      ],
+      "country": "Norway",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2000-07-21",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:255922",
+      "name": "Matteo Gabbia",
+      "aliases": [
+        "Matteo Gabbia",
+        "M. Gabbia"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1999-10-21",
+      "shirtNumber": 46
+    },
+    {
+      "id": "espn:256115",
+      "name": "Pedro Neto",
+      "aliases": [
+        "Pedro Neto",
+        "P. Neto"
+      ],
+      "country": "Portugal",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2000-03-09",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:256444",
+      "name": "Luis Barraza",
+      "aliases": [
+        "Luis Barraza",
+        "L. Barraza"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "G",
+      "birthDate": "1996-11-08",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:256715",
+      "name": "Weston McKennie",
+      "aliases": [
+        "Weston McKennie",
+        "W. McKennie"
+      ],
+      "country": "USA",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1998-08-28",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:257206",
+      "name": "Dominik Szoboszlai",
+      "aliases": [
+        "Dominik Szoboszlai",
+        "D. Szoboszlai"
+      ],
+      "country": "Hungary",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2000-10-25",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:257237",
+      "name": "Andriy Lunin",
+      "aliases": [
+        "Andriy Lunin",
+        "A. Lunin"
+      ],
+      "country": "Ukraine",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "1999-02-11",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:257390",
+      "name": "Luis Díaz",
+      "aliases": [
+        "Luis Díaz",
+        "L. Díaz"
+      ],
+      "country": "Colombia",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "1997-01-13",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:258307",
+      "name": "Bremer",
+      "aliases": [
+        "Bremer"
+      ],
+      "country": "Brazil",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1997-03-18",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:258906",
+      "name": "Viktor Gyökeres",
+      "aliases": [
+        "Viktor Gyökeres",
+        "V. Gyökeres"
+      ],
+      "country": "Sweden",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1998-06-04",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:258917",
+      "name": "Rafael Leão",
+      "aliases": [
+        "Rafael Leão",
+        "R. Leão"
+      ],
+      "country": "Portugal",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1999-06-10",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:258968",
+      "name": "Teun Koopmeiners",
+      "aliases": [
+        "Teun Koopmeiners",
+        "T. Koopmeiners"
+      ],
+      "country": "Netherlands",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1998-02-28",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:259474",
+      "name": "Kamil Grabara",
+      "aliases": [
+        "Kamil Grabara",
+        "K. Grabara"
+      ],
+      "country": "Poland",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "1999-01-08",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:259902",
+      "name": "Matheus Cunha",
+      "aliases": [
+        "Matheus Cunha",
+        "M. Cunha"
+      ],
+      "country": "Brazil",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1999-05-27",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:259910",
+      "name": "Marc Cucurella",
+      "aliases": [
+        "Marc Cucurella",
+        "M. Cucurella"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "1998-07-22",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:260300",
+      "name": "Edon Zhegrova",
+      "aliases": [
+        "Edon Zhegrova",
+        "E. Zhegrova"
+      ],
+      "country": "Kosovo",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1999-03-31",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:261302",
+      "name": "Mert Yandas",
+      "aliases": [
+        "Mert Yandas",
+        "M. Yandas"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1994-08-19",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:265653",
+      "name": "Morgan Rogers",
+      "aliases": [
+        "Morgan Rogers",
+        "M. Rogers"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2002-07-26",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:265869",
+      "name": "Ferran Torres",
+      "aliases": [
+        "Ferran Torres",
+        "F. Torres"
+      ],
+      "country": "Spain",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "F",
+      "birthDate": "2000-02-29",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:265907",
+      "name": "Marc Guéhi",
+      "aliases": [
+        "Marc Guéhi",
+        "M. Guéhi"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2000-07-13",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:265918",
+      "name": "Maxence Lacroix",
+      "aliases": [
+        "Maxence Lacroix",
+        "M. Lacroix"
+      ],
+      "country": "France",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2000-04-06",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:265919",
+      "name": "Aurélien Tchouaméni",
+      "aliases": [
+        "Aurélien Tchouaméni",
+        "A. Tchouaméni"
+      ],
+      "country": "France",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2000-01-27",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:265921",
+      "name": "Illan Meslier",
+      "aliases": [
+        "Illan Meslier",
+        "I. Meslier"
+      ],
+      "country": "France",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2000-03-02",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:266002",
+      "name": "Mert Müldür",
+      "aliases": [
+        "Mert Müldür",
+        "M. Müldür"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1999-04-03",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:266575",
+      "name": "Yunus Akgün",
+      "aliases": [
+        "Yunus Akgün",
+        "Y. Akgün"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2000-07-07",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:266660",
+      "name": "Yann Bisseck",
+      "aliases": [
+        "Yann Bisseck",
+        "Y. Bisseck"
+      ],
+      "country": "Germany",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2000-11-29",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:267711",
+      "name": "Djed Spence",
+      "aliases": [
+        "Djed Spence",
+        "D. Spence"
+      ],
+      "country": "England",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2000-08-09",
+      "shirtNumber": 99
+    },
+    {
+      "id": "espn:267804",
+      "name": "Rodrygo",
+      "aliases": [
+        "Rodrygo"
+      ],
+      "country": "Brazil",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2001-01-09",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:268478",
+      "name": "Gabriel Sara",
+      "aliases": [
+        "Gabriel Sara",
+        "G. Sara"
+      ],
+      "country": "Brazil",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1999-06-26",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:268641",
+      "name": "Iliman Ndiaye",
+      "aliases": [
+        "Iliman Ndiaye",
+        "I. Ndiaye"
+      ],
+      "country": "Senegal",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2000-03-06",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:268782",
+      "name": "Anthony Gordon",
+      "aliases": [
+        "Anthony Gordon",
+        "A. Gordon"
+      ],
+      "country": "England",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2001-02-24",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:268796",
+      "name": "Ismail Jakobs",
+      "aliases": [
+        "Ismail Jakobs",
+        "I. Jakobs"
+      ],
+      "country": "Senegal",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1999-08-17",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:270190",
+      "name": "Wesley Fofana",
+      "aliases": [
+        "Wesley Fofana",
+        "W. Fofana"
+      ],
+      "country": "France",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2000-12-17",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:270821",
+      "name": "Ronald Araújo",
+      "aliases": [
+        "Ronald Araújo",
+        "R. Araújo"
+      ],
+      "country": "Uruguay",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1999-03-07",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:271132",
+      "name": "Alexis Saelemaekers",
+      "aliases": [
+        "Alexis Saelemaekers",
+        "A. Saelemaekers"
+      ],
+      "country": "Belgium",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1999-06-27",
+      "shirtNumber": 56
+    },
+    {
+      "id": "espn:271170",
+      "name": "Bryan Mbeumo",
+      "aliases": [
+        "Bryan Mbeumo",
+        "B. Mbeumo"
+      ],
+      "country": "Cameroon",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "1999-08-07",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:271769",
+      "name": "Carlos Augusto",
+      "aliases": [
+        "Carlos Augusto",
+        "C. Augusto"
+      ],
+      "country": "Brazil",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1999-01-07",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:271873",
+      "name": "Zeki Çelik",
+      "aliases": [
+        "Zeki Çelik",
+        "Z. Çelik"
+      ],
+      "country": "Türkiye",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1997-02-17",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:272512",
+      "name": "Rayan Aït-Nouri",
+      "aliases": [
+        "Rayan Aït-Nouri",
+        "R. Aït-Nouri"
+      ],
+      "country": "Algeria",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2001-06-06",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:272700",
+      "name": "Orkun Kökçü",
+      "aliases": [
+        "Orkun Kökçü",
+        "O. Kökçü"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2000-12-29",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:273292",
+      "name": "Antoine Semenyo",
+      "aliases": [
+        "Antoine Semenyo",
+        "A. Semenyo"
+      ],
+      "country": "Ghana",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2000-01-07",
+      "shirtNumber": 42
+    },
+    {
+      "id": "espn:274632",
+      "name": "Ryan Gravenberch",
+      "aliases": [
+        "Ryan Gravenberch",
+        "R. Gravenberch"
+      ],
+      "country": "Netherlands",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2002-05-16",
+      "shirtNumber": 38
+    },
+    {
+      "id": "espn:274742",
+      "name": "Giorgi Mamardashvili",
+      "aliases": [
+        "Giorgi Mamardashvili",
+        "G. Mamardashvili"
+      ],
+      "country": "Georgia",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2000-09-29",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:274745",
+      "name": "Khvicha Kvaratskhelia",
+      "aliases": [
+        "Khvicha Kvaratskhelia",
+        "K. Kvaratskhelia"
+      ],
+      "country": "Georgia",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "F",
+      "birthDate": "2001-02-12",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:274913",
+      "name": "Karim Adeyemi",
+      "aliases": [
+        "Karim Adeyemi",
+        "K. Adeyemi"
+      ],
+      "country": "Germany",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2002-01-18",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:275128",
+      "name": "Tarik Cetin",
+      "aliases": [
+        "Tarik Cetin",
+        "T. Cetin"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "1997-01-08",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:276221",
+      "name": "Mason Greenwood",
+      "aliases": [
+        "Mason Greenwood",
+        "M. Greenwood"
+      ],
+      "country": "England",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2001-10-01",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:276327",
+      "name": "Joshua Zirkzee",
+      "aliases": [
+        "Joshua Zirkzee",
+        "J. Zirkzee"
+      ],
+      "country": "Netherlands",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2001-05-22",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:276329",
+      "name": "Josip Stanisic",
+      "aliases": [
+        "Josip Stanisic",
+        "J. Stanisic"
+      ],
+      "country": "Croatia",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2000-04-02",
+      "shirtNumber": 44
+    },
+    {
+      "id": "espn:277385",
+      "name": "William Saliba",
+      "aliases": [
+        "William Saliba",
+        "W. Saliba"
+      ],
+      "country": "France",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2001-03-24",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:278790",
+      "name": "Dogan Alemdar",
+      "aliases": [
+        "Dogan Alemdar",
+        "D. Alemdar"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "2002-10-29",
+      "shirtNumber": 80
+    },
+    {
+      "id": "espn:280555",
+      "name": "Bukayo Saka",
+      "aliases": [
+        "Bukayo Saka",
+        "B. Saka"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2001-09-05",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:280711",
+      "name": "Emir Han Topcu",
+      "aliases": [
+        "Emir Han Topcu",
+        "E. Topcu"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2000-10-11",
+      "shirtNumber": 53
+    },
+    {
+      "id": "espn:281119",
+      "name": "Jeremie Frimpong",
+      "aliases": [
+        "Jeremie Frimpong",
+        "J. Frimpong"
+      ],
+      "country": "Netherlands",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2000-12-10",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:281122",
+      "name": "Felix Nmecha",
+      "aliases": [
+        "Felix Nmecha",
+        "F. Nmecha"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2000-10-10",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:282716",
+      "name": "Jurriën Timber",
+      "aliases": [
+        "Jurriën Timber",
+        "J. Timber"
+      ],
+      "country": "Netherlands",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2001-06-17",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:283139",
+      "name": "Khéphren Thuram",
+      "aliases": [
+        "Khéphren Thuram",
+        "K. Thuram"
+      ],
+      "country": "France",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2001-03-26",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:283672",
+      "name": "Jérémy Doku",
+      "aliases": [
+        "Jérémy Doku",
+        "J. Doku"
+      ],
+      "country": "Belgium",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2002-05-27",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:283682",
+      "name": "Tiago Djaló",
+      "aliases": [
+        "Tiago Djaló",
+        "T. Djaló"
+      ],
+      "country": "Portugal",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2000-04-09",
+      "shirtNumber": 35
+    },
+    {
+      "id": "espn:283691",
+      "name": "Ridvan Yilmaz",
+      "aliases": [
+        "Ridvan Yilmaz",
+        "R. Yilmaz"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2001-05-21",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:283930",
+      "name": "Kartal Kayra Yilmaz",
+      "aliases": [
+        "Kartal Kayra Yilmaz",
+        "K. Yilmaz"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2000-11-04",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:284960",
+      "name": "João Pedro",
+      "aliases": [
+        "João Pedro"
+      ],
+      "country": "Brazil",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2001-09-26",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:285150",
+      "name": "Eduardo Camavinga",
+      "aliases": [
+        "Eduardo Camavinga",
+        "E. Camavinga"
+      ],
+      "country": "France",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2002-11-10",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:285450",
+      "name": "Enzo Fernández",
+      "aliases": [
+        "Enzo Fernández",
+        "E. Fernández"
+      ],
+      "country": "Argentina",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2001-01-17",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:285473",
+      "name": "Facundo Mura",
+      "aliases": [
+        "Facundo Mura",
+        "F. Mura"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "1999-03-24",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:286369",
+      "name": "Luis Henrique",
+      "aliases": [
+        "Luis Henrique"
+      ],
+      "country": "Brazil",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2001-12-14",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:286569",
+      "name": "Wilfried Singo",
+      "aliases": [
+        "Wilfried Singo",
+        "W. Singo"
+      ],
+      "country": "Ivory Coast",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2000-12-25",
+      "shirtNumber": 90
+    },
+    {
+      "id": "espn:286774",
+      "name": "Gaga Slonina",
+      "aliases": [
+        "Gaga Slonina",
+        "G. Slonina"
+      ],
+      "country": "USA",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2004-05-15",
+      "shirtNumber": 44
+    },
+    {
+      "id": "espn:286828",
+      "name": "Nico Schlotterbeck",
+      "aliases": [
+        "Nico Schlotterbeck",
+        "N. Schlotterbeck"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1999-12-01",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:286831",
+      "name": "Michael Olise",
+      "aliases": [
+        "Michael Olise",
+        "M. Olise"
+      ],
+      "country": "France",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2001-12-12",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:287005",
+      "name": "Willian Pacho",
+      "aliases": [
+        "Willian Pacho",
+        "W. Pacho"
+      ],
+      "country": "Ecuador",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "2001-10-16",
+      "shirtNumber": 51
+    },
+    {
+      "id": "espn:287225",
+      "name": "Sacha Boey",
+      "aliases": [
+        "Sacha Boey",
+        "S. Boey"
+      ],
+      "country": "France",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2000-09-13",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:287266",
+      "name": "Martín Zubimendi",
+      "aliases": [
+        "Martín Zubimendi",
+        "M. Zubimendi"
+      ],
+      "country": "Spain",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1999-02-02",
+      "shirtNumber": 36
+    },
+    {
+      "id": "espn:287678",
+      "name": "Eren Elmali",
+      "aliases": [
+        "Eren Elmali",
+        "E. Elmali"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2000-07-07",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:288896",
+      "name": "Gonçalo Ramos",
+      "aliases": [
+        "Gonçalo Ramos",
+        "G. Ramos"
+      ],
+      "country": "Portugal",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2001-06-20",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:288897",
+      "name": "Vitinha",
+      "aliases": [
+        "Vitinha"
+      ],
+      "country": "Portugal",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "2000-02-13",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:288925",
+      "name": "Lucas Chevalier",
+      "aliases": [
+        "Lucas Chevalier",
+        "L. Chevalier"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "G",
+      "birthDate": "2001-11-06",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:289155",
+      "name": "Benjamin Sesko",
+      "aliases": [
+        "Benjamin Sesko",
+        "B. Sesko"
+      ],
+      "country": "Slovenia",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2003-05-31",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:289840",
+      "name": "Vitezslav Jaros",
+      "aliases": [
+        "Vitezslav Jaros",
+        "V. Jaros"
+      ],
+      "country": "Czechia",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2001-07-23",
+      "shirtNumber": 56
+    },
+    {
+      "id": "espn:289877",
+      "name": "Moisés Caicedo",
+      "aliases": [
+        "Moisés Caicedo",
+        "M. Caicedo"
+      ],
+      "country": "Ecuador",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2001-11-02",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:290129",
+      "name": "Pierre Kalulu",
+      "aliases": [
+        "Pierre Kalulu",
+        "P. Kalulu"
+      ],
+      "country": "France",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2000-06-05",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:290375",
+      "name": "Strahinja Pavlovic",
+      "aliases": [
+        "Strahinja Pavlovic",
+        "S. Pavlovic"
+      ],
+      "country": "Serbia",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2001-05-24",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:290511",
+      "name": "Munir Mercan",
+      "aliases": [
+        "Munir Mercan",
+        "M. Mercan"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2000-12-10",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:290591",
+      "name": "Nuno Mendes",
+      "aliases": [
+        "Nuno Mendes",
+        "N. Mendes"
+      ],
+      "country": "Portugal",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "2002-06-19",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:290639",
+      "name": "Maximilian Beier",
+      "aliases": [
+        "Maximilian Beier",
+        "M. Beier"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "2002-10-17",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:290715",
+      "name": "David Ayala",
+      "aliases": [
+        "David Ayala",
+        "D. Ayala"
+      ],
+      "country": "Mexico",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2000-04-06",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:291281",
+      "name": "Jude Bellingham",
+      "aliases": [
+        "Jude Bellingham",
+        "J. Bellingham"
+      ],
+      "country": "England",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2003-06-29",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:291629",
+      "name": "Fábio Silva",
+      "aliases": [
+        "Fábio Silva",
+        "F. Silva"
+      ],
+      "country": "Portugal",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "2002-07-19",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:291630",
+      "name": "Amad Diallo",
+      "aliases": [
+        "Amad Diallo",
+        "A. Diallo"
+      ],
+      "country": "Ivory Coast",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2002-07-11",
+      "shirtNumber": 16
+    },
+    {
+      "id": "espn:292062",
+      "name": "Piero Hincapié",
+      "aliases": [
+        "Piero Hincapié",
+        "P. Hincapié"
+      ],
+      "country": "Ecuador",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2002-01-09",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:293236",
+      "name": "Noni Madueke",
+      "aliases": [
+        "Noni Madueke",
+        "N. Madueke"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2002-03-10",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:294317",
+      "name": "Carney Chukwuemeka",
+      "aliases": [
+        "Carney Chukwuemeka",
+        "C. Chukwuemeka"
+      ],
+      "country": "Austria",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2003-10-20",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:296395",
+      "name": "Cole Palmer",
+      "aliases": [
+        "Cole Palmer",
+        "C. Palmer"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2002-05-06",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:296410",
+      "name": "Levi Colwill",
+      "aliases": [
+        "Levi Colwill",
+        "L. Colwill"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2003-02-26",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:297047",
+      "name": "Rocco Ríos Novo",
+      "aliases": [
+        "Rocco Ríos Novo",
+        "R. Ríos Novo"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "G",
+      "birthDate": "2002-06-04",
+      "shirtNumber": 34
+    },
+    {
+      "id": "espn:297328",
+      "name": "Matías Galarza",
+      "aliases": [
+        "Matías Galarza",
+        "M. Galarza"
+      ],
+      "country": "Paraguay",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2002-02-11",
+      "shirtNumber": 80
+    },
+    {
+      "id": "espn:297337",
+      "name": "Pape Matar Sarr",
+      "aliases": [
+        "Pape Matar Sarr",
+        "P. Sarr"
+      ],
+      "country": "Senegal",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2002-09-14",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:297362",
+      "name": "Joan García",
+      "aliases": [
+        "Joan García",
+        "J. García"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "2001-05-04",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:298008",
+      "name": "Rayan Cherki",
+      "aliases": [
+        "Rayan Cherki",
+        "R. Cherki"
+      ],
+      "country": "France",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2003-08-17",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:298329",
+      "name": "Riccardo Calafiori",
+      "aliases": [
+        "Riccardo Calafiori",
+        "R. Calafiori"
+      ],
+      "country": "Italy",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2002-05-19",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:298349",
+      "name": "Nick Woltemade",
+      "aliases": [
+        "Nick Woltemade",
+        "N. Woltemade"
+      ],
+      "country": "Germany",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2002-02-14",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:299910",
+      "name": "Josko Gvardiol",
+      "aliases": [
+        "Josko Gvardiol",
+        "J. Gvardiol"
+      ],
+      "country": "Croatia",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2002-01-23",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:300049",
+      "name": "Teddy Sharman-Lowe",
+      "aliases": [
+        "Teddy Sharman-Lowe",
+        "T. Sharman-Lowe"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2003-03-30",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:300331",
+      "name": "Pep Chavarría",
+      "aliases": [
+        "Pep Chavarría",
+        "P. Chavarría"
+      ],
+      "country": "Spain",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "1998-04-10",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:301345",
+      "name": "Kazimcan Karatas",
+      "aliases": [
+        "Kazimcan Karatas",
+        "K. Karatas"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2003-01-16",
+      "shirtNumber": 88
+    },
+    {
+      "id": "espn:301425",
+      "name": "Senne Lammens",
+      "aliases": [
+        "Senne Lammens",
+        "S. Lammens"
+      ],
+      "country": "Belgium",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2002-07-07",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:302434",
+      "name": "Oh Hyeon-Gyu",
+      "aliases": [
+        "Oh Hyeon-Gyu",
+        "O. Hyeon-Gyu"
+      ],
+      "country": "South Korea",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2001-04-12",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:303748",
+      "name": "Florian Wirtz",
+      "aliases": [
+        "Florian Wirtz",
+        "F. Wirtz"
+      ],
+      "country": "Germany",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2003-05-03",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:303785",
+      "name": "Matheus Nunes",
+      "aliases": [
+        "Matheus Nunes",
+        "M. Nunes"
+      ],
+      "country": "Portugal",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "1998-08-27",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:303793",
+      "name": "Christos Tzolis",
+      "aliases": [
+        "Christos Tzolis",
+        "C. Tzolis"
+      ],
+      "country": "Greece",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2002-01-30",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:303821",
+      "name": "Jamal Musiala",
+      "aliases": [
+        "Jamal Musiala",
+        "J. Musiala"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2003-02-26",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:303919",
+      "name": "Filippo Terracciano",
+      "aliases": [
+        "Filippo Terracciano",
+        "F. Terracciano"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2003-02-08",
+      "shirtNumber": 42
+    },
+    {
+      "id": "espn:303973",
+      "name": "Ardon Jashari",
+      "aliases": [
+        "Ardon Jashari",
+        "A. Jashari"
+      ],
+      "country": "Switzerland",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2002-07-30",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:304503",
+      "name": "Illia Zabarnyi",
+      "aliases": [
+        "Illia Zabarnyi",
+        "I. Zabarnyi"
+      ],
+      "country": "Ukraine",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "2002-09-01",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:304572",
+      "name": "Ismael Saibari",
+      "aliases": [
+        "Ismael Saibari",
+        "I. Saibari"
+      ],
+      "country": "Morocco",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2001-01-28",
+      "shirtNumber": 34
+    },
+    {
+      "id": "espn:304740",
+      "name": "El Chadaille Bitshiabu",
+      "aliases": [
+        "El Chadaille Bitshiabu",
+        "E. Bitshiabu"
+      ],
+      "country": "France",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2005-05-16",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:304866",
+      "name": "Jayden Oosterwolde",
+      "aliases": [
+        "Jayden Oosterwolde",
+        "J. Oosterwolde"
+      ],
+      "country": "Netherlands",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2001-04-26",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:304871",
+      "name": "Emmanuel Emegha",
+      "aliases": [
+        "Emmanuel Emegha",
+        "E. Emegha"
+      ],
+      "country": "Netherlands",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2003-02-03",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:304901",
+      "name": "Hugo Ekitike",
+      "aliases": [
+        "Hugo Ekitike",
+        "H. Ekitike"
+      ],
+      "country": "France",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2002-06-20",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:305629",
+      "name": "Ismail Yüksek",
+      "aliases": [
+        "Ismail Yüksek",
+        "I. Yüksek"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "1999-01-26",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:306789",
+      "name": "Kerem Aktürkoglu",
+      "aliases": [
+        "Kerem Aktürkoglu",
+        "K. Aktürkoglu"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "1998-10-21",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:307527",
+      "name": "Yunus Musah",
+      "aliases": [
+        "Yunus Musah",
+        "Y. Musah"
+      ],
+      "country": "USA",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2002-11-29",
+      "shirtNumber": 80
+    },
+    {
+      "id": "espn:308029",
+      "name": "Andrea Cambiaso",
+      "aliases": [
+        "Andrea Cambiaso",
+        "A. Cambiaso"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2000-02-20",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:308217",
+      "name": "Romeo Lavia",
+      "aliases": [
+        "Romeo Lavia",
+        "R. Lavia"
+      ],
+      "country": "Belgium",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2004-01-06",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:308449",
+      "name": "Emmanuel Agbadou",
+      "aliases": [
+        "Emmanuel Agbadou",
+        "E. Agbadou"
+      ],
+      "country": "Ivory Coast",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "1997-06-17",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:308947",
+      "name": "Malo Gusto",
+      "aliases": [
+        "Malo Gusto",
+        "M. Gusto"
+      ],
+      "country": "France",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2003-05-19",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:309185",
+      "name": "Ange-Yoan Bonny",
+      "aliases": [
+        "Ange-Yoan Bonny",
+        "A. Bonny"
+      ],
+      "country": "Ivory Coast",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2003-10-25",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:309563",
+      "name": "Lesley Ugochukwu",
+      "aliases": [
+        "Lesley Ugochukwu",
+        "L. Ugochukwu"
+      ],
+      "country": "France",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2004-03-26",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:309570",
+      "name": "Koni De Winter",
+      "aliases": [
+        "Koni De Winter",
+        "K. De Winter"
+      ],
+      "country": "Belgium",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2002-06-12",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:310279",
+      "name": "Maximiliano Falcón",
+      "aliases": [
+        "Maximiliano Falcón",
+        "M. Falcón"
+      ],
+      "country": "Uruguay",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "1997-05-01",
+      "shirtNumber": 37
+    },
+    {
+      "id": "espn:310452",
+      "name": "Arda Güler",
+      "aliases": [
+        "Arda Güler",
+        "A. Güler"
+      ],
+      "country": "Türkiye",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2005-02-25",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:310637",
+      "name": "Álvaro Carreras",
+      "aliases": [
+        "Álvaro Carreras",
+        "Á. Carreras"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2003-03-23",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:310709",
+      "name": "Daniel Svensson",
+      "aliases": [
+        "Daniel Svensson",
+        "D. Svensson"
+      ],
+      "country": "Sweden",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2002-02-12",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:311428",
+      "name": "Giannis Konstantelias",
+      "aliases": [
+        "Giannis Konstantelias",
+        "G. Konstantelias"
+      ],
+      "country": "Greece",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2003-03-05",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:311984",
+      "name": "Bartug Elmaz",
+      "aliases": [
+        "Bartug Elmaz",
+        "B. Elmaz"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2003-02-19",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:312015",
+      "name": "Gerard Martín",
+      "aliases": [
+        "Gerard Martín",
+        "G. Martín"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2002-02-26",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:312659",
+      "name": "Francisco Conceição",
+      "aliases": [
+        "Francisco Conceição",
+        "F. Conceição"
+      ],
+      "country": "Portugal",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2002-12-14",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:314858",
+      "name": "Andrey Santos",
+      "aliases": [
+        "Andrey Santos",
+        "A. Santos"
+      ],
+      "country": "Brazil",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2004-05-03",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:314952",
+      "name": "Micael",
+      "aliases": [
+        "Micael"
+      ],
+      "country": "Brazil",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2000-08-12",
+      "shirtNumber": 16
+    },
+    {
+      "id": "espn:315594",
+      "name": "Telasco Segovia",
+      "aliases": [
+        "Telasco Segovia",
+        "T. Segovia"
+      ],
+      "country": "Venezuela",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2003-04-02",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:315617",
+      "name": "Gonzalo Luján",
+      "aliases": [
+        "Gonzalo Luján",
+        "G. Luján"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2001-04-27",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:315801",
+      "name": "Tadeo Allende",
+      "aliases": [
+        "Tadeo Allende",
+        "T. Allende"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "1999-02-20",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:315879",
+      "name": "Harvey Davies",
+      "aliases": [
+        "Harvey Davies",
+        "H. Davies"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2003-09-03",
+      "shirtNumber": 95
+    },
+    {
+      "id": "espn:316128",
+      "name": "Lucas Beraldo",
+      "aliases": [
+        "Lucas Beraldo",
+        "L. Beraldo"
+      ],
+      "country": "Brazil",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "D",
+      "birthDate": "2003-11-24",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:316269",
+      "name": "Ian Fray",
+      "aliases": [
+        "Ian Fray",
+        "I. Fray"
+      ],
+      "country": "Jamaica",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2002-08-31",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:318534",
+      "name": "Ernest Poku",
+      "aliases": [
+        "Ernest Poku",
+        "E. Poku"
+      ],
+      "country": "Netherlands",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2004-01-28",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:319167",
+      "name": "Andy Diouf",
+      "aliases": [
+        "Andy Diouf",
+        "A. Diouf"
+      ],
+      "country": "France",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2003-05-17",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:319985",
+      "name": "Junior Olaitan",
+      "aliases": [
+        "Junior Olaitan",
+        "J. Olaitan"
+      ],
+      "country": "Benin",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2002-05-09",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:320074",
+      "name": "Douglas Luiz",
+      "aliases": [
+        "Douglas Luiz",
+        "D. Luiz"
+      ],
+      "country": "Brazil",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1998-05-09",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:320760",
+      "name": "Valentín Barco",
+      "aliases": [
+        "Valentín Barco",
+        "V. Barco"
+      ],
+      "country": "Argentina",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2004-07-23",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:320982",
+      "name": "Archie Brown",
+      "aliases": [
+        "Archie Brown",
+        "A. Brown"
+      ],
+      "country": "England",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2002-05-28",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:322538",
+      "name": "Baris Alper Yilmaz",
+      "aliases": [
+        "Baris Alper Yilmaz",
+        "B. Yilmaz"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2000-05-23",
+      "shirtNumber": 53
+    },
+    {
+      "id": "espn:322771",
+      "name": "Omari Hutchinson",
+      "aliases": [
+        "Omari Hutchinson",
+        "O. Hutchinson"
+      ],
+      "country": "England",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2003-10-30",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:322813",
+      "name": "Oguz Aydin",
+      "aliases": [
+        "Oguz Aydin",
+        "O. Aydin"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2000-10-27",
+      "shirtNumber": 70
+    },
+    {
+      "id": "espn:323110",
+      "name": "Milos Kerkez",
+      "aliases": [
+        "Milos Kerkez",
+        "M. Kerkez"
+      ],
+      "country": "Hungary",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2003-11-07",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:323147",
+      "name": "Federico Gatti",
+      "aliases": [
+        "Federico Gatti",
+        "F. Gatti"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "1998-06-24",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:323702",
+      "name": "Gavi",
+      "aliases": [
+        "Gavi"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2004-08-05",
+      "shirtNumber": 6
+    },
+    {
+      "id": "espn:323703",
+      "name": "Alejandro Balde",
+      "aliases": [
+        "Alejandro Balde",
+        "A. Balde"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2003-10-18",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:323790",
+      "name": "Jonas Urbig",
+      "aliases": [
+        "Jonas Urbig",
+        "J. Urbig"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "2003-08-08",
+      "shirtNumber": 40
+    },
+    {
+      "id": "espn:323975",
+      "name": "Fabio Miretti",
+      "aliases": [
+        "Fabio Miretti",
+        "F. Miretti"
+      ],
+      "country": "Italy",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2003-08-03",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:324097",
+      "name": "Mario Gila",
+      "aliases": [
+        "Mario Gila",
+        "M. Gila"
+      ],
+      "country": "Spain",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2000-08-29",
+      "shirtNumber": 34
+    },
+    {
+      "id": "espn:324660",
+      "name": "Tom Bischof",
+      "aliases": [
+        "Tom Bischof",
+        "T. Bischof"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2005-06-28",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:324820",
+      "name": "Jobe Bellingham",
+      "aliases": [
+        "Jobe Bellingham",
+        "J. Bellingham"
+      ],
+      "country": "England",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2005-09-23",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:324895",
+      "name": "Jankat Yilmaz",
+      "aliases": [
+        "Jankat Yilmaz",
+        "J. Yilmaz"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "2004-08-16",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:325550",
+      "name": "Dermot Mee",
+      "aliases": [
+        "Dermot Mee",
+        "D. Mee"
+      ],
+      "country": "Northern Ireland",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2002-11-20",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:325564",
+      "name": "Rico Lewis",
+      "aliases": [
+        "Rico Lewis",
+        "R. Lewis"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2004-11-21",
+      "shirtNumber": 82
+    },
+    {
+      "id": "espn:32572",
+      "name": "Luke Chambers",
+      "aliases": [
+        "Luke Chambers",
+        "L. Chambers"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2004-06-24",
+      "shirtNumber": 44
+    },
+    {
+      "id": "espn:326230",
+      "name": "James McConnell",
+      "aliases": [
+        "James McConnell",
+        "J. McConnell"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2004-09-13",
+      "shirtNumber": 53
+    },
+    {
+      "id": "espn:328238",
+      "name": "Bradley Barcola",
+      "aliases": [
+        "Bradley Barcola",
+        "B. Barcola"
+      ],
+      "country": "France",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2002-09-02",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:328464",
+      "name": "Nico O'Reilly",
+      "aliases": [
+        "Nico O'Reilly",
+        "N. O'Reilly"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2005-03-21",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:328466",
+      "name": "Kobbie Mainoo",
+      "aliases": [
+        "Kobbie Mainoo",
+        "K. Mainoo"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2005-04-19",
+      "shirtNumber": 37
+    },
+    {
+      "id": "espn:328497",
+      "name": "Cristhian Mosquera",
+      "aliases": [
+        "Cristhian Mosquera",
+        "C. Mosquera"
+      ],
+      "country": "Spain",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2004-06-27",
+      "shirtNumber": 3
+    },
+    {
+      "id": "espn:329025",
+      "name": "Yannick Bright",
+      "aliases": [
+        "Yannick Bright",
+        "Y. Bright"
+      ],
+      "country": "Italy",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2001-09-03",
+      "shirtNumber": 42
+    },
+    {
+      "id": "espn:329486",
+      "name": "Nene Dorgeles",
+      "aliases": [
+        "Nene Dorgeles",
+        "N. Dorgeles"
+      ],
+      "country": "Mali",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2002-12-23",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:329690",
+      "name": "Maghnes Akliouche",
+      "aliases": [
+        "Maghnes Akliouche",
+        "M. Akliouche"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "2002-02-25",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:330352",
+      "name": "Mario Rivas",
+      "aliases": [
+        "Mario Rivas",
+        "M. Rivas"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2007-03-16",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:331152",
+      "name": "Roony Bardghji",
+      "aliases": [
+        "Roony Bardghji",
+        "R. Bardghji"
+      ],
+      "country": "Sweden",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2005-11-15",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:331297",
+      "name": "Silas Ostrzinski",
+      "aliases": [
+        "Silas Ostrzinski",
+        "S. Ostrzinski"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "2003-11-19",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:332343",
+      "name": "Mike Penders",
+      "aliases": [
+        "Mike Penders",
+        "M. Penders"
+      ],
+      "country": "Belgium",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2005-07-31",
+      "shirtNumber": 39
+    },
+    {
+      "id": "espn:336388",
+      "name": "Désiré Doué",
+      "aliases": [
+        "Désiré Doué",
+        "D. Doué"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "F",
+      "birthDate": "2005-06-03",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:338814",
+      "name": "Carlos Baleba",
+      "aliases": [
+        "Carlos Baleba",
+        "C. Baleba"
+      ],
+      "country": "Cameroon",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2004-01-03",
+      "shirtNumber": 20
+    },
+    {
+      "id": "espn:339879",
+      "name": "Jamie Gittens",
+      "aliases": [
+        "Jamie Gittens",
+        "J. Gittens"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2004-08-08",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:340186",
+      "name": "Yiğit Demir",
+      "aliases": [
+        "Yiğit Demir",
+        "Y. Demir"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2004-08-02",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:340206",
+      "name": "Leny Yoro",
+      "aliases": [
+        "Leny Yoro",
+        "L. Yoro"
+      ],
+      "country": "France",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2005-11-13",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:340678",
+      "name": "Diego Moreira",
+      "aliases": [
+        "Diego Moreira",
+        "D. Moreira"
+      ],
+      "country": "Belgium",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2004-08-06",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:340741",
+      "name": "Umit Akdag",
+      "aliases": [
+        "Umit Akdag",
+        "U. Akdag"
+      ],
+      "country": "Romania",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2003-10-06",
+      "shirtNumber": 50
+    },
+    {
+      "id": "espn:341494",
+      "name": "Petar Sucic",
+      "aliases": [
+        "Petar Sucic",
+        "P. Sucic"
+      ],
+      "country": "Croatia",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2003-10-25",
+      "shirtNumber": 8
+    },
+    {
+      "id": "espn:345212",
+      "name": "Semih Kiliçsoy",
+      "aliases": [
+        "Semih Kiliçsoy",
+        "S. Kiliçsoy"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2005-08-15",
+      "shirtNumber": 90
+    },
+    {
+      "id": "espn:345243",
+      "name": "Kassoum Ouattara",
+      "aliases": [
+        "Kassoum Ouattara",
+        "K. Ouattara"
+      ],
+      "country": "France",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2004-10-14",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:345581",
+      "name": "Warren Zaïre-Emery",
+      "aliases": [
+        "Warren Zaïre-Emery",
+        "W. Zaïre-Emery"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "2006-03-08",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:345637",
+      "name": "Davide Bartesaghi",
+      "aliases": [
+        "Davide Bartesaghi",
+        "D. Bartesaghi"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2005-12-29",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:346213",
+      "name": "Yasin Ozcan",
+      "aliases": [
+        "Yasin Ozcan",
+        "Y. Ozcan"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2006-04-20",
+      "shirtNumber": 58
+    },
+    {
+      "id": "espn:346612",
+      "name": "Endrick",
+      "aliases": [
+        "Endrick"
+      ],
+      "country": "Brazil",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2006-07-21",
+      "shirtNumber": 9
+    },
+    {
+      "id": "espn:346757",
+      "name": "Eyüp Aydin",
+      "aliases": [
+        "Eyüp Aydin",
+        "E. Aydin"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2004-08-02",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:349101",
+      "name": "Justin Oboavwoduo",
+      "aliases": [
+        "Justin Oboavwoduo",
+        "J. Oboavwoduo"
+      ],
+      "country": "England",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2006-08-23",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:349733",
+      "name": "Ethan Nwaneri",
+      "aliases": [
+        "Ethan Nwaneri",
+        "E. Nwaneri"
+      ],
+      "country": "England",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2007-03-21",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:350351",
+      "name": "Sergio Mestre",
+      "aliases": [
+        "Sergio Mestre",
+        "S. Mestre"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "2005-02-13",
+      "shirtNumber": 26
+    },
+    {
+      "id": "espn:350513",
+      "name": "Deniz Gül",
+      "aliases": [
+        "Deniz Gül",
+        "D. Gül"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2004-07-02",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:350661",
+      "name": "Lewis Koumas",
+      "aliases": [
+        "Lewis Koumas",
+        "L. Koumas"
+      ],
+      "country": "Wales",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2005-09-19",
+      "shirtNumber": 67
+    },
+    {
+      "id": "espn:352758",
+      "name": "Myles Lewis-Skelly",
+      "aliases": [
+        "Myles Lewis-Skelly",
+        "M. Lewis-Skelly"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2006-09-26",
+      "shirtNumber": 49
+    },
+    {
+      "id": "espn:353363",
+      "name": "Mika Godts",
+      "aliases": [
+        "Mika Godts",
+        "M. Godts"
+      ],
+      "country": "Belgium",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "F",
+      "birthDate": "2005-06-07",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:353951",
+      "name": "Jorrel Hato",
+      "aliases": [
+        "Jorrel Hato",
+        "J. Hato"
+      ],
+      "country": "Netherlands",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2006-03-07",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:354334",
+      "name": "Fermín López",
+      "aliases": [
+        "Fermín López",
+        "F. López"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2003-05-11",
+      "shirtNumber": 7
+    },
+    {
+      "id": "espn:354737",
+      "name": "Jayden Danns",
+      "aliases": [
+        "Jayden Danns",
+        "J. Danns"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2006-01-16",
+      "shirtNumber": 76
+    },
+    {
+      "id": "espn:355061",
+      "name": "João Neves",
+      "aliases": [
+        "João Neves",
+        "J. Neves"
+      ],
+      "country": "Portugal",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "2004-09-27",
+      "shirtNumber": 87
+    },
+    {
+      "id": "espn:355113",
+      "name": "Alexey Batrakov",
+      "aliases": [
+        "Alexey Batrakov",
+        "A. Batrakov"
+      ],
+      "country": "Russia",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2005-06-09",
+      "shirtNumber": 83
+    },
+    {
+      "id": "espn:355980",
+      "name": "Jérémy Jacquet",
+      "aliases": [
+        "Jérémy Jacquet",
+        "J. Jacquet"
+      ],
+      "country": "France",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2005-07-13",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:356000",
+      "name": "Dean Huijsen",
+      "aliases": [
+        "Dean Huijsen",
+        "D. Huijsen"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2005-04-14",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:356044",
+      "name": "Ayden Heaven",
+      "aliases": [
+        "Ayden Heaven",
+        "A. Heaven"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2006-09-22",
+      "shirtNumber": 26
+    },
+    {
+      "id": "espn:356075",
+      "name": "Trey Nyoni",
+      "aliases": [
+        "Trey Nyoni",
+        "T. Nyoni"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2007-06-30",
+      "shirtNumber": 42
+    },
+    {
+      "id": "espn:356940",
+      "name": "Harry Amass",
+      "aliases": [
+        "Harry Amass",
+        "H. Amass"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2007-03-16",
+      "shirtNumber": 41
+    },
+    {
+      "id": "espn:357205",
+      "name": "Kojo Peprah Oppong",
+      "aliases": [
+        "Kojo Peprah Oppong",
+        "K. Oppong"
+      ],
+      "country": "Ghana",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2004-06-04",
+      "shirtNumber": 21
+    },
+    {
+      "id": "espn:357512",
+      "name": "Arda Ünyay",
+      "aliases": [
+        "Arda Ünyay",
+        "A. Ünyay"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2007-01-18",
+      "shirtNumber": 91
+    },
+    {
+      "id": "espn:357801",
+      "name": "Konstantinos Karetsas",
+      "aliases": [
+        "Konstantinos Karetsas",
+        "K. Karetsas"
+      ],
+      "country": "Greece",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2007-11-19",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:358180",
+      "name": "Shea Lacey",
+      "aliases": [
+        "Shea Lacey",
+        "S. Lacey"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2007-04-14",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:359239",
+      "name": "Israel Boatwright",
+      "aliases": [
+        "Israel Boatwright",
+        "I. Boatwright"
+      ],
+      "country": "Dominican Republic",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2005-06-02",
+      "shirtNumber": 62
+    },
+    {
+      "id": "espn:359370",
+      "name": "Aleksandar Pavlovic",
+      "aliases": [
+        "Aleksandar Pavlovic",
+        "A. Pavlovic"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2004-05-03",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:359754",
+      "name": "Alphadjo Cissè",
+      "aliases": [
+        "Alphadjo Cissè",
+        "A. Cissè"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2006-10-22",
+      "shirtNumber": 70
+    },
+    {
+      "id": "espn:359953",
+      "name": "Lovens Delinois",
+      "aliases": [
+        "Lovens Delinois",
+        "L. Delinois"
+      ],
+      "country": "Haiti",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "2004-10-05",
+      "shirtNumber": 54
+    },
+    {
+      "id": "espn:361433",
+      "name": "Riquelme",
+      "aliases": [
+        "Riquelme"
+      ],
+      "country": "Brazil",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "2006-09-15",
+      "shirtNumber": 11
+    },
+    {
+      "id": "espn:361434",
+      "name": "Vitor Reis",
+      "aliases": [
+        "Vitor Reis"
+      ],
+      "country": "Brazil",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2006-01-12",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:362150",
+      "name": "Lamine Yamal",
+      "aliases": [
+        "Lamine Yamal",
+        "L. Yamal"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2007-07-13",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:362211",
+      "name": "Abdukodir Khusanov",
+      "aliases": [
+        "Abdukodir Khusanov",
+        "A. Khusanov"
+      ],
+      "country": "Uzbekistan",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2004-02-29",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:362486",
+      "name": "Marco Palestra",
+      "aliases": [
+        "Marco Palestra",
+        "M. Palestra"
+      ],
+      "country": "Italy",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2005-03-03",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:362674",
+      "name": "Pio Esposito",
+      "aliases": [
+        "Pio Esposito",
+        "P. Esposito"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2005-06-28",
+      "shirtNumber": 94
+    },
+    {
+      "id": "espn:363218",
+      "name": "Aaron Anselmino",
+      "aliases": [
+        "Aaron Anselmino",
+        "A. Anselmino"
+      ],
+      "country": "Argentina",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2005-04-29",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:364401",
+      "name": "Tyler Hall",
+      "aliases": [
+        "Tyler Hall",
+        "T. Hall"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2006-02-05",
+      "shirtNumber": 26
+    },
+    {
+      "id": "espn:365318",
+      "name": "Jesse Bisiwu",
+      "aliases": [
+        "Jesse Bisiwu",
+        "J. Bisiwu"
+      ],
+      "country": "Belgium",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2008-01-22",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:366509",
+      "name": "Kenan Yildiz",
+      "aliases": [
+        "Kenan Yildiz",
+        "K. Yildiz"
+      ],
+      "country": "Türkiye",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2005-05-04",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:366781",
+      "name": "Patrick Dorgu",
+      "aliases": [
+        "Patrick Dorgu",
+        "P. Dorgu"
+      ],
+      "country": "Denmark",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2004-10-26",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:368317",
+      "name": "Josh Acheampong",
+      "aliases": [
+        "Josh Acheampong",
+        "J. Acheampong"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2006-05-05",
+      "shirtNumber": 34
+    },
+    {
+      "id": "espn:368542",
+      "name": "Emir Yasar",
+      "aliases": [
+        "Emir Yasar",
+        "E. Yasar"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "2006-01-16",
+      "shirtNumber": 96
+    },
+    {
+      "id": "espn:368543",
+      "name": "Mustafa Hekimoglu",
+      "aliases": [
+        "Mustafa Hekimoglu",
+        "M. Hekimoglu"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2007-04-22",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:368992",
+      "name": "Pau Cubarsí",
+      "aliases": [
+        "Pau Cubarsí",
+        "P. Cubarsí"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2007-01-22",
+      "shirtNumber": 5
+    },
+    {
+      "id": "espn:371500",
+      "name": "Kouakou Gadou",
+      "aliases": [
+        "Kouakou Gadou",
+        "K. Gadou"
+      ],
+      "country": "France",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2007-01-17",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:371538",
+      "name": "Abdou Fall",
+      "aliases": [
+        "Abdou Fall",
+        "A. Fall"
+      ],
+      "country": "Senegal",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2007-02-20",
+      "shirtNumber": 60
+    },
+    {
+      "id": "espn:372033",
+      "name": "Taylan Bulut",
+      "aliases": [
+        "Taylan Bulut",
+        "T. Bulut"
+      ],
+      "country": "Germany",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2006-01-19",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:373927",
+      "name": "Ayyoub Bouaddi",
+      "aliases": [
+        "Ayyoub Bouaddi",
+        "A. Bouaddi"
+      ],
+      "country": "Morocco",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2007-10-02",
+      "shirtNumber": 32
+    },
+    {
+      "id": "espn:376274",
+      "name": "Geovany Quenda",
+      "aliases": [
+        "Geovany Quenda",
+        "G. Quenda"
+      ],
+      "country": "Portugal",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2007-04-30",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:376422",
+      "name": "Daniel Yañez",
+      "aliases": [
+        "Daniel Yañez",
+        "D. Yañez"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2007-03-28",
+      "shirtNumber": 35
+    },
+    {
+      "id": "espn:376423",
+      "name": "Marc Bernal",
+      "aliases": [
+        "Marc Bernal",
+        "M. Bernal"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2007-05-26",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:376481",
+      "name": "Estêvão",
+      "aliases": [
+        "Estêvão"
+      ],
+      "country": "Brazil",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2007-04-24",
+      "shirtNumber": 41
+    },
+    {
+      "id": "espn:377563",
+      "name": "Francesco Camarda",
+      "aliases": [
+        "Francesco Camarda",
+        "F. Camarda"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2008-03-10",
+      "shirtNumber": 73
+    },
+    {
+      "id": "espn:379088",
+      "name": "Senny Mayulu",
+      "aliases": [
+        "Senny Mayulu",
+        "S. Mayulu"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "2006-05-17",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:379588",
+      "name": "Rio Ngumoha",
+      "aliases": [
+        "Rio Ngumoha",
+        "R. Ngumoha"
+      ],
+      "country": "England",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2008-08-29",
+      "shirtNumber": 73
+    },
+    {
+      "id": "espn:380082",
+      "name": "Giovanni Leoni",
+      "aliases": [
+        "Giovanni Leoni",
+        "G. Leoni"
+      ],
+      "country": "Italy",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2006-12-21",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:380286",
+      "name": "Carlos Espí",
+      "aliases": [
+        "Carlos Espí",
+        "C. Espí"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2005-07-24",
+      "shirtNumber": 19
+    },
+    {
+      "id": "espn:380332",
+      "name": "Ognjen Mimovic",
+      "aliases": [
+        "Ognjen Mimovic",
+        "O. Mimovic"
+      ],
+      "country": "Serbia",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "D",
+      "birthDate": "2004-08-17",
+      "shirtNumber": 77
+    },
+    {
+      "id": "espn:382966",
+      "name": "Allan Elias",
+      "aliases": [
+        "Allan Elias",
+        "A. Elias"
+      ],
+      "country": "Brazil",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2004-04-19",
+      "shirtNumber": 37
+    },
+    {
+      "id": "espn:383070",
+      "name": "Justin Lerma",
+      "aliases": [
+        "Justin Lerma",
+        "J. Lerma"
+      ],
+      "country": "Ecuador",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2008-05-05",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:384290",
+      "name": "Ilhan Fakili",
+      "aliases": [
+        "Ilhan Fakili",
+        "I. Fakili"
+      ],
+      "country": "France",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2006-01-20",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:384305",
+      "name": "Lorenzo Torriani",
+      "aliases": [
+        "Lorenzo Torriani",
+        "L. Torriani"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "2005-01-31",
+      "shirtNumber": 96
+    },
+    {
+      "id": "espn:387434",
+      "name": "Filippo Pagnucco",
+      "aliases": [
+        "Filippo Pagnucco",
+        "F. Pagnucco"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2006-02-09",
+      "shirtNumber": 43
+    },
+    {
+      "id": "espn:387437",
+      "name": "Filippo Mané",
+      "aliases": [
+        "Filippo Mané",
+        "F. Mané"
+      ],
+      "country": "Italy",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2005-03-08",
+      "shirtNumber": 39
+    },
+    {
+      "id": "espn:387661",
+      "name": "Mateo Silvetti",
+      "aliases": [
+        "Mateo Silvetti",
+        "M. Silvetti"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "2006-01-14",
+      "shirtNumber": 24
+    },
+    {
+      "id": "espn:387725",
+      "name": "Alessandro Longoni",
+      "aliases": [
+        "Alessandro Longoni",
+        "A. Longoni"
+      ],
+      "country": "Italy",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "G",
+      "birthDate": "2008-01-31",
+      "shirtNumber": 16
+    },
+    {
+      "id": "espn:388239",
+      "name": "Sankhoun Diawara",
+      "aliases": [
+        "Sankhoun Diawara",
+        "S. Diawara"
+      ],
+      "country": "France",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2006-01-13",
+      "shirtNumber": 13
+    },
+    {
+      "id": "espn:388338",
+      "name": "Raúl Asencio",
+      "aliases": [
+        "Raúl Asencio",
+        "R. Asencio"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2003-02-13",
+      "shirtNumber": 2
+    },
+    {
+      "id": "espn:388339",
+      "name": "Joan Martínez",
+      "aliases": [
+        "Joan Martínez",
+        "J. Martínez"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2007-08-20",
+      "shirtNumber": 30
+    },
+    {
+      "id": "espn:388606",
+      "name": "Jeff Ekhator",
+      "aliases": [
+        "Jeff Ekhator",
+        "J. Ekhator"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2006-11-11",
+      "shirtNumber": 18
+    },
+    {
+      "id": "espn:390094",
+      "name": "Kaden Braithwaite",
+      "aliases": [
+        "Kaden Braithwaite",
+        "K. Braithwaite"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2008-02-08",
+      "shirtNumber": 61
+    },
+    {
+      "id": "espn:391034",
+      "name": "Kerim Alajbegovic",
+      "aliases": [
+        "Kerim Alajbegovic",
+        "K. Alajbegovic"
+      ],
+      "country": "Bosnia and Herzegovina",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2007-09-21",
+      "shirtNumber": 17
+    },
+    {
+      "id": "espn:393138",
+      "name": "Tyler Fletcher",
+      "aliases": [
+        "Tyler Fletcher",
+        "T. Fletcher"
+      ],
+      "country": "Scotland",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2007-03-19",
+      "shirtNumber": 39
+    },
+    {
+      "id": "espn:393424",
+      "name": "Theo Julienne",
+      "aliases": [
+        "Theo Julienne",
+        "T. Julienne"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2008-01-11",
+      "shirtNumber": 45
+    },
+    {
+      "id": "espn:395463",
+      "name": "Ryan McAidoo",
+      "aliases": [
+        "Ryan McAidoo",
+        "R. McAidoo"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2008-06-24",
+      "shirtNumber": 56
+    },
+    {
+      "id": "espn:397258",
+      "name": "Augusto Owusu",
+      "aliases": [
+        "Augusto Owusu",
+        "A. Owusu"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2005-01-28",
+      "shirtNumber": 41
+    },
+    {
+      "id": "espn:397263",
+      "name": "Max Dowman",
+      "aliases": [
+        "Max Dowman",
+        "M. Dowman"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2009-12-31",
+      "shirtNumber": 56
+    },
+    {
+      "id": "espn:397463",
+      "name": "Niccolò Rizzo",
+      "aliases": [
+        "Niccolò Rizzo",
+        "N. Rizzo"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2007-07-19",
+      "shirtNumber": 44
+    },
+    {
+      "id": "espn:397545",
+      "name": "Víctor Muñoz",
+      "aliases": [
+        "Víctor Muñoz",
+        "V. Muñoz"
+      ],
+      "country": "Spain",
+      "clubId": "364",
+      "club": "Liverpool",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "F",
+      "birthDate": "2003-07-13",
+      "shirtNumber": 23
+    },
+    {
+      "id": "espn:399200",
+      "name": "Hamza Abdelkarim",
+      "aliases": [
+        "Hamza Abdelkarim",
+        "H. Abdelkarim"
+      ],
+      "country": "Egypt",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2008-01-01",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:399455",
+      "name": "Kauã Prates",
+      "aliases": [
+        "Kauã Prates"
+      ],
+      "country": "Brazil",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2008-08-12",
+      "shirtNumber": 36
+    },
+    {
+      "id": "espn:399562",
+      "name": "Mahdi Nicoll-Jazuli",
+      "aliases": [
+        "Mahdi Nicoll-Jazuli",
+        "M. Nicoll-Jazuli"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2010-01-06",
+      "shirtNumber": 32
+    },
+    {
+      "id": "espn:399564",
+      "name": "Reggie Watson",
+      "aliases": [
+        "Reggie Watson",
+        "R. Watson"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2010-01-26",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:399894",
+      "name": "Ife Ibrahim",
+      "aliases": [
+        "Ife Ibrahim",
+        "I. Ibrahim"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2008-01-20",
+      "shirtNumber": 44
+    },
+    {
+      "id": "espn:399946",
+      "name": "Idoh Zeltzer-Zubida",
+      "aliases": [
+        "Idoh Zeltzer-Zubida",
+        "I. Zeltzer-Zubida"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "2005-02-08",
+      "shirtNumber": 47
+    },
+    {
+      "id": "espn:399951",
+      "name": "Cesar Abadia-Reda",
+      "aliases": [
+        "Cesar Abadia-Reda",
+        "C. Abadia-Reda"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2006-02-21",
+      "shirtNumber": 76
+    },
+    {
+      "id": "espn:399970",
+      "name": "Dániel Pintér",
+      "aliases": [
+        "Dániel Pintér",
+        "D. Pintér"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "2007-06-06",
+      "shirtNumber": 56
+    },
+    {
+      "id": "espn:399971",
+      "name": "Ian Urkidi",
+      "aliases": [
+        "Ian Urkidi",
+        "I. Urkidi"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2007-02-21",
+      "shirtNumber": 55
+    },
+    {
+      "id": "espn:400284",
+      "name": "Marli Salmon",
+      "aliases": [
+        "Marli Salmon",
+        "M. Salmon"
+      ],
+      "country": "England",
+      "clubId": "359",
+      "club": "Arsenal",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2009-08-29",
+      "shirtNumber": 89
+    },
+    {
+      "id": "espn:401414",
+      "name": "Preston Plambeck",
+      "aliases": [
+        "Preston Plambeck",
+        "P. Plambeck"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2005-12-20",
+      "shirtNumber": 59
+    },
+    {
+      "id": "espn:401415",
+      "name": "Daniel Sumalla",
+      "aliases": [
+        "Daniel Sumalla",
+        "D. Sumalla"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2007-06-25",
+      "shirtNumber": 70
+    },
+    {
+      "id": "espn:401418",
+      "name": "Diego Rey",
+      "aliases": [
+        "Diego Rey",
+        "D. Rey"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "2006-04-18",
+      "shirtNumber": 52
+    },
+    {
+      "id": "espn:401450",
+      "name": "Enzo De Pina Duarte Dos Santos",
+      "aliases": [
+        "Enzo De Pina Duarte Dos Santos",
+        "E. De Pina Duarte Dos Santos"
+      ],
+      "country": "Luxembourg",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2009-01-28",
+      "shirtNumber": 44
+    },
+    {
+      "id": "espn:402479",
+      "name": "Yan Diomande",
+      "aliases": [
+        "Yan Diomande",
+        "Y. Diomande"
+      ],
+      "country": "Ivory Coast",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "F",
+      "birthDate": "2006-11-14",
+      "shirtNumber": 25
+    },
+    {
+      "id": "espn:402696",
+      "name": "Fricio Caicedo",
+      "aliases": [
+        "Fricio Caicedo",
+        "F. Caicedo"
+      ],
+      "country": "Ecuador",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "D",
+      "birthDate": "2008-04-17",
+      "shirtNumber": 15
+    },
+    {
+      "id": "espn:402841",
+      "name": "Lennart Karl",
+      "aliases": [
+        "Lennart Karl",
+        "L. Karl"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2008-02-22",
+      "shirtNumber": 42
+    },
+    {
+      "id": "espn:402986",
+      "name": "Renato Nhaga",
+      "aliases": [
+        "Renato Nhaga",
+        "R. Nhaga"
+      ],
+      "country": "Guinea-Bissau",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "M",
+      "birthDate": "2007-03-27",
+      "shirtNumber": 74
+    },
+    {
+      "id": "espn:403419",
+      "name": "Quentin Ndjantou",
+      "aliases": [
+        "Quentin Ndjantou",
+        "Q. Ndjantou"
+      ],
+      "country": "France",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "F",
+      "birthDate": "2007-07-23",
+      "shirtNumber": 47
+    },
+    {
+      "id": "espn:403575",
+      "name": "Brian Fariñas",
+      "aliases": [
+        "Brian Fariñas",
+        "B. Fariñas"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2006-02-09",
+      "shirtNumber": 4
+    },
+    {
+      "id": "espn:403576",
+      "name": "Iker Rodríguez",
+      "aliases": [
+        "Iker Rodríguez",
+        "I. Rodríguez"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "2008-02-22",
+      "shirtNumber": 35
+    },
+    {
+      "id": "espn:403578",
+      "name": "Dro Fernández",
+      "aliases": [
+        "Dro Fernández",
+        "D. Fernández"
+      ],
+      "country": "Spain",
+      "clubId": "160",
+      "club": "Paris Saint-Germain",
+      "leagueId": "fra.1",
+      "league": "Ligue 1",
+      "position": "M",
+      "birthDate": "2008-01-12",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:403582",
+      "name": "Xavi Espart",
+      "aliases": [
+        "Xavi Espart",
+        "X. Espart"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2007-05-21",
+      "shirtNumber": 12
+    },
+    {
+      "id": "espn:403587",
+      "name": "Eder Aller",
+      "aliases": [
+        "Eder Aller",
+        "E. Aller"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "2007-04-04",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:403781",
+      "name": "Mathis Albert",
+      "aliases": [
+        "Mathis Albert",
+        "M. Albert"
+      ],
+      "country": "USA",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "2009-05-21",
+      "shirtNumber": 41
+    },
+    {
+      "id": "espn:403807",
+      "name": "Christian Comotto",
+      "aliases": [
+        "Christian Comotto",
+        "C. Comotto"
+      ],
+      "country": "Italy",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "2008-04-25",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:403808",
+      "name": "Leonardo Bovio",
+      "aliases": [
+        "Leonardo Bovio",
+        "L. Bovio"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2008-02-04",
+      "shirtNumber": 46
+    },
+    {
+      "id": "espn:403833",
+      "name": "Samuele Inácio",
+      "aliases": [
+        "Samuele Inácio",
+        "S. Inácio"
+      ],
+      "country": "Italy",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "F",
+      "birthDate": "2008-04-02",
+      "shirtNumber": 40
+    },
+    {
+      "id": "espn:403839",
+      "name": "Léo-Paul Bouyer",
+      "aliases": [
+        "Léo-Paul Bouyer",
+        "L. Bouyer"
+      ],
+      "country": "France",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "2008-08-14",
+      "shirtNumber": 41
+    },
+    {
+      "id": "espn:403895",
+      "name": "Can Güner",
+      "aliases": [
+        "Can Güner",
+        "C. Güner"
+      ],
+      "country": "Argentina",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2008-01-07",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:403933",
+      "name": "Mussa Kaba",
+      "aliases": [
+        "Mussa Kaba",
+        "M. Kaba"
+      ],
+      "country": "Germany",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2008-11-17",
+      "shirtNumber": 48
+    },
+    {
+      "id": "espn:404034",
+      "name": "Destiny Elimoghale",
+      "aliases": [
+        "Destiny Elimoghale",
+        "D. Elimoghale"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2009-04-23",
+      "shirtNumber": 48
+    },
+    {
+      "id": "espn:405544",
+      "name": "Jesús Fortea",
+      "aliases": [
+        "Jesús Fortea",
+        "J. Fortea"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2007-03-26",
+      "shirtNumber": 28
+    },
+    {
+      "id": "espn:405585",
+      "name": "David Daiber",
+      "aliases": [
+        "David Daiber"
+      ],
+      "country": "Portugal",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2007-01-10",
+      "shirtNumber": 47
+    },
+    {
+      "id": "espn:406938",
+      "name": "Alexander Shaw",
+      "aliases": [
+        "Alexander Shaw",
+        "A. Shaw"
+      ],
+      "country": "USA",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "M",
+      "birthDate": "2008-04-03",
+      "shirtNumber": 88
+    },
+    {
+      "id": "espn:407654",
+      "name": "Enes Büyük",
+      "aliases": [
+        "Enes Büyük",
+        "E. Büyük"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "2006-05-08",
+      "shirtNumber": 70
+    },
+    {
+      "id": "espn:408508",
+      "name": "Olutayo Subuloye",
+      "aliases": [
+        "Olutayo Subuloye",
+        "O. Subuloye"
+      ],
+      "country": "England",
+      "clubId": "363",
+      "club": "Chelsea",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "D",
+      "birthDate": "2007-12-18",
+      "shirtNumber": 37
+    },
+    {
+      "id": "espn:409016",
+      "name": "Bara Sapoko Ndiaye",
+      "aliases": [
+        "Bara Sapoko Ndiaye",
+        "B. Ndiaye"
+      ],
+      "country": "Senegal",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2007-12-31",
+      "shirtNumber": 39
+    },
+    {
+      "id": "espn:409019",
+      "name": "Thiago Pitarch",
+      "aliases": [
+        "Thiago Pitarch",
+        "T. Pitarch"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2007-08-03",
+      "shirtNumber": 27
+    },
+    {
+      "id": "espn:409051",
+      "name": "Mattia Mosconi",
+      "aliases": [
+        "Mattia Mosconi",
+        "M. Mosconi"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2007-03-26",
+      "shirtNumber": 48
+    },
+    {
+      "id": "espn:409318",
+      "name": "Sergio Martínez",
+      "aliases": [
+        "Sergio Martínez",
+        "S. Martínez"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2007-05-15",
+      "shirtNumber": 38
+    },
+    {
+      "id": "espn:409491",
+      "name": "Valeri Vladimirov",
+      "aliases": [
+        "Valeri Vladimirov",
+        "V. Vladimirov"
+      ],
+      "country": "Bulgaria",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2008-06-05",
+      "shirtNumber": 35
+    },
+    {
+      "id": "espn:410320",
+      "name": "Floyd Samba",
+      "aliases": [
+        "Floyd Samba",
+        "F. Samba"
+      ],
+      "country": "England",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "M",
+      "birthDate": "2009-01-15",
+      "shirtNumber": 75
+    },
+    {
+      "id": "espn:410613",
+      "name": "Jamal Iddrissou",
+      "aliases": [
+        "Jamal Iddrissou",
+        "J. Iddrissou"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "2007-09-22",
+      "shirtNumber": 52
+    },
+    {
+      "id": "espn:412245",
+      "name": "Mattia Marello",
+      "aliases": [
+        "Mattia Marello",
+        "M. Marello"
+      ],
+      "country": "Italy",
+      "clubId": "110",
+      "club": "Inter",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "D",
+      "birthDate": "2008-03-13",
+      "shirtNumber": 54
+    },
+    {
+      "id": "espn:413817",
+      "name": "Luca Reggiani",
+      "aliases": [
+        "Luca Reggiani",
+        "L. Reggiani"
+      ],
+      "country": "Italy",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2008-01-09",
+      "shirtNumber": 49
+    },
+    {
+      "id": "espn:413855",
+      "name": "Max-Edgar Chabot",
+      "aliases": [
+        "Max-Edgar Chabot",
+        "M. Chabot"
+      ],
+      "country": "France",
+      "clubId": "382",
+      "club": "Manchester City",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "2008-04-01",
+      "shirtNumber": 94
+    },
+    {
+      "id": "espn:414157",
+      "name": "Stefano Mangiapoco",
+      "aliases": [
+        "Stefano Mangiapoco",
+        "S. Mangiapoco"
+      ],
+      "country": "Italy",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "2004-01-27",
+      "shirtNumber": 61
+    },
+    {
+      "id": "espn:414315",
+      "name": "Miguel Adje",
+      "aliases": [
+        "Miguel Adje",
+        "M. Adje"
+      ],
+      "country": "Switzerland",
+      "clubId": "124",
+      "club": "Borussia Dortmund",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "2008-02-03",
+      "shirtNumber": 47
+    },
+    {
+      "id": "espn:415478",
+      "name": "Jorge Cestero",
+      "aliases": [
+        "Jorge Cestero",
+        "J. Cestero"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "M",
+      "birthDate": "2006-03-24",
+      "shirtNumber": 29
+    },
+    {
+      "id": "espn:415732",
+      "name": "Arda Yilmaz",
+      "aliases": [
+        "Arda Yilmaz",
+        "A. Yilmaz"
+      ],
+      "country": "Türkiye",
+      "clubId": "432",
+      "club": "Galatasaray",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "G",
+      "birthDate": "2008-02-13",
+      "shirtNumber": 60
+    },
+    {
+      "id": "espn:416475",
+      "name": "Ahmet Bircan",
+      "aliases": [
+        "Ahmet Bircan",
+        "A. Bircan"
+      ],
+      "country": "Türkiye",
+      "clubId": "1895",
+      "club": "Beşiktaş",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2007-01-24",
+      "shirtNumber": 70
+    },
+    {
+      "id": "espn:416476",
+      "name": "Alaettin Ekici",
+      "aliases": [
+        "Alaettin Ekici",
+        "A. Ekici"
+      ],
+      "country": "Türkiye",
+      "clubId": "436",
+      "club": "Fenerbahçe",
+      "leagueId": "tur.1",
+      "league": "Süper Lig",
+      "position": "F",
+      "birthDate": "2009-01-01",
+      "shirtNumber": 54
+    },
+    {
+      "id": "espn:416511",
+      "name": "Jordi Pesquer",
+      "aliases": [
+        "Jordi Pesquer",
+        "J. Pesquer"
+      ],
+      "country": "Spain",
+      "clubId": "83",
+      "club": "Barcelona",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "D",
+      "birthDate": "2009-01-26",
+      "shirtNumber": 33
+    },
+    {
+      "id": "espn:417373",
+      "name": "Maycon Cardozo",
+      "aliases": [
+        "Maycon Cardozo",
+        "M. Cardozo"
+      ],
+      "country": "Brazil",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "M",
+      "birthDate": "2008-10-10",
+      "shirtNumber": 49
+    },
+    {
+      "id": "espn:421739",
+      "name": "Riccardo Radu",
+      "aliases": [
+        "Riccardo Radu",
+        "R. Radu"
+      ],
+      "country": "Romania",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "G",
+      "birthDate": "2007-08-07",
+      "shirtNumber": 40
+    },
+    {
+      "id": "espn:42250",
+      "name": "Tom Heaton",
+      "aliases": [
+        "Tom Heaton",
+        "T. Heaton"
+      ],
+      "country": "England",
+      "clubId": "360",
+      "club": "Manchester United",
+      "leagueId": "eng.1",
+      "league": "Premier League",
+      "position": "G",
+      "birthDate": "1986-04-15",
+      "shirtNumber": 22
+    },
+    {
+      "id": "espn:45843",
+      "name": "Lionel Messi",
+      "aliases": [
+        "Lionel Messi",
+        "L. Messi"
+      ],
+      "country": "Argentina",
+      "clubId": "20232",
+      "club": "Inter Miami",
+      "leagueId": "usa.1",
+      "league": "MLS",
+      "position": "F",
+      "birthDate": "1987-06-24",
+      "shirtNumber": 10
+    },
+    {
+      "id": "espn:76017",
+      "name": "Nico González",
+      "aliases": [
+        "Nico González",
+        "N. González"
+      ],
+      "country": "Argentina",
+      "clubId": "111",
+      "club": "Juventus",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "F",
+      "birthDate": "1998-04-06",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:76762",
+      "name": "Luka Modric",
+      "aliases": [
+        "Luka Modric",
+        "L. Modric"
+      ],
+      "country": "Croatia",
+      "clubId": "103",
+      "club": "Milan",
+      "leagueId": "ita.1",
+      "league": "Serie A",
+      "position": "M",
+      "birthDate": "1985-09-09",
+      "shirtNumber": 14
+    },
+    {
+      "id": "espn:84349",
+      "name": "Javier Navarro",
+      "aliases": [
+        "Javier Navarro",
+        "J. Navarro"
+      ],
+      "country": "Spain",
+      "clubId": "86",
+      "club": "Real Madrid",
+      "leagueId": "esp.1",
+      "league": "La Liga",
+      "position": "G",
+      "birthDate": "2007-01-25",
+      "shirtNumber": 31
+    },
+    {
+      "id": "espn:84774",
+      "name": "Manuel Neuer",
+      "aliases": [
+        "Manuel Neuer",
+        "M. Neuer"
+      ],
+      "country": "Germany",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "G",
+      "birthDate": "1986-03-27",
+      "shirtNumber": 1
+    },
+    {
+      "id": "espn:97111",
+      "name": "Hiroki Ito",
+      "aliases": [
+        "Hiroki Ito",
+        "H. Ito"
+      ],
+      "country": "Japan",
+      "clubId": "132",
+      "club": "Bayern Münih",
+      "leagueId": "ger.1",
+      "league": "Bundesliga",
+      "position": "D",
+      "birthDate": "1999-05-12",
+      "shirtNumber": 21
+    }
+  ]
+}

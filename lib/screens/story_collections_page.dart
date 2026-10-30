@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../app/game_audio.dart';
 import '../app/route_appearance.dart';
 import '../widgets/pitch_ui.dart';
 import 'journey_passport_page.dart';
@@ -93,7 +94,7 @@ class StoryCollectionsPage extends StatelessWidget {
                   return;
                 }
                 Navigator.of(context)
-                    .push(LinkballRoute(builder: (_) => entry.page));
+                    .push(LinkballRoute(builder: (_) => MusicScene(track: MusicTrack.story, child: entry.page)));
               },
             ),
           ),

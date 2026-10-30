@@ -1,5 +1,5 @@
 {
-  "version": "arcade-v1-d8103483c40c7bbb",
+  "version": "arcade-v1-eda7625d2ae31237",
   "scenarios": [
     {
       "style": "speed",
@@ -9,7 +9,7 @@
         "style": "speed",
         "pairType": "clubClub",
         "difficulty": "normal",
-        "dataVersion": "arcade-v1-d8103483c40c7bbb",
+        "dataVersion": "arcade-v1-eda7625d2ae31237",
         "revision": 0,
         "phase": "active",
         "createdAt": 100000,
@@ -1059,7 +1059,7 @@
         "style": "survival",
         "pairType": "clubClub",
         "difficulty": "normal",
-        "dataVersion": "arcade-v1-d8103483c40c7bbb",
+        "dataVersion": "arcade-v1-eda7625d2ae31237",
         "revision": 0,
         "phase": "active",
         "createdAt": 100000,

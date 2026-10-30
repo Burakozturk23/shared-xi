@@ -265,6 +265,10 @@ class OrtakSahaTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: p.background,
         indicatorColor: p.tint,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: p.accent.withValues(alpha: .4)),
+        ),
         elevation: 0,
         height: 80,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,

@@ -318,7 +318,11 @@ void main() {
   for (final dark in [true, false]) {
     for (final tab in ['Güçlendirmeler', 'Avatarlar', 'Formalar']) {
       testWidgets('$tab preview ${dark ? 'dark' : 'light'}', (t) async {
-        final key = await mount(t, StorePage(gateway: ShopFake(), initialTab: 'boost'), dark: dark);
+        final key = await mount(
+          t,
+          StorePage(gateway: ShopFake(), initialTab: 'boost'),
+          dark: dark,
+        );
         await t.tap(find.text(tab));
         await t.pumpAndSettle();
         if (tab == 'Formalar') {
@@ -341,7 +345,11 @@ void main() {
   testWidgets('narrow large text store and original jersey remain readable', (
     t,
   ) async {
-    final key = await mount(t, StorePage(gateway: ShopFake(), initialTab: 'boost'), large: true);
+    final key = await mount(
+      t,
+      StorePage(gateway: ShopFake(), initialTab: 'boost'),
+      large: true,
+    );
     await reveal(t, find.text('İlk Harf'));
     await t.ensureVisible(find.text('Satın al').first);
     await t.pumpAndSettle();

@@ -196,9 +196,11 @@ function act(c, r, input, time) {
       const player = r.question.answers.map((id) => c.players[id]).find((p) => !r.found.includes(p.id) &&
         !r.hinted.includes(p.id));
       if (!player) fail("failed-precondition", "Yeni ipucu kalmadı.");
-      if (!r.freeUsed) r.freeUsed = true;
-      else if (r.adCredits > 0) r.adCredits--;
-      else fail("resource-exhausted", "Ücretsiz ipucu kullanıldı. Doğrulanmış reklam hakkı gerekli.");
+      if (r.boostPolicy?.version !== 1) {
+        if (!r.freeUsed) r.freeUsed = true;
+        else if (r.adCredits > 0) r.adCredits--;
+        else fail("resource-exhausted", "Ücretsiz ipucu kullanıldı. Doğrulanmış reklam hakkı gerekli.");
+      }
       r.hints++; r.hinted.push(player.id);
       r.hint = player.name.split(/\s+/).map((s) => s[0] + ".").join(" ") + " · " + player.country;
     } else if (input.action === "answer") {
@@ -276,6 +278,23 @@ function act(c, r, input, time) {
       }
     } else fail("invalid-argument", "Geçersiz Pyramid işlemi.");
   } else {
+    if (input.action === "hint") {
+      if (!require("./boosts").paid(r)) fail("failed-precondition", "Bu oyunda çift desteği açık değil.");
+      if (r.lockUntil > time || r.open.length) fail("failed-precondition", "Önce açık kartları tamamla.");
+      if (r.hints >= 1) fail("resource-exhausted", "Bu oyunun çift önerisi kullanıldı.");
+      const player = r.board.cards.find((x) => x.type === "player" && !r.matched.includes(x.pair));
+      const club = player && r.board.cards.find((x) => x.type === "club" && x.pair === player.pair);
+      const career = player && c.careers.find((x) => x.playerId === player.entityId);
+      if (!club || !career?.clubs.includes(club.entityId) || !career.sources?.length) {
+        fail("unavailable", "Doğrulanmış çift bulunamadı; destek harcanmadı.");
+      }
+      const cards = [player, club].map((x) => ({id: x.id, position: r.board.cards.indexOf(x) + 1,
+        name: x.name}));
+      r.matchingHint = {cards, sources: career.sources};
+      r.hint = cards.map((x) => `${x.position}. kart: ${x.name}`).join(" · ");
+      r.hints++;
+      return;
+    }
     if (input.action !== "flip") fail("invalid-argument", "Geçersiz Matching işlemi.");
     if (r.lockUntil > time) fail("failed-precondition", "Kartlar kapanana kadar bekle.");
     const card = r.board.cards.find((x) => x.id === input.cardId);
@@ -300,7 +319,9 @@ function act(c, r, input, time) {
 function publicRun(c, raw, time) {
   const r = hydrate(raw); if (!r) return null;
   const {question, board, filled, undo, history} = r;
-  const v = {...r};
+  const support = require("./boosts").view(r);
+  const v = {...r, ...(support ? {support} : {})};
+  delete v.boostPolicy; delete v.boostUses;
   for (const key of ["actions", "question", "board", "filled", "undo", "wrongInputs", "adReceipts", "history",
     "used", "hinted"]) delete v[key];
   v.serverNow = time; v.totalRemainingMs = Math.max(0, 120000 - r.activeMs - (r.penaltyMs || 0));

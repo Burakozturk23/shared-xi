@@ -1,3 +1,4 @@
+import 'supported_bot_page.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -12,15 +13,15 @@ import '../widgets/club_badge.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/player_avatar.dart';
 
-class VsBotRandomFivePage extends StatefulWidget {
-  const VsBotRandomFivePage({super.key, this.controllerFactory});
+class _LegacyVsBotRandomFivePage extends StatefulWidget {
+  const _LegacyVsBotRandomFivePage({this.controllerFactory});
   final VsBotRandomFiveController Function()? controllerFactory;
 
   @override
-  State<VsBotRandomFivePage> createState() => _VsBotRandomFivePageState();
+  State<_LegacyVsBotRandomFivePage> createState() => __LegacyVsBotRandomFivePageState();
 }
 
-class _VsBotRandomFivePageState extends State<VsBotRandomFivePage>
+class __LegacyVsBotRandomFivePageState extends State<_LegacyVsBotRandomFivePage>
     with WidgetsBindingObserver {
   late final VsBotRandomFiveController _c;
   final _answer = TextEditingController();
@@ -658,5 +659,16 @@ class _VsBotRandomFivePageState extends State<VsBotRandomFivePage>
         _history(),
       ],
     );
+  }
+}
+
+class VsBotRandomFivePage extends StatelessWidget {
+  const VsBotRandomFivePage({super.key, this.controllerFactory});
+  final VsBotRandomFiveController Function()? controllerFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyVsBotRandomFivePage(controllerFactory: controllerFactory);
+    return controllerFactory != null ? legacy : SupportedBotPage(mode: 'bot_random_five', legacy: legacy);
   }
 }

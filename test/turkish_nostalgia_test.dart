@@ -118,7 +118,9 @@ void main() {
       );
       await c.load();
       await drained(c);
-      for (final chapter in catalog.chapters.where((c) => c.tasks.every((t) => !t.serverValidated))) {
+      for (final chapter in catalog.chapters.where(
+        (c) => c.tasks.every((t) => !t.serverValidated),
+      )) {
         c.open(chapter.id);
         c.start();
         solve(c);
@@ -146,7 +148,13 @@ void main() {
       expect(restored.pending.length, 24);
       gateway.offline = false;
       await restored.sync();
-      expect(gateway.submitted, catalog.tasks.where((t) => !t.serverValidated).map((t) => t.id).toList());
+      expect(
+        gateway.submitted,
+        catalog.tasks
+            .where((t) => !t.serverValidated)
+            .map((t) => t.id)
+            .toList(),
+      );
       expect(restored.pending, isEmpty);
       expect(restored.confirmed.length, 24);
       restored.open(catalog.chapters.first.id, replay: true);

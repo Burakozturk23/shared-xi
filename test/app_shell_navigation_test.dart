@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/app/app_preferences.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
 import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/main.dart';
 import 'package:shared_xi/screens/app_settings_page.dart';
@@ -49,12 +50,8 @@ void main() {
           'Sahte Kulüp',
         ],
         'Harf & Kelime': ['Futbol Lingo', 'Passaparola', 'Anagram'],
-        'Hız & Eşleştirme': ['Burst', 'Pyramid', 'Matching'],
-        'Seçim & Sıralama': [
-          'O mu Bu mu?',
-          'Higher or Lower',
-          'Blind Ranking',
-        ],
+        'Hız & Eşleştirme': ['Solo Grid', 'Burst', 'Pyramid', 'Matching'],
+        'Seçim & Sıralama': ['O mu Bu mu?', 'Higher or Lower', 'Blind Ranking'],
         'Hikâye': ['Story Mode'],
       };
       expect(GameCatalog.groups.map((group) => group.title), expected.keys);
@@ -70,8 +67,8 @@ void main() {
       expect(GameCatalog.games.where((game) => game.category.isEmpty), [
         GameCatalog.vsBot,
       ]);
-      expect(GameCatalog.games.length, 22);
-      expect(GameCatalog.games.map((game) => game.title).toSet().length, 22);
+      expect(GameCatalog.games.length, 23);
+      expect(GameCatalog.games.map((game) => game.title).toSet().length, 23);
     },
   );
 
@@ -105,6 +102,25 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('every tab keeps coins and energy in the app bar only', (
+    tester,
+  ) async {
+    await openApp(tester);
+    for (final tab in ['Ana Sayfa', 'Oyunlar', 'Online', 'Profil']) {
+      await tester.tap(find.text(tab).last);
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(HubEconomyPills),
+        ),
+        findsOneWidget,
+        reason: tab,
+      );
+      expect(find.byType(HubEconomyPills), findsOneWidget, reason: tab);
+    }
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'Groups open their own list and global search survives tab back',
     (tester) async {
@@ -114,16 +130,22 @@ void main() {
       expect(find.text('Botla oyna'), findsOneWidget);
       expect(find.byType(PitchTile), findsNWidgets(6));
       expect(find.text('Club Manager'), findsNothing);
-      await tester.tap(find.text('Kadro & Yönetim'));
+      // The category tile, not its shortcut chip above the bot hero.
+      await tester.ensureVisible(find.text('Kadro & Yönetim').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Kadro & Yönetim').last);
       await tester.pumpAndSettle();
       expect(find.text('Club Manager'), findsOneWidget);
       expect(find.text('Vs Bot'), findsNothing);
-      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Harf 11'), findsOneWidget);
       expect(find.text('Squad Challenge'), findsOneWidget);
       expect(find.text('Hoca 11'), findsOneWidget);
       expect(find.text('Kadro Kasası'), findsOneWidget);
       await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      // The list keeps its scroll offset; return to the top to see the hero.
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, 2000));
       await tester.pumpAndSettle();
       expect(find.text('Botla oyna'), findsOneWidget);
       expect(find.byType(PitchTile), findsNWidgets(6));
@@ -161,12 +183,17 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Online').last);
     await tester.pumpAndSettle();
-    for (final label in ['Mod seç', 'Birlikte oyna']) {
-      await tester.ensureVisible(find.text(label));
+    for (final label in ['Hemen Eşleş', 'Oda Aç', 'Kodu Gir']) {
+      // Centre the action so the navigation bar cannot cover it.
+      Scrollable.ensureVisible(tester.element(find.text(label)), alignment: .5);
+      await tester.pumpAndSettle();
       await tester.tap(find.text(label));
       await tester.pumpAndSettle();
       expect(find.byType(LinkballSignInPage), findsOneWidget);
-      expect(Theme.of(tester.element(find.byType(LinkballSignInPage))).brightness, Brightness.light);
+      expect(
+        Theme.of(tester.element(find.byType(LinkballSignInPage))).brightness,
+        Brightness.light,
+      );
       expect(
         tester
             .widget<LinkballSignInPage>(find.byType(LinkballSignInPage))

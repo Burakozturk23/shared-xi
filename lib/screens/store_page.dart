@@ -33,6 +33,7 @@ class _StorePageState extends State<StorePage> {
   bool _loading = false, _busy = false, _error = false, _ownedOnly = false;
   late String _tab;
   String _kitCategory = 'all';
+  String _boostCategory = 'all';
   AvatarBrowserFilter _avatarFilter = const AvatarBrowserFilter();
   final _scroll = ScrollController();
   bool _confirming = false;
@@ -257,6 +258,8 @@ class _StorePageState extends State<StorePage> {
         ? [for (final a in filteredAvatars) offersByAvatar[a.id]!]
         : d.offers.where((o) => o.itemType == _tab &&
             (_tab != 'kit' || _kitCategory == 'all' || o.category == _kitCategory) &&
+            (_tab != 'boost' || _boostCategory == 'all' ||
+              (_boostCategory == 'packs' ? o.units > 1 : o.boostCategory == _boostCategory)) &&
             (!_ownedOnly || ownedIds.contains(o.itemId))).toList();
     final previewCount = avatarOffers.where((o) => o.isPreview).length;
     return CustomScrollView(
@@ -344,10 +347,19 @@ class _StorePageState extends State<StorePage> {
                 ],
               ),
               const SizedBox(height: 12),
-              if (_tab == 'boost')
+              if (_tab == 'boost') ...[
                 const Text(
-                  'Tek kişilik Futbol Lingo, Gizemli Futbolcu ve Transfer Detective için. Her destek bir turda bir kez kullanılır. 3’lü paketler daha uygundur.',
+                  'Destekler uyumlu tek kişilik oyunlarda kullanılır. Oyun içindeki destek paneli, kullanılabilecek türü ve sonucu nasıl etkileyeceğini gösterir.',
                 ),
+                const SizedBox(height: 12),
+                Wrap(spacing: 8, runSpacing: 8, children: [
+                  for (final category in const [
+                    ('all', 'Tümü'), ('Temel', 'Temel'), ('Taktiksel', 'Taktiksel'),
+                    ('Güçlü', 'Güçlü'), ('packs', 'Paketler'),
+                  ]) ChoiceChip(label: Text(category.$2), selected: _boostCategory == category.$1,
+                    onSelected: _busy ? null : (_) => setState(() => _boostCategory = category.$1)),
+                ]),
+              ],
               if (_tab == 'avatar') ...[
                 const Text(
                   'Futbolcu, teknik direktör ve özel portrelerden avatarını seç. Satın aldıktan sonra profilinde kullanabilirsin.',
@@ -415,6 +427,7 @@ class _StorePageState extends State<StorePage> {
                   _avatarFilter = const AvatarBrowserFilter();
                   _ownedOnly = false;
                   _kitCategory = 'all';
+                  _boostCategory = 'all';
                 }),
               ),
             ),
@@ -513,6 +526,12 @@ class _StorePageState extends State<StorePage> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 10),
+            if (o.itemType == 'boost') ...[
+              if (o.subtitle.isNotEmpty) Text(o.subtitle, style: Theme.of(context).textTheme.bodySmall),
+              if (o.compatibleModes.isNotEmpty) Text('Uyumlu oyunlar: ${o.compatibleModes}',
+                style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 10),
+            ],
             if (!o.isPreview && (!o.oneTime || !owned))
               Text(
                 '${o.priceCoins} Link Coin',

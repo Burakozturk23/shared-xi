@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/game_catalog.dart';
 import '../services/auth_service.dart';
 import '../app/game_launcher.dart';
@@ -75,7 +76,7 @@ class _PlayerJourneyListPageState extends State<PlayerJourneyListPage> {
       onTap: !unlocked ? null : () async {
         await GameLauncher.open(context, GameEntry(title: journey.subjectName, subtitle: '', icon: Icons.route,
           page: v2 ? JourneyV2Page(journeyId: journey.id, chapterId: widget.chapter.id) : PlayerJourneyPage(journey: journey),
-          requiresRepository: !v2, modern: v2,
+          requiresRepository: !v2, modern: v2, music: MusicTrack.story,
         ));
         if (mounted) await _loadProgress();
       },
