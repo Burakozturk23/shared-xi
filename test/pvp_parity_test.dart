@@ -96,6 +96,7 @@ void main() {
         final power = ManagerMatchService.instance.powerOf(
           xi,
           repository: repo,
+          sharedSpells: false,
           tactics: ManagerTactics(
             press: (t['press'] as num).toDouble(),
             tempo: (t['tempo'] as num).toDouble(),

@@ -180,17 +180,43 @@ void main() {
       await tester.tap(find.text('Maça çık'));
       await tester.pumpAndSettle();
       expect(find.byType(ClubManagerMatchPage), findsOneWidget);
+      // Nothing is stored before the half-time decision.
+      expect(find.text('DEVRE ARASI'), findsOneWidget);
+      expect((await store.load(ManagerDifficulty.easy)).matchesPlayed, 0);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('DEVRE ARASI'), findsOneWidget);
+      final protect = find.byKey(const ValueKey('halftime-protect'));
+      await tester.scrollUntilVisible(protect, 200);
+      await tester.ensureVisible(protect);
+      await tester.pumpAndSettle();
+      await tester.tap(protect);
+      await tester.pumpAndSettle();
       expect(find.text('Sezona dön').hitTestable(), findsOneWidget);
       final played = await store.load(ManagerDifficulty.easy);
       expect(played.matchesPlayed, 1);
       expect(played.season!.clubs.every((c) => c.played == 1), isTrue);
-      expect(played.budgetLink, ready.budgetLink + played.wins * 12);
+      expect(
+        played.budgetLink,
+        ready.budgetLink + played.wins * 12 + played.draws * 4,
+      );
       await tester.tap(find.text('Sezona dön'));
       await tester.pumpAndSettle();
       expect(find.byType(ClubManagerSeasonPage), findsOneWidget);
       expect(find.byType(ClubManagerSquadPage), findsNothing);
       expect(find.byType(ClubManagerPrematchPage), findsNothing);
       expect(find.text('Hafta 2 / 38'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Yönetim hedefi: ilk 4'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const PageStorageKey<String>('manager-overview')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(find.text('Yönetim hedefi: ilk 4'), findsOneWidget);
       expect(find.text('Maça hazırlan').hitTestable(), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
@@ -332,6 +358,8 @@ void main() {
           store: interrupted,
         ),
       );
+      await tester.tap(find.byKey(const ValueKey('halftime-keep')));
+      await tester.pumpAndSettle();
       expect(find.text('Sonuç kaydedilemedi'), findsOneWidget);
       final first = await interrupted.load(ManagerDifficulty.medium);
       expect(first.matchesPlayed, 1);

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../models/daily_footballer.dart';
+import '../models/manager_rating.dart';
+import '../models/manager_season.dart';
 
 /// Opens the system share sheet. Tests swap it to observe the text.
 Future<void> Function(String text) shareResultText = (text) async {
@@ -42,6 +44,23 @@ String dailyQuestionShare(Map<String, dynamic> data) {
 }
 
 /// "Paylaş" opens the share sheet; "Kopyala" keeps the old clipboard path.
+/// Club Manager season card: place, points, record and the board target.
+String managerSeasonShare({
+  required ManagerSeason season,
+  required int seasonNumber,
+  required ManagerDifficulty difficulty,
+}) {
+  final u = season.user;
+  final rank = season.userRank();
+  return [
+    'Linkball · Club Manager',
+    'Sezon $seasonNumber · ${difficulty.label}',
+    '${rank == 1 ? '🏆 Şampiyon' : '$rank. sıra'} · ${u.points} puan',
+    '${u.won}G ${u.drawn}B ${u.lost}M · ${u.gf}:${u.ga}',
+    'Hedef ilk ${difficulty.boardTargetRank} ${rank <= difficulty.boardTargetRank ? '✅' : '❌'}',
+  ].join('\n');
+}
+
 class ShareResultButtons extends StatelessWidget {
   const ShareResultButtons({super.key, required this.text});
   final String text;

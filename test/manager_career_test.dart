@@ -432,14 +432,21 @@ void main() {
       expect(career.season!.isComplete, isTrue);
       expect(
         career.budgetLink,
-        initial.budgetLink + career.wins * difficulty.winBonusLink,
+        initial.budgetLink +
+            career.wins * difficulty.winBonusLink +
+            career.draws * difficulty.drawBonusLink,
       );
       final next = await store.nextSeason(difficulty);
       expect(next.season!.id, isNot(career.season!.id));
       expect(next.season!.user.played, 0);
       expect(next.archivedSeasons.single.isComplete, isTrue);
       expect(next.archivedSeasons.single.fixtures.length, 38);
-      expect(next.budgetLink, career.budgetLink);
+      // The season-end reward is paid once, on rollover.
+      expect(
+        next.budgetLink,
+        career.budgetLink +
+            difficulty.seasonRewardLink(career.season!.userRank()),
+      );
       expect(next.squadPlayerIds, career.squadPlayerIds);
       expect(next.matchesPlayed, 38);
       expect(next.seasonNumber, 2);
