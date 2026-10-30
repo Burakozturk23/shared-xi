@@ -113,6 +113,17 @@ def main() -> int:
                 )
         if actual["shadow_players"] != 0:
             return fail(f"shadow players leaked: {actual['shadow_players']}")
+        # A "club" linked to a large share of all players is a placeholder
+        # (Transfermarkt 515 = without club once was 11,135 links), and it
+        # fakes team-mate links in every shared-club game.
+        if scalar(con, "SELECT COUNT(*) FROM player_clubs WHERE club_id=515"):
+            return fail("placeholder club 515 (without club) has player links")
+        widest = con.execute(
+            "SELECT club_id, COUNT(DISTINCT player_id) FROM player_clubs "
+            "GROUP BY club_id ORDER BY 2 DESC LIMIT 1"
+        ).fetchone()
+        if widest and widest[1] > actual["players"] * 0.05:
+            return fail(f"club {widest[0]} is linked to {widest[1]:,} players (>5%)")
         if actual["roster_expansion_players"] != additions:
             return fail(
                 "roster expansion players: "
