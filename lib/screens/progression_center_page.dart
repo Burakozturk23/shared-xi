@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import '../app/game_audio.dart';
 import '../app/app_copy.dart';
 import '../app/app_feedback.dart';
 import '../app/game_catalog.dart';
@@ -95,7 +94,8 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
     setState(() => _claiming = true);
     try {
       String message;
-      bool granted, levelUp = false;
+      bool granted, levelUp = false, streak = false;
+      var coins = 0, xp = 0;
       if (mission == null) {
         final before = _progression?.level.level;
         final result = await widget.gateway.claimDaily();
@@ -105,6 +105,9 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         if (granted && before != null && result.profile.level.level > before) {
           levelUp = true;
         }
+        coins = result.amount;
+        xp = result.xp;
+        streak = result.profile.dailyReward.currentStreak > 1;
         message = granted
             ? '+${result.amount} Link Coin · +${result.xp} XP'
             : c(
@@ -119,14 +122,23 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         if (!mounted) return;
         setState(() => _missions = result.profile);
         granted = result.granted;
+        coins = result.amount;
+        xp = mission.rewardXp;
         message = granted
-            ? '+${result.amount} Link Coin'
+            ? '+${result.amount} Link Coin${xp > 0 ? ' · +$xp XP' : ''}'
             : c(
                 'Ödül zaten alınmış veya şu anda kullanılamıyor.',
                 'Reward already claimed or currently unavailable.',
               );
       }
-      if (granted) AppFeedback.reward(levelUp ? Sfx.levelUp : Sfx.coinReward);
+      if (granted) {
+        AppFeedback.earned(
+          coins: coins,
+          xp: xp,
+          streak: streak,
+          levelUp: levelUp,
+        );
+      }
       if (mounted)
         ScaffoldMessenger.of(
           context,

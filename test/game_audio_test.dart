@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_xi/app/app_feedback.dart';
 import 'package:shared_xi/app/app_preferences.dart';
 import 'package:shared_xi/app/game_audio.dart';
 
@@ -20,7 +22,7 @@ class AudioLog implements AudioBackend {
   @override
   Future<void> stopMusic() async => calls.add('stop');
   @override
-  Future<void> playSfx(String asset, double volume) async =>
+  Future<void> playSfx(String asset, double volume, {Sfx? sfx}) async =>
       calls.add('sfx:$asset@$volume');
   @override
   Future<void> dispose() async {}
@@ -81,16 +83,18 @@ void main() {
   );
 
   testWidgets(
-    'story and quiet lobbies play lower; music switch stops and restarts',
+    'tracks play at one level; quiet lobbies lower; music switch stops and restarts',
     (t) async {
       audio.start();
       await t.pump(settle);
       final story = audio.enter(MusicTrack.story);
       await t.pump(settle);
-      expect(log.volumes.last, closeTo(.20, .001));
+      // The story cut is the quietest: it gets a gain instead of a cut (-22.3 -> -20 LUFS).
+      expect(log.volumes.last, closeTo(.27 * MusicTrack.story.gain, .001));
+      expect(MusicTrack.story.gain, greaterThan(1));
       audio.update(story, MusicTrack.menu, quiet: true);
       await t.pump(settle);
-      expect(log.volumes.last, closeTo(.135, .001));
+      expect(log.volumes.last, closeTo(.27 * MusicTrack.menu.gain * .5, .001));
       await prefs.setMusic(false);
       await t.pump(settle);
       expect(log.calls.last, 'stop');
@@ -103,9 +107,99 @@ void main() {
       expect(log.music.last, 'music:${MusicTrack.competitive.asset}');
       await prefs.setMusicVolume(.5);
       await t.pump();
-      expect(log.volumes.last, closeTo(.5, .001));
+      expect(log.volumes.last, closeTo(.5 * MusicTrack.competitive.gain, .001));
     },
   );
+
+  test(
+    'every cut lands on the same loudness; the hot MP3 masters are turned down',
+    () {
+      for (final track in MusicTrack.values) {
+        for (final mp3 in [true, false]) {
+          final lufs = mp3 ? track.mp3Lufs : track.oggLufs;
+          final level =
+              lufs + 20 * math.log(track.gainFor(mp3: mp3)) / math.ln10;
+          expect(
+            level,
+            closeTo(MusicTrack.targetLufs, .01),
+            reason: track.file,
+          );
+        }
+      }
+      // neon_pas_v3.mp3 measured -13.6 LUFS (peak -1.8 dBFS): about 6.4 dB down.
+      expect(MusicTrack.competitive.gainFor(mp3: true), closeTo(.479, .005));
+      expect(MusicTrack.story.gainFor(mp3: true), greaterThan(1));
+    },
+  );
+
+  testWidgets('a track change fades out from the level actually heard', (
+    t,
+  ) async {
+    audio.start();
+    await t.pump(settle);
+    final story = audio.enter(MusicTrack.story);
+    await t.pump(settle);
+    final heard = log.volumes.last;
+    log.volumes.clear();
+    audio.leave(story);
+    await t.pump(settle);
+    // The first fade-out step is just below the story level, never a jump up
+    // to the raw music volume.
+    expect(log.volumes.first, closeTo(heard * 6 / 7, .001));
+    expect(log.volumes.first, lessThan(heard));
+  });
+
+  test(
+    'the voice pool keeps a long stinger and cuts the oldest short effect',
+    () {
+      var clock = DateTime(2026, 11, 1);
+      final pool = VoicePool(3, clock: () => clock);
+      expect(pool.take(Sfx.champion), 0);
+      expect(pool.take(Sfx.uiTap), 1);
+      expect(pool.take(Sfx.answerCorrect), 2);
+      clock = clock.add(const Duration(milliseconds: 50));
+      // All busy: the champion voice (2.7 s) is kept; the short one ending first goes.
+      expect(pool.take(Sfx.coinReward), 1);
+      expect(pool.take(Sfx.cardFlip), 2);
+      clock = clock.add(const Duration(seconds: 3));
+      expect(pool.take(Sfx.goal), 0);
+    },
+  );
+
+  testWidgets('web unlock replays the current track at its level', (t) async {
+    audio.start();
+    await t.pump(settle);
+    final before = log.music.length;
+    audio.retryMusic();
+    await t.pump();
+    expect(log.music.length, before + 1);
+    expect(log.music.last, 'music:${MusicTrack.menu.asset}');
+  });
+
+  testWidgets('a grant plays its coin or streak cue, then the XP cue', (
+    t,
+  ) async {
+    await AppFeedback.earned(coins: 15, xp: 15);
+    await t.pump(AppFeedback.xpDelay);
+    expect(log.sfx, [
+      'sfx:audio/sfx/coin_reward.wav@0.55',
+      'sfx:audio/sfx/xp_reward.wav@0.55',
+    ]);
+    now = now.add(const Duration(seconds: 1));
+    log.calls.clear();
+    await AppFeedback.earned(coins: 20, xp: 25, streak: true);
+    await t.pump(AppFeedback.xpDelay);
+    expect(log.sfx, [
+      'sfx:audio/sfx/streak.wav@0.55',
+      'sfx:audio/sfx/xp_reward.wav@0.55',
+    ]);
+    now = now.add(const Duration(seconds: 1));
+    log.calls.clear();
+    await AppFeedback.earned(coins: 20, xp: 25, levelUp: true);
+    await t.pump(AppFeedback.xpDelay);
+    expect(log.sfx, ['sfx:audio/sfx/level_up.wav@0.55']);
+    await t.pump(settle); // the level-up cue ducks the music for 1.6 s
+  });
 
   testWidgets(
     'background and rewarded ads pause music and resume the same track',

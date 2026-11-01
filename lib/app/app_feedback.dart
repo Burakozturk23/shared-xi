@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 
 import 'app_preferences.dart';
@@ -13,7 +15,8 @@ class AppFeedback {
 
   /// Pack effects for verified events. Callers invoke these only after the
   /// server/controller confirmed the result (coin and XP after the ledger).
-  static void sfx(Sfx sound, {String? eventId}) => GameAudio.instance?.play(sound, eventId: eventId);
+  static void sfx(Sfx sound, {String? eventId}) =>
+      GameAudio.instance?.play(sound, eventId: eventId);
   static void hint() => sfx(Sfx.hintReveal);
 
   /// Server-granted reward: same haptic as a correct answer with its own cue.
@@ -24,6 +27,34 @@ class AppFeedback {
       audio.play(sound);
     } else {
       await _sound(preferences);
+    }
+  }
+
+  /// Gap between the coin (or streak) cue and the XP cue that follows it.
+  static const xpDelay = Duration(milliseconds: 450);
+
+  /// A confirmed grant: level-up, a continuing streak or coins play first;
+  /// earned XP follows with its own cue (skipped on level-up, which covers it).
+  static Future<void> earned({
+    int coins = 0,
+    int xp = 0,
+    bool streak = false,
+    bool levelUp = false,
+  }) async {
+    if (coins <= 0 && xp <= 0 && !levelUp) return;
+    final first = levelUp
+        ? Sfx.levelUp
+        : streak
+        ? Sfx.streak
+        : coins > 0
+        ? Sfx.coinReward
+        : Sfx.xpReward;
+    await reward(first);
+    if (xp > 0 &&
+        first != Sfx.xpReward &&
+        !levelUp &&
+        GameAudio.instance != null) {
+      Timer(xpDelay, () => GameAudio.instance?.play(Sfx.xpReward));
     }
   }
 

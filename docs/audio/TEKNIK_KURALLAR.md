@@ -11,7 +11,7 @@
 5. Doğru/yanlış SFX sadece cevap client/controller/sunucu onayından sonra. Hata, network gecikmesi ve yanlış kullanıcı girişini karıştırma.
 6. Coin sesi sadece idempotent backend/ledger ödemesinden sonra. İpucunda Coin kazanma sesi çalma.
 7. Reklam oynarken, uygulama arka plandayken veya başka medya ses odağını alınca BGM pause/duck yap; döndüğünde gerektiğinde continue.
-8. Müzik/efekt/titreşim ayrı ayarlar, ayrı ses seviyesi. Tavsiye başlangıç M1/M3/M4/M5 ~%27, Story %20, SFX ~%55. Kullanıcının kapatma tercihine saygı göster.
+8. Müzik/efekt/titreşim ayrı ayarlar, ayrı ses seviyesi. Tavsiye başlangıç müzik ~%27, SFX ~%55. Her müzik dosyası (MP3 ve OGG ayrı) ölçülen tümleşik ses yüksekliğine göre `MusicTrack.gain` ile -20 LUFS'a eşitlenir; Story için ayrı kısma yoktur. Yeni ya da değişen bir müzik dosyasında `mp3Lufs`/`oggLufs` yeniden ölçülmelidir. Kullanıcının kapatma tercihine saygı göster.
 9. SFX benzer vuruşları 120ms throttle, aynı ses için overlap sınırı, genel 3-voice SFX sınırı. Online aynı event ID yeniden gelirse ikinci kez çalma.
 10. Klavyede her karakter için click yok. Sayaç son 5sn ancak oyuncuyu bunaltmayacak seyrek sinyal. Sessiz hata geri bildirimi metin+ikonla da anlaşılmalı.
 

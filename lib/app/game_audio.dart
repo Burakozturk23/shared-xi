@@ -1,59 +1,79 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'dart:math' as math;
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import 'app_preferences.dart';
 
 /// Five shared tracks from the 25 Oct 2026 audio pack (M1–M5).
+///
+/// [mp3Lufs] / [oggLufs] are the measured integrated loudness (EBU R128) of
+/// each cut. The MP3 masters run up to 7 dB hotter than the Ogg loops, so
+/// without a per-cut gain Apple and web players heard the rival and final
+/// themes harsh and the story theme faint.
 enum MusicTrack {
-  menu('neon_tribun_v2_5'),
-  story('kupa_ani_v6_story'),
-  puzzle('tactical_focus_v2'),
-  rush('final_whistle_rush_v2'),
-  competitive('neon_pas_v3');
+  menu('neon_tribun_v2_5', -17.1, -20.1),
+  story('kupa_ani_v6_story', -22.5, -22.3),
+  puzzle('tactical_focus_v2', -17.5, -19.4),
+  rush('final_whistle_rush_v2', -14.7, -20.6),
+  competitive('neon_pas_v3', -13.6, -20.6);
 
-  const MusicTrack(this.file);
+  const MusicTrack(this.file, this.mp3Lufs, this.oggLufs);
   final String file;
+  final double mp3Lufs, oggLufs;
+
+  /// Every cut is brought to this level before the player's volume applies.
+  static const targetLufs = -20.0;
+
+  static bool get _mp3 => kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS;
 
   /// Android/desktop loop the Ogg Vorbis cut; Apple and web use the MP3 cut.
-  String get asset {
-    final apple = !kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS);
-    return kIsWeb || apple ? 'audio/music/$file.mp3' : 'audio/music/${file}_loop.ogg';
-  }
+  String get asset => _mp3 ? 'audio/music/$file.mp3' : 'audio/music/${file}_loop.ogg';
+
+  /// Linear gain that brings the cut this platform plays to [targetLufs].
+  double get gain => gainFor(mp3: _mp3);
+  double gainFor({required bool mp3}) => math.pow(10, (targetLufs - (mp3 ? mp3Lufs : oggLufs)) / 20).toDouble();
 }
 
 /// The 23 effects in the pack. Asset names match `assets/audio/sfx/<file>.wav`.
+/// [ms] is the measured length of each file.
 enum Sfx {
-  achievement('achievement'),
-  answerCorrect('answer_correct'),
-  answerWrong('answer_wrong'),
-  cardFlip('card_flip'),
-  cardSwipe('card_swipe'),
-  champion('champion'),
-  coachRoulette('coach_roulette_short'),
-  coinReward('coin_reward'),
-  connectionAlert('connection_alert_soft'),
-  countdown('countdown'),
-  goal('goal'),
-  hintReveal('hint_reveal_soft'),
-  levelUp('level_up'),
-  matchStart('match_start'),
-  opponentJoin('online_opponent_join'),
-  perfectCombo('perfect_combo'),
-  roundTransition('round_transition'),
-  slotLock('slot_lock'),
-  softConfirm('soft_confirm'),
-  streak('streak'),
-  uiTap('ui_tap'),
-  whistle('whistle'),
-  xpReward('xp_reward');
+  achievement('achievement', 1400),
+  answerCorrect('answer_correct', 360),
+  answerWrong('answer_wrong', 800),
+  cardFlip('card_flip', 280),
+  cardSwipe('card_swipe', 450),
+  champion('champion', 2680),
+  coachRoulette('coach_roulette_short', 1350),
+  coinReward('coin_reward', 630),
+  connectionAlert('connection_alert_soft', 1050),
+  countdown('countdown', 180),
+  goal('goal', 2000),
+  hintReveal('hint_reveal_soft', 750),
+  levelUp('level_up', 1360),
+  matchStart('match_start', 1200),
+  opponentJoin('online_opponent_join', 1100),
+  perfectCombo('perfect_combo', 1100),
+  roundTransition('round_transition', 950),
+  slotLock('slot_lock', 320),
+  softConfirm('soft_confirm', 330),
+  streak('streak', 570),
+  uiTap('ui_tap', 100),
+  whistle('whistle', 530),
+  xpReward('xp_reward', 840);
 
-  const Sfx(this.file);
+  const Sfx(this.file, this.ms);
   final String file;
+  final int ms;
+
+  /// Stingers long enough that cutting them midway is audible.
+  bool get long => ms >= 1300;
   String get asset => 'audio/sfx/$file.wav';
 
   /// Outcome stingers duck the current music instead of fighting it.
@@ -67,8 +87,41 @@ abstract class AudioBackend {
   Future<void> pauseMusic();
   Future<void> resumeMusic();
   Future<void> stopMusic();
-  Future<void> playSfx(String asset, double volume);
+  /// [sfx] lets the backend keep long stingers playing (see [VoicePool]).
+  Future<void> playSfx(String asset, double volume, {Sfx? sfx});
   Future<void> dispose();
+}
+
+/// Picks the voice for a new effect: a voice that has finished first; when all
+/// three are busy, the one ending soonest among those not playing a long
+/// stinger (a champion or goal sound is cut only if every voice holds one).
+class VoicePool {
+  VoicePool(this.size, {DateTime Function()? clock}) : _clock = clock ?? DateTime.now;
+  final int size;
+  final DateTime Function() _clock;
+  late final List<DateTime> _until = List.filled(size, DateTime.fromMillisecondsSinceEpoch(0));
+  late final List<bool> _long = List.filled(size, false);
+  int take(Sfx? sfx) {
+    final now = _clock();
+    var pick = -1;
+    for (var i = 0; i < size; i++) {
+      if (!_until[i].isAfter(now)) {
+        pick = i; break;
+      }
+    }
+    if (pick < 0) {
+      for (final longOk in [false, true]) {
+        for (var i = 0; i < size; i++) {
+          if (!longOk && _long[i]) continue;
+          if (pick < 0 || _until[i].isBefore(_until[pick])) pick = i;
+        }
+        if (pick >= 0) break;
+      }
+    }
+    _until[pick] = now.add(Duration(milliseconds: sfx?.ms ?? 1000));
+    _long[pick] = sfx?.long ?? false;
+    return pick;
+  }
 }
 
 class AudioplayersBackend implements AudioBackend {
@@ -97,7 +150,7 @@ class AudioplayersBackend implements AudioBackend {
   }
   late final AudioPlayer _music;
   late final List<AudioPlayer> _sfx;
-  int _next = 0;
+  final VoicePool _voices = VoicePool(GameAudio.maxVoices);
   // Audio is optional: unsupported platforms and missing codecs stay silent.
   static Future<void> _guard(Future<void> Function() task) async {
     try { await task(); } catch (error) { debugPrint('[GameAudio] $error'); }
@@ -115,9 +168,9 @@ class AudioplayersBackend implements AudioBackend {
   @override
   Future<void> stopMusic() => _guard(_music.stop);
   @override
-  Future<void> playSfx(String asset, double volume) => _guard(() async {
-    // A fixed pool of three voices: the oldest effect is cut, never a fourth layer.
-    final player = _sfx[_next]; _next = (_next + 1) % _sfx.length;
+  Future<void> playSfx(String asset, double volume, {Sfx? sfx}) => _guard(() async {
+    // A fixed pool of three voices, never a fourth layer; long stingers are kept.
+    final player = _sfx[_voices.take(sfx)];
     await player.stop(); await player.play(AssetSource(asset), volume: volume);
   });
   @override
@@ -147,7 +200,6 @@ class GameAudio with WidgetsBindingObserver {
   static const throttle = Duration(milliseconds: 120);
   static const fade = Duration(milliseconds: 700);
   static const _fadeSteps = 7;
-  static const _storyLevel = 0.20 / 0.27;
 
   final AppPreferences preferences;
   final AudioBackend _backend;
@@ -163,6 +215,9 @@ class GameAudio with WidgetsBindingObserver {
   int _generation = 0;
   Timer? _duckTimer;
   bool _ducked = false;
+  // The volume last sent to the backend: fades start from what is really heard.
+  double _heard = 0;
+  bool _webUnlockArmed = false;
 
   MusicTrack get track => _scenes.isEmpty ? MusicTrack.menu : _scenes.last.track;
   bool get _quiet => _scenes.isNotEmpty && _scenes.last.quiet;
@@ -170,11 +225,14 @@ class GameAudio with WidgetsBindingObserver {
   MusicTrack? get playing => _playing;
 
   double get _volume {
-    var v = preferences.musicVolume;
-    if (track == MusicTrack.story) v *= _storyLevel;
+    var v = preferences.musicVolume * track.gain;
     if (_quiet) v *= .5;
     if (_ducked) v *= .35;
     return v.clamp(0.0, 1.0);
+  }
+
+  Future<void> _setVolume(double v) {
+    _heard = v; return _backend.setMusicVolume(v);
   }
   bool get _audible => _started && _foreground && _suspensions.isEmpty && preferences.music;
 
@@ -182,6 +240,30 @@ class GameAudio with WidgetsBindingObserver {
   void start() {
     if (_started) return;
     _started = true; WidgetsBinding.instance.addObserver(this); _apply();
+    if (kIsWeb) _armWebUnlock();
+  }
+
+  // 7. Browsers block sound until the first gesture, and the first play()
+  // fails silently. The first tap anywhere restarts the current track once.
+  void _armWebUnlock() {
+    if (_webUnlockArmed) return;
+    _webUnlockArmed = true;
+    GestureBinding.instance.pointerRouter.addGlobalRoute(_webUnlock);
+  }
+  void _webUnlock(PointerEvent event) {
+    if (event is! PointerDownEvent) return;
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_webUnlock);
+    _webUnlockArmed = false;
+    retryMusic();
+  }
+
+  /// Plays the current track again from the start at its level (web unlock).
+  @visibleForTesting
+  void retryMusic() {
+    final loaded = _loaded;
+    if (loaded == null || !_audible || _paused) return;
+    _generation++;
+    unawaited(_backend.playMusic(loaded.asset, _volume).then((_) => _heard = _volume));
   }
 
   Object enter(MusicTrack track, {bool quiet = false}) {
@@ -214,14 +296,14 @@ class GameAudio with WidgetsBindingObserver {
     if (!force && last != null && now.difference(last) < throttle) return;
     _lastPlayed[sfx] = now;
     if (sfx.outcome) _duck();
-    unawaited(_backend.playSfx(sfx.asset, preferences.sfxVolume));
+    unawaited(_backend.playSfx(sfx.asset, preferences.sfxVolume, sfx: sfx));
   }
 
   void _duck() {
     _ducked = true; _duckTimer?.cancel();
-    if (_playing != null && !_paused) unawaited(_backend.setMusicVolume(_volume));
+    if (_playing != null && !_paused) unawaited(_setVolume(_volume));
     _duckTimer = Timer(const Duration(milliseconds: 1600), () {
-      _ducked = false; if (_playing != null && !_paused) unawaited(_backend.setMusicVolume(_volume));
+      _ducked = false; if (_playing != null && !_paused) unawaited(_setVolume(_volume));
     });
   }
 
@@ -240,7 +322,7 @@ class GameAudio with WidgetsBindingObserver {
       }
       _apply();
     } else if (_playing != null && !_paused) {
-      unawaited(_backend.setMusicVolume(_volume));
+      unawaited(_setVolume(_volume));
     }
   }
 
@@ -255,7 +337,7 @@ class GameAudio with WidgetsBindingObserver {
     }
     if (_playing == track && _loaded == track) {
       if (_paused) { _paused = false; unawaited(_backend.resumeMusic()); }
-      unawaited(_backend.setMusicVolume(_volume));
+      unawaited(_setVolume(_volume));
       return;
     }
     unawaited(_switch(track));
@@ -266,25 +348,26 @@ class GameAudio with WidgetsBindingObserver {
     final generation = ++_generation; final wasPaused = _paused;
     _playing = next; _paused = false;
     if (_loaded != null && !wasPaused) {
-      final from = preferences.musicVolume;
+      final from = _heard;
       for (var i = _fadeSteps - 1; i >= 0; i--) {
         await Future<void>.delayed(fade ~/ (_fadeSteps * 2));
         if (generation != _generation) return;
-        await _backend.setMusicVolume(from * i / _fadeSteps);
+        await _setVolume(from * i / _fadeSteps);
       }
     }
     if (generation != _generation) return;
     await _backend.playMusic(next.asset, 0);
-    _loaded = next;
+    _heard = 0; _loaded = next;
     for (var i = 1; i <= _fadeSteps; i++) {
       await Future<void>.delayed(fade ~/ (_fadeSteps * 2));
       if (generation != _generation) return;
-      await _backend.setMusicVolume(_volume * i / _fadeSteps);
+      await _setVolume(_volume * i / _fadeSteps);
     }
   }
 
   Future<void> dispose() async {
     _generation++; _duckTimer?.cancel(); preferences.removeListener(_preferencesChanged);
+    if (_webUnlockArmed) GestureBinding.instance.pointerRouter.removeGlobalRoute(_webUnlock);
     if (_started) WidgetsBinding.instance.removeObserver(this);
     await _backend.dispose();
   }

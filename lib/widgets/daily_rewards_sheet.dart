@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/app_copy.dart';
 import '../app/app_feedback.dart';
-import '../app/game_audio.dart';
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
 import '../models/mission_models.dart';
@@ -99,7 +98,13 @@ class _DailyRewardsSheetState extends State<DailyRewardsSheet> {
       final r = await widget.gateway.claimDaily();
       if (!mounted) return;
       setState(() => _progression = r.profile);
-      if (r.granted) AppFeedback.reward(Sfx.coinReward);
+      if (r.granted) {
+        AppFeedback.earned(
+          coins: r.amount,
+          xp: r.xp,
+          streak: r.profile.dailyReward.currentStreak > 1,
+        );
+      }
       _snack(
         r.granted
             ? '+${r.amount} Link Coin · +${r.xp} XP'
@@ -119,7 +124,7 @@ class _DailyRewardsSheetState extends State<DailyRewardsSheet> {
       final r = await widget.gateway.claimMission(m.id, periodKey: m.periodKey);
       if (!mounted) return;
       setState(() => _missions = r.profile);
-      if (r.granted) AppFeedback.reward(Sfx.coinReward);
+      if (r.granted) AppFeedback.earned(coins: r.amount, xp: m.rewardXp);
       _snack(
         r.granted
             ? '+${r.amount} Link Coin${m.rewardXp > 0 ? ' · +${m.rewardXp} XP' : ''}'
