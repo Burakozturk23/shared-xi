@@ -357,8 +357,8 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                 )
               : _kind == MissionKind.weekly
               ? c(
-                  '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} ödül · Pazartesi 00.00’da yenilenir · +0 XP / +0 SP',
-                  '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} rewards · Resets Monday at 00:00 Türkiye time · +0 XP / +0 SP',
+                  '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} ödül · Pazartesi 00.00’da yenilenir · Haftalık görevler SP vermez',
+                  '${m.weeklyCompletedCount}/${m.weeklyClaimLimit} rewards · Resets Monday at 00:00 Türkiye time · Weekly missions give no SP',
                 )
               : c(
                   'Aşamaları tamamla, sıradaki hedefi aç. Her kartta kazanacağın ödüller gösterilir.',
@@ -1026,6 +1026,12 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
           color: pc.limeInk,
           label: '+${m.rewardCoins} Link Coin',
         ),
+        if (m.rewardXp > 0)
+          _Reward(
+            icon: Icons.trending_up_rounded,
+            color: pc.success,
+            label: '+${m.rewardXp} XP',
+          ),
         if (m.rewardSp > 0)
           _Reward(
             icon: Icons.stars_rounded,

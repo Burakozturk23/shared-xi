@@ -5,6 +5,8 @@ const {dayKey, RewardError} = require("./rewarded_ads");
 const STEPS = 20;
 const STEP_SP = 100;
 const DAILY_CAP = 150;
+// Unlocked rewards of last month stay claimable during the new month's first days.
+const GRACE_DAYS = 3;
 function seasonAt(now) {
   const day = dayKey(now);
   const id = day.slice(0, 7);
@@ -12,6 +14,18 @@ function seasonAt(now) {
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
   return {id, startsOn: id + "-01", endsOn: id + "-" + last, day,
     daysLeft: last - Number(day.slice(8)) + 1};
+}
+function previousId(id) {
+  let [y, m] = id.split("-").map(Number); m--;
+  if (!m) {
+    m = 12; y--;
+  }
+  return `${y}-${String(m).padStart(2, "0")}`;
+}
+function seasonById(id) {
+  const [y, m] = id.split("-").map(Number);
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return {id, startsOn: id + "-01", endsOn: id + "-" + last, day: id + "-" + last, daysLeft: 0};
 }
 function points(claims, season, now) {
   const days = {};
@@ -23,7 +37,8 @@ function points(claims, season, now) {
     if (row.sourceType === "daily_reward") bucket.checkIn = 10;
     if (row.sourceType === "mission_reward") {
       const source = String(row.sourceId);
-      if (/^general__general_(ranked_play|ranked_wins|daily_days)_\d+$/.test(source)) bucket.career += 50;
+      if (/^general__general_(ranked_play|ranked_wins|daily_days)_\d+$/.test(source) ||
+        /^general__(solo_knowledge|mode_collector)_\d+$/.test(source)) bucket.career += 50;
       else if (/^\d{4}-\d{2}-\d{2}__daily_[a-z0-9_]+$/.test(source)) {
         bucket.daily = Math.min(90, bucket.daily + 30);
       }
@@ -40,6 +55,15 @@ function points(claims, season, now) {
 const reward = (step, lane) => step % 5 === 0 ? (lane === "pro" ? 100 : 60) : (lane === "pro" ? 40 : 20);
 const claimId = (id, step, lane) => `season_v1__${id}__${step}__${lane}`;
 function createService({db, isPro, grantCoins, now = Date.now}) {
+  const tiersOf = (claims, season, level) => Array.from({length: STEPS}, (_, i) => {
+    const step = i + 1;
+    return {step, requiredSp: step * STEP_SP, unlocked: level >= step,
+      freeCoins: reward(step, "free"), proCoins: reward(step, "pro"),
+      freeClaimed: !!claims[claimId(season.id, step, "free")],
+      proClaimed: !!claims[claimId(season.id, step, "pro")]};
+  });
+  const open = (tiers, pro) => tiers.reduce((n, t) => n + (t.unlocked && !t.freeClaimed ? 1 : 0) +
+    (pro && t.unlocked && !t.proClaimed ? 1 : 0), 0);
   async function status(uid) {
     const time = now();
     const season = seasonAt(time);
@@ -47,24 +71,33 @@ function createService({db, isPro, grantCoins, now = Date.now}) {
     const claims = snapshot.val()?.claims || {};
     const score = points(claims, season, time);
     const level = Math.floor(score.sp / STEP_SP);
-    const tiers = Array.from({length: STEPS}, (_, i) => {
-      const step = i + 1;
-      return {step, requiredSp: step * STEP_SP, unlocked: level >= step,
-        freeCoins: reward(step, "free"), proCoins: reward(step, "pro"),
-        freeClaimed: !!claims[claimId(season.id, step, "free")],
-        proClaimed: !!claims[claimId(season.id, step, "pro")]};
-    });
+    const tiers = tiersOf(claims, season, level);
+    // Last month's unlocked, unclaimed rewards during the grace days.
+    const day = Number(season.day.slice(8)); let previous = null;
+    if (day <= GRACE_DAYS) {
+      const last = seasonById(previousId(season.id));
+      const lastLevel = Math.floor(points(claims, last, time).sp / STEP_SP);
+      const lastTiers = tiersOf(claims, last, lastLevel);
+      if (open(lastTiers, pro)) {
+        previous = {id: last.id, level: lastLevel, claimDaysLeft: GRACE_DAYS - day + 1,
+          unclaimed: open(lastTiers, pro), tiers: lastTiers};
+      }
+    }
     return {...season, ...score, title: "Sezon Rotası", level, maxLevel: STEPS, stepSp: STEP_SP,
-      dailyCap: DAILY_CAP, pro, tiers, freeTotal: 560, proTotal: 1040};
+      dailyCap: DAILY_CAP, pro, tiers, freeTotal: 560, proTotal: 1040, unclaimed: open(tiers, pro),
+      graceDays: GRACE_DAYS, previous};
   }
   async function claim(uid, input) {
     const profile = await status(uid);
     const {seasonId, step, lane} = input;
-    if (seasonId !== profile.id) throw new RewardError("failed-precondition", "Sezon yenilendi. Ekranı yenile.");
+    const past = profile.previous && seasonId === profile.previous.id;
+    if (seasonId !== profile.id && !past) {
+      throw new RewardError("failed-precondition", "Sezon yenilendi. Ekranı yenile.");
+    }
     if (!Number.isInteger(step) || step < 1 || step > STEPS || !["free", "pro"].includes(lane)) {
       throw new RewardError("invalid-argument", "Geçersiz sezon ödülü.");
     }
-    const tier = profile.tiers[step - 1];
+    const tier = (past ? profile.previous.tiers : profile.tiers)[step - 1];
     const claimed = tier[lane + "Claimed"];
     if (!claimed && (!tier.unlocked || (lane === "pro" && !profile.pro))) {
       throw new RewardError("failed-precondition", "Bu ödül henüz açık değil.");
@@ -76,4 +109,4 @@ function createService({db, isPro, grantCoins, now = Date.now}) {
   }
   return {status, claim};
 }
-module.exports = {createService, seasonAt, points, reward};
+module.exports = {createService, seasonAt, points, reward, GRACE_DAYS, previousId};

@@ -82,7 +82,8 @@ class GameGroup {
 class GameCatalog {
   // Server route keys are allowlisted here; arbitrary server URLs cannot navigate.
   static GameEntry? missionRoute(String key) {
-    if (key == 'online_ranked') return onlineRanked;
+    // Mode missions accept ranked or friend matches; the hub has both.
+    if (key == 'online_ranked' || key == 'online_mode') return onlineRanked;
     if (key == 'online_friends') return onlineFriends;
     final story = <String, (String, Widget)>{
       'player_journey': (

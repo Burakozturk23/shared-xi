@@ -18,8 +18,11 @@ test("actual PvP settlement advances daily play and win missions exactly once wi
   assert.equal(settlement.player2Result, "loss");
   await h.context.exports.syncRankedMissions(event(settlement));
   await h.context.exports.syncRankedMissions(event(settlement));
-  assert.deepEqual(h.read("missionState/alice/daily/counters"), {rankedPlayed: 1, rankedWins: 1, dailyChallenge: 0});
-  assert.deepEqual(h.read("missionState/bob/daily/counters"), {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0});
+  // The mode's own online mission advances too.
+  assert.deepEqual(h.read("missionState/alice/daily/counters"),
+      {rankedPlayed: 1, rankedWins: 1, dailyChallenge: 0, online__club_club: 1});
+  assert.deepEqual(h.read("missionState/bob/daily/counters"),
+      {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0, online__club_club: 1});
   assert.equal(settlement.rewards.alice.coins, 0);
   assert.equal(settlement.rewards.alice.eloDelta, 0);
 });
@@ -35,7 +38,8 @@ test("older PvP results work; invalid and update events are ignored", async () =
   assert.equal(h.read("missionState"), null);
   await h.context.exports.syncRankedMissions(event(settlement));
   for (const uid of ["alice", "bob"]) {
-    assert.deepEqual(h.read(`missionState/${uid}/daily/counters`), {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0});
+    assert.deepEqual(h.read(`missionState/${uid}/daily/counters`),
+        {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0, online__club_club: 1});
   }
 });
 

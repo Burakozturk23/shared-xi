@@ -7609,13 +7609,14 @@ function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFI
   return {
     dateKey: state.daily.dateKey,
     economyConfigId: config.configId,
-    dailyClaimLimit: config.sources.daily_mission.dailyLimit,
+    dailyClaimLimit: state.schemaVersion === 3 ? missionV3.rewards(policy).dailyLimit :
+      config.sources.daily_mission.dailyLimit,
     daily: state.schemaVersion === 3 && state.daily.assigned.length ? missionV3.items(state, policy).daily : daily,
     general: [...general, ...(state.schemaVersion === 3 ? missionV3.items(state, policy).general : [])],
     weekly: state.schemaVersion === 3 ? missionV3.items(state, policy).weekly : [],
     weeklyEnabled: policy.weeklyEnabled === true,
     weekKey: state.weekly.weekKey,
-    weeklyClaimLimit: 2,
+    weeklyClaimLimit: missionV3.rewards(policy).weeklyLimit,
     weeklyCompletedCount: Object.keys(state.weekly.claims || {}).length,
     availabilityNotice: state.availabilityNotice || "",
     dailyCompletedCount: Object.keys(state.daily.claims).length,
@@ -8048,6 +8049,20 @@ async function lbMissionV3Policy(db, uid, checkReadiness = false, time = Date.no
   return {...raw, ...health, enabled, weeklyEnabled: enabled && raw.weeklyEnabled === true,
     careerEnabled: enabled && raw.careerEnabled === true};
 }
+// XP granted once per id (journeyClaims doubles as the idempotency record).
+async function lbProgressionGrantOnce(db, uid, id, xp) {
+  const now = Date.now();
+  const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+    const s = lbProgressionState(raw, now);
+    if (!s.journeyClaims[id]) {
+      s.lifetimeXp += xp; s.season.xp += xp;
+      s.journeyClaims[id] = {xp, claimedAt: now}; s.updatedAt = now;
+    }
+    return s;
+  });
+  await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+      await lbProgressionPremiumBenefits(db, uid), now);
+}
 async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
   const policy = await lbMissionV3Policy(db, uid);
   const now = Date.now(); const nonce = crypto.randomUUID();
@@ -8075,6 +8090,10 @@ async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
   });
   if (failure) throw new httpsV2.HttpsError(failure.code, failure.message);
   if (!outcome) throw new httpsV2.HttpsError("invalid-argument", "Bilinmeyen görev. Ekranı yenile.");
+  // Mission XP: once per reward receipt, also when a retry finds the claim already made.
+  if (outcome.claim.rewardXp > 0) {
+    await lbProgressionGrantOnce(db, uid, "mission__" + outcome.sourceId, outcome.claim.rewardXp);
+  }
   const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
   const profile = await lbMissionProject(db, uid, lbMissionState(tx.snapshot.val(), now), config);
   return {granted: outcome.claim.nonce === nonce, alreadyClaimed: outcome.claim.nonce !== nonce,

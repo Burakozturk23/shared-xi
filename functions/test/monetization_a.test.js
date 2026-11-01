@@ -282,7 +282,7 @@ test("trusted mission events count once and cannot leak yesterday's activity int
   await ctx.lbMissionRecordDailyChallenge(h.db, "alice", "2026-09-20");
   await ctx.lbMissionRecordDailyChallenge(h.db, "alice", "2026-09-20");
   assert.deepEqual(h.read("missionState/alice/daily/counters"), {
-    rankedPlayed: 1, rankedWins: 1, dailyChallenge: 1,
+    rankedPlayed: 1, rankedWins: 1, dailyChallenge: 1, online__grid_classic: 1,
   });
   const oldTime = h.now;
   h.setTime("2026-09-20T21:00:00Z");

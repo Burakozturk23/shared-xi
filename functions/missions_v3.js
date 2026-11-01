@@ -19,6 +19,34 @@ const soloModes = [
   ...require("./mission_story_events").definitions.map(([, id, title]) => [id, title, "story"]),
 ];
 const dailyModes = new Set(["daily_lingo", "passa_daily", "daily_anagram"]);
+const onlineNames = {club_club: "Kulüp × Kulüp", club_country: "Kulüp × Ülke", grid_classic: "Grid · Klasik",
+  grid_random: "Grid · Rastgele", grid_reverse: "Grid · Ters", random_five: "Rastgele Beş", cinko: "Çinko",
+  loto: "Football Loto", club_manager: "Club Manager", career_race: "Kariyer Yarışı",
+  transfer_duel: "Transfer Düellosu", mystery_duel: "Gizem Düellosu", fake_club_duel: "Sahte Kulüp Düellosu"};
+// Rewards by mission; runtimeConfig/missionsV3.rewards may override any value.
+// Online missions ask for a rival and a full match, so they pay more than a solo game.
+const REWARDS = Object.freeze({
+  daily: {solo: {coins: 20, xp: 20}, online: {coins: 30, xp: 30}}, dailySp: 30, dailyLimit: 3,
+  weekly: {coins: 25, xp: 60}, weeklyLimit: 2,
+  // Career stages: coins and XP grow with the stage; each claimed stage is worth 50 SP.
+  career: {solo_knowledge_10: 30, solo_knowledge_50: 75, solo_knowledge_100: 120, solo_knowledge_250: 200,
+    mode_collector_3: 30, mode_collector_8: 75, mode_collector_12: 150},
+  careerXpPerCoin: 1, careerSp: 50,
+});
+function rewards(policy = {}) {
+  const o = policy.rewards || {};
+  const n = (v, d) => Number.isSafeInteger(v) && v >= 0 ? v : d;
+  return {
+    daily: {solo: {coins: n(o.daily?.solo?.coins, REWARDS.daily.solo.coins), xp: n(o.daily?.solo?.xp,
+        REWARDS.daily.solo.xp)}, online: {coins: n(o.daily?.online?.coins, REWARDS.daily.online.coins),
+      xp: n(o.daily?.online?.xp, REWARDS.daily.online.xp)}},
+    dailySp: n(o.dailySp, REWARDS.dailySp), dailyLimit: n(o.dailyLimit, REWARDS.dailyLimit) || REWARDS.dailyLimit,
+    weekly: {coins: n(o.weekly?.coins, REWARDS.weekly.coins), xp: n(o.weekly?.xp, REWARDS.weekly.xp)},
+    weeklyLimit: n(o.weeklyLimit, REWARDS.weeklyLimit) || REWARDS.weeklyLimit,
+    career: {...REWARDS.career, ...policy.careerRewards},
+    careerXpPerCoin: n(o.careerXpPerCoin, REWARDS.careerXpPerCoin), careerSp: n(o.careerSp, REWARDS.careerSp),
+  };
+}
 const catalog = soloModes.map(([modeId, name, family]) => ({id: "complete_" + modeId, modeId, family,
   title: `${name} oyununu tamamla`, description: "Doğrulanmış bir oyunu tamamla.",
   metric: "mode__" + modeId, target: 1, routeKey: modeId, solo: true, once: dailyModes.has(modeId)}));
@@ -32,6 +60,10 @@ catalog.push(
     {id: "friend_complete_one", title: "Bir arkadaş maçı tamamla",
       description: "Aktif katıldığın bir arkadaş maçını normal bitişle tamamla.",
       metric: "friendPlayed", target: 1, routeKey: "online_friends", solo: false, family: "friend"},
+    // One mission per online mode: a ranked or friend match of that mode counts.
+    ...onlineModes.map((m) => ({id: "online_" + m, title: `${onlineNames[m]} maçı tamamla`,
+      description: "Dereceli ya da arkadaş maçını normal bitişle tamamla.", metric: "online__" + m, target: 1,
+      routeKey: "online_mode", onlineModeId: m, solo: false, family: "online"})),
 );
 const weeklyCatalog = [
   {id: "weekly_explorer", title: "Linkball Kaşifi", description: "Beş farklı modda oyun tamamla.",
@@ -81,6 +113,7 @@ function available(d, ready, state) {
   if (d.modeId && !soloIds.has(d.modeId)) return false;
   if (d.routeKey === "online_ranked") return ready.online === true;
   if (d.routeKey === "online_friends") return ready.friends === true;
+  if (d.routeKey === "online_mode") return ready.online === true || ready.friends === true;
   if (d.metric === "uniqueSoloModes") return soloModes.filter(([m]) => ready[m] === true).length >= 2;
   return ready[d.modeId] === true && (!d.once || !state.daily.modes[d.modeId]);
 }
@@ -160,9 +193,10 @@ function record(state, event, now) {
     bucket.modes[event.modeId] = true;
     const add = (name) => bucket.counters[name] = number(bucket.counters[name]) + 1;
     if (ranked) {
-      add("rankedPlayed"); if (event.result === "win") add("rankedWins");
-    } else if (friend) add("friendPlayed");
-    else {
+      add("rankedPlayed"); if (event.result === "win") add("rankedWins"); add("online__" + event.modeId);
+    } else if (friend) {
+      add("friendPlayed"); add("online__" + event.modeId);
+    } else {
       bucket.soloModes[event.modeId] = true;
       if (mode[2] === "word") bucket.wordModes[event.modeId] = true;
       add("soloCompleted"); add("mode__" + event.modeId);
@@ -172,19 +206,25 @@ function record(state, event, now) {
   return changed;
 }
 function items(state, policy = {}) {
+  const r = rewards(policy);
   const project = (d, kind) => {
     const bucket = kind === "daily" ? state.daily : kind === "weekly" ? state.weekly : state.general;
     const claim = (kind === "general" ? state.generalClaims : bucket.claims)?.[d.id];
     const progress = Math.max(0, value(bucket, d) - number(d.baseline));
-    const limit = kind === "daily" ? 3 : 2;
+    const limit = kind === "daily" ? r.dailyLimit : r.weeklyLimit;
     const enabled = !d.unavailable && (kind === "daily" ? policy.enabled === true :
       kind === "weekly" ? policy.weeklyEnabled === true : policy.careerEnabled === true && number(d.rewardCoins) > 0);
     const limitReached = kind !== "general" && !claim && Object.keys(bucket.claims || {}).length >= limit;
     return {...d, kind, periodKey: kind === "daily" ? state.daily.dateKey :
       kind === "weekly" ? "weekly__" + state.weekly.weekKey : "general",
     progress: Math.min(progress, d.target), rawProgress: progress,
-    rewardCoins: claim?.rewardCoins ?? (kind === "daily" ? 20 : kind === "weekly" ? 25 : number(d.rewardCoins)),
-    rewardSp: kind === "daily" ? 30 : 0, rewardXp: 0, enabled, limitReached,
+    rewardCoins: claim?.rewardCoins ?? (kind === "daily" ? r.daily[d.solo ? "solo" : "online"].coins :
+      kind === "weekly" ? r.weekly.coins : number(d.rewardCoins)),
+    rewardXp: claim?.rewardXp ?? (kind === "daily" ? r.daily[d.solo ? "solo" : "online"].xp :
+      kind === "weekly" ? r.weekly.xp : number(d.rewardCoins) * r.careerXpPerCoin),
+    // Season points only for rewards still inside the period's limit.
+    rewardSp: limitReached ? 0 : kind === "daily" ? r.dailySp : kind === "general" && number(d.rewardCoins) > 0 ?
+      r.careerSp : 0, enabled, limitReached,
     claimed: !!claim, claimedAt: claim?.claimedAt || 0,
     claimable: enabled && !claim && !limitReached && progress >= d.target};
   };
@@ -195,11 +235,11 @@ function items(state, policy = {}) {
     return project({id: chain.id + "_" + target, metric: chain.metric, title: `${chain.title}: ${target}`,
       description: "Doğrulanmış oyunlarla gelişim yolunu ilerlet.", target, routeKey: "solo_catalog",
       chainId: chain.id, stage: index + 1, stageCount: chain.targets.length,
-      rewardCoins: number(policy.careerRewards?.[chain.id + "_" + target])}, "general");
+      rewardCoins: number(r.career[chain.id + "_" + target])}, "general");
   });
   return {daily: state.daily.assigned.map((d) => project(d, "daily")),
     weekly: weeklyCatalog.map((d) => project(d, "weekly")), general,
-    weekKey: state.weekly.weekKey, weeklyClaimLimit: 2,
+    weekKey: state.weekly.weekKey, weeklyClaimLimit: r.weeklyLimit, dailyClaimLimit: r.dailyLimit,
     weeklyCompletedCount: Object.keys(state.weekly.claims || {}).length,
     weeklyEnabled: policy.weeklyEnabled === true, availabilityNotice: state.availabilityNotice || ""};
 }
@@ -218,8 +258,9 @@ function claim(state, missionId, policy, now, nonce) {
         "Görev tamamlanmadı, ödül kapalı veya dönem limiti doldu.");
   }
   const sourceId = periodKey + "__" + missionId;
-  bucket[missionId] ||= {claimedAt: now, rewardCoins: item.rewardCoins, nonce, economyConfigId: "missions-v3"};
+  bucket[missionId] ||= {claimedAt: now, rewardCoins: item.rewardCoins, rewardXp: number(item.rewardXp), nonce,
+    economyConfigId: "missions-v3"};
   return {item, claim: bucket[missionId], periodKey, sourceId};
 }
-module.exports = {VERSION, onlineModes, soloModes, catalog, weeklyCatalog, extraChains,
+module.exports = {VERSION, onlineModes, onlineNames, REWARDS, rewards, soloModes, catalog, weeklyCatalog, extraChains,
   weekKey, decorate, assign, record, value, items, claim};

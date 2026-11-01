@@ -66,14 +66,16 @@ test("three daily and two weekly claims, replay and disabled rewards", () => {
   assert.throws(() => M.claim(s, M.weeklyCatalog[2].id, policy, now, "week"));
   assert.equal(M.items(s, {}).weekly.every((d) => !d.enabled), true);
 });
-test("Monday Istanbul boundary, weekly/new career receipts award zero SP", () => {
+test("Monday Istanbul boundary; weekly receipts award zero SP, career stages 50", () => {
   assert.equal(M.weekKey(Date.parse("2026-10-25T20:59:59Z")), "2026-10-19");
   assert.equal(M.weekKey(Date.parse("2026-10-25T21:00:00Z")), "2026-10-26");
-  const claims = Object.fromEntries(["weekly__2026-10-19__weekly_explorer", "general__solo_knowledge_10", "unknown"]
+  const claims = Object.fromEntries(["weekly__2026-10-19__weekly_explorer", "unknown"]
       .map((sourceId) => [sourceId, {sourceId, sourceType: "mission_reward", amount: 25, claimedAt: now}]));
   assert.equal(points(claims, seasonAt(now), now).sp, 0);
   claims.daily = {sourceId: "2026-10-24__daily_v3_slot_1", sourceType: "mission_reward", amount: 20, claimedAt: now};
   assert.equal(points(claims, seasonAt(now), now).sp, 30);
+  claims.career = {sourceId: "general__solo_knowledge_10", sourceType: "mission_reward", amount: 30, claimedAt: now};
+  assert.equal(points(claims, seasonAt(now), now).sp, 80);
 });
 test("mode adapters reject partial or repeated terminal events", () => {
   assert.equal(E.fromRun("a", "arcade", "r", {mode: "matching", finished: true}), null);
@@ -95,6 +97,31 @@ test("callable concurrency and RTDB empty-map persistence mint once", async () =
     h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey})]);
   assert.equal(results.filter((r) => r.granted).length, 1);
   assert.equal(h.read("economyState/alice/balances/coins"), 20);
+  // A solo daily mission also grants 20 XP, once, even with two concurrent claims.
+  assert.equal(h.read("progressionState/alice/lifetimeXp"), 20);
+});
+test("online missions per mode pay more; SP shows only inside the limit; career stages pay", () => {
+  const s = state(); M.assign(s, "u1", {...ready, online: true}, policy, now);
+  assert.equal(M.catalog.filter((d) => d.family === "online").length, M.onlineModes.length);
+  const online = M.catalog.find((d) => d.id === "online_career_race");
+  s.daily.assigned[4] = {...online, definitionId: online.id, id: "daily_v3_slot_5", baseline: 0};
+  M.record(s, {uid: "alice", eventId: "m1", modeId: "career_race", source: "friend_settlement", result: "loss",
+    serverValidated: true, verificationVersion: 1, serverFinishedAtMs: now}, now);
+  let p = M.items(s, policy);
+  const card = p.daily.find((d) => d.definitionId === "online_career_race");
+  assert.equal(card.claimable, true); assert.equal(card.rewardCoins, 30); assert.equal(card.rewardXp, 30);
+  assert.equal(p.daily.find((d) => d.solo).rewardCoins, 20);
+  // With three daily rewards taken, the other cards promise no SP.
+  s.daily.claims = {a: {}, b: {}, c: {}};
+  p = M.items(s, policy);
+  assert.ok(p.daily.filter((d) => !s.daily.claims[d.id]).every((d) => d.limitReached && d.rewardSp === 0));
+  // Career stages have default rewards (still behind careerEnabled) and 50 SP.
+  p = M.items(s, {...policy, careerEnabled: true});
+  const stage = p.general.find((d) => d.chainId === "solo_knowledge");
+  assert.equal(stage.rewardCoins, 30); assert.equal(stage.rewardXp, 30); assert.equal(stage.rewardSp, 50);
+  assert.equal(stage.enabled, true);
+  assert.equal(M.items(s, {...policy, rewards: {daily: {solo: {coins: 15}}}}).daily.find((d) => d.solo)
+      .rewardCoins, 15);
 });
 test("forfeit and nonparticipation cannot advance counters", async () => {
   const h = harness();

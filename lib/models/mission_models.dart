@@ -6,6 +6,7 @@ class MissionItem {
   final String periodKey;
   final String modeId;
   final int rewardSp;
+  final int rewardXp;
   final bool unavailable;
   final MissionKind kind;
   final String title;
@@ -28,6 +29,7 @@ class MissionItem {
     this.periodKey = '',
     this.modeId = '',
     this.rewardSp = 0,
+    this.rewardXp = 0,
     this.unavailable = false,
     this.enabled = true,
     this.limitReached = false,
@@ -58,6 +60,7 @@ class MissionItem {
       periodKey: data['periodKey']?.toString() ?? '',
       modeId: data['modeId']?.toString() ?? '',
       rewardSp: _missionInt(data['rewardSp']),
+      rewardXp: _missionInt(data['rewardXp']),
       unavailable: data['unavailable'] == true,
       enabled: data['enabled'] != false,
       limitReached: data['limitReached'] == true,

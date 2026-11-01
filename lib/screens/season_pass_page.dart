@@ -139,6 +139,51 @@ class _SeasonPassPageState extends State<SeasonPassPage>
     );
   }
 
+  /// Last month's rewards still open during the grace days.
+  List<(SeasonTier, String)> _previousRewards(SeasonPass s) => [
+    for (final t in s.previous?.tiers ?? const <SeasonTier>[])
+      if (t.unlocked) ...[
+        if (!t.freeClaimed) (t, 'free'),
+        if (s.pro && !t.proClaimed) (t, 'pro'),
+      ],
+  ];
+
+  Future<void> _claimPrevious() async {
+    final previous = _data?.previous;
+    if (_busy || previous == null) return;
+    setState(() => _busy = true);
+    var claimed = 0;
+    try {
+      for (final (t, lane) in _previousRewards(_data!)) {
+        final data = await widget.gateway.claim(previous.id, t.step, lane);
+        if (!mounted) return;
+        setState(() => _data = data);
+        claimed++;
+      }
+    } catch (_) {
+      // Reported below.
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted) return;
+    if (claimed > 0) AppFeedback.reward(Sfx.coinReward);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _previousRewards(_data!).isEmpty
+              ? c(
+                  'Geçen ayın $claimed ödülü cüzdanında.',
+                  "$claimed rewards from last month are in your wallet.",
+                )
+              : c(
+                  '$claimed ödül alındı; kalanlar için tekrar dene.',
+                  '$claimed claimed; retry for the rest.',
+                ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _pro() async {
     await Navigator.of(
       context,
@@ -276,6 +321,21 @@ class _SeasonPassPageState extends State<SeasonPassPage>
                 '${groupedNumber(s.sp)} SP · ${c('Bugün', 'Today')} ${s.todaySp}/${s.dailyCap} SP',
                 style: text.bodySmall?.copyWith(color: pc.muted),
               ),
+              if (!done) ...[
+                const SizedBox(height: 4),
+                Text(
+                  s.neededPerDay > s.dailyCap
+                      ? c(
+                          'Bu tempoyla ay sonunda Kademe ${s.projectedLevel}. Kalan günlerde rotanın tamamı yetişmez (günde en çok ${s.dailyCap} SP).',
+                          'At this pace: tier ${s.projectedLevel} by month end. The full route no longer fits (max ${s.dailyCap} SP a day).',
+                        )
+                      : c(
+                          'Bu tempoyla ay sonunda Kademe ${s.projectedLevel} · Rotayı bitirmek için günde ${s.neededPerDay} SP.',
+                          'At this pace: tier ${s.projectedLevel} by month end · ${s.neededPerDay} SP a day finishes the route.',
+                        ),
+                  style: text.bodySmall?.copyWith(color: pc.muted),
+                ),
+              ],
               const SizedBox(height: 14),
               _proBanner(s),
               if (ready > 0) ...[
@@ -293,6 +353,62 @@ class _SeasonPassPageState extends State<SeasonPassPage>
             ],
           ),
         ),
+        if (s.previous != null && _previousRewards(s).isNotEmpty) ...[
+          const SizedBox(height: 16),
+          PitchPanel(
+            key: const ValueKey('season-previous'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  c(
+                    'Geçen ayın ${_previousRewards(s).length} ödülü seni bekliyor',
+                    '${_previousRewards(s).length} rewards from last month are waiting',
+                  ),
+                  style: text.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  c(
+                    '${s.previous!.id} rotasında Kademe ${s.previous!.level}’e ulaştın. Açılmış ödülleri ${s.previous!.claimDaysLeft} gün daha alabilirsin.',
+                    'You reached tier ${s.previous!.level} in ${s.previous!.id}. Unlocked rewards stay claimable for ${s.previous!.claimDaysLeft} more days.',
+                  ),
+                  style: text.bodySmall?.copyWith(color: pc.muted),
+                ),
+                const SizedBox(height: 12),
+                PitchAction(
+                  label: c(
+                    'Geçen ayın ödüllerini al',
+                    "Claim last month's rewards",
+                  ),
+                  icon: Icons.history_rounded,
+                  busy: _busy,
+                  onPressed: _busy ? null : _claimPrevious,
+                ),
+              ],
+            ),
+          ),
+        ],
+        if (s.daysLeft <= s.graceDays && ready > 0) ...[
+          const SizedBox(height: 16),
+          PitchPanel(
+            key: const ValueKey('season-ending'),
+            child: Row(
+              children: [
+                Icon(Icons.hourglass_bottom_rounded, color: hubAmber(context)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    c(
+                      'Ay bitiyor: $ready ödülün alınmadı. Ay bitince ${s.graceDays} gün daha alabilirsin.',
+                      'The month is ending: $ready rewards unclaimed. They stay claimable ${s.graceDays} days after.',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         HubSectionHeader(
           c('Ödül durakları', 'Reward stops'),
           icon: Icons.flag_outlined,
@@ -329,8 +445,8 @@ class _SeasonPassPageState extends State<SeasonPassPage>
             children: [
               Text(
                 c(
-                  'Günlük buluşma ödülünü al: +10 SP\nGünlük görev ödülünü al: +30 SP (en fazla 3)\nKariyer görevi ödülünü al: +50 SP\nGünün Maçları’nda günün ilk galibiyet ödülü: +50 SP\n\nToplam günlük sınır 150 SP. Her 100 SP bir durak açar. SP harcanmaz; ay sonunda yenilenir. Rozetlerin ve aldığın coinler kalır. Ödüllerini sezon bitmeden al.\n\nCoin satın almak veya reklam izlemek SP kazandırmaz.',
-                  'Claim daily check-in: +10 SP\nClaim a daily mission: +30 SP (up to 3)\nClaim a career mission: +50 SP\nFirst Daily Matches win reward: +50 SP\n\nDaily cap: 150 SP. Every 100 SP unlocks a stop. SP resets monthly; badges and claimed coins remain. Claim rewards before the season ends.\n\nPurchases and ads do not earn SP.',
+                  'Günlük buluşma ödülünü al: +10 SP\nGünlük görev ödülünü al: +30 SP (en fazla 3)\nKariyer görevi ödülünü al: +50 SP\nGünün Maçları’nda günün ilk galibiyet ödülü: +50 SP\n\nToplam günlük sınır 150 SP. Her 100 SP bir durak açar. SP harcanmaz; ay sonunda yenilenir. Rozetlerin ve aldığın coinler kalır. Açtığın ama almadığın ödüller ay bitince 3 gün daha alınabilir.\n\nCoin satın almak veya reklam izlemek SP kazandırmaz.',
+                  'Claim daily check-in: +10 SP\nClaim a daily mission: +30 SP (up to 3)\nClaim a career mission: +50 SP\nFirst Daily Matches win reward: +50 SP\n\nDaily cap: 150 SP. Every 100 SP unlocks a stop. SP resets monthly; badges and claimed coins remain. Unlocked rewards stay claimable 3 days after the month ends.\n\nPurchases and ads do not earn SP.',
                 ),
               ),
             ],

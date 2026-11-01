@@ -59,7 +59,7 @@ test("concurrent reward requests credit once; lost projection recovers; wallet i
   await other.call("claimSeasonReward", input);
   assert.equal(other.read("economyState/alice/balances/coins"), 20);
 });
-test("month rollover rejects stale screen; current-season Pro upgrade unlocks earned tiers", async () => {
+test("month rollover keeps last month claimable for three days; Pro upgrade unlocks earned tiers", async () => {
   const h = harness({economyState: {alice: {claims: receipts()}}});
   h.seed("premiumState/alice", {verified: true, entitled: true, plan: "lifetime", expiresAt: 0});
   // Use the real premium normalizer rather than a client-provided flag.
@@ -73,8 +73,16 @@ test("month rollover rejects stale screen; current-season Pro upgrade unlocks ea
   const s = await h.call("getSeasonPass");
   assert.equal(s.level, 0);
   assert.equal(s.id, "2026-10");
-  await assert.rejects(h.call("claimSeasonReward", input), {code: "failed-precondition"});
-  assert.equal(h.read("economyState/alice/balances/coins"), 40);
+  // September's unclaimed free reward is still waiting during October's first three days.
+  assert.equal(s.previous.id, "2026-09"); assert.equal(s.previous.unclaimed, 1);
+  assert.equal(s.previous.claimDaysLeft, 3);
+  assert.equal((await h.call("claimSeasonReward", {seasonId: "2026-09", step: 1, lane: "free"})).granted, true);
+  assert.equal((await h.call("getSeasonPass")).previous, null);
+  assert.equal(h.read("economyState/alice/balances/coins"), 60);
+  // Day four: last month is closed.
+  h.setTime("2026-10-03T21:00:00Z");
+  await assert.rejects(h.call("claimSeasonReward", {seasonId: "2026-09", step: 1, lane: "free"}),
+      {code: "failed-precondition", message: /Sezon yenilendi/});
 });
 test("published free and Pro reward totals match all 20 stops", () => {
   for (const [lane, total] of [["free", 560], ["pro", 1040]]) {
