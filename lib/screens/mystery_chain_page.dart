@@ -11,10 +11,19 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/club_badge.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
 
 List<Map<String, dynamic>> _rows(dynamic value) =>
     (value is List ? value : const []).map(rewardMap).toList();
 const _medals = ['Kilitli', 'Bronz', 'Gümüş', 'Altın', 'Ustalık'];
+// Mystery levels follow how well known the player is; '' is the mix.
+const _levels = {
+  '': 'Karışık',
+  'easy': 'Kolay',
+  'medium': 'Orta',
+  'hard': 'Zor',
+};
+const _streakNames = {'streak_5': '5 seri', 'streak_10': '10 seri'};
 
 class MysteryChainPage extends StatefulWidget {
   const MysteryChainPage({super.key, required this.mode, this.service});
@@ -31,6 +40,7 @@ class _MysteryChainPageState extends State<MysteryChainPage>
   Map<String, dynamic> _status = {}, _session = {};
   List<Map<String, dynamic>> _results = [], _clubs = [];
   Map<String, dynamic>? _selected;
+  String _level = '';
   final _query = TextEditingController(), _clubQuery = TextEditingController();
   final _scroll = ScrollController();
   Timer? _debounce, _ticker;
@@ -145,11 +155,14 @@ class _MysteryChainPageState extends State<MysteryChainPage>
         _accept(rewardMap(r['session']));
       });
   });
-  Future<void> _start({String? target}) => _run(() async {
+  Future<void> _start({String? target, bool daily = false}) => _run(() async {
     await _service.mutate('startMysteryChain', {
       'mode': widget.mode,
       'version': _version,
       if (target != null) 'target': target,
+      if (daily) 'daily': true,
+      if (_mystery && !daily && target == null && _level.isNotEmpty)
+        'difficulty': _level,
     });
     final r = await _service.load(widget.mode);
     if (mounted && !_accountChanged)
@@ -189,11 +202,20 @@ class _MysteryChainPageState extends State<MysteryChainPage>
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(_sprint ? 'Sprinti bitir?' : 'Dosyayı kapat?'),
+        title: Text(
+          _sprint
+              ? 'Sprinti bitir?'
+              : _mystery
+              ? 'Dosyayı kapat?'
+              : 'Teslim ol?',
+        ),
         content: Text(
           _sprint
               ? 'Şu ana kadar tamamladığın zincirlerle sonuç kaydedilir.'
-              : 'İlk resmî sonuç kalıcıdır. Sonraki denemeler alıştırma olur.',
+              : _mystery
+              ? 'İlk resmî sonuç kalıcıdır. Sonraki denemeler alıştırma olur.'
+              : 'Bu çiftin ilk resmî ödül hakkı yanar ve en kısa rota gösterilir.'
+                    '${_session['deadEnd'] == true || _rows(_session['path']).isNotEmpty ? ' Teslim olmak yerine son hamleyi geri alıp başka köprü deneyebilirsin.' : ''}',
         ),
         actions: [
           TextButton(
@@ -202,7 +224,7 @@ class _MysteryChainPageState extends State<MysteryChainPage>
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Bitir'),
+            child: Text(_mystery || _sprint ? 'Bitir' : 'Çözümü gör'),
           ),
         ],
       ),
@@ -403,7 +425,7 @@ class _MysteryChainPageState extends State<MysteryChainPage>
           const SizedBox(height: 8),
           Text(
             _mystery
-                ? 'Milliyet ve mevkiyle başla. Üç geçerli tahminde futbolcuyu bul. Her yanlışta yeni bir bilgi açılır.'
+                ? 'Milliyet, mevki ve bir kulüple başla. Üç geçerli tahminde futbolcuyu bul. Her yanlışta yeni bir bilgi açılır.'
                 : _sprint
                 ? '60 saniyede başla. Tamamladığın her zincir +5 saniye verir. Sayaç en fazla 75; oturum en fazla 180 saniye sürer.'
                 : 'İki kulüpte de oynamış futbolcularla köprüler kur. Futbolcu ve kulüp tekrarı yok. PAR, en kısa geçerli yolun hamle sayısıdır.',
@@ -428,14 +450,20 @@ class _MysteryChainPageState extends State<MysteryChainPage>
                 ? 'Bir pas hakkı: −10 saniye. Saat arka planda da işler. Oyun sırasında ipucu ve reklam yok.'
                 : '1 ücretsiz + en fazla 2 reklamlı ipucu. Mevcut destek stoğu aynı üç hakkı paylaşır.',
             _mystery
-                ? 'İlk resmî dosyada en fazla 6 Coin / 12 XP.'
+                ? 'İlk resmî dosyada en fazla 6 Coin / 12 XP. Ustalık: yanlışsız ve en fazla 1 isteğe bağlı ipucu.'
                 : _sprint
                 ? 'Günlük en iyi Sprint ile en fazla 10 Coin / 20 XP; yalnızca yeni eşikler ödenir.'
-                : 'İlk resmî kulüp çiftinde en fazla 12 Coin / 24 XP. Ters yön aynı dosyadır.',
+                : 'İlk resmî kulüp çiftinde en fazla 12 Coin / 24 XP. Ustalık: PAR, ipucusuz, geri almasız. Altın: PAR+1 ve en fazla 1 ipucu.',
+            if (!_mystery && !_sprint)
+              'İpucu sıradaki köprü futbolcusunu söyler; hangi kulübüne geçeceğini sen bulursun. Oyun bitince en kısa rota gösterilir.',
             'Gizemli Futbolcu ve iki Zincir modu ortak günde 24 Coin / 48 XP bütçesini kullanır. Fazlası kaybolmaz; sırada bekler.',
             rewardMap(_status['energy'])['enabled'] == true
                 ? 'Yeni oyun: 1 enerji. Kayıtlı oyuna devam ücretsiz.'
                 : 'Enerji sistemi şu anda kapalı; yeni oyun ücretsiz.',
+            if (_mystery)
+              'Seri yalnızca ilk denemelerde ilerler; süresi dolan dosya seriyi bozmaz. 5 seri +10, 10 seri +20 Coin (bir kez).',
+            if (_mystery)
+              'Gösterilen tüm bilgilere uyan başka bir futbolcu varsa o da doğru kabul edilir.',
             if (_status['linked'] != true)
               'Kazanımların saklanır. Cüzdana aktarılması için Google hesabını bağla.',
           ])
@@ -446,12 +474,84 @@ class _MysteryChainPageState extends State<MysteryChainPage>
         ],
       ),
     ),
+    if (_mystery) ...[
+      const SizedBox(height: 12),
+      _streakPanel(),
+      const SizedBox(height: 12),
+      HubSegmented<String>(
+        label: 'Zorluk',
+        options: _levels,
+        value: _level,
+        onChanged: _busy ? null : (v) => setState(() => _level = v),
+      ),
+      const SizedBox(height: 6),
+      const Text('Zorluk, futbolcunun ne kadar tanındığına göre.'),
+    ],
     const SizedBox(height: 16),
     FilledButton(
       onPressed: _busy ? null : () => _start(),
       child: Text(_sprint ? 'Sprinti başlat' : 'Yeni dosya aç'),
     ),
+    if (!_sprint) ...[
+      const SizedBox(height: 8),
+      OutlinedButton.icon(
+        onPressed: _busy ? null : () => _start(daily: true),
+        icon: const Icon(Icons.today_outlined),
+        label: Text(_mystery ? 'Günün gizemli futbolcusu' : 'Günün zinciri'),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        _mystery
+            ? 'Herkes bugün aynı futbolcuyu arar. Sonucu paylaşabilirsin.'
+            : 'Herkes bugün aynı iki kulübü bağlar. Sonucu paylaşabilirsin.',
+      ),
+    ],
   ];
+
+  /// Current and best streak with the one-time streak rewards.
+  Widget _streakPanel() {
+    final amber = hubAmber(context);
+    return PitchPanel(
+      child: Row(
+        children: [
+          Icon(Icons.local_fire_department_rounded, color: amber, size: 32),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Seri ${_status['streak'] ?? 0} · En iyi ${_status['longestStreak'] ?? 0}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final b in _rows(_status['streakRewards']))
+                      HubPill(
+                        '${_streakNames[b['id']] ?? b['id']} · +${b['coins']} Coin',
+                        icon: b['earned'] == true
+                            ? Icons.check_rounded
+                            : Icons.lock_outline,
+                        color: b['earned'] == true
+                            ? amber
+                            : PitchColors.of(context).muted,
+                        background: b['earned'] == true
+                            ? amber.withValues(alpha: .14)
+                            : PitchColors.of(context).raised,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _game() {
     final path = _rows(_session['path']);
     final hints = _rows(_session['hints']);
@@ -479,17 +579,51 @@ class _MysteryChainPageState extends State<MysteryChainPage>
               'Hamle ${path.length} / ${_session['maxMoves']} · PAR ${_session['par']}',
             ),
           Text('Puan ${_session['score']}'),
+          if (!_mystery && !_sprint && _session['daily'] != null)
+            HubPill(
+              'Günün zinciri',
+              color: hubAmber(context),
+              background: hubAmber(context).withValues(alpha: .14),
+            ),
           if (_sprint)
             Text('${_session['chains']} zincir · Seri ${_session['streak']}'),
         ],
       ),
       const SizedBox(height: 16),
+      if (_mystery && !_finished && _hoursLeft < 6)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: HubSpecNote(
+            'Bu dosya ${_hoursLeft < 1 ? '1 saatten kısa' : '$_hoursLeft saat'} içinde kapanır. '
+            'Bitirmezsen ilk deneme ödülü bu dosya için kullanılmış sayılır.',
+          ),
+        ),
       if (_mystery)
         PitchPanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('BAŞLANGIÇ BİLGİLERİ'),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text('BAŞLANGIÇ BİLGİLERİ', style: hubCaps(context)),
+                  ),
+                  if (_session['daily'] != null)
+                    HubPill(
+                      'Günün futbolcusu',
+                      color: hubAmber(context),
+                      background: hubAmber(context).withValues(alpha: .14),
+                    )
+                  else if (_levels[_session['difficulty']] != null)
+                    HubPill(
+                      _levels[_session['difficulty']]!,
+                      color: PitchColors.of(context).accent,
+                      background: PitchColors.of(
+                        context,
+                      ).accent.withValues(alpha: .12),
+                    ),
+                ],
+              ),
               const SizedBox(height: 8),
               for (final h in _rows(_session['initial']))
                 Text(
@@ -499,7 +633,22 @@ class _MysteryChainPageState extends State<MysteryChainPage>
               for (final h in hints)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
-                  child: Text('${h['text']}'),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        h['automatic'] == true
+                            ? Icons.close_rounded
+                            : Icons.lightbulb_outline,
+                        size: 18,
+                        color: h['automatic'] == true
+                            ? PitchColors.of(context).muted
+                            : hubAmber(context),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text('${h['text']}')),
+                    ],
+                  ),
                 ),
             ],
           ),
@@ -611,7 +760,13 @@ class _MysteryChainPageState extends State<MysteryChainPage>
           ),
         TextButton(
           onPressed: disabled ? null : _close,
-          child: Text(_sprint ? 'Sprinti bitir' : 'Dosyayı kapat'),
+          child: Text(
+            _sprint
+                ? 'Sprinti bitir'
+                : _mystery
+                ? 'Dosyayı kapat'
+                : 'Teslim ol · çözümü gör',
+          ),
         ),
       ] else ...[
         const SizedBox(height: 16),
@@ -625,14 +780,37 @@ class _MysteryChainPageState extends State<MysteryChainPage>
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               Text(
-                _medals[(rewardMap(_session['result'])['medal'] as num? ?? 0)
-                    .toInt()
-                    .clamp(0, 4)],
+                _session['gaveUp'] == true
+                    ? 'Teslim oldun'
+                    : _medals[(rewardMap(_session['result'])['medal'] as num? ??
+                              0)
+                          .toInt()
+                          .clamp(0, 4)],
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               Text(
                 'Bu oyunda ${rewardMap(_session['result'])['coins']} Link Coin · ${rewardMap(_session['result'])['xp']} XP hakkı kazanıldı.',
               ),
+              if (rewardMap(_session['result'])['expired'] == true)
+                const HubSpecNote(
+                  '24 saat içinde bitirilmediği için dosya kapandı. Serin bozulmadı.',
+                ),
+              if (_session['answer'] != null)
+                Text(
+                  'Senin cevabın da doğru: ${rewardMap(_session['answer'])['name']} gösterilen tüm bilgilere uyuyor.',
+                ),
+              if ((_session['alsoBy'] as List?)?.isNotEmpty == true)
+                HubSpecNote(
+                  'Bu bilgilere uyan diğer futbolcular: ${(_session['alsoBy'] as List).join(', ')}',
+                ),
+              if (rewardMap(_session['result'])['badge'] != null)
+                Text(
+                  'Seri ödülü: ${_streakNames[rewardMap(_session['result'])['badge']] ?? ''} tamamlandı!',
+                  style: TextStyle(
+                    color: hubAmber(context),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               if (rewardMap(_session['result'])['practice'] == true)
                 const Text(
                   'Alıştırma sonucu. İlk resmî ekonomik sonuç değişmedi.',
@@ -643,6 +821,18 @@ class _MysteryChainPageState extends State<MysteryChainPage>
             ],
           ),
         ),
+        if (!_mystery &&
+            !_sprint &&
+            _rows(_session['solution']).isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _solutionPanel(),
+        ],
+        if (!_sprint) ...[
+          const SizedBox(height: 12),
+          ShareResultButtons(
+            text: _mystery ? mysteryShare(_session) : chainShare(_session),
+          ),
+        ],
         const SizedBox(height: 12),
         FilledButton(
           onPressed: _busy
@@ -657,8 +847,60 @@ class _MysteryChainPageState extends State<MysteryChainPage>
     ];
   }
 
+  /// The shortest route after a chain ends, with how many such routes exist.
+  Widget _solutionPanel() {
+    final steps = _rows(_session['solution']);
+    final count = (_session['routeCount'] as num? ?? 1).toInt();
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('EN KISA ROTA', style: hubCaps(context)),
+          const SizedBox(height: 4),
+          Text(
+            count > 1
+                ? 'PAR ${_session['par']} · $count farklı en kısa rota var; biri:'
+                : 'PAR ${_session['par']} · tek en kısa rota:',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          _club(rewardMap(_session['start']), 'Başlangıç'),
+          for (final step in steps) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 18, top: 2, bottom: 2),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.south_rounded,
+                    size: 18,
+                    color: PitchColors.of(context).muted,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${rewardMap(step['player'])['name']}',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: PitchColors.of(context).accent,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _club(rewardMap(step['club']), ''),
+          ],
+        ],
+      ),
+    );
+  }
+
+  int get _hoursLeft =>
+      (((_session['expiresAt'] as num? ?? 0) - _serverNow) / 3600000).floor();
+
   List<Widget> _help(bool disabled) {
     final count = (_session['optionalHints'] as num? ?? 0).toInt();
+    if (_session['optionalLeft'] == 0 && count < 3)
+      return [const Text('Bu dosyada açılacak başka bilgi yok.')];
     if (count >= 3)
       return [const Text('Bu oyunun üç isteğe bağlı ipucu kullanıldı.')];
     if (rewardMap(_session['support'])['version'] == 1)
@@ -784,4 +1026,37 @@ class _MysteryChainPageState extends State<MysteryChainPage>
       child: const Text('Oyuna dön'),
     ),
   ];
+}
+
+/// Share card for a finished mystery file: never names the player.
+String mysteryShare(Map<String, dynamic> session) {
+  final wrong = (session['wrong'] as num? ?? 0).toInt();
+  final found = session['found'] == true;
+  final day = '${session['daily'] ?? ''}'.split('-').reversed.join('.');
+  final hints = (session['optionalHints'] as num? ?? 0).toInt();
+  return [
+    'Linkball · Gizemli Futbolcu',
+    if (session['daily'] != null) 'Günün futbolcusu · $day',
+    '${'🟥' * wrong.clamp(0, 3)}${found ? '🟩' : ''}${'⬜' * (3 - wrong - (found ? 1 : 0)).clamp(0, 3)}'
+        ' ${found ? 'Bulundu' : 'Bulunamadı'}',
+    '$hints ipucu · ${session['score'] ?? 0} puan'
+        '${(session['streak'] as num? ?? 0) > 1 ? ' · 🔥 ${session['streak']} seri' : ''}',
+  ].join('\n');
+}
+
+/// Share card for a finished chain: the pair and PAR, never the route.
+String chainShare(Map<String, dynamic> session) {
+  final moves = (session['path'] as List? ?? const []).length;
+  final found = session['found'] == true;
+  final medal = (rewardMap(session['result'])['medal'] as num? ?? 0).toInt();
+  final day = '${session['daily'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · Zincir Ustalığı',
+    if (session['daily'] != null) 'Günün zinciri · $day',
+    '${rewardMap(session['start'])['name']} → ${rewardMap(session['target'])['name']}',
+    found
+        ? '${'🔗' * moves} $moves hamle · PAR ${session['par']}'
+        : '⛓️‍💥 Bağlanamadı · PAR ${session['par']}',
+    '${_medals[medal.clamp(0, 4)]} · ${(session['optionalHints'] as num? ?? 0).toInt()} ipucu',
+  ].join('\n');
 }

@@ -44,4 +44,25 @@ function remaining(graph, run) {
   return shortest(graph, current, run.puzzle.target, [run.puzzle.start, ...path.map((x) => x.clubId)],
       path.map((x) => x.playerId), run.maxMoves - path.length);
 }
-module.exports = {graphOf, shortest, validMove, remaining};
+// Number of distinct shortest routes (player, club steps). Layered BFS counts
+// each way once; shortest routes never reuse a player or club (see above).
+function countShortest(graph, start, target) {
+  const dist = new Map([[start, 0]]); const ways = new Map([[start, 1]]); let layer = [start];
+  while (layer.length && !dist.has(target)) {
+    const next = new Set();
+    for (const club of layer) {
+      for (const pid of graph.byClub.get(club) || []) {
+        for (const to of graph.players.get(pid)) {
+          if (dist.has(to) && dist.get(to) <= dist.get(club)) continue;
+          if (!dist.has(to)) {
+            dist.set(to, dist.get(club) + 1); next.add(to);
+          }
+          ways.set(to, (ways.get(to) || 0) + ways.get(club));
+        }
+      }
+    }
+    layer = [...next];
+  }
+  return ways.get(target) || 0;
+}
+module.exports = {graphOf, shortest, validMove, remaining, countShortest};
