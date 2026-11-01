@@ -8,7 +8,9 @@ import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../services/story_support_service.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/pitch_ui.dart';
 
@@ -252,7 +254,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     final epoch = ++_searchEpoch;
     _search?.cancel();
     setState(() => _suggestions = []);
-    if (query.trim().length < 2 || !_canPlay || _reverse) return;
+    if (query.trim().length < 2 || !_canPlay) return;
     final revision = _run['revision'];
     _search = Timer(const Duration(milliseconds: 250), () async {
       try {
@@ -267,9 +269,10 @@ class _SupportedGridPageState extends State<SupportedGridPage>
             _accountChanged)
           return;
         setState(
-          () => _suggestions = (result['players'] as List? ?? const [])
-              .map(rewardMap)
-              .toList(),
+          () => _suggestions =
+              (result[_reverse ? 'criteria' : 'players'] as List? ?? const [])
+                  .map(rewardMap)
+                  .toList(),
         );
       } catch (e) {
         if (mounted && epoch == _searchEpoch)
@@ -330,63 +333,10 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                 ),
               ],
               if (_run.isNotEmpty) ...[
-                Text(
-                  _run['assisted'] == true
-                      ? 'Yardımlı · Ayrı sonuç kaydı'
-                      : 'Yardımsız',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sen: ${_run['userScore'] ?? 0}${_bot ? ' · Bot: ${_run['botScore'] ?? 0}' : ''}',
-                ),
-                if (_run['feedback'] != null) Text('${_run['feedback']}'),
-                if (_active && _bot)
-                  Text(_run['turn'] == 'bot' ? 'Bot oynuyor…' : 'Sıra sende'),
+                _header(),
                 const SizedBox(height: 16),
-                if (_reverse) ...[
-                  for (var row = 0; row < 3; row++)
-                    PitchPanel(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${row + 1}. satır',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          for (var col = 0; col < 3; col++)
-                            Text(
-                              '${col + 1}. sütun · ${rewardMap(_list('witnesses')[row * 3 + col])['name']}',
-                            ),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (var i = 0; i < 6; i++)
-                        ChoiceChip(
-                          label: Text(
-                            '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}${rewardMap(_run['axes']).containsKey('$i') ? ' ✓' : ''}',
-                          ),
-                          selected: _target == i,
-                          onSelected:
-                              _canPlay &&
-                                  !rewardMap(_run['axes']).containsKey('$i')
-                              ? (_) => _select(i)
-                              : null,
-                        ),
-                    ],
-                  ),
-                  for (final entry in rewardMap(_run['axes']).entries)
-                    Text(
-                      '${int.parse(entry.key) < 3 ? 'Satır' : 'Sütun'} ${int.parse(entry.key) % 3 + 1}: '
-                      '${rewardMap(entry.value)['label']} · ${rewardMap(entry.value)['owner'] == 1 ? 'Sen' : 'Bot'}',
-                    ),
-                ] else
-                  _board(),
+                if (_reverse) _reverseBoard() else _board(),
+                const SizedBox(height: 12),
                 if (_active && _random) ...[
                   Text('Yerleştirilen çift: ${_run['roundsUsed']}/3'),
                   if (_run['pending'] == null)
@@ -415,6 +365,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                 if (!_active) ...[
                   const SizedBox(height: 16),
                   serverMatchResult(_run, bot: _bot),
+                  _summary(),
                   const SizedBox(height: 12),
                   FilledButton(
                     onPressed: _busy || _data['availability'] != true
@@ -431,27 +382,323 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     );
   }
 
+  // Score, record, turn and the last messages from the server.
+  Widget _header() {
+    final p = PitchColors.of(context);
+    final records = rewardMap(
+      _data[_run['assisted'] == true ? 'assistedRecords' : 'records'],
+    );
+    final record = rewardMap(records['${widget.mode}:${_run['difficulty']}']);
+    final feedback = _run['feedback']?.toString();
+    final cost = (_run['wrongCost'] as num? ?? 0).toInt();
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              HubPill(
+                _run['assisted'] == true
+                    ? 'Yardımlı · Ayrı sonuç kaydı'
+                    : 'Yardımsız',
+                color: _run['assisted'] == true ? hubAmber(context) : p.accent,
+                background: p.background.withValues(alpha: .4),
+              ),
+              if (_active && _bot)
+                HubPill(
+                  _run['turn'] == 'bot' ? 'Bot oynuyor…' : 'Sıra sende',
+                  color: _run['turn'] == 'bot' ? hubAmber(context) : p.success,
+                  background: p.background.withValues(alpha: .4),
+                  dot: true,
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: HubStatTile(
+                  label: 'Sen',
+                  value: '${_run['userScore'] ?? 0}',
+                  note: _bot ? 'kutu / eksen' : 'puan',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _bot
+                    ? HubStatTile(
+                        label: 'Bot',
+                        value: '${_run['botScore'] ?? 0}',
+                        note: '${_run['difficulty'] ?? widget.difficulty}',
+                      )
+                    : HubStatTile(
+                        label: 'Yanlış',
+                        value: '${_run['wrong'] ?? 0}',
+                        note: cost > 0 ? 'her biri −$cost puan' : 'cezasız',
+                      ),
+              ),
+            ],
+          ),
+          if (record.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Rekor ${record['best'] ?? 0} · ${record['completed'] ?? 0} tamamlanan'
+              '${_bot ? ' · ${record['wins'] ?? 0} galibiyet' : ''}',
+              style: hubCaps(context),
+            ),
+          ],
+          if (_bot && _run['botFirst'] == true && _active)
+            _line('Bu maçta bot önce başladı.', p.muted),
+          if (_run['botNote'] != null) _line('${_run['botNote']}', p.muted),
+          if (feedback != null)
+            _line(
+              feedback,
+              feedback == 'Doğru.' ? p.success : p.error,
+              icon: feedback == 'Doğru.'
+                  ? Icons.check_circle_rounded
+                  : Icons.cancel_rounded,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _line(String text, Color color, {IconData? icon}) => Padding(
+    padding: const EdgeInsets.only(top: 8),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 6),
+        ],
+        Expanded(
+          child: Text(
+            text,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: color),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  // Criterion header of the board: rows on the left, columns on top.
+  Widget _axis(String text, {bool top = false, bool done = false}) {
+    final p = PitchColors.of(context);
+    return Container(
+      constraints: const BoxConstraints(minHeight: 56),
+      margin: const EdgeInsets.all(2),
+      padding: const EdgeInsets.all(6),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: done ? p.tint : p.background.withValues(alpha: .4),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: done ? p.accent : p.border),
+      ),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        maxLines: top ? 3 : 4,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  Widget _grid(
+    Widget Function(int i) cell,
+    List<Widget> top,
+    List<Widget> left,
+  ) => Column(
+    children: [
+      Row(
+        children: [
+          const Expanded(child: SizedBox()),
+          for (final w in top) Expanded(flex: 2, child: w),
+        ],
+      ),
+      for (var row = 0; row < 3; row++)
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: left[row]),
+              for (var col = 0; col < 3; col++)
+                Expanded(flex: 2, child: cell(row * 3 + col)),
+            ],
+          ),
+        ),
+    ],
+  );
+
   Widget _board() {
     final rows = _list('rows'), cols = _list('cols');
+    String label(List<dynamic> list, int i) =>
+        list.length > i && list[i] != null ? _criterion(list[i]) : '—';
+    return Semantics(
+      container: true,
+      label: 'Grid tahtası',
+      child: _grid(
+        _cell,
+        [for (var i = 0; i < 3; i++) _axis(label(cols, i), top: true)],
+        [for (var i = 0; i < 3; i++) _axis(label(rows, i))],
+      ),
+    );
+  }
+
+  Widget _cell(int i) {
+    final p = PitchColors.of(context);
+    final cell = rewardMap(rewardMap(_run['cells'])['$i']);
+    final mine = cell['owner'] == 1, selected = _target == i;
+    final available =
+        _canPlay &&
+        cell.isEmpty &&
+        (!_random ||
+            _list('rows')[i ~/ 3] != null && _list('cols')[i % 3] != null);
+    final color = cell.isEmpty
+        ? p.surface
+        : mine
+        ? p.tint
+        : hubAmber(context).withValues(alpha: .16);
+    return Semantics(
+      label: _cellCriteria(i),
+      selected: selected,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 92),
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: selected ? p.tint : color,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected
+                ? p.accent
+                : cell.isEmpty
+                ? p.border
+                : mine
+                ? p.accent
+                : hubAmber(context),
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: TextButton(
+          key: ValueKey('grid-cell-$i'),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: available ? () => _select(i) : null,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (cell.isEmpty)
+                Icon(
+                  available ? Icons.add_rounded : Icons.lock_outline_rounded,
+                  color: available ? p.accent : p.muted,
+                  size: 20,
+                )
+              else ...[
+                Text(
+                  '${rewardMap(cell['player'])['name']}',
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: p.text,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  _bot
+                      ? (mine ? 'Sen' : 'Bot')
+                      : (cell['bonus'] as num? ?? 0) > 0
+                      ? '+${20 + (cell['bonus'] as num).toInt()}'
+                      : '+20',
+                  style: hubCaps(
+                    context,
+                    color: mine ? p.accent : hubAmber(context),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Reverse: the nine players with each axis' found criterion around them.
+  Widget _reverseBoard() {
+    final p = PitchColors.of(context);
+    final axes = rewardMap(_run['axes']);
+    final players = _list('witnesses');
+    String axis(int i) {
+      final a = rewardMap(axes['$i']);
+      return a.isEmpty
+          ? '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}\n?'
+          : '${a['label']}\n${a['owner'] == 1 ? 'Sen' : 'Bot'}';
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var i = 0; i < 3; i++)
-          Text(
-            'Satır ${i + 1}: ${_criterion(rows[i])} · Sütun ${i + 1}: ${_criterion(cols[i])}',
+        _grid(
+          (i) => Container(
+            constraints: const BoxConstraints(minHeight: 72),
+            margin: const EdgeInsets.all(2),
+            padding: const EdgeInsets.all(6),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: p.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: p.border),
+            ),
+            child: Text(
+              players.length > i ? '${rewardMap(players[i])['name']}' : '—',
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
           ),
+          [
+            for (var i = 3; i < 6; i++)
+              _axis(axis(i), top: true, done: axes.containsKey('$i')),
+          ],
+          [
+            for (var i = 0; i < 3; i++)
+              _axis(axis(i), done: axes.containsKey('$i')),
+          ],
+        ),
         const SizedBox(height: 12),
-        Table(
-          border: TableBorder.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        Text(
+          'Bir satır ya da sütun seç; üç oyuncunun ortak kulübünü, '
+          'milliyetini veya mevkisini yaz.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: p.muted),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
-            for (var row = 0; row < 3; row++)
-              TableRow(
-                children: [
-                  for (var col = 0; col < 3; col++) _cell(row * 3 + col),
-                ],
+            for (var i = 0; i < 6; i++)
+              ChoiceChip(
+                label: Text(
+                  '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}${axes.containsKey('$i') ? ' ✓' : ''}',
+                ),
+                selected: _target == i,
+                onSelected: _canPlay && !axes.containsKey('$i')
+                    ? (_) => _select(i)
+                    : null,
               ),
           ],
         ),
@@ -459,38 +706,43 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     );
   }
 
-  Widget _cell(int i) {
-    final cell = rewardMap(rewardMap(_run['cells'])['$i']);
-    final available =
-        _canPlay &&
-        cell.isEmpty &&
-        (!_random ||
-            _list('rows')[i ~/ 3] != null && _list('cols')[i % 3] != null);
-    return Semantics(
-      label: _cellCriteria(i),
-      selected: _target == i,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 100),
-        color: _target == i
-            ? Theme.of(context).colorScheme.primaryContainer
-            : null,
-        padding: const EdgeInsets.all(4),
-        child: TextButton(
-          key: ValueKey('grid-cell-$i'),
-          onPressed: available ? () => _select(i) : null,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('${i ~/ 3 + 1} / ${i % 3 + 1}'),
-              Text(
-                cell.isEmpty
-                    ? 'Boş kutu'
-                    : '${rewardMap(cell['player'])['name']}',
-                textAlign: TextAlign.center,
-              ),
-              if (cell.isNotEmpty) Text(cell['owner'] == 1 ? 'Sen' : 'Bot'),
-            ],
-          ),
+  // After the game: an answer for every empty cell, or each axis' accepted criteria.
+  Widget _summary() {
+    final solutions = rewardMap(_run['solutions']);
+    final accepted = _list('accepted');
+    if (solutions.isEmpty && accepted.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: PitchPanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              accepted.isNotEmpty
+                  ? 'Kabul edilen kriterler'
+                  : 'Boş kalan kutulara örnek cevaplar',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            if (accepted.isNotEmpty)
+              for (var i = 0; i < accepted.length; i++)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}: '
+                    '${(accepted[i] as List? ?? const []).join(' · ')}',
+                  ),
+                )
+            else
+              for (final e in solutions.entries)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    '${_cellCriteria(int.parse(e.key)).replaceAll('\n', ' · ')}: '
+                    '${rewardMap(e.value)['name']}',
+                  ),
+                ),
+          ],
         ),
       ),
     );
@@ -563,7 +815,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
               onChanged: _find,
               decoration: InputDecoration(
                 labelText: _reverse
-                    ? 'Üç oyuncunun ortak kriteri'
+                    ? 'Ortak kriter ara · Kulüp, milliyet veya mevki'
                     : 'Futbolcu ara · En az iki harf',
               ),
             ),
@@ -579,11 +831,24 @@ class _SupportedGridPageState extends State<SupportedGridPage>
               ),
             for (final p in _suggestions)
               ListTile(
-                title: Text('${p['name']}'),
+                title: Text('${p[_reverse ? 'label' : 'name']}'),
+                subtitle: _reverse
+                    ? Text(
+                        const {
+                              'club': 'Kulüp',
+                              'country': 'Milliyet',
+                              'position': 'Mevki',
+                            }['${p['type']}'] ??
+                            '',
+                      )
+                    : null,
                 onTap: _canPlay
                     ? () => _act('guess', {
                         'target': _target,
-                        'playerId': p['id'],
+                        if (_reverse)
+                          'answer': p['id']
+                        else
+                          'playerId': p['id'],
                       })
                     : null,
               ),

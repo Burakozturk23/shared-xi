@@ -1,5 +1,6 @@
 import 'supported_grid_page.dart';
 import '../widgets/grid_club_pool_picker.dart';
+import '../widgets/grid_friend_section.dart';
 import '../widgets/hub_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -69,6 +70,8 @@ class GridModeSelectionPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 28),
+            const GridFriendSection(),
           ],
         ),
       ),

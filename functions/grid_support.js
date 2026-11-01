@@ -16,6 +16,14 @@ const bot = (r) => r.mode.startsWith("bot_");
 const kind = (r) => r.mode.split("_").at(-1);
 const pos = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", ATT: "Forvet"};
 const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+// Sessions started with rules 2: fair boards, a cost for wrong solo answers, a bot that
+// blocks and misses by difficulty, and a random first mover against the bot.
+const RULES = 2;
+const POPULAR_RANK = 3000;
+const FAIR_MIN_ANSWERS = 3;
+const WRONG_COST = {classic: 5, random: 5, reverse: 10};
+const BOT_ACCURACY = {easy: .60, medium: .78, hard: .92};
+const BOT_BLOCK = {easy: 0, medium: .5, hard: 1};
 const criterionPlayers = new Map();
 for (const p of Object.values(catalog.players)) {
   for (const id of [...p.clubs.map((v) => "club:" + v), ...p.countryKeys.map((v) => "country:" + v),
@@ -26,6 +34,25 @@ for (const p of Object.values(catalog.players)) {
 }
 function matches(p, id) {
   return criterionPlayers.get(id)?.has(p.id) === true;
+}
+// Well-known players of each criterion, for picking fair rows quickly.
+const popularCount = new Map([...criterionPlayers].map(([id, ids]) =>
+  [id, [...ids].filter((p) => catalog.players[p].rank <= 3000).length]));
+// For one row criterion: every criterion its players share, with the count and the well-known count.
+const overlaps = new Map();
+function overlap(row) {
+  if (!overlaps.has(row)) {
+    const m = new Map();
+    for (const id of criterionPlayers.get(row) || []) {
+      const p = catalog.players[id];
+      for (const k of [...p.clubs.map((v) => "club:" + v), ...p.countryKeys.map((v) => "country:" + v),
+        "position:" + p.position]) {
+        const x = m.get(k) || {n: 0, popular: 0}; x.n++; if (p.rank <= POPULAR_RANK) x.popular++; m.set(k, x);
+      }
+    }
+    overlaps.set(row, m);
+  }
+  return overlaps.get(row);
 }
 function intersection(a, b) {
   const left = criterionPlayers.get(a) || new Set(); const right = criterionPlayers.get(b) || new Set();
@@ -44,16 +71,49 @@ function perfect(answers) {
   }
   return answers.every((_, i) => assign(i, new Set())) ? witness : null;
 }
+// Three distinct items by hash; shuffling a 2000-club pool on every try is too slow.
+function sample(list, key) {
+  const picked = new Set();
+  for (let j = 0; picked.size < 3 && j < 50; j++) {
+    picked.add(list[parseInt(P.hash([key, j]).slice(0, 8), 16) % list.length]);
+  }
+  return [...picked];
+}
+// At most one position column, so one column is not hundreds of answers wide.
+function fairColumns(ids) {
+  const cols = [];
+  for (const id of ids) {
+    if (id.startsWith("position:") && cols.some((c) => c.startsWith("position:"))) continue;
+    cols.push(id); if (cols.length === 3) break;
+  }
+  return cols;
+}
 function makePuzzle(r) {
   const clubs = r.pool.length ? r.pool : catalog.clubOptions;
   if (clubs.length < 3) fail("failed-precondition", "En az üç uygun kulüp gerekli.");
-  for (let attempt = 0; attempt < 60; attempt++) {
-    const rows = P.shuffle(clubs, r.seed + attempt).slice(0, 3);
-    const viable = Object.values(catalog.criteria).filter((k) =>
-      ["country", "position"].includes(k.type) || k.type === "club" && clubs.includes(k.id) && !rows.includes(k.id))
-        .map((k) => k.id).filter((id) => rows.every((row) => intersection(row, id).length >= r.minimumAnswers));
-    if (viable.length < 3) continue;
-    const cols = P.shuffle(viable, r.seed + "cols" + attempt).slice(0, 3);
+  const strict = r.rules >= 2;
+  // Fair rows: clubs with at least six well-known players (when the pool has three of them).
+  const known = clubs.filter((id) => popularCount.get(id) >= 6); const inPool = new Set(clubs);
+  for (let attempt = 0; attempt < (strict ? 120 : 60); attempt++) {
+    // Rules 2: the first 60 tries look for a fair board (3+ answers per cell, one of them among
+    // the 3000 best-known players, one position column at most); narrow pools fall back after.
+    const fair = strict && attempt < 60;
+    const floor = fair ? Math.max(FAIR_MIN_ANSWERS, r.minimumAnswers) : r.minimumAnswers;
+    const rows = fair ? sample(known.length >= 3 ? known : clubs, r.seed + attempt) :
+      P.shuffle(clubs, r.seed + attempt).slice(0, 3);
+    const fits = (row, id) => {
+      const x = overlap(row).get(id); return !!x && x.n >= floor && (!fair || x.popular > 0);
+    };
+    // Same set as intersecting every criterion with the rows, from the rows' own players.
+    const viable = [...overlap(rows[0]).keys()].filter((id) => {
+      const k = catalog.criteria[id];
+      return k && (["country", "position"].includes(k.type) || k.type === "club" && inPool.has(id) &&
+        !rows.includes(id)) && rows.every((row) => fits(row, id));
+    });
+    if (rows.length < 3 || viable.length < 3) continue;
+    const shuffled = P.shuffle(viable, r.seed + "cols" + attempt);
+    const cols = fair ? fairColumns(shuffled) : shuffled.slice(0, 3);
+    if (cols.length < 3) continue;
     const answers = rows.flatMap((row) => cols.map((col) => intersection(row, col)
         .sort((a, b) => catalog.players[a].rank - catalog.players[b].rank || a.localeCompare(b))));
     const witness = perfect(answers);
@@ -66,6 +126,12 @@ function countryKey(value) {
   return ({turkiye: "turkey", czechia: "czechrepublic", unitedstates: "usa", unitedstatesofamerica: "usa",
     korearepublic: "southkorea", koreasouth: "southkorea", ivorycoast: "cotedivoire",
     bosniaherzegovina: "bosniaandherzegovina", holland: "netherlands", thenetherlands: "netherlands"})[key] || key;
+}
+// Club labels are short ("Galatasaray", "PSG"); "Galatasaray SK" or "FC Porto" still match.
+const AFFIXES = new Set(["fc", "sk", "cf", "ac", "afc", "sc", "cd", "fk", "jk", "if", "bk", "club", "futbol",
+  "kulubu", "spor", "as", "ssc", "sv", "vfb", "vfl", "rc", "ca", "se", "the"]);
+function labelKey(value) {
+  return String(value || "").split(/[^\p{L}\p{N}]+/u).map(P.norm).filter((w) => w && !AFFIXES.has(w)).join("");
 }
 function restored(raw) {
   const s = {sessions: {}, active: {}, records: {}, assistedRecords: {}, ...raw};
@@ -139,6 +205,22 @@ function usable(r, scope) {
     return false;
   }
 }
+// The reverse axes accept every shared club, country or position; shown after the game.
+function accepted(r) {
+  return Array.from({length: 6}, (_, i) => common(r, i).map((k) => k.label));
+}
+// Best-known unused answer of each empty cell, shown after the game.
+function solutions(r) {
+  return Object.fromEntries(Array.from({length: 9}, (_, i) => i).filter((i) => !r.cells[i])
+      .map((i) => [i, answers(r, i).sort((a, b) => catalog.players[a].rank - catalog.players[b].rank)[0]])
+      .filter(([, id]) => id).map(([i, id]) => [i, P.player(catalog, id)]));
+}
+// Wrong solo answers cost points in rules 2 sessions (never below 0).
+function wrongAnswer(r) {
+  if (bot(r) || r.rules < 2) return "";
+  r.wrong = (r.wrong || 0) + 1; const cost = Math.min(r.userScore, WRONG_COST[kind(r)]);
+  r.userScore -= cost; return cost ? ` −${cost} puan.` : "";
+}
 function finish(r, reason, time) {
   if (r.finished) return;
   r.finished = true; r.reason = reason; r.finishedAt = time; r.turn = "done";
@@ -174,12 +256,28 @@ function makePair(r) {
   const pool = new Set(r.pool);
   const clubs = P.shuffle(pool.size ? [...pool] : catalog.clubOptions, r.seed + r.pairNumber)
       .filter((id) => !used.has(id));
-  const pairs = [];
-  for (let i = 0; i < clubs.length && !pairs.length; i++) {
+  const pairs = []; const fair = r.rules >= 2;
+  // Rules 2: 3+ unused answers with a well-known one, gathered from the first three clubs that
+  // have pairs (not only the first), so one club does not decide every pair.
+  const floor = fair ? Math.max(FAIR_MIN_ANSWERS, r.minimumAnswers) : r.minimumAnswers;
+  for (let i = 0, from = 0; i < clubs.length && from < (fair ? 3 : 1); i++) {
+    const before = pairs.length;
     for (let j = i + 1; j < clubs.length; j++) {
-      const ids = intersection(clubs[i], clubs[j]);
-      if (ids.filter((id) => !r.used[id]).length >= r.minimumAnswers) {
+      const ids = intersection(clubs[i], clubs[j]); const free = ids.filter((id) => !r.used[id]);
+      if (free.length >= floor && (!fair || free.some((id) => catalog.players[id].rank <= POPULAR_RANK))) {
         pairs.push({criteria: [clubs[i], clubs[j]], answers: ids});
+      }
+    }
+    if (pairs.length > before) from++;
+  }
+  if (!pairs.length && fair) {
+    // A narrow pool keeps the old floor rather than running out of pairs.
+    for (let i = 0; i < clubs.length && !pairs.length; i++) {
+      for (let j = i + 1; j < clubs.length; j++) {
+        const ids = intersection(clubs[i], clubs[j]);
+        if (ids.filter((id) => !r.used[id]).length >= r.minimumAnswers) {
+          pairs.push({criteria: [clubs[i], clubs[j]], answers: ids});
+        }
       }
     }
   }
@@ -204,23 +302,30 @@ function schedule(r, time) {
     kind(r) === "reverse" ? [1050, 2049] : [1150, 2049];
   r.botAt = time + range[0] + Math.floor(random(r, "delay") * (range[1] - range[0] + 1));
 }
+// Cells that complete a line of `owner`.
+function completing(r, cells, owner) {
+  return cells.filter((i) => lines.some((l) => l.includes(i) &&
+    l.filter((j) => j !== i).every((j) => r.cells[j]?.owner === owner)));
+}
 function botMove(r, time) {
   if (r.turn !== "bot" || r.botAt > time || r.finished) return;
-  r.turn = "user";
+  r.turn = "user"; r.botNote = null;
+  const hit = random(r, "accuracy") <= BOT_ACCURACY[r.difficulty];
   if (kind(r) === "reverse") {
     const i = pick(r, open(r), "axis"); const k = common(r, i)[0];
-    if (k) {
+    // Rules 2: the reverse bot misses by difficulty like the classic one.
+    if (k && (r.rules < 2 || hit)) {
       r.axes[i] = {owner: 2, criterionId: k.id, label: k.label}; r.botScore++;
-    }
+    } else if (k) r.botNote = `Bot ${i < 3 ? "satır" : "sütun"} ${i % 3 + 1} için yanlış kriter söyledi.`;
   } else if (kind(r) === "classic") {
-    if (random(r, "accuracy") <= {easy: .60, medium: .78, hard: .92}[r.difficulty]) {
+    if (hit) {
       const cells = open(r).filter((i) => answers(r, i).length);
-      // Preserve legacy policy: complete a bot line, then random valid cell.
-      const winning = cells.filter((i) => lines.some((l) => l.includes(i) &&
-        l.filter((j) => j !== i).every((j) => r.cells[j]?.owner === 2)));
-      const i = pick(r, winning.length ? winning : cells, "cell");
+      // Complete a bot line; rules 2 then block a user line (hard always, medium half the time).
+      const winning = completing(r, cells, 2);
+      const blocking = r.rules >= 2 && random(r, "block") < BOT_BLOCK[r.difficulty] ? completing(r, cells, 1) : [];
+      const i = pick(r, winning.length ? winning : blocking.length ? blocking : cells, "cell");
       if (i !== undefined) claim(r, i, pick(r, answers(r, i), "player"), 2, time);
-    }
+    } else if (r.rules >= 2) r.botNote = "Bot bu turda doğru oyuncuyu bulamadı.";
   } else {
     const i = open(r).find((i) => answers(r, i).length);
     if (i !== undefined) claim(r, i, pick(r, answers(r, i), "player"), 2, time);
@@ -270,6 +375,9 @@ function view(r) {
     axes: r.axes, pending: r.pending ? {criteria: r.pending.criteria.map(criterion),
       player: r.pending.playerId ? P.player(catalog, r.pending.playerId) : null} : null,
     roundsUsed: r.roundsUsed, pairNumber: r.pairNumber, userScore: r.userScore, botScore: r.botScore,
+    rules: r.rules || 1, wrong: r.wrong || 0, wrongCost: !bot(r) && r.rules >= 2 ? WRONG_COST[kind(r)] : 0,
+    botNote: r.botNote || null, botFirst: !!r.botFirst,
+    ...r.finished ? reverse ? {accepted: accepted(r)} : {solutions: solutions(r)} : {},
     winner: r.winner ?? null, feedback: r.feedback || null, hints: r.hints, support: B.view(r),
     assisted: r.assisted, adGranted: r.adGranted,
     masteryEligible: false, leaderboardEligible: false, rewardCoins: 0, rewardXp: 0};
@@ -304,6 +412,13 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     }
     if (typeof input.query !== "string" || input.query.length > 80) fail("invalid-argument", "Arama geçersiz.");
     const q = P.norm(input.query); if (q.length < 2) return {players: []};
+    if (kind(r) === "reverse") {
+      // Reverse: clubs, countries and positions whose name contains the query, whatever the axis.
+      return {players: [], criteria: Object.values(catalog.criteria).filter((k) =>
+        ["club", "country", "position"].includes(k.type) && P.norm(k.label).includes(q))
+          .sort((a, b) => P.norm(a.label).indexOf(q) - P.norm(b.label).indexOf(q) || a.label.length - b.label.length)
+          .slice(0, 12).map((k) => ({id: k.id, label: k.label, type: k.type}))};
+    }
     // Search is deliberately independent of the selected cell: it is not a free answer oracle.
     return {players: Object.values(catalog.players).filter((p) => !r.used?.[p.id] &&
       [p.name, ...p.aliases].some((s) => P.norm(s).includes(q))).slice(0, 20).map((p) => ({id: p.id, name: p.name}))};
@@ -337,10 +452,14 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
           minimumAnswers: input.minimumAnswers === 1 ? 1 : 2, startFingerprint: fp,
           createdAt: now(), expiresAt: now() + 86400000, turn: "user", finished: false,
           cells: {}, axes: {}, used: {}, rows: {}, cols: {}, actions: {}, hints: {}, roundsUsed: 0,
-          pairNumber: 0, userScore: 0, botScore: 0, adCredits: 0, adGranted: 0};
+          pairNumber: 0, userScore: 0, botScore: 0, adCredits: 0, adGranted: 0, rules: RULES, wrong: 0};
         if (kind(r) !== "random") {
           r.puzzle = makePuzzle(r);
           r.rows = {...r.puzzle.rows}; r.cols = {...r.puzzle.cols};
+          // Against the bot the first move goes to either side.
+          if (bot(r) && random(r, "first") < .5) {
+            r.botFirst = true; schedule(r, now());
+          }
         }
         B.pin(r, policy); s.sessions[id] = r; s.active[m] = id; return;
       }
@@ -372,11 +491,12 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
               fail("invalid-argument", "Bir kriter yaz.");
             }
             const k = common(r, i).find((k) => P.norm(k.label) === P.norm(input.answer) || k.id === input.answer ||
+              r.rules >= 2 && labelKey(k.label) && labelKey(k.label) === labelKey(input.answer) ||
               k.type === "country" && countryKey(k.id.slice(8)) === countryKey(input.answer));
             if (k) {
               r.axes[i] = {owner: 1, criterionId: k.id, label: k.label}; r.userScore += bot(r) ? 1 : 40;
             }
-            r.feedback = k ? "Doğru." : "Bu kriter üç oyuncunun tamamına uymuyor.";
+            r.feedback = k ? "Doğru." : "Bu kriter üç oyuncunun tamamına uymuyor." + wrongAnswer(r);
             check(r, now()); schedule(r, now());
           } else {
             const i = input.target === "pending" ? "pending" : Number(input.target);
@@ -386,7 +506,7 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
               fail("invalid-argument", "Oyuncu kullanılamaz.");
             }
             const ok = answers(r, i).includes(input.playerId);
-            r.feedback = ok ? "Doğru." : "Oyuncu iki kritere uymuyor.";
+            r.feedback = ok ? "Doğru." : "Oyuncu iki kritere uymuyor." + wrongAnswer(r);
             if (ok && i === "pending") r.pending.playerId = input.playerId;
             else {
               if (ok) claim(r, i, input.playerId, 1, now());
@@ -420,4 +540,5 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   }
   return {status, search, act, prepareHint, settleHint};
 }
-module.exports = {createService, MODES, catalog, hint, common, answers, view, makePuzzle, perfect};
+module.exports = {createService, MODES, catalog, hint, common, answers, view, makePuzzle, perfect, labelKey, botMove,
+  RULES, POPULAR_RANK, WRONG_COST, BOT_ACCURACY, BOT_BLOCK};
