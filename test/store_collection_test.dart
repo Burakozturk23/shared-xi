@@ -46,6 +46,8 @@ class ShopFake extends StoreGateway {
   Completer<int>? consuming;
   bool failConsume = false;
   List<StoreOffer>? catalogOverride;
+  List<StoreBoostGuide> guide = const [];
+  int converts = 0;
   @override
   bool get connected => true;
   @override
@@ -65,7 +67,26 @@ class ShopFake extends StoreGateway {
     offers: catalogOverride ?? offers(),
     inventory: {...items},
     selectedKitId: selected,
+    boostGuide: guide,
   );
+  @override
+  Future<Map<String, int>> convertLegacy() async {
+    converts++;
+    for (final (from, to) in const [
+      ('boost_last_letter', 'boost_basic'),
+      ('boost_anagram', 'boost_strong'),
+    ]) {
+      final n = items.remove(from)?.quantity ?? 0;
+      if (n > 0) items[to] = item(to, 'boost', (items[to]?.quantity ?? 0) + n);
+    }
+    return {
+      'boost_basic': items['boost_basic']?.quantity ?? 0,
+      'boost_strong': items['boost_strong']?.quantity ?? 0,
+      'boost_last_letter': 0,
+      'boost_anagram': 0,
+    };
+  }
+
   @override
   Future<EconomyPurchaseResult> purchase(StoreOffer o) async {
     purchases++;
@@ -189,6 +210,168 @@ void main() {
       expect(StoreBoostPanel.blockedLetters('Lionel Messi', {3}), isEmpty);
     },
   );
+  test('every support mode on the server has a player-facing name', () {
+    final guide = File('functions/boost_guide.js').readAsStringSync();
+    final paid = RegExp(
+      r'^  (\w+): \[',
+      multiLine: true,
+    ).allMatches(guide).map((m) => m[1]!).toList();
+    expect(paid.length, greaterThan(30));
+    final legacy = RegExp(r'"(\w+)"')
+        .allMatches(
+          RegExp(r'const modes = new Set\(\[([^\]]*)\]\)').firstMatch(
+            File('functions/store_collection.js').readAsStringSync(),
+          )![1]!,
+        )
+        .map((m) => m[1]!);
+    for (final mode in [
+      ...paid,
+      ...legacy,
+      for (final o in offers()) ...o.modes,
+    ]) {
+      expect(boostModeNames[mode], isNotNull, reason: mode);
+    }
+    expect(boostModeNames.containsKey('coach_xi'), isFalse);
+  });
+  test('boost guide parses the server shape and skips broken rows', () {
+    final guide = StoreBoostGuide.listFrom([
+      {
+        'modeId': 'daily_question',
+        'name': 'Günün Sorusu',
+        'group': 'Günlük',
+        'supports': [
+          {
+            'itemId': 'boost_eliminate',
+            'title': 'Şık ele',
+            'effect': 'Bir yanlış şıkkı eler.',
+          },
+          {'title': 'no id'},
+        ],
+      },
+      {'name': 'no mode'},
+      'junk',
+    ]);
+    expect(guide, hasLength(1));
+    expect(guide.single.supports.single.effect, 'Bir yanlış şıkkı eler.');
+    expect(StoreBoostGuide.listFrom(null), isEmpty);
+  });
+  testWidgets('game guide explains each support and filters the products', (
+    t,
+  ) async {
+    final fake = ShopFake()
+      ..items['boost_first_letter'] = item('boost_first_letter', 'boost', 4)
+      ..guide = StoreBoostGuide.listFrom([
+        {
+          'modeId': 'transfer',
+          'name': 'Transfer Dedektifi',
+          'group': 'Bulmaca',
+          'supports': [
+            {
+              'itemId': 'boost_first_letter',
+              'title': 'İlk Harf',
+              'effect': 'Üçüncü ipucu: futbolcunun adının ilk harfi.',
+            },
+          ],
+        },
+        {
+          'modeId': 'daily_question',
+          'name': 'Günün Sorusu',
+          'group': 'Günlük',
+          'supports': [
+            {
+              'itemId': 'boost_eliminate',
+              'title': 'Şık Ele',
+              'effect': 'Bir yanlış şıkkı eler.',
+            },
+          ],
+        },
+      ]);
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
+    expect(find.text('Oyuna göre destekler'), findsOneWidget);
+    await t.tap(find.byKey(const ValueKey('guide-transfer')));
+    await t.pumpAndSettle();
+    expect(
+      find.text('Üçüncü ipucu: futbolcunun adının ilk harfi.'),
+      findsOneWidget,
+    );
+    expect(find.text('Çantanda 4'), findsOneWidget);
+    expect(
+      find.text(
+        'Aşağıda yalnızca Transfer Dedektifi için işe yarayan ürünler listeleniyor.',
+      ),
+      findsOneWidget,
+    );
+    // The first-letter products stay listed for this game.
+    await reveal(t, find.byKey(const ValueKey('store-boost_first_letter_1')));
+    await t.drag(find.byType(CustomScrollView), const Offset(0, 3000));
+    await t.pumpAndSettle();
+    await t.ensureVisible(find.text('Günlük'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Günlük'));
+    await t.pumpAndSettle();
+    await t.tap(find.byKey(const ValueKey('guide-daily_question')));
+    await t.pumpAndSettle();
+    expect(find.text('Bir yanlış şıkkı eler.'), findsOneWidget);
+    // No Şık Ele product in this catalog: nothing from other games leaks in.
+    expect(
+      find.byKey(const ValueKey('store-boost_first_letter_1')),
+      findsNothing,
+    );
+    await reveal(t, find.text('Burada henüz ürün yok'));
+    expect(find.byKey(const ValueKey('guide-daily_question')), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
+  testWidgets(
+    'early avatars sell in the store; the 450 tier is marked special',
+    (t) async {
+      await mount(
+        t,
+        StorePage(
+          gateway: ShopFake(),
+          initialTab: 'avatar',
+          initialAvatarId: 'night_owl',
+        ),
+      );
+      await reveal(t, find.text('Gece Kuşu').last);
+      expect(
+        find.byKey(const ValueKey('store-special-night_owl')),
+        findsOneWidget,
+      );
+      expect(find.text('450 Link Coin'), findsWidgets);
+      await mount(
+        t,
+        StorePage(
+          gateway: ShopFake(),
+          initialTab: 'avatar',
+          initialAvatarId: 'speedster_bolt',
+        ),
+      );
+      await reveal(t, find.text('Şimşek').last);
+      expect(
+        find.byKey(const ValueKey('store-special-speedster_bolt')),
+        findsNothing,
+      );
+      expect(t.takeException(), isNull);
+    },
+  );
+  testWidgets('leftover letter supports convert one to one by price, once', (
+    t,
+  ) async {
+    final fake = ShopFake()
+      ..items['boost_last_letter'] = item('boost_last_letter', 'boost', 2)
+      ..items['boost_anagram'] = item('boost_anagram', 'boost', 1);
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
+    expect(find.text('Eski destekler'), findsOneWidget);
+    expect(find.textContaining('Son Harf → Temel bilgi'), findsOneWidget);
+    await t.tap(find.text('3 desteği çevir'));
+    await t.pumpAndSettle();
+    expect(fake.converts, 1);
+    expect(
+      find.text('2 Temel bilgi ve 1 Güçlü bilgi çantana eklendi.'),
+      findsOneWidget,
+    );
+    expect(find.text('Eski destekler'), findsNothing);
+  });
   testWidgets(
     'purchase confirms price, cancels safely and updates balance and stock',
     (t) async {

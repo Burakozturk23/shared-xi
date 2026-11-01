@@ -43,17 +43,32 @@ function enabled(policy, uid) {
     policy.public === true && Number.isInteger(policy.percent) &&
     parseInt(digest(uid).slice(0, 8), 16) % 100 < Math.max(0, Math.min(100, policy.percent)));
 }
+// Live prices (price_config.js, Remote Config linkball_prices_v1). index.js sets
+// the source; until then, or while its flag is off, boosts.js prices apply.
+let priceSource = async () => null;
+function usePrices(source) {
+  priceSource = source;
+}
 async function policyFor(db, uid, linked) {
   if (!linked) return null;
   const p = (await db.ref("runtimeConfig/boosts").get()).val();
-  return enabled(p, uid) ? p : null;
+  if (!enabled(p, uid)) return null;
+  let prices = null;
+  try {
+    prices = require("./price_config").boostPrices(await priceSource());
+  } catch (_) {
+    prices = null;
+  }
+  return prices ? {...p, prices} : p;
 }
 function pin(run, policy) {
   const mode = modeOf(run);
   if (!policy || !modes[mode] || policy.readyModes?.[mode] !== true) return;
   run.boostPolicy = {version: VERSION, modeId: mode, daily: run.entry === "daily",
     products: Object.fromEntries(modes[mode].map((id) => {
-      const p = products["boost_" + id]; return [p.id, {...p}];
+      const p = products["boost_" + id]; const live = policy.prices?.[p.id];
+      // The price is pinned with the run: a change later never alters a quote already shown.
+      return [p.id, live ? {...p, priceCoins: live.single, bundlePrice: live.pack} : {...p}];
     }))};
   run.boostUses = {}; run.assisted = false;
 }
@@ -104,14 +119,15 @@ function consume(e, run, input, sku, target, result, time) {
     }
     item.quantity--;
   } else if (source === "coins") {
-    if (input.expectedPriceCoins !== product.priceCoins) fail("failed-precondition", "Fiyatı yenileyip tekrar seç.");
-    if (e.balances.coins < product.priceCoins) {
+    const price = run.boostPolicy.products[sku]?.priceCoins ?? product.priceCoins;
+    if (input.expectedPriceCoins !== price) fail("failed-precondition", "Fiyatı yenileyip tekrar seç.");
+    if (e.balances.coins < price) {
       fail("resource-exhausted", "Yeterli Coin yok; oyununa devam edebilirsin.");
     }
-    const before = e.balances.coins; e.balances.coins -= product.priceCoins;
-    e.lifetimeSpent += product.priceCoins;
+    const before = e.balances.coins; e.balances.coins -= price;
+    e.lifetimeSpent += price;
     e.purchases["boost__" + key] = {txId: "boost__" + key, offerId: sku, itemId: sku, itemType: "boost",
-      priceCoins: product.priceCoins, balanceBefore: before, balanceAfter: e.balances.coins,
+      priceCoins: price, balanceBefore: before, balanceAfter: e.balances.coins,
       purchasedAt: time, economyConfigId: "boosts-v1", consumed: true};
   } else if (source === "ad") {
     if (!product.ads || !(adCredits(run, sku) > 0)) {
@@ -185,15 +201,22 @@ function recoverUnused(e, run, time, usable = () => true) {
     if (!run.adProducts[sku]) delete run.adRecoveryPending[sku];
   }
 }
+// One real example per product for the store card; the full list is the store's game guide.
+const EXAMPLES = {
+  basic: "Örnek: Grid'de seçtiğin kutu için bir adayın milliyeti ve mevkisi.",
+  eliminate: "Örnek: Günün Sorusu'nda bir yanlış şıkkı eler.",
+  connection: "Örnek: Kariyer Zinciri'nde sıradaki köprü futbolcusu.",
+  strong: "Örnek: Kadro Mücadelesi'nde tek aday önerisi.",
+};
 const offers = specs.filter(([id]) => !["first_letter", "last_letter", "anagram"].includes(id)).flatMap(
     ([id, title, price, bundle, , category], i) => [1, 3].map((units) => ({
       offerId: `boost_${id}_${units}`, itemId: "boost_" + id, itemType: "boost",
       title: units === 3 ? title + " · 3 kullanım" : title,
-      subtitle: "Yalnız desteklenen solo oyunlarda; sonuç Yardımlı olarak kaydedilir.",
+      subtitle: EXAMPLES[id] + " Sonuç Yardımlı olarak kaydedilir.",
       badge: units === 3 ? "3’LÜ PAKET" : "TEK KULLANIM",
       units, priceCoins: units === 1 ? price : bundle, enabled: true, oneTime: false,
       category, sortOrder: 200 + i * 2 + (units === 3 ? 1 : 0),
       modes: Object.keys(modes).filter((mode) => modes[mode].includes(id)),
     })));
-module.exports = {VERSION, products, modes, offers, enabled, policyFor, pin, paid, view,
+module.exports = {VERSION, products, modes, offers, enabled, policyFor, usePrices, pin, paid, view,
   paymentFingerprint, consume, adBenefit, grantAd, recoverAd, recoverUnused};

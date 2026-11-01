@@ -114,7 +114,7 @@
           "itemId": "speedster_bolt",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 10
         },
         "avatar_tactician_board": {
@@ -125,7 +125,7 @@
           "itemId": "tactician_board",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 20
         },
         "avatar_night_owl": {
@@ -136,7 +136,7 @@
           "itemId": "night_owl",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 30
         },
         "avatar_champion_cup": {
@@ -147,7 +147,7 @@
           "itemId": "champion_cup",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 40
         }
       }

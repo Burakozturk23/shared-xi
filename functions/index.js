@@ -28,6 +28,19 @@ const lbGetEconomyConfig = economyConfig.createProvider({
   },
   warn: (message, detail) => logger.warn(message, detail),
 });
+const priceConfig = require("./price_config");
+const dailyReturn = require("./daily_return");
+const lbGetPrices = economyConfig.createProvider({
+  fetch: async () => {
+    const template = await getRemoteConfig().getServerTemplate({
+      defaultConfig: {[priceConfig.PARAMETER]: JSON.stringify(priceConfig.defaults)},
+    });
+    return template.evaluate().getString(priceConfig.PARAMETER);
+  },
+  warn: (message, detail) => logger.warn(message, detail),
+  validate: priceConfig.validatePrices, initial: priceConfig.DEFAULT_PRICES,
+});
+require("./boosts").usePrices(lbGetPrices);
 
 initializeApp();
 setGlobalOptions({maxInstances: 10});
@@ -4934,6 +4947,7 @@ function lbStoreOfferProjection(offer) {
 async function lbStoreCatalog(db, config) {
   config = config || await lbGetEconomyConfig();
   return Object.entries(config.sinks.cosmetics.offers)
+      .filter(([id]) => !Object.hasOwn(storeCollection.offers, id))
       .map(([id, raw]) => lbStoreOffer(raw, id)).filter(Boolean)
       .map((offer) => ({...lbStoreOfferProjection(offer), economyConfigId: config.configId}))
       .sort((a, b) => a.sortOrder - b.sortOrder || a.offerId.localeCompare(b.offerId));
@@ -6253,10 +6267,14 @@ exports.getStoreCatalog = httpsV2.onCall(
       const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
       const boostPolicy = await require("./boosts").policyFor(db, uid, true);
       if (boostPolicy) {
+        const prices = await lbGetPrices();
         offers.push(...require("./boosts").offers.filter((o) =>
           o.modes.some((m) => boostPolicy.readyModes?.[m] === true))
-            .map((o) => ({...o, modes: o.modes.filter((m) => boostPolicy.readyModes?.[m] === true)})));
+            .map((o) => ({...o, priceCoins: priceConfig.offerPrice(o, prices),
+              modes: o.modes.filter((m) => boostPolicy.readyModes?.[m] === true)})));
       }
+      // Game guide: which support works in which open game and what it does there.
+      const boostGuide = boostPolicy ? require("./boost_guide").forModes(boostPolicy.readyModes) : [];
       const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
@@ -6268,6 +6286,7 @@ exports.getStoreCatalog = httpsV2.onCall(
         selectedAvatarId: profile.avatarId || "starter_ball",
         selectedKitId: profile.kitId || "",
         economy: economyConfig.publicContract(config),
+        boostGuide,
       };
     },
 );
@@ -6874,6 +6893,7 @@ function lbProgressionState(raw, now) {
     },
     daily: {
       lastClaimDay: lbProgressionText(rawDaily.lastClaimDay, 10),
+      lastProtectedDay: lbProgressionText(rawDaily.lastProtectedDay, 10),
       currentStreak: lbProgressionNumber(rawDaily.currentStreak),
       bestStreak: lbProgressionNumber(rawDaily.bestStreak),
       lastClaim: {
@@ -6884,6 +6904,8 @@ function lbProgressionState(raw, now) {
         coins: lbProgressionNumber(rawLastClaim.coins),
         xp: lbProgressionNumber(rawLastClaim.xp),
         streakProtected: rawLastClaim.streakProtected === true,
+        freeProtection: rawLastClaim.freeProtection === true,
+        supportItemId: lbProgressionText(rawLastClaim.supportItemId, 40),
         claimedAt: lbProgressionNumber(rawLastClaim.claimedAt),
         nonce: lbProgressionText(rawLastClaim.nonce, 80),
         economyConfigId: rawLastClaim.economyConfigId || "legacy",
@@ -6905,7 +6927,12 @@ function lbProgressionNextDaily(state, dayKey, benefits, config = economyConfig.
   const lastDay = state.daily.lastClaimDay;
   const alreadyClaimed = lastDay === dayKey;
   const gap = lastDay ? lbProgressionDayDiff(lastDay, dayKey) : 0;
-  const streakProtected = !alreadyClaimed && gap === 2 && benefits.streakProtection === true;
+  const returnPolicy = benefits.dailyReturn || dailyReturn.OFF;
+  const paidProtection = !alreadyClaimed && gap === 2 && benefits.streakProtection === true;
+  // Faz 2: everyone may cover one missed day once in seven days.
+  const freeProtection = !alreadyClaimed && !paidProtection &&
+    dailyReturn.freeProtection(state.daily, dayKey, returnPolicy);
+  const streakProtected = paidProtection || freeProtection;
   const nextStreak = alreadyClaimed ? state.daily.currentStreak :
     (gap === 1 || streakProtected ? Math.max(1, state.daily.currentStreak + 1) : 1);
   const dayIndex = ((Math.max(1, nextStreak) - 1) % 7) + 1;
@@ -6919,6 +6946,8 @@ function lbProgressionNextDaily(state, dayKey, benefits, config = economyConfig.
     coins: alreadyClaimed ? receipt.coins : source.coinsByDay[dayIndex - 1] * multiplier,
     xp: alreadyClaimed ? receipt.xp : source.xp,
     streakProtected: alreadyClaimed ? receipt.streakProtected : streakProtected,
+    freeProtection: alreadyClaimed ? receipt.freeProtection : freeProtection,
+    supportItemId: alreadyClaimed ? receipt.supportItemId : dailyReturn.loopSupport(dayIndex, returnPolicy) || "",
   };
 }
 
@@ -6979,6 +7008,10 @@ function lbProgressionProjection(state, benefits, now, config = economyConfig.DE
       xpReward: next.xp,
       streakProtectionAvailable: benefits.streakProtection === true,
       wouldUseStreakProtection: next.streakProtected,
+      scheduleSupports: dailyReturn.loopSchedule(benefits.dailyReturn || dailyReturn.OFF),
+      rewardSupport: next.supportItemId,
+      freeProtectionEnabled: (benefits.dailyReturn || dailyReturn.OFF).streakProtection,
+      freeProtectionReadyOn: dailyReturn.protectionReadyOn(state.daily),
       lastClaimedAt: state.daily.lastClaim.claimedAt,
     },
     updatedAt: state.updatedAt,
@@ -6998,7 +7031,9 @@ async function lbProgressionPremiumBenefits(db, uid) {
       Date.now(),
   );
 
-  return lbPremiumBenefits(premium.active);
+  const returnPolicy = dailyReturn.policy((await db.ref("runtimeConfig/dailyReturn").get()).val(),
+      !!await require("./boosts").policyFor(db, uid, true));
+  return {...lbPremiumBenefits(premium.active), dailyReturn: returnPolicy};
 }
 
 /**
@@ -7127,6 +7162,41 @@ async function lbProgressionGrantCoins(
   };
 }
 
+// Faz 2: the support a check-in day added. Idempotent per day (receipt in
+// economyState.storeUses), so a retry or a later read settles a lost write.
+async function lbSettleDailySupport(db, uid, state) {
+  const claim = state.daily.lastClaim;
+  if (!claim.supportItemId || !claim.dateKey) return null;
+  let result = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw);
+    result = dailyReturn.grantSupport(e, "daily_reward__" + claim.dateKey, claim.supportItemId, "daily_reward",
+        claim.dateKey, Date.now());
+    return e;
+  });
+  await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  return {itemId: claim.supportItemId, granted: result.granted, full: result.receipt.full === true,
+    coins: result.receipt.coins || 0};
+}
+
+// Faz 2: one Temel bilgi when all daily missions of the day are claimed, in the
+// legacy and the v3 mission paths alike (same receipt id, at most two a week).
+async function lbGrantAllMissionsBonus(db, uid, dayKey) {
+  const policy = dailyReturn.policy((await db.ref("runtimeConfig/dailyReturn").get()).val(),
+      !!await require("./boosts").policyFor(db, uid, true));
+  if (!policy.allMissionsBonus) return null;
+  let result = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw);
+    result = dailyReturn.grantAllMissionsBonus(e, dayKey, Date.now(), policy);
+    return e;
+  });
+  if (!result) return {itemId: dailyReturn.BONUS_ITEM, granted: false, weeklyLimit: true};
+  await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  return {itemId: dailyReturn.BONUS_ITEM, granted: result.granted, full: result.receipt.full === true,
+    coins: result.receipt.coins || 0};
+}
+
 /**
  * @param {Object} db
  * @param {string} uid
@@ -7172,10 +7242,13 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
       coins: next.coins,
       xp: next.xp,
       streakProtected: next.streakProtected,
+      freeProtection: next.freeProtection,
+      supportItemId: next.supportItemId,
       claimedAt: now,
       nonce: nonce,
       economyConfigId: config.configId,
     };
+    if (next.freeProtection) state.daily.lastProtectedDay = dayKey;
     state.pendingRewards["daily_reward__" + dayKey] = lbPendingReward(
         "daily_reward", dayKey, next.coins, config.configId,
     );
@@ -7196,6 +7269,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   }
 
   const economy = await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
+  const support = await lbSettleDailySupport(db, uid, state);
   const profile = await lbProgressionProject(
       db,
       uid,
@@ -7206,6 +7280,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   );
 
   return {
+    support,
     granted: claim.nonce === nonce,
     alreadyClaimed: claim.nonce !== nonce,
     amount: claim.coins,
@@ -7230,6 +7305,7 @@ exports.getMyProgression = httpsV2.onCall(
       const db = getDatabase();
       const state = await lbProgressionEnsure(db, uid);
       await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
+      await lbSettleDailySupport(db, uid, state);
       const benefits = await lbProgressionPremiumBenefits(db, uid);
       const profile = await lbProgressionProject(
           db,
@@ -7273,6 +7349,7 @@ exports.claimDailyReward = httpsV2.onCall(
         dayIndex: result.dayIndex,
         multiplier: result.multiplier,
         streakProtected: result.streakProtected,
+        support: result.support,
         walletCoins: result.walletCoins,
         profile: result.profile,
         version: LB_PROGRESSION_VERSION,
@@ -7877,10 +7954,13 @@ async function lbMissionClaim(db, uid, missionId, expectedPeriodKey) {
     throw new httpsV2.HttpsError("failed-precondition", "Görev henüz tamamlanmadı veya günlük limit doldu. Yenile.");
   }
   const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
+  const allDone = resolved.kind === "daily" &&
+    Object.keys(state.daily.claims).length >= config.sources.daily_mission.dailyLimit;
+  const supportBonus = allDone ? await lbGrantAllMissionsBonus(db, uid, dayKey) : null;
   const profile = await lbMissionProject(db, uid, state, config);
   return {
     granted: claim.nonce === nonce, alreadyClaimed: claim.nonce !== nonce,
-    amount: claim.rewardCoins, walletCoins: economy.balances.coins, profile, missionId, periodKey,
+    amount: claim.rewardCoins, walletCoins: economy.balances.coins, profile, missionId, periodKey, supportBonus,
   };
 }
 
@@ -8096,10 +8176,12 @@ async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
     await lbProgressionGrantOnce(db, uid, "mission__" + outcome.sourceId, outcome.claim.rewardXp);
   }
   const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
+  const supportBonus = outcome.item.id === "daily_bonus" ?
+    await lbGrantAllMissionsBonus(db, uid, outcome.periodKey) : null;
   const profile = await lbMissionProject(db, uid, lbMissionState(tx.snapshot.val(), now), config);
   return {granted: outcome.claim.nonce === nonce, alreadyClaimed: outcome.claim.nonce !== nonce,
     amount: outcome.claim.rewardCoins, walletCoins: economy.balances.coins, profile,
-    missionId, periodKey: outcome.periodKey};
+    missionId, periodKey: outcome.periodKey, supportBonus};
 }
 async function lbMissionRecordEvents(db, uid, events) {
   if (!events.length || !await lbAchievementEligible(db, uid)) return;
@@ -8985,8 +9067,12 @@ exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "
 // Server-owned collection inventory; no client writes can mint or spend items.
 function lbStoreCollectionService() {
   return storeCollection.createStore({db: getDatabase(), normalize: lbEconomyState,
-    project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now()});
+    project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now(), getPrices: lbGetPrices});
 }
+exports.convertLegacyBoosts = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbStoreCollectionService().convertLegacy(request.auth.uid);
+});
 exports.consumeStoreBoost = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().consume(request.auth.uid, request.data || {});
@@ -10041,6 +10127,9 @@ async function lbFakeClubDailyClaim(uid, day) {
   if (!claim) return day !== lbProgressionDateKey(time) ? "expired" : "pending";
   await lbProgressionGrantCoins(db, uid, id, "mission_reward", day + "__daily_fake_club", 2, claim.configId);
   await lbCareerTransferGrantXp(uid, id, 4);
+  if (Object.keys(state.daily.claims).length >= config.sources.daily_mission.dailyLimit) {
+    await lbGrantAllMissionsBonus(db, uid, day);
+  }
   await lbMissionProject(db, uid, state, config);
   return "paid";
 }
@@ -10207,12 +10296,7 @@ function lbDailyStreakService() {
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
       const e = lbEconomyState(raw);
       if (e.storeUses[key]) return;
-      const item = e.inventory.boost_basic; const quantity = item?.quantity || 0;
-      if (quantity < 99) {
-        e.inventory.boost_basic = {...item, itemId: "boost_basic", itemType: "boost", quantity: quantity + 1,
-          sourceType: "daily_streak", sourceId: id, acquiredAt: item?.acquiredAt || now};
-      }
-      e.storeUses[key] = {itemId: "boost_basic", source: "daily_streak", usedAt: now}; e.updatedAt = now;
+      dailyReturn.grantSupport(e, key, "boost_basic", "daily_streak", id, now);
       return e;
     });
     await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
@@ -10273,7 +10357,11 @@ async function lbArcadeDailyClaim(uid, day, group) {
   const s = lbMissionState(tx.snapshot.val(), time); const claim = s.externalDailyClaims[id];
   if (!claim) return day !== lbProgressionDateKey(time) ? "expired" : "pending";
   await lbProgressionGrantCoins(db, uid, id, "mission_reward", day + "__" + mission, 2, claim.configId);
-  await lbCareerTransferGrantXp(uid, id, 4); await lbMissionProject(db, uid, s, config); return "paid";
+  await lbCareerTransferGrantXp(uid, id, 4);
+  if (Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) {
+    await lbGrantAllMissionsBonus(db, uid, day);
+  }
+  await lbMissionProject(db, uid, s, config); return "paid";
 }
 function lbArcadeService() {
   const db = getDatabase();

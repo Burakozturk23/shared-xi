@@ -42,9 +42,21 @@ void main() {
                 ).readAsStringSync(),
               )
               as Map;
-      final offers = (catalog['offers'] as List)
+      final sold = (catalog['offers'] as List)
           .where((o) => o['itemType'] == 'avatar' && o['enabled'] == true)
           .toList();
+      // The four early Linkball avatars are drawn in code, not portraits.
+      final classic = sold.where((o) => o['category'] == 'classic').toList();
+      expect(classic.map((o) => o['itemId']).toSet(), {
+        'speedster_bolt',
+        'tactician_board',
+        'night_owl',
+        'champion_cup',
+      });
+      for (final o in classic) {
+        expect(UserAvatarCatalog.contains(o['itemId'] as String), isTrue);
+      }
+      final offers = sold.where((o) => o['category'] != 'classic').toList();
       expect(collectionAvatars.length, 160);
       expect(
         collectionAvatars.map((a) => a.id).toSet(),

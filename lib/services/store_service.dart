@@ -75,7 +75,21 @@ class StoreService {
       catalogVersion: _int(data['catalogVersion'], fallback: 1),
       wallet: EconomyWallet.fromMap(Map<String, dynamic>.from(rawWallet)),
       offers: List<StoreOffer>.unmodifiable(offers),
+      boostGuide: StoreBoostGuide.listFrom(data['boostGuide']),
     );
+  }
+
+  /// Turns leftover last-letter and anagram stock into Temel bilgi. Returns
+  /// the new inventory counts for the three items.
+  static Future<Map<String, int>> convertLegacyBoosts() async {
+    await CloudBootstrap.ensureInitialized();
+    _requireGoogleAccount();
+    final result = await _functions.httpsCallable('convertLegacyBoosts').call();
+    final data = _map(result.data);
+    if (data['ok'] != true) throw StateError('Destekler çevrilemedi.');
+    return {
+      for (final e in _map(data['inventory']).entries) e.key: _int(e.value),
+    };
   }
 
   static String newRequestId() {

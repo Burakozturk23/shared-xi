@@ -7,6 +7,7 @@ import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
 import '../models/mission_models.dart';
 import '../models/progression_models.dart';
+import '../models/store_models.dart';
 import '../services/auth_service.dart';
 import '../services/experience/progress_gateway.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -19,6 +20,81 @@ String? missionSlotLabel(BuildContext context, String slot) => switch (slot) {
   'discovery' => appCopy(context, 'KEŞİF', 'DISCOVERY'),
   _ => null,
 };
+
+/// "Temel bilgi" for a support id.
+String supportLabel(BuildContext context, String itemId) {
+  final name = supportNames[itemId];
+  return name == null ? itemId : appCopy(context, name.$1, name.$2);
+}
+
+/// "+1 Temel bilgi", or why the support did not land; null when there is
+/// nothing to tell.
+String? supportRewardNote(BuildContext context, SupportReward? r) {
+  if (r == null) return null;
+  final label = supportLabel(context, r.itemId);
+  if (r.granted) return '+1 $label';
+  if (r.full) {
+    return r.coins > 0
+        ? appCopy(
+            context,
+            'Destek çantan dolu (99): $label yerine +${r.coins} Link Coin.',
+            'Support bag full (99): +${r.coins} Link Coin instead of $label.',
+          )
+        : appCopy(
+            context,
+            '$label eklenemedi: destek çantan dolu (99).',
+            '$label not added: your support bag is full (99).',
+          );
+  }
+  if (r.weeklyLimit) {
+    return appCopy(
+      context,
+      'Bu haftanın iki bonus desteği alındı.',
+      "This week's two bonus supports are claimed.",
+    );
+  }
+  return null;
+}
+
+/// The check-in line under the claim button: the missed-day cover, then
+/// tomorrow's reward once today's is claimed.
+List<String> dailyReturnNotes(BuildContext context, DailyRewardStatus s) {
+  String c(String tr, String en) => appCopy(context, tr, en);
+  final notes = <String>[];
+  if (s.canClaim && s.wouldUseStreakProtection) {
+    notes.add(
+      c(
+        'Dün girmedin ama serin korunuyor (7 günde bir).',
+        'You missed yesterday but your streak is covered (once a week).',
+      ),
+    );
+  } else if (s.freeProtectionEnabled) {
+    notes.add(
+      s.freeProtectionReady
+          ? c(
+              'Seri koruması hazır: bir gün kaçırırsan serin bozulmaz.',
+              'Streak cover ready: miss one day and keep your streak.',
+            )
+          : c(
+              'Seri koruması ${s.freeProtectionReadyOn} tarihinde yenilenir.',
+              'Streak cover renews on ${s.freeProtectionReadyOn}.',
+            ),
+    );
+  }
+  final days = s.scheduleCoins.length;
+  if (!s.canClaim && days > 0) {
+    final tomorrow = s.nextDayIndex % days + 1;
+    final support = s.supportOn(tomorrow);
+    final extra = support == null ? '' : ' + ${supportLabel(context, support)}';
+    notes.add(
+      c(
+        'Yarın: +${s.scheduleCoins[tomorrow - 1]} Link Coin$extra',
+        'Tomorrow: +${s.scheduleCoins[tomorrow - 1]} Link Coin$extra',
+      ),
+    );
+  }
+  return notes;
+}
 
 bool _ready(MissionItem m) =>
     m.enabled && m.claimable && !m.claimed && !m.limitReached;
@@ -105,9 +181,10 @@ class _DailyRewardsSheetState extends State<DailyRewardsSheet> {
           streak: r.profile.dailyReward.currentStreak > 1,
         );
       }
+      final note = supportRewardNote(context, r.support);
       _snack(
         r.granted
-            ? '+${r.amount} Link Coin · +${r.xp} XP'
+            ? '+${r.amount} Link Coin · +${r.xp} XP${note == null ? '' : ' · $note'}'
             : c('Bugünün ödülü zaten alındı.', 'Already claimed today.'),
       );
     } catch (_) {
@@ -125,9 +202,11 @@ class _DailyRewardsSheetState extends State<DailyRewardsSheet> {
       if (!mounted) return;
       setState(() => _missions = r.profile);
       if (r.granted) AppFeedback.earned(coins: r.amount, xp: m.rewardXp);
+      final note = supportRewardNote(context, r.supportBonus);
       _snack(
         r.granted
             ? '+${r.amount} Link Coin${m.rewardXp > 0 ? ' · +${m.rewardXp} XP' : ''}'
+                  '${note == null ? '' : ' · $note'}'
             : c('Ödül zaten alındı.', 'Already claimed.'),
       );
     } catch (_) {
@@ -276,6 +355,19 @@ class _DailyRewardsSheetState extends State<DailyRewardsSheet> {
                           ? pc.accent
                           : pc.muted,
                     ),
+                    if (s.supportOn(i + 1) case final support?)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Tooltip(
+                          message: supportLabel(context, support),
+                          child: Icon(
+                            storeBoostIcon(support),
+                            key: ValueKey('sheet-support-${i + 1}'),
+                            size: 15,
+                            color: hubAmber(context),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -294,6 +386,33 @@ class _DailyRewardsSheetState extends State<DailyRewardsSheet> {
                 : c('Bugünün ödülü alındı', "Today's reward claimed"),
           ),
         ),
+        if (s.canClaim && s.rewardSupport.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Row(
+            key: const ValueKey('sheet-today-support'),
+            children: [
+              Icon(
+                storeBoostIcon(s.rewardSupport),
+                size: 18,
+                color: hubAmber(context),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  c(
+                    'Bugün ayrıca: 1 ${supportLabel(context, s.rewardSupport)} destek çantana.',
+                    'Also today: 1 ${supportLabel(context, s.rewardSupport)} for your bag.',
+                  ),
+                  style: text.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+        ],
+        for (final note in dailyReturnNotes(context, s)) ...[
+          const SizedBox(height: 8),
+          Text(note, style: text.bodyMedium?.copyWith(color: pc.text)),
+        ],
         const SizedBox(height: 8),
         Text(
           c(

@@ -1,3 +1,5 @@
+import 'progression_models.dart';
+
 enum MissionKind { daily, weekly, general }
 
 class MissionItem {
@@ -153,6 +155,8 @@ class MissionClaimResult {
   final String missionId;
   final String periodKey;
   final MissionProfile profile;
+  /// Faz 2: the support the all-missions bonus added, if any.
+  final SupportReward? supportBonus;
 
   const MissionClaimResult({
     required this.granted,
@@ -162,6 +166,7 @@ class MissionClaimResult {
     required this.missionId,
     required this.periodKey,
     required this.profile,
+    this.supportBonus,
   });
 }
 

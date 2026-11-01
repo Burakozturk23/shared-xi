@@ -342,3 +342,16 @@ test("consumed typed credit cannot recover a second stock unit at finish", async
   assert.equal(h.read("economyState/alice/inventory/boost_basic/quantity"), 3);
   assert.equal(h.read(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`), 0);
 });
+test("game guide: every support mode has a text for each of its supports; offers carry an example", () => {
+  const G = require("../boost_guide");
+  for (const [mode, ids] of Object.entries(B.modes)) {
+    assert.ok(G.guide[mode], mode);
+    for (const id of ids) assert.ok(G.guide[mode][2]["boost_" + id]?.length > 10, mode + " " + id);
+  }
+  const ready = {daily_question: true, squad_challenge: true, matching: false};
+  const list = G.forModes(ready);
+  assert.deepEqual(list.map((g) => g.modeId), ["daily_question", "squad_challenge"]);
+  assert.deepEqual(list[1].supports.map((s) => s.itemId), ["boost_basic", "boost_strong"]);
+  assert.match(list[0].supports[0].effect, /yanlış şıkkı eler/);
+  for (const o of B.offers) assert.match(o.subtitle, /^Örnek: .*Yardımlı/);
+});

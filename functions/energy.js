@@ -64,7 +64,10 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     return {ok: true, enabled: active, serverNow: now(), capacity: policy.capacity,
       balance: e.balance, available: e.balance - reserved, reserved,
       nextRefillAt: e.balance < policy.capacity ? e.refillAt + policy.refillMs : null,
-      daily: e.daily, pro, packages: policy.packages, version: policy.version};
+      daily: e.daily, pro, version: policy.version,
+      // Whether each pack fits now: a pack never fills past capacity.
+      packages: Object.fromEntries(Object.entries(policy.packages).map(([id, p]) => [id,
+        {...p, fits: e.balance + p.energy <= policy.capacity, freeSlots: Math.max(0, policy.capacity - e.balance)}]))};
   }
   async function status(uid) {
     const e = await change(uid, () => {});
@@ -179,8 +182,9 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
       }
       if (e.daily.purchases >= policy.purchaseLimit) fail("resource-exhausted", "Günlük 2 dolum hakkını kullandın.");
       if (e.balance + offer.energy > policy.capacity) {
-        fail("failed-precondition",
-            "Paketin tamamı için enerji alanı yok.");
+        const free = Math.max(0, policy.capacity - e.balance);
+        fail("failed-precondition", `Paket için yeterli boş yer yok: ${offer.energy} boş yer gerekiyor, ` +
+          `şu an ${free} var.`);
       }
       if (s.balances.coins < offer.coins) fail("failed-precondition", "Link Coin yetersiz.");
       const before = s.balances.coins;

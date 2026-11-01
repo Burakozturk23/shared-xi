@@ -34,6 +34,7 @@ class _StorePageState extends State<StorePage> {
   late String _tab;
   String _kitCategory = 'all';
   String _boostCategory = 'all';
+  String? _guideGroup, _guideMode;
   AvatarBrowserFilter _avatarFilter = const AvatarBrowserFilter();
   final _scroll = ScrollController();
   bool _confirming = false;
@@ -128,18 +129,14 @@ class _StorePageState extends State<StorePage> {
       if (!mounted) return;
       final old = _data!;
       setState(
-        () => _data = StoreCatalogSnapshot(
-          catalogVersion: old.catalogVersion,
+        () => _data = old.copyWith(
           wallet: EconomyWallet(
             coins: r.coins,
             lifetimeEarned: old.wallet.lifetimeEarned,
             lifetimeSpent:
                 old.wallet.lifetimeSpent + (r.purchased ? r.priceCoins : 0),
           ),
-          offers: old.offers,
           inventory: {...old.inventory, offer.itemId: r.item},
-          selectedAvatarId: old.selectedAvatarId,
-          selectedKitId: old.selectedKitId,
         ),
       );
       if (r.purchased) {
@@ -175,11 +172,7 @@ class _StorePageState extends State<StorePage> {
       if (!mounted) return;
       final old = _data!;
       setState(
-        () => _data = StoreCatalogSnapshot(
-          catalogVersion: old.catalogVersion,
-          wallet: old.wallet,
-          offers: old.offers,
-          inventory: old.inventory,
+        () => _data = old.copyWith(
           selectedAvatarId: id.startsWith('kit_') ? old.selectedAvatarId : id,
           selectedKitId: id == 'kit_none'
               ? ''
@@ -191,6 +184,47 @@ class _StorePageState extends State<StorePage> {
       _notice('Profil görünümün güncellendi.');
     } catch (_) {
       _notice('Seçim kaydedilemedi. Yeniden dene.');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  int _stock(String itemId) => _data?.inventory[itemId]?.quantity ?? 0;
+
+  /// Leftover retired letter supports, converted one to one into the typed
+  /// support of the same price: Son harf → Temel bilgi, Harf karışımı → Güçlü bilgi.
+  int get _legacyValue => _stock('boost_last_letter') + _stock('boost_anagram');
+
+  Future<void> _convertLegacy() async {
+    if (_busy || _loading || _data == null || _legacyValue == 0) return;
+    setState(() => _busy = true);
+    try {
+      final counts = await widget.gateway.convertLegacy();
+      if (!mounted) return;
+      final old = _data!;
+      final basic = _stock('boost_basic'), strong = _stock('boost_strong');
+      final inventory = {...old.inventory};
+      for (final e in counts.entries) {
+        final had = inventory[e.key];
+        if (e.value <= 0) {
+          inventory.remove(e.key);
+        } else {
+          inventory[e.key] = EconomyInventoryItem(
+            itemId: e.key, itemType: 'boost', sourceType: had?.sourceType ?? 'purchase',
+            sourceId: had?.sourceId ?? 'legacy_convert', quantity: e.value);
+        }
+      }
+      setState(() => _data = old.copyWith(inventory: inventory));
+      final gained = [
+        if ((counts['boost_basic'] ?? basic) - basic case final n when n > 0) '$n Temel bilgi',
+        if ((counts['boost_strong'] ?? strong) - strong case final n when n > 0) '$n Güçlü bilgi',
+      ];
+      AppFeedback.answer(correct: true);
+      _notice(gained.isNotEmpty
+          ? '${gained.join(' ve ')} çantana eklendi.'
+          : 'Stoğun dolu (en fazla 99). Eski destekler çantanda kaldı.');
+    } catch (_) {
+      _notice('Çevirme doğrulanamadı. Tekrar dene; aynı stok iki kez çevrilmez.');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -254,12 +288,18 @@ class _StorePageState extends State<StorePage> {
     final ownedIds = {for (final entry in d.inventory.entries) if (entry.value.quantity > 0) entry.key};
     final filteredAvatars = _avatarFilter.apply(avatarDefinitions, ownedIds);
     final offersByAvatar = {for (final o in avatarOffers) o.itemId: o};
+    final guide = d.boostGuide;
+    final groups = {for (final g in guide) g.group}.toList();
+    final group = groups.contains(_guideGroup) ? _guideGroup! : (groups.isEmpty ? '' : groups.first);
+    final selectedGuide = guide.where((g) => g.modeId == _guideMode).firstOrNull;
+    final guideItems = {for (final x in selectedGuide?.supports ?? const <({String itemId, String title, String effect})>[]) x.itemId};
     final visible = _tab == 'avatar'
         ? [for (final a in filteredAvatars) offersByAvatar[a.id]!]
         : d.offers.where((o) => o.itemType == _tab &&
             (_tab != 'kit' || _kitCategory == 'all' || o.category == _kitCategory) &&
             (_tab != 'boost' || _boostCategory == 'all' ||
               (_boostCategory == 'packs' ? o.units > 1 : o.boostCategory == _boostCategory)) &&
+            (_tab != 'boost' || selectedGuide == null || guideItems.contains(o.itemId)) &&
             (!_ownedOnly || ownedIds.contains(o.itemId))).toList();
     final previewCount = avatarOffers.where((o) => o.isPreview).length;
     return CustomScrollView(
@@ -349,8 +389,16 @@ class _StorePageState extends State<StorePage> {
               const SizedBox(height: 12),
               if (_tab == 'boost') ...[
                 const Text(
-                  'Destekler uyumlu tek kişilik oyunlarda kullanılır. Oyun içindeki destek paneli, kullanılabilecek türü ve sonucu nasıl etkileyeceğini gösterir.',
+                  'Destekler uyumlu tek kişilik oyunlarda kullanılır. Destek kullanılan sonuç Yardımlı olarak kaydedilir; online düellolarda ve sıralamada destek yoktur.',
                 ),
+                if (_legacyValue > 0) ...[
+                  const SizedBox(height: 12),
+                  _legacyCard(),
+                ],
+                if (guide.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _guidePanel(guide, groups, group, selectedGuide),
+                ],
                 const SizedBox(height: 12),
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   for (final category in const [
@@ -428,6 +476,7 @@ class _StorePageState extends State<StorePage> {
                   _ownedOnly = false;
                   _kitCategory = 'all';
                   _boostCategory = 'all';
+                  _guideMode = null;
                 }),
               ),
             ),
@@ -504,17 +553,19 @@ class _StorePageState extends State<StorePage> {
                   ? UserAvatarBadge(avatarId: o.itemId, radius: 32)
                   : kit != null
                   ? ProfileKitView(kit: kit)
-                  : Icon(
-                      o.itemId.contains('anagram')
-                          ? Icons.shuffle_rounded
-                          : o.itemId.contains('last')
-                          ? Icons.last_page_rounded
-                          : Icons.first_page_rounded,
-                      size: 54,
-                      color: socialAccent(context),
-                    ),
+                  : _BoostMedal(icon: o.boostIcon, units: o.units),
             ),
             const SizedBox(height: 12),
+            if (o.itemType == 'boost') Align(
+              alignment: Alignment.centerLeft,
+              child: _Tag(o.units > 1 ? '${o.boostCategory} · Paket' : o.boostCategory),
+            ),
+            if (o.itemType == 'boost') const SizedBox(height: 6),
+            if (o.isAvatar && o.priceCoins >= 450 && !o.isPreview) Align(
+              alignment: Alignment.centerLeft,
+              child: _Tag('Özel', key: ValueKey('store-special-${o.itemId}')),
+            ),
+            if (o.isAvatar && o.priceCoins >= 450 && !o.isPreview) const SizedBox(height: 6),
             Text(o.title, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
             Text(
@@ -528,8 +579,11 @@ class _StorePageState extends State<StorePage> {
             const SizedBox(height: 10),
             if (o.itemType == 'boost') ...[
               if (o.subtitle.isNotEmpty) Text(o.subtitle, style: Theme.of(context).textTheme.bodySmall),
-              if (o.compatibleModes.isNotEmpty) Text('Uyumlu oyunlar: ${o.compatibleModes}',
-                style: Theme.of(context).textTheme.bodySmall),
+              if (o.modes.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(_modesLine(o.modes), style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: socialAccent(context))),
+              ],
               const SizedBox(height: 10),
             ],
             if (!o.isPreview && (!o.oneTime || !owned))
@@ -565,6 +619,163 @@ class _StorePageState extends State<StorePage> {
           ],
         ),
       ),
+    );
+  }
+
+  /// "3 oyunda: Günün Sorusu · Sahte Kulüp Sonsuz · …" without a wall of names.
+  static String _modesLine(List<String> modes) {
+    final names = [for (final m in modes) boostModeNames[m] ?? m];
+    final shown = names.take(3).join(' · ');
+    return names.length <= 3
+        ? '${names.length} oyunda: $shown'
+        : '${names.length} oyunda: $shown +${names.length - 3}';
+  }
+
+  Widget _legacyCard() {
+    final theme = Theme.of(context);
+    final lines = [
+      if (_stock('boost_last_letter') > 0) '${_stock('boost_last_letter')} Son Harf',
+      if (_stock('boost_anagram') > 0) '${_stock('boost_anagram')} Harf karışımı',
+    ];
+    return PitchPanel(
+      key: const ValueKey('store-legacy'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(Icons.autorenew_rounded, color: socialAccent(context)),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Eski destekler', style: theme.textTheme.titleMedium)),
+          ]),
+          const SizedBox(height: 6),
+          Text(
+            'Çantanda ${lines.join(' ve ')} var. Bu destekler artık satılmıyor; aynı fiyattaki yeni '
+            'desteklere birebir çevirebilirsin: Son Harf → Temel bilgi, Harf karışımı → Güçlü bilgi.',
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 10),
+          FilledButton.tonalIcon(
+            onPressed: _busy || _loading ? null : _convertLegacy,
+            icon: const Icon(Icons.lightbulb_outline_rounded),
+            label: Text('$_legacyValue desteği çevir'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _guidePanel(List<StoreBoostGuide> guide, List<String> groups, String group, StoreBoostGuide? selected) {
+    final theme = Theme.of(context);
+    final modes = guide.where((g) => g.group == group).toList();
+    return PitchPanel(
+      key: const ValueKey('store-guide'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(Icons.travel_explore_rounded, color: socialAccent(context)),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Oyuna göre destekler', style: theme.textTheme.titleMedium)),
+          ]),
+          const SizedBox(height: 4),
+          Text('Bir oyun seç; orada hangi desteğin ne yaptığını ve çantanda kaç tane olduğunu gör.',
+            style: theme.textTheme.bodySmall),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: [
+              for (final g in groups) Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(g), selected: g == group,
+                  onSelected: _busy ? null : (_) => setState(() {
+                    _guideGroup = g;
+                    _guideMode = null;
+                  }),
+                ),
+              ),
+            ]),
+          ),
+          const SizedBox(height: 8),
+          Wrap(spacing: 6, runSpacing: 6, children: [
+            for (final m in modes) FilterChip(
+              key: ValueKey('guide-${m.modeId}'),
+              label: Text(m.name), selected: m.modeId == selected?.modeId,
+              visualDensity: VisualDensity.compact,
+              onSelected: _busy ? null : (v) => setState(() => _guideMode = v ? m.modeId : null),
+            ),
+          ]),
+          if (selected != null) ...[
+            const Divider(height: 24),
+            for (final x in selected.supports) Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Icon(storeBoostIcon(x.itemId), size: 22, color: socialAccent(context)),
+                const SizedBox(width: 10),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(x.title, style: theme.textTheme.titleSmall),
+                  if (x.effect.isNotEmpty) Text(x.effect, style: theme.textTheme.bodySmall),
+                ])),
+                const SizedBox(width: 8),
+                _Tag('Çantanda ${_stock(x.itemId)}'),
+              ]),
+            ),
+            Text('Aşağıda yalnızca ${selected.name} için işe yarayan ürünler listeleniyor.',
+              style: theme.textTheme.bodySmall),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Tag extends StatelessWidget {
+  const _Tag(this.text, {super.key});
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    final accent = socialAccent(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: .12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(text, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: accent)),
+    );
+  }
+}
+
+/// Round support emblem; packs show their count on a small badge.
+class _BoostMedal extends StatelessWidget {
+  const _BoostMedal({required this.icon, required this.units});
+  final IconData icon;
+  final int units;
+  @override
+  Widget build(BuildContext context) {
+    final accent = socialAccent(context);
+    return SizedBox(
+      width: 72, height: 64,
+      child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: [
+        Container(
+          width: 60, height: 60,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(colors: [accent.withValues(alpha: .28), accent.withValues(alpha: .06)]),
+            border: Border.all(color: accent.withValues(alpha: .45)),
+          ),
+          child: Icon(icon, size: 30, color: accent),
+        ),
+        if (units > 1) Positioned(
+          right: 0, top: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(999)),
+            child: Text('×$units', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.w800)),
+          ),
+        ),
+      ]),
     );
   }
 }

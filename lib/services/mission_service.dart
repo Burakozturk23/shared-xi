@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import '../models/mission_models.dart';
+import '../models/progression_models.dart';
 import 'auth_service.dart';
 import 'cloud_bootstrap.dart';
 
@@ -62,6 +63,7 @@ class MissionService {
       missionId: data['missionId']?.toString() ?? missionId,
       periodKey: data['periodKey']?.toString() ?? '',
       profile: MissionProfile.fromMap(Map<String, dynamic>.from(rawProfile)),
+      supportBonus: SupportReward.from(data['supportBonus']),
     );
   }
 

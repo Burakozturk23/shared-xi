@@ -8,6 +8,7 @@ import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
 import '../models/mission_models.dart';
 import '../models/progression_models.dart';
+import '../models/store_models.dart';
 import '../services/experience/progress_gateway.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/daily_rewards_sheet.dart';
@@ -108,8 +109,10 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         coins = result.amount;
         xp = result.xp;
         streak = result.profile.dailyReward.currentStreak > 1;
+        final note = supportRewardNote(context, result.support);
         message = granted
             ? '+${result.amount} Link Coin · +${result.xp} XP'
+                  '${note == null ? '' : ' · $note'}'
             : c(
                 'Ödül zaten alınmış veya şu anda kullanılamıyor.',
                 'Reward already claimed or currently unavailable.',
@@ -124,8 +127,10 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
         granted = result.granted;
         coins = result.amount;
         xp = mission.rewardXp;
+        final note = supportRewardNote(context, result.supportBonus);
         message = granted
             ? '+${result.amount} Link Coin${xp > 0 ? ' · +$xp XP' : ''}'
+                  '${note == null ? '' : ' · $note'}'
             : c(
                 'Ödül zaten alınmış veya şu anda kullanılamıyor.',
                 'Reward already claimed or currently unavailable.',
@@ -582,10 +587,16 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
               SocialStatus('+${s.xpReward} XP'),
               const SocialStatus('+10 SP'),
               if (s.multiplier > 1) SocialStatus('${s.multiplier}× Pro'),
+              if (s.canClaim && s.rewardSupport.isNotEmpty)
+                SocialStatus('+1 ${supportLabel(context, s.rewardSupport)}'),
               if (s.streakProtectionAvailable)
                 SocialStatus(c('Seri koruması', 'Streak protection')),
             ],
           ),
+          for (final note in dailyReturnNotes(context, s)) ...[
+            const SizedBox(height: 8),
+            Text(note, style: text.bodyMedium?.copyWith(color: pc.muted)),
+          ],
           if (limit > 0) ...[
             const SizedBox(height: 16),
             Divider(height: 1, color: pc.border),
@@ -696,16 +707,43 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
                   ),
           ),
           const SizedBox(height: 2),
-          Text(
-            '+${s.scheduleCoins[i]}',
-            style: text.titleSmall?.copyWith(
-              color: big
-                  ? gold
-                  : state == 'claimed'
-                  ? pc.muted
-                  : pc.text,
+          if (s.supportOn(day) case final support?)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '+${s.scheduleCoins[i]}',
+                  style: text.titleSmall?.copyWith(
+                    color: big
+                        ? gold
+                        : state == 'claimed'
+                        ? pc.muted
+                        : pc.text,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Tooltip(
+                  message: supportLabel(context, support),
+                  child: Icon(
+                    storeBoostIcon(support),
+                    key: ValueKey('daily-support-$day'),
+                    size: 15,
+                    color: gold,
+                  ),
+                ),
+              ],
+            )
+          else
+            Text(
+              '+${s.scheduleCoins[i]}',
+              style: text.titleSmall?.copyWith(
+                color: big
+                    ? gold
+                    : state == 'claimed'
+                    ? pc.muted
+                    : pc.text,
+              ),
             ),
-          ),
           const SizedBox(height: 4),
           if (state == 'ready')
             Text(c('HAZIR', 'READY'), style: hubCaps(context, color: pc.accent))

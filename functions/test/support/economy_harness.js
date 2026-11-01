@@ -20,6 +20,7 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
   const tree = stored(initial) || {};
   let time = Date.parse("2026-09-20T10:00:00Z");
   let remote = clone(configModule.defaults);
+  let prices = null; // linkball_prices_v1; null = the parameter's default value
   let queue = Promise.resolve();
   let failPath = null;
   const linkedUsers = {};
@@ -89,8 +90,9 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     "firebase-admin/auth": {getAuth: () => ({getUser: async (uid) => ({
       providerData: linkedUsers[uid] === false ? [] : [{providerId: "google.com"}],
     })})},
-    "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async () => ({
-      evaluate: () => ({getString: () => JSON.stringify(remote)}),
+    "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async ({defaultConfig} = {}) => ({
+      evaluate: () => ({getString: (key) => key === "linkball_prices_v1" ?
+        (prices ? JSON.stringify(prices) : defaultConfig[key]) : JSON.stringify(remote)}),
     })})},
     "./economy_config": {...configModule,
       createProvider: (opts) => configModule.createProvider({...opts, now: () => time})},
@@ -115,6 +117,11 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     setConfig: (edit) => {
       remote = clone(configModule.defaults);
       edit(remote);
+      time += 300001;
+    },
+    setPrices: (edit) => {
+      prices = clone(require("../../config/linkball_prices.defaults.json"));
+      edit(prices);
       time += 300001;
     },
   };

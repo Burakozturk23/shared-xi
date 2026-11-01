@@ -195,7 +195,101 @@ void main() {
     expect(idle.loads, 1);
   });
 
+  testWidgets('Faz 2: loop supports, cover note, tomorrow line and full bag', (
+    t,
+  ) async {
+    ProgressionProfile day({required bool canClaim}) =>
+        ProgressionProfile.fromMap({
+          'dailyReward': {
+            'dateKey': '2026-11-03',
+            'canClaim': canClaim,
+            'currentStreak': 2,
+            'nextStreak': 3,
+            'nextDayIndex': 3,
+            'rewardCoins': 15,
+            'xpReward': 25,
+            'scheduleCoins': [10, 12, 15, 18, 20, 25, 30],
+            'scheduleSupports': [
+              null,
+              null,
+              'boost_basic',
+              null,
+              null,
+              null,
+              'boost_strong',
+            ],
+            'rewardSupport': canClaim ? 'boost_basic' : 'boost_basic',
+            'wouldUseStreakProtection': canClaim,
+            'freeProtectionEnabled': true,
+            'freeProtectionReadyOn': canClaim ? '' : '2026-11-10',
+          },
+        });
+    final g = _SupportGateway(day);
+    await t.pumpWidget(MaterialApp(home: Host(gateway: g)));
+    await t.tap(find.text('aç'));
+    await t.pumpAndSettle();
+    expect(find.byKey(const ValueKey('sheet-support-3')), findsOneWidget);
+    expect(find.byKey(const ValueKey('sheet-support-7')), findsOneWidget);
+    expect(find.byKey(const ValueKey('sheet-support-4')), findsNothing);
+    expect(
+      find.text('Bugün ayrıca: 1 Temel bilgi destek çantana.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Dün girmedin ama serin korunuyor (7 günde bir).'),
+      findsOneWidget,
+    );
+    await t.tap(find.text('Bugünkü Ödülü Al · +15 Link Coin'));
+    await t.pump();
+    expect(
+      find.text(
+        '+15 Link Coin · +25 XP · Temel bilgi eklenemedi: destek çantan dolu (99).',
+      ),
+      findsOneWidget,
+    );
+    await t.pumpAndSettle();
+    expect(find.text('Yarın: +18 Link Coin'), findsOneWidget);
+    expect(
+      find.text('Seri koruması 2026-11-10 tarihinde yenilenir.'),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('sheet-today-support')), findsNothing);
+    expect(t.takeException(), isNull);
+  });
+
+  test('support reward parsing ignores rows without an item', () {
+    expect(SupportReward.from(null), isNull);
+    expect(SupportReward.from({'granted': true}), isNull);
+    final r = SupportReward.from({'itemId': 'boost_strong', 'granted': true})!;
+    expect(r.granted, isTrue);
+    expect(r.full, isFalse);
+  });
+
   test('online mode missions route to the online hub', () {
     expect(GameCatalog.missionRoute('online_mode'), GameCatalog.onlineRanked);
   });
+}
+
+class _SupportGateway extends SheetGateway {
+  _SupportGateway(this.day);
+  final ProgressionProfile Function({required bool canClaim}) day;
+  @override
+  ProgressionProfile progression2() => day(canClaim: canClaim);
+  @override
+  Future<DailyRewardClaimResult> claimDaily() async {
+    dailyClaims++;
+    canClaim = false;
+    return DailyRewardClaimResult(
+      granted: true,
+      alreadyClaimed: false,
+      amount: 15,
+      xp: 25,
+      dayIndex: 3,
+      multiplier: 1,
+      streakProtected: true,
+      walletCoins: 120,
+      profile: progression2(),
+      support: const SupportReward(itemId: 'boost_basic', full: true),
+    );
+  }
 }

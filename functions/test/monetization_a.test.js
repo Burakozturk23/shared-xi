@@ -201,27 +201,32 @@ test("achievement authority, repricing and concurrent replay preserve a single o
 test("store guards quotes/funds and concurrent purchases preserve Squad progress", async () => {
   const h = harness({economyState: {alice: wallet(500)}});
   h.seed(coinPath + "/squadChallenge", {day: "2026-09-20", freeUsed: 2});
-  h.setConfig((c) => c.sinks.cosmetics.offers.avatar_speedster_bolt.priceCoins = 180);
-  const data = {offerId: "avatar_speedster_bolt", priceCoins: 1, expectedPriceCoins: 150};
+  // The early avatars are store-catalog items now (Şimşek 300); a live Remote Config copy
+  // at the old price can neither be listed twice nor sell at that price.
+  h.setConfig((c) => {
+    c.sinks.cosmetics.offers.avatar_speedster_bolt.enabled = true;
+    c.sinks.cosmetics.offers.avatar_speedster_bolt.priceCoins = 150;
+  });
+  const listed = (await h.call("getStoreCatalog")).offers.filter((o) => o.offerId === "avatar_speedster_bolt");
+  assert.equal(listed.length, 1); assert.equal(listed[0].priceCoins, 300);
+  const data = {offerId: "avatar_speedster_bolt", requestId: "speedster_request_0001", expectedPriceCoins: 150};
   await assert.rejects(h.call("purchaseEconomyOffer", data), {code: "failed-precondition"});
-  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: data.offerId}), {code: "failed-precondition"});
+  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: data.offerId, requestId: data.requestId}),
+      {code: "invalid-argument"});
   assert.equal(coins(h), 500);
   const results = await Promise.all([1, 2, 3].map(() => h.call("purchaseEconomyOffer", {
-    ...data, expectedPriceCoins: 180,
+    ...data, expectedPriceCoins: 300,
   })));
   assert.equal(results.filter((r) => r.purchased).length, 1);
-  assert.equal(coins(h), 320);
+  assert.equal(coins(h), 200);
   assert.equal(h.read(coinPath + "/squadChallenge/freeUsed"), 2);
-  h.setConfig((c) => c.sinks.cosmetics.offers.avatar_speedster_bolt.priceCoins = 250);
-  const replay = await h.call("purchaseEconomyOffer", data);
+  const replay = await h.call("purchaseEconomyOffer", {...data, requestId: "speedster_request_0002",
+    expectedPriceCoins: 300});
   assert.equal(replay.alreadyOwned, true);
-  assert.equal(replay.priceCoins, 180);
-  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: "avatar_champion_cup", expectedPriceCoins: 600}),
-      {code: "failed-precondition"});
-  const ledger = h.read("economyLedger/alice/purchase__speedster_bolt");
-  assert.equal(ledger.balanceBefore, 500);
-  assert.equal(ledger.balanceAfter, 320);
-  assert.equal(ledger.amount, -180);
+  assert.equal(coins(h), 200);
+  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: "avatar_champion_cup",
+    requestId: "champion_request_0001", expectedPriceCoins: 450}), {code: "failed-precondition"});
+  assert.equal(coins(h), 200);
 });
 
 test("pausing sources blocks new rewards but keeps valid old receipts", async () => {

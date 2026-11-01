@@ -11,10 +11,17 @@ const use = (h, roundId = "round_1234567890_ab", modeId = "futbol_lingo") =>
 
 test("catalog exposes server prices, solo modes and unique stable item definitions", async () => {
   const c = await funded().call("getStoreCatalog");
-  assert.equal(c.offers.length, catalog.offers.filter((o) => o.enabled).length + 4);
+  // The four early avatars now live in the store catalog (no second copy from the economy config).
+  assert.equal(c.offers.length, catalog.offers.filter((o) => o.enabled).length);
   assert.equal(new Set(c.offers.map((o) => o.offerId)).size, c.offers.length);
   assert.equal(catalog.offers.filter((o) => o.itemType === "kit").length, 24);
-  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar").length, 162);
+  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar").length, 166);
+  assert.equal(catalog.offers.filter((o) => o.itemType === "avatar" && o.enabled).length, 164);
+  assert.deepEqual(["avatar_speedster_bolt", "avatar_tactician_board", "avatar_night_owl", "avatar_champion_cup"]
+      .map((id) => c.offers.find((o) => o.offerId === id).priceCoins), [300, 300, 450, 450]);
+  // Two tiers only: every sold avatar is 300 or 450.
+  assert.ok(catalog.offers.filter((o) => o.itemType === "avatar" && o.enabled)
+      .every((o) => [300, 450].includes(o.priceCoins)));
   for (const o of catalog.offers) {
     assert.ok(Number.isSafeInteger(o.priceCoins) && o.priceCoins > 0);
     if (o.itemType === "boost") assert.deepEqual(o.modes, ["futbol_lingo", "mystery_player", "transfer_detective"]);
@@ -45,7 +52,8 @@ test("quotes, insufficient balances, stock limits and reused keys cannot overcha
   const h = funded();
   await assert.rejects(buy(h, undefined, undefined, 1), {code: "failed-precondition"});
   await buy(h);
-  await assert.rejects(buy(h, "boost_last_letter_3"), {code: "invalid-argument"});
+  // The same request id cannot buy a different offer.
+  await assert.rejects(buy(h, "boost_first_letter_1", undefined, 25), {code: "invalid-argument"});
   assert.equal(h.read("economyState/alice/balances/coins"), 935);
   h.seed("economyState/alice/inventory/boost_first_letter/quantity", 99);
   await assert.rejects(buy(h, undefined, "new_request_123456789"), {code: "resource-exhausted"});
@@ -115,10 +123,43 @@ test("new portrait avatars can be bought and equipped exactly once", async () =>
 test("retired portrait offers disappear and cannot debit the wallet", async () => {
   const h = funded();
   const c = await h.call("getStoreCatalog");
-  assert.equal(c.catalogVersion, 8);
+  assert.equal(c.catalogVersion, 9);
   for (const id of ["anthony_nwakaeme", "marek_hamsik"]) {
     assert.ok(!c.offers.some((o) => o.offerId === "avatar_" + id));
     await assert.rejects(buy(h, "avatar_" + id, "retired_request_123", 300), {code: "not-found"});
   }
   assert.equal(h.read("economyState/alice/balances/coins"), 1000);
+});
+test("last letter and anagram packs are no longer sold; first letter stays", async () => {
+  const h = funded();
+  const c = await h.call("getStoreCatalog");
+  const items = new Set(c.offers.map((o) => o.itemId));
+  assert.ok(items.has("boost_first_letter"));
+  assert.ok(!items.has("boost_last_letter")); assert.ok(!items.has("boost_anagram"));
+  await assert.rejects(buy(h, "boost_anagram_1", "anagram_request_12345", 60), {code: "not-found"});
+  assert.equal(h.read("economyState/alice/balances/coins"), 1000);
+});
+test("legacy letter stock converts by price: Son harf to Temel, Harf karışımı to Güçlü, once", async () => {
+  const h = funded();
+  h.seed("economyState/alice/inventory/boost_last_letter", {itemId: "boost_last_letter", itemType: "boost",
+    quantity: 2});
+  h.seed("economyState/alice/inventory/boost_anagram", {itemId: "boost_anagram", itemType: "boost", quantity: 3});
+  h.seed("economyState/alice/inventory/boost_basic", {itemId: "boost_basic", itemType: "boost", quantity: 4});
+  const r = await h.call("convertLegacyBoosts", {});
+  assert.equal(r.added, 5);
+  assert.deepEqual({...r.gained}, {boost_basic: 2, boost_strong: 3});
+  assert.deepEqual({...r.inventory}, {boost_basic: 6, boost_strong: 3, boost_last_letter: 0, boost_anagram: 0});
+  const again = await h.call("convertLegacyBoosts", {});
+  assert.equal(again.added, 0); assert.equal(h.read("economyState/alice/inventory/boost_strong/quantity"), 3);
+  assert.equal(h.read("economyState/alice/balances/coins"), 1000);
+  // Near the 99 cap only what fits converts; the rest stays as it was.
+  const full = funded();
+  full.seed("economyState/alice/inventory/boost_basic", {itemId: "boost_basic", itemType: "boost", quantity: 98});
+  full.seed("economyState/alice/inventory/boost_strong", {itemId: "boost_strong", itemType: "boost", quantity: 99});
+  full.seed("economyState/alice/inventory/boost_anagram", {itemId: "boost_anagram", itemType: "boost", quantity: 2});
+  full.seed("economyState/alice/inventory/boost_last_letter", {itemId: "boost_last_letter", itemType: "boost",
+    quantity: 3});
+  const capped = await full.call("convertLegacyBoosts", {});
+  assert.deepEqual({...capped.inventory},
+      {boost_basic: 99, boost_strong: 99, boost_last_letter: 2, boost_anagram: 2});
 });

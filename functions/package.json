@@ -8,7 +8,11 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "node --test"
+    "test": "node --test",
+    "economy:report": "node tools/economy_report.js",
+    "economy:check": "node tools/economy_report.js --check",
+    "prices:check": "node tools/prices_publish.js",
+    "prices:publish": "node tools/prices_publish.js --publish"
   },
   "engines": {
     "node": "24"
