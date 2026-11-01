@@ -6531,12 +6531,12 @@
       "category": "player",
       "prompt": "Luis Enrique · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "FC Cartagena",
+        "UD Las Palmas",
         "FC Barcelona",
         "Real Madrid"
       ],
       "answer": 0,
-      "explanation": "Luis Enrique’in gözden geçirilmiş tam A takım kariyerinde FC Barcelona ve Real Madrid vardır; FC Cartagena yoktur.",
+      "explanation": "Luis Enrique’in gözden geçirilmiş tam A takım kariyerinde FC Barcelona ve Real Madrid vardır; UD Las Palmas yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Luis_Enrique"
@@ -6575,10 +6575,10 @@
       "options": [
         "Besiktas JK",
         "Inter Milan",
-        "Ravenna FC"
+        "Fatih Karagümrük"
       ],
       "answer": 2,
-      "explanation": "Okan Buruk’in gözden geçirilmiş tam A takım kariyerinde Inter Milan ve Besiktas JK vardır; Ravenna FC yoktur.",
+      "explanation": "Okan Buruk’in gözden geçirilmiş tam A takım kariyerinde Inter Milan ve Besiktas JK vardır; Fatih Karagümrük yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Okan_Buruk"
@@ -6594,12 +6594,12 @@
       "category": "player",
       "prompt": "Alex Ferguson · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Heart of Midlothian FC",
+        "Kilmarnock FC",
         "Rangers FC",
         "Falkirk FC"
       ],
       "answer": 0,
-      "explanation": "Alex Ferguson’in gözden geçirilmiş tam A takım kariyerinde Rangers FC ve Falkirk FC vardır; Heart of Midlothian FC yoktur.",
+      "explanation": "Alex Ferguson’in gözden geçirilmiş tam A takım kariyerinde Rangers FC ve Falkirk FC vardır; Kilmarnock FC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Alex_Ferguson"
@@ -6616,11 +6616,11 @@
       "prompt": "Carlo Ancelotti · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "AC Milan",
-        "AC Bra",
+        "Napoli",
         "AS Roma"
       ],
       "answer": 1,
-      "explanation": "Carlo Ancelotti’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve AS Roma vardır; AC Bra yoktur.",
+      "explanation": "Carlo Ancelotti’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve AS Roma vardır; Napoli yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Carlo_Ancelotti"
@@ -6638,10 +6638,10 @@
       "options": [
         "Bayern Munich",
         "1.FC Köln",
-        "VfB Lübeck"
+        "Bayer 04 Leverkusen"
       ],
       "answer": 2,
-      "explanation": "Hansi Flick’in gözden geçirilmiş tam A takım kariyerinde 1.FC Köln ve Bayern Munich vardır; VfB Lübeck yoktur.",
+      "explanation": "Hansi Flick’in gözden geçirilmiş tam A takım kariyerinde 1.FC Köln ve Bayern Munich vardır; Bayer 04 Leverkusen yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Hansi_Flick"
@@ -6657,12 +6657,12 @@
       "category": "player",
       "prompt": "Diego Simeone · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "SS Monopoli 1966",
+        "CA Banfield",
         "Inter Milan",
         "CA Vélez Sarsfield"
       ],
       "answer": 0,
-      "explanation": "Diego Simeone’in gözden geçirilmiş tam A takım kariyerinde Inter Milan ve CA Vélez Sarsfield vardır; SS Monopoli 1966 yoktur.",
+      "explanation": "Diego Simeone’in gözden geçirilmiş tam A takım kariyerinde Inter Milan ve CA Vélez Sarsfield vardır; CA Banfield yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Diego_Simeone"
@@ -6701,10 +6701,10 @@
       "options": [
         "Spezia Calcio",
         "FC Empoli",
-        "Guidonia Montecelio 1937 FC"
+        "Delfino Pescara 1936"
       ],
       "answer": 2,
-      "explanation": "Luciano Spalletti’in gözden geçirilmiş tam A takım kariyerinde FC Empoli ve Spezia Calcio vardır; Guidonia Montecelio 1937 FC yoktur.",
+      "explanation": "Luciano Spalletti’in gözden geçirilmiş tam A takım kariyerinde FC Empoli ve Spezia Calcio vardır; Delfino Pescara 1936 yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Luciano_Spalletti"
@@ -6720,12 +6720,12 @@
       "category": "player",
       "prompt": "Massimiliano Allegri · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Giugliano Calcio 1928",
+        "Pineto Calcio",
         "US Livorno 1915",
         "FC Pistoiese"
       ],
       "answer": 0,
-      "explanation": "Massimiliano Allegri’in gözden geçirilmiş tam A takım kariyerinde US Livorno 1915 ve FC Pistoiese vardır; Giugliano Calcio 1928 yoktur.",
+      "explanation": "Massimiliano Allegri’in gözden geçirilmiş tam A takım kariyerinde US Livorno 1915 ve FC Pistoiese vardır; Pineto Calcio yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Massimiliano_Allegri"
@@ -6742,11 +6742,11 @@
       "prompt": "Roberto Mancini · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "SS Lazio",
-        "US Pianese",
+        "FC Empoli",
         "Bologna FC 1909"
       ],
       "answer": 1,
-      "explanation": "Roberto Mancini’in gözden geçirilmiş tam A takım kariyerinde SS Lazio ve Bologna FC 1909 vardır; US Pianese yoktur.",
+      "explanation": "Roberto Mancini’in gözden geçirilmiş tam A takım kariyerinde SS Lazio ve Bologna FC 1909 vardır; FC Empoli yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Roberto_Mancini"
@@ -6764,10 +6764,10 @@
       "options": [
         "VfB Stuttgart",
         "Karlsruher SC",
-        "Alemannia Aachen"
+        "Eintracht Braunschweig"
       ],
       "answer": 2,
-      "explanation": "Joachim Löw’in gözden geçirilmiş tam A takım kariyerinde Karlsruher SC ve VfB Stuttgart vardır; Alemannia Aachen yoktur.",
+      "explanation": "Joachim Löw’in gözden geçirilmiş tam A takım kariyerinde Karlsruher SC ve VfB Stuttgart vardır; Eintracht Braunschweig yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Joachim_L%C3%B6w"
@@ -6783,12 +6783,12 @@
       "category": "player",
       "prompt": "Abdullah Avcı · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Kayserispor",
+        "Esenler Erokspor",
         "Caykur Rizespor",
         "Istanbulspor"
       ],
       "answer": 0,
-      "explanation": "Abdullah Avcı’in gözden geçirilmiş tam A takım kariyerinde Caykur Rizespor ve Istanbulspor vardır; Kayserispor yoktur.",
+      "explanation": "Abdullah Avcı’in gözden geçirilmiş tam A takım kariyerinde Caykur Rizespor ve Istanbulspor vardır; Esenler Erokspor yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Abdullah_Avc%C4%B1"
@@ -6827,10 +6827,10 @@
       "options": [
         "Catania FC",
         "Palermo FC",
-        "Genoa CFC"
+        "AZ Picerno"
       ],
       "answer": 2,
-      "explanation": "Claudio Ranieri’in gözden geçirilmiş tam A takım kariyerinde Palermo FC ve Catania FC vardır; Genoa CFC yoktur.",
+      "explanation": "Claudio Ranieri’in gözden geçirilmiş tam A takım kariyerinde Palermo FC ve Catania FC vardır; AZ Picerno yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Claudio_Ranieri"
@@ -6846,12 +6846,12 @@
       "category": "player",
       "prompt": "Enzo Maresca · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "AC Carpi",
+        "OFI Crete FC",
         "Juventus FC",
         "Olympiacos Piraeus"
       ],
       "answer": 0,
-      "explanation": "Enzo Maresca’in gözden geçirilmiş tam A takım kariyerinde Juventus FC ve Olympiacos Piraeus vardır; AC Carpi yoktur.",
+      "explanation": "Enzo Maresca’in gözden geçirilmiş tam A takım kariyerinde Juventus FC ve Olympiacos Piraeus vardır; OFI Crete FC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Enzo_Maresca"
@@ -6890,10 +6890,10 @@
       "options": [
         "PSV Eindhoven",
         "FC Schalke 04",
-        "SV Darmstadt 98"
+        "Karlsruher SC"
       ],
       "answer": 2,
-      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; SV Darmstadt 98 yoktur.",
+      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; Karlsruher SC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Jefferson_Farf%C3%A1n"
@@ -6909,12 +6909,12 @@
       "category": "player",
       "prompt": "Peter Schmeichel · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Port Vale FC",
+        "AC Horsens",
         "Bröndby IF",
         "Manchester United"
       ],
       "answer": 0,
-      "explanation": "Peter Schmeichel’in gözden geçirilmiş tam A takım kariyerinde Bröndby IF ve Manchester United vardır; Port Vale FC yoktur.",
+      "explanation": "Peter Schmeichel’in gözden geçirilmiş tam A takım kariyerinde Bröndby IF ve Manchester United vardır; AC Horsens yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Peter_Schmeichel"
@@ -6931,11 +6931,11 @@
       "prompt": "Cafu · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "AS Roma",
-        "FC Barcelona Atlètic",
+        "Cultural Leonesa",
         "Real Zaragoza"
       ],
       "answer": 1,
-      "explanation": "Cafu’in gözden geçirilmiş tam A takım kariyerinde AS Roma ve Real Zaragoza vardır; FC Barcelona Atlètic yoktur.",
+      "explanation": "Cafu’in gözden geçirilmiş tam A takım kariyerinde AS Roma ve Real Zaragoza vardır; Cultural Leonesa yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Cafu"
@@ -6953,10 +6953,10 @@
       "options": [
         "Galatasaray",
         "Besiktas JK",
-        "Sivasspor"
+        "Fatih Karagümrük"
       ],
       "answer": 2,
-      "explanation": "Burak Yılmaz’in gözden geçirilmiş tam A takım kariyerinde Besiktas JK ve Galatasaray vardır; Sivasspor yoktur.",
+      "explanation": "Burak Yılmaz’in gözden geçirilmiş tam A takım kariyerinde Besiktas JK ve Galatasaray vardır; Fatih Karagümrük yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Burak_Y%C4%B1lmaz"
@@ -6972,12 +6972,12 @@
       "category": "player",
       "prompt": "Alex de Souza · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Sport Club Corinthians Paulista",
+        "Clube do Remo (PA)",
         "Fenerbahce",
         "Cruzeiro Esporte Clube"
       ],
       "answer": 0,
-      "explanation": "Alex de Souza’in gözden geçirilmiş tam A takım kariyerinde Fenerbahce ve Cruzeiro Esporte Clube vardır; Sport Club Corinthians Paulista yoktur.",
+      "explanation": "Alex de Souza’in gözden geçirilmiş tam A takım kariyerinde Fenerbahce ve Cruzeiro Esporte Clube vardır; Clube do Remo (PA) yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Alex_(footballer%2C_born_1977)"
@@ -6994,11 +6994,11 @@
       "prompt": "Micah Richards · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "Manchester City",
-        "SS Maceratese 1922",
+        "West Ham United",
         "Aston Villa"
       ],
       "answer": 1,
-      "explanation": "Micah Richards’in gözden geçirilmiş tam A takım kariyerinde Manchester City ve Aston Villa vardır; SS Maceratese 1922 yoktur.",
+      "explanation": "Micah Richards’in gözden geçirilmiş tam A takım kariyerinde Manchester City ve Aston Villa vardır; West Ham United yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Micah_Richards"
@@ -7016,10 +7016,10 @@
       "options": [
         "Manchester United",
         "Preston North End",
-        "Blackpool FC"
+        "D.C. United"
       ],
       "answer": 2,
-      "explanation": "David Beckham’in gözden geçirilmiş tam A takım kariyerinde Preston North End ve Manchester United vardır; Blackpool FC yoktur.",
+      "explanation": "David Beckham’in gözden geçirilmiş tam A takım kariyerinde Preston North End ve Manchester United vardır; D.C. United yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/David_Beckham"
@@ -7035,12 +7035,12 @@
       "category": "player",
       "prompt": "Kaká · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Esporte Clube Vitória",
+        "FC Dallas",
         "AC Milan",
         "São Paulo Futebol Clube"
       ],
       "answer": 0,
-      "explanation": "Kaká’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve São Paulo Futebol Clube vardır; Esporte Clube Vitória yoktur.",
+      "explanation": "Kaká’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve São Paulo Futebol Clube vardır; FC Dallas yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Kak%C3%A1"
@@ -7079,10 +7079,10 @@
       "options": [
         "Inter Milan",
         "Arsenal FC",
-        "US Avellino 1912"
+        "PSV Eindhoven"
       ],
       "answer": 2,
-      "explanation": "Dennis Bergkamp’in gözden geçirilmiş tam A takım kariyerinde Arsenal FC ve Inter Milan vardır; US Avellino 1912 yoktur.",
+      "explanation": "Dennis Bergkamp’in gözden geçirilmiş tam A takım kariyerinde Arsenal FC ve Inter Milan vardır; PSV Eindhoven yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Dennis_Bergkamp"
@@ -7098,12 +7098,12 @@
       "category": "player",
       "prompt": "Patrick Vieira · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Calcio Lecco 1912",
+        "Everton FC",
         "AC Milan",
         "Manchester City"
       ],
       "answer": 0,
-      "explanation": "Patrick Vieira’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Manchester City vardır; Calcio Lecco 1912 yoktur.",
+      "explanation": "Patrick Vieira’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Manchester City vardır; Everton FC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Patrick_Vieira"
@@ -7142,10 +7142,10 @@
       "options": [
         "Sevilla FC",
         "CA Boca Juniors",
-        "Cádiz CF"
+        "CA Unión (Santa Fe)"
       ],
       "answer": 2,
-      "explanation": "Diego Maradona’in gözden geçirilmiş tam A takım kariyerinde CA Boca Juniors ve Sevilla FC vardır; Cádiz CF yoktur.",
+      "explanation": "Diego Maradona’in gözden geçirilmiş tam A takım kariyerinde CA Boca Juniors ve Sevilla FC vardır; CA Unión (Santa Fe) yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Diego_Maradona"
@@ -7161,12 +7161,12 @@
       "category": "player",
       "prompt": "Michel Platini · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Virtus Francavilla Calcio",
+        "Stade Lavallois",
         "Juventus FC",
         "AS Saint-Étienne"
       ],
       "answer": 0,
-      "explanation": "Michel Platini’in gözden geçirilmiş tam A takım kariyerinde Juventus FC ve AS Saint-Étienne vardır; Virtus Francavilla Calcio yoktur.",
+      "explanation": "Michel Platini’in gözden geçirilmiş tam A takım kariyerinde Juventus FC ve AS Saint-Étienne vardır; Stade Lavallois yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Michel_Platini"
@@ -7183,11 +7183,11 @@
       "prompt": "Roberto Baggio · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "AC Milan",
-        "AC Perugia Calcio",
+        "AS Giana Erminio",
         "Juventus FC"
       ],
       "answer": 1,
-      "explanation": "Roberto Baggio’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Juventus FC vardır; AC Perugia Calcio yoktur.",
+      "explanation": "Roberto Baggio’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Juventus FC vardır; AS Giana Erminio yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Roberto_Baggio"
@@ -7205,10 +7205,10 @@
       "options": [
         "Dynamo Kyiv",
         "AC Milan",
-        "Dagenham & Redbridge FC"
+        "Kryvbas Kryvyi Rig"
       ],
       "answer": 2,
-      "explanation": "Andriy Shevchenko’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Dynamo Kyiv vardır; Dagenham & Redbridge FC yoktur.",
+      "explanation": "Andriy Shevchenko’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Dynamo Kyiv vardır; Kryvbas Kryvyi Rig yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Andriy_Shevchenko"

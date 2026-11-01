@@ -31,7 +31,8 @@ function view(raw, time) {
     questionStartedAt: r.questionStartedAt, finished: r.finished, answered: r.answered,
     lives: r.lives, streak: r.streak, bestStreak: r.bestStreak, cleanStreak: r.cleanStreak,
     score: r.score, correct: r.correct, answers: r.answers, hintsUsed: r.hintsUsed,
-    questionNumber: r.answers + (r.answered ? 0 : 1), free5050: !r.freeUsed, support: B.view(r),
+    questionNumber: r.answers + (r.answered ? 0 : 1), ...(r.dailyDay ? {daily: r.dailyDay} : {}),
+    free5050: !r.freeUsed, support: B.view(r),
     traceRemaining: Math.max(0, 2 - r.traceUsed), adCredits: r.adCredits,
     traceAvailable: !r.traceOnQuestion && q.realClubIds.some((id) => !r.eliminated.includes(id)),
     eliminated: r.eliminated, confirmed: r.confirmed, energyCharged: r.energyCharged,
@@ -42,15 +43,30 @@ function view(raw, time) {
       quick: r.quick, fakeClubId: q.fakeClubId, explanation: explanation(q), evidence: q.evidence} : {}),
     ...(r.finished ? {history: r.history} : {})};
 }
+const TIERS = ["easy", "normal", "hard", "legend"];
+// A question is never asked twice in a session. Unused players come first;
+// once a tier has none left, a player may return with another club trio, but
+// not within the last five questions. An empty tier borrows the nearest one.
 function pick(c, r, policy) {
   const tier = r.mode === "fake_endless" ? difficulty(r.streak) :
     ["easy", "normal", "hard", "easy", "normal", "hard", "easy", "normal", "hard", "normal"][r.answers];
-  const candidates = c.questions.filter((q) => q.difficulty === tier &&
-    !r.usedPlayers.includes(q.playerId) && !(policy.disabledQuestions || []).includes(q.questionId));
-  return shuffled(candidates, r.id + "|" + r.answers)[0] || null;
+  const asked = new Set([...(r.usedQuestions || []), ...(r.history || []).map((h) => h.questionId)]);
+  const recent = r.usedPlayers.slice(-5);
+  const order = [...TIERS].sort((a, b) =>
+    Math.abs(TIERS.indexOf(a) - TIERS.indexOf(tier)) - Math.abs(TIERS.indexOf(b) - TIERS.indexOf(tier)));
+  for (const t of order) {
+    const open = c.questions.filter((q) => q.difficulty === t && !asked.has(q.questionId) &&
+      !(policy.disabledQuestions || []).includes(q.questionId));
+    for (const pool of [open.filter((q) => !r.usedPlayers.includes(q.playerId)),
+      open.filter((q) => !recent.includes(q.playerId))]) {
+      if (pool.length) return shuffled(pool, (r.seed || r.id) + "|" + r.answers)[0];
+    }
+  }
+  return null;
 }
 function setup(r, q, time) {
   r.question = q; r.usedPlayers.push(q.playerId); r.questionStartedAt = time;
+  r.usedQuestions = [...(r.usedQuestions || []), q.questionId];
   r.deadline = r.mode === "fake_speed" ? time + 10000 : null;
   r.answered = false; r.selectedId = null; r.wasCorrect = false; r.points = 0; r.quick = false;
   r.eliminated = []; r.confirmed = []; r.traceOnQuestion = false; r.questionHints = 0;
@@ -99,6 +115,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       bestCorrect: 0, answers: 0, hintsUsed: 0, sessions: 0};
   }
   function award(s, r, tier, time, policy) {
+    // Medals are progress and are kept even while rewards are switched off;
+    // their coins are paid once the tier is reached again with rewards on.
+    s.medals[r.mode] = Math.max(s.medals[r.mode] || 0, tier);
     if (!policy.rewardsEnabled) return;
     for (let i = 1; i <= tier; i++) {
       const key = `fc__${r.mode}__medal_${i}`;
@@ -106,7 +125,6 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       const coins = (r.mode === "fake_endless" ? [0, 2, 3, 3, 4] : [0, 1, 2, 2, 3])[i];
       s.claims[key] = {coins, at: time}; s.pending[key] = {coins, target: r.mode}; r.earnedCoins += coins;
     }
-    s.medals[r.mode] = Math.max(s.medals[r.mode] || 0, tier);
   }
   function daily(s, r, time, policy) {
     if (!policy.rewardsEnabled) return;
@@ -221,8 +239,11 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const charge = await energyCost(uid) === 1;
     const e = await change(uid, (s, e, time) => {
       refresh(s, e, policy, time);
+      const daily = input.mode === "fake_speed" && input.daily === true;
       if (s.starts[input.requestId]) {
-        if (s.starts[input.requestId] !== input.mode) fail("invalid-argument", "İstek başka moda ait.");
+        if (s.starts[input.requestId] !== input.mode + (daily ? "__daily" : "")) {
+          fail("invalid-argument", "İstek başka moda ait.");
+        }
         if (!s.sessions[input.requestId]) fail("failed-precondition", "Eski oturum sona erdi.");
         return;
       }
@@ -232,7 +253,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         startedAt: time, expiresAt: time + energy.policy.resumeMs, finished: false, answered: false,
         lives: 3, streak: 0, cleanStreak: 0, bestStreak: 0, correct: 0, score: 0, answers: 0,
         hintsUsed: 0, questionHints: 0, freeUsed: false, traceUsed: 0, adCredits: 0, adGranted: 0,
-        energyCharged: charge, earnedCoins: 0, actions: {}, adReceipts: {}, history: [], usedPlayers: []};
+        energyCharged: charge, earnedCoins: 0, actions: {}, adReceipts: {}, history: [], usedPlayers: [],
+        ...(daily ? {seed: "daily|" + dayKey(time), dailyDay: dayKey(time)} : {})};
       const q = pick(catalog, r, policy);
       if (!q) fail("failed-precondition", "Doğrulanmış soru bulunamadı. Enerji harcanmadı.");
       // Question, session and debit commit together; failures leave no reservation to leak.
@@ -244,7 +266,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         e.energy.balance--;
       }
       B.pin(r, boostPolicy);
-      setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id; s.starts[r.id] = r.mode;
+      setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id;
+      s.starts[r.id] = r.mode + (daily ? "__daily" : "");
       for (const [id, prior] of Object.entries(s.sessions)) {
         if (prior.expiresAt < time && !(prior.adCredits > 0) && !Object.values(s.active).includes(id)) {
           delete s.sessions[id];

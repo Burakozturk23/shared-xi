@@ -32,6 +32,8 @@ def build():
         and rawclubs[cid(i)]['country'] and rawclubs[cid(i)]['competition']
         and rawclubs[cid(i)]['gameplay_eligible'] and '\\' not in rawclubs[cid(i)]['name']}
     questions, careers, rejected = [], [], Counter()
+    # Each fake club appears at most this many times in the whole catalog.
+    fake_uses, FAKE_CAP = Counter(), 5
     for p in review['players']:
         pid = p['playerId']
         person = con.execute('select * from players where id=?', (pid,)).fetchone()
@@ -58,15 +60,32 @@ def build():
         triples = sorted(itertools.combinations(displayed, 3), key=digest)[:4]
         for triple in triples:
             countries = {clubs[i]['country'] for i in triple}
-            leagues = {clubs[i]['league'] for i in triple}
+            # A league name is only meaningful with its country ("Bundesliga").
+            leagues = {(clubs[i]['country'], clubs[i]['league']) for i in triple}
+            pops = [clubs[i]['popularity'] for i in triple]
+            mean = sum(pops) / 3
             fake = [c for c in clubs.values() if c['id'] not in excluded and c['popularity'] >= 10]
+            # No tier gives the fake away by an odd country, and from normal up
+            # it is never simply the least known of the four.
+            rules = {
+                'easy': lambda c: c['country'] in countries,
+                'normal': lambda c: (c['country'], c['league']) in leagues,
+                'hard': lambda c: (c['country'], c['league']) in leagues and abs(c['popularity'] - mean) <= 20
+                    and c['popularity'] >= min(pops),
+                'legend': lambda c: (c['country'], c['league']) in leagues and abs(c['popularity'] - mean) <= 10
+                    and c['popularity'] >= min(pops),
+            }
+            # Relax one step at a time only when fewer than two candidates remain.
+            chain = {'easy': ['easy'], 'normal': ['normal', 'easy'], 'hard': ['hard', 'normal', 'easy'],
+                     'legend': ['legend', 'hard', 'normal', 'easy']}
             for difficulty in ['easy', 'normal', 'hard', 'legend']:
-                eligible = [c for c in fake if (
-                    c['country'] not in countries if difficulty == 'easy' else
-                    c['country'] in countries if difficulty == 'normal' else
-                    c['league'] in leagues if difficulty == 'hard' else
-                    c['league'] in leagues and min(abs(c['popularity'] - clubs[i]['popularity']) for i in triple) <= 15)]
-                for candidate in sorted(eligible, key=lambda c: digest([pid, triple, difficulty, c['id']]))[:2]:
+                for step, rule in enumerate(chain[difficulty]):
+                    eligible = [c for c in fake if rules[rule](c) and fake_uses[c['id']] < FAKE_CAP]
+                    if len(eligible) >= 2: break
+                if step: rejected[f'tier_relaxed_{difficulty}'] += 1
+                ordered = sorted(eligible, key=lambda c: (fake_uses[c['id']], digest([pid, triple, difficulty, c['id']])))
+                for candidate in ordered[:2]:
+                    fake_uses[candidate['id']] += 1
                     fid = candidate['id']
                     key = digest([pid, triple, fid, difficulty])[:24]
                     evidence = dict(coverage=p['coverage'], sources=p['sources'], reviewedAt=p['reviewedAt'])
@@ -77,6 +96,7 @@ def build():
     data = dict(schema=1, databaseSha256=hashlib.sha256(DB.read_bytes()).hexdigest(),
         reviewSha256=digest(review), careers=careers, questions=questions,
         quality=dict(players=len(careers), questions=len(questions), difficulties=dict(Counter(q['difficulty'] for q in questions)),
+            maxFakeUses=max(fake_uses.values()), distinctFakes=len(fake_uses),
             rejected=dict(rejected), policy='complete_retired_career_allowlist_only'))
     data['version'] = 'fc-v1-' + digest(data)[:16]
     for q in questions:

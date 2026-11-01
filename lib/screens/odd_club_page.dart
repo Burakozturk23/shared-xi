@@ -7,8 +7,11 @@ import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
 import '../widgets/fake_club_options.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/player_portrait.dart';
+import '../widgets/share_result.dart';
 
 List<Map<String, dynamic>> _rows(dynamic value) => (value is List ? value : const []).map(rewardMap).toList();
 List<int> _ids(dynamic value) => (value is List ? value : const []).whereType<num>().map((n) => n.toInt()).toList();
@@ -81,8 +84,8 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     final r = await _service.load(_mode);
     if (mounted && !_accountChanged) setState(() => _accept(r));
   });
-  Future<void> _start() => _run(() async {
-    await _service.mutate('startFakeClub', {'mode': _mode, 'version': _status['version']});
+  Future<void> _start({bool daily = false}) => _run(() async {
+    await _service.mutate('startFakeClub', {'mode': _mode, 'version': _status['version'], if (daily) 'daily': true});
     final r = await _service.load(_mode);
     if (mounted && !_accountChanged) { setState(() { _accept(r); _records = false; }); if (_scroll.hasClients) _scroll.jumpTo(0); }
   });
@@ -139,10 +142,17 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
       const SizedBox(height: 8), Text(_status['energyCost'] == 1 ? 'Yeni oturum: 1 enerji. Devam etmek ücretsiz.' : 'Enerji sistemi şu anda kapalı; yeni oturum ücretsiz.'),
       const Text('Oyun 24 saat saklanır. Hız Serisi saati arka planda durmaz.'),
       if (_availability['solo'] != true) const Text('Bu mod test aşamasında. Açıldığında buradan başlayabilirsin.'),
-      if (_availability['rewards'] != true) const Text('Bu test aşamasında Coin / XP kazanımı kapalı.'),
+      if (_availability['rewards'] != true) const Text('Bu test aşamasında Coin / XP kazanımı kapalı; rozet ilerlemen yine kaydedilir.'),
+      if (!widget.timed) const Text('Seri uzadıkça aynı futbolcu başka bir kulüp üçlüsüyle dönebilir; aynı soru bir oturumda tekrar gelmez.'),
       if (_status['linked'] != true) const Text('Rozet hakların saklanır. Cüzdana aktarılması için bu hesabı Google ile bağla.'),
     ])), const SizedBox(height: 16),
     FilledButton(onPressed: _busy || _availability['solo'] != true ? null : _start, child: Text('$_subtitle başlat')),
+    if (widget.timed) ...[
+      const SizedBox(height: 8),
+      OutlinedButton.icon(onPressed: _busy || _availability['solo'] != true ? null : () => _start(daily: true),
+        icon: const Icon(Icons.today_outlined), label: const Text('Günün Hız Serisi')),
+      const SizedBox(height: 4), const Text('Herkes bugün aynı 10 soruyu cevaplar. Sonucu paylaşabilirsin.'),
+    ],
     const SizedBox(height: 12), ..._recordPanel(compact: true),
   ];
   List<Widget> _game() {
@@ -154,7 +164,10 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
         Text('Can ${_session['lives']} / 3'), Text('Seri ${_session['streak']}'), Text('${_session['score']} puan'),
         if (widget.timed) Text('Soru ${_session['questionNumber']} / 10 · $_seconds sn'),
         Text({'easy': 'Kolay', 'normal': 'Normal', 'hard': 'Zor', 'legend': 'Efsane'}[q['difficulty']] ?? ''),
-      ]), const SizedBox(height: 16),
+        if (_session['daily'] != null) HubPill('Günün serisi', color: hubAmber(context), background: hubAmber(context).withValues(alpha: .14)),
+      ]),
+      if (widget.timed) ...[const SizedBox(height: 10), _progress()],
+      const SizedBox(height: 16),
       PitchPanel(child: Row(children: [
         SizedBox(width: 64, height: 64, child: PlayerPortrait(playerId: (player['id'] as num? ?? 0).toInt(), size: 64, fallback: const Icon(Icons.person_outline, size: 48))),
         const SizedBox(width: 12), Expanded(child: Text('${player['name']}', style: Theme.of(context).textTheme.titleLarge)),
@@ -163,7 +176,8 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
         selectedId: (_session['selectedId'] as num?)?.toInt(), fakeClubId: (_session['fakeClubId'] as num?)?.toInt(),
         eliminated: _ids(_session['eliminated']), confirmed: _ids(_session['confirmed'])),
       if (_answered || _finished) PitchPanel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        if (_answered) Row(children: [Icon(_session['wasCorrect'] == true ? Icons.check_circle_outline : Icons.cancel_outlined), const SizedBox(width: 8),
+        if (_answered) Row(children: [Icon(_session['wasCorrect'] == true ? Icons.check_circle_outline : Icons.cancel_outlined,
+            color: _session['wasCorrect'] == true ? PitchColors.of(context).accent : Theme.of(context).colorScheme.error), const SizedBox(width: 8),
           Expanded(child: Text(_session['wasCorrect'] == true ? '${_session['quick'] == true ? 'Hız Bonusu · ' : 'Doğru · '}+${_session['points']} puan' :
             _session['selectedId'] == null ? 'Süre doldu · bir can kaybı' : 'Bu kulüpte oynadı · bir can kaybı'))]),
         const SizedBox(height: 8), Text('${_session['explanation']}'),
@@ -182,12 +196,22 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
           Text('${_session['hintsUsed']} yardım · ${_session['earnedCoins']} Link Coin / ${_session['earnedXp']} XP rozet hakkı'),
           const Text('Günlük görev ve ömür boyu rozetler Kulüp Dedektifi bölümünde.'),
         ])), const SizedBox(height: 12),
+        ShareResultButtons(text: fakeClubShare(_session, timed: widget.timed)), const SizedBox(height: 12),
         FilledButton(onPressed: _busy || _availability['solo'] != true ? null : _start, child: const Text('Yeni oturum başlat')),
         for (final item in _rows(_session['history'])) ExpansionTile(title: Text('${rewardMap(item['player'])['name']}'),
           subtitle: Text(item['correct'] == true ? 'Doğru · ${item['points']} puan' : 'Yanlış / süre doldu'),
           children: [Padding(padding: const EdgeInsets.all(12), child: Text('${item['explanation']}'))]),
       ],
     ];
+  }
+  /// Ten answer slots for a speed run: green right, red wrong or timed out.
+  Widget _progress() {
+    final history = _rows(_session['history']); final p = PitchColors.of(context);
+    return Semantics(label: '${history.where((h) => h['correct'] == true).length} doğru, ${history.length} / 10 cevap', excludeSemantics: true,
+      child: Row(children: [for (var i = 0; i < 10; i++) Expanded(child: Container(height: 6, margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), color: i < history.length
+          ? history[i]['correct'] == true ? p.accent : Theme.of(context).colorScheme.error
+          : i == history.length && !_finished ? p.muted : p.raised)))]));
   }
   List<Widget> _help(bool locked) => rewardMap(_session['support'])['version'] == 1 ? [
     const SizedBox(height: 12),
@@ -224,4 +248,17 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     if ((_status['pendingCoins'] as num? ?? 0) > 0) Text('Bekleyen rozet: ${_status['pendingCoins']} Link Coin'),
     if (!compact) TextButton(onPressed: () => setState(() => _records = false), child: const Text('Oyuna dön')),
   ];
+}
+
+/// Share card for a finished run: right and wrong as squares, never the answers.
+String fakeClubShare(Map<String, dynamic> session, {required bool timed}) {
+  final history = (session['history'] as List? ?? const []).map(rewardMap).toList();
+  final day = '${session['daily'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · Sahte Kulüp · ${timed ? 'Hız Serisi' : 'Sonsuz Seri'}',
+    if (session['daily'] != null) 'Günün serisi · $day',
+    history.map((h) => h['correct'] == true ? '🟩' : '🟥').join(),
+    timed ? '${session['correct'] ?? 0}/10 doğru · ${session['score'] ?? 0} puan'
+      : 'En uzun seri ${session['bestStreak'] ?? 0} · ${session['score'] ?? 0} puan',
+  ].join('\n');
 }
