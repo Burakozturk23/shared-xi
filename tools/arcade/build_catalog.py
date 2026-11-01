@@ -72,6 +72,9 @@ for a,b in itertools.combinations(entities,2):
     if ev:
         adj[a].add(b);adj[b].add(a); edges['|'.join(sorted([a,b]))]=ev
 
+# How many boards each entity already appears in: a soft cap keeps the same
+# few players from filling the catalog.
+uses=collections.Counter(); USE_CAP=4
 def full_board(n):
     """Construct all slots top-down, each child linked to its one/two parents."""
     for attempt in range(500):
@@ -82,8 +85,11 @@ def full_board(n):
                 parents=rows[-1][max(0,col-1):min(col+1,row)]
                 choices=set.intersection(*(adj[p] for p in parents))-set(chosen)
                 if not choices:ok=False;break
-                # Prefer mixed relation witnesses, not a single club clique.
+                # Prefer mixed relation witnesses, not a single club clique;
+                # sometimes prefer a club/country cell; avoid overused entities.
                 options=sorted(choices);rng.shuffle(options)
+                mixed=rng.random()<0.35
+                options.sort(key=lambda x:(uses[x]>=USE_CAP, mixed and entities[x]['type']=='player'))
                 value=options[0];chosen.append(value);current.append(value)
             if not ok: break
             rows.append(current)
@@ -102,9 +108,10 @@ def full_board(n):
         return rows
     raise RuntimeError('No diverse certified triangle within budget')
 boards=[]
-for diff,n in [('easy',4),('normal',5),('hard',5)]:
-    for number in range(16):
-        rows=full_board(n); slots=[];solution={};initial={};i=0
+# 50 four-level boards, 100 five-level boards split into normal and hard below.
+for diff,n,count in [('easy',4,50),('normal',5,100)]:
+    for number in range(count):
+        rows=full_board(n); uses.update(x for row in rows for x in row); slots=[];solution={};initial={};i=0
         for r,row in enumerate(rows):
             for j,entity in enumerate(row):
                 slots.append({'id':str(i),'row':r,'column':j,'supports':[str((r+1)*(r+2)//2+j),str((r+1)*(r+2)//2+j+1)] if r<n-1 else []})
@@ -117,15 +124,28 @@ def complexity(b):
     ids=list(b['certificate'].values())
     witness={json.dumps(edges['|'.join(sorted([b['certificate'][s['id']],b['certificate'][n]]))],sort_keys=True) for s in b['slots'] for n in s['supports']}
     return len(witness)*100-sum(len(adj[i]) for i in ids)/len(ids)
-five.sort(key=lambda b:(complexity(b),b['id']))
+def looseness(b):
+    """Mean number of entities that link every required neighbour of an empty
+    cell (given the certified neighbours): fewer candidates, harder cell."""
+    cert=b['certificate']; counts=[]
+    for s in b['slots']:
+        if s['id'] in b['initial'] or not s['supports']: continue
+        need=[cert[x] for x in s['supports']]+([cert['0']] if s['row']==1 else [])
+        counts.append(len(set.intersection(*(adj[x] for x in need))))
+    return sum(counts)/len(counts)
+# The tighter half of the five-level boards is hard.
+five.sort(key=lambda b:(looseness(b),b['id']))
 for index,b in enumerate(five):
-    diff='normal' if index<16 else 'hard'; b['difficulty']=diff;b['id']=f'pyramid:{diff}:{index%16+1}'
-    b['complexity']=round(complexity(b),2)
-catalog={'schema':1,'databaseSha256':hashlib.sha256(DB.read_bytes()).hexdigest(),'players':players,'clubs':clubs,'burst':burst,'careers':careers,'entities':entities,'edges':edges,'pyramids':boards,'policy':{'matchingPairs':{'easy':6,'normal':8,'hard':12},'stars':{'threePerPair':2,'twoPerPair':3,'calibration':'provisional; requires device playtest'},'maxPickAttempts':40}}
+    diff='hard' if index<len(five)//2 else 'normal'; b['difficulty']=diff
+    b['id']=f'pyramid:{diff}:{index%(len(five)//2)+1}'
+    b['complexity']=round(complexity(b),2); b['looseness']=round(looseness(b),2)
+for b in boards:
+    if b['levels']==4: b['looseness']=round(looseness(b),2)
+catalog={'schema':1,'databaseSha256':hashlib.sha256(DB.read_bytes()).hexdigest(),'players':players,'clubs':clubs,'burst':burst,'careers':careers,'entities':entities,'edges':edges,'pyramids':boards,'policy':{'matchingPairs':{'easy':6,'normal':8,'hard':12},'stars':{'threePerPair':1.75,'twoPerPair':2.5,'calibration':'tightened from 2/3 pairs: perfect-memory play needs about 1.6 moves per pair; recalibrate with device telemetry'},'maxPickAttempts':40}}
 body=json.dumps(catalog,ensure_ascii=False,sort_keys=True,separators=(',',':'))
 catalog['version']='arcade-v1-'+hashlib.sha256(body.encode()).hexdigest()[:16]
 out=ROOT/'functions/config/arcade_catalog.json'; text=json.dumps(catalog,ensure_ascii=False,separators=(',',':'))+'\n'
 if '--check' in sys.argv:
     assert out.read_text()==text, 'Arcade catalog drift; run tools/arcade/build_catalog.py'
 else: out.write_text(text)
-print(json.dumps({'version':catalog['version'],'players':len(players),'burst':len(burst),'burstTiers':dict(collections.Counter(x['pairType']+'/'+x['difficulty'] for x in burst)),'completeCareers':len(careers),'pyramidEntities':len(entities),'pyramidBoards':len(boards),'bytes':out.stat().st_size},indent=2))
+print(json.dumps({'version':catalog['version'],'players':len(players),'burst':len(burst),'burstTiers':dict(collections.Counter(x['pairType']+'/'+x['difficulty'] for x in burst)),'completeCareers':len(careers),'pyramidEntities':len(entities),'pyramidBoards':len(boards),'pyramidLooseness':{d:round(sum(b['looseness'] for b in boards if b['difficulty']==d)/max(1,sum(b['difficulty']==d for b in boards)),1) for d in ['easy','normal','hard']},'maxEntityBoards':max(uses.values()),'bytes':out.stat().st_size},indent=2))

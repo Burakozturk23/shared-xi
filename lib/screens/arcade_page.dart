@@ -7,6 +7,7 @@ import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/arcade_service.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
 import '../services/game_error.dart';
@@ -87,11 +88,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           background ||
           run['paused'] == true)
         return;
+      // Both Burst styles have a round clock; Speed also has a total clock.
       final speedExpired =
           widget.mode == 'burst' &&
-          run['style'] == 'speed' &&
-          (delta >= _n(run['totalRemainingMs']) ||
-              delta >= _n(run['roundRemainingMs']));
+          (delta >= _n(run['roundRemainingMs']) ||
+              run['style'] == 'speed' && delta >= _n(run['totalRemainingMs']));
       final lockExpired =
           widget.mode == 'matching' &&
           _n(run['lockUntil']) > 0 &&
@@ -233,7 +234,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       unawaited(act('pause'));
   }
 
-  Future<void> prepare() async {
+  Future<void> prepare({bool daily = false}) async {
     if (busy || error != null) return;
     if (data['offline'] == true) {
       setState(() => error = 'Yeni oyun hazırlamak için bağlantı gerekli.');
@@ -250,6 +251,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         'difficulty': difficulty,
         'style': style,
         'pairType': pairType,
+        if (daily) 'daily': true,
       }, prepare: true);
       if (mounted)
         setState(() {
@@ -512,8 +514,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       }, (v) => pairType = v),
       HubSpecNote(
         style == 'speed'
-            ? 'Toplam 120 sn · Tur 30 sn · Yanlış −3 sn\n2 pas: her biri −5 sn · İpucu yok'
-            : '5 can · 12 tamamlanan tur · 2 pas\nDestek seçenekleri oyun içinde gösterilir\nReklam ipuçları diğer solo modlarla ortak 4/gün sınırına tabidir.',
+            ? 'Toplam 120 sn · Tur 30 sn · Yanlış −3 sn\n2 pas: her biri −5 sn · İpucu yok\nKolay çiftlerle başlar, turlar ilerledikçe zorlaşır'
+            : '5 can · 12 tamamlanan tur · 2 pas · Tur 75 sn (dolarsa −1 can)\nİpucu önce milliyeti, ikincisi baş harfleri söyler\nDuraklatınca çift gizlenir\nReklam ipuçları diğer solo modlarla ortak 4/gün sınırına tabidir.',
       ),
     ] else ...[
       panel(
@@ -531,8 +533,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       }, (v) => difficulty = v),
       HubSpecNote(
         widget.mode == 'pyramid'
-            ? '${difficulty == 'easy' ? '10 hücre · 5 boş' : '15 hücre · 9 boş'} · 5 can\n${difficulty == 'hard' ? 1 : 2} ipucu · Süre sınırı yok'
-            : '${{'easy': 6, 'normal': 8, 'hard': 12}[difficulty]} çift · ${difficulty == 'easy' ? 3 : 4} sütun\nİpucu ve geri sayım yok',
+            ? '${difficulty == 'easy' ? '10 hücre · 5 boş' : '15 hücre · 9 boş'} · 5 can\n${difficulty == 'hard' ? 1 : 2} ipucu: ilki türü, aynı hücreye ikincisi bağı söyler · Süre sınırı yok\n${difficulty == 'hard' ? 'Zor tahtalarda her hücreye uyan aday daha az. ' : ''}Bağlı ama tahtayı çözümsüz bırakan aday da yanlış sayılır.\nZafer bonusu: kalan can × 100, ipucusuz +200, her geri alma −50'
+            : '${{'easy': 6, 'normal': 8, 'hard': 12}[difficulty]} çift · ${difficulty == 'easy' ? 3 : 4} sütun · Geri sayım yok\n3 yıldız: en fazla ${({'easy': 6, 'normal': 8, 'hard': 12}[difficulty]! * 1.75).floor()} hamle · 2 yıldız: en fazla ${({'easy': 6, 'normal': 8, 'hard': 12}[difficulty]! * 2.5).floor()}\nÜcretsiz ipucu yok; destek ürünün varsa oyun başına bir çift önerisi açılır.\nDuraklatılan oyun süre rekoru sayılmaz.',
       ),
     ],
     const SizedBox(height: 12),
@@ -544,11 +546,11 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           child: Text(
             widget.mode == 'burst'
                 ? style == 'speed'
-                      ? '2 / 3 / 5 tur: her derece 2 Coin + 4 XP. 7 turu yanlış ve pas olmadan bitir: Ustalık 3 Coin + 6 XP. Günde bir kez 2 tur: 2 Coin + 4 XP.'
+                      ? '2 / 3 / 5 tur: her derece 2 Coin + 4 XP. 7 turu en fazla 1 yanlışla ve passız bitir: Ustalık 3 Coin + 6 XP. Günde bir kez 2 tur: 2 Coin + 4 XP.'
                       : '3 / 6 / 9 tur: her derece 2 Coin + 4 XP. 12 turu ipucu ve pas olmadan, en az 3 canla bitir: Ustalık 3 Coin + 6 XP. Günde bir kez 3 tur: 2 Coin + 4 XP.'
                 : widget.mode == 'pyramid'
-                ? 'Kolay 2, Normal 2, Zor 3 Coin. Zor tahtayı yanlış ve ipucu olmadan bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Matching ile ortak günde bir kez 2 Coin + 4 XP.'
-                : 'Kolay 1, Normal 2, Zor 2 Coin. Zor tahtayı en fazla 24 hamlede bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Pyramid ile ortak günde bir kez 2 Coin + 4 XP.',
+                ? 'Kolay 2, Normal 2, Zor 3 Coin. Zor tahtayı yanlış, ipucu ve geri alma olmadan bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Matching ile ortak günde bir kez 2 Coin + 4 XP.'
+                : 'Kolay 1, Normal 2, Zor 2 Coin. Zor tahtayı en fazla 18 hamlede bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Pyramid ile ortak günde bir kez 2 Coin + 4 XP.',
           ),
         ),
         const Padding(
@@ -564,9 +566,23 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           ? 'Yeni oyun: ${data['energyCost'] ?? 0} enerji · Kayıtlı oyuna devam: ücretsiz'
           : 'Konuk alıştırması · Enerji ve Coin ödülü yok',
     ),
-    if (rewardMap(data['availability'])['enabled'] == true)
-      button('Oyunu hazırla', prepare)
-    else
+    if (rewardMap(data['availability'])['enabled'] == true) ...[
+      button('Oyunu hazırla', prepare),
+      if (widget.mode != 'burst') ...[
+        OutlinedButton.icon(
+          onPressed: busy ? null : () => prepare(daily: true),
+          icon: const Icon(Icons.today_outlined),
+          label: Text(
+            widget.mode == 'pyramid' ? 'Günün piramidi' : 'Günün kartları',
+          ),
+        ),
+        Text(
+          widget.mode == 'pyramid'
+              ? 'Herkes bugün aynı normal tahtayı çözer. Henüz oynamadığın tahtalar önce gelir.'
+              : 'Herkes bugün aynı normal kart dizilimini çözer. Sonucu paylaşabilirsin.',
+        ),
+      ],
+    ] else
       panel(
         'Güncelleme hazırlanıyor',
         'Bu mod henüz açılmadı. Rekorların korunuyor.',
@@ -646,10 +662,31 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
               'Toplam ${seconds('totalRemainingMs')} sn · Tur ${seconds('roundRemainingMs')} sn',
             )
           else
-            Text('♥ ${run['lives']} · Hedef 12 tur'),
+            Text(
+              '♥ ${run['lives']} · Tur ${seconds('roundRemainingMs')} sn · Hedef 12 tur',
+            ),
         ],
       ),
-      const SizedBox(height: 16),
+      const SizedBox(height: 10),
+      // Round clock: turns amber in the last third.
+      Builder(
+        builder: (context) {
+          final left = math.max(0, _n(run['roundRemainingMs']) - delta);
+          final total = math.max(1, _n(run['roundMs'] ?? 30000));
+          final part = (left / total).clamp(0.0, 1.0);
+          return Semantics(
+            label: 'Tur süresi ${(left / 1000).ceil()} saniye',
+            excludeSemantics: true,
+            child: LinearProgressIndicator(
+              value: part,
+              minHeight: 6,
+              borderRadius: BorderRadius.circular(3),
+              color: part < 1 / 3 ? hubAmber(context) : accent,
+            ),
+          );
+        },
+      ),
+      const SizedBox(height: 12),
       panel(
         '${q['left']} × ${q['right']}',
         '${_rows(run['found']).length}/3 oyuncu · ${_difficulty('${q['difficulty']}')}',
@@ -722,9 +759,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         .map((x) => '$x')
         .toSet();
     if (selected?['row'] == 1) highlighted.add('0');
+    // A five-level board fits a phone; only large text needs side scrolling.
     final boardWidth = math.max(
       math.min(MediaQuery.sizeOf(context).width, 640.0) - 32,
-      _n(board['levels']) * 110.0 * MediaQuery.textScalerOf(context).scale(1),
+      _n(board['levels']) * 70.0 * MediaQuery.textScalerOf(context).scale(1),
     );
     pyramidScroll ??= ScrollController(
       initialScrollOffset: math.max(
@@ -736,7 +774,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     );
     return [
       Text(
-        '♥ ${run['lives']} · ${run['correct']}/${_n(board['levels']) == 4 ? 5 : 9} hücre · ${run['score']} puan',
+        '♥ ${run['lives']} · ${run['correct']}/${_n(board['cells'] ?? (_n(board['levels']) == 4 ? 5 : 9))} hücre · ${run['score']} puan${run['daily'] != null ? ' · Günün piramidi' : ''}',
         style: TextStyle(color: accent),
       ),
       const SizedBox(height: 14),
@@ -1020,9 +1058,14 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         xp: _n(run['earnedCoins']) * 2,
         notes: [
           widget.mode == 'matching'
-              ? '${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}'
+              ? '${(_n(run['activeMs']) / 1000).round()} sn · ${'★' * _n(run['stars'])}${'☆' * (3 - _n(run['stars'])).clamp(0, 3)}${run['daily'] != null ? ' · Günün kartları' : ''}'
               : '${run['correct']} doğru · ${_n(run['wrong'])} yanlış · ${_n(run['hints'])} ipucu'
-                    '${widget.mode == 'burst' ? ' · ${run['rounds']} tur · ${_n(run['passes'])} pas' : ''}',
+                    '${widget.mode == 'burst' ? ' · ${run['rounds']} tur · ${_n(run['passes'])} pas' : ''}'
+                    '${widget.mode == 'pyramid' ? ' · ${_n(run['undos'])} geri alma' : ''}',
+          if (widget.mode == 'pyramid' &&
+              run['won'] == true &&
+              run['bonus'] != null)
+            'Zafer bonusu +${_n(run['bonus'])}: ${_n(run['lives'])} can${_n(run['hints']) == 0 ? ', ipucusuz' : ''}${_n(run['undos']) > 0 ? ', ${_n(run['undos'])} geri alma' : ''}',
           if (run['assisted'] == true)
             'Yardımlı sonuç · Yardımsız rekor ve ustalığa eklenmez.',
           if (run['pendingValidation'] == true)
@@ -1048,6 +1091,17 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
             ),
           ],
         ),
+    if (widget.mode == 'pyramid') ShareResultButtons(text: pyramidShare(run)),
+    if (widget.mode == 'matching' && run['won'] == true) ...[
+      if (_n(run['pauses']) > 0)
+        const Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: HubSpecNote(
+            'Oyun duraklatıldığı için süre rekoru sayılmadı; hamle rekoru geçerli.',
+          ),
+        ),
+      ShareResultButtons(text: matchingShare(run)),
+    ],
     if (widget.mode == 'pyramid')
       ExpansionTile(
         title: const Text('Doğrulanmış çözüm'),
@@ -1143,7 +1197,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
           '${widget.mode == 'burst' ? '${r['style'] == 'speed' ? 'Hız Atağı' : 'Dayanıklılık'} · ${r['pairType'] == 'clubClub' ? 'Kulüp × Kulüp' : 'Kulüp × Ülke'}' : _difficulty('${r['difficulty']}')}${r['assisted'] == true ? ' · Yardımlı' : ''}',
           widget.mode == 'matching'
               ? 'En az hamle: ${r['bestMoves'] ?? '—'}\nEn iyi süre: ${r['bestTimeMs'] == null ? '—' : (_n(r['bestTimeMs']) / 1000).round()} sn\n${r['sessions']} oyun'
-              : 'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}\nOrtalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}',
+              : 'En iyi skor: ${r['bestScore']}\n${widget.mode == 'burst' ? 'Tur: ${r['bestRounds']} · En uzun seri: ${r['bestStreak']}\n' : ''}Doğru: ${r['bestCorrect']} · ${r['sessions']} oyun${widget.mode == 'burst' ? '\nİpucusuz en iyi: ${r['bestNoHintScore'] ?? 0}${r['style'] == 'speed' && r['bestAverageAnswerMs'] != null ? '\nEn hızlı ortalama yanıt: ${(_n(r['bestAverageAnswerMs']) / 1000).toStringAsFixed(1)} sn' : ''}${r['style'] == 'survival' && r['bestLives'] != null ? '\nEn çok kalan can: ${r['bestLives']}' : ''}' : ''}',
         ),
       if (rewardMap(data['legacy']).isNotEmpty)
         panel(
@@ -1184,4 +1238,37 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         ),
     ];
   }
+}
+
+/// Share card for a finished pyramid: score and lives, never the cells.
+String pyramidShare(Map<String, dynamic> run) {
+  int n(Object? v) => (v as num?)?.toInt() ?? 0;
+  final day = '${run['daily'] ?? ''}'.split('-').reversed.join('.');
+  final level =
+      {'easy': 'Kolay', 'normal': 'Normal', 'hard': 'Zor'}[run['difficulty']] ??
+      '';
+  return [
+    'Linkball · Bağlantı Piramidi${level.isEmpty ? '' : ' · $level'}',
+    if (run['daily'] != null) 'Günün piramidi · $day',
+    run['won'] == true
+        ? '🔺 Tamamlandı · ${n(run['score'])} puan'
+        : '🧱 ${n(run['correct'])} hücre · ${n(run['score'])} puan',
+    '${'❤️' * n(run['lives']).clamp(0, 5)}${'🖤' * (5 - n(run['lives'])).clamp(0, 5)} · ${n(run['hints'])} ipucu · ${n(run['undos'])} geri alma',
+  ].join('\n');
+}
+
+/// Share card for a finished matching board: moves and stars, no cards.
+String matchingShare(Map<String, dynamic> run) {
+  int n(Object? v) => (v as num?)?.toInt() ?? 0;
+  final day = '${run['daily'] ?? ''}'.split('-').reversed.join('.');
+  final level =
+      {'easy': 'Kolay', 'normal': 'Normal', 'hard': 'Zor'}[run['difficulty']] ??
+      '';
+  final pairs = n(rewardMap(run['board'])['count']);
+  return [
+    'Linkball · Kart Eşleştirme${level.isEmpty ? '' : ' · $level'}',
+    if (run['daily'] != null) 'Günün kartları · $day',
+    '${'⭐' * n(run['stars']).clamp(0, 3)}${'☆' * (3 - n(run['stars'])).clamp(0, 3)} · ${n(run['moves'])} hamle${pairs > 0 ? ' · $pairs çift' : ''}',
+    '${(n(run['activeMs']) / 1000).round()} sn',
+  ].join('\n');
 }

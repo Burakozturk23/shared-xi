@@ -1,5 +1,5 @@
 {
-  "version": "arcade-v1-eda7625d2ae31237",
+  "version": "arcade-v1-8d07c11727da40a4",
   "scenarios": [
     {
       "style": "speed",
@@ -9,7 +9,7 @@
         "style": "speed",
         "pairType": "clubClub",
         "difficulty": "normal",
-        "dataVersion": "arcade-v1-eda7625d2ae31237",
+        "dataVersion": "arcade-v1-8d07c11727da40a4",
         "revision": 0,
         "phase": "active",
         "createdAt": 100000,
@@ -44,15 +44,16 @@
         "serverNow": 100000,
         "totalRemainingMs": 120000,
         "roundRemainingMs": 30000,
+        "roundMs": 30000,
         "roundIds": [
-          "clubClub:162:520"
+          "clubClub:1082:583"
         ],
         "hintedIds": [],
         "question": {
-          "id": "clubClub:162:520",
-          "left": "AS Monaco",
-          "right": "Cercle Brugge",
-          "difficulty": "legend"
+          "id": "clubClub:1082:583",
+          "left": "LOSC Lille",
+          "right": "Paris Saint-Germain",
+          "difficulty": "easy"
         }
       },
       "steps": [
@@ -62,12 +63,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 0,
             "action": "answer",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 250,
             "query": "Definitely unknown xyz"
           },
           "expected": {
-            "activeMs": 250,
+            "activeMs": 800,
             "score": 0,
             "correct": 0,
             "wrong": 0,
@@ -83,16 +84,16 @@
             "won": false,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:162:520"
+              "clubClub:1082:583"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 119750,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 119200,
+            "roundRemainingMs": 29200,
             "revision": 1,
             "paused": false
           },
-          "questionId": "clubClub:162:520"
+          "questionId": "clubClub:1082:583"
         },
         {
           "event": {
@@ -100,12 +101,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 1,
             "action": "answer",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 250,
-            "entityId": "182891"
+            "entityId": "100986"
           },
           "expected": {
-            "activeMs": 500,
+            "activeMs": 1600,
             "score": 100,
             "correct": 1,
             "wrong": 0,
@@ -121,21 +122,21 @@
             "won": false,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:162:520"
+              "clubClub:1082:583"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "182891",
-                "name": "Thomas Didillon-Hödl"
+                "id": "100986",
+                "name": "Thomas Meunier"
               }
             ],
-            "totalRemainingMs": 119500,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 118400,
+            "roundRemainingMs": 28400,
             "revision": 2,
             "paused": false
           },
-          "questionId": "clubClub:162:520"
+          "questionId": "clubClub:1082:583"
         },
         {
           "event": {
@@ -143,12 +144,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 2,
             "action": "answer",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 250,
-            "entityId": "182891"
+            "entityId": "100986"
           },
           "expected": {
-            "activeMs": 750,
+            "activeMs": 2400,
             "score": 100,
             "correct": 1,
             "wrong": 0,
@@ -164,21 +165,21 @@
             "won": false,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:162:520"
+              "clubClub:1082:583"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "182891",
-                "name": "Thomas Didillon-Hödl"
+                "id": "100986",
+                "name": "Thomas Meunier"
               }
             ],
-            "totalRemainingMs": 119250,
-            "roundRemainingMs": 29250,
+            "totalRemainingMs": 117600,
+            "roundRemainingMs": 27600,
             "revision": 3,
             "paused": false
           },
-          "questionId": "clubClub:162:520"
+          "questionId": "clubClub:1082:583"
         },
         {
           "event": {
@@ -186,12 +187,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 3,
             "action": "answer",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 250,
             "entityId": "1650"
           },
           "expected": {
-            "activeMs": 1000,
+            "activeMs": 3200,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -208,21 +209,21 @@
             "penaltyMs": 3000,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:162:520"
+              "clubClub:1082:583"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "182891",
-                "name": "Thomas Didillon-Hödl"
+                "id": "100986",
+                "name": "Thomas Meunier"
               }
             ],
-            "totalRemainingMs": 116000,
-            "roundRemainingMs": 29000,
+            "totalRemainingMs": 113800,
+            "roundRemainingMs": 26800,
             "revision": 4,
             "paused": false
           },
-          "questionId": "clubClub:162:520"
+          "questionId": "clubClub:1082:583"
         },
         {
           "event": {
@@ -230,11 +231,11 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 4,
             "action": "pause",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 1250,
+            "activeMs": 3450,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -251,21 +252,21 @@
             "penaltyMs": 3000,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:162:520"
+              "clubClub:1082:583"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "182891",
-                "name": "Thomas Didillon-Hödl"
+                "id": "100986",
+                "name": "Thomas Meunier"
               }
             ],
-            "totalRemainingMs": 115750,
-            "roundRemainingMs": 28750,
+            "totalRemainingMs": 113550,
+            "roundRemainingMs": 26550,
             "revision": 5,
             "paused": true
           },
-          "questionId": "clubClub:162:520"
+          "questionId": "clubClub:1082:583"
         },
         {
           "event": {
@@ -273,11 +274,11 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 5,
             "action": "resume",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 0
           },
           "expected": {
-            "activeMs": 1250,
+            "activeMs": 3450,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -294,21 +295,21 @@
             "penaltyMs": 3000,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:162:520"
+              "clubClub:1082:583"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "182891",
-                "name": "Thomas Didillon-Hödl"
+                "id": "100986",
+                "name": "Thomas Meunier"
               }
             ],
-            "totalRemainingMs": 115750,
-            "roundRemainingMs": 28750,
+            "totalRemainingMs": 113550,
+            "roundRemainingMs": 26550,
             "revision": 6,
             "paused": false
           },
-          "questionId": "clubClub:162:520"
+          "questionId": "clubClub:1082:583"
         },
         {
           "event": {
@@ -316,11 +317,11 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 6,
             "action": "pass",
-            "questionId": "clubClub:162:520",
+            "questionId": "clubClub:1082:583",
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 1500,
+            "activeMs": 4250,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -335,14 +336,14 @@
             "finished": false,
             "won": false,
             "penaltyMs": 8000,
-            "roundAt": 1500,
+            "roundAt": 4250,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 110500,
+            "totalRemainingMs": 107750,
             "roundRemainingMs": 30000,
             "revision": 7,
             "paused": false
@@ -359,7 +360,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 1750,
+            "activeMs": 5050,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -374,20 +375,20 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 1750,
+            "roundAt": 5050,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458"
+              "clubClub:244:506"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 105250,
+            "totalRemainingMs": 101950,
             "roundRemainingMs": 30000,
             "revision": 8,
             "paused": false
           },
-          "questionId": "clubClub:1038:458"
+          "questionId": "clubClub:244:506"
         },
         {
           "event": {
@@ -395,12 +396,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 8,
             "action": "answer",
-            "questionId": "clubClub:1038:458",
+            "questionId": "clubClub:244:506",
             "elapsedMs": 250,
-            "entityId": "130108"
+            "entityId": "170934"
           },
           "expected": {
-            "activeMs": 2000,
+            "activeMs": 5850,
             "score": 200,
             "correct": 2,
             "wrong": 1,
@@ -415,25 +416,25 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 1750,
+            "roundAt": 5050,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458"
+              "clubClub:244:506"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "130108",
-                "name": "Pajtim Kasami"
+                "id": "170934",
+                "name": "Mario Lemina"
               }
             ],
-            "totalRemainingMs": 105000,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 101150,
+            "roundRemainingMs": 29200,
             "revision": 9,
             "paused": false
           },
-          "questionId": "clubClub:1038:458"
+          "questionId": "clubClub:244:506"
         },
         {
           "event": {
@@ -441,12 +442,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 9,
             "action": "answer",
-            "questionId": "clubClub:1038:458",
+            "questionId": "clubClub:244:506",
             "elapsedMs": 250,
-            "entityId": "144143"
+            "entityId": "182913"
           },
           "expected": {
-            "activeMs": 2250,
+            "activeMs": 6650,
             "score": 300,
             "correct": 3,
             "wrong": 1,
@@ -461,29 +462,29 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 1750,
+            "roundAt": 5050,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458"
+              "clubClub:244:506"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "130108",
-                "name": "Pajtim Kasami"
+                "id": "170934",
+                "name": "Mario Lemina"
               },
               {
-                "id": "144143",
-                "name": "Bartosz Bereszyński"
+                "id": "182913",
+                "name": "Adrien Rabiot"
               }
             ],
-            "totalRemainingMs": 104750,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 100350,
+            "roundRemainingMs": 28400,
             "revision": 10,
             "paused": false
           },
-          "questionId": "clubClub:1038:458"
+          "questionId": "clubClub:244:506"
         },
         {
           "event": {
@@ -491,12 +492,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 10,
             "action": "answer",
-            "questionId": "clubClub:1038:458",
+            "questionId": "clubClub:244:506",
             "elapsedMs": 250,
-            "entityId": "256339"
+            "entityId": "191891"
           },
           "expected": {
-            "activeMs": 2500,
+            "activeMs": 7450,
             "score": 450,
             "correct": 4,
             "wrong": 1,
@@ -511,21 +512,21 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 2500,
+            "roundAt": 7450,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719"
+              "clubClub:244:506",
+              "clubClub:244:5"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 104500,
+            "totalRemainingMs": 99550,
             "roundRemainingMs": 30000,
             "revision": 11,
             "paused": false
           },
-          "questionId": "clubClub:232:3719"
+          "questionId": "clubClub:244:5"
         },
         {
           "event": {
@@ -533,12 +534,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 11,
             "action": "answer",
-            "questionId": "clubClub:232:3719",
+            "questionId": "clubClub:244:5",
             "elapsedMs": 250,
-            "entityId": "185024"
+            "entityId": "182913"
           },
           "expected": {
-            "activeMs": 2750,
+            "activeMs": 8250,
             "score": 550,
             "correct": 5,
             "wrong": 1,
@@ -553,26 +554,26 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 2500,
+            "roundAt": 7450,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719"
+              "clubClub:244:506",
+              "clubClub:244:5"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "185024",
-                "name": "Georgiy Dzhikiya"
+                "id": "182913",
+                "name": "Adrien Rabiot"
               }
             ],
-            "totalRemainingMs": 104250,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 98750,
+            "roundRemainingMs": 29200,
             "revision": 12,
             "paused": false
           },
-          "questionId": "clubClub:232:3719"
+          "questionId": "clubClub:244:5"
         },
         {
           "event": {
@@ -580,12 +581,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 12,
             "action": "answer",
-            "questionId": "clubClub:232:3719",
+            "questionId": "clubClub:244:5",
             "elapsedMs": 250,
-            "entityId": "279242"
+            "entityId": "189441"
           },
           "expected": {
-            "activeMs": 3000,
+            "activeMs": 9050,
             "score": 700,
             "correct": 6,
             "wrong": 1,
@@ -600,30 +601,30 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 2500,
+            "roundAt": 7450,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719"
+              "clubClub:244:506",
+              "clubClub:244:5"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "185024",
-                "name": "Georgiy Dzhikiya"
+                "id": "182913",
+                "name": "Adrien Rabiot"
               },
               {
-                "id": "279242",
-                "name": "Zelimkhan Bakaev"
+                "id": "189441",
+                "name": "Lucas Ocampos"
               }
             ],
-            "totalRemainingMs": 104000,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 97950,
+            "roundRemainingMs": 28400,
             "revision": 13,
             "paused": false
           },
-          "questionId": "clubClub:232:3719"
+          "questionId": "clubClub:244:5"
         },
         {
           "event": {
@@ -631,12 +632,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 13,
             "action": "answer",
-            "questionId": "clubClub:232:3719",
+            "questionId": "clubClub:244:5",
             "elapsedMs": 250,
-            "entityId": "292837"
+            "entityId": "351816"
           },
           "expected": {
-            "activeMs": 3250,
+            "activeMs": 9850,
             "score": 900,
             "correct": 7,
             "wrong": 1,
@@ -651,22 +652,22 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 3250,
+            "roundAt": 9850,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 103750,
+            "totalRemainingMs": 97150,
             "roundRemainingMs": 30000,
             "revision": 14,
             "paused": false
           },
-          "questionId": "clubClub:252:416"
+          "questionId": "clubClub:405:631"
         },
         {
           "event": {
@@ -674,12 +675,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 14,
             "action": "answer",
-            "questionId": "clubClub:252:416",
+            "questionId": "clubClub:405:631",
             "elapsedMs": 250,
-            "entityId": "105521"
+            "entityId": "111873"
           },
           "expected": {
-            "activeMs": 3500,
+            "activeMs": 10650,
             "score": 1050,
             "correct": 8,
             "wrong": 1,
@@ -694,27 +695,27 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 3250,
+            "roundAt": 9850,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "105521",
-                "name": "Ciro Immobile"
+                "id": "111873",
+                "name": "Emiliano Martínez"
               }
             ],
-            "totalRemainingMs": 103500,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 96350,
+            "roundRemainingMs": 29200,
             "revision": 15,
             "paused": false
           },
-          "questionId": "clubClub:252:416"
+          "questionId": "clubClub:405:631"
         },
         {
           "event": {
@@ -722,12 +723,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 15,
             "action": "answer",
-            "questionId": "clubClub:252:416",
+            "questionId": "clubClub:405:631",
             "elapsedMs": 250,
-            "entityId": "124715"
+            "entityId": "131978"
           },
           "expected": {
-            "activeMs": 3750,
+            "activeMs": 11450,
             "score": 1200,
             "correct": 9,
             "wrong": 1,
@@ -742,31 +743,31 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 3250,
+            "roundAt": 9850,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "105521",
-                "name": "Ciro Immobile"
+                "id": "111873",
+                "name": "Emiliano Martínez"
               },
               {
-                "id": "124715",
-                "name": "Nikola Maksimović"
+                "id": "131978",
+                "name": "Ross Barkley"
               }
             ],
-            "totalRemainingMs": 103250,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 95550,
+            "roundRemainingMs": 28400,
             "revision": 16,
             "paused": false
           },
-          "questionId": "clubClub:252:416"
+          "questionId": "clubClub:405:631"
         },
         {
           "event": {
@@ -774,12 +775,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 16,
             "action": "answer",
-            "questionId": "clubClub:252:416",
+            "questionId": "clubClub:405:631",
             "elapsedMs": 250,
-            "entityId": "173859"
+            "entityId": "131996"
           },
           "expected": {
-            "activeMs": 4000,
+            "activeMs": 12250,
             "score": 1400,
             "correct": 10,
             "wrong": 1,
@@ -794,23 +795,23 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 4000,
+            "roundAt": 12250,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416",
-              "clubClub:1025:252"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631",
+              "clubClub:11:281"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 103000,
+            "totalRemainingMs": 94750,
             "roundRemainingMs": 30000,
             "revision": 17,
             "paused": false
           },
-          "questionId": "clubClub:1025:252"
+          "questionId": "clubClub:11:281"
         },
         {
           "event": {
@@ -818,12 +819,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 17,
             "action": "answer",
-            "questionId": "clubClub:1025:252",
+            "questionId": "clubClub:11:281",
             "elapsedMs": 250,
-            "entityId": "105521"
+            "entityId": "134425"
           },
           "expected": {
-            "activeMs": 4250,
+            "activeMs": 13050,
             "score": 1600,
             "correct": 11,
             "wrong": 1,
@@ -838,28 +839,28 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 4000,
+            "roundAt": 12250,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416",
-              "clubClub:1025:252"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631",
+              "clubClub:11:281"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "105521",
-                "name": "Ciro Immobile"
+                "id": "134425",
+                "name": "Raheem Sterling"
               }
             ],
-            "totalRemainingMs": 102750,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 93950,
+            "roundRemainingMs": 29200,
             "revision": 18,
             "paused": false
           },
-          "questionId": "clubClub:1025:252"
+          "questionId": "clubClub:11:281"
         },
         {
           "event": {
@@ -867,12 +868,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 18,
             "action": "answer",
-            "questionId": "clubClub:1025:252",
+            "questionId": "clubClub:11:281",
             "elapsedMs": 250,
-            "entityId": "126673"
+            "entityId": "203853"
           },
           "expected": {
-            "activeMs": 4500,
+            "activeMs": 13850,
             "score": 1800,
             "correct": 12,
             "wrong": 1,
@@ -887,32 +888,32 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 4000,
+            "roundAt": 12250,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416",
-              "clubClub:1025:252"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631",
+              "clubClub:11:281"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "105521",
-                "name": "Ciro Immobile"
+                "id": "134425",
+                "name": "Raheem Sterling"
               },
               {
-                "id": "126673",
-                "name": "Adama Soumaoro"
+                "id": "203853",
+                "name": "Oleksandr Zinchenko"
               }
             ],
-            "totalRemainingMs": 102500,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 93150,
+            "roundRemainingMs": 28400,
             "revision": 19,
             "paused": false
           },
-          "questionId": "clubClub:1025:252"
+          "questionId": "clubClub:11:281"
         },
         {
           "event": {
@@ -920,12 +921,12 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 19,
             "action": "answer",
-            "questionId": "clubClub:1025:252",
+            "questionId": "clubClub:11:281",
             "elapsedMs": 250,
-            "entityId": "176139"
+            "entityId": "210178"
           },
           "expected": {
-            "activeMs": 4750,
+            "activeMs": 14650,
             "score": 2050,
             "correct": 13,
             "wrong": 1,
@@ -940,24 +941,24 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 4750,
+            "roundAt": 14650,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416",
-              "clubClub:1025:252",
-              "clubClub:405:631"
+              "clubClub:244:506",
+              "clubClub:244:5",
+              "clubClub:405:631",
+              "clubClub:11:281",
+              "clubClub:1184:2282"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 102250,
+            "totalRemainingMs": 92350,
             "roundRemainingMs": 30000,
             "revision": 20,
             "paused": false
           },
-          "questionId": "clubClub:405:631"
+          "questionId": "clubClub:1184:2282"
         },
         {
           "event": {
@@ -965,11 +966,11 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 20,
             "action": "tick",
-            "questionId": "clubClub:405:631",
+            "questionId": "clubClub:1184:2282",
             "elapsedMs": 31000
           },
           "expected": {
-            "activeMs": 35750,
+            "activeMs": 45650,
             "score": 2050,
             "correct": 13,
             "wrong": 1,
@@ -984,25 +985,25 @@
             "finished": false,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 35750,
+            "roundAt": 45650,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416",
-              "clubClub:1025:252",
+              "clubClub:244:506",
+              "clubClub:244:5",
               "clubClub:405:631",
-              "clubClub:10690:6992"
+              "clubClub:11:281",
+              "clubClub:1184:2282",
+              "clubClub:114:244"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 71250,
+            "totalRemainingMs": 61350,
             "roundRemainingMs": 30000,
             "revision": 21,
             "paused": false
           },
-          "questionId": "clubClub:10690:6992"
+          "questionId": "clubClub:114:244"
         },
         {
           "event": {
@@ -1010,11 +1011,11 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 21,
             "action": "tick",
-            "questionId": "clubClub:10690:6992",
+            "questionId": "clubClub:114:244",
             "elapsedMs": 120000
           },
           "expected": {
-            "activeMs": 155750,
+            "activeMs": 165650,
             "score": 2050,
             "correct": 13,
             "wrong": 1,
@@ -1029,16 +1030,16 @@
             "finished": true,
             "won": false,
             "penaltyMs": 13000,
-            "roundAt": 35750,
+            "roundAt": 45650,
             "roundIds": [
-              "clubClub:162:520",
+              "clubClub:1082:583",
               "clubClub:5:631",
-              "clubClub:1038:458",
-              "clubClub:232:3719",
-              "clubClub:252:416",
-              "clubClub:1025:252",
+              "clubClub:244:506",
+              "clubClub:244:5",
               "clubClub:405:631",
-              "clubClub:10690:6992"
+              "clubClub:11:281",
+              "clubClub:1184:2282",
+              "clubClub:114:244"
             ],
             "hintedIds": [],
             "found": [],
@@ -1047,7 +1048,7 @@
             "revision": 22,
             "paused": false
           },
-          "questionId": "clubClub:10690:6992"
+          "questionId": "clubClub:114:244"
         }
       ]
     },
@@ -1059,7 +1060,7 @@
         "style": "survival",
         "pairType": "clubClub",
         "difficulty": "normal",
-        "dataVersion": "arcade-v1-eda7625d2ae31237",
+        "dataVersion": "arcade-v1-8d07c11727da40a4",
         "revision": 0,
         "phase": "active",
         "createdAt": 100000,
@@ -1093,7 +1094,8 @@
         "roundAt": 0,
         "serverNow": 100000,
         "totalRemainingMs": 120000,
-        "roundRemainingMs": 30000,
+        "roundRemainingMs": 75000,
+        "roundMs": 75000,
         "roundIds": [
           "clubClub:1075:294"
         ],
@@ -1117,7 +1119,7 @@
             "query": "Definitely unknown xyz"
           },
           "expected": {
-            "activeMs": 250,
+            "activeMs": 800,
             "score": 0,
             "correct": 0,
             "wrong": 0,
@@ -1137,8 +1139,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 119750,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 119200,
+            "roundRemainingMs": 74200,
             "revision": 1,
             "paused": false
           },
@@ -1155,7 +1157,7 @@
             "entityId": "139396"
           },
           "expected": {
-            "activeMs": 500,
+            "activeMs": 1600,
             "score": 100,
             "correct": 1,
             "wrong": 0,
@@ -1180,8 +1182,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 119500,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 118400,
+            "roundRemainingMs": 73400,
             "revision": 2,
             "paused": false
           },
@@ -1198,7 +1200,7 @@
             "entityId": "139396"
           },
           "expected": {
-            "activeMs": 750,
+            "activeMs": 2400,
             "score": 100,
             "correct": 1,
             "wrong": 0,
@@ -1223,8 +1225,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 119250,
-            "roundRemainingMs": 29250,
+            "totalRemainingMs": 117600,
+            "roundRemainingMs": 72600,
             "revision": 3,
             "paused": false
           },
@@ -1241,7 +1243,7 @@
             "entityId": "1650"
           },
           "expected": {
-            "activeMs": 1000,
+            "activeMs": 3200,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1266,8 +1268,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 119000,
-            "roundRemainingMs": 29000,
+            "totalRemainingMs": 116800,
+            "roundRemainingMs": 71800,
             "revision": 4,
             "paused": false
           },
@@ -1283,7 +1285,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 1250,
+            "activeMs": 3450,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1308,8 +1310,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 118750,
-            "roundRemainingMs": 28750,
+            "totalRemainingMs": 116550,
+            "roundRemainingMs": 71550,
             "revision": 5,
             "paused": true
           },
@@ -1325,7 +1327,7 @@
             "elapsedMs": 0
           },
           "expected": {
-            "activeMs": 1250,
+            "activeMs": 3450,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1350,8 +1352,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 118750,
-            "roundRemainingMs": 28750,
+            "totalRemainingMs": 116550,
+            "roundRemainingMs": 71550,
             "revision": 6,
             "paused": false
           },
@@ -1367,7 +1369,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 1500,
+            "activeMs": 4250,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1394,8 +1396,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 118500,
-            "roundRemainingMs": 28500,
+            "totalRemainingMs": 115750,
+            "roundRemainingMs": 70750,
             "revision": 7,
             "paused": false
           },
@@ -1411,7 +1413,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 1750,
+            "activeMs": 5050,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1431,7 +1433,7 @@
             ],
             "hintedIds": [
               "155395",
-              "157036"
+              "155395"
             ],
             "found": [
               {
@@ -1439,8 +1441,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 118250,
-            "roundRemainingMs": 28250,
+            "totalRemainingMs": 114950,
+            "roundRemainingMs": 69950,
             "revision": 8,
             "paused": false
           },
@@ -1456,7 +1458,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 2000,
+            "activeMs": 5850,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1476,8 +1478,8 @@
             ],
             "hintedIds": [
               "155395",
-              "157036",
-              "238055"
+              "155395",
+              "157036"
             ],
             "found": [
               {
@@ -1485,8 +1487,8 @@
                 "name": "Bruma"
               }
             ],
-            "totalRemainingMs": 118000,
-            "roundRemainingMs": 28000,
+            "totalRemainingMs": 114150,
+            "roundRemainingMs": 69150,
             "revision": 9,
             "paused": false
           },
@@ -1502,7 +1504,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 2250,
+            "activeMs": 6650,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1516,15 +1518,15 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 2250,
+            "roundAt": 6650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5"
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 117750,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 113350,
+            "roundRemainingMs": 75000,
             "revision": 10,
             "paused": false
           },
@@ -1540,7 +1542,7 @@
             "elapsedMs": 250
           },
           "expected": {
-            "activeMs": 2500,
+            "activeMs": 7450,
             "score": 100,
             "correct": 1,
             "wrong": 1,
@@ -1554,7 +1556,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 2500,
+            "roundAt": 7450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1562,8 +1564,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 117500,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 112550,
+            "roundRemainingMs": 75000,
             "revision": 11,
             "paused": false
           },
@@ -1580,7 +1582,7 @@
             "entityId": "213268"
           },
           "expected": {
-            "activeMs": 2750,
+            "activeMs": 8250,
             "score": 200,
             "correct": 2,
             "wrong": 1,
@@ -1594,7 +1596,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 2500,
+            "roundAt": 7450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1607,8 +1609,8 @@
                 "name": "Alireza Jahanbakhsh"
               }
             ],
-            "totalRemainingMs": 117250,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 111750,
+            "roundRemainingMs": 74200,
             "revision": 12,
             "paused": false
           },
@@ -1625,7 +1627,7 @@
             "entityId": "235540"
           },
           "expected": {
-            "activeMs": 3000,
+            "activeMs": 9050,
             "score": 300,
             "correct": 3,
             "wrong": 1,
@@ -1639,7 +1641,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 2500,
+            "roundAt": 7450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1656,8 +1658,8 @@
                 "name": "Oussama Tannane"
               }
             ],
-            "totalRemainingMs": 117000,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 110950,
+            "roundRemainingMs": 73400,
             "revision": 13,
             "paused": false
           },
@@ -1674,7 +1676,7 @@
             "entityId": "241378"
           },
           "expected": {
-            "activeMs": 3250,
+            "activeMs": 9850,
             "score": 450,
             "correct": 4,
             "wrong": 1,
@@ -1688,7 +1690,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 3250,
+            "roundAt": 9850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1697,8 +1699,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 116750,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 110150,
+            "roundRemainingMs": 75000,
             "revision": 14,
             "paused": false
           },
@@ -1715,7 +1717,7 @@
             "entityId": "182712"
           },
           "expected": {
-            "activeMs": 3500,
+            "activeMs": 10650,
             "score": 550,
             "correct": 5,
             "wrong": 1,
@@ -1729,7 +1731,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 3250,
+            "roundAt": 9850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1743,8 +1745,8 @@
                 "name": "João Cancelo"
               }
             ],
-            "totalRemainingMs": 116500,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 109350,
+            "roundRemainingMs": 74200,
             "revision": 15,
             "paused": false
           },
@@ -1761,7 +1763,7 @@
             "entityId": "256339"
           },
           "expected": {
-            "activeMs": 3750,
+            "activeMs": 11450,
             "score": 700,
             "correct": 6,
             "wrong": 1,
@@ -1775,7 +1777,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 3250,
+            "roundAt": 9850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1793,8 +1795,8 @@
                 "name": "Emil Audero"
               }
             ],
-            "totalRemainingMs": 116250,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 108550,
+            "roundRemainingMs": 73400,
             "revision": 16,
             "paused": false
           },
@@ -1811,7 +1813,7 @@
             "entityId": "301238"
           },
           "expected": {
-            "activeMs": 4000,
+            "activeMs": 12250,
             "score": 900,
             "correct": 7,
             "wrong": 1,
@@ -1825,7 +1827,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 4000,
+            "roundAt": 12250,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1835,8 +1837,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 116000,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 107750,
+            "roundRemainingMs": 75000,
             "revision": 17,
             "paused": false
           },
@@ -1853,7 +1855,7 @@
             "entityId": "148455"
           },
           "expected": {
-            "activeMs": 4250,
+            "activeMs": 13050,
             "score": 1050,
             "correct": 8,
             "wrong": 1,
@@ -1867,7 +1869,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 4000,
+            "roundAt": 12250,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1882,8 +1884,8 @@
                 "name": "Mohamed Salah"
               }
             ],
-            "totalRemainingMs": 115750,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 106950,
+            "roundRemainingMs": 74200,
             "revision": 18,
             "paused": false
           },
@@ -1900,7 +1902,7 @@
             "entityId": "173859"
           },
           "expected": {
-            "activeMs": 4500,
+            "activeMs": 13850,
             "score": 1200,
             "correct": 9,
             "wrong": 1,
@@ -1914,7 +1916,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 4000,
+            "roundAt": 12250,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1933,8 +1935,8 @@
                 "name": "Davide Zappacosta"
               }
             ],
-            "totalRemainingMs": 115500,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 106150,
+            "roundRemainingMs": 73400,
             "revision": 19,
             "paused": false
           },
@@ -1951,7 +1953,7 @@
             "entityId": "181778"
           },
           "expected": {
-            "activeMs": 4750,
+            "activeMs": 14650,
             "score": 1400,
             "correct": 10,
             "wrong": 1,
@@ -1965,7 +1967,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 4750,
+            "roundAt": 14650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -1976,8 +1978,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 115250,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 105350,
+            "roundRemainingMs": 75000,
             "revision": 20,
             "paused": false
           },
@@ -1994,7 +1996,7 @@
             "entityId": "153238"
           },
           "expected": {
-            "activeMs": 5000,
+            "activeMs": 15450,
             "score": 1600,
             "correct": 11,
             "wrong": 1,
@@ -2008,7 +2010,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 4750,
+            "roundAt": 14650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2024,8 +2026,8 @@
                 "name": "Jonathan Viera"
               }
             ],
-            "totalRemainingMs": 115000,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 104550,
+            "roundRemainingMs": 74200,
             "revision": 21,
             "paused": false
           },
@@ -2042,7 +2044,7 @@
             "entityId": "18644"
           },
           "expected": {
-            "activeMs": 5250,
+            "activeMs": 16250,
             "score": 1800,
             "correct": 12,
             "wrong": 1,
@@ -2056,7 +2058,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 4750,
+            "roundAt": 14650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2076,8 +2078,8 @@
                 "name": "Álvaro Negredo"
               }
             ],
-            "totalRemainingMs": 114750,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 103750,
+            "roundRemainingMs": 73400,
             "revision": 22,
             "paused": false
           },
@@ -2094,7 +2096,7 @@
             "entityId": "278837"
           },
           "expected": {
-            "activeMs": 5500,
+            "activeMs": 17050,
             "score": 2050,
             "correct": 13,
             "wrong": 1,
@@ -2108,7 +2110,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 5500,
+            "roundAt": 17050,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2120,8 +2122,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 114500,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 102950,
+            "roundRemainingMs": 75000,
             "revision": 23,
             "paused": false
           },
@@ -2138,7 +2140,7 @@
             "entityId": "127048"
           },
           "expected": {
-            "activeMs": 5750,
+            "activeMs": 17850,
             "score": 2250,
             "correct": 14,
             "wrong": 1,
@@ -2152,7 +2154,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 5500,
+            "roundAt": 17050,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2169,8 +2171,8 @@
                 "name": "Cédric Bakambu"
               }
             ],
-            "totalRemainingMs": 114250,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 102150,
+            "roundRemainingMs": 74200,
             "revision": 24,
             "paused": false
           },
@@ -2187,7 +2189,7 @@
             "entityId": "131248"
           },
           "expected": {
-            "activeMs": 6000,
+            "activeMs": 18650,
             "score": 2450,
             "correct": 15,
             "wrong": 1,
@@ -2201,7 +2203,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 5500,
+            "roundAt": 17050,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2222,8 +2224,8 @@
                 "name": "Joel Campbell"
               }
             ],
-            "totalRemainingMs": 114000,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 101350,
+            "roundRemainingMs": 73400,
             "revision": 25,
             "paused": false
           },
@@ -2240,7 +2242,7 @@
             "entityId": "221899"
           },
           "expected": {
-            "activeMs": 6250,
+            "activeMs": 19450,
             "score": 2700,
             "correct": 16,
             "wrong": 1,
@@ -2254,7 +2256,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 6250,
+            "roundAt": 19450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2267,8 +2269,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 113750,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 100550,
+            "roundRemainingMs": 75000,
             "revision": 26,
             "paused": false
           },
@@ -2285,7 +2287,7 @@
             "entityId": "134425"
           },
           "expected": {
-            "activeMs": 6500,
+            "activeMs": 20250,
             "score": 2900,
             "correct": 17,
             "wrong": 1,
@@ -2299,7 +2301,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 6250,
+            "roundAt": 19450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2317,8 +2319,8 @@
                 "name": "Raheem Sterling"
               }
             ],
-            "totalRemainingMs": 113500,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 99750,
+            "roundRemainingMs": 74200,
             "revision": 27,
             "paused": false
           },
@@ -2335,7 +2337,7 @@
             "entityId": "203853"
           },
           "expected": {
-            "activeMs": 6750,
+            "activeMs": 21050,
             "score": 3100,
             "correct": 18,
             "wrong": 1,
@@ -2349,7 +2351,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 6250,
+            "roundAt": 19450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2371,8 +2373,8 @@
                 "name": "Oleksandr Zinchenko"
               }
             ],
-            "totalRemainingMs": 113250,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 98950,
+            "roundRemainingMs": 73400,
             "revision": 28,
             "paused": false
           },
@@ -2389,7 +2391,7 @@
             "entityId": "210178"
           },
           "expected": {
-            "activeMs": 7000,
+            "activeMs": 21850,
             "score": 3350,
             "correct": 19,
             "wrong": 1,
@@ -2403,7 +2405,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 7000,
+            "roundAt": 21850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2417,8 +2419,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 113000,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 98150,
+            "roundRemainingMs": 75000,
             "revision": 29,
             "paused": false
           },
@@ -2435,7 +2437,7 @@
             "entityId": "111038"
           },
           "expected": {
-            "activeMs": 7250,
+            "activeMs": 22650,
             "score": 3550,
             "correct": 20,
             "wrong": 1,
@@ -2449,7 +2451,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 7000,
+            "roundAt": 21850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2468,8 +2470,8 @@
                 "name": "Dennis Appiah"
               }
             ],
-            "totalRemainingMs": 112750,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 97350,
+            "roundRemainingMs": 74200,
             "revision": 30,
             "paused": false
           },
@@ -2486,7 +2488,7 @@
             "entityId": "113707"
           },
           "expected": {
-            "activeMs": 7500,
+            "activeMs": 23450,
             "score": 3750,
             "correct": 21,
             "wrong": 1,
@@ -2500,7 +2502,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 7000,
+            "roundAt": 21850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2523,8 +2525,8 @@
                 "name": "Rémy Cabella"
               }
             ],
-            "totalRemainingMs": 112500,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 96550,
+            "roundRemainingMs": 73400,
             "revision": 31,
             "paused": false
           },
@@ -2541,7 +2543,7 @@
             "entityId": "126687"
           },
           "expected": {
-            "activeMs": 7750,
+            "activeMs": 24250,
             "score": 4000,
             "correct": 22,
             "wrong": 1,
@@ -2555,7 +2557,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 7750,
+            "roundAt": 24250,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2570,8 +2572,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 112250,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 95750,
+            "roundRemainingMs": 75000,
             "revision": 32,
             "paused": false
           },
@@ -2588,7 +2590,7 @@
             "entityId": "130394"
           },
           "expected": {
-            "activeMs": 8000,
+            "activeMs": 25050,
             "score": 4200,
             "correct": 23,
             "wrong": 1,
@@ -2602,7 +2604,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 7750,
+            "roundAt": 24250,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2622,8 +2624,8 @@
                 "name": "Gianluca Lapadula"
               }
             ],
-            "totalRemainingMs": 112000,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 94950,
+            "roundRemainingMs": 74200,
             "revision": 33,
             "paused": false
           },
@@ -2640,7 +2642,7 @@
             "entityId": "242940"
           },
           "expected": {
-            "activeMs": 8250,
+            "activeMs": 25850,
             "score": 4400,
             "correct": 24,
             "wrong": 1,
@@ -2654,7 +2656,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 7750,
+            "roundAt": 24250,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2678,8 +2680,8 @@
                 "name": "Edoardo Goldaniga"
               }
             ],
-            "totalRemainingMs": 111750,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 94150,
+            "roundRemainingMs": 73400,
             "revision": 34,
             "paused": false
           },
@@ -2696,7 +2698,7 @@
             "entityId": "264116"
           },
           "expected": {
-            "activeMs": 8500,
+            "activeMs": 26650,
             "score": 4650,
             "correct": 25,
             "wrong": 1,
@@ -2710,7 +2712,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 8500,
+            "roundAt": 26650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2726,8 +2728,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 111500,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 93350,
+            "roundRemainingMs": 75000,
             "revision": 35,
             "paused": false
           },
@@ -2744,7 +2746,7 @@
             "entityId": "146258"
           },
           "expected": {
-            "activeMs": 8750,
+            "activeMs": 27450,
             "score": 4850,
             "correct": 26,
             "wrong": 1,
@@ -2758,7 +2760,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 8500,
+            "roundAt": 26650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2779,8 +2781,8 @@
                 "name": "Jetro Willems"
               }
             ],
-            "totalRemainingMs": 111250,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 92550,
+            "roundRemainingMs": 74200,
             "revision": 36,
             "paused": false
           },
@@ -2797,7 +2799,7 @@
             "entityId": "196158"
           },
           "expected": {
-            "activeMs": 9000,
+            "activeMs": 28250,
             "score": 5050,
             "correct": 27,
             "wrong": 1,
@@ -2811,7 +2813,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 8500,
+            "roundAt": 26650,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2836,8 +2838,8 @@
                 "name": "Brahim Darri"
               }
             ],
-            "totalRemainingMs": 111000,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 91750,
+            "roundRemainingMs": 73400,
             "revision": 37,
             "paused": false
           },
@@ -2854,7 +2856,7 @@
             "entityId": "235540"
           },
           "expected": {
-            "activeMs": 9250,
+            "activeMs": 29050,
             "score": 5300,
             "correct": 28,
             "wrong": 1,
@@ -2868,7 +2870,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 9250,
+            "roundAt": 29050,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2885,8 +2887,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 110750,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 90950,
+            "roundRemainingMs": 75000,
             "revision": 38,
             "paused": false
           },
@@ -2903,7 +2905,7 @@
             "entityId": "159908"
           },
           "expected": {
-            "activeMs": 9500,
+            "activeMs": 29850,
             "score": 5500,
             "correct": 29,
             "wrong": 1,
@@ -2917,7 +2919,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 9250,
+            "roundAt": 29050,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2939,8 +2941,8 @@
                 "name": "Aytaç Kara"
               }
             ],
-            "totalRemainingMs": 110500,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 90150,
+            "roundRemainingMs": 74200,
             "revision": 39,
             "paused": false
           },
@@ -2957,7 +2959,7 @@
             "entityId": "191391"
           },
           "expected": {
-            "activeMs": 9750,
+            "activeMs": 30650,
             "score": 5700,
             "correct": 30,
             "wrong": 1,
@@ -2971,7 +2973,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 9250,
+            "roundAt": 29050,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -2997,8 +2999,8 @@
                 "name": "Yusuf Erdoğan"
               }
             ],
-            "totalRemainingMs": 110250,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 89350,
+            "roundRemainingMs": 73400,
             "revision": 40,
             "paused": false
           },
@@ -3015,7 +3017,7 @@
             "entityId": "236471"
           },
           "expected": {
-            "activeMs": 10000,
+            "activeMs": 31450,
             "score": 5950,
             "correct": 31,
             "wrong": 1,
@@ -3029,7 +3031,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 10000,
+            "roundAt": 31450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3047,8 +3049,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 110000,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 88550,
+            "roundRemainingMs": 75000,
             "revision": 41,
             "paused": false
           },
@@ -3065,7 +3067,7 @@
             "entityId": "193885"
           },
           "expected": {
-            "activeMs": 10250,
+            "activeMs": 32250,
             "score": 6150,
             "correct": 32,
             "wrong": 1,
@@ -3079,7 +3081,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 10000,
+            "roundAt": 31450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3102,8 +3104,8 @@
                 "name": "Robbie Muirhead"
               }
             ],
-            "totalRemainingMs": 109750,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 87750,
+            "roundRemainingMs": 74200,
             "revision": 42,
             "paused": false
           },
@@ -3120,7 +3122,7 @@
             "entityId": "226151"
           },
           "expected": {
-            "activeMs": 10500,
+            "activeMs": 33050,
             "score": 6350,
             "correct": 33,
             "wrong": 1,
@@ -3134,7 +3136,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 10000,
+            "roundAt": 31450,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3161,8 +3163,8 @@
                 "name": "Sean Kelly"
               }
             ],
-            "totalRemainingMs": 109500,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 86950,
+            "roundRemainingMs": 73400,
             "revision": 43,
             "paused": false
           },
@@ -3179,7 +3181,7 @@
             "entityId": "363227"
           },
           "expected": {
-            "activeMs": 10750,
+            "activeMs": 33850,
             "score": 6600,
             "correct": 34,
             "wrong": 1,
@@ -3193,7 +3195,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 10750,
+            "roundAt": 33850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3212,8 +3214,8 @@
             ],
             "hintedIds": [],
             "found": [],
-            "totalRemainingMs": 109250,
-            "roundRemainingMs": 30000,
+            "totalRemainingMs": 86150,
+            "roundRemainingMs": 75000,
             "revision": 44,
             "paused": false
           },
@@ -3230,7 +3232,7 @@
             "entityId": "157396"
           },
           "expected": {
-            "activeMs": 11000,
+            "activeMs": 34650,
             "score": 6800,
             "correct": 35,
             "wrong": 1,
@@ -3244,7 +3246,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 10750,
+            "roundAt": 33850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3268,8 +3270,8 @@
                 "name": "Rob Schoofs"
               }
             ],
-            "totalRemainingMs": 109000,
-            "roundRemainingMs": 29750,
+            "totalRemainingMs": 85350,
+            "roundRemainingMs": 74200,
             "revision": 45,
             "paused": false
           },
@@ -3286,7 +3288,7 @@
             "entityId": "244221"
           },
           "expected": {
-            "activeMs": 11250,
+            "activeMs": 35450,
             "score": 7000,
             "correct": 36,
             "wrong": 1,
@@ -3300,7 +3302,7 @@
             "adCredits": 0,
             "finished": false,
             "won": false,
-            "roundAt": 10750,
+            "roundAt": 33850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3328,8 +3330,8 @@
                 "name": "Christian Burgess"
               }
             ],
-            "totalRemainingMs": 108750,
-            "roundRemainingMs": 29500,
+            "totalRemainingMs": 84550,
+            "roundRemainingMs": 73400,
             "revision": 46,
             "paused": false
           },
@@ -3346,7 +3348,7 @@
             "entityId": "289648"
           },
           "expected": {
-            "activeMs": 11500,
+            "activeMs": 36250,
             "score": 7250,
             "correct": 37,
             "wrong": 1,
@@ -3360,7 +3362,7 @@
             "adCredits": 0,
             "finished": true,
             "won": true,
-            "roundAt": 10750,
+            "roundAt": 33850,
             "roundIds": [
               "clubClub:1075:294",
               "clubClub:368:5",
@@ -3392,8 +3394,8 @@
                 "name": "Dante Vanzeir"
               }
             ],
-            "totalRemainingMs": 108500,
-            "roundRemainingMs": 29250,
+            "totalRemainingMs": 83750,
+            "roundRemainingMs": 72600,
             "revision": 47,
             "paused": false
           },

@@ -2,7 +2,7 @@
 const crypto = require("node:crypto");
 const {normalize} = require("./daily_words");
 const {shuffled} = require("./career_transfer");
-const {RewardError} = require("./rewarded_ads");
+const {RewardError, dayKey} = require("./rewarded_ads");
 const catalog = require("./config/arcade_catalog.json");
 const fail = (code, message) => {
   throw new RewardError(code, message);
@@ -60,14 +60,13 @@ function matching(c, difficulty, seed) {
   const count = c.policy.matchingPairs[difficulty];
   const all = c.careers.flatMap((p) => p.clubs.map((clubId) => ({playerId: p.playerId, clubId,
     excluded: p.excluded, sources: p.sources})));
+  // Recognisability combines player ranking, familiar club and readable labels.
+  // Easy draws from the 40 most recognisable links by seed, so easy boards vary.
+  const known = (p) => c.players[p.playerId].rank / 1000 - c.clubs[p.clubId].popularity / 10 +
+    c.clubs[p.clubId].name.length / 10;
+  const base = difficulty === "easy" ? [...all].sort((a, b) => known(a) - known(b)).slice(0, 40) : all;
   for (let attempt = 0; attempt < 40; attempt++) {
-    const choices = shuffled(all, seed + ":" + attempt);
-    // Recognisability combines player ranking, familiar club and readable labels.
-    if (difficulty === "easy") {
-      choices.sort((a, b) =>
-        (c.players[a.playerId].rank / 1000 - c.clubs[a.clubId].popularity / 10 + c.clubs[a.clubId].name.length / 10) -
-      (c.players[b.playerId].rank / 1000 - c.clubs[b.clubId].popularity / 10 + c.clubs[b.clubId].name.length / 10));
-    }
+    const choices = shuffled(base, seed + ":" + attempt);
     const pairs = []; const names = new Set();
     for (const p of choices) {
       const pn = normalize(c.players[p.playerId].name); const cn = normalize(c.clubs[p.clubId].name);
@@ -75,22 +74,40 @@ function matching(c, difficulty, seed) {
         q.clubId === p.clubId || q.excluded.includes(p.clubId) || p.excluded.includes(q.clubId))) continue;
       pairs.push(p); names.add(pn); names.add(cn);
       if (pairs.length === count) {
+        // Card ids follow the shuffled layout, so an id never reveals its pair.
         const cards = shuffled(pairs.flatMap((p, i) => [
-          {id: `p${i}`, pair: i, type: "player", entityId: p.playerId, name: c.players[p.playerId].name},
-          {id: `c${i}`, pair: i, type: "club", entityId: p.clubId, name: c.clubs[p.clubId].name},
-        ]), seed + ":layout");
+          {pair: i, type: "player", entityId: p.playerId, name: c.players[p.playerId].name},
+          {pair: i, type: "club", entityId: p.clubId, name: c.clubs[p.clubId].name},
+        ]), seed + ":layout").map((card, i) => ({id: `k${i}`, ...card}));
         return {id: seed, seed, cards, pairs, count};
       }
     }
   }
   fail("unavailable", "Bu zorlukta çapraz bağı olmayan yeterli çift bulunamadı. Enerji harcanmadı.");
 }
+const TIERS = ["easy", "normal", "hard", "legend"];
+// Speed Attack climbs too: two easy rounds, two normal, two hard, then legend.
+const SPEED_TIERS = ["easy", "easy", "normal", "normal", "hard", "hard", "legend"];
+const ROUND_MS = {speed: 30000, survival: 75000};
+// Every answer, pass or hint costs at least this much active time, so a
+// client reporting zero elapsed time cannot stop the clock.
+const MIN_EVENT_MS = 800;
+const TIMED = new Set(["answer", "pass", "hint"]);
+const effectiveElapsed = (r, action, elapsed) => !r.paused && TIMED.has(action) ?
+  Math.max(elapsed, MIN_EVENT_MS) : elapsed;
 function tier(r) {
-  return ["easy", "normal", "hard", "legend"][Math.min(3, Math.floor(r.rounds / 3))];
+  return r.style === "speed" ? SPEED_TIERS[Math.min(6, r.rounds)] : TIERS[Math.min(3, Math.floor(r.rounds / 3))];
+}
+// The nearest tier with questions left; ties go to the easier one.
+function tierOrder(wanted) {
+  const w = TIERS.indexOf(wanted);
+  return [...TIERS].sort((a, b) => Math.abs(TIERS.indexOf(a) - w) - Math.abs(TIERS.indexOf(b) - w) ||
+    TIERS.indexOf(a) - TIERS.indexOf(b));
 }
 function round(c, r) {
-  const pool = c.burst.filter((q) => q.pairType === r.pairType && !r.used.includes(q.id) &&
-    (r.style === "speed" || q.difficulty === tier(r)));
+  const open = c.burst.filter((q) => q.pairType === r.pairType && !r.used.includes(q.id));
+  const level = tierOrder(tier(r)).find((t) => open.some((q) => q.difficulty === t));
+  const pool = open.filter((q) => q.difficulty === level);
   const rank = (q) => crypto.createHash("sha256").update(`${r.id}:${r.used.length}:${q.id}`).digest("hex");
   const q = pool.map((q) => ({q, rank: rank(q)})).sort((a, b) => a.rank.localeCompare(b.rank))[0]?.q;
   if (!q || q.answers.length < 6) {
@@ -112,12 +129,28 @@ function create(c, input, time) {
     round(c, r);
     if (r.finished) fail("unavailable", "Doğrulanmış soru bulunamadı. Enerji harcanmadı.");
   } else if (r.mode === "pyramid") {
-    r.board = shuffled(c.pyramids.filter((b) => b.difficulty === r.difficulty), r.id)[0];
+    let boards = c.pyramids.filter((b) => b.difficulty === r.difficulty);
+    if (input.daily) {
+      // Today's board: one normal board for everyone.
+      const normal = c.pyramids.filter((b) => b.difficulty === "normal");
+      const day = dayKey(time); r.daily = day; r.difficulty = "normal";
+      boards = [normal[parseInt(crypto.createHash("sha256").update("pyramid__" + day + c.version)
+          .digest("hex").slice(0, 8), 16) % normal.length]];
+    } else {
+      // Boards not played yet come first.
+      const fresh = boards.filter((b) => !(input.seen || []).includes(b.id));
+      if (fresh.length) boards = fresh;
+    }
+    r.board = shuffled(boards, r.id)[0];
     if (!r.board || !solve(c, r.board, r.board.initial)) {
       fail("unavailable",
           "Çözülebilir tahta bulunamadı; enerji harcanmadı.");
     }
     r.filled = {...r.board.initial};
+  } else if (input.daily) {
+    // Today's board: one normal board for everyone.
+    const day = dayKey(time); r.daily = day; r.difficulty = "normal";
+    r.board = matching(c, "normal", "matching__" + day + c.version);
   } else r.board = matching(c, r.difficulty, r.id);
   return r;
 }
@@ -147,9 +180,17 @@ function tick(c, r, time) {
   if (r.mode === "burst" && r.style === "speed") {
     if (r.activeMs + (r.penaltyMs || 0) >= 120000) {
       r.finished = true; r.reason = "Toplam süre doldu.";
-    } else if (r.activeMs - r.roundAt >= 30000) {
+    } else if (r.activeMs - r.roundAt >= ROUND_MS.speed) {
       r.history.push({question: r.question.id, found: r.found, cause: "timeout"}); r.streak = 0;
       round(c, r); r.message = "Tur süresi doldu. Yeni tur.";
+    }
+  } else if (r.mode === "burst" && r.activeMs - r.roundAt >= ROUND_MS.survival) {
+    // Survival has a round clock too, so it measures knowledge, not research.
+    r.history.push({question: r.question.id, found: r.found, cause: "timeout"}); r.streak = 0; r.lives--;
+    if (r.lives <= 0) {
+      r.finished = true; r.reason = "Canların bitti.";
+    } else {
+      round(c, r); r.message = "Tur süresi doldu. −1 can, yeni tur.";
     }
   }
 }
@@ -172,11 +213,14 @@ function resolve(c, query, entityId, mode) {
   return matches?.size === 1 ? [...matches][0] : null;
 }
 function act(c, r, input, time) {
-  r.message = "";
+  // A tick keeps the message its clock check just set (e.g. a round timeout).
+  if (input.action !== "tick") r.message = "";
   if (input.action === "finish") {
     r.finished = true; r.reason = "Oyunu bitirdin."; return;
   }
   if (input.action === "pause") {
+    // Paused runs keep their moves but cannot set a time record.
+    if (!r.paused && r.phase === "active") r.pauses = (r.pauses || 0) + 1;
     r.paused = true; r.open = []; // lockUntil deliberately persists, including across pause/restart.
     return;
   }
@@ -193,8 +237,11 @@ function act(c, r, input, time) {
       r.history.push({question: r.question.id, found: r.found, cause: "pass"}); round(c, r);
     } else if (input.action === "hint") {
       if (r.style !== "survival") fail("failed-precondition", "Hız Atağı ipucu içermez.");
-      const player = r.question.answers.map((id) => c.players[id]).find((p) => !r.found.includes(p.id) &&
-        !r.hinted.includes(p.id));
+      // Two steps per answer: nationality first, initials on the second hint.
+      const times = (id) => r.hinted.filter((x) => x === id).length;
+      const open = r.question.answers.filter((id) => !r.found.includes(id) && c.players[id].countryId);
+      const id = open.find((x) => times(x) === 1) ?? open.find((x) => times(x) === 0);
+      const player = id && c.players[id];
       if (!player) fail("failed-precondition", "Yeni ipucu kalmadı.");
       if (r.boostPolicy?.version !== 1) {
         if (!r.freeUsed) r.freeUsed = true;
@@ -202,7 +249,8 @@ function act(c, r, input, time) {
         else fail("resource-exhausted", "Ücretsiz ipucu kullanıldı. Doğrulanmış reklam hakkı gerekli.");
       }
       r.hints++; r.hinted.push(player.id);
-      r.hint = player.name.split(/\s+/).map((s) => s[0] + ".").join(" ") + " · " + player.country;
+      r.hint = times(player.id) === 1 ? `Bir cevabın milliyeti: ${player.country}` :
+        player.name.split(/\s+/).map((s) => s[0] + ".").join(" ") + " · " + player.country;
     } else if (input.action === "answer") {
       const id = resolve(c, input.query, input.entityId, "burst");
       if (!id) {
@@ -217,6 +265,7 @@ function act(c, r, input, time) {
         r.message = r.style === "speed" ? "Bu eşleşme doğru değil. −3 saniye." : "Bu eşleşme doğru değil. −1 can.";
       } else {
         r.found.push(id); r.correct++; r.streak++; r.bestStreak = Math.max(r.streak, r.bestStreak);
+        if (r.hinted.includes(id)) r.hint = "";
         r.score += 100 * (r.streak >= 10 ? 2 : r.streak >= 5 ? 1.5 : 1);
         if (r.found.length === 3) {
           r.rounds++; r.score += 50; r.history.push({question: r.question.id, found: r.found, cause: "complete"});
@@ -235,7 +284,7 @@ function act(c, r, input, time) {
   } else if (r.mode === "pyramid") {
     if (input.action === "undo") {
       const previous = r.undo.pop(); if (previous) {
-        delete r.filled[previous]; r.correct--; r.score = r.correct * 100;
+        delete r.filled[previous]; r.correct--; r.score = r.correct * 100; r.undos = (r.undos || 0) + 1;
       }
       return;
     }
@@ -249,32 +298,36 @@ function act(c, r, input, time) {
       if (!solution) fail("unavailable", "Çözüm kontrolü tamamlanamadı. Hak harcanmadı.");
       const candidate = c.entities[solution[slot.id]]; r.hints++;
       const type = {player: "Oyuncu", club: "Kulüp", country: "Ülke"}[candidate.type];
-      r.hint = `Aday türü: ${type}. ` + label(c, edge(c, candidate.id, r.filled[slot.supports[0]]));
+      // First hint on a cell names only the type; a second one adds the link.
+      r.slotHints ||= {}; r.slotHints[slot.id] = (r.slotHints[slot.id] || 0) + 1;
+      r.hint = r.slotHints[slot.id] === 1 ? `Aday türü: ${type}.` :
+        `Aday türü: ${type}. ` + label(c, edge(c, candidate.id, r.filled[slot.supports[0]]));
     } else if (input.action === "answer") {
       const id = resolve(c, input.query, input.entityId, "pyramid");
       if (!id || Object.values(r.filled).includes(id)) {
         r.message = "Belirsiz, bilinmeyen veya kullanılmış ad; can kaybı yok."; return;
       }
       const supports = slot.supports.map((s) => r.filled[s]); if (slot.row === 1) supports.push(r.filled["0"]);
-      if (supports.some((s) => !edge(c, id, s))) {
+      // A linked candidate that leaves the board unsolvable is just as wrong:
+      // same message and cost, so a free rejection cannot reveal the links.
+      const solution = !supports.some((s) => !edge(c, id, s)) && solve(c, r.board, {...r.filled, [slot.id]: id});
+      if (!solution) {
         const k = slot.id + "__" + id;
         if (!r.wrongInputs[k]) {
           r.wrongInputs[k] = true; r.wrong++; r.lives--;
         }
-        r.message = "Gerekli kariyer/milliyet bağlantılarının tümü bulunmuyor. Aynı cevap yeniden can götürmez.";
+        r.message = "Bu aday bu hücreye uymuyor. Aynı cevap yeniden can götürmez.";
         if (r.lives <= 0) {
           r.finished = true; r.reason = "Beş canın bitti.";
         }
         return;
       }
-      const solution = solve(c, r.board, {...r.filled, [slot.id]: id});
-      if (!solution) {
-        r.message = "Bu seçimden sonra kalan çözüm doğrulanamadı. Can kaybı yok; başka aday dene."; return;
-      }
       r.filled[slot.id] = id; r.board.certificate = solution; r.undo.push(slot.id); r.correct++; r.score += 100;
       r.message = supports.map((s) => label(c, edge(c, id, s))).join(" · ");
       if (Object.keys(r.filled).length === r.board.slots.length) {
         r.finished = true; r.won = true; r.reason = "Piramidin tüm bağları tamamlandı!";
+        // Win bonus: lives left, no hints, few undos.
+        r.bonus = Math.max(0, 100 * r.lives + (r.hints ? 0 : 200) - 50 * (r.undos || 0)); r.score += r.bonus;
       }
     } else fail("invalid-argument", "Geçersiz Pyramid işlemi.");
   } else {
@@ -325,10 +378,13 @@ function publicRun(c, raw, time) {
   for (const key of ["actions", "question", "board", "filled", "undo", "wrongInputs", "adReceipts", "history",
     "used", "hinted"]) delete v[key];
   v.serverNow = time; v.totalRemainingMs = Math.max(0, 120000 - r.activeMs - (r.penaltyMs || 0));
-  v.roundRemainingMs = Math.max(0, 30000 - (r.activeMs - (r.roundAt || 0)));
+  const roundMs = ROUND_MS[r.style] || ROUND_MS.speed;
+  v.roundRemainingMs = Math.max(0, roundMs - (r.activeMs - (r.roundAt || 0))); v.roundMs = roundMs;
   if (r.mode === "burst") {
     v.roundIds = r.used; v.hintedIds = r.hinted;
     v.question = {id: question.id, left: question.left, right: question.right, difficulty: question.difficulty};
+    // A paused run hides the pair, so pausing cannot buy research time.
+    if (r.paused && r.phase === "active" && !r.finished) v.question = {id: question.id, hidden: true};
     v.found = r.found.map((id) => ({id, name: c.players[id].name}));
     if (r.finished) {
       v.history = [...history, ...(!history.some((x) => x.question === question.id) ? [{question: question.id,
@@ -340,7 +396,8 @@ function publicRun(c, raw, time) {
     }
   }
   if (r.mode === "pyramid") {
-    v.board = {id: board.id, levels: board.levels, slots: board.slots, initial: Object.keys(board.initial)};
+    v.board = {id: board.id, levels: board.levels, slots: board.slots, initial: Object.keys(board.initial),
+      cells: board.slots.length - Object.keys(board.initial).length};
     v.filled = Object.fromEntries(Object.entries(filled).map(([k, id]) => [k, c.entities[id]]));
     v.canUndo = undo.length > 0;
     if (r.finished) {
@@ -362,4 +419,5 @@ function publicRun(c, raw, time) {
   }
   return v;
 }
-module.exports = {catalog, create, hydrate, tick, act, publicRun, solve, matching, edge, label, resolve, fail, list};
+module.exports = {catalog, create, hydrate, tick, act, publicRun, solve, matching, edge, label, resolve, fail, list,
+  effectiveElapsed, MIN_EVENT_MS, ROUND_MS};

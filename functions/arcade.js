@@ -9,13 +9,17 @@ const {validId} = require("./career_transfer");
 const {catalog, fail, hydrate} = E;
 const defaults = {enabled: false, rewardsEnabled: false};
 const hash = (s) => crypto.createHash("sha256").update(s).digest("hex");
-const state = (s) => ({sessions: {}, active: {}, records: {}, claims: {}, pending: {}, paid: {}, daily: {}, ...s});
+const state = (s) => ({sessions: {}, active: {}, records: {}, claims: {}, medals: {}, pending: {}, paid: {},
+  daily: {}, ...s});
+// Hard Matching mastery: stricter than three stars (21 moves for 12 pairs).
+const MATCHING_MASTER_MOVES = 18;
 const recordKey = (r) => r.mode === "burst" ? `burst__${r.style}__${r.pairType}` : r.mode + "__" + r.difficulty;
 function check(input) {
   if (!["burst", "pyramid", "matching"].includes(input.mode)) fail("invalid-argument", "Geçersiz mod.");
   if (input.style && !["speed", "survival"].includes(input.style) || input.pairType && !["clubClub",
     "clubCountry"].includes(input.pairType) ||
-    input.difficulty && !["easy", "normal", "hard"].includes(input.difficulty)) {
+    input.difficulty && !["easy", "normal", "hard"].includes(input.difficulty) ||
+    input.daily != null && (input.daily !== true || input.mode === "burst")) {
     fail("invalid-argument",
         "Geçersiz oyun seçimi.");
   }
@@ -23,6 +27,8 @@ function check(input) {
 function finalize(s, r, time, rewarded) {
   if (!r.finished || r.recorded || r.phase !== "active") return;
   r.recorded = true; r.finishedAt = time;
+  // Boards already played, so the next pick prefers new ones.
+  if (r.mode === "pyramid" && r.board?.id) s.seenBoards = [...E.list(s.seenBoards), r.board.id].slice(-200);
   const key = recordKey(r) + "__" + r.dataVersion + (r.assisted ? "__assisted" : "");
   const rec = s.records[key] ||= {mode: r.mode, style: r.style, pairType: r.pairType, difficulty: r.difficulty,
     dataVersion: r.dataVersion, sessions: 0, bestScore: 0, bestRounds: 0, bestStreak: 0, bestCorrect: 0};
@@ -30,29 +36,36 @@ function finalize(s, r, time, rewarded) {
   rec.sessions++; rec.bestScore = Math.max(rec.bestScore, r.score); rec.bestRounds = Math.max(rec.bestRounds, r.rounds);
   rec.bestStreak = Math.max(rec.bestStreak, r.bestStreak); rec.bestCorrect = Math.max(rec.bestCorrect, r.correct);
   if (!r.hints) rec.bestNoHintScore = Math.max(rec.bestNoHintScore || 0, r.score);
-  if (r.mode === "burst") {
-    rec.bestLives = Math.max(rec.bestLives || 0, r.lives);
-    if (r.correct) rec.bestAverageAnswerMs = Math.min(rec.bestAverageAnswerMs || Infinity, r.activeMs / r.correct);
+  // Lives only exist in Survival; answer pace is only comparable under Speed's clock.
+  if (r.mode === "burst" && r.style === "survival") rec.bestLives = Math.max(rec.bestLives || 0, r.lives);
+  if (r.mode === "burst" && r.style === "speed" && r.correct) {
+    rec.bestAverageAnswerMs = Math.min(rec.bestAverageAnswerMs || Infinity, r.activeMs / r.correct);
   }
   if (r.won) {
-    rec.bestTimeMs = Math.min(rec.bestTimeMs ?? Infinity, r.activeMs);
+    // A paused run can still set a move record, never a time record.
+    const timed = !r.pauses;
+    if (timed) rec.bestTimeMs = Math.min(rec.bestTimeMs ?? Infinity, r.activeMs);
     if (r.mode === "matching") {
-      if (rec.bestMoves == null || r.moves < rec.bestMoves || r.moves === rec.bestMoves &&
-        r.activeMs < rec.timeAtBestMoves) {
-        rec.bestMoves = r.moves; rec.timeAtBestMoves = r.activeMs;
+      rec.bestStars = Math.max(rec.bestStars || 0, r.stars || 0);
+      if (rec.bestMoves == null || r.moves < rec.bestMoves) {
+        rec.bestMoves = r.moves; rec.timeAtBestMoves = timed ? r.activeMs : null;
+      } else if (r.moves === rec.bestMoves && timed && r.activeMs < (rec.timeAtBestMoves ?? Infinity)) {
+        rec.timeAtBestMoves = r.activeMs;
       }
     }
   }
-  if (!rewarded) return;
+  // Medals are progress: recorded even when rewards are off or for guests;
+  // coins follow only for rewarded runs.
   function award(id, coins) {
-    if (s.claims[id]) return;
+    (s.medals ||= {})[id] ||= time;
+    if (!rewarded || s.claims[id]) return;
     s.claims[id] = {at: time, coins, sessionId: r.id}; s.pending[id] = {coins, mode: r.mode};
     r.rewardKeys.push(id); r.earnedCoins += coins;
   }
   if (r.mode === "burst") {
     const thresholds = r.style === "speed" ? [2, 3, 5, 7] : [3, 6, 9, 12];
     thresholds.forEach((n, i) => {
-      const master = r.style === "speed" ? r.wrong === 0 && r.passes === 0 : r.hints === 0 && r.passes === 0 &&
+      const master = r.style === "speed" ? r.wrong <= 1 && r.passes === 0 : r.hints === 0 && r.passes === 0 &&
         r.lives >= 3;
       if (r.rounds >= n && (i !== 3 ||
         master)) award(`burst:v1:${r.style}:${["bronze", "silver", "gold", "master"][i]}`, i === 3 ? 3 : 2);
@@ -61,8 +74,9 @@ function finalize(s, r, time, rewarded) {
     const coins = r.mode === "pyramid" ? {easy: 2, normal: 2, hard: 3} : {easy: 1, normal: 2, hard: 2};
     award(`${r.mode}:v1:${r.difficulty}`, coins[r.difficulty]);
     if (!r.assisted && r.difficulty === "hard" && (r.mode === "pyramid" ? r.wrong === 0 &&
-      r.hints === 0 : r.moves <= 24)) award(`${r.mode}:v1:master`, 3);
+      r.hints === 0 && !r.undos : r.moves <= MATCHING_MASTER_MOVES)) award(`${r.mode}:v1:master`, 3);
   }
+  if (!rewarded) return;
   const qualifies = r.mode === "burst" ? r.rounds >= (r.style === "speed" ? 2 : 3) : r.won && r.difficulty !== "easy";
   if (qualifies) {
     const group = r.mode === "burst" ? "burst" : "logic"; const day = dayKey(time); const k = group + "__" + day;
@@ -130,10 +144,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       ...(mode === "burst" && kitVersion != null && kitVersion !== c.version ? {burstKit: {
         version: c.version, questions: c.burst,
         players: Object.fromEntries(Object.values(c.players).map((p) => [p.id,
-          {id: p.id, name: p.name, country: p.country, countryId: p.countryId, aliases: p.aliases}])),
+          {id: p.id, name: p.name, country: p.country, countryId: p.countryId, aliases: p.aliases, rank: p.rank}])),
       }} : {}), availability: {...defaults, ...await getPolicy()},
       energyCost: await cost(uid, mode), linked: await isLinked(uid),
-      session: E.publicRun(c, r, now()), records: s.records, medals: s.claims, paid: s.paid,
+      session: E.publicRun(c, r, now()), records: s.records, medals: {...s.medals, ...s.claims}, paid: s.paid,
       pendingCoins: Object.values(s.pending).reduce((n, p) => n + p.coins, 0), daily: s.daily,
       recent: Object.values(s.sessions).filter((x) => x.mode === mode && x.finished).sort((a,
           b) => b.finishedAt - a.finishedAt)
@@ -177,7 +191,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       fail("failed-precondition", "Enerji sistemi için uygulamayı güncelle.");
     }
     // All expensive selection/solver work precedes the energy reservation.
-    const draft = E.create(catalog, input, now());
+    const seen = input.mode === "pyramid" ? E.list((await read(uid)).seenBoards) : [];
+    const draft = E.create(catalog, {...input, seen}, now());
     B.pin(draft, boostPolicy);
     await db.ref(`arcadeCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
     await change(uid, (s, e, time) => {
@@ -206,7 +221,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     });
     return result(uid, input.mode, "none");
   }
-  function applyRequest(s, e, t, input, c, p, linked) {
+  function applyRequest(s, e, t, input, c, p, linked, {online = false, lenient = false} = {}) {
     const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "questionId",
       "entityId", "query", "slotId", "cardId", "elapsedMs", "boostId", "paymentSource", "expectedPriceCoins"]
         .filter((k) => input[k] != null).map((k) => [k, input[k]]));
@@ -250,7 +265,11 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       if (r.mode === "burst" && input.elapsedMs != null) {
         if (!Number.isSafeInteger(input.elapsedMs) || input.elapsedMs < 0 ||
             r.lastAt + input.elapsedMs > t + 1000) fail("invalid-argument", "Olay süresi doğrulanamadı.");
-        eventTime = r.lastAt + input.elapsedMs;
+        eventTime = r.lastAt + E.effectiveElapsed(r, input.action, input.elapsedMs);
+        // Online, the server's own clock is the floor: at most 2 s of network
+        // and loading per event are not counted.
+        if (online && !r.paused) eventTime = Math.max(eventTime, t - 2000);
+        eventTime = Math.min(eventTime, t + 1000);
       }
       if (t >= r.expiresAt) {
         r.finished = true; r.reason = "24 saatlik devam süresi doldu.";
@@ -258,7 +277,14 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       E.tick(c, r, eventTime);
       if (!r.finished) {
         const previousHints = r.hints;
-        E.act(c, r, input, eventTime);
+        try {
+          E.act(c, r, input, eventTime);
+        } catch (err) {
+          // Offline: an answer for a round the clock already closed is dropped,
+          // not allowed to throw away the whole batch.
+          if (!lenient || err.code !== "aborted") throw err;
+          r.message = "Tur süresi dolmuştu; geç gelen cevap sayılmadı.";
+        }
         if (input.action === "hint" && B.paid(r) && r.hints > previousHints) {
           B.consume(e, r, input, r.mode === "burst" ? "boost_basic" : "boost_strong",
               r.mode === "pyramid" ? "slot:" + input.slotId : r.mode === "matching" ? "pair" :
@@ -291,7 +317,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
           !["answer", "tick", "pass", "hint", "pause", "resume", "finish"].includes(event.action)) {
           fail("invalid-argument", "Çevrimdışı paket oturum sınırını aşamaz.");
         }
-        applyRequest(s, e, t, event, c, p, linked);
+        applyRequest(s, e, t, event, c, p, linked, {lenient: true});
       }
       s.sessions[saved.id].lastAt = t;
     });
@@ -305,7 +331,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const c = await pinned(saved.dataVersion); const p = {...defaults, ...await getPolicy()};
     const linked = await isLinked(uid);
     await change(uid, (s, e, t) => {
-      applyRequest(s, e, t, input, c, p, linked);
+      applyRequest(s, e, t, input, c, p, linked, {online: true});
       // Network/loading time is excluded after the server validates the monotonic event.
       if (input.elapsedMs != null) s.sessions[input.sessionId].lastAt = t;
     });
@@ -323,8 +349,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     // No question/answers/filled state is consulted, including ranking and cache keys.
     const pool = input.mode === "pyramid" ? Object.values(c.entities) : Object.values(c.players);
     const items = pool.filter((p) => [p.name, ...(p.aliases || [])].some((x) => nameKey(x).includes(query)))
+        // Better known players first among equal matches (question independent).
         .sort((a, b) => Number(nameKey(b.name).startsWith(query)) - Number(nameKey(a.name).startsWith(query)) ||
-          nameKey(a.name).localeCompare(nameKey(b.name)) || a.id.localeCompare(b.id)).slice(0, 12)
+          (a.rank ?? 1e9) - (b.rank ?? 1e9) || nameKey(a.name).localeCompare(nameKey(b.name)) ||
+          a.id.localeCompare(b.id)).slice(0, 12)
         .map((p) => ({id: p.id, name: p.name, type: p.type || "player", country: p.country || ""}));
     return {items};
   }

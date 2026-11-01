@@ -159,7 +159,8 @@ void main() {
         event(data, 'answer', elapsed: 0, id: nextPlayer(data)),
       );
       expect(wire.calls.last['name'], 'replayArcade');
-      expect(wire.run['activeMs'], 35000);
+      // An answer reported as 0 ms still costs the 800 ms event floor.
+      expect(wire.run['activeMs'], 35800);
       expect(wire.run['roundAt'], 30000);
       expect(wire.run['score'], 100);
     },
