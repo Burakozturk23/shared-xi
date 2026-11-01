@@ -3928,7 +3928,7 @@ exports.setMyNickname = httpsV2.onCall(
 
 // LINKBALL_16_5B_ACHIEVEMENTS_FOUNDATION_START
 
-const LB_ACHIEVEMENT_CATALOG_VERSION = 2;
+const LB_ACHIEVEMENT_CATALOG_VERSION = 3;
 const LB_ACHIEVEMENT_DEFINITIONS = [
   ...require("./config/achievement_expansion.json"),
   {
@@ -4266,6 +4266,21 @@ async function lbAchievementRecordDaily(db, uid, dateKey, row) {
   return state;
 }
 
+// Badge families of ranked modes: legacy stat keys and today's PvP mode ids.
+const LB_ACHIEVEMENT_MODE_FAMILIES = {
+  shared_xi: ["shared_xi", "club_club"],
+  club_country: ["club_country"],
+  grid: ["grid", "grid_classic", "grid_random", "grid_reverse"],
+  cinko: ["cinko"],
+  five: ["five", "random_five"],
+  loto: ["loto"],
+  club_manager: ["club_manager"],
+  career_race: ["career_race"],
+  transfer_duel: ["transfer_duel"],
+  mystery_duel: ["mystery_duel"],
+  fake_club_duel: ["fake_club_duel"],
+};
+
 /**
  * @param {Object} profile
  * @return {Object}
@@ -4274,15 +4289,19 @@ function lbAchievementRankedSignals(profile) {
   const ranked = lbRankedProfile(profile);
   const modes = lbRankedModeStats(ranked.modeStats);
 
+  // Current PvP rooms record stats under their own mode ids (club_club,
+  // grid_classic, random_five…); the older badge families read the legacy
+  // keys, so each family sums both.
+  const wins = (...keys) => keys.reduce((n, k) => n + (modes[k]?.wins || 0), 0);
+  const families = Object.fromEntries(Object.entries(LB_ACHIEVEMENT_MODE_FAMILIES)
+      .map(([family, keys]) => [family, wins(...keys)]));
   return {
     ranked_played: ranked.wins + ranked.losses + ranked.draws,
     ranked_wins: ranked.wins,
     best_win_streak: ranked.bestWinStreak,
     peak_elo: ranked.peakElo,
-    ranked_shared_xi_wins: modes.shared_xi.wins,
-    ranked_grid_wins: modes.grid.wins,
-    ranked_cinko_wins: modes.cinko.wins,
-    ranked_five_wins: modes.five.wins,
+    ...Object.fromEntries(Object.entries(families).map(([family, n]) => ["ranked_" + family + "_wins", n])),
+    ranked_modes_won: Object.values(families).filter((n) => n > 0).length,
   };
 }
 

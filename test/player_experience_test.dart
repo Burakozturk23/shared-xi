@@ -135,6 +135,43 @@ class BadgeFake extends BadgesGateway {
   }
 }
 
+/// Two earned badges with rewards waiting, and progress on two locked ones.
+class LadderBadgeFake extends BadgesGateway {
+  final claimed = <String>[];
+  @override
+  bool get connected => true;
+  AchievementProgress _p(String id, int value, int target) =>
+      AchievementProgress(
+        id: id,
+        value: value,
+        rawValue: value,
+        target: target,
+        unlocked: value >= target,
+      );
+  @override
+  Future<BadgeSnapshot> load() async => BadgeSnapshot(
+    {
+      'first_victory': _p('first_victory', 1, 1),
+      'winner_5': _p('winner_5', 5, 5),
+      'winner_10': _p('winner_10', 7, 10),
+      'loto_wins_1': _p('loto_wins_1', 0, 1),
+      'friends_5': _p('friends_5', 2, 5),
+    },
+    {},
+    {'first_victory': 15, 'winner_5': 20, 'winner_10': 25},
+  );
+  @override
+  Future<EconomyClaimResult> claim(String id) async {
+    claimed.add(id);
+    return EconomyClaimResult(
+      granted: true,
+      alreadyClaimed: false,
+      amount: id == 'winner_5' ? 20 : 15,
+      coins: 100,
+    );
+  }
+}
+
 class TestUser implements User {
   @override
   String get uid => 'test-user';
@@ -464,6 +501,27 @@ void main() {
       expect(g.claims, 1);
       expect(find.text('Ödülü al'), findsNothing);
       expect(find.text('Bu filtrede rozet yok'), findsOneWidget);
+    },
+  );
+  testWidgets(
+    'badges claim every ready reward at once and show next goals and the ladder',
+    (t) async {
+      final g = LadderBadgeFake();
+      await open(t, AchievementsPage(gateway: g));
+      expect(find.text('Sıradaki hedeflerin'), findsOneWidget);
+      final all = find.text('2 ödülü al · +35 Link Coin');
+      await reveal(t, all);
+      await t.tap(all);
+      await t.pumpAndSettle();
+      expect(g.claimed.toSet(), {'first_victory', 'winner_5'});
+      expect(find.text('+35 Link Coin'), findsOneWidget);
+      expect(find.textContaining('ödülü al ·'), findsNothing);
+      final goal = find.text('Formda Günler').first;
+      await reveal(t, goal);
+      await t.tap(goal);
+      await t.pumpAndSettle();
+      expect(find.text('Bu hedefin basamakları'), findsOneWidget);
+      expect(find.text('Zaferin Tadı · 5'), findsOneWidget);
     },
   );
   testWidgets(

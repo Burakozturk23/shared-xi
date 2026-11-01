@@ -6,9 +6,9 @@
     "signal": "ranked_wins",
     "target": 5,
     "category": "ranked",
-    "tier": "silver",
+    "tier": "bronze",
     "iconKey": "winner_5",
-    "reward": 35
+    "reward": 20
   },
   {
     "id": "winner_25",
@@ -41,7 +41,7 @@
     "category": "ranked",
     "tier": "platinum",
     "iconKey": "winner_500",
-    "reward": 150
+    "reward": 200
   },
   {
     "id": "winner_750",
@@ -52,7 +52,7 @@
     "category": "ranked",
     "tier": "platinum",
     "iconKey": "winner_750",
-    "reward": 150
+    "reward": 250
   },
   {
     "id": "played_250",
@@ -74,7 +74,7 @@
     "category": "ranked",
     "tier": "platinum",
     "iconKey": "played_500",
-    "reward": 100
+    "reward": 150
   },
   {
     "id": "played_1000",
@@ -85,7 +85,7 @@
     "category": "ranked",
     "tier": "platinum",
     "iconKey": "played_1000",
-    "reward": 100
+    "reward": 200
   },
   {
     "id": "streak_15",
@@ -107,7 +107,7 @@
     "category": "ranked",
     "tier": "platinum",
     "iconKey": "streak_20",
-    "reward": 100
+    "reward": 150
   },
   {
     "id": "shared_xi_wins_1",
@@ -138,9 +138,9 @@
     "signal": "ranked_shared_xi_wins",
     "target": 100,
     "category": "mastery",
-    "tier": "gold",
+    "tier": "platinum",
     "iconKey": "shared_xi_wins_100",
-    "reward": 80
+    "reward": 120
   },
   {
     "id": "grid_wins_1",
@@ -171,9 +171,9 @@
     "signal": "ranked_grid_wins",
     "target": 100,
     "category": "mastery",
-    "tier": "gold",
+    "tier": "platinum",
     "iconKey": "grid_wins_100",
-    "reward": 80
+    "reward": 120
   },
   {
     "id": "cinko_wins_1",
@@ -204,9 +204,9 @@
     "signal": "ranked_cinko_wins",
     "target": 100,
     "category": "mastery",
-    "tier": "gold",
+    "tier": "platinum",
     "iconKey": "cinko_wins_100",
-    "reward": 80
+    "reward": 120
   },
   {
     "id": "five_wins_1",
@@ -237,9 +237,9 @@
     "signal": "ranked_five_wins",
     "target": 100,
     "category": "mastery",
-    "tier": "gold",
+    "tier": "platinum",
     "iconKey": "five_wins_100",
-    "reward": 80
+    "reward": 120
   },
   {
     "id": "daily_90",
@@ -294,7 +294,7 @@
     "category": "mastery",
     "tier": "gold",
     "iconKey": "journey_chapter_1",
-    "reward": 0
+    "reward": 60
   },
   {
     "id": "journey_chapter_2",
@@ -305,7 +305,7 @@
     "category": "mastery",
     "tier": "gold",
     "iconKey": "journey_chapter_2",
-    "reward": 0
+    "reward": 60
   },
   {
     "id": "journey_chapter_3",
@@ -316,7 +316,7 @@
     "category": "mastery",
     "tier": "gold",
     "iconKey": "journey_chapter_3",
-    "reward": 0
+    "reward": 60
   },
   {
     "id": "journey_chapter_4",
@@ -327,7 +327,7 @@
     "category": "mastery",
     "tier": "gold",
     "iconKey": "journey_chapter_4",
-    "reward": 0
+    "reward": 60
   },
   {
     "id": "journey_legend",
@@ -338,7 +338,7 @@
     "category": "mastery",
     "tier": "platinum",
     "iconKey": "journey_legend",
-    "reward": 0
+    "reward": 150
   },
   {
     "id": "what_if_first",
@@ -349,7 +349,7 @@
     "category": "mastery",
     "tier": "bronze",
     "iconKey": "what_if_first",
-    "reward": 0
+    "reward": 10
   },
   {
     "id": "what_if_eight",
@@ -360,7 +360,7 @@
     "category": "mastery",
     "tier": "silver",
     "iconKey": "what_if_eight",
-    "reward": 0
+    "reward": 35
   },
   {
     "id": "what_if_all",
@@ -371,7 +371,7 @@
     "category": "mastery",
     "tier": "gold",
     "iconKey": "what_if_all",
-    "reward": 0
+    "reward": 80
   },
   {
     "id": "what_if_dual",
@@ -382,7 +382,7 @@
     "category": "mastery",
     "tier": "platinum",
     "iconKey": "what_if_dual",
-    "reward": 0
+    "reward": 120
   },
   {
     "id": "daily_question_30",
@@ -392,8 +392,8 @@
     "target": 30,
     "category": "daily",
     "tier": "silver",
-    "iconKey": "daily_streak",
-    "reward": 0
+    "iconKey": "daily_question_30",
+    "reward": 35
   },
   {
     "id": "daily_question_100",
@@ -403,7 +403,260 @@
     "target": 100,
     "category": "daily",
     "tier": "gold",
-    "iconKey": "daily_streak",
-    "reward": 0
+    "iconKey": "daily_question_100",
+    "reward": 80
+  },
+  {
+    "id": "club_country_wins_1",
+    "title": "Pasaport Kontrolü",
+    "description": "Kulüp × Ülke modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_club_country_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "club_country_wins",
+    "reward": 20
+  },
+  {
+    "id": "club_country_wins_10",
+    "title": "Kıtalar Arası",
+    "description": "Kulüp × Ülke modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_club_country_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "club_country_wins",
+    "reward": 50
+  },
+  {
+    "id": "club_country_wins_50",
+    "title": "Dünya Vatandaşı",
+    "description": "Kulüp × Ülke modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_club_country_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "club_country_wins",
+    "reward": 80
+  },
+  {
+    "id": "loto_wins_1",
+    "title": "İlk Çekiliş",
+    "description": "Football Loto modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_loto_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "loto_wins",
+    "reward": 20
+  },
+  {
+    "id": "loto_wins_10",
+    "title": "Şanslı Kart",
+    "description": "Football Loto modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_loto_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "loto_wins",
+    "reward": 50
+  },
+  {
+    "id": "loto_wins_50",
+    "title": "Loto Kralı",
+    "description": "Football Loto modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_loto_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "loto_wins",
+    "reward": 80
+  },
+  {
+    "id": "club_manager_wins_1",
+    "title": "Teknik Direktör Koltuğu",
+    "description": "Club Manager modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_club_manager_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "club_manager_wins",
+    "reward": 20
+  },
+  {
+    "id": "club_manager_wins_10",
+    "title": "Taktik Dehası",
+    "description": "Club Manager modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_club_manager_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "club_manager_wins",
+    "reward": 50
+  },
+  {
+    "id": "club_manager_wins_50",
+    "title": "Menajerlerin Menajeri",
+    "description": "Club Manager modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_club_manager_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "club_manager_wins",
+    "reward": 80
+  },
+  {
+    "id": "career_race_wins_1",
+    "title": "Yola Çıkış",
+    "description": "Kariyer Yarışı modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_career_race_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "career_race_wins",
+    "reward": 20
+  },
+  {
+    "id": "career_race_wins_10",
+    "title": "Kariyer Avcısı",
+    "description": "Kariyer Yarışı modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_career_race_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "career_race_wins",
+    "reward": 50
+  },
+  {
+    "id": "career_race_wins_50",
+    "title": "Rota Ustası",
+    "description": "Kariyer Yarışı modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_career_race_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "career_race_wins",
+    "reward": 80
+  },
+  {
+    "id": "transfer_duel_wins_1",
+    "title": "İlk İmza",
+    "description": "Transfer Düellosu modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_transfer_duel_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "transfer_duel_wins",
+    "reward": 20
+  },
+  {
+    "id": "transfer_duel_wins_10",
+    "title": "Pazar Kurdu",
+    "description": "Transfer Düellosu modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_transfer_duel_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "transfer_duel_wins",
+    "reward": 50
+  },
+  {
+    "id": "transfer_duel_wins_50",
+    "title": "Bonservis Ustası",
+    "description": "Transfer Düellosu modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_transfer_duel_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "transfer_duel_wins",
+    "reward": 80
+  },
+  {
+    "id": "mystery_duel_wins_1",
+    "title": "İlk İpucu",
+    "description": "Gizem Düellosu modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_mystery_duel_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "mystery_duel_wins",
+    "reward": 20
+  },
+  {
+    "id": "mystery_duel_wins_10",
+    "title": "Sis Perdesi",
+    "description": "Gizem Düellosu modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_mystery_duel_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "mystery_duel_wins",
+    "reward": 50
+  },
+  {
+    "id": "mystery_duel_wins_50",
+    "title": "Gizem Çözücü",
+    "description": "Gizem Düellosu modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_mystery_duel_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "mystery_duel_wins",
+    "reward": 80
+  },
+  {
+    "id": "fake_club_duel_wins_1",
+    "title": "Sahteyi Yakala",
+    "description": "Sahte Kulüp Düellosu modunda ilk dereceli galibiyetini al.",
+    "signal": "ranked_fake_club_duel_wins",
+    "target": 1,
+    "category": "mastery",
+    "tier": "bronze",
+    "iconKey": "fake_club_duel_wins",
+    "reward": 20
+  },
+  {
+    "id": "fake_club_duel_wins_10",
+    "title": "Kulüp Polisi",
+    "description": "Sahte Kulüp Düellosu modunda 10 dereceli galibiyet kazan.",
+    "signal": "ranked_fake_club_duel_wins",
+    "target": 10,
+    "category": "mastery",
+    "tier": "silver",
+    "iconKey": "fake_club_duel_wins",
+    "reward": 50
+  },
+  {
+    "id": "fake_club_duel_wins_50",
+    "title": "Sahtecilik Masası",
+    "description": "Sahte Kulüp Düellosu modunda 50 dereceli galibiyet kazan.",
+    "signal": "ranked_fake_club_duel_wins",
+    "target": 50,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "fake_club_duel_wins",
+    "reward": 80
+  },
+  {
+    "id": "all_rounder_5",
+    "title": "Çok Yönlü",
+    "description": "5 farklı dereceli modda en az bir galibiyet al.",
+    "signal": "ranked_modes_won",
+    "target": 5,
+    "category": "mastery",
+    "tier": "gold",
+    "iconKey": "all_rounder",
+    "reward": 100
+  },
+  {
+    "id": "all_rounder_11",
+    "title": "Komple Futbolcu",
+    "description": "Dereceli 11 mod ailesinin hepsinde en az bir galibiyet al.",
+    "signal": "ranked_modes_won",
+    "target": 11,
+    "category": "mastery",
+    "tier": "platinum",
+    "iconKey": "all_rounder",
+    "reward": 200
   }
 ]
