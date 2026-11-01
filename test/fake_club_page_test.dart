@@ -143,6 +143,8 @@ class FakeClubTransport extends CareerTransferService {
         'theirs': {'score': 0},
         'question': {
           'kind': 'fake_club_duel',
+          'difficulty': 'legend',
+          'multiplier': 2,
           'player': {'name': 'David Beckham'},
           'options': clubs,
         },
@@ -302,6 +304,12 @@ void main() {
         expect(find.text('David Beckham'), findsOneWidget);
         expect(find.textContaining('Reklam izle'), findsNothing);
         expect(find.textContaining('Tur 1 / 10'), findsOneWidget);
+        expect(find.text('Efsane'), findsOneWidget);
+        expect(find.text('Son tur · puan ×2'), findsOneWidget);
+        expect(
+          find.text('Futbolcu olarak hangi kulüpte hiç oynamadı?'),
+          findsOneWidget,
+        );
         await capture(t, 'duel_${light ? 'light' : 'dark'}');
         expect(t.takeException(), isNull);
         await t.pumpWidget(const SizedBox());
@@ -333,6 +341,48 @@ void main() {
         isNull,
       );
       expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'speed home starts today\'s run; result shows progress and a spoiler-free share card',
+    (t) async {
+      final fake = FakeClubTransport(timed: true, stage: 'home');
+      await mount(t, OddClubPage(timed: true, service: fake));
+      await t.scrollUntilVisible(
+        find.text('Günün Hız Serisi'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.tap(find.text('Günün Hız Serisi'));
+      await t.pumpAndSettle();
+      expect(fake.mutation!['daily'], true);
+      await t.pumpWidget(const SizedBox());
+      final done = FakeClubTransport(timed: true, stage: 'result');
+      await mount(t, OddClubPage(timed: true, service: done));
+      expect(find.bySemanticsLabel('1 doğru, 1 / 10 cevap'), findsOneWidget);
+      await t.scrollUntilVisible(
+        find.text('Paylaş'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final text = fakeClubShare({
+        ...done.session,
+        'daily': '2026-10-31',
+        'history': [
+          {'correct': true},
+          {'correct': false},
+          {'correct': true},
+        ],
+        'correct': 2,
+        'score': 100,
+      }, timed: true);
+      expect(text, contains('Günün serisi · 31.10.2026'));
+      expect(text, contains('🟩🟥🟩'));
+      expect(text, contains('2/10 doğru · 100 puan'));
+      expect(text, isNot(contains('Barcelona')));
+      await t.pumpAndSettle();
+      await capture(t, 'speed_result_share');
       await t.pumpWidget(const SizedBox());
     },
   );

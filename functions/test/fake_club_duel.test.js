@@ -108,3 +108,28 @@ test("ON05-06: tie breakers and forfeits: Elo without payment", async () => {
   assert.equal(h.read("rankedState/profiles/bob/modeStats/fake_club_duel/wins"), 1);
   assert.equal(h.read("economyState/bob/balances/coins"), null);
 });
+test("ON08: climbing difficulty with legend, no fake club or club twice, shuffled options, double last round",
+    async () => {
+      const positions = [0, 0, 0, 0];
+      for (let i = 0; i < 80; i++) {
+        const bank = questions(mode, "on08-" + i);
+        assert.deepEqual(bank.map((q) => q.public.difficulty),
+            ["easy", "easy", "normal", "normal", "normal", "hard", "hard", "hard", "legend", "legend"]);
+        assert.equal(new Set(bank.map((q) => q.public.player.id)).size, 10);
+        const clubs = bank.flatMap((q) => q.public.options.map((o) => o.id));
+        assert.equal(new Set(clubs).size, clubs.length);
+        assert.equal(bank[9].public.multiplier, 2); assert.equal(bank[8].multiplier, undefined);
+        for (const q of bank) positions[q.public.options.findIndex((o) => o.id === q.answer)]++;
+      }
+      // 800 rounds: every place holds the fake club roughly a quarter of the time.
+      assert.ok(positions.every((n) => n > 150 && n < 250), String(positions));
+      // Both stay present through the first nine rounds, then the final round is answered.
+      const h = setup(); const r = await pair(h); const bank = raw(h, r);
+      for (let i = 0; i < 9; i++) {
+        h.setTime(timing(bank, i).start + 1000); await act(h, "alice", r); await act(h, "bob", r);
+      }
+      const clock = timing(bank, 9);
+      h.setTime(clock.start + 1000); const a = await act(h, "alice", r); await act(h, "bob", r);
+      await act(h, "alice", r, "answer", {round: 9, roundToken: a.roundToken, answer: bank.questions[9].answer});
+      assert.equal(raw(h, r).answers.alice[9].score, 2 * (100 + Math.floor(50 * 9000 / 10000)));
+    });

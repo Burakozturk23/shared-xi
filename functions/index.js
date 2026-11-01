@@ -9879,8 +9879,8 @@ async function lbSettleCareerTransferRanked(room) {
     const ar = lbRankedResultName(room.host, room.winner); const br = lbRankedResultName(room.guest, room.winner);
     const ae = lbRankedNextElo(a.elo, b.elo, lbRankedResultScore(ar));
     const be = lbRankedNextElo(b.elo, a.elo, lbRankedResultScore(br));
-    const participated = (uid) => !["mystery_duel", "fake_club_duel"].includes(mode) ||
-      Object.keys(room.answers?.[uid] || {}).length > 0;
+    // No answer in the whole duel: no ranked reward (Elo still settles the result).
+    const participated = (uid) => Object.keys(room.answers?.[uid] || {}).length > 0;
     const rewardEligible = {[room.host]: room.status === "finished" && participated(room.host) &&
       lbRankedRewardCount(s, room.host, room.finishedAt) < 5,
     [room.guest]: room.status === "finished" &&

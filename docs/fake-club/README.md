@@ -4,8 +4,8 @@
 
 ## Oynanış
 
-- **Sonsuz Seri:** süre yok, 3 can, yanlışta seri sıfır. Doğru cevap 50 × seri çarpanı (3: 1,5; 5: 2; 10: 3). Hız bonusu yok. 0–4 kolay, 5–11 normal, 12–19 zor, 20+ efsane. Aynı futbolcu oturumda tekrarlanmaz. Doğrulanmış havuz tükenirse güvenle tamamlanır.
-- **Hız Serisi:** 10 soru veya 3 yanlışta son. Soru başına sunucu saatinde 10 saniye; ilk 3000 ms içindeki doğru cevap 2× hız bonusu. Yardım ve reklam yok. Kolay/normal/zor dağılımı 3/4/3. Cevap sonrası açıklamayı okuma süresi sonraki sorudan düşmez; kullanıcı Sonraki Soru ile ilerler. Arka plandaki açık sorunun süresi işler ve dönüşte timeout uygulanır.
+- **Sonsuz Seri:** süre yok, 3 can, yanlışta seri sıfır. Doğru cevap 50 × seri çarpanı (3: 1,5; 5: 2; 10: 3). Hız bonusu yok. 0–4 kolay, 5–11 normal, 12–19 zor, 20+ efsane. Aynı soru oturumda tekrarlanmaz. Önce henüz gelmemiş futbolcular sorulur; bir kademede bunlar bitince futbolcu başka bir kulüp üçlüsüyle dönebilir, ama son beş soruda değil. Boş kademe en yakın kademeden soru alır. Doğrulanmış havuz tükenirse güvenle tamamlanır.
+- **Hız Serisi:** 10 soru veya 3 yanlışta son. Soru başına sunucu saatinde 10 saniye; ilk 3000 ms içindeki doğru cevap 2× hız bonusu. Yardım ve reklam yok. Kolay/normal/zor dağılımı 3/4/3. Günün Hız Serisi herkese aynı 10 soruyu sorar ve paylaşım kartı verir. Cevap sonrası açıklamayı okuma süresi sonraki sorudan düşmez; kullanıcı Sonraki Soru ile ilerler. Arka plandaki açık sorunun süresi işler ve dönüşte timeout uygulanır.
 - **Yardım:** Sonsuz oturumunda bir ücretsiz 50/50 tam iki gerçek kulübü eler. En fazla iki Kariyer İzi, görünür bir gerçek kulübü doğrular; aynı soruda ikinci kez satılmaz. Doğrulanmış AdMob SSV/Pro kredisi ya da mevcut üç destek ürünü aynı iki iz slotunu kullanır. Eski inventory kaybolmaz; harcama ve yardım tek transaction'dır. Reklam izni verilmeden slot tüketilmez; SSV tekrarları hak çoğaltmaz. Rastgele kalabalık yüzdeleri kaldırıldı.
 - **Devam:** hesap başına alt modda bir aktif oturum; 24 saat. Tek enerji, soru ve oturum atomik yazılır. Başlatma öncesi geçerli soru bulunamazsa enerji düşmez. İstek günlüğü, hesap UID'si, revision ve soru kimliği çift işlem/hesap geçişini engeller.
 
@@ -13,12 +13,12 @@
 
 `tools/fake_club/coverage.json` açık bir tam kariyer izin listesidir. V4'teki `LIKELY_COMPLETE_MODERN_WINDOW` etiketi tek başına **tam kariyer kanıtı sayılmaz**. Kapsamı bilinmeyen aktif futbolcular soru havuzuna alınmaz.
 
-- İlk sürüm: **33 futbolcu, 768 soru**, her zorlukta 192 soru. 36 incelenmiş kariyerin 3'ünde en az üç gösterilebilir, tutarlı kulüp olmadığından soru yok.
+- İlk sürüm: **33 futbolcu, 768 soru**, her zorlukta 192 soru. Hiçbir kademede sahte kulüp gerçek üç kulübün ülkelerinin dışından gelmez: kolay aynı ülkeden, normal aynı ülke+ligden (lig adı ülkesiyle birlikte karşılaştırılır, ör. iki "Bundesliga"), zor ve efsane aynı ülke+ligden ve üçlünün ortalama tanınırlığına ±20 / ±10 yakın, en az bilinenden aşağı değil. Aday kalmazsa kural bir kademe gevşer. Bir sahte kulüp katalogda en fazla 5 kez kullanılır. 36 incelenmiş kariyerin 3'ünde en az üç gösterilebilir, tutarlı kulüp olmadığından soru yok.
 - Avatar kariyerleri mevcut kaynaklı 5 Ekim incelemesinden gelir. On ek emekli futbolcunun tam A takım kariyer tabloları 17 Ekim'de yeniden kontrol edildi (Beckham, Kaká, Deschamps, Bergkamp, Vieira, Shearer, Maradona, Platini, Baggio, Shevchenko). Altyapı/rezerv ve teknik direktörlük gerçek seçenek üretmez.
 - Gerçek üçlü, tam kariyer manifesti **ve** V4 güvenilir ilişkileri ile kesişir. Sahte adaylar, manifestin tamamı, güven düzeyine bakılmadan bütün `player_clubs`, bütün `career_spells` ve bütün transfer uçları birleştirilerek dışlanır. Bir kulüp seçilen üçlünün dışında diye sahte kabul edilmez. Kanonik namespace eşlemesi yapılır.
 - Kulüp adı, ülke, lig, logo anahtarı aynı V4 kaydından gelir. Eksik ülke/lig, bozuk ad, gelişim takımı ve uygun olmayan kulüp seçenek olamaz. Her soruda dört ayrı ID vardır.
 - Soru kimliği ve katalog sürümü içerik hash'idir; veritabanı hash'i ve kanıt kaynakları katalogda saklanır. Aktif oturumlar `fakeClubCatalogs/{version}` özel sürümüne bağlıdır. Yeni deploy eski soruyu değiştirmez.
-- Oturum içi oyuncu tekrarı olmaması nedeniyle başlangıç havuzunda Sonsuz Seri en fazla 33 farklı futbolcuya ulaşabilir. 30'luk Ustalık koşulu erişilebilirdir. Daha geniş havuz ancak tam kariyer kanıtı eklenerek büyütülür.
+- Sonsuz Seri ilk 33 soruda her futbolcuyu bir kez sorar, sonra aynı futbolcular yeni kulüp üçlüleriyle döner; 30'luk Ustalık koşulu rahatça erişilebilirdir. Daha geniş havuz ancak tam kariyer kanıtı eklenerek büyütülür.
 
 ```bash
 python3 tools/fake_club/build_catalog.py --check
@@ -39,7 +39,7 @@ Rozetler ayrı oyun puanından bağımsızdır. Sunucu ledger/outbox Coin ve XP'
 
 ## Online
 
-`fake_club_duel`: arkadaş odası + kontrollü dereceli eşleşme. Aynı sırada 10 farklı futbolcu, her tur 10 saniye + ortak 2 saniyelik açıklama arası; can yok. Sunucu skoru `100 + floor(50 × kalan/10000)`, eşitlikte doğru sayısı ve toplam doğru süre. İki yanıt gelmeden/süre dolmadan rakip cevap ve çözüm açıklanmaz. Yanıtlar bir kez kabul edilir; tur token'ı veri sürümü/başlangıç zamanına bağlıdır. Cevap anahtarları ve bütün oda yazımları istemcilere kapalıdır. Reklam/enerji/mağaza desteği yok.
+`fake_club_duel`: arkadaş odası + kontrollü dereceli eşleşme. Aynı sırada 10 farklı futbolcu, her tur 10 saniye + ortak 2 saniyelik açıklama arası; can yok. Zorluk maç boyunca yükselir: 2 kolay, 3 orta, 3 zor, 2 efsane; son tur ×2 puan. Maçta bir kulüp ikinci kez görünmez (sahte kulüp sonraki turda şık olarak bile çıkmaz); şıkların sırası maça göre karışır. Soru oyunculuk kariyeri içindir, ekranda yazar. Sunucu skoru `100 + floor(50 × kalan/10000)` (son turda ×2), eşitlikte doğru sayısı ve toplam doğru süre. İki yanıt gelmeden/süre dolmadan rakip cevap ve çözüm açıklanmaz. Yanıtlar bir kez kabul edilir; tur token'ı veri sürümü/başlangıç zamanına bağlıdır. Cevap anahtarları ve bütün oda yazımları istemcilere kapalıdır. Reklam/enerji/mağaza desteği yok.
 
 60 saniye yokluk veya açık ayrılma hükmen sonuç üretir. Sahte Kulüp dereceli forfeit Elo/W-L-D'yi günceller, Coin/XP ve ilk-beş hakkı tüketmez. Bağlantı geri gelirse aynı oda ve saat devam eder. Arkadaş odası hiçbir ekonomik ödül ya da sıralama üretmez. Geçerli derecelide 3/8, 2/6, 1/4 ödülleri bütün modların ortak ilk beş sınırını kullanır. Hiç cevap vermeyen oyuncu doğrudan ödül almaz.
 
@@ -50,7 +50,7 @@ Canlı deploy ve main merge bu çalışmanın parçası olarak yapılmadı. PDF'
 1. PR #53 → #54 → #55 → #56 taban sırasını koruyarak bu dalı alın. Test Firebase projesinde uygulama/Firebase ayarlarını mevcut projedeki gibi kullanın.
 2. Normalizer alanlarının kaybolmaması için **tüm Functions ve database kurallarını beraber dağıtın**:
    `firebase deploy --only functions,database`
-3. Yönetici tarafından `runtimeConfig/fakeClub` alanında veri kabulünden sonra `dataEnabled: true`; solo smoke için `soloEnabled: true` ayarlayın. Kontrollü ekonomi testi için ayrıca `rewardsEnabled: true` gerekir. Bu alanlar sunucu özelidir.
+3. Yönetici tarafından `runtimeConfig/fakeClub` alanında veri kabulünden sonra `dataEnabled: true`; solo smoke için `soloEnabled: true` ayarlayın. Kontrollü ekonomi testi için ayrıca `rewardsEnabled: true` gerekir. Ödüller kapalıyken de madalya ilerlemesi kaydedilir; o kademeye ödüller açıkken yeniden ulaşıldığında Coin bir kez ödenir. Bu alanlar sunucu özelidir.
 4. Enerji için mevcut `runtimeConfig/energy.enabled`, `percent`, `sessionModes` ayarları geçerlidir; listeye `fake_club` eklenir, diğer modlar korunur. Online her zaman enerjisizdir.
 5. Arkadaş cihaz testini test projesinde `friendsEnabled: true` ile yapın. ON-08 kanıtı tamamlanmadan üretimde açmayın. `rankedEnabled: true` yalnızca arkadaş ve bütün online kapıları geçtikten sonra açılır; friends kapalıysa ranked de kapalıdır.
 6. `flutter pub get` ve `flutter run`. Gerçek reklam için mevcut AdMob SSV yapılandırması gerekir. Emülatör gerçek satın alma/SSV/iki cihaz kanıtı yerine geçmez.

@@ -12,8 +12,14 @@ import 'package:shared_xi/theme/app_theme.dart';
 import 'package:shared_xi/widgets/hub_ui.dart';
 
 class FakeMysteryChain extends CareerTransferService {
-  FakeMysteryChain(this.mode, {this.active = true, this.finished = false});
+  FakeMysteryChain(
+    this.mode, {
+    this.active = true,
+    this.finished = false,
+    this.extra = const {},
+  });
   final String mode;
+  final Map<String, dynamic> extra;
   bool active, finished;
   Map<String, dynamic>? mutation;
   static const a = {
@@ -51,6 +57,7 @@ class FakeMysteryChain extends CareerTransferService {
     'endAt': DateTime.now().millisecondsSinceEpoch + 60000,
     if (finished) 'result': {'medal': 4, 'coins': 6, 'xp': 12},
     if (finished && mode == 'mystery') 'player': {'name': 'Cristiano Ronaldo'},
+    ...extra,
   };
   @override
   Future<Map<String, dynamic>> load(String mode) async => {
@@ -61,6 +68,12 @@ class FakeMysteryChain extends CareerTransferService {
     'pendingCoins': 0,
     'inventory': [],
     'collection': [],
+    'streak': 3,
+    'longestStreak': 6,
+    'streakRewards': [
+      {'id': 'streak_5', 'at': 5, 'coins': 10, 'earned': true},
+      {'id': 'streak_10', 'at': 10, 'coins': 20, 'earned': false},
+    ],
     'session': active ? session : null,
   };
   @override
@@ -108,6 +121,8 @@ class FakeMysteryChain extends CareerTransferService {
         'kind': 'mystery_duel',
         'country': 'Portekiz',
         'position': 'Forvet',
+        'difficulty': 'easy',
+        'hintAt': [8000, 16000, 24000],
         'hints': ['Oynadığı kulüp: Manchester United'],
         'options': [
           {'id': 1, 'name': 'Cristiano Ronaldo'},
@@ -252,9 +267,12 @@ void main() {
       // Shared budget, reward and energy lines are each their own note.
       expect(find.byType(HubSpecNote), findsAtLeastNWidgets(4));
       expect(
-        find.widgetWithText(HubSpecNote, 'Gizemli Futbolcu ve iki Zincir '
-            'modu ortak günde 24 Coin / 48 XP bütçesini kullanır. Fazlası '
-            'kaybolmaz; sırada bekler.'),
+        find.widgetWithText(
+          HubSpecNote,
+          'Gizemli Futbolcu ve iki Zincir '
+          'modu ortak günde 24 Coin / 48 XP bütçesini kullanır. Fazlası '
+          'kaybolmaz; sırada bekler.',
+        ),
         findsOneWidget,
       );
       expect(t.takeException(), isNull);
@@ -334,6 +352,192 @@ void main() {
         scale: 1.8,
       );
       expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'Gizem Duellosu shows the hint schedule, the next hint and the difficulty',
+    (t) async {
+      await mount(
+        t,
+        CareerTransferOnlinePage(
+          mode: 'mystery_duel',
+          service: FakeMysteryChain('mystery'),
+        ),
+      );
+      expect(find.textContaining('8, 16, 24. saniyelerde'), findsOneWidget);
+      expect(find.text('1. Oynadığı kulüp: Manchester United'), findsOneWidget);
+      expect(find.textContaining('Sonraki bilgi'), findsOneWidget);
+      expect(find.text('Kolay'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'mystery home sends level and daily, and shows the streak rewards',
+    (t) async {
+      final f = FakeMysteryChain('mystery', active: false);
+      await mount(t, MysteryChainPage(mode: 'mystery', service: f));
+      await t.scrollUntilVisible(
+        find.text('Zor'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Seri 3 · En iyi 6'), findsOneWidget);
+      expect(find.text('5 seri · +10 Coin'), findsOneWidget);
+      await t.tap(find.text('Zor'));
+      await t.pump();
+      await t.ensureVisible(find.text('Yeni dosya aç'));
+      await t.tap(find.text('Yeni dosya aç'));
+      await t.pumpAndSettle();
+      expect(f.mutation!['difficulty'], 'hard');
+      await t.pumpWidget(const SizedBox());
+      final d = FakeMysteryChain('mystery', active: false);
+      await mount(t, MysteryChainPage(mode: 'mystery', service: d));
+      await t.scrollUntilVisible(
+        find.text('Günün gizemli futbolcusu'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.tap(find.text('Günün gizemli futbolcusu'));
+      await t.pumpAndSettle();
+      expect(d.mutation!['daily'], true);
+      expect(d.mutation!.containsKey('difficulty'), isFalse);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('a file close to its deadline warns before the reward is lost', (
+    t,
+  ) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final f = FakeMysteryChain(
+      'mystery',
+      extra: {
+        'expiresAt': now + 2 * 3600000 + 60000,
+        'daily': '2026-10-31',
+        'initial': [
+          {'id': 'country', 'text': 'Portekiz'},
+          {'id': 'position', 'text': 'Forvet'},
+          {'id': 'club_1', 'text': 'Oynadığı kulüp: Sporting CP'},
+        ],
+        'hints': [
+          {
+            'id': 'period',
+            'text': 'Bir dönemi: Real Madrid, 2009 – 2018',
+            'automatic': true,
+          },
+        ],
+      },
+    );
+    await mount(t, MysteryChainPage(mode: 'mystery', service: f));
+    expect(find.textContaining('2 saat içinde kapanır'), findsOneWidget);
+    expect(find.text('Günün futbolcusu'), findsOneWidget);
+    expect(find.text('Oynadığı kulüp: Sporting CP'), findsOneWidget);
+    await capture(t, 'mystery_deadline');
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets(
+    'finished mystery explains other answers, expiry and shares without the name',
+    (t) async {
+      final f = FakeMysteryChain(
+        'mystery',
+        finished: true,
+        extra: {
+          'found': true,
+          'wrong': 1,
+          'score': 70,
+          'streak': 5,
+          'optionalHints': 1,
+          'daily': '2026-10-31',
+          'answer': {'id': 2, 'name': 'Moussa Sissoko'},
+          'alsoBy': ['Étienne Capoue'],
+          'result': {'medal': 2, 'coins': 13, 'xp': 26, 'badge': 'streak_5'},
+        },
+      );
+      await mount(t, MysteryChainPage(mode: 'mystery', service: f));
+      await t.scrollUntilVisible(
+        find.textContaining('uyan diğer futbolcular'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('Senin cevabın da doğru'), findsOneWidget);
+      expect(find.textContaining('Seri ödülü: 5 seri'), findsOneWidget);
+      final text = mysteryShare(f.session);
+      expect(text, contains('Günün futbolcusu · 31.10.2026'));
+      expect(text, contains('🟥🟩⬜ Bulundu'));
+      expect(text, contains('🔥 5 seri'));
+      expect(text, isNot(contains('Ronaldo')));
+      await t.pumpAndSettle();
+      await capture(t, 'mystery_result');
+      await t.pumpWidget(const SizedBox());
+      final expired = FakeMysteryChain(
+        'mystery',
+        finished: true,
+        extra: {
+          'result': {'medal': 0, 'coins': 0, 'xp': 0, 'expired': true},
+        },
+      );
+      await mount(t, MysteryChainPage(mode: 'mystery', service: expired));
+      await t.scrollUntilVisible(
+        find.textContaining('Serin bozulmadı'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'chain give-up asks first, then shows the shortest route and a share card',
+    (t) async {
+      final f = FakeMysteryChain('mastermind', extra: {'daily': '2026-10-31'});
+      await mount(t, MysteryChainPage(mode: 'mastermind', service: f));
+      expect(find.text('Günün zinciri'), findsOneWidget);
+      await t.scrollUntilVisible(
+        find.text('Teslim ol · çözümü gör'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.tap(find.text('Teslim ol · çözümü gör'));
+      await t.pumpAndSettle();
+      expect(find.textContaining('ilk resmî ödül hakkı yanar'), findsOneWidget);
+      await t.tap(find.text('Çözümü gör'));
+      await t.pumpAndSettle();
+      expect(f.mutation!['action'], 'skip');
+      await t.pumpWidget(const SizedBox());
+      final done = FakeMysteryChain(
+        'mastermind',
+        finished: true,
+        extra: {
+          'gaveUp': true,
+          'found': false,
+          'routeCount': 3,
+          'daily': '2026-10-31',
+          'result': {'medal': 0, 'coins': 0, 'xp': 0},
+          'solution': [
+            {
+              'player': {'name': 'Xherdan Shaqiri'},
+              'club': FakeMysteryChain.b,
+            },
+          ],
+          'par': 1,
+        },
+      );
+      await mount(t, MysteryChainPage(mode: 'mastermind', service: done));
+      await t.scrollUntilVisible(
+        find.text('Xherdan Shaqiri'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('EN KISA ROTA'), findsOneWidget);
+    expect(find.text('Teslim oldun'), findsOneWidget);
+      expect(find.textContaining('3 farklı en kısa rota'), findsOneWidget);
+      final text = chainShare(done.session);
+      expect(text, contains('Günün zinciri · 31.10.2026'));
+      expect(text, contains('Manchester United → Real Madrid'));
+      expect(text, contains('Bağlanamadı · PAR 1'));
+      expect(text, isNot(contains('Shaqiri')));
+      await t.pumpAndSettle();
+      await capture(t, 'chain_solution');
       await t.pumpWidget(const SizedBox());
     },
   );

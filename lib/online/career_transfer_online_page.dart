@@ -11,11 +11,47 @@ import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/online_ui.dart';
 import '../services/game_error.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../widgets/fake_club_options.dart';
 import 'online_mode_catalog.dart';
 
 List<Map<String, dynamic>> _rows(dynamic v) =>
     (v is List ? v : const []).map(rewardMap).toList();
+
+const _kinds = {
+  'fake_club_duel': 'Sahte Kulüp',
+  'mystery_duel': 'Gizem',
+  'transfer': 'Transfer',
+  'order': 'Kronoloji',
+  'missing': 'Eksik kulüp',
+  'mystery': 'Gizemli kariyer',
+};
+const _levels = {
+  'beginner': 'Kolay',
+  'normal': 'Orta',
+  'legend': 'Zor',
+  'easy': 'Kolay',
+  'medium': 'Orta',
+  'hard': 'Zor',
+};
+const _positions = {
+  'GK': 'Kaleci',
+  'DEF': 'Defans',
+  'MID': 'Orta saha',
+  'FWD': 'Forvet',
+  'ATT': 'Forvet',
+};
+
+/// The correct answer of a finished round, in words.
+String _answerText(Map<String, dynamic> r) {
+  final options = _rows(r['options']);
+  String name(Object? id) =>
+      '${options.firstWhere((o) => o['id'] == id, orElse: () => const {})['name'] ?? ''}';
+  if (r['kind'] == 'order' && r['answer'] is List) {
+    return (r['answer'] as List).map(name).join(' → ');
+  }
+  return name(r['answer']);
+}
 
 class CareerTransferOnlinePage extends StatefulWidget {
   const CareerTransferOnlinePage({
@@ -470,7 +506,10 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      'Tur: ${{'fake_club_duel': 'Sahte Kulüp', 'mystery_duel': 'Gizem', 'transfer': 'Transfer', 'order': 'Kronoloji', 'missing': 'Eksik kulüp', 'mystery': 'Gizemli kariyer'}[r['kind']] ?? 'Soru'} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan${r['explanation'] != null ? '\n${r['explanation']}' : ''}',
+                      'Tur: ${_kinds[r['kind']] ?? 'Soru'}${_levels[r['difficulty']] != null ? ' (${_levels[r['difficulty']]})' : ''} · ${rewardMap(r['mine'])['correct'] == true ? 'Doğru' : 'Yanlış / süre doldu'} · ${rewardMap(r['mine'])['score'] ?? 0} puan'
+                      '${rewardMap(r['theirs']).isNotEmpty ? ' · rakip ${rewardMap(r['theirs'])['score'] ?? 0}' : ''}'
+                      '${_career && _answerText(r).isNotEmpty ? '\nCevap: ${_answerText(r)}' : ''}'
+                      '${r['explanation'] != null ? '\n${r['explanation']}' : ''}',
                     ),
                   ),
               ],
@@ -546,6 +585,99 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
       ),
     ],
   ];
+
+  /// Career route as a timeline: one row per stop with its start year; the
+  /// hidden stop is marked.
+  Widget _route(Map<String, dynamic> q) {
+    final p = PitchColors.of(context);
+    final route = q['route'] as List;
+    final years = q['years'] as List? ?? const [];
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < route.length; i++)
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    width: 28,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: route[i] == '?' ? p.accent : p.raised,
+                            border: Border.all(
+                              color: route[i] == '?' ? p.accent : p.border,
+                            ),
+                          ),
+                          child: Text(
+                            '${i + 1}',
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  color: route[i] == '?'
+                                      ? p.background
+                                      : p.text,
+                                ),
+                          ),
+                        ),
+                        if (i < route.length - 1)
+                          Expanded(child: Container(width: 2, color: p.border)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12, top: 2),
+                      child: Text(
+                        route[i] == '?'
+                            ? '? · eksik kulüp'
+                            : '${route[i]}${years.length > i && '${years[i]}'.isNotEmpty ? ' · ${years[i]}' : ''}',
+                        style: route[i] == '?'
+                            ? Theme.of(
+                                context,
+                              ).textTheme.titleSmall?.copyWith(color: p.accent)
+                            : Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Difficulty label; the Fake Club tiers go one step further (legend).
+  String? _level(Map<String, dynamic> q) => q['kind'] == 'fake_club_duel'
+      ? const {
+          'easy': 'Kolay',
+          'normal': 'Orta',
+          'hard': 'Zor',
+          'legend': 'Efsane',
+        }[q['difficulty']]
+      : _levels[q['difficulty']];
+
+  /// Seconds until the next timed hint of a Mystery Duel round, if any.
+  int? _nextHint(Map<String, dynamic> q) {
+    final at = q['hintAt'];
+    final start = _room['startsAt'] as num?;
+    if (at is! List || start == null || _room.containsKey('reveal'))
+      return null;
+    for (final ms in at) {
+      final left = ((start + (ms as num) - _now) / 1000).ceil();
+      if (left > 0) return left;
+    }
+    return null;
+  }
+
   List<Widget> _game() {
     final q = rewardMap(_room['question']);
     final before = _now < (_room['startsAt'] as num? ?? 0);
@@ -563,10 +695,59 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (_kinds[q['kind']] != null || q['difficulty'] != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    if (_kinds[q['kind']] != null)
+                      HubPill(
+                        _kinds[q['kind']]!,
+                        color: PitchColors.of(context).accent,
+                        background: PitchColors.of(context).tint,
+                      ),
+                    if (_level(q) != null)
+                      HubPill(
+                        _level(q)!,
+                        color: hubAmber(context),
+                        background: PitchColors.of(
+                          context,
+                        ).background.withValues(alpha: .4),
+                      ),
+                    if ((q['multiplier'] as num? ?? 1) > 1)
+                      HubPill(
+                        'Son tur · puan ×${q['multiplier']}',
+                        color: PitchColors.of(context).limeInk,
+                        background: PitchColors.of(context).limeTint,
+                      ),
+                  ],
+                ),
+              ),
             Text(
               'Tur ${(_room['round'] as num? ?? 0) + 1} / ${_room['totalRounds']} · $seconds sn',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: before
+                    ? 1
+                    : ((((_room['deadline'] as num? ?? _now) - _now) /
+                                  ((_room['deadline'] as num? ?? 1) -
+                                      (_room['startsAt'] as num? ?? 0)))
+                              .clamp(0, 1))
+                          .toDouble(),
+                minHeight: 6,
+                color: seconds <= 5
+                    ? PitchColors.of(context).error
+                    : PitchColors.of(context).accent,
+                backgroundColor: PitchColors.of(context).border,
+              ),
+            ),
+            const SizedBox(height: 8),
             Text(
               'Sen ${rewardMap(_room['mine'])['score'] ?? 0} · Rakip ${rewardMap(_room['theirs'])['score'] ?? 0}',
             ),
@@ -586,17 +767,49 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
                   '${q['country']} · ${q['position']}',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                const Text(
-                  '10. ve 20. saniyede iki rakibe aynı yeni bilgi açılır.',
+                Text(
+                  q['hintAt'] is List
+                      ? '${(q['hintAt'] as List).map((ms) => (ms as num) ~/ 1000).join(', ')}. saniyelerde '
+                            'iki rakibe aynı yeni bilgi açılır. İlk bilgiden önce '
+                            'verilen doğru cevap hız bonusu almaz.'
+                      : '10. ve 20. saniyede iki rakibe aynı yeni bilgi açılır.',
                 ),
-                for (final hint in (q['hints'] as List? ?? const []))
+                for (final (i, hint)
+                    in (q['hints'] as List? ?? const []).indexed)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: Text('$hint'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.lightbulb_outline_rounded,
+                          size: 18,
+                          color: hubAmber(context),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text('${i + 1}. $hint')),
+                      ],
+                    ),
+                  ),
+                if (_nextHint(q) case final next?)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Sonraki bilgi $next sn sonra',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: PitchColors.of(context).muted,
+                      ),
+                    ),
                   ),
               ],
             ),
           ),
+          if (_room['explanation'] != null && _room.containsKey('reveal'))
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: PitchPanel(child: Text('${_room['explanation']}')),
+            ),
+          const SizedBox(height: 12),
         ],
         if (q['player'] != null)
           Padding(
@@ -606,27 +819,77 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-        if (q['route'] is List)
+        if (q['route'] is List) _route(q),
+        if (q['kind'] == 'transfer') ...[
           PitchPanel(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                for (var i = 0; i < (q['route'] as List).length; i++)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Text('${i + 1}. ${(q['route'] as List)[i]}'),
+                Text(
+                  '${q['year']}',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: PitchColors.of(context).muted,
                   ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${rewardMap(q['from'])['name']}',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: PitchColors.of(context).accent,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '${rewardMap(q['to'])['name']}',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        if (q['kind'] == 'transfer') ...[
-          PitchPanel(
-            child: Text(
-              '${rewardMap(q['from'])['name']} → ${rewardMap(q['to'])['name']}\n${q['year']}',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+          const SizedBox(height: 12),
+          Text(
+            '10. saniyede milliyet, 20. saniyede mevki açılır; açık her '
+            'ipucu doğru cevabın taban puanını 15 düşürür.',
+            style: Theme.of(context).textTheme.bodySmall,
           ),
+          for (final hint in (q['hints'] as List? ?? const []))
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.lightbulb_outline_rounded,
+                    size: 18,
+                    color: hubAmber(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text('$hint')),
+                ],
+              ),
+            ),
+          if (_room['explanation'] != null && _room.containsKey('reveal'))
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: PitchPanel(
+                child: Text(
+                  '${_room['correct'] == true ? 'Doğru' : 'Doğru cevap'}: '
+                  '${_room['explanation']}',
+                ),
+              ),
+            ),
           const SizedBox(height: 16),
           TextField(
             controller: _query,
@@ -637,7 +900,13 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
           for (final p in _results)
             ListTile(
               title: Text('${p['name']}'),
-              subtitle: Text('${p['country']}'),
+              subtitle: Text(
+                [
+                  if ('${p['country'] ?? ''}'.isNotEmpty) '${p['country']}',
+                  if (_positions[p['position']] != null)
+                    _positions[p['position']],
+                ].join(' · '),
+              ),
               selected: _selected == p['id'],
               onTap: locked ? null : () => setState(() => _selected = p['id']),
             ),
@@ -683,7 +952,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
               ),
             ),
         ] else if (_fakeClub) ...[
-          const Text('Hangi kulüpte oynamadı?'),
+          const Text('Futbolcu olarak hangi kulüpte hiç oynamadı?'),
+          Text(
+            'Teknik direktörlük kariyeri sayılmaz.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 12),
           FakeClubOptions(
             options: _rows(q['options']),
@@ -692,22 +965,48 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
             onSelected: locked ? null : (id) => setState(() => _selected = id),
           ),
           if (_room['explanation'] != null) Text('${_room['explanation']}'),
-        ] else
+        ] else ...[
+          if (q['kind'] == 'missing')
+            const Text('Soru işaretli durakta hangi kulüp var?'),
+          if (q['kind'] == 'mystery') const Text('Bu kariyer kimin?'),
+          const SizedBox(height: 8),
           for (final p in _rows(q['options']))
             Card(
+              color: _room['reveal'] == p['id']
+                  ? PitchColors.of(context).success.withValues(alpha: .14)
+                  : null,
               child: ListTile(
                 title: Text('${p['name']}'),
+                subtitle: _room.containsKey('reveal')
+                    ? Text(
+                        [
+                          if (_room['reveal'] == p['id']) 'Doğru cevap',
+                          if (_room['opponentAnswer'] == p['id'])
+                            'Rakibin seçimi',
+                        ].join(' · '),
+                      )
+                    : null,
                 selected: _selected == p['id'],
                 leading: Icon(
-                  _selected == p['id']
+                  _room['reveal'] == p['id']
+                      ? Icons.check_circle_rounded
+                      : _room.containsKey('reveal') && _selected == p['id']
+                      ? Icons.cancel_rounded
+                      : _selected == p['id']
                       ? Icons.radio_button_checked
                       : Icons.radio_button_off,
+                  color: _room['reveal'] == p['id']
+                      ? PitchColors.of(context).success
+                      : _room.containsKey('reveal') && _selected == p['id']
+                      ? PitchColors.of(context).error
+                      : null,
                 ),
                 onTap: locked
                     ? null
                     : () => setState(() => _selected = p['id']),
               ),
             ),
+        ],
         const SizedBox(height: 16),
         FilledButton(
           onPressed: locked || q['kind'] != 'order' && _selected == null

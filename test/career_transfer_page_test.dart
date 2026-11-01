@@ -11,8 +11,14 @@ import 'package:shared_xi/theme/app_theme.dart';
 import 'package:shared_xi/widgets/hub_ui.dart';
 
 class FakePuzzle extends CareerTransferService {
-  FakePuzzle(this.mode, {this.phase = 'guess', this.active = true});
+  FakePuzzle(
+    this.mode, {
+    this.phase = 'guess',
+    this.active = true,
+    this.extra = const {},
+  });
   final String mode;
+  final Map<String, dynamic> extra;
   String phase;
   bool active;
   Map<String, dynamic>? mutation;
@@ -20,7 +26,7 @@ class FakePuzzle extends CareerTransferService {
     {
       'id': 'period_a',
       'club': {'id': 985, 'name': 'Manchester United', 'badgeKey': 'c_985'},
-      'visit': 1,
+      'visit': 2,
     },
     {
       'id': 'period_b',
@@ -55,6 +61,8 @@ class FakePuzzle extends CareerTransferService {
       'year': 2021,
     },
     if (phase == 'order') 'player': {'name': 'Cristiano Ronaldo'},
+    'maxChecks': 2,
+    ...extra,
   };
   @override
   Future<Map<String, dynamic>> load(String mode) async => {
@@ -105,11 +113,19 @@ class FakePuzzle extends CareerTransferService {
       'mine': {'score': 0},
       'theirs': {'score': 0},
       'submitted': false,
+      if (phase == 'reveal') ...{
+        'reveal': 1,
+        'opponentAnswer': 2,
+        'correct': false,
+        'explanation': 'Cristiano Ronaldo · 2021-08-31 · 36 yaşında',
+      },
       'question': mode == 'career_race'
           ? {
               'kind': 'missing',
+              'difficulty': 'normal',
               'player': {'name': 'Cristiano Ronaldo'},
               'route': ['Sporting', '?', 'Real Madrid'],
+              'years': ['2002', '2003', '2009'],
               'options': [
                 {'id': 1, 'name': 'Manchester United'},
                 {'id': 2, 'name': 'Galatasaray'},
@@ -119,9 +135,11 @@ class FakePuzzle extends CareerTransferService {
             }
           : {
               'kind': 'transfer',
+              'difficulty': 'hard',
               'from': {'name': 'Juventus'},
               'to': {'name': 'Manchester United'},
               'year': 2021,
+              'hints': ['Milliyet: Portugal'],
             },
     },
   };
@@ -206,21 +224,84 @@ void main() {
     expect(f.mutation!['difficulty'], 'legend');
     await t.pumpWidget(const SizedBox());
   });
-  testWidgets('transfer has no difficulty choice', (t) async {
-    await mount(
-      t,
-      CareerTransferPage(
-        mode: 'transfer',
-        service: FakePuzzle('transfer', active: false),
-      ),
-    );
-    expect(find.byWidgetPredicate((w) => w is HubSegmented), findsNothing);
+  testWidgets('transfer level and today\'s file are sent on start', (t) async {
+    final f = FakePuzzle('transfer', active: false);
+    await mount(t, CareerTransferPage(mode: 'transfer', service: f));
+    expect(find.byWidgetPredicate((w) => w is HubSegmented), findsOneWidget);
+    expect(find.text('Karışık'), findsOneWidget);
     expect(
       find.textContaining('1 ücretsiz + 2 reklamlı ipucu'),
       findsOneWidget,
     );
+    expect(
+      find.textContaining('Seri yalnızca ilk denemelerde'),
+      findsOneWidget,
+    );
+    await t.ensureVisible(find.text('Zor'));
+    await t.tap(find.text('Zor'));
+    await t.pump();
+    await t.ensureVisible(find.text('Yeni transfer dosyası'));
+    await t.tap(find.text('Yeni transfer dosyası'));
+    await t.pump();
+    expect(f.mutation!['difficulty'], 'hard');
+    await t.pumpWidget(const SizedBox());
+    final daily = FakePuzzle('transfer', active: false);
+    await mount(t, CareerTransferPage(mode: 'transfer', service: daily));
+    await t.scrollUntilVisible(
+      find.text('Günün transferi'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await t.tap(find.text('Günün transferi'));
+    await t.pump();
+    expect(daily.mutation!['daily'], true);
     await t.pumpWidget(const SizedBox());
   });
+  testWidgets(
+    'finished transfer explains shared moves, badge reward and shares without the name',
+    (t) async {
+      final f = FakePuzzle(
+        'transfer',
+        phase: 'result',
+        extra: {
+          'finished': true,
+          'found': true,
+          'wrong': 1,
+          'score': 120,
+          'streak': 5,
+          'hints': [
+            {'kind': 'country', 'text': 'Italy'},
+          ],
+          'answer': {'id': 7, 'name': 'Andrea Belotti'},
+          'transfer': {
+            'from': {'id': 416, 'name': 'Torino', 'badgeKey': 'c_416'},
+            'to': {'id': 800, 'name': 'Atalanta', 'badgeKey': 'c_800'},
+            'year': 2024,
+            'date': '2024-07-01',
+            'source': 'V4 transfers / HIGH',
+            'alsoBy': ['Ola Aina'],
+          },
+          'result': {'coins': 16, 'xp': 32, 'medal': 2, 'badge': 'streak_5'},
+        },
+      );
+      await mount(t, CareerTransferPage(mode: 'transfer', service: f));
+      await t.scrollUntilVisible(
+        find.textContaining('aynı yıl yapan diğer futbolcular'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('Senin cevabın da doğru'), findsOneWidget);
+      expect(find.textContaining('Keskin Dedektif açıldı'), findsOneWidget);
+      final text = transferShare(f.session);
+      expect(text, contains('Torino → Atalanta · 2024'));
+      expect(text, contains('🟥🟩⬜ Çözüldü'));
+      expect(text, contains('🔥 5 seri'));
+      expect(text, isNot(contains('Belotti')));
+      await t.pumpAndSettle();
+      await capture(t, 'transfer_result');
+      await t.pumpWidget(const SizedBox());
+    },
+  );
   for (final mode in ['career', 'transfer']) {
     testWidgets(
       '$mode home/game use both themes, 320px large text and no local coin controls',
@@ -283,6 +364,157 @@ void main() {
       expect(find.text('2 / 2 · Kariyeri sırala'), findsOneWidget);
       expect(find.byKey(const ValueKey('period_a')), findsOneWidget);
       expect(find.byKey(const ValueKey('period_c')), findsOneWidget);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('today\'s career is started from home with the daily flag', (
+    t,
+  ) async {
+    final f = FakePuzzle('career', active: false);
+    await mount(t, CareerTransferPage(mode: 'career', service: f));
+    await t.ensureVisible(find.text('Günün kariyeri'));
+    await t.tap(find.text('Günün kariyeri'));
+    await t.pump();
+    expect(f.mutation!['daily'], true);
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets(
+    'ordering shows checks by career length, return count and the gaps note',
+    (t) async {
+      final f = FakePuzzle(
+        'career',
+        phase: 'order',
+        extra: {
+          'maxChecks': 3,
+          'checks': 1,
+          'gaps': true,
+          'daily': '2026-10-31',
+        },
+      );
+      await mount(t, CareerTransferPage(mode: 'career', service: f));
+      expect(find.text('Kontrol: 1 / 3'), findsOneWidget);
+      expect(find.text('Günün kariyeri'), findsOneWidget);
+      expect(find.text('2 ayrı dönem · dönüş var'), findsNWidgets(2));
+      expect(find.textContaining('1. dönem'), findsNothing);
+      expect(find.textContaining('Doğrulanmamış dönemler'), findsOneWidget);
+      await t.scrollUntilVisible(
+        find.text('Kontrol et · 2. hak'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Kontrol et · 2. hak'), findsOneWidget);
+      await capture(t, 'career_order_checks');
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'finished career lists the right order and a spoiler-free share',
+    (t) async {
+      final solution = [
+        {
+          'id': 'period_a',
+          'start': '2003-08-12',
+          'end': '2009-07-01',
+          'club': {'id': 985, 'name': 'Manchester United', 'badgeKey': 'c_985'},
+        },
+        {
+          'id': 'period_b',
+          'start': '2009-07-01',
+          'end': '2018-07-10',
+          'club': {'id': 418, 'name': 'Real Madrid', 'badgeKey': 'c_418'},
+        },
+      ];
+      final f = FakePuzzle(
+        'career',
+        phase: 'result',
+        extra: {
+          'finished': true,
+          'found': true,
+          'checks': 2,
+          'score': 100,
+          'correctness': [true, false, true],
+          'solution': solution,
+          'daily': '2026-10-31',
+          'result': {'coins': 8, 'xp': 16, 'medal': 3},
+        },
+      );
+      await mount(t, CareerTransferPage(mode: 'career', service: f));
+      await t.scrollUntilVisible(
+        find.text('Real Madrid · 2009 – 2018'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('DOĞRU SIRA'), findsOneWidget);
+      final text = careerShare(f.session);
+      expect(text, contains('Günün kariyeri · 31.10.2026'));
+      expect(text, contains('🟩🟥🟩 · 2/2 kontrol'));
+      expect(text, isNot(contains('Ronaldo')));
+      await capture(t, 'career_result');
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'Career Race shows the route as a timeline, the round type and the revealed answer',
+    (t) async {
+      await mount(
+        t,
+        CareerTransferOnlinePage(
+          mode: 'career_race',
+          ranked: true,
+          service: FakePuzzle('career_race'),
+        ),
+      );
+      expect(find.text('Eksik kulüp'), findsOneWidget);
+      expect(find.text('Orta'), findsOneWidget);
+      expect(find.text('Sporting · 2002'), findsOneWidget);
+      expect(find.text('? · eksik kulüp'), findsOneWidget);
+      await t.pumpWidget(const SizedBox());
+      await mount(
+        t,
+        CareerTransferOnlinePage(
+          mode: 'career_race',
+          ranked: true,
+          service: FakePuzzle('career_race', phase: 'reveal'),
+        ),
+      );
+      await t.ensureVisible(find.text('Doğru cevap'));
+      expect(find.text('Doğru cevap'), findsOneWidget);
+      expect(find.text('Rakibin seçimi'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'Transfer Duel shows the move, the timed hints and the transfer details after the round',
+    (t) async {
+      await mount(
+        t,
+        CareerTransferOnlinePage(
+          mode: 'transfer_duel',
+          ranked: true,
+          service: FakePuzzle('transfer_duel'),
+        ),
+      );
+      expect(find.text('Transfer'), findsOneWidget);
+      expect(find.text('Zor'), findsOneWidget);
+      expect(find.text('Juventus'), findsOneWidget);
+      expect(find.text('Milliyet: Portugal'), findsOneWidget);
+      expect(find.textContaining('taban puanını 15 düşürür'), findsOneWidget);
+      await t.pumpWidget(const SizedBox());
+      await mount(
+        t,
+        CareerTransferOnlinePage(
+          mode: 'transfer_duel',
+          ranked: true,
+          service: FakePuzzle('transfer_duel', phase: 'reveal'),
+        ),
+      );
+      final details = find.text(
+        'Doğru cevap: Cristiano Ronaldo · 2021-08-31 · 36 yaşında',
+      );
+      await t.ensureVisible(details);
+      expect(details, findsOneWidget);
+      expect(t.takeException(), isNull);
       await t.pumpWidget(const SizedBox());
     },
   );
