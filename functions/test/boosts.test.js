@@ -91,7 +91,7 @@ test("new policy cannot be forged for any of thirteen ranked/friend wire modes",
     assert.throws(() => B.consume({}, r, {}, "boost_basic", "x", {text: "x"}, 1));
   }
 });
-for (const mode of ["coach_xi", "squad_vault", "letter11"]) {
+for (const mode of ["squad_vault", "letter11"]) {
   test(`${mode}: real adapter consumes typed product`, async () => {
     const h = setup(); const s = (await h.call("startThreeMode", {mode, version: three.version,
       entry: "random", requestId: id()})).session;
@@ -218,13 +218,13 @@ test("missing mystery run recovers its original basic product, never a connectio
 });
 
 test("typed ad credit cannot buy a different support and identical use remains idempotent", async () => {
-  const h = setup(); const s = (await h.call("startThreeMode", {mode: "coach_xi", version: three.version,
+  const h = setup(); const s = (await h.call("startThreeMode", {mode: "letter11", version: three.version,
     entry: "random", requestId: id()})).session;
   const service = h.context.lbThreeModesService();
-  const benefit = await service.prepareHint("alice", "coach11_hint", {sessionId: s.id, boostId: "boost_basic"});
-  assert.equal(benefit.context.boostId, "boost_basic"); assert.equal(benefit.context.modeId, "coach_xi");
+  const benefit = await service.prepareHint("alice", "letter11_hint", {sessionId: s.id, boostId: "boost_basic"});
+  assert.equal(benefit.context.boostId, "boost_basic"); assert.equal(benefit.context.modeId, "letter11");
   await service.settleHint("alice", {id: "d".repeat(48), context: benefit.context});
-  const data = {mode: "coach_xi", version: three.version, sessionId: s.id, revision: s.revision,
+  const data = {mode: "letter11", version: three.version, sessionId: s.id, revision: s.revision,
     requestId: id(), action: "hint", hint: "club", slot: 0, boostId: "boost_connection", paymentSource: "ad"};
   await assert.rejects(h.call("actThreeMode", data), {code: "resource-exhausted"});
   assert.equal(h.read(`economyState/alice/threeModes/sessions/${s.id}/adCredits`), 1);
@@ -234,10 +234,10 @@ test("typed ad credit cannot buy a different support and identical use remains i
   assert.equal(a.session.support.adCreditsByProduct.boost_basic, 0);
 });
 test("expired typed ad recovers the selected SKU and retains its run ad counter", async () => {
-  const h = setup(); const s = (await h.call("startThreeMode", {mode: "coach_xi", version: three.version,
+  const h = setup(); const s = (await h.call("startThreeMode", {mode: "letter11", version: three.version,
     entry: "random", requestId: id()})).session;
   const service = h.context.lbThreeModesService();
-  const benefit = await service.prepareHint("alice", "coach11_hint", {sessionId: s.id, boostId: "boost_connection"});
+  const benefit = await service.prepareHint("alice", "letter11_hint", {sessionId: s.id, boostId: "boost_connection"});
   h.setTime(h.now + 25 * 3600000);
   const receipt = {id: "e".repeat(48), context: benefit.context};
   await service.settleHint("alice", receipt); await service.settleHint("alice", receipt);

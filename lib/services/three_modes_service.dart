@@ -55,7 +55,7 @@ class ThreeModesService {
   Future<void> watchHint(String mode, String sessionId, {String? boostId}) async {
     final status = await _transport.call('getRewardedAdStatus');
     await _transport.watch(
-      {'coach_xi': 'coach11_hint', 'letter11': 'letter11_hint', 'squad_vault': 'vault_hint'}[mode]!,
+      {'letter11': 'letter11_hint', 'squad_vault': 'vault_hint'}[mode]!,
       pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId},
     );
   }

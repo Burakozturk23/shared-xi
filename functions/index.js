@@ -9801,7 +9801,6 @@ exports.startThreeMode = lbThreeModesCallable("start");
 exports.actThreeMode = lbThreeModesCallable("act");
 exports.searchThreeMode = lbThreeModesCallable("search");
 exports.resumeThreeMode = lbThreeModesCallable("resume");
-exports.claimCoachMastery = lbThreeModesCallable("chooseAvatar");
 
 function lbCareerTransferService() {
   const db = getDatabase();

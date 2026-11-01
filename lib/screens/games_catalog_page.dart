@@ -571,7 +571,6 @@ class _BotQuickMatch extends StatelessWidget {
 const _modeTags = <String, String>{
   'Club Manager': 'STRATEJİ',
   'Squad Challenge': 'GÜNLÜK GÖREV',
-  'Hoca 11': 'TAKTİK BAĞLANTI',
   'Kadro Kasası': 'BULMACA',
   'Harf 11': 'HARF',
   'Career Puzzle': 'ZAMAN ÇİZGİSİ',

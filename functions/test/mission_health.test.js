@@ -48,7 +48,7 @@ test("missing, future and stale observations fail closed and preserve mode rollo
 });
 test("service outage replaces an unfinished ranked slot with solo without changing other slots", async () => {
   const h = harness();
-  const ready = {coach11: true, vault: true, letter11: true, career: true, transfer: true, online: true};
+  const ready = {vault: true, letter11: true, career: true, transfer: true, online: true};
   const state = M.decorate({daily: {dateKey: "2026-10-25", counters: {}, claims: {}, processed: {}},
     generalClaims: {}, updatedAt: time}, {}, time);
   const policy = {enabled: true};

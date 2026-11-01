@@ -8,7 +8,7 @@ const onlineModes = ["club_club", "club_country", "grid_classic", "grid_random",
   "cinko", "loto", "club_manager", "career_race", "transfer_duel", "mystery_duel", "fake_club_duel"];
 const soloModes = [
   ["matching", "Matching", "puzzle"], ["pyramid", "Pyramid", "puzzle"],
-  ["coach11", "Hoca 11", "squad"], ["vault", "Kadro Kasası", "squad"], ["letter11", "Harf 11", "squad"],
+  ["vault", "Kadro Kasası", "squad"], ["letter11", "Harf 11", "squad"],
   ["career", "Kariyer Bulmacası", "puzzle"], ["transfer", "Transfer Dedektifi", "puzzle"],
   ["mystery", "Gizemli Futbolcu", "puzzle"], ["chain", "Kariyer Zinciri", "puzzle"],
   ["fake_endless", "Sahte Kulüp", "puzzle"], ["this_or_that", "This or That", "choice"],
@@ -75,7 +75,10 @@ function value(bucket, definition) {
   if (metric === "uniqueWordModes") return Object.keys(bucket.wordModes || {}).length;
   return number(bucket.counters?.[metric]);
 }
+// A removed mode's mission is never available; assigned ones are swapped out.
+const soloIds = new Set(soloModes.map(([modeId]) => modeId));
 function available(d, ready, state) {
+  if (d.modeId && !soloIds.has(d.modeId)) return false;
   if (d.routeKey === "online_ranked") return ready.online === true;
   if (d.routeKey === "online_friends") return ready.friends === true;
   if (d.metric === "uniqueSoloModes") return soloModes.filter(([m]) => ready[m] === true).length >= 2;

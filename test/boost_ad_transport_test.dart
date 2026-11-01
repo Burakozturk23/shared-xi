@@ -54,7 +54,7 @@ void main() {
           ).watchHint('transfer', 'run', boostId: sku),
           'three' => ThreeModesService(
             transport: transport,
-          ).watchHint('coach_xi', 'run', boostId: sku),
+          ).watchHint('letter11', 'run', boostId: sku),
           _ => ArcadeService(
             transport: transport,
             currentUser: () => 'alice',

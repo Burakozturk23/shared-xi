@@ -26,10 +26,10 @@ test("all 13 online wireNames stay outside every boost whitelist, offer and pinn
   }
 });
 
-test("65-row coverage matrix matches the boost whitelist and cites existing tests", () => {
+test("64-row coverage matrix matches the boost whitelist and cites existing tests", () => {
   const rows = JSON.parse(fs.readFileSync(path.join(__dirname, "../../docs/specs/mission-boosts/mode-coverage.json")));
   const scope = JSON.parse(fs.readFileSync(path.join(__dirname, "../../docs/specs/mission-boosts/mode-scope.json")));
-  assert.equal(rows.length, 65);
+  assert.equal(rows.length, 64);
   assert.deepEqual(rows.map((r) => r.grup + "/" + r.mod), scope.map((r) => r.grup + "/" + r.mod));
   for (const r of rows) {
     if (r.status === "server_paid") assert.ok(r.modeIds.length && r.modeIds.every((m) => B.modes[m]), r.mod);

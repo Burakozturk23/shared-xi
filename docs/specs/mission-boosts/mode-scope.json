@@ -13,12 +13,6 @@
   },
   {
     "grup": "Solo",
-    "mod": "Hoca 11",
-    "destek": "Ülke/mevki; hoca-oyuncu kulüp izi",
-    "politika": "0 ücretsiz; mevcut 3 ipucu slotu korunur"
-  },
-  {
-    "grup": "Solo",
     "mod": "Kadro Kasası",
     "destek": "Gizli oyuncunun ülkesi veya kariyer izi",
     "politika": "0 ücretsiz; yıldız/ustalık ayrımı"

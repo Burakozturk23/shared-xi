@@ -37,7 +37,6 @@ void main() {
         'Kadro & Yönetim': [
           'Club Manager',
           'Squad Challenge',
-          'Hoca 11',
           'Kadro Kasası',
           'Harf 11',
         ],
@@ -67,8 +66,8 @@ void main() {
       expect(GameCatalog.games.where((game) => game.category.isEmpty), [
         GameCatalog.vsBot,
       ]);
-      expect(GameCatalog.games.length, 23);
-      expect(GameCatalog.games.map((game) => game.title).toSet().length, 23);
+      expect(GameCatalog.games.length, 22);
+      expect(GameCatalog.games.map((game) => game.title).toSet().length, 22);
     },
   );
 
@@ -140,7 +139,7 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Harf 11'), findsOneWidget);
       expect(find.text('Squad Challenge'), findsOneWidget);
-      expect(find.text('Hoca 11'), findsOneWidget);
+      expect(find.text('Hoca 11'), findsNothing);
       expect(find.text('Kadro Kasası'), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();

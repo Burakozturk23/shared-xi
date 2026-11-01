@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/models/coach_honours.dart';
 import 'package:shared_xi/screens/coach_honours_page.dart';
-import 'package:shared_xi/screens/three_modes_page.dart';
 import 'package:shared_xi/services/coach_honours_service.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'three_modes_page_test.dart' show FakeModes;
@@ -199,24 +198,6 @@ void main() {
     await t.tap(find.text('Tekrar dene'));
     await t.pumpAndSettle();
     expect(find.text('98 / 98 teknik direktör'), findsOneWidget);
-  });
-  testWidgets('Hoca 11 links the bundled archive without starting a game', (
-    t,
-  ) async {
-    final fake = FakeModes('coach_xi');
-    await mount(
-      t,
-      ThreeModesPage(
-        mode: 'coach_xi',
-        service: fake,
-        honoursService: CoachHonoursService(bundle: ArchiveBundle(source)),
-      ),
-    );
-    await t.tap(find.byTooltip('Hoca başarı arşivi'));
-    await t.pumpAndSettle();
-    expect(find.byType(CoachHonoursPage), findsOneWidget);
-    expect(find.text('98 / 98 teknik direktör'), findsOneWidget);
-    expect(fake.lastMutation, isNull);
   });
   for (final light in [false, true]) {
     testWidgets(

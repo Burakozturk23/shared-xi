@@ -6,7 +6,7 @@ function fromRun(uid, family, id, r) {
   let modeId; let valid = false;
   switch (family) {
     case "threeModes":
-      modeId = {coach_xi: "coach11", squad_vault: "vault", letter11: "letter11"}[r.mode];
+      modeId = {squad_vault: "vault", letter11: "letter11"}[r.mode];
       valid = r.finished === true && (r.mode === "squad_vault" ? r.won === true :
         Object.values(r.picks || {}).filter(Number.isSafeInteger).length === 11); break;
     case "careerTransfer":

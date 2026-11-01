@@ -1,23 +1,18 @@
 import '../widgets/paid_hint_button.dart';
 import 'dart:async';
-import '../app/route_appearance.dart';
-import 'coach_honours_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import '../app/app_feedback.dart';
 import '../app/game_audio.dart';
 import '../data/country_flags.dart';
-import '../models/coach.dart';
 import '../models/club.dart';
 import '../widgets/club_badge.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/three_modes_service.dart';
-import '../services/coach_honours_service.dart';
-import '../widgets/coach_avatar.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
-import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
 
 List<Map<String, dynamic>> _maps(dynamic v) =>
     (v is List ? v : const []).map(rewardMap).toList();
@@ -42,6 +37,38 @@ String _nextMedal(Map<String, dynamic> r) => r['mastery'] == true
     ? 'Sıradaki: 8 oyuncu'
     : 'Sıradaki: 5 oyuncu';
 String _formation(String v) => v.split('').join('-');
+
+const _levels = {'easy': 'Kolay', 'medium': 'Orta', 'hard': 'Zor'};
+
+/// Share card for a finished letter XI: score as squares, never the names.
+String letterShare(Map<String, dynamic> session) {
+  final score = (session['score'] as num? ?? 0).toInt();
+  final day = '${session['day'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · Harf 11 · ${'${session['title']}'.split(' ').first}',
+    if (session['entry'] == 'daily') 'Günün harfi · $day',
+    '${'🟩' * score}${'⬜' * (11 - score)} $score/11',
+    '${session['wrong'] ?? 0} yanlış · ${(session['hints'] as List?)?.length ?? 0} ipucu',
+  ].join('\n');
+}
+
+/// Share card for a finished vault; today's vault never names the club.
+String vaultShare(Map<String, dynamic> session) {
+  final stars = (session['stars'] as num? ?? 0).toInt();
+  final guesses = 5 - (session['remaining'] as num? ?? 0).toInt();
+  final daily = session['entry'] == 'daily';
+  final day = '${session['day'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · Kadro Kasası',
+    daily ? 'Günün kasası · $day' : '${session['title']}',
+    session['won'] == true
+        ? '${'⭐' * stars}${'☆' * (5 - stars)} · $guesses/5 tahmin'
+        : '🔒 Kasa açılmadı · $guesses/5 tahmin',
+    if ((session['hints'] as List?)?.isNotEmpty == true)
+      '💡 ${(session['hints'] as List).length} ipucu',
+  ].join('\n');
+}
+
 const _positions = {
   'GK': 'Kaleci',
   'DEF': 'Defans',
@@ -51,15 +78,9 @@ const _positions = {
 
 /// The same server-backed contract powers all entry routes and collections.
 class ThreeModesPage extends StatefulWidget {
-  const ThreeModesPage({
-    super.key,
-    required this.mode,
-    this.service,
-    this.honoursService,
-  });
+  const ThreeModesPage({super.key, required this.mode, this.service});
   final String mode;
   final ThreeModesService? service;
-  final CoachHonoursService? honoursService;
   @override
   State<ThreeModesPage> createState() => _ThreeModesPageState();
 }
@@ -74,16 +95,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   bool _busy = true, _searching = false, _archive = false, _showHub = false;
   String? _error;
   String _form = '433', _difficulty = '';
-
-  /// Hoca 11 collection filter by club name ('' = all clubs).
-  String _clubFilter = '';
   bool get _vault => widget.mode == 'squad_vault';
-  bool get _coach => widget.mode == 'coach_xi';
-  String get _title => _vault
-      ? 'Kadro Kasası'
-      : _coach
-      ? 'Hoca 11'
-      : 'Harf 11';
+  String get _title => _vault ? 'Kadro Kasası' : 'Harf 11';
   String get _version => '${_status['version']}';
   bool get _finished => _session['finished'] == true;
   bool get _playing => _session.isNotEmpty && !_showHub;
@@ -137,35 +150,20 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     _searching = false;
   }
 
-  Future<void> _start(
-    String entry, {
-    String? target,
-    String? league,
-    String? spell,
-  }) => _run(() async {
-    final r = await _service.mutate('startThreeMode', {
-      'mode': widget.mode,
-      'version': _version,
-      'entry': entry,
-      'formation': _form,
-      // A chosen tenure is always the hard game.
-      if (spell != null)
-        'difficulty': 'hard'
-      else if (_difficulty.isNotEmpty)
-        'difficulty': _difficulty,
-      if (target != null) 'target': target,
-      if (league != null) 'league': league,
-      if (spell != null) 'spell': spell,
-    });
+  Future<void> _start(String entry, {String? target, String? league}) =>
+      _run(() async {
+        final r = await _service.mutate('startThreeMode', {
+          'mode': widget.mode,
+          'version': _version,
+          'entry': entry,
+          'formation': _form,
+          if (_difficulty.isNotEmpty) 'difficulty': _difficulty,
+          if (target != null) 'target': target,
+          if (league != null) 'league': league,
+        });
         if (!mounted) return;
         if (entry == 'random')
-          AppFeedback.sfx(
-            _vault
-                ? Sfx.cardFlip
-                : _coach
-                ? Sfx.coachRoulette
-                : Sfx.cardSwipe,
-          );
+          AppFeedback.sfx(_vault ? Sfx.cardFlip : Sfx.cardSwipe);
         setState(() {
           _session = rewardMap(r['session']);
           _archive = false;
@@ -290,17 +288,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     appBar: AppBar(
       title: Text(_title),
       actions: [
-        if (_coach)
-          IconButton(
-            tooltip: 'Hoca başarı arşivi',
-            icon: const Icon(Icons.emoji_events_outlined),
-            onPressed: () => Navigator.of(context).push(
-              LinkballRoute<void>(
-                builder: (_) =>
-                    CoachHonoursPage(service: widget.honoursService),
-              ),
-            ),
-          ),
         if (_playing && !_finished)
           IconButton(
             tooltip: 'Koleksiyonu incele',
@@ -365,17 +352,23 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         .where((e) => rewardMap(e['record'])['solved'] == true)
         .length;
     final palette = PitchColors.of(context);
-    final unit = _vault
-        ? 'kasa'
-        : _coach
-        ? 'hoca'
-        : 'harf';
+    final unit = _vault ? 'kasa' : 'harf';
+    final stars = entries.fold<int>(
+      0,
+      (n, e) => n + ((rewardMap(e['record'])['best'] as num?) ?? 0).toInt(),
+    );
     final stats = [
       HubStatTile(
         label: 'Koleksiyon',
         value: '$completed / ${entries.length}',
         note: '$unit tamamlandı',
       ),
+      if (_vault)
+        HubStatTile(
+          label: 'Kasa ustalığı',
+          value: '$stars / ${entries.length * 5}',
+          note: 'toplam yıldız',
+        ),
       if (energy.isNotEmpty)
         energy['enabled'] == true
             ? HubStatTile(
@@ -397,30 +390,20 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
             Align(
               alignment: Alignment.centerLeft,
               child: HubIconBox(
-                _vault
-                    ? Icons.lock_open_rounded
-                    : _coach
-                    ? Icons.sports_rounded
-                    : Icons.abc_rounded,
+                _vault ? Icons.lock_open_rounded : Icons.abc_rounded,
                 size: 52,
                 background: palette.background.withValues(alpha: .4),
               ),
             ),
             const SizedBox(height: 14),
             Text(
-              _vault
-                  ? 'Üç bayrak. Bir kulüp.'
-                  : _coach
-                  ? 'Bir hoca, senin ilk 11’in.'
-                  : 'Bir harf, senin ilk 11’in.',
+              _vault ? 'Üç bayrak. Bir kulüp.' : 'Bir harf, senin ilk 11’in.',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
               _vault
                   ? 'Farklı dönemlerde aynı kulüpte oynamış 11 futbolcu. Üç bayraktan kulübü bul; beş tahmin hakkın var.'
-                  : _coach
-                  ? 'Hocasıyla gerçekten çalışmış futbolculardan kadronu kur. Doğrulanamayan bağlar yanlış sayılmaz.'
                   : 'Adı, soyadı veya bilinen lakabı verilen harfle başlayan futbolcularla kadronu kur.',
               style: Theme.of(
                 context,
@@ -489,31 +472,43 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
         ),
         const SizedBox(height: 8),
-        if (_coach)
-          Text(
-            _difficulty == 'hard'
-                ? 'Zor: hocanın tek bir dönemi (kulüp · yıllar). Aynı hocanın başka döneminden oyuncu yanlış sayılır.'
-                : '${_maps(_status['entries']).length} hoca. Hoca dönemleri Wikidata’dan, oyuncu dönemleri kariyer kayıtlarından; en az 180 gün aynı kulüpte.',
-          ),
         const Text(
-          'Günün resmi denemesinde en az 8 oyuncu: +10 coin ve +20 XP, günde bir kez.',
+          'Günün resmi denemesinde en az 8 oyuncu (orta harfte 7): +10 coin ve +20 XP, günde bir kez. '
+          'Ş, İ, Ç gibi zor harfler günün harfi olmaz; rulet önce ustalaşmadığın harfleri getirir.',
+        ),
+      ],
+      if (_vault) ...[
+        HubSegmented<String>(
+          label: 'Zorluk',
+          options: const {
+            '': 'Karışık',
+            'easy': 'Kolay',
+            'medium': 'Orta',
+            'hard': 'Zor',
+          },
+          value: _difficulty,
+          onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Zorluk, kadrodaki oyuncuların ne kadar tanındığına göre. Rastgele kasa önce henüz çözmediğin kulüpleri getirir.',
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Günün kasasını açarsan: +10 coin ve +20 XP, günde bir kez.',
         ),
       ],
       const SizedBox(height: 12),
       PitchAction(
-        label: _vault
-            ? 'Rastgele kasa aç'
-            : _coach
-            ? 'Hoca ruleti'
-            : 'Harf ruleti',
+        label: _vault ? 'Rastgele kasa aç' : 'Harf ruleti',
         icon: Icons.shuffle_rounded,
         onPressed: !_canStart ? null : () => _start('random'),
       ),
-      if (!_vault) ...[
+      ...[
         const SizedBox(height: 8),
         PitchAction(
           label:
-              '${_coach ? 'Günün hocası' : 'Günün harfi'} · ${_status['dailyUsed'] == true ? 'Tekrar oyna' : 'Ücretsiz'}',
+              '${_vault ? 'Günün kasası' : 'Günün harfi'} · ${_status['dailyUsed'] == true ? 'Tekrar oyna' : 'Ücretsiz'}',
           secondary: true,
           icon: Icons.today_rounded,
           onPressed: !_canStart || _status['dailyUnavailable'] == true
@@ -532,25 +527,8 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         ),
       ],
       const SizedBox(height: 16),
-      if (_coach) ...[
-        PitchRow(
-          title: 'Hoca başarı arşivi',
-          subtitle: 'Tarihsel kupalar, ödüller ve hoca profilleri',
-          icon: Icons.emoji_events_outlined,
-          onTap: () => Navigator.of(context).push(
-            LinkballRoute<void>(
-              builder: (_) => CoachHonoursPage(service: widget.honoursService),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-      ],
       PitchRow(
-        title: _vault
-            ? 'Kasa arşivi ve ligler'
-            : _coach
-            ? 'Hoca koleksiyonu'
-            : 'Harf Pasaportu',
+        title: _vault ? 'Kasa arşivi ve ligler' : 'Harf Pasaportu',
         subtitle: 'En iyi kadrolar ve kalıcı başarılar',
         icon: Icons.collections_bookmark_outlined,
         onTap: () => setState(() => _archive = !_archive),
@@ -583,19 +561,14 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           ),
         ],
         PitchSectionTitle(_vault ? 'Kulüpler' : 'Koleksiyon'),
-        if (_coach) ...[
-          _clubChips(entries),
-          const SizedBox(height: 8),
-        ],
+        if (!_vault) ...[_passport(entries), const SizedBox(height: 12)],
         Text(
           _vault
               ? '1 / 3 / 5 yıldız ödülleri bir kez kazanılır: toplam 25 coin + 50 XP. İlk 5 farklı kasa: +30 coin + 50 XP.'
               : '5 / 8 / 11 oyuncu ve ustalık madalyaları: toplam 40 coin + 80 XP. Ustalık: 11 oyuncu, sıfır ipucu, en fazla 3 yanlış.',
         ),
         const SizedBox(height: 12),
-        for (var i = 0; i < entries.length; i++)
-          if (_clubFilter.isEmpty ||
-              _strings(entries[i]['clubs']).contains(_clubFilter)) ...[
+        for (var i = 0; i < entries.length; i++) ...[
           if (_vault &&
               (i == 0 || entries[i - 1]['league'] != entries[i]['league']))
             PitchSectionTitle('${entries[i]['league']}'),
@@ -620,67 +593,93 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     return PitchRow(
       title: '${e['name']}',
       icon: _vault ? Icons.shield_outlined : Icons.military_tech_outlined,
-      leading: _coach
-          ? CoachAvatar(
-              coach: Coach(
-                id: '${e['portraitId'] ?? e['id']}',
-                name: '${e['name']}',
-                countries: const [],
-                clubIds: const [],
-              ),
-            )
-          : _vault && r['solved'] == true
-          ? _clubBadge(e)
-          : null,
+      leading: _vault && r['solved'] == true ? _clubBadge(e) : null,
       subtitle: _vault
           ? '${e['league']} · ${r['best'] ?? 0} yıldız'
-          : _coach && _strings(e['clubs']).isNotEmpty
-          ? '${_strings(e['clubs']).take(2).join(' · ')}${_strings(e['clubs']).length > 2 ? ' +${_strings(e['clubs']).length - 2}' : ''}\n'
-                '${r['best'] ?? 0}/11 · ${_medal(r)}'
-          : '${r['best'] ?? 0}/11 · ${_medal(r)} · ${_nextMedal(r)}',
+          : [
+              ?_levels['${e['difficulty']}'],
+              '${r['best'] ?? 0}/11',
+              _medal(r),
+              _nextMedal(r),
+            ].join(' · '),
       onTap: _busy ? null : () => _showEntry(e),
     );
   }
 
-  /// Club chips with how many of that club's coaches have a medal.
-  Widget _clubChips(List<Map<String, dynamic>> entries) {
-    final total = <String, int>{}, done = <String, int>{};
-    for (final e in entries) {
-      final solved = ((rewardMap(e['record'])['best'] as num?) ?? 0) > 0;
-      for (final club in _strings(e['clubs'])) {
-        total[club] = (total[club] ?? 0) + 1;
-        if (solved) done[club] = (done[club] ?? 0) + 1;
-      }
-    }
-    final clubs = total.keys.where((c) => total[c]! >= 3).toList()
-      ..sort((a, b) => total[b]!.compareTo(total[a]!));
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ChoiceChip(
-          label: const Text('Tümü'),
-          selected: _clubFilter.isEmpty,
-          onSelected: (_) => setState(() => _clubFilter = ''),
-        ),
-        for (final club in clubs)
-          ChoiceChip(
-            label: Text('$club · ${done[club] ?? 0}/${total[club]}'),
-            selected: _clubFilter == club,
-            onSelected: (_) =>
-                setState(() => _clubFilter = _clubFilter == club ? '' : club),
+  /// Harf Pasaportu: letters completed with all eleven and the next reward.
+  Widget _passport(List<Map<String, dynamic>> entries) {
+    final p = PitchColors.of(context);
+    final done = entries
+        .where((e) => ((rewardMap(e['record'])['best'] as num?) ?? 0) >= 11)
+        .length;
+    final milestones = _maps(_status['passport']);
+    final next = milestones
+        .where((m) => m['claimed'] != true && (m['at'] as num) > done)
+        .firstOrNull;
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('HARF PASAPORTU', style: hubCaps(context)),
+          const SizedBox(height: 6),
+          Text(
+            '$done / ${entries.length} harf tamamlandı',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-      ],
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: entries.isEmpty ? 0 : done / entries.length,
+            minHeight: 6,
+            borderRadius: BorderRadius.circular(3),
+            backgroundColor: p.raised,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            next == null
+                ? 'Tüm pasaport ödüllerini aldın.'
+                : 'Sıradaki ödül ${next['at']} harfte: +${next['coins']} coin, +${next['xp']} XP',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final e in entries)
+                Semantics(
+                  label:
+                      '${e['letter'] ?? e['name']} ${((rewardMap(e['record'])['best'] as num?) ?? 0) >= 11 ? 'tamamlandı' : 'açık'}',
+                  excludeSemantics: true,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color:
+                          ((rewardMap(e['record'])['best'] as num?) ?? 0) >= 11
+                          ? p.accent.withValues(alpha: .22)
+                          : p.raised,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${e['letter'] ?? e['name']}',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color:
+                            ((rewardMap(e['record'])['best'] as num?) ?? 0) >=
+                                11
+                            ? p.accent
+                            : p.muted,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
-
-  /// Source ids read as their provider.
-  String _sourceLabel(Iterable<String> sources) => {
-    for (final x in sources)
-      x.startsWith('wikidata:')
-          ? 'Wikidata hoca dönemi · kariyer kaydı'
-          : 'StatsBomb maç kadrosu',
-  }.join(' · ');
 
   Widget _clubBadge(Map<String, dynamic> c) => ClubBadge(
     club: Club(
@@ -720,33 +719,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                 Text(
                   'Oynanabilir düzenler: ${_strings(e['formations']).map(_formation).join(' / ')}',
                 ),
-              if (_coach && _strings(e['clubs']).isNotEmpty)
-                Text('Kulüpler: ${_strings(e['clubs']).join(' · ')}'),
-              if (_coach && _maps(e['spells']).isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Text('DÖNEMLER · ZOR', style: hubCaps(ctx)),
-                const SizedBox(height: 4),
-                for (final spell in _maps(e['spells']))
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.history_edu_outlined),
-                    title: Text('${spell['club']} · ${spell['period']}'),
-                    subtitle: Text('${spell['count']} oyuncu'),
-                    trailing: const Icon(Icons.play_arrow_rounded),
-                    enabled: _canStart,
-                    onTap: () => Navigator.pop(ctx, 'spell:${spell['id']}'),
-                  ),
-              ],
-              if (_coach)
-                TextButton.icon(
-                  icon: const Icon(Icons.emoji_events_outlined),
-                  label: const Text('Başarı arşivinde ara'),
-                  onPressed: () => Navigator.pop(ctx, 'honours'),
-                ),
-              if (_coach && e['avatarId'] != null)
-                Text(
-                  e['avatarOwned'] == true ? 'Avatar sende' : 'Avatar kilitli',
-                ),
               if (r['bestFormation'] != null)
                 Text(_formation('${r['bestFormation']}')),
               for (final p in _maps(r['bestLineup']))
@@ -772,24 +744,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                         ),
                   ],
                 ),
-              if (_coach && _maps(e['bestEvidence']).isNotEmpty)
-                ExpansionTile(
-                  title: const Text('Kadro bağlantıları'),
-                  children: [
-                    for (final p in _maps(e['bestEvidence']))
-                      ListTile(
-                        title: Text('${p['name']}'),
-                        subtitle: SelectableText(
-                          _maps(p['links'])
-                              .map(
-                                (l) =>
-                                    '${l['club']} · ${l['period'] ?? l['date']}\n${_sourceLabel(_strings(l['sources']))}',
-                              )
-                              .join('\n'),
-                        ),
-                      ),
-                  ],
-                ),
               const SizedBox(height: 16),
               if (!_vault || r['solved'] == true)
                 PitchAction(
@@ -802,66 +756,13 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                 const Text(
                   'Kulübü rastgele veya lig kasasında çözerek arşivde aç.',
                 ),
-              if (_coach &&
-                  r['mastery'] == true &&
-                  e['avatarId'] != null &&
-                  e['avatarChoice'] == null) ...[
-                const SizedBox(height: 16),
-                const Text(
-                  'Ustalık ödülünü bir kez seç. Avatar zaten sende ise sabit coin karşılığı verilir.',
-                ),
-                const SizedBox(height: 8),
-                PitchAction(
-                  label: 'Hoca avatarını al',
-                  onPressed: () => Navigator.pop(ctx, 'avatar'),
-                ),
-                const SizedBox(height: 8),
-                PitchAction(
-                  label: '${e['avatarCoins']} coin seç',
-                  secondary: true,
-                  onPressed: () => Navigator.pop(ctx, 'coins'),
-                ),
-              ],
-              if (e['avatarChoice'] != null)
-                const Text('Özel ustalık ödülü alındı.'),
             ],
           ),
         ),
       ),
     );
     if (!mounted || result == null) return;
-    if (result == 'honours') {
-      await Navigator.of(context).push(
-        LinkballRoute<void>(
-          builder: (_) => CoachHonoursPage(
-            service: widget.honoursService,
-            initialCoachId: '${e['portraitId'] ?? e['id']}',
-            initialQuery: '${e['name']}',
-          ),
-        ),
-      );
-    } else if (result == 'play') {
-      await _start('archive', target: '${e['id']}');
-    } else if (result.startsWith('spell:')) {
-      await _start(
-        'archive',
-        target: '${e['id']}',
-        spell: result.substring('spell:'.length),
-      );
-    } else if (await _confirm(
-      'Ödül seçimini onayla',
-      'Bu hedefte tek seferlik seçimin: ${result == 'avatar' ? 'avatar (zaten sahipsen coin)' : '${e['avatarCoins']} coin'}.',
-    )) {
-      await _run(() async {
-        final r = await _service.mutate('claimCoachMastery', {
-          'mode': widget.mode,
-          'version': _version,
-          'target': e['id'],
-          'choice': result,
-        });
-        if (mounted) setState(() => _status = r);
-      });
-    }
+    if (result == 'play') await _start('archive', target: '${e['id']}');
   }
 
   List<Widget> _game() {
@@ -871,35 +772,26 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_coach)
-              CoachAvatar(
-                coach: Coach(
-                  id: '${_session['portraitId'] ?? ''}',
-                  name: '${_session['title']}',
-                  countries: const [],
-                  clubIds: const [],
-                ),
-              ),
             if (_vault && _session['club'] is Map)
               _clubBadge(rewardMap(_session['club'])),
             Text(
               '${_session['title']}',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            if (_session['spell'] is Map) ...[
-              const SizedBox(height: 6),
-              ManagerTag(
-                'Zor · ${rewardMap(_session['spell'])['club']} · ${rewardMap(_session['spell'])['period']}',
-                active: true,
-              ),
-            ] else if ('${_session['context'] ?? ''}'.isNotEmpty)
+            if ('${_session['context'] ?? ''}'.isNotEmpty)
               Text('${_session['context']}'),
             if (_vault) Text('${_session['historyNote']}'),
             if (_session['league'] != null) Text('${_session['league']}'),
+            if (_vault && !_finished) ...[
+              const SizedBox(height: 10),
+              _starMeter((_session['stars'] as num? ?? 0).toInt()),
+            ],
             const SizedBox(height: 10),
             Text(
               _vault
-                  ? '${_session['remaining']} tahmin · ${_session['stars']} yıldız'
+                  ? _finished
+                        ? '${_session['remaining']} tahmin · ${_session['stars']} yıldız'
+                        : '${_session['remaining']} tahmin hakkı kaldı'
                   : '${_session['score']}/11 oyuncu · ${_session['wrong']} yanlış',
             ),
             Text(
@@ -933,11 +825,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                 ),
               )
               .toList(),
-        ),
-      if (_coach)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text('${_session['coverage']}'),
         ),
       const SizedBox(height: 8),
       _pitch(slots),
@@ -1008,9 +895,12 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                           'league': 'Lig −1★',
                           'player': 'Oyuncu −2★',
                         }
-                      : _coach
-                      ? {'country': 'Ülke', 'club': 'Kulüp', 'years': 'Yıl'}
-                      : {'country': 'Ülke', 'club': 'Kulüp', 'league': 'Lig'})
+                      : const {
+                          'country': 'Ülke',
+                          'club': 'Kulüp',
+                          'league': 'Lig',
+                          'shape': 'İsim kalıbı',
+                        })
                   .entries)
             PaidHintButton(
               session: _session,
@@ -1050,9 +940,12 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
                             'league': 'Lig −1★',
                             'player': 'Oyuncu −2★',
                           }
-                        : _coach
-                        ? {'country': 'Ülke', 'club': 'Kulüp', 'years': 'Yıl'}
-                        : {'country': 'Ülke', 'club': 'Kulüp', 'league': 'Lig'})
+                        : const {
+                            'country': 'Ülke',
+                            'club': 'Kulüp',
+                            'league': 'Lig',
+                            'shape': 'İsim kalıbı',
+                          })
                     .entries
                     .map(
                       (h) => ActionChip(
@@ -1100,23 +993,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         ),
       ] else
         ..._result(),
-      if (_coach && _finished) ...[
-        const PitchSectionTitle('Doğrulanmış bağlar'),
-        for (final slot in slots)
-          if (slot['player'] != null) ...[
-            Text(
-              '${rewardMap(slot['player'])['name']}',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            for (final e in _maps(slot['evidence']))
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SelectableText(
-                  '${e['club']} · ${e['period'] ?? e['date']}\n${_sourceLabel(_strings(e['sources']))}',
-                ),
-              ),
-          ],
-      ],
     ];
   }
 
@@ -1254,6 +1130,44 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     );
   }
 
+  /// Stars still available in this vault; each wrong guess or hint costs.
+  Widget _starMeter(int stars) {
+    final amber = hubAmber(context);
+    final level = _levels['${_session['difficulty']}'];
+    return Semantics(
+      label: '$stars yıldız kaldı',
+      excludeSemantics: true,
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < 5; i++)
+                Icon(
+                  i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                  color: i < stars ? amber : PitchColors.of(context).muted,
+                  size: 22,
+                ),
+            ],
+          ),
+          if (level != null)
+            HubPill(
+              level,
+              color: amber,
+              background: amber.withValues(alpha: .14),
+            ),
+          Text(
+            'Yanlış tahmin ve ipucu yıldız düşürür. Ödül için en az 1 yıldızla aç.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _result() {
     final r = rewardMap(_session['result']);
     final medals = _vault
@@ -1286,7 +1200,9 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
             : Icons.groups_rounded,
         kicker: 'Oyun tamamlandı',
         title: _vault
-            ? '$score yıldız'
+            ? _session['won'] == true
+                  ? '$score yıldız'
+                  : 'Kasa açılmadı'
             : r['mastery'] == true
             ? 'Ustalık kazandın!'
             : '$score/11 kadro',
@@ -1296,14 +1212,20 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
         coins: (r['coins'] as num?)?.toInt(),
         xp: (r['xp'] as num?)?.toInt(),
         notes: [
+          if (r['passport'] != null)
+            'Harf Pasaportu: ${r['passport'] == 'all' ? 'tüm harfler' : '${r['passport']} harf'} tamamlandı!',
+          if (_vault && _session['won'] == true && score == 0)
+            'Kasayı açtın ama yıldızın kalmadı; ödül için en az 1 yıldız gerekir.',
           _vault
               ? 'Aynı kulübün yıldız ödülleri tüm kasa çeşitlerinde ortaktır.'
               : 'Aynı hedefin madalyaları rulet, günlük ve arşivde ortaktır.',
           if (_status['linked'] != true)
             'Ödüllerin bekliyor. Aynı misafir hesabını Google’a bağlayınca aktarılır.',
-          if (r['avatarAvailable'] == true)
-            'Hoca koleksiyonunda avatar veya sabit coin ödülünü seçebilirsin.',
         ],
+      ),
+      const SizedBox(height: 12),
+      ShareResultButtons(
+        text: _vault ? vaultShare(_session) : letterShare(_session),
       ),
       const SizedBox(height: 16),
       PitchAction(

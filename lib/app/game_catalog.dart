@@ -14,7 +14,6 @@ import '../screens/vs_bot_mode_selection_page.dart';
 import '../screens/club_manager_hub_page.dart';
 import '../screens/build_xi_theme_selection_page.dart';
 import '../screens/endless_mode_selection_page.dart';
-import '../screens/coach_xi_difficulty_page.dart';
 import '../screens/career_puzzle_page.dart';
 import '../screens/kadro_kasasi_page.dart';
 import '../screens/transfer_detective_page.dart';
@@ -127,7 +126,6 @@ class GameCatalog {
         modern: true,
       );
     const titles = <String, String>{
-      'coach11': 'Hoca 11',
       'vault': 'Kadro Kasası',
       'letter11': 'Harf 11',
       'career': 'Career Puzzle',
@@ -325,15 +323,6 @@ class GameCatalog {
       subtitle: 'Günlük görev, kadro kur, coin kazan',
       icon: Icons.groups_outlined,
       page: BuildXiThemeSelectionPage(),
-      category: 'Kadro & Yönetim',
-      requiresRepository: false,
-      modern: true,
-    ),
-    GameEntry(
-      title: 'Hoca 11',
-      subtitle: 'Doğrulanmış hoca bağlarıyla ilk 11 kur',
-      icon: Icons.sports_outlined,
-      page: CoachXiDifficultyPage(),
       category: 'Kadro & Yönetim',
       requiresRepository: false,
       modern: true,

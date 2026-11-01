@@ -37,7 +37,7 @@ void main() {
 
       // Each category names its featured mode and how many more it holds.
       for (final preview in [
-        'Club Manager · +4',
+        'Club Manager · +3',
         'Transfer Detective · +4',
         'UCL Moments · +7',
         'Futbol Lingo · +2',

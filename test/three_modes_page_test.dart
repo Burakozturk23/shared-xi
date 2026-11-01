@@ -34,11 +34,7 @@ class FakeModes extends ThreeModesService {
     'mode': mode,
     'entry': 'random',
     'targetId': 'A',
-    'title': mode == 'squad_vault'
-        ? 'Gizli kulüp'
-        : mode == 'coach_xi'
-        ? 'Pep Guardiola'
-        : 'A harfi',
+    'title': mode == 'squad_vault' ? 'Gizli kulüp' : 'A harfi',
     'formation': '433',
     'formations': ['433', '442', '352', '4231', '451'],
     'revision': 0,
@@ -73,29 +69,18 @@ class FakeModes extends ThreeModesService {
     'linked': true,
     'dailyUsed': false,
     'leagueSnapshot': 'test',
+    if (mode == 'letter11')
+      'passport': [
+        {'at': 5, 'coins': 20, 'xp': 40, 'claimed': false},
+      ],
     'entries': [
       {
         'id': 'A',
-        'name': mode == 'coach_xi'
-            ? 'Pep Guardiola'
-            : mode == 'squad_vault'
-            ? 'Kilitli kasa'
-            : 'A',
+        'name': mode == 'squad_vault' ? 'Kilitli kasa' : 'A',
         'formations': ['433', '442'],
         'count': 120,
         'league': 'Premier League',
         'record': null,
-        if (mode == 'coach_xi') ...{
-          'clubs': ['Manchester City', 'FC Barcelona', 'Bayern Munich'],
-          'spells': [
-            {
-              'id': '281_2016',
-              'club': 'Manchester City',
-              'period': '2016–2026',
-              'count': 80,
-            },
-          ],
-        },
       },
     ],
   };
@@ -140,6 +125,7 @@ class FinishedModes extends FakeModes {
   Map<String, dynamic> get session => {
     ...super.session,
     'finished': true,
+    'won': true,
     'result': {
       'score': mode == 'squad_vault' ? 4 : 11,
       'newMedals': mode == 'squad_vault' ? [] : ['3'],
@@ -149,17 +135,15 @@ class FinishedModes extends FakeModes {
   };
 }
 
-/// A coach whose started game is one tenure (the hard mode).
-class HardCoachModes extends FakeModes {
-  HardCoachModes() : super('coach_xi');
+/// A vault opened on the last guess after hints: won, zero stars.
+class ZeroStarVault extends FinishedModes {
+  ZeroStarVault() : super('squad_vault');
   @override
   Map<String, dynamic> get session => {
     ...super.session,
-    'spell': {
-      'id': '281_2016',
-      'club': 'Manchester City',
-      'period': '2016–2026',
-    },
+    'stars': 0,
+    'remaining': 0,
+    'result': {'score': 0, 'newMedals': [], 'coins': 0, 'xp': 0},
   };
 }
 
@@ -225,11 +209,7 @@ void main() {
       await (FontLoader(entry.$1)..addFont(rootBundle.load(entry.$2))).load();
     }
   });
-  for (final (mode, unit) in [
-    ('coach_xi', 'hoca'),
-    ('letter11', 'harf'),
-    ('squad_vault', 'kasa'),
-  ]) {
+  for (final (mode, unit) in [('letter11', 'harf'), ('squad_vault', 'kasa')]) {
     testWidgets('$mode landing shows a collection tile and labelled choices', (
       t,
     ) async {
@@ -238,12 +218,12 @@ void main() {
       expect(find.text('0 / 1'), findsOneWidget);
       expect(find.text('$unit tamamlandı'), findsOneWidget);
       final segmented = find.byWidgetPredicate((w) => w is HubSegmented);
+      // Both modes pick a difficulty; only Harf 11 picks a formation.
+      expect(segmented, findsOneWidget);
+      expect(find.text('ZORLUK'), findsOneWidget);
       if (mode == 'squad_vault') {
-        expect(segmented, findsNothing);
         expect(find.text('FORMASYON'), findsNothing);
       } else {
-        expect(segmented, findsOneWidget);
-        expect(find.text('ZORLUK'), findsOneWidget);
         expect(find.text('FORMASYON'), findsOneWidget);
         await t.ensureVisible(find.text('Kolay'));
         await t.tap(find.text('Kolay'));
@@ -257,7 +237,6 @@ void main() {
     });
   }
   for (final (mode, title, subtitle) in [
-    ('coach_xi', '11/11 kadro', 'Yeni madalya: Altın'),
     ('letter11', '11/11 kadro', 'Yeni madalya: Altın'),
     ('squad_vault', '4 yıldız', null),
   ]) {
@@ -290,7 +269,7 @@ void main() {
       expect(t.takeException(), isNull);
     });
   }
-  for (final mode in ['coach_xi', 'letter11', 'squad_vault']) {
+  for (final mode in ['letter11', 'squad_vault']) {
     testWidgets(
       '$mode landing and resumed pitch render in both themes and large type',
       (t) async {
@@ -312,46 +291,89 @@ void main() {
       },
     );
   }
-  testWidgets('a coach tenure starts the hard game and shows its era', (
+  test("vault share card never names today's club", () {
+    final daily = vaultShare({
+      'entry': 'daily',
+      'day': '2026-10-31',
+      'title': 'Galatasaray',
+      'won': true,
+      'stars': 3,
+      'remaining': 3,
+      'hints': [
+        {'kind': 'flag'},
+      ],
+    });
+    expect(daily, contains('Günün kasası · 31.10.2026'));
+    expect(daily, contains('⭐⭐⭐☆☆ · 2/5 tahmin'));
+    expect(daily, contains('💡 1 ipucu'));
+    expect(daily, isNot(contains('Galatasaray')));
+    final lost = vaultShare({
+      'entry': 'random',
+      'title': 'Galatasaray',
+      'won': false,
+      'stars': 0,
+      'remaining': 0,
+      'hints': [],
+    });
+    expect(lost, contains('Galatasaray'));
+    expect(lost, contains('🔒 Kasa açılmadı · 5/5 tahmin'));
+  });
+  testWidgets('a vault opened with no stars left explains the missing reward', (
     t,
   ) async {
-    final fake = HardCoachModes();
-    await open(t, fake);
-    final collection = find.text('Hoca koleksiyonu');
+    await open(t, ZeroStarVault());
+    final note = find.text(
+      'Kasayı açtın ama yıldızın kalmadı; ödül için en az 1 yıldız gerekir.',
+    );
     await t.scrollUntilVisible(
-      collection,
+      note,
       250,
       scrollable: find.byType(Scrollable).first,
     );
-    await t.tap(collection);
-    await t.pumpAndSettle();
+    expect(note, findsOneWidget);
     await t.scrollUntilVisible(
-      find.text('Pep Guardiola'),
+      find.text('Paylaş'),
       250,
       scrollable: find.byType(Scrollable).first,
     );
-    await t.tap(find.text('Pep Guardiola').last);
-    await t.pumpAndSettle();
-    await capture(t, 'coach_tenure_sheet');
-    expect(
-      find.text('Kulüpler: Manchester City · FC Barcelona · Bayern Munich'),
-      findsOneWidget,
-    );
-    final spell = find.text('Manchester City · 2016–2026');
-    await t.ensureVisible(spell);
-    await t.tap(spell);
-    await t.pumpAndSettle();
-    expect(fake.lastMutation!['spell'], '281_2016');
-    expect(fake.lastMutation!['difficulty'], 'hard');
-    expect(fake.lastMutation!['entry'], 'archive');
+    expect(find.text('Paylaş'), findsOneWidget);
+  });
+  test('letter share card shows the score, never the players', () {
+    final text = letterShare({
+      'title': 'K harfi',
+      'entry': 'daily',
+      'day': '2026-10-31',
+      'score': 9,
+      'wrong': 2,
+      'hints': [
+        {'kind': 'shape'},
+      ],
+    });
+    expect(text, contains('Linkball · Harf 11 · K'));
+    expect(text, contains('Günün harfi · 31.10.2026'));
+    expect(text, contains('🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 9/11'));
+    expect(text, contains('2 yanlış · 1 ipucu'));
+  });
+  testWidgets('Harf Pasaportu shows progress and the next reward', (t) async {
+    await open(t, FakeModes('letter11'));
+    final tile = find.text('Harf Pasaportu');
     await t.scrollUntilVisible(
-      find.text('Zor · Manchester City · 2016–2026'),
-      -250,
+      tile,
+      250,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('Zor · Manchester City · 2016–2026'), findsOneWidget);
-    await capture(t, 'coach_tenure_game');
-    expect(t.takeException(), isNull);
+    await t.ensureVisible(tile);
+    await t.pumpAndSettle();
+    await t.tap(tile);
+    await t.pumpAndSettle();
+    final next = find.text('Sıradaki ödül 5 harfte: +20 coin, +40 XP');
+    await t.scrollUntilVisible(
+      next,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('0 / 1 harf tamamlandı'), findsOneWidget);
+    expect(next, findsOneWidget);
   });
   testWidgets(
     'search keeps unrelated known players visible and validates only selected identity',
@@ -387,6 +409,8 @@ void main() {
         250,
         scrollable: find.byType(Scrollable).first,
       );
+      await t.ensureVisible(daily);
+      await t.pumpAndSettle();
       await t.tap(daily);
       await t.pumpAndSettle();
       expect(fake.lastMutation!['entry'], 'daily');
