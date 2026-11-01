@@ -543,7 +543,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
       if (_active && current.isNotEmpty) ...[
         OutlinedButton(
           onPressed: _canPlay ? () => _act('pass', {'index': index}) : null,
-          child: const Text('Pas · 0 puan'),
+          child: const Text('Pas · 0 puan, kutu boş kalır'),
         ),
         _support(
           index.toInt(),
@@ -576,14 +576,28 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         style: Theme.of(context).textTheme.titleMedium,
       ),
       Text(
-        'Bu tur: Sen ${_run['userFound'] ?? 0} · Bot ${_run['botFound'] ?? 0} · Kalan ${_run['remaining'] ?? 0}',
+        'Bu tur: Sen ${_run['userFound'] ?? 0} · Bot ${_run['botFound'] ?? 0}/${_run['total'] ?? 0} buldu · '
+        'Kalan ${_run['remaining'] ?? 0}',
       ),
       if (_active && _run['over'] != true && countdown > 0)
         Text('Başlıyor: $countdown'),
+      if (_active &&
+          _run['over'] != true &&
+          countdown == 0 &&
+          _run['endsAt'] != null)
+        Text('Kalan süre: ${_seconds('endsAt')} sn'),
       for (final f in _list('found'))
         Text(
           '${rewardMap(f)['name']} · ${rewardMap(f)['owner'] == 1 ? 'Sen' : 'Bot'}',
         ),
+      if (_run['over'] == true && _list('missed').isNotEmpty) ...[
+        const SizedBox(height: 8),
+        Text(
+          'Kimsenin bulamadığı',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        Text(_list('missed').map((p) => '${rewardMap(p)['name']}').join(' · ')),
+      ],
       if (_active && _run['over'] == true)
         FilledButton(
           onPressed: _busy ? null : () => _act('next'),
@@ -593,6 +607,12 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         _picker(
           (p) => _act('guess', {'round': round, 'playerId': p['id']}),
           'İki kulüpte oynamış futbolcu',
+        ),
+        TextButton(
+          onPressed: _canPlay
+              ? () => _act('end_round', {'round': round})
+              : null,
+          child: const Text('Turu bitir · bot kalan sürede oynar'),
         ),
         const SizedBox(height: 12),
         _support(
@@ -622,6 +642,9 @@ class _SupportedBotPageState extends State<SupportedBotPage>
           _picker(
             (p) => _act('choose', {'playerId': p['id']}),
             'Oyuncu seç · En az iki harf',
+          ),
+          const Text(
+            'Her oyuncu maçta bir kez kullanılır; doğru kutu +1, yanlış kutu −1.',
           ),
           OutlinedButton(
             onPressed: _canPlay ? () => _act('pass') : null,
@@ -731,7 +754,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
 
     return [
       Text(
-        '${round + 1}/5. tur',
+        '${round + 1}/5. tur · ${_run['botFirst'] == true ? 'bu turda bot önce oynar' : 'bu turda sen önce oynarsın'}',
         style: Theme.of(context).textTheme.titleMedium,
       ),
       Wrap(
@@ -741,12 +764,19 @@ class _SupportedBotPageState extends State<SupportedBotPage>
           for (final c in _list('clubs')) Chip(label: Text(_label(c))),
         ],
       ),
-      for (final h in _list('history'))
-        if (rewardMap(h)['user'] != null)
+      for (final h in _list('history')) ...[
+        if (rewardMap(h)['user'] != null || rewardMap(h)['bot'] != null)
           Text(
             '${(rewardMap(h)['round'] as num? ?? 0).toInt() + 1}. tur · Sen: ${move(rewardMap(h)['user'])} · '
             'Bot: ${move(rewardMap(h)['bot'])}',
           ),
+        // After both moves: the round's best answers (most clubs).
+        if (_list2(rewardMap(h)['best']).isNotEmpty)
+          Text(
+            'En iyi cevaplar: ${_list2(rewardMap(h)['best']).map((b) => '${rewardMap(b)['name']} (${rewardMap(b)['clubs']})').join(' · ')}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+      ],
       if (_active && _run['turn'] == 'result')
         FilledButton(
           onPressed: _busy ? null : () => _act('next'),
@@ -756,6 +786,10 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         _picker(
           (p) => _act('guess', {'playerId': p['id']}),
           'Beş kulüpten en az birinde oynamış futbolcu',
+        ),
+        Text(
+          'Uymayan isim için ${_run['wrongLeft'] ?? 3} deneme hakkın var; üçü de uymazsa tur pas sayılır. '
+          'Her oyuncu maçta bir kez kullanılır.',
         ),
         OutlinedButton(
           onPressed: _canPlay ? () => _act('pass') : null,

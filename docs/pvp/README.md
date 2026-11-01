@@ -74,6 +74,125 @@ aktif maç saatini ve kayıtlarını silmez. Önceden atomik rezerve edilmiş
 ödül outbox'ı tekrar denemede aynı tutarı tamamlar.
 Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez.
 
+## Football Loto
+
+- Katalog 300 tahta tutar, her zorlukta 100 (`loto-{easy|medium|hard}-{n}`).
+  Zorluk 16 futbolcunun bilinirliğidir (oyuncu sırası: kolay ≤1500, orta
+  ≤4000, zor ≤12000). Her tahta 8 kulüp, 4 ülke ve 4 bilinen lig hücresi
+  taşır; lig hücreleri yalnızca büyük liglerden (Premier League, LaLiga,
+  Serie A, Bundesliga, Ligue 1, Süper Lig, Eredivisie, Liga Portugal, 1. Lig)
+  gelir.
+- Oyuncular katalogda karışık sırada saklanır; saklanan sıra cevap sırası
+  değildir. Her tahtanın tam bir doğru yerleşimi vardır (test eşleştirmeyle
+  kanıtlar). Oyuncu başına ortalama uygun hücre `data-audit.json` içindeki
+  `lotoValidCellsPerPlayer` alanındadır.
+- Online maçta yanlış hamle oyuncuyu 3 sn kilitler, maçta en fazla 8 yanlış
+  hamle yapılabilir ve hamleler arasında en az 400 ms olmalıdır. Eşit skorda
+  az yanlış yapan, o da eşitse son doğru hamlesi daha erken olan kazanır.
+  Sayaç ve kilit odada `wrongMoves`, `maxWrong`, `lockUntil` olarak gelir.
+- Bot Loto tahtayı zorluğuna göre `tier` alanından seçer, insan hızında
+  düşünür (kolay 9–15 sn, orta 7–12 sn, zor 5–9 sn) ve birden çok doğru
+  hücresi varsa sıradaki oyuncuların en az ihtiyaç duyduğunu alır.
+
+## Rastgele Beşler
+
+- Online tahta katalogdaki 300 hazır tahtadan gelir (`five`): her tahtada 4
+  kulübünde oynamış bir futbolcu, 3+ kulüplü en az 4 ve 2+ kulüplü en az 20
+  futbolcu vardır. Eski kataloglarda 5 rastgele kulüp kullanılır.
+- Puan (`fiveRules: 2` ile başlayan odalar): 1 kulüp 1, 2 kulüp 2, 3 kulüp 4,
+  4 kulüp 6, 5 kulüp 8 (`FIVE_POINTS`).
+- Uymayan isim 2 sn kilitler, maçta en fazla 10; hamleler arası en az 400 ms.
+- Maç sonunda `found` ve kimsenin söylemediği en iyi 10 cevap (`missed`,
+  2+ kulüp, en çok kulüp önce) gelir.
+- Bot: turlar sırayla açılır (1, 3, 5. turda oyuncu, 2 ve 4. turda bot önce).
+  Kolay bot en çok 3 kulüplü ve en bilinen 2000 futbolcudan, orta 4 kulüp ve
+  5000, zor 5 kulüp ve 12000. Bir turda üç uymayan isim turu pas sayar. Kulüp
+  havuzu popüler kulüpler ile online kulüp listesinin birleşimi; maç boyunca
+  kulüp tekrar etmez. İki hamleden sonra turun en iyi 3 cevabı gösterilir.
+
+## Grid
+
+- Online klasik ve ters 300 hazır tahtadan gelir (`grids`): her kutuda en az 3
+  cevap ve en bilinen 3000 futbolcudan en az biri vardır.
+- `gridRules: 2` ile başlayan odalarda yanlış cevaplar sayılır (`gridWrong`);
+  klasik ve tersde skor eşitse az yanlış yapan kazanır. Rastgelede doğru cevap 1
+  puan, çiftin az bilinen yarısından bir isim +1 (`GRID_RARE_BONUS`).
+- Ters maç bitince her eksenin kabul ettiği tüm kulüp ve ülkeler (`accepted`)
+  gösterilir.
+- Arkadaş odası Online menüsünün yanında Solo Grid ve Botla Oyna > Grid
+  ekranlarından da açılır (`GridFriendSection`).
+- Solo ve bot (`grid_support.js`, `rules: 2` ile başlayan oturumlar): tahtanın
+  ilk 60 denemesi adil tahta arar (kutu başına 3+ cevap, biri en bilinen 3000
+  futbolcudan, en fazla bir mevki sütunu); dar havuzlar eski alt sınıra düşer.
+  Solo yanlış cevap klasik ve rastgelede −5, tersde −10 puan (0'ın altına
+  inmez). Bot ilk hamleyi yarı yarıya yapar; zor bot rakibin ikili çizgisini
+  hep, orta bot yarı yarıya keser; ters bot da zorluğa göre (%60 / %78 / %92)
+  yanılır. Ters kriter araması kulüp, ülke ve mevki önerir; kulüp adı "FC",
+  "SK" gibi eklerle de kabul edilir. Oyun bitince boş kutulara örnek cevap,
+  tersde kabul edilen kriterler gösterilir.
+
+## Club Manager
+
+- Havuz her mevkide yıldız (maliyet 14+), orta (10) ve ucuz (6) oyuncu karışık
+  gelir (`MANAGER_TIERS`: GK 1/1/1, DEF 2/2/3, MID 2/3/3, ATT 2/2/3). En yüksek
+  puanlı 4-3-3 kadro 138–142 tutar, bütçe 120 kalır; her dizilişte bütçeye
+  sığan ucuz bir kadro vardır.
+- `managerRules: 2` ile başlayan odalarda taktik bir döngüdür: yüksek pres
+  tempoyu, tempo genişliği, genişlik presi yener (`counter`). Takım gücü nötr
+  taktikle hesaplanır, böylece her şeyi yükseltmek avantaj getirmez. xG
+  gürültüsü yarıya indi; normal sürede beraberlik penaltılarla biter.
+- Süre dolduğunda yalnız bir taraf kadrosunu kilitlediyse o taraf hükmen
+  kazanır; iki taraf da kilitlemediyse maç iptal olur.
+- Sıralı mod `managerRankedVerified` doğrulanana kadar kapalı kalır.
+- Arkadaş odası Club Manager ana ekranından da açılır (`FriendRoomSection`).
+  Eski online lobi, kadro ve maç ekranları kullanılmadığı için silindi.
+
+## Futbol Çinko
+
+- Online ve bot aynı kuralla oynanır. Oyuncu bir futbolcu ve yan yana bağlı
+  açık kutular seçer (çapraz sayılmaz). Uyan her kutu onun olur (+1), uymayan
+  her kutu 1 puan düşürür ve açık kalır. Bir futbolcu maçta bir kez kullanılır.
+- Online'da pas vardır. Süresi dolan sıra da pas sayılır; dört pas üst üste
+  gelirse maç biter. Açık kutuda kullanılmamış cevap kalmayınca ya da süre
+  dolunca çok puanlı kazanır; 5'li çizgi kuralı kalktı.
+- İlk başlamak yaklaşık bir puan değerinde (motorla simülasyon). İkinci
+  başlayan maça 1 puanla başlar. İlk hamle kutu sınırı denendi: 1 kutu ikinci
+  oyuncuyu, 2 kutu ilk oyuncuyu kayırdı.
+- Yeni kurallar `cinkoRules: 2` ile başlayan odalara uygulanır; daha önce
+  başlamış oda eski kuralla biter.
+- Katalog 200 tahta tutar. Her tahtada 1–2 bilinen lig, 5 ülke, 4 az cevaplı
+  kutu (20–60 futbolcu, en az 3'ü en bilinen 12000 içinde) ve bilinen
+  kulüpler vardır; her kutu farklı bir futbolcuyla doldurulabilir.
+- Bot: kolay en bilinen 1500 futbolcuyu bilir ve en çok 2 kutu alır, orta 4000
+  ve 3 kutu, zor 12000 ve sınırsız. Bot ara sıra (%25 / %15 / %5) yanına
+  yanlış bir kutu da işaretleyip puan kaybeder. Oyuncu seçimi artık tahtaya
+  uyup uymadığını söylemez.
+
+## Kulüp-Kulüp ve Kulüp-Ülke
+
+- Bir çift en az 6 ortak futbolcuyla oynanır (`PAIR_MIN_ANSWERS`).
+- Rastgele ve dereceli çiftler ek olarak en bilinen 3000 futbolcudan en az
+  3 cevap ister. Kulüp-Ülke'de önce ülke seçilir (ağırlık: o ülkenin çift
+  sayısının karekökü), sonra o ülkenin çiftlerinden biri; Fransa ve Brezilya
+  artık baskın değil.
+- Arkadaş modunda oda `pairOptions` ile yalnızca rakibin seçimiyle oynanabilir
+  seçenekleri listeler; sunucu `choose` aşamasında aynı şartı denetler, bu
+  yüzden "yeterli ortak futbolcu yok" hatası maç başında çıkmaz.
+- Yanlış cevap 2 sn kilitler, maçta en fazla 10 yanlış, hamleler arası en az
+  400 ms; eşitlik Loto'daki gibi bozulur.
+- Maç sonunda `found` (kim kimi buldu) ve `missed` (kimsenin bulamadığı en
+  bilinen 12 futbolcu) gelir.
+
+## Bot Takım Yarışı
+
+- Rakip kulüp en az 6 ortak futbolcusu olan en fazla 40 kulüpten, ortak
+  sayısının kareköküyle ağırlıklı seçilir.
+- Tur havuzu (en fazla 12) zorluğa göre: kolayda en bilinen 12, ortada en
+  bilinen 24'ten 12, zorda herhangi 12. Bot da kolayda kalanların en bilinen
+  3'ünden, ortada 6'sından, zorda herhangisinden bulur.
+- Tur en fazla 70 sn sürer; oyuncu "Turu bitir" diyebilir, o zaman bot kalan
+  sürede oynar. Tur sonunda kimsenin bulamadıkları listelenir.
+
 ## Komutlar
 
 ```sh

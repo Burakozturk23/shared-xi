@@ -82,8 +82,14 @@ function finish(r, reason, time) {
 
 // ---- Football Loto: same 16 players, separate boards, per-player clock.
 const LOTO_SECONDS = {easy: 20, medium: 15, hard: 12};
-const LOTO_BOT = {easy: [[1800, 2999], .35], medium: [[1200, 2199], .55], hard: [[800, 1499], .75]};
+// The bot thinks at a human pace (a full board takes it about 2–4 minutes).
+const LOTO_BOT = {easy: [[9000, 15000], .35], medium: [[7000, 12000], .55], hard: [[5000, 9000], .75]};
 const lotoTiers = (() => {
+  // Boards carry their tier (how known the 16 players are); older catalogs fall
+  // back to thirds by average player rank.
+  if (catalog.loto.every((b) => b.tier)) {
+    return Object.fromEntries(["easy", "medium", "hard"].map((t) => [t, catalog.loto.filter((b) => b.tier === t)]));
+  }
   const boards = catalog.loto.map((b) => ({...b, avg: b.players.reduce((n, id) => n + catalog.players[id].rank, 0)}))
       .sort((a, b) => a.avg - b.avg || a.id.localeCompare(b.id));
   const third = Math.ceil(boards.length / 3);
@@ -112,7 +118,15 @@ function lotoBotMove(r) {
   const empty = Array.from({length: 16}, (_, i) => i).filter((i) => r.bot[i] === undefined);
   const correct = empty.filter((i) => lotoValid(r, id, i)); const wrong = empty.filter((i) => !lotoValid(r, id, i));
   const aims = random(r, "aim" + r.botIndex) < LOTO_BOT[r.difficulty][1];
-  const candidates = !correct.length ? wrong : !wrong.length || aims ? correct : wrong;
+  let candidates = !correct.length ? wrong : !wrong.length || aims ? correct : wrong;
+  if (candidates === correct && correct.length > 1) {
+    // Take the cell the players still to come need least, so the bot does not
+    // steal another player's only cell.
+    const rest = r.board.queue.slice(r.botIndex + 1);
+    const need = (cell) => rest.filter((other) => lotoValid(r, other, cell)).length;
+    const least = Math.min(...correct.map(need));
+    candidates = correct.filter((cell) => need(cell) === least);
+  }
   if (candidates.length) r.bot[pick(r, candidates, "cell" + r.botIndex)] = id;
   r.botIndex++;
   if (r.botIndex < 16) r.botAt += between(r, LOTO_BOT[r.difficulty][0], "bot" + r.botIndex);
@@ -133,7 +147,18 @@ function lotoTick(r, time) {
 
 // ---- Team Race: chosen club against a random partner, first to three rounds.
 const RACE_BOT = {easy: [[6500, 9500], .55], medium: [[4200, 7000], .72], hard: [[2600, 4600], .88]};
-function partners(club) {
+// A round lasts 70 s at most; the player may also end it early.
+const RACE_ROUND_MS = 70000;
+// A partner club needs at least 6 shared players; up to 40 partners, drawn
+// with weight sqrt(shared players) so small clubs do not always meet the same giants.
+const RACE_MIN_SHARED = 6;
+const RACE_PARTNERS = 40;
+// How well known the round's players are: easy takes the 12 best known,
+// medium 12 of the 24 best known, hard any 12. The bot finds players in the
+// same spirit: easy only among the 3 best-known left, medium the 6, hard any.
+const RACE_POOL = {easy: 12, medium: 24, hard: Infinity};
+const RACE_BOT_WINDOW = {easy: 3, medium: 6, hard: Infinity};
+function partnerCounts(club) {
   const counts = new Map();
   for (const id of answers(club)) {
     for (const v of catalog.players[id].clubs) {
@@ -141,22 +166,34 @@ function partners(club) {
       if (other !== club && catalog.criteria[other]) counts.set(other, (counts.get(other) || 0) + 1);
     }
   }
-  return [...counts].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-      .slice(0, 16).map(([id]) => id);
+  return [...counts].filter(([, n]) => n >= RACE_MIN_SHARED)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, RACE_PARTNERS);
 }
+const partners = (club) => partnerCounts(club).map(([id]) => id);
 function raceRound(r, time) {
-  const pool = partners(r.club); const fresh = pool.filter((id) => !r.opponents.includes(id));
-  const opponent = pick(r, fresh.length ? fresh : pool, "opponent" + r.round);
-  const left = answers(r.club); const shared = [...answers(opponent)].filter((id) => left.has(id));
+  const pool = partnerCounts(r.club); const fresh = pool.filter(([id]) => !r.opponents.includes(id));
+  const options = fresh.length ? fresh : pool;
+  const weights = options.map(([, n]) => Math.sqrt(n)); let roll = random(r, "opponent" + r.round) *
+    weights.reduce((a, b) => a + b, 0);
+  let opponent = options.at(-1)[0];
+  for (let i = 0; i < options.length; i++) {
+    roll -= weights[i];
+    if (roll < 0) {
+      opponent = options[i][0]; break;
+    }
+  }
+  const left = answers(r.club); const shared = [...answers(opponent)].filter((id) => left.has(id)).sort(byRank);
   r.opponents.push(opponent);
-  r.race = {round: r.round, opponent, players: shuffled(shared, r.seed + "round" + r.round).slice(0, 12),
-    found: {}, userFound: 0, botFound: 0, startsAt: time + 3000, over: false};
+  const players = shuffled(shared.slice(0, RACE_POOL[r.difficulty]), r.seed + "round" + r.round).slice(0, 12);
+  r.race = {round: r.round, opponent, players, found: {}, userFound: 0, botFound: 0, startsAt: time + 3000,
+    endsAt: time + 3000 + RACE_ROUND_MS, over: false};
   r.race.botAt = r.race.startsAt + between(r, RACE_BOT[r.difficulty][0], "delay" + r.round + ":0");
   r.botTries = 0; r.feedback = null;
 }
 const remaining = (r) => r.race.players.filter((id) => !r.race.found[id]);
-function raceEnd(r, time) {
-  if (remaining(r).length) return;
+// The round ends when every player is found or its time is up (or the player ends it).
+function raceEnd(r, time, force = false) {
+  if (remaining(r).length && !force) return;
   const race = r.race; race.over = true;
   if (race.userFound > race.botFound) r.userScore++;
   else if (race.botFound > race.userFound) r.botScore++;
@@ -165,15 +202,19 @@ function raceEnd(r, time) {
 function raceTick(r, time) {
   const race = r.race;
   if (r.pausedAt || !race || race.over) return;
-  while (!race.over && time >= race.botAt) {
+  while (!race.over && time >= race.botAt && race.botAt < (race.endsAt || Infinity)) {
     const tries = ++r.botTries;
     if (random(r, "accuracy" + race.round + ":" + tries) > RACE_BOT[r.difficulty][1]) r.feedback = "Bot pas geçti.";
     else {
-      const id = pick(r, remaining(r), "claim" + race.round + ":" + tries);
+      const id = pick(r, remaining(r).sort(byRank).slice(0, RACE_BOT_WINDOW[r.difficulty]),
+          "claim" + race.round + ":" + tries);
       race.found[id] = 2; race.botFound++; r.feedback = "Bot buldu: " + catalog.players[id].name;
       raceEnd(r, time);
     }
     race.botAt += between(r, RACE_BOT[r.difficulty][0], "delay" + race.round + ":" + tries);
+  }
+  if (!race.over && race.endsAt && time >= race.endsAt) {
+    r.feedback = "Süre doldu."; raceEnd(r, race.endsAt, true);
   }
 }
 
@@ -237,15 +278,20 @@ function cinkoApply(r, id, cells, owner, time) {
   if (owner === 1) r.userScore += correct.length - wrong.length; else r.botScore += correct.length - wrong.length;
   if (!playable(r).length) finish(r, "completed", time);
 }
+// Easy: well-known players, two cells, slips often; hard: wide knowledge, any group, rare slips.
+const CINKO_BOT = {easy: {known: 1500, cap: 2, slip: .25}, medium: {known: 4000, cap: 3, slip: .15},
+  hard: {known: 12000, cap: SIZE * SIZE, slip: .05}};
 function cinkoBot(r, time) {
   if (r.turn !== "bot" || r.botAt > time || r.finished) return;
   const open = playable(r); const options = new Map();
+  // The bot knows only players up to its rank limit and takes groups up to its cap.
+  const {known, cap, slip} = CINKO_BOT[r.difficulty];
   for (const i of open) {
     for (const id of answers(r.cells[i])) {
-      if (!r.used[id]) options.set(id, [...options.get(id) || [], i]);
+      if (!r.used[id] && catalog.players[id].rank <= known) options.set(id, [...options.get(id) || [], i]);
     }
   }
-  const cap = {easy: 1, medium: 3, hard: SIZE * SIZE}[r.difficulty]; let best = []; let chosen = null; let ties = 0;
+  let best = []; let chosen = null; let ties = 0;
   // Rank connected components, not scattered matches; ties are seeded per move.
   for (const id of [...options.keys()].sort()) {
     const connected = component(options.get(id)).slice(0, cap);
@@ -256,16 +302,28 @@ function cinkoBot(r, time) {
     }
   }
   r.turn = "user";
+  if (chosen && random(r, "slip" + r.revision) < slip) {
+    // Sometimes the bot also marks a wrong neighbouring open cell and loses a point.
+    const wrong = open.filter((i) => !best.includes(i) && !matches(chosen, r.cells[i]) && best.some((b) =>
+      Math.abs(b - i) === SIZE || Math.abs(b - i) === 1 && Math.floor(b / SIZE) === Math.floor(i / SIZE)));
+    if (wrong.length) best = [...best, pick(r, wrong, "slipcell" + r.revision)];
+  }
   if (chosen) cinkoApply(r, chosen, best, 2, time);
   else finish(r, "completed", time);
   r.revision++;
 }
 
 // ---- Random Five: five shared boards, one user and one bot answer each.
-const FIVE_LIMIT = {easy: 2, medium: 3, hard: 5};
+// Most clubs the bot aims for, and how far its knowledge reaches (player rank).
+const FIVE_LIMIT = {easy: 3, medium: 4, hard: 5};
+const FIVE_KNOWN = {easy: 2000, medium: 5000, hard: 12000};
+// After three names that fit none of the five clubs, the round is passed.
+const FIVE_MAX_WRONG = 3;
+// Popular clubs plus the online club list; no club repeats within a match.
+const FIVE_POOL = [...new Set([...POPULAR_CLUBS, ...catalog.clubOptions])];
 let fiveSeeds = null;
 function fiveRound(r, previous, i) {
-  const pool = POPULAR_CLUBS.filter((id) => answers(id).size >= 2); const inPool = new Set(pool);
+  const pool = FIVE_POOL.filter((id) => answers(id).size >= 2); const inPool = new Set(pool);
   fiveSeeds ||= Object.values(catalog.players).map((p) => p.clubs.map((v) => "club:" + v)
       .filter((id) => inPool.has(id))).filter((ids) => ids.length >= 3);
   const seeds = shuffled(fiveSeeds, r.seed + "seeds" + i).slice(0, 64);
@@ -309,10 +367,32 @@ function fiveRound(r, previous, i) {
   fail("failed-precondition", "Beşler için yeterli bağlantısı olan tahta üretilemedi.");
 }
 const matched = (r, id) => r.rounds[r.round].filter((club) => matches(id, club));
+// Rounds alternate who moves first: the player in rounds 1, 3, 5; the bot in 2 and 4.
+function fiveAfter(r, side, time) {
+  const h = r.history[r.round];
+  if (side === "user" && !h.bot) {
+    r.turn = "bot"; r.botAt = time + between(r, [900, 1400], "bot" + r.round);
+  } else if (side === "bot" && !h.user) r.turn = "user";
+  else {
+    r.turn = "result";
+    if (r.round === 4) finish(r, "completed", time);
+  }
+}
+// The best answers of a round: most clubs first, then the best known.
+function fiveBest(clubs) {
+  const all = new Set();
+  for (const club of clubs) for (const id of answers(club)) all.add(id);
+  return [...all].map((id) => [id, clubs.filter((club) => matches(id, club)).length])
+      .sort((a, b) => b[1] - a[1] || byRank(a[0], b[0])).slice(0, 3).map(([id, n]) => ({...name(id), clubs: n}));
+}
 function fiveBot(r, time) {
   if (r.turn !== "bot" || r.botAt > time || r.finished) return;
   const candidates = new Set();
-  for (const club of r.rounds[r.round]) for (const id of answers(club)) if (!r.used[id]) candidates.add(id);
+  for (const club of r.rounds[r.round]) {
+    for (const id of answers(club)) {
+      if (!r.used[id] && catalog.players[id].rank <= FIVE_KNOWN[r.difficulty]) candidates.add(id);
+    }
+  }
   const all = [...candidates].sort();
   const preferred = all.filter((id) => matched(r, id).length <= FIVE_LIMIT[r.difficulty]);
   const available = preferred.length ? preferred : all; let move = {pass: true};
@@ -322,8 +402,7 @@ function fiveBot(r, time) {
     const id = pick(r, available.filter((id) => matched(r, id).length === target), "five" + r.round);
     r.used[id] = true; move = {playerId: id, clubs: matched(r, id)};
   }
-  r.history[r.round].bot = move; r.botScore += move.clubs?.length || 0; r.turn = "result"; r.revision++;
-  if (r.round === 4) finish(r, "completed", time);
+  r.history[r.round].bot = move; r.botScore += move.clubs?.length || 0; fiveAfter(r, "bot", time); r.revision++;
 }
 
 // ---- Server-generated support. Text never names the hidden answer.
@@ -434,9 +513,11 @@ function view(r, time) {
   } else if (k === "team_race") {
     const race = r.race;
     Object.assign(v, {club: label(r.club), round: race.round, opponent: label(race.opponent),
-      startsAt: race.startsAt, over: race.over, total: race.players.length, remaining: remaining(r).length,
-      userFound: race.userFound, botFound: race.botFound,
-      found: Object.entries(race.found).map(([id, owner]) => ({...name(id), owner}))});
+      startsAt: race.startsAt, endsAt: race.endsAt || null, over: race.over, total: race.players.length,
+      remaining: remaining(r).length, userFound: race.userFound, botFound: race.botFound,
+      found: Object.entries(race.found).map(([id, owner]) => ({...name(id), owner})),
+      // Players nobody found, shown once the round is over.
+      missed: race.over ? remaining(r).sort(byRank).map(name) : []});
   } else if (k === "cinko") {
     const open = playable(r);
     Object.assign(v, {cells: r.cells.map((id, i) => ({...label(id), owner: r.owners[i]?.owner || 0,
@@ -449,7 +530,8 @@ function view(r, time) {
     Object.assign(v, {round: r.round, totalRounds: 5, clubs: r.rounds[r.round].map(label),
       botAt: r.turn === "bot" ? r.botAt : null,
       history: r.history.map((h, i) => ({round: i, clubs: r.rounds[i].map(label),
-        user: side(h.user), bot: side(h.bot)}))});
+        user: side(h.user), bot: side(h.bot), ...h.user && h.bot ? {best: fiveBest(r.rounds[i])} : {}})),
+      wrongLeft: FIVE_MAX_WRONG - (r.fiveWrong?.[r.round] || 0), botFirst: r.round % 2 === 1});
   }
   return v;
 }
@@ -464,7 +546,7 @@ function begin(r, input, time) {
   } else if (k === "cinko") r.cells = cinkoBoard(r);
   else {
     r.rounds = [];
-    for (let i = 0; i < 5; i++) r.rounds.push(fiveRound(r, r.rounds.at(-1) || [], i));
+    for (let i = 0; i < 5; i++) r.rounds.push(fiveRound(r, r.rounds.flat(), i));
     r.round = 0; r.history = [{}];
   }
 }
@@ -480,6 +562,7 @@ function move(r, input, time) {
         r.deadline += shift; r.botAt += shift;
       } else if (!r.race.over) {
         r.race.startsAt += shift; r.race.botAt += shift;
+        if (r.race.endsAt) r.race.endsAt += shift;
       }
     }
     return;
@@ -503,6 +586,14 @@ function move(r, input, time) {
       if (!race.over) fail("failed-precondition", "Tur sürüyor.");
       r.round++; raceRound(r, time); return;
     }
+    if (action === "end_round") {
+      if (race.over || Number(input.round) !== race.round) fail("failed-precondition", "Bu tur kapandı.");
+      if (time < race.startsAt) fail("failed-precondition", "Geri sayım sürüyor.");
+      // Ending early lets the bot play out the rest of the round's time.
+      raceTick(r, race.endsAt); r.feedback = "Turu bitirdin.";
+      if (!race.over) raceEnd(r, time, true);
+      return;
+    }
     if (action !== "guess") fail("invalid-argument", "İşlem geçersiz.");
     if (race.over || Number(input.round) !== race.round) fail("failed-precondition", "Bu tur kapandı.");
     if (time < race.startsAt) fail("failed-precondition", "Geri sayım sürüyor.");
@@ -517,16 +608,18 @@ function move(r, input, time) {
   }
   if (k === "random_five" && action === "next") {
     if (r.turn !== "result") fail("failed-precondition", "Tur sonucu henüz hazır değil.");
-    r.round++; r.history.push({}); r.turn = "user"; return;
+    r.round++; r.history.push({}); r.turn = "user";
+    if (r.round % 2) {
+      r.turn = "bot"; r.botAt = time + between(r, [900, 1400], "bot" + r.round);
+    }
+    return;
   }
   if (r.turn !== "user") fail("failed-precondition", "Sıra botta.");
   if (k === "cinko") {
     if (action === "choose") {
       const id = input.playerId;
-      if (!catalog.players[id] || r.used[id]) fail("invalid-argument", "Bu oyuncu bu maçta kullanılamaz.");
-      if (!playable(r).some((i) => matches(id, r.cells[i]))) {
-        r.feedback = "Bu oyuncuya uyan açık kutu kalmadı. Başka bir oyuncu seç."; return;
-      }
+      // Choosing tells nothing about the board; wrong cells cost points on confirm.
+      if (!catalog.players[id] || r.used[id]) fail("invalid-argument", "Bu oyuncu bu maçta kullanıldı.");
       r.current = id; r.feedback = null; return;
     }
     if (action === "cancel") {
@@ -556,13 +649,19 @@ function move(r, input, time) {
       r.feedback = "Bu oyuncu bu maçta zaten kullanıldı. Başka bir isim seç."; return;
     }
     if (!matched(r, id).length) {
-      r.feedback = catalog.players[id].name + " bu beş kulübe uymuyor. Başka bir isim deneyebilirsin."; return;
+      const wrong = r.fiveWrong ||= {}; wrong[r.round] = (wrong[r.round] || 0) + 1;
+      if (wrong[r.round] < FIVE_MAX_WRONG) {
+        r.feedback = catalog.players[id].name + " bu beş kulübe uymuyor. " +
+          (FIVE_MAX_WRONG - wrong[r.round]) + " deneme hakkın kaldı."; return;
+      }
+      r.history[r.round].user = {pass: true, wrong: true}; fiveAfter(r, "user", time);
+      r.feedback = "Üç isim de uymadı; bu tur pas sayıldı."; return;
     }
     r.used[id] = true; r.history[r.round].user = {playerId: id, clubs: matched(r, id)};
     r.userScore += matched(r, id).length;
   } else if (action === "pass") r.history[r.round].user = {pass: true};
   else fail("invalid-argument", "İşlem geçersiz.");
-  r.feedback = null; r.turn = "bot"; r.botAt = time + between(r, [900, 1400], "bot" + r.round);
+  r.feedback = null; fiveAfter(r, "user", time);
 }
 function createService({db, normalize, project, isLinked, now = Date.now}) {
   const mode = (input) => {
@@ -675,4 +774,4 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   return {status, search, act, prepareHint, settleHint};
 }
 module.exports = {createService, MODES, VERSION, catalog, answers, matches, hint, view, lotoTiers, cinkoBoard,
-  fiveRound, component, partners, POPULAR_CLUBS};
+  fiveRound, fiveBot, component, partners, POPULAR_CLUBS, FIVE_MAX_WRONG, FIVE_KNOWN, RACE_ROUND_MS, RACE_MIN_SHARED};

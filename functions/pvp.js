@@ -221,7 +221,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     if (event && !validId(input.actionId)) fail("invalid-argument", "Hamle kimliği gerekli.");
     const allowed = new Set(["mode", "schemaVersion", "ruleVersion", "dataRevision", "roomId",
       "actionId", "action", "revision",
-      "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice",
+      "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice", "cells",
       "clientVersion", "platform"]);
     if (Object.keys(input).some((k) => !allowed.has(k))) {
       fail("invalid-argument",
@@ -253,6 +253,11 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
           const side = uid === r.host ? "left" : "right";
           const options = r.mode === "club_country" && side === "right" ? c.countryOptions : c.clubOptions;
           if (!options.includes(input.choice)) fail("invalid-argument", "Geçersiz seçim.");
+          const other = r.choices[side === "left" ? "right" : "left"];
+          if (other && !E.pairOptions(c, r.mode, side, other).includes(input.choice)) {
+            fail("failed-precondition",
+                "Bu seçimle rakibinin seçimi arasında yeterli ortak futbolcu yok; başka seçim yap.");
+          }
           r.choices[side] = input.choice; r.ready = {}; receipt = {accepted: true};
         } else if (input.action === "ready" && r.status === "ready") {
           if (r.playKind === "friend" && ["club_club", "club_country"].includes(r.mode) &&
@@ -261,7 +266,9 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
           if (r.ready[r.host] && r.ready[r.guest]) E.start(r, c, time);
           receipt = {accepted: true};
         } else {
-          if (!["answer", "squad"].includes(input.action)) fail("invalid-argument", "Bu aşamada geçersiz işlem.");
+          if (!["answer", "squad"].includes(input.action) && !(input.action === "pass" && r.mode === "cinko")) {
+            fail("invalid-argument", "Bu aşamada geçersiz işlem.");
+          }
           // Simultaneous races validate current target/round atomically; stale turn claims do not consume a new turn.
           if (["grid_classic", "grid_reverse", "cinko"].includes(r.mode) && input.revision !== r.revision) {
             fail("aborted", "Sıra değişti; güncel maçı yenile.");

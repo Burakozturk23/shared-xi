@@ -152,8 +152,11 @@ test("Çinko enforces connected cells, -1 wrong, 0 pass and capped bot groups", 
   h.setTime(h.now + 2500);
   r = await load(h, r.mode);
   assert.equal(r.turn, "user");
-  assert.equal(r.botScore, 1);
-  assert.equal(r.cells.filter((c) => c.owner === 2).length, 1);
+  // Easy bot: at most two cells, and a slipped wrong cell costs it a point.
+  const botCells = r.cells.filter((c) => c.owner === 2).length;
+  assert.ok(botCells >= 1 && botCells <= 2);
+  assert.equal(r.botScore, botCells - r.last.wrong.length);
+  assert.ok(raw(h, r).last.playerId && S.catalog.players[raw(h, r).last.playerId].rank <= 1500);
   r = await act(h, r, "pass");
   assert.equal(r.userScore <= 1, true);
   const before = r.userScore;
@@ -177,6 +180,12 @@ test("Random Five edits are free, passes score zero and five rounds finish once"
   assert.equal(r.turn, "user");
   assert.match(r.feedback, /uymuyor/);
   for (let round = 0; round < 5; round++) {
+    // Rounds 2 and 4 open with the bot's move.
+    if (round % 2) {
+      assert.equal(r.turn, "bot"); assert.equal(r.botFirst, true);
+      h.setTime(h.now + 1500); r = await load(h, r.mode);
+      assert.equal(r.turn, "user"); assert.ok(r.history[round].bot.player);
+    }
     if (round === 1) r = await act(h, r, "pass");
     else {
       const used = raw(h, r).used || {};
@@ -184,12 +193,15 @@ test("Random Five edits are free, passes score zero and five rounds finish once"
       r = await act(h, r, "guess", {playerId: pid});
       await assert.rejects(act(h, r, "guess", {playerId: pid}));
     }
-    assert.equal(r.turn, "bot");
-    h.setTime(h.now + 1500);
-    r = await load(h, r.mode);
+    if (!(round % 2)) {
+      assert.equal(r.turn, "bot");
+      h.setTime(h.now + 1500);
+      r = await load(h, r.mode);
+    }
     if (round < 4) {
       assert.equal(r.turn, "result");
       assert.ok(r.history[round].bot.player);
+      assert.equal(r.history[round].best.length, 3);
       r = await act(h, r, "next");
     }
   }
@@ -238,4 +250,52 @@ test("generated boards are solvable for every seed and difficulty", () => {
       assert.ok(board.players.every((p) => board.criteria.some((k) => S.matches(p, k))));
     }
   }
+});
+test("bot Loto: 100 boards per tier and the bot never takes a cell a later player needs when it has a choice", () => {
+  assert.deepEqual(Object.values(S.lotoTiers).map((t) => t.length), [100, 100, 100]);
+  assert.ok(S.lotoTiers.easy.every((b) => b.tier === "easy"));
+});
+
+test("Team Race: 70 s rounds, early end, 6+ shared players, easy rounds use the best-known players", async () => {
+  const h = setup(); const c = require("../pvp_engine").catalog;
+  let r = await start(h, "bot_team_race", {clubId: "club:418", difficulty: "easy"});
+  const race = raw(h, r).race;
+  assert.equal(r.endsAt - r.startsAt, S.RACE_ROUND_MS);
+  const [a, b] = [r.club.id, race.opponent].map((k) => k.slice(5));
+  const shared = Object.values(c.players).filter((p) => p.clubs.map(String).includes(a) &&
+    p.clubs.map(String).includes(b)).sort((x, y) => x.rank - y.rank || x.id.localeCompare(y.id));
+  assert.ok(shared.length >= S.RACE_MIN_SHARED);
+  assert.deepEqual([...race.players].sort(), shared.slice(0, 12).map((p) => p.id).sort());
+  // Time runs out: the round closes and lists the players nobody found.
+  h.setTime(r.endsAt + 1); r = await load(h, r.mode);
+  assert.equal(r.over, true); assert.equal(r.missed.length, r.remaining);
+  r = await act(h, r, "next"); h.setTime(h.now + 3000);
+  r = await act(h, r, "end_round", {round: r.round});
+  assert.equal(r.over, true); assert.equal(r.feedback, "Turu bitirdin.");
+  await assert.rejects(act(h, r, "end_round", {round: r.round}));
+});
+
+test("Çinko choose does not reveal whether the player fits an open cell", async () => {
+  const h = setup(); let r = await start(h, "bot_cinko", {difficulty: "medium"});
+  const cells = raw(h, r).cells;
+  const none = Object.keys(S.catalog.players).find((id) => !cells.some((k) => S.matches(id, k)));
+  r = await act(h, r, "choose", {playerId: none});
+  assert.equal(r.current.id, none); assert.equal(r.feedback, null);
+  r = await act(h, r, "confirm", {cells: [0, 1]});
+  assert.equal(r.userScore, -2); assert.equal(r.cells[0].owner, 0);
+});
+
+test("Random Five: three wrong names pass the round; easy bot stays within its knowledge", async () => {
+  const h = setup(); let r = await start(h, "bot_random_five", {difficulty: "easy"});
+  const none = Object.keys(S.catalog.players).filter((p) => !r.clubs.some((c) => S.matches(p, c.id)));
+  r = await act(h, r, "guess", {playerId: none[0]}); assert.equal(r.wrongLeft, 2);
+  r = await act(h, r, "guess", {playerId: none[1]}); assert.equal(r.turn, "user");
+  r = await act(h, r, "guess", {playerId: none[2]});
+  assert.equal(r.turn, "bot"); assert.equal(r.history[0].user.pass, true); assert.match(r.feedback, /pas sayıldı/);
+  h.setTime(h.now + 1500); r = await load(h, r.mode);
+  const bot = r.history[0].bot.player;
+  assert.ok(S.catalog.players[bot.id].rank <= S.FIVE_KNOWN.easy);
+  assert.ok(r.history[0].bot.clubs.length <= 3);
+  // No club repeats across the five rounds.
+  const clubs = raw(h, r).rounds.flat(); assert.equal(new Set(clubs).size, 25);
 });

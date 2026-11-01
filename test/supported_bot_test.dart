@@ -84,6 +84,7 @@ class BotWire extends EnergyService {
           'club': {'label': 'Galatasaray'},
           'opponent': {'label': 'Fenerbahçe'},
           'startsAt': now - 1000,
+          'endsAt': now + 50000,
           'over': false,
           'total': 8,
           'remaining': 8,
@@ -107,8 +108,23 @@ class BotWire extends EnergyService {
         if (kind == 'random_five') ...{
           'round': 0,
           'totalRounds': 5,
+          'wrongLeft': 2,
+          'botFirst': false,
           'history': [
-            {'round': 0},
+            {
+              'round': 0,
+              'user': {
+                'player': {'name': 'Arda Turan'},
+                'clubs': [1, 2],
+              },
+              'bot': {
+                'player': {'name': 'Hakan Şükür'},
+                'clubs': [1],
+              },
+              'best': [
+                {'name': 'Emre Belözoğlu', 'clubs': 4},
+              ],
+            },
           ],
           'clubs': [
             for (var i = 0; i < 5; i++) {'id': 'club:$i', 'label': 'Kulüp $i'},
@@ -290,6 +306,56 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     }
   });
+  testWidgets(
+    'Team Race shows the round clock, live bot progress and ends the round early',
+    (t) async {
+      final wire = BotWire();
+      await t.pumpWidget(
+        MaterialApp(
+          home: SupportedBotPage(
+            mode: 'bot_team_race',
+            legacy: const Text('Eski'),
+            service: _service(wire),
+            clubId: 'club:141',
+            clubName: 'Galatasaray',
+          ),
+        ),
+      );
+      await t.pump(const Duration(milliseconds: 50));
+      await t.pump();
+      expect(find.textContaining('Bot 0/8 buldu'), findsOneWidget);
+      expect(find.textContaining('Kalan süre: '), findsOneWidget);
+      final end = find.text('Turu bitir · bot kalan sürede oynar');
+      await t.ensureVisible(end);
+      await t.tap(end);
+      await t.pump();
+      await t.pump();
+      expect(wire.calls.last['action'], 'end_round');
+      expect(wire.calls.last['round'], 0);
+      await t.pumpWidget(const SizedBox.shrink());
+    },
+  );
+  testWidgets(
+    'Random Five shows who starts, attempts left and the best answers',
+    (t) async {
+      final wire = BotWire();
+      await t.pumpWidget(
+        MaterialApp(
+          home: SupportedBotPage(
+            mode: 'bot_random_five',
+            legacy: const Text('Eski'),
+            service: _service(wire),
+          ),
+        ),
+      );
+      await t.pump(const Duration(milliseconds: 50));
+      await t.pump();
+      expect(find.textContaining('bu turda sen önce oynarsın'), findsOneWidget);
+      expect(find.text('En iyi cevaplar: Emre Belözoğlu (4)'), findsOneWidget);
+      expect(find.textContaining('2 deneme hakkın var'), findsOneWidget);
+      await t.pumpWidget(const SizedBox.shrink());
+    },
+  );
   testWidgets('Bot rollout response opens the existing legacy route', (
     t,
   ) async {

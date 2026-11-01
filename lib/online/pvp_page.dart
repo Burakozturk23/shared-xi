@@ -43,6 +43,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   List<Map<String, dynamic>> results = [];
   Map<String, dynamic>? selected;
   String? target, criterion, error, feedback;
+  // Online Çinko (cinkoRules 2): the connected open cells picked for a player.
+  final Set<int> cinkoCells = {};
   String profile = 'standard', formation = '433';
   final Set<String> xi = {};
   double press = .5, tempo = .5, width = .5;
@@ -59,6 +61,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       : widget.playKind == 'ranked';
   String get mode => widget.mode.wireName;
   String get uid => '${room['myUid']}';
+  bool get cinkoV2 => mode == 'cinko' && room['cinkoRules'] == 2;
   bool get done =>
       ['finished', 'cancelled', 'forfeit', 'expired'].contains(room['status']);
   List<Map<String, dynamic>> rows(dynamic value) =>
@@ -125,6 +128,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         if (response.containsKey('availability')) data = response;
         if (response['room'] != null) {
           final next = rewardMap(response['room']);
+          if (next['revision'] != room['revision']) cinkoCells.clear();
           if (next['id'] != room['id'] || next['round'] != room['round']) {
             searchSerial++;
             xi.clear();
@@ -290,6 +294,45 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               1000)
           .ceil()
           .clamp(0, 9999);
+  // Loto and Club-Club / Club-Country: a wrong move locks and counts.
+  int get locked => room['lockUntil'] == null ? 0 : seconds(room['lockUntil']);
+  bool get outOfWrong =>
+      room['maxWrong'] != null &&
+      (rewardMap(room['wrongMoves'])[uid] as num? ?? 0) >=
+          (room['maxWrong'] as num);
+  List<Widget> wrongNotes() => [
+    if (room['maxWrong'] != null)
+      note(
+        'Yanlış hamle: ${rewardMap(room['wrongMoves'])[uid] ?? 0} / '
+        '${room['maxWrong']} · rakip '
+        '${rewardMap(room['wrongMoves'])[room['host'] == uid ? room['guest'] : room['host']] ?? 0}. '
+        'Her yanlış ${mode == 'loto' ? 3 : 2} sn kilitler; eşitlikte az yanlış kazanır.',
+      ),
+    if (locked > 0) note('Yanlış hamle: $locked sn bekle.'),
+    if (outOfWrong)
+      note('Yanlış hakkın doldu; bu maçta yeni hamle yapamazsın.'),
+  ];
+  // Grid (gridRules 2): wrong answers decide equal scores; Random pays rare answers.
+  String axisName(String a) =>
+      '${a.startsWith('r') ? 'Satır' : 'Sütun'} ${int.parse(a[1]) + 1}';
+  List<Widget> gridNotes() {
+    if (room['gridRules'] != 2) return const [];
+    final wrong = rewardMap(room['gridWrong']);
+    final rival = room['host'] == uid ? room['guest'] : room['host'];
+    return [
+      if (mode == 'grid_random')
+        note(
+          'Doğru cevap 1 puan; çiftin az bilinen yarısından bir isim '
+          '+${room['rareBonus'] ?? 1} puan daha getirir.',
+        )
+      else
+        note(
+          'Yanlış cevap: ${wrong[uid] ?? 0} · rakip ${wrong[rival] ?? 0}. '
+          'Skor eşitse az yanlış yapan kazanır.',
+        ),
+    ];
+  }
+
   Widget note(String text) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 8),
     child: Text(
@@ -352,6 +395,25 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             if (v != null) change(v);
           },
   );
+
+  /// Friend pair modes: the server lists only the options that make a playable
+  /// pair with the other side's choice.
+  List<Map<String, dynamic>> pairChoices() {
+    final host = room['host'] == uid;
+    final all = rows(
+      data[!host && mode == 'club_country' ? 'countries' : 'clubs'],
+    );
+    final allowed = room['pairOptions'];
+    if (allowed is! List) return all;
+    final ids = allowed.map((e) => '$e').toSet();
+    return all.where((p) => ids.contains('${p['id']}')).toList();
+  }
+
+  String joinOr(Iterable<Object?> names) {
+    final text = names.join(' · ');
+    return text.isEmpty ? '—' : text;
+  }
+
   Widget setup() {
     final available =
         rewardMap(data['availability'])[ranked
@@ -487,10 +549,16 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           choice(
             host || mode == 'club_club' ? 'Kulübünü seç' : 'Ülkeni seç',
             choices[host ? 'left' : 'right'],
-            rows(data[!host && mode == 'club_country' ? 'countries' : 'clubs']),
+            pairChoices(),
             (v) => action('choose', {'choice': v}),
           ),
-          note('Eşleşmede en az 8 ortak futbolcu bulunmalı.'),
+          note(
+            room['pairOptions'] is List &&
+                    choices[host ? 'right' : 'left'] != null
+                ? 'Yalnızca rakibinin seçimiyle en az 6 ortak futbolcusu olan '
+                      'seçenekler listelenir (${(room['pairOptions'] as List).length}).'
+                : 'Eşleşmede en az 6 ortak futbolcu bulunmalı.',
+          ),
         ],
         button(
           ready[uid] == true ? 'Rakibin hazırlanıyor' : 'Hazırım',
@@ -580,7 +648,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ),
             itemBuilder: (context, i) {
               final owner = rewardMap(owners['$i']);
-              final selectedCell = target == '$i';
+              final selectedCell = cinkoV2
+                  ? cinkoCells.contains(i)
+                  : target == '$i';
               final ownerName = rewardMap(room['names'])[owner['uid']];
               return Semantics(
                 label: '${i + 1}. hücre, ${labels[i]}, ${ownerName ?? 'boş'}',
@@ -594,7 +664,16 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     onTap: done || owner.isNotEmpty
                         ? () => detail(i, ownerName?.toString())
                         : () {
-                            if (selectable && connected && !busy)
+                            if (cinkoV2 &&
+                                connected &&
+                                !busy &&
+                                room['turnUid'] == uid)
+                              setState(
+                                () => cinkoCells.contains(i)
+                                    ? cinkoCells.remove(i)
+                                    : cinkoCells.add(i),
+                              );
+                            else if (selectable && connected && !busy)
                               setState(() => target = '$i');
                             else
                               detail(i, ownerName?.toString());
@@ -655,6 +734,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         },
       );
   Widget chooser() => panel([
+    if (['club_club', 'club_country', 'random_five'].contains(mode))
+      ...wrongNotes(),
+    if (room['fivePoints'] is List)
+      note(
+        'Puan: 1 kulüp 1, 2 kulüp 2, 3 kulüp 4, 4 kulüp 6, 5 kulüp 8 puan. '
+        'Her futbolcuyu ilk yazan alır.',
+      ),
+    if (cinkoV2) ...cinkoNotes(),
     if (selected != null) ...[
       PlayerPortrait(
         playerId: int.tryParse('${selected!['id']}') ?? -1,
@@ -697,85 +784,280 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       'Cevabı gönder',
       selected == null ||
               room['submitted'] == true ||
+              locked > 0 ||
+              outOfWrong ||
               ['grid_classic', 'loto'].contains(mode) && target == null ||
-              ['grid_classic', 'cinko'].contains(mode) && room['turnUid'] != uid
+              ['grid_classic', 'cinko'].contains(mode) &&
+                  room['turnUid'] != uid ||
+              cinkoV2 && cinkoCells.isEmpty
           ? null
           : () => action('answer', {
               'playerId': selected!['id'],
+              if (cinkoV2) 'cells': cinkoCells.toList()..sort(),
               if (target != null) 'targetId': target,
               if (mode == 'grid_random') 'round': room['round'],
             }),
     ),
     if (room['submitted'] == true)
       note('Cevabın kilitlendi. Rakibinin cevabı tur kapanınca açılır.'),
+    if (cinkoV2)
+      button(
+        'Pas · 0 puan',
+        room['turnUid'] != uid ? null : () => action('pass'),
+        secondary: true,
+      ),
   ]);
+  List<Widget> cinkoNotes() {
+    final last = rewardMap(room['lastMove']);
+    final who = last['uid'] == uid
+        ? 'Sen'
+        : '${rewardMap(room['names'])[last['uid']] ?? 'Rakip'}';
+    return [
+      note(
+        'Oyuncuyu seç, tahtadan uyduğunu düşündüğün yan yana kutuları işaretle '
+        '(çapraz sayılmaz). Doğru kutu +1, yanlış kutu −1. Her oyuncu maçta '
+        'bir kez kullanılır.',
+      ),
+      if (room['secondBonus'] != null)
+        note(
+          'İlk başlamak avantaj olduğu için ikinci başlayan maça '
+          '${room['secondBonus']} puanla başlar. Dört pas üst üste gelirse maç biter.',
+        ),
+      if (cinkoCells.isNotEmpty) note('Seçilen kutu: ${cinkoCells.length}'),
+      if (last.isNotEmpty)
+        note(
+          last['pass'] == true
+              ? '$who: ${last['timeout'] == true ? 'süre doldu' : 'pas'} · 0'
+              : '$who: ${rewardMap(last['player'])['name']} · '
+                    '${(last['correct'] as List? ?? []).length} doğru, '
+                    '${(last['wrong'] as List? ?? []).length} yanlış · '
+                    '${(last['points'] as num? ?? 0) > 0 ? '+' : ''}${last['points']}',
+        ),
+    ];
+  }
+
+  // Club Manager formation slots, in pitch order.
+  static const managerSlots = {
+    '433': {'GK': 1, 'DEF': 4, 'MID': 3, 'ATT': 3},
+    '442': {'GK': 1, 'DEF': 4, 'MID': 4, 'ATT': 2},
+    '352': {'GK': 1, 'DEF': 3, 'MID': 5, 'ATT': 2},
+    '451': {'GK': 1, 'DEF': 4, 'MID': 5, 'ATT': 1},
+  };
+  static const positionNames = {
+    'GK': 'Kaleci',
+    'DEF': 'Defans',
+    'MID': 'Orta saha',
+    'ATT': 'Forvet',
+  };
+
+  /// Fills the empty slots with the best-rated players the budget still allows,
+  /// keeping enough money for the cheapest players of the slots after them.
+  void autoFill(List<Map<String, dynamic>> pool, num budget) {
+    final need = Map<String, int>.from(managerSlots[formation]!);
+    final chosen = pool.where((p) => xi.contains(p['id'])).toList();
+    // Players that no longer fit the formation leave first.
+    for (final p in [...chosen]) {
+      final pos = '${p['position']}';
+      if ((need[pos] ?? 0) > 0) {
+        need[pos] = need[pos]! - 1;
+      } else {
+        chosen.remove(p);
+      }
+    }
+    num spent = chosen.fold<num>(0, (n, p) => n + (p['cost'] as num));
+    final open = [
+      for (final e in need.entries)
+        for (var i = 0; i < e.value; i++) e.key,
+    ];
+    num cheapest(String pos, Set<Object?> taken, int skip) {
+      final costs =
+          pool
+              .where((p) => p['position'] == pos && !taken.contains(p['id']))
+              .map((p) => p['cost'] as num)
+              .toList()
+            ..sort();
+      return costs.length > skip ? costs[skip] : 999;
+    }
+
+    final taken = {for (final p in chosen) p['id']};
+    for (var i = 0; i < open.length; i++) {
+      final pos = open[i];
+      // Money the later slots need at the least.
+      num reserve(Object? without) {
+        final count = <String, int>{};
+        num sum = 0;
+        for (final later in open.skip(i + 1)) {
+          final n = count[later] = (count[later] ?? 0) + 1;
+          sum += cheapest(later, {...taken, without}, n - 1);
+        }
+        return sum;
+      }
+
+      final options =
+          pool
+              .where((p) => p['position'] == pos && !taken.contains(p['id']))
+              .toList()
+            ..sort(
+              (a, b) => (b['rating'] as num).compareTo(a['rating'] as num),
+            );
+      for (final p in options) {
+        if (spent + (p['cost'] as num) + reserve(p['id']) <= budget) {
+          taken.add(p['id']);
+          chosen.add(p);
+          spent += p['cost'] as num;
+          break;
+        }
+      }
+    }
+    setState(() {
+      xi
+        ..clear()
+        ..addAll(chosen.map((p) => '${p['id']}'));
+    });
+  }
+
   Widget manager() {
     final pool = rows(room['pool']);
+    final budget = room['budget'] as num? ?? 120;
+    final locked = room['submitted'] == true;
+    final editable = !busy && connected && !locked;
     final spent = pool
         .where((p) => xi.contains(p['id']))
         .fold<num>(0, (n, p) => n + (p['cost'] as num));
+    final slots = managerSlots[formation]!;
+    int picked(String pos) =>
+        pool.where((p) => p['position'] == pos && xi.contains(p['id'])).length;
+    final fits = slots.entries.every((e) => picked(e.key) == e.value);
+    final over = spent > budget;
+    final v2 = room['managerRules'] == 2;
     return panel([
       heading('Aynı bütçe, senin XI’in'),
-      note(
-        '${xi.length} / 11 oyuncu · $spent / ${room['budget']} kadro bütçesi',
+      Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: (spent / budget).clamp(0, 1).toDouble(),
+            minHeight: 10,
+            color: over ? palette.error : accent,
+            backgroundColor: palette.border,
+          ),
+        ),
       ),
-      note('Kadro bütçesi oyun içindir; Coin bakiyen kullanılmaz.'),
+      note(
+        '${xi.length} / 11 oyuncu · $spent / $budget kadro bütçesi'
+        '${over ? ' · bütçe aşıldı' : ' · kalan ${budget - spent}'}',
+      ),
+      note(
+        'Yıldızlar (★, 14–18) bütçenin tamamına sığmaz; kimin için harcayacağını '
+        'seç. Kadro bütçesi oyun içindir; Coin bakiyen kullanılmaz.',
+      ),
       choice(
         'Diziliş',
         formation,
         [
-          for (final f in ['433', '442', '352', '451'])
+          for (final f in managerSlots.keys)
             {'id': f, 'label': f.split('').join('-')},
         ],
         (v) => setState(() => formation = v),
-        enabled: room['submitted'] != true,
+        enabled: !locked,
       ),
-      for (final p in pool)
-        CheckboxListTile(
-          contentPadding: EdgeInsets.zero,
-          value: xi.contains(p['id']),
-          title: Text('${p['name']}'),
-          subtitle: Text(
-            '${p['position']} · ${p['rating']} reyting · ${p['cost']} bütçe',
+      Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        children: [
+          for (final e in slots.entries)
+            Chip(
+              avatar: Icon(
+                picked(e.key) == e.value
+                    ? Icons.check_circle_rounded
+                    : Icons.radio_button_unchecked_rounded,
+                size: 18,
+                color: picked(e.key) == e.value
+                    ? palette.success
+                    : picked(e.key) > e.value
+                    ? palette.error
+                    : palette.muted,
+              ),
+              label: Text(
+                '${positionNames[e.key]} ${picked(e.key)}/${e.value}',
+              ),
+            ),
+        ],
+      ),
+      if (!locked)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: editable ? () => autoFill(pool, budget) : null,
+            icon: const Icon(Icons.auto_fix_high_rounded),
+            label: const Text('Boşları bütçeye göre doldur'),
           ),
-          onChanged: busy || !connected || room['submitted'] == true
-              ? null
-              : (v) => setState(() {
-                  if (v == true)
-                    xi.add('${p['id']}');
-                  else
-                    xi.remove(p['id']);
-                }),
         ),
+      for (final pos in positionNames.keys) ...[
+        Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 4),
+          child: Text(
+            '${positionNames[pos]} · ${picked(pos)}/${slots[pos]}',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
+        for (final p in pool.where((p) => p['position'] == pos))
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            value: xi.contains(p['id']),
+            title: Text('${(p['cost'] as num) >= 14 ? '★ ' : ''}${p['name']}'),
+            subtitle: Text('${p['rating']} reyting · ${p['cost']} bütçe'),
+            onChanged: !editable
+                ? null
+                : (v) => setState(() {
+                    if (v == true) {
+                      xi.add('${p['id']}');
+                    } else {
+                      xi.remove(p['id']);
+                    }
+                  }),
+          ),
+      ],
+      const SizedBox(height: 8),
+      Text('Taktik', style: Theme.of(context).textTheme.titleSmall),
+      note(
+        v2
+            ? 'Taktikler döngü gibi: yüksek pres tempoyu, tempo genişliği, '
+                  'genişlik presi yener. Her şeyi yükseltmek avantaj getirmez; '
+                  'rakibin taktiği maçtan sonra açılır.'
+            : 'Rakibin taktiği maçtan sonra açılır.',
+      ),
       for (final t in [
         ('Press', press),
         ('Tempo', tempo),
         ('Genişlik', width),
       ]) ...[
-        note(t.$1),
+        note('${t.$1} · ${(t.$2 * 100).round()}'),
         Slider(
           value: t.$2,
           divisions: 4,
           label: '${(t.$2 * 100).round()}',
-          onChanged: busy || !connected || room['submitted'] == true
+          onChanged: !editable
               ? null
               : (v) => setState(() {
-                  if (t.$1 == 'Press')
+                  if (t.$1 == 'Press') {
                     press = v;
-                  else if (t.$1 == 'Tempo')
+                  } else if (t.$1 == 'Tempo') {
                     tempo = v;
-                  else
+                  } else {
                     width = v;
+                  }
                 }),
         ),
       ],
+      if (!locked && xi.length == 11 && !fits)
+        note(
+          'Seçtiğin oyuncular ${formation.split('').join('-')} dizilişine uymuyor.',
+        ),
       button(
-        room['submitted'] == true
-            ? 'Kadro kilitlendi'
-            : 'XI ve taktiği kilitle',
-        xi.length != 11 ||
-                spent > (room['budget'] as num? ?? 120) ||
-                room['submitted'] == true
+        locked ? 'Kadro kilitlendi' : 'XI ve taktiği kilitle',
+        xi.length != 11 || over || !fits || locked
             ? null
             : () => action('squad', {
                 'playerIds': xi.toList(),
@@ -784,7 +1066,10 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               }),
       ),
       note(
-        'Rakibin kadrosu ve taktiği iki taraf da kilitledikten sonra görünür.',
+        v2
+            ? 'Rakibin kadrosu iki taraf da kilitledikten sonra görünür. Süre '
+                  'dolduğunda yalnız sen kilitlediysen maçı hükmen kazanırsın.'
+            : 'Rakibin kadrosu ve taktiği iki taraf da kilitledikten sonra görünür.',
       ),
     ]);
   }
@@ -792,9 +1077,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   Widget play() {
     if (mode == 'club_manager') return manager();
     final criteria = rows(room['criteria']);
+    final labels = {
+      for (final k in [...rows(data['clubs']), ...rows(data['countries'])])
+        '${k['id']}': '${k['label']}',
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (mode.startsWith('grid_')) ...gridNotes(),
         if (mode == 'grid_classic') ...[
           board(3, [
             for (final row in rows(room['rows']))
@@ -839,7 +1129,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ),
             ...rewardMap(room['owners']).entries.map(
               (e) => note(
-                '${e.key}: ${rewardMap(room['names'])[rewardMap(e.value)['uid']]}',
+                '${axisName(e.key)}: '
+                '${labels[rewardMap(e.value)['criterionId']] ?? rewardMap(e.value)['criterionId']} · '
+                '${rewardMap(e.value)['uid'] == uid ? 'Sen' : rewardMap(room['names'])[rewardMap(e.value)['uid']]}',
               ),
             ),
           ]),
@@ -873,6 +1165,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         if (mode == 'loto')
           panel([
             heading('Tahtanın futbolcuları'),
+            ...wrongNotes(),
             if (target != null)
               note('Seçilen hücre: ${criteria[int.parse(target!)]['label']}'),
             ...rows(room['players']).map(
@@ -886,7 +1179,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ),
             button(
               'Seçilen hücreye yerleştir',
-              selected == null || target == null
+              selected == null || target == null || locked > 0 || outOfWrong
                   ? null
                   : () => action('answer', {
                       'playerId': selected!['id'],
@@ -899,12 +1192,13 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         if (mode == 'grid_random' && rewardMap(room['rounds']).isNotEmpty)
           panel([
             heading('Kapanan turlar'),
-            ...rewardMap(room['rounds']).entries.map(
-              (e) => note(
+            ...rewardMap(room['rounds']).entries.map((e) {
+              final mine = rewardMap(rewardMap(e.value)[uid]);
+              return note(
                 'Tur ${int.parse(e.key) + 1}: '
-                '${rewardMap(rewardMap(e.value)[uid])['correct'] == true ? 'Doğru' : 'Puan yok'}',
-              ),
-            ),
+                '${mine['correct'] == true ? 'Doğru${mine['bonus'] != null ? ' · nadir isim +${mine['bonus']}' : ''}' : 'Puan yok'}',
+              );
+            }),
           ]),
       ],
     );
@@ -954,9 +1248,45 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           ),
         ),
         panel([
-          if (room['simulation'] != null)
+          if (room['simulation'] != null) ...[
             note(
               'Sunucuda hesaplanan gol sonucu: ${rewardMap(rewardMap(room['simulation'])['goals']).values.join(' – ')}',
+            ),
+            for (final side in [uid, rival])
+              note(
+                '${side == uid ? 'Sen' : names[rival] ?? 'Rakip'} · güç '
+                '${(rewardMap(rewardMap(room['simulation'])['powers'])[side] as num? ?? 0).toStringAsFixed(1)} · xG '
+                '${(rewardMap(rewardMap(room['simulation'])['xg'])[side] as num? ?? 0).toStringAsFixed(2)}',
+              ),
+            if (rewardMap(room['simulation'])['penalties'] != null)
+              note(
+                'Penaltılar: ${rewardMap(rewardMap(room['simulation'])['penalties'])[uid] ?? 0} – '
+                '${rewardMap(rewardMap(room['simulation'])['penalties'])[rival] ?? 0}',
+              ),
+          ],
+          if (room['found'] is List || room['missed'] is List) ...[
+            for (final side in [uid, rival])
+              note(
+                '${side == uid ? 'Senin bulduğun' : '${names[rival] ?? 'Rakip'} buldu'}: '
+                '${joinOr(rows(room['found']).where((p) => p['uid'] == side).map((p) => p['name']))}',
+              ),
+            if (rows(room['missed']).isNotEmpty)
+              note(
+                'Kimsenin bulamadığı: ${rows(room['missed']).map((p) => p['clubs'] == null ? p['name'] : '${p['name']} (${p['clubs']})').join(' · ')}',
+              ),
+          ],
+          if (room['accepted'] is Map)
+            ExpansionTile(
+              title: const Text('Her eksenin kabul edilen kriterleri'),
+              children: [
+                for (final e in rewardMap(room['accepted']).entries)
+                  ListTile(
+                    title: Text(axisName(e.key)),
+                    subtitle: Text(
+                      joinOr((e.value as List? ?? const []).map((x) => '$x')),
+                    ),
+                  ),
+              ],
             ),
           if (room['witness'] != null)
             ExpansionTile(
@@ -1033,6 +1363,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               xi.clear();
               target = null;
               selected = null;
+              cinkoCells.clear();
             });
             load();
           }, secondary: true),

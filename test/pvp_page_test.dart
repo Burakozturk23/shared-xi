@@ -68,7 +68,76 @@ class PvpFixture extends PvpService {
       criterion,
     ),
     'players': List.generate(mode == 'loto' ? 16 : 9, player),
-    'pool': List.generate(25, player),
+    'wrongMoves': {'alice': 1, 'bob': 3},
+    if (mode == 'random_five') 'fivePoints': [0, 1, 2, 4, 6, 8],
+    if (mode.startsWith('grid_')) ...{
+      'gridRules': 2,
+      'gridWrong': {'alice': 1, 'bob': 2},
+      if (mode == 'grid_random') 'rareBonus': 1,
+      if (mode == 'grid_reverse')
+        'owners': {
+          'r0': {'uid': 'bob', 'criterionId': 'country:england'},
+        },
+      if (mode == 'grid_reverse' && stage == 'finished')
+        'accepted': {
+          'r0': ['England'],
+          'c1': ['Manchester United', 'England'],
+        },
+    },
+    'maxWrong': 8,
+    'lockUntil': 12000,
+    'pairOptions': ['club:0', 'club:2'],
+    if (mode == 'cinko') ...{
+      'cinkoRules': 2,
+      'secondBonus': 1,
+      'lastMove': {
+        'uid': 'bob',
+        'player': {'id': '4', 'name': 'Rüştü Reçber'},
+        'correct': [3],
+        'wrong': [4],
+        'points': 0,
+      },
+    },
+    if (stage == 'finished') ...{
+      'found': [
+        {'id': '1', 'name': 'Arda Turan', 'uid': 'alice'},
+        {'id': '2', 'name': 'Emre Belözoğlu', 'uid': 'bob'},
+      ],
+      'missed': [
+        {'id': '3', 'name': 'Hakan Şükür'},
+      ],
+    },
+    // Club Manager pool: 3 GK, 7 DEF, 8 MID, 7 ATT; the first of each is a star.
+    'pool': List.generate(25, (i) {
+      final pos = i < 3
+          ? 'GK'
+          : i < 10
+          ? 'DEF'
+          : i < 18
+          ? 'MID'
+          : 'ATT';
+      final star = [0, 3, 4, 10, 11, 18, 19].contains(i);
+      return {
+        ...player(i),
+        'id': '${300000 + i}',
+        'name': 'Oyuncu $i',
+        'position': pos,
+        'rating': star ? 85 - i % 3 : 60 + i % 10,
+        'cost': star
+            ? 14
+            : i % 2 == 0
+            ? 10
+            : 6,
+      };
+    }),
+    if (mode == 'club_manager') 'managerRules': 2,
+    if (mode == 'club_manager' && stage == 'finished')
+      'simulation': {
+        'goals': {'alice': 1, 'bob': 1},
+        'powers': {'alice': 71.24, 'bob': 69.5},
+        'xg': {'alice': 1.42, 'bob': 1.18},
+        'penalties': {'alice': 5, 'bob': 4},
+      },
     'budget': 120,
     'submitted': false,
     'ruleVersion': 'PVP_RULES_V1',
@@ -272,6 +341,159 @@ void main() {
       await t.pump();
     });
   }
+  testWidgets('online Loto shows both wrong-move counts and the lock', (
+    t,
+  ) async {
+    await mount(t, OnlinePlayMode.loto, PvpFixture());
+    final counter = find.textContaining('Yanlış hamle: 1 / 8 · rakip 3.');
+    await t.scrollUntilVisible(
+      counter,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(counter, findsOneWidget);
+    expect(find.text('Yanlış hamle: 2 sn bekle.'), findsOneWidget);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+    await t.pump();
+  });
+  testWidgets(
+    'online Random Five explains the club bonus and the wrong-name lock',
+    (t) async {
+      await mount(t, OnlinePlayMode.randomFive, PvpFixture());
+      final points = find.textContaining(
+        '3 kulüp 4, 4 kulüp 6, 5 kulüp 8 puan',
+      );
+      await t.scrollUntilVisible(
+        points,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('Yanlış hamle: 1 / 8'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    },
+  );
+  testWidgets(
+    'online Grid counts wrong answers, pays rare names and lists accepted criteria',
+    (t) async {
+      await mount(t, OnlinePlayMode.gridReverse, PvpFixture());
+      expect(
+        find.text(
+          'Yanlış cevap: 1 · rakip 2. Skor eşitse az yanlış yapan kazanır.',
+        ),
+        findsOneWidget,
+      );
+      final axis = find.text('Satır 1: England · Arkadaşın');
+      await t.scrollUntilVisible(
+        axis,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(axis, findsOneWidget);
+      await mount(t, OnlinePlayMode.gridRandom, PvpFixture());
+      expect(find.textContaining('+1 puan daha getirir'), findsOneWidget);
+      await mount(t, OnlinePlayMode.gridReverse, PvpFixture(stage: 'finished'));
+      final accepted = find.text('Her eksenin kabul edilen kriterleri');
+      await t.scrollUntilVisible(
+        accepted,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.tap(accepted);
+      await t.pumpAndSettle();
+      expect(find.text('Manchester United · England'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    },
+  );
+  testWidgets(
+    'online Club Manager fills the XI within budget and explains the tactic cycle',
+    (t) async {
+      await mount(t, OnlinePlayMode.clubManager, PvpFixture());
+      expect(find.text('Kaleci 0/1'), findsOneWidget);
+      expect(find.textContaining('yüksek pres tempoyu'), findsOneWidget);
+      final fill = find.text('Boşları bütçeye göre doldur');
+      await t.scrollUntilVisible(
+        fill,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.tap(fill);
+      await t.pumpAndSettle();
+      final count = find.textContaining('11 / 11 oyuncu');
+      await t.scrollUntilVisible(
+        count,
+        -300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(count, findsOneWidget);
+      expect(find.textContaining('bütçe aşıldı'), findsNothing);
+      expect(find.text('Kaleci 1/1'), findsOneWidget);
+      expect(find.text('Forvet 3/3'), findsOneWidget);
+      await mount(t, OnlinePlayMode.clubManager, PvpFixture(stage: 'finished'));
+      final pens = find.text('Penaltılar: 5 – 4');
+      await t.scrollUntilVisible(
+        pens,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Sen · güç 71.2 · xG 1.42'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    },
+  );
+  testWidgets('online Çinko picks cells by hand and explains the rules', (
+    t,
+  ) async {
+    await mount(t, OnlinePlayMode.cinko, PvpFixture());
+    expect(
+      find.textContaining('Doğru kutu +1, yanlış kutu −1'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('ikinci başlayan maça 1 puanla başlar'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Arkadaşın: Rüştü Reçber · 1 doğru, 1 yanlış · 0'),
+      findsOneWidget,
+    );
+    await t.tap(find.bySemanticsLabel(RegExp(r'^1\. hücre')));
+    await t.pump();
+    expect(find.text('Seçilen kutu: 1'), findsOneWidget);
+    expect(find.text('Pas · 0 puan'), findsOneWidget);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+    await t.pump();
+  });
+  testWidgets(
+    'friend pair choice lists only playable options; result shows who found whom and the missed players',
+    (t) async {
+      await mount(t, OnlinePlayMode.sharedXi, PvpFixture(stage: 'ready'));
+      expect(
+        find.textContaining(
+          'en az 6 ortak futbolcusu olan seçenekler listelenir (2)',
+        ),
+        findsOneWidget,
+      );
+      await mount(t, OnlinePlayMode.sharedXi, PvpFixture(stage: 'finished'));
+      final missed = find.text('Kimsenin bulamadığı: Hakan Şükür');
+      await t.scrollUntilVisible(
+        missed,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Senin bulduğun: Arda Turan'), findsOneWidget);
+      expect(find.text('Arkadaşın buldu: Emre Belözoğlu'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    },
+  );
   testWidgets(
     'Club Country host and guest choices remain distinct and ranked setup never creates friend room',
     (t) async {

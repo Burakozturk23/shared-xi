@@ -16,6 +16,20 @@ const act = async (h, uid, r, action = "poll", extra = {}) => (await h.call("act
   roomId: r.id, action, revision: r.revision, ...(action === "poll" ? {} : {actionId: id()}), ...extra},
 auth(uid))).room;
 const raw = (h, r) => h.read(`pvpV1/${r.mode}/rooms/${r.id}`);
+// One full correct placement of a Loto board (players are stored shuffled).
+function lotoSolution(board) {
+  const cellOf = {};
+  const tryPlace = (p, seen) => board.criteria.some((k, cell) => {
+    if (!E.matches(c, c.players[p], k) || seen.has(cell)) return false;
+    seen.add(cell);
+    if (cellOf[cell] === undefined || tryPlace(cellOf[cell], seen)) {
+      cellOf[cell] = p; return true;
+    }
+    return false;
+  });
+  for (const p of board.players) if (!tryPlace(p, new Set())) return null;
+  return cellOf;
+}
 async function pair(h, mode, ranked = false, names = ["alice", "bob"], seed = null) {
   const [a, b] = names; const extra = {playKind: ranked ? "ranked" : "friend"};
   let r = await enter(h, a, mode, ranked ? "search" : "create", extra);
@@ -32,17 +46,20 @@ async function pair(h, mode, ranked = false, names = ["alice", "bob"], seed = nu
   await act(h, a, r); return act(h, b, r);
 }
 test("CORE01-06/CL05/GC01/CI01/LO01: canonical snapshot and solvability certificates", () => {
-  assert.equal(c.grids.length, 60); assert.equal(c.cinko.length, 40); assert.equal(c.loto.length, 40);
+  assert.equal(c.grids.length, 300); assert.equal(c.cinko.length, 200); assert.equal(c.loto.length, 300);
   for (const g of c.grids) {
     for (let i = 0; i < 9; i++) {
       assert(E.matches(c, c.players[g.witness[i]], g.rows[Math.floor(i / 3)]));
       assert(E.matches(c, c.players[g.witness[i]], g.cols[i % 3]));
       assert(g.answers[i].length >= 3);
+      assert(g.answers[i].some((id) => c.players[id].rank <= 3000), g.id);
     }
   }
   for (const g of c.loto) {
     assert.equal(new Set(g.players).size, 16);
-    g.players.forEach((p, i) => assert(E.matches(c, c.players[p], g.criteria[i])));
+    // A full correct board exists, and stored order is not the answer order.
+    assert.ok(lotoSolution(g), g.id);
+    assert.ok(g.players.some((p, i) => !E.matches(c, c.players[p], g.criteria[i])), g.id);
   }
   for (const mode of E.MODES) assert(E.puzzle(c, mode, "fixed"));
 });
@@ -83,7 +100,9 @@ test("GR01-06: both players have five equal rounds; opponent answer/used ID hidd
       if (t < q.startsAt) continue; h.setTime(new Date(t).toISOString()); await act(h, "alice", r); r =
           await act(h, "bob", r);
     }
-    const answer = q.puzzle.rounds[i].answers.find((p) => !used.has(p)); used.add(answer);
+    // The best-known unused answer: no rarity bonus, so both score one point a round.
+    const answer = [...q.puzzle.rounds[i].answers].sort((a, b) => c.players[a].rank - c.players[b].rank)
+        .find((p) => !used.has(p)); used.add(answer);
     r = await act(h, "alice", r, "answer", {playerId: answer, round: i});
     const peer = await act(h, "bob", r); assert.equal(peer.rounds[i], undefined);
     assert.deepEqual(peer.used, {}); assert.equal(peer.scores.alice, i);
@@ -93,6 +112,28 @@ test("GR01-06: both players have five equal rounds; opponent answer/used ID hidd
   }
   h.setTime(new Date(q.endsAt + 1).toISOString()); r = await act(h, "alice", r);
   assert.equal(r.status, "finished"); assert.equal(r.result, "draw"); assert.equal(h.read("rankedState"), null);
+});
+test("GR07: a rare answer earns +1 in Grid Random; equal reverse scores go to fewer wrong answers", () => {
+  const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed: "rare", dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; assert.equal(r.gridRules, 2);
+  const all = [...r.puzzle.rounds[0].answers].sort((x, y) => c.players[x].rank - c.players[y].rank ||
+    x.localeCompare(y));
+  E.move(c, r, "a", {playerId: all[0], round: 0}, 6000);
+  E.move(c, r, "b", {playerId: all.at(-1), round: 0}, 6000);
+  assert.equal(r.scores.a, 1); assert.equal(r.scores.b, 1 + E.GRID_RARE_BONUS);
+  assert.equal(E.view(c, r, "a", 6000).rareBonus, 1);
+  const g = E.hydrate({mode: "grid_reverse", host: "a", guest: "b", seed: "tie", dataRevision: c.version});
+  E.start(g, c, 0); g.status = "playing";
+  const wrongBy = g.turnUid;
+  const wrong = Object.keys(c.criteria).find((k) => !g.puzzle.witness.slice(0, 3).every((id) =>
+    E.matches(c, c.players[id], k)));
+  E.move(c, g, wrongBy, {targetId: "r0", criterionId: wrong}, 6000);
+  assert.equal(E.view(c, g, wrongBy, 6000).gridWrong[wrongBy], 1);
+  g.scores = {a: 3, b: 3}; E.finish(g, "finished", "test", 7000);
+  assert.equal(g.winnerUid, wrongBy === "a" ? "b" : "a");
+  const done = E.view(c, g, "a", 7000);
+  assert.equal(Object.keys(done.accepted).length, 6);
+  assert.ok(Object.values(done.accepted).every((labels) => labels.length));
 });
 test("GT01-05: reverse axes require all three canonical relationships; 4 axes ends game", () => {
   const r = E.hydrate({mode: "grid_reverse", host: "a", guest: "b", seed: "reverse", dataRevision: c.version});
@@ -107,7 +148,7 @@ test("RF01-05/CI02-04: server computes club points and all eligible cells; index
   const q = raw(h, r).puzzle;
   const p = Object.values(c.players).find((p) => q.clubs.filter((k) => E.matches(c, p, k)).length >= 2);
   r = await act(h, "alice", r, "answer", {playerId: p.id});
-  assert.equal(r.scores.alice, q.clubs.filter((k) => E.matches(c, p, k)).length);
+  assert.equal(r.scores.alice, E.FIVE_POINTS[q.clubs.filter((k) => E.matches(c, p, k)).length]);
   const cinko = await pair(boot(), "cinko"); assert.equal(cinko.criteria.length, 25);
   const h2 = boot(); const cr = await pair(h2, "cinko");
   await assert.rejects(act(h2, cr.turnUid, cr, "answer", {playerId: p.id, indexes: [0, 1, 2]}), {code:
@@ -116,9 +157,12 @@ test("RF01-05/CI02-04: server computes club points and all eligible cells; index
 test("LO02-06: only pinned stone and correct cell accepted; 180s is server owned", async () => {
   const h = boot(); let r = await pair(h, "loto"); const q = raw(h, r).puzzle;
   assert.equal(r.endsAt - r.startsAt, 180000);
-  r = await act(h, "alice", r, "answer", {targetId: 0, playerId: q.players[0]});
-  assert.equal(r.owners[0].playerId, q.players[0]);
-  await assert.rejects(act(h, "bob", r, "answer", {targetId: 1, playerId: q.players[0]}), {code: "already-exists"});
+  const sol = lotoSolution(q); const cell = Object.keys(sol).find((k) => sol[k] === q.players[0]);
+  r = await act(h, "alice", r, "answer", {targetId: Number(cell), playerId: q.players[0]});
+  assert.equal(r.owners[cell].playerId, q.players[0]);
+  h.setTime(h.now + 500);
+  const other = Number(Object.keys(sol).find((k) => k !== cell));
+  await assert.rejects(act(h, "bob", r, "answer", {targetId: other, playerId: q.players[0]}), {code: "already-exists"});
 });
 test("CM01-06: budget, unique positions, secret XI, deterministic two-team referee", async () => {
   const h = boot(); let r = await pair(h, "club_manager"); const q = raw(h, r);
@@ -131,6 +175,49 @@ test("CM01-06: budget, unique positions, secret XI, deterministic two-team refer
   assert.equal(peer.squads, undefined); assert.equal(peer.mySquad, null);
   r = await act(h, "bob", r, "squad", input); assert.equal(r.status, "finished");
   const done = raw(h, r); assert.deepEqual(E.simulate(c, done), done.simulation);
+});
+test("CM08: binding budget, cyclic tactics, penalties on a draw, forfeit for a missing XI", async () => {
+  for (let i = 0; i < 20; i++) {
+    const q = E.puzzle(c, "club_manager", "cm08-" + i); const ps = q.pool.map((id) => c.players[id]);
+    let best = 0; let cheap = 0;
+    for (const [pos, n] of Object.entries(E.FORMATIONS["433"])) {
+      const g = ps.filter((p) => p.position === pos);
+      best += [...g].sort((a, b) => b.rating - a.rating).slice(0, n).reduce((x, p) => x + p.cost, 0);
+      cheap += [...g].sort((a, b) => a.cost - b.cost).slice(0, n).reduce((x, p) => x + p.cost, 0);
+    }
+    assert.ok(best > q.budget, String(best)); assert.ok(cheap <= q.budget, String(cheap));
+    assert.ok(ps.filter((p) => p.cost >= 14).length >= 7);
+  }
+  const P = {press: 1, tempo: 0, width: 0}; const T = {press: 0, tempo: 1, width: 0};
+  const W = {press: 0, tempo: 0, width: 1}; const all = {press: 1, tempo: 1, width: 1};
+  assert.ok(E.counter(P, T) > E.counter(T, P)); assert.ok(E.counter(T, W) > E.counter(W, T));
+  assert.ok(E.counter(W, P) > E.counter(P, W));
+  for (const t of [P, T, W, {press: .5, tempo: .5, width: .5}]) assert.equal(E.counter(all, t), E.counter(t, all));
+  // A draw in normal time is decided on penalties.
+  const q = E.puzzle(c, "club_manager", "cm08");
+  const ids = Object.entries(E.FORMATIONS["433"]).flatMap(([pos, n]) => q.pool.map((id) => c.players[id])
+      .filter((p) => p.position === pos).sort((a, b) => a.cost - b.cost).slice(0, n).map((p) => p.id));
+  const squad = {playerIds: ids, formation: "433", tactics: {press: .5, tempo: .5, width: .5}};
+  let pens = 0;
+  for (let i = 0; i < 40; i++) {
+    const r = E.hydrate({mode: "club_manager", host: "a", guest: "b", seed: "pen" + i, managerRules: 2});
+    r.squads = {a: squad, b: squad}; const sim = E.simulate(c, r);
+    if (sim.goals.a === sim.goals.b) {
+      pens++; assert.notEqual(sim.penalties.a, sim.penalties.b);
+    } else assert.equal(sim.penalties, undefined);
+  }
+  assert.ok(pens > 0);
+  // Only one side locked its XI: it wins by forfeit at the deadline.
+  const h = boot(); let r = await pair(h, "club_manager"); const pool = raw(h, r).puzzle.pool;
+  const mine = Object.entries(E.FORMATIONS["433"]).flatMap(([pos, n]) => pool.map((id) => c.players[id])
+      .filter((p) => p.position === pos).sort((a, b) => a.cost - b.cost).slice(0, n).map((p) => p.id));
+  r = await act(h, "alice", r, "squad", {...squad, playerIds: mine});
+  const end = raw(h, r).endsAt;
+  for (let t = raw(h, r).startsAt + 20000; t < end; t += 20000) {
+    h.setTime(new Date(t).toISOString()); await act(h, "alice", r); await act(h, "bob", r);
+  }
+  h.setTime(new Date(end + 1).toISOString()); r = await act(h, "alice", r);
+  assert.equal(r.status, "forfeit"); assert.equal(r.result, "win");
 });
 test("NET01-05/CORE07: reconnect clock, 30s absence, simultaneous offline and queue timeout", async () => {
   const h = boot(); let r = await pair(h, "random_five"); const start = r.startsAt;
@@ -284,3 +371,144 @@ for (const mode of E.MODES) {
     });
   }
 }
+test("LO07: a wrong Loto move locks 3 s; eight wrong moves end that player's moves; 400 ms gap", async () => {
+  const h = boot(); let r = await pair(h, "loto"); const q = raw(h, r).puzzle;
+  h.setTime(Math.max(h.now, r.startsAt) + 10);
+  const wrongCell = (p) => q.criteria.findIndex((k, i) => !E.matches(c, c.players[p], k) && !raw(h, r).owners?.[i]);
+  const p0 = q.players[0];
+  r = await act(h, "alice", r, "answer", {targetId: wrongCell(p0), playerId: p0});
+  assert.equal(r.wrongMoves.alice, 1); assert.ok(r.lockUntil > h.now);
+  await assert.rejects(act(h, "alice", r, "answer", {targetId: wrongCell(p0), playerId: p0}),
+      {code: "resource-exhausted"});
+  for (let i = 1; i < E.PENALTY.loto.maxWrong; i++) {
+    h.setTime(h.now + E.PENALTY.loto.lockMs + 1);
+    r = await act(h, "alice", r, "answer", {targetId: wrongCell(p0), playerId: p0});
+  }
+  assert.equal(r.wrongMoves.alice, 8);
+  h.setTime(h.now + E.PENALTY.loto.lockMs + 1);
+  const sol = lotoSolution(q); const cell = Number(Object.keys(sol).find((k) => sol[k] === p0));
+  await assert.rejects(act(h, "alice", r, "answer", {targetId: cell, playerId: p0}), {code: "resource-exhausted"});
+  r = await act(h, "bob", r, "answer", {targetId: cell, playerId: p0});
+  await assert.rejects(act(h, "bob", r, "answer", {targetId: 0, playerId: q.players[1]}), {code: "resource-exhausted"});
+});
+test("LO08: equal Loto scores go to fewer wrong moves, then the earlier last correct move", () => {
+  const r = {mode: "loto", host: "a", guest: "b", moveStats: {a: {wrong: 1, lastCorrectAt: 5}, b: {wrong: 0}}};
+  assert.equal(E.raceTieBreak(r), "b");
+  r.moveStats.b.wrong = 1; r.moveStats.b.lastCorrectAt = 9; assert.equal(E.raceTieBreak(r), "a");
+  r.moveStats.b.lastCorrectAt = 5; assert.equal(E.raceTieBreak(r), null);
+});
+test("PA01: friend pair modes only offer and accept choices that make a playable pair", async () => {
+  for (const mode of ["club_club", "club_country"]) {
+    const h = boot(); let r = await enter(h, "alice", mode, "create");
+    r = await enter(h, "bob", mode, "join", {code: r.id});
+    const p = c.pairs.find((p) => p.answers.length >= E.PAIR_MIN_ANSWERS && p.criteria[1].startsWith(
+        mode === "club_club" ? "club:" : "country:"));
+    r = await act(h, "alice", r, "choose", {choice: p.criteria[0]});
+    const view = await act(h, "bob", r);
+    assert.ok(view.pairOptions.includes(p.criteria[1]));
+    const options = mode === "club_country" ? c.countryOptions : c.clubOptions;
+    assert.ok(view.pairOptions.length < options.length);
+    const bad = options.find((id) => !view.pairOptions.includes(id));
+    await assert.rejects(act(h, "bob", view, "choose", {choice: bad}), {code: "failed-precondition"});
+    r = await act(h, "bob", view, "choose", {choice: p.criteria[1]});
+    r = await act(h, "alice", r, "ready"); r = await act(h, "bob", r, "ready");
+    assert.equal(r.status, "countdown");
+  }
+});
+test("PA02: a wrong pair guess locks 2 s, ten end the guessing, missed players shown", async () => {
+  const h = boot(); let r = await pair(h, "club_country"); const q = raw(h, r).puzzle.rounds[0];
+  const wrong = Object.keys(c.players).filter((id) => !q.answers.includes(id));
+  r = await act(h, "alice", r, "answer", {playerId: wrong[0]});
+  assert.equal(r.wrongMoves.alice, 1); assert.equal(r.maxWrong, 10);
+  await assert.rejects(act(h, "alice", r, "answer", {playerId: q.answers[0]}), {code: "resource-exhausted"});
+  for (let i = 1; i < 10; i++) {
+    h.setTime(h.now + E.PENALTY.club_country.lockMs + 1);
+    r = await act(h, "alice", r, "answer", {playerId: wrong[i]});
+  }
+  h.setTime(h.now + E.PENALTY.club_country.lockMs + 1);
+  await assert.rejects(act(h, "alice", r, "answer", {playerId: q.answers[0]}), {code: "resource-exhausted"});
+  r = await act(h, "bob", r, "answer", {playerId: q.answers[0]}); assert.equal(r.scores.bob, 1);
+  await assert.rejects(act(h, "bob", r, "answer", {playerId: q.answers[1]}), {code: "resource-exhausted"});
+  for (let t = h.now + 20000; t < r.endsAt; t += 20000) {
+    h.setTime(t); await act(h, "alice", r); await act(h, "bob", r);
+  }
+  h.setTime(r.endsAt + 10); r = await act(h, "bob", r);
+  assert.equal(r.status, "finished"); assert.equal(r.winnerUid, "bob");
+  assert.equal(r.missed.length, Math.min(12, q.answers.length - 1));
+  assert.ok(!r.missed.some((p) => p.id === q.answers[0]));
+  assert.deepEqual(r.found.map((p) => [p.id, p.uid]), [[q.answers[0], "bob"]]);
+});
+test("PA03: random pairs have 6+ answers, 3+ well-known answers and no country dominates", () => {
+  const countries = {};
+  for (let i = 0; i < 400; i++) {
+    for (const mode of ["club_club", "club_country"]) {
+      const p = E.puzzle(c, mode, "seed" + i).rounds[0];
+      assert.ok(p.answers.length >= 6);
+      assert.ok(p.answers.filter((id) => c.players[id].rank <= E.POPULAR_RANK).length >= 3);
+      if (mode === "club_country") countries[p.criteria[1]] = (countries[p.criteria[1]] || 0) + 1;
+    }
+  }
+  assert.ok(Object.keys(countries).length >= 30, String(Object.keys(countries).length));
+  assert.ok(Math.max(...Object.values(countries)) <= 400 * .1, JSON.stringify(countries));
+});
+test("CI07: Çinko uses the Botla Oyna rules: connected cells, +1/-1, one use per player, pass", async () => {
+  const h = boot(); let r = await pair(h, "cinko"); const q = raw(h, r).puzzle;
+  assert.equal(r.cinkoRules, 2); assert.equal(r.open.length, 25);
+  const u = r.turnUid; const o = u === "alice" ? "bob" : "alice";
+  // A player who fits cell i but not its right-hand neighbour j.
+  let pick = null;
+  for (let i = 0; i < 25 && !pick; i++) {
+    if (i % 5 === 4) continue;
+    const p = Object.values(c.players).find((p) => p.rank <= 3000 && E.matches(c, p, q.criteria[i]) &&
+      !E.matches(c, p, q.criteria[i + 1]));
+    if (p) pick = {p, i, j: i + 1};
+  }
+  await assert.rejects(act(h, u, r, "answer", {playerId: pick.p.id, cells: [0, 6]}), {code: "invalid-argument"});
+  await assert.rejects(act(h, u, r, "answer", {playerId: pick.p.id}), {code: "invalid-argument"});
+  r = await act(h, u, r, "answer", {playerId: pick.p.id, cells: [pick.i, pick.j]});
+  assert.equal(r.scores[u], 0); assert.equal(r.scores[o], 1);
+  assert.equal(r.owners[pick.i].uid, u); assert.equal(r.owners[pick.j], undefined);
+  assert.deepEqual([r.lastMove.correct, r.lastMove.wrong, r.lastMove.player.id], [[pick.i], [pick.j], pick.p.id]);
+  assert.equal(r.turnUid, o);
+  await assert.rejects(act(h, o, r, "answer", {playerId: pick.p.id, cells: [pick.j]}), {code: "already-exists"});
+  r = await act(h, o, r, "pass"); assert.equal(r.turnUid, u); assert.equal(r.passes, 1);
+  r = await act(h, u, r, "pass"); r = await act(h, o, r, "pass");
+  assert.equal(r.status, "playing");
+  r = await act(h, u, r, "pass");
+  assert.equal(r.status, "finished"); assert.equal(r.reason, "İki oyuncu da üst üste pas geçti.");
+  // The second player's starting point decides an otherwise level match.
+  assert.equal(r.winnerUid, o);
+});
+test("CI08: a timed-out Çinko turn counts as a pass", async () => {
+  const h = boot(); let r = await pair(h, "cinko"); const u = r.turnUid;
+  h.setTime(r.turnDeadline - 20000); await act(h, "alice", r); await act(h, "bob", r);
+  h.setTime(r.turnDeadline + 10); await act(h, "alice", r); r = await act(h, "bob", r);
+  assert.equal(r.passes, 1); assert.equal(r.lastMove.timeout, true); assert.equal(r.lastMove.uid, u);
+  assert.notEqual(r.turnUid, u);
+});
+test("RF07: Random Five boards are checked, 3+ clubs earn a bonus, wrong names cost, best answers shown", async () => {
+  const fit = (q, p) => q.clubs.filter((k) => E.matches(c, p, k)).length;
+  for (let i = 0; i < 50; i++) {
+    const q = E.puzzle(c, "random_five", "five" + i); const n = Object.values(c.players).map((p) => fit(q, p));
+    assert.ok(Math.max(...n) >= 4); assert.ok(n.filter((x) => x >= 3).length >= 4);
+    assert.ok(n.filter((x) => x >= 2).length >= 20);
+  }
+  assert.deepEqual(E.FIVE_POINTS, [0, 1, 2, 4, 6, 8]);
+  const h = boot(); let r = await pair(h, "random_five"); const q = raw(h, r).puzzle;
+  assert.deepEqual(r.fivePoints, E.FIVE_POINTS);
+  const four = Object.values(c.players).find((p) => fit(q, p) >= 4);
+  r = await act(h, "alice", r, "answer", {playerId: four.id});
+  assert.equal(r.scores.alice, E.FIVE_POINTS[fit(q, four)]);
+  const none = Object.values(c.players).find((p) => !fit(q, p));
+  r = await act(h, "bob", r, "answer", {playerId: none.id});
+  assert.equal(r.wrongMoves.bob, 1); assert.equal(r.scores.bob, 0);
+  await assert.rejects(act(h, "bob", r, "answer", {playerId: four.id}), {code: "resource-exhausted"});
+  for (let t = h.now + 20000; t < r.endsAt; t += 20000) {
+    h.setTime(t); await act(h, "alice", r); await act(h, "bob", r);
+  }
+  h.setTime(r.endsAt + 10); r = await act(h, "bob", r);
+  assert.equal(r.status, "finished"); assert.equal(r.winnerUid, "alice");
+  assert.deepEqual(r.found.map((p) => [p.id, p.uid]), [[four.id, "alice"]]);
+  assert.ok(r.missed.length > 0 && r.missed.every((p) => p.clubs >= 2 && p.id !== four.id));
+  assert.ok(r.missed.every((p, i) => !i || r.missed[i - 1].clubs >= p.clubs));
+});
