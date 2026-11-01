@@ -10,6 +10,8 @@ import '../services/auth_service.dart';
 import '../services/career_transfer_service.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
+import '../theme/ortak_saha_theme.dart';
 
 List<Map<String, dynamic>> _maps(dynamic v) =>
     (v is List ? v : const []).map(rewardMap).toList();
@@ -18,6 +20,17 @@ const _levels = {
   'beginner': 'Başlangıç · 3–4 dönem',
   'normal': 'Normal · 5–7 dönem',
   'legend': 'Efsane · 8–12 dönem',
+};
+// Transfer levels follow how well known the player is; "normal" is the mix.
+const _transferLevels = {
+  'normal': 'Karışık',
+  'easy': 'Kolay',
+  'medium': 'Orta',
+  'hard': 'Zor',
+};
+const _badgeNames = {
+  'streak_5': 'Keskin Dedektif',
+  'streak_10': 'Kusursuz Seri',
 };
 
 class CareerTransferPage extends StatefulWidget {
@@ -122,12 +135,13 @@ class _CareerTransferPageState extends State<CareerTransferPage>
     _searching = false;
   }
 
-  Future<void> _start({String? target}) => _run(() async {
+  Future<void> _start({String? target, bool daily = false}) => _run(() async {
     final r = await _service.mutate('startCareerTransfer', {
       'mode': widget.mode,
       'version': _version,
       'difficulty': _difficulty,
       if (target != null) 'target': target,
+      if (daily) 'daily': true,
     });
     if (mounted && !_accountChanged)
       setState(() {
@@ -301,10 +315,25 @@ class _CareerTransferPageState extends State<CareerTransferPage>
           ? 'Bir futbolcu. Bir kariyer.'
           : 'İki kulüp. Bir transfer.',
       message: _career
-          ? 'Futbolcuyu bul, kariyerinden seçilen kulüpleri sırala. Üç tahmin, iki sıralama kontrolü.'
+          ? 'Futbolcuyu bul, kariyerinden seçilen kulüpleri sırala. Üç tahmin; uzun kariyerlerde daha fazla sıralama kontrolü.'
           : 'Kulüp yönü ve yıldan futbolcuyu bul. Her dosyada üç tahmin hakkın var.',
     ),
     const SizedBox(height: 12),
+    if (!_career) ...[
+      HubSegmented<String>(
+        label: 'Zorluk',
+        options: _transferLevels,
+        value: _transferLevels.containsKey(_difficulty)
+            ? _difficulty
+            : 'normal',
+        onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Zorluk, futbolcunun ne kadar tanındığına göre. Aynı futbolcu arka arkaya gelmez.',
+      ),
+      const SizedBox(height: 16),
+    ],
     if (_career) ...[
       // "Başlangıç · 3–4 dönem" shows as name over range in the segment.
       HubSegmented<String>(
@@ -329,6 +358,10 @@ class _CareerTransferPageState extends State<CareerTransferPage>
             _career
                 ? 'Futbolcu başına en fazla 12 Link Coin / 24 XP. Başlangıç seviyesinde ustalık yok.'
                 : 'Transfer başına ilk resmî denemede en fazla 6 Link Coin / 12 XP.',
+            if (!_career)
+              'Seri yalnızca ilk denemelerde ilerler. 5 seri: +10 Link Coin, 10 seri: +20 Link Coin (bir kez).',
+            if (!_career)
+              'Aynı yıl aynı transferi birden fazla futbolcu yaptıysa hepsi doğru cevaptır.',
             'İki modun ortak ödül sınırı: günde 36 Link Coin / 72 XP. Fazlası bekleyen ödül olarak saklanır.',
             '1 ücretsiz + 2 reklamlı ipucu; mevcut destek stoğun da aynı üç slotu kullanır.',
             rewardMap(_status['energy'])['enabled'] == true
@@ -349,6 +382,18 @@ class _CareerTransferPageState extends State<CareerTransferPage>
       onPressed: _busy ? null : () => _start(),
       child: Text(_career ? 'Yeni bulmaca' : 'Yeni transfer dosyası'),
     ),
+    const SizedBox(height: 8),
+    OutlinedButton.icon(
+      onPressed: _busy ? null : () => _start(daily: true),
+      icon: const Icon(Icons.today_outlined),
+      label: Text(_career ? 'Günün kariyeri' : 'Günün transferi'),
+    ),
+    const SizedBox(height: 4),
+    Text(
+      _career
+          ? 'Herkes bugün aynı futbolcunun kariyerini sıralar. Sonucu paylaşabilirsin.'
+          : 'Herkes bugün aynı transfer dosyasını çözer. Sonucu paylaşabilirsin.',
+    ),
   ];
   List<Widget> _game() {
     final stops = _maps(_session['stops']);
@@ -368,7 +413,9 @@ class _CareerTransferPageState extends State<CareerTransferPage>
             ? '2 / 2 · Kariyeri sırala'
             : 'Futbolcuyu bul',
         message: _career
-            ? ordering
+            ? _finished
+                  ? 'Senin sıran ve işaretler aşağıda; doğru sıra sonuç kartında.'
+                  : ordering
                   ? 'Kulüpleri en eski dönemden en yeniye yerleştir.'
                   : 'Bu kulüplerde forma giyen futbolcuyu keşfet.'
             : 'Kulüpleri ve transfer yılını incele. Bu yolculuk kime ait?',
@@ -380,7 +427,10 @@ class _CareerTransferPageState extends State<CareerTransferPage>
             'Tahmin: ${3 - (_session['wrong'] as num? ?? 0)} / 3',
           ),
           if (_career)
-            (Icons.checklist_rounded, 'Kontrol: ${_session['checks']} / 2'),
+            (
+              Icons.checklist_rounded,
+              'Kontrol: ${_session['checks']} / ${_session['maxChecks'] ?? 2}',
+            ),
           (Icons.stars_outlined, 'Puan: ${_session['score']}'),
           if (!_career)
             (
@@ -390,10 +440,28 @@ class _CareerTransferPageState extends State<CareerTransferPage>
         ],
       ),
       if (_career) ...[
+        if (_session['daily'] != null)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: HubPill(
+              'Günün kariyeri',
+              color: hubAmber(context),
+              background: hubAmber(context).withValues(alpha: .14),
+            ),
+          ),
         const Text('Kariyerinden seçilen kulüpleri sırala.'),
         if (ordering)
           const Text(
             'En eskiden en yeniye sürükle. Ok düğmelerini de kullanabilirsin.',
+          ),
+        if (_session['gaps'] == true)
+          const HubSpecNote(
+            'Doğrulanmamış dönemler (kiralık, kulüpsüz veya kaydı eksik yıllar) listede yok; '
+            'kartlar arasında boşluk olabilir.',
+          ),
+        if (stops.any((s) => s['visit'] != null))
+          const HubSpecNote(
+            'Bir kulübe dönüş varsa o kulüp birden fazla kartta görünür; bu kartlar birbirinin yerine geçer.',
           ),
         ReorderableListView.builder(
           shrinkWrap: true,
@@ -441,14 +509,28 @@ class _CareerTransferPageState extends State<CareerTransferPage>
                               ),
                               if (stop['visit'] != null)
                                 Text(
-                                  '${stop['visit']}. dönem',
+                                  '${stop['visit']} ayrı dönem · dönüş var',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               if (correctness.length == stops.length)
-                                Text(
-                                  correctness[i] == true
-                                      ? 'Doğru pozisyon'
-                                      : 'Yerini değiştir',
+                                Row(
+                                  children: [
+                                    Icon(
+                                      correctness[i] == true
+                                          ? Icons.check_circle_rounded
+                                          : Icons.swap_vert_rounded,
+                                      size: 16,
+                                      color: correctness[i] == true
+                                          ? PitchColors.of(context).accent
+                                          : hubAmber(context),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      correctness[i] == true
+                                          ? 'Doğru pozisyon'
+                                          : 'Yerini değiştir',
+                                    ),
+                                  ],
                                 ),
                             ],
                           ),
@@ -503,6 +585,15 @@ class _CareerTransferPageState extends State<CareerTransferPage>
             ],
           ),
         ),
+      if (!_career && _session['daily'] != null)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: HubPill(
+            'Günün transferi',
+            color: hubAmber(context),
+            background: hubAmber(context).withValues(alpha: .14),
+          ),
+        ),
       if (!_career && !_finished)
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -554,7 +645,12 @@ class _CareerTransferPageState extends State<CareerTransferPage>
               : () => _act('order', {
                   'order': stops.map((x) => x['id']).toList(),
                 }),
-          child: Text(_session['checks'] == 0 ? 'İlk kontrol' : 'Son kontrol'),
+          child: Text(
+            (_session['checks'] as num? ?? 0) + 1 >=
+                    (_session['maxChecks'] as num? ?? 2)
+                ? 'Son kontrol'
+                : 'Kontrol et · ${(_session['checks'] as num? ?? 0) + 1}. hak',
+          ),
         ),
       ],
       for (final h in _maps(_session['hints']))
@@ -575,13 +671,60 @@ class _CareerTransferPageState extends State<CareerTransferPage>
               const Text(
                 'Günlük sınırı aşan hakların bekleyen ödüllere aktarılır.',
               ),
-              if (!_career) Text('${transfer['date']} · ${transfer['source']}'),
-              for (final s in _maps(_session['solution']))
+              if (result['badge'] != null)
                 Text(
-                  '${rewardMap(s['club'])['name']} · ${s['start']} – ${s['end'] ?? 'açık dönem'}',
+                  'Rozet ödülü: ${_badgeNames[result['badge']] ?? result['badge']} açıldı!',
+                  style: TextStyle(
+                    color: hubAmber(context),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
+              if (!_career) Text('${transfer['date']} · ${transfer['source']}'),
+              if (!_career && _session['answer'] != null)
+                Text(
+                  'Senin cevabın da doğru: ${rewardMap(_session['answer'])['name']} bu transferi aynı yıl yaptı.',
+                ),
+              if (!_career && (transfer['alsoBy'] as List?)?.isNotEmpty == true)
+                HubSpecNote(
+                  'Bu transferi aynı yıl yapan diğer futbolcular: ${(transfer['alsoBy'] as List).join(', ')}',
+                ),
+              if (_career) ...[
+                const SizedBox(height: 12),
+                Text('DOĞRU SIRA', style: hubCaps(context)),
+                const SizedBox(height: 6),
+                for (final (i, s) in _maps(_session['solution']).indexed)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 22,
+                          child: Text(
+                            '${i + 1}',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                        ClubBadge(
+                          club: Club.fromJson(rewardMap(s['club'])),
+                          size: 28,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '${rewardMap(s['club'])['name']} · ${_years(s)}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ],
           ),
+        ),
+        const SizedBox(height: 12),
+        ShareResultButtons(
+          text: _career ? careerShare(_session) : transferShare(_session),
         ),
         const SizedBox(height: 12),
         FilledButton(
@@ -631,14 +774,17 @@ class _CareerTransferPageState extends State<CareerTransferPage>
     if (hints.length >= 3)
       return [const Text('Bu bulmacanın üç ipucu kullanıldı.')];
     final options = !_career
-        ? {'next': 'Sıradaki ipucu'}
+        ? {
+            'next':
+                'Sıradaki ipucu: ${['Milliyet', 'Mevki ve yaş', 'İlk harf'][hints.length]}',
+          }
         : ordering
         ? {
             'connection': 'Ardışık bağlantı',
             'years': 'Yıl aralığı',
-            'short': 'Kısa dönem',
+            'short': 'Durak sırası',
           }
-        : {'country': 'Milliyet', 'position': 'Mevki'};
+        : {'country': 'Milliyet', 'position': 'Mevki', 'letter': 'İlk harf'};
     final available = options.entries
         .where((e) => !hints.any((h) => h['kind'] == e.key))
         .toList();
@@ -649,13 +795,13 @@ class _CareerTransferPageState extends State<CareerTransferPage>
         for (final e in available)
           PaidHintButton(
             session: _session,
-            sku: !_career && hints.length == 2
+            sku: !_career && hints.length == 2 || e.key == 'letter'
                 ? 'boost_first_letter'
                 : ordering
                 ? 'boost_connection'
                 : 'boost_basic',
             label: !_career
-                ? ['Ülke bilgisi', 'Mevki bilgisi', 'İlk harf'][hints.length]
+                ? ['Ülke bilgisi', 'Mevki ve yaş', 'İlk harf'][hints.length]
                 : e.value,
             disabled: _busy,
             onUse: (payment) => _act('hint', {'hint': e.key, ...payment}),
@@ -718,7 +864,10 @@ class _CareerTransferPageState extends State<CareerTransferPage>
               b['earned'] == true ? Icons.emoji_events : Icons.lock_outline,
               size: 18,
             ),
-            label: Text('${b['title']} · ${b['progress']} / ${b['target']}'),
+            label: Text(
+              '${b['title']} · ${b['progress']} / ${b['target']}'
+              '${b['coins'] != null ? ' · +${b['coins']} coin' : ''}',
+            ),
           ),
       ],
     ),
@@ -764,4 +913,45 @@ class _CareerTransferPageState extends State<CareerTransferPage>
         ),
       ),
   ];
+}
+
+String _years(Map<String, dynamic> s) {
+  final start = '${s['start']}';
+  final end = s['end'] == null ? 'açık dönem' : '${s['end']}';
+  return '${start.length >= 4 ? start.substring(0, 4) : start} – '
+      '${end.length >= 4 && s['end'] != null ? end.substring(0, 4) : end}';
+}
+
+/// Share card for a finished career: positions as squares, never the player.
+String careerShare(Map<String, dynamic> session) {
+  final marks = (session['correctness'] as List? ?? const [])
+      .map((ok) => ok == true ? '🟩' : '🟥')
+      .join();
+  final day = '${session['daily'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · Kariyer Bulmacası',
+    if (session['daily'] != null) 'Günün kariyeri · $day',
+    '${session['found'] == true ? '✅ Futbolcu bulundu' : '❌ Futbolcu bulunamadı'} · ${session['wrong'] ?? 0} yanlış',
+    if (marks.isNotEmpty)
+      '$marks · ${session['checks'] ?? 0}/${session['maxChecks'] ?? 2} kontrol',
+    '${session['score'] ?? 0} puan',
+  ].join('\n');
+}
+
+/// Share card for a finished transfer file: never names the player.
+String transferShare(Map<String, dynamic> session) {
+  final t = rewardMap(session['transfer']);
+  final wrong = (session['wrong'] as num? ?? 0).toInt();
+  final found = session['found'] == true;
+  final day = '${session['daily'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · Transfer Dedektifi',
+    session['daily'] != null
+        ? 'Günün transferi · $day'
+        : '${rewardMap(t['from'])['name']} → ${rewardMap(t['to'])['name']} · ${t['year']}',
+    '${'🟥' * wrong}${found ? '🟩' : ''}${'⬜' * (3 - wrong - (found ? 1 : 0)).clamp(0, 3)}'
+        ' ${found ? 'Çözüldü' : 'Çözülemedi'}',
+    '${(session['hints'] as List?)?.length ?? 0} ipucu · ${session['score'] ?? 0} puan'
+        '${(session['streak'] as num? ?? 0) > 1 ? ' · 🔥 ${session['streak']} seri' : ''}',
+  ].join('\n');
 }

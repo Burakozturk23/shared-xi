@@ -135,7 +135,8 @@ test("career guess followed by skip cannot masquerade as a completed ordering pu
       sessionId: run.id, revision: run.revision, requestId: requestId(), action, ...extra});
     run = (await act("guess", {playerId: puzzle.playerId})).session;
     const before = h.read("economyState/alice/careerTransfer");
-    run = (await act(finish ? "order" : "skip", finish ? {order: puzzle.stops.map((s) => s.id)} : {})).session;
+    const order = require("../career_transfer").cardsOf(puzzle).map((c) => c.id);
+    run = (await act(finish ? "order" : "skip", finish ? {order} : {})).session;
     assert.equal(run.finished, true);
     const after = h.read("economyState/alice/careerTransfer");
     await h.context.exports.syncSoloMissions({params: {uid: "alice", family: "careerTransfer"},

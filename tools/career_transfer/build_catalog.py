@@ -65,12 +65,30 @@ def build():
         key = hashlib.sha256(f"{r['player_id']}|{a}|{b}|{r['transfer_date']}".encode()).hexdigest()[:24]
         events[key] = dict(id=key, playerId=r['player_id'], fromClubId=a, toClubId=b,
             date=r['transfer_date'], year=r['transfer_year'], source='V4 transfers / HIGH', sourceEventId=r['event_id'])
-    # Visible clues must have exactly one answer. Ambiguous directions/year are excluded.
+    # Visible clues must have exactly one answer among catalog events.
     clue_counts = Counter((e['fromClubId'],e['toClubId'],e['year']) for e in events.values())
     events = [e for e in events.values() if clue_counts[(e['fromClubId'],e['toClubId'],e['year'])] == 1]
+    # Any V4 player (not only puzzle-eligible ones) who made the same move in the
+    # same year is a correct answer too: the screen shows only clubs and year.
+    movers = defaultdict(set)
+    for r in con.execute('select player_id,from_club_id,to_club_id,transfer_year from transfers'):
+        movers[(cid(r['from_club_id']),cid(r['to_club_id']),r['transfer_year'])].add(r['player_id'])
+    profiles = {r['player_id']: r for r in con.execute(
+        "select * from profiles where identity_confidence like 'HIGH%'")}
+    for e in events:
+        also = sorted(movers[(e['fromClubId'],e['toClubId'],e['year'])] - {e['playerId']})
+        if also: e['alsoPlayerIds'] = also
+        rank = players[e['playerId']]['rank']
+        e['difficulty'] = 'easy' if rank <= 800 else 'medium' if rank <= 2500 else 'hard'
+        pr = profiles.get(e['playerId'])
+        if pr and pr['birth_year'] and 15 <= e['year'] - pr['birth_year'] <= 45:
+            e['age'] = e['year'] - pr['birth_year']
+        if pr and pr['detailed_position']: e['detailedPosition'] = pr['detailed_position']
     result = dict(schema=1, databaseSha256=hashlib.sha256(DB.read_bytes()).hexdigest(),
         careers=puzzles, transfers=sorted(events,key=lambda e:e['id']), clubs=list(clubs.values()),
         quality=dict(careers=dict(Counter(p['difficulty'] for p in puzzles)), transfers=len(events),
+                     transferLevels=dict(Counter(e['difficulty'] for e in events)),
+                     sharedTransfers=sum(1 for e in events if 'alsoPlayerIds' in e),
                      rejected=dict(rejected)))
     result['version'] = 'ct-v1-' + hashlib.sha256(json.dumps(result,sort_keys=True).encode()).hexdigest()[:16]
     assert all(result['quality']['careers'].get(d,0) >= 20 for d in ['beginner','normal','legend'])
