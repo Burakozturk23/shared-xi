@@ -9,6 +9,7 @@ import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/share_result.dart';
 import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
 
@@ -163,7 +164,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> prepare() async {
+  Future<void> prepare({bool daily = false}) async {
     if (busy || error != null) return;
     setState(() {
       busy = true;
@@ -173,7 +174,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       final result = await service.mutate({
         'mode': widget.mode,
         'version': data['version'],
-        if (tot) ...{'bracketId': themeId, 'size': size},
+        if (tot && daily) 'daily': true,
+        if (tot && !daily) ...{'bracketId': themeId, 'size': size},
         if (!tot && (hl || type == 'objective')) 'training': training,
         if (hl) 'metricId': metricId,
         if (!tot && !hl) ...{
@@ -336,14 +338,14 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
               ? '16 / 32 / 64 / 128 aday: 2 / 3 / 4 / 5 coin. İstanbul gününde en fazla 2 ödüllü turnuva; aynı tema ve boyut günde bir kez. Üst sınır 10 coin + 20 XP.'
               : hl
               ? '5 / 10 / 20 seri: 1 / 2 / 3 coin. Aynı kriterde yalnızca yeni eşiğin farkı ödenir. İstanbul gününde toplam en fazla 6 coin + 12 XP.'
-              : '5 / 10 oyuncu: 2 / 3 coin. UTC gününde tüm kategoriler toplamında ilk 2 tam liste ödüllü. Üst sınır 6 coin + 12 XP.',
+              : '5 / 10 oyuncu: 2 / 3 coin. UTC gününde (Türkiye saatiyle 03:00’te yenilenir) ilk 2 tam liste ödüllü; bunlardan en fazla biri kişisel liste olabilir. Üst sınır 6 coin + 12 XP.',
         ),
         note(
           tot
               ? 'İlk şampiyon, oyuncu şampiyonu, kulüp şampiyonu ve 4 farklı tema: birer kez 2 coin + 4 XP. Bir turnuva bitirme günlük görevi: ortak görev sınırı içinde 2 coin + 4 XP.'
               : hl
-              ? 'İlk 5 / 10 / 20 seri ve 3 farklı kriterde 5 seri: sırasıyla 1 / 2 / 2 / 3 coin, iki katı XP. Başarımlar hesap başına bir kez.'
-              : 'İlk liste 1; ilk 10’lu liste 2; istatistikte 80 puan 2; kusursuz liste 3; ilk kişisel liste 1; üç istatistik kriteri 2 coin. İki katı XP. Her başarım bir kez.',
+              ? 'İlk 5 / 10 / 20 seri ve 3 farklı kriterde 5 seri (üçten az kriter açıksa hepsinde): sırasıyla 1 / 2 / 2 / 3 coin, iki katı XP. Her koşuda bir joker. Başarımlar hesap başına bir kez.'
+              : 'İlk liste 1; ilk 10’lu liste 2; 10’lu listede 80+ ya da kusursuz 5’li liste 2; kusursuz 10’lu liste 3; ilk kişisel liste 1; üç istatistik kriteri (üçten az açıksa hepsi) 2 coin. İki katı XP. Her başarım bir kez. Her listede değerleri birbirine yakın en az bir çift bulunur.',
         ),
         note(
           'Ödüller bağlı hesap ve sunucu doğrulaması gerektirir. Misafir oyunları sonradan ödüle çevrilmez.',
@@ -521,6 +523,18 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
           if (rewardMap(data['availability'])['enabled'] != true)
             note('Güncelleme henüz kullanıma açılmadı.'),
           button('Oyunu hazırla', canStart ? prepare : null),
+          if (tot) ...[
+            button(
+              'Günün turnuvası',
+              rewardMap(data['availability'])['enabled'] == true && !busy
+                  ? () => prepare(daily: true)
+                  : null,
+              secondary: true,
+            ),
+            note(
+              'Herkes bugün aynı temayı aynı eşleşmelerle oynar. Sonunda şampiyonunu kaç kişinin seçtiğini görürsün.',
+            ),
+          ],
         ]),
         rewards(),
       ],
@@ -635,6 +649,10 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
 
   String number(dynamic n, [String? metric]) {
     if (n == null) return '?';
+    // Goals per match is a ratio: two decimals, Turkish comma.
+    if ((metric ?? metricId ?? '').contains('per_match')) {
+      return (n as num).toStringAsFixed(2).replaceAll('.', ',');
+    }
     final value = (n as num)
         .toStringAsFixed(0)
         .replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
@@ -721,6 +739,21 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     return panel([
       heading('${r['streak'] ?? 0} doğru seri'),
       note('${metric?['label'] ?? 'İstatistik karşılaştırması'}'),
+      // One joker per run: the first miss keeps the streak alive.
+      if (r['finished'] != true)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: HubPill(
+            r['jokerUsed'] == true ? 'Joker kullanıldı' : 'Joker hazır',
+            icon: r['jokerUsed'] == true
+                ? Icons.block_rounded
+                : Icons.favorite_rounded,
+            color: r['jokerUsed'] == true ? palette.muted : hubAmber(context),
+            background: r['jokerUsed'] == true
+                ? palette.raised
+                : hubAmber(context).withValues(alpha: .14),
+          ),
+        ),
       ...metricContext(r),
       if (r['training'] == true) trainingSupport(r),
       for (final side in ['left', 'right']) ...[
@@ -735,7 +768,15 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         const SizedBox(height: 12),
       ],
       if (r['answered'] == true) ...[
-        heading(r['correct'] == true ? 'Doğru!' : 'Seri tamamlandı'),
+        heading(
+          r['correct'] == true
+              ? 'Doğru!'
+              : r['finished'] == true
+              ? 'Seri tamamlandı'
+              : 'Yanlış · joker devrede',
+        ),
+        if (r['correct'] != true && r['finished'] != true)
+          note('Serin korunuyor. Bir sonraki yanlışta oyun biter.'),
         if (r['finished'] != true)
           button(
             'Sonraki çift',
@@ -871,6 +912,8 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         padding: const EdgeInsets.only(bottom: 16),
         child: resultCard(r, archive: archive),
       ),
+      if (tot && !archive && data['community'] != null)
+        panel([communityPanel(rewardMap(data['community']), r)]),
       if (tot)
         panel([tree(r)])
       else if (hl)
@@ -879,6 +922,13 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         ranking(r, result: true),
       if (r['completed'] == true && !hl)
         button('Sonuç kartını paylaş', () => share(r), secondary: true),
+      if (tot && r['completed'] == true)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: ShareResultButtons(
+            text: bracketShare(r, rewardMap(data['community'])),
+          ),
+        ),
       if (!archive)
         button(
           'Yeni oyun',
@@ -950,6 +1000,49 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         if (pending) 'Sonuç doğrulanıyor',
         if (r['rewardReason'] != null) '${r['rewardReason']}',
         if (r['practice'] == true) 'Ödülsüz deneme oyunu.',
+        if (tot && (r['undos'] as num? ?? 0) > 0)
+          '${r['undos']} kez geri alındı.',
+        if (tot && r['daily'] != null) 'Günün turnuvası',
+      ],
+    );
+  }
+
+  /// How the community crowned this bracket: the share that chose the same
+  /// champion and the three most picked champions.
+  Widget communityPanel(Map<String, dynamic> c, Map<String, dynamic> r) {
+    final p = PitchColors.of(context);
+    final champion = rewardMap(rewardMap(r['candidates'])[r['championId']]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('TOPLULUK', style: hubCaps(context)),
+        const SizedBox(height: 6),
+        Text(
+          '${c['total']} turnuvanın %${c['championShare']}\'inde şampiyon ${champion['name'] ?? 'senin seçimin'}.',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 10),
+        for (final t in rows(c['top']))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Expanded(child: Text('${t['name']}')),
+                SizedBox(
+                  width: 110,
+                  child: LinearProgressIndicator(
+                    value: ((t['share'] as num? ?? 0) / 100).clamp(0.0, 1.0),
+                    minHeight: 6,
+                    borderRadius: BorderRadius.circular(3),
+                    backgroundColor: p.raised,
+                    color: t['id'] == r['championId'] ? p.accent : p.muted,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(width: 40, child: Text('%${t['share']}')),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -1224,4 +1317,17 @@ Future<Uint8List> choiceSharePng(Map<String, dynamic> run) async {
   image.dispose();
   picture.dispose();
   return bytes!.buffer.asUint8List();
+}
+
+/// Text share for a finished bracket, available on every platform.
+String bracketShare(Map<String, dynamic> run, Map<String, dynamic> community) {
+  final champion = rewardMap(rewardMap(run['candidates'])[run['championId']]);
+  final day = '${run['daily'] ?? ''}'.split('-').reversed.join('.');
+  return [
+    'Linkball · O mu Bu mu? · ${run['size']}\'lik turnuva',
+    if (run['daily'] != null) 'Günün turnuvası · $day',
+    '🏆 ${champion['name'] ?? 'Şampiyon'}${champion['seasonKey'] != null ? ' (${champion['seasonKey']})' : ''}',
+    if (community['total'] != null)
+      'Oyuncuların %${community['championShare']}\'i de aynı şampiyonu seçti',
+  ].join('\n');
 }

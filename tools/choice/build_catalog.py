@@ -52,8 +52,9 @@ for field,label,table,unit in specs:
  audit[field]={'totalIdentities':total,'unknownCount':missing,'nullRate':round(missing/max(1,total),4),'invalidCount':invalid,'positiveCount':len(values),'distinctValues':len(set(values)),'comparableGroups':{k:len(v) for k,v in viable.items()},'eligibleCount':sum(map(len,viable.values())),'distinctPairs':pairs,'tieRate':round(sum(n*(n-1)//2 for n in collections.Counter(values).values())/max(1,len(values)*(len(values)-1)//2),4),'sourceReviewed':reviewed,'gatePassed':gate,'reason':reason}
 # Independent, source-attributed historical criteria. Original eight gates stay intact.
 from verified_snapshot import load_metrics
-verified_metrics, verified_audit = load_metrics(players, aliases)
+verified_metrics, verified_audit, verified_entities = load_metrics(players, aliases)
 metrics.update(verified_metrics); audit.update(verified_audit)
+public.update(verified_entities)  # published UEFA clubs, used only by club criteria
 files=['prime_battles_32','era_clash_64','position_rivalry_64','super_lig_legends_64','ucl_dynasties_64','historical_season_kings_64','turkish_peak_squads_64','city_derby_rivalries_64']
 titles=['Zirve Sezonlar','Efsane vs Modern','Rol Kapışması','Süper Lig Efsaneleri','Avrupa Hanedanlıkları','Tarihsel Sezon Kralları','Türk Futbolunun Zirve Kadroları','Şehir ve Derbi Rekabetleri']
 themes={};candidates={};unresolved=[]

@@ -2,7 +2,7 @@
 const crypto = require("node:crypto");
 const B = require("./boosts");
 const catalog = require("./config/choice_catalog.json");
-const {RewardError} = require("./rewarded_ads");
+const {RewardError, dayKey} = require("./rewarded_ads");
 const fail = (code, message) => {
   throw new RewardError(code, message);
 };
@@ -10,6 +10,9 @@ const hash = (v) => crypto.createHash("sha256").update(String(v)).digest("hex");
 const list = (v) => Array.isArray(v) ? v : Object.values(v || {});
 const order = (items, seed) => [...items].sort((a, b) => hash(seed + a).localeCompare(hash(seed + b)));
 const modes = ["this_or_that", "higher_lower", "blind_ranking"];
+// "gol/maç" style units are ratios: two decimals matter, absolute floors do not.
+const isRatio = (m) => /\//.test(m?.unit || "");
+const shownValue = (m, v) => isRatio(m) ? Math.round(v * 100) : Math.round(v);
 function hydrate(r) {
   if (!r) return null;
   for (const k of ["history", "orderedCandidateIds", "usedIds", "placements", "rewardKeys"]) r[k] = list(r[k]);
@@ -58,18 +61,30 @@ function higherPair(c, r) {
   const rows = list(c.metrics[r.metricId].groups[r.scope]).filter((x) => !r.usedIds.includes(x.id));
   const band = r.streak < 3 ? "easy" : r.streak < 9 ? "normal" : r.streak < 19 ? "hard" : "master";
   const limits = {easy: [0.45, 1], normal: [0.2, 0.65], hard: [0.08, 0.3], master: [0.01, 0.15]}[band];
+  // For counts (matches, goals) a relative gap alone turns "1 vs 2" into an
+  // easy question and "0 vs 1" into a coin toss: require an absolute gap too.
+  // Money values keep the purely relative band.
+  const metric = c.metrics[r.metricId];
+  const counts = metric?.unit !== "EUR" && !isRatio(metric);
+  const floor = counts ? {easy: 8, normal: 5, hard: 4, master: 3}[band] : 0;
   const shuffled = order(rows.map((x) => x.id), r.privateSeed + r.history.length);
   const values = Object.fromEntries(rows.map((x) => [x.id, x.value]));
-  for (let i = 0; i < shuffled.length; i++) {
-    for (let j = i + 1; j < shuffled.length; j++) {
-      let a = shuffled[i]; let b = shuffled[j];
-      const gap = Math.abs(values[a] - values[b]) / Math.max(values[a], values[b]);
-      if (gap < limits[0] || gap > limits[1] || Math.round(values[a]) === Math.round(values[b])) continue;
-      const higher = parseInt(hash(r.privateSeed + ":direction:" + r.history.length).slice(0, 2), 16) % 2 === 0;
-      if ((values[b] > values[a]) !== higher) [a, b] = [b, a];
-      r.usedIds.push(a, b);
-      return {id: hash(r.id + ":" + r.history.length).slice(0, 24), leftId: a, rightId: b,
-        leftValue: values[a], rightValue: values[b], difficulty: band, knownSide: r.history.length % 2};
+  // With the floor first; only if no pair is left, without it (never end early).
+  for (const min of floor ? [floor, 1] : [0]) {
+    for (let i = 0; i < shuffled.length; i++) {
+      for (let j = i + 1; j < shuffled.length; j++) {
+        let a = shuffled[i]; let b = shuffled[j];
+        const gap = Math.abs(values[a] - values[b]) / Math.max(values[a], values[b]);
+        if (gap < limits[0] || gap > limits[1] || shownValue(metric, values[a]) === shownValue(metric, values[b]) ||
+          Math.abs(values[a] - values[b]) < min) continue;
+        const higher = parseInt(hash(r.privateSeed + ":direction:" + r.history.length).slice(0, 2), 16) % 2 === 0;
+        if ((values[b] > values[a]) !== higher) [a, b] = [b, a];
+        r.usedIds.push(a, b);
+        // Which side shows its value is seeded too, not a left/right rhythm.
+        const knownSide = parseInt(hash(r.privateSeed + ":side:" + r.history.length).slice(0, 2), 16) % 2;
+        return {id: hash(r.id + ":" + r.history.length).slice(0, 24), leftId: a, rightId: b,
+          leftValue: values[a], rightValue: values[b], difficulty: band, knownSide};
+      }
     }
   }
   return null;
@@ -81,10 +96,18 @@ function create(c, input, time) {
     history: [], actions: {}, orderedCandidateIds: [], usedIds: [], placements: [], rewardKeys: [],
     earnedCoins: 0, streak: 0, renderTemplateVersion: 1};
   if (r.mode === "this_or_that") {
-    const theme = c.themes[input.bracketId]; const f = theme?.formats[String(input.size || 16)];
+    let bracketId = input.bracketId; let size = input.size || 16; let seed = r.privateSeed;
+    if (input.daily === true) {
+      // Today's bracket: one 16-candidate theme and the same draw for everyone.
+      const day = dayKey(time); const ids = Object.keys(c.themes).sort();
+      bracketId = ids[parseInt(hash("tot__" + day + c.version).slice(0, 8), 16) % ids.length];
+      size = 16; seed = "tot__" + day + c.version; r.daily = day;
+    }
+    const theme = c.themes[bracketId]; const f = theme?.formats[String(size)];
     if (!f) fail("invalid-argument", "Tema bu boyutu desteklemiyor.");
-    r.bracketId = theme.id; r.size = Number(input.size || 16); r.type = theme.type;
-    r.contentVerified = f.approved === true; r.orderedCandidateIds = list(f.candidateIds);
+    r.bracketId = theme.id; r.size = Number(size); r.type = theme.type;
+    // Each game draws its own pairings from the manifest.
+    r.contentVerified = f.approved === true; r.orderedCandidateIds = order(list(f.candidateIds), seed);
     if (r.orderedCandidateIds.length !== r.size || new Set(r.orderedCandidateIds).size !== r.size) {
       fail("failed-precondition", "Aday manifesti geçersiz.");
     }
@@ -102,14 +125,25 @@ function create(c, input, time) {
       r.themeId = theme.id; r.orderedCandidateIds = order(list(theme.ids), r.privateSeed).slice(0, r.size);
     } else {
       r.metricId = input.metricId; const g = metricGroup(c, r.metricId, r.privateSeed); r.scope = g.scope;
-      const rows = g.rows.sort((a, b) => a.value - b.value || a.id.localeCompare(b.id));
+      // Sort a copy: the catalog's group array is shared across sessions.
+      const rows = [...g.rows].sort((a, b) => a.value - b.value || a.id.localeCompare(b.id));
+      const values = Object.fromEntries(rows.map((x) => [x.id, x.value]));
       for (let attempt = 0; attempt < 40; attempt++) {
         const chosen = [];
         for (let i = 0; i < r.size; i++) {
           const slice = rows.slice(Math.floor(i * rows.length / r.size), Math.floor((i + 1) * rows.length / r.size));
           chosen.push(order(slice.map((x) => x.id), r.privateSeed + attempt)[0]);
         }
-        const values = Object.fromEntries(rows.map((x) => [x.id, x.value]));
+        // One close call per list: a neighbour within 10% (at most 3 apart for
+        // counts) replaces the next pick, so a perfect score needs real
+        // knowledge instead of only telling far-apart strata apart.
+        const k = parseInt(hash(r.privateSeed + ":close:" + attempt).slice(0, 8), 16) % (r.size - 1);
+        const base = values[chosen[k]];
+        const absolute = isRatio(c.metrics[r.metricId]) ? 0 : 3;
+        const near = order(rows.filter((x) => !chosen.includes(x.id) && x.value !== base &&
+          Math.abs(x.value - base) <= Math.max(absolute, base * 0.1)).map((x) => x.id),
+        r.privateSeed + ":near" + attempt)[0];
+        if (near) chosen[k + 1] = near;
         if (new Set(chosen.map((i) => values[i])).size < (r.size === 5 ? 4 : 7)) continue;
         r.orderedCandidateIds = order(chosen, r.privateSeed + "reveal");
         r.values = Object.fromEntries(chosen.map((i) => [i, values[i]])); break;
@@ -128,7 +162,7 @@ function act(c, r, input) {
   if (r.mode === "this_or_that") {
     if (input.action === "undo") {
       if (!r.history.length) fail("failed-precondition", "Geri alınacak seçim yok.");
-      r.history.pop(); return;
+      r.history.pop(); r.undos = (r.undos || 0) + 1; return;
     }
     if (input.action !== "choose") fail("invalid-argument", "Geçersiz tercih.");
     const b = bracket(r.orderedCandidateIds, r.history);
@@ -146,13 +180,18 @@ function act(c, r, input) {
       }
       return;
     }
+    if (input.action === "next") fail("failed-precondition", "Önce soruyu cevapla.");
     if (input.action !== "guess" || r.answered || input.questionId !== r.question.id ||
       !["higher", "lower"].includes(input.direction)) fail("failed-precondition", "Bu soru zaten cevaplandı.");
     const q = r.question; const known = q.knownSide === 0 ? q.leftValue : q.rightValue;
     const hidden = q.knownSide === 0 ? q.rightValue : q.leftValue;
     r.correct = (hidden > known) === (input.direction === "higher"); r.answered = true;
     r.history.push({...q, direction: input.direction, correct: r.correct});
-    if (r.correct) r.streak++; else {
+    if (r.correct) r.streak++;
+    else if (!r.jokerUsed) {
+      // One joker per run: the first miss keeps the streak alive.
+      r.jokerUsed = true; r.reason = "Joker kullanıldı: serin devam ediyor. Bir sonraki yanlışta oyun biter.";
+    } else {
       r.finished = true; r.reason = "Seri tamamlandı.";
     }
   } else {
@@ -171,18 +210,22 @@ function act(c, r, input) {
     }
   }
 }
-function candidate(c, id, tournament = false) {
+function candidate(c, id, tournament = false, label = false) {
   const p = tournament ? c.candidates[id] : c.players[id];
   if (!p) fail("failed-precondition", "Sürümlü aday bulunamadı.");
   const {seasonKey, ...safe} = p; delete safe.legacyHighlight;
-  return {...safe, ...(p.contentStatus === "verified" ? {seasonKey} : {})};
+  // The season / era tag is part of what a bracket candidate is ("Galatasaray
+  // 99/00"), so it is shown as a label; unverified stats stay hidden.
+  return {...safe, ...(p.contentStatus === "verified" || label && seasonKey ? {seasonKey} : {}),
+    ...(p.contentStatus !== "verified" && label && seasonKey ? {seasonLabelOnly: true} : {})};
 }
 function publicRun(c, raw) {
   const r = hydrate(raw); if (!r) return null;
   const out = Object.fromEntries(["id", "ownerUid", "renderTemplateVersion", "seedOrderHash", "mode", "phase",
     "revision", "dataVersion", "createdAt", "completedAt", "finished", "completed", "practice", "earnedCoins",
     "rewardKeys", "bracketId", "size", "type", "metricId", "themeId", "scope", "streak", "answered", "correct",
-    "reason", "rewardReason", "contentVerified"].filter((k) => r[k] != null).map((k) => [k, r[k]]));
+    "reason", "rewardReason", "contentVerified", "daily", "undos", "jokerUsed"].filter((k) => r[k] != null)
+      .map((k) => [k, r[k]]));
   if (r.training) {
     Object.assign(out, {training: true, support: B.view(r), adCredits: r.adCredits, adGranted: r.adGranted});
     const key = r.mode === "higher_lower" ? r.question?.id : r.orderedCandidateIds[r.placements.length];
@@ -191,7 +234,7 @@ function publicRun(c, raw) {
   if (r.mode === "this_or_that") {
     Object.assign(out, bracket(r.orderedCandidateIds, r.history), {history: r.history,
       orderedCandidateIds: r.orderedCandidateIds,
-      candidates: Object.fromEntries(r.orderedCandidateIds.map((i) => [i, candidate(c, i, true)]))});
+      candidates: Object.fromEntries(r.orderedCandidateIds.map((i) => [i, candidate(c, i, true, true)]))});
   } else if (r.mode === "higher_lower") {
     if (r.question) {
       const q = r.question;
@@ -214,4 +257,5 @@ function publicRun(c, raw) {
   }
   return out;
 }
-module.exports = {catalog, fail, hash, list, modes, hydrate, bracket, score, create, act, publicRun, higherPair};
+module.exports = {catalog, fail, hash, list, modes, hydrate, bracket, score, create, act, publicRun, higherPair,
+  isRatio};

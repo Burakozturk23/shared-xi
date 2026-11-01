@@ -30,6 +30,8 @@ for (const mode of ["higher_lower", "blind_ranking"]) {
       state.question[state.question.knownSide === 0 ? "rightValue" : "leftValue"] :
       Object.values(state.values).filter((x) => x > state.values[info.target]).length + 1;
     assert.ok(info.low <= value && value <= info.high);
+    // Ranking hints only name the half of the list, not the exact place.
+    if (mode === "blind_ranking") assert.match(info.text, /^İstatistikte listenin (üst|alt) yarısında\.$/);
     const input = request(r, help(r));
     const [a, b] = await Promise.all([h.call("actChoice", input), h.call("actChoice", input)]);
     assert.deepEqual(a, b); r = a.session;
@@ -61,7 +63,10 @@ test("perfect assisted training cannot create normal records, rewards, daily cla
     r = await act(h, r, {action: "place", candidateId: r.current.id, slot: order.indexOf(r.current.id)});
   }
   assert.equal(r.score, 100); assert.equal(r.earnedCoins, 0);
-  assert.equal(h.read(root + "/choice/records"), null); assert.equal(h.read(root + "/choice/claims"), null);
+  // Only a separate training record is kept; normal records, claims and mastery stay empty.
+  const records = Object.values(h.read(root + "/choice/records"));
+  assert.equal(records.length, 1); assert.equal(records[0].training, true); assert.equal(records[0].best, 100);
+  assert.equal(h.read(root + "/choice/claims"), null);
   assert.equal(h.read(root + "/choice/daily"), null); assert.equal(h.read("progressionState/alice"), null);
   const archive = (await h.call("getChoice", {mode: "blind_ranking"})).archive;
   assert.equal(archive[0].training, true); assert.equal(archive[0].support.assisted, true);

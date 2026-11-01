@@ -18,10 +18,12 @@ class ChoiceFixture extends ChoiceService {
     this.offline = false,
     this.gated = false,
     this.training = false,
+    this.community = false,
+    this.joker = false,
   });
   String stage, type;
   int size;
-  bool offline, gated, training;
+  bool offline, gated, training, community, joker;
   Map<String, dynamic>? sent;
   Map<String, dynamic> player(int i) => {
     'id': 'p$i',
@@ -85,7 +87,8 @@ class ChoiceFixture extends ChoiceService {
         'metricId': 'peak_market_value',
         'streak': 10,
         'answered': result || stage == 'reveal',
-        'correct': !result,
+        'correct': !result && !joker,
+        if (joker) 'jokerUsed': true,
         'question': {
           'id': 'q1',
           'left': player(0),
@@ -129,6 +132,15 @@ class ChoiceFixture extends ChoiceService {
     'offline': offline,
     'notice': offline ? 'Çevrimdışı kayıt korunuyor.' : null,
     'session': stage == 'intro' ? null : session(mode),
+    if (community && stage == 'result' && mode == 'this_or_that')
+      'community': {
+        'total': 40,
+        'championShare': 25,
+        'top': [
+          {'id': 'p0', 'name': 'Lionel Messi', 'share': 25},
+          {'id': 'p1', 'name': 'Cristiano Ronaldo', 'share': 20},
+        ],
+      },
     'records': {},
     'archive': [],
     'daily': {},
@@ -441,4 +453,58 @@ void main() {
       expect(bytes.length, greaterThan(1000));
     });
   });
+  testWidgets(
+    "tournament offers today's bracket and shows the community champion share",
+    (t) async {
+      final fixture = ChoiceFixture(stage: 'intro');
+      await mount(t, fixture, 'this_or_that');
+      await t.scrollUntilVisible(
+        find.text('Günün turnuvası'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await t.tap(find.text('Günün turnuvası'));
+      await t.pumpAndSettle();
+      expect(fixture.sent?['daily'], true);
+      expect(fixture.sent?.containsKey('bracketId'), isFalse);
+      await mount(
+        t,
+        ChoiceFixture(stage: 'result', community: true),
+        'this_or_that',
+      );
+      await t.scrollUntilVisible(
+        find.text('TOPLULUK'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining("40 turnuvanın %25'inde"), findsOneWidget);
+      final text = bracketShare(
+        ChoiceFixture(stage: 'result').session('this_or_that'),
+        {'total': 40, 'championShare': 25},
+      );
+      expect(text, contains('🏆 Lionel Messi'));
+      expect(text, contains("%25'i de aynı şampiyonu"));
+      await capture(t, 'tot_community');
+    },
+  );
+  testWidgets(
+    'higher/lower shows the joker and keeps the run going after one miss',
+    (t) async {
+      await mount(t, ChoiceFixture(stage: 'game'), 'higher_lower');
+      expect(find.text('Joker hazır'), findsOneWidget);
+      await mount(
+        t,
+        ChoiceFixture(stage: 'reveal', joker: true),
+        'higher_lower',
+      );
+      expect(find.text('Joker kullanıldı'), findsOneWidget);
+      expect(find.text('Yanlış · joker devrede'), findsOneWidget);
+      await t.scrollUntilVisible(
+        find.text('Sonraki çift'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await capture(t, 'hl_joker');
+    },
+  );
 }

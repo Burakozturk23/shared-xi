@@ -14,13 +14,28 @@ function finalize(s, r, time, rewarded, c = catalog) {
   r.recorded = true; r.completedAt = time; r.rewardKeys ||= []; r.earnedCoins ||= 0;
   if (r.mode !== "higher_lower" && !r.completed) return;
   const recordKey = `${r.mode}__${r.metricId || r.bracketId || r.themeId}__${r.size || 0}__${r.dataVersion}`;
-  if (!r.practice && (r.mode === "higher_lower" || r.mode === "blind_ranking" && r.type === "objective")) {
-    const rec = s.records[recordKey] ||= {mode: r.mode, metricId: r.metricId, size: r.size || 0,
-      dataVersion: r.dataVersion, best: 0, sessions: 0};
+  // Training runs keep their own record, so supported play is still tracked.
+  if ((!r.practice || r.training) &&
+    (r.mode === "higher_lower" || r.mode === "blind_ranking" && r.type === "objective")) {
+    const key = recordKey + (r.training ? "__training" : "");
+    const rec = s.records[key] ||= {mode: r.mode, metricId: r.metricId, size: r.size || 0,
+      dataVersion: r.dataVersion, best: 0, sessions: 0, ...(r.training ? {training: true} : {})};
     rec.best = Math.max(rec.best, r.mode === "higher_lower" ? r.streak : r.score); rec.sessions++;
     rec.lastAt = time; rec.lastSessionId = r.id;
   }
-  if (r.completed) s.archive[r.id] = E.publicRun(c, r);
+  if (r.completed) {
+    s.archive[r.id] = E.publicRun(c, r);
+    // The collection keeps the newest 200 results.
+    const old = Object.values(s.archive).sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0)).slice(200);
+    for (const x of old) delete s.archive[x.id];
+  }
+  // A bracket is a matter of taste, so only its pace can be checked: a run
+  // faster than 0.6 s per decision earns no reward.
+  const rushed = r.mode === "this_or_that" && r.startedAt != null && time - r.startedAt < (r.size - 1) * 600;
+  if (rushed && rewarded && !r.practice && r.contentVerified) {
+    r.rewardReason = "Seçimler çok hızlı yapıldı; bu turnuva ödül vermedi. Koleksiyonun kaydedildi.";
+    s.archive[r.id] = E.publicRun(c, r); return;
+  }
   if (!rewarded || r.practice || r.mode === "this_or_that" && !r.contentVerified) {
     r.rewardReason = r.training ? "Antrenman: normal rekor, ödül ve ustalığa eklenmez." :
       r.practice ? "Misafir/deneme oyunu; ödül yok." : "Ödüller veya içerik onayı henüz açılmadı.";
@@ -52,19 +67,29 @@ function finalize(s, r, time, rewarded, c = catalog) {
     }
     if (r.streak >= 10) award("hl__master", 2);
     if (r.streak >= 20) award("hl__consistent", 2);
-    if (Object.keys(progress.metrics).length >= 3) award("hl__explorer", 3);
+    // Three metrics, or every open one while fewer than three pass review.
+    const open = Object.values(c.metrics || {}).filter((m) => m.gatePassed).length;
+    if (Object.keys(progress.metrics).length >= Math.max(1, Math.min(3, open))) award("hl__explorer", 3);
   } else {
-    if (daily.count < 2) {
+    // A personal list has no right answer, so only one a day is rewarded.
+    const personalLeft = r.type !== "personal" || !daily.personal;
+    if (daily.count < 2 && personalLeft) {
       const coins = c.policy.blind_ranking[r.size]; daily.count++; daily.coins += coins; award("rank__" + r.id, coins);
-    } else r.rewardReason = "UTC günündeki iki ödüllü oyun tamamlandı. Listen kaydedildi.";
+      if (r.type === "personal") daily.personal = true;
+    } else {
+      r.rewardReason = personalLeft ? "UTC günündeki iki ödüllü oyun tamamlandı. Listen kaydedildi." :
+        "Bugünün ödüllü kişisel listesi kullanıldı; nesnel listeler ödül vermeye devam eder.";
+    }
     award("br__first_rank", 1);
     if (r.size === 10) award("br__classic_rank", 2);
     if (r.type === "personal") award("br__my_first_list", 1);
     else {
       progress.statMetrics[r.metricId] = true;
-      if (r.score >= 80) award("br__stat_80", 2);
-      if (r.score === 100) award("br__stat_perfect", 3);
-      if (Object.keys(progress.statMetrics).length >= 3) award("br__three_metrics", 2);
+      // A ten-list is far harder than a five-list: 80+ there, or a perfect five.
+      if (r.size === 10 ? r.score >= 80 : r.score === 100) award("br__stat_80", 2);
+      if (r.size === 10 && r.score === 100) award("br__stat_perfect", 3);
+      const open = Object.values(c.metrics || {}).filter((m) => m.gatePassed).length;
+      if (Object.keys(progress.statMetrics).length >= Math.max(1, Math.min(3, open))) award("br__three_metrics", 2);
     }
   }
   if (r.completed) s.archive[r.id] = E.publicRun(c, r);
@@ -129,6 +154,29 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       });
     }
   }
+  // Champion picks across all players, one per completed bracket.
+  const statsPath = (r) => `choiceStats/${r.dataVersion}/${r.bracketId}__${r.size}`;
+  async function countChampion(uid, sessionId) {
+    const r = hydrate((await read(uid)).sessions[sessionId]);
+    if (!r || r.mode !== "this_or_that" || !r.completed || !r.championId || r.statsCounted) return;
+    await db.ref(statsPath(r)).transaction((raw) => {
+      const v = raw || {total: 0, champions: {}};
+      v.total = (v.total || 0) + 1; v.champions ||= {};
+      v.champions[r.championId] = (v.champions[r.championId] || 0) + 1; return v;
+    });
+    await change(uid, (s) => {
+      if (s.sessions[sessionId]) s.sessions[sessionId].statsCounted = true;
+    });
+  }
+  async function community(c, r) {
+    if (!r || r.mode !== "this_or_that" || !r.completed) return null;
+    const v = (await db.ref(statsPath(r)).get()).val();
+    if (!v?.total) return null;
+    const share = (id) => Math.round(100 * (v.champions?.[id] || 0) / v.total);
+    const top = Object.entries(v.champions || {}).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 3)
+        .filter(([id]) => c.candidates[id]).map(([id]) => ({id, name: c.candidates[id].name, share: share(id)}));
+    return {total: v.total, championShare: share(r.championId), top};
+  }
   async function result(uid, input) {
     const s = await read(uid); const r = hydrate(s.sessions[s.active[input.mode]]);
     const c = r ? await pinned(r.dataVersion) : catalog;
@@ -144,7 +192,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       trainingAvailable: ["higher_lower", "blind_ranking"].includes(input.mode) &&
         (await B.policyFor(db, uid, await isLinked(uid)))?.readyModes?.[input.mode + "_training"] === true,
       energyCost: await cost(uid, input.mode), linked: await isLinked(uid),
-      session: decorate(E.publicRun(c, r)), records: s.records, achievements: s.claims, paid: s.paid,
+      session: decorate(E.publicRun(c, r)), community: await community(c, r), records: s.records,
+      achievements: s.claims, paid: s.paid,
       daily: s.daily[input.mode + "__" + dayFor(input.mode, now())] || {count: 0, coins: 0},
       dayZone: input.mode === "blind_ranking" ? "UTC" : "Europe/Istanbul",
       archive: archive.slice(offset, offset + 20).map(decorate),
@@ -187,7 +236,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     await change(uid, (s, e, t) => {
       const existing = s.sessions[draft.id];
       if (existing) {
-        for (const k of ["mode", "size", "bracketId", "metricId", "themeId", "type", "training"]) {
+        for (const k of ["mode", "size", "bracketId", "metricId", "themeId", "type", "training", "daily"]) {
           if ((existing[k] || null) !== (draft[k] || null)) fail("invalid-argument", "İstek seçimi değişti.");
         }
         return;
@@ -206,6 +255,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
           status: "reserved", createdAt: t, expiresAt: draft.preparedUntil};
       }
       s.sessions[draft.id] = draft; s.active[draft.mode] = draft.id;
+      // Finished runs are archived; keep only the newest 30 full sessions.
+      const done = Object.values(s.sessions).filter((x) => x.finished && !Object.values(s.active).includes(x.id))
+          .sort((a, b) => (b.completedAt || b.createdAt) - (a.completedAt || a.createdAt));
+      for (const x of done.slice(30)) if (!(x.adCredits > 0)) delete s.sessions[x.id];
     });
     return result(uid, input);
   }
@@ -273,7 +326,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         apply(s, e, t, ev, c, p, linked);
       }
     });
-    await settle(uid); return result(uid, input);
+    await countChampion(uid, r.id); await settle(uid); return result(uid, input);
   }
   async function act(uid, input) {
     check(input); const s = await read(uid); const r = hydrate(s.sessions[input.sessionId]);
@@ -281,7 +334,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const c = await pinned(r.dataVersion); const p = {...defaults, ...await getPolicy()};
     const linked = await isLinked(uid);
     await change(uid, (s, e, t) => apply(s, e, t, input, c, p, linked));
-    await settle(uid); return result(uid, input);
+    await countChampion(uid, input.sessionId); await settle(uid); return result(uid, input);
   }
   async function prepareHint(uid, placement, input) {
     const r = hydrate((await read(uid)).sessions[input.sessionId]);
@@ -319,15 +372,21 @@ function clue(r, c = catalog) {
     const rows = E.list(c.metrics[r.metricId]?.groups?.[r.scope]);
     const values = rows.map((x) => x.value);
     if (!values.length || !Number.isFinite(value)) fail("failed-precondition", "Doğrulanmış aralık bulunamadı.");
-    const step = Math.max(1, Math.ceil((Math.max(...values) - Math.min(...values)) / 5));
-    const low = Math.floor(value / step) * step;
-    return {target, low, high: low + step, text: `Gizli değer ${low}–${low + step} aralığında.`};
+    const spread = Math.max(...values) - Math.min(...values);
+    // Ratios (goals per match) get a two-decimal band; counts a whole-number one.
+    const ratio = E.isRatio(c.metrics[r.metricId]);
+    const step = ratio ? Math.max(0.01, Math.ceil(spread / 5 * 100) / 100) : Math.max(1, Math.ceil(spread / 5));
+    const low = Math.floor(value / step) * step; const high = low + step;
+    const fmt = (v) => ratio ? v.toFixed(2).replace(".", ",") : String(v);
+    return {target, low, high, text: `Gizli değer ${fmt(low)}–${fmt(high)} aralığında.`};
   }
   if (r.mode !== "blind_ranking" || r.type !== "objective") fail("permission-denied", "Bu listede destek yok.");
   const value = r.values?.[target]; const values = Object.values(r.values || {});
   if (!Number.isFinite(value) || values.length !== r.size) fail("failed-precondition", "Doğrulanmış sıra yok.");
-  const low = Math.max(1, values.filter((v) => v > value).length);
-  const high = Math.min(r.size, values.filter((v) => v >= value).length + 1);
-  return {target, low, high, text: `İstatistik sırası ${low}–${high} aralığında (eşit değerler birlikte).`};
+  // Only the half of the list, so the hint guides without solving the blind order.
+  const rank = values.filter((v) => v > value).length + 1;
+  const upper = rank <= Math.ceil(r.size / 2);
+  return {target, low: upper ? 1 : Math.ceil(r.size / 2) + 1, high: upper ? Math.ceil(r.size / 2) : r.size,
+    text: `İstatistikte listenin ${upper ? "üst" : "alt"} yarısında.`};
 }
 module.exports = {createService, finalize, state, dayFor, defaults, clue};
