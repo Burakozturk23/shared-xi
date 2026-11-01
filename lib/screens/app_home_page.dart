@@ -9,12 +9,14 @@ import '../app/route_appearance.dart';
 import '../controllers/home_resources_controller.dart';
 import '../models/daily_streak.dart';
 import '../models/mission_models.dart';
+import '../services/auth_service.dart';
 import '../services/daily_reminders.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import 'games_catalog_page.dart';
 import 'progression_center_page.dart';
+import 'sign_in_page.dart';
 
 class AppHomePage extends StatefulWidget {
   const AppHomePage({
@@ -233,6 +235,7 @@ class _AppHomePageState extends State<AppHomePage> with WidgetsBindingObserver {
             ),
           ),
           const SizedBox(height: 16),
+          const AccountLinkCard(),
           _QuickActions(
             actions: [
               (
@@ -406,6 +409,74 @@ class _DiscoveryStrip extends StatelessWidget {
               ),
             ),
             side('Kulüp', '2. seçim', true),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Home card for players without a linked account: protect the profile,
+/// unlock online play. "Sonra" hides it for a week; never a blocking gate.
+class AccountLinkCard extends StatelessWidget {
+  const AccountLinkCard({super.key, this.linked});
+
+  /// Test seam; defaults to the live account state.
+  final bool? linked;
+  @override
+  Widget build(BuildContext context) {
+    final prefs = PreferencesScope.maybeOf(context);
+    final snoozed =
+        (prefs?.accountCardSnoozedUntil ?? 0) >
+        DateTime.now().millisecondsSinceEpoch;
+    if ((linked ?? AuthService.isGoogleAccount) || snoozed) {
+      return const SizedBox.shrink();
+    }
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: PitchPanel(
+        key: const ValueKey('home-account-card'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                HubIconBox(Icons.shield_outlined, color: p.accent),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Profilini koru, hesabını bağla',
+                    style: text.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Rozetlerin, görev ödüllerin ve online düellolar Google hesabına '
+              'bağlı profilde tutulur. Misafir ilerlemen bağlayınca korunur.',
+              style: text.bodySmall?.copyWith(color: p.muted),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    LinkballRoute(builder: (_) => const LinkballSignInPage()),
+                  ),
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text('Hesabını bağla'),
+                ),
+                TextButton(
+                  onPressed: () => prefs?.snoozeAccountCard(),
+                  child: const Text('Sonra'),
+                ),
+              ],
+            ),
           ],
         ),
       ),

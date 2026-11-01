@@ -25,13 +25,19 @@ class AppPreferences extends ChangeNotifier {
     );
     onboardingComplete =
         (_store.getInt('linkball.onboarding_version') ?? 0) > 0;
+    entryGateComplete = _store.getBool('linkball.entry_gate_done') ?? false;
+    accountCardSnoozedUntil =
+        _store.getInt('linkball.account_card_snooze') ?? 0;
   }
 
   final SharedPreferences _store;
   late ThemeMode themeMode;
   late String languageCode;
   late HapticStrength hapticStrength;
-  late bool sound, music, haptics, onboardingComplete;
+  late bool sound, music, haptics, onboardingComplete, entryGateComplete;
+
+  /// Until this time (ms) the home "link your account" card stays hidden.
+  late int accountCardSnoozedUntil;
   late double musicVolume, sfxVolume;
   static const defaultMusicVolume = .27, defaultSfxVolume = .55;
   double _volume(String key, double fallback) {
@@ -114,6 +120,27 @@ class AppPreferences extends ChangeNotifier {
       throw StateError('Tanıtım tercihi kaydedilemedi.');
     }
     onboardingComplete = true;
+    notifyListeners();
+  }
+
+  /// The first-run entry gate (Google or guest) has been answered.
+  Future<void> finishEntryGate() async {
+    if (!await _store.setBool('linkball.entry_gate_done', true)) {
+      throw StateError('Giriş tercihi kaydedilemedi.');
+    }
+    entryGateComplete = true;
+    notifyListeners();
+  }
+
+  /// Hides the home account card for a week.
+  Future<void> snoozeAccountCard({DateTime? now}) async {
+    final until = (now ?? DateTime.now())
+        .add(const Duration(days: 7))
+        .millisecondsSinceEpoch;
+    if (!await _store.setInt('linkball.account_card_snooze', until)) {
+      throw StateError('Tercih kaydedilemedi.');
+    }
+    accountCardSnoozedUntil = until;
     notifyListeners();
   }
 

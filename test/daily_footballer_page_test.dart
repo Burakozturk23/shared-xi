@@ -182,13 +182,23 @@ void main() {
           light: light,
         );
         expect(find.text('Tüm oyunları keşfet'), findsNothing);
-        await tester.ensureVisible(find.text('Günün Futbolcusu'));
+        await tester.scrollUntilVisible(
+          find.text('Günün Futbolcusu'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Günün Futbolcusu'));
         expect(selected, same(GameCatalog.dailyFootballer));
         expect(selected!.requiresRepository, isFalse);
         expect(selected!.requiresAuth, isFalse);
         await capture(tester, 'home-footballer-${light ? 'light' : 'dark'}');
-        await tester.ensureVisible(find.text('Bağlantıyı keşfet'));
+        await tester.scrollUntilVisible(
+          find.text('Bağlantıyı keşfet'),
+          -200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Bağlantıyı keşfet'));
         expect(selected, same(GameCatalog.discovery));
         expect(tester.takeException(), isNull);

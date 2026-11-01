@@ -7,6 +7,7 @@ import 'package:shared_xi/app/game_catalog.dart';
 import 'package:shared_xi/main.dart';
 import 'package:shared_xi/screens/app_settings_page.dart';
 import 'package:shared_xi/screens/games_catalog_page.dart';
+import 'package:shared_xi/screens/entry_gate_page.dart';
 import 'package:shared_xi/screens/onboarding_page.dart';
 import 'package:shared_xi/screens/sign_in_page.dart';
 import 'package:shared_xi/widgets/pitch_tile.dart';
@@ -89,14 +90,20 @@ void main() {
     expect(prefs.onboardingComplete, isFalse);
     await tester.tap(find.text('Atla'));
     await tester.pumpAndSettle();
+    // A fresh install meets the entry gate after the slides; guest play is one tap.
+    expect(find.byType(EntryGatePage), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('entry-guest')));
+    await tester.pumpAndSettle();
     expect(find.byType(NavigationBar), findsOneWidget);
     final restored = await AppPreferences.load();
     addTearDown(restored.dispose);
     expect(restored.onboardingComplete, isTrue);
+    expect(restored.entryGateComplete, isTrue);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(SharedXIApp(preferences: restored));
     await tester.pumpAndSettle();
     expect(find.byType(OnboardingPage), findsNothing);
+    expect(find.byType(EntryGatePage), findsNothing);
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

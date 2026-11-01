@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'screens/welcome_page.dart';
+import 'screens/entry_gate_page.dart';
 import 'screens/onboarding_page.dart';
 import 'app/app_preferences.dart';
 import 'app/app_feedback.dart';
@@ -62,6 +63,10 @@ class SharedXIApp extends StatefulWidget {
 class _SharedXIAppState extends State<SharedXIApp> {
   final _appearance = RouteAppearanceObserver();
   late bool _showOnboarding;
+
+  /// The entry gate follows the slides on a fresh install only; players who
+  /// finished the slides before keep going straight to the app.
+  bool _showGate = false;
   @override
   void initState() {
     super.initState();
@@ -109,8 +114,13 @@ class _SharedXIAppState extends State<SharedXIApp> {
           navigatorObservers: [_appearance],
           home: _showOnboarding
               ? OnboardingPage(
-                  onComplete: () => setState(() => _showOnboarding = false),
+                  onComplete: () => setState(() {
+                    _showOnboarding = false;
+                    _showGate = !widget.preferences.entryGateComplete;
+                  }),
                 )
+              : _showGate
+              ? EntryGatePage(onDone: () => setState(() => _showGate = false))
               : const WelcomePage(),
         ),
       ),
