@@ -16,6 +16,7 @@ function accepts(match, answers) {
     answers.every((id, i) => typeof id === "string" && id === match.answerKeys[i]);
 }
 function createService({db, documentRef, grantCoins, grantXp, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
   const ref = documentRef || ((uid) => db.ref("uclMomentsState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function accrue(s) {
@@ -62,7 +63,12 @@ function createService({db, documentRef, grantCoins, grantXp, now = Date.now}) {
       throw new RewardError("failed-precondition", "UCL Moments içeriğini güncelle.");
     }
     const match = matchOf(input.matchId);
-    if (!accepts(match, input.answers)) return {correct: false};
+    await attempts.before(uid, "ucl_moments", match.id);
+    if (!accepts(match, input.answers)) {
+      await attempts.wrong(uid, "ucl_moments", match.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "ucl_moments", match.id);
     await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       s.completed[match.id] ||= now();

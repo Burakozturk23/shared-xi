@@ -27,15 +27,29 @@ class MemoryStore implements NostalgiaStore {
   }
 }
 
+/// Server catalog with answers; the app asset carries none.
+final Map<String, Map<String, dynamic>> fullTasks = {
+  for (final c
+      in (jsonDecode(
+            File('functions/config/nostalgia_catalog.json').readAsStringSync(),
+          )['chapters']
+          as List))
+    for (final t in (c as Map)['tasks'] as List)
+      (t as Map)['id'] as String: Map<String, dynamic>.from(t),
+};
+List<String> answersOf(String id) =>
+    List<String>.from(fullTasks[id]!['answerKeys'] as List);
+
 class Gateway implements NostalgiaGateway {
   bool offline = false;
   Completer<Map<String, dynamic>>? delayed;
   final List<String> submitted = [];
-  final Map<String, dynamic> completed = {}, hints = {};
+  final Map<String, dynamic> completed = {}, hints = {}, results = {};
   Map<String, dynamic> get status => {
     'version': 2,
     'completed': completed,
     'hints': hints,
+    'results': results,
     'rewards': <String, dynamic>{},
     'rewardEligible': true,
   };
@@ -48,8 +62,17 @@ class Gateway implements NostalgiaGateway {
     if (delayed != null) return delayed!.future;
     if (action == 'submit') {
       final id = input['taskId'] as String;
+      // Checked like the backend: the answer must match the server catalog.
+      if (jsonEncode(input['answers']) != jsonEncode(answersOf(id))) {
+        return {'correct': false, ...status};
+      }
       submitted.add(id);
       completed[id] = 1;
+      results[id] = {
+        'answer': 'cevap',
+        'story': fullTasks[id]!['explanation'],
+        'sources': fullTasks[id]!['sources'],
+      };
       return {'correct': true, ...status};
     }
     if (action == 'hint') hints[input['taskId'] as String] = true;
@@ -65,17 +88,18 @@ Future<void> drained(TurkishNostalgiaController c) async {
 
 void solve(TurkishNostalgiaController c) {
   final t = c.task!;
+  final keys = answersOf(t.id);
   if (t.mechanic == 'timeline') {
-    for (var i = 0; i < t.answerKeys.length; i++) {
-      var from = c.answers.indexOf(t.answerKeys[i]);
+    for (var i = 0; i < keys.length; i++) {
+      var from = c.answers.indexOf(keys[i]);
       while (from > i) {
         c.move(from, -1);
         from--;
       }
     }
   } else {
-    for (var i = 0; i < t.answerKeys.length; i++) {
-      c.choose(t.answerKeys[i], slot: i);
+    for (var i = 0; i < keys.length; i++) {
+      c.choose(keys[i], slot: i);
     }
   }
 }
@@ -108,8 +132,10 @@ void main() {
     }
   });
   test(
-    'all legacy tasks survive offline checkpoint and sync in task order without local money',
+    'base tasks are server-validated: an offline answer waits, then all 24 verify in order',
     () async {
+      expect(catalog.tasks.every((t) => t.serverValidated), isTrue);
+      expect(catalog.tasks.every((t) => t.answerKeys.isEmpty), isTrue);
       final store = MemoryStore(), gateway = Gateway()..offline = true;
       final c = TurkishNostalgiaController(
         catalog: catalog,
@@ -118,24 +144,15 @@ void main() {
       );
       await c.load();
       await drained(c);
-      for (final chapter in catalog.chapters.where(
-        (c) => c.tasks.every((t) => !t.serverValidated),
-      )) {
-        c.open(chapter.id);
-        c.start();
-        solve(c);
-        await c.submit();
-        await drained(c);
-        c.next();
-        solve(c);
-        await c.submit();
-        await drained(c);
-        c.next();
-      }
-      expect(c.solved.length, 24);
-      expect(c.albums, 12);
-      expect(c.coins, 0);
-      expect(c.pending.length, 24);
+      final first = catalog.chapters.first;
+      c.open(first.id);
+      c.start();
+      solve(c);
+      await c.submit();
+      await drained(c);
+      // No local verdict: the answer waits for the server.
+      expect(c.phase, 'task');
+      expect(c.pending.keys, [first.tasks.first.id]);
       c.dispose();
       final restored = TurkishNostalgiaController(
         catalog: catalog,
@@ -144,32 +161,42 @@ void main() {
       );
       await restored.load();
       await drained(restored);
-      expect(restored.solved.length, 24);
-      expect(restored.pending.length, 24);
+      expect(restored.pending.keys, [first.tasks.first.id]);
       gateway.offline = false;
       await restored.sync();
-      expect(
-        gateway.submitted,
-        catalog.tasks
-            .where((t) => !t.serverValidated)
-            .map((t) => t.id)
-            .toList(),
-      );
+      expect(gateway.submitted, [first.tasks.first.id]);
       expect(restored.pending, isEmpty);
-      expect(restored.confirmed.length, 24);
-      restored.open(catalog.chapters.first.id, replay: true);
-      expect(restored.phase, 'intro');
-      expect(restored.solved.length, 24);
-      restored.start();
-      expect(restored.phase, 'task');
-      expect(restored.answers, isEmpty);
       restored.dispose();
+      final online = TurkishNostalgiaController(
+        catalog: catalog,
+        store: MemoryStore(),
+        gateway: Gateway(),
+      );
+      await online.load();
+      await drained(online);
+      // The 12 base chapters (the expansion pack has its own catalog).
+      for (final chapter in catalog.chapters.where(
+        (c) => fullTasks.containsKey(c.tasks.first.id),
+      )) {
+        online.open(chapter.id);
+        online.start();
+        for (var i = 0; i < 2; i++) {
+          solve(online);
+          await online.submit();
+          await drained(online);
+          expect(online.phase, 'result');
+          online.next();
+        }
+      }
+      expect(online.confirmed.length, 24);
+      expect(online.coins, 0);
+      online.dispose();
     },
   );
   test(
     'incorrect answers retry, route partial draft persists, hints and sequence resume',
     () async {
-      final store = MemoryStore(), gateway = Gateway()..offline = true;
+      final store = MemoryStore(), gateway = Gateway();
       final c = TurkishNostalgiaController(
         catalog: catalog,
         store: store,
@@ -210,7 +237,7 @@ void main() {
     },
   );
   test('failed checkpoint does not show success and can be retried', () async {
-    final store = MemoryStore(), gateway = Gateway()..offline = true;
+    final store = MemoryStore(), gateway = Gateway();
     final c = TurkishNostalgiaController(
       catalog: catalog,
       store: store,
@@ -362,7 +389,7 @@ void main() {
       await tester.tap(find.text('Cevabı kontrol et'));
       await tester.pumpAndSettle();
       expect(c.solved, isEmpty);
-      expect(c.message, contains('Henüz doğru değil'));
+      expect(c.message, contains('Cevap doğru değil'));
       await tester.scrollUntilVisible(find.text('Ücretsiz ipucu'), -200);
       await tester.tap(find.text('Ücretsiz ipucu'));
       await tester.pumpAndSettle();

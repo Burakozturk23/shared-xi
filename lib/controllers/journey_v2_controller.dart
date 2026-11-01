@@ -114,6 +114,8 @@ class JourneyV2Controller extends ChangeNotifier {
   Future<void> next() => _run(() async {
     final state = checkpoint;
     if (state == null || !state.reviewing || state.complete) return;
+    // The saved draft belongs to the next task: never carry the solved answer over.
+    selected = [];
     await _save(JourneyCheckpoint(index: state.index + 1, solved: state.solved));
     _prepare();
   });

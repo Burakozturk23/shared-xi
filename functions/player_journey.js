@@ -23,7 +23,29 @@ function accepts(task, keys) {
   return task.type === "timeline" ? keys.every((k, i) => options[k] === options[task.answerKeys[i]]) :
     keys.every((k) => task.answerKeys.includes(k));
 }
+// The app asset no longer carries answers: after a correct answer the server
+// returns the explanation, and bought coin/ad hints are computed here.
+function resultOf(task) {
+  if (task.result) return task.result;
+  const label = (k) => task.options.find((o) => o.key === k)?.label;
+  return {answer: task.answerKeys.map(label).join(task.type === "timeline" ? " → " : ", "), story: task.explanation};
+}
+function assistOf(task, hints) {
+  if (task.expansion || !hints || !(hints.coin || hints.ad)) return null;
+  const label = (k) => task.options.find((o) => o.key === k)?.label;
+  if (task.type === "timeline") {
+    return {eliminated: [],
+      text: "Doğru başlangıç: " + task.answerKeys.slice(0, hints.coin ? 2 : 1).map(label).join(" → ")};
+  }
+  if (task.type === "missingClub" && !hints.coin) {
+    return {eliminated: [], text: "Kulübün ilk harfi: " + [...label(task.answerKeys[0])][0]};
+  }
+  const wrong = task.options.filter((o) => !task.answerKeys.includes(o.key)).map((o) => o.key);
+  return hints.coin ? {eliminated: wrong, text: "Yanlış seçenekler elendi. Kalan seçeneklerden cevabını oluştur."} :
+    {eliminated: wrong.slice(0, 2), text: "İki yanlış seçenek elendi."};
+}
 function createService({db, documentRef, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
   const ref = documentRef || ((uid) => db.ref("journeyRewardState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
@@ -77,15 +99,22 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
     const completed = Object.keys(journeys).filter((id) => s.journeys[id]?.solved === 4);
     return {ok: true, version: catalog.version, completed, progress: s.journeys, hints: s.hints,
       rewards: s.rewards, favorites: s.favorites, chapterCounts: counts(s),
-      results: Object.fromEntries(expansion.journey.journeys.flatMap((j) => j.tasks
-          .filter((t, i) => i < (s.journeys[j.id]?.solved || 0)).map((t) => [t.id, t.result]))),
+      results: Object.fromEntries(Object.values(journeys).flatMap((j) => j.tasks
+          .filter((t, i) => i < (s.journeys[j.id]?.solved || 0)).map((t) => [t.id, resultOf(t)]))),
+      assist: Object.fromEntries(Object.values(journeys).flatMap((j) => j.tasks
+          .map((t) => [t.id, assistOf(t, s.hints[t.id])]).filter(([, v]) => v))),
       finalUnlocked: counts(s).every((n) => n === 8), hintPrice: 10,
       playerReward: {coins: 20, xp: 40}, chapterReward: {coins: 80, xp: 120}, finalReward: {coins: 150, xp: 300}};
   }
   async function submit(uid, input) {
     if (input.version !== catalog.version) fail("failed-precondition", "Uygulamanı güncelle.");
     const {journey, task, index} = taskOf(input);
-    if (!accepts(task, input.answers)) fail("invalid-argument", "Cevap doğrulanamadı.");
+    await attempts.before(uid, "player_journey", task.id);
+    if (!accepts(task, input.answers)) {
+      await attempts.wrong(uid, "player_journey", task.id, input.answers);
+      fail("invalid-argument", "Cevap doğrulanamadı.");
+    }
+    await attempts.solved(uid, "player_journey", task.id);
     await change(uid, (s) => {
       const progress = s.journeys[journey.id] ||= {solved: 0};
       if (index > progress.solved) fail("failed-precondition", "Önceki aşamaların eşitlenmesi bekleniyor.");

@@ -430,11 +430,11 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(t.text('hint')),
         ),
-      if (!t.serverValidated && c.hints.contains(t.id))
+      if ((!t.serverValidated || t.legacyHints) && c.hints.contains(t.id))
         PitchPanel(child: Text(t.text('strongHint')))
-      else if (!t.serverValidated)
+      else if (!t.serverValidated || t.legacyHints)
         TextButton(
-          onPressed: c.task!.serverValidated || c.busy || c.syncing
+          onPressed: c.task!.serverValidated && !c.task!.legacyHints || c.busy || c.syncing
               ? null
               : () async {
                   final buy = await showDialog<bool>(

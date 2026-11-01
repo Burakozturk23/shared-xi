@@ -120,14 +120,42 @@ class WhatIfController extends ChangeNotifier {
     await _edit((l){final p=_p(l,s);final hints=List<String>.from(p['freeHints'] as List? ?? []); if(!hints.contains(r.id)) hints.add(r.id); p['freeHints']=hints;});
   }
   bool freeHintShown(WhatIfScenario s)=> (progress(s)['freeHints'] as List? ?? []).contains(route(s)?.id);
+  Map<String,dynamic> _result(WhatIfRoute r)=>rewardMap(rewardMap(cloud['results'])[r.task.id]);
+  /// Explanation and ending: bundled for old packs, from the server otherwise.
+  String explanation(WhatIfRoute r)=>r.task.explanation.isNotEmpty ? r.task.explanation : '${_result(r)['story'] ?? ''}';
+  String ending(WhatIfRoute r)=>r.ending.isNotEmpty ? r.ending : '${_result(r)['ending'] ?? ''}';
   Future<void> submit(WhatIfScenario s) async {
     final r=route(s);if(r==null)return;
     final answers=picked(s);
+    if(r.task.serverValidated){await _submitToServer(s,r,answers);return;}
     if(!r.task.accepts(answers)){feedback='Henüz olmadı. İpucuna bakıp yeniden deneyebilirsin.';_notify();return;}
     final ok=await _edit((l){final p=_p(l,s);
       p['ends']={...List<String>.from(p['ends'] as List? ?? []),r.id}.toList();
       p['phase']='result';
       if(linked)(l['proofs'] as Map)[r.task.id]={'version':catalog.version,'scenarioId':s.id,'routeId':r.id,'answers':answers};
+    });
+    if(ok){feedback=null;_notify();}
+  }
+  Future<void> _submitToServer(WhatIfScenario s,WhatIfRoute r,List<String> answers) async {
+    if(!linked){feedback='Bu görev sunucuda doğrulanır. Oynamak için Google hesabına bağlan; ilerlemen cihazda kalır.';_notify();return;}
+    if(answers.length!=r.task.requiredCount || syncing)return;
+    syncing=true;feedback=null;_notify();
+    try {
+      final reply=await gateway.call('submit',{'version':catalog.version,'scenarioId':s.id,'routeId':r.id,'answers':answers});
+      if(!linked)throw StateError('Hesap değişti');
+      cloud=reply;
+    } catch(e) {
+      syncing=false;
+      final text='$e';
+      feedback=text.contains('doğrulanamadı') || text.contains('invalid-argument') ? 'Henüz olmadı. İpucuna bakıp yeniden deneyebilirsin.'
+        : text.contains('Art arda') ? 'Art arda yanlış denemeler: biraz bekleyip yeniden dene.'
+        : 'Sunucuya ulaşılamadı. Seçimin duruyor; bağlantı gelince yeniden dene.';
+      _notify();return;
+    }
+    syncing=false;
+    final ok=await _edit((l){final p=_p(l,s);
+      p['ends']={...List<String>.from(p['ends'] as List? ?? []),r.id}.toList();
+      p['phase']='result';
     });
     if(ok){feedback=null;_notify();}
   }

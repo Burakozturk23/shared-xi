@@ -209,7 +209,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
         icon: const Icon(Icons.lightbulb_outline_rounded), label: Text(game.hintVisible ? 'İpucu açık' : 'İpucu · Ücretsiz')),
       if (game.hintVisible) PitchPanel(child: Text(task.hint)),
       const SizedBox(height:8),
-      if (!task.serverValidated) ...[
+      if (!task.serverValidated || task.legacyHints) ...[
       OutlinedButton.icon(onPressed:_rewards.busy || _rewards.hints(task.id)['ad']==true || _rewards.hints(task.id)['coin']==true
         ? null : ()=>_rewards.action('story_hint',{'journeyId':widget.journeyId,'taskId':task.id},ad:true),
         icon:Icon(_rewards.pro ? Icons.workspace_premium : Icons.play_circle_outline),
@@ -219,13 +219,15 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       if (_rewards.hints(task.id).isNotEmpty) PitchPanel(child:Text(_assistance(game))),
       ],
       ])),
-      if (task.serverValidated) const PitchPanel(child: Text('Dört aşama tamamlanınca: 20 Coin + 40 XP. Sekiz kariyerin tamamında: ayrıca 80 Coin + 120 XP.')),
+      if (task.serverValidated && !task.legacyHints) const PitchPanel(child: Text('Dört aşama tamamlanınca: 20 Coin + 40 XP. Sekiz kariyerin tamamında: ayrıca 80 Coin + 120 XP.')),
+      if (task.legacyHints && !_rewards.linked) const PitchPanel(child: Text('Cevaplar sunucuda doğrulanır: bu görevi oynamak için Google hesabına bağlan. Cihazdaki ilerlemen korunur.')),
       if (_rewards.message!=null) Text(_rewards.message!),
       const SizedBox(height: 12), const Text('Süre sınırı yok. Yanlış seçimde tekrar deneyebilirsin.', textAlign: TextAlign.center),
     ];
   }
   Set<String> _eliminated(JourneyV2Controller game) {
     final h=_rewards.hints(game.task.id), task=game.task;
+    if (task.legacyHints) return (_rewards.assist(task.id)['eliminated'] as List? ?? []).map((e)=>'$e').toSet();
     if (task.serverValidated || task.isTimeline || h.isEmpty) return {};
     final wrong=task.options.where((o)=>!task.answerKeys.contains(o.key));
     if (h['coin']==true) return wrong.map((o)=>o.key).toSet();
@@ -234,6 +236,7 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
   }
   String _assistance(JourneyV2Controller game) {
     final task=game.task, coin=_rewards.hints(game.task.id)['coin']==true;
+    if (task.legacyHints) return '${_rewards.assist(task.id)['text'] ?? 'Destek hazırlanıyor; birazdan yenilenir.'}';
     if (task.isTimeline) {
       final count=coin ? 2 : 1;
       return 'Doğru başlangıç: ${task.answerKeys.take(count).map((k)=>task.option(k).label).join(' → ')}';
@@ -261,7 +264,8 @@ class _JourneyV2PageState extends State<JourneyV2Page> {
       const SizedBox(height: 12), Text(game.checkpoint!.complete ? 'Yolculuk tamamlandı!' : 'Aşama tamamlandı!', style: Theme.of(context).textTheme.headlineSmall),
       const SizedBox(height: 12),
       Text('Bu dönemin izi', style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: 8), Text(game.explanation),
+      // Tasks solved before answers left the app have no local copy: use the server's.
+      const SizedBox(height: 8), Text(game.explanation.isNotEmpty ? game.explanation : '${_rewards.result(game.task.id)['story'] ?? ''}'),
       if (game.checkpoint!.complete) ...[const SizedBox(height: 16), const Text('Dört görevi çözdün. Oyuncu listesinde yolculuğuna devam edebilirsin.')],
     ])), const SizedBox(height: 18),
     if (game.checkpoint!.complete) ...[

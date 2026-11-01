@@ -14,6 +14,7 @@ function accepts(t, answers) {
 }
 const completedRivalries = (s) => catalog.tasks.filter((t) => s.completed[t.id]);
 function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
   const ref = documentRef || ((uid) => db.ref("derbyDayState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function check(input) {
@@ -53,7 +54,12 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
   }
   async function submit(uid, input, eligible = true) {
     const t = check(input);
-    if (!accepts(t, input.answers)) return {correct: false};
+    await attempts.before(uid, "derby_day", t.id);
+    if (!accepts(t, input.answers)) {
+      await attempts.wrong(uid, "derby_day", t.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "derby_day", t.id);
     const tx = await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       s.completed[t.id] ||= now();

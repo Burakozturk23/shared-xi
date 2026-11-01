@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_xi/controllers/journey_rewards_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/app/route_appearance.dart';
 import 'package:shared_xi/data/player_journey_chapters.dart';
@@ -11,7 +12,7 @@ import 'package:shared_xi/services/journey_v2_store.dart';
 import 'package:shared_xi/services/player_journey_progress_service.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'package:shared_xi/widgets/pitch_ui.dart';
-import 'journey_v2_test.dart' show journeyTestPack;
+import 'journey_v2_test.dart' show journeyTestPack, SourceJourneyGateway;
 import 'journey_v2_page_test.dart' show goTo, snapshot, startTask;
 import 'package:flutter/services.dart';
 
@@ -46,6 +47,15 @@ void main() {
       'player_journey_completed_ids': ['messi'],
     }),
   );
+  // Chapters 1–4 are server-validated: answer like the backend would.
+  setUp(() {
+    JourneyRewardsController.debugGateway = SourceJourneyGateway();
+    JourneyRewardsController.debugUserId = 'alice';
+  });
+  tearDown(() {
+    JourneyRewardsController.debugGateway = null;
+    JourneyRewardsController.debugUserId = null;
+  });
   setUpAll(() async {
     for (final (name, path) in [
       ('Satoshi', 'assets/fonts/Satoshi-Variable.ttf'),

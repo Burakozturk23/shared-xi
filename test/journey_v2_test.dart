@@ -6,14 +6,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/controllers/journey_v2_controller.dart';
 import 'package:shared_xi/models/journey_task.dart';
+import 'package:shared_xi/services/journey_gateway.dart';
 import 'package:shared_xi/services/journey_v2_store.dart';
 import 'package:shared_xi/services/player_journey_progress_service.dart';
 
+/// Full chapters with answers: the app assets carry none (server-validated),
+/// so local-validation logic is exercised against the build source.
 List<JourneyV2Definition> journeyTestPack({String chapter = 'one'}) {
   final j =
       jsonDecode(
             File(
-              'assets/data/player_journey_chapter_$chapter.json',
+              'tools/player_journey/source/chapter_$chapter.json',
             ).readAsStringSync(),
           )
           as Map<String, dynamic>;
@@ -23,6 +26,50 @@ List<JourneyV2Definition> journeyTestPack({String chapter = 'one'}) {
             JourneyV2Definition.fromJson(Map<String, dynamic>.from(v as Map)),
       )
       .toList();
+}
+
+/// Answers server validation from the full build source, like the backend.
+class SourceJourneyGateway implements JourneyGateway {
+  final Map<String, int> solved = {};
+  final Map<String, dynamic> results = {};
+  static final _pack = {
+    for (final c in ['one', 'two', 'three', 'four'])
+      for (final j in journeyTestPack(chapter: c)) j.id: j,
+  };
+  @override
+  Future<Map<String, dynamic>> call(
+    String action, [
+    Map<String, dynamic> input = const {},
+  ]) async {
+    if (action == 'submit') {
+      final journey = _pack[input['journeyId']]!;
+      final index = journey.tasks.indexWhere((t) => t.id == input['taskId']);
+      final task = journey.tasks[index];
+      if (!task.accepts(List<String>.from(input['answers'] as List))) {
+        throw StateError('Cevap doğru değil. Yeniden deneyebilirsin.');
+      }
+      solved[journey.id] = index + 1;
+      results[task.id] = {
+        'answer': task.answerKeys.map((k) => task.option(k).label).join(', '),
+        'story': task.explanation,
+      };
+    }
+    return {
+      'completed': [
+        for (final e in solved.entries)
+          if (e.value == 4) e.key,
+      ],
+      'results': Map<String, dynamic>.from(results),
+      'hints': <String, dynamic>{},
+      'rewards': <String, dynamic>{},
+    };
+  }
+
+  @override
+  Future<void> watch(
+    String placement, {
+    Map<String, dynamic> context = const {},
+  }) async {}
 }
 
 class MemoryJourneyStore implements JourneyV2Store {
@@ -288,4 +335,57 @@ void main() {
       );
     },
   );
+  test(
+    'app assets carry no answers; a solved answer never becomes the next task draft',
+    () async {
+      final journey = _redacted['messi']!;
+      expect(
+        journey.tasks.every((t) => t.serverValidated && t.answerKeys.isEmpty),
+        isTrue,
+      );
+      final source = journeyTestPack().first;
+      final store = MemoryJourneyStore();
+      Future<Map<String, dynamic>> verify(
+        JourneyTask task,
+        List<String> answers,
+      ) async => {
+        'story': source.tasks.firstWhere((t) => t.id == task.id).explanation,
+      };
+      final game = JourneyV2Controller(
+        journey: journey,
+        store: store,
+        verify: verify,
+      );
+      await game.initialize();
+      for (final key in source.tasks[0].answerKeys.take(
+        source.tasks[0].requiredCount,
+      )) {
+        game.choose(key);
+      }
+      await game.submit();
+      expect(game.explanation, source.tasks[0].explanation);
+      await game.next();
+      final restored = JourneyV2Controller(
+        journey: journey,
+        store: store,
+        verify: verify,
+      );
+      await restored.initialize();
+      expect(restored.checkpoint!.index, 1);
+      expect(restored.selected, isEmpty);
+    },
+  );
 }
+
+final _redacted = {
+  for (final j
+      in (jsonDecode(
+            File(
+              'assets/data/player_journey_chapter_one.json',
+            ).readAsStringSync(),
+          )['journeys']
+          as List))
+    (j as Map)['id']: JourneyV2Definition.fromJson(
+      Map<String, dynamic>.from(j),
+    ),
+};

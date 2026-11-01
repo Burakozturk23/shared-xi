@@ -20,6 +20,7 @@ function accepts(task, answers) {
     answers.every((key, i) => typeof key === "string" && key === task.answerKeys[i]);
 }
 function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
   const ref = documentRef || ((uid) => db.ref("nostalgiaState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
@@ -81,13 +82,21 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     if (eligible) await settle(uid);
     const s = await get(uid);
     return {version: catalog.version, completed: s.completed, hints: s.hints, rewards: s.rewards,
-      results: Object.fromEntries(Object.keys(s.completed).filter((id) => tasks[id]?.expansion)
-          .map((id) => [id, tasks[id].result])),
+      // The app asset has no answers: every solved task's answer and story come from here.
+      results: Object.fromEntries(Object.keys(s.completed).filter((id) => tasks[id])
+          .map((id) => [id, tasks[id].result || {answer: tasks[id].answerKeys.map((k) =>
+            tasks[id].options.find((o) => o.id === k).label).join(" → "), story: tasks[id].explanation,
+          sources: tasks[id].sources}])),
       pro: eligible && await isPro(uid), rewardEligible: eligible};
   }
   async function submit(uid, input, eligible = true) {
     const task = taskOf(input);
-    if (!accepts(task, input.answers)) return {correct: false};
+    await attempts.before(uid, "nostalgia", task.id);
+    if (!accepts(task, input.answers)) {
+      await attempts.wrong(uid, "nostalgia", task.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "nostalgia", task.id);
     await change(uid, (s) => {
       available(s, task);
       s.completed[task.id] ||= now();

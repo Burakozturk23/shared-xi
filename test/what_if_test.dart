@@ -7,10 +7,44 @@ import 'package:shared_xi/models/what_if.dart';
 import 'package:shared_xi/services/journey_gateway.dart';
 import 'package:shared_xi/services/what_if_store.dart';
 
+/// Server catalog with answers: local-validation logic is tested against it.
 WhatIfCatalog whatIfPack() => WhatIfCatalog(
+  jsonDecode(File('functions/config/what_if_catalog.json').readAsStringSync())
+      as Map<String, dynamic>,
+);
+
+/// The app asset: no answers, explanations or endings.
+WhatIfCatalog whatIfAppPack() => WhatIfCatalog(
   jsonDecode(File('assets/data/what_if_v2.json').readAsStringSync())
       as Map<String, dynamic>,
 );
+
+/// Checks answers like the backend and returns explanations afterwards.
+class ValidatingWhatIfGateway implements JourneyGateway {
+  final full = whatIfPack();
+  final Map<String, dynamic> results = {};
+  @override
+  Future<Map<String, dynamic>> call(
+    String action, [
+    Map<String, dynamic> input = const {},
+  ]) async {
+    if (action == 'submit') {
+      final s = full.scenarios.firstWhere((x) => x.id == input['scenarioId']);
+      final r = s.route(input['routeId'] as String);
+      if (!r.task.accepts(List<String>.from(input['answers'] as List))) {
+        throw StateError('invalid-argument: Cevap doğrulanamadı.');
+      }
+      results[r.task.id] = {'story': r.task.explanation, 'ending': r.ending};
+    }
+    return {'results': Map<String, dynamic>.from(results)};
+  }
+
+  @override
+  Future<void> watch(
+    String placement, {
+    Map<String, dynamic> context = const {},
+  }) async {}
+}
 
 class MemoryWhatIfStore implements WhatIfStore {
   Map<String, dynamic> value = {};
@@ -246,6 +280,62 @@ void main() {
       await again.initialize();
       expect(again.picked(s), ['o1', 'o2']);
       expect(again.ends(s).length, 2);
+    },
+  );
+  test(
+    'app asset has no answers; the server checks them and returns explanation and ending',
+    () async {
+      final app = whatIfAppPack(), full = whatIfPack();
+      for (final sc in app.scenarios) {
+        for (final r in sc.routes) {
+          expect(r.task.serverValidated, isTrue);
+          expect(r.task.answers, isEmpty);
+          expect(r.task.explanation, isEmpty);
+          expect(r.ending, isEmpty);
+        }
+      }
+      final guest = WhatIfController(catalog: app, store: MemoryWhatIfStore());
+      await guest.initialize();
+      final s = app.scenarios.first,
+          answer = full.scenarios.first.route('real');
+      await guest.selectRoute(s, 'real');
+      for (final key in answer.task.answers) {
+        await guest.choose(s, key);
+      }
+      await guest.submit(s);
+      expect(guest.phase(s), 'task');
+      expect(guest.feedback, contains('Google hesabına bağlan'));
+      final c = WhatIfController(
+        catalog: app,
+        store: MemoryWhatIfStore(),
+        gateway: ValidatingWhatIfGateway(),
+        userId: 'alice',
+      );
+      await c.initialize();
+      await c.selectRoute(s, 'real');
+      final wrong = s
+          .route('real')
+          .task
+          .options
+          .keys
+          .firstWhere(
+            (k) => !answer.task.answers.contains(k),
+            orElse: () => '',
+          );
+      if (wrong.isNotEmpty && !answer.task.timeline) {
+        await c.choose(s, wrong);
+        await c.submit(s);
+        expect(c.phase(s), 'task');
+        expect(c.feedback, contains('Henüz olmadı'));
+      }
+      await c.selectRoute(s, 'real');
+      for (final key in answer.task.answers) {
+        await c.choose(s, key);
+      }
+      await c.submit(s);
+      expect(c.phase(s), 'result');
+      expect(c.explanation(s.route('real')), answer.task.explanation);
+      expect(c.ending(s.route('real')), answer.ending);
     },
   );
 }

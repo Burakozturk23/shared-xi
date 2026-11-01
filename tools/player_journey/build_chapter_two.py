@@ -87,6 +87,7 @@ add('falcao', 'Falcao', [
 ], ['falcao','monaco','atleti'])
 
 enrich(journeys)
-out = ROOT / 'assets/data/player_journey_chapter_two.json'
+# Full chapter (with answers); build_catalog.py derives the server catalog and app asset.
+out = ROOT / 'tools/player_journey/source/chapter_two.json'
 out.write_text(json.dumps(dict(version=2, chapterId='chapter_2_underdogs', journeys=journeys), ensure_ascii=False, indent=2)+'\n')
 print(f'Wrote {len(journeys)} journeys / {sum(len(j["tasks"]) for j in journeys)} tasks')

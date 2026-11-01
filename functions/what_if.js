@@ -20,6 +20,7 @@ function accepts(task, answers) {
     answers.every((a) => task.answerKeys.includes(a));
 }
 function createService({db, documentRef, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
   const ref = documentRef || ((uid) => db.ref("whatIfState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
@@ -58,13 +59,22 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
   async function status(uid) {
     await settle(uid);
     const s = await get(uid);
+    // The app asset has no answers: explanations and endings of finished routes come from here.
+    const results = Object.fromEntries(catalog.scenarios.flatMap((j) => j.routes
+        .filter((r) => ends(s, j.id).includes(r.id))
+        .map((r) => [r.task.id, {story: r.task.explanation, ending: r.ending}])));
     return {ok: true, version: catalog.version, progress: s.progress, hints: s.hints,
-      rewards: s.rewards, favorites: s.favorites, chapterCounts: counts(s), hintPrice: 10};
+      rewards: s.rewards, favorites: s.favorites, chapterCounts: counts(s), hintPrice: 10, results};
   }
   async function submit(uid, input) {
     if (input.version !== catalog.version) fail("failed-precondition", "What If içeriğini güncelle.");
     const {scenario, route, task} = routeOf(input);
-    if (!accepts(task, input.answers)) fail("invalid-argument", "Cevap doğrulanamadı.");
+    await attempts.before(uid, "what_if", task.id);
+    if (!accepts(task, input.answers)) {
+      await attempts.wrong(uid, "what_if", task.id, input.answers);
+      fail("invalid-argument", "Cevap doğrulanamadı.");
+    }
+    await attempts.solved(uid, "what_if", task.id);
     await change(uid, (s) => {
       const p = s.progress[scenario.id] ||= {ends: {}};
       p.ends[route.id] ||= now();

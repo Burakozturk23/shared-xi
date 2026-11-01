@@ -6,19 +6,24 @@ class WhatIfTask {
   WhatIfTask(Map<String, dynamic> j)
     : id = j['id'] as String, type = j['type'] as String,
       prompt = j['prompt'] as String, hint = j['hint'] as String,
-      strongHint = j['strongHint'] as String, explanation = j['explanation'] as String,
+      strongHint = j['strongHint'] as String, explanation = j['explanation'] as String? ?? '',
       options = {for (final o in j['options'] as List) o['key'] as String: o['label'] as String},
-      answers = List<String>.from(j['answerKeys'] as List) {
+      answers = List<String>.from(j['answerKeys'] as List? ?? []),
+      serverValidated = j['serverValidated'] == true,
+      requiredCount = j['requiredCount'] as int? ?? (j['answerKeys'] as List? ?? []).length {
     if (!{'transfer','teammate','missing','timeline','connection'}.contains(type) ||
-        options.length < 3 || answers.isEmpty || answers.toSet().length != answers.length ||
+        options.length < 3 || (!serverValidated && answers.isEmpty) || answers.toSet().length != answers.length ||
         answers.any((a) => !options.containsKey(a)) ||
-        (timeline ? answers.length != options.length : answers.length != 1)) {
+        (timeline ? requiredCount != options.length : requiredCount != 1)) {
       throw const FormatException('Invalid What If task');
     }
   }
   final String id, type, prompt, hint, strongHint, explanation;
   final Map<String,String> options;
   final List<String> answers;
+  /// The app asset has no answers: the server checks them.
+  final bool serverValidated;
+  final int requiredCount;
   bool get timeline => type == 'timeline';
   String get label => switch(type) {
     'transfer' => 'Transfer yolu', 'teammate' => 'Aynı dönem kadrosu',
@@ -34,7 +39,7 @@ class WhatIfTask {
 }
 class WhatIfRoute {
   WhatIfRoute(Map<String,dynamic> j): id=j['id'] as String, label=j['label'] as String,
-    kind=j['kind'] as String, ending=j['ending'] as String,
+    kind=j['kind'] as String, ending=j['ending'] as String? ?? '',
     task=WhatIfTask(Map<String,dynamic>.from(j['task'] as Map));
   final String id, label, kind, ending;
   final WhatIfTask task;
