@@ -15,10 +15,11 @@ function state(time = now) {
 const event = (id, modeId = "matching", time = now) => ({uid: "alice", eventId: id, modeId,
   serverValidated: true, verificationVersion: 1, source: "solo_verified", result: "completed",
   serverFinishedAtMs: time});
-test("five stable choices, at least three solo, refresh and next-day diversity", () => {
+test("three slots (knowledge, rivalry, discovery), stable on refresh and different the next day", () => {
   for (let i = 0; i < 50; i++) {
     const s = state(); M.assign(s, "u" + i, {...ready, online: true}, policy, now);
-    assert.equal(s.daily.assigned.length, 5); assert.ok(s.daily.assigned.filter((d) => d.solo).length >= 3);
+    assert.deepEqual(s.daily.assigned.map((d) => d.slot), ["knowledge", "rivalry", "discovery"]);
+    assert.equal(s.daily.assigned[1].solo, false);
     const old = structuredClone(s.daily.assigned);
     M.assign(s, "u" + i, {...ready, online: true}, policy, now + 5000);
     assert.deepEqual(s.daily.assigned, old);
@@ -39,6 +40,8 @@ test("unavailable replacement retains slot identity and progress history", () =>
   M.assign(s, "a", {...ready, [d.modeId]: false}, policy, now);
   const replacement = s.daily.assigned.find((x) => x.id === d.id);
   assert.notEqual(replacement.definitionId, d.definitionId); assert.equal(replacement.replaced.length, 1);
+  // The replacement keeps the slot, so the day keeps its bonus.
+  assert.equal(replacement.slot, d.slot); assert.ok(M.items(s, policy).daily.some((x) => x.bonus));
 });
 test("verified event dedupe, late-period isolation, friend and ranked separation", () => {
   const s = state(); assert.equal(M.record(s, event("one"), now), true);
@@ -54,17 +57,25 @@ test("verified event dedupe, late-period isolation, friend and ranked separation
   assert.equal(s.daily.counters.rankedWins, undefined);
   assert.equal(M.record(s, {...friend, eventId: "assisted", assisted: true}, now), false);
 });
-test("three daily and two weekly claims, replay and disabled rewards", () => {
+test("all three daily and weekly missions pay, then their bonus; replay and disabled rewards", () => {
   const s = state(); M.assign(s, "a", ready, policy, now);
   for (const [m] of M.soloModes) for (let n = 0; n < 10; n++) M.record(s, event(m + n, m), now);
-  for (const d of s.daily.assigned.slice(0, 3)) {
-    assert.equal(M.claim(s, d.id, policy, now, "one").claim.rewardCoins, 20);
+  // Without online, the rivalry slot is a solo stand-in paying like discovery.
+  const coins = {knowledge: 15, rivalry: 25, discovery: 25};
+  assert.throws(() => M.claim(s, "daily_bonus", policy, now, "early"));
+  for (const d of s.daily.assigned) {
+    assert.equal(M.claim(s, d.id, policy, now, "one").claim.rewardCoins, coins[d.slot]);
     assert.equal(M.claim(s, d.id, policy, now, "two").claim.nonce, "one");
   }
-  assert.throws(() => M.claim(s, s.daily.assigned[3].id, policy, now, "four"));
-  for (const w of M.weeklyCatalog.slice(0, 2)) M.claim(s, w.id, policy, now, "week");
-  assert.throws(() => M.claim(s, M.weeklyCatalog[2].id, policy, now, "week"));
+  const bonus = M.claim(s, "daily_bonus", policy, now, "bonus");
+  assert.equal(bonus.claim.rewardCoins, 40); assert.equal(bonus.claim.rewardXp, 40);
+  assert.equal(bonus.sourceId, s.daily.dateKey + "__daily_bonus");
+  assert.throws(() => M.claim(s, "weekly_bonus", policy, now, "early"));
+  for (const w of M.weeklyCatalog) assert.equal(M.claim(s, w.id, policy, now, "week").claim.rewardCoins, 40);
+  assert.equal(M.claim(s, "weekly_bonus", policy, now, "week").claim.rewardCoins, 100);
   assert.equal(M.items(s, {}).weekly.every((d) => !d.enabled), true);
+  // The bonus earns no extra SP beyond the daily cap.
+  assert.equal(M.items(s, policy).daily.find((d) => d.bonus).rewardSp, 0);
 });
 test("Monday Istanbul boundary; weekly receipts award zero SP, career stages 50", () => {
   assert.equal(M.weekKey(Date.parse("2026-10-25T20:59:59Z")), "2026-10-19");
@@ -89,39 +100,53 @@ test("mode adapters reject partial or repeated terminal events", () => {
 test("callable concurrency and RTDB empty-map persistence mint once", async () => {
   const h = harness({users: {alice: {displayName: "Alice"}}, runtimeConfig: {missionsV3: policy}},
       {omitEmptyObjects: true});
-  const first = await h.call("getMyMissions"); assert.equal(first.profile.daily.length, 5);
+  // Three missions and the bonus card.
+  const first = await h.call("getMyMissions"); assert.equal(first.profile.daily.length, 4);
   for (const [m] of M.soloModes) await h.context.lbMissionRecordEvents(h.db, "alice", [event(m, m, h.now)]);
   const profile = (await h.call("getMyMissions")).profile;
-  const item = profile.daily.find((d) => d.claimable); assert.ok(item);
+  const item = profile.daily.find((d) => d.claimable && d.slot === "knowledge"); assert.ok(item);
   const results = await Promise.all([h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey}),
     h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey})]);
   assert.equal(results.filter((r) => r.granted).length, 1);
-  assert.equal(h.read("economyState/alice/balances/coins"), 20);
-  // A solo daily mission also grants 20 XP, once, even with two concurrent claims.
-  assert.equal(h.read("progressionState/alice/lifetimeXp"), 20);
+  assert.equal(h.read("economyState/alice/balances/coins"), 15);
+  // The knowledge mission also grants 15 XP, once, even with two concurrent claims.
+  assert.equal(h.read("progressionState/alice/lifetimeXp"), 15);
 });
-test("online missions per mode pay more; SP shows only inside the limit; career stages pay", () => {
+test("online mode missions in the rivalry slot pay most; older five-mission days keep their limit", () => {
   const s = state(); M.assign(s, "u1", {...ready, online: true}, policy, now);
   assert.equal(M.catalog.filter((d) => d.family === "online").length, M.onlineModes.length);
   const online = M.catalog.find((d) => d.id === "online_career_race");
-  s.daily.assigned[4] = {...online, definitionId: online.id, id: "daily_v3_slot_5", baseline: 0};
+  s.daily.assigned[1] = {...online, slot: "rivalry", definitionId: online.id, id: "daily_v3_slot_2", baseline: 0};
   M.record(s, {uid: "alice", eventId: "m1", modeId: "career_race", source: "friend_settlement", result: "loss",
     serverValidated: true, verificationVersion: 1, serverFinishedAtMs: now}, now);
   let p = M.items(s, policy);
   const card = p.daily.find((d) => d.definitionId === "online_career_race");
-  assert.equal(card.claimable, true); assert.equal(card.rewardCoins, 30); assert.equal(card.rewardXp, 30);
-  assert.equal(p.daily.find((d) => d.solo).rewardCoins, 20);
-  // With three daily rewards taken, the other cards promise no SP.
-  s.daily.claims = {a: {}, b: {}, c: {}};
+  assert.equal(card.claimable, true); assert.equal(card.rewardCoins, 35); assert.equal(card.rewardXp, 35);
+  assert.equal(p.daily.find((d) => d.slot === "knowledge").rewardCoins, 15);
+  // A day assigned before the slots (five missions) keeps three rewards and the old amounts.
+  s.daily.assigned = [...M.catalog.filter((d) => d.solo).slice(0, 5)].map((d, i) => ({...d,
+    definitionId: d.id, id: "daily_v3_slot_" + (i + 1), baseline: 0}));
+  s.daily.claims = {daily_v3_slot_1: {}, daily_v3_slot_2: {}, daily_v3_slot_3: {}};
   p = M.items(s, policy);
+  assert.equal(p.daily.some((d) => d.bonus), false);
   assert.ok(p.daily.filter((d) => !s.daily.claims[d.id]).every((d) => d.limitReached && d.rewardSp === 0));
+  assert.equal(p.daily[3].rewardCoins, 20);
   // Career stages have default rewards (still behind careerEnabled) and 50 SP.
   p = M.items(s, {...policy, careerEnabled: true});
   const stage = p.general.find((d) => d.chainId === "solo_knowledge");
   assert.equal(stage.rewardCoins, 30); assert.equal(stage.rewardXp, 30); assert.equal(stage.rewardSp, 50);
   assert.equal(stage.enabled, true);
-  assert.equal(M.items(s, {...policy, rewards: {daily: {solo: {coins: 15}}}}).daily.find((d) => d.solo)
-      .rewardCoins, 15);
+  assert.equal(M.items(s, {...policy, rewards: {daily: {solo: {coins: 12}}}}).daily[3].rewardCoins, 12);
+});
+test("career family chains count verified games of their family", () => {
+  const s = state();
+  for (const [m] of M.soloModes.filter(([, , f]) => f === "puzzle").slice(0, 5)) M.record(s, event("p" + m, m), now);
+  const p = M.items(s, {...policy, careerEnabled: true});
+  const puzzle = p.general.find((d) => d.chainId === "puzzle_hunter");
+  assert.equal(puzzle.progress, 5); assert.equal(puzzle.claimable, true); assert.equal(puzzle.rewardCoins, 30);
+  assert.equal(p.general.find((d) => d.chainId === "word_master").progress, 0);
+  assert.deepEqual(p.general.map((d) => d.chainId),
+      ["solo_knowledge", "mode_collector", "puzzle_hunter", "squad_master", "word_master", "arena"]);
 });
 test("forfeit and nonparticipation cannot advance counters", async () => {
   const h = harness();
@@ -146,7 +171,7 @@ test("stale daily and weekly card cannot claim the next period's slot", async ()
   }
   assert.equal(h.read("economyState/alice/balances/coins") || 0, 0);
   await h.call("claimMissionReward", {missionId: item.id, periodKey: item.periodKey});
-  assert.equal(h.read("economyState/alice/balances/coins"), 20);
+  assert.equal(h.read("economyState/alice/balances/coins"), item.rewardCoins);
 });
 
 test("career guess followed by skip cannot masquerade as a completed ordering puzzle", async () => {

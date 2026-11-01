@@ -11,6 +11,7 @@ import '../models/mission_models.dart';
 import '../models/progression_models.dart';
 import '../services/experience/progress_gateway.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/daily_rewards_sheet.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
@@ -1081,7 +1082,9 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             HubIconBox(
-              game?.icon ?? Icons.flag_outlined,
+              m.bonus
+                  ? Icons.card_giftcard_rounded
+                  : game?.icon ?? Icons.flag_outlined,
               color: ready ? pc.limeInk : pc.accent,
               background: ready ? pc.limeTint : null,
             ),
@@ -1090,6 +1093,8 @@ class _ProgressionCenterPageState extends State<ProgressionCenterPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (missionSlotLabel(context, m.slot) case final slot?)
+                    Text(slot, style: hubCaps(context)),
                   Text(m.title, style: text.titleMedium),
                   const SizedBox(height: 4),
                   Text(

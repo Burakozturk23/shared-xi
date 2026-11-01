@@ -11,6 +11,7 @@ import '../services/cloud_bootstrap.dart';
 import '../controllers/home_resources_controller.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/brand_mark.dart';
+import '../widgets/daily_rewards_sheet.dart';
 import '../widgets/hub_ui.dart';
 import 'app_home_page.dart';
 import 'games_catalog_page.dart';
@@ -25,7 +26,7 @@ class AppShell extends StatefulWidget {
   State<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   int _index = 0;
   final _visited = <int>{0};
   StreamSubscription<dynamic>? _auth;
@@ -48,6 +49,7 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (widget.observeAuth) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
@@ -58,6 +60,7 @@ class _AppShellState extends State<AppShell> {
             if (mounted) setState(() {});
           });
           setState(() {});
+          unawaited(_dailyRewards());
         } catch (_) {
           /* Offline home/catalog remain usable; entry gates own errors. */
         }
@@ -65,8 +68,20 @@ class _AppShellState extends State<AppShell> {
     }
   }
 
+  /// Daily rewards sheet: once a day, on start and on return to the app.
+  Future<void> _dailyRewards() async {
+    if (!mounted || !widget.observeAuth) return;
+    await DailyRewardsSheet.maybeShow(context);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(_dailyRewards());
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _auth?.cancel();
     _resources.dispose();
     super.dispose();

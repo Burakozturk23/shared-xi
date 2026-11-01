@@ -7617,9 +7617,10 @@ function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFI
     weeklyEnabled: policy.weeklyEnabled === true,
     weekKey: state.weekly.weekKey,
     weeklyClaimLimit: missionV3.rewards(policy).weeklyLimit,
-    weeklyCompletedCount: Object.keys(state.weekly.claims || {}).length,
+    // Bonus claims are not missions; the counters stay within the limit.
+    weeklyCompletedCount: Object.keys(state.weekly.claims || {}).filter((id) => !id.endsWith("_bonus")).length,
     availabilityNotice: state.availabilityNotice || "",
-    dailyCompletedCount: Object.keys(state.daily.claims).length,
+    dailyCompletedCount: Object.keys(state.daily.claims).filter((id) => !id.endsWith("_bonus")).length,
     generalCompletedCount: Object.keys(
         state.generalClaims,
     ).length,

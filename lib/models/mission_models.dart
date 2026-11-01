@@ -7,6 +7,10 @@ class MissionItem {
   final String modeId;
   final int rewardSp;
   final int rewardXp;
+  /// Daily slot (knowledge, rivalry, discovery); empty for other missions.
+  final String slot;
+  /// Tüm Görevler Bonusu: opens when every mission of the period is claimed.
+  final bool bonus;
   final bool unavailable;
   final MissionKind kind;
   final String title;
@@ -30,6 +34,8 @@ class MissionItem {
     this.modeId = '',
     this.rewardSp = 0,
     this.rewardXp = 0,
+    this.slot = '',
+    this.bonus = false,
     this.unavailable = false,
     this.enabled = true,
     this.limitReached = false,
@@ -61,6 +67,8 @@ class MissionItem {
       modeId: data['modeId']?.toString() ?? '',
       rewardSp: _missionInt(data['rewardSp']),
       rewardXp: _missionInt(data['rewardXp']),
+      slot: data['slot']?.toString() ?? '',
+      bonus: data['bonus'] == true,
       unavailable: data['unavailable'] == true,
       enabled: data['enabled'] != false,
       limitReached: data['limitReached'] == true,
