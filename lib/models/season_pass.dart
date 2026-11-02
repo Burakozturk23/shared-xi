@@ -1,12 +1,26 @@
-double _chance450(Object? odds) {
-  if (odds is! Map || odds['tiers'] is! List) return 0;
-  for (final t in (odds['tiers'] as List).whereType<Map>()) {
-    if ((t['price'] as num?)?.toInt() == 450) {
-      return (t['chance'] as num?)?.toDouble() ?? 0;
-    }
-  }
-  return 0;
+/// Which avatar pool a Pro step draws from and how many of it are still to get.
+class SeasonAvatarPool {
+  const SeasonAvatarPool({
+    required this.step,
+    required this.tier,
+    required this.count,
+  });
+  final int step, tier, count;
 }
+
+/// Support names on the season lane (Turkish).
+const seasonSupportNames = <String, String>{
+  'boost_basic': 'Temel bilgi',
+  'boost_strong': 'Güçlü bilgi',
+  'boost_connection': 'Bağlantı',
+  'boost_eliminate': 'Tek seçenek ele',
+};
+
+/// "2 Güçlü bilgi" / "1 Bağlantı + 1 Tek seçenek ele + 1 Temel bilgi".
+String seasonSupportLine(Map<String, int> items) => [
+  for (final e in items.entries)
+    '${e.value} ${seasonSupportNames[e.key] ?? e.key}',
+].join(' + ');
 
 class SeasonTier {
   const SeasonTier({
@@ -19,7 +33,16 @@ class SeasonTier {
     required this.proClaimed,
     this.proAvatar = false,
     this.proRewardTitle = '',
+    this.proAvatarTier = 0,
+    this.proSupports = const {},
+    this.proRewardSupports = const {},
   });
+
+  /// Avatar steps: the price pool the avatar comes from (300 or 450).
+  final int proAvatarTier;
+
+  /// Support steps: items and counts this step gives instead of coins.
+  final Map<String, int> proSupports;
   final int step, requiredSp, freeCoins, proCoins;
   final bool unlocked, freeClaimed, proClaimed;
 
@@ -37,10 +60,31 @@ class SeasonTier {
     freeClaimed: m['freeClaimed'] == true,
     proClaimed: m['proClaimed'] == true,
     proAvatar: m['proAvatar'] == true,
+    proAvatarTier: (m['proAvatarTier'] as num?)?.toInt() ?? 0,
+    proSupports: m['proSupports'] is Map
+        ? {
+            for (final e in (m['proSupports'] as Map).entries)
+              e.key.toString(): (e.value as num).toInt(),
+          }
+        : const {},
     proRewardTitle: m['proReward'] is Map
         ? ((m['proReward'] as Map)['title']?.toString() ?? '')
         : '',
+    proRewardSupports:
+        m['proReward'] is Map && (m['proReward'] as Map)['supports'] is Map
+        ? {
+            for (final e
+                in ((m['proReward'] as Map)['supports'] as Map).entries)
+              e.key.toString(): (e.value as num).toInt(),
+          }
+        : const {},
   );
+
+  /// What a support step gave, once claimed.
+  final Map<String, int> proRewardSupports;
+
+  bool get supportStep =>
+      proSupports.isNotEmpty || proRewardSupports.isNotEmpty;
 
   bool get avatarStep => proAvatar || proRewardTitle.isNotEmpty;
 }
@@ -82,14 +126,42 @@ class SeasonPass {
     this.graceDays = 3,
     this.previous,
     this.avatarSteps = const [],
-    this.avatarChance450 = 0,
+    this.avatarPools = const [],
+    this.supportSteps = const [],
+    this.proTotal = 1040,
   });
 
   /// Pro steps that give a random avatar (empty while the switch is off).
   final List<int> avatarSteps;
 
-  /// Chance that an avatar step gives a 450-coin avatar (0–1).
-  final double avatarChance450;
+  /// The pool each avatar step draws from (step 10: 300, step 20: 450).
+  final List<SeasonAvatarPool> avatarPools;
+
+  /// Pro steps that give supports instead of coins (5 and 15).
+  final List<int> supportSteps;
+
+  /// Coins on the Pro lane (640 with the final lane, 1040 before).
+  final int proTotal;
+
+  /// "640 Link Coin + 5 destek + 2 avatar" for the final lane, else coins only.
+  String get proLaneSummary {
+    final supports = tiers
+        .where(
+          (t) => t.proSupports.isNotEmpty || t.proRewardSupports.isNotEmpty,
+        )
+        .fold<int>(
+          0,
+          (n, t) =>
+              n +
+              (t.proSupports.isNotEmpty ? t.proSupports : t.proRewardSupports)
+                  .values
+                  .fold<int>(0, (a, b) => a + b),
+        );
+    return avatarSteps.isEmpty
+        ? '$proTotal Link Coin'
+        : '$proTotal Link Coin + $supports destek + ${avatarSteps.length} avatar';
+  }
+
   final String id, endsOn;
   final int sp, todaySp, level, daysLeft, maxLevel, stepSp, dailyCap, graceDays;
   final SeasonPrevious? previous;
@@ -136,7 +208,20 @@ class SeasonPass {
     avatarSteps: m['avatarSteps'] is List
         ? [for (final v in m['avatarSteps'] as List) (v as num).toInt()]
         : const [],
-    avatarChance450: _chance450(m['avatarOdds']),
+    avatarPools: m['avatarPools'] is List
+        ? [
+            for (final p in (m['avatarPools'] as List).whereType<Map>())
+              SeasonAvatarPool(
+                step: (p['step'] as num).toInt(),
+                tier: (p['tier'] as num).toInt(),
+                count: (p['count'] as num).toInt(),
+              ),
+          ]
+        : const [],
+    supportSteps: m['supportSteps'] is List
+        ? [for (final v in m['supportSteps'] as List) (v as num).toInt()]
+        : const [],
+    proTotal: (m['proTotal'] as num?)?.toInt() ?? 1040,
     tiers: (m['tiers'] as List)
         .map((r) => SeasonTier.fromMap(Map<String, dynamic>.from(r)))
         .toList(),

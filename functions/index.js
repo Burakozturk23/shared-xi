@@ -9153,8 +9153,21 @@ function lbSeasonService() {
     isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     avatarsEnabled: async () => (await db.ref("runtimeConfig/seasonAvatars/enabled").get()).val() === true,
-    grantAvatar: (uid, id) => lbProDraw(db, uid, (e, now) =>
-      require("./pro_crate").drawAvatar(e, id, uid, "season", "season_pass", now))});
+    grantAvatar: (uid, id, tier) => lbProDraw(db, uid, (e, now) =>
+      require("./pro_crate").drawAvatar(e, id, uid, tier, "season_pass", now)),
+    // Support steps: one receipt per unit; past the 99 cap they pay half the store price.
+    grantSupports: (uid, id, items) => lbProDraw(db, uid, (e, now) => {
+      if (e.storeUses[id]) return e.storeUses[id];
+      const supports = {}; let overflowCoins = 0;
+      for (const [itemId, count] of Object.entries(items)) {
+        for (let i = 1; i <= count; i++) {
+          const r = dailyReturn.grantSupport(e, `${id}__${itemId}__${i}`, itemId, "season_pass", id, now).receipt;
+          supports[itemId] = (supports[itemId] || 0) + (r.full ? 0 : 1); overflowCoins += r.coins || 0;
+        }
+      }
+      e.storeUses[id] = {kind: "supports", supports, overflowCoins, usedAt: now};
+      return e.storeUses[id];
+    })});
 }
 // Faz 4: one wallet transaction for a Pro draw (Sezon avatar or the monthly Kasa).
 async function lbProDraw(db, uid, run) {
@@ -9178,7 +9191,8 @@ async function lbProCrateStatus(db, uid) {
   const {month, endsOn, daysLeft} = crate.monthOf(day);
   const receipt = e.storeUses["pro_crate__" + month] || null;
   const openAt = crate.openableAt(premium);
-  return {ok: true, enabled, pro: premium.active, month, endsOn, daysLeft, remind: !receipt && daysLeft <= 3,
+  return {ok: true, enabled, pro: premium.active, proUntil: premium.expiresAt, month, endsOn, daysLeft,
+    remind: !receipt && daysLeft <= 3,
     opened: !!receipt, receipt, openableAt: openAt, canOpen: enabled && premium.active && !receipt && now >= openAt,
     contents: {...crate.CRATE, avatarTier: crate.CRATE_TIER}, odds: crate.odds(e, "crate")};
 }
@@ -9197,7 +9211,10 @@ exports.claimProCrate = httpsV2.onCall({region: "europe-west1", maxInstances: 20
     throw new httpsV2.HttpsError("failed-precondition", "Kasa, üyeliğin başladıktan 48 saat sonra açılır.");
   }
   const day = lbProgressionDateKey(Date.now());
-  const result = await lbProDraw(db, uid, (e, now) => require("./pro_crate").openCrate(e, day, uid, now));
+  // Re-checked at commit time: a subscription ending in between does not open the Kasa.
+  const result = await lbProDraw(db, uid, (e, now) => status.proUntil && now >= status.proUntil ? null :
+    require("./pro_crate").openCrate(e, day, uid, now));
+  if (!result) throw new httpsV2.HttpsError("permission-denied", "Etkin Pro üyeliği gerekli.");
   return {...await lbProCrateStatus(db, uid), granted: result.opened};
 });
 function lbSeasonCallable(action) {

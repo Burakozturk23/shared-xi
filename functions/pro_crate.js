@@ -24,9 +24,17 @@ function roll(uid, key) {
   return parseInt(crypto.createHash("sha256").update(uid + "|" + key).digest("hex").slice(0, 13), 16) / 2 ** 52;
 }
 
-/** The avatars a draw may give now (owned ones never), with their weights. */
+/**
+ * The avatars a draw may give now (owned ones never), with their weights.
+ * `mode` is "crate", "season" (whole pool, 3:2) or a fixed price tier (300 / 450):
+ * that tier first, the other tier once it is all owned.
+ */
 function pool(e, mode) {
   const free = AVATARS.filter((a) => !(e.inventory?.[a.itemId]?.quantity > 0));
+  if (typeof mode === "number") {
+    const tier = free.filter((a) => a.price === mode);
+    return (tier.length ? tier : free).map((a) => ({...a, weight: 1}));
+  }
   if (mode === "crate") {
     const tier = free.filter((a) => a.price === CRATE_TIER);
     // The 450 tier first; once it is all owned the Kasa falls back to the 300 tier.

@@ -64,12 +64,29 @@ class _SeasonPassPageState extends State<SeasonPassPage>
       final data = await widget.gateway.claim(_data!.id, t.step, lane);
       if (!mounted) return;
       setState(() => _data = data);
-      final avatar = lane == 'pro' && t.proAvatar
-          ? data.tiers
-                .firstWhere((x) => x.step == t.step, orElse: () => t)
-                .proRewardTitle
+      final after = data.tiers.firstWhere(
+        (x) => x.step == t.step,
+        orElse: () => t,
+      );
+      final avatar = lane == 'pro' && t.proAvatar ? after.proRewardTitle : '';
+      final supports = lane == 'pro' && t.proSupports.isNotEmpty
+          ? seasonSupportLine(
+              after.proRewardSupports.isNotEmpty
+                  ? after.proRewardSupports
+                  : t.proSupports,
+            )
           : '';
       AppFeedback.reward(avatar.isNotEmpty ? Sfx.levelUp : Sfx.coinReward);
+      if (supports.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              c('$supports destek çantanda.', '$supports added to your bag.'),
+            ),
+          ),
+        );
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -373,17 +390,43 @@ class _SeasonPassPageState extends State<SeasonPassPage>
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    c(
-                      '${s.avatarSteps.join('. ve ')}. basamakta Pro yolu rastgele bir avatar verir. '
-                          "Sahip olduğun avatarlar çıkmaz; 450 coin'lik özel avatar şansı "
-                          '%${(s.avatarChance450 * 100).toStringAsFixed(1).replaceAll('.', ',')}, '
-                          "kalan şans 300 coin'lik avatarlarda.",
-                      'Steps ${s.avatarSteps.join(' and ')} on the Pro lane give a random avatar. '
-                          'Owned avatars never come out; a 450-coin special avatar has a '
-                          '${(s.avatarChance450 * 100).toStringAsFixed(1)}% chance, the rest are 300-coin avatars.',
-                    ),
-                    style: text.bodySmall,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        c(
+                          'Pro yolu: ${s.proLaneSummary}',
+                          'Pro lane: ${s.proLaneSummary}',
+                        ),
+                        key: const ValueKey('season-pro-summary'),
+                        style: text.titleSmall,
+                      ),
+                      const SizedBox(height: 4),
+                      for (final pool in s.avatarPools)
+                        Text(
+                          pool.count > 0
+                              ? c(
+                                  "${pool.step}. basamak: ${pool.tier} coin'lik havuzdan rastgele avatar "
+                                      '(sende olmayan ${pool.count} avatar)',
+                                  'Step ${pool.step}: a random avatar from the ${pool.tier}-coin pool '
+                                      '(${pool.count} you do not own)',
+                                )
+                              : c(
+                                  "${pool.step}. basamak: ${pool.tier} coin'lik avatarların hepsi sende; "
+                                      'diğer havuzdan, o da bittiyse forma ya da 300 Link Coin gelir.',
+                                  'Step ${pool.step}: you own every ${pool.tier}-coin avatar; the other pool, '
+                                      'then a kit or 300 Link Coin.',
+                                ),
+                          style: text.bodySmall,
+                        ),
+                      Text(
+                        c(
+                          'Sahip olduğun avatarlar çıkmaz.',
+                          'Avatars you own never come out.',
+                        ),
+                        style: text.bodySmall?.copyWith(color: pc.muted),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -544,8 +587,8 @@ class _SeasonPassPageState extends State<SeasonPassPage>
                     ),
                     Text(
                       c(
-                        'Ücretsiz yolda toplam 560 Link Coin. Mevcut Pro üyeliğinle ek 1.040 Link Coin. İlerleme hızı herkes için aynı.',
-                        '560 Link Coin on the free track. Another 1,040 with your existing Pro membership. Everyone progresses at the same speed.',
+                        'Ücretsiz yolda toplam 560 Link Coin. Pro yolunda ek ${s.proLaneSummary}. İlerleme hızı herkes için aynı.',
+                        '560 Link Coin on the free track. The Pro lane adds ${s.proLaneSummary}. Everyone progresses at the same speed.',
                       ),
                       style: text.bodySmall?.copyWith(color: pc.muted),
                     ),
@@ -765,9 +808,31 @@ class _SeasonPassPageState extends State<SeasonPassPage>
               Text(
                 t.proRewardTitle.isNotEmpty
                     ? t.proRewardTitle
+                    : t.proAvatarTier > 0
+                    ? c(
+                        "${t.proAvatarTier}'lük havuz",
+                        '${t.proAvatarTier} pool',
+                      )
                     : c('Rastgele avatar', 'Random avatar'),
                 style: text.labelSmall,
                 maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ] else if (pro && t.supportStep) ...[
+              Icon(
+                Icons.inventory_2_outlined,
+                key: ValueKey('season-support-${t.step}'),
+                size: 26,
+                color: reachedColor(t, color, pc.muted),
+              ),
+              Text(
+                seasonSupportLine(
+                  t.proRewardSupports.isNotEmpty
+                      ? t.proRewardSupports
+                      : t.proSupports,
+                ),
+                style: text.labelSmall,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
             ] else ...[

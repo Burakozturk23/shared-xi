@@ -9,6 +9,7 @@ import '../services/premium_billing_service.dart';
 import 'sign_in_page.dart';
 import 'season_pass_page.dart';
 import '../services/experience/pro_gateway.dart';
+import '../services/experience/season_gateway.dart';
 import '../app/route_appearance.dart';
 import '../widgets/social_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -35,6 +36,8 @@ class _PremiumPageState extends State<PremiumPage> {
   bool _reloading = false;
   bool _cancellationLogged = false;
   String? _purchaseStateMessage;
+  // What the Pro lane gives this month, from the server (never a hard-coded total).
+  String? _proLane;
 
   @override
   void initState() {
@@ -43,6 +46,16 @@ class _PremiumPageState extends State<PremiumPage> {
 
     if (widget.gateway.connected) {
       _startPersistentSession();
+      unawaited(_loadProLane());
+    }
+  }
+
+  Future<void> _loadProLane() async {
+    try {
+      final season = await const SeasonGateway().load();
+      if (mounted) setState(() => _proLane = season.proLaneSummary);
+    } catch (_) {
+      // The neutral text stays; the page never depends on the season call.
     }
   }
 
@@ -423,11 +436,13 @@ class _PremiumPageState extends State<PremiumPage> {
               icon: const Icon(Icons.route_outlined),
               label: const Text('Sezon Rotası’nı incele'),
             ),
-            for (final item in const [
+            for (final item in [
               (
                 Icons.route_rounded,
                 'Sezon Rotası Pro yolu',
-                '20 duraklı aylık rotada ek 1.040 Link Coin. Görevlerle ilerle, ulaştığın ödülleri al. Ek sezon kartı satın alman gerekmez.',
+                _proLane != null
+                    ? '20 duraklı aylık rotada ek $_proLane. Görevlerle ilerle, ulaştığın ödülleri al. Ek sezon kartı satın alman gerekmez.'
+                    : '20 duraklı aylık rotada her durakta ek Pro ödülü. Görevlerle ilerle, ulaştığın ödülleri al. Ek sezon kartı satın alman gerekmez.',
               ),
               (
                 Icons.card_giftcard_outlined,

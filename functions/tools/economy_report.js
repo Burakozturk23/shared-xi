@@ -125,14 +125,20 @@ function measure() {
   const season = require("../season_pass");
   const crateSupports = Object.entries(crate.CRATE).reduce((n, [id, count]) => n + count * price(id), 0);
   const seasonProCoins = Array.from({length: 20}, (_, i) => i + 1)
-      .filter((step) => !season.AVATAR_STEPS.includes(step)).reduce((n, step) => n + season.reward(step, "pro"), 0);
+      .filter((step) => !season.AVATAR_STEPS.includes(step) && !season.SUPPORT_STEPS[step])
+      .reduce((n, step) => n + season.reward(step, "pro"), 0);
+  const seasonSupports = Object.values(season.SUPPORT_STEPS)
+      .reduce((n, items) => n + Object.entries(items).reduce((m, [id, count]) => m + count * price(id), 0), 0);
   const pro = {
     seasonCoins: seasonProCoins,
-    seasonAvatars: round(season.AVATAR_STEPS.length * crate.expectedValue("season")),
+    seasonSupports,
+    // Fixed pools: step 10 a 300 avatar, step 20 a 450 one.
+    seasonAvatars: Object.values(season.AVATAR_TIERS).reduce((n, tier) => n + tier, 0),
     crateSupports,
     crateAvatar: round(crate.expectedValue("crate")),
   };
-  const proMonthlyValue = round(pro.seasonCoins + pro.seasonAvatars + pro.crateSupports + pro.crateAvatar);
+  const proMonthlyValue = round(pro.seasonCoins + pro.seasonSupports + pro.seasonAvatars + pro.crateSupports +
+    pro.crateAvatar);
   const freeMonthly = (daily) => daily * 30 + 560 + monthlySupportValue;
   const proRatio = round((freeMonthly(routineAverage) + proMonthlyValue) / freeMonthly(routineAverage));
   const proRatioMissionsV3 = round((freeMonthly(routineAverageMissionsV3) + proMonthlyValue) /
@@ -209,8 +215,11 @@ function markdown(m = measure()) {
     "", `Ücretsiz oyuncunun aylık güçlendirme değeri (hepsi açıkken): **${m.totals.monthlySupportValue}** coin.`,
     "", "## Pro paketi (Faz 4, aylık coin eşdeğeri)", "",
     "| Kalem | Değer |", "| --- | --- |",
-    `| Sezon Pro şeridi coin (10. ve 20. basamak avatar) | ${m.pro.seasonCoins} |`,
-    `| Sezon avatarları (2 çekim, 300'e 3 / 450'ye 2 ağırlık) | ${m.pro.seasonAvatars} |`,
+    `| Sezon Pro şeridi coin (16 basamak × 40) | ${m.pro.seasonCoins} |`,
+    "| Sezon destekleri (5. basamak 2 Güçlü, 15. basamak Bağlantı + Tek seçenek ele + Temel) " +
+      "| " +
+      `${m.pro.seasonSupports} |`,
+    `| Sezon avatarları (10. basamak 300'lük, 20. basamak 450'lik havuz) | ${m.pro.seasonAvatars} |`,
     `| Kasa güçlendirmeleri (12 Temel, 4 Güçlü, 2 Bağlantı, 2 Tek seçenek ele) | ${m.pro.crateSupports} |`,
     `| Kasa avatarı (450 kademesi) | ${m.pro.crateAvatar} |`,
     `| **Toplam** | **${m.totals.proMonthlyValue}** |`,

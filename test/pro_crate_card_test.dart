@@ -137,23 +137,40 @@ void main() {
     },
   );
 
-  testWidgets('Sezon: avatar steps show the random avatar and the odds', (
-    t,
-  ) async {
-    await host(
-      t,
-      SizedBox(height: 900, child: SeasonPassPage(gateway: _AvatarSeason())),
-    );
-    expect(find.byKey(const ValueKey('season-avatar-odds')), findsOneWidget);
-    expect(find.textContaining('%21,6'), findsOneWidget);
-    await t.scrollUntilVisible(
-      find.byKey(const ValueKey('season-avatar-10')),
-      300,
-      scrollable: find.byType(Scrollable).last,
-    );
-    expect(find.text('Rastgele avatar'), findsWidgets);
-    expect(t.takeException(), isNull);
-  });
+  testWidgets(
+    'Sezon: final Pro lane shows pools, support steps and the summary',
+    (t) async {
+      await host(
+        t,
+        SizedBox(height: 900, child: SeasonPassPage(gateway: _AvatarSeason())),
+      );
+      expect(find.byKey(const ValueKey('season-avatar-odds')), findsOneWidget);
+      expect(
+        find.text('Pro yolu: 640 Link Coin + 5 destek + 2 avatar'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining("20. basamak: 450 coin'lik havuzdan"),
+        findsOneWidget,
+      );
+      await t.scrollUntilVisible(
+        find.byKey(const ValueKey('season-avatar-10')),
+        300,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.text("300'lük havuz"), findsOneWidget);
+      await t.scrollUntilVisible(
+        find.byKey(const ValueKey('season-support-15')),
+        300,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(
+        find.text('1 Bağlantı + 1 Tek seçenek ele + 1 Temel bilgi'),
+        findsOneWidget,
+      );
+      expect(t.takeException(), isNull);
+    },
+  );
 }
 
 class _AvatarSeason extends SeasonGateway {
@@ -172,13 +189,12 @@ class _AvatarSeason extends SeasonGateway {
     'dailyCap': 150,
     'pro': true,
     'avatarSteps': [10, 20],
-    'avatarOdds': {
-      'count': 164,
-      'tiers': [
-        {'price': 300, 'count': 116, 'chance': 0.7838, 'each': 0.0068},
-        {'price': 450, 'count': 48, 'chance': 0.2162, 'each': 0.0045},
-      ],
-    },
+    'proTotal': 640,
+    'supportSteps': [5, 15],
+    'avatarPools': [
+      {'step': 10, 'tier': 300, 'count': 116},
+      {'step': 20, 'tier': 450, 'count': 48},
+    ],
     'tiers': [
       for (var step = 1; step <= 20; step++)
         {
@@ -186,12 +202,20 @@ class _AvatarSeason extends SeasonGateway {
           'requiredSp': step * 100,
           'unlocked': step <= 10,
           'freeCoins': step % 5 == 0 ? 60 : 20,
-          'proCoins': step == 10 || step == 20
-              ? 0
-              : step % 5 == 0
-              ? 100
-              : 40,
+          'proCoins': step % 5 == 0 ? 0 : 40,
           'proAvatar': step == 10 || step == 20,
+          'proAvatarTier': step == 10
+              ? 300
+              : step == 20
+              ? 450
+              : 0,
+          if (step == 5) 'proSupports': {'boost_strong': 2},
+          if (step == 15)
+            'proSupports': {
+              'boost_connection': 1,
+              'boost_eliminate': 1,
+              'boost_basic': 1,
+            },
           'freeClaimed': step < 10,
           'proClaimed': step < 10,
         },

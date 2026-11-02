@@ -53,18 +53,26 @@ function points(claims, season, now) {
     todaySp: totals[season.day] || 0};
 }
 const reward = (step, lane) => step % 5 === 0 ? (lane === "pro" ? 100 : 60) : (lane === "pro" ? 40 : 20);
-// Faz 4b: with runtimeConfig/seasonAvatars on, these Pro steps give a random avatar instead of coins.
-const AVATAR_STEPS = Object.freeze([10, 20]);
+// Pro şeridi son hali (runtimeConfig/seasonAvatars): 16 steps of 40 coins, step 5 and 15 give
+// supports, step 10 an avatar from the 300 pool and step 20 one from the 450 pool.
+const AVATAR_TIERS = Object.freeze({10: 300, 20: 450});
+const AVATAR_STEPS = Object.freeze(Object.keys(AVATAR_TIERS).map(Number));
+const SUPPORT_STEPS = Object.freeze({5: Object.freeze({boost_strong: 2}),
+  15: Object.freeze({boost_connection: 1, boost_eliminate: 1, boost_basic: 1})});
 const avatarStep = (step, lane, avatars) => avatars && lane === "pro" && AVATAR_STEPS.includes(step);
+const supportStep = (step, lane, avatars) => avatars && lane === "pro" && !!SUPPORT_STEPS[step];
 const claimId = (id, step, lane) => `season_v1__${id}__${step}__${lane}`;
 function createService({db, isPro, grantCoins, now = Date.now, avatarsEnabled = async () => false,
-  grantAvatar = null}) {
-  // An avatar step is claimed when its draw receipt exists (or its coins were paid before the switch).
+  grantAvatar = null, grantSupports = null}) {
+  // A reward step is claimed when its receipt exists (or its coins were paid before the switch:
+  // those keep their coins, nothing is paid twice).
   const tiersOf = (claims, uses, season, level, avatars) => Array.from({length: STEPS}, (_, i) => {
     const step = i + 1; const proId = claimId(season.id, step, "pro");
     const proAvatar = avatarStep(step, "pro", avatars) && !claims[proId];
+    const proSupport = supportStep(step, "pro", avatars) && !claims[proId];
     return {step, requiredSp: step * STEP_SP, unlocked: level >= step,
-      freeCoins: reward(step, "free"), proCoins: proAvatar ? 0 : reward(step, "pro"), proAvatar,
+      freeCoins: reward(step, "free"), proCoins: proAvatar || proSupport ? 0 : reward(step, "pro"), proAvatar,
+      proAvatarTier: proAvatar ? AVATAR_TIERS[step] : 0, proSupports: proSupport ? SUPPORT_STEPS[step] : null,
       proReward: uses[proId] || null,
       freeClaimed: !!claims[claimId(season.id, step, "free")],
       proClaimed: !!claims[proId] || !!uses[proId]};
@@ -75,7 +83,7 @@ function createService({db, isPro, grantCoins, now = Date.now, avatarsEnabled = 
     const time = now();
     const season = seasonAt(time);
     const [snapshot, pro, avatars] = await Promise.all([db.ref("economyState/" + uid).get(), isPro(uid),
-      grantAvatar ? avatarsEnabled() : false]);
+      grantAvatar && grantSupports ? avatarsEnabled() : false]);
     const claims = snapshot.val()?.claims || {}; const uses = snapshot.val()?.storeUses || {};
     const score = points(claims, season, time);
     const level = Math.floor(score.sp / STEP_SP);
@@ -92,9 +100,13 @@ function createService({db, isPro, grantCoins, now = Date.now, avatarsEnabled = 
       }
     }
     return {...season, ...score, title: "Sezon Rotası", level, maxLevel: STEPS, stepSp: STEP_SP,
-      dailyCap: DAILY_CAP, pro, tiers, freeTotal: 560, proTotal: avatars ? 840 : 1040,
+      dailyCap: DAILY_CAP, pro, tiers, freeTotal: 560, proTotal: avatars ? 640 : 1040,
       unclaimed: open(tiers, pro), graceDays: GRACE_DAYS, previous, avatarSteps: avatars ? [...AVATAR_STEPS] : [],
-      avatarOdds: avatars ? require("./pro_crate").odds({inventory: snapshot.val()?.inventory || {}}, "season") : null};
+      // Which pool each avatar step draws from and how many of it the player can still get.
+      avatarPools: avatars ? Object.entries(AVATAR_TIERS).map(([step, tier]) => ({step: Number(step), tier,
+        count: require("./pro_crate").pool({inventory: snapshot.val()?.inventory || {}}, tier)
+            .filter((a) => a.price === tier).length})) : [],
+      supportSteps: avatars ? Object.keys(SUPPORT_STEPS).map(Number) : []};
   }
   async function claim(uid, input) {
     const profile = await status(uid);
@@ -113,8 +125,12 @@ function createService({db, isPro, grantCoins, now = Date.now, avatarsEnabled = 
     }
     const id = claimId(seasonId, step, lane);
     if (tier.proAvatar && lane === "pro") {
-      const avatar = await grantAvatar(uid, id);
+      const avatar = await grantAvatar(uid, id, AVATAR_TIERS[step]);
       return {granted: !claimed, amount: 0, avatar, profile: await status(uid)};
+    }
+    if (tier.proSupports && lane === "pro") {
+      const supports = await grantSupports(uid, id, SUPPORT_STEPS[step]);
+      return {granted: !claimed, amount: 0, supports, profile: await status(uid)};
     }
     const result = await grantCoins(uid, id, "season_pass", `${seasonId}__${step}__${lane}`,
         reward(step, lane), "season-v1");
@@ -122,4 +138,5 @@ function createService({db, isPro, grantCoins, now = Date.now, avatarsEnabled = 
   }
   return {status, claim};
 }
-module.exports = {createService, seasonAt, points, reward, GRACE_DAYS, previousId, AVATAR_STEPS};
+module.exports = {createService, seasonAt, points, reward, GRACE_DAYS, previousId, AVATAR_STEPS, AVATAR_TIERS,
+  SUPPORT_STEPS};
