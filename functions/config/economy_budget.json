@@ -5,15 +5,22 @@
     "routineMin": 100,
     "routineMax": 230,
     "maxCatalogDays": 400,
+    "fullPlayerMax": 270,
+    "minProRatio": 1.25,
     "decidedBy": "2026-11-02 kararı: üst sınır Görevler v3 (223,6) için 170'ten 230'a yükseltildi; katalog sınırı 400 gün onaylandı. Oyuncu verisi gelince güncellenecek."
   },
   "expected": {
     "routineAverage": 168.57,
     "routineAverageMissionsV3": 223.57,
+    "fullPlayerAverage": 203.43,
+    "fullPlayerAverageMissionsV3": 258.43,
     "oneTimeSupply": 6850,
     "cosmeticCatalog": 63400,
     "dailyModeCeiling": 763,
-    "monthlySupportValue": 578.57
+    "monthlySupportValue": 578.57,
+    "proMonthlyValue": 2644.86,
+    "proRatio": 1.43,
+    "proRatioMissionsV3": 1.34
   },
   "sources": [
     {"id": "daily_reward", "label": "Günlük giriş ödülü", "sourceTypes": ["daily_reward"], "cadence": "daily",
@@ -108,11 +115,16 @@
       "where": "arcade.js, fake_club.js, choice.js, three_modes.js", "unmeasured": ["hepsi"]},
     {"id": "season_pass", "label": "Sezon Rotası (aylık)", "sourceTypes": ["season_pass"], "cadence": "season",
       "total": 560, "proTotal": 1040, "where": "season_pass.js",
-      "pins": [{"file": "season_pass.js", "text": "freeTotal: 560, proTotal: 1040"}]},
+      "pins": [{"file": "season_pass.js", "text": "freeTotal: 560, proTotal: avatars ? 840 : 1040,"},
+        {"file": "season_pass.js", "text": "const AVATAR_STEPS = Object.freeze([10, 20]);"}]},
     {"id": "support_overflow", "label": "Dolu çantada destek: mağaza fiyatının yarısı coin",
       "sourceTypes": ["support_overflow"], "cadence": "conditional", "average": null, "max": 30,
       "gate": "yalnız çanta 99 iken; Faz 2 desteği başına en çok 30 (Güçlü bilgi)", "where": "daily_return.js",
       "pins": [{"file": "daily_return.js", "text": "return product ? Math.floor(product.priceCoins / 2) : 0;"}]},
+    {"id": "pro_reward_fallback", "label": "Pro çekimi: avatar ve forma kalmadıysa 300 coin",
+      "sourceTypes": ["pro_reward_fallback"], "cadence": "conditional", "average": null, "max": 300,
+      "gate": "yalnız havuz tükenince; Kasa ve Sezon avatar basamakları", "where": "pro_crate.js",
+      "pins": [{"file": "pro_crate.js", "text": "const FALLBACK_COINS = 300;"}]},
     {"id": "coin_purchase", "label": "Coin paketi satın alma (gerçek para)", "sourceTypes": ["google_play_purchase"],
       "cadence": "paid", "where": "coin_purchases.js PRODUCTS"}
   ],
@@ -125,6 +137,6 @@
     {"id": "streak_first_week", "label": "Oyun serisi ilk hafta: 1 Temel bilgi", "cadence": "oneTime",
       "total": 25, "where": "daily_streak.js + index.js grantBoost"}
   ],
-  "walletWriters": {"index.js": 2, "squad_challenge.js": 1, "coin_purchases.js": 1, "daily_return.js": 1},
+  "walletWriters": {"index.js": 2, "squad_challenge.js": 1, "coin_purchases.js": 1, "daily_return.js": 1, "pro_crate.js": 1},
   "dynamicGrantCalls": {"index.js": 2, "rewarded_ads.js": 1}
 }

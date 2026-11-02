@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../repositories/repository.dart';
 import '../services/auth_service.dart';
+import '../services/monetization_analytics.dart';
 import '../screens/sign_in_page.dart';
 import 'app_feedback.dart';
 import 'game_catalog.dart';
@@ -63,6 +66,8 @@ class GameLauncher {
       );
       // Only preparation is locked, not the entire lifetime of a game route.
       final result = Navigator.of(context).push(route);
+      unawaited(MonetizationAnalytics.instance
+          .gameSessionStarted(game: entry.title, category: entry.category));
       _preparing = false;
       await result;
     } catch (error, stack) {

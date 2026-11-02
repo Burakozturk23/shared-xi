@@ -6262,10 +6262,19 @@ exports.getStoreCatalog = httpsV2.onCall(
 
       const uid = request.auth.uid;
       const db = getDatabase();
-      const state = await lbEconomyEnsure(db, uid);
+      let state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
-      const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
       const boostPolicy = await require("./boosts").policyFor(db, uid, true);
+      // Classic letter packs only for accounts outside typed supports; typed accounts
+      // get their leftover letter stock converted on store open (same price, one to one).
+      const offers = [...await lbStoreCatalog(db, config),
+        ...storeCollection.catalog.offers.filter((o) => o.enabled && (!o.legacyOnly || !boostPolicy))];
+      let legacyConverted = null;
+      if (boostPolicy && ["boost_last_letter", "boost_anagram"].some((id) => state.inventory[id]?.quantity > 0)) {
+        const converted = await lbStoreCollectionService().convertLegacy(uid);
+        if (converted.added > 0) legacyConverted = converted.gained;
+        state = await lbEconomyEnsure(db, uid);
+      }
       if (boostPolicy) {
         const prices = await lbGetPrices();
         offers.push(...require("./boosts").offers.filter((o) =>
@@ -6287,6 +6296,7 @@ exports.getStoreCatalog = httpsV2.onCall(
         selectedKitId: profile.kitId || "",
         economy: economyConfig.publicContract(config),
         boostGuide,
+        legacyConverted,
       };
     },
 );
@@ -7164,9 +7174,13 @@ async function lbProgressionGrantCoins(
 
 // Faz 2: the support a check-in day added. Idempotent per day (receipt in
 // economyState.storeUses), so a retry or a later read settles a lost write.
-async function lbSettleDailySupport(db, uid, state) {
+async function lbSettleDailySupport(db, uid, state, onlyMissing = false) {
   const claim = state.daily.lastClaim;
   if (!claim.supportItemId || !claim.dateKey) return null;
+  // Reads only repair a lost write: with the receipt in place there is nothing to do.
+  if (onlyMissing && (await db.ref(`economyState/${uid}/storeUses/daily_reward__${claim.dateKey}`).get()).exists()) {
+    return null;
+  }
   let result = null;
   const tx = await db.ref("economyState/" + uid).transaction((raw) => {
     const e = lbEconomyState(raw);
@@ -7305,7 +7319,7 @@ exports.getMyProgression = httpsV2.onCall(
       const db = getDatabase();
       const state = await lbProgressionEnsure(db, uid);
       await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
-      await lbSettleDailySupport(db, uid, state);
+      await lbSettleDailySupport(db, uid, state, true);
       const benefits = await lbProgressionPremiumBenefits(db, uid);
       const profile = await lbProgressionProject(
           db,
@@ -9137,8 +9151,55 @@ function lbSeasonService() {
   const db = getDatabase();
   return require("./season_pass").createService({db, now: () => Date.now(),
     isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
-    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args)});
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    avatarsEnabled: async () => (await db.ref("runtimeConfig/seasonAvatars/enabled").get()).val() === true,
+    grantAvatar: (uid, id) => lbProDraw(db, uid, (e, now) =>
+      require("./pro_crate").drawAvatar(e, id, uid, "season", "season_pass", now))});
 }
+// Faz 4: one wallet transaction for a Pro draw (Sezon avatar or the monthly Kasa).
+async function lbProDraw(db, uid, run) {
+  let result = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw);
+    result = run(e, Date.now());
+    return e;
+  });
+  await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  return result;
+}
+async function lbProCrateStatus(db, uid) {
+  const now = Date.now(); const day = lbProgressionDateKey(now);
+  const crate = require("./pro_crate");
+  const raw = (await db.ref("runtimeConfig/proCrate").get()).val() || {};
+  const enabled = raw.enabled === true && (raw.public === true || raw.betaUids?.[uid] === true);
+  // Fresh entitlement on every read and claim (never a cached flag).
+  const premium = lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), now);
+  const e = lbEconomyState((await db.ref("economyState/" + uid).get()).val());
+  const {month, endsOn, daysLeft} = crate.monthOf(day);
+  const receipt = e.storeUses["pro_crate__" + month] || null;
+  const openAt = crate.openableAt(premium);
+  return {ok: true, enabled, pro: premium.active, month, endsOn, daysLeft, remind: !receipt && daysLeft <= 3,
+    opened: !!receipt, receipt, openableAt: openAt, canOpen: enabled && premium.active && !receipt && now >= openAt,
+    contents: {...crate.CRATE, avatarTier: crate.CRATE_TIER}, odds: crate.odds(e, "crate")};
+}
+exports.getProCrate = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbProCrateStatus(getDatabase(), request.auth.uid);
+});
+exports.claimProCrate = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+  lbRequireGoogleLinked(request);
+  const db = getDatabase(); const uid = request.auth.uid;
+  const status = await lbProCrateStatus(db, uid);
+  if (status.opened) return {...status, granted: false};
+  if (!status.enabled) throw new httpsV2.HttpsError("failed-precondition", "Pro Kasası henüz açık değil.");
+  if (!status.pro) throw new httpsV2.HttpsError("permission-denied", "Etkin Pro üyeliği gerekli.");
+  if (Date.now() < status.openableAt) {
+    throw new httpsV2.HttpsError("failed-precondition", "Kasa, üyeliğin başladıktan 48 saat sonra açılır.");
+  }
+  const day = lbProgressionDateKey(Date.now());
+  const result = await lbProDraw(db, uid, (e, now) => require("./pro_crate").openCrate(e, day, uid, now));
+  return {...await lbProCrateStatus(db, uid), granted: result.opened};
+});
 function lbSeasonCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     lbRequireGoogleLinked(request);

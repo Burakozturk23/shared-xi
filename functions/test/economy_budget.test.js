@@ -49,3 +49,21 @@ test("a routine total outside the band, a changed cap or a slow catalog breaks t
   code["career_transfer.js"] = code["career_transfer.js"].replace("36 - d.coins", "48 - d.coins");
   assert.ok(report.problems(m, code).some((p) => p.startsWith("career_transfer: career_transfer.js")));
 });
+
+test("coin source summary: per player-day mean and median, paid packs excluded, window respected", () => {
+  const {summarize} = require("../tools/coin_sources");
+  const at = (day, h = 12) => Date.parse(`${day}T${String(h).padStart(2, "0")}:00:00+03:00`);
+  const s = summarize({
+    a: {claims: {
+      x: {sourceType: "daily_reward", amount: 10, claimedAt: at("2026-11-29")},
+      y: {sourceType: "mission_reward", amount: 50, claimedAt: at("2026-11-29")},
+      z: {sourceType: "google_play_purchase", amount: 500, claimedAt: at("2026-11-29")},
+      old: {sourceType: "daily_reward", amount: 99, claimedAt: at("2026-10-01")},
+    }},
+    b: {claims: {w: {sourceType: "daily_reward", amount: 30, claimedAt: at("2026-11-30")}}},
+  }, {days: 14, until: "2026-11-30"});
+  assert.equal(s.playerDays, 2);
+  assert.equal(s.mean, 45); assert.equal(s.median, 45);
+  assert.deepEqual(s.sources.map((r) => r.sourceType), ["mission_reward", "daily_reward"]);
+  assert.equal(s.sources.find((r) => r.sourceType === "daily_reward").coins, 40);
+});

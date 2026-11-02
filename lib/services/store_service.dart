@@ -76,6 +76,10 @@ class StoreService {
       wallet: EconomyWallet.fromMap(Map<String, dynamic>.from(rawWallet)),
       offers: List<StoreOffer>.unmodifiable(offers),
       boostGuide: StoreBoostGuide.listFrom(data['boostGuide']),
+      legacyConverted: {
+        for (final e in _map(data['legacyConverted']).entries)
+          if (_int(e.value) > 0) e.key: _int(e.value),
+      },
     );
   }
 

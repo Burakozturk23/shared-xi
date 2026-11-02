@@ -64,14 +64,21 @@ class _SeasonPassPageState extends State<SeasonPassPage>
       final data = await widget.gateway.claim(_data!.id, t.step, lane);
       if (!mounted) return;
       setState(() => _data = data);
-      AppFeedback.reward(Sfx.coinReward);
+      final avatar = lane == 'pro' && t.proAvatar
+          ? data.tiers
+                .firstWhere((x) => x.step == t.step, orElse: () => t)
+                .proRewardTitle
+          : '';
+      AppFeedback.reward(avatar.isNotEmpty ? Sfx.levelUp : Sfx.coinReward);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            c(
-              'Sezon ödülün cüzdanında.',
-              'Your season reward is in your wallet.',
-            ),
+            avatar.isNotEmpty
+                ? c('Yeni avatarın: $avatar', 'Your new avatar: $avatar')
+                : c(
+                    'Sezon ödülün cüzdanında.',
+                    'Your season reward is in your wallet.',
+                  ),
           ),
         ),
       );
@@ -353,6 +360,36 @@ class _SeasonPassPageState extends State<SeasonPassPage>
             ],
           ),
         ),
+        if (s.avatarSteps.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          PitchPanel(
+            key: const ValueKey('season-avatar-odds'),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.face_retouching_natural_rounded,
+                  color: hubAmber(context),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    c(
+                      '${s.avatarSteps.join('. ve ')}. basamakta Pro yolu rastgele bir avatar verir. '
+                          "Sahip olduğun avatarlar çıkmaz; 450 coin'lik özel avatar şansı "
+                          '%${(s.avatarChance450 * 100).toStringAsFixed(1).replaceAll('.', ',')}, '
+                          "kalan şans 300 coin'lik avatarlarda.",
+                      'Steps ${s.avatarSteps.join(' and ')} on the Pro lane give a random avatar. '
+                          'Owned avatars never come out; a 450-coin special avatar has a '
+                          '${(s.avatarChance450 * 100).toStringAsFixed(1)}% chance, the rest are 300-coin avatars.',
+                    ),
+                    style: text.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         if (s.previous != null && _previousRewards(s).isNotEmpty) ...[
           const SizedBox(height: 16),
           PitchPanel(
@@ -718,13 +755,30 @@ class _SeasonPassPageState extends State<SeasonPassPage>
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              '+${pro ? t.proCoins : t.freeCoins}',
-              style: text.titleLarge?.copyWith(
+            if (pro && t.avatarStep) ...[
+              Icon(
+                Icons.face_retouching_natural_rounded,
+                key: ValueKey('season-avatar-${t.step}'),
+                size: 28,
                 color: reachedColor(t, color, pc.muted),
               ),
-            ),
-            Text('Link Coin', style: text.labelSmall),
+              Text(
+                t.proRewardTitle.isNotEmpty
+                    ? t.proRewardTitle
+                    : c('Rastgele avatar', 'Random avatar'),
+                style: text.labelSmall,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ] else ...[
+              Text(
+                '+${pro ? t.proCoins : t.freeCoins}',
+                style: text.titleLarge?.copyWith(
+                  color: reachedColor(t, color, pc.muted),
+                ),
+              ),
+              Text('Link Coin', style: text.labelSmall),
+            ],
             const SizedBox(height: 10),
             FilledButton(
               key: ValueKey('season-${t.step}-$lane'),

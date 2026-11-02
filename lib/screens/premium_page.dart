@@ -12,6 +12,7 @@ import '../services/experience/pro_gateway.dart';
 import '../app/route_appearance.dart';
 import '../widgets/social_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/pro_crate_card.dart';
 
 class PremiumPage extends StatefulWidget {
   const PremiumPage({super.key, this.gateway = const ProGateway()});
@@ -397,6 +398,7 @@ class _PremiumPageState extends State<PremiumPage> {
                   : null,
             ),
             const SizedBox(height: 16),
+            ProCrateCard(gateway: widget.gateway),
             if (snapshot.connectionState != ConnectionState.done)
               const LinearProgressIndicator(),
             if (snapshot.hasError)

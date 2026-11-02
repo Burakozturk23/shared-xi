@@ -47,6 +47,7 @@ class ShopFake extends StoreGateway {
   bool failConsume = false;
   List<StoreOffer>? catalogOverride;
   List<StoreBoostGuide> guide = const [];
+  Map<String, int> converted = const {};
   int converts = 0;
   @override
   bool get connected => true;
@@ -68,6 +69,7 @@ class ShopFake extends StoreGateway {
     inventory: {...items},
     selectedKitId: selected,
     boostGuide: guide,
+    legacyConverted: converted,
   );
   @override
   Future<Map<String, int>> convertLegacy() async {
@@ -321,6 +323,19 @@ void main() {
     expect(find.byKey(const ValueKey('guide-daily_question')), findsOneWidget);
     expect(t.takeException(), isNull);
   });
+  testWidgets('a store open that converted letter stock says what was added', (
+    t,
+  ) async {
+    final fake = ShopFake()
+      ..converted = const {'boost_basic': 2, 'boost_strong': 1};
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
+    expect(
+      find.text(
+        'Eski harf desteklerin yeni desteklere çevrildi: 2 Temel bilgi, 1 Güçlü bilgi.',
+      ),
+      findsOneWidget,
+    );
+  });
   testWidgets(
     'early avatars sell in the store; the 450 tier is marked special',
     (t) async {
@@ -357,7 +372,22 @@ void main() {
   testWidgets('leftover letter supports convert one to one by price, once', (
     t,
   ) async {
+    // Classic account (no typed supports): the letters still work there, no card.
+    final classic = ShopFake()
+      ..items['boost_last_letter'] = item('boost_last_letter', 'boost', 2);
+    await mount(t, StorePage(gateway: classic, initialTab: 'boost'));
+    expect(find.text('Eski destekler'), findsNothing);
     final fake = ShopFake()
+      ..guide = StoreBoostGuide.listFrom([
+        {
+          'modeId': 'career',
+          'name': 'Kariyer Bulmacası',
+          'group': 'Bulmaca',
+          'supports': [
+            {'itemId': 'boost_basic', 'title': 'Temel bilgi', 'effect': 'x'},
+          ],
+        },
+      ])
       ..items['boost_last_letter'] = item('boost_last_letter', 'boost', 2)
       ..items['boost_anagram'] = item('boost_anagram', 'boost', 1);
     await mount(t, StorePage(gateway: fake, initialTab: 'boost'));

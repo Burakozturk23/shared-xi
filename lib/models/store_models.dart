@@ -141,6 +141,9 @@ class StoreCatalogSnapshot {
   final String selectedAvatarId, selectedKitId;
   final List<StoreBoostGuide> boostGuide;
 
+  /// Supports added when this load converted leftover letter stock (item → count).
+  final Map<String, int> legacyConverted;
+
   const StoreCatalogSnapshot({
     required this.catalogVersion,
     required this.wallet,
@@ -149,6 +152,7 @@ class StoreCatalogSnapshot {
     this.selectedAvatarId = 'starter_ball',
     this.selectedKitId = '',
     this.boostGuide = const [],
+    this.legacyConverted = const {},
   });
 
   StoreCatalogSnapshot copyWith({

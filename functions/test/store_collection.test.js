@@ -123,21 +123,34 @@ test("new portrait avatars can be bought and equipped exactly once", async () =>
 test("retired portrait offers disappear and cannot debit the wallet", async () => {
   const h = funded();
   const c = await h.call("getStoreCatalog");
-  assert.equal(c.catalogVersion, 9);
+  assert.equal(c.catalogVersion, 10);
   for (const id of ["anthony_nwakaeme", "marek_hamsik"]) {
     assert.ok(!c.offers.some((o) => o.offerId === "avatar_" + id));
     await assert.rejects(buy(h, "avatar_" + id, "retired_request_123", 300), {code: "not-found"});
   }
   assert.equal(h.read("economyState/alice/balances/coins"), 1000);
 });
-test("last letter and anagram packs are no longer sold; first letter stays", async () => {
-  const h = funded();
-  const c = await h.call("getStoreCatalog");
+test("letter packs: sold only outside typed supports; typed accounts get stock converted on open", async () => {
+  // Classic account (no typed supports): letter packs are on sale and work in the classic modes.
+  const classic = funded();
+  const c = await classic.call("getStoreCatalog");
   const items = new Set(c.offers.map((o) => o.itemId));
-  assert.ok(items.has("boost_first_letter"));
-  assert.ok(!items.has("boost_last_letter")); assert.ok(!items.has("boost_anagram"));
-  await assert.rejects(buy(h, "boost_anagram_1", "anagram_request_12345", 60), {code: "not-found"});
-  assert.equal(h.read("economyState/alice/balances/coins"), 1000);
+  for (const id of ["boost_first_letter", "boost_last_letter", "boost_anagram"]) assert.ok(items.has(id), id);
+  await buy(classic, "boost_anagram_1", "anagram_request_12345", 60);
+  assert.equal(classic.read("economyState/alice/inventory/boost_anagram/quantity"), 1);
+  assert.equal(c.legacyConverted, null);
+  // Typed account: no letter packs, purchase refused, leftover stock converted once on store open.
+  const typed = harness({runtimeConfig: {boosts: {enabled: true, betaUids: {alice: true}, readyModes: {career: true}}},
+    economyState: {alice: {balances: {coins: 1000}, inventory: {
+      boost_last_letter: {itemId: "boost_last_letter", itemType: "boost", quantity: 2},
+      boost_anagram: {itemId: "boost_anagram", itemType: "boost", quantity: 1}}}}});
+  const open = await typed.call("getStoreCatalog");
+  assert.ok(!open.offers.some((o) => ["boost_last_letter", "boost_anagram"].includes(o.itemId)));
+  assert.deepEqual({...open.legacyConverted}, {boost_basic: 2, boost_strong: 1});
+  assert.equal(open.inventory.boost_strong.quantity, 1);
+  assert.equal((await typed.call("getStoreCatalog")).legacyConverted, null);
+  await assert.rejects(buy(typed, "boost_anagram_1", "anagram_request_67890", 60), {code: "failed-precondition"});
+  assert.equal(typed.read("economyState/alice/balances/coins"), 1000);
 });
 test("legacy letter stock converts by price: Son harf to Temel, Harf karışımı to Güçlü, once", async () => {
   const h = funded();

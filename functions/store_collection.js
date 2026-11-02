@@ -17,6 +17,10 @@ function createStore({db, normalize, project, HttpsError, now = Date.now, getPri
   async function purchase(uid, data) {
     const offer = offers[data.offerId];
     if (!offer || !offer.enabled) error("not-found", "Offer unavailable.");
+    // Letter packs (legacyOnly) are for accounts still on the classic letter supports.
+    if (offer.legacyOnly && await B.policyFor(db, uid, true)) {
+      error("failed-precondition", "Bu destek yeni destek sistemine çevrildi; Coin harcanmadı.");
+    }
     if (B.offers.some((o) => o.offerId === offer.offerId)) {
       const p = await B.policyFor(db, uid, true);
       if (!p || !offer.modes.some((m) => p.readyModes?.[m] === true)) {
@@ -75,12 +79,9 @@ function createStore({db, normalize, project, HttpsError, now = Date.now, getPri
       replayed: !!receipt && receipt.nonce !== nonce, coins: state.balances.coins,
       priceCoins: receipt?.priceCoins || 0, item};
   }
-  // Last letter and anagram are no longer sold and do not exist in the new
-  // support rules. On request they become Temel bilgi: one for a last letter
-  // (same price), two for an anagram (60 coins against 2 x 25). Stock above 99
-  // stays where it was.
-  // Retired letter supports become the typed ones of the same price:
+  // Retired letter supports become the typed ones of the same price, one to one:
   // Son harf (25) -> Temel bilgi (25), Harf karışımı (60) -> Güçlü bilgi (60).
+  // What does not fit under the 99 cap stays in the old stock.
   async function convertLegacy(uid) {
     const stamp = now(); const key = "legacy_convert__" + crypto.randomUUID();
     const pairs = [["boost_last_letter", "boost_basic"], ["boost_anagram", "boost_strong"]];

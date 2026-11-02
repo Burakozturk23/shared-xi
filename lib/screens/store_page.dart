@@ -62,6 +62,14 @@ class _StorePageState extends State<StorePage> {
     try {
       final data = await widget.gateway.load();
       if (mounted) setState(() => _data = data);
+      // Leftover letter stock was turned into typed supports on this open.
+      if (mounted && data.legacyConverted.isNotEmpty) {
+        final parts = [
+          for (final e in data.legacyConverted.entries)
+            '${e.value} ${e.key == 'boost_strong' ? 'Güçlü bilgi' : 'Temel bilgi'}',
+        ];
+        _notice('Eski harf desteklerin yeni desteklere çevrildi: ${parts.join(', ')}.');
+      }
     } catch (_) {
       if (mounted) setState(() => _error = true);
     } finally {
@@ -391,7 +399,7 @@ class _StorePageState extends State<StorePage> {
                 const Text(
                   'Destekler uyumlu tek kişilik oyunlarda kullanılır. Destek kullanılan sonuç Yardımlı olarak kaydedilir; online düellolarda ve sıralamada destek yoktur.',
                 ),
-                if (_legacyValue > 0) ...[
+                if (_legacyValue > 0 && guide.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   _legacyCard(),
                 ],

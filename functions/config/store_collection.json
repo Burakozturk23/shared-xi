@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "offers": [
     {
       "offerId": "avatar_speedster_bolt",
@@ -993,18 +993,19 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Son Harf",
-      "subtitle": "Futbolcunun adının son harfini açar. Satıştan kalktı; eski stok Temel bilgiye çevrilir.",
+      "subtitle": "Futbolcunun adının son harfini açar. Klasik modlarda kullanılır.",
       "badge": "TEK KULLANIM",
       "priceCoins": 25,
       "oneTime": false,
       "units": 1,
-      "enabled": false,
+      "enabled": true,
       "modes": [
         "futbol_lingo",
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 141
+      "sortOrder": 141,
+      "legacyOnly": true
     },
     {
       "offerId": "boost_last_letter_3",
@@ -1012,18 +1013,19 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Son Harf · 3 kullanım",
-      "subtitle": "Futbolcunun adının son harfini açar. Satıştan kalktı; eski stok Temel bilgiye çevrilir.",
+      "subtitle": "Futbolcunun adının son harfini açar. Klasik modlarda kullanılır.",
       "badge": "3’LÜ PAKET",
       "priceCoins": 65,
       "oneTime": false,
       "units": 3,
-      "enabled": false,
+      "enabled": true,
       "modes": [
         "futbol_lingo",
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 142
+      "sortOrder": 142,
+      "legacyOnly": true
     },
     {
       "offerId": "boost_anagram_1",
@@ -1031,18 +1033,19 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Harf Karışımı",
-      "subtitle": "Futbolcunun adının harflerini karışık gösterir. Satıştan kalktı; eski stok Temel bilgiye çevrilir.",
+      "subtitle": "Futbolcunun adının harflerini karışık gösterir. Klasik modlarda kullanılır.",
       "badge": "TEK KULLANIM",
       "priceCoins": 60,
       "oneTime": false,
       "units": 1,
-      "enabled": false,
+      "enabled": true,
       "modes": [
         "futbol_lingo",
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 143
+      "sortOrder": 143,
+      "legacyOnly": true
     },
     {
       "offerId": "boost_anagram_3",
@@ -1050,18 +1053,19 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Harf Karışımı · 3 kullanım",
-      "subtitle": "Futbolcunun adının harflerini karışık gösterir. Satıştan kalktı; eski stok Temel bilgiye çevrilir.",
+      "subtitle": "Futbolcunun adının harflerini karışık gösterir. Klasik modlarda kullanılır.",
       "badge": "3’LÜ PAKET",
       "priceCoins": 150,
       "oneTime": false,
       "units": 3,
-      "enabled": false,
+      "enabled": true,
       "modes": [
         "futbol_lingo",
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 144
+      "sortOrder": 144,
+      "legacyOnly": true
     },
     {
       "offerId": "kit_galatasaray",

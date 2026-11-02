@@ -1,3 +1,13 @@
+double _chance450(Object? odds) {
+  if (odds is! Map || odds['tiers'] is! List) return 0;
+  for (final t in (odds['tiers'] as List).whereType<Map>()) {
+    if ((t['price'] as num?)?.toInt() == 450) {
+      return (t['chance'] as num?)?.toDouble() ?? 0;
+    }
+  }
+  return 0;
+}
+
 class SeasonTier {
   const SeasonTier({
     required this.step,
@@ -7,9 +17,17 @@ class SeasonTier {
     required this.proCoins,
     required this.freeClaimed,
     required this.proClaimed,
+    this.proAvatar = false,
+    this.proRewardTitle = '',
   });
   final int step, requiredSp, freeCoins, proCoins;
   final bool unlocked, freeClaimed, proClaimed;
+
+  /// Faz 4: the Pro reward of this step is a random avatar, not coins.
+  final bool proAvatar;
+
+  /// What the avatar step gave, once claimed.
+  final String proRewardTitle;
   factory SeasonTier.fromMap(Map<String, dynamic> m) => SeasonTier(
     step: (m['step'] as num).toInt(),
     requiredSp: (m['requiredSp'] as num).toInt(),
@@ -18,7 +36,13 @@ class SeasonTier {
     proCoins: (m['proCoins'] as num).toInt(),
     freeClaimed: m['freeClaimed'] == true,
     proClaimed: m['proClaimed'] == true,
+    proAvatar: m['proAvatar'] == true,
+    proRewardTitle: m['proReward'] is Map
+        ? ((m['proReward'] as Map)['title']?.toString() ?? '')
+        : '',
   );
+
+  bool get avatarStep => proAvatar || proRewardTitle.isNotEmpty;
 }
 
 /// Last month's unlocked rewards that are still claimable (grace days).
@@ -57,7 +81,15 @@ class SeasonPass {
     this.dailyCap = 150,
     this.graceDays = 3,
     this.previous,
+    this.avatarSteps = const [],
+    this.avatarChance450 = 0,
   });
+
+  /// Pro steps that give a random avatar (empty while the switch is off).
+  final List<int> avatarSteps;
+
+  /// Chance that an avatar step gives a 450-coin avatar (0–1).
+  final double avatarChance450;
   final String id, endsOn;
   final int sp, todaySp, level, daysLeft, maxLevel, stepSp, dailyCap, graceDays;
   final SeasonPrevious? previous;
@@ -101,6 +133,10 @@ class SeasonPass {
         ? SeasonPrevious.fromMap(Map<String, dynamic>.from(m['previous']))
         : null,
     pro: m['pro'] == true,
+    avatarSteps: m['avatarSteps'] is List
+        ? [for (final v in m['avatarSteps'] as List) (v as num).toInt()]
+        : const [],
+    avatarChance450: _chance450(m['avatarOdds']),
     tiers: (m['tiers'] as List)
         .map((r) => SeasonTier.fromMap(Map<String, dynamic>.from(r)))
         .toList(),

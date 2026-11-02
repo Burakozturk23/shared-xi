@@ -73,6 +73,12 @@ function measure() {
   const routineAverage = round(sum(routine.map((x) => value(x.id, "average"))));
   const legacyMissions = value("daily_mission", "average");
   const routineAverageMissionsV3 = round(routineAverage - legacyMissions + value("missions_v3_daily", "average"));
+  // "Tam oyuncu": the routine plus every daily mode whose average day is known
+  // (streak, Günün Sorusu, Günün Futbolcusu, words…); session-capped modes stay out.
+  const measuredDaily = daily.filter((x) => x.routine === false && Number.isFinite(value(x.id, "average")));
+  const extra = sum(measuredDaily.map((x) => value(x.id, "average")));
+  const fullPlayerAverage = round(routineAverage + extra);
+  const fullPlayerAverageMissionsV3 = round(routineAverageMissionsV3 + extra);
   // Every daily source at its busiest day; v3 slots replace the legacy missions, never both.
   const dailyModeCeiling = sum(daily.filter((x) => x.id !== "missions_v3_daily").map((x) => value(x.id, "max")));
 
@@ -114,6 +120,24 @@ function measure() {
   };
   const monthlySupportValue = round(supports.daily_loop.monthlyValue + supports.all_missions_bonus.monthlyValue);
 
+  // Faz 4 Pro package, valued at store prices (coin equivalent; avatars at the draw's expected value).
+  const crate = require("../pro_crate");
+  const season = require("../season_pass");
+  const crateSupports = Object.entries(crate.CRATE).reduce((n, [id, count]) => n + count * price(id), 0);
+  const seasonProCoins = Array.from({length: 20}, (_, i) => i + 1)
+      .filter((step) => !season.AVATAR_STEPS.includes(step)).reduce((n, step) => n + season.reward(step, "pro"), 0);
+  const pro = {
+    seasonCoins: seasonProCoins,
+    seasonAvatars: round(season.AVATAR_STEPS.length * crate.expectedValue("season")),
+    crateSupports,
+    crateAvatar: round(crate.expectedValue("crate")),
+  };
+  const proMonthlyValue = round(pro.seasonCoins + pro.seasonAvatars + pro.crateSupports + pro.crateAvatar);
+  const freeMonthly = (daily) => daily * 30 + 560 + monthlySupportValue;
+  const proRatio = round((freeMonthly(routineAverage) + proMonthlyValue) / freeMonthly(routineAverage));
+  const proRatioMissionsV3 = round((freeMonthly(routineAverageMissionsV3) + proMonthlyValue) /
+    freeMonthly(routineAverageMissionsV3));
+
   // Release checklist items the code can answer (the live value may differ).
   const index = read("index.js");
   const release = [
@@ -134,9 +158,10 @@ function measure() {
   ];
 
   return {
-    budget, measured, story, sinks, coinPacks, supports, release,
-    totals: {routineAverage, routineAverageMissionsV3, dailyModeCeiling, oneTimeSupply, cosmeticCatalog,
-      monthlySupportValue,
+    budget, measured, story, sinks, coinPacks, supports, release, pro,
+    totals: {routineAverage, routineAverageMissionsV3, fullPlayerAverage, fullPlayerAverageMissionsV3,
+      dailyModeCeiling, oneTimeSupply, cosmeticCatalog,
+      monthlySupportValue, proMonthlyValue, proRatio, proRatioMissionsV3,
       catalogDays: round(cosmeticCatalog / routineAverage, 0)},
     prices: {parameter: prices.PARAMETER, enabled: prices.DEFAULT_PRICES.enabled,
       boosts: prices.DEFAULT_PRICES.boosts},
@@ -167,6 +192,9 @@ function markdown(m = measure()) {
     `- Rutin günlük gelir (ortalama): **${m.totals.routineAverage}** coin.`,
     `- Görevler v3 açıkken rutin gelir: **${m.totals.routineAverageMissionsV3}** coin (+ haftalık ortalama ` +
       `${m.measured.missions_v3_weekly.average}).`,
+    `- Tam oyuncu (rutin + ortalaması bilinen günlük modlar): **${m.totals.fullPlayerAverage}** coin; ` +
+      `Görevler v3 ile **${m.totals.fullPlayerAverageMissionsV3}** ` +
+      `(bant ${b.band.routineMin}–${b.band.fullPlayerMax}).`,
     `- Tüm günlük kaynakların en dolu günü toplamı: **${m.totals.dailyModeCeiling}** coin.`,
     `- Tek seferlik arz (başarı + genel görev): **${m.totals.oneTimeSupply}** coin.`,
     `- Hikâye modları tek seferlik: ${Object.entries(m.story).map(([k, n]) => `${k} ${n}`).join(", ")} ` +
@@ -179,6 +207,15 @@ function markdown(m = measure()) {
       `${cell(m.supports[x.id]?.monthlyValue ?? x.monthlyValue)} | ${x.cadence === "oneTime" ? cell(x.total) : ""} | ` +
       `${x.gate || ""} |`),
     "", `Ücretsiz oyuncunun aylık güçlendirme değeri (hepsi açıkken): **${m.totals.monthlySupportValue}** coin.`,
+    "", "## Pro paketi (Faz 4, aylık coin eşdeğeri)", "",
+    "| Kalem | Değer |", "| --- | --- |",
+    `| Sezon Pro şeridi coin (10. ve 20. basamak avatar) | ${m.pro.seasonCoins} |`,
+    `| Sezon avatarları (2 çekim, 300'e 3 / 450'ye 2 ağırlık) | ${m.pro.seasonAvatars} |`,
+    `| Kasa güçlendirmeleri (12 Temel, 4 Güçlü, 2 Bağlantı, 2 Tek seçenek ele) | ${m.pro.crateSupports} |`,
+    `| Kasa avatarı (450 kademesi) | ${m.pro.crateAvatar} |`,
+    `| **Toplam** | **${m.totals.proMonthlyValue}** |`,
+    "", `Pro / Ücretsiz değer oranı: **${m.totals.proRatio}** (Görevler v3 ile **${m.totals.proRatioMissionsV3}**; ` +
+      `alt sınır ${b.band.minProRatio}). Enerji deposu ve ücretsiz hikâye ipucu dahil değil.`,
     "", "## Yayın kontrol listesi (koddaki varsayılanlar)", "",
     "Canlı değerler Remote Config ve runtimeConfig'tedir; bu liste yalnız kodun varsayılanını gösterir.", "",
     ...m.release.map((r) => `- ${r.ok ? "[x]" : "[ ]"} ${r.label}: ${r.value}`),
@@ -246,9 +283,17 @@ function problems(m = measure(), code = readCode()) {
       if (got != null && !near(got, x[key])) out.push(`${x.id}.${key}: kayıt ${x[key]}, kod ${got}`);
     }
   }
-  for (const key of ["routineAverage", "routineAverageMissionsV3", "oneTimeSupply", "cosmeticCatalog",
-    "dailyModeCeiling", "monthlySupportValue"]) {
+  for (const key of ["routineAverage", "routineAverageMissionsV3", "fullPlayerAverage",
+    "fullPlayerAverageMissionsV3", "oneTimeSupply", "cosmeticCatalog",
+    "dailyModeCeiling", "monthlySupportValue", "proMonthlyValue", "proRatio", "proRatioMissionsV3"]) {
     if (!near(t[key], b.expected[key])) out.push(`${key}: kayıt ${b.expected[key]}, ölçülen ${t[key]}`);
+  }
+  for (const [label, value] of [["Pro/Ücretsiz", t.proRatio], ["v3 Pro/Ücretsiz", t.proRatioMissionsV3]]) {
+    if (value < b.band.minProRatio) out.push(`${label} oranı ${value}, alt sınır ${b.band.minProRatio}`);
+  }
+  for (const [label, value] of [["tam oyuncu", t.fullPlayerAverage],
+    ["v3 tam oyuncu", t.fullPlayerAverageMissionsV3]]) {
+    if (value > b.band.fullPlayerMax) out.push(`${label} ${value}, tam oyuncu bandı en çok ${b.band.fullPlayerMax}`);
   }
   if (t.catalogDays > b.band.maxCatalogDays) {
     out.push(`katalog ${t.catalogDays} günde biter (> ${b.band.maxCatalogDays})`);
