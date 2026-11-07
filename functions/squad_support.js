@@ -1,6 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
 const S = require("./squad_challenge");
 const {RewardError} = require("./rewarded_ads");
 const fail = (code, message) => {
@@ -56,9 +57,14 @@ function recommendation(run, input) {
     explanation: "Mevki ve krediye uygun; komşu kulüp bağı, yeni ülke ve düşük kredi sırasıyla. " +
       "Tam kadro garantisi değildir."};
 }
+// İpucu v2 menu (hints/squad.js).
+const adapter = H.register(require("./hints/squad").challenge({recommendation}));
 function recover(e, now) {
   const s = e.squadChallenge || {};
   for (const r of [...Object.values(s.runs || {}), ...Object.values(s.practiceRuns || {})]) {
+    if (H.active(r)) {
+      r.finished = r.status !== "active"; H.recoverUnused(e, r, now); continue;
+    }
     if (!B.paid(r)) continue;
     r.finished = r.status !== "active";
     B.recoverUnused(e, r, now, (sku) => !r.supportHints?.[sku]);
@@ -69,8 +75,9 @@ function recover(e, now) {
   }
 }
 function publicView(r) {
-  return {legacy: !B.paid(r), session: {id: r.id, revision: r.revision || 0, finished: r.status !== "active",
-    support: B.view(r), adCredits: r.adCredits || 0, adGranted: r.adGranted || 0},
+  return {legacy: !B.paid(r) && !H.active(r), session: {id: r.id, revision: r.revision || 0,
+    finished: r.status !== "active", support: B.view(r), hintMenu: H.view(r, adapter),
+    adCredits: r.adCredits || 0, adGranted: r.adGranted || 0},
   hints: r.supportHints || {}, penalty: r.supportPenalty || 0, result: r.result || null,
   practice: r.practice === true};
 }
@@ -92,7 +99,7 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   }
   function find(s, input) {
     const r = s.runs?.[input.sessionId] || s.practiceRuns?.[input.sessionId];
-    if (!B.paid(r)) fail("failed-precondition", "Destek panelini yenile.");
+    if (!B.paid(r) && !H.active(r)) fail("failed-precondition", "Destek panelini yenile.");
     if (input.catalogVersion !== S.catalog.version || r.version !== S.catalog.version) {
       fail("failed-precondition", "Kadro kataloğu değişti.");
     }
@@ -122,10 +129,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
           s.practiceRuns[r.id] = r; s.practiceActive[key] = r.id;
         }
       }
-      if (!B.paid(r) && r.status === "active" && policy?.readyModes?.squad_challenge === true) {
+      if (!B.paid(r) && !H.active(r) && r.status === "active" && policy?.readyModes?.squad_challenge === true) {
         Object.assign(r, {mode: "squad_challenge", entry: r.practice ? "solo" : "daily", version: S.catalog.version,
           revision: 0, expiresAt: now() + 86400000, adCredits: 0, adGranted: 0, adReceipts: {}, actions: {}});
-        B.pin(r, policy);
+        H.pinAny(r, policy, e, now());
       }
       return publicView(r);
     });
@@ -134,7 +141,7 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     if (!await isLinked(uid)) fail("permission-denied", "Hesabını bağla.");
     if (!/^[a-f0-9]{32}$/.test(input.requestId || "")) fail("invalid-argument", "İstek kimliği geçersiz.");
     const fp = hash([input.sessionId, input.catalogVersion, input.revision, input.slot,
-      input.playerIds, ...B.paymentFingerprint(input)]);
+      input.playerIds, ...B.paymentFingerprint(input), input.itemId]);
     return change(uid, (e, s) => {
       const r = find(s, input); r.actions ||= {};
       if (r.actions[input.requestId]) {
@@ -142,6 +149,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
         return publicView(r);
       }
       if (r.status !== "active" || r.revision !== input.revision) fail("failed-precondition", "Kadro durumunu yenile.");
+      if (H.active(r)) {
+        H.use(e, r, adapter, input, now(), {input});
+        r.actions[input.requestId] = fp; r.revision++; return publicView(r);
+      }
       if (!["boost_basic", "boost_strong"].includes(input.boostId)) fail("invalid-argument", "Yanlış destek.");
       if (r.supportHints?.[input.boostId]) fail("already-exists", "Bu destek bu kadroda zaten kullanıldı.");
       const hint = recommendation(r, input);
@@ -175,6 +186,13 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     if (!await isLinked(uid) || placement !== "squad_support_hint") fail("permission-denied", "Hesap gerekli.");
     const e = normalize((await db.ref("economyState/" + uid).get()).val());
     const r = find(e.squadChallenge || {}, input);
+    if (H.active(r)) {
+      if (r.status !== "active" || r.expiresAt <= now()) {
+        fail("failed-precondition", "Bu kadroda reklam desteği kullanılamaz.");
+      }
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `squad_hint_${r.id}_${input.itemId}`,
+        context: {sessionId: r.id, catalogVersion: S.catalog.version}});
+    }
     if (r.status !== "active" || r.expiresAt <= now() || input.boostId !== "boost_basic" ||
         r.supportHints?.boost_basic) {
       fail("failed-precondition", "Bu kadroda reklam desteği kullanılamaz.");
@@ -185,6 +203,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   async function settleHint(uid, receipt) {
     return change(uid, (e, s) => {
       const r = s.runs?.[receipt.context?.sessionId] || s.practiceRuns?.[receipt.context?.sessionId];
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, now(), r?.status === "active")) H.grantAd(r, receipt);
+        return;
+      }
       const usable = r?.status === "active" && !r.supportHints?.boost_basic;
       if (!B.recoverAd(e, r, receipt, now(), "boost_basic", usable)) B.grantAd(r, receipt);
     });

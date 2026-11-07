@@ -1,6 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const catalog = require("./config/three_modes_catalog.json");
@@ -76,6 +77,9 @@ function eligible(s, position) {
   return catalog.players.filter((p) => p.position === position && !used.has(p.id) &&
     p.letters.includes(target.letter));
 }
+// İpucu v2 menus (hints/squad.js).
+const adapter = H.register(require("./hints/squad").three({catalog, clubs, players, puzzleOf, eligible, letterWord,
+  targetOf}));
 function sessionView(raw) {
   const s = sessionOf(raw);
   if (!s) return null;
@@ -83,7 +87,8 @@ function sessionView(raw) {
   const v = {id: s.id, mode: s.mode, entry: s.entry, formation: s.formation,
     formations: target?.formations || [s.formation], revision: s.revision, finished: s.finished,
     dailyOfficial: s.dailyOfficial, expiresAt: s.expiresAt, day: s.day,
-    wrong: s.wrong, hints: s.hints, freeHint: !B.paid(s) && !s.freeUsed, support: B.view(s), adCredits: s.adCredits,
+    wrong: s.wrong, hints: s.hints, freeHint: !B.paid(s) && !H.active(s) && !s.freeUsed, support: B.view(s),
+    hintMenu: H.view(s, adapter), adCredits: s.adCredits,
     adRemaining: Math.max(0, 2 - s.adGranted), feedback: s.feedback || "", energyCharged: s.energyCharged,
     result: s.result || null};
   if (s.mode !== "squad_vault") {
@@ -125,6 +130,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         }
         fn(state.threeModes, state, time);
         for (const r of Object.values(state.threeModes.sessions)) {
+          H.recoverUnused(state, sessionOf(r), time);
           B.recoverUnused(state, r, time,
               () => (r.hints?.length || 0) < 3);
         }
@@ -309,7 +315,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         Object.assign(session, {puzzle: puzzle.id, revealed: puzzle.initial, nameHints: [],
           leagueShown: input.entry === "league"});
       }
-      B.pin(session, boostPolicy);
+      H.pinAny(session, boostPolicy, e, time);
       s.sessions[session.id] = session; s.active[input.mode] = session.id;
       s.starts[session.id] = true;
       // Collections/receipts are permanent; expired session bodies are bounded.
@@ -390,7 +396,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       if (!run || run.mode !== input.mode || run.version !== catalog.version) fail("not-found", "Oturum bulunamadı.");
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.clubId ?? null,
         input.slot ?? null, input.formation ?? null, input.hint ?? null, input.confirmReset ?? null,
-        ...B.paymentFingerprint(input)]));
+        ...B.paymentFingerprint(input), input.itemId ?? null]));
       if (run.actions[input.requestId]) {
         if (run.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İşlem kimliği başka cevaba ait.");
         return;
@@ -444,6 +450,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           run.wrong++; run.feedback = "Bu kasa başka bir kulübe ait.";
           if (run.guesses.length >= 5) finish(s, run, time);
         }
+      } else if (input.action === "hint" && H.active(run)) {
+        H.use(e, run, adapter, input, time, {slot: input.slot});
       } else if (input.action === "hint") {
         if (!B.paid(run) && run.freeUsed && run.adCredits <= 0) {
           fail("resource-exhausted", "İpucu için doğrulanmış reklam hakkı gerekli.");
@@ -521,6 +529,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function prepareHint(uid, placement, context) {
     const expected = {letter11_hint: "letter11", vault_hint: "squad_vault"}[placement];
     const s = await read(uid); const run = sessionOf(s.sessions[context?.sessionId]);
+    if (H.active(run)) {
+      if (!expected || run.mode !== expected || run.finished || run.expiresAt <= now()) {
+        fail("failed-precondition", "Bu oyun için reklamlı ipucu hakkı yok.");
+      }
+      return H.adBenefit(run, context.itemId, {amount: 0, claimKey: `three_hint_${run.id}_${run.adGranted}`,
+        context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}});
+    }
     if (!expected || !run || run.mode !== expected || run.finished || run.expiresAt <= now() || run.adGranted >= 2 ||
         B.paid(run) && run.hints.length + run.adCredits >= 3) {
       fail("failed-precondition", "Bu oyun için reklamlı ipucu hakkı yok.");
@@ -531,6 +546,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const run = sessionOf(s.sessions[receipt.context?.sessionId]);
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        const ok = run && H.active(run) && run.mode === receipt.context.mode &&
+          run.adGranted === receipt.context.credit;
+        if (H.recoverAd(e, run, receipt, time, ok)) {
+          if (run) s.sessions[run.id] = run; return;
+        }
+        H.grantAd(run, receipt); s.sessions[run.id] = run; return;
+      }
       // A late receipt cannot modify another run or convert into coins.
       const canApply = run && run.hints.length + run.adCredits < 3 &&
         run.adGranted < (run.boostPolicy?.daily ? 1 : 2) && run.adGranted === receipt.context.credit;
