@@ -1,3 +1,5 @@
+import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -140,7 +142,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
     final visible=c.catalog.dynasties.where((d)=>_filter=='all'||d.chapterId.toString()==_filter);
     return [
       _hero('HANEDANLIKLAR ÇAĞI','Bir dönem.\nKalıcı bir iz.',
-        '19 hanedanlık. 38 görev. Kadroyu, kupaları ve oyun fikrini keşfet.',
+        '${c.catalog.dynasties.length} hanedanlık. ${c.catalog.tasks.length} görev. Kadroyu, kupaları ve oyun fikrini keşfet.',
         footer:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text('${c.sealCount} / ${c.catalog.dynasties.length} mühür  ·  ${c.count} / ${c.catalog.tasks.length} görev',style:const TextStyle(color:Colors.white,fontWeight:FontWeight.bold)),
           const SizedBox(height:12),LinearProgressIndicator(value:c.sealCount/c.catalog.dynasties.length,minHeight:6,
@@ -170,6 +172,12 @@ class _DynastiesPageState extends State<DynastiesPage> {
             Icon(c.catalog.dynasties.where((d) => c.seals.containsKey(d.id)).length >= dyMap(raw)['count'] ? Icons.verified : Icons.flag_outlined),const SizedBox(width:12),
             Expanded(child:Text('${dyMap(raw)['count']} mühür · +${dyMap(raw)['coins']} Coin / +${dyMap(raw)['xp']} XP\n${dyMap(c.rewards['milestone_${dyMap(raw)['count']}'])['settled']==true?'Ödül alındı':c.catalog.dynasties.where((d) => c.seals.containsKey(d.id)).length >= dyMap(raw)['count']?'Ödül eşitlemesi bekliyor':'Keşfetmeye devam et'}')),
           ]))),
+        PitchPanel(key:const ValueKey('dy-expansion-final'),child:Row(children:[
+          Icon(c.sealCount>=c.catalog.dynasties.length ? Icons.verified : Icons.flag_outlined),const SizedBox(width:12),
+          Expanded(child:Text('Tüm ${c.catalog.dynasties.length} mühür · +${storyFinals['dynasties']!.coins} Coin / +${storyFinals['dynasties']!.xp} XP\n'
+            '${c.rewards.containsKey('expansion_final') ? 'Ödül alındı' : 'Atlasın tamamı için bir kez'}')),
+        ])),
+        const SizedBox(height:8),
         PitchPanel(key:const ValueKey('dy-historian'),child:Text(c.catalog.dynasties.where((d) => d.data['expansion'] == null && c.seals.containsKey(d.id)).length==16?'Futbol Tarihçisi · 16/16 mühür tamamlandı':'Futbol Tarihçisi · ilk 16 dönemin mühürleriyle açılır')),
       ],
       for(final chapter in [1,2]) ...[
@@ -201,7 +209,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
         icon:c.results.containsKey(id)?Icons.check_circle:c.available(c.catalog.byId(id))?_icon(c.catalog.byId(id).mechanic):Icons.lock_outline,
         onTap:c.busy||!c.available(c.catalog.byId(id))?null:()=>_open(id))),
       const SizedBox(height:12),Text('${t.text('title')} · ${t.label}',style:Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height:10),const Text('Ücretsiz ipucu ve sınırsız deneme. Seçimlerin cihazda saklanır; ilerleme ve ödül bağlantı olduğunda doğrulanır.'),
+      const SizedBox(height:10),const Text('İsteğe bağlı destek ve sınırsız deneme. Seçimlerin cihazda saklanır; ilerleme ve ödül bağlantı olduğunda doğrulanır.'),
       if (t.data['expansion'] != null) const Padding(padding:EdgeInsets.only(top:12),child:Text('İlk başarı: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
       const SizedBox(height:20),FilledButton.icon(key:const ValueKey('dy-start'),onPressed:c.busy?null:(){_startWithEnergy();_top();},icon:const Icon(Icons.play_arrow),label:Text('${t.text('title')} görevine başla')),
     ];
@@ -221,6 +229,9 @@ class _DynastiesPageState extends State<DynastiesPage> {
       if(t.interaction=='order') ..._order(c)
       else if(t.interaction=='match') ..._matching(c)
       else ..._choices(c),
+      StorySupportPanel(mode: 'dynasties', targetId: t.id, disabled: c.busy,
+        knownBasic: c.hintOpen ? t.text('hint') : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       const SizedBox(height:12),TextButton.icon(key:const ValueKey('dy-hint'),onPressed:c.hint,icon:const Icon(Icons.lightbulb_outline),label:const Text('Ücretsiz ipucu')),
       if(c.hintOpen) PitchPanel(child:Text(t.text('hint'))),
       if(c.hints.containsKey(t.id)) Padding(padding:const EdgeInsets.only(top:12),child:PitchPanel(child:Text(dyMap(c.hints[t.id])['text']?.toString()??''))),
@@ -231,6 +242,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
           actions:[TextButton(onPressed:()=>Navigator.pop(dialog,false),child:const Text('Vazgeç')),FilledButton(onPressed:()=>Navigator.pop(dialog,true),child:const Text('Aç'))]));
         if(yes==true&&mounted&&identical(c,_c)&&c.activeId==taskId) await c.buyHint(maxPrice:price);
       },child:Text(c.pro?'Pro · Ek yardım':'Ek yardım · 6 Coin')),
+      ])),
       const SizedBox(height:14),FilledButton(key:const ValueKey('dy-submit'),onPressed:c.busy||!c.canSubmit?null:()async{await c.submit();if(mounted&&c.phase=='result')_top();},child:Text(c.busy?'Doğrulanıyor…':'Cevabı kontrol et')),
     ];
   }
@@ -280,6 +292,8 @@ class _DynastiesPageState extends State<DynastiesPage> {
     final t=c.active!,d=c.catalog.dynasty(t.dynastyId),r=dyMap(c.results[t.id]),reward=dyMap(c.rewards[t.id]);
     final sealed=c.seals.containsKey(d.id);
     return [
+      StorySupportPanel(mode: 'dynasties', targetId: t.id, resultOnly: true, legacy: const SizedBox.shrink()),
+
       _hero(sealed?'HANEDANLIK MÜHRÜ KAZANILDI':'YÜKSELİŞ TAMAMLANDI',d.text('club'),'${d.text('period')} · ${t.text('title')}',
         footer:Text(sealed?'2 / 2 görev · Atlas kaydı açıldı':'1 / 2 görev · Zirve seni bekliyor',style:const TextStyle(color:Color(0xFFF3CF87)))),
       const SizedBox(height:20),PitchPanel(key:const ValueKey('dy-result'),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[

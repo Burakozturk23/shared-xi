@@ -12,19 +12,19 @@ const start = (h, mode, extra = {}) =>
 const act = (h, s, extra) => h.call("actThreeMode", {version, mode: s.mode, sessionId: s.id,
   revision: s.revision, requestId: id(), ...extra});
 async function fill(h, s, n = 11) {
-  const t = (s.mode === "coach_xi" ? catalog.coaches : catalog.letters).find((x) => x.id === s.targetId);
+  const t = catalog.letters.find((x) => x.id === s.targetId);
   const used = new Set();
   for (let slot = 0; slot < n; slot++) {
     const p = catalog.players.find((p) => !used.has(p.id) && p.position === s.slots[slot].position &&
-      (s.mode === "coach_xi" ? t.links[p.id] : p.letters.includes(t.letter)));
+      p.letters.includes(t.letter));
     used.add(p.id); s = (await act(h, s, {action: "place", slot, playerId: p.id})).session;
   }
   return s;
 }
-test("every published letter/coach formation and vault is solvable with distinct known positions", () => {
+test("every published letter formation and vault is solvable with distinct known positions", () => {
   assert.equal(catalog.players.length, 36391);
-  for (const t of [...catalog.coaches, ...catalog.letters]) {
-    const pool = catalog.players.filter((p) => t.letter ? p.letters.includes(t.letter) : t.links[p.id]);
+  for (const t of catalog.letters) {
+    const pool = catalog.players.filter((p) => p.letters.includes(t.letter));
     for (const f of t.formations) {
       for (const pos of ["GK", "DEF", "MID", "FWD"]) {
         assert.ok(pool.filter((p) => p.position === pos).length >=
@@ -39,10 +39,18 @@ test("every published letter/coach formation and vault is solvable with distinct
     assert.ok(p.quality.compatibleClubs >= 2 && p.quality.compatibleLeagueClubs >= 2);
   }
 });
+test("Hoca 11 is removed: its mode, catalog and mastery callable are gone", async () => {
+  assert.equal(catalog.coaches, undefined);
+  assert.equal(catalog.policy.daily.coach_xi, undefined);
+  const h = harness();
+  await assert.rejects(h.call("getThreeMode", {mode: "coach_xi"}), {code: "invalid-argument"});
+  await assert.rejects(start(h, "coach_xi"), {code: "failed-precondition"});
+  assert.equal(h.context.exports.claimCoachMastery, undefined);
+});
 test("all three entrypoints require auth; general search does not leak correct answers via filtering", async () => {
   const h = harness();
   await assert.rejects(h.call("getThreeMode", {mode: "letter11"}, null), {code: "unauthenticated"});
-  for (const mode of ["coach_xi", "letter11"]) {
+  for (const mode of ["letter11"]) {
     const r = await h.call("searchThreeMode", {version, mode, query: "Lionel Messi"});
     assert.ok(r.results.some((p) => p.name.includes("Messi")));
   }
@@ -66,7 +74,7 @@ test("medals settle once across entries and preserve RTDB state", async () => {
 });
 test("energy charges once only after valid content, resumes free, daily first free and retry costs one", async () => {
   const h = harness({runtimeConfig: {energy: {enabled: true, percent: 100,
-    sessionModes: ["coach_xi", "letter11", "squad_vault"]}}}, {omitEmptyObjects: true});
+    sessionModes: ["letter11", "squad_vault"]}}}, {omitEmptyObjects: true});
   const request = {version, mode: "letter11", entry: "daily", requestId: id()};
   let s = (await h.call("startThreeMode", request)).session;
   assert.equal(s.dailyOfficial, true); assert.equal(s.energyCharged, false);
@@ -76,20 +84,16 @@ test("energy charges once only after valid content, resumes free, daily first fr
   assert.equal(s.energyCharged, true); assert.equal(h.read("economyState/alice/energy/balance"), 5);
   await h.call("resumeThreeMode", {version, mode: s.mode, sessionId: s.id});
   await act(h, s, {action: "finish"});
-  await assert.rejects(start(h, "coach_xi", {difficulty: "hard"}), {code: "failed-precondition"});
+  await assert.rejects(start(h, "letter11", {entry: "archive", target: "missing"}), {code: "failed-precondition"});
   assert.equal(h.read("economyState/alice/energy/balance"), 5);
   h.setTime("2026-09-20T21:00:01Z");
   s = (await start(h, "letter11", {entry: "daily"})).session;
   assert.equal(s.dailyOfficial, true);
 });
-test("known wrong letter costs one; unresolved identities and unverified coach links do not", async () => {
-  const h = harness(); let s = (await start(h, "coach_xi")).session;
-  const coach = catalog.coaches.find((x) => x.id === s.targetId);
-  const other = catalog.players.find((p) => p.position && !coach.links[p.id]);
-  s = (await act(h, s, {action: "place", slot: 0, playerId: other.id})).session;
-  assert.equal(s.wrong, 0); assert.match(s.feedback, /doğrulanmadı/);
+test("known wrong letter costs one; unresolved identities do not", async () => {
+  const h = harness(); let s = (await start(h, "letter11")).session;
   await assert.rejects(act(h, s, {action: "place", slot: 0, playerId: -999999}), {code: "invalid-argument"});
-  s = (await start(h, "letter11")).session;
+  assert.equal(s.wrong, 0);
   const t = catalog.letters.find((t) => t.id === s.targetId);
   const wrong = catalog.players.find((p) => p.position && !p.letters.includes(t.letter));
   s = (await act(h, s, {action: "place", slot: 0, playerId: wrong.id})).session;
@@ -128,16 +132,6 @@ test("vault: three flags, five guesses, variants share tiers", async () => {
   await assert.rejects(act(h, s, {action: "guess", clubId: wrong[0].id}), {code: "already-exists"});
   for (const c of wrong.slice(1)) s = (await act(h, s, {action: "guess", clubId: c.id})).session;
   assert.equal(s.finished, true); assert.equal(s.result.coins, 0); assert.equal(s.remaining, 0);
-});
-test("coach mastery gives fixed special reward once, later choice cannot duplicate it", async () => {
-  const h = harness(); const coach = catalog.coaches.find((c) => c.avatarId);
-  let s = (await start(h, "coach_xi", {entry: "archive", target: coach.id})).session;
-  s = await fill(h, s); s = (await act(h, s, {action: "finish"})).session;
-  assert.equal(s.result.mastery, true);
-  await h.call("claimCoachMastery", {version, mode: "coach_xi", target: coach.id, choice: "coins"});
-  await h.call("claimCoachMastery", {version, mode: "coach_xi", target: coach.id, choice: "avatar"});
-  assert.equal(h.read("economyState/alice/balances/coins"), 40 + coach.avatarCoins);
-  assert.equal(h.read("economyState/alice/inventory/" + coach.avatarId), null);
 });
 test("hint receipts are session bound, at most two and watching alone preserves mastery", async () => {
   const h = harness({}, {omitEmptyObjects: true});
@@ -206,14 +200,8 @@ test("stale concurrent picks cannot overwrite a newer revision; late receipt can
     context: {sessionId: s.id, mode: s.mode, credit: 0}});
   assert.equal(h.read(`economyState/alice/threeModes/sessions/${next.id}/adCredits`), 0);
 });
-test("already owned coach avatar converts to frozen coins, distinct vault archive bonus is one-time", async () => {
-  const h = harness(); const c = catalog.coaches.find((c) => c.avatarId);
-  h.seed(`economyState/alice/inventory/${c.avatarId}`, {itemId: c.avatarId, itemType: "avatar", quantity: 1});
-  let s = (await start(h, "coach_xi", {entry: "archive", target: c.id})).session;
-  s = await fill(h, s); await act(h, s, {action: "finish"});
-  await h.call("claimCoachMastery", {version, mode: s.mode, target: c.id, choice: "avatar"});
-  assert.equal(h.read("economyState/alice/balances/coins"), 40 + c.avatarCoins);
-  let total = 0;
+test("distinct vault archive bonus is one-time", async () => {
+  const h = harness(); let s; let total = 0;
   for (let i = 0; i < 6; i++) {
     s = (await start(h, "squad_vault")).session;
     const target = Number(h.read(`economyState/alice/threeModes/sessions/${s.id}/target`));
@@ -253,4 +241,156 @@ test("a previous-version daily is closed without blocking normal games and colle
   assert.ok(status.entries.length > 0);
   await assert.rejects(start(h, "letter11", {entry: "daily"}), {code: "failed-precondition"});
   assert.ok((await start(h, "letter11")).session);
+});
+
+test("Kadro Kasası: a duplicate V4 row of the right club wins, and is never listed", async () => {
+  const az = catalog.clubs.find((c) => c.canonicalId === 1090);
+  assert.ok(az && !az.searchable);
+  const h = harness();
+  h.seed("economyState/alice/threeModes/collection/squad_vault__1090", {solved: true, best: 1});
+  let s = (await start(h, "squad_vault", {entry: "archive", target: "1090"})).session;
+  s = (await act(h, s, {action: "guess", clubId: az.id})).session;
+  assert.equal(s.finished, true); assert.equal(s.won, true); assert.equal(s.wrong, 0);
+  const hits = (await h.call("searchThreeMode", {version, mode: "squad_vault", query: "AZ Alkmaar"})).results;
+  assert.deepEqual(hits.map((c) => c.id), [1090]);
+});
+
+test("Kadro Kasası search: playable clubs only, best known first, common short names", async () => {
+  const h = harness();
+  const find = async (query) =>
+    (await h.call("searchThreeMode", {version, mode: "squad_vault", query})).results.map((c) => c.name);
+  assert.equal((await find("man utd"))[0], "Manchester United");
+  assert.equal((await find("real"))[0], "Real Madrid");
+  assert.equal((await find("spurs"))[0], "Tottenham Hotspur");
+  assert.ok(!(await find("kulupsuz")).length);
+  const fc = (await find("fc")).slice(0, 30);
+  assert.ok(fc.includes("FC Barcelona"));
+});
+
+test("Kadro Kasası random play reaches unsolved clubs first", async () => {
+  const h = harness();
+  const open = catalog.vaultClubs[0];
+  for (const id of catalog.vaultClubs.slice(1)) {
+    h.seed(`economyState/alice/threeModes/collection/squad_vault__${id}`, {solved: true, best: 1});
+  }
+  for (let i = 0; i < 3; i++) {
+    const s = (await start(h, "squad_vault")).session;
+    assert.equal(Number(h.read(`economyState/alice/threeModes/sessions/${s.id}/target`)), open);
+    await act(h, s, {action: "guess", clubId: catalog.clubs.find((c) => c.searchable && c.id !== open).id});
+    for (let g = 0; g < 4; g++) {
+      const cur = (await h.call("resumeThreeMode", {version, mode: "squad_vault", sessionId: s.id})).session;
+      if (cur.finished) break;
+      const used = new Set(h.read(`economyState/alice/threeModes/sessions/${s.id}/guesses`));
+      const wrong = catalog.clubs.find((c) => c.searchable && c.id !== open && !used.has(c.id));
+      await act(h, cur, {action: "guess", clubId: wrong.id});
+    }
+  }
+});
+
+test("Today's vault is one puzzle for everyone, hides the club and pays the daily bonus once", async () => {
+  const h = harness();
+  const status = await h.call("getThreeMode", {mode: "squad_vault"});
+  assert.ok(status.daily.day); assert.equal(status.daily.target, undefined);
+  let s = (await start(h, "squad_vault", {entry: "daily"})).session;
+  assert.equal(s.dailyOfficial, true); assert.ok(["easy", "medium", "hard"].includes(s.difficulty));
+  const target = Number(h.read(`economyState/alice/threeModes/sessions/${s.id}/target`));
+  s = (await act(h, s, {action: "guess", clubId: target})).session;
+  // 5 stars: 25 vault coins + the daily 10.
+  assert.equal(s.result.coins, 25 + catalog.policy.daily.squad_vault.coins);
+  const again = (await start(h, "squad_vault", {entry: "daily"})).session;
+  assert.equal(again.dailyOfficial, false);
+  assert.equal(Number(h.read(`economyState/alice/threeModes/sessions/${again.id}/target`)), target);
+});
+
+test("Kadro Kasası variants differ: three formations, at most three shared players per club", () => {
+  const byClub = new Map();
+  for (const p of catalog.puzzles) byClub.set(p.clubId, [...byClub.get(p.clubId) || [], p]);
+  for (const list of byClub.values()) {
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        assert.ok(list[i].players.filter((id) => list[j].players.includes(id)).length <= 3);
+      }
+    }
+  }
+  assert.deepEqual(new Set(catalog.puzzles.map((p) => p.formation)), new Set(["433", "4231", "352"]));
+  assert.ok(catalog.puzzles.every((p) => ["easy", "medium", "hard"].includes(p.difficulty)));
+  for (const p of catalog.puzzles) {
+    assert.deepEqual(p.players.map((id) => players.get(id).position), catalog.formations[p.formation]);
+  }
+});
+
+test("Harf 11 letter rule: the server reads the same letters the catalog was built with", () => {
+  const {letterWord} = require("../three_modes");
+  const alphabet = catalog.letters.map((l) => l.letter);
+  for (const p of catalog.players) {
+    for (const letter of alphabet) {
+      assert.equal(!!letterWord(p, letter), p.letters.includes(letter), `${p.name} ${letter}`);
+    }
+  }
+  const byName = (n) => catalog.players.find((p) => p.name === n);
+  assert.deepEqual(byName("Virgil van Dijk").letters, ["D", "V"]);
+  assert.ok(byName("Kevin De Bruyne").letters.includes("D"));
+  assert.ok(byName("Selcuk Inan").letters.includes("İ"));
+  assert.ok(alphabet.includes("W"));
+});
+
+test("Harf 11 says whether the letter or the position was wrong, and why a pick fits", async () => {
+  const h = harness();
+  const t = catalog.letters.find((l) => l.letter === "K");
+  let s = (await start(h, "letter11", {entry: "archive", target: t.id})).session;
+  const pos = s.slots[0].position;
+  const noLetter = catalog.players.find((p) => p.position === pos && !p.letters.includes("K"));
+  s = (await act(h, s, {action: "place", slot: 0, playerId: noLetter.id})).session;
+  assert.match(s.feedback, /K ile başlamıyor/);
+  const wrongPos = catalog.players.find((p) => p.position && p.position !== pos && p.letters.includes("K"));
+  s = (await act(h, s, {action: "place", slot: 0, playerId: wrongPos.id})).session;
+  assert.match(s.feedback, /bu yer .* için/);
+  const right = catalog.players.find((p) => p.position === pos && p.name.startsWith("K") && p.letters.includes("K"));
+  s = (await act(h, s, {action: "place", slot: 0, playerId: right.id})).session;
+  assert.match(s.feedback, /^Doğru: .* · ".+" K ile başlıyor\.$/);
+  assert.equal(s.wrong, 2);
+});
+
+test("Harf 11 daily letter is never a hard one; random play reaches unmastered letters first", async () => {
+  const hard = new Set(catalog.letters.filter((l) => l.difficulty === "hard").map((l) => l.id));
+  const h = harness();
+  for (let d = 0; d < 40; d++) {
+    h.setTime(Date.parse("2026-11-01T09:00:00Z") + d * 86400000);
+    const status = await h.call("getThreeMode", {mode: "letter11"});
+    assert.ok(!hard.has(status.daily.target), status.daily.target);
+  }
+  const g = harness();
+  const open = catalog.letters.find((l) => l.difficulty === "medium");
+  for (const l of catalog.letters) {
+    if (l.id === open.id) continue;
+    g.seed(`economyState/alice/threeModes/collection/letter11__${l.id}`, {mastery: true, best: 11});
+  }
+  for (let i = 0; i < 3; i++) {
+    const s = (await start(g, "letter11")).session;
+    assert.equal(s.targetId, open.id);
+    await act(g, s, {action: "finish"});
+  }
+});
+
+test("Harf Pasaportu pays at five completed letters, once", async () => {
+  const h = harness();
+  const done = catalog.letters.slice(0, 4);
+  for (const l of done) h.seed(`economyState/alice/threeModes/collection/letter11__${l.id}`, {best: 11, solved: true});
+  const fifth = catalog.letters.find((l) => l.difficulty === "easy" && !done.includes(l));
+  let s = (await start(h, "letter11", {entry: "archive", target: fifth.id})).session;
+  s = await fill(h, s); s = (await act(h, s, {action: "finish"})).session;
+  const first = catalog.policy.passport[0];
+  assert.equal(s.result.passport, 5);
+  assert.equal(s.result.coins, 40 + first.coins);
+  s = (await start(h, "letter11", {entry: "archive", target: fifth.id})).session;
+  s = await fill(h, s); s = (await act(h, s, {action: "finish"})).session;
+  assert.equal(s.result.passport, undefined); assert.equal(s.result.coins, 0);
+});
+
+test("Harf 11 name-pattern hint shows the matching word's start and length", async () => {
+  const h = harness();
+  const t = catalog.letters.find((l) => l.letter === "M");
+  let s = (await start(h, "letter11", {entry: "archive", target: t.id})).session;
+  s = (await act(h, s, {action: "hint", hint: "shape", slot: 0})).session;
+  assert.match(s.feedback, /: "M._*" \(\d+ harf\)$/);
 });

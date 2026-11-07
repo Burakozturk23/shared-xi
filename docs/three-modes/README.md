@@ -1,4 +1,6 @@
-# Hoca 11, Harf 11, Kadro Kasası — PDF uygulaması
+# Harf 11, Kadro Kasası — PDF uygulaması
+
+> Hoca 11 2026-10-31'de uygulamadan kaldırıldı: mod, sunucu kuralları, katalog bölümü, görevler ve destek kayıtları. Aşağıdaki Hoca 11 sütunu tarihsel kayıttır.
 
 Üç kaynak: **Hoca_11(1).pdf**, **Harf_11(1).pdf**, **Kadro_Kasasi(1).pdf** (her biri 5 sayfa).
 Bu değişiklik `codex/home-profile-hub` üzerine kuruludur. Önceki ana sayfa/enerji/ekonomi işlerini içerir; bağımsız eski `main` üzerine dosya kopyalayarak kurulmaz.
@@ -27,9 +29,8 @@ Bu değişiklik `codex/home-profile-hub` üzerine kuruludur. Önceki ana sayfa/e
 
 ## Veri kapsamı ve sınırlar
 
-`data-audit.json` sayıları otomatik üretir: **36.391 futbolcu**, **27 harf**, **7 hoca**, **8 lig / 96 kulüp / 285 kasa**.
+`data-audit.json` sayıları otomatik üretir: **36.391 futbolcu**, **27 harf**, **8 lig / 96 kulüp / 285 kasa**.
 
-Hoca 11 bağlantıları mevcut doğrulanmış StatsBomb/Open Data maç kayıtlarından gelir; hocanın tüm kariyerini kapsamaz. Klopp, Zidane, Ferguson, Guardiola, Allegri, Luis Enrique ve Pochettino açılır. Aynı kulüpte farklı tarihlerde bulunma hiçbir zaman kanıt sayılmaz. Bilinmeyen bağlar reddedilirken yanlış artırılmaz. Yeterli doğrulanmış dönem havuzu olmadığından zor hoca seviyesi kapalıdır. Her kabul edilen bağın kulüp, tarih ve kaynak bağlantısı sonuç ekranındadır.
 
 Kasa kulüp ilişkilerinde ana V4 veritabanının pozitif `player_club_stats.appearances` alanı kullanılır. Bu alanların doğruluğu kaynak veritabanı kapsamındadır; bütün kariyerler harici kaynakla yeniden denetlenmiş değildir. Kadrolar aynı sezona ait değildir. Lig etiketleri `v4-2026-10-05.1` sürümünden alınır, güncel lig iddiası değildir. İlk üç bayrak hem genel havuzda hem kendi liginde birden fazla kulüple uyumludur; böylece tek başına cevabı ele veren veya aşırı belirsiz üçlüler elenir.
 

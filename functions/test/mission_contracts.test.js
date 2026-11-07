@@ -117,13 +117,20 @@ test("mission reward claims are server-defined and idempotent", () => {
   assert.equal(block.includes("(request.data || {}).progress"), false);
 });
 
-test("mission daily state resets by server Istanbul day", () => {
-  const block = missionBlock();
-
-  assert.ok(block.includes("lbProgressionDateKey(currentTime)"));
-  assert.ok(block.includes("sameDay"));
-  assert.ok(block.includes("eventDay !== currentDay"));
-  assert.equal(block.includes("(request.data || {}).dateKey"), false);
+test("mission daily state resets at Istanbul midnight without losing late career results", async () => {
+  const {harness} = require("./support/economy_harness");
+  const h = harness({users: {alice: {displayName: "Alice"}}});
+  const old = Date.parse("2026-10-25T20:59:59Z");
+  h.setTime(old + 2000);
+  await h.context.lbMissionRecordRanked(h.db, "alice", "club_club", "old", "win", old);
+  assert.equal(h.read("missionState/alice/daily/dateKey"), "2026-10-26");
+  assert.equal(h.read("missionState/alice/daily/counters/rankedWins"), 0);
+  assert.equal(h.read("missionState/alice/weekly/counters/rankedWins"), null);
+  assert.equal(h.read("missionState/alice/general/counters/rankedWins"), 1);
+  await h.context.lbMissionRecordRanked(h.db, "alice", "club_club", "new", "win", h.now);
+  assert.equal(h.read("missionState/alice/daily/counters/rankedWins"), 1);
+  assert.equal(h.read("missionState/alice/weekly/counters/rankedWins"), 1);
+  assert.equal(h.read("missionState/alice/general/counters/rankedWins"), 2);
 });
 
 test("mission state is private and projection is owner read-only", () => {

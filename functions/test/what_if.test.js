@@ -8,8 +8,14 @@ const {defaults} = require("../economy_config");
 const unit = "ca-app-pub-1234567890123456/1234567890";
 const proof = (id, routeId = "real") => ({version: 1, scenarioId: id, routeId,
   answers: scenarios[id].routes.find((r) => r.id === routeId).task.answerKeys});
-test("What If catalog agrees with app: 24 stories, 48 route tasks, five mechanics", () => {
-  assert.deepEqual(catalog, require("../../assets/data/what_if_v2.json"));
+test("What If app asset is the catalog without answers, explanations or endings", () => {
+  const app = require("../../assets/data/what_if_v2.json");
+  app.scenarios.forEach((s, i) => s.routes.forEach((r, k) => {
+    const full = catalog.scenarios[i].routes[k];
+    assert.ok(!("ending" in r) && !("answerKeys" in r.task) && !("explanation" in r.task));
+    assert.equal(r.task.serverValidated, true); assert.equal(r.task.requiredCount, full.task.answerKeys.length);
+    assert.deepEqual(r.task.options, full.task.options);
+  }));
   assert.equal(catalog.scenarios.length, 24);
   assert.equal(new Set(catalog.scenarios.flatMap((s) => s.routes.map((r) => r.task.type))).size, 5);
 });
@@ -129,4 +135,12 @@ test("Pro grants hints without ad unit; no-fill and cancellation grant nothing",
   assert.equal(p.pro, true);
   assert.equal(h.read("whatIfState/alice/hints/messi__real/ad"), true);
   assert.equal(h.read("economyState/alice"), null);
+});
+test("a finished route returns its explanation and ending; unfinished routes stay hidden", async () => {
+  const h = harness(); const id = Object.keys(scenarios)[0];
+  const s = await h.call("submitWhatIf", proof(id));
+  const real = scenarios[id].routes.find((r) => r.id === "real");
+  const alt = scenarios[id].routes.find((r) => r.id === "alternate");
+  assert.deepEqual(s.results[real.task.id], {story: real.task.explanation, ending: real.ending});
+  assert.ok(!(alt.task.id in s.results));
 });

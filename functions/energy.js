@@ -6,10 +6,13 @@ const catalog = require("./energy_catalog");
 const fail = (code, message) => {
   throw new RewardError(code, message);
 };
+// Faz 4c: Pro depot. With runtimeConfig/energy.depot on, the daily Pro +2 goes to a
+// depot outside the capacity (at most 20, never expires); play spends normal energy first.
+const DEPOT_CAP = 20;
 const safeId = (id) => typeof id === "string" && /^[a-zA-Z0-9_-]{1,100}$/.test(id);
 const requestId = (id) => typeof id === "string" && /^[a-f0-9]{32}$/.test(id);
 function refreshed(raw, time) {
-  const e = {balance: policy.capacity, refillAt: time, sessions: {}, unlocked: {}, receipts: {}, ...raw};
+  const e = {balance: policy.capacity, refillAt: time, sessions: {}, unlocked: {}, receipts: {}, depot: 0, ...raw};
   e.sessions ||= {}; e.unlocked ||= {}; e.receipts ||= {};
   if (e.balance < policy.capacity) {
     const n = Math.max(0, Math.floor((time - e.refillAt) / policy.refillMs));
@@ -34,7 +37,7 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     const r = {...policy.rollout, ...await getRollout()};
     const bucket = parseInt(crypto.createHash("sha256").update(uid).digest("hex").slice(0, 8), 16) % 100;
     return {active: r.enabled === true && bucket < Math.min(100, Math.max(0, r.percent)),
-      minClientVersion: r.minClientVersion,
+      minClientVersion: r.minClientVersion, depot: r.depot === true,
       sessionModes: Array.isArray(r.sessionModes) ? r.sessionModes.filter((m) => policy.sessionModes.includes(m)) : []};
   }
   async function change(uid, fn) {
@@ -59,16 +62,21 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     await project(db, uid, state);
     return state.energy;
   }
-  function view(e, active, pro) {
-    const reserved = held(e);
+  function view(e, active, pro, depot = false) {
+    const reserved = held(e); const stored = depot ? e.depot || 0 : 0;
     return {ok: true, enabled: active, serverNow: now(), capacity: policy.capacity,
-      balance: e.balance, available: e.balance - reserved, reserved,
+      balance: e.balance, available: e.balance + stored - reserved, reserved,
+      depot: stored, depotCap: depot ? DEPOT_CAP : 0, depotEnabled: depot,
       nextRefillAt: e.balance < policy.capacity ? e.refillAt + policy.refillMs : null,
-      daily: e.daily, pro, packages: policy.packages, version: policy.version};
+      daily: e.daily, pro, version: policy.version,
+      // Whether each pack fits now: a pack never fills past capacity.
+      packages: Object.fromEntries(Object.entries(policy.packages).map(([id, p]) => [id,
+        {...p, fits: e.balance + p.energy <= policy.capacity, freeSlots: Math.max(0, policy.capacity - e.balance)}]))};
   }
   async function status(uid) {
     const e = await change(uid, () => {});
-    return view(e, (await enabled(uid)).active, await isPro(uid));
+    const r = await enabled(uid);
+    return view(e, r.active, await isPro(uid), r.depot);
   }
   async function start(uid, input) {
     const rollout = await enabled(uid);
@@ -101,7 +109,7 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
       }
       // Two devices opening the same story share one hold.
       if (key && Object.values(e.sessions).some((s) => s.key === key && s.status === "reserved")) return;
-      if (e.balance - held(e) < 1) {
+      if (e.balance + (rollout.depot ? e.depot || 0 : 0) - held(e) < 1) {
         fail("resource-exhausted",
             "Enerjin bitti. Günlük oyunlar ücretsiz; enerji saatte bir yenilenir.");
       }
@@ -135,9 +143,14 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
         return;
       }
       if (!s.key || !e.unlocked[s.key]) {
-        if (e.balance < 1) fail("resource-exhausted", "Enerji yetersiz.");
-        if (e.balance === policy.capacity) e.refillAt = time;
-        e.balance -= 1;
+        if (e.balance >= 1) {
+          if (e.balance === policy.capacity) e.refillAt = time;
+          e.balance -= 1;
+        } else if (rollout.depot && e.depot >= 1) {
+          e.depot -= 1; // normal energy first, then the Pro depot
+        } else {
+          fail("resource-exhausted", "Enerji yetersiz.");
+        }
       }
       s.status = "confirmed"; s.confirmedAt = time; s.expiresAt = time + policy.resumeMs;
       if (s.key) e.unlocked[s.key] ||= {at: time};
@@ -179,8 +192,9 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
       }
       if (e.daily.purchases >= policy.purchaseLimit) fail("resource-exhausted", "Günlük 2 dolum hakkını kullandın.");
       if (e.balance + offer.energy > policy.capacity) {
-        fail("failed-precondition",
-            "Paketin tamamı için enerji alanı yok.");
+        const free = Math.max(0, policy.capacity - e.balance);
+        fail("failed-precondition", `Paket için yeterli boş yer yok: ${offer.energy} boş yer gerekiyor, ` +
+          `şu an ${free} var.`);
       }
       if (s.balances.coins < offer.coins) fail("failed-precondition", "Link Coin yetersiz.");
       const before = s.balances.coins;
@@ -194,9 +208,15 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
     return status(uid);
   }
   async function proBonus(uid) {
-    if (!(await enabled(uid)).active || !await isPro(uid)) fail("permission-denied", "Etkin Pro üyeliği gerekli.");
+    const rollout = await enabled(uid);
+    if (!rollout.active || !await isPro(uid)) fail("permission-denied", "Etkin Pro üyeliği gerekli.");
     await change(uid, (e, s, time) => {
       if (e.daily.pro) return;
+      if (rollout.depot) {
+        if ((e.depot || 0) >= DEPOT_CAP) fail("failed-precondition", `Pro deposu dolu (${DEPOT_CAP}).`);
+        e.depot = Math.min(DEPOT_CAP, (e.depot || 0) + policy.proAmount); e.daily.pro = true;
+        return;
+      }
       if (e.balance + policy.proAmount > policy.capacity) {
         fail("failed-precondition",
             "Bonus için en az 2 enerji alanı gerekli.");
@@ -249,4 +269,4 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
   return {status, start, confirm, resume, cancel, purchase, proBonus, prepareReward, settleReward, requireStory,
     enabled};
 }
-module.exports = {createService, refreshed, held, policy};
+module.exports = {DEPOT_CAP, createService, refreshed, held, policy};

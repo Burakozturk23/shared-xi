@@ -8,21 +8,14 @@ class BrandMark extends StatelessWidget {
   final String? semanticLabel;
   @override
   Widget build(BuildContext context) {
-    final light = Theme.of(context).brightness == Brightness.light;
+    // The mark is a self-contained dark tile, so it reads on both themes.
     return Semantics(
       label: semanticLabel,
       image: true,
       excludeSemantics: true,
-      child: Container(
+      child: SizedBox(
         width: size,
         height: size,
-        padding: EdgeInsets.all(light ? size * .12 : 0),
-        decoration: light
-            ? BoxDecoration(
-                color: PitchColors.dark.background,
-                borderRadius: BorderRadius.circular(size * .24),
-              )
-            : null,
         child: Image.asset(
           'assets/brand/ortak_saha_mark.png',
           fit: BoxFit.contain,

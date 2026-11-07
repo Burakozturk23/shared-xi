@@ -94,8 +94,12 @@ class ProgressFake extends ProgressGateway {
     reads++;
     return missionData ?? missionFixture();
   }
+
   @override
-  Future<MissionClaimResult> claimMission(String id) async {
+  Future<MissionClaimResult> claimMission(
+    String id, {
+    String periodKey = '',
+  }) async {
     claims++;
     return pending!.future;
   }
@@ -127,6 +131,43 @@ class BadgeFake extends BadgesGateway {
       alreadyClaimed: false,
       amount: 25,
       coins: 125,
+    );
+  }
+}
+
+/// Two earned badges with rewards waiting, and progress on two locked ones.
+class LadderBadgeFake extends BadgesGateway {
+  final claimed = <String>[];
+  @override
+  bool get connected => true;
+  AchievementProgress _p(String id, int value, int target) =>
+      AchievementProgress(
+        id: id,
+        value: value,
+        rawValue: value,
+        target: target,
+        unlocked: value >= target,
+      );
+  @override
+  Future<BadgeSnapshot> load() async => BadgeSnapshot(
+    {
+      'first_victory': _p('first_victory', 1, 1),
+      'winner_5': _p('winner_5', 5, 5),
+      'winner_10': _p('winner_10', 7, 10),
+      'loto_wins_1': _p('loto_wins_1', 0, 1),
+      'friends_5': _p('friends_5', 2, 5),
+    },
+    {},
+    {'first_victory': 15, 'winner_5': 20, 'winner_10': 25},
+  );
+  @override
+  Future<EconomyClaimResult> claim(String id) async {
+    claimed.add(id);
+    return EconomyClaimResult(
+      granted: true,
+      alreadyClaimed: false,
+      amount: id == 'winner_5' ? 20 : 15,
+      coins: 100,
     );
   }
 }
@@ -299,7 +340,11 @@ void main() {
       expect(calls, isEmpty);
       await p.setHaptics(true);
       await AppFeedback.answer(correct: false);
-      expect(calls.map((e) => e.method), ['HapticFeedback.vibrate']);
+      // A wrong answer is two short pulses.
+      expect(calls.map((e) => e.method), [
+        'HapticFeedback.vibrate',
+        'HapticFeedback.vibrate',
+      ]);
       calls.clear();
       await p.setHaptics(false);
       await p.setSound(true);
@@ -324,43 +369,87 @@ void main() {
     expect(find.text('Menu language'), findsOneWidget);
   });
   for (final large in [false, true]) {
-    testWidgets('daily mission cards filter, launch correct games and refresh on return $large', (t) async {
-      final g = ProgressFake()..missionData = MissionProfile.fromMap({
-        'daily': [
-          for (final (id, title, target) in [
-            ('daily_ranked_play_3', 'Bugün 3 sıralamalı maç oyna', 3),
-            ('daily_ranked_win_1', 'Bugün 1 sıralamalı maç kazan', 1),
-            ('daily_challenge_1', 'Günlük Mücadeleyi tamamla', 1),
-          ]) {'id': id, 'title': title, 'kind': 'daily', 'target': target,
-            'description': 'Oyununu tamamla, ilerlemeni burada takip et.', 'rewardCoins': 20},
-        ],
-      });
-      final opened = <GameEntry>[];
-      final pending = Completer<void>();
-      final key = await open(t, ProgressionCenterPage(gateway: g,
-        openGame: (_, game) { opened.add(game); return pending.future; }), dark: !large, large: large);
-      await reveal(t, find.text('Ödülü hazır'));
-      await t.tap(find.text('Ödülü hazır')); await t.pumpAndSettle();
-      await reveal(t, find.text('Tüm görevleri göster'));
-      expect(find.text('Henüz hazır ödül yok'), findsOneWidget);
-      await t.tap(find.text('Tüm görevleri göster')); await t.pumpAndSettle();
-      final rankedButton = find.descendant(of: find.byKey(const ValueKey('mission-daily_ranked_play_3')),
-        matching: find.byWidgetPredicate((w) => w is OutlinedButton));
-      await reveal(t, rankedButton);
-      await capture(t, key, 'missions-ranked-${large ? 'light-large' : 'dark-normal'}');
-      await t.tap(rankedButton); await t.pump();
-      expect(opened, [GameCatalog.onlineRanked]);
-      expect(t.widget<OutlinedButton>(rankedButton).onPressed, isNull);
-      pending.complete(); await t.pumpAndSettle();
-      expect(g.reads, 2);
-      await reveal(t, find.text('Günün maçlarına git'));
-      await capture(t, key, 'missions-daily-${large ? 'light-large' : 'dark-normal'}');
-      await t.tap(find.text('Günün maçlarına git')); await t.pumpAndSettle();
-      expect(opened, [GameCatalog.onlineRanked, GameCatalog.daily]);
-      expect(g.reads, 3);
-      expect(g.claims, 0);
-      expect(t.takeException(), isNull);
-    });
+    testWidgets(
+      'daily mission cards filter, launch correct games and refresh on return $large',
+      (t) async {
+        final g = ProgressFake()
+          ..missionData = MissionProfile.fromMap({
+            'daily': [
+              for (final (id, title, target) in [
+                ('daily_ranked_play_3', 'Bugün 3 sıralamalı maç oyna', 3),
+                ('daily_ranked_win_1', 'Bugün 1 sıralamalı maç kazan', 1),
+                ('daily_challenge_1', 'Günlük Mücadeleyi tamamla', 1),
+              ])
+                {
+                  'id': id,
+                  'title': title,
+                  'kind': 'daily',
+                  'target': target,
+                  'description': 'Oyununu tamamla, ilerlemeni burada takip et.',
+                  'rewardCoins': 20,
+                  'routeKey': id == 'daily_challenge_1'
+                      ? 'daily_matches'
+                      : 'online_ranked',
+                  'rewardSp': 30,
+                },
+            ],
+          });
+        final opened = <GameEntry>[];
+        final pending = Completer<void>();
+        final key = await open(
+          t,
+          ProgressionCenterPage(
+            gateway: g,
+            openGame: (_, game) {
+              opened.add(game);
+              return pending.future;
+            },
+          ),
+          dark: !large,
+          large: large,
+        );
+        await reveal(t, find.text('Ödülü hazır'));
+        await t.tap(find.text('Ödülü hazır'));
+        await t.pumpAndSettle();
+        await reveal(t, find.text('Tüm görevleri göster'));
+        expect(find.text('Henüz hazır ödül yok'), findsOneWidget);
+        await t.tap(find.text('Tüm görevleri göster'));
+        await t.pumpAndSettle();
+        final rankedButton = find.descendant(
+          of: find.byKey(const ValueKey('mission-daily_ranked_play_3')),
+          matching: find.byWidgetPredicate((w) => w is OutlinedButton),
+        );
+        await reveal(t, rankedButton);
+        await capture(
+          t,
+          key,
+          'missions-ranked-${large ? 'light-large' : 'dark-normal'}',
+        );
+        await t.tap(rankedButton);
+        await t.pump();
+        expect(opened, [GameCatalog.onlineRanked]);
+        expect(t.widget<OutlinedButton>(rankedButton).onPressed, isNull);
+        pending.complete();
+        await t.pumpAndSettle();
+        expect(g.reads, 2);
+        final dailyButton = find.descendant(
+          of: find.byKey(const ValueKey('mission-daily_challenge_1')),
+          matching: find.byType(OutlinedButton),
+        );
+        await reveal(t, dailyButton);
+        await capture(
+          t,
+          key,
+          'missions-daily-${large ? 'light-large' : 'dark-normal'}',
+        );
+        await t.tap(dailyButton);
+        await t.pumpAndSettle();
+        expect(opened, [GameCatalog.onlineRanked, GameCatalog.daily]);
+        expect(g.reads, 3);
+        expect(g.claims, 0);
+        expect(t.takeException(), isNull);
+      },
+    );
   }
   testWidgets('mission claim locks duplicate taps and uses server result', (
     t,
@@ -416,6 +505,27 @@ void main() {
       expect(g.claims, 1);
       expect(find.text('Ödülü al'), findsNothing);
       expect(find.text('Bu filtrede rozet yok'), findsOneWidget);
+    },
+  );
+  testWidgets(
+    'badges claim every ready reward at once and show next goals and the ladder',
+    (t) async {
+      final g = LadderBadgeFake();
+      await open(t, AchievementsPage(gateway: g));
+      expect(find.text('Sıradaki hedeflerin'), findsOneWidget);
+      final all = find.text('2 ödülü al · +35 Link Coin');
+      await reveal(t, all);
+      await t.tap(all);
+      await t.pumpAndSettle();
+      expect(g.claimed.toSet(), {'first_victory', 'winner_5'});
+      expect(find.text('+35 Link Coin'), findsOneWidget);
+      expect(find.textContaining('ödülü al ·'), findsNothing);
+      final goal = find.text('Formda Günler').first;
+      await reveal(t, goal);
+      await t.tap(goal);
+      await t.pumpAndSettle();
+      expect(find.text('Bu hedefin basamakları'), findsOneWidget);
+      expect(find.text('Zaferin Tadı · 5'), findsOneWidget);
     },
   );
   testWidgets(

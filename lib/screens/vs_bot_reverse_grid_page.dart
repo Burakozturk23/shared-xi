@@ -1,3 +1,4 @@
+import 'supported_grid_page.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/vs_bot_reverse_grid_controller.dart';
@@ -5,15 +6,15 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/grid_player_identity.dart';
 
 /// Bot'a karşı tersten grid — tahmin sayfa içinde (bottom sheet yok).
-class VsBotReverseGridPage extends StatefulWidget {
-  const VsBotReverseGridPage({super.key, this.controllerFactory});
+class _LegacyVsBotReverseGridPage extends StatefulWidget {
+  const _LegacyVsBotReverseGridPage({super.key, this.controllerFactory});
   final VsBotReverseGridController Function()? controllerFactory;
 
   @override
-  State<VsBotReverseGridPage> createState() => _VsBotReverseGridPageState();
+  State<_LegacyVsBotReverseGridPage> createState() => __LegacyVsBotReverseGridPageState();
 }
 
-class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
+class __LegacyVsBotReverseGridPageState extends State<_LegacyVsBotReverseGridPage> {
   late final VsBotReverseGridController _c;
   final TextEditingController _answerController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -345,7 +346,7 @@ class _VsBotReverseGridPageState extends State<VsBotReverseGridPage> {
                   onPressed: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => VsBotReverseGridPage()),
+                        builder: (_) => _LegacyVsBotReverseGridPage()),
                   ),
                   child: Text('YENİDEN OYNA',
                       style: TextStyle(fontWeight: FontWeight.bold)),
@@ -440,5 +441,16 @@ class _GuessBar extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class VsBotReverseGridPage extends StatelessWidget {
+  const VsBotReverseGridPage({super.key, this.controllerFactory});
+  final VsBotReverseGridController Function()? controllerFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyVsBotReverseGridPage(controllerFactory: controllerFactory);
+    return controllerFactory != null ? legacy : SupportedGridPage(mode: 'bot_grid_reverse', legacy: legacy);
   }
 }

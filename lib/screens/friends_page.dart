@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/friend_models.dart';
 import '../services/social/social_gateways.dart';
 import '../widgets/social_ui.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../services/nickname_service.dart';
 import '../widgets/player_safety_actions.dart';
@@ -504,16 +505,30 @@ class _FriendsList extends StatelessWidget {
           separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             if (index == 0)
-              return SocialHero(
-                icon: Icons.groups_outlined,
-                eyebrow: '${rows.length} ARKADAŞ',
-                title: 'Takımın burada.',
-                message: 'İsteklerini yönet, arkadaşlarınla bağlantıda kal.',
-                footer: OutlinedButton.icon(
-                  onPressed: onSearch,
-                  icon: const Icon(Icons.person_add_alt_1),
-                  label: const Text('Arkadaş ekle'),
-                ),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SocialHero(
+                    icon: Icons.groups_outlined,
+                    eyebrow: '${rows.length} ARKADAŞ',
+                    title: 'Takımın burada.',
+                    message:
+                        'İsteklerini yönet, arkadaşlarınla bağlantıda kal.',
+                    footer: OutlinedButton.icon(
+                      onPressed: onSearch,
+                      icon: const Icon(Icons.person_add_alt_1),
+                      label: const Text('Arkadaş ekle'),
+                    ),
+                  ),
+                  HubSectionHeader(
+                    'Aktif liste',
+                    icon: Icons.groups_outlined,
+                    trailing: Text(
+                      '${rows.length} OYUNCU',
+                      style: hubCaps(context),
+                    ),
+                  ),
+                ],
               );
             final edge = rows[index - 1];
             final busy = busyUids.contains(edge.uid);
@@ -625,6 +640,7 @@ class _RequestsList extends StatelessWidget {
                       child: _HydratedProfileCard(
                         future: profileFor(edge.uid),
                         fallbackUid: edge.uid,
+                        actionsBelow: true,
                         trailing: busy
                             ? const _SmallBusy()
                             : Row(
@@ -1069,10 +1085,14 @@ class _HydratedProfileCard extends StatelessWidget {
   final String fallbackUid;
   final Widget trailing;
 
+  /// Several actions sit on their own row so the name keeps its width.
+  final bool actionsBelow;
+
   const _HydratedProfileCard({
     required this.future,
     required this.fallbackUid,
     required this.trailing,
+    this.actionsBelow = false,
   });
 
   @override
@@ -1082,7 +1102,9 @@ class _HydratedProfileCard extends StatelessWidget {
       builder: (context, snapshot) {
         final profile = snapshot.data;
 
+        // One row: avatar, name with handle and Elo, then the actions.
         return PitchPanel(
+          padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -1122,10 +1144,13 @@ class _HydratedProfileCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (!actionsBelow) ...[const SizedBox(width: 8), trailing],
                 ],
               ),
-              const SizedBox(height: 8),
-              Align(alignment: Alignment.centerRight, child: trailing),
+              if (actionsBelow) ...[
+                const SizedBox(height: 8),
+                Align(alignment: Alignment.centerRight, child: trailing),
+              ],
             ],
           ),
         );

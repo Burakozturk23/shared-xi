@@ -10,6 +10,10 @@ class ManagerRatingService {
   ManagerRatingService._();
   static final ManagerRatingService instance = ManagerRatingService._();
 
+  /// Open spells end in this year. Fixed to the data snapshot so prices
+  /// and ratings do not drift as the calendar year changes.
+  static const int referenceYear = 2026;
+
   static const double _wClub = 0.35;
   static const double _wNational = 0.20;
   static const double _wLength = 0.15;
@@ -93,7 +97,7 @@ class ManagerRatingService {
       return n == 0 ? 25 : (sum / n).clamp(10.0, 100.0);
     }
 
-    final currentYear = referenceYear ?? DateTime.now().year;
+    final currentYear = referenceYear ?? ManagerRatingService.referenceYear;
     double weighted = 0;
     double weightSum = 0;
     double maxLig = 0;
@@ -135,7 +139,7 @@ class ManagerRatingService {
 
   double lengthScore(Player p, {int? referenceYear}) {
     final stops = p.careerTimeline;
-    final currentYear = referenceYear ?? DateTime.now().year;
+    final currentYear = referenceYear ?? ManagerRatingService.referenceYear;
     if (stops.isNotEmpty) {
       var minY = stops.first.startYear;
       var maxY = stops.first.endYear ?? currentYear;

@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/nostalgia_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, chapters: [...baseCatalog.chapters, ...expansion.nostalgia]};
 const tasks = Object.fromEntries(catalog.chapters.flatMap((c) => c.tasks.map((t) => [t.id, t])));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
@@ -19,8 +20,9 @@ function accepts(task, answers) {
   return Array.isArray(answers) && answers.length === task.answerKeys.length &&
     answers.every((key, i) => typeof key === "string" && key === task.answerKeys[i]);
 }
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("nostalgiaState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("nostalgiaState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
     let error;
@@ -58,6 +60,10 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     if (baseCatalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
       earn("album", catalog.economy.final.coins, catalog.economy.final.xp);
     }
+    // All 15 periods (base + expansion): the expansion's own closing receipt.
+    if (catalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
+      earn(Finals.KEY, Finals.FINALS.turkish_nostalgia.coins, Finals.FINALS.turkish_nostalgia.xp);
+    }
     return s;
   }
   async function reconcile(uid) {
@@ -81,13 +87,22 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     if (eligible) await settle(uid);
     const s = await get(uid);
     return {version: catalog.version, completed: s.completed, hints: s.hints, rewards: s.rewards,
-      results: Object.fromEntries(Object.keys(s.completed).filter((id) => tasks[id]?.expansion)
-          .map((id) => [id, tasks[id].result])),
+      expansionFinal: Finals.view("turkish_nostalgia", s.rewards),
+      // The app asset has no answers: every solved task's answer and story come from here.
+      results: Object.fromEntries(Object.keys(s.completed).filter((id) => tasks[id])
+          .map((id) => [id, tasks[id].result || {answer: tasks[id].answerKeys.map((k) =>
+            tasks[id].options.find((o) => o.id === k).label).join(" → "), story: tasks[id].explanation,
+          sources: tasks[id].sources}])),
       pro: eligible && await isPro(uid), rewardEligible: eligible};
   }
   async function submit(uid, input, eligible = true) {
     const task = taskOf(input);
-    if (!accepts(task, input.answers)) return {correct: false};
+    await attempts.before(uid, "nostalgia", task.id);
+    if (!accepts(task, input.answers)) {
+      await attempts.wrong(uid, "nostalgia", task.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "nostalgia", task.id);
     await change(uid, (s) => {
       available(s, task);
       s.completed[task.id] ||= now();
@@ -97,6 +112,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   }
   async function hint(uid, input, eligible = true) {
     const task = taskOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     if (!eligible) fail("permission-denied", "Güçlü yardım için Google hesabına bağlan.");
     const state = await get(uid);

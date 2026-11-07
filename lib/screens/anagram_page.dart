@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'daily_words_page.dart';
 import '../controllers/anagram_controller.dart';
@@ -5,6 +6,7 @@ import '../models/anagram.dart';
 import '../models/player.dart';
 import '../services/anagram_store.dart';
 import '../services/auth_service.dart';
+import '../services/daily_words_service.dart';
 import '../services/session_energy_access.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_ui.dart';
@@ -23,7 +25,7 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
   AnagramController? _game;
   final _answer = TextEditingController();
   final _scroll = ScrollController();
-  bool _failed = false;
+  bool _failed = false, _serverPractice = false;
   int? _shownPlayer;
   @override
   void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); if (widget.practice || widget.controller != null) _boot(); }
@@ -38,8 +40,17 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
       if (game == null) {
         final catalog = await loadAnagramCatalog();
         final user = await AuthService.ensureGuestSignedIn();
+        final store = LocalAnagramStore(userId: user.uid, currentUser: () => AuthService.uid);
+        final saved = await store.read();
+        final unfinished = saved != null && !AnagramSession.fromJson(
+          jsonDecode(saved) as Map<String, dynamic>, catalog).finished(catalog);
+        final status = await DailyWordsService().load('anagram_practice');
+        if (status['legacy'] == false && (!unfinished || status['session'] != null)) {
+          if (mounted) setState(() => _serverPractice = true);
+          return;
+        }
         game = AnagramController(catalog: catalog,
-          store: LocalAnagramStore(userId: user.uid, currentUser: () => AuthService.uid),
+          store: store,
           energyAccess: ServerSessionEnergyAccess('anagram'));
       }
       if (!mounted) { if (widget.controller == null) game.dispose(); return; }
@@ -74,6 +85,15 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
     if (accepted != true || !mounted) return;
     FocusScope.of(context).unfocus();
     if (restart) {
+      if (widget.controller == null) {
+        try {
+          final status = await DailyWordsService().load('anagram_practice');
+          if (status['legacy'] == false) {
+            if (mounted) setState(() => _serverPractice = true);
+            return;
+          }
+        } catch (_) { if (mounted) setState(() => _failed = true); return; }
+      }
       _answer.clear();
       await _game?.restart();
       if (mounted && _scroll.hasClients) _scroll.jumpTo(0);
@@ -105,6 +125,7 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    if (_serverPractice) return const DailyWordsPage(mode: 'anagram_practice');
     if (!widget.practice && widget.controller == null) {
       return Scaffold(appBar: AppBar(title: const Text('Anagram')), body: SafeArea(child: ListView(
         padding: const EdgeInsets.all(20), children: [

@@ -1,0 +1,260 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_xi/models/pro_crate.dart';
+import 'package:shared_xi/models/season_pass.dart';
+import 'package:shared_xi/screens/season_pass_page.dart';
+import 'package:shared_xi/services/experience/pro_gateway.dart';
+import 'package:shared_xi/services/experience/season_gateway.dart';
+import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/pro_crate_card.dart';
+
+Map<String, dynamic> crateMap({
+  bool enabled = true,
+  bool pro = true,
+  bool canOpen = true,
+  bool opened = false,
+  bool remind = false,
+}) => {
+  'enabled': enabled,
+  'pro': pro,
+  'month': '2026-11',
+  'endsOn': '2026-11-30',
+  'daysLeft': remind ? 2 : 20,
+  'remind': remind,
+  'opened': opened,
+  'canOpen': canOpen,
+  'openableAt': DateTime(2026, 11, 12, 9, 30).millisecondsSinceEpoch,
+  'contents': {
+    'boost_basic': 12,
+    'boost_strong': 4,
+    'boost_connection': 2,
+    'boost_eliminate': 2,
+    'avatarTier': 450,
+  },
+  'odds': {
+    'count': 48,
+    'tiers': [
+      {'price': 450, 'count': 48, 'chance': 1, 'each': 0.020833},
+    ],
+  },
+  if (opened)
+    'receipt': {
+      'supports': {
+        'boost_basic': 12,
+        'boost_strong': 4,
+        'boost_connection': 2,
+        'boost_eliminate': 2,
+      },
+      'overflowCoins': 0,
+      'avatar': {
+        'kind': 'avatar',
+        'itemId': 'night_owl',
+        'title': 'Gece Kuşu',
+        'coins': 0,
+      },
+    },
+};
+
+class CrateFake extends ProGateway {
+  CrateFake(this.state);
+  Map<String, dynamic> state;
+  int opens = 0;
+  final equipped = <String>[];
+  @override
+  bool get connected => true;
+  @override
+  Future<ProCrateStatus> crate() async => ProCrateStatus.fromMap(state);
+  @override
+  Future<ProCrateStatus> openCrate() async {
+    opens++;
+    state = crateMap(opened: true, canOpen: false);
+    return ProCrateStatus.fromMap(state);
+  }
+
+  @override
+  Future<void> equip(String itemId) async => equipped.add(itemId);
+}
+
+Future<void> host(WidgetTester t, Widget child) async {
+  t.view.physicalSize = const Size(390, 1000);
+  t.view.devicePixelRatio = 1;
+  addTearDown(t.view.resetPhysicalSize);
+  addTearDown(t.view.resetDevicePixelRatio);
+  await t.pumpWidget(
+    MaterialApp(
+      theme: OrtakSahaTheme.dark,
+      home: Scaffold(body: SingleChildScrollView(child: child)),
+    ),
+  );
+  await t.pumpAndSettle();
+}
+
+void main() {
+  test('crate odds warn when the 450 tier is nearly gone', () {
+    final odds = DrawOdds.from({
+      'count': 3,
+      'tiers': [
+        {'price': 450, 'count': 3, 'chance': 1, 'each': 0.333333},
+      ],
+    });
+    expect(crateOddsText(odds, 450), contains('Az kaldı'));
+    expect(
+      crateOddsText(
+        DrawOdds.from({
+          'count': 48,
+          'tiers': [
+            {'price': 450, 'count': 48, 'chance': 1, 'each': 0.02},
+          ],
+        }),
+        450,
+      ),
+      isNot(contains('Az kaldı')),
+    );
+  });
+
+  testWidgets('Sezon: a nearly empty pool says so', (t) async {
+    await host(
+      t,
+      SizedBox(
+        height: 900,
+        child: SeasonPassPage(gateway: _AvatarSeason(left450: 3)),
+      ),
+    );
+    expect(find.byKey(const ValueKey('season-pool-low-20')), findsOneWidget);
+    expect(find.byKey(const ValueKey('season-pool-low-10')), findsNothing);
+  });
+
+  testWidgets(
+    'Pro Kasası shows contents and odds, opens once and offers to use the avatar',
+    (t) async {
+      final g = CrateFake(crateMap());
+      await host(t, ProCrateCard(gateway: g));
+      expect(find.text('Kasım Kasası'), findsOneWidget);
+      expect(find.text('12 Temel bilgi'), findsOneWidget);
+      expect(find.text('4 Güçlü bilgi'), findsOneWidget);
+      expect(
+        find.textContaining('48 özel (450 coin) avatar arasından eşit şansla'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('%2,08'), findsOneWidget);
+      await t.tap(find.text('Kasayı aç'));
+      await t.pumpAndSettle();
+      expect(g.opens, 1);
+      expect(find.byKey(const ValueKey('pro-crate-result')), findsOneWidget);
+      expect(find.text('Yeni avatarın'), findsOneWidget);
+      await t.tap(find.text('Tamam'));
+      await t.pumpAndSettle();
+      expect(find.text('Bu ayın Kasası açıldı'), findsOneWidget);
+      await t.tap(find.text('Kullan'));
+      await t.pumpAndSettle();
+      expect(g.equipped, ['night_owl']);
+      expect(find.text('Kullanılıyor'), findsOneWidget);
+      expect(t.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'Kasa: hidden while off, Pro-only label, 48-hour wait and last-days reminder',
+    (t) async {
+      await host(t, ProCrateCard(gateway: CrateFake(crateMap(enabled: false))));
+      expect(find.byKey(const ValueKey('pro-crate-card')), findsNothing);
+      await host(
+        t,
+        ProCrateCard(gateway: CrateFake(crateMap(pro: false, canOpen: false))),
+      );
+      expect(find.text('Pro üyelerine özel'), findsOneWidget);
+      await host(t, ProCrateCard(gateway: CrateFake(crateMap(canOpen: false))));
+      expect(find.text('12.11 09:30 itibarıyla açılır'), findsOneWidget);
+      await host(t, ProCrateCard(gateway: CrateFake(crateMap(remind: true))));
+      expect(find.byKey(const ValueKey('pro-crate-remind')), findsOneWidget);
+      expect(t.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'Sezon: final Pro lane shows pools, support steps and the summary',
+    (t) async {
+      await host(
+        t,
+        SizedBox(height: 900, child: SeasonPassPage(gateway: _AvatarSeason())),
+      );
+      expect(find.byKey(const ValueKey('season-avatar-odds')), findsOneWidget);
+      expect(
+        find.text('Pro yolu: 640 Link Coin + 5 destek + 2 avatar'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining("20. basamak: 450 coin'lik havuzdan"),
+        findsOneWidget,
+      );
+      await t.scrollUntilVisible(
+        find.byKey(const ValueKey('season-avatar-10')),
+        300,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.text("300'lük havuz"), findsOneWidget);
+      await t.scrollUntilVisible(
+        find.byKey(const ValueKey('season-support-15')),
+        300,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(
+        find.text('1 Bağlantı + 1 Tek seçenek ele + 1 Temel bilgi'),
+        findsOneWidget,
+      );
+      expect(t.takeException(), isNull);
+    },
+  );
+}
+
+class _AvatarSeason extends SeasonGateway {
+  _AvatarSeason({this.left450 = 48});
+  final int left450;
+  @override
+  bool get connected => true;
+  @override
+  Future<SeasonPass> load() async => SeasonPass.fromMap({
+    'id': '2026-11',
+    'endsOn': '2026-11-30',
+    'sp': 1050,
+    'todaySp': 40,
+    'level': 10,
+    'daysLeft': 20,
+    'maxLevel': 20,
+    'stepSp': 100,
+    'dailyCap': 150,
+    'pro': true,
+    'avatarSteps': [10, 20],
+    'proTotal': 640,
+    'supportSteps': [5, 15],
+    'avatarPools': [
+      {'step': 10, 'tier': 300, 'count': 116},
+      {'step': 20, 'tier': 450, 'count': left450},
+    ],
+    'tiers': [
+      for (var step = 1; step <= 20; step++)
+        {
+          'step': step,
+          'requiredSp': step * 100,
+          'unlocked': step <= 10,
+          'freeCoins': step % 5 == 0 ? 60 : 20,
+          'proCoins': step % 5 == 0 ? 0 : 40,
+          'proAvatar': step == 10 || step == 20,
+          'proAvatarTier': step == 10
+              ? 300
+              : step == 20
+              ? 450
+              : 0,
+          if (step == 5) 'proSupports': {'boost_strong': 2},
+          if (step == 15)
+            'proSupports': {
+              'boost_connection': 1,
+              'boost_eliminate': 1,
+              'boost_basic': 1,
+            },
+          'freeClaimed': step < 10,
+          'proClaimed': step < 10,
+        },
+    ],
+  });
+}

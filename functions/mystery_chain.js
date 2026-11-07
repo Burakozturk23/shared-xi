@@ -1,10 +1,11 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {norm} = require("./three_modes");
 const {players, playerView, validId} = require("./career_transfer");
-const {graphOf, validMove, remaining} = require("./mystery_chain_graph");
+const {graphOf, validMove, remaining, countShortest} = require("./mystery_chain_graph");
 const catalog = require("./config/mystery_chain_catalog.json");
 const MODES = ["mystery", "mastermind", "blitz"];
 const boosts = ["boost_first_letter", "boost_last_letter", "boost_anagram"];
@@ -14,8 +15,15 @@ const fail = (code, message) => {
 };
 const stateOf = (raw) => ({sessions: {}, active: {}, starts: {}, collection: {}, claims: {}, pending: {},
   payments: {}, days: {}, sprintDays: {}, energyCredits: 0,
-  sprintBest: {chains: 0, score: 0, streak: 0}, streak: 0, ...raw});
+  sprintBest: {chains: 0, score: 0, streak: 0}, streak: 0, longestStreak: 0, ...raw});
 const runOf = (r) => r && ({path: [], routes: [], hints: [], guesses: [], actions: {}, adReceipts: {}, ...r});
+const LEVELS = ["easy", "medium", "hard"];
+// Streak rewards pay once, the first time the best mystery streak reaches them.
+const STREAK_REWARDS = [{id: "streak_5", at: 5, coins: 10}, {id: "streak_10", at: 10, coins: 20}];
+// Layout 2 puts the first club on the card and keeps 3+ clues optional;
+// older pinned sessions keep their original optional order.
+const optionalOf = (p) => p.layout === 2 ? p.optional : [0, 3, 4];
+const answersOf = (p) => [p.playerId, ...(p.alsoPlayerIds || [])];
 const fileKey = (mode, p) => mode === "mystery" ? `mystery__${p.playerId}` : `chain__${p.id}`;
 const pool = (c, mode) => mode === "mystery" ? c.mystery : mode === "mastermind" ? c.mastery : c.sprint;
 function view(raw, time) {
@@ -23,21 +31,31 @@ function view(raw, time) {
   const v = {id: r.id, mode: r.mode, revision: r.revision, graphVersion: r.graphVersion,
     startedAt: r.startedAt, expiresAt: r.expiresAt, serverNow: time, endAt: r.endAt || null,
     hardEndAt: r.hardEndAt || null, finished: r.finished, found: r.found, wrong: r.wrong,
-    guesses: r.guesses, hints: r.hints, freeHint: !r.freeUsed, adCredits: r.adCredits,
+    guesses: r.guesses, hints: r.hints, freeHint: !B.paid(r) && !r.freeUsed, support: B.view(r), adCredits: r.adCredits,
     adRemaining: Math.max(0, 2 - r.adGranted), optionalHints: r.optionalHints,
     score: r.score, streak: r.streak, chains: r.chains, skipped: r.skipped, undoUsed: r.undoUsed,
     result: r.result || null, feedback: r.feedback || "", energyCharged: r.energyCharged,
-    firstOfficial: r.first, deadEnd: !!r.deadEnd};
+    firstOfficial: r.first, deadEnd: !!r.deadEnd, expired: !!r.expired,
+    ...(r.daily ? {daily: r.daily} : {}), ...(r.puzzle?.difficulty ? {difficulty: r.puzzle.difficulty} : {})};
   if (r.mode === "mystery") {
-    v.initial = [{id: "country", text: r.puzzle.country}, {id: "position", text: r.puzzle.position}];
+    v.initial = [{id: "country", text: r.puzzle.countryLabel || r.puzzle.country},
+      {id: "position", text: r.puzzle.position},
+      ...(r.puzzle.layout === 2 ? [{id: r.puzzle.hints[0].id, text: r.puzzle.hints[0].text}] : [])];
+    v.optionalLeft = Math.max(0, Math.min(3, optionalOf(r.puzzle).length) - r.optionalHints);
     if (r.finished) {
       v.player = r.player; v.source = r.puzzle.source;
+      v.alsoBy = answersOf(r.puzzle).filter((id) => id !== r.puzzle.playerId && id !== r.answerId)
+          .map((id) => players.get(id)?.name).filter(Boolean);
+      if (r.answerId && r.answerId !== r.puzzle.playerId) v.answer = playerView(players.get(r.answerId));
     }
   } else {
     v.start = r.start; v.target = r.target; v.current = r.path.length ? r.path[r.path.length - 1].club : r.start;
     v.path = r.path; v.par = r.puzzle.par; v.maxMoves = r.maxMoves;
     v.bridgeHint = r.bridgeHint || null;
     if (r.finished) v.routes = r.routes;
+    if (r.finished && r.mode === "mastermind" && r.solution) {
+      v.solution = r.solution; v.routeCount = r.routeCount; v.gaveUp = !!r.gaveUp;
+    }
   }
   return v;
 }
@@ -46,10 +64,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function change(uid, fn) {
     let error; const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-      error = null; const e = normalize(raw); e.mysteryChain = stateOf(e.mysteryChain);
+      error = null; const e = normalize(structuredClone(raw)); e.mysteryChain = stateOf(e.mysteryChain);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.mysteryChain, e, time); return e;
+        for (const r of Object.values(e.mysteryChain.sessions)) B.recoverUnused(e, r, time);
+        fn(e.mysteryChain, e, time);
+        for (const r of Object.values(e.mysteryChain.sessions)) B.recoverUnused(e, r, time); return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -102,7 +122,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   function finish(s, r, time) {
     if (r.finished) return;
-    r.finished = true;
+    r.finished = true; r.finishedAt = time;
     let medal = 0;
     if (r.mode === "blitz") {
       const day = dayKey(Math.min(time, r.endAt, r.hardEndAt));
@@ -114,13 +134,19 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         streak: Math.max(s.sprintBest.streak, r.bestStreak)};
     } else {
       if (r.found) {
-        if (r.mode === "mystery") medal = r.wrong === 0 ? r.optionalHints === 0 ? 4 : 3 : r.wrong === 1 ? 2 : 1;
+        // With the first club on the card, mastery allows one optional clue.
+        const free = r.puzzle.layout === 2 ? 1 : 0;
+        if (r.mode === "mystery") medal = r.wrong === 0 ? r.optionalHints <= free ? 4 : 3 : r.wrong === 1 ? 2 : 1;
         else {
+          // A hint names the next bridge, so gold allows at most one.
           medal = r.path.length === r.puzzle.par && !r.optionalHints && !r.undoUsed ? 4 :
-          r.path.length <= r.puzzle.par + 1 ? 3 : r.path.length <= r.puzzle.par + 2 ? 2 : 1;
+          r.path.length <= r.puzzle.par + 1 && r.optionalHints <= 1 ? 3 : r.path.length <= r.puzzle.par + 2 ? 2 : 1;
         }
       }
       const key = fileKey(r.mode, r.puzzle); const record = s.collection[key];
+      if (r.mode === "mastermind" && r.solutionView) {
+        r.solution = r.solutionView; r.routeCount = r.routeCountView; delete r.solutionView; delete r.routeCountView;
+      }
       if (r.first && medal) {
         award(s, r, `mc__${key}__v1`,
             (r.mode === "mystery" ? [0, 2, 3, 4, 6] : [0, 3, 5, 8, 12])[medal], time);
@@ -129,20 +155,37 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         moves: r.path.length, wrong: r.wrong, undoUsed: r.undoUsed, at: time};
       if (r.first) record.firstResult = result;
       record.last = result; record.lastAt = time; record.bestMedal = Math.max(record.bestMedal || 0, medal);
-      record.bestScore = Math.max(record.bestScore || 0, r.score);
+      const bestKey = r.assisted ? "bestAssistedScore" : "bestScore";
+      record[bestKey] = Math.max(record[bestKey] || 0, r.score);
       record.solvedCount = (record.solvedCount || 0) + (r.found ? 1 : 0);
-      if (r.found && r.mode === "mastermind" && (!record.bestMoves || r.path.length < record.bestMoves)) {
+      if (!r.assisted && r.found && r.mode === "mastermind" &&
+          (!record.bestMoves || r.path.length < record.bestMoves)) {
         record.bestMoves = r.path.length; record.route = r.path;
       }
-      if (r.mode === "mystery") s.streak = r.found ? s.streak + 1 : 0;
+      // Only first plays count: archive replays know the answer, and a file
+      // that ran out of time is not a wrong answer.
+      if (!r.assisted && r.mode === "mystery" && r.first && !r.expired) {
+        s.streak = r.found ? s.streak + 1 : 0;
+        s.longestStreak = Math.max(s.longestStreak || 0, s.streak);
+        for (const b of STREAK_REWARDS) {
+          if (s.longestStreak >= b.at && !s.claims[`mc__mystery__${b.id}`]) {
+            award(s, r, `mc__mystery__${b.id}`, b.coins, time); r.badge = b.id;
+          }
+        }
+      }
     }
-    r.result = {medal, coins: r.earned, xp: r.earned * 2, practice: r.mode !== "blitz" && !r.first, score: r.score};
+    r.result = {medal, coins: r.earned, xp: r.earned * 2, practice: r.mode !== "blitz" && !r.first, score: r.score,
+      ...(r.badge ? {badge: r.badge} : {}), ...(r.expired ? {expired: true} : {})};
   }
   function expire(s, time) {
     for (const id of Object.values(s.active)) {
       const r = runOf(s.sessions[id]); if (!r || r.finished) continue;
       const deadline = r.mode === "blitz" ? Math.min(r.endAt, r.hardEndAt) : r.expiresAt;
       if (time >= deadline) {
+        if (r.mode !== "blitz") {
+          r.expired = true;
+          r.feedback = "24 saat içinde bitirilmediği için dosya kapandı; ilk deneme ödülü bu dosya için kullanıldı.";
+        }
         finish(s, r, deadline); s.sessions[id] = r;
       }
     }
@@ -168,6 +211,21 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const clubs = new Map(c.clubs.map((x) => [x.id, x]));
     r.puzzle = p; r.start = clubs.get(p.start); r.target = clubs.get(p.target);
     r.path = []; r.maxMoves = Math.min(p.par + 3, 8); r.bridgeHint = null; r.deadEnd = false;
+    if (r.mode === "mastermind") {
+      // Kept private until the file ends: one shortest route and how many exist.
+      const people = new Map(c.graph.map((x) => [x.id, x.player]));
+      r.solutionView = p.solution.map((x) => ({playerId: x.playerId, clubId: x.clubId,
+        player: playerView(people.get(x.playerId)), club: clubs.get(x.clubId)}));
+      r.routeCountView = countShortest(graphOf(c), p.start, p.target);
+    }
+  }
+  // Next sprint pair: hashed among pairs not yet played in this sprint, so a
+  // pass never lands on the same easy pair.
+  function nextSprint(r, c, policy, salt) {
+    const valid = c.sprint.filter((p) => !(policy.disabledFiles || []).includes(fileKey("blitz", p)));
+    const fresh = valid.filter((p) => !r.routes.some((x) => x.pair === p.id) && p.id !== r.puzzle.id);
+    const choices = fresh.length ? fresh : valid;
+    return choices.length ? choices[parseInt(hash(r.id + salt).slice(0, 8), 16) % choices.length] : null;
   }
   async function status(uid, input) {
     if (!MODES.includes(input.mode)) fail("invalid-argument", "Geçersiz mod.");
@@ -183,15 +241,21 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         !(r && !r.finished && r.mode === "mystery" && x.id === r.puzzle.id)),
       pendingCoins: Object.values(s.pending).reduce((n, x) => n + x.coins, 0) +
         Object.values(s.payments).filter((x) => !x.paid).reduce((n, x) => n + x.coins, 0),
+      streak: s.streak, longestStreak: s.longestStreak || 0,
+      streakRewards: STREAK_REWARDS.map((b) => ({...b, xp: b.coins * 2,
+        earned: (s.longestStreak || 0) >= b.at})),
       sprintBest: s.sprintBest, sprintToday: s.sprintDays[dayKey(now())] || {tier: 0, chains: 0, score: 0},
       inventory: boosts.map((id) => ({id, quantity: e.inventory[id]?.quantity || 0}))};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input); if (!validId(input.requestId)) fail("invalid-argument", "Geçersiz istek.");
     // Immutable version archive keeps active paths, PAR and hints stable after deploy.
     await db.ref(`mysteryChainCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
     const policy = await getPolicy();
-    const seed = random(); const fingerprint = hash(JSON.stringify([input.mode, input.target || null]));
+    const seed = random(); const daily = ["mystery", "mastermind"].includes(input.mode) && input.daily === true;
+    const level = input.mode === "mystery" && LEVELS.includes(input.difficulty) ? input.difficulty : null;
+    const fingerprint = hash(JSON.stringify([input.mode, input.target || null, daily, level]));
     const rollout = {...energy.policy.rollout, ...await getRollout()};
     const charge = rollout.enabled === true && parseInt(hash(uid).slice(0, 8), 16) % 100 < rollout.percent &&
       (rollout.sessionModes || []).includes(input.mode === "mystery" ? "mystery" : "chain");
@@ -207,13 +271,20 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       if (old && !old.finished) fail("already-exists", "Kayıtlı oyununa devam et.");
       let candidates = pool(catalog, input.mode)
           .filter((p) => !(policy.disabledFiles || []).includes(fileKey(input.mode, p)));
-      if (input.target) {
+      if (daily) {
+        // Today's mystery or chain: the same file for everyone (chains up to PAR 3).
+        const open = input.mode === "mastermind" ? candidates.filter((p) => p.par <= 3) :
+          candidates.filter((p) => p.layout === 2 && p.difficulty !== "hard" && !p.alsoPlayerIds);
+        candidates = [open[parseInt(hash(input.mode + "__" + dayKey(time) + catalog.version).slice(0, 8), 16) %
+          open.length]];
+      } else if (input.target) {
         if (input.mode === "blitz" ||
           !s.collection[fileKey(input.mode, {id: input.target, playerId: input.target})]?.last) {
           fail("permission-denied", "Önce arşive ekle.");
         }
         candidates = candidates.filter((p) => p.id === input.target);
       } else if (input.mode !== "blitz") {
+        if (level) candidates = candidates.filter((p) => p.difficulty === level);
         const unseen = candidates.filter((p) => !s.collection[fileKey(input.mode, p)]);
         if (unseen.length) candidates = unseen;
       }
@@ -233,16 +304,19 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         revision: 0, finished: false, found: false, wrong: 0, earned: 0, score: 0, chains: 0, streak: 0,
         bestStreak: 0, skipped: 0, undoUsed: false, energyCharged: charge, optionalHints: 0,
         freeUsed: false, adCredits: 0, adGranted: 0, hints: [], guesses: [], actions: {},
-        adReceipts: {}, path: [], routes: []};
+        adReceipts: {}, path: [], routes: [], ...(daily ? {daily: dayKey(time)} : {})};
       if (input.mode === "mystery") r.player = playerView(players.get(p.playerId)); else setupChain(r, p, catalog);
       if (input.mode !== "blitz") {
         s.collection[key] ||= {id: p.id, mode: input.mode, firstAt: time,
           graphVersion: catalog.version, firstSession: r.id, player: r.player || null,
           start: r.start || null, target: r.target || null, par: p.par || null, bestMedal: 0};
       }
+      B.pin(r, boostPolicy);
       s.sessions[r.id] = r; s.active[input.mode] = r.id; s.starts[r.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
-        if (old.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
+        if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
+          delete s.sessions[id];
+        }
       }
     });
     await settle(uid);
@@ -250,15 +324,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   function nextHint(r, graph, c) {
     if (r.mode === "blitz" || r.optionalHints >= 3) return null;
-    if (r.mode === "mystery") return r.puzzle.hints[[0, 3, 4][r.optionalHints]];
+    if (r.mode === "mystery") return r.puzzle.hints[optionalOf(r.puzzle)[r.optionalHints]] || null;
     const path = remaining(graph, r); if (!path?.length) return null;
     const next = path[0];
-    const id = `${r.path.map((x) => x.clubId).join("_")}__${next.playerId}__${next.clubId}`;
+    // Only the player: which of their clubs moves you closer is still yours to find.
+    const id = `${r.path.map((x) => x.clubId).join("_")}__${next.playerId}`;
     if (r.hints.some((h) => h.id === id)) return null;
     const player = c.graph.find((p) => p.id === next.playerId).player;
-    const club = c.clubs.find((x) => x.id === next.clubId);
-    return {id, playerId: next.playerId, clubId: next.clubId,
-      text: `Bir sonraki geçerli köprü: ${player.name} → ${club.name}`};
+    return {id, playerId: next.playerId, text: `Sıradaki köprü futbolcusu: ${player.name}`};
   }
   async function act(uid, input) {
     check(input);
@@ -273,7 +346,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const r = runOf(s.sessions[input.sessionId]);
       if (r.voided) return;
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.clubId ?? null,
-        input.boost ?? null]));
+        input.boost ?? null, ...B.paymentFingerprint(input)]));
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İstek başka işleme ait.");
         return;
@@ -289,9 +362,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         if (!p) fail("invalid-argument", "Listeden geçerli bir futbolcu seç. Hakkın azalmadı.");
         if (r.guesses.includes(p.id)) fail("already-exists", "Bu futbolcuyu zaten denedin; hakkın azalmadı.");
         r.guesses.push(p.id);
-        if (p.id === r.puzzle.playerId) {
-          r.found = true; r.score = Math.max(0, 100 - r.wrong * 20 - r.optionalHints * 10);
-          r.streak = s.streak + 1; finish(s, r, time);
+        // Anyone matching nationality, position and the three shown clubs is right too.
+        if (answersOf(r.puzzle).includes(p.id)) {
+          r.found = true; r.answerId = p.id; r.score = Math.max(0, 100 - r.wrong * 20 - r.optionalHints * 10);
+          r.streak = r.first ? s.streak + 1 : 0; finish(s, r, time);
         } else {
           r.wrong++; r.feedback = "Yanlış futbolcu; yeni bilgi açıldı.";
           if (r.wrong < 3) r.hints.push({...r.puzzle.hints[r.wrong], automatic: true});
@@ -315,13 +389,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
             r.score += 100 + Math.min(50, r.streak * 10);
             r.routes.push({pair: r.puzzle.id, par: r.puzzle.par, route: r.path});
             r.endAt = Math.min(r.endAt + 5000, time + 75000, r.hardEndAt);
-            const valid = c.sprint.filter((p) => !(policy.disabledFiles || []).includes(fileKey("blitz", p)));
-            const candidates = valid.filter((p) => !r.routes.some((x) => x.pair === p.id) && p.id !== r.puzzle.id);
-            const choices = candidates.length ? candidates : valid;
-            if (!choices.length) {
+            const next = nextSprint(r, c, policy, String(r.chains));
+            if (!next) {
               finish(s, r, time); s.sessions[r.id] = r; return;
             }
-            const next = choices[parseInt(hash(r.id + r.chains).slice(0, 8), 16) % choices.length];
             setupChain(r, next, c); r.feedback = "Zincir tamamlandı · +5 saniye";
           }
         } else {
@@ -335,7 +406,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       } else if (input.action === "hint") {
         const hint = nextHint(r, graph, c);
         if (!hint) fail("failed-precondition", "Yeni geçerli ipucu yok. Geri al veya oyuna devam et.");
-        if (input.boost) {
+        if (B.paid(r)) {
+          B.consume(e, r, input, r.mode === "mystery" ? "boost_basic" : "boost_connection",
+              `hint:${r.optionalHints}`, hint, time);
+        } else if (input.boost) {
           const item = e.inventory[input.boost];
           if (!boosts.includes(input.boost) || !item || item.quantity < 1) {
             fail("resource-exhausted", "Destek stokta yok.");
@@ -346,14 +420,17 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         else fail("resource-exhausted", "Doğrulanmış reklam veya destek gerekli.");
         r.optionalHints++; r.hints.push(hint); if (r.mode === "mastermind") r.bridgeHint = hint;
       } else if (input.action === "skip") {
-        if (r.mode !== "blitz") finish(s, r, time);
-        else {
+        if (r.mode !== "blitz") {
+          if (r.mode === "mastermind") {
+            r.gaveUp = true; r.feedback = "Teslim oldun. En kısa rota aşağıda.";
+          }
+          finish(s, r, time);
+        } else {
           if (r.skipped) fail("resource-exhausted", "Sprintte yalnızca bir pas hakkın var.");
           r.skipped = 1; r.streak = 0; r.endAt = Math.max(time, r.endAt - 10000);
           if (time >= r.endAt) finish(s, r, r.endAt);
           else {
-            const next = c.sprint.find((p) => p.id !== r.puzzle.id &&
-              !(policy.disabledFiles || []).includes(fileKey("blitz", p)));
+            const next = nextSprint(r, c, policy, `:skip:${r.chains}`);
             if (next) setupChain(r, next, c); else finish(s, r, time);
           }
         }
@@ -388,21 +465,28 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const r = runOf((await read(uid)).sessions[context?.sessionId]);
     if (!r || (r.mode === "mystery" ? "mystery_hint" : "chain_hint") !== placement ||
         r.finished || r.mode === "blitz" || r.expiresAt <= now() || r.adGranted >= 2 ||
-        r.optionalHints + r.adCredits + (r.freeUsed ? 0 : 1) >= 3) {
+        r.optionalHints + r.adCredits + (B.paid(r) || r.freeUsed ? 0 : 1) >= 3) {
       fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
     }
     const c = await pinned(r.graphVersion);
     if (!nextHint(r, graphOf(c), c)) fail("failed-precondition", "Bu konumda yeni köprü ipucu yok.");
-    return {amount: 0, claimKey: `mc_hint_${r.id}_${r.adGranted}`,
-      context: {sessionId: r.id, mode: r.mode, credit: r.adGranted}};
+    return B.adBenefit(r, {amount: 0, claimKey: `mc_hint_${r.id}_${r.adGranted}`,
+      context: {sessionId: r.id, mode: r.mode, credit: r.adGranted}}, context?.boostId);
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, time) => {
+    await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
+      const canApply = r && r.optionalHints + r.adCredits < 3 && r.adGranted < 2 &&
+        r.adGranted === receipt.context.credit;
+      const sku = receipt.context?.mode === "mystery" ? "boost_basic" : "boost_connection";
+      if (B.recoverAd(e, r, receipt, time, sku, canApply)) {
+        if (r) s.sessions[r.id] = r; return;
+      }
       if (!r || r.mode !== receipt.context?.mode || r.mode === "blitz" || r.finished || r.expiresAt <= time ||
-          r.adReceipts[receipt.id] || r.adGranted >= 2 || r.optionalHints + r.adCredits + (r.freeUsed ? 0 : 1) >= 3 ||
+          r.adReceipts[receipt.id] || r.adGranted >= 2 ||
+          r.optionalHints + r.adCredits + (B.paid(r) || r.freeUsed ? 0 : 1) >= 3 ||
           r.adGranted !== receipt.context.credit) return;
-      r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
+      B.grantAd(r, receipt); s.sessions[r.id] = r;
     });
   }
   return {status, start, act, search, settle, prepareHint, settleHint};

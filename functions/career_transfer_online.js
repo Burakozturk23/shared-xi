@@ -8,66 +8,215 @@ const MODES = ["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"]
 const modeVersion = (mode) => mode === "fake_club_duel" ? fakeClub.catalog.version :
   mode === "mystery_duel" ? mysteryCatalog.version : catalog.version;
 const hash = (v) => crypto.createHash("sha256").update(v).digest("hex");
+// Career Race: club country, league and popularity come from the PvP catalog (same club ids).
+const clubMeta = require("./pvp_engine").catalog.clubs;
+// Clubs that appear in some career; a distractor nobody ever played for is too easy to rule out.
+const careerClubs = [...new Set(catalog.careers.flatMap((p) => p.stops.map((s) => s.clubId)))];
+const RACE_MIX = ["beginner", "normal", "legend"];
+const once = (p, clubId) => p.stops.filter((s) => s.clubId === clubId).length === 1;
+// Three wrong clubs close to the answer: same country first, then the nearest popularity.
+function clubDistractors(p, answer, rng) {
+  const a = clubMeta[String(answer)] || {}; const names = new Set(p.stops.map((s) => clubs.get(s.clubId).name));
+  const near = careerClubs.filter((id) => id !== answer && !p.stops.some((s) => s.clubId === id) &&
+    !names.has(clubs.get(id).name)).map((id) => {
+    const m = clubMeta[String(id)] || {};
+    return [id, (m.country === a.country ? 0 : m.league === a.league ? 500 : 1000) +
+      Math.abs((m.rank || 0) - (a.rank || 0))];
+  }).sort((x, y) => x[1] - y[1] || x[0] - y[0]).slice(0, 8).map(([id]) => id);
+  return shuffled(near, rng + "near").slice(0, 3);
+}
+// Order rounds: a random run of three stops with three different clubs when there is one.
+function orderWindow(p, rng) {
+  const starts = Array.from({length: Math.max(0, p.stops.length - 2)}, (_, i) => i);
+  const clean = starts.filter((i) => new Set(p.stops.slice(i, i + 3).map((s) => s.clubId)).size === 3);
+  const pool = clean.length ? clean : starts;
+  const start = pool[parseInt(hash(rng + "window").slice(0, 8), 16) % pool.length];
+  return p.stops.slice(start, start + 3);
+}
+// Fake Club Duel: difficulty climbs over the match (2 easy, 3 normal, 3 hard, 2 legend); the
+// last round counts double. No person twice, and a fake club never shows up again in the
+// match, not even as an option; real clubs repeat only when nothing else is left. Options are
+// shuffled per match, so the fake club's place carries no signal.
+const FAKE_MIX = ["easy", "easy", "normal", "normal", "normal", "hard", "hard", "hard", "legend", "legend"];
+const FAKE_FINAL_MULTIPLIER = 2;
+function fakeClubDuel(seed, policy) {
+  const bank = []; const people = new Set(); const shown = new Set(); const fakes = new Set();
+  const off = new Set(policy.disabledQuestions || []);
+  for (const [i, level] of FAKE_MIX.entries()) {
+    let pool = fakeClub.catalog.questions.filter((q) => q.difficulty === level && !off.has(q.questionId) &&
+      !people.has(q.playerId) && !shown.has(q.fakeClubId) && q.options.every((o) => !fakes.has(o.id)));
+    const fresh = pool.filter((q) => q.options.every((o) => !shown.has(o.id)));
+    if (fresh.length) pool = fresh;
+    const q = shuffled(pool, seed + "fake" + i)[0];
+    if (!q) fail("failed-precondition", "On farklı doğrulanmış futbolcu bulunamadı.");
+    people.add(q.playerId); fakes.add(q.fakeClubId);
+    for (const o of q.options) shown.add(o.id);
+    const last = i === FAKE_MIX.length - 1;
+    bank.push({id: q.questionId, kind: "fake_club_duel", duration: 10000, answer: q.fakeClubId,
+      explanation: fakeClub.explanation(q), evidence: q.evidence, ...last ? {multiplier: FAKE_FINAL_MULTIPLIER} : {},
+      public: {player: q.player, dataVersion: q.dataVersion, difficulty: q.difficulty,
+        ...last ? {multiplier: FAKE_FINAL_MULTIPLIER} : {},
+        options: shuffled(q.options, seed + "options" + i).map(({popularity, ...club}) => club)}});
+  }
+  return bank;
+}
+// Mystery Duel: 2 easy, 2 medium, 1 hard; well-known players first; no first-hint club or
+// more than two of one position in a match. Hints open at 8, 16 and 24 s (club, period, a
+// second club). A wrong option who played for a hinted club is left out, so a hint never
+// fits two options. An answer before the first hint earns no speed bonus.
+const MYSTERY_MIX = ["easy", "easy", "medium", "medium", "hard"];
+const MYSTERY_HINT_MS = [8000, 16000, 24000];
+const pvpClubs = require("./pvp_engine").catalog;
+const clubIdsByName = new Map();
+for (const [id, c] of Object.entries(pvpClubs.clubs)) {
+  if (!clubIdsByName.has(c.name)) clubIdsByName.set(c.name, []);
+  clubIdsByName.get(c.name).push(id);
+}
+// Club ids the shown hints name: the two club hints and the period's club.
+function hintClubs(p) {
+  const ids = new Set(p.hints.filter((h) => /^club_\d+$/.test(h.id)).map((h) => h.id.slice(5)));
+  const period = p.hints.find((h) => h.id === "period")?.text.match(/^[^:]+:\s*(.+),\s*\d{4}/)?.[1];
+  for (const id of clubIdsByName.get(period) || []) ids.add(id);
+  return ids;
+}
+// Wrong options who never played for a hinted club.
+const cleanOptions = new Map();
+function clean(p) {
+  if (!cleanOptions.has(p.id)) {
+    const shown = hintClubs(p);
+    cleanOptions.set(p.id, p.options.filter((id) => id !== p.playerId &&
+      !(pvpClubs.players[String(id)]?.clubs || []).some((c) => shown.has(String(c)))));
+  }
+  return cleanOptions.get(p.id);
+}
+function mysteryDuel(seed) {
+  const picked = []; const firstClubs = new Set(); const positions = {};
+  for (const [i, level] of MYSTERY_MIX.entries()) {
+    let pool = mysteryCatalog.mystery.filter((p) => p.difficulty === level && !picked.includes(p) &&
+      !firstClubs.has(p.hints[0].id) && (positions[p.position] || 0) < 2);
+    // Players with three unambiguous wrong options first, then the well-known ones.
+    for (const keep of [(p) => clean(p).length >= 3, (p) => players.get(p.playerId).rank <= TRANSFER_KNOWN_RANK]) {
+      if (pool.some(keep)) pool = pool.filter(keep);
+    }
+    const p = shuffled(pool, seed + "mystery" + i)[0];
+    if (!p) fail("failed-precondition", "Gizem düellosu için yeterli futbolcu yok.");
+    picked.push(p); firstClubs.add(p.hints[0].id); positions[p.position] = (positions[p.position] || 0) + 1;
+  }
+  return picked.map((p, i) => {
+    const fine = clean(p); const rest = p.options.filter((id) => id !== p.playerId && !fine.includes(id));
+    const options = [...shuffled(fine, seed + i), ...shuffled(rest, seed + i)].slice(0, 3);
+    const teammate = p.hints.find((h) => h.id === "teammate");
+    return {id: p.id, kind: "mystery_duel", duration: 30000, answer: p.playerId, difficulty: p.difficulty,
+      timedHints: [p.hints[0].text, p.hints[1].text, p.hints[2].text], hintAt: MYSTERY_HINT_MS,
+      explanation: [players.get(p.playerId).name, p.hints[1].text.replace(/^[^:]+:\s*/, ""),
+        teammate?.text].filter(Boolean).join(" · "),
+      public: {country: p.countryLabel || p.country, position: p.position, difficulty: p.difficulty,
+        hintAt: MYSTERY_HINT_MS,
+        options: shuffled([p.playerId, ...options], seed + i).map((id) => playerView(players.get(id)))}};
+  });
+}
+// Transfer Duel: 2 easy, 2 medium, 1 hard; a player is drawn first and then one of their
+// moves, so players with many loans do not crowd the match; no player or club pair twice,
+// one move before 2015 when there is one. A move several players made the same day accepts
+// all of them. Country opens at 10 s, position at 20 s; each open hint lowers the base by 15.
+const TRANSFER_MIX = ["easy", "easy", "medium", "medium", "hard"];
+const TRANSFER_HINT_MS = [10000, 20000];
+const TRANSFER_HINT_COST = 15;
+const TRANSFER_KNOWN_RANK = 3000;
+const POSITIONS = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet", ATT: "Forvet"};
+function transferDuel(seed) {
+  const picked = []; const usedPlayers = new Set(); const usedPairs = new Set();
+  const pair = (p) => [p.fromClubId, p.toClubId].sort((a, b) => a - b).join("-");
+  for (const [i, level] of TRANSFER_MIX.entries()) {
+    const fits = (p) => p.difficulty === level && ![p.playerId, ...p.alsoPlayerIds || []]
+        .some((id) => usedPlayers.has(id)) && !usedPairs.has(pair(p)) &&
+      (i !== 0 || p.year < 2015);
+    let pool = catalog.transfers.filter(fits);
+    if (!pool.length && i === 0) {
+      pool = catalog.transfers.filter((p) => p.difficulty === level && !usedPairs.has(pair(p)));
+    }
+    // Well-known players first (the 3000 best known); the whole tier only when none is left.
+    const known = pool.filter((p) => players.get(p.playerId).rank <= TRANSFER_KNOWN_RANK);
+    if (known.length) pool = known;
+    const byPlayer = [...new Set(pool.map((p) => p.playerId))];
+    if (!byPlayer.length) fail("failed-precondition", "Transfer düellosu için yeterli transfer yok.");
+    const player = shuffled(byPlayer, seed + "player" + i)[0];
+    const p = shuffled(pool.filter((x) => x.playerId === player), seed + "move" + i)[0];
+    picked.push(p); usedPairs.add(pair(p));
+    for (const id of [p.playerId, ...p.alsoPlayerIds || []]) usedPlayers.add(id);
+  }
+  return picked.map((p) => {
+    const who = players.get(p.playerId);
+    const accepted = [p.playerId, ...p.alsoPlayerIds || []];
+    return {id: p.id, kind: "transfer", duration: 30000, answer: p.playerId, difficulty: p.difficulty,
+      ...accepted.length > 1 ? {accepted} : {},
+      timedHints: [`Milliyet: ${who.country || "bilinmiyor"}`, `Mevki: ${p.detailedPosition ||
+        POSITIONS[who.position] || who.position}`],
+      explanation: `${who.name} · ${p.date}${p.age ? ` · ${p.age} yaşında` : ""}` +
+        (accepted.length > 1 ? ` · aynı gün geçen ${accepted.slice(1).map((id) => players.get(id).name)
+            .join(", ")} de doğru sayıldı` : ""),
+      public: {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year,
+        difficulty: p.difficulty}};
+  });
+}
+// Six careers: two of each difficulty; missing-club careers need a club that appears once.
+function raceCareers(seed) {
+  const picked = []; const fits = [(p) => p.stops.some((s) => once(p, s.clubId)), (p) => p.stops.length >= 3,
+    () => true];
+  const plan = [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1], [1, 2]];
+  for (const [d, kind] of plan) {
+    const p = shuffled(catalog.careers.filter((x) => x.difficulty === RACE_MIX[d] && fits[kind](x) &&
+      !picked.includes(x)), seed + "race" + picked.length)[0];
+    if (!p) fail("failed-precondition", "Kariyer yarışı için yeterli kariyer yok.");
+    picked.push(p);
+  }
+  return picked;
+}
 const fail = (c, m) => {
   throw new RewardError(c, m);
 };
 function questions(mode, seed, policy = fakeClub.policyOf({})) {
-  if (mode === "fake_club_duel") {
-    const run = {id: seed, mode: "fake_speed", answers: 0, usedPlayers: []}; const bank = [];
-    for (let i = 0; i < 10; i++) {
-      const q = fakeClub.pick(fakeClub.catalog, run, policy);
-      if (!q) fail("failed-precondition", "On farklı doğrulanmış futbolcu bulunamadı.");
-      run.usedPlayers.push(q.playerId); run.answers++;
-      bank.push({id: q.questionId, kind: "fake_club_duel", duration: 10000, answer: q.fakeClubId,
-        explanation: fakeClub.explanation(q), evidence: q.evidence,
-        public: {player: q.player, dataVersion: q.dataVersion, difficulty: q.difficulty,
-          options: q.options.map(({popularity, ...club}) => club)}});
-    }
-    return bank;
-  }
-  if (mode === "mystery_duel") {
-    return shuffled(mysteryCatalog.mystery, seed).slice(0, 5).map((p, i) => {
-      const options = shuffled(p.options.filter((id) => id !== p.playerId), seed + i).slice(0, 3);
-      return {id: p.id, kind: "mystery_duel", duration: 30000, answer: p.playerId,
-        timedHints: [p.hints[0].text, p.hints[1].text],
-        public: {country: p.country, position: p.position,
-          options: shuffled([p.playerId, ...options], seed + i).map((id) => playerView(players.get(id)))}};
-    });
-  }
-  if (mode === "transfer_duel") {
-    return shuffled(catalog.transfers, seed).slice(0, 5).map((p) => ({
-      id: p.id, kind: "transfer", duration: 30000, answer: p.playerId,
-      public: {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year},
-    }));
-  }
-  const chosen = shuffled(catalog.careers, seed).slice(0, 6);
+  if (mode === "fake_club_duel") return fakeClubDuel(seed, policy);
+  if (mode === "mystery_duel") return mysteryDuel(seed);
+  if (mode === "transfer_duel") return transferDuel(seed);
+  // Missing clubs hide a club the route shows only once, with distractors from the same
+  // country and popularity; order rounds use a random run of stops; 2 careers per difficulty.
+  const chosen = raceCareers(seed);
   return chosen.map((p, i) => {
     const rng = seed + i;
     if (i < 3) {
-      const slot = parseInt(hash(rng).slice(0, 8), 16) % p.stops.length;
+      const slots = p.stops.map((s, j) => j).filter((j) => once(p, p.stops[j].clubId));
+      const slot = slots[parseInt(hash(rng).slice(0, 8), 16) % slots.length];
       const answer = p.stops[slot].clubId;
-      const distractors = shuffled([...clubs.values()].filter((c) => !p.stops.some((s) => s.clubId === c.id)), rng)
-          .slice(0, 3).map((c) => c.id);
-      return {id: p.id + "_missing", kind: "missing", duration: 20000, answer,
-        public: {player: playerView(players.get(p.playerId)),
+      return {id: p.id + "_missing", kind: "missing", duration: 20000, answer, difficulty: p.difficulty,
+        public: {player: playerView(players.get(p.playerId)), difficulty: p.difficulty,
           route: p.stops.map((s, j) => j === slot ? "?" : clubs.get(s.clubId).name),
-          options: shuffled([answer, ...distractors], rng).map((id) => ({id, name: clubs.get(id).name}))}};
+          years: p.stops.map((s) => (s.start || "").slice(0, 4)),
+          options: shuffled([answer, ...clubDistractors(p, answer, rng)], rng)
+              .map((id) => ({id, name: clubs.get(id).name}))}};
     }
     if (i < 5) {
-      const stops = p.stops.slice(0, 3);
+      const stops = orderWindow(p, rng);
       return {id: p.id + "_order", kind: "order", duration: 25000, answer: stops.map((s) => s.id),
-        public: {player: playerView(players.get(p.playerId)), options: shuffled(stops, rng).map((s) => ({
-          id: s.id, name: clubs.get(s.clubId).name + (stops.filter((x) => x.clubId === s.clubId).length > 1 ?
+        public: {player: playerView(players.get(p.playerId)), difficulty: p.difficulty,
+          options: shuffled(stops, rng).map((s) => ({
+            id: s.id, name: clubs.get(s.clubId).name + (stops.filter((x) => x.clubId === s.clubId).length > 1 ?
             ` (${stops.filter((x) => x.clubId === s.clubId).indexOf(s) + 1}. dönem)` : ""),
-        }))}};
+          }))}};
     }
-    const distractors = shuffled(catalog.careers.filter((x) => x.playerId !== p.playerId), rng)
+    // Wrong players who share a club with this route, so the route alone does not give it away.
+    const route = new Set(p.stops.map((s) => s.clubId));
+    const others = catalog.careers.filter((x) => x.playerId !== p.playerId);
+    const close = shuffled(others.filter((x) => x.stops.some((s) => route.has(s.clubId))), rng);
+    const distractors = [...close, ...shuffled(others.filter((x) => !close.includes(x)), rng)]
         .slice(0, 3).map((x) => x.playerId);
     return {id: p.id + "_mystery", kind: "mystery", duration: 20000, answer: p.playerId,
-      public: {route: p.stops.map((s) => clubs.get(s.clubId).name),
+      public: {difficulty: p.difficulty, route: p.stops.map((s) => clubs.get(s.clubId).name),
         options: shuffled([p.playerId, ...distractors], rng).map((id) => ({id, name: players.get(id).name}))}};
   });
 }
+// A round's token: answers must name the round as it stood when the question opened.
+const roundToken = (room, index) => hash(room.id + "|" + index + "|" + room.version + "|" + timing(room, index).start);
 function roomOf(raw) {
   if (!raw) return null;
   return {...raw, answers: raw.answers || {}, receipts: raw.receipts || {}, presence: raw.presence || {}};
@@ -124,11 +273,14 @@ function view(room, uid, time) {
     if (time >= clock.start) {
       v.questionId = hash(room.id + "|" + index + "|" + q.id);
       v.question = {kind: q.kind, ...q.public};
-      if (q.kind === "mystery_duel") {
-        v.question.hints = (q.timedHints || []).slice(0, Math.floor((time - clock.start) / 10000));
+      if (q.kind === "mystery_duel" || q.kind === "transfer" && q.timedHints) {
+        // Hints open on the question's own schedule (older rooms: every 10 s).
+        const open = q.hintAt ? q.hintAt.filter((ms) => time - clock.start >= ms).length :
+          Math.floor((time - clock.start) / 10000);
+        v.question.hints = (q.timedHints || []).slice(0, open);
       }
-      if (["mystery_duel", "fake_club_duel"].includes(q.kind)) {
-        v.roundToken = hash(room.id + "|" + index + "|" + room.version + "|" + clock.start);
+      if (["mystery_duel", "fake_club_duel", "career_race", "transfer_duel"].includes(room.mode)) {
+        v.roundToken = roundToken(room, index);
       }
     }
     v.submitted = !!a;
@@ -140,8 +292,8 @@ function view(room, uid, time) {
   }
   if (["finished", "forfeit"].includes(room.status)) {
     v.result = room.winner == null ? "draw" : room.winner === uid ? "win" : "loss";
-    v.rewardEligible = room.status === "finished" && room.ranked &&
-      (!["mystery_duel", "fake_club_duel"].includes(room.mode) || Object.keys(room.answers[uid] || {}).length > 0);
+    // A player who answered nothing earns no ranked reward in any duel.
+    v.rewardEligible = room.status === "finished" && room.ranked && Object.keys(room.answers[uid] || {}).length > 0;
     v.rounds = room.questions.map((q, i) => ({kind: q.kind, ...q.public, answer: q.answer,
       ...(q.explanation ? {explanation: q.explanation, evidence: q.evidence} : {}),
       mine: room.answers[uid]?.[i] || null, theirs: room.answers[other]?.[i] || null}));
@@ -288,8 +440,9 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
           fail("failed-precondition", "Tur açık değil.");
         }
         const q = room.questions[input.round]; const clock = timing(room, input.round);
-        if (["mystery_duel", "fake_club_duel"].includes(room.mode) && input.roundToken !==
-            hash(room.id + "|" + input.round + "|" + room.version + "|" + clock.start)) {
+        if (["mystery_duel", "fake_club_duel", "career_race", "transfer_duel"].includes(room.mode) &&
+            input.roundToken !==
+            roundToken(room, input.round)) {
           fail("failed-precondition", "Tur kimliği güncel değil. Yeniden bağlan.");
         }
         if (time < clock.start || time >= clock.end) {
@@ -304,10 +457,17 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
           }
         } else if (!Number.isSafeInteger(input.answer) || (q.kind === "transfer" ? !players.has(input.answer) :
           !q.public.options.some((o) => o.id === input.answer))) fail("invalid-argument", "Geçerli cevap seç.");
-        const correct = JSON.stringify(input.answer) === JSON.stringify(q.answer);
+        const correct = q.accepted ? q.accepted.includes(input.answer) :
+          JSON.stringify(input.answer) === JSON.stringify(q.answer);
         const elapsed = time - clock.start;
+        // Transfer Duel: every hint already open lowers the base score.
+        const base = 100 - (q.kind === "transfer" && q.timedHints ?
+          TRANSFER_HINT_MS.filter((ms) => elapsed >= ms).length * TRANSFER_HINT_COST : 0);
+        // Mystery Duel: no speed bonus before the first hint; full bonus right when it opens.
+        const from = q.hintAt ? q.hintAt[0] : 0;
+        const bonus = elapsed < from ? 0 : Math.floor(50 * (q.duration - elapsed) / (q.duration - from));
         room.answers[uid][input.round] = {value: input.answer, correct, elapsed,
-          score: correct ? 100 + Math.floor(50 * (q.duration - elapsed) / q.duration) : 0};
+          score: correct ? (base + bonus) * (q.multiplier || 1) : 0};
       }
       room.presence[uid] = time;
       if (room.status !== "waiting") delete s.queue[uid];
@@ -349,4 +509,6 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
   }
   return {enter, act, sweep};
 }
-module.exports = {createService, questions, timing, totals, outcome, advance, view};
+module.exports = {createService, questions, timing, totals, outcome, advance, view, roundToken,
+  TRANSFER_MIX, TRANSFER_HINT_COST, TRANSFER_KNOWN_RANK, MYSTERY_MIX, MYSTERY_HINT_MS, hintClubs,
+  FAKE_MIX, FAKE_FINAL_MULTIPLIER};

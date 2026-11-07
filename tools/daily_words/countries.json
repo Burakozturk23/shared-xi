@@ -388,5 +388,727 @@
     "key": "Bhutan",
     "name": "Butan",
     "continent": "Asya"
+  },
+  {
+    "key": "United States",
+    "name": "ABD",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "USA",
+    "name": "ABD",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Saudi Arabia",
+    "name": "Suudi Arabistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Korea, South",
+    "name": "Güney Kore",
+    "continent": "Asya"
+  },
+  {
+    "key": "South Korea",
+    "name": "Güney Kore",
+    "continent": "Asya",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Korea",
+    "name": "Kore",
+    "continent": "Asya",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Cote d'Ivoire",
+    "name": "Fildişi Sahili",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Australia",
+    "name": "Avustralya",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "DR Congo",
+    "name": "Demokratik Kongo",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Bosnia-Herzegovina",
+    "name": "Bosna Hersek",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Bosnia and Herzegovina",
+    "name": "Bosna Hersek",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Northern Ireland",
+    "name": "Kuzey İrlanda",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Guinea",
+    "name": "Gine",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Georgia",
+    "name": "Gürcistan",
+    "continent": "Avrupa / Asya"
+  },
+  {
+    "key": "Guinea-Bissau",
+    "name": "Gine-Bissau",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Cape Verde",
+    "name": "Yeşil Burun Adaları",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Cape Verde Islands",
+    "name": "Yeşil Burun Adaları",
+    "continent": "Afrika",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Burkina Faso",
+    "name": "Burkina Faso",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Montenegro",
+    "name": "Karadağ",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "The Gambia",
+    "name": "Gambiya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Gambia",
+    "name": "Gambiya",
+    "continent": "Afrika",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Congo",
+    "name": "Kongo",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Israel",
+    "name": "İsrail",
+    "continent": "Asya"
+  },
+  {
+    "key": "New Zealand",
+    "name": "Yeni Zelanda",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Suriname",
+    "name": "Surinam",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "South Africa",
+    "name": "Güney Afrika",
+    "continent": "Afrika"
+  },
+  {
+    "key": "North Macedonia",
+    "name": "Kuzey Makedonya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Guadeloupe",
+    "name": "Guadeloupe",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Curacao",
+    "name": "Curaçao",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Curaçao",
+    "name": "Curaçao",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Martinique",
+    "name": "Martinik",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Trinidad and Tobago",
+    "name": "Trinidad ve Tobago",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Sierra Leone",
+    "name": "Sierra Leone",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Mauritania",
+    "name": "Moritanya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Costa Rica",
+    "name": "Kosta Rika",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Turkey",
+    "name": "Türkiye",
+    "continent": "Avrupa / Asya",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Honduras",
+    "name": "Honduras",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Equatorial Guinea",
+    "name": "Ekvator Ginesi",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Comoros",
+    "name": "Komorlar",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Belarus",
+    "name": "Belarus",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Zimbabwe",
+    "name": "Zimbabve",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Madagascar",
+    "name": "Madagaskar",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Lithuania",
+    "name": "Litvanya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Panama",
+    "name": "Panama",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Moldova",
+    "name": "Moldova",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Latvia",
+    "name": "Letonya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Indonesia",
+    "name": "Endonezya",
+    "continent": "Asya"
+  },
+  {
+    "key": "Liberia",
+    "name": "Liberya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Estonia",
+    "name": "Estonya",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Azerbaijan",
+    "name": "Azerbaycan",
+    "continent": "Avrupa / Asya"
+  },
+  {
+    "key": "Cyprus",
+    "name": "Kıbrıs",
+    "continent": "Avrupa / Asya"
+  },
+  {
+    "key": "Philippines",
+    "name": "Filipinler",
+    "continent": "Asya"
+  },
+  {
+    "key": "Luxembourg",
+    "name": "Lüksemburg",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Czechia",
+    "name": "Çekya",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Armenia",
+    "name": "Ermenistan",
+    "continent": "Avrupa / Asya"
+  },
+  {
+    "key": "El Salvador",
+    "name": "El Salvador",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Dominican Republic",
+    "name": "Dominik Cumhuriyeti",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Central African Republic",
+    "name": "Orta Afrika Cumhuriyeti",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Zambia",
+    "name": "Zambiya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Mozambique",
+    "name": "Mozambik",
+    "continent": "Afrika"
+  },
+  {
+    "key": "St. Kitts & Nevis",
+    "name": "Saint Kitts ve Nevis",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Guyana",
+    "name": "Guyana",
+    "continent": "Güney Amerika"
+  },
+  {
+    "key": "Uzbekistan",
+    "name": "Özbekistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Republic of Ireland",
+    "name": "İrlanda",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Puerto Rico",
+    "name": "Porto Riko",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Kazakhstan",
+    "name": "Kazakistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Faroe Islands",
+    "name": "Faroe Adaları",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Grenada",
+    "name": "Grenada",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "French Guiana",
+    "name": "Fransız Guyanası",
+    "continent": "Güney Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Antigua and Barbuda",
+    "name": "Antigua ve Barbuda",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Tanzania",
+    "name": "Tanzanya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Palestine",
+    "name": "Filistin",
+    "continent": "Asya"
+  },
+  {
+    "key": "Guatemala",
+    "name": "Guatemala",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Burundi",
+    "name": "Burundi",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Montserrat",
+    "name": "Montserrat",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Yemen",
+    "name": "Yemen",
+    "continent": "Asya"
+  },
+  {
+    "key": "Thailand",
+    "name": "Tayland",
+    "continent": "Asya"
+  },
+  {
+    "key": "St. Lucia",
+    "name": "Saint Lucia",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "St Lucia",
+    "name": "Saint Lucia",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "alias"
+  },
+  {
+    "key": "Saint-Martin",
+    "name": "Saint-Martin",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Malaysia",
+    "name": "Malezya",
+    "continent": "Asya"
+  },
+  {
+    "key": "Liechtenstein",
+    "name": "Liechtenstein",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Chad",
+    "name": "Çad",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Somalia",
+    "name": "Somali",
+    "continent": "Afrika"
+  },
+  {
+    "key": "San Marino",
+    "name": "San Marino",
+    "continent": "Avrupa"
+  },
+  {
+    "key": "Korea, North",
+    "name": "Kuzey Kore",
+    "continent": "Asya"
+  },
+  {
+    "key": "Aruba",
+    "name": "Aruba",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Afghanistan",
+    "name": "Afganistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Turkmenistan",
+    "name": "Türkmenistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Pakistan",
+    "name": "Pakistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Mauritius",
+    "name": "Mauritius",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Lebanon",
+    "name": "Lübnan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Hongkong",
+    "name": "Hong Kong",
+    "continent": "Asya",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Bermuda",
+    "name": "Bermuda",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "United Arab Emirates",
+    "name": "Birleşik Arap Emirlikleri",
+    "continent": "Asya"
+  },
+  {
+    "key": "St. Vincent & Grenadinen",
+    "name": "Saint Vincent ve Grenadinler",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Sao Tome and Principe",
+    "name": "São Tomé ve Príncipe",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Réunion",
+    "name": "Réunion",
+    "continent": "Afrika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Kyrgyzstan",
+    "name": "Kırgızistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Guam",
+    "name": "Guam",
+    "continent": "Okyanusya",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Gibraltar",
+    "name": "Cebelitarık",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Dominica",
+    "name": "Dominika",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Belize",
+    "name": "Belize",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Barbados",
+    "name": "Barbados",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "Bahrain",
+    "name": "Bahreyn",
+    "continent": "Asya"
+  },
+  {
+    "key": "Turks- and Caicosinseln",
+    "name": "Turks ve Caicos Adaları",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Timor-Leste",
+    "name": "Doğu Timor",
+    "continent": "Asya"
+  },
+  {
+    "key": "Southern Sudan",
+    "name": "Güney Sudan",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Sint Maarten",
+    "name": "Sint Maarten",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Seychelles",
+    "name": "Seyşeller",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Nicaragua",
+    "name": "Nikaragua",
+    "continent": "Kuzey Amerika"
+  },
+  {
+    "key": "New Caledonia",
+    "name": "Yeni Kaledonya",
+    "continent": "Okyanusya",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Neukaledonien",
+    "name": "Yeni Kaledonya",
+    "continent": "Okyanusya",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Namibia",
+    "name": "Namibya",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Malawi",
+    "name": "Malavi",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Lesotho",
+    "name": "Lesotho",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Laos",
+    "name": "Laos",
+    "continent": "Asya"
+  },
+  {
+    "key": "Isle of Man",
+    "name": "Man Adası",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "India",
+    "name": "Hindistan",
+    "continent": "Asya"
+  },
+  {
+    "key": "Guernsey",
+    "name": "Guernsey",
+    "continent": "Avrupa",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "British Virgin Islands",
+    "name": "Britanya Virjin Adaları",
+    "continent": "Kuzey Amerika",
+    "lingo": false,
+    "kind": "territory"
+  },
+  {
+    "key": "Bangladesh",
+    "name": "Banglades",
+    "continent": "Asya"
+  },
+  {
+    "key": "Fiji",
+    "name": "Fiji",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Tonga",
+    "name": "Tonga",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Samoa",
+    "name": "Samoa",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Palau",
+    "name": "Palau",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Nauru",
+    "name": "Nauru",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Tuvalu",
+    "name": "Tuvalu",
+    "continent": "Okyanusya"
+  },
+  {
+    "key": "Eritrea",
+    "name": "Eritre",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Djibouti",
+    "name": "Cibuti",
+    "continent": "Afrika"
+  },
+  {
+    "key": "Brunei",
+    "name": "Brunei",
+    "continent": "Asya"
+  },
+  {
+    "key": "Monaco",
+    "name": "Monako",
+    "continent": "Avrupa"
   }
 ]

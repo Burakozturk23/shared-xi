@@ -8,11 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/screens/football_calendar_page.dart';
 import 'package:shared_xi/services/daily_matches_gateway.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
+import 'package:shared_xi/widgets/hub_ui.dart';
+import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class FakeDailyGateway implements DailyMatchesGateway {
   bool empty = false, failed = false;
   int calls = 0;
   String? lastPlacement;
+  Map<String, dynamic>? lastInput;
   final round = <String, dynamic>{
     'key': '2026-09-30_1',
     'day': '2026-09-30',
@@ -46,6 +49,7 @@ class FakeDailyGateway implements DailyMatchesGateway {
     Map<String, dynamic> input = const {},
   ]) async {
     if (failed) throw StateError('Bağlantı kurulamadı.');
+    lastInput = input;
     if (action == 'status')
       return {
         'dayKey': '2026-09-30',
@@ -90,39 +94,90 @@ class FakeDailyGateway implements DailyMatchesGateway {
 
 class CalendarGateway extends FakeDailyGateway {
   @override
-  Future<Map<String, dynamic>> call(String action, [Map<String, dynamic> input = const {}]) async {
+  Future<Map<String, dynamic>> call(
+    String action, [
+    Map<String, dynamic> input = const {},
+  ]) async {
     final result = await super.call(action, input);
     if (action != 'status') return result;
-    return {...result, 'feed': {
-      'state': empty ? 'no-playable' : 'ready', 'snapshotUsed': true,
-      'snapshotUpdatedAt': DateTime.utc(2026, 10, 20, 21).millisecondsSinceEpoch,
-      'sources': {'turkey': {'state': 'error'}},
-      'competitions': ['Premier League', 'Şampiyonlar Ligi'],
-    }, 'calendar': [
-      {...match, 'status': 'NS', 'source': 'api-football', 'playable': !empty},
-      {'fixtureId': 4000575370, 'homeName': 'Real Madrid', 'awayName': 'RB Leipzig',
-        'homeClubId': 418, 'awayClubId': 23826, 'leagueId': 2, 'leagueName': 'Şampiyonlar Ligi',
-        'kickoff': '2026-09-30T19:00:00Z', 'status': 'NS', 'source': 'football-data-snapshot', 'playable': false},
-    ]};
+    return {
+      ...result,
+      'feed': {
+        'state': empty ? 'no-playable' : 'ready',
+        'snapshotUsed': true,
+        'snapshotUpdatedAt': DateTime.utc(
+          2026,
+          10,
+          20,
+          21,
+        ).millisecondsSinceEpoch,
+        'sources': {
+          'turkey': {'state': 'error'},
+        },
+        'competitions': ['Premier League', 'Şampiyonlar Ligi'],
+      },
+      'calendar': [
+        {
+          ...match,
+          'status': 'NS',
+          'source': 'api-football',
+          'playable': !empty,
+        },
+        {
+          'fixtureId': 4000575370,
+          'homeName': 'Real Madrid',
+          'awayName': 'RB Leipzig',
+          'homeClubId': 418,
+          'awayClubId': 23826,
+          'leagueId': 2,
+          'leagueName': 'Şampiyonlar Ligi',
+          'kickoff': '2026-09-30T19:00:00Z',
+          'status': 'NS',
+          'source': 'football-data-snapshot',
+          'playable': false,
+        },
+      ],
+    };
   }
 }
 
 class EuropeanCalendarGateway extends CalendarGateway {
   @override
-  Future<Map<String, dynamic>> call(String action, [Map<String, dynamic> input = const {}]) async {
+  Future<Map<String, dynamic>> call(
+    String action, [
+    Map<String, dynamic> input = const {},
+  ]) async {
     final result = await super.call(action, input);
     if (action != 'status') return result;
-    return {...result, 'matches': [], 'feed': {
-      'state': 'no-playable',
-      'sources': {'supplemental': {'state': 'ok'}},
-      'competitions': ['Süper Lig', 'Avrupa Ligi', 'Konferans Ligi'],
-    }, 'calendar': [
-      for (final (id, league, home) in [(3, 'Avrupa Ligi', 'Avrupa Ev'), (848, 'Konferans Ligi', 'Konferans Ev')])
-        {'fixtureId': id, 'leagueId': id, 'leagueName': league, 'homeName': home,
-          'awayName': 'Konuk', 'kickoff': '2026-10-22T20:00:00+03:00',
-          'status': 'NS', 'source': 'api-football', 'playable': false},
-      {...match, 'status': 'NS', 'playable': false},
-    ]};
+    return {
+      ...result,
+      'matches': [],
+      'feed': {
+        'state': 'no-playable',
+        'sources': {
+          'supplemental': {'state': 'ok'},
+        },
+        'competitions': ['Süper Lig', 'Avrupa Ligi', 'Konferans Ligi'],
+      },
+      'calendar': [
+        for (final (id, league, home) in [
+          (3, 'Avrupa Ligi', 'Avrupa Ev'),
+          (848, 'Konferans Ligi', 'Konferans Ev'),
+        ])
+          {
+            'fixtureId': id,
+            'leagueId': id,
+            'leagueName': league,
+            'homeName': home,
+            'awayName': 'Konuk',
+            'kickoff': '2026-10-22T20:00:00+03:00',
+            'status': 'NS',
+            'source': 'api-football',
+            'playable': false,
+          },
+        {...match, 'status': 'NS', 'playable': false},
+      ],
+    };
   }
 }
 
@@ -184,6 +239,53 @@ void main() {
     }
   });
   testWidgets(
+    'paid daily match uses canonical revision and hides legacy free hint',
+    (tester) async {
+      final gateway = FakeDailyGateway();
+      gateway.round.addAll({
+        'id': '2026-09-30_1',
+        'revision': 2,
+        'support': {
+          'version': 1,
+          'products': [
+            {'id': 'boost_basic', 'priceCoins': 25, 'ads': true},
+          ],
+          'adRemaining': 1,
+        },
+      });
+      await open(tester, gateway, width: 320, scale: 1.8);
+      await tester.scrollUntilVisible(
+        find.text('Mücadeleye başla'),
+        200,
+        maxScrolls: 40,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Mücadeleye başla'));
+      await tester.pumpAndSettle();
+      final target = find.byType(PaidHintButton).hitTestable();
+      await tester.scrollUntilVisible(
+        target,
+        200,
+        scrollable: find.byType(Scrollable).first,
+        maxScrolls: 40,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Ücretsiz ipucunu göster'), findsNothing);
+      await tester.widget<PaidHintButton>(target).onUse({
+        'boostId': 'boost_basic',
+        'paymentSource': 'coins',
+        'expectedPriceCoins': 25,
+      });
+      await tester.pumpAndSettle();
+      expect(gateway.lastInput?['revision'], 2);
+      expect(gateway.lastInput?['key'], '2026-09-30_1');
+      expect(gateway.lastInput?['expectedPriceCoins'], 25);
+      expect(gateway.round['hintUsed'], true);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'real fixture menu renders and three answers allow early cash-out',
     (tester) async {
       final gateway = FakeDailyGateway();
@@ -210,7 +312,13 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(finish);
       await tester.pumpAndSettle();
-      expect(find.text('30 Link Coin'), findsOneWidget);
+      final card = find.byType(HubResultCard);
+      expect(tester.widget<HubResultCard>(card).tone, HubResultTone.win);
+      expect(
+        find.descendant(of: card, matching: find.text('+30 Link Coin')),
+        findsOneWidget,
+      );
+      expect(find.text('Maçı kazandın!'), findsOneWidget);
       expect(find.text('Hedef tamamlandı. Maç bitti.'), findsOneWidget);
       expect(
         find.text('Hedef tamam! Ek ödül için devam edebilirsin.'),
@@ -222,7 +330,8 @@ void main() {
       await tester.tap(bonus);
       await tester.pumpAndSettle();
       expect(gateway.lastPlacement, 'daily_double');
-      expect(find.text('60 Link Coin'), findsOneWidget);
+      expect(find.text('+60 Link Coin'), findsOneWidget);
+      expect(find.text('2x bonusun kaydedildi.'), findsOneWidget);
       expect(find.text('Tekrar dene'), findsNothing);
       await tester.drag(find.byType(ListView).first, const Offset(0, 1200));
       await tester.pumpAndSettle();
@@ -254,66 +363,91 @@ void main() {
     await preview(tester, 'daily-large-text');
   });
   for (final light in [false, true]) {
-    testWidgets('calendar and playable games stay separate, filters recover; theme $light', (tester) async {
-      await open(tester, CalendarGateway(), light: light, width: light ? 320 : 390, scale: light ? 1.8 : 1);
-      expect(tester.takeException(), isNull);
-      await preview(tester, 'daily-v2-lobby-$light');
-      await tester.ensureVisible(find.text('Fikstür · 2'));
-      await tester.pumpAndSettle();
-      expect(find.text('Fikstür · 2').hitTestable(), findsOneWidget);
-      await tester.tap(find.text('Fikstür · 2')); await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Avrupa'));
-      await tester.pumpAndSettle();
-      expect(find.text('Avrupa').hitTestable(), findsOneWidget);
-      await tester.tap(find.text('Avrupa')); await tester.pumpAndSettle();
-      expect(find.text('Real Madrid'), findsOneWidget);
-      expect(find.text('Ortak oyuncuları bul'), findsNothing);
-      await tester.ensureVisible(find.text('Real Madrid')); await tester.pumpAndSettle();
-      await preview(tester, 'daily-v2-calendar-$light');
-      await tester.ensureVisible(find.text('Oyna · 1'));
-      await tester.pumpAndSettle();
-      expect(find.text('Oyna · 1').hitTestable(), findsOneWidget);
-      await tester.tap(find.text('Oyna · 1')); await tester.pumpAndSettle();
-      expect(find.text('Bu seçime uygun maç yok'), findsOneWidget);
-      await tester.ensureVisible(find.text('Tümünü göster'));
-      await tester.pumpAndSettle();
-      expect(find.text('Tümünü göster').hitTestable(), findsOneWidget);
-      await tester.tap(find.text('Tümünü göster')); await tester.pumpAndSettle();
-      expect(find.text('Mücadeleye başla'), findsOneWidget);
-      await tester.ensureVisible(find.text('Takvim bilgisi')); await tester.pumpAndSettle();
-      await preview(tester, 'daily-v2-source-$light');
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-    });
+    testWidgets(
+      'calendar and playable games stay separate, filters recover; theme $light',
+      (tester) async {
+        await open(
+          tester,
+          CalendarGateway(),
+          light: light,
+          width: light ? 320 : 390,
+          scale: light ? 1.8 : 1,
+        );
+        expect(tester.takeException(), isNull);
+        await preview(tester, 'daily-v2-lobby-$light');
+        await tester.ensureVisible(find.text('Fikstür · 2'));
+        await tester.pumpAndSettle();
+        expect(find.text('Fikstür · 2').hitTestable(), findsOneWidget);
+        await tester.tap(find.text('Fikstür · 2'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Avrupa'));
+        await tester.pumpAndSettle();
+        expect(find.text('Avrupa').hitTestable(), findsOneWidget);
+        await tester.tap(find.text('Avrupa'));
+        await tester.pumpAndSettle();
+        expect(find.text('Real Madrid'), findsOneWidget);
+        expect(find.text('Ortak oyuncuları bul'), findsNothing);
+        await tester.ensureVisible(find.text('Real Madrid'));
+        await tester.pumpAndSettle();
+        await preview(tester, 'daily-v2-calendar-$light');
+        await tester.ensureVisible(find.text('Oyna · 1'));
+        await tester.pumpAndSettle();
+        expect(find.text('Oyna · 1').hitTestable(), findsOneWidget);
+        await tester.tap(find.text('Oyna · 1'));
+        await tester.pumpAndSettle();
+        expect(find.text('Bu seçime uygun maç yok'), findsOneWidget);
+        await tester.ensureVisible(find.text('Tümünü göster'));
+        await tester.pumpAndSettle();
+        expect(find.text('Tümünü göster').hitTestable(), findsOneWidget);
+        await tester.tap(find.text('Tümünü göster'));
+        await tester.pumpAndSettle();
+        expect(find.text('Mücadeleye başla'), findsOneWidget);
+        await tester.ensureVisible(find.text('Takvim bilgisi'));
+        await tester.pumpAndSettle();
+        await preview(tester, 'daily-v2-source-$light');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
   }
-  testWidgets('no playable games still offers an honest calendar instead of a fake game', (tester) async {
-    await open(tester, CalendarGateway()..empty = true);
-    expect(find.text('Bugün için uygun oyun bulunamadı'), findsOneWidget);
-    await tester.ensureVisible(find.text('Fikstürü incele'));
-    await tester.pumpAndSettle();
-    expect(find.text('Fikstürü incele').hitTestable(), findsOneWidget);
-    await tester.tap(find.text('Fikstürü incele')); await tester.pumpAndSettle();
-    expect(find.text('Real Madrid'), findsOneWidget);
-    expect(find.text('Mücadeleye başla'), findsNothing);
-    expect(find.text('Ortak oyuncuları bul'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'no playable games still offers an honest calendar instead of a fake game',
+    (tester) async {
+      await open(tester, CalendarGateway()..empty = true);
+      expect(find.text('Bugün için uygun oyun bulunamadı'), findsOneWidget);
+      await tester.ensureVisible(find.text('Fikstürü incele'));
+      await tester.pumpAndSettle();
+      expect(find.text('Fikstürü incele').hitTestable(), findsOneWidget);
+      await tester.tap(find.text('Fikstürü incele'));
+      await tester.pumpAndSettle();
+      expect(find.text('Real Madrid'), findsOneWidget);
+      expect(find.text('Mücadeleye başla'), findsNothing);
+      expect(find.text('Ortak oyuncuları bul'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
-  testWidgets('European cups appear in calendar and Europe filter even without eligible games', (tester) async {
-    await open(tester, EuropeanCalendarGateway(), width: 320, scale: 1.5);
-    await tester.ensureVisible(find.text('Fikstür · 3'));
-    await tester.tap(find.text('Fikstür · 3')); await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Avrupa'));
-    await tester.tap(find.text('Avrupa')); await tester.pumpAndSettle();
-    expect(find.text('Avrupa Ligi'), findsOneWidget);
-    expect(find.text('Konferans Ligi'), findsOneWidget);
-    expect(find.text('Süper Lig'), findsNothing);
-    expect(find.text('Ortak oyuncuları bul'), findsNothing);
-    await tester.ensureVisible(find.text('Konferans Ev')); await tester.pumpAndSettle();
-    await preview(tester, 'daily-europe-cups');
-    await tester.ensureVisible(find.text('Takvim bilgisi')); await tester.pumpAndSettle();
-    expect(find.textContaining('güncellemesi bekleniyor'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
-
+  testWidgets(
+    'European cups appear in calendar and Europe filter even without eligible games',
+    (tester) async {
+      await open(tester, EuropeanCalendarGateway(), width: 320, scale: 1.5);
+      await tester.ensureVisible(find.text('Fikstür · 3'));
+      await tester.tap(find.text('Fikstür · 3'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Avrupa'));
+      await tester.tap(find.text('Avrupa'));
+      await tester.pumpAndSettle();
+      expect(find.text('Avrupa Ligi'), findsOneWidget);
+      expect(find.text('Konferans Ligi'), findsOneWidget);
+      expect(find.text('Süper Lig'), findsNothing);
+      expect(find.text('Ortak oyuncuları bul'), findsNothing);
+      await tester.ensureVisible(find.text('Konferans Ev'));
+      await tester.pumpAndSettle();
+      await preview(tester, 'daily-europe-cups');
+      await tester.ensureVisible(find.text('Takvim bilgisi'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('güncellemesi bekleniyor'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

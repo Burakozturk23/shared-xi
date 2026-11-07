@@ -3,6 +3,7 @@ import '../app/route_appearance.dart';
 
 import '../data/build_xi_formations.dart';
 import '../models/squad_challenge.dart';
+import '../widgets/hub_ui.dart';
 import '../services/profile_service.dart';
 import '../services/squad_challenge_progress_service.dart';
 import '../services/squad_challenge_service.dart';
@@ -206,11 +207,11 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
             throw StateError(
               'Bugünkü ek denemelerin bitti. Antrenman her zaman açık.',
             );
-          if (_hub!.coins < _hub!.extraPrice)
+          final price = _priceOf(mission, _hub!);
+          if (_hub!.coins < price)
             throw StateError(
               'Link Coin’in yetersiz. Yeni ücretsiz haklar 00.00’da gelir.',
             );
-          final price = _hub!.extraPrice;
           quotedPrice = price;
           spend =
               await showDialog<bool>(
@@ -484,7 +485,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Ücretsiz haklardan sonra ${hub.extraPrice} Link Coinle ek deneme açabilirsin. '
+                      'Ücretsiz haklardan sonra görev ödülünün yarısı kadar Link Coinle ek deneme açabilirsin. '
                       'Bugün ${hub.extraRemaining} ek deneme kaldı. Premium ile deneme sınırı kalkar.',
                     ),
                     const SizedBox(height: 8),
@@ -527,12 +528,17 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
     );
   }
 
+  /// Extra attempt price of this mission (older servers: one hub price).
+  int _priceOf(SquadMission m, SquadHub hub) =>
+      m.extraPrice > 0 ? m.extraPrice : hub.extraPrice;
+
   Widget _missionCard(SquadMission m, SquadHub hub) {
     final theme = _catalog!.themes[m.themeId]!;
+    final price = _priceOf(m, hub);
     final blocked =
         !hub.premium &&
         hub.freeRemaining == 0 &&
-        (hub.extraRemaining == 0 || hub.coins < hub.extraPrice);
+        (hub.extraRemaining == 0 || hub.coins < price);
     final activeHere = hub.active?.mission.id == m.id;
     final label = m.completed
         ? 'Tamamlandı · Antrenman yap'
@@ -544,7 +550,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
         ? 'Başla · 1 ücretsiz deneme'
         : blocked
         ? 'Yeni haklar 00.00’da'
-        : 'Başla · ${hub.extraPrice} Link Coin';
+        : 'Başla · $price Link Coin';
     return PitchPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -564,10 +570,36 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
           Text(theme.name, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 6),
           Text(theme.description),
-          const SizedBox(height: 10),
-          Text(
-            '${m.formationId} · ${m.budget} kredi · ${m.links} bağ · ${m.countries} ülke',
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ManagerTag(m.formationId),
+              ManagerTag('${m.budget} kredi'),
+              ManagerTag(
+                m.maxLinks > 0
+                    ? '${m.links}/${m.maxLinks} bağ'
+                    : '${m.links} bağ',
+              ),
+              ManagerTag('${m.countries} ülke'),
+            ],
           ),
+          if (m.twoStar > 0) ...[
+            const SizedBox(height: 10),
+            Text(
+              '★★ ${m.twoStar} bağ · +${m.starBonus[2] ?? 0} coin   '
+              '★★★ ${m.threeStar} bağ · +${m.starBonus[3] ?? 0} coin',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: hubAmber(context),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Her kulüp en fazla ${m.clubLinkCap} bağ verir.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
           const SizedBox(height: 14),
           PitchAction(
             label: label,

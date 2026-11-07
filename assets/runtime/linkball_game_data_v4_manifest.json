@@ -5,9 +5,9 @@
   "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
   "database": {
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
-    "bytes": 43065344,
-    "sizeMB": 41.07,
-    "sha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030"
+    "bytes": 40415232,
+    "sizeMB": 38.54,
+    "sha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254"
   },
   "counts": {
     "players": 36391,
@@ -41,8 +41,8 @@
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
   },
-  "revision": "v4-2026-10-05.1",
-  "updatedUtc": "2026-10-05",
+  "revision": "v4-2026-10-30.1",
+  "updatedUtc": "2026-10-30",
   "patches": [
     {
       "id": "v4-2026-09-28.1",
@@ -110,6 +110,19 @@
       "newClubs": 24,
       "newCoaches": 10,
       "newCareerSpells": 200
+    }
+  ],
+  "corrections": [
+    {
+      "id": "v4-2026-10-30.1",
+      "baseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
+      "outputSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+      "policy": "placeholder_clubs_v1",
+      "clubs": [
+        515
+      ],
+      "removedLinks": 11135,
+      "players": 36391
     }
   ]
 }

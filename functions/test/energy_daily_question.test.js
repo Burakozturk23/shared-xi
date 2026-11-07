@@ -68,7 +68,12 @@ test("concurrent purchase retries spend once, share limits and never overflow", 
   await Promise.all([1, 2].map(() => h.call("purchaseEnergy", {requestId: req(8), packageId: "small"})));
   assert.equal(h.read("economyState/alice/balances/coins"), 175);
   assert.equal((await h.call("getEnergyStatus")).daily.purchases, 1);
-  await assert.rejects(h.call("purchaseEnergy", {requestId: req(9), packageId: "large"}), /alanı/);
+  // The message names the room a pack needs and the room there is.
+  await assert.rejects(h.call("purchaseEnergy", {requestId: req(9), packageId: "large"}),
+      /Paket için yeterli boş yer yok: 5 boş yer gerekiyor, şu an \d+ var\./);
+  const packs = (await h.call("getEnergyStatus")).packages;
+  assert.equal(packs.large.fits, false); assert.equal(packs.large.energy, 5);
+  assert.equal(packs.small.freeSlots, packs.large.freeSlots);
   assert.equal(h.read("economyState/alice/balances/coins"), 175);
 });
 test("story units resolve all eight catalogs, legacy progress and repeated tasks share access", async () => {

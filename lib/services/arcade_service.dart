@@ -195,9 +195,9 @@ class ArcadeService {
     final uid = await _identity(); final prefs = await SharedPreferences.getInstance(); _check(uid);
     return _mutateBurst(prefs, uid, _readSnapshot(prefs, _key(uid, 'burst')), input, checkpoint: true);
   }
-  Future<void> watch(String sessionId) async {
+  Future<void> watch(String sessionId, {String? boostId}) async {
     final uid = await _identity();
     final status = await transport.call('getRewardedAdStatus'); _check(uid);
-    await transport.watch('burst_survival_hint', pro: status['pro'] == true, context: {'sessionId': sessionId}); _check(uid);
+    await transport.watch('burst_survival_hint', pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId}); _check(uid);
   }
 }

@@ -82,6 +82,29 @@ extension ManagerDifficultyX on ManagerDifficulty {
         return 28;
     }
   }
+
+  /// About a third of the win bonus: a point away from home is worth something.
+  int get drawBonusLink => (winBonusLink / 3).round();
+
+  /// Board target: finish in the top N.
+  int get boardTargetRank => switch (this) {
+    ManagerDifficulty.easy => 4,
+    ManagerDifficulty.medium => 8,
+    ManagerDifficulty.hard => 12,
+  };
+
+  int get boardBonusLink => switch (this) {
+    ManagerDifficulty.easy => 30,
+    ManagerDifficulty.medium => 40,
+    ManagerDifficulty.hard => 50,
+  };
+
+  /// Season-end LINK: 2 per place above 21st, the board bonus when the
+  /// target is met and 30 more for the title.
+  int seasonRewardLink(int rank) =>
+      (21 - rank).clamp(0, 20) * 2 +
+      (rank <= boardTargetRank ? boardBonusLink : 0) +
+      (rank == 1 ? 30 : 0);
 }
 
 class ManagerRatingBreakdown {

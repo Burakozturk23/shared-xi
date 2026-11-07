@@ -48,7 +48,7 @@
         "challenger_10": 20,
         "loyal_rival_50": 40,
         "centurion_100": 75,
-        "winner_10": 20,
+        "winner_10": 25,
         "winner_50": 50,
         "winner_100": 100,
         "streak_3": 15,
@@ -114,7 +114,7 @@
           "itemId": "speedster_bolt",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 10
         },
         "avatar_tactician_board": {
@@ -125,7 +125,7 @@
           "itemId": "tactician_board",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 20
         },
         "avatar_night_owl": {
@@ -136,7 +136,7 @@
           "itemId": "night_owl",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 30
         },
         "avatar_champion_cup": {
@@ -147,7 +147,7 @@
           "itemId": "champion_cup",
           "itemType": "avatar",
           "oneTime": true,
-          "enabled": true,
+          "enabled": false,
           "sortOrder": 40
         }
       }

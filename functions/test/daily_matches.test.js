@@ -102,18 +102,14 @@ test("three starts per Istanbul day; day rollover rejects old submissions", asyn
   s.h.setTime(s.h.now + 86400000);
   await assert.rejects(s.service.play("alice", {key: session.key, action: "answer", answer: "test"}));
 });
-test("streak ignores empty fixture days; one missed playable day can be repaired once per week", async () => {
+test("streak ignores empty fixture days; repair moved to the shared play streak", async () => {
   const s = setup(); await s.h.db.ref("dailyMatchState/alice").set({streak: 4, lastWin: "2026-09-18"});
   await s.put("2026-09-19", []); await s.put();
-  assert.equal((await s.service.status("alice")).streak, 4);
-  await s.put("2026-09-19", [s.fixture(9, "2026-09-19")]);
-  assert.equal((await s.service.status("alice")).repairStreak, 4);
-  const {event} = await s.ad("daily_streak"); await s.ads.accept(event);
   assert.equal((await s.service.status("alice")).streak, 4);
   const {session} = await s.service.start("alice", 1); await s.answer(session.key);
   await s.service.play("alice", {key: session.key, action: "finish"});
   assert.equal((await s.service.status("alice")).streak, 5);
-  await assert.rejects(s.ad("daily_streak", undefined, "b".repeat(32)));
+  await assert.rejects(s.service.prepareReward("alice", "daily_streak", {}));
 });
 test("anonymous base and doubled rewards wait for same-account linking, then settle once", async () => {
   const s = setup(); s.setLinked(false); await s.put(); const {session} = await s.service.start("alice", 1);

@@ -286,3 +286,172 @@ test("Offline: clock events never reset total budget and paused time is excluded
   assert.equal(result.session.activeMs, 120000); assert.equal(result.session.finished, true);
   assert.equal(result.session.totalRemainingMs, 0); assert.equal(result.session.score, 0);
 });
+test("Burst clock: elapsedMs 0 cannot stop Speed Attack; the server clock is the floor", async () => {
+  const h = setup(); let s = await start(h, "burst", {style: "speed"});
+  for (let i = 0; i < 20 && !s.finished; i++) {
+    h.setTime(h.now + 10000);
+    s = await act(h, s, {action: "answer", entityId: raw(h, s).question.answers.find((x) =>
+      !(raw(h, s).found || []).includes(x)), elapsedMs: 0});
+  }
+  assert.equal(s.finished, true); assert.ok(raw(h, s).activeMs >= 100000);
+  assert.ok(s.rounds < 20);
+});
+test("Burst Speed climbs tiers; Survival rounds time out at 75 s for a life", async () => {
+  const r = E.create(E.catalog, {mode: "burst", style: "speed", pairType: "clubClub", requestId: id()}, 1);
+  assert.equal(r.question.difficulty, "easy");
+  const h = setup(); let s = await start(h, "burst", {style: "survival"});
+  assert.equal(s.roundMs, 75000);
+  h.setTime(h.now + 76000);
+  s = await act(h, s, {action: "tick", elapsedMs: 76000});
+  assert.equal(s.lives, 4); assert.match(s.message, /−1 can/);
+});
+test("Burst: pausing hides the pair; hints go nationality then initials and clear once found", async () => {
+  const h = setup(); let s = await start(h, "burst", {style: "survival"});
+  const left = s.question.left;
+  s = await act(h, s, {action: "pause"});
+  assert.equal(s.question.hidden, true); assert.equal(s.question.left, undefined);
+  s = await act(h, s, {action: "resume"}); assert.equal(s.question.left, left);
+  h.seed(`economyState/alice/arcade/sessions/${s.id}/adCredits`, 2);
+  s = await act(h, s, {action: "hint", elapsedMs: 1000}); assert.match(s.hint, /^Bir cevabın milliyeti: /);
+  s = await act(h, s, {action: "hint", elapsedMs: 1000}); assert.doesNotMatch(s.hint, /milliyeti/);
+  const hinted = raw(h, s).hinted[0];
+  s = await act(h, s, {action: "answer", entityId: hinted, elapsedMs: 1000}); assert.equal(s.hint, "");
+});
+test("Burst: medals are kept with rewards off; Speed records hold no lives", async () => {
+  const h = harness({runtimeConfig: {arcade: {enabled: true, rewardsEnabled: false},
+    energy: {enabled: false}}}, {omitEmptyObjects: true});
+  let s = await start(h, "burst", {style: "speed"});
+  for (let i = 0; i < 6; i++) {
+    h.setTime(h.now + 2000); s = await correct(h, s);
+  }
+  s = await act(h, s, {action: "finish"});
+  const st = h.read("economyState/alice/arcade");
+  assert.ok(st.medals["burst:v1:speed:bronze"]); assert.equal(st.claims, undefined);
+  const rec = Object.values(st.records)[0];
+  assert.equal(rec.bestLives, undefined); assert.ok(rec.bestAverageAnswerMs > 0);
+});
+test("Burst offline: an answer for a round the clock already closed is dropped, not the batch", async () => {
+  const h = setup(); const s = await start(h, "burst", {style: "speed"});
+  const q = raw(h, s).question;
+  const events = [
+    {mode: "burst", sessionId: s.id, revision: s.revision, requestId: id(), action: "tick",
+      questionId: q.id, elapsedMs: 29000},
+    {mode: "burst", sessionId: s.id, revision: s.revision + 1, requestId: id(), action: "answer",
+      questionId: q.id, entityId: q.answers[0], elapsedMs: 2000},
+  ];
+  h.setTime(h.now + 40000);
+  const result = await h.call("replayArcade", {mode: "burst", events});
+  assert.match(result.session.message, /geç gelen cevap/); assert.equal(result.session.correct, 0);
+});
+test("Burst search ranks better-known players first among equal matches", async () => {
+  const h = setup();
+  const {items} = await h.call("searchArcade", {mode: "burst", query: "silva"});
+  const ranks = items.map((x) => E.catalog.players[x.id].rank);
+  const starts = items.map((x) => x.name.toLowerCase().startsWith("silva"));
+  for (let i = 1; i < items.length; i++) {
+    if (starts[i] === starts[i - 1]) assert.ok(ranks[i - 1] <= ranks[i]);
+  }
+});
+const fillable = (b, filled) => b.slots.find((x) => !filled[x.id] && x.supports.length === 2 &&
+  x.supports.every((n) => filled[n]));
+async function solvePyramid(h, s, {undoOnce = false} = {}) {
+  let undone = !undoOnce;
+  while (!s.finished) {
+    const r = E.hydrate(raw(h, s)); const slot = fillable(r.board, r.filled);
+    s = await act(h, s, {action: "answer", slotId: slot.id, entityId: r.board.certificate[slot.id]});
+    if (!undone) {
+      s = await act(h, s, {action: "undo"}); undone = true;
+    }
+  }
+  return s;
+}
+test("Pyramid catalog: 150 boards, hard boards are tighter than normal", () => {
+  const boards = E.catalog.pyramids;
+  assert.equal(boards.length, 150);
+  const mean = (d) => boards.filter((b) => b.difficulty === d).reduce((n, b) => n + b.looseness, 0) /
+    boards.filter((b) => b.difficulty === d).length;
+  assert.ok(mean("hard") < mean("normal") - 3);
+  for (const b of boards.slice(0, 20)) assert.ok(E.solve(E.catalog, b, b.initial));
+});
+test("Pyramid: win bonus rewards lives and no hints; undo costs bonus and hard mastery", async () => {
+  const h = setup(); let s = await start(h, "pyramid", {difficulty: "hard"});
+  assert.equal(s.board.cells, 9);
+  s = await solvePyramid(h, s);
+  assert.equal(s.won, true); assert.equal(raw(h, s).bonus, 700); assert.equal(s.score, 900 + 700);
+  assert.ok(h.read("economyState/alice/arcade/claims")["pyramid:v1:master"]);
+  const h2 = setup(); let s2 = await start(h2, "pyramid", {difficulty: "hard"});
+  s2 = await solvePyramid(h2, s2, {undoOnce: true});
+  assert.equal(raw(h2, s2).bonus, 650);
+  assert.equal(h2.read("economyState/alice/arcade/claims")["pyramid:v1:master"], undefined);
+});
+test("Pyramid: a dead-end candidate costs a life like any wrong one; hints come in two steps", async () => {
+  const h = setup(); let s = await start(h, "pyramid", {difficulty: "normal"});
+  const r = E.hydrate(raw(h, s)); const slot = fillable(r.board, r.filled);
+  const used = new Set(Object.values(r.filled));
+  const need = slot.supports.map((n) => r.filled[n]).concat(slot.row === 1 ? [r.filled["0"]] : []);
+  const linked = Object.keys(E.catalog.entities).filter((id) => !used.has(id) &&
+    need.every((n) => E.edge(E.catalog, id, n)));
+  const dead = linked.find((id) => !E.solve(E.catalog, r.board, {...r.filled, [slot.id]: id}));
+  const unlinked = Object.keys(E.catalog.entities).find((id) => !used.has(id) && !linked.includes(id));
+  s = await act(h, s, {action: "answer", slotId: slot.id, entityId: unlinked});
+  const message = s.message; assert.equal(s.lives, 4);
+  if (dead) {
+    s = await act(h, s, {action: "answer", slotId: slot.id, entityId: dead});
+    assert.equal(s.lives, 3); assert.equal(s.message, message);
+  }
+  s = await act(h, s, {action: "hint", slotId: slot.id}); assert.match(s.hint, /^Aday türü: \w+\.$/u);
+  s = await act(h, s, {action: "hint", slotId: slot.id}); assert.ok(s.hint.length > "Aday türü: Oyuncu.".length);
+});
+test("Pyramid: new boards come first; today's board is the same for everyone", async () => {
+  const h = setup(); const seen = new Set();
+  for (let i = 0; i < 4; i++) {
+    let s = await start(h, "pyramid", {difficulty: "easy"}); assert.ok(!seen.has(s.board.id)); seen.add(s.board.id);
+    s = await act(h, s, {action: "finish"});
+  }
+  const a = setup(); const b = setup();
+  const d1 = await start(a, "pyramid", {daily: true}); const d2 = await start(b, "pyramid", {daily: true});
+  assert.equal(d1.board.id, d2.board.id); assert.ok(d1.daily); assert.equal(d1.difficulty, "normal");
+  await assert.rejects(prepare(a, "burst", {daily: true}), {code: "invalid-argument"});
+});
+test("Matching: card ids carry no pair; flipping ids in order is not a perfect game", async () => {
+  for (let i = 0; i < 20; i++) {
+    const b = E.matching(E.catalog, "hard", "ids" + i);
+    assert.deepEqual(b.cards.map((x) => x.id), b.cards.map((_, k) => "k" + k));
+  }
+  const h = setup(); let s = await start(h, "matching", {difficulty: "hard"});
+  for (let i = 0; i < 24 && !s.finished; i++) {
+    h.setTime(h.now + 1100);
+    s = await act(h, s, {action: "flip", cardId: s.board.cards[i].id});
+  }
+  assert.ok(!(s.finished && s.moves === 12), "sequential ids must not solve the board");
+});
+test("Matching: easy boards vary by seed; stars and hard mastery are tighter", async () => {
+  const boards = new Set();
+  for (let i = 0; i < 30; i++) {
+    boards.add(E.matching(E.catalog, "easy", "easy" + i).pairs.map((p) => p.playerId).sort().join());
+  }
+  assert.ok(boards.size >= 10);
+  assert.deepEqual(E.catalog.policy.stars.threePerPair, 1.75);
+  const s = {records: {}, claims: {}, pending: {}, daily: {}};
+  const base = {mode: "matching", phase: "active", finished: true, won: true, difficulty: "hard", hints: 0,
+    wrong: 0, dataVersion: version, rewardKeys: [], earnedCoins: 0, activeMs: 50000, stars: 3};
+  finalize(s, {...base, id: "a", moves: 20}, 1, true);
+  assert.equal(s.claims["matching:v1:master"], undefined);
+  finalize(s, {...base, id: "b", moves: 18}, 1, true);
+  assert.ok(s.claims["matching:v1:master"]);
+  assert.equal(Object.values(s.records)[0].bestStars, 3);
+});
+test("Matching: a paused win sets moves but no time record; today's board is shared", async () => {
+  const s = {records: {}, claims: {}, pending: {}, daily: {}};
+  const run = {mode: "matching", phase: "active", finished: true, won: true, difficulty: "normal", hints: 0,
+    wrong: 0, dataVersion: version, rewardKeys: [], earnedCoins: 0, activeMs: 1000, moves: 14, stars: 2, pauses: 1};
+  finalize(s, {...run, id: "p"}, 1, false);
+  const rec = Object.values(s.records)[0];
+  assert.equal(rec.bestMoves, 14); assert.equal(rec.bestTimeMs, undefined); assert.equal(rec.timeAtBestMoves, null);
+  const h = setup(); let live = await start(h, "matching");
+  live = await act(h, live, {action: "pause"}); assert.equal(raw(h, live).pauses, 1);
+  const a = setup(); const b = setup();
+  const d1 = await start(a, "matching", {daily: true}); const d2 = await start(b, "matching", {daily: true});
+  assert.deepEqual(raw(a, d1).board.pairs.map((p) => p.playerId), raw(b, d2).board.pairs.map((p) => p.playerId));
+  assert.ok(d1.daily); assert.equal(d1.difficulty, "normal");
+});

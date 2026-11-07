@@ -43,16 +43,46 @@ SQLite SHA and `reviews.json`. Density checks are not source verification.
   See `../reviews/fourteen-modes-2026-10-22.md` for the complete source audit.
   The existing numeric database columns alone do not establish career/senior/recorded
   scope, snapshot provenance or reliable zero values.
-- All 768 original tournament highlights are unreviewed. Unverified season and
-  highlight claims are omitted. These themes are free, unrewarded practice only.
-  Short manifests preserve legacy matchup pairs but require explicit editorial
-  approval in addition to candidate source reviews before rewards can open.
+- All 768 original tournament highlights are unreviewed. Unverified highlight
+  claims are omitted; the season / era tag is shown only as the candidate's
+  identifying label (`seasonLabelOnly`), so repeated names such as two
+  Galatasaray squads stay distinguishable. These themes are free, unrewarded
+  practice only and require explicit editorial approval in addition to
+  candidate source reviews before rewards can open.
+- Six sourced criteria, all from the same hash-pinned UEFA handbook PDF:
+  player appearances, goals and goals per match (derived from the two printed
+  columns, two decimals) for the 145 verified 70+ appearance identities, and
+  club participations, wins and goals scored for the 164 clubs with 20+ matches
+  in the all-time club ranking (pages 2–6, transcribed in
+  `tools/choice/uefa_2023_clubs.json`). Every club row must satisfy
+  W + D + L = Pld, F − A = GD and Pts = 2W + D; `verify_uefa_source.py` compares
+  all 536 club rows with the PDF. Clubs appear under their published UEFA name
+  and country; no database identity is inferred. The 15+ goals scorer table
+  (pages 9–10) maps only 97 identities, below the 120-row gate, so it is unused.
+- Higher or Lower: count metrics (matches, goals) also need an absolute gap per
+  band (easy 8, normal 5, hard 4, master 3), relaxed only when no pair is left;
+  money values keep the relative band. The known side is seeded. Each run has
+  one joker: the first miss keeps the streak. Training runs keep a separate
+  `__training` record. `hl__explorer` needs three metrics or every open one while
+  fewer than three pass review. Finished sessions are pruned to the newest 30.
+- Blind Ranking: every objective list carries one close call (a neighbour
+  within 10%, at most 3 apart for counts); lists are sampled from a copy of the
+  shared catalog rows. The 80 badge needs 80+ on a ten-list or a perfect
+  five-list; perfection needs a perfect ten-list. One personal list a day is
+  rewarded. Training hints name only the upper or lower half. The collection
+  keeps the newest 200 results.
+- Each tournament draws its own pairings from the manifest (private seed);
+  today's bracket picks one theme at 16 and the same draw for everyone. Undos
+  are counted. A completed bracket adds one champion pick to
+  `choiceStats/{version}/{theme}__{size}` (server-only path), and the result
+  shows the share that crowned the same champion. Once rewards open, a bracket
+  finished faster than 0.6 s per decision earns no reward.
 - Some legacy names cannot be mapped unambiguously to V4. The machine audit records
   the exact IDs. No fuzzy first-hit matching or invented source approval is used.
 - Full offline progression for Higher or Lower and Blind Ranking is not yet shipped.
 - Club crest mappings and reviewed season-club/two-fact cards remain content work.
-- Android PNG code needs a real-device chooser/save smoke test. iOS/web native
-  sharing is not provided. The in-app card preview is available.
+- Android PNG code needs a real-device chooser/save smoke test. A text result
+  share (share sheet / copy) is available on every platform.
 - Firebase emulator rules/concurrency and physical-device acceptance are not
   represented by the in-memory callable contract harness or widget tests.
 

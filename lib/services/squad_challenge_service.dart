@@ -63,6 +63,7 @@ class FirebaseSquadGateway extends SquadGateway {
     await CloudBootstrap.ensureInitialized();
     if (userId == null)
       throw StateError('Coin görevleri için Google hesabına bağlan.');
+    final owner = userId;
     try {
       final response =
           await FirebaseFunctions.instanceFor(
@@ -76,6 +77,7 @@ class FirebaseSquadGateway extends SquadGateway {
                 ),
               )
               .call<Map<String, dynamic>>({'catalogVersion': version, ...data});
+      if (owner != userId) throw StateError('Hesabın değişti. Görevlerine geri dön.');
       if (response.data['ok'] != true) throw StateError('İşlem tamamlanamadı.');
       return SquadResponse.fromJson(response.data);
     } on FirebaseFunctionsException catch (e) {

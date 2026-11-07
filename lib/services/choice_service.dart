@@ -114,6 +114,14 @@ class ChoiceService {
     return _flush(prefs, uid, mode);
   }
 
+  Future<void> watchHint(Map<String, dynamic> session, String boostId) async {
+    final uid = await _identity();
+    await transport.watch('choice_training_hint', pro: false, context: {
+      'sessionId': session['id'], 'mode': session['mode'], 'boostId': boostId,
+    });
+    _check(uid);
+  }
+
   /// Subjective tournament only: no hidden answers or local wallet writes.
   static Map<String,dynamic> tournamentStep(Map<String,dynamic> original, Map<String,dynamic> event) {
     final r = rewardMap(jsonDecode(jsonEncode(original)));

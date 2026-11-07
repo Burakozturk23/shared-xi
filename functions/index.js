@@ -13,6 +13,42 @@ const {initializeApp} = require("firebase-admin/app");
 const {getDatabase} = require("firebase-admin/database");
 const {getAuth} = require("firebase-admin/auth");
 const logger = require("firebase-functions/logger");
+
+// App Check, switchable without a deploy. Callables made with lbGuardedOnCall are
+// not enforced by the platform: they accept a missing token until
+// runtimeConfig/appCheck/enforce is true. Until then the gate only counts missing
+// tokens (logged at 1, 10, 100, 1000 and every 10 000 per instance) so the share of
+// unverified clients is known before switching. New callables should use
+// enforceAppCheck: true or lbGuardedOnCall (a contract test checks it).
+let lbAppCheckPolicy = {value: {}, expires: 0};
+let lbAppCheckMissing = 0;
+async function lbAppCheckGate(request) {
+  if (request.app) return; // verified App Check token
+  const now = Date.now();
+  if (now >= lbAppCheckPolicy.expires) {
+    try {
+      const value = (await getDatabase().ref("runtimeConfig/appCheck").get()).val() || {};
+      lbAppCheckPolicy = {value, expires: now + 60000};
+    } catch (error) {
+      lbAppCheckPolicy = {value: lbAppCheckPolicy.value, expires: now + 10000};
+    }
+  }
+  lbAppCheckMissing++;
+  const enforce = lbAppCheckPolicy.value.enforce === true;
+  if ([1, 10, 100, 1000].includes(lbAppCheckMissing) || lbAppCheckMissing % 10000 === 0) {
+    logger.warn("App Check token missing", {count: lbAppCheckMissing, enforce});
+  }
+  if (enforce) {
+    throw new httpsV2.HttpsError("failed-precondition",
+        "Uygulama doğrulanamadı. Linkball'u Play Store'dan güncelleyip yeniden dene.");
+  }
+}
+function lbGuardedOnCall(options, handler) {
+  return httpsV2.onCall(options, async (request) => {
+    await lbAppCheckGate(request);
+    return handler(request);
+  });
+}
 const httpsV2 = require("firebase-functions/v2/https");
 const {onValueWritten} = require("firebase-functions/v2/database");
 const crypto = require("node:crypto");
@@ -28,6 +64,19 @@ const lbGetEconomyConfig = economyConfig.createProvider({
   },
   warn: (message, detail) => logger.warn(message, detail),
 });
+const priceConfig = require("./price_config");
+const dailyReturn = require("./daily_return");
+const lbGetPrices = economyConfig.createProvider({
+  fetch: async () => {
+    const template = await getRemoteConfig().getServerTemplate({
+      defaultConfig: {[priceConfig.PARAMETER]: JSON.stringify(priceConfig.defaults)},
+    });
+    return template.evaluate().getString(priceConfig.PARAMETER);
+  },
+  warn: (message, detail) => logger.warn(message, detail),
+  validate: priceConfig.validatePrices, initial: priceConfig.DEFAULT_PRICES,
+});
+require("./boosts").usePrices(lbGetPrices);
 
 initializeApp();
 setGlobalOptions({maxInstances: 10});
@@ -176,7 +225,7 @@ async function lbDailyPublicIdentity(uid) {
   }
 }
 
-exports.startDailyScoreSession = httpsV2.onCall(
+exports.startDailyScoreSession = lbGuardedOnCall(
     {region: "europe-west1", maxInstances: 30},
     async (request) => {
       if (!request.auth || !request.auth.uid) {
@@ -213,7 +262,7 @@ exports.startDailyScoreSession = httpsV2.onCall(
     },
 );
 
-exports.submitDailyScore = httpsV2.onCall(
+exports.submitDailyScore = lbGuardedOnCall(
     {region: "europe-west1", maxInstances: 30},
     async (request) => {
       if (!request.auth || !request.auth.uid) {
@@ -351,15 +400,8 @@ exports.submitDailyScore = httpsV2.onCall(
         lastSubmittedScore: Number(saved.score || score),
         lastSubmittedSecondsLeft: Number(saved.secondsLeft ?? secondsLeft),
       });
-      logger.info("Daily leaderboard submission", {
-        uid: uid,
-        dateKey: dateStr,
-        accepted: accepted,
-        score: Number(saved.score || score),
-        secondsLeft: Number(saved.secondsLeft ?? secondsLeft),
-        weekKey: weekKey,
-        weeklyScore: Number(weeklySaved.score || savedScore),
-      });
+      // No per-submission log: the result is stored above, and a log line per play
+      // (with the uid) only adds Cloud Logging volume.
       return {
         ok: true,
         accepted: accepted,
@@ -805,7 +847,7 @@ function lbRankedLeaderboardProjection(user, trusted, now) {
   };
 }
 
-exports.submitRankedResult = httpsV2.onCall(
+exports.submitRankedResult = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1552,7 +1594,7 @@ exports.syncPublicProfileProjection = onValueWritten(
     },
 );
 
-exports.syncMyPublicProfile = httpsV2.onCall(
+exports.syncMyPublicProfile = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -1578,7 +1620,7 @@ exports.syncMyPublicProfile = httpsV2.onCall(
     },
 );
 
-exports.searchFriendByNickname = httpsV2.onCall(
+exports.searchFriendByNickname = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1662,7 +1704,7 @@ exports.searchFriendByNickname = httpsV2.onCall(
     },
 );
 
-exports.sendFriendRequest = httpsV2.onCall(
+exports.sendFriendRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1807,7 +1849,7 @@ exports.sendFriendRequest = httpsV2.onCall(
     },
 );
 
-exports.respondFriendRequest = httpsV2.onCall(
+exports.respondFriendRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1915,7 +1957,7 @@ exports.respondFriendRequest = httpsV2.onCall(
     },
 );
 
-exports.cancelFriendRequest = httpsV2.onCall(
+exports.cancelFriendRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1979,7 +2021,7 @@ exports.cancelFriendRequest = httpsV2.onCall(
     },
 );
 
-exports.removeFriend = httpsV2.onCall(
+exports.removeFriend = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2043,7 +2085,7 @@ exports.removeFriend = httpsV2.onCall(
     },
 );
 
-exports.blockUser = httpsV2.onCall(
+exports.blockUser = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2111,7 +2153,7 @@ exports.blockUser = httpsV2.onCall(
     },
 );
 
-exports.unblockUser = httpsV2.onCall(
+exports.unblockUser = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2438,7 +2480,7 @@ async function lbSocialLoadInvite(
   };
 }
 
-exports.sendFriendMatchInvite = httpsV2.onCall(
+exports.sendFriendMatchInvite = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2546,7 +2588,7 @@ exports.sendFriendMatchInvite = httpsV2.onCall(
     },
 );
 
-exports.acceptFriendMatchInvite = httpsV2.onCall(
+exports.acceptFriendMatchInvite = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2641,7 +2683,7 @@ exports.acceptFriendMatchInvite = httpsV2.onCall(
     },
 );
 
-exports.declineFriendMatchInvite = httpsV2.onCall(
+exports.declineFriendMatchInvite = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3022,7 +3064,7 @@ function lbSafetyReportProjection(report) {
   };
 }
 
-exports.reportPlayer = httpsV2.onCall(
+exports.reportPlayer = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -3127,7 +3169,7 @@ exports.reportPlayer = httpsV2.onCall(
     },
 );
 
-exports.getMyPlayerReports = httpsV2.onCall(
+exports.getMyPlayerReports = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -3691,7 +3733,7 @@ async function lbNicknameSyncProfile(db, uid, profile, now) {
   };
 }
 
-exports.checkNicknameAvailability = httpsV2.onCall(
+exports.checkNicknameAvailability = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3714,7 +3756,7 @@ exports.checkNicknameAvailability = httpsV2.onCall(
     },
 );
 
-exports.syncMyNickname = httpsV2.onCall(
+exports.syncMyNickname = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3754,7 +3796,7 @@ exports.syncMyNickname = httpsV2.onCall(
     },
 );
 
-exports.setMyNickname = httpsV2.onCall(
+exports.setMyNickname = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3928,7 +3970,7 @@ exports.setMyNickname = httpsV2.onCall(
 
 // LINKBALL_16_5B_ACHIEVEMENTS_FOUNDATION_START
 
-const LB_ACHIEVEMENT_CATALOG_VERSION = 2;
+const LB_ACHIEVEMENT_CATALOG_VERSION = 3;
 const LB_ACHIEVEMENT_DEFINITIONS = [
   ...require("./config/achievement_expansion.json"),
   {
@@ -4266,6 +4308,21 @@ async function lbAchievementRecordDaily(db, uid, dateKey, row) {
   return state;
 }
 
+// Badge families of ranked modes: legacy stat keys and today's PvP mode ids.
+const LB_ACHIEVEMENT_MODE_FAMILIES = {
+  shared_xi: ["shared_xi", "club_club"],
+  club_country: ["club_country"],
+  grid: ["grid", "grid_classic", "grid_random", "grid_reverse"],
+  cinko: ["cinko"],
+  five: ["five", "random_five"],
+  loto: ["loto"],
+  club_manager: ["club_manager"],
+  career_race: ["career_race"],
+  transfer_duel: ["transfer_duel"],
+  mystery_duel: ["mystery_duel"],
+  fake_club_duel: ["fake_club_duel"],
+};
+
 /**
  * @param {Object} profile
  * @return {Object}
@@ -4274,15 +4331,19 @@ function lbAchievementRankedSignals(profile) {
   const ranked = lbRankedProfile(profile);
   const modes = lbRankedModeStats(ranked.modeStats);
 
+  // Current PvP rooms record stats under their own mode ids (club_club,
+  // grid_classic, random_five…); the older badge families read the legacy
+  // keys, so each family sums both.
+  const wins = (...keys) => keys.reduce((n, k) => n + (modes[k]?.wins || 0), 0);
+  const families = Object.fromEntries(Object.entries(LB_ACHIEVEMENT_MODE_FAMILIES)
+      .map(([family, keys]) => [family, wins(...keys)]));
   return {
     ranked_played: ranked.wins + ranked.losses + ranked.draws,
     ranked_wins: ranked.wins,
     best_win_streak: ranked.bestWinStreak,
     peak_elo: ranked.peakElo,
-    ranked_shared_xi_wins: modes.shared_xi.wins,
-    ranked_grid_wins: modes.grid.wins,
-    ranked_cinko_wins: modes.cinko.wins,
-    ranked_five_wins: modes.five.wins,
+    ...Object.fromEntries(Object.entries(families).map(([family, n]) => ["ranked_" + family + "_wins", n])),
+    ranked_modes_won: Object.values(families).filter((n) => n > 0).length,
   };
 }
 
@@ -4786,7 +4847,7 @@ async function lbAchievementBackfillHistory(
   };
 }
 
-exports.syncMyAchievements = httpsV2.onCall(
+exports.syncMyAchievements = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -4915,6 +4976,7 @@ function lbStoreOfferProjection(offer) {
 async function lbStoreCatalog(db, config) {
   config = config || await lbGetEconomyConfig();
   return Object.entries(config.sinks.cosmetics.offers)
+      .filter(([id]) => !Object.hasOwn(storeCollection.offers, id))
       .map(([id, raw]) => lbStoreOffer(raw, id)).filter(Boolean)
       .map((offer) => ({...lbStoreOfferProjection(offer), economyConfigId: config.configId}))
       .sort((a, b) => a.sortOrder - b.sortOrder || a.offerId.localeCompare(b.offerId));
@@ -5828,6 +5890,12 @@ function lbEconomyState(raw) {
     purchases: purchases,
     inventory: inventory,
     choice: data.choice && typeof data.choice === "object" ? data.choice : {},
+    dailyWords: data.dailyWords && typeof data.dailyWords === "object" ? data.dailyWords : {},
+    gridSupport: data.gridSupport && typeof data.gridSupport === "object" ? data.gridSupport : {},
+    botSupport: data.botSupport && typeof data.botSupport === "object" ? data.botSupport : {},
+    dailyFootballer: data.dailyFootballer && typeof data.dailyFootballer === "object" ? data.dailyFootballer : {},
+    anagramPractice: data.anagramPractice && typeof data.anagramPractice === "object" ? data.anagramPractice : {},
+    storyStates: data.storyStates && typeof data.storyStates === "object" ? data.storyStates : {},
     arcade: data.arcade && typeof data.arcade === "object" ? data.arcade : {},
     fakeClub: data.fakeClub && typeof data.fakeClub === "object" ? data.fakeClub : {},
     mysteryChain: data.mysteryChain && typeof data.mysteryChain === "object" ? data.mysteryChain : {},
@@ -6128,12 +6196,12 @@ async function lbEconomyPurchaseOffer(db, uid, offer) {
 
 // LINKBALL_16_6C_ECONOMY_TRANSACTIONS_END
 
-exports.getEconomyContract = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.getEconomyContract = lbGuardedOnCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return {ok: true, economy: economyConfig.publicContract(await lbGetEconomyConfig())};
 });
 
-exports.syncMyWallet = httpsV2.onCall(
+exports.syncMyWallet = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6154,7 +6222,7 @@ exports.syncMyWallet = httpsV2.onCall(
     },
 );
 
-exports.claimAchievementReward = httpsV2.onCall(
+exports.claimAchievementReward = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6213,7 +6281,7 @@ exports.claimAchievementReward = httpsV2.onCall(
     },
 );
 
-exports.getStoreCatalog = httpsV2.onCall(
+exports.getStoreCatalog = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6223,9 +6291,28 @@ exports.getStoreCatalog = httpsV2.onCall(
 
       const uid = request.auth.uid;
       const db = getDatabase();
-      const state = await lbEconomyEnsure(db, uid);
+      let state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
-      const offers = [...await lbStoreCatalog(db, config), ...storeCollection.catalog.offers.filter((o) => o.enabled)];
+      const boostPolicy = await require("./boosts").policyFor(db, uid, true);
+      // Classic letter packs only for accounts outside typed supports; typed accounts
+      // get their leftover letter stock converted on store open (same price, one to one).
+      const offers = [...await lbStoreCatalog(db, config),
+        ...storeCollection.catalog.offers.filter((o) => o.enabled && (!o.legacyOnly || !boostPolicy))];
+      let legacyConverted = null;
+      if (boostPolicy && ["boost_last_letter", "boost_anagram"].some((id) => state.inventory[id]?.quantity > 0)) {
+        const converted = await lbStoreCollectionService().convertLegacy(uid);
+        if (converted.added > 0) legacyConverted = converted.gained;
+        state = await lbEconomyEnsure(db, uid);
+      }
+      if (boostPolicy) {
+        const prices = await lbGetPrices();
+        offers.push(...require("./boosts").offers.filter((o) =>
+          o.modes.some((m) => boostPolicy.readyModes?.[m] === true))
+            .map((o) => ({...o, priceCoins: priceConfig.offerPrice(o, prices),
+              modes: o.modes.filter((m) => boostPolicy.readyModes?.[m] === true)})));
+      }
+      // Game guide: which support works in which open game and what it does there.
+      const boostGuide = boostPolicy ? require("./boost_guide").forModes(boostPolicy.readyModes) : [];
       const profile = (await db.ref("users/" + uid).get()).val() || {};
 
       return {
@@ -6237,11 +6324,13 @@ exports.getStoreCatalog = httpsV2.onCall(
         selectedAvatarId: profile.avatarId || "starter_ball",
         selectedKitId: profile.kitId || "",
         economy: economyConfig.publicContract(config),
+        boostGuide,
+        legacyConverted,
       };
     },
 );
 
-exports.purchaseEconomyOffer = httpsV2.onCall(
+exports.purchaseEconomyOffer = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6511,7 +6600,7 @@ function lbCommunityProjection(record) {
   };
 }
 
-exports.submitCommunityRequest = httpsV2.onCall(
+exports.submitCommunityRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -6592,7 +6681,7 @@ exports.submitCommunityRequest = httpsV2.onCall(
     },
 );
 
-exports.getMyCommunityRequests = httpsV2.onCall(
+exports.getMyCommunityRequests = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -6843,6 +6932,7 @@ function lbProgressionState(raw, now) {
     },
     daily: {
       lastClaimDay: lbProgressionText(rawDaily.lastClaimDay, 10),
+      lastProtectedDay: lbProgressionText(rawDaily.lastProtectedDay, 10),
       currentStreak: lbProgressionNumber(rawDaily.currentStreak),
       bestStreak: lbProgressionNumber(rawDaily.bestStreak),
       lastClaim: {
@@ -6853,6 +6943,8 @@ function lbProgressionState(raw, now) {
         coins: lbProgressionNumber(rawLastClaim.coins),
         xp: lbProgressionNumber(rawLastClaim.xp),
         streakProtected: rawLastClaim.streakProtected === true,
+        freeProtection: rawLastClaim.freeProtection === true,
+        supportItemId: lbProgressionText(rawLastClaim.supportItemId, 40),
         claimedAt: lbProgressionNumber(rawLastClaim.claimedAt),
         nonce: lbProgressionText(rawLastClaim.nonce, 80),
         economyConfigId: rawLastClaim.economyConfigId || "legacy",
@@ -6874,7 +6966,12 @@ function lbProgressionNextDaily(state, dayKey, benefits, config = economyConfig.
   const lastDay = state.daily.lastClaimDay;
   const alreadyClaimed = lastDay === dayKey;
   const gap = lastDay ? lbProgressionDayDiff(lastDay, dayKey) : 0;
-  const streakProtected = !alreadyClaimed && gap === 2 && benefits.streakProtection === true;
+  const returnPolicy = benefits.dailyReturn || dailyReturn.OFF;
+  const paidProtection = !alreadyClaimed && gap === 2 && benefits.streakProtection === true;
+  // Faz 2: everyone may cover one missed day once in seven days.
+  const freeProtection = !alreadyClaimed && !paidProtection &&
+    dailyReturn.freeProtection(state.daily, dayKey, returnPolicy);
+  const streakProtected = paidProtection || freeProtection;
   const nextStreak = alreadyClaimed ? state.daily.currentStreak :
     (gap === 1 || streakProtected ? Math.max(1, state.daily.currentStreak + 1) : 1);
   const dayIndex = ((Math.max(1, nextStreak) - 1) % 7) + 1;
@@ -6888,6 +6985,8 @@ function lbProgressionNextDaily(state, dayKey, benefits, config = economyConfig.
     coins: alreadyClaimed ? receipt.coins : source.coinsByDay[dayIndex - 1] * multiplier,
     xp: alreadyClaimed ? receipt.xp : source.xp,
     streakProtected: alreadyClaimed ? receipt.streakProtected : streakProtected,
+    freeProtection: alreadyClaimed ? receipt.freeProtection : freeProtection,
+    supportItemId: alreadyClaimed ? receipt.supportItemId : dailyReturn.loopSupport(dayIndex, returnPolicy) || "",
   };
 }
 
@@ -6948,6 +7047,10 @@ function lbProgressionProjection(state, benefits, now, config = economyConfig.DE
       xpReward: next.xp,
       streakProtectionAvailable: benefits.streakProtection === true,
       wouldUseStreakProtection: next.streakProtected,
+      scheduleSupports: dailyReturn.loopSchedule(benefits.dailyReturn || dailyReturn.OFF),
+      rewardSupport: next.supportItemId,
+      freeProtectionEnabled: (benefits.dailyReturn || dailyReturn.OFF).streakProtection,
+      freeProtectionReadyOn: dailyReturn.protectionReadyOn(state.daily),
       lastClaimedAt: state.daily.lastClaim.claimedAt,
     },
     updatedAt: state.updatedAt,
@@ -6967,7 +7070,9 @@ async function lbProgressionPremiumBenefits(db, uid) {
       Date.now(),
   );
 
-  return lbPremiumBenefits(premium.active);
+  const returnPolicy = dailyReturn.policy((await db.ref("runtimeConfig/dailyReturn").get()).val(),
+      !!await require("./boosts").policyFor(db, uid, true));
+  return {...lbPremiumBenefits(premium.active), dailyReturn: returnPolicy};
 }
 
 /**
@@ -7096,6 +7201,45 @@ async function lbProgressionGrantCoins(
   };
 }
 
+// Faz 2: the support a check-in day added. Idempotent per day (receipt in
+// economyState.storeUses), so a retry or a later read settles a lost write.
+async function lbSettleDailySupport(db, uid, state, onlyMissing = false) {
+  const claim = state.daily.lastClaim;
+  if (!claim.supportItemId || !claim.dateKey) return null;
+  // Reads only repair a lost write: with the receipt in place there is nothing to do.
+  if (onlyMissing && (await db.ref(`economyState/${uid}/storeUses/daily_reward__${claim.dateKey}`).get()).exists()) {
+    return null;
+  }
+  let result = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw);
+    result = dailyReturn.grantSupport(e, "daily_reward__" + claim.dateKey, claim.supportItemId, "daily_reward",
+        claim.dateKey, Date.now());
+    return e;
+  });
+  await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  return {itemId: claim.supportItemId, granted: result.granted, full: result.receipt.full === true,
+    coins: result.receipt.coins || 0};
+}
+
+// Faz 2: one Temel bilgi when all daily missions of the day are claimed, in the
+// legacy and the v3 mission paths alike (same receipt id, at most two a week).
+async function lbGrantAllMissionsBonus(db, uid, dayKey) {
+  const policy = dailyReturn.policy((await db.ref("runtimeConfig/dailyReturn").get()).val(),
+      !!await require("./boosts").policyFor(db, uid, true));
+  if (!policy.allMissionsBonus) return null;
+  let result = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw);
+    result = dailyReturn.grantAllMissionsBonus(e, dayKey, Date.now(), policy);
+    return e;
+  });
+  if (!result) return {itemId: dailyReturn.BONUS_ITEM, granted: false, weeklyLimit: true};
+  await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  return {itemId: dailyReturn.BONUS_ITEM, granted: result.granted, full: result.receipt.full === true,
+    coins: result.receipt.coins || 0};
+}
+
 /**
  * @param {Object} db
  * @param {string} uid
@@ -7141,10 +7285,13 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
       coins: next.coins,
       xp: next.xp,
       streakProtected: next.streakProtected,
+      freeProtection: next.freeProtection,
+      supportItemId: next.supportItemId,
       claimedAt: now,
       nonce: nonce,
       economyConfigId: config.configId,
     };
+    if (next.freeProtection) state.daily.lastProtectedDay = dayKey;
     state.pendingRewards["daily_reward__" + dayKey] = lbPendingReward(
         "daily_reward", dayKey, next.coins, config.configId,
     );
@@ -7165,6 +7312,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   }
 
   const economy = await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
+  const support = await lbSettleDailySupport(db, uid, state);
   const profile = await lbProgressionProject(
       db,
       uid,
@@ -7175,6 +7323,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   );
 
   return {
+    support,
     granted: claim.nonce === nonce,
     alreadyClaimed: claim.nonce !== nonce,
     amount: claim.coins,
@@ -7187,7 +7336,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   };
 }
 
-exports.getMyProgression = httpsV2.onCall(
+exports.getMyProgression = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -7199,6 +7348,7 @@ exports.getMyProgression = httpsV2.onCall(
       const db = getDatabase();
       const state = await lbProgressionEnsure(db, uid);
       await lbSettlePendingRewards(db, uid, "progressionState/" + uid);
+      await lbSettleDailySupport(db, uid, state, true);
       const benefits = await lbProgressionPremiumBenefits(db, uid);
       const profile = await lbProgressionProject(
           db,
@@ -7216,7 +7366,7 @@ exports.getMyProgression = httpsV2.onCall(
     },
 );
 
-exports.claimDailyReward = httpsV2.onCall(
+exports.claimDailyReward = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -7242,6 +7392,7 @@ exports.claimDailyReward = httpsV2.onCall(
         dayIndex: result.dayIndex,
         multiplier: result.multiplier,
         streakProtected: result.streakProtected,
+        support: result.support,
         walletCoins: result.walletCoins,
         profile: result.profile,
         version: LB_PROGRESSION_VERSION,
@@ -7253,6 +7404,8 @@ exports.claimDailyReward = httpsV2.onCall(
 
 // LINKBALL_16_10C_MISSION_ENGINE_START
 
+const missionV3 = require("./missions_v3");
+const missionEvents = require("./mission_events");
 const LB_MISSION_VERSION = 2;
 const LB_MISSION_DAILY_DEFINITIONS = Object.freeze([
   Object.freeze({
@@ -7416,7 +7569,7 @@ function lbMissionState(raw, now) {
       }
     }
   }
-  return {
+  return missionV3.decorate({
     pendingRewards,
     version: LB_MISSION_VERSION,
     daily: {
@@ -7436,7 +7589,7 @@ function lbMissionState(raw, now) {
     generalClaims: {...rawGeneralClaims},
     createdAt: lbProgressionNumber(data.createdAt),
     updatedAt: lbProgressionNumber(data.updatedAt),
-  };
+  }, data, currentTime);
 }
 
 /**
@@ -7504,6 +7657,9 @@ function lbMissionProjectionItem(
 
   return {
     id: definition.id,
+    routeKey: definition.metric === "dailyChallenge" || definition.metric === "dailyDays" ?
+      "daily_matches" : "online_ranked",
+    rewardSp: kind === "daily" ? 30 : 50,
     kind: kind,
     title: definition.title,
     description: String(definition.description || ""),
@@ -7557,7 +7713,7 @@ function lbMissionGeneralProjection(chain, state, totals, config) {
  * @param {Object} totals
  * @return {Object}
  */
-function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFIG) {
+function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFIG, policy = {}) {
   const daily = LB_MISSION_DAILY_DEFINITIONS.map(
       (definition) => lbMissionProjectionItem(
           definition,
@@ -7573,34 +7729,38 @@ function lbMissionProjection(state, totals, config = economyConfig.DEFAULT_CONFI
   return {
     dateKey: state.daily.dateKey,
     economyConfigId: config.configId,
-    dailyClaimLimit: config.sources.daily_mission.dailyLimit,
-    daily: daily,
-    general: general,
-    dailyCompletedCount: Object.keys(state.daily.claims).length,
+    dailyClaimLimit: state.schemaVersion === 3 ? missionV3.rewards(policy).dailyLimit :
+      config.sources.daily_mission.dailyLimit,
+    daily: state.schemaVersion === 3 && state.daily.assigned.length ? missionV3.items(state, policy).daily : daily,
+    general: [...general, ...(state.schemaVersion === 3 ? missionV3.items(state, policy).general : [])],
+    weekly: state.schemaVersion === 3 ? missionV3.items(state, policy).weekly : [],
+    weeklyEnabled: policy.weeklyEnabled === true,
+    weekKey: state.weekly.weekKey,
+    weeklyClaimLimit: missionV3.rewards(policy).weeklyLimit,
+    // Bonus claims are not missions; the counters stay within the limit.
+    weeklyCompletedCount: Object.keys(state.weekly.claims || {}).filter((id) => !id.endsWith("_bonus")).length,
+    availabilityNotice: state.availabilityNotice || "",
+    dailyCompletedCount: Object.keys(state.daily.claims).filter((id) => !id.endsWith("_bonus")).length,
     generalCompletedCount: Object.keys(
         state.generalClaims,
     ).length,
     updatedAt: state.updatedAt,
-    version: LB_MISSION_VERSION,
+    version: state.schemaVersion,
   };
 }
 
-/**
- * @param {Object} db
- * @param {string} uid
- * @return {Promise<Object>}
- */
 async function lbMissionEnsure(db, uid) {
-  const ref = db.ref("missionState/" + uid);
   const now = Date.now();
+  const policy = await lbMissionV3Policy(db, uid, true, now);
+  const ref = db.ref("missionState/" + uid);
 
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
 
-    state.createdAt = state.createdAt > 0 ?
-      state.createdAt : now;
-    state.updatedAt = state.updatedAt > 0 ?
-      state.updatedAt : now;
+    state.createdAt = state.createdAt > 0 ? state.createdAt : now;
+    state.updatedAt = now;
+    for (const event of policy.events || []) missionV3.record(state, event, now);
+    missionV3.assign(state, uid, policy.readyModes || {}, policy, now);
 
     return state;
   });
@@ -7617,7 +7777,8 @@ async function lbMissionEnsure(db, uid) {
 async function lbMissionProject(db, uid, state, config) {
   config = config || await lbGetEconomyConfig();
   const totals = await lbMissionTrustedTotals(db, uid);
-  const projection = lbMissionProjection(state, totals, config);
+  const policy = await lbMissionV3Policy(db, uid);
+  const projection = lbMissionProjection(state, totals, config, policy);
 
   await db.ref("missionProfiles/" + uid).set(projection);
   return projection;
@@ -7644,24 +7805,20 @@ async function lbMissionRecordRanked(
   const currentDay = lbProgressionDateKey(now);
   const eventDay = lbProgressionDateKey(settledAt);
 
-  if (eventDay !== currentDay) return;
-
   const ref = db.ref("missionState/" + uid);
   const eventKey = "ranked__" + mode + "__" + matchId;
   const tx = await ref.transaction((current) => {
     const state = lbMissionState(current, now);
     if (state.daily.dateKey !== currentDay) return current;
 
-    if (state.daily.processed[eventKey]) {
-      return;
-    }
-
-    state.daily.processed[eventKey] = true;
-    state.daily.counters.rankedPlayed += 1;
-
-    if (result === "win") {
-      state.daily.counters.rankedWins += 1;
-    }
+    if (eventDay === currentDay && state.daily.processed[eventKey]) return;
+    const modeId = ({shared_xi: "club_club", grid: "grid_classic", five: "random_five"})[mode] || mode;
+    const changed = missionV3.record(state, {uid, modeId,
+      eventId: matchId,
+      source: "ranked_settlement", result, serverFinishedAtMs: settledAt,
+      serverValidated: true, verificationVersion: 1}, now);
+    if (!changed) return;
+    if (eventDay === currentDay) state.daily.processed[eventKey] = true;
 
     state.createdAt = state.createdAt > 0 ?
       state.createdAt : now;
@@ -7796,11 +7953,13 @@ function lbMissionRequirePreviousStages(resolved, state) {
  * @param {string} missionId
  * @return {Promise<Object>}
  */
-async function lbMissionClaim(db, uid, missionId) {
+async function lbMissionClaim(db, uid, missionId, expectedPeriodKey) {
   const config = await lbGetEconomyConfig();
   const resolved = lbMissionDefinition(missionId, config);
-  if (!resolved) throw new httpsV2.HttpsError("invalid-argument", "Unknown mission.");
-  await lbMissionEnsure(db, uid);
+  const initial = await lbMissionEnsure(db, uid);
+  if (!resolved || initial.schemaVersion === 3 && resolved.kind === "daily") {
+    return lbMissionV3Claim(db, uid, missionId, config, expectedPeriodKey);
+  }
   await lbSettlePendingRewards(db, uid, "missionState/" + uid);
   const now = Date.now();
   const dayKey = lbProgressionDateKey(now);
@@ -7838,10 +7997,13 @@ async function lbMissionClaim(db, uid, missionId) {
     throw new httpsV2.HttpsError("failed-precondition", "Görev henüz tamamlanmadı veya günlük limit doldu. Yenile.");
   }
   const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
+  const allDone = resolved.kind === "daily" &&
+    Object.keys(state.daily.claims).length >= config.sources.daily_mission.dailyLimit;
+  const supportBonus = allDone ? await lbGrantAllMissionsBonus(db, uid, dayKey) : null;
   const profile = await lbMissionProject(db, uid, state, config);
   return {
     granted: claim.nonce === nonce, alreadyClaimed: claim.nonce !== nonce,
-    amount: claim.rewardCoins, walletCoins: economy.balances.coins, profile, missionId, periodKey,
+    amount: claim.rewardCoins, walletCoins: economy.balances.coins, profile, missionId, periodKey, supportBonus,
   };
 }
 
@@ -7859,7 +8021,8 @@ exports.syncRankedMissions = onValueWritten(
 
       const settlement = event.data.after.val() || {};
 
-      if (settlement.serverValidated !== true) return;
+      if (settlement.serverValidated !== true || settlement.forfeit === true ||
+          settlement.rankedEligible === false) return;
 
       const db = getDatabase();
       const mode = String(event.params.mode || "");
@@ -7881,7 +8044,8 @@ exports.syncRankedMissions = onValueWritten(
       ];
 
       for (const participant of participants) {
-        if (!participant.uid || !["win", "draw", "loss"].includes(participant.result)) continue;
+        if (!participant.uid || settlement.participants?.[participant.uid] === false ||
+            !["win", "draw", "loss"].includes(participant.result)) continue;
         if (!await lbAchievementEligible(
             db,
             participant.uid,
@@ -7930,7 +8094,7 @@ exports.syncDailyMissions = onValueWritten(
     },
 );
 
-exports.getMyMissions = httpsV2.onCall(
+exports.getMyMissions = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -7956,7 +8120,7 @@ exports.getMyMissions = httpsV2.onCall(
     },
 );
 
-exports.claimMissionReward = httpsV2.onCall(
+exports.claimMissionReward = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -7977,9 +8141,7 @@ exports.claimMissionReward = httpsV2.onCall(
       }
 
       const result = await lbMissionClaim(
-          getDatabase(),
-          uid,
-          missionId,
+          getDatabase(), uid, missionId, request.data?.periodKey,
       );
 
       return {
@@ -7989,6 +8151,125 @@ exports.claimMissionReward = httpsV2.onCall(
       };
     },
 );
+
+
+// Admin-owned pilot configuration. Missing mode/content readiness fails closed.
+exports.refreshMissionServiceHealth = onSchedule({region: "europe-west1", schedule: "every 5 minutes",
+  maxInstances: 1, timeoutSeconds: 60}, async () => {
+  const db = getDatabase();
+  const policy = (await db.ref("runtimeConfig/missionsV3").get()).val();
+  if (policy?.enabled !== true || !(policy.readyModes?.online || policy.readyModes?.friends)) return;
+  const health = await require("./mission_health").collect();
+  await db.ref("runtimeConfig/missionsV3/serviceHealth").transaction((previous) =>
+    previous?.checkedAt > health.checkedAt ? previous : health);
+});
+async function lbMissionV3Policy(db, uid, checkReadiness = false, time = Date.now()) {
+  const runtime = (await db.ref("runtimeConfig").get()).val() || {};
+  const raw = runtime.missionsV3 || {};
+  const enabled = raw.enabled === true && (raw.public === true || raw.betaUids?.[uid] === true);
+  const health = checkReadiness && enabled ? await require("./mission_readiness").resolve(
+      db, uid, raw.readyModes, runtime, time,
+      economyConfig.squadPolicy(await lbGetEconomyConfig()).enabled) : {};
+  return {...raw, ...health, enabled, weeklyEnabled: enabled && raw.weeklyEnabled === true,
+    careerEnabled: enabled && raw.careerEnabled === true};
+}
+// XP granted once per id (journeyClaims doubles as the idempotency record).
+async function lbProgressionGrantOnce(db, uid, id, xp) {
+  const now = Date.now();
+  const tx = await db.ref("progressionState/" + uid).transaction((raw) => {
+    const s = lbProgressionState(raw, now);
+    if (!s.journeyClaims[id]) {
+      s.lifetimeXp += xp; s.season.xp += xp;
+      s.journeyClaims[id] = {xp, claimedAt: now}; s.updatedAt = now;
+    }
+    return s;
+  });
+  await lbProgressionProject(db, uid, lbProgressionState(tx.snapshot.val(), now),
+      await lbProgressionPremiumBenefits(db, uid), now);
+}
+async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
+  const policy = await lbMissionV3Policy(db, uid);
+  const now = Date.now(); const nonce = crypto.randomUUID();
+  let outcome; let failure;
+  const tx = await db.ref("missionState/" + uid).transaction((raw) => {
+    outcome = null; failure = null;
+    const state = lbMissionState(raw, now);
+    try {
+      const projected = missionV3.items(state, policy);
+      const card = [...projected.daily, ...projected.weekly, ...projected.general].find((d) => d.id === missionId);
+      if (card && periodKey !== card.periodKey) {
+        throw new httpsV2.HttpsError("failed-precondition", "Görev dönemi değişti. Ekranı yenile.");
+      }
+      outcome = missionV3.claim(state, missionId, policy, now, nonce);
+    } catch (e) {
+      failure = e; return state;
+    }
+    if (!outcome) return state;
+    const key = "mission_reward__" + outcome.sourceId;
+    if (outcome.claim.nonce === nonce) {
+      state.pendingRewards[key] = lbPendingReward(
+          "mission_reward", outcome.sourceId, outcome.claim.rewardCoins, "missions-v3");
+    }
+    state.updatedAt = now; return state;
+  });
+  if (failure) throw new httpsV2.HttpsError(failure.code, failure.message);
+  if (!outcome) throw new httpsV2.HttpsError("invalid-argument", "Bilinmeyen görev. Ekranı yenile.");
+  // Mission XP: once per reward receipt, also when a retry finds the claim already made.
+  if (outcome.claim.rewardXp > 0) {
+    await lbProgressionGrantOnce(db, uid, "mission__" + outcome.sourceId, outcome.claim.rewardXp);
+  }
+  const economy = await lbSettlePendingRewards(db, uid, "missionState/" + uid);
+  const supportBonus = outcome.item.id === "daily_bonus" ?
+    await lbGrantAllMissionsBonus(db, uid, outcome.periodKey) : null;
+  const profile = await lbMissionProject(db, uid, lbMissionState(tx.snapshot.val(), now), config);
+  return {granted: outcome.claim.nonce === nonce, alreadyClaimed: outcome.claim.nonce !== nonce,
+    amount: outcome.claim.rewardCoins, walletCoins: economy.balances.coins, profile,
+    missionId, periodKey: outcome.periodKey, supportBonus};
+}
+async function lbMissionRecordEvents(db, uid, events) {
+  if (!events.length || !await lbAchievementEligible(db, uid)) return;
+  const now = Date.now();
+  const tx = await db.ref("missionState/" + uid).transaction((raw) => {
+    const state = lbMissionState(raw, now);
+    for (const event of events) if (event.uid === uid) missionV3.record(state, event, now);
+    state.updatedAt = now; state.createdAt ||= now; return state;
+  });
+  await lbMissionProject(db, uid, lbMissionState(tx.snapshot.val(), now));
+}
+exports.syncSoloMissions = onValueWritten({ref: "/economyState/{uid}/{family}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  const {uid, family} = event.params;
+  const events = missionEvents.changedRuns(uid, family, event.data.before.val(), event.data.after.val());
+  await lbMissionRecordEvents(getDatabase(), uid, events);
+});
+exports.syncWordMissions = onValueWritten({ref: "/dailyWordState/{uid}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  const {uid} = event.params;
+  await lbMissionRecordEvents(getDatabase(), uid,
+      missionEvents.changedWords(uid, event.data.before.val(), event.data.after.val()));
+});
+async function lbMissionFriendResult(family, event) {
+  const {mode, roomId} = event.params;
+  const events = missionEvents.changedFriends(family, mode, roomId,
+      event.data.before.val(), event.data.after.val());
+  for (const result of events) await lbMissionRecordEvents(getDatabase(), result.uid, [result]);
+}
+exports.syncPvpFriendMissions = onValueWritten({ref: "/pvpV1/{mode}/rooms/{roomId}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  await lbMissionFriendResult("pvpV1", event);
+});
+exports.syncDuelFriendMissions = onValueWritten({ref: "/careerTransferOnline/{mode}/rooms/{roomId}",
+  instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+  await lbMissionFriendResult("careerTransferOnline", event);
+});
+for (const [family] of require("./mission_story_events").definitions) {
+  exports["syncMission_" + family] = onValueWritten({ref: "/" + family + "/{uid}",
+    instance: "sharedix-default-rtdb", region: "europe-west1"}, async (event) => {
+    const {uid} = event.params;
+    await lbMissionRecordEvents(getDatabase(), uid, require("./mission_story_events")
+        .changed(uid, family, event.data.before.val(), event.data.after.val()));
+  });
+}
 
 // LINKBALL_16_10C_MISSION_ENGINE_END
 
@@ -8446,7 +8727,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   };
 }
 
-exports.deleteMyAccount = httpsV2.onCall(
+exports.deleteMyAccount = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -8559,6 +8840,36 @@ exports.startSquadChallenge = squadCallable("start");
 exports.finishSquadChallenge = squadCallable("finish");
 exports.abandonSquadChallenge = squadCallable("abandon");
 
+let lbSquadSupportInstance;
+function lbSquadSupportService() {
+  if (!lbSquadSupportInstance) {
+    lbSquadSupportInstance = require("./squad_support").createService({
+      db: getDatabase(), normalize: lbEconomyState, project: lbEconomyProject, now: () => Date.now(),
+      isLinked: async (uid) => {
+        const user = await getAuth().getUser(uid);
+        return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+      },
+    });
+  }
+  return lbSquadSupportInstance;
+}
+function lbSquadSupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbSquadSupportService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError || e instanceof require("./squad_challenge").SquadError) {
+        throw new httpsV2.HttpsError(e.code, e.message);
+      }
+      throw e;
+    }
+  });
+}
+exports.getSquadSupport = lbSquadSupportCallable("get");
+exports.useSquadSupport = lbSquadSupportCallable("use");
+exports.finishSquadPractice = lbSquadSupportCallable("finishPractice");
+
 // Monetization B: optional rewarded ads. No network IO during discovery.
 let lbRewardedInstance;
 let lbAdmobKeys;
@@ -8569,14 +8880,34 @@ function lbRewardedService() {
       db, getConfig: lbGetEconomyConfig,
       prepareEnergyReward: (uid) => lbEnergyService().prepareReward(uid),
       settleEnergyReward: (uid, receipt) => lbEnergyService().settleReward(uid, receipt),
-      prepareThreeReward: (uid, placement, context) => placement === "burst_survival_hint" ?
+      prepareThreeReward: (uid, placement, context) => placement === "bot_support_hint" ?
+        lbBotSupportService().prepareHint(uid, placement, context) : placement === "grid_support_hint" ?
+        lbGridSupportService().prepareHint(uid, placement, context) : placement === "daily_footballer_hint" ?
+        lbDailyFootballerService().prepareHint(uid, placement, context) : placement === "anagram_practice_hint" ?
+        lbAnagramPracticeService().prepareHint(uid, placement, context) : placement === "daily_match_hint" ?
+        lbDailyMatchesService().prepareHint(uid, placement, context) : placement === "squad_support_hint" ?
+        lbSquadSupportService().prepareHint(uid, placement, context) : placement === "daily_question_hint" ?
+        lbDailyQuestionService().prepareBoostHint(uid, placement, context) : placement === "choice_training_hint" ?
+        lbChoiceService().prepareHint(uid, placement, context) : placement === "story_support_hint" ?
+        lbStorySupportService().prepareHint(uid, placement, context) : placement === "daily_words_hint" ?
+        lbDailyWordsService().prepareHint(uid, placement, context) : placement === "burst_survival_hint" ?
         lbArcadeService().prepareHint(uid, placement, context) : placement === "fake_club_hint" ?
         lbFakeClubService().prepareHint(uid, placement, context) : ["mystery_hint", "chain_hint"].includes(placement) ?
         lbMysteryChainService().prepareHint(uid, placement, context) :
           ["career_hint", "transfer_hint"].includes(placement) ?
         lbCareerTransferService().prepareHint(uid, placement, context) :
           lbThreeModesService().prepareHint(uid, placement, context),
-      settleThreeReward: (uid, receipt) => receipt.placement === "burst_survival_hint" ?
+      settleThreeReward: (uid, receipt) => receipt.placement === "bot_support_hint" ?
+        lbBotSupportService().settleHint(uid, receipt) : receipt.placement === "grid_support_hint" ?
+        lbGridSupportService().settleHint(uid, receipt) : receipt.placement === "daily_footballer_hint" ?
+        lbDailyFootballerService().settleHint(uid, receipt) : receipt.placement === "anagram_practice_hint" ?
+        lbAnagramPracticeService().settleHint(uid, receipt) : receipt.placement === "daily_match_hint" ?
+        lbDailyMatchesService().settleHint(uid, receipt) : receipt.placement === "squad_support_hint" ?
+        lbSquadSupportService().settleHint(uid, receipt) : receipt.placement === "daily_question_hint" ?
+        lbDailyQuestionService().settleBoostHint(uid, receipt) : receipt.placement === "choice_training_hint" ?
+        lbChoiceService().settleHint(uid, receipt) : receipt.placement === "story_support_hint" ?
+        lbStorySupportService().settleHint(uid, receipt) : receipt.placement === "daily_words_hint" ?
+        lbDailyWordsService().settleHint(uid, receipt) : receipt.placement === "burst_survival_hint" ?
         lbArcadeService().settleHint(uid, receipt) : receipt.placement === "fake_club_hint" ?
         lbFakeClubService().settleHint(uid, receipt) : ["mystery_hint", "chain_hint"].includes(receipt.placement) ?
         lbMysteryChainService().settleHint(uid, receipt) :
@@ -8588,8 +8919,10 @@ function lbRewardedService() {
       settleWhatIfReward: (uid, receipt) => lbWhatIfService().settleReward(uid, receipt),
       prepareStoryReward: (uid, placement, context) => lbJourneyService().prepareReward(uid, placement, context),
       settleStoryReward: (uid, receipt) => lbJourneyService().settleReward(uid, receipt),
-      prepareDailyReward: (uid, placement, context) => lbDailyMatchesService().prepareReward(uid, placement, context),
-      settleDailyReward: (uid, receipt) => lbDailyMatchesService().settleReward(uid, receipt),
+      prepareDailyReward: (uid, placement, context) => placement === "daily_streak" ?
+        lbDailyStreakService().prepareRepair(uid) : lbDailyMatchesService().prepareReward(uid, placement, context),
+      settleDailyReward: (uid, receipt) => receipt.placement === "daily_streak" ?
+        lbDailyStreakService().settleRepair(uid, receipt) : lbDailyMatchesService().settleReward(uid, receipt),
       units: require("./config/admob.units.json"),
       now: () => Date.now(),
       grantCoins: (uid, id, source, placement, amount, configId) =>
@@ -8777,13 +9110,19 @@ exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "
 // Server-owned collection inventory; no client writes can mint or spend items.
 function lbStoreCollectionService() {
   return storeCollection.createStore({db: getDatabase(), normalize: lbEconomyState,
-    project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now()});
+    project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now(), getPrices: lbGetPrices});
 }
-exports.consumeStoreBoost = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+// Wallet-writing Kasa and conversion calls require App Check, like the Sezon callables.
+const LB_WALLET_APP_CHECK = {region: "europe-west1", maxInstances: 20, enforceAppCheck: true};
+exports.convertLegacyBoosts = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbStoreCollectionService().convertLegacy(request.auth.uid);
+});
+exports.consumeStoreBoost = lbGuardedOnCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().consume(request.auth.uid, request.data || {});
 });
-exports.equipStoreItem = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.equipStoreItem = lbGuardedOnCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().equip(request.auth.uid, request.data || {});
 });
@@ -8794,12 +9133,13 @@ function lbDailyMatchesService() {
   if (!lbDailyMatchesInstance) {
     const db = getDatabase();
     lbDailyMatchesInstance = require("./daily_matches").createService({
-      db,
+      db, documentRef: lbStoryDocumentRef(db, "dailyMatchState", "daily_match"), now: () => Date.now(),
       recordWin: async (uid, day, result) => {
         await lbAchievementRecordDaily(db, uid, day, result);
         await lbMissionRecordDailyChallenge(db, uid, day);
       },
       grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+      onPlayed: (...args) => lbDailyStreakService().mark(...args),
       isLinked: async (uid) => {
         const user = await getAuth().getUser(uid);
         return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
@@ -8819,8 +9159,11 @@ function lbDailyMatchesCallable(action) {
       if (action === "play") return await service.play(uid, input);
       // Recover late SSV benefits when the player returns to the mode.
       const bonus = await lbRewardedService().status(uid, input.platform);
-      return {...await service.status(uid), bonus: {pro: bonus.pro, enabled: bonus.enabled,
-        testingOnly: bonus.testingOnly, remaining: bonus.remaining}};
+      // The page shows (and repairs) the shared play streak, not a per-mode one.
+      const shared = await lbDailyStreakService().status(uid);
+      return {...await service.status(uid), playStreak: shared.streak, repairStreak: shared.repairStreak,
+        bonus: {pro: bonus.pro, enabled: bonus.enabled,
+          testingOnly: bonus.testingOnly, remaining: bonus.remaining}};
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code, error.message);
@@ -8839,8 +9182,74 @@ function lbSeasonService() {
   const db = getDatabase();
   return require("./season_pass").createService({db, now: () => Date.now(),
     isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
-    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args)});
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
+    avatarsEnabled: async () => (await db.ref("runtimeConfig/seasonAvatars/enabled").get()).val() === true,
+    grantAvatar: (uid, id, tier) => lbProDraw(db, uid, (e, now) =>
+      require("./pro_crate").drawAvatar(e, id, uid, tier, "season_pass", now)),
+    // Support steps: one receipt per unit; past the 99 cap they pay half the store price.
+    grantSupports: (uid, id, items) => lbProDraw(db, uid, (e, now) => {
+      if (e.storeUses[id]) return e.storeUses[id];
+      const supports = {}; let overflowCoins = 0;
+      for (const [itemId, count] of Object.entries(items)) {
+        for (let i = 1; i <= count; i++) {
+          const r = dailyReturn.grantSupport(e, `${id}__${itemId}__${i}`, itemId, "season_pass", id, now).receipt;
+          supports[itemId] = (supports[itemId] || 0) + (r.full ? 0 : 1); overflowCoins += r.coins || 0;
+        }
+      }
+      e.storeUses[id] = {kind: "supports", supports, overflowCoins, usedAt: now};
+      return e.storeUses[id];
+    })});
 }
+// Faz 4: one wallet transaction for a Pro draw (Sezon avatar or the monthly Kasa).
+async function lbProDraw(db, uid, run) {
+  let result = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw);
+    result = run(e, Date.now());
+    return e;
+  });
+  await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  return result;
+}
+async function lbProCrateStatus(db, uid) {
+  const now = Date.now(); const day = lbProgressionDateKey(now);
+  const crate = require("./pro_crate");
+  const raw = (await db.ref("runtimeConfig/proCrate").get()).val() || {};
+  const enabled = raw.enabled === true && (raw.public === true || raw.betaUids?.[uid] === true);
+  // Fresh entitlement on every read and claim (never a cached flag).
+  const premium = lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), now);
+  const e = lbEconomyState((await db.ref("economyState/" + uid).get()).val());
+  const {month, endsOn, daysLeft} = crate.monthOf(day);
+  const receipt = e.storeUses["pro_crate__" + month] || null;
+  // The 48 h wait guards a new purchase; a continuing subscriber (last month's Kasa opened)
+  // is never delayed, even if Play reported the renewal date as the start.
+  const openAt = e.storeUses["pro_crate__" + crate.previousMonth(month)] ? 0 : crate.openableAt(premium);
+  return {ok: true, enabled, pro: premium.active, proUntil: premium.expiresAt, month, endsOn, daysLeft,
+    remind: !receipt && daysLeft <= 3,
+    opened: !!receipt, receipt, openableAt: openAt, canOpen: enabled && premium.active && !receipt && now >= openAt,
+    contents: {...crate.CRATE, avatarTier: crate.CRATE_TIER}, odds: crate.odds(e, "crate")};
+}
+exports.getProCrate = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
+  lbRequireGoogleLinked(request);
+  return lbProCrateStatus(getDatabase(), request.auth.uid);
+});
+exports.claimProCrate = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
+  lbRequireGoogleLinked(request);
+  const db = getDatabase(); const uid = request.auth.uid;
+  const status = await lbProCrateStatus(db, uid);
+  if (status.opened) return {...status, granted: false};
+  if (!status.enabled) throw new httpsV2.HttpsError("failed-precondition", "Pro Kasası henüz açık değil.");
+  if (!status.pro) throw new httpsV2.HttpsError("permission-denied", "Etkin Pro üyeliği gerekli.");
+  if (Date.now() < status.openableAt) {
+    throw new httpsV2.HttpsError("failed-precondition", "Kasa, üyeliğin başladıktan 48 saat sonra açılır.");
+  }
+  const day = lbProgressionDateKey(Date.now());
+  // Re-checked at commit time: a subscription ending in between does not open the Kasa.
+  const result = await lbProDraw(db, uid, (e, now) => status.proUntil && now >= status.proUntil ? null :
+    require("./pro_crate").openCrate(e, day, uid, now));
+  if (!result) throw new httpsV2.HttpsError("permission-denied", "Etkin Pro üyeliği gerekli.");
+  return {...await lbProCrateStatus(db, uid), granted: result.opened};
+});
 function lbSeasonCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     lbRequireGoogleLinked(request);
@@ -8861,9 +9270,58 @@ exports.claimSeasonReward = lbSeasonCallable("claim");
 
 
 // Player Journey uses server-reviewed answers and durable milestone receipts.
+function lbStoryDocumentRef(db, collection, supportMode) {
+  const reference = require("./economy_document").create({db, normalize: lbEconomyState, project: lbEconomyProject,
+    collection, now: () => Date.now(), shouldMigrate: async (uid) => {
+      const mode = supportMode || require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
+      const policy = (await db.ref("runtimeConfig/boosts").get()).val();
+      if (!require("./boosts").enabled(policy, uid) || policy.readyModes?.[mode] !== true) return false;
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+  const mode = supportMode || require("./mission_story_events").definitions.find((d) => d[0] === collection)?.[1];
+  reference.guardHint = (uid, targetId) => lbStorySupportService().guardLegacy(uid, mode, targetId);
+  return reference;
+}
+function lbStorySupportService() {
+  const db = getDatabase();
+  return require("./story_support").create({db, documentRef: (collection) => lbStoryDocumentRef(db, collection),
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    },
+    premium: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()),
+    now: () => Date.now()});
+}
+function lbStorySupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth) throw new httpsV2.HttpsError("unauthenticated", "Oturum gerekli.");
+    try {
+      const input = request.data || {};
+      const modes = {player_journey: "journey", what_if: "what_if", ucl_moments: "ucl", nostalgia: "nostalgia",
+        international_glory: "international", dynasties: "dynasties", football_docu: "docu", derby_day: "derby"};
+      const target = require("./story_support").content(input.mode).targets[input.targetId];
+      if (!target) throw new httpsV2.HttpsError("invalid-argument", "Geçersiz hikâye görevi.");
+      if (action === "use") {
+        const unit = input.mode === "player_journey" ? target.section : input.mode === "what_if" ?
+          target.section.split("__")[0] : input.targetId;
+        await lbEnergyService().requireStory(request.auth.uid, modes[input.mode], unit, input.energyClientVersion);
+      } else await lbRewardedService().settle(request.auth.uid);
+      return await lbStorySupportService()[action](request.auth.uid, input);
+    } catch (error) {
+      if (error instanceof require("./rewarded_ads").RewardError) {
+        throw new httpsV2.HttpsError(error.code, error.message);
+      }
+      throw error;
+    }
+  });
+}
+exports.getStorySupport = lbStorySupportCallable("ensure");
+exports.useStorySupport = lbStorySupportCallable("use");
+
 function lbJourneyService() {
   const db = getDatabase();
-  return require("./player_journey").createService({db,
+  return require("./player_journey").createService({db, documentRef: lbStoryDocumentRef(db, "journeyRewardState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -8943,7 +9401,7 @@ exports.setJourneyShowcase = lbJourneyCallable("favorites");
 // What If has an isolated catalog, progress and receipt namespace.
 function lbWhatIfService() {
   const db = getDatabase();
-  return require("./what_if").createService({db,
+  return require("./what_if").createService({db, documentRef: lbStoryDocumentRef(db, "whatIfState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9017,7 +9475,7 @@ exports.setWhatIfShowcase = lbWhatIfCallable("favorites");
 // UCL answers and post-match disclosures are server-owned; no client reward amounts.
 function lbUclMomentsService() {
   const db = getDatabase();
-  return require("./ucl_moments").createService({db,
+  return require("./ucl_moments").createService({db, documentRef: lbStoryDocumentRef(db, "uclMomentsState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9067,7 +9525,7 @@ exports.submitUclMoment = lbUclCallable("submit");
 // Nostalji V2 has separate progress, hint, coin and XP receipt IDs.
 function lbNostalgiaService() {
   const db = getDatabase();
-  return require("./nostalgia").createService({db,
+  return require("./nostalgia").createService({db, documentRef: lbStoryDocumentRef(db, "nostalgiaState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9143,6 +9601,7 @@ exports.buyTurkishNostalgiaHint = lbNostalgiaCallable("hint");
 function lbInternationalGloryService() {
   const db = getDatabase();
   return require("./international_glory").createService({db,
+    documentRef: lbStoryDocumentRef(db, "internationalGloryState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9219,7 +9678,7 @@ exports.buyInternationalGloryHint = lbInternationalCallable("hint");
 // Dynasties uses isolated receipts and state.
 function lbDynastiesService() {
   const db = getDatabase();
-  return require("./dynasties").createService({db,
+  return require("./dynasties").createService({db, documentRef: lbStoryDocumentRef(db, "dynastiesState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9297,7 +9756,7 @@ exports.buyDynastiesHint = lbDynastiesCallable("hint");
 // FootballDocu uses isolated receipts and state.
 function lbFootballDocuService() {
   const db = getDatabase();
-  return require("./football_docu").createService({db,
+  return require("./football_docu").createService({db, documentRef: lbStoryDocumentRef(db, "footballDocuState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9375,7 +9834,7 @@ exports.buyFootballDocuHint = lbFootballDocuCallable("hint");
 // DerbyDay uses isolated receipts and state.
 function lbDerbyDayService() {
   const db = getDatabase();
-  return require("./derby_day").createService({db,
+  return require("./derby_day").createService({db, documentRef: lbStoryDocumentRef(db, "derbyDayState"),
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
     grantXp: async (uid, id, xp) => {
       const now = Date.now();
@@ -9484,7 +9943,8 @@ exports.claimProEnergyBonus = lbEnergyCallable("proBonus");
 
 function lbDailyQuestionService() {
   const db = getDatabase();
-  return require("./daily_question").createService({db, now: () => Date.now(),
+  return require("./daily_question").createService({db,
+    documentRef: lbStoryDocumentRef(db, "dailyQuestionState", "daily_question"), now: () => Date.now(),
     enabled: async () => (await db.ref("runtimeConfig/dailyQuestion/enabled").get()).val() === true,
     isLinked: async (uid) => {
       const user = await getAuth().getUser(uid);
@@ -9506,6 +9966,8 @@ function lbDailyQuestionService() {
           await lbProgressionPremiumBenefits(db, uid), now);
     },
     projectBadges: (uid, total) => lbAchievementMergeSignals(db, uid, {daily_question_days: total}, "daily_question"),
+    onPlayed: (...args) => lbDailyStreakService().mark(...args),
+    ownStreakBonus: async () => (await db.ref("runtimeConfig/dailyStreak/rewardsEnabled").get()).val() !== true,
   });
 }
 function lbDailyQuestionCallable(action) {
@@ -9513,7 +9975,8 @@ function lbDailyQuestionCallable(action) {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);
-      return await lbDailyQuestionService()[action](request.auth.uid, request.data || {});
+      const result = await lbDailyQuestionService()[action](request.auth.uid, request.data || {});
+      return ["status", "submit"].includes(action) ? await lbWithPlayStreak(request.auth.uid, result) : result;
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code,
@@ -9525,6 +9988,7 @@ function lbDailyQuestionCallable(action) {
 }
 exports.getDailyQuestion = lbDailyQuestionCallable("status");
 exports.submitDailyQuestion = lbDailyQuestionCallable("submit");
+exports.useDailyQuestionHint = lbDailyQuestionCallable("useHint");
 // Preflight only. An actual elimination always requires a verified SSV/Pro ticket.
 exports.prepareDailyQuestionHint = lbDailyQuestionCallable("prepareHint");
 
@@ -9573,7 +10037,6 @@ exports.startThreeMode = lbThreeModesCallable("start");
 exports.actThreeMode = lbThreeModesCallable("act");
 exports.searchThreeMode = lbThreeModesCallable("search");
 exports.resumeThreeMode = lbThreeModesCallable("resume");
-exports.claimCoachMastery = lbThreeModesCallable("chooseAvatar");
 
 function lbCareerTransferService() {
   const db = getDatabase();
@@ -9652,8 +10115,8 @@ async function lbSettleCareerTransferRanked(room) {
     const ar = lbRankedResultName(room.host, room.winner); const br = lbRankedResultName(room.guest, room.winner);
     const ae = lbRankedNextElo(a.elo, b.elo, lbRankedResultScore(ar));
     const be = lbRankedNextElo(b.elo, a.elo, lbRankedResultScore(br));
-    const participated = (uid) => !["mystery_duel", "fake_club_duel"].includes(mode) ||
-      Object.keys(room.answers?.[uid] || {}).length > 0;
+    // No answer in the whole duel: no ranked reward (Elo still settles the result).
+    const participated = (uid) => Object.keys(room.answers?.[uid] || {}).length > 0;
     const rewardEligible = {[room.host]: room.status === "finished" && participated(room.host) &&
       lbRankedRewardCount(s, room.host, room.finishedAt) < 5,
     [room.guest]: room.status === "finished" &&
@@ -9764,6 +10227,7 @@ async function lbFakeClubDailyClaim(uid, day) {
   const tx = await db.ref("missionState/" + uid).transaction((raw) => {
     const s = lbMissionState(raw, time);
     if (s.externalDailyClaims[id]) return s;
+    if (s.schemaVersion === 3) return s;
     if (s.daily.dateKey !== day || !config.sources.daily_mission.enabled ||
       Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) return s;
     s.daily.claims.daily_fake_club = {claimedAt: time, rewardCoins: 2, economyConfigId: config.configId};
@@ -9774,6 +10238,9 @@ async function lbFakeClubDailyClaim(uid, day) {
   if (!claim) return day !== lbProgressionDateKey(time) ? "expired" : "pending";
   await lbProgressionGrantCoins(db, uid, id, "mission_reward", day + "__daily_fake_club", 2, claim.configId);
   await lbCareerTransferGrantXp(uid, id, 4);
+  if (Object.keys(state.daily.claims).length >= config.sources.daily_mission.dailyLimit) {
+    await lbGrantAllMissionsBonus(db, uid, day);
+  }
   await lbMissionProject(db, uid, state, config);
   return "paid";
 }
@@ -9810,22 +10277,159 @@ exports.startFakeClub = lbFakeClubCallable("start");
 exports.actFakeClub = lbFakeClubCallable("act");
 
 // Official daily word games share one account transaction and a durable reward outbox.
+function lbGridSupportService() {
+  const db = getDatabase();
+  return require("./grid_support").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+}
+function lbGridSupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbGridSupportService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getGridSupport = lbGridSupportCallable("status");
+exports.actGridSupport = lbGridSupportCallable("act");
+
+exports.searchGridSupport = lbGridSupportCallable("search");
+
+// Loto, Team Race, Çinko and Random Five bot sessions share one account-owned state.
+function lbBotSupportService() {
+  const db = getDatabase();
+  return require("./bot_support").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+}
+function lbBotSupportCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbBotSupportService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getBotSupport = lbBotSupportCallable("status");
+exports.actBotSupport = lbBotSupportCallable("act");
+exports.searchBotSupport = lbBotSupportCallable("search");
+
+function lbDailyFootballerService() {
+  const db = getDatabase();
+  return require("./daily_footballer").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    },
+    getPolicy: async () => (await db.ref("runtimeConfig/dailyFootballer").get()).val() || {},
+    onPlayed: (...args) => lbDailyStreakService().mark(...args),
+    grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
+}
+function lbDailyFootballerCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbDailyFootballerService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getDailyFootballer = lbDailyFootballerCallable("status");
+exports.actDailyFootballer = lbDailyFootballerCallable("act");
+
+function lbAnagramPracticeService() {
+  const db = getDatabase();
+  return require("./anagram_practice").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject, getRollout: async () => (await db.ref("runtimeConfig/energy").get()).val() || {},
+    isLinked: async (uid) => {
+      const user = await getAuth().getUser(uid);
+      return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+    }});
+}
+function lbAnagramPracticeCallable(action) {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+    if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    try {
+      return await lbAnagramPracticeService()[action](request.auth.uid, request.data || {});
+    } catch (e) {
+      if (e instanceof require("./rewarded_ads").RewardError) throw new httpsV2.HttpsError(e.code, e.message);
+      throw e;
+    }
+  });
+}
+exports.getAnagramPractice = lbAnagramPracticeCallable("status");
+exports.actAnagramPractice = lbAnagramPracticeCallable("act");
+
 function lbDailyWordsService() {
   const db = getDatabase();
-  return require("./daily_words").createService({db, now: () => Date.now(),
+  return require("./daily_words").createService({db, now: () => Date.now(), normalize: lbEconomyState,
+    project: lbEconomyProject,
     getPolicy: async () => (await db.ref("runtimeConfig/dailyWords").get()).val() || {},
+    onPlayed: (...args) => lbDailyStreakService().mark(...args),
     isLinked: async (uid) => {
       const user = await getAuth().getUser(uid);
       return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
     },
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
 }
+function lbDailyStreakService() {
+  const db = getDatabase();
+  const legacy = (collection, mode) => lbStoryDocumentRef(db, collection, mode);
+  return require("./daily_streak").createService({db, now: () => Date.now(), isLinked: async (uid) => {
+    const user = await getAuth().getUser(uid);
+    return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
+  },
+  getPolicy: async () => (await db.ref("runtimeConfig/dailyStreak").get()).val() || {},
+  recordBest: (uid, best) => lbAchievementMergeSignals(db, uid, {best_daily_streak: best}, "daily"),
+  legacy: async (uid) => {
+    const question = (await legacy("dailyQuestionState", "daily_question")(uid).get()).val() || {};
+    const matches = (await legacy("dailyMatchState", "daily_match")(uid).get()).val() || {};
+    return [{streak: question.streak, lastDay: question.lastDay || ""},
+      {streak: matches.streak, lastDay: matches.lastWin || ""}, await lbDailyWordsService().streakSeed(uid)];
+  },
+  grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp,
+  // The first streak week leaves one basic support in the bag (idempotent per claim).
+  grantBoost: async (uid, id) => {
+    const now = Date.now(); const key = "daily_streak_boost__" + id;
+    const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+      const e = lbEconomyState(raw);
+      if (e.storeUses[key]) return;
+      dailyReturn.grantSupport(e, key, "boost_basic", "daily_streak", id, now);
+      return e;
+    });
+    await lbEconomyProject(db, uid, lbEconomyState(tx.snapshot.val()));
+  }});
+}
+// Daily pages show the shared play streak beside their own state.
+async function lbWithPlayStreak(uid, result) {
+  return {...result, playStreak: (await lbDailyStreakService().status(uid)).streak};
+}
+exports.getDailyStreak = httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true},
+    async (request) => {
+      if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+      return await lbDailyStreakService().status(request.auth.uid);
+    });
+
 function lbDailyWordsCallable(action, mode) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
-      return await lbDailyWordsService()[action](request.auth.uid,
+      const result = await lbDailyWordsService()[action](request.auth.uid,
           {...request.data, ...(mode ? {mode} : {})});
+      return action === "history" ? result : await lbWithPlayStreak(request.auth.uid, result);
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code, error.message);
@@ -9854,6 +10458,7 @@ async function lbArcadeDailyClaim(uid, day, group) {
   const tx = await db.ref("missionState/" + uid).transaction((raw) => {
     const s = lbMissionState(raw, time);
     if (s.externalDailyClaims[id]) return s;
+    if (s.schemaVersion === 3) return s;
     if (s.daily.dateKey !== day || !config.sources.daily_mission.enabled ||
       Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) return s;
     s.daily.claims[mission] = {claimedAt: time, rewardCoins: 2, economyConfigId: config.configId};
@@ -9863,7 +10468,11 @@ async function lbArcadeDailyClaim(uid, day, group) {
   const s = lbMissionState(tx.snapshot.val(), time); const claim = s.externalDailyClaims[id];
   if (!claim) return day !== lbProgressionDateKey(time) ? "expired" : "pending";
   await lbProgressionGrantCoins(db, uid, id, "mission_reward", day + "__" + mission, 2, claim.configId);
-  await lbCareerTransferGrantXp(uid, id, 4); await lbMissionProject(db, uid, s, config); return "paid";
+  await lbCareerTransferGrantXp(uid, id, 4);
+  if (Object.keys(s.daily.claims).length >= config.sources.daily_mission.dailyLimit) {
+    await lbGrantAllMissionsBonus(db, uid, day);
+  }
+  await lbMissionProject(db, uid, s, config); return "paid";
 }
 function lbArcadeService() {
   const db = getDatabase();

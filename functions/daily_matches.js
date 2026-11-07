@@ -1,6 +1,9 @@
 "use strict";
+const crypto = require("node:crypto");
+const B = require("./boosts");
 const {dayKey, RewardError} = require("./rewarded_ads");
 const catalog = require("./config/daily_catalog.json");
+const catalogVersion = crypto.createHash("sha256").update(JSON.stringify(catalog)).digest("hex");
 const fail = (message) => {
   throw new RewardError("failed-precondition", message);
 };
@@ -33,17 +36,20 @@ function initial(raw) {
 function coins(found, total) {
   return found < 3 ? 0 : 15 + Math.min(found * 5, 30) + (found === total ? 15 : 0);
 }
-function createService({db, grantCoins, isLinked, recordWin = async () => {}, now = Date.now}) {
-  const ref = (uid) => db.ref("dailyMatchState/" + uid);
+function createService({db, documentRef, grantCoins, isLinked, recordWin = async () => {},
+  onPlayed = async () => {}, now = Date.now}) {
+  const ref = documentRef || ((uid) => db.ref("dailyMatchState/" + uid));
   async function change(uid, fn) {
     let error;
-    const tx = await ref(uid).transaction((raw) => {
+    const tx = await ref(uid).transaction((raw, e) => {
       error = null;
-      const s = initial(raw);
+      const s = initial(structuredClone(raw));
       try {
-        fn(s); return s;
-      } catch (e) {
-        error = e; return raw;
+        fn(s, e);
+        if (e) for (const r of Object.values(s.sessions)) B.recoverUnused(e, r, now(), () => !r.hintUsed);
+        return s;
+      } catch (err) {
+        error = err; return e ? undefined : raw;
       }
     });
     if (error) throw error;
@@ -65,14 +71,12 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
       });
     }
   }
-  function canRepair(s, today, missed) {
-    return s.streak > 0 && missed.length === 1 && s.lastWin >= previousDay(today, 31) &&
-      (!s.lastRepair || s.lastRepair <= previousDay(today, 7));
-  }
   function view(session) {
     if (!session) return null;
     const {answers, ...safe} = session;
-    return {...safe, total: answers.length, foundPlayers: session.found.map((id) => ({id, ...catalog.players[id]})),
+    for (const key of ["boostPolicy", "boostUses", "actions", "adReceipts", "adScopes"]) delete safe[key];
+    return {...safe, ...(B.paid(session) ? {support: B.view(session)} : {}), total: answers.length,
+      foundPlayers: session.found.map((id) => ({id, ...catalog.players[id]})),
       remainingPlayers: session.finished ? answers.filter((id) => !session.found.includes(id))
           .map((id) => ({id, ...catalog.players[id]})) : []};
   }
@@ -101,8 +105,13 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
   }
   async function status(uid) {
     await settle(uid);
+    const old = (await ref(uid).get()).val();
+    if (Object.values(old?.sessions || {}).some((r) => B.paid(r))) await change(uid, () => {});
     const today = dayKey(now());
     const s = initial((await ref(uid).get()).val());
+    if (Object.values(s.sessions).some((r) => r.day === today && r.finished)) {
+      await onPlayed(uid, today, "daily_match");
+    }
     const feed = await fixtureFeed();
     const matches = feed.selected;
     for (const round of Object.values(s.sessions)) {
@@ -112,7 +121,7 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
     }
     const missed = await missedDays(s, today);
     return {ok: true, dayKey: today, streak: missed.length === 0 && s.lastWin >= previousDay(today, 31) ? s.streak : 0,
-      repairStreak: canRepair(s, today, missed) ? s.streak : 0, dailyLimit: 3,
+      dailyLimit: 3,
       remaining: Math.max(0, 3 - Object.values(s.sessions).filter((x) => x.day === today).length),
       feed: {sources: feed.sources, updatedAt: feed.updatedAt, snapshotUsed: feed.snapshotUsed,
         snapshotUpdatedAt: feed.snapshotUpdatedAt, coverageStart: feed.coverageStart, coverageEnd: feed.coverageEnd,
@@ -136,18 +145,26 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
     if (existing) return {ok: true, session: view(existing)};
     const match = (await fixtures()).find((m) => m.fixtureId === fixtureId);
     if (!match) fail("Bu maç şu anda oynanabilir listede değil. Listeyi yenile.");
-    const s = await change(uid, (state) => {
+    const policy = await B.policyFor(db, uid, await isLinked(uid));
+    const s = await change(uid, (state, e) => {
       if (state.sessions[key]) return;
       if (Object.values(state.sessions).filter((x) =>
         x.day === today).length >= 3) fail("Bugünkü 3 maç hakkını kullandın.");
       for (const [id, old] of Object.entries(state.sessions)) {
         if (old.day < previousDay(today,
-            14)) delete state.sessions[id];
+            14) && !(old.adCredits > 0)) delete state.sessions[id];
       }
       state.sessions[key] = {key, day: today, fixtureId, found: [], wrong: [], lives: 3, target: 3,
         answers: catalog.pairs[match.catalogKey], finished: false, reward: 0, doubled: false,
         hintUsed: false, adHint: false, createdAt: now(), homeName: match.homeName, awayName: match.awayName,
         match: {...match}};
+      if (e && policy?.readyModes?.daily_match === true) {
+        const r = state.sessions[key];
+        Object.assign(r, {id: key, mode: "daily_match", entry: "daily", version: catalogVersion,
+          revision: 0, expiresAt: Date.parse(today + "T00:00:00+03:00") + 86400000,
+          adCredits: 0, adGranted: 0, adReceipts: {}, actions: {}});
+        B.pin(r, policy);
+      }
     });
     return {ok: true, session: view(s.sessions[key])};
   }
@@ -163,6 +180,11 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
     s.reward = coins(s.found.length, s.answers.length);
     if (!s.reward) return;
     state.pending[s.key + "_base"] = s.reward;
+    if (s.assisted) {
+      state.assistedResults ||= {};
+      state.assistedResults[s.key] = {day: s.day, found: s.found.length, reward: s.reward};
+      s.masteryEligible = false; return;
+    }
     if (state.lastWin !== s.day) {
       state.streak = state.lastWin && state.lastWin >= previousDay(s.day, 31) &&
           missed.length === 0 ? state.streak + 1 : 1;
@@ -181,11 +203,28 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
         3)}…` : `${p.country} · Soyadı ${surname[0]} ile başlıyor`;
   }
   async function play(uid, input) {
+    const linked = input.action === "hint" ? await isLinked(uid) : false;
     const before = initial((await ref(uid).get()).val());
     const missed = await missedDays(before, dayKey(now()));
-    const s = await change(uid, (state) => {
+    const s = await change(uid, (state, e) => {
       const round = getSession(state, input.key);
+      if (input.action === "hint" && B.paid(round)) {
+        if (!linked) fail("Hesabını bağla.");
+        if (!e || !/^[a-f0-9]{32}$/.test(input.requestId || "")) fail("Destek isteği geçersiz.");
+        const fp = crypto.createHash("sha256").update(JSON.stringify([input.key, input.revision,
+          ...B.paymentFingerprint(input)])).digest("hex");
+        round.actions ||= {};
+        if (round.actions[input.requestId]) {
+          if (round.actions[input.requestId] !== fp) fail("İstek değiştirilemez.");
+          return;
+        }
+        if (round.finished || round.hintUsed || round.revision !== input.revision) fail("Destek durumunu yenile.");
+        const text = hint(round, false);
+        B.consume(e, round, input, "boost_basic", "match_hint", {text}, now());
+        round.hintUsed = true; round.hint = text; round.actions[input.requestId] = fp; round.revision++; return;
+      }
       if (round.finished) return;
+      if (B.paid(round)) round.revision++;
       if (input.action === "finish") {
         finish(state, round, missed); return;
       }
@@ -215,35 +254,23 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
       }
     });
     await settle(uid);
+    if (s.sessions[input.key]?.finished) await onPlayed(uid, s.sessions[input.key].day, "daily_match");
     return {ok: true, session: view(s.sessions[input.key]), streak: s.streak};
   }
   async function prepareReward(uid, placement, context) {
     const s = initial((await ref(uid).get()).val());
-    const today = dayKey(now());
-    if (placement === "daily_streak") {
-      if (!canRepair(s, today, await missedDays(s, today))) fail("Seri koruması şu anda kullanılamıyor.");
-      return {amount: 0, claimKey: "daily_streak_" + today, context: {day: today}};
-    }
     const round = getSession(s, context?.key);
     if (placement === "daily_double") {
       if (!round.finished || !round.reward || round.doubled) fail("Bu maçın 2x ödülü alınamıyor.");
       return {amount: round.reward, claimKey: "daily_double_" + round.key, context: {key: round.key}};
     }
+    if (B.paid(round)) fail("Destek Çantası'nı kullan; uygulamayı güncelle.");
     if (placement !== "daily_hint" || round.finished || round.adHint ||
         !round.hintUsed) fail("Önce ücretsiz ipucunu kullan.");
     return {amount: 0, claimKey: "daily_hint_" + round.key, context: {key: round.key}};
   }
   async function settleReward(uid, receipt) {
-    const before = initial((await ref(uid).get()).val());
-    const missed = await missedDays(before, dayKey(now()));
     await change(uid, (state) => {
-      const today = dayKey(now());
-      if (receipt.placement === "daily_streak") {
-        if (receipt.context.day === today && canRepair(state, today, missed)) {
-          state.lastWin = missed[0]; state.lastRepair = today;
-        }
-        return;
-      }
       // A late verified callback may settle a completed match after midnight.
       const round = state.sessions[receipt.context.key];
       if (!round) return;
@@ -256,6 +283,21 @@ function createService({db, grantCoins, isLinked, recordWin = async () => {}, no
     });
     await settle(uid);
   }
-  return {status, start, play, prepareReward, settleReward};
+  async function prepareHint(uid, placement, input) {
+    if (!await isLinked(uid) || placement !== "daily_match_hint") fail("Hesabını bağla.");
+    const s = initial((await ref(uid).get()).val()); const r = getSession(s, input.key);
+    if (!B.paid(r) || input.boostId !== "boost_basic" || r.hintUsed || r.finished) fail("Destek kullanılamaz.");
+    return B.adBenefit(r, {amount: 0, claimKey: "match_hint_" + r.key,
+      context: {key: r.key, sessionId: r.id}}, "boost_basic");
+  }
+  async function settleHint(uid, receipt) {
+    await change(uid, (s, e) => {
+      if (!e) fail("Cüzdan hazır değil.");
+      const r = s.sessions[receipt.context?.key];
+      const usable = r?.id === receipt.context?.sessionId && !r.hintUsed;
+      if (!B.recoverAd(e, r, receipt, now(), "boost_basic", usable)) B.grantAd(r, receipt);
+    });
+  }
+  return {status, start, play, prepareReward, settleReward, prepareHint, settleHint};
 }
 module.exports = {createService, resolveFixture, norm, coins, previousDay};

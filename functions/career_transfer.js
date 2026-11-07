@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {norm} = require("./three_modes");
@@ -20,34 +21,93 @@ const runOf = (r) => r && ({hints: [], guesses: [], actions: {}, adReceipts: {},
 const pool = (mode) => mode === "career" ? catalog.careers : catalog.transfers;
 const puzzleOf = (s) => pool(s.mode).find((p) => p.id === s.puzzle);
 const playerView = (p) => ({id: p.id, name: p.name, country: p.country, position: p.position});
+// Everyone who made the shown move in that year answers it; the screen only has clubs and year.
+const answersOf = (p) => [p.playerId, ...(p.alsoPlayerIds || [])];
+const TRANSFER_LEVELS = ["easy", "medium", "hard"];
+// Streak badges pay once, the first time the best streak reaches them.
+const STREAK_REWARDS = [{id: "streak_5", at: 5, coins: 10}, {id: "streak_10", at: 10, coins: 20}];
+const detailedPositions = {"Goalkeeper": "Kaleci", "Centre-Back": "Stoper", "Left-Back": "Sol bek",
+  "Right-Back": "Sağ bek", "Defensive Midfield": "Ön libero", "Central Midfield": "Merkez orta saha",
+  "Attacking Midfield": "On numara", "Left Midfield": "Sol orta saha", "Right Midfield": "Sağ orta saha",
+  "Left Winger": "Sol kanat", "Right Winger": "Sağ kanat", "Second Striker": "İkinci forvet",
+  "Centre-Forward": "Santrfor"};
 function shuffled(list, seed) {
   return [...list].sort((a, b) => hash(seed + JSON.stringify(a)).localeCompare(hash(seed + JSON.stringify(b))));
 }
+// Career cards: back-to-back periods at one club are one card, so two cards
+// can never be told apart only by a hidden "1st / 2nd spell" label.
+function cardsOf(p) {
+  const cards = [];
+  for (const stop of p.stops) {
+    const last = cards.at(-1);
+    if (last && last.clubId === stop.clubId) {
+      last.end = stop.end; last.stopIds.push(stop.id);
+    } else cards.push({id: stop.id, clubId: stop.clubId, start: stop.start, end: stop.end, stopIds: [stop.id]});
+  }
+  return cards;
+}
+// Longer careers get more checks: up to 5 cards 2, 6–8 cards 3, 9+ cards 4.
+const maxChecks = (n) => n <= 5 ? 2 : n <= 8 ? 3 : 4;
+const clubOfCard = (cards, id) => cards.find((c) => c.id === id)?.clubId;
+// A card position is right when it holds the right club; two cards of the
+// same club are interchangeable.
+const correctnessOf = (cards, order) => order.map((id, i) => clubOfCard(cards, id) === cards[i].clubId);
+// Shuffle that never starts as the solution (when another order exists).
+function startOrder(cards, seed) {
+  let order = cards.map((c) => c.id);
+  for (let i = 0; i < 24; i++) {
+    order = shuffled(cards.map((c) => c.id), seed + ":" + i);
+    if (correctnessOf(cards, order).some((ok) => !ok)) return order;
+  }
+  return order;
+}
+// Sessions started before cards existed keep stop ids; give them a card order.
+function orderOf(run, cards) {
+  const ids = new Set(cards.map((c) => c.id));
+  const valid = run.order.length === cards.length && run.order.every((id) => ids.has(id)) &&
+    new Set(run.order).size === cards.length;
+  return valid ? run.order : startOrder(cards, run.id);
+}
+const yearsOf = (c) => `${c.start.slice(0, 4)}–${c.end?.slice(0, 4) || "açık dönem"}`;
 function sessionView(raw) {
   const s = runOf(raw); if (!s) return null;
   const p = puzzleOf(s); const player = players.get(p.playerId);
   const v = {id: s.id, mode: s.mode, difficulty: s.difficulty, version: s.version, revision: s.revision,
     phase: s.phase, finished: s.finished, expiresAt: s.expiresAt, wrong: s.wrong, guesses: s.guesses,
-    checks: s.checks, score: s.score, found: s.found, hints: s.hints, freeHint: !s.freeUsed,
+    checks: s.checks, score: s.score, found: s.found, hints: s.hints,
+    freeHint: !B.paid(s) && !s.freeUsed, support: B.view(s),
     adCredits: s.adCredits, adRemaining: Math.max(0, 2 - s.adGranted), feedback: s.feedback || "",
-    energyCharged: s.energyCharged, masteryEligible: s.first && s.difficulty !== "beginner",
-    result: s.result || null, streak: s.streak || 0};
+    energyCharged: s.energyCharged, masteryEligible: !s.assisted && s.first && s.difficulty !== "beginner",
+    result: s.result || null, streak: s.streak || 0, ...(s.daily ? {daily: s.daily} : {})};
   if (s.phase !== "guess" || s.finished) v.player = playerView(player);
   if (s.mode === "career") {
-    v.stops = s.order.map((id) => {
-      const stop = p.stops.find((x) => x.id === id);
-      const repeat = p.stops.filter((x) => x.clubId === stop.clubId);
-      return {id, club: clubs.get(stop.clubId), visit: repeat.length > 1 ? repeat.indexOf(stop) + 1 : null};
+    const cards = cardsOf(p);
+    // "visit" is how many spells the club has in this career, never which one.
+    v.stops = orderOf(s, cards).map((id) => {
+      const card = cards.find((c) => c.id === id);
+      const spells = cards.filter((c) => c.clubId === card.clubId).length;
+      return {id, club: clubs.get(card.clubId), visit: spells > 1 ? spells : null};
     });
-    v.correctness = s.correctness;
-    if (s.finished) v.solution = p.stops.map((x) => ({...x, club: clubs.get(x.clubId)}));
+    v.correctness = s.correctness; v.maxChecks = maxChecks(cards.length);
+    // Periods with no verified club (loans, free agency, unknown years) are left out.
+    v.gaps = cards.some((c, i) => i > 0 && cards[i - 1].end &&
+      Date.parse(c.start) - Date.parse(cards[i - 1].end) > 30 * 86400000);
+    if (s.finished) {
+      v.solution = cards.map((c) => ({id: c.id, clubId: c.clubId, start: c.start, end: c.end,
+        club: clubs.get(c.clubId)}));
+    }
   } else {
     const first = [...player.name].findIndex((c) => /\p{L}/u.test(c));
     const letter = s.hints.some((h) => h.kind === "letter");
     v.maskedName = [...player.name].map((c, i) => /\p{L}/u.test(c) ?
       s.finished || letter && i === first ? c : "_" : c).join(" ");
     v.transfer = {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year};
-    if (s.finished) v.transfer = {...v.transfer, eventId: p.id, date: p.date, source: p.source};
+    if (s.finished) {
+      v.transfer = {...v.transfer, eventId: p.id, date: p.date, source: p.source,
+        alsoBy: answersOf(p).filter((id) => id !== p.playerId && id !== s.answerId)
+            .map((id) => players.get(id)?.name).filter(Boolean)};
+      if (s.answerId && s.answerId !== p.playerId) v.answer = playerView(players.get(s.answerId));
+    }
   }
   return v;
 }
@@ -56,10 +116,23 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function change(uid, fn) {
     let error; const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-      error = null; const e = normalize(raw); e.careerTransfer = stateOf(e.careerTransfer);
+      error = null; const e = normalize(structuredClone(raw)); e.careerTransfer = stateOf(e.careerTransfer);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.careerTransfer, e, time); return e;
+        for (const r of Object.values(e.careerTransfer.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => (r.hints?.length || 0) < 3 && sku === (r.mode === "transfer" &&
+              (r.hints?.length || 0) === 2 ? "boost_first_letter" :
+              r.phase === "order" ? "boost_connection" : "boost_basic"));
+        }
+        fn(e.careerTransfer, e, time);
+        for (const r of Object.values(e.careerTransfer.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => (r.hints?.length || 0) < 3 && sku === (r.mode === "transfer" &&
+              (r.hints?.length || 0) === 2 ? "boost_first_letter" :
+              r.phase === "order" ? "boost_connection" : "boost_basic"));
+        }
+        return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -119,8 +192,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       if (!run.wrong) award(s, run, 3, 1, time);
       if (!run.wrong && !run.hints.length) award(s, run, 4, 2, time);
     } else {
+      // Only the first play pays: after a skip or a reveal the answer is known.
+      if (!run.first) return;
       award(s, run, 1, 3, time);
-      const n = puzzleOf(run).stops.length;
+      const n = cardsOf(puzzleOf(run)).length;
       if (correct >= Math.ceil(n / 2)) award(s, run, 2, 2, time);
       if (correct === n) award(s, run, 3, 3, time);
       if (correct === n && run.checks === 1 && run.first && !run.wrong &&
@@ -128,21 +203,36 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     }
   }
   function finish(s, run, time) {
-    run.finished = true; run.phase = "result";
+    run.finished = true; run.phase = "result"; run.finishedAt = time;
     const record = s.collection[`${run.mode}__${run.puzzle}`];
     if (run.mode === "transfer") {
-      s.streak = run.found ? s.streak + 1 : 0; run.streak = s.streak;
-      s.longestStreak = Math.max(s.longestStreak, s.streak);
-      const multiplier = s.streak >= 4 ? 2 : s.streak === 3 ? 1.5 : s.streak === 2 ? 1.2 : 1;
+      const streakKey = run.assisted ? "assistedStreak" : "streak";
+      // Archive replays know the answer: they neither extend nor break the streak.
+      if (run.first) s[streakKey] = run.found ? (s[streakKey] || 0) + 1 : 0;
+      run.streak = run.first ? s[streakKey] || 0 : 0;
+      if (run.first && !run.assisted) {
+        s.longestStreak = Math.max(s.longestStreak, s.streak);
+        for (const b of STREAK_REWARDS) {
+          const key = `ct__transfer__badge__${b.id}`;
+          if (s.longestStreak >= b.at && !s.claims[key]) {
+            s.claims[key] = {at: time, coins: b.coins}; s.pending[key] = {coins: b.coins, target: b.id, at: time};
+            run.earned += b.coins; run.badge = b.id;
+          }
+        }
+      }
+      const multiplier = run.streak >= 4 ? 2 : run.streak === 3 ? 1.5 : run.streak === 2 ? 1.2 : 1;
       run.score = run.found ? Math.round(Math.max(0, 100 - run.wrong * 10 - run.hints.length * 10) * multiplier) : 0;
     }
-    record.bestScore = Math.max(record.bestScore || 0, run.score);
-    record.solved = !!record.solved || run.found; record.lastAt = time;
+    const bestKey = run.assisted ? "bestAssistedScore" : "bestScore";
+    record[bestKey] = Math.max(record[bestKey] || 0, run.score);
+    // A transfer counts as solved for the archive badges only when found on its first play.
+    record.solved = !!record.solved || run.found && (run.mode !== "transfer" || run.first); record.lastAt = time;
     record.last = {wrong: run.wrong, hints: run.hints.length, checks: run.checks, score: run.score, found: run.found};
     record.attempts = (record.attempts || 0) + 1;
     if (run.first) record.firstResult = record.last;
     run.result = {coins: run.earned, xp: run.earned * 2, medal: record.medal || 0,
-      practice: !run.found, score: run.score};
+      practice: !run.found, assisted: run.assisted === true, score: run.score,
+      ...(run.badge ? {badge: run.badge} : {})};
   }
   async function status(uid, input) {
     if (!MODES.includes(input.mode)) fail("invalid-argument", "Geçersiz mod.");
@@ -179,14 +269,20 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
             .filter(([key, r]) => key.startsWith("transfer__") && r.solved).length},
         {id: "streak_5", title: "Keskin Dedektif", target: 5, progress: s.longestStreak},
         {id: "streak_10", title: "Kusursuz Seri", target: 10, progress: s.longestStreak},
-      ].map((b) => ({...b, earned: b.progress >= b.target})) : [],
+      ].map((b) => {
+        const reward = STREAK_REWARDS.find((r) => r.id === b.id);
+        return {...b, earned: b.progress >= b.target,
+          ...(reward ? {coins: reward.coins, xp: reward.coins * 2} : {})};
+      }) : [],
       inventory: boosts.map((id) => ({id, quantity: e.inventory[id]?.quantity || 0}))};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input);
     if (!validId(input.requestId)) fail("invalid-argument", "Geçersiz istek.");
-    const difficulty = input.mode === "career" ? input.difficulty || "normal" : "normal";
-    const fingerprint = hash(JSON.stringify([input.mode, difficulty, input.target || null]));
+    const difficulty = input.daily ? "normal" : input.mode === "career" ? input.difficulty || "normal" :
+      TRANSFER_LEVELS.includes(input.difficulty) ? input.difficulty : "normal";
+    const fingerprint = hash(JSON.stringify([input.mode, difficulty, input.target || null, !!input.daily]));
     const seed = random(); const rollout = {...energy.policy.rollout, ...await getRollout()};
     const charge = rollout.enabled === true && parseInt(hash(uid).slice(0, 8), 16) % 100 < rollout.percent &&
       (rollout.sessionModes || []).includes(input.mode);
@@ -201,13 +297,33 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       if (active && !active.finished && active.expiresAt <= time) {
         finish(s, active, time); s.sessions[active.id] = active;
       }
-      let candidates = pool(input.mode).filter((p) => input.mode !== "career" || p.difficulty === difficulty);
-      if (input.target) {
+      // Transfer "normal" is the mixed pool.
+      let candidates = pool(input.mode).filter((p) => input.mode === "transfer" && difficulty === "normal" ||
+        p.difficulty === difficulty);
+      if (input.daily) {
+        // Today's file: one well-known career or transfer for everyone.
+        const daily = input.mode === "career" ? catalog.careers.filter((p) => p.difficulty === "normal") :
+          catalog.transfers.filter((p) => p.difficulty !== "hard" && !p.alsoPlayerIds);
+        candidates = [daily[parseInt(hash(input.mode + "__" + dayKey(time) + catalog.version).slice(0, 8), 16) %
+          daily.length]];
+      } else if (input.target) {
         if (!s.collection[`${input.mode}__${input.target}`]?.last) fail("permission-denied", "Önce arşive ekle.");
         candidates = candidates.filter((p) => p.id === input.target);
       } else {
         const unseen = candidates.filter((p) => !s.collection[`${input.mode}__${p.id}`]);
         if (unseen.length) candidates = unseen;
+        if (input.mode === "transfer") {
+          // A few journeymen own dozens of transfers: pick a player first, then
+          // one of their files, and skip the players of the last five files.
+          const recent = Object.values(s.sessions).filter((x) => x.mode === "transfer")
+              .sort((a, b) => b.startedAt - a.startedAt).slice(0, 5)
+              .map((x) => pool("transfer").find((p) => p.id === x.puzzle)?.playerId);
+          const fresh = candidates.filter((p) => !recent.includes(p.playerId));
+          if (fresh.length) candidates = fresh;
+          const ids = [...new Set(candidates.map((p) => p.playerId))].sort((a, b) => a - b);
+          const pid = ids[parseInt(hash(seed + ":player").slice(0, 8), 16) % ids.length];
+          candidates = candidates.filter((p) => p.playerId === pid);
+        }
       }
       if (!candidates.length) fail("failed-precondition", "Bu seviyede doğrulanmış içerik yok.");
       const p = candidates[parseInt(hash(seed).slice(0, 8), 16) % candidates.length];
@@ -226,10 +342,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         revision: 0, phase: "guess", finished: false, found: false, wrong: 0, checks: 0, score: 0,
         energyCharged: charge, earned: 0, hints: [], guesses: [], actions: {}, freeUsed: false,
         adGranted: 0, adCredits: 0, adReceipts: {}, correctness: [],
-        order: p.stops ? shuffled(p.stops.map((x) => x.id), seed) : []};
+        order: p.stops ? startOrder(cardsOf(p), seed) : [], ...(input.daily ? {daily: dayKey(time)} : {})};
+      B.pin(run, boostPolicy);
       s.sessions[run.id] = run; s.active[input.mode] = run.id; s.starts[run.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
-        if (old.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
+        if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
+          delete s.sessions[id];
+        }
       }
     });
     return {ok: true, version: catalog.version, session: sessionView(e.careerTransfer.sessions[input.requestId])};
@@ -249,18 +368,30 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     let text;
     if (run.phase === "guess") {
       if (kind === "country") text = player.country;
-      if (kind === "position") text = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet"}[player.position];
-      if (kind === "letter" && run.mode === "transfer") text = `İlk harf: ${player.name.match(/\p{L}/u)?.[0] || ""}`;
-    } else if (run.mode === "career" && run.phase === "order") {
-      if (kind === "connection") text = `${clubs.get(p.stops[0].clubId).name} → ${clubs.get(p.stops[1].clubId).name}`;
-      if (kind === "years") {
-        const stop = p.stops[0];
-        const years = `${stop.start.slice(0, 4)}–${stop.end?.slice(0, 4) || "açık dönem"}`;
-        text = `${clubs.get(stop.clubId).name}: ${years}`;
+      if (kind === "position") {
+        text = detailedPositions[p.detailedPosition] ||
+          {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet"}[player.position];
+        if (run.mode === "transfer" && p.age) text += ` · transferde ${p.age} yaşında`;
       }
-      if (kind === "short") {
-        const stop = p.stops.find((x) => x.end && Date.parse(x.end) - Date.parse(x.start) <= 366 * 86400000);
-        if (stop) text = `${clubs.get(stop.clubId).name}: bir yıl veya daha kısa dönem`;
+      if (kind === "letter") text = `İlk harf: ${player.name.match(/\p{L}/u)?.[0] || ""}`;
+    } else if (run.mode === "career" && run.phase === "order") {
+      // Each hint fixes a card that is not yet in place, so three hints
+      // always add three different pieces of the career.
+      const cards = cardsOf(p); const order = orderOf(run, cards);
+      const told = new Set(run.hints.map((h) => h.card).filter(Boolean));
+      const open = cards.map((c, i) => ({c, i})).filter(({c, i}) =>
+        clubOfCard(cards, order[i]) !== c.clubId && !told.has(c.id));
+      const pick = open[0] || cards.map((c, i) => ({c, i})).find(({c}) => !told.has(c.id));
+      if (pick) {
+        const {c, i} = pick; const name = clubs.get(c.clubId).name;
+        if (kind === "connection" && i + 1 < cards.length) {
+          text = `${name} → ${clubs.get(cards[i + 1].clubId).name} art arda`;
+        } else if (kind === "years") {
+          text = `${name}: ${yearsOf(c)}`;
+        } else if (kind === "short" || kind === "connection") {
+          text = `${name} kariyerin ${i + 1}. durağı`;
+        }
+        if (text) return {kind, text, card: c.id};
       }
     }
     if (!text) fail("failed-precondition", "Bu aşamada doğrulanmış yeni ipucu yok.");
@@ -273,7 +404,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const run = runOf(s.sessions[input.sessionId]);
       if (!run || run.mode !== input.mode || run.version !== catalog.version) fail("not-found", "Oturum bulunamadı.");
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.answer ?? null,
-        input.order ?? null, input.hint ?? null, input.boost ?? null]));
+        input.order ?? null, input.hint ?? null, input.boost ?? null, ...B.paymentFingerprint(input)]));
       if (run.actions[input.requestId]) {
         if (run.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İşlem başka cevaba ait.");
         return;
@@ -286,8 +417,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         if (!player) fail("invalid-argument", "İsim tanınmadı veya belirsiz. Listeden futbolcu seç; hakkın azalmadı.");
         if (run.guesses.includes(player.id)) fail("already-exists", "Bu futbolcu zaten denendi.");
         run.guesses.push(player.id);
-        if (player.id === p.playerId) {
-          run.found = true; run.score = run.mode === "career" ? 25 : 0;
+        if (player.id === p.playerId || run.mode === "transfer" && answersOf(p).includes(player.id)) {
+          run.found = true; run.score = run.mode === "career" ? 25 : 0; run.answerId = player.id;
           grade(s, run, time); run.feedback = "Doğru futbolcu!";
           if (run.mode === "career") run.phase = "order"; else finish(s, run, time);
         } else {
@@ -299,28 +430,33 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           }
         }
       } else if (["order", "reorder"].includes(input.action) && run.phase === "order") {
-        if (!Array.isArray(input.order) || input.order.length !== p.stops.length ||
-            new Set(input.order).size !== p.stops.length ||
-            input.order.some((id) => !p.stops.some((x) => x.id === id))) {
+        const cards = cardsOf(p); const n = cards.length;
+        if (!Array.isArray(input.order) || input.order.length !== n || new Set(input.order).size !== n ||
+            input.order.some((id) => !cards.some((c) => c.id === id))) {
           fail("invalid-argument", "Her kariyer dönemi bir kez yer almalı.");
         }
         run.order = input.order;
         if (input.action === "reorder") run.correctness = [];
         else {
           run.checks++;
-          run.correctness = run.order.map((id, i) => id === p.stops[i].id);
+          run.correctness = correctnessOf(cards, run.order);
           const count = run.correctness.filter(Boolean).length;
           grade(s, run, time, count);
-          if (count === p.stops.length || run.checks === 2) {
-            run.score = (run.found ? 25 : 0) + Math.floor(75 * count / p.stops.length) +
-              (count === p.stops.length && run.checks === 1 ? 50 : 0);
+          const left = maxChecks(n) - run.checks;
+          if (count === n || left <= 0) {
+            run.score = (run.found ? 25 : 0) + Math.floor(75 * count / n) +
+              (count === n && run.checks === 1 ? 50 : 0);
             finish(s, run, time);
-          } else run.feedback = "İlk kontrol: doğru pozisyonlar işaretlendi. Bir kontrol hakkın daha var.";
+          } else run.feedback = `Doğru pozisyonlar işaretlendi: ${count}/${n}. ${left} kontrol hakkın kaldı.`;
         }
       } else if (input.action === "hint") {
         if (run.hints.length >= 3) fail("resource-exhausted", "Bu bulmacanın üç ipucu kullanıldı.");
         const hint = hintFor(run, input);
-        if (input.boost) {
+        if (B.paid(run)) {
+          const sku = hint.kind === "letter" ? "boost_first_letter" :
+            ["connection", "years", "short"].includes(hint.kind) ? "boost_connection" : "boost_basic";
+          B.consume(e, run, input, sku, "hint:" + hint.kind, hint, time);
+        } else if (input.boost) {
           const item = e.inventory[input.boost];
           if (!boosts.includes(input.boost) || !item || item.quantity < 1) {
             fail("resource-exhausted", "Destek stokta yok.");
@@ -351,21 +487,34 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function prepareHint(uid, placement, context) {
     const s = await read(uid); const run = runOf(s.sessions[context?.sessionId]);
     if (!run || `${run.mode}_hint` !== placement || run.finished || run.expiresAt <= now() ||
-        run.adGranted >= 2 || run.hints.length + run.adCredits + (run.freeUsed ? 0 : 1) >= 3) {
+        run.adGranted >= 2 || run.hints.length + run.adCredits + (B.paid(run) || run.freeUsed ? 0 : 1) >= 3) {
       fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
     }
-    return {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
-      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}};
+    const sku = run.mode === "transfer" && run.hints.length === 2 ? "boost_first_letter" :
+      run.phase === "order" ? "boost_connection" : "boost_basic";
+    if (B.paid(run) && context?.boostId && context.boostId !== sku) {
+      fail("failed-precondition", "Bu aşamada seçilen destek kullanılamaz.");
+    }
+    return B.adBenefit(run, {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
+      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}}, sku);
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, time) => {
+    await change(uid, (s, e, time) => {
       const run = runOf(s.sessions[receipt.context?.sessionId]);
+      const sku = run?.mode === "transfer" && run.hints.length === 2 ? "boost_first_letter" :
+        run?.phase === "order" ? "boost_connection" : "boost_basic";
+      const canApply = run && run.hints.length + run.adCredits < 3 && run.adGranted < 2 &&
+        run.adGranted === receipt.context.credit && (!receipt.context.boostId || receipt.context.boostId === sku);
+      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) {
+        if (run) s.sessions[run.id] = run; return;
+      }
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= time ||
           run.adReceipts[receipt.id] || run.hints.length >= 3 || run.adGranted >= 2 ||
           run.adGranted !== receipt.context.credit) return;
-      run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true; s.sessions[run.id] = run;
+      B.grantAd(run, receipt); s.sessions[run.id] = run;
     });
   }
   return {status, start, act, search, settle, prepareHint, settleHint};
 }
-module.exports = {createService, catalog, players, clubs, sessionView, shuffled, validId, playerView};
+module.exports = {createService, catalog, players, clubs, sessionView, shuffled, validId, playerView,
+  cardsOf, maxChecks};

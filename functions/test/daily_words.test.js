@@ -53,8 +53,8 @@ test("LG01/03/06 PA02/04/12/21 AN02/05/10/11: entire reviewed calendar, dictiona
   assert.equal(normalize("Jesper GRØNKJÆR"), normalize("Jesper Grønkjær"));
   assert.equal(normalize("ÐðÆæŒœẞß"), "DDAEAEOEOESSSS");
   assert.equal(catalog.alphabet.length, 29); assert.ok(catalog.alphabet.includes("Ğ"));
-  assert.equal(catalog.players.length, 270); assert.ok(catalog.questions.length >= 174);
-  assert.equal(Object.keys(catalog.daily).length, 90);
+  assert.equal(catalog.players.length, 540); assert.ok(catalog.questions.length >= 1000);
+  assert.equal(Object.keys(catalog.daily).length, 180); assert.equal(Object.keys(catalog.weekly).length, 27);
   const seen = new Set(); const seenLingo = new Set();
   const counts = (a) => a.reduce((m, v) => {
     m[v] = (m[v] || 0) + 1; return m;
@@ -112,7 +112,7 @@ test("closed rollout / missing future content cannot silently create a random re
   const h = setup({runtimeConfig: {}});
   assert.equal((await load(h, "daily_lingo")).availability, false);
   assert.equal((await load(h, "daily_lingo")).session, null);
-  const active = setup(); active.setTime(Date.parse("2027-02-01T10:00:00Z"));
+  const active = setup(); active.setTime(Date.parse("2027-05-01T10:00:00Z"));
   assert.equal((await load(active, "daily_anagram")).availability, false);
 });
 test("LG03/04/07/08/09/13: invalid guesses and premature hints never consume a turn or leak answer", async () => {
@@ -130,7 +130,7 @@ test("LG03/04/07/08/09/13: invalid guesses and premature hints never consume a t
   r = await act(h, r, "hint"); assert.ok(r.hint); assert.equal(r.attempts, 3);
   assert.equal(r.answer, undefined);
   r = await act(h, r, "guess", q.answer);
-  assert.equal(r.result.medal, "Altın"); assert.equal(r.result.coins, 3); assert.equal(r.result.xp, 6);
+  assert.equal(r.result.medal, "Altın"); assert.equal(r.result.coins, 3); assert.equal(r.result.xp, 8);
   await assert.rejects(act(h, r, "guess", wrong[3]), {code: "failed-precondition"});
 });
 test("LG14: six valid wrong guesses earn only participation XP, reveal/giveup earn nothing", async () => {
@@ -138,7 +138,7 @@ test("LG14: six valid wrong guesses earn only participation XP, reveal/giveup ea
   const answer = raw(h, r).puzzle.answer;
   const wrong = compiled(TODAY, false).dictionary.filter((x) => x.length === r.length && x !== answer);
   for (const word of wrong.slice(0, 6)) r = await act(h, r, "guess", word);
-  assert.ok(r.finished); assert.equal(r.answer, answer); assert.equal(coins(h), 0); assert.equal(xp(h), 2);
+  assert.ok(r.finished); assert.equal(r.answer, answer); assert.equal(coins(h), 0); assert.equal(xp(h), 3);
   const b = setup(); const ended = await act(b, await run(b, "daily_lingo"), "giveup");
   assert.equal(ended.result.eligibleForDailyBonus, false); assert.equal(xp(b), 0);
 });
@@ -175,12 +175,13 @@ test("PA08/16: 240-second deadline survives restart, delayed response and Monday
   w = await run(empty, "passa_weekly"); assert.equal(w.result.xp, 0); assert.equal(w.result.coins, 0);
 });
 test("PA13: all daily / weekly reward and medal thresholds are independent and capped", async () => {
-  for (const [correct, coin, points] of [[0, 0, 1], [2, 0, 1], [3, 1, 2], [5, 2, 4], [7, 3, 6]]) {
+  for (const [correct, coin, points] of [[0, 0, 2], [2, 0, 2], [3, 1, 4], [5, 2, 6], [7, 3, 8]]) {
     const h = setup(); const r = await passa(h, correct);
     assert.equal(r.result.coins, coin); assert.equal(r.result.xp, points);
     assert.equal((await run(h, "passa_daily")).result.solved, correct);
   }
-  for (const [correct, coin, points] of [[0, 0, 0], [1, 0, 3], [15, 0, 3], [16, 2, 6], [29, 2, 6]]) {
+  for (const [correct, coin, points] of
+    [[0, 0, 0], [1, 0, 3], [7, 0, 3], [8, 1, 10], [16, 2, 20], [22, 4, 30], [29, 8, 40]]) {
     const h = setup(); const r = await passa(h, correct, true);
     assert.equal(r.result.coins, coin); assert.equal(r.result.xp, points);
   }
@@ -205,7 +206,7 @@ test("AN09/14: daily scores, mastery and all solve/reveal reward bands", async (
   for (const correct of [0, 1, 2, 3]) {
     const h = setup(); const r = await anagram(h, correct);
     assert.equal(r.score, correct * 100); assert.equal(r.result.coins, correct);
-    assert.equal(r.result.xp, correct ? correct * 2 : 1);
+    assert.equal(r.result.xp, 2 + correct * 2);
     assert.equal(r.result.medal === "Ustalık", correct === 3);
   }
   const h = setup(); let r = await run(h, "daily_anagram");
@@ -214,13 +215,13 @@ test("AN09/14: daily scores, mastery and all solve/reveal reward bands", async (
   }
   assert.equal(r.result.xp, 0); assert.equal(r.result.eligibleForDailyBonus, false);
 });
-test("LG16 PA15 AN16: atomic trio pays exactly 11/22; practice and weekly never count", async () => {
-  const h = setup(); await lingo(h); await passa(h); assert.equal(coins(h), 6);
-  await anagram(h); assert.equal(coins(h), 11); assert.equal(xp(h), 22);
+test("LG16 PA15 AN16: atomic trio pays exactly 12/28; practice and weekly never count", async () => {
+  const h = setup(); await lingo(h); await passa(h); assert.equal(coins(h), 7);
+  await anagram(h); assert.equal(coins(h), 12); assert.equal(xp(h), 28);
   for (const m of ["daily_lingo", "passa_daily", "daily_anagram"]) await load(h, m);
-  assert.equal(coins(h), 11); assert.equal(xp(h), 22);
+  assert.equal(coins(h), 12); assert.equal(xp(h), 28);
   const s = await load(h, "daily_anagram"); assert.equal(s.bonus.coins, 2); assert.equal(s.archive.streak, 1);
-  await passa(h, 29, true); assert.equal(coins(h), 13); assert.equal(xp(h), 28);
+  await passa(h, 29, true); assert.equal(coins(h), 20); assert.equal(xp(h), 68);
   const skip = setup(); await lingo(skip); await passa(skip); let a = await run(skip, "daily_anagram");
   a = await act(skip, a, "giveup"); assert.equal(a.result.eligibleForDailyBonus, false);
   assert.equal((await load(skip, "daily_lingo")).bonus, null);
@@ -229,7 +230,7 @@ test("LG15/19 PA14/19 AN15/21: concurrent retries, forged revision, changed payl
   const h = setup(); const r = await run(h, "daily_lingo");
   const request = input(r, "guess", raw(h, r).puzzle.answer);
   await Promise.all([h.call("actDailyWords", request), h.call("actDailyWords", request)]);
-  assert.equal(coins(h), 3); assert.equal(xp(h), 6);
+  assert.equal(coins(h), 4); assert.equal(xp(h), 8);
   await assert.rejects(h.call("actDailyWords", {...request, answer: "WRONG"}), {code: "invalid-argument"});
   const b = setup(); const a = await run(b, "daily_anagram");
   const q = input(a, "guess", raw(b, a).questions[0].answer);
@@ -238,8 +239,8 @@ test("LG15/19 PA14/19 AN15/21: concurrent retries, forged revision, changed payl
   const crash = setup(); const l = await run(crash, "daily_lingo");
   crash.failNext("progressionState/alice");
   await assert.rejects(act(crash, l, "guess", raw(crash, l).puzzle.answer));
-  assert.equal(coins(crash), 3); await load(crash, "daily_lingo");
-  assert.equal(coins(crash), 3); assert.equal(xp(crash), 6);
+  assert.equal(coins(crash), 4); await load(crash, "daily_lingo");
+  assert.equal(coins(crash), 4); assert.equal(xp(crash), 8);
 });
 test("LG17/20 PA17 AN17/20: midnight expires old plays and published content remains pinned", async () => {
   const h = setup(); const r = await run(h, "daily_lingo");
@@ -247,8 +248,8 @@ test("LG17/20 PA17 AN17/20: midnight expires old plays and published content rem
   await h.call("actDailyWords", request);
   h.setTime(Date.parse("2026-10-19T21:00:00Z"));
   const newer = await run(h, "daily_lingo"); assert.equal(newer.period, "2026-10-20");
-  assert.notEqual(newer.packId, r.packId); assert.equal(coins(h), 3);
-  await h.call("actDailyWords", request); assert.equal(coins(h), 3);
+  assert.notEqual(newer.packId, r.packId); assert.equal(coins(h), 4);
+  await h.call("actDailyWords", request); assert.equal(coins(h), 4);
   await assert.rejects(h.call("actDailyWords", {...request, requestId: id()}), {code: "failed-precondition"});
   const p = h.read("dailyWordPrivate/daily/2026-10-20");
   p.contentVersion = "dw-previous-deploy"; h.seed("dailyWordPrivate/daily/2026-10-20", p);
@@ -263,7 +264,7 @@ test("LG18 PA20 AN19: account isolation and guest upgrade retain only the same U
   const bob = (await h.call("getDailyWords", {mode: "daily_lingo"}, {uid: "bob"})).session;
   assert.equal(bob.attempts, 0); assert.equal(bob.finished, false);
   h.setLinked("alice", true); await load(h, "daily_lingo");
-  assert.equal(coins(h), 3); assert.equal(xp(h), 6);
+  assert.equal(coins(h), 4); assert.equal(xp(h), 8);
 });
 test("withdrawal voids an unfinished pack without granting an extra attempt", async () => {
   const h = setup(); const r = await run(h, "daily_lingo");

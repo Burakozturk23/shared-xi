@@ -15,22 +15,61 @@ const finish = (state, run, players = ids, time = now) =>
   engine.apply(state, "finish", {runId: run.id, playerIds: players}, time, false);
 const abandon = (state, run) => engine.apply(state, "abandon", {runId: run.id}, now, false);
 
-test("Canonical catalogs match byte-for-byte and every daily theme has a winning hard XI", () => {
+test("Canonical catalogs match byte-for-byte; every daily theme wins a hard XI in every formation", () => {
   assert.equal(fs.readFileSync(path.join(__dirname, "../data/squad_challenge_catalog.json"), "utf8"),
       fs.readFileSync(path.join(__dirname, "../../assets/data/squad_challenge_catalog.json"), "utf8"));
   for (const theme of engine.catalog.themes.filter((t) => t.dailyEligible)) {
-    const goal = {themeId: theme.id, formationId: "4-3-3", budget: 105, links: 8, countries: 5};
-    const selected = solve(goal);
-    const score = engine.evaluate(theme.id, goal.formationId, selected, goal.budget);
-    assert.ok(score.links >= 8 && score.countries >= 5, theme.id);
+    for (const formation of engine.catalog.formations) {
+      const edges = formation.adjacency.reduce((n, row) => n + row.length, 0) / 2;
+      const goal = {themeId: theme.id, formationId: formation.id, budget: 105,
+        links: Math.ceil(edges * .7), countries: 5};
+      const score = engine.evaluate(theme.id, formation.id, solve(goal), goal.budget);
+      assert.ok(score.links >= goal.links && score.countries >= 5, theme.id + " " + formation.id);
+    }
   }
+});
+
+test("The without-club placeholder is gone and no club dominates the catalog", () => {
+  const counts = new Map();
+  for (const p of engine.catalog.players) for (const c of p.clubIds) counts.set(c, (counts.get(c) || 0) + 1);
+  assert.equal(counts.get(515), undefined);
+  assert.ok(Math.max(...counts.values()) < engine.catalog.players.length * .1);
+});
+
+test("Detailed positions fit their slots; bare and prefixed names agree", () => {
+  const slot = engine.catalog.formations[0].slots[1]; // LB: "Defender - Left-Back"
+  assert.ok(engine.positionFits({position: "Defender", detailedPosition: "Left-Back"}, slot));
+  assert.ok(!engine.positionFits({position: "Defender", detailedPosition: "Centre-Back"}, slot));
+  assert.ok(engine.positionFits({position: "Defender", detailedPosition: ""}, slot));
+});
+
+test("One club credits at most three links; dual nationals count once", () => {
+  const formation = engine.catalog.formations.find((f) => f.id === "4-3-3");
+  const same = Array.from({length: 11}, (_, i) => ({id: i, clubIds: [7]}));
+  assert.deepEqual(engine.creditedLinks(same, formation), {links: 3, raw: 14});
+  // Two shared clubs per pair: the matching spreads them to credit six.
+  const two = Array.from({length: 11}, (_, i) => ({id: i, clubIds: [7, 8]}));
+  assert.equal(engine.creditedLinks(two, formation).links, 6);
+  const mission = {links: 6, twoStar: 9, threeStar: 12, countries: 3};
+  assert.equal(engine.starsFor(mission, {links: 5, countries: 9}), 0);
+  assert.equal(engine.starsFor(mission, {links: 6, countries: 2}), 0);
+  assert.equal(engine.starsFor(mission, {links: 8, countries: 3}), 1);
+  assert.equal(engine.starsFor(mission, {links: 9, countries: 3}), 2);
+  assert.equal(engine.starsFor(mission, {links: 12, countries: 3}), 3);
 });
 
 test("Three distinct daily missions rotate; reset is at midnight in Türkiye", () => {
   for (let i = 0; i < 62; i++) {
     const ms = engine.missions(engine.dayKey(now + i * 86400000));
     assert.equal(new Set(ms.map((m) => m.themeId)).size, 3);
+    assert.equal(new Set(ms.map((m) => m.formationId)).size, 3);
     assert.equal(ms.reduce((n, m) => n + m.reward, 0), 90);
+    for (const m of ms) {
+      const f = engine.catalog.formations.find((x) => x.id === m.formationId);
+      assert.equal(m.maxLinks, f.adjacency.reduce((n, row) => n + row.length, 0) / 2);
+      assert.ok(m.links < m.twoStar && m.twoStar < m.threeStar && m.threeStar <= m.maxLinks);
+      assert.equal(m.extraPrice, m.reward / 2);
+    }
   }
   assert.equal(engine.dayKey(Date.parse("2026-09-17T20:59:59Z")), "2026-09-17");
   assert.equal(engine.dayKey(Date.parse("2026-09-17T21:00:00Z")), "2026-09-18");
@@ -48,23 +87,24 @@ test("Flutter scoring fixtures stay in agreement with the canonical server score
 });
 
 test("Free attempts exhaust at three; paid entry is explicit, atomic in state and capped", () => {
-  const state = wallet(60);
+  const state = wallet(30);
   for (let i = 1; i <= 3; i++) abandon(state, start(state, i).run);
-  assert.equal(state.balances.coins, 60);
+  assert.equal(state.balances.coins, 30);
   assert.throws(() => start(state, 4), /ücretsiz/);
   for (let i = 4; i <= 6; i++) {
     const run = start(state, i, false, daily[0], now, "coins").run;
     assert.equal(run.payment, "coins");
     abandon(state, run);
   }
+  // An extra attempt costs half the mission reward (10 for Isınma).
   assert.equal(state.balances.coins, 0);
-  assert.equal(state.lifetimeSpent, 60);
+  assert.equal(state.lifetimeSpent, 30);
   assert.equal(Object.keys(state.purchases).length, 3);
   assert.throws(() => start(state, 7, false, daily[0], now, "coins"), /ek deneme limiti/);
 });
 
 test("Repeated starts resume one active run and never double-charge", () => {
-  const state = wallet(20);
+  const state = wallet(10);
   for (let i = 1; i <= 3; i++) abandon(state, start(state, i).run);
   const first = start(state, 4, false, daily[0], now, "coins").run;
   assert.equal(start(state, 4, false, daily[0], now, "coins").run.id, first.id);
@@ -78,10 +118,12 @@ test("Win reward is server-computed once; retry returns the same result", () => 
   const state = wallet(0);
   const run = start(state, 1).run;
   const response = finish(state, run);
-  assert.equal(response.run.result.reward, 20);
-  assert.equal(state.balances.coins, 20);
-  assert.equal(finish(state, run).run.result.reward, 20);
-  assert.equal(state.balances.coins, 20);
+  const paid = 20 + (engine.STAR_BONUS[response.run.result.stars] || 0);
+  assert.ok(response.run.result.stars >= 1);
+  assert.equal(response.run.result.reward, paid);
+  assert.equal(state.balances.coins, paid);
+  assert.equal(finish(state, run).run.result.reward, paid);
+  assert.equal(state.balances.coins, paid);
   assert.equal(state.squadChallenge.completedTotal, 1);
   assert.equal(Object.keys(state.claims).length, 1);
   assert.throws(() => start(state, 2), /zaten aldın/);
@@ -107,7 +149,7 @@ test("Premium gives attempts, not extra rewards or weaker goals; expiry restores
   for (let i = 1; i <= 12; i++) abandon(state, start(state, i, true).run);
   assert.equal(state.squadChallenge.freeUsed, 0);
   assert.equal(state.balances.coins, 0);
-  assert.equal(engine.status(state, now, true).dailyMaxCoins, 90);
+  assert.equal(engine.status(state, now, true).dailyMaxCoins, 120);
   for (let i = 13; i <= 15; i++) abandon(state, start(state, i, false).run);
   assert.throws(() => start(state, 16), /ücretsiz/);
   assert.throws(() => start(state, 17, false, daily[0], now, "coins"), /Link Coin/);
@@ -120,8 +162,9 @@ test("Rollover restores free entries and preserves an unfinished paid-for draft"
   const hub = engine.apply(state, "status", {}, tomorrow, false).hub;
   assert.equal(hub.freeRemaining, 3);
   assert.equal(hub.active.id, run.id);
-  finish(state, run, ids, tomorrow);
-  assert.equal(state.balances.coins, 220);
+  const won = finish(state, run, ids, tomorrow).run.result;
+  assert.equal(state.balances.coins, 200 + won.reward);
+  assert.ok(won.reward >= 20);
   assert.equal(state.squadChallenge.freeUsed, 0);
   assert.throws(() => start(state, 2, false, daily[0], tomorrow), /yenilendi/);
   const mission = engine.missions(engine.dayKey(tomorrow))[0];

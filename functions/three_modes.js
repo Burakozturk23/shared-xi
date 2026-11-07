@@ -1,12 +1,13 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const catalog = require("./config/three_modes_catalog.json");
-const MODES = new Set(["coach_xi", "letter11", "squad_vault"]);
+const MODES = new Set(["letter11", "squad_vault"]);
 const players = new Map(catalog.players.map((p) => [p.id, p]));
 const clubs = new Map(catalog.clubs.map((p) => [p.id, p]));
-const targets = {coach_xi: catalog.coaches, letter11: catalog.letters};
+const targets = {letter11: catalog.letters};
 const idOk = (id) => typeof id === "string" && /^[a-f0-9]{32}$/.test(id);
 const fail = (code, message) => {
   throw new RewardError(code, message);
@@ -18,7 +19,7 @@ const norm = (v) => String(v || "").toLowerCase().replaceAll("ı", "i").replaceA
 const stateOf = (raw) => {
   const s = {...raw};
   for (const key of ["sessions", "active", "collection", "daily", "claims", "pending",
-    "avatarChoices", "starts"]) s[key] ||= {};
+    "starts"]) s[key] ||= {};
   return s;
 };
 // RTDB may serialize numeric-key maps as arrays with null holes.
@@ -31,8 +32,32 @@ const sessionOf = (s) => s ? {...s, picks: picksOf(s.picks), actions: s.actions 
   nameHints: s.nameHints || [], adReceipts: s.adReceipts || {}} : null;
 const targetOf = (s) => targets[s.mode]?.find((x) => x.id === s.target);
 const puzzleOf = (s) => catalog.puzzles.find((p) => p.id === s.puzzle);
+// Several V4 rows can be one club (same name and country); any of them answers.
+const canonical = (id) => clubs.get(id)?.canonicalId || id;
 const collectionKey = (s) => s.mode + "__" + s.target;
 const indexFrom = (seed, length) => parseInt(hash(seed).slice(0, 8), 16) % length;
+// Harf 11 letter rule, the same as tools/three_modes/build_catalog.py
+// initials(): lower-case surname particles never count, ASCII "I" of a Turkish
+// name is İ. Returns the word of the name or alias that gives the letter.
+const PARTICLES = new Set(["van", "von", "de", "da", "di", "do", "dos", "das", "del", "della", "der", "den", "du",
+  "la", "le", "el", "al", "bin", "ben", "ten", "ter", "y", "e", "zu", "of", "af"]);
+function initialOf(token, turkish) {
+  const ch = token[0];
+  if (ch === "i" || ch === "İ" || ch === "I" && turkish) return "İ";
+  if (ch === "I" || ch === "ı") return "I";
+  const up = ch.toUpperCase();
+  return "ÇĞÖŞÜ".includes(up) ? up : norm(ch).toUpperCase().slice(0, 1);
+}
+function letterWord(p, letter) {
+  const turkish = ["turkey", "turkiye"].includes(norm(p.country));
+  for (const name of [p.name, ...(p.aliases || [])]) {
+    for (const token of String(name).trim().split(/[\s-]+/)) {
+      if (token && !PARTICLES.has(token) && initialOf(token, turkish) === letter) return token;
+    }
+  }
+  return null;
+}
+const positionLabel = {GK: "kaleci", DEF: "defans", MID: "orta saha", FWD: "forvet"};
 const publicPlayer = (p) => ({id: p.id, name: p.name, country: p.country, position: p.position});
 function stars(s) {
   if (s.finished && !s.won) return 0;
@@ -49,7 +74,7 @@ function eligible(s, position) {
   const target = targetOf(s);
   const used = new Set(Object.values(s.picks));
   return catalog.players.filter((p) => p.position === position && !used.has(p.id) &&
-    (s.mode === "letter11" ? p.letters.includes(target.letter) : Object.hasOwn(target.links, p.id)));
+    p.letters.includes(target.letter));
 }
 function sessionView(raw) {
   const s = sessionOf(raw);
@@ -58,26 +83,20 @@ function sessionView(raw) {
   const v = {id: s.id, mode: s.mode, entry: s.entry, formation: s.formation,
     formations: target?.formations || [s.formation], revision: s.revision, finished: s.finished,
     dailyOfficial: s.dailyOfficial, expiresAt: s.expiresAt, day: s.day,
-    wrong: s.wrong, hints: s.hints, freeHint: !s.freeUsed, adCredits: s.adCredits,
+    wrong: s.wrong, hints: s.hints, freeHint: !B.paid(s) && !s.freeUsed, support: B.view(s), adCredits: s.adCredits,
     adRemaining: Math.max(0, 2 - s.adGranted), feedback: s.feedback || "", energyCharged: s.energyCharged,
     result: s.result || null};
   if (s.mode !== "squad_vault") {
-    v.targetId = s.target; v.title = target.name || `${target.letter} harfi`;
-    v.portraitId = target.portraitId || null; v.score = score(s);
+    v.targetId = s.target; v.title = `${target.letter} harfi`; v.score = score(s);
     v.slots = catalog.formations[s.formation].map((pos, slot) => {
       const p = players.get(s.picks[slot]);
-      return {slot, position: pos, player: p ? publicPlayer(p) : null,
-        evidence: p && s.mode === "coach_xi" ? target.links[p.id].map((e) =>
-          ({club: clubs.get(e.clubId).name, date: e.date, sources: e.sources})) : []};
+      return {slot, position: pos, player: p ? publicPlayer(p) : null};
     });
-    v.coverage = s.mode === "coach_xi" ?
-      "Yalnızca kaynakla doğrulanmış bağlantılar kabul edilir. Doğrulanamayan bağlantı yanlış sayılmaz." : "";
-    v.context = s.mode === "coach_xi" && s.difficulty === "easy" ?
-      [...new Set(Object.values(target.links).flat().map((e) => clubs.get(e.clubId).name))].join(" · ") : "";
   } else {
     const puzzle = puzzleOf(s); const club = clubs.get(puzzle.clubId);
     v.title = s.finished ? club.name : "Gizli kulüp";
     v.stars = stars(s); v.remaining = Math.max(0, 5 - s.guesses.length);
+    v.difficulty = puzzle.difficulty || null; v.won = s.won === true;
     v.league = s.leagueShown || s.finished ? club.league : null;
     v.club = s.finished ? {id: club.id, name: club.name, badgeKey: club.badgeKey} : null;
     v.slots = puzzle.players.map((id, slot) => {
@@ -97,10 +116,19 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
       error = null;
-      const state = normalize(raw); state.threeModes = stateOf(state.threeModes);
+      const state = normalize(structuredClone(raw)); state.threeModes = stateOf(state.threeModes);
       state.energy = energy.refreshed(state.energy, time);
       try {
-        fn(state.threeModes, state, time); return state;
+        for (const r of Object.values(state.threeModes.sessions)) {
+          B.recoverUnused(state, r, time,
+              () => (r.hints?.length || 0) < 3);
+        }
+        fn(state.threeModes, state, time);
+        for (const r of Object.values(state.threeModes.sessions)) {
+          B.recoverUnused(state, r, time,
+              () => (r.hints?.length || 0) < 3);
+        }
+        return state;
       } catch (e) {
         error = e; return raw;
       }
@@ -132,12 +160,20 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   async function daily(mode) {
     const day = dayKey(now()); const key = mode + "__" + day;
-    const pool = targets[mode];
-    if (!pool) fail("invalid-argument", "Bu modda günlük oyun yok.");
-    const target = pool[indexFrom(key + catalog.version, pool.length)];
-    const form = target.formations[indexFrom(key, target.formations.length)];
-    const tx = await db.ref("threeModeDaily/" + key).transaction((raw) => raw ||
-      {day, target: target.id, formation: form, version: catalog.version});
+    let fixed;
+    if (mode === "squad_vault") {
+      // Today's vault: the same puzzle for everyone.
+      const puzzle = catalog.puzzles[indexFrom(key + catalog.version, catalog.puzzles.length)];
+      fixed = {day, target: puzzle.id, formation: puzzle.formation, version: catalog.version};
+    } else {
+      // Hard letters (Ş, İ, Ç…) are too narrow for a shared daily target.
+      const pool = targets[mode]?.filter((x) => x.difficulty !== "hard");
+      if (!pool) fail("invalid-argument", "Bu modda günlük oyun yok.");
+      const target = pool[indexFrom(key + catalog.version, pool.length)];
+      const form = target.formations[indexFrom(key, target.formations.length)];
+      fixed = {day, target: target.id, formation: form, version: catalog.version};
+    }
+    const tx = await db.ref("threeModeDaily/" + key).transaction((raw) => raw || fixed);
     const value = tx.snapshot.val();
     if (value.version !== catalog.version) fail("failed-precondition", "Günlük veri güncellemesi yarın açılacak.");
     return value;
@@ -146,18 +182,17 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     if (!MODES.has(input.mode)) fail("invalid-argument", "Geçersiz mod.");
     await settle(uid);
     const s = await read(uid); const linked = await isLinked(uid);
-    const inventory = (await db.ref("economyState/" + uid + "/inventory").get()).val() || {};
     const active = sessionOf(s.sessions[s.active[input.mode]]);
     let dailyGame = null; let dailyUnavailable = false;
-    if (input.mode !== "squad_vault") {
-      try {
-        dailyGame = await daily(input.mode);
-      } catch (error) {
-        if (error.code !== "failed-precondition") throw error;
-        // A frozen previous-version daily must not block roulette or archives.
-        dailyUnavailable = true;
-      }
+    try {
+      dailyGame = await daily(input.mode);
+    } catch (error) {
+      if (error.code !== "failed-precondition") throw error;
+      // A frozen previous-version daily must not block roulette or archives.
+      dailyUnavailable = true;
     }
+    // Today's vault names no club before it is opened.
+    if (dailyGame && input.mode === "squad_vault") dailyGame = {day: dailyGame.day, formation: dailyGame.formation};
     const current = active && active.version === catalog.version && !active.finished && active.expiresAt > now() &&
       (active.entry !== "daily" || active.day === dayKey(now())) ? sessionView(active) : null;
     const exposeRecord = (r) => r ? {...r,
@@ -167,19 +202,18 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const c = clubs.get(id); const record = s.collection[`squad_vault__${id}`];
       return {id: String(id), name: record?.solved ? c.name : "Kilitli kasa", league: c.league,
         badgeKey: record?.solved ? c.badgeKey : null, record: exposeRecord(record)};
-    }) : targets[input.mode].map((t) => ({id: t.id, name: t.name || t.letter, letter: t.letter || null,
-      formations: t.formations, difficulty: t.difficulty, portraitId: t.portraitId || null,
-      count: t.count || Object.keys(t.links).length, record: exposeRecord(s.collection[`${input.mode}__${t.id}`]),
-      avatarId: t.avatarId || null, avatarCoins: t.avatarCoins || 0,
-      bestEvidence: t.links ? lineupOf(s.collection[`${input.mode}__${t.id}`]?.bestLineup)
-          .filter((id) => t.links[id]).map((id) => ({name: players.get(id).name,
-            links: t.links[id].map((e) => ({club: clubs.get(e.clubId).name, date: e.date, sources: e.sources}))})) : [],
-      avatarOwned: !!inventory[t.avatarId], avatarChoice: s.avatarChoices[t.id] || null}));
+    }) : targets[input.mode].map((t) => ({id: t.id, name: t.letter, letter: t.letter,
+      formations: t.formations, difficulty: t.difficulty, count: t.count,
+      record: exposeRecord(s.collection[`${input.mode}__${t.id}`])}));
     return {ok: true, version: catalog.version, mode: input.mode, entries: list, session: current,
       daily: dailyGame, dailyUnavailable, dailyUsed: !!s.daily[`${input.mode}__${dayKey(now())}`], linked,
-      pendingRewards: Object.keys(s.pending).length, leagueSnapshot: catalog.leagueSnapshot};
+      pendingRewards: Object.keys(s.pending).length, leagueSnapshot: catalog.leagueSnapshot,
+      ...(input.mode === "letter11" ? {passport: (catalog.policy.passport || []).map((m) =>
+        ({...m, at: m.at === "all" ? catalog.letters.length : m.at,
+          claimed: !!s.claims[`three__passport__${m.at}`]}))} : {})};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input);
     if (!idOk(input.requestId) || !["random", "archive", "daily", "league"].includes(input.entry)) {
       fail("invalid-argument", "Geçersiz oyun isteği.");
@@ -210,24 +244,38 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       if (input.mode === "squad_vault") {
         let pool = catalog.puzzles.filter((p) =>
           input.entry !== "league" || clubs.get(p.clubId).league === input.league);
+        if (fixed) pool = pool.filter((p) => p.id === fixed.target);
         if (input.entry === "archive") {
           if (!s.collection[`squad_vault__${input.target}`]?.solved) fail("failed-precondition", "Önce bu kasayı çöz.");
           pool = pool.filter((p) => String(p.clubId) === input.target);
         }
-        const recent = Object.values(s.sessions).filter((x) => x.mode === "squad_vault")
-            .sort((a, b) => b.startedAt - a.startedAt).slice(0, 5).map((x) => x.target);
-        const fresh = pool.filter((p) => !recent.includes(String(p.clubId)));
-        if (fresh.length) pool = fresh;
+        if (!fixed && input.entry !== "archive") {
+          if (input.difficulty) {
+            const level = pool.filter((p) => p.difficulty === input.difficulty);
+            if (level.length) pool = level;
+          }
+          // Unsolved clubs first: a solved club pays nothing again, so it
+          // should not keep costing energy while new ones remain.
+          const open = pool.filter((p) => !s.collection[`squad_vault__${p.clubId}`]?.solved);
+          if (open.length) pool = open;
+          const recent = Object.values(s.sessions).filter((x) => x.mode === "squad_vault")
+              .sort((a, b) => b.startedAt - a.startedAt).slice(0, 5).map((x) => x.target);
+          const fresh = pool.filter((p) => !recent.includes(String(p.clubId)));
+          if (fresh.length) pool = fresh;
+        }
         if (!pool.length) fail("failed-precondition", "Bu ligde oynanabilir kasa yok.");
         puzzle = pool[indexFrom(seed, pool.length)]; target = String(puzzle.clubId); formation = puzzle.formation;
       } else {
         let pool = targets[input.mode];
-        if (input.difficulty === "hard" && input.mode === "coach_xi") {
-          fail("failed-precondition", "Dönem kısıtlı zor hoca havuzu henüz doğrulanmadı.");
-        }
         if (input.entry === "random" && input.difficulty) pool = pool.filter((x) => x.difficulty === input.difficulty);
         if (input.entry === "random" && input.formation) {
           pool = pool.filter((x) => x.formations.includes(input.formation));
+        }
+        if (input.entry === "random") {
+          const open = pool.filter((x) => !s.collection[`${input.mode}__${x.id}`]?.mastery);
+          if (open.length) pool = open;
+          // Without a chosen difficulty a hard letter is a quarter as likely.
+          if (!input.difficulty) pool = pool.flatMap((x) => x.difficulty === "hard" ? [x] : [x, x, x, x]);
         }
         const selected = fixed ? pool.find((x) => x.id === fixed.target) : input.entry === "archive" ?
           pool.find((x) => x.id === input.target) : pool[indexFrom(seed, pool.length)];
@@ -261,12 +309,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         Object.assign(session, {puzzle: puzzle.id, revealed: puzzle.initial, nameHints: [],
           leagueShown: input.entry === "league"});
       }
+      B.pin(session, boostPolicy);
       s.sessions[session.id] = session; s.active[input.mode] = session.id;
       s.starts[session.id] = true;
       // Collections/receipts are permanent; expired session bodies are bounded.
       const obsolete = Object.values(s.sessions).filter((x) => x.expiresAt < time)
           .sort((a, b) => b.startedAt - a.startedAt).slice(20);
-      for (const x of obsolete) delete s.sessions[x.id];
+      for (const x of obsolete) if (!(x.adCredits > 0)) delete s.sessions[x.id];
     });
     return {ok: true, version: catalog.version, session: sessionView(state.threeModes.sessions[input.requestId])};
   }
@@ -291,12 +340,15 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     }
     const lineup = run.mode === "squad_vault" ? puzzleOf(run).players :
       catalog.formations[run.formation].map((_, i) => run.picks[i] || null);
-    const record = {...previous, best: Math.max(previous.best || 0, value), mastery: !!previous.mastery || master,
-      bestFormation: value > (previous.best || 0) || master && !previous.mastery ? run.formation :
-        previous.bestFormation || run.formation,
+    const record = {...previous, best: run.assisted ? previous.best || 0 : Math.max(previous.best || 0, value),
+      bestAssisted: run.assisted ? Math.max(previous.bestAssisted || 0, value) : previous.bestAssisted || 0,
+      mastery: !!previous.mastery || master,
+      bestFormation: !run.assisted && value > (previous.best || 0) || master && !previous.mastery ? run.formation :
+        previous.bestFormation || (run.assisted ? "" : run.formation),
       lastLineup: lineup, lastFormation: run.formation, lastAt: time,
       solved: !!previous.solved || (run.mode === "squad_vault" ? !!run.won : value > 0),
-      bestLineup: value > (previous.best || 0) || master && !previous.mastery ? lineup : previous.bestLineup || lineup};
+      bestLineup: !run.assisted && value > (previous.best || 0) || master && !previous.mastery ?
+        lineup : previous.bestLineup || (run.assisted ? [] : lineup)};
     s.collection[key] = record;
     if (run.mode === "squad_vault" && Object.entries(s.collection)
         .filter(([k, r]) => k.startsWith("squad_vault__") && r.best >= 1).length >= 5) {
@@ -305,17 +357,30 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         coins += b.coins; xp += b.xp;
       }
     }
-    if (run.dailyOfficial && value >= 8) {
+    // Harf Pasaportu: letters completed with all eleven pay at fixed milestones.
+    if (run.mode === "letter11" && value === 11) {
+      const done = Object.entries(s.collection).filter(([k, r]) => k.startsWith("letter11__") && r.best >= 11).length;
+      for (const m of catalog.policy.passport || []) {
+        const at = m.at === "all" ? catalog.letters.length : m.at;
+        if (done >= at && reward(s, `three__passport__${m.at}`, {coins: m.coins, xp: m.xp, target: "letter11"})) {
+          coins += m.coins; xp += m.xp; run.passport = m.at;
+        }
+      }
+    }
+    // Daily bonus: a won vault (1+ star) or a letter XI of 8+ players (7 on a medium letter).
+    const dailyAt = catalog.policy.letterDailyAt?.[targetOf(run)?.difficulty] ?? 8;
+    if (run.dailyOfficial && (run.mode === "squad_vault" ? run.won && value >= 1 : value >= dailyAt)) {
       const b = catalog.policy.daily[run.mode];
       if (b && reward(s, `three__daily__${run.mode}__${run.day}`, {...b, target: run.mode})) {
         coins += b.coins; xp += b.xp;
       }
     }
     if (run.dailyOfficial) {
-      s.daily[`${run.mode}__${run.day}`].result = {score: value, mastery: master, wrong: run.wrong};
+      s.daily[`${run.mode}__${run.day}`].result = {score: value, assisted: run.assisted === true,
+        mastery: master, wrong: run.wrong};
     }
-    run.result = {score: value, mastery: master, newMedals: medals, coins, xp,
-      avatarAvailable: master && !!targetOf(run)?.avatarId && !s.avatarChoices[run.target]};
+    run.result = {score: value, assisted: run.assisted === true, mastery: master, newMedals: medals, coins, xp,
+      ...(run.passport ? {passport: run.passport} : {})};
   }
   async function act(uid, input) {
     check(input);
@@ -324,7 +389,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const run = sessionOf(s.sessions[input.sessionId]);
       if (!run || run.mode !== input.mode || run.version !== catalog.version) fail("not-found", "Oturum bulunamadı.");
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.clubId ?? null,
-        input.slot ?? null, input.formation ?? null, input.hint ?? null, input.confirmReset ?? null]));
+        input.slot ?? null, input.formation ?? null, input.hint ?? null, input.confirmReset ?? null,
+        ...B.paymentFingerprint(input)]));
       if (run.actions[input.requestId]) {
         if (run.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İşlem kimliği başka cevaba ait.");
         return;
@@ -353,30 +419,33 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         if (!p || !p.position) fail("invalid-argument", "Oyuncu kimliği/mevkisi çözülemedi. Yanlış hakkın değişmedi.");
         if (Object.values(run.picks).includes(p.id)) fail("already-exists", "Bu futbolcu zaten kadroda.");
         const target = targetOf(run);
-        if (run.mode === "coach_xi" && !Object.hasOwn(target.links, p.id)) {
-          run.feedback = "Bu hoca-futbolcu bağı henüz doğrulanmadı. Yanlış hakkın değişmedi.";
-        } else if (p.position !== catalog.formations[run.formation][input.slot] ||
-            run.mode === "letter11" && !p.letters.includes(target.letter)) {
-          run.wrong++; run.feedback = "Futbolcunun harfi veya mevkisi bu slota uymuyor.";
+        const slot = catalog.formations[run.formation][input.slot];
+        if (!p.letters.includes(target.letter)) {
+          run.wrong++;
+          run.feedback = `${p.name}: adı veya bilinen lakabı ${target.letter} ile başlamıyor.`;
+        } else if (p.position !== slot) {
+          run.wrong++;
+          run.feedback = `${p.name} bir ${positionLabel[p.position] || "farklı mevki"} oyuncusu; ` +
+            `bu yer ${positionLabel[slot]} için.`;
         } else {
-          run.picks[input.slot] = p.id; run.feedback = "Doğru bağlantı: " + p.name;
-          if (run.mode === "coach_xi") {
-            const proof = target.links[p.id][0];
-            run.feedback += ` · ${clubs.get(proof.clubId).name} · ${proof.date}`;
-          }
+          run.picks[input.slot] = p.id;
+          const word = letterWord(p, target.letter);
+          run.feedback = `Doğru: ${p.name}` + (word ? ` · "${word}" ${target.letter} ile başlıyor.` : "");
         }
       } else if (input.action === "guess" && run.mode === "squad_vault") {
         if (!clubs.has(input.clubId)) fail("invalid-argument", "Kulübü arama listesinden seç. Hakkın değişmedi.");
-        if (run.guesses.includes(input.clubId)) fail("already-exists", "Bu kulübü zaten denedin.");
+        if (run.guesses.some((g) => canonical(g) === canonical(input.clubId))) {
+          fail("already-exists", "Bu kulübü zaten denedin.");
+        }
         run.guesses.push(input.clubId);
-        if (input.clubId === puzzleOf(run).clubId) {
+        if (canonical(input.clubId) === canonical(puzzleOf(run).clubId)) {
           run.won = true; finish(s, run, time);
         } else {
           run.wrong++; run.feedback = "Bu kasa başka bir kulübe ait.";
           if (run.guesses.length >= 5) finish(s, run, time);
         }
       } else if (input.action === "hint") {
-        if (run.freeUsed && run.adCredits <= 0) {
+        if (!B.paid(run) && run.freeUsed && run.adCredits <= 0) {
           fail("resource-exhausted", "İpucu için doğrulanmış reklam hakkı gerekli.");
         }
         let text;
@@ -398,15 +467,18 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           if (!slotOk || run.picks[input.slot]) fail("invalid-argument", "Önce boş bir mevki seç.");
           const options = eligible(run, catalog.formations[run.formation][input.slot]);
           if (!options.length) fail("failed-precondition", "Bu mevki için ipucu bulunamadı.");
-          const filtered = run.mode === "letter11" && ["club", "league"].includes(input.hint) ?
-            options.filter((p) => (p.clubs || []).some((id) => clubs.has(id) &&
-              (input.hint !== "league" || clubs.get(id).league))) : options;
-          if (!filtered.length) fail("failed-precondition", "Bu mevki için doğrulanmış ipucu yok.");
-          const p = filtered.sort((a, b) => a.rank - b.rank)[run.hints.length % filtered.length];
-          if (run.mode === "coach_xi" && ["club", "years"].includes(input.hint)) {
-            const proof = targetOf(run).links[p.id][0];
-            text = input.hint === "club" ? clubs.get(proof.clubId).name : proof.date.slice(0, 4);
-          } else if (run.mode === "letter11" && ["club", "league"].includes(input.hint)) {
+          // One target player per slot, so successive hints narrow the same
+          // footballer instead of describing a different one each time.
+          const known = (p) => (p.clubs || []).some((id) => clubs.get(id)?.league);
+          const ranked = options.sort((a, b) => Number(known(b)) - Number(known(a)) || a.rank - b.rank);
+          const p = ranked[0];
+          if (["club", "league"].includes(input.hint) && !known(p)) {
+            fail("failed-precondition", "Bu mevki için doğrulanmış kulüp ipucu yok.");
+          }
+          if (input.hint === "shape") {
+            const word = letterWord(p, targetOf(run).letter) || "";
+            text = word.length > 2 ? `"${word.slice(0, 2)}${"_".repeat(word.length - 2)}" (${word.length} harf)` : "";
+          } else if (["club", "league"].includes(input.hint)) {
             const c = p.clubs.map((id) => clubs.get(id)).find((c) => c && (input.hint !== "league" || c.league));
             text = input.hint === "club" ? c.name : `${c.league} (kulübün veri sürümündeki ligi)`;
           } else if (input.hint === "country") {
@@ -415,7 +487,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           if (!text) fail("failed-precondition", "Doğrulanmış ipucu yok.");
           text = `Seçili mevkiye uygun, henüz bulunmamış bir futbolcu: ${text}`;
         }
-        if (!run.freeUsed) run.freeUsed = true; else run.adCredits--;
+        if (B.paid(run)) {
+          if (run.hints.length >= 3) fail("resource-exhausted", "Bu oyunun üç ipucu kullanıldı.");
+          const sku = run.mode === "squad_vault" && input.hint === "player" ? "boost_strong" :
+            input.hint === "club" ? "boost_connection" : "boost_basic";
+          B.consume(e, run, input, sku, `hint:${run.hints.length}`, {text}, time);
+        } else if (!run.freeUsed) run.freeUsed = true; else run.adCredits--;
         run.hints.push({kind: input.hint, text}); run.feedback = text;
       } else fail("invalid-argument", "Geçersiz oyun işlemi.");
       run.revision++; run.actions[input.requestId] = fingerprint; s.sessions[run.id] = run;
@@ -428,53 +505,45 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     check(input);
     const q = norm(input.query).slice(0, 80);
     if (q.length < 2) return {ok: true, results: []};
-    // Never filter by the answer, letter, coach link, selected position or club.
-    const list = input.mode === "squad_vault" ? catalog.clubs : catalog.players;
+    // Never filter by the answer, letter, selected position or club.
+    const vault = input.mode === "squad_vault";
+    // Clubs: only playable senior clubs with a league, the best known first.
+    const list = vault ? catalog.clubs.filter((c) => c.searchable) : catalog.players;
     const tokens = q.split(" ");
+    // Whole-word starts beat matches inside a word ("real" -> Real Madrid, not Villarreal).
+    const starts = (p) => Number(tokens.every((t) => (" " + p.search).includes(" " + t)));
     const hits = list.filter((p) => tokens.every((t) => p.search.includes(t))).sort((a, b) =>
-      Number(norm(b.name) === q) - Number(norm(a.name) === q) || (a.rank || 0) - (b.rank || 0) || a.id - b.id);
+      Number(norm(b.name) === q) - Number(norm(a.name) === q) || starts(b) - starts(a) ||
+      (vault ? (b.popularity || 0) - (a.popularity || 0) : (a.rank || 0) - (b.rank || 0)) || a.id - b.id);
     return {ok: true, results: hits.slice(0, 30).map((p) => input.mode === "squad_vault" ?
       {id: p.id, name: p.name, country: p.country, league: p.league} : publicPlayer(p))};
   }
   async function prepareHint(uid, placement, context) {
-    const expected = {coach11_hint: "coach_xi", letter11_hint: "letter11", vault_hint: "squad_vault"}[placement];
+    const expected = {letter11_hint: "letter11", vault_hint: "squad_vault"}[placement];
     const s = await read(uid); const run = sessionOf(s.sessions[context?.sessionId]);
-    if (!expected || !run || run.mode !== expected || run.finished || run.expiresAt <= now() || run.adGranted >= 2) {
+    if (!expected || !run || run.mode !== expected || run.finished || run.expiresAt <= now() || run.adGranted >= 2 ||
+        B.paid(run) && run.hints.length + run.adCredits >= 3) {
       fail("failed-precondition", "Bu oyun için reklamlı ipucu hakkı yok.");
     }
-    return {amount: 0, claimKey: `three_hint_${run.id}_${run.adGranted}`,
-      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}};
+    return B.adBenefit(run, {amount: 0, claimKey: `three_hint_${run.id}_${run.adGranted}`,
+      context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}}, context?.boostId);
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s) => {
+    await change(uid, (s, e, time) => {
       const run = sessionOf(s.sessions[receipt.context?.sessionId]);
       // A late receipt cannot modify another run or convert into coins.
+      const canApply = run && run.hints.length + run.adCredits < 3 &&
+        run.adGranted < (run.boostPolicy?.daily ? 1 : 2) && run.adGranted === receipt.context.credit;
+      if (B.recoverAd(e, run, receipt, time, "boost_basic", canApply)) {
+        if (run) s.sessions[run.id] = run; return;
+      }
       if (!run || run.mode !== receipt.context?.mode || run.finished || run.expiresAt <= now()) return;
       if (run.adReceipts[receipt.id]) return;
       if (run.adGranted >= 2 || run.adGranted !== receipt.context.credit) return;
-      run.adGranted++; run.adCredits++; run.adReceipts[receipt.id] = true;
+      B.grantAd(run, receipt);
       // Watching only grants credit; mastery changes when a hint is consumed.
       s.sessions[run.id] = run;
     });
-  }
-  async function chooseAvatar(uid, input) {
-    check(input);
-    if (!await isLinked(uid)) fail("permission-denied", "Ödülünü almak için hesabını bağla.");
-    const coach = catalog.coaches.find((c) => c.id === input.target);
-    if (input.mode !== "coach_xi" || !coach?.avatarId || !["avatar", "coins"].includes(input.choice)) {
-      fail("invalid-argument", "Geçersiz hoca ödülü.");
-    }
-    await change(uid, (s, e, time) => {
-      if (!s.collection[`coach_xi__${coach.id}`]?.mastery) fail("permission-denied", "Önce ipucusuz ustalık kazan.");
-      if (s.avatarChoices[coach.id]) return;
-      const choice = e.inventory[coach.avatarId] ? "coins" : input.choice;
-      s.avatarChoices[coach.id] = {choice, at: time, value: coach.avatarCoins, avatarId: coach.avatarId};
-      if (choice === "avatar") {
-        e.inventory[coach.avatarId] = {itemId: coach.avatarId, itemType: "avatar", quantity: 1,
-          sourceType: "coach_mastery", sourceId: coach.id, acquiredAt: time};
-      } else reward(s, `three__avatar__${coach.id}`, {target: coach.id, coins: coach.avatarCoins, xp: 0});
-    });
-    return status(uid, input);
   }
   async function resume(uid, input) {
     check(input);
@@ -486,6 +555,6 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     await settle(uid);
     return {ok: true, version: catalog.version, linked: await isLinked(uid), session: sessionView(run)};
   }
-  return {status, start, act, search, resume, chooseAvatar, prepareHint, settleHint, settle};
+  return {status, start, act, search, resume, prepareHint, settleHint, settle};
 }
-module.exports = {createService, catalog, norm, sessionView, score, stars, mastery};
+module.exports = {createService, catalog, norm, sessionView, score, stars, mastery, letterWord};

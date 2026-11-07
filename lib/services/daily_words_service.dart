@@ -42,7 +42,7 @@ class DailyWordsService {
     final key = _pending(uid, mode);
     final request = rewardMap(jsonDecode(prefs.getString(key)!)); _check(uid);
     try {
-      final result = await _call('actDailyWords', request); _check(uid);
+      final result = await _call(mode == 'anagram_practice' ? 'actAnagramPractice' : 'actDailyWords', request); _check(uid);
       final cache = prefs.getString(_cache(uid, mode));
       if (cache != null) {
         final previous = rewardMap(jsonDecode(cache));
@@ -69,7 +69,7 @@ class DailyWordsService {
           notice = e.message ?? 'Bekleyen işlem uygulanmadı; güncel kayıt yüklendi.';
         }
       }
-      final result = await _call('getDailyWords', {'mode': mode}); _check(uid);
+      final result = await _call(mode == 'anagram_practice' ? 'getAnagramPractice' : 'getDailyWords', {'mode': mode}); _check(uid);
       final snapshot = {...result, 'offline': false, if (notice != null) 'notice': notice};
       await prefs.setString(_cache(uid, mode), jsonEncode(snapshot)); _check(uid);
       return snapshot;
@@ -92,5 +92,12 @@ class DailyWordsService {
     final uid = await _identity();
     final result = await _call('getDailyWordsHistory', {'mode': mode, 'period': period});
     _check(uid); return result;
+  }
+  Future<void> watchHint(Map<String, dynamic> session, String boostId) async {
+    final uid = await _identity();
+    await transport.watch(session['mode'] == 'anagram_practice' ? 'anagram_practice_hint' : 'daily_words_hint', pro: false, context: {
+      'sessionId': session['id'], 'mode': session['mode'], 'period': session['period'], 'boostId': boostId,
+    });
+    _check(uid);
   }
 }

@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const B = require("./boosts");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {validId, shuffled} = require("./career_transfer");
@@ -30,7 +31,8 @@ function view(raw, time) {
     questionStartedAt: r.questionStartedAt, finished: r.finished, answered: r.answered,
     lives: r.lives, streak: r.streak, bestStreak: r.bestStreak, cleanStreak: r.cleanStreak,
     score: r.score, correct: r.correct, answers: r.answers, hintsUsed: r.hintsUsed,
-    questionNumber: r.answers + (r.answered ? 0 : 1), free5050: !r.freeUsed,
+    questionNumber: r.answers + (r.answered ? 0 : 1), ...(r.dailyDay ? {daily: r.dailyDay} : {}),
+    free5050: !r.freeUsed, support: B.view(r),
     traceRemaining: Math.max(0, 2 - r.traceUsed), adCredits: r.adCredits,
     traceAvailable: !r.traceOnQuestion && q.realClubIds.some((id) => !r.eliminated.includes(id)),
     eliminated: r.eliminated, confirmed: r.confirmed, energyCharged: r.energyCharged,
@@ -41,15 +43,30 @@ function view(raw, time) {
       quick: r.quick, fakeClubId: q.fakeClubId, explanation: explanation(q), evidence: q.evidence} : {}),
     ...(r.finished ? {history: r.history} : {})};
 }
+const TIERS = ["easy", "normal", "hard", "legend"];
+// A question is never asked twice in a session. Unused players come first;
+// once a tier has none left, a player may return with another club trio, but
+// not within the last five questions. An empty tier borrows the nearest one.
 function pick(c, r, policy) {
   const tier = r.mode === "fake_endless" ? difficulty(r.streak) :
     ["easy", "normal", "hard", "easy", "normal", "hard", "easy", "normal", "hard", "normal"][r.answers];
-  const candidates = c.questions.filter((q) => q.difficulty === tier &&
-    !r.usedPlayers.includes(q.playerId) && !(policy.disabledQuestions || []).includes(q.questionId));
-  return shuffled(candidates, r.id + "|" + r.answers)[0] || null;
+  const asked = new Set([...(r.usedQuestions || []), ...(r.history || []).map((h) => h.questionId)]);
+  const recent = r.usedPlayers.slice(-5);
+  const order = [...TIERS].sort((a, b) =>
+    Math.abs(TIERS.indexOf(a) - TIERS.indexOf(tier)) - Math.abs(TIERS.indexOf(b) - TIERS.indexOf(tier)));
+  for (const t of order) {
+    const open = c.questions.filter((q) => q.difficulty === t && !asked.has(q.questionId) &&
+      !(policy.disabledQuestions || []).includes(q.questionId));
+    for (const pool of [open.filter((q) => !r.usedPlayers.includes(q.playerId)),
+      open.filter((q) => !recent.includes(q.playerId))]) {
+      if (pool.length) return shuffled(pool, (r.seed || r.id) + "|" + r.answers)[0];
+    }
+  }
+  return null;
 }
 function setup(r, q, time) {
   r.question = q; r.usedPlayers.push(q.playerId); r.questionStartedAt = time;
+  r.usedQuestions = [...(r.usedQuestions || []), q.questionId];
   r.deadline = r.mode === "fake_speed" ? time + 10000 : null;
   r.answered = false; r.selectedId = null; r.wasCorrect = false; r.points = 0; r.quick = false;
   r.eliminated = []; r.confirmed = []; r.traceOnQuestion = false; r.questionHints = 0;
@@ -59,10 +76,19 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function change(uid, fn) {
     let error; const time = now();
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-      error = null; const e = normalize(raw); e.fakeClub = stateOf(e.fakeClub);
+      error = null; const e = normalize(structuredClone(raw)); e.fakeClub = stateOf(e.fakeClub);
       e.energy = energy.refreshed(e.energy, time);
       try {
-        fn(e.fakeClub, e, time); return e;
+        for (const r of Object.values(e.fakeClub.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => sku === "boost_eliminate" ? !r.freeUsed : r.traceUsed < 2);
+        }
+        fn(e.fakeClub, e, time);
+        for (const r of Object.values(e.fakeClub.sessions)) {
+          B.recoverUnused(e, r, time,
+              (sku) => sku === "boost_eliminate" ? !r.freeUsed : r.traceUsed < 2);
+        }
+        return e;
       } catch (err) {
         error = err; return raw;
       }
@@ -85,9 +111,13 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     }
   }
   function record(s, r) {
-    return s.records[r.mode] ||= {bestScore: 0, bestStreak: 0, bestCorrect: 0, answers: 0, hintsUsed: 0, sessions: 0};
+    return s.records[r.mode + (r.assisted ? "__assisted" : "")] ||= {bestScore: 0, bestStreak: 0,
+      bestCorrect: 0, answers: 0, hintsUsed: 0, sessions: 0};
   }
   function award(s, r, tier, time, policy) {
+    // Medals are progress and are kept even while rewards are switched off;
+    // their coins are paid once the tier is reached again with rewards on.
+    s.medals[r.mode] = Math.max(s.medals[r.mode] || 0, tier);
     if (!policy.rewardsEnabled) return;
     for (let i = 1; i <= tier; i++) {
       const key = `fc__${r.mode}__medal_${i}`;
@@ -95,7 +125,6 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       const coins = (r.mode === "fake_endless" ? [0, 2, 3, 3, 4] : [0, 1, 2, 2, 3])[i];
       s.claims[key] = {coins, at: time}; s.pending[key] = {coins, target: r.mode}; r.earnedCoins += coins;
     }
-    s.medals[r.mode] = Math.max(s.medals[r.mode] || 0, tier);
   }
   function daily(s, r, time, policy) {
     if (!policy.rewardsEnabled) return;
@@ -106,7 +135,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   function finish(s, r, reason, time, policy) {
     if (r.finished) return;
-    r.finished = true; r.reason = reason;
+    r.finished = true; r.reason = reason; r.finishedAt = time;
     const rec = record(s, r); rec.sessions++;
     if (r.mode === "fake_speed" && r.answers === 10) {
       const tier = r.correct === 10 ? 4 : r.correct >= 9 ? 3 : r.correct >= 8 ? 2 : r.correct >= 5 ? 1 : 0;
@@ -132,7 +161,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     rec.bestStreak = Math.max(rec.bestStreak, r.bestStreak); rec.bestCorrect = Math.max(rec.bestCorrect, r.correct);
     if (r.mode === "fake_endless") {
       award(s, r,
-        r.cleanStreak >= 30 ? 4 : r.streak >= 20 ? 3 : r.streak >= 10 ? 2 : r.streak >= 5 ? 1 : 0, time, policy);
+        !r.assisted && r.cleanStreak >= 30 ? 4 : r.streak >= 20 ? 3 : r.streak >= 10 ? 2 : r.streak >= 5 ?
+          1 : 0, time, policy);
     }
     daily(s, r, time, policy);
     if (r.lives <= 0 || r.mode === "fake_speed" && r.answers === 10) {
@@ -199,6 +229,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       inventory: boosts.map((id) => ({id, quantity: e.inventory[id]?.quantity || 0}))};
   }
   async function start(uid, input) {
+    const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input); if (!validId(input.requestId)) fail("invalid-argument", "Geçersiz istek.");
     const policy = policyOf(await getPolicy());
     if (!policy.dataEnabled || !policy.soloEnabled) {
@@ -208,8 +239,11 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const charge = await energyCost(uid) === 1;
     const e = await change(uid, (s, e, time) => {
       refresh(s, e, policy, time);
+      const daily = input.mode === "fake_speed" && input.daily === true;
       if (s.starts[input.requestId]) {
-        if (s.starts[input.requestId] !== input.mode) fail("invalid-argument", "İstek başka moda ait.");
+        if (s.starts[input.requestId] !== input.mode + (daily ? "__daily" : "")) {
+          fail("invalid-argument", "İstek başka moda ait.");
+        }
         if (!s.sessions[input.requestId]) fail("failed-precondition", "Eski oturum sona erdi.");
         return;
       }
@@ -219,7 +253,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         startedAt: time, expiresAt: time + energy.policy.resumeMs, finished: false, answered: false,
         lives: 3, streak: 0, cleanStreak: 0, bestStreak: 0, correct: 0, score: 0, answers: 0,
         hintsUsed: 0, questionHints: 0, freeUsed: false, traceUsed: 0, adCredits: 0, adGranted: 0,
-        energyCharged: charge, earnedCoins: 0, actions: {}, adReceipts: {}, history: [], usedPlayers: []};
+        energyCharged: charge, earnedCoins: 0, actions: {}, adReceipts: {}, history: [], usedPlayers: [],
+        ...(daily ? {seed: "daily|" + dayKey(time), dailyDay: dayKey(time)} : {})};
       const q = pick(catalog, r, policy);
       if (!q) fail("failed-precondition", "Doğrulanmış soru bulunamadı. Enerji harcanmadı.");
       // Question, session and debit commit together; failures leave no reservation to leak.
@@ -230,9 +265,13 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (e.energy.balance === energy.policy.capacity) e.energy.refillAt = time;
         e.energy.balance--;
       }
-      setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id; s.starts[r.id] = r.mode;
+      B.pin(r, boostPolicy);
+      setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id;
+      s.starts[r.id] = r.mode + (daily ? "__daily" : "");
       for (const [id, prior] of Object.entries(s.sessions)) {
-        if (prior.expiresAt < time && !Object.values(s.active).includes(id)) delete s.sessions[id];
+        if (prior.expiresAt < time && !(prior.adCredits > 0) && !Object.values(s.active).includes(id)) {
+          delete s.sessions[id];
+        }
       }
     });
     return {session: view(e.fakeClub.sessions[input.requestId], now())};
@@ -245,7 +284,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const c = await pinned(before.dataVersion); const policy = policyOf(await getPolicy());
     const e = await change(uid, (s, e, time) => {
       const fp = hash(JSON.stringify([input.action, input.questionId ?? null,
-        input.clubId ?? null, input.boost ?? null]));
+        input.clubId ?? null, input.boost ?? null, ...B.paymentFingerprint(input)]));
       let r = runOf(s.sessions[input.sessionId]);
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fp) fail("invalid-argument", "İstek başka işleme ait.");
@@ -276,8 +315,12 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (r.mode !== "fake_endless" || r.answered) fail("failed-precondition", "Bu oyunda yardım kapalı.");
         if (input.action === "fifty") {
           if (r.freeUsed) fail("resource-exhausted", "Oturumun ücretsiz 50/50 hakkı kullanıldı.");
-          r.eliminated = r.question.realClubIds.filter((id) => !r.confirmed.includes(id)).slice(0, 2);
-          if (r.eliminated.length !== 2) fail("failed-precondition", "Elenebilecek iki seçenek yok.");
+          r.eliminated = r.question.realClubIds.filter((id) => !r.confirmed.includes(id)).slice(0, B.paid(r) ? 1 : 2);
+          if (r.eliminated.length !== (B.paid(r) ? 1 : 2)) fail("failed-precondition", "Elenebilecek iki seçenek yok.");
+          if (B.paid(r)) {
+            B.consume(e, r, input, "boost_eliminate", "eliminate:" + r.question.questionId,
+                {eliminated: r.eliminated}, time);
+          }
           r.freeUsed = true;
         } else {
           if (r.traceUsed >= 2 || r.traceOnQuestion) {
@@ -285,7 +328,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
           }
           const id = r.question.realClubIds.find((id) => !r.eliminated.includes(id) && !r.confirmed.includes(id));
           if (!id) fail("failed-precondition", "Yeni geçerli iz yok.");
-          if (input.boost) {
+          if (B.paid(r)) {
+            B.consume(e, r, input, "boost_connection", "trace:" + r.question.questionId,
+                {clubId: id}, time);
+          } else if (input.boost) {
             if (!boosts.includes(input.boost) || !(e.inventory[input.boost]?.quantity > 0)) {
               fail("resource-exhausted", "Destek stokta yok.");
             }
@@ -304,19 +350,28 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   async function prepareHint(uid, placement, context) {
     const r = runOf((await read(uid)).sessions[context?.sessionId]);
+    const sku = context?.boostId || "boost_connection";
+    const eliminate = B.paid(r) && sku === "boost_eliminate";
     if (placement !== "fake_club_hint" || !r || r.mode !== "fake_endless" || r.finished ||
-      r.answered || r.expiresAt <= now() || r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.traceOnQuestion) {
-      fail("failed-precondition", "Bu oyunda yeni Kariyer İzi hakkı yok.");
+      r.answered || r.expiresAt <= now() || r.adGranted >= 2 || (eliminate ?
+        r.freeUsed || r.adProducts?.boost_eliminate > 0 : r.traceUsed + r.adCredits >= 2 || r.traceOnQuestion)) {
+      fail("failed-precondition", "Bu oyunda seçilen destek için yeni reklam hakkı yok.");
     }
-    return {amount: 0, claimKey: `fc_hint_${r.id}_${r.adGranted}`,
-      context: {sessionId: r.id, credit: r.adGranted}};
+    return B.adBenefit(r, {amount: 0, claimKey: `fc_hint_${r.id}_${r.adGranted}`,
+      context: {sessionId: r.id, credit: r.adGranted}}, sku);
   }
   async function settleHint(uid, receipt) {
-    await change(uid, (s, _, time) => {
+    await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
+      const eliminate = B.paid(r) && receipt.context?.boostId === "boost_eliminate";
+      const canApply = r && r.adGranted < 2 && r.adGranted === receipt.context.credit &&
+        (eliminate ? !r.freeUsed && !(r.adProducts?.boost_eliminate > 0) : r.traceUsed + r.adCredits < 2);
+      if (B.recoverAd(e, r, receipt, time, "boost_connection", canApply)) {
+        if (r) s.sessions[r.id] = r; return;
+      }
       if (!r || r.mode !== "fake_endless" || r.finished || r.expiresAt <= time || r.adReceipts[receipt.id] ||
-        r.adGranted >= 2 || r.traceUsed + r.adCredits >= 2 || r.adGranted !== receipt.context.credit) return;
-      r.adGranted++; r.adCredits++; r.adReceipts[receipt.id] = true; s.sessions[r.id] = r;
+        !canApply) return;
+      B.grantAd(r, receipt); s.sessions[r.id] = r;
     });
   }
   return {status, start, act, settle, prepareHint, settleHint};

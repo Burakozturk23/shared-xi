@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../app/app_feedback.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -232,16 +233,25 @@ class TurkishNostalgiaController extends ChangeNotifier {
       if (syncing) return;
       busy = true; _notify();
       pending[task!.id] = List<String>.from(answers);
-      try { await _save(); await sync(); }
+      try {
+        await _save(); await sync();
+        if (phase == 'result') {
+          AppFeedback.answer(correct: true);
+        } else if (message.startsWith('Cevap doğru değil')) {
+          AppFeedback.answer(correct: false);
+        }
+      }
       catch (_) { message = 'Seçim kaydedilemedi. Yeniden dene.'; }
       finally { busy = false; _notify(); }
       return;
     }
     if (!task!.accepts(answers)) {
       message = 'Henüz doğru değil. İpucuna bakıp yeniden dene.';
+      AppFeedback.answer(correct: false);
       _notify();
       return;
     }
+    AppFeedback.answer(correct: true);
     busy = true;
     final id = task!.id;
     final wasSolved = solved.contains(id);

@@ -13,7 +13,8 @@ import sys
 
 
 def extract(pdf):
-    text = subprocess.check_output(['pdftotext', '-layout', '-f', '7', '-l', '8', str(pdf), '-'], text=True)
+    text = subprocess.check_output(['pdftotext', '-layout', '-enc', 'UTF-8', '-f', '7', '-l', '8', str(pdf), '-'],
+                                   encoding='utf-8')
     result = []
     for page, body in enumerate(text.split('\f')[:2], 7):
         lines = body.splitlines()
@@ -37,9 +38,29 @@ def extract(pdf):
     return result
 
 
+def extract_clubs(pdf):
+    text = subprocess.check_output(['pdftotext', '-raw', '-enc', 'UTF-8', '-f', '2', '-l', '6', str(pdf), '-'])
+    result = []
+    keys = ['participations', 'titles', 'played', 'won', 'drawn', 'lost', 'goalsFor', 'goalsAgainst', 'points',
+            'goalDifference']
+    for page, body in zip(range(2, 7), text.decode('utf-8').split('\f')):
+        for line in body.splitlines():
+            m = re.match(r'^(\d+) (.+?) ([A-Z]{3}) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (-?\d+)$',
+                         line.strip())
+            if m:
+                result.append({'position': int(m[1]), 'sourceName': m[2], 'countryCode': m[3], 'pdfPage': page,
+                               **dict(zip(keys, map(int, m.groups()[3:])))})
+    return result
+
+
 def main(pdf):
     source = json.loads(pathlib.Path(__file__).with_name('uefa_2023_snapshot.json').read_text())
     assert hashlib.sha256(pdf.read_bytes()).hexdigest() == source['sourceSha256'], 'Source bytes changed'
+    # Club ranking first: its raw-mode extraction does not depend on page layout.
+    clubs = json.loads(pathlib.Path(__file__).with_name('uefa_2023_clubs.json').read_text(encoding='utf-8'))
+    assert clubs['sourceSha256'] == source['sourceSha256']
+    assert extract_clubs(pdf) == clubs['rows'], 'club table differs from the PDF'
+    print(f"PASS: all {len(clubs['rows'])} club ranking rows match the PDF.")
     facts = extract(pdf)
     expected = source['rows'] + source['excluded']
     assert len(facts) == len(expected) == 208

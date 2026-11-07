@@ -196,6 +196,15 @@ for r in rows:
  if r['id']=='chelsea_duo':r['sources']=[dict(label='Resmî transfer kaydı • '+key,url=S[key]) for key in ['kdb','salah']]
 pack=dict(version=1,chapters=chapters,scenarios=rows)
 assert len(rows)==24
-for target in ['assets/data/what_if_v2.json','functions/config/what_if_catalog.json']:
- (ROOT/target).write_text(json.dumps(pack,ensure_ascii=False,indent=2)+'\n')
+def public(full):
+ """App asset without answers, explanations or endings (9 endings name the
+ answer): the server checks the answer and returns them afterwards."""
+ out=json.loads(json.dumps(full))
+ for s in out['scenarios']:
+  for r in s['routes']:
+   r.pop('ending'); t=r['task']
+   t['requiredCount']=len(t.pop('answerKeys')); t.pop('explanation'); t['serverValidated']=True
+ return out
+for target,data in [('functions/config/what_if_catalog.json',pack),('assets/data/what_if_v2.json',public(pack))]:
+ (ROOT/target).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('24 scenarios, 48 route tasks and endings written.')

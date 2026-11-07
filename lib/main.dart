@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'screens/welcome_page.dart';
+import 'screens/entry_gate_page.dart';
 import 'screens/onboarding_page.dart';
 import 'app/app_preferences.dart';
 import 'app/app_feedback.dart';
+import 'app/game_audio.dart';
 import 'app/route_appearance.dart';
 import 'services/cloud_bootstrap.dart';
 import 'services/ads_consent_service.dart';
@@ -20,6 +22,7 @@ Future<void> main() async {
   // Firebase and the player database remain outside this critical path.
   final preferences = await AppPreferences.load();
   AppFeedback.preferences = preferences;
+  GameAudio.instance = GameAudio(preferences: preferences, backend: AudioplayersBackend());
 
   // STEP 08D.7Q.2: do not block Welcome's first paint on Dart-side Firebase.
   // Firebase Core + App Check + telemetry start immediately after the first
@@ -28,6 +31,7 @@ Future<void> main() async {
   runApp(SharedXIApp(preferences: preferences));
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
+    GameAudio.instance?.start();
     unawaited(AdsConsentService.refresh());
     unawaited(CoinBillingService.initialize());
     debugPrint(
@@ -59,6 +63,10 @@ class SharedXIApp extends StatefulWidget {
 class _SharedXIAppState extends State<SharedXIApp> {
   final _appearance = RouteAppearanceObserver();
   late bool _showOnboarding;
+
+  /// The entry gate follows the slides on a fresh install only; players who
+  /// finished the slides before keep going straight to the app.
+  bool _showGate = false;
   @override
   void initState() {
     super.initState();
@@ -106,8 +114,13 @@ class _SharedXIAppState extends State<SharedXIApp> {
           navigatorObservers: [_appearance],
           home: _showOnboarding
               ? OnboardingPage(
-                  onComplete: () => setState(() => _showOnboarding = false),
+                  onComplete: () => setState(() {
+                    _showOnboarding = false;
+                    _showGate = !widget.preferences.entryGateComplete;
+                  }),
                 )
+              : _showGate
+              ? EntryGatePage(onDone: () => setState(() => _showGate = false))
               : const WelcomePage(),
         ),
       ),

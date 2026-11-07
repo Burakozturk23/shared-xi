@@ -19,7 +19,8 @@ String gameErrorMessage(Object error) {
       case 'cancelled':
         return _connection;
       case 'resource-exhausted':
-        return 'Çok fazla işlem yapıldı. Biraz bekleyip tekrar dene.';
+        // Domain limits (energy, hints, story cooldowns) say what to wait for.
+        return _safeMessage(error.message) ?? 'Çok fazla işlem yapıldı. Biraz bekleyip tekrar dene.';
       case 'failed-precondition':
       case 'invalid-argument':
       case 'already-exists':

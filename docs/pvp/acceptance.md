@@ -44,6 +44,9 @@ Otomatik kapsam bir yayın PASS kararı değildir. Her satır staging/iki hesap 
 | CC03 | P0 | Takım–ülke ortaklığında olmayan oyuncu skor alamaz. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CC04 | P1 | İki tarafın farklı seçim rolleri hazır ol aşamasında adil açıklanır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CC05 | P1 | Kesişim boşsa tekrar seçim yapılır; otomatik sahte soru üretilmez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
+| PA01 | P0 | Arkadaş modunda yalnızca rakibin seçimiyle en az 6 ortak futbolcusu olan seçenekler sunulur ve kabul edilir. | `functions/test/pvp.test.js` PA01 |
+| PA02 | P0 | Yanlış cevap 2 sn kilitler, maçta en fazla 10 yanlış; maç sonunda bulunanlar ve kaçırılanlar açıklanır. | `functions/test/pvp.test.js` PA02 |
+| PA03 | P1 | Rastgele çiftlerin en az 6 cevabı ve üst 3000'den en az 3 cevabı var; hiçbir ülke %10'u geçmez. | `functions/test/pvp.test.js` PA03 |
 | GC01 | P0 | Her Grid Klasik hücresi en az bir doğrulanmış futbolcuyla çözülebilir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | GC02 | P0 | Yanlış playerId istemci transaction’ında hücre ele geçirmez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | GC03 | P0 | Farklı Grid alt türü claimClassicCell tarafından reddedilir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
@@ -56,6 +59,7 @@ Otomatik kapsam bir yayın PASS kararı değildir. Her satır staging/iki hesap 
 | GR04 | P0 | Rakibin cevabı her iki tur cevabı kapanmadan açıklanmaz. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | GR05 | P1 | Kişi başı tur süreleri eşittir. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | GR06 | P1 | Beş turun sonunda beraberlik/galibiyet doğru kapanır. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
+| GR07 | P1 | Grid Rastgele'de çiftin az bilinen yarısından doğru cevap +1 puan alır; Grid Ters'te eşit skorda az yanlış yapan kazanır ve maç sonunda her eksenin kabul ettiği kriterler gelir. | Hizmet otomatik testi (GR07); cihaz kabulü bekliyor |
 | GT01 | P0 | Grid Ters için her eksen doğru cevabı sunucuda kontrol edilir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | GT02 | P0 | Yanlış axisKey veya yanlış ilişki skor üretmez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | GT03 | P0 | Bir eksen iki kez ele geçirilmez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
@@ -67,24 +71,30 @@ Otomatik kapsam bir yayın PASS kararı değildir. Her satır staging/iki hesap 
 | RF04 | P0 | Gecikmeli yeniden gönderim idempotent makbuz döndürür. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | RF05 | P1 | 90 sn sonunda tam skor ve beraberlik doğru. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | RF06 | P1 | Kısa bağlantı kopmasında aynı maç oturumu geri yüklenir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
+| RF07 | P0 | Rastgele Beşler hazır tahtalardan gelir (4 kulüplü oyuncu, 3+ kulüplü en az 4, 2+ kulüplü en az 20); 3+ kulüp bonus puan; yanlış isim 2 sn kilit, en fazla 10; maç sonunda en iyi kaçırılan cevaplar. | `functions/test/pvp.test.js` RF07 |
 | CI01 | P0 | Çinko 25 hücresinin kriterleri ve çözülebilirliği doğrulandı. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CI02 | P0 | İstemci yanlış indexes ekleyerek hücre boyayamaz. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CI03 | P0 | Sunucu oyuncunun uygun boş hücrelerini kendi hesaplar. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CI04 | P0 | Yanlış futbolcu yanlış kişiye bir kare devredemez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
-| CI05 | P1 | Satır/sütun/çapraz kazanma koşulları PASS. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
+| CI05 | P1 | Satır/sütun/çapraz kazanma koşulları PASS (yalnız eski kuralla başlamış odalar; yeni Çinko'da çizgi yok). | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CI06 | P1 | Tahta dolunca skor ve beraberlik PASS. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
+| CI07 | P0 | Çinko Botla Oyna kurallarıyla oynanır: bağlı kutular, +1/−1, oyuncu bir kez, pas; ikinci başlayan 1 puanla başlar. | `functions/test/pvp.test.js` CI07 |
+| CI08 | P1 | Süresi dolan Çinko sırası pas sayılır; dört pas üst üste maçı bitirir. | `functions/test/pvp.test.js` CI08 |
 | LO01 | P0 | Loto 4×4 tahtası ve 16 oyuncu sunucu sürümüne sabittir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | LO02 | P0 | Yalnızca doğru futbolcu/doğru hücre skor yaratır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | LO03 | P0 | Aynı oyuncu ikinci kez yazılamaz. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | LO04 | P0 | İstemci saati değişikliği 180 sn maç süresini etkilemez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | LO05 | P1 | Her iki oyuncuya uyumlu zorluk ve hamle süresi atanır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | LO06 | P1 | Sonuç ve açıklanan boş hücreler iki telefonda eşittir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
+| LO07 | P0 | Yanlış hamle 3 sn kilitler, maçta en fazla 8 yanlış, hamleler arası en az 400 ms. | `functions/test/pvp.test.js` LO07 |
+| LO08 | P1 | Eşit skorda az yanlış, sonra daha erken son doğru hamle kazanır. | `functions/test/pvp.test.js` LO08 |
 | CM01 | P0 | Her iki kullanıcı aynı bütçeyi ve havuz sürümünü alır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CM02 | P0 | Her iki dizilişin 11 gerçek/tekrarsız oyuncu olduğu doğrulanır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CM03 | P0 | Kadro/bütçe/kullanılabilir oyuncu sınırı sunucuda doğrulanır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CM04 | P0 | Bir oyuncu rakibin henüz gizli takım/taktiğini göremez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CM05 | P0 | Host kendi kazandığını söyleyen result yazamaz. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | CM06 | P0 | Aynı seed ve snapshot aynı maç sonucunu üretir. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
+| CM08 | P1 | Club Manager havuzunda en iyi kadro bütçeyi aşar, ucuz kadro sığar; taktikler döngüseldir; normal süre beraberliği penaltıyla, kilitlenmemiş kadro hükmen yenilgiyle biter. | Hizmet otomatik testi (CM08); cihaz kabulü bekliyor |
 | CM07 | P1 | Ranked kapalıysa açık mesaj; oda maçları doğru çalışır. | Yayın kapısı: README kapsam/sınırları; PASS değil |
 | EC01 | P0 | Sadece doğrulanmış ranked maçlar Elo hesaplamaya girer. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | EC02 | P0 | Arkadaş maçında Elo hiçbir durumda değişmez. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |

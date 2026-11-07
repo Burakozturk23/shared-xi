@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../app/route_appearance.dart';
 import '../services/auth_service.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import 'player_profile_page.dart';
 import 'sign_in_page.dart';
@@ -21,27 +22,23 @@ class ProfileHubPage extends StatefulWidget {
 
 class _ProfileHubPageState extends State<ProfileHubPage> {
   Future<void> _open(Widget page, {bool modern = false}) async {
-    await Navigator.of(context)
-        .push(LinkballRoute(builder: (_) => page, modern: modern));
+    await Navigator.of(
+      context,
+    ).push(LinkballRoute(builder: (_) => page, modern: modern));
     if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     if (AuthService.hasPersistentAccount) {
-      return const PlayerProfilePage(embedded: true);
+      return PlayerProfilePage(embedded: true);
     }
     final p = PitchColors.of(context);
     return ListView(
       key: const PageStorageKey('profile'),
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       children: [
-        Text(
-          'Oyuncu alanın.',
-          style: Theme.of(context).textTheme.headlineLarge,
-        ),
-        const SizedBox(height: 24),
-        PitchPanel(
+        HubHeroCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -84,15 +81,23 @@ class _ProfileHubPageState extends State<ProfileHubPage> {
               PitchAction(
                 label: 'Google hesabını bağla',
                 icon: Icons.login_rounded,
-                onPressed: () =>
-                    _open(const LinkballSignInPage(allowSkip: false), modern: true),
+                onPressed: () => _open(
+                  const LinkballSignInPage(allowSkip: false),
+                  modern: true,
+                ),
               ),
             ],
           ),
         ),
-        const PitchSectionTitle('Profilin ve ilerlemen'),
-        PitchRow(title: 'Burst Rekor Merkezi', icon: Icons.bolt_outlined,
-          onTap: () => _open(const ArcadePage(mode: 'burst', recordsInitially: true), modern: true)),
+        const HubSectionHeader('Profilin ve ilerlemen'),
+        PitchRow(
+          title: 'Burst Rekor Merkezi',
+          icon: Icons.bolt_outlined,
+          onTap: () => _open(
+            const ArcadePage(mode: 'burst', recordsInitially: true),
+            modern: true,
+          ),
+        ),
         const SizedBox(height: 16),
         PitchRow(
           title: 'Profilim ve istatistikler',

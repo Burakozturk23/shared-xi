@@ -19,6 +19,24 @@
 
 Arkadaş odaları ve rastgele dereceli kuyruk: `career_race` 3×20sn eksik kulüp, 2×25sn kronoloji, 1×20sn gizemli kariyer; `transfer_duel` 5×30sn. Turlar arasında 2sn, başlangıçta 5sn hazırlık. Sunucuda seçilen aynı sıralı içerik, tek cevap/tur, server clock, 100+0–50 puan. Eşitlik: puan, doğru sayısı, doğru cevap toplam süresi, beraberlik.
 
+Kariyer Yarışı soruları: maçta 2 kolay, 2 orta, 2 zor kariyer (`difficulty`).
+Eksik kulüp yalnızca rotada bir kez geçen bir kulüptür, böylece cevap rotada
+görünmez; yanlış şıklar bir kariyerde geçen, cevapla aynı ülkeden ve yakın
+popülerlikte kulüplerdir (ülke, lig ve popülerlik PvP kataloğundan). Kronoloji
+rastgele ardışık üç duraktan, mümkünse üç farklı kulüpten gelir. Gizemli
+kariyerde yanlış şıklar rotadaki bir kulüpte oynamış futbolculardır. Kariyer
+Yarışı cevapları da tur kimliği (`roundToken`) ister. Hiç cevap vermeyen
+oyuncu hiçbir düelloda dereceli ödül almaz (ELO yine işlenir).
+
+Transfer Düellosu soruları: 2 kolay, 2 orta, 1 zor transfer; önce futbolcu,
+sonra onun transferlerinden biri seçilir (çok transferli futbolcular maçı
+doldurmaz). Mümkünse en bilinen 3000 futbolcudan gelir; maçta futbolcu ve kulüp
+çifti tekrar etmez, en az bir transfer 2015 öncesidir. Aynı gün aynı geçişi
+yapan tüm futbolcular doğru sayılır (`accepted`). 10. saniyede milliyet, 20.
+saniyede mevki açılır; açık her ipucu doğru cevabın taban puanını 15 düşürür.
+Tur sonunda transfer tarihi ve yaş gösterilir. Transfer Düellosu cevapları da
+tur kimliği ister.
+
 Cevap anahtarı ve mevcut rakip cevabı tur sonuna kadar gönderilmez. Yeni RTDB ağacı tamamen özel; istemci yalnızca App Check'li callable kullanır. 60sn yokluk/çıkış hükmen sonuç, ödül/ELO yok. Arkadaş maçında Coin/XP/ELO yok. Dereceli sonuç mevcut rankedState profillerine tek işlemle yazılır; iki yeni mod ve eski geçerli dereceli settlement'lar ilk beş maç sınırında birlikte sayılır. Yeni modlar galibiyet 3C/8XP, beraberlik 2C/6XP, mağlubiyet 1C/4XP verir. Solo arşive online madalya yazılmaz.
 
 Dakikalık reconcile, açık maçları sunucu saatine göre sonuçlandırır ve kesilmiş ödül ödemelerini onarır. Sıcak veri 7 gün; eski oda istekleri sona ermiş olarak tutulur. Hesap silme yeni özel odaları da temizler. Global mod işlemi ilk sürümde basit tutarlılık kilididir; yüksek eşzamanlı kullanıcı sayısında oda bazlı parçalama gerekir.
