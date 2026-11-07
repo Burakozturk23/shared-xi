@@ -1,6 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {norm} = require("./three_modes");
@@ -26,12 +27,15 @@ const optionalOf = (p) => p.layout === 2 ? p.optional : [0, 3, 4];
 const answersOf = (p) => [p.playerId, ...(p.alsoPlayerIds || [])];
 const fileKey = (mode, p) => mode === "mystery" ? `mystery__${p.playerId}` : `chain__${p.id}`;
 const pool = (c, mode) => mode === "mystery" ? c.mystery : mode === "mastermind" ? c.mastery : c.sprint;
+// İpucu v2 menus (hints/mystery_chain.js).
+const adapter = H.register(require("./hints/mystery_chain").make({catalog}));
 function view(raw, time) {
   const r = runOf(raw); if (!r) return null;
   const v = {id: r.id, mode: r.mode, revision: r.revision, graphVersion: r.graphVersion,
     startedAt: r.startedAt, expiresAt: r.expiresAt, serverNow: time, endAt: r.endAt || null,
     hardEndAt: r.hardEndAt || null, finished: r.finished, found: r.found, wrong: r.wrong,
-    guesses: r.guesses, hints: r.hints, freeHint: !B.paid(r) && !r.freeUsed, support: B.view(r), adCredits: r.adCredits,
+    guesses: r.guesses, hints: r.hints, freeHint: !B.paid(r) && !H.active(r) && !r.freeUsed, support: B.view(r),
+    hintMenu: r.mode === "blitz" ? null : H.view(r, adapter), adCredits: r.adCredits,
     adRemaining: Math.max(0, 2 - r.adGranted), optionalHints: r.optionalHints,
     score: r.score, streak: r.streak, chains: r.chains, skipped: r.skipped, undoUsed: r.undoUsed,
     result: r.result || null, feedback: r.feedback || "", energyCharged: r.energyCharged,
@@ -68,6 +72,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       e.energy = energy.refreshed(e.energy, time);
       try {
         for (const r of Object.values(e.mysteryChain.sessions)) B.recoverUnused(e, r, time);
+        for (const r of Object.values(e.mysteryChain.sessions)) H.recoverUnused(e, runOf(r), time);
         fn(e.mysteryChain, e, time);
         for (const r of Object.values(e.mysteryChain.sessions)) B.recoverUnused(e, r, time); return e;
       } catch (err) {
@@ -311,7 +316,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           graphVersion: catalog.version, firstSession: r.id, player: r.player || null,
           start: r.start || null, target: r.target || null, par: p.par || null, bestMedal: 0};
       }
-      B.pin(r, boostPolicy);
+      H.pinAny(r, boostPolicy, e, time);
       s.sessions[r.id] = r; s.active[input.mode] = r.id; s.starts[r.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
         if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
@@ -346,7 +351,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const r = runOf(s.sessions[input.sessionId]);
       if (r.voided) return;
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.clubId ?? null,
-        input.boost ?? null, ...B.paymentFingerprint(input)]));
+        input.boost ?? null, ...B.paymentFingerprint(input), input.itemId ?? null]));
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İstek başka işleme ait.");
         return;
@@ -368,7 +373,11 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
           r.streak = r.first ? s.streak + 1 : 0; finish(s, r, time);
         } else {
           r.wrong++; r.feedback = "Yanlış futbolcu; yeni bilgi açıldı.";
-          if (r.wrong < 3) r.hints.push({...r.puzzle.hints[r.wrong], automatic: true});
+          // v2 hints may already have shown that clue: the next unseen one opens instead.
+          const seen = new Set([r.puzzle.hints[0]?.id, ...r.hints.map((h) => h.id)]);
+          const auto = H.active(r) ? r.puzzle.hints.slice(r.wrong).find((h) => !seen.has(h.id)) :
+            r.puzzle.hints[r.wrong];
+          if (r.wrong < 3 && auto) r.hints.push({...auto, automatic: true});
           else finish(s, r, time);
         }
       } else if (input.action === "move" && r.mode !== "mystery") {
@@ -403,6 +412,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       } else if (input.action === "undo" && r.mode !== "mystery") {
         if (!r.path.length) fail("failed-precondition", "Geri alınacak hamle yok.");
         r.path.pop(); r.undoUsed = true; r.bridgeHint = null; r.deadEnd = !remaining(graph, r);
+      } else if (input.action === "hint" && H.active(r)) {
+        H.use(e, r, adapter, input, time, {c});
       } else if (input.action === "hint") {
         const hint = nextHint(r, graph, c);
         if (!hint) fail("failed-precondition", "Yeni geçerli ipucu yok. Geri al veya oyuna devam et.");
@@ -463,6 +474,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   async function prepareHint(uid, placement, context) {
     const r = runOf((await read(uid)).sessions[context?.sessionId]);
+    if (H.active(r)) {
+      if ((r.mode === "mystery" ? "mystery_hint" : "chain_hint") !== placement || r.finished ||
+          r.expiresAt <= now()) fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
+      return H.adBenefit(r, context.itemId, {amount: 0, claimKey: `mc_hint_${r.id}_${r.adGranted}`,
+        context: {sessionId: r.id, mode: r.mode, credit: r.adGranted}});
+    }
     if (!r || (r.mode === "mystery" ? "mystery_hint" : "chain_hint") !== placement ||
         r.finished || r.mode === "blitz" || r.expiresAt <= now() || r.adGranted >= 2 ||
         r.optionalHints + r.adCredits + (B.paid(r) || r.freeUsed ? 0 : 1) >= 3) {
@@ -476,6 +493,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        const canApply = r && H.active(r) && r.mode === receipt.context.mode && r.adGranted === receipt.context.credit;
+        if (H.recoverAd(e, r, receipt, time, canApply)) {
+          if (r) s.sessions[r.id] = r; return;
+        }
+        H.grantAd(r, receipt); s.sessions[r.id] = r; return;
+      }
       const canApply = r && r.optionalHints + r.adCredits < 3 && r.adGranted < 2 &&
         r.adGranted === receipt.context.credit;
       const sku = receipt.context?.mode === "mystery" ? "boost_basic" : "boost_connection";
