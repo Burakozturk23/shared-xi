@@ -240,16 +240,21 @@ function act(c, r, input, time) {
       // Two steps per answer: nationality first, initials on the second hint.
       const times = (id) => r.hinted.filter((x) => x === id).length;
       const open = r.question.answers.filter((id) => !r.found.includes(id) && c.players[id].countryId);
-      const id = open.find((x) => times(x) === 1) ?? open.find((x) => times(x) === 0);
+      // İpucu v2 asks for one kind: "country" (a fresh answer) or "initials" (any open answer).
+      const kind = input.hintKind;
+      const id = kind === "country" ? open.find((x) => times(x) === 0) :
+        open.find((x) => times(x) === 1) ?? open.find((x) => times(x) === 0);
       const player = id && c.players[id];
       if (!player) fail("failed-precondition", "Yeni ipucu kalmadı.");
-      if (r.boostPolicy?.version !== 1) {
+      if (r.boostPolicy?.version !== 1 && r.hintPolicy?.version !== 2) {
         if (!r.freeUsed) r.freeUsed = true;
         else if (r.adCredits > 0) r.adCredits--;
         else fail("resource-exhausted", "Ücretsiz ipucu kullanıldı. Doğrulanmış reklam hakkı gerekli.");
       }
+      const country = kind ? kind === "country" : times(player.id) === 0;
       r.hints++; r.hinted.push(player.id);
-      r.hint = times(player.id) === 1 ? `Bir cevabın milliyeti: ${player.country}` :
+      if (kind === "initials" && times(player.id) === 1) r.hinted.push(player.id);
+      r.hint = country ? `Bir cevabın milliyeti: ${player.country}` :
         player.name.split(/\s+/).map((s) => s[0] + ".").join(" ") + " · " + player.country;
     } else if (input.action === "answer") {
       const id = resolve(c, input.query, input.entityId, "burst");
@@ -300,7 +305,7 @@ function act(c, r, input, time) {
       const type = {player: "Oyuncu", club: "Kulüp", country: "Ülke"}[candidate.type];
       // First hint on a cell names only the type; a second one adds the link.
       r.slotHints ||= {}; r.slotHints[slot.id] = (r.slotHints[slot.id] || 0) + 1;
-      r.hint = r.slotHints[slot.id] === 1 ? `Aday türü: ${type}.` :
+      r.hint = (input.hintKind ? input.hintKind === "type" : r.slotHints[slot.id] === 1) ? `Aday türü: ${type}.` :
         `Aday türü: ${type}. ` + label(c, edge(c, candidate.id, r.filled[slot.supports[0]]));
     } else if (input.action === "answer") {
       const id = resolve(c, input.query, input.entityId, "pyramid");
@@ -332,7 +337,9 @@ function act(c, r, input, time) {
     } else fail("invalid-argument", "Geçersiz Pyramid işlemi.");
   } else {
     if (input.action === "hint") {
-      if (!require("./boosts").paid(r)) fail("failed-precondition", "Bu oyunda çift desteği açık değil.");
+      if (!require("./boosts").paid(r) && r.hintPolicy?.version !== 2) {
+        fail("failed-precondition", "Bu oyunda çift desteği açık değil.");
+      }
       if (r.lockUntil > time || r.open.length) fail("failed-precondition", "Önce açık kartları tamamla.");
       if (r.hints >= 1) fail("resource-exhausted", "Bu oyunun çift önerisi kullanıldı.");
       const player = r.board.cards.find((x) => x.type === "player" && !r.matched.includes(x.pair));
@@ -373,8 +380,10 @@ function publicRun(c, raw, time) {
   const r = hydrate(raw); if (!r) return null;
   const {question, board, filled, undo, history} = r;
   const support = require("./boosts").view(r);
-  const v = {...r, ...(support ? {support} : {})};
+  const hintMenu = require("./hints").view(r);
+  const v = {...r, ...(support ? {support} : {}), ...(hintMenu ? {hintMenu} : {})};
   delete v.boostPolicy; delete v.boostUses;
+  for (const key of ["hintPolicy", "hintUses", "hintAdCredits", "hintAdReceipts"]) delete v[key];
   for (const key of ["actions", "question", "board", "filled", "undo", "wrongInputs", "adReceipts", "history",
     "used", "hinted"]) delete v[key];
   v.serverNow = time; v.totalRemainingMs = Math.max(0, 120000 - r.activeMs - (r.penaltyMs || 0));

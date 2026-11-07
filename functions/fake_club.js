@@ -1,6 +1,9 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
+// İpucu v2 menu (hints/arcade.js).
+const adapter = H.register(require("./hints/arcade").fakeClub());
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {validId, shuffled} = require("./career_transfer");
@@ -32,7 +35,7 @@ function view(raw, time) {
     lives: r.lives, streak: r.streak, bestStreak: r.bestStreak, cleanStreak: r.cleanStreak,
     score: r.score, correct: r.correct, answers: r.answers, hintsUsed: r.hintsUsed,
     questionNumber: r.answers + (r.answered ? 0 : 1), ...(r.dailyDay ? {daily: r.dailyDay} : {}),
-    free5050: !r.freeUsed, support: B.view(r),
+    free5050: !r.freeUsed, support: B.view(r), hintMenu: H.view(r, adapter),
     traceRemaining: Math.max(0, 2 - r.traceUsed), adCredits: r.adCredits,
     traceAvailable: !r.traceOnQuestion && q.realClubIds.some((id) => !r.eliminated.includes(id)),
     eliminated: r.eliminated, confirmed: r.confirmed, energyCharged: r.energyCharged,
@@ -85,6 +88,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         }
         fn(e.fakeClub, e, time);
         for (const r of Object.values(e.fakeClub.sessions)) {
+          H.recoverUnused(e, runOf(r), time);
           B.recoverUnused(e, r, time,
               (sku) => sku === "boost_eliminate" ? !r.freeUsed : r.traceUsed < 2);
         }
@@ -265,7 +269,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (e.energy.balance === energy.policy.capacity) e.energy.refillAt = time;
         e.energy.balance--;
       }
-      B.pin(r, boostPolicy);
+      H.pinAny(r, boostPolicy, e, time);
       setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id;
       s.starts[r.id] = r.mode + (daily ? "__daily" : "");
       for (const [id, prior] of Object.entries(s.sessions)) {
@@ -284,7 +288,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const c = await pinned(before.dataVersion); const policy = policyOf(await getPolicy());
     const e = await change(uid, (s, e, time) => {
       const fp = hash(JSON.stringify([input.action, input.questionId ?? null,
-        input.clubId ?? null, input.boost ?? null, ...B.paymentFingerprint(input)]));
+        input.clubId ?? null, input.boost ?? null, ...B.paymentFingerprint(input), input.itemId ?? null]));
       let r = runOf(s.sessions[input.sessionId]);
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fp) fail("invalid-argument", "İstek başka işleme ait.");
@@ -311,7 +315,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (q) setup(r, q, time);
         else finish(s, r, "Doğrulanmış soru havuzu tamamlandı. Rekorun kaydedildi.", time, policy);
       } else if (input.action === "finish") finish(s, r, "Oturum kapatıldı; rekorların korundu.", time, policy);
-      else if (input.action === "fifty" || input.action === "trace") {
+      else if (input.action === "hint" && H.active(r)) {
+        if (r.mode !== "fake_endless") fail("failed-precondition", "Bu oyunda yardım kapalı.");
+        H.use(e, r, adapter, input, time, {onHint: () => record(s, r).hintsUsed++});
+      } else if (input.action === "fifty" || input.action === "trace") {
         if (r.mode !== "fake_endless" || r.answered) fail("failed-precondition", "Bu oyunda yardım kapalı.");
         if (input.action === "fifty") {
           if (r.freeUsed) fail("resource-exhausted", "Oturumun ücretsiz 50/50 hakkı kullanıldı.");
@@ -350,6 +357,12 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   async function prepareHint(uid, placement, context) {
     const r = runOf((await read(uid)).sessions[context?.sessionId]);
+    if (H.active(r)) {
+      if (placement !== "fake_club_hint" || r.mode !== "fake_endless" || r.finished || r.answered ||
+        r.expiresAt <= now()) fail("failed-precondition", "Bu oyunda yeni reklam hakkı yok.");
+      return H.adBenefit(r, context.itemId, {amount: 0, claimKey: `fc_hint_${r.id}_${r.adGranted}`,
+        context: {sessionId: r.id, credit: r.adGranted}});
+    }
     const sku = context?.boostId || "boost_connection";
     const eliminate = B.paid(r) && sku === "boost_eliminate";
     if (placement !== "fake_club_hint" || !r || r.mode !== "fake_endless" || r.finished ||
@@ -363,6 +376,13 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const r = runOf(s.sessions[receipt.context?.sessionId]);
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        const ok = r && H.active(r) && !r.finished && r.adGranted === receipt.context.credit;
+        if (H.recoverAd(e, r, receipt, time, ok)) {
+          if (r) s.sessions[r.id] = r; return;
+        }
+        H.grantAd(r, receipt); s.sessions[r.id] = r; return;
+      }
       const eliminate = B.paid(r) && receipt.context?.boostId === "boost_eliminate";
       const canApply = r && r.adGranted < 2 && r.adGranted === receipt.context.credit &&
         (eliminate ? !r.freeUsed && !(r.adProducts?.boost_eliminate > 0) : r.traceUsed + r.adCredits < 2);

@@ -1,7 +1,10 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
 const E = require("./arcade_engine");
+// İpucu v2 menus (hints/arcade.js).
+const adapter = H.register(require("./hints/arcade").arcade({E}));
 const energy = require("./energy");
 const {dayKey} = require("./rewarded_ads");
 const {normalize: nameKey} = require("./daily_words");
@@ -100,6 +103,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       e.arcade = state(e.arcade); e.energy = energy.refreshed(e.energy, time);
       try {
         for (const r of Object.values(e.arcade.sessions)) B.recoverUnused(e, r, time);
+        for (const r of Object.values(e.arcade.sessions)) H.recoverUnused(e, r, time);
         fn(e.arcade, e, time);
         for (const r of Object.values(e.arcade.sessions)) B.recoverUnused(e, r, time); e.updatedAt = time; return e;
       } catch (err) {
@@ -193,7 +197,9 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     // All expensive selection/solver work precedes the energy reservation.
     const seen = input.mode === "pyramid" ? E.list((await read(uid)).seenBoards) : [];
     const draft = E.create(catalog, {...input, seen}, now());
-    B.pin(draft, boostPolicy);
+    H.pinAny(draft, boostPolicy, null, now());
+    // Pyramid and Matching are timed boards: their hints are stock, Joker or Coin, never an ad.
+    if (H.active(draft) && ["pyramid", "matching"].includes(draft.mode)) draft.hintPolicy.ads = false;
     await db.ref(`arcadeCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
     await change(uid, (s, e, time) => {
       if (s.sessions[input.requestId]) {
@@ -223,7 +229,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   function applyRequest(s, e, t, input, c, p, linked, {online = false, lenient = false} = {}) {
     const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "questionId",
-      "entityId", "query", "slotId", "cardId", "elapsedMs", "boostId", "paymentSource", "expectedPriceCoins"]
+      "entityId", "query", "slotId", "cardId", "elapsedMs", "boostId", "paymentSource", "expectedPriceCoins",
+      "itemId"]
         .filter((k) => input[k] != null).map((k) => [k, input[k]]));
     const fp = hash(JSON.stringify(canonical));
     const r = hydrate(s.sessions[input.sessionId]);
@@ -278,7 +285,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       if (!r.finished) {
         const previousHints = r.hints;
         try {
-          E.act(c, r, input, eventTime);
+          if (input.action === "hint" && H.active(r)) H.use(e, r, adapter, input, t, {c, input, eventTime});
+          else E.act(c, r, input, eventTime);
         } catch (err) {
           // Offline: an answer for a round the clock already closed is dropped,
           // not allowed to throw away the whole batch.
@@ -305,7 +313,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       fail("invalid-argument", "Geçersiz çevrimdışı olay paketi.");
     }
     const saved = hydrate((await read(uid)).sessions[events[0].sessionId]);
-    if (B.paid(saved) && events.some((e) => e.action === "hint")) {
+    if ((B.paid(saved) || H.active(saved)) && events.some((e) => e.action === "hint")) {
       fail("failed-precondition", "Ücretli destek çevrimiçi doğrulanır; hak harcanmadı.");
     }
     if (!saved || saved.mode !== "burst") fail("not-found", "Kayıt bu hesaba ait değil.");
@@ -358,6 +366,12 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   async function prepareHint(uid, placement, context) {
     const r = hydrate((await read(uid)).sessions[context?.sessionId]);
+    if (H.active(r)) {
+      if (placement !== "burst_survival_hint" || r.mode !== "burst" || r.phase !== "active" || r.finished ||
+        r.expiresAt <= now()) fail("failed-precondition", "Bu oturumda reklam ipucu kullanılamaz.");
+      return H.adBenefit(r, context.itemId, {amount: 0, claimKey: `burst_hint_${r.id}_${r.adGranted}`,
+        context: {sessionId: r.id, credit: r.adGranted}});
+    }
     if (placement !== "burst_survival_hint" || !r || r.mode !== "burst" || r.style !== "survival" ||
       r.phase !== "active" || r.finished || r.expiresAt <= now() || r.adGranted >= 2 ||
       !r.question.answers.some((id) => !r.found.includes(id) &&
@@ -368,6 +382,13 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, t) => {
       const r = hydrate(s.sessions[receipt.context?.sessionId]);
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        const ok = r && H.active(r) && !r.finished && r.adGranted === receipt.context.credit;
+        if (H.recoverAd(e, r, receipt, t, ok)) {
+          if (r) s.sessions[r.id] = r; return;
+        }
+        H.grantAd(r, receipt); s.sessions[r.id] = r; return;
+      }
       if (B.recoverAd(e, r, receipt, t)) {
         if (r) s.sessions[r.id] = r; return;
       }
