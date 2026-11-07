@@ -121,7 +121,8 @@ function view(run, adapter = adapterOf(run), ctx = {}) {
     ads: {allowed: run.hintPolicy.ads !== false, remaining: Math.max(0, adLimit(run) - (run.adGranted || 0)),
       credits: Object.fromEntries(Object.entries(run.hintAdCredits || {})
           .filter(([, c]) => c.board === board).map(([id, c]) => [id, c.n]))},
-    assisted: run.assisted === true};
+    assisted: run.assisted === true,
+    ...(adapter.availability ? {byTarget: adapter.availability(run, ctx)} : {})};
 }
 
 function paymentFingerprint(input) {

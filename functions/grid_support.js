@@ -2,6 +2,7 @@
 const crypto = require("node:crypto");
 const P = require("./pvp_engine");
 const B = require("./boosts");
+const H = require("./hints");
 const {RewardError} = require("./rewarded_ads");
 const catalog = {...P.catalog, version: P.catalog.version + "-grid-v1", criteria: {...P.catalog.criteria,
   ...Object.fromEntries(Object.entries({GK: "Kaleci", DEF: "Defans", MID: "Orta Saha", ATT: "Forvet"})
@@ -197,6 +198,9 @@ function hint(r, target) {
   return {key, text: `Geçerli bir adayın milliyeti ${p.countries.join(" / ")}; ` +
       `mevki grubu ${pos[p.position]}.`};
 }
+// İpucu v2 menus (hints/grid.js).
+const adapter = H.register(require("./hints/grid").make({catalog, kind, answers, common, axisIds, matches,
+  targetKey}));
 function usable(r, scope) {
   if (!r || r.finished || r.version !== catalog.version) return false;
   try {
@@ -348,6 +352,7 @@ function reconcile(s, e, time) {
     if (r.expiresAt <= time) finish(r, "expired", time);
     if (r.version === catalog.version) botMove(r, time);
     B.recoverUnused(e, r, time, (_, scope) => usable(r, scope));
+    H.recoverUnused(e, r, time);
     if (r.finished && !r.recorded) {
       r.recorded = true;
       if (r.completed) {
@@ -379,6 +384,7 @@ function view(r) {
     botNote: r.botNote || null, botFirst: !!r.botFirst,
     ...r.finished ? reverse ? {accepted: accepted(r)} : {solutions: solutions(r)} : {},
     winner: r.winner ?? null, feedback: r.feedback || null, hints: r.hints, support: B.view(r),
+    hintMenu: H.view(r, adapter),
     assisted: r.assisted, adGranted: r.adGranted,
     masteryEligible: false, leaderboardEligible: false, rewardCoins: 0, rewardXp: 0};
 }
@@ -430,7 +436,7 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     const policy = await B.policyFor(db, uid, true); const seed = crypto.randomBytes(32).toString("hex");
     const fp = P.hash([m, input.action, input.sessionId, input.version, input.revision, input.target,
       input.playerId, input.answer, input.swap, input.difficulty, input.clubIds, input.minimumAnswers,
-      ...B.paymentFingerprint(input)]);
+      ...B.paymentFingerprint(input), input.itemId]);
     const s = await change(uid, (s, e) => {
       if (input.action === "start") {
         const id = "grid_" + input.requestId;
@@ -461,7 +467,7 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
             r.botFirst = true; schedule(r, now());
           }
         }
-        B.pin(r, policy); s.sessions[id] = r; s.active[m] = id; return;
+        H.pinAny(r, policy, e, now()); s.sessions[id] = r; s.active[m] = id; return;
       }
       const r = s.sessions[input.sessionId];
       if (!r || r.mode !== m || r.version !== input.version) fail("failed-precondition", "Grid oturumu değişti.");
@@ -474,7 +480,9 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
       if (input.action === "finish") finish(r, "partial", now());
       else {
         if (r.turn !== "user") fail("failed-precondition", "Sıra botta.");
-        if (input.action === "hint") {
+        if (input.action === "hint" && H.active(r)) {
+          H.use(e, r, adapter, input, now(), {target: input.target});
+        } else if (input.action === "hint") {
           const info = hint(r, input.target);
           if (input.paymentSource === "ad" && r.adScopes?.boost_basic?.targetKey !== info.key) {
             fail("failed-precondition", "Reklam hakkı başka Grid hedefine ait.");
@@ -523,6 +531,13 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   async function prepareHint(uid, placement, input) {
     if (!await isLinked(uid) || placement !== "grid_support_hint") fail("permission-denied", "Hesap gerekli.");
     const s = await read(uid); const r = s.sessions[input.sessionId];
+    if (H.active(r)) {
+      if (r.finished || r.turn !== "user" || r.expiresAt <= now() || r.version !== catalog.version) {
+        fail("failed-precondition", "Grid yardımı şu anda kullanılamaz.");
+      }
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `grid_hint_${r.id}_${input.itemId}_${r.adGranted || 0}`,
+        context: {sessionId: r.id}});
+    }
     if (!B.paid(r) || r.finished || r.turn !== "user" || r.expiresAt <= now() || r.version !== catalog.version ||
         input.boostId !== "boost_basic") fail("failed-precondition", "Grid yardımı şu anda kullanılamaz.");
     if (r.adProducts?.boost_basic > 0) {
@@ -535,6 +550,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   async function settleHint(uid, receipt) {
     await change(uid, (s, e) => {
       const r = s.sessions[receipt.context?.sessionId];
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, now(), !!r && H.active(r) && !r.finished)) H.grantAd(r, receipt);
+        return;
+      }
       if (!B.recoverAd(e, r, receipt, now(), "boost_basic", usable(r, receipt.context))) B.grantAd(r, receipt);
     });
   }
