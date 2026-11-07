@@ -29,8 +29,18 @@ function createStore({db, normalize, project, HttpsError, now = Date.now, getPri
     throw new HttpsError(code, message);
   }
   async function purchase(uid, data) {
-    const offer = offers[data.offerId];
+    const hintOffer = String(data.offerId || "").startsWith("hint_") ? require("./hints/index").offerOf(data.offerId) :
+      null;
+    const offer = hintOffer || offers[data.offerId];
     if (!offer || !offer.enabled) error("not-found", "Offer unavailable.");
+    const live = await B.policyFor(db, uid, true);
+    // İpucu v2: hint packs only on v2 wallets; the old supports are not sold there any more.
+    if (hintOffer && (live?.version !== 2 || !hintOffer.modes.some((m) => live.readyModes?.[m] === true))) {
+      error("failed-precondition", "Bu ipucu henüz açılmadı; Coin harcanmadı.");
+    }
+    if (!hintOffer && offer.itemType === "boost" && live?.version === 2) {
+      error("failed-precondition", "Destekler yeni ipuçlarına çevrildi; Coin harcanmadı.");
+    }
     // Letter packs (legacyOnly) are for accounts still on the classic letter supports.
     if (offer.legacyOnly && await B.policyFor(db, uid, true)) {
       error("failed-precondition", "Bu destek yeni destek sistemine çevrildi; Coin harcanmadı.");
@@ -51,7 +61,15 @@ function createStore({db, normalize, project, HttpsError, now = Date.now, getPri
     if (!Number.isSafeInteger(data.expectedPriceCoins)) error("invalid-argument", "A price quote is required.");
     // Support prices may come from linkball_prices_v1 (flag off: the catalog price).
     let price = offer.priceCoins;
-    if (offer.itemType === "boost") {
+    if (hintOffer) {
+      try {
+        const tier = require("./hints").priceOf(offer.itemId.slice(5), require("./price_config").hintPrices(
+            await getPrices()));
+        price = offer.units > 1 ? tier.pack : tier.single;
+      } catch (_) {
+        price = offer.priceCoins;
+      }
+    } else if (offer.itemType === "boost") {
       try {
         price = require("./price_config").offerPrice(offer, await getPrices());
       } catch (_) {

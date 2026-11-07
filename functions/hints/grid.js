@@ -108,4 +108,6 @@ function make({catalog, kind, answers, common, axisIds, matches, targetKey}) {
   };
 }
 
-module.exports = {make};
+const CATALOG = Object.fromEntries(["classic", "reverse", "random"].flatMap((k) =>
+  ["solo", "bot"].map((w) => [`${w}_grid_${k}`, k === "reverse" ? AXIS : CELL])));
+module.exports = {make, CATALOG};

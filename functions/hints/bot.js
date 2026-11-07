@@ -83,4 +83,5 @@ function make({catalog, kind, targetKey, answers, matches, remaining, matched, b
   };
 }
 
-module.exports = {make};
+module.exports = {make, CATALOG: {bot_loto: MENUS.loto, bot_team_race: MENUS.team_race,
+  bot_cinko: MENUS.cinko, bot_random_five: MENUS.random_five}};

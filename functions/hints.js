@@ -74,6 +74,7 @@ function convertLegacy(e, time) {
     const key = TYPES[type].key;
     result.converted[from] = take; result.gained[key] = (result.gained[key] || 0) + take; result.added += take;
   }
+  e.hintsVersion = VERSION;
   if (result.added) {
     e.storeUses["hint_legacy__" + time] = {converted: result.converted, gained: result.gained, added: result.added,
       source: "hint_legacy_conversion", usedAt: time};

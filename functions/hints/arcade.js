@@ -86,4 +86,5 @@ function fakeClub() {
   };
 }
 
-module.exports = {arcade, fakeClub};
+module.exports = {arcade, fakeClub, CATALOG: {burst_survival: MENUS.burst, pyramid: MENUS.pyramid,
+  matching: MENUS.matching, fake_endless: FAKE}};

@@ -78,4 +78,4 @@ function make({catalog}) {
   };
 }
 
-module.exports = {make};
+module.exports = {make, CATALOG: {mystery: MYSTERY, mastermind: CHAIN}};

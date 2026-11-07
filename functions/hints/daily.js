@@ -75,4 +75,4 @@ function make() {
 }
 
 const adapter = require("../hints").register(make());
-module.exports = {make, adapter};
+module.exports = {make, adapter, CATALOG: MENUS};

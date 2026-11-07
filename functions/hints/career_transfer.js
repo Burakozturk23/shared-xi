@@ -1,7 +1,9 @@
 "use strict";
 // İpucu v2 menus: Transfer Dedektifi and Kariyer Bulmacası (spec §4.3).
 // The module passes its own data helpers in, so there is no require cycle.
-const allClubs = new Map(require("../config/three_modes_catalog.json").clubs.map((c) => [c.id, c]));
+let clubCache = null; // three_modes clubs (league, popularity), loaded on first use
+const allClubs = {get: (id) => (clubCache ||= new Map(require("../config/three_modes_catalog.json").clubs
+    .map((c) => [c.id, c]))).get(id)};
 const POSITIONS = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet"};
 const letters = (name) => [...name].filter((c) => /\p{L}/u.test(c));
 const shape = (name) => {
@@ -10,28 +12,30 @@ const shape = (name) => {
   return chars.map((c, i) => /\p{L}/u.test(c) ? show.has(i) ? c : "_" : " ").join(" ").replace(/ {3,}/g, "   ");
 };
 
+const catalog = {
+  transfer: [
+    {id: "milliyet", label: "Milliyet", type: "milliyet", why: "Aday listesini en çok bu daraltır."},
+    {id: "mevki_yas", label: "Mevki ve yaş", type: "mevki", why: "Transferdeki rolü ve yaşı."},
+    {id: "baska_kulup", label: "Başka bir kulübü", type: "kulup", why: "Ekranda olmayan bir kulübü."},
+    {id: "kulup_sayisi", label: "Kulüp sayısı", type: "kulup", why: "Kariyerinin uzunluğunu gösterir."},
+    {id: "ilk_harf", label: "İlk harf", type: "isim", why: "Neredeyse çözdürür."},
+    {id: "isim_sekli", label: "İsim şekli", type: "isim", why: "İlk ve son harf, harf sayısı."},
+  ],
+  career: [
+    {id: "milliyet", label: "Milliyet", type: "milliyet", why: "Aday listesini en çok bu daraltır."},
+    {id: "mevki", label: "Mevki", type: "mevki", why: "Sahadaki rolü."},
+    {id: "kariyer_yillari", label: "Kariyer yılları", type: "donem", why: "Hangi dönemin oyuncusu?"},
+    {id: "ilk_harf", label: "İlk harf", type: "isim", why: "Neredeyse çözdürür."},
+  ],
+  career_order: [
+    {id: "yillar", label: "Bir kulübün yılları", type: "donem", why: "Yanlış yerdeki bir kulübün yılları."},
+    {id: "durak", label: "Kaçıncı durak", type: "kulup", why: "Bir kulübün kariyerdeki sırası."},
+    {id: "art_arda", label: "Art arda iki kulüp", type: "baglanti", why: "İki kartı birden yerine oturtur."},
+  ],
+};
+const CATALOG = {transfer: catalog.transfer, career: [...catalog.career, ...catalog.career_order]};
+
 function make({puzzleOf, players, cardsOf, orderOf, clubOfCard, clubName, yearsOf, detailedPositions}) {
-  const catalog = {
-    transfer: [
-      {id: "milliyet", label: "Milliyet", type: "milliyet", why: "Aday listesini en çok bu daraltır."},
-      {id: "mevki_yas", label: "Mevki ve yaş", type: "mevki", why: "Transferdeki rolü ve yaşı."},
-      {id: "baska_kulup", label: "Başka bir kulübü", type: "kulup", why: "Ekranda olmayan bir kulübü."},
-      {id: "kulup_sayisi", label: "Kulüp sayısı", type: "kulup", why: "Kariyerinin uzunluğunu gösterir."},
-      {id: "ilk_harf", label: "İlk harf", type: "isim", why: "Neredeyse çözdürür."},
-      {id: "isim_sekli", label: "İsim şekli", type: "isim", why: "İlk ve son harf, harf sayısı."},
-    ],
-    career: [
-      {id: "milliyet", label: "Milliyet", type: "milliyet", why: "Aday listesini en çok bu daraltır."},
-      {id: "mevki", label: "Mevki", type: "mevki", why: "Sahadaki rolü."},
-      {id: "kariyer_yillari", label: "Kariyer yılları", type: "donem", why: "Hangi dönemin oyuncusu?"},
-      {id: "ilk_harf", label: "İlk harf", type: "isim", why: "Neredeyse çözdürür."},
-    ],
-    career_order: [
-      {id: "yillar", label: "Bir kulübün yılları", type: "donem", why: "Yanlış yerdeki bir kulübün yılları."},
-      {id: "durak", label: "Kaçıncı durak", type: "kulup", why: "Bir kulübün kariyerdeki sırası."},
-      {id: "art_arda", label: "Art arda iki kulüp", type: "baglanti", why: "İki kartı birden yerine oturtur."},
-    ],
-  };
   const menuOf = (run) => run.mode === "career" && run.phase === "order" ? "career_order" : run.mode;
   const playerOf = (run) => players.get(puzzleOf(run).playerId);
   const otherClubs = (run) => {
@@ -81,7 +85,7 @@ function make({puzzleOf, players, cardsOf, orderOf, clubOfCard, clubName, yearsO
   const kinds = {ilk_harf: "letter", isim_sekli: "shape", yillar: "years", durak: "short", art_arda: "connection"};
   return {
     modes: ["transfer", "career"],
-    catalog: {transfer: catalog.transfer, career: [...catalog.career, ...catalog.career_order]},
+    catalog: CATALOG,
     board: (run) => run.mode === "career" ? `${run.id}:${run.phase}` : run.id,
     items: (run) => catalog[menuOf(run)].filter((i) => texts[i.id](run)),
     reveal(run, id) {
@@ -98,4 +102,4 @@ function make({puzzleOf, players, cardsOf, orderOf, clubOfCard, clubName, yearsO
   };
 }
 
-module.exports = {make, shape};
+module.exports = {make, shape, CATALOG};

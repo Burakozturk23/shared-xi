@@ -5903,6 +5903,7 @@ function lbEconomyState(raw) {
     threeModes: data.threeModes && typeof data.threeModes === "object" ? data.threeModes : {},
     energy: data.energy && typeof data.energy === "object" ? data.energy : {},
     storeUses: data.storeUses && typeof data.storeUses === "object" ? {...data.storeUses} : {},
+    ...(data.hintsVersion === 2 ? {hintsVersion: 2} : {}),
     squadChallenge: data.squadChallenge && typeof data.squadChallenge === "object" ?
       data.squadChallenge : {},
     createdAt: lbEconomyNumber(data.createdAt),
@@ -6294,6 +6295,7 @@ exports.getStoreCatalog = lbGuardedOnCall(
       let state = await lbEconomyEnsure(db, uid);
       const config = await lbGetEconomyConfig();
       const boostPolicy = await require("./boosts").policyFor(db, uid, true);
+      if (boostPolicy?.version === 2) return lbHintStoreCatalog(db, uid, config, boostPolicy);
       // Classic letter packs only for accounts outside typed supports; typed accounts
       // get their leftover letter stock converted on store open (same price, one to one).
       const offers = [...await lbStoreCatalog(db, config),
@@ -6331,6 +6333,37 @@ exports.getStoreCatalog = lbGuardedOnCall(
     },
 );
 
+// İpucu v2 store: hint packs, the v2 game guide and a one-time conversion of old support stock.
+async function lbHintStoreCatalog(db, uid, config, policy) {
+  const H = require("./hints"); const HI = require("./hints/index");
+  let legacyConverted = null;
+  const tx = await db.ref("economyState/" + uid).transaction((raw) => {
+    const e = lbEconomyState(raw); legacyConverted = null;
+    const r = H.convertLegacy(e, Date.now());
+    if (r.added) legacyConverted = r.gained;
+    return e;
+  });
+  const state = lbEconomyState(tx.snapshot.val());
+  await lbEconomyProject(db, uid, state);
+  const prices = priceConfig.hintPrices(await lbGetPrices());
+  const profile = (await db.ref("users/" + uid).get()).val() || {};
+  return {
+    ok: true,
+    catalogVersion: Math.max(LB_STORE_CATALOG_VERSION, storeCollection.catalog.version),
+    wallet: lbEconomyWalletProjection(state),
+    offers: [...await lbStoreCatalog(db, config),
+      ...storeCollection.catalog.offers.filter((o) => o.enabled && o.itemType !== "boost"),
+      ...HI.offers(policy, prices)],
+    inventory: state.inventory,
+    selectedAvatarId: profile.avatarId || "starter_ball",
+    selectedKitId: profile.kitId || "",
+    economy: economyConfig.publicContract(config),
+    boostGuide: HI.guide(policy.readyModes),
+    hintsVersion: 2,
+    legacyConverted,
+  };
+}
+
 exports.purchaseEconomyOffer = lbGuardedOnCall(
     {
       region: "europe-west1",
@@ -6352,7 +6385,7 @@ exports.purchaseEconomyOffer = lbGuardedOnCall(
       }
 
       const db = getDatabase();
-      if (Object.hasOwn(storeCollection.offers, offerId)) {
+      if (Object.hasOwn(storeCollection.offers, offerId) || offerId.startsWith("hint_")) {
         return lbStoreCollectionService().purchase(uid, request.data || {});
       }
       const config = await lbGetEconomyConfig();
@@ -7204,6 +7237,9 @@ async function lbProgressionGrantCoins(
 
 // Faz 2: the support a check-in day added. Idempotent per day (receipt in
 // economyState.storeUses), so a retry or a later read settles a lost write.
+async function lbHintsLive(db, uid) {
+  return (await require("./boosts").policyFor(db, uid, true))?.version === 2;
+}
 async function lbSettleDailySupport(db, uid, state, onlyMissing = false) {
   const claim = state.daily.lastClaim;
   if (!claim.supportItemId || !claim.dateKey) return null;
@@ -7211,9 +7247,9 @@ async function lbSettleDailySupport(db, uid, state, onlyMissing = false) {
   if (onlyMissing && (await db.ref(`economyState/${uid}/storeUses/daily_reward__${claim.dateKey}`).get()).exists()) {
     return null;
   }
-  let result = null;
+  let result = null; const live = await lbHintsLive(db, uid);
   const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-    const e = lbEconomyState(raw);
+    const e = lbEconomyState(raw); if (live) e.hintsVersion = 2;
     result = dailyReturn.grantSupport(e, "daily_reward__" + claim.dateKey, claim.supportItemId, "daily_reward",
         claim.dateKey, Date.now());
     return e;
@@ -7229,9 +7265,9 @@ async function lbGrantAllMissionsBonus(db, uid, dayKey) {
   const policy = dailyReturn.policy((await db.ref("runtimeConfig/dailyReturn").get()).val(),
       !!await require("./boosts").policyFor(db, uid, true));
   if (!policy.allMissionsBonus) return null;
-  let result = null;
+  let result = null; const live = await lbHintsLive(db, uid);
   const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-    const e = lbEconomyState(raw);
+    const e = lbEconomyState(raw); if (live) e.hintsVersion = 2;
     result = dailyReturn.grantAllMissionsBonus(e, dayKey, Date.now(), policy);
     return e;
   });
@@ -9188,18 +9224,23 @@ function lbSeasonService() {
     grantAvatar: (uid, id, tier) => lbProDraw(db, uid, (e, now) =>
       require("./pro_crate").drawAvatar(e, id, uid, tier, "season_pass", now)),
     // Support steps: one receipt per unit; past the 99 cap they pay half the store price.
-    grantSupports: (uid, id, items) => lbProDraw(db, uid, (e, now) => {
-      if (e.storeUses[id]) return e.storeUses[id];
-      const supports = {}; let overflowCoins = 0;
-      for (const [itemId, count] of Object.entries(items)) {
-        for (let i = 1; i <= count; i++) {
-          const r = dailyReturn.grantSupport(e, `${id}__${itemId}__${i}`, itemId, "season_pass", id, now).receipt;
-          supports[itemId] = (supports[itemId] || 0) + (r.full ? 0 : 1); overflowCoins += r.coins || 0;
+    grantSupports: async (uid, id, items) => {
+      const live = await lbHintsLive(db, uid);
+      const units = require("./hints/index").seasonSupports(items, live);
+      return lbProDraw(db, uid, (e, now) => {
+        if (e.storeUses[id]) return e.storeUses[id];
+        if (live) e.hintsVersion = 2;
+        const supports = {}; let overflowCoins = 0;
+        for (const [itemId, count] of Object.entries(units)) {
+          for (let i = 1; i <= count; i++) {
+            const r = dailyReturn.grantSupport(e, `${id}__${itemId}__${i}`, itemId, "season_pass", id, now).receipt;
+            supports[itemId] = (supports[itemId] || 0) + (r.full ? 0 : 1); overflowCoins += r.coins || 0;
+          }
         }
-      }
-      e.storeUses[id] = {kind: "supports", supports, overflowCoins, usedAt: now};
-      return e.storeUses[id];
-    })});
+        e.storeUses[id] = {kind: "supports", supports, overflowCoins, usedAt: now};
+        return e.storeUses[id];
+      });
+    }});
 }
 // Faz 4: one wallet transaction for a Pro draw (Sezon avatar or the monthly Kasa).
 async function lbProDraw(db, uid, run) {
@@ -9244,10 +9285,13 @@ exports.claimProCrate = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
   if (Date.now() < status.openableAt) {
     throw new httpsV2.HttpsError("failed-precondition", "Kasa, üyeliğin başladıktan 48 saat sonra açılır.");
   }
-  const day = lbProgressionDateKey(Date.now());
+  const day = lbProgressionDateKey(Date.now()); const live = await lbHintsLive(db, uid);
   // Re-checked at commit time: a subscription ending in between does not open the Kasa.
-  const result = await lbProDraw(db, uid, (e, now) => status.proUntil && now >= status.proUntil ? null :
-    require("./pro_crate").openCrate(e, day, uid, now));
+  const result = await lbProDraw(db, uid, (e, now) => {
+    if (status.proUntil && now >= status.proUntil) return null;
+    if (live) e.hintsVersion = 2;
+    return require("./pro_crate").openCrate(e, day, uid, now);
+  });
   if (!result) throw new httpsV2.HttpsError("permission-denied", "Etkin Pro üyeliği gerekli.");
   return {...await lbProCrateStatus(db, uid), granted: result.opened};
 });
@@ -10407,10 +10451,11 @@ function lbDailyStreakService() {
   grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp,
   // The first streak week leaves one basic support in the bag (idempotent per claim).
   grantBoost: async (uid, id) => {
-    const now = Date.now(); const key = "daily_streak_boost__" + id;
+    const now = Date.now(); const key = "daily_streak_boost__" + id; const live = await lbHintsLive(db, uid);
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
       const e = lbEconomyState(raw);
       if (e.storeUses[key]) return;
+      if (live) e.hintsVersion = 2;
       dailyReturn.grantSupport(e, key, "boost_basic", "daily_streak", id, now);
       return e;
     });

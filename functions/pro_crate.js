@@ -13,6 +13,8 @@ const KITS = Object.freeze(catalog.filter((o) => o.itemType === "kit")
     .map((o) => Object.freeze({itemId: o.itemId, price: o.priceCoins, title: o.title})));
 // Kasa: 12 Temel + 4 Güçlü + 2 Bağlantı + 2 Tek seçenek ele + 1 avatar (450 tier).
 const CRATE = Object.freeze({boost_basic: 12, boost_strong: 4, boost_connection: 2, boost_eliminate: 2});
+// İpucu v2 wallets: 8 Joker + 12 typed hints (spec §5.1).
+const CRATE_V2 = Object.freeze({hint_joker: 8, hint_milliyet: 4, hint_mevki: 4, hint_kulup: 2, hint_harf: 2});
 const CRATE_TIER = 450;
 // Sezon: whole pool, a 300 avatar weighs 3 and a 450 avatar 2.
 const SEASON_WEIGHTS = Object.freeze({300: 3, 450: 2});
@@ -124,7 +126,7 @@ function openCrate(e, dayKey, uid, now) {
   const base = "pro_crate__" + month;
   if (e.storeUses[base]) return {opened: false, receipt: e.storeUses[base]};
   const supports = {}; let overflowCoins = 0;
-  for (const [itemId, count] of Object.entries(CRATE)) {
+  for (const [itemId, count] of Object.entries(e.hintsVersion === 2 ? CRATE_V2 : CRATE)) {
     for (let i = 1; i <= count; i++) {
       const r = grantSupport(e, `${base}__${itemId}__${i}`, itemId, "pro_crate", month, now).receipt;
       supports[itemId] = (supports[itemId] || 0) + (r.full ? 0 : 1);
@@ -143,5 +145,6 @@ function expectedValue(mode, e = {inventory: {}}) {
   return total ? rows.reduce((n, r) => n + r.price * r.weight, 0) / total : 0;
 }
 
-module.exports = {AVATARS, KITS, CRATE, CRATE_TIER, SEASON_WEIGHTS, FALLBACK_COINS, OPEN_AFTER_MS, roll, pool, odds,
+module.exports = {AVATARS, KITS, CRATE, CRATE_V2,
+  CRATE_TIER, SEASON_WEIGHTS, FALLBACK_COINS, OPEN_AFTER_MS, roll, pool, odds,
   drawAvatar, monthOf, openableAt, openCrate, expectedValue, previousMonth, depletionMonths};

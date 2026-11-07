@@ -61,7 +61,18 @@ function weekOf(dayKey) {
 }
 
 /** Coins paid for a support that does not fit: half its store price, rounded down. */
+// İpucu v2 wallets receive the new types for the old support ids (spec §5.1).
+const V2_ITEMS = Object.freeze({boost_basic: "hint_milliyet", boost_strong: "hint_isim",
+  boost_connection: "hint_baglanti", boost_eliminate: "hint_ele"});
 function overflowCoins(itemId) {
+  if (itemId === "hint_joker") return 25;
+  if (itemId.startsWith("hint_")) {
+    try {
+      return Math.floor(require("./hints").priceOf(itemId.slice(5)).single / 2);
+    } catch (_) {
+      return 0;
+    }
+  }
   const product = require("./boosts").products[itemId];
   return product ? Math.floor(product.priceCoins / 2) : 0;
 }
@@ -74,6 +85,7 @@ function overflowCoins(itemId) {
  */
 function grantSupport(e, key, itemId, source, sourceId, now, extra = {}) {
   if (e.storeUses[key]) return {granted: false, receipt: e.storeUses[key]};
+  if (e.hintsVersion === 2 && V2_ITEMS[itemId]) itemId = V2_ITEMS[itemId];
   const item = e.inventory[itemId]; const quantity = item?.quantity || 0;
   const full = quantity >= MAX_STOCK;
   let coins = 0;

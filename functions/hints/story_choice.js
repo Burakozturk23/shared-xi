@@ -84,4 +84,5 @@ function story() {
   };
 }
 
-module.exports = {choice, story};
+module.exports = {choice, story, CATALOG: {higher_lower_training: CHOICE.higher_lower,
+  blind_ranking_training: CHOICE.blind_ranking, ...Object.fromEntries(STORY_MODES.map((m) => [m, STORY]))}};

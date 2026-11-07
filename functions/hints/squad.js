@@ -106,4 +106,5 @@ function challenge({recommendation}) {
   };
 }
 
-module.exports = {three, challenge};
+module.exports = {three, challenge,
+  CATALOG: {squad_vault: VAULT, letter11: LETTER, squad_challenge: CHALLENGE}};

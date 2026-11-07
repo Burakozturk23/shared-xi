@@ -1,9 +1,12 @@
 "use strict";
 // İpucu v2 menus: Günün Lingo'su, Mini/Haftalık Passaparola, Günün Anagramı, Sekizli Anagram (spec §4.3).
 // Lingo already shows the word length, so its menu starts with the category clue.
-const tm = require("../config/three_modes_catalog.json");
-const tmPlayers = new Map(tm.players.map((p) => [p.id, p]));
-const tmClubs = new Map(tm.clubs.map((c) => [c.id, c]));
+// three_modes players and clubs (for "Bir kulübü"), loaded on first use.
+let tm = null;
+const tmData = () => tm ||= (() => {
+  const raw = require("../config/three_modes_catalog.json");
+  return {players: new Map(raw.players.map((p) => [p.id, p])), clubs: new Map(raw.clubs.map((c) => [c.id, c]))};
+})();
 const POS = {Goalkeeper: "Kaleci", Defender: "Defans", Midfield: "Orta saha", Attack: "Forvet"};
 const item = (id, label, type, why) => ({id, label, type, why});
 const LINGO = [item("ipucu", "Kategori ipucu", "milliyet", "Kelimenin kategorisinden bir bilgi."),
@@ -52,7 +55,7 @@ function make({normalize, isAnagram}) {
     if (id === "mevki") return POS[q.position] || null;
     if (id === "son_harf") return `Son harf: ${q.answer.at(-1)}`;
     if (id === "ilk_harf") return round.first ? null : `İlk harf: ${q.answer[0]}`;
-    const club = (tmPlayers.get(q.id)?.clubs || []).map((c) => tmClubs.get(c)).filter(Boolean)
+    const club = (tmData().players.get(q.id)?.clubs || []).map((c) => tmData().clubs.get(c)).filter(Boolean)
         .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))[0];
     return club ? `Oynadığı bir kulüp: ${club.name}` : null;
   }
@@ -73,8 +76,7 @@ function make({normalize, isAnagram}) {
   }
   return {
     modes: ["daily_lingo", "passa_daily", "passa_weekly", "daily_anagram", "anagram_practice"],
-    catalog: {daily_lingo: LINGO, passa_daily: PASSA, passa_weekly: PASSA, daily_anagram: ANAGRAM,
-      anagram_practice: ANAGRAM},
+    catalog: CATALOG,
     board: (r) => {
       const q = questionOf(r); return r.mode === "daily_lingo" ? r.id : q.questionId || q.id;
     },
@@ -89,4 +91,6 @@ function make({normalize, isAnagram}) {
   };
 }
 
-module.exports = {make, LIGHT_POINTS};
+const CATALOG = {daily_lingo: LINGO, passa_daily: PASSA, passa_weekly: PASSA, daily_anagram: ANAGRAM,
+  anagram_practice: ANAGRAM};
+module.exports = {make, LIGHT_POINTS, CATALOG};
