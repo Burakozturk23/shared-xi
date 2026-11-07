@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/screens/supported_bot_page.dart';
+import 'package:shared_xi/widgets/hint_panel.dart';
 import 'package:shared_xi/services/energy_service.dart';
 import 'package:shared_xi/services/story_support_service.dart';
 import 'package:shared_xi/widgets/hub_ui.dart';
@@ -10,7 +11,7 @@ import 'package:shared_xi/widgets/paid_hint_button.dart';
 
 class BotWire extends EnergyService {
   final calls = <Map<String, dynamic>>[];
-  bool hinted = false, legacy = false, paused = false, finished = false;
+  bool hinted = false, legacy = false, paused = false, finished = false, v2 = false;
   Completer<Map<String, dynamic>>? pending;
   static const keys = {
     'loto': 'player_0',
@@ -55,7 +56,10 @@ class BotWire extends EnergyService {
         'botScore': finished ? 4 : 0,
         'serverNow': now,
         'hints': {if (hinted) keys[kind]!: 'Doğrulanmış bilgi'},
-        'support': {
+        if (v2) 'hintMenu': {'version': 2, 'board': 'run', 'items': [{'id': 'milliyet', 'label': 'Milliyet',
+          'type': 'milliyet', 'strong': false, 'price': 25, 'used': false}], 'suggested': ['milliyet', null],
+          'ads': {'allowed': kind != 'loto', 'remaining': 2}, 'assisted': false},
+        if (!v2) 'support': {
           'version': 1,
           'adRemaining': 2,
           'products': [
@@ -374,4 +378,28 @@ void main() {
     expect(find.text('Mevcut yerel oyun'), findsOneWidget);
     await t.pumpWidget(const SizedBox.shrink());
   });
+  for (final kind in ['loto', 'team_race', 'random_five']) {
+    testWidgets('v2 bot $kind shows the hint panel and sends the item with its target', (t) async {
+      t.view.physicalSize = const Size(400, 1400);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      final wire = BotWire()..v2 = true;
+      await t.pumpWidget(MaterialApp(home: SupportedBotPage(mode: 'bot_$kind', legacy: const Text('Eski oyun'),
+          service: _service(wire))));
+      await t.pump(const Duration(milliseconds: 50));
+      await t.pump();
+      expect(find.byType(PaidHintButton), findsNothing);
+      final button = find.byType(HintButton);
+      await _scrollTo(t, button);
+      await t.widget<HintButton>(button).onUse('milliyet', 'stock');
+      await t.pump();
+      await t.pump();
+      final input = wire.calls.last;
+      expect(input['action'], 'hint');
+      expect(input['itemId'], 'milliyet');
+      expect(input['target'], 0);
+      await t.pumpWidget(const SizedBox.shrink());
+    });
+  }
 }

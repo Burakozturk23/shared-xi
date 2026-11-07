@@ -581,7 +581,6 @@ const _modeTags = <String, String>{
   'Futbol Lingo': 'GÜNÜN KELİMESİ',
   'Passaparola': 'ALFABE',
   'Anagram': 'HARF KARIŞTIRMA',
-  'Solo Grid': 'KLASİK',
   'Burst': 'HIZ',
   'Pyramid': 'ZİNCİR',
   'Matching': 'EŞLEŞTİRME',

@@ -50,7 +50,7 @@ void main() {
           'Sahte Kulüp',
         ],
         'Harf & Kelime': ['Futbol Lingo', 'Passaparola', 'Anagram'],
-        'Hız & Eşleştirme': ['Solo Grid', 'Burst', 'Pyramid', 'Matching'],
+        'Hız & Eşleştirme': ['Burst', 'Pyramid', 'Matching'],
         'Seçim & Sıralama': ['O mu Bu mu?', 'Higher or Lower', 'Blind Ranking'],
         'Hikâye': ['Story Mode'],
       };
@@ -67,8 +67,8 @@ void main() {
       expect(GameCatalog.games.where((game) => game.category.isEmpty), [
         GameCatalog.vsBot,
       ]);
-      expect(GameCatalog.games.length, 22);
-      expect(GameCatalog.games.map((game) => game.title).toSet().length, 22);
+      expect(GameCatalog.games.length, 21);
+      expect(GameCatalog.games.map((game) => game.title).toSet().length, 21);
     },
   );
 

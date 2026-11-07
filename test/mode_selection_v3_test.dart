@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/screens/chain_mode_selection_page.dart';
-import 'package:shared_xi/screens/grid_mode_selection_page.dart';
 import 'package:shared_xi/screens/odd_club_mode_selection_page.dart';
 import 'package:shared_xi/theme/app_theme.dart';
 import 'package:shared_xi/widgets/hub_ui.dart';
@@ -27,12 +26,6 @@ void main() {
       const OddClubModeSelectionPage(),
       ['Sonsuz Seri', 'Hız Serisi'],
       ['Süresiz', '1 ücretsiz 50/50', 'kalıcı rekor', 'yardımsız'],
-    ),
-    (
-      'grid',
-      const GridModeSelectionPage(),
-      ['Klasik', 'Tersten', 'Rastgele Eşleşme'],
-      ['Kriterlere uyan doğru oyuncuyu bul'],
     ),
   ];
   for (final light in [false, true]) {

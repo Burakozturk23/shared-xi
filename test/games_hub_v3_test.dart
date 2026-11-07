@@ -41,7 +41,7 @@ void main() {
         'Transfer Detective · +4',
         'UCL Moments · +7',
         'Futbol Lingo · +2',
-        'Burst · +3',
+        'Burst · +2',
         'O mu Bu mu? · +2',
       ]) {
         await t.scrollUntilVisible(

@@ -192,7 +192,17 @@ class NicknameService {
   /// Legacy or unsafe names are never claimed by the client. The backend either
   /// repairs the canonical index or marks the profile as requiring nickname
   /// setup.
-  static Future<void> ensureCurrentNicknameIndex() async {
+  ///
+  /// App start and the profile page both ask for this at once; they share one
+  /// call, because the server holds a per-user lock and refuses a second one.
+  static Future<void> ensureCurrentNicknameIndex() => _sync.run(_syncNickname);
+  static final _sync = SingleFlight();
+
+  /// The server's per-user lock is held by a sync already running: not a failure.
+  static bool isBusy(Object error) =>
+      error is FirebaseFunctionsException && error.code == 'resource-exhausted';
+
+  static Future<void> _syncNickname() async {
     await CloudBootstrap.ensureInitialized();
 
     if (_auth.currentUser == null) return;
@@ -216,6 +226,7 @@ class NicknameService {
     } on NicknameException {
       rethrow;
     } on FirebaseFunctionsException catch (error) {
+      if (isBusy(error)) return;
       throw _fromFunctionsError(error);
     } catch (error) {
       throw NicknameException(
@@ -343,4 +354,11 @@ class NicknameService {
     if (value is num) return value.toInt();
     return int.tryParse(value?.toString() ?? '');
   }
+}
+
+/// Runs one call at a time: callers that arrive while it runs get the same future.
+class SingleFlight {
+  Future<void>? _running;
+  Future<void> run(Future<void> Function() body) =>
+      _running ??= body().whenComplete(() => _running = null);
 }
