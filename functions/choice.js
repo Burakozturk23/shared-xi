@@ -1,6 +1,7 @@
 "use strict";
 const E = require("./choice_engine");
 const B = require("./boosts");
+const H = require("./hints");
 const energy = require("./energy");
 const {dayKey} = require("./rewarded_ads");
 const {validId} = require("./career_transfer");
@@ -113,6 +114,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       try {
         fn(e.choice, e, time);
         for (const r of Object.values(e.choice.sessions)) {
+          H.recoverUnused(e, E.hydrate(r), time);
           B.recoverUnused(e, r, time, (_, scope) => {
             try {
               return clue(r).target === scope.targetId;
@@ -224,8 +226,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       }
       draft.training = true; draft.expiresAt = now() + energy.policy.resumeMs;
       draft.adCredits = 0; draft.adGranted = 0; draft.adReceipts = {}; draft.trainingHints = {};
-      B.pin(draft, await B.policyFor(db, uid, linked));
-      if (!B.paid(draft)) fail("failed-precondition", "Antrenman desteği henüz açılmadı.");
+      H.pinAny(draft, await B.policyFor(db, uid, linked), null, now());
+      if (!B.paid(draft) && !H.active(draft)) fail("failed-precondition", "Antrenman desteği henüz açılmadı.");
     }
     const charge = draft.training || draft.contentVerified === false ? 0 : await cost(uid, input.mode);
     const rollout = {...energy.policy.rollout, ...await getRollout()};
@@ -268,7 +270,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     if (!validId(input.requestId)) fail("invalid-argument", "Olay kimliği gerekli.");
     const canonical = Object.fromEntries(["mode", "sessionId", "requestId", "revision", "action", "candidateId",
       "questionId", "direction", "slot",
-      ...(B.paid(r) ? ["paymentSource", "boostId", "expectedPriceCoins"] : [])]
+      ...(B.paid(r) ? ["paymentSource", "boostId", "expectedPriceCoins"] : []),
+      ...(H.active(r) ? ["paymentSource", "itemId", "expectedPriceCoins"] : [])]
         .filter((k) => input[k] != null).map((k) => [k, input[k]]));
     const fp = hash(JSON.stringify(canonical));
     if (r.actions[input.requestId]) {
@@ -294,7 +297,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       r.phase = "active"; r.startedAt = t;
     } else {
       if (r.phase !== "active") fail("failed-precondition", "Önce başlat.");
-      if (input.action === "hint") {
+      if (input.action === "hint" && H.active(r)) {
+        if (!linked || !r.training) fail("permission-denied", "Yalnız antrenmanda destek alınabilir.");
+        H.use(e, r, adapter, input, t, {c});
+      } else if (input.action === "hint") {
         if (!linked || !r.training || !B.paid(r)) fail("permission-denied", "Yalnız antrenmanda destek alınabilir.");
         const info = clue(r, c);
         if (input.questionId !== info.target) fail("aborted", "Gösterilen soru değişti. Yenile.");
@@ -338,6 +344,13 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   async function prepareHint(uid, placement, input) {
     const r = hydrate((await read(uid)).sessions[input.sessionId]);
+    if (H.active(r)) {
+      if (placement !== "choice_training_hint" || !await isLinked(uid) || r.expiresAt <= now()) {
+        fail("permission-denied", "Aktif antrenman gerekli.");
+      }
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: "choice_hint_" + r.id + "_" + r.adGranted,
+        context: {sessionId: r.id, mode: r.mode}});
+    }
     if (placement !== "choice_training_hint" || !await isLinked(uid) || !B.paid(r)) {
       fail("permission-denied", "Aktif antrenman gerekli.");
     }
@@ -351,6 +364,10 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     const c = r ? await pinned(r.dataVersion) : catalog;
     await change(uid, (s, e, t) => {
       const r = hydrate(s.sessions[receipt.context?.sessionId]); let canApply = false;
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, t, !!r && H.active(r) && !r.finished)) H.grantAd(r, receipt);
+        return;
+      }
       try {
         canApply = clue(r, c).target === receipt.context?.targetId;
       } catch (_) {/* recover stock */}
@@ -362,11 +379,14 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
 }
 function clue(r, c = catalog) {
   r = hydrate(r);
-  if (!r?.training || r.finished || r.phase !== "active" || !B.paid(r)) {
+  if (!r?.training || r.finished || r.phase !== "active" || !B.paid(r) && !H.active(r)) {
     fail("failed-precondition", "Aktif antrenman gerekli.");
   }
   const target = r.mode === "higher_lower" ? r.question?.id : r.orderedCandidateIds[r.placements.length];
-  if (!target || r.answered || r.trainingHints?.[target]) fail("failed-precondition", "Bu soru için destek yok.");
+  // v2 keeps its own once-per-question rule; v1 allows one clue per question.
+  if (!target || r.answered || !H.active(r) && r.trainingHints?.[target]) {
+    fail("failed-precondition", "Bu soru için destek yok.");
+  }
   if (r.mode === "higher_lower") {
     const value = r.question.knownSide === 0 ? r.question.rightValue : r.question.leftValue;
     const rows = E.list(c.metrics[r.metricId]?.groups?.[r.scope]);
@@ -389,4 +409,6 @@ function clue(r, c = catalog) {
   return {target, low: upper ? 1 : Math.ceil(r.size / 2) + 1, high: upper ? Math.ceil(r.size / 2) : r.size,
     text: `İstatistikte listenin ${upper ? "üst" : "alt"} yarısında.`};
 }
+// İpucu v2 menus (hints/story_choice.js).
+const adapter = H.register(require("./hints/story_choice").choice({clue, catalog: E.catalog}));
 module.exports = {createService, finalize, state, dayFor, defaults, clue};

@@ -227,7 +227,8 @@ function publicRun(c, raw) {
     "reason", "rewardReason", "contentVerified", "daily", "undos", "jokerUsed"].filter((k) => r[k] != null)
       .map((k) => [k, r[k]]));
   if (r.training) {
-    Object.assign(out, {training: true, support: B.view(r), adCredits: r.adCredits, adGranted: r.adGranted});
+    Object.assign(out, {training: true, support: B.view(r), hintMenu: require("./hints").view(r),
+      adCredits: r.adCredits, adGranted: r.adGranted});
     const key = r.mode === "higher_lower" ? r.question?.id : r.orderedCandidateIds[r.placements.length];
     if (r.trainingHints?.[key]) out.trainingHint = r.trainingHints[key];
   }

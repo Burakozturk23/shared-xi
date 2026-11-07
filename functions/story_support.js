@@ -1,6 +1,9 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
+// İpucu v2 menus (hints/story_choice.js).
+const adapter = H.register(require("./hints/story_choice").story());
 const {RewardError} = require("./rewarded_ads");
 const definitions = require("./mission_story_events").definitions;
 const fail = (code, text) => {
@@ -72,7 +75,7 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
   }
   async function enabled(uid, mode) {
     const c = content(mode); const state = (await documentRef(c.collection)(uid).get()).val() || {};
-    if (Object.values(state.supportRuns || {}).some(B.paid)) return true;
+    if (Object.values(state.supportRuns || {}).some((r) => B.paid(r) || H.active(r))) return true;
     const policy = await B.policyFor(db, uid, await isLinked(uid));
     if (policy?.readyModes?.[mode] !== true) return false;
     const pro = await premium(uid);
@@ -91,6 +94,9 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
   function syncRun(s, r, c, t) {
     if (Object.values(c.targets).filter((x) => x.section === t.section).every((x) => x.done(s))) r.finished = true;
     r.actions ||= {}; r.reveals ||= {}; r.adReceipts ||= {};
+    if (H.active(r)) {
+      r.hintTarget = t.task.id; return;
+    }
     const owned = s.hints?.[t.task.id];
     if (owned === true || owned?.coin || owned?.ad) {
       for (const sku of Object.keys(r.boostPolicy.products)) {
@@ -101,6 +107,13 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
     }
   }
   function view(s, r, c, t) {
+    if (H.active(r)) {
+      r.hintTarget = t.task.id;
+      const hintMenu = H.view(r, adapter, {task: t.task});
+      return {legacy: false, contentVersion: c.version, completed: t.done(s), session: {id: r.id,
+        revision: r.revision, hintMenu, adCredits: r.adCredits, adGranted: r.adGranted, finished: r.finished},
+      hints: Object.fromEntries(hintMenu.items.filter((i) => i.used).map((i) => [i.id, i.result]))};
+    }
     const support = B.view(r);
     support.products = support.products.filter((p) => {
       try {
@@ -128,8 +141,8 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
           const r = {id: key, mode: input.mode, version: c.version, revision: 0, createdAt: now(),
             expiresAt: Number.MAX_SAFE_INTEGER, finished: false, adCredits: 0, adGranted: 0,
             adReceipts: {}, actions: {}, reveals: {}};
-          B.pin(r, policy);
-          if (!B.paid(r)) fail("failed-precondition", "Yeni hikâye desteği şu anda kapalı.");
+          H.pinAny(r, policy, null, now());
+          if (!B.paid(r) && !H.active(r)) fail("failed-precondition", "Yeni hikâye desteği şu anda kapalı.");
           s.supportRuns[key] = r;
         }
         if (receipt) (s.hints ||= {})[input.targetId] ||= {coin: true};
@@ -146,11 +159,11 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
     if (!await isLinked(uid)) fail("permission-denied", "Destek için hesabını bağla.");
     if (!/^[a-f0-9]{32}$/.test(input.requestId || "")) fail("invalid-argument", "Geçersiz istek kimliği.");
     const {c, t, key} = target(input); let error;
-    const fingerprint = hash([input.targetId, input.revision, ...B.paymentFingerprint(input)]);
+    const fingerprint = hash([input.targetId, input.revision, ...B.paymentFingerprint(input), input.itemId ?? null]);
     const tx = await documentRef(c.collection)(uid).transaction((raw, e, time) => {
       error = null; const s = raw || {}; const r = s.supportRuns?.[key];
       try {
-        if (!B.paid(r) || !e) fail("failed-precondition", "Destek panelini yenile.");
+        if (!(B.paid(r) || H.active(r)) || !e) fail("failed-precondition", "Destek panelini yenile.");
         syncRun(s, r, c, t);
         if (r.actions[input.requestId]) {
           if (r.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İstek değiştirilemez.");
@@ -158,6 +171,12 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
         }
         if (r.revision !== input.revision) fail("aborted", "Başka cihazda değişiklik var. Yenile.");
         if (!t.open(s) || t.done(s)) fail("failed-precondition", "Bu aşama kapalı veya tamamlanmış.");
+        if (H.active(r)) {
+          H.use(e, r, adapter, input, time, {task: t.task});
+          r.actions[input.requestId] = fingerprint; r.revision++;
+          (s.supportAssisted ||= {})[t.section] = true;
+          return s;
+        }
         const text = help(t.task, input.boostId); const revealKey = input.targetId + ":" + input.boostId;
         if (r.reveals[revealKey]) fail("already-exists", "Bu ipucu zaten açık.");
         B.consume(e, r, input, input.boostId, revealKey, {text}, time);
@@ -182,6 +201,12 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
     if (placement !== "story_support_hint" || !await isLinked(uid)) fail("permission-denied", "Hesap gerekli.");
     const {c, t, key} = target(input);
     const s = (await documentRef(c.collection)(uid).get()).val() || {}; const r = s.supportRuns?.[key];
+    if (H.active(r)) {
+      if (input.sessionId !== r.id || !t.open(s) || t.done(s)) fail("failed-precondition", "Aktif hikâye desteği yok.");
+      syncRun(s, r, c, t);
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: "story_support_" + key + "_" + r.adGranted,
+        context: {mode: input.mode, targetId: input.targetId, contentVersion: c.version, sessionId: key}});
+    }
     if (!B.paid(r) || input.sessionId !== r.id || !t.open(s) || t.done(s)) {
       fail("failed-precondition", "Aktif hikâye desteği yok.");
     }
@@ -198,6 +223,10 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
       try {
         if (!e) fail("failed-precondition", "Hikâye cüzdan kaydı hazır değil.");
         if (r) syncRun(s, r, c, t);
+        if (receipt.context?.hintPolicyVersion === H.VERSION) {
+          if (!H.recoverAd(e, r, receipt, time, !!r && H.active(r) && t.open(s) && !t.done(s))) H.grantAd(r, receipt);
+          return s;
+        }
         const canApply = !!r && t.open(s) && !t.done(s) && !r.reveals[t.task.id + ":" + receipt.context.boostId];
         if (B.recoverAd(e, r, receipt, time, "boost_basic", canApply)) return s;
         if (!r.adReceipts[receipt.id]) B.grantAd(r, receipt);
@@ -212,6 +241,9 @@ function create({db, documentRef, isLinked, premium, now = Date.now}) {
 }
 function recoverUnused(e, s, time) {
   for (const r of Object.values(s.supportRuns || {})) {
+    if (H.active(r)) {
+      H.recoverUnused(e, r, time); continue;
+    }
     const c = content(r.mode);
     B.recoverUnused(e, r, time, (sku, scope) => {
       const t = c.targets[scope.targetId];
