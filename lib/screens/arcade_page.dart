@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -309,13 +310,13 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       await act(run['phase'] == 'prepared' ? 'cancel' : 'finish');
   }
 
-  Future<void> adHint({String? boostId}) async {
+  Future<void> adHint({String? boostId, String? itemId}) async {
     setState(() {
       busy = true;
       error = null;
     });
     try {
-      await service.watch('${run['id']}', boostId: boostId);
+      await service.watch('${run['id']}', boostId: boostId, itemId: itemId);
     } catch (e) {
       if (mounted) setState(() => error = gameErrorMessage(e));
     } finally {
@@ -717,7 +718,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
               'Pas (${2 - _n(run['passes'])})${speed ? ' · −5 sn' : ''}',
             ),
           ),
-          if (!speed && rewardMap(run['support'])['version'] == 1)
+          if (hintEntry(run, disabled: busy || offline || local, send: (p) => act('hint', p),
+              watch: (id) => adHint(itemId: id)) case final w? when !speed)
+            w
+          else if (!speed && rewardMap(run['support'])['version'] == 1)
             PaidHintButton(
               session: run,
               sku: 'boost_basic',
@@ -880,7 +884,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       Wrap(
         spacing: 10,
         children: [
-          if (rewardMap(run['support'])['version'] == 1)
+          if (hintEntry(run, target: slotId, disabled: busy || offline || slotId == null,
+              send: (p) => act('hint', {'slotId': slotId, ...p})) case final w?)
+            w
+          else if (rewardMap(run['support'])['version'] == 1)
             PaidHintButton(
               session: run,
               sku: 'boost_strong',
@@ -939,7 +946,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         style: TextStyle(color: accent),
       ),
       const SizedBox(height: 12),
-      if (rewardMap(run['support'])['version'] == 1) ...[
+      if (hintEntry(run, disabled: busy || offline || locked || (run['open'] as List? ?? []).isNotEmpty,
+          send: (p) => act('hint', p)) case final w?)
+        w
+      else if (rewardMap(run['support'])['version'] == 1) ...[
         PaidHintButton(
           session: run,
           sku: 'boost_strong',

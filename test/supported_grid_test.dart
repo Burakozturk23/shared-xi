@@ -9,10 +9,11 @@ import 'package:shared_xi/online/online_mode_catalog.dart';
 import 'package:shared_xi/widgets/friend_room_section.dart';
 import 'package:shared_xi/widgets/grid_friend_section.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
+import 'package:shared_xi/widgets/hint_panel.dart';
 
 class GridWire extends EnergyService {
   final calls = <Map<String, dynamic>>[];
-  bool hinted = false, legacy = false, finished = false;
+  bool hinted = false, legacy = false, finished = false, v2 = false;
   Completer<Map<String, dynamic>>? pending;
   @override
   Future<Map<String, dynamic>> call(
@@ -95,7 +96,10 @@ class GridWire extends EnergyService {
                 'player': null,
               }
             : null,
-        'support': {
+        if (v2) 'hintMenu': {'version': 2, 'board': 'run', 'items': [{'id': 'milliyet', 'label': 'Milliyet', 'type': 'milliyet',
+          'strong': false, 'price': 25, 'used': false}], 'suggested': ['milliyet', null],
+          'ads': {'allowed': true, 'remaining': 2}, 'assisted': false},
+        if (!v2) 'support': {
           'version': 1,
           'adRemaining': 2,
           'products': [
@@ -360,4 +364,35 @@ void main() {
       );
     },
   );
+  for (final kind in ['classic', 'random']) {
+    testWidgets('v2 Grid $kind opens HintPanel and sends {action: hint, itemId, paymentSource, target}', (t) async {
+      t.view.physicalSize = const Size(400, 1400);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      final wire = GridWire()..v2 = true;
+      final service = StorySupportService(transport: wire, currentUser: () => 'alice',
+          useCallable: 'actGridSupport', loadCallable: 'getGridSupport', watchPlacement: 'grid_support_hint');
+      await t.pumpWidget(MaterialApp(home: SupportedGridPage(mode: 'solo_grid_$kind',
+          legacy: const Text('Eski oyun'), service: service)));
+      await t.pumpAndSettle();
+      final select = kind == 'classic' ? find.byKey(const ValueKey('grid-cell-0')) : find.text('Ortak oyuncuyu bul');
+      await t.scrollUntilVisible(select.hitTestable(), 200, scrollable: find.byType(Scrollable).first, maxScrolls: 60);
+      await t.tap(select);
+      await t.pumpAndSettle();
+      expect(find.byType(PaidHintButton), findsNothing);
+      final button = find.byType(HintButton);
+      await t.scrollUntilVisible(button.hitTestable(), 200, scrollable: find.byType(Scrollable).first, maxScrolls: 60);
+      await t.widget<HintButton>(button).onUse('milliyet', 'stock');
+      await t.pumpAndSettle();
+      final input = wire.calls.last;
+      expect(input['action'], 'hint');
+      expect(input['itemId'], 'milliyet');
+      expect(input['paymentSource'], 'stock');
+      expect(input['target'], kind == 'random' ? 'pending' : 0);
+      expect(input.containsKey('boostId'), isFalse);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+    });
+  }
 }

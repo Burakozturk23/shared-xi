@@ -148,7 +148,9 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
   async function prepareHint(uid) {
     const q = await current();
     const s = normalize((await ref(uid).get()).val());
-    if (B.paid(s.boostRuns?.[q.day])) fail("failed-precondition", "Destek Çantası'nı kullan; uygulamayı güncelle.");
+    if (B.paid(s.boostRuns?.[q.day]) || H.active(s.boostRuns?.[q.day])) {
+      fail("failed-precondition", "Destek Çantası'nı kullan; uygulamayı güncelle.");
+    }
     if (s.answers[q.day] || s.hints[q.day]) fail("failed-precondition", "Bugünkü ipucu kullanılamaz.");
     return {amount: 0, claimKey: "quiz_hint_" + q.day, context: {day: q.day, questionId: q.id}};
   }

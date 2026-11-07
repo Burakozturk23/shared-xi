@@ -8,6 +8,7 @@ import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../widgets/pitch_ui.dart';
 
 /// Account-owned Loto, Team Race, Çinko and Random Five sessions. The server
@@ -243,7 +244,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         _suggestions = [];
         _answer.clear();
       });
-  Future<void> _watch(Object target) => _work(() async {
+  Future<void> _watch(Object target, {String? itemId}) => _work(() async {
     _watching = true;
     try {
       await _service.watch({
@@ -251,6 +252,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         'sessionId': _run['id'],
         'target': target,
         'boostId': 'boost_basic',
+        if (itemId != null) 'itemId': itemId,
       });
     } finally {
       _watching = false;
@@ -431,14 +433,17 @@ class _SupportedBotPageState extends State<SupportedBotPage>
           else ...[
             Text(about),
             const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
-            PaidHintButton(
-              session: _run,
-              sku: 'boost_basic',
-              label: 'Temel bilgi',
-              disabled: !_canPlay || !enabled,
-              onUse: (payment) => _act('hint', {'target': target, ...payment}),
-              onWatch: () => _watch(target),
-            ),
+            hintEntry(_run, target: target, disabled: !_canPlay || !enabled,
+                    send: (p) => _act('hint', {'target': target, ...p}),
+                    watch: (id) => _watch(target, itemId: id)) ??
+                PaidHintButton(
+                  session: _run,
+                  sku: 'boost_basic',
+                  label: 'Temel bilgi',
+                  disabled: !_canPlay || !enabled,
+                  onUse: (payment) => _act('hint', {'target': target, ...payment}),
+                  onWatch: () => _watch(target),
+                ),
           ],
         ],
       ),

@@ -94,8 +94,8 @@ class CareerTransferService {
   }
   Future<Map<String, dynamic>> poll(Map<String, dynamic> input) => _read('actCareerTransferOnline', input);
   Future<Map<String, dynamic>> search(Map<String, dynamic> input) => _read(mysteryChain ? 'searchMysteryChain' : 'searchCareerTransfer', input);
-  Future<void> watchHint(String mode, String sessionId, {String? boostId}) async {
+  Future<void> watchHint(String mode, String sessionId, {String? boostId, String? itemId}) async {
     final status = await transport.call('getRewardedAdStatus');
-    await transport.watch('${mode == 'fake_endless' ? 'fake_club' : mode == 'mastermind' ? 'chain' : mode}_hint', pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId});
+    await transport.watch('${mode == 'fake_endless' ? 'fake_club' : mode == 'mastermind' ? 'chain' : mode}_hint', pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId, if (itemId != null) 'itemId': itemId});
   }
 }

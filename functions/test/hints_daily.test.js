@@ -75,3 +75,8 @@ test("v1 policy keeps today's supports", async () => {
   assert.equal(v.session.hintMenu, null);
   assert.equal(v.session.support.version, 1);
 });
+
+test("v2 daily question: the old quiz ad path is closed", async () => {
+  const h = setup(); await h.call("getDailyQuestion");
+  await assert.rejects(h.call("prepareDailyQuestionHint"), {code: "failed-precondition"});
+});

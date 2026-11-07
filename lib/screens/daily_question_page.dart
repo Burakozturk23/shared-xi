@@ -5,6 +5,7 @@ import '../services/energy_service.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -332,6 +333,16 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                       rewardMap(data?['session'])['support'],
                     )['version'] ==
                     1)
+                  hintEntry(rewardMap(data?['session']), disabled: busy || error != null || eliminated != null,
+                    send: (p) => _run(() async {
+                      final session = rewardMap(data?['session']);
+                      data = await _call('useDailyQuestionHint', {'day': q['day'], 'questionId': q['id'],
+                        'sessionId': session['id'], 'revision': session['revision'], ...p});
+                    }),
+                    watch: (id) => _run(() async {
+                      await _support.watch({'sessionId': rewardMap(data?['session'])['id'], 'itemId': id});
+                      data = await _call('getDailyQuestion');
+                    })) ??
                   PaidHintButton(
                     session: rewardMap(data?['session']),
                     sku: 'boost_eliminate',

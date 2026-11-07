@@ -93,10 +93,11 @@ class DailyWordsService {
     final result = await _call('getDailyWordsHistory', {'mode': mode, 'period': period});
     _check(uid); return result;
   }
-  Future<void> watchHint(Map<String, dynamic> session, String boostId) async {
+  Future<void> watchHint(Map<String, dynamic> session, String boostId, {String? itemId}) async {
     final uid = await _identity();
     await transport.watch(session['mode'] == 'anagram_practice' ? 'anagram_practice_hint' : 'daily_words_hint', pro: false, context: {
       'sessionId': session['id'], 'mode': session['mode'], 'period': session['period'], 'boostId': boostId,
+      if (itemId != null) 'itemId': itemId,
     });
     _check(uid);
   }

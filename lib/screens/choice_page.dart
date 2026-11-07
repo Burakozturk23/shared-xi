@@ -10,6 +10,7 @@ import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../widgets/share_result.dart';
 import '../services/game_error.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -699,7 +700,15 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     children: [
       note('Antrenman · Normal rekor, ödül ve ustalığa eklenmez.'),
       if (rewardMap(r['support'])['assisted'] == true) note('Yardımlı'),
-      if (r['trainingHint'] != null)
+      if (hintEntry(r, disabled: busy || error != null || data['offline'] == true || r['finished'] == true ||
+          r['answered'] == true, send: (p) => action('hint', {...p,
+            'questionId': hl ? rewardMap(r['question'])['id'] : rewardMap(r['current'])['id']}),
+          watch: (id) async {
+            await service.watchHint(r, 'boost_basic', itemId: id);
+            if (mounted) await load();
+          }) case final w?)
+        w
+      else if (r['trainingHint'] != null)
         note('${r['trainingHint']}')
       else if (r['finished'] != true &&
           r['answered'] != true &&

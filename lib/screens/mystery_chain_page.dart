@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../app/app_feedback.dart';
 import 'dart:async';
 import '../services/game_error.dart';
@@ -288,11 +289,12 @@ class _MysteryChainPageState extends State<MysteryChainPage>
     });
   }
 
-  Future<void> _watch({String? boostId}) => _run(() async {
+  Future<void> _watch({String? boostId, String? itemId}) => _run(() async {
     await _service.watchHint(
       widget.mode,
       '${_session['id']}',
       boostId: boostId,
+      itemId: itemId,
     );
     final r = await _service.load(widget.mode);
     if (mounted && !_accountChanged)
@@ -901,6 +903,10 @@ class _MysteryChainPageState extends State<MysteryChainPage>
       (((_session['expiresAt'] as num? ?? 0) - _serverNow) / 3600000).floor();
 
   List<Widget> _help(bool disabled) {
+    if (hintEntry(_session, disabled: disabled, send: (p) => _act('hint', p),
+        watch: (id) => _watch(itemId: id)) case final w?) {
+      return [const SizedBox(height: 12), w];
+    }
     final count = (_session['optionalHints'] as num? ?? 0).toInt();
     if (_session['optionalLeft'] == 0 && count < 3)
       return [const Text('Bu dosyada açılacak başka bilgi yok.')];

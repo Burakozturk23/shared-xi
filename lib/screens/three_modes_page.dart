@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
@@ -275,11 +276,12 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     }
   }
 
-  Future<void> _watch({String? boostId}) => _run(() async {
+  Future<void> _watch({String? boostId, String? itemId}) => _run(() async {
     await _service.watchHint(
       widget.mode,
       '${_session['id']}',
       boostId: boostId,
+      itemId: itemId,
     );
     final r = await _service.load(widget.mode);
     if (mounted)
@@ -893,7 +895,11 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
             label: const Text('Seçili oyuncuyu kaldır'),
           ),
         const PitchSectionTitle('İpuçları'),
-        if (rewardMap(_session['support'])['version'] == 1) ...[
+        if (hintEntry(_session, target: _slot, disabled: _busy || (!_vault && _slot == null),
+            send: (p) => _act('hint', {'slot': _slot, ...p}),
+            watch: (id) => _watch(itemId: id)) case final w?)
+          w
+        else if (rewardMap(_session['support'])['version'] == 1) ...[
           for (final h
               in (_vault
                       ? {

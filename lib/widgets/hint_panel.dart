@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app/app_feedback.dart';
 import '../models/hint_menu.dart';
+export '../models/hint_menu.dart';
 import '../services/store_gateway.dart';
 
 /// İpucu v2: one "İpucu al" button and panel for every game (spec §3).
@@ -225,4 +226,48 @@ class _Payment extends StatelessWidget {
         Text('Süreli oyunda ipucu reklamla alınmaz; oyun saati durmaz.', style: Theme.of(context).textTheme.bodySmall),
     ]);
   }
+}
+
+/// İpucu v2 entry for a game screen: the "İpucu al" button and the hints this
+/// board has opened. Null while the session is on the old supports, so a screen
+/// writes `if (hintEntry(...) case final w?) w else <old support UI>`.
+Widget? hintEntry(
+  Map? session, {
+  required Future<void> Function(Map<String, dynamic> payment) send,
+  Future<void> Function(String itemId)? watch,
+  Object? target,
+  bool disabled = false,
+  Future<Map<String, int>> Function()? loadBag,
+}) {
+  final menu = HintMenu.fromSession(session);
+  if (menu == null) return null;
+  final opened = [for (final i in menu.items) if (i.used && i.result != null) i];
+  return Column(
+    key: const ValueKey('hint-entry'),
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      for (final i in opened)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Row(children: [
+            Icon(hintTypeIcon(i.type), size: 18),
+            const SizedBox(width: 8),
+            Expanded(child: Text('${i.label}: ${i.result}')),
+          ]),
+        ),
+      HintButton(
+        menu: menu,
+        target: target,
+        disabled: disabled,
+        loadBag: loadBag,
+        onWatch: watch,
+        onUse: (id, source) => send({
+          'itemId': id,
+          'paymentSource': source,
+          if (source == 'coins') 'expectedPriceCoins': menu.item(id)?.price,
+        }),
+      ),
+    ],
+  );
 }

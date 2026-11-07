@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_xi/models/hint_menu.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'package:shared_xi/widgets/hint_panel.dart';
 

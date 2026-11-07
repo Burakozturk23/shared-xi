@@ -12,7 +12,7 @@ abstract interface class DailyMatchesGateway {
     String action, [
     Map<String, dynamic> input = const {},
   ]);
-  Future<void> watch(String placement, {String? key});
+  Future<void> watch(String placement, {String? key, String? itemId});
 }
 
 class FirebaseDailyMatchesGateway implements DailyMatchesGateway {
@@ -68,9 +68,9 @@ class FirebaseDailyMatchesGateway implements DailyMatchesGateway {
   }
 
   @override
-  Future<void> watch(String placement, {String? key}) async {
+  Future<void> watch(String placement, {String? key, String? itemId}) async {
     if (placement == 'daily_match_hint') {
-      await _support.watch({'key': key, 'boostId': 'boost_basic'}); return;
+      await _support.watch({'key': key, 'boostId': 'boost_basic', if (itemId != null) 'itemId': itemId}); return;
     }
     final status = await _call('getRewardedAdStatus', {});
     if (status['enabled'] != true)

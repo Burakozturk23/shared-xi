@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
 import '../models/rewarded_ad_models.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -418,7 +419,10 @@ class _DailyFootballerPageState extends State<DailyFootballerPage>
                               ],
                             ),
                             const SizedBox(height: 12),
-                            if (round.serverOwned)
+                            if (hintEntry(round.serverData, disabled: game.busy || game.message != null,
+                                send: game.paidHint, watch: game.watchHintItem) case final w?)
+                              w
+                            else if (round.serverOwned)
                               PaidHintButton(
                                 session: round.serverData!,
                                 sku: 'boost_basic',

@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../app/app_feedback.dart';
 import 'dart:async';
 import '../services/game_error.dart';
@@ -102,8 +103,8 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
     if (mounted && !_accountChanged) setState(() => _accept(status));
     if (action == 'next' && _scroll.hasClients) _scroll.jumpTo(0);
   });
-  Future<void> _watch({String? boostId}) => _run(() async {
-    await _service.watchHint(_mode, '${_session['id']}', boostId: boostId);
+  Future<void> _watch({String? boostId, String? itemId}) => _run(() async {
+    await _service.watchHint(_mode, '${_session['id']}', boostId: boostId, itemId: itemId);
     final r = await _service.load(_mode);
     if (mounted && !_accountChanged) setState(() => _accept(r));
   });
@@ -216,7 +217,12 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
           ? history[i]['correct'] == true ? p.accent : Theme.of(context).colorScheme.error
           : i == history.length && !_finished ? p.muted : p.raised)))]));
   }
-  List<Widget> _help(bool locked) => rewardMap(_session['support'])['version'] == 1 ? [
+  List<Widget> _help(bool locked) {
+    final v2 = hintEntry(_session, disabled: locked, send: (p) => _act('hint', p),
+        watch: (id) => _watch(itemId: id));
+    return v2 != null ? [const SizedBox(height: 12), v2] : _helpV1(locked);
+  }
+  List<Widget> _helpV1(bool locked) => rewardMap(_session['support'])['version'] == 1 ? [
     const SizedBox(height: 12),
     if (_session['free5050'] == true)
       PaidHintButton(session: _session, sku: 'boost_eliminate', label: 'Tek seçenek ele', disabled: locked,

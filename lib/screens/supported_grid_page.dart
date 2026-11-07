@@ -12,6 +12,7 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../widgets/pitch_ui.dart';
 
 /// Account-owned Grid session. Legacy route is selected only by the server's
@@ -230,13 +231,14 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         _suggestions = [];
         _answer.clear();
       });
-  Future<void> _watch() => _work(() async {
+  Future<void> _watch({String? itemId}) => _work(() async {
     final target = _target;
     await _service.watch({
       'mode': widget.mode,
       'sessionId': _run['id'],
       'target': target,
       'boostId': 'boost_basic',
+      if (itemId != null) 'itemId': itemId,
     });
     _accept(await _service.load(widget.mode, widget.mode));
   });
@@ -862,15 +864,18 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                     : 'Temel destek geçerli bir adayın milliyet ve mevki grubunu verir.',
               ),
               const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
-              PaidHintButton(
-                session: _run,
-                sku: 'boost_basic',
-                label: 'Temel bilgi',
-                disabled: !_canPlay,
-                onUse: (payment) =>
-                    _act('hint', {'target': _target, ...payment}),
-                onWatch: _watch,
-              ),
+              hintEntry(_run, target: _target, disabled: !_canPlay,
+                      send: (p) => _act('hint', {'target': _target, ...p}),
+                      watch: (id) => _watch(itemId: id)) ??
+                  PaidHintButton(
+                    session: _run,
+                    sku: 'boost_basic',
+                    label: 'Temel bilgi',
+                    disabled: !_canPlay,
+                    onUse: (payment) =>
+                        _act('hint', {'target': _target, ...payment}),
+                    onWatch: _watch,
+                  ),
             ],
           ],
         ),

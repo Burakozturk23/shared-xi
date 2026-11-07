@@ -95,3 +95,9 @@ test("v1 policy keeps today's supports", async () => {
   assert.equal(s.hintMenu, undefined);
   assert.equal(s.support.version, 1);
 });
+
+test("v2 anagram: the old free bio/first actions are closed", async () => {
+  const h = setup(); const s = await load(h, "daily_anagram");
+  for (const action of ["bio", "first"]) await assert.rejects(act(h, s, {action}), {code: "failed-precondition"});
+  assert.equal(raw(h, s).rounds[0].bio, false);
+});

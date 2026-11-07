@@ -103,6 +103,12 @@ class DailyFootballerController extends ChangeNotifier {
   });
 
   Future<void> unlockHint() => _reward(extra: false);
+  /// İpucu v2: a verified ad for one menu item.
+  Future<void> watchHintItem(String itemId) => _run(() async {
+    if (!await _ensureToday() || _disposed || round?.serverOwned != true) return;
+    await server!.watch({'sessionId': round!.serverData!['id'], 'itemId': itemId});
+    await _loadDay();
+  });
   Future<void> unlockExtra() => _reward(extra: true);
   Future<void> _reward({required bool extra}) => _run(() async {
     if (!await _ensureToday() || _disposed) return;

@@ -1,5 +1,6 @@
 import 'dart:async';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../services/game_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -949,7 +950,14 @@ class _DailyWordsPageState extends State<DailyWordsPage>
             label: const Text('Sil'),
           ),
         ),
-        if (_session['hintUsed'] == true)
+        if (hintEntry(_session, disabled: _locked, send: (p) => _act('hint', p),
+            watch: (id) => _run(() async {
+              await _service.watchHint(_session, 'boost_basic', itemId: id);
+              final status = await _service.load(widget.mode);
+              if (mounted && !_changedAccount) setState(() => _accept(status));
+            })) case final w?)
+          w
+        else if (_session['hintUsed'] == true)
           _notice('İpucu: ${_session['hint']}')
         else if (rewardMap(_session['support'])['version'] == 1)
           _paidHint(
@@ -1121,7 +1129,14 @@ class _DailyWordsPageState extends State<DailyWordsPage>
             child: _notice('Denemelerin: ${guesses.join(' · ')}'),
           ),
         const SizedBox(height: 12),
-        if (round['bio'] == true)
+        if (hintEntry(_session, disabled: _locked, send: (p) => _act('hint', p),
+            watch: (id) => _run(() async {
+              await _service.watchHint(_session, 'boost_basic', itemId: id);
+              final status = await _service.load(widget.mode);
+              if (mounted && !_changedAccount) setState(() => _accept(status));
+            })) case final w?)
+          w
+        else if (round['bio'] == true)
           _notice('Ülke / mevki: ${round['hint']}')
         else if (rewardMap(_session['support'])['version'] == 1)
           _paidHint('bio', 'boost_basic', 'Ülke + mevki · −15 puan')
@@ -1130,7 +1145,9 @@ class _DailyWordsPageState extends State<DailyWordsPage>
             onPressed: _locked ? null : () => _act('bio'),
             child: const Text('Ülke + mevki · −15 puan'),
           ),
-        if (round['first'] == true)
+        if (HintMenu.fromSession(_session) != null)
+          const SizedBox.shrink()
+        else if (round['first'] == true)
           _notice('İlk harf: ${round['firstLetter']}')
         else if (rewardMap(_session['support'])['version'] == 1)
           _paidHint('first', 'boost_first_letter', 'İlk harf · −25 puan')
@@ -1324,7 +1341,14 @@ class _DailyWordsPageState extends State<DailyWordsPage>
         ),
         const SizedBox(height: 16),
         _input('Cevabın', action: 'guess'),
-        if (q['hint'] != null)
+        if (hintEntry(_session, disabled: _locked, send: (p) => _act('hint', p),
+            watch: (id) => _run(() async {
+              await _service.watchHint(_session, 'boost_basic', itemId: id);
+              final status = await _service.load(widget.mode);
+              if (mounted && !_changedAccount) setState(() => _accept(status));
+            })) case final w?)
+          w
+        else if (q['hint'] != null)
           _notice('${q['hint']}')
         else if (rewardMap(_session['support'])['version'] == 1)
           _paidHint('hint', 'boost_basic', 'Cevabın uzunluğu'),

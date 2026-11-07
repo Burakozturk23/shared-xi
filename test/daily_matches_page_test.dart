@@ -86,7 +86,7 @@ class FakeDailyGateway implements DailyMatchesGateway {
   }
 
   @override
-  Future<void> watch(String placement, {String? key}) async {
+  Future<void> watch(String placement, {String? key, String? itemId}) async {
     lastPlacement = placement;
     if (placement == 'daily_double') round['doubled'] = true;
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
+import 'hint_panel.dart';
 import 'paid_hint_button.dart';
 
 /// The server chooses the pinned offer or preserved legacy/Pro entitlement.
@@ -82,11 +83,24 @@ class _StorySupportPanelState extends State<StorySupportPanel> {
   void dispose() { _generation++; _auth?.cancel(); super.dispose(); }
   @override
   Widget build(BuildContext context) {
+    final v2 = HintMenu.fromSession(rewardMap(_value?['session']));
     if (widget.resultOnly) {
-      return rewardMap(rewardMap(_value?['session'])['support'])['assisted'] == true
+      return rewardMap(rewardMap(_value?['session'])['support'])['assisted'] == true || v2?.assisted == true
           ? const Text('Bu bölüm: Yardımlı') : const SizedBox.shrink();
     }
     if (_value?['legacy'] == true) return widget.legacy;
+    if (v2 != null) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (_busy) const LinearProgressIndicator(),
+        if (_error != null) ...[
+          Text(_error!), TextButton(onPressed: _busy ? null : _load, child: const Text('Destekleri yenile')),
+        ],
+        if (v2.assisted) const Text('Bu bölüm: Yardımlı'),
+        hintEntry(rewardMap(_value?['session']),
+            disabled: _busy || widget.disabled || _error != null || _value!['completed'] == true,
+            send: _act, watch: (id) => _act({'itemId': id}, watch: true))!,
+      ]);
+    }
     final session = rewardMap(_value?['session']), support = rewardMap(rewardMap(_value?['session'])['support']);
     final products = support['products'] as List? ?? const [];
     final hints = rewardMap(_value?['hints']);

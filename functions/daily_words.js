@@ -365,6 +365,10 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
       const q = r.puzzle || r.questions[r.index];
       if (input.questionId !== (q.questionId || q.id)) fail("failed-precondition", "Soru değişti. Yenile.");
       const word = normalize(input.answer);
+      // v2 runs open hints only through the menu; the old free reveals are closed.
+      if (H.active(r) && ["bio", "first"].includes(input.action)) {
+        fail("failed-precondition", "İpucu panelini kullan.");
+      }
       if (H.active(r) && input.action === "hint") {
         H.use(e, r, adapter, input, time);
         r.revision++; r.actions[input.requestId] = fingerprint;

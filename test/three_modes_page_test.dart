@@ -115,6 +115,7 @@ class FakeModes extends ThreeModesService {
     String mode,
     String sessionId, {
     String? boostId,
+    String? itemId,
   }) async {}
 }
 

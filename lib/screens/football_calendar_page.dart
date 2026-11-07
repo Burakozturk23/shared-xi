@@ -8,6 +8,7 @@ import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../theme/ortak_saha_theme.dart';
 
 class FootballCalendarPage extends StatefulWidget {
@@ -754,7 +755,16 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
               child: PitchPanel(child: Text('İpucu: ${r['hint']}')),
             ),
           const SizedBox(height: 12),
-          if (rewardMap(r['support'])['version'] == 1)
+          if (hintEntry(r, disabled: _busy || _message != null, send: (p) => _run(() async {
+            final data = await _gateway.call('play', {'key': r['key'], 'action': 'hint', 'revision': r['revision'],
+              ...p});
+            if (mounted) setState(() => _round = rewardMap(data['session']));
+          }), watch: (id) => _run(() async {
+            await _gateway.watch('daily_match_hint', key: r['key']?.toString(), itemId: id);
+            await _refresh();
+          })) case final w?)
+            w
+          else if (rewardMap(r['support'])['version'] == 1)
             PaidHintButton(
               session: r,
               sku: 'boost_basic',

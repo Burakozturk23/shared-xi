@@ -6,7 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_xi/services/energy_service.dart';
 import 'package:shared_xi/services/story_support_service.dart';
 import 'package:shared_xi/widgets/paid_hint_button.dart';
+import 'package:shared_xi/widgets/hint_panel.dart';
 import 'package:shared_xi/widgets/story_support_panel.dart';
+
+Map<String, dynamic> v2Support() => {
+  'legacy': false,
+  'contentVersion': 'v1',
+  'completed': false,
+  'session': {'id': 'section', 'revision': 0, 'finished': false, 'hintMenu': {'version': 2, 'board': 'run', 'items': [{'id': 'gorev_ipucu', 'label': 'Görevin ipucu', 'type': 'donem',
+          'strong': false, 'price': 25, 'used': false}], 'suggested': ['gorev_ipucu', null],
+          'ads': {'allowed': true, 'remaining': 2}, 'assisted': false}},
+  'hints': <String, dynamic>{},
+};
 
 Map<String, dynamic> publicSupport({bool used = false}) => {
   'legacy': false,
@@ -30,7 +41,7 @@ Map<String, dynamic> publicSupport({bool used = false}) => {
 
 class Transport extends EnergyService {
   final calls = <Map<String, dynamic>>[];
-  bool loseResponse = false, used = false, legacy = false;
+  bool loseResponse = false, used = false, legacy = false, v2 = false;
   Completer<Map<String, dynamic>>? waitForLoad;
   @override
   Future<Map<String, dynamic>> call(
@@ -50,7 +61,7 @@ class Transport extends EnergyService {
     } else if (waitForLoad != null) {
       return waitForLoad!.future;
     }
-    return legacy ? {'legacy': true} : publicSupport(used: used);
+    return legacy ? {'legacy': true} : v2 ? v2Support() : publicSupport(used: used);
   }
 
   @override
@@ -226,5 +237,21 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('Önceden kazanılmış Pro desteği'), findsOneWidget);
     expect(find.byType(PaidHintButton), findsNothing);
+  });
+  testWidgets('v2 story panel opens HintPanel and sends {itemId, paymentSource} with the task', (t) async {
+    final wire = Transport()..v2 = true;
+    final service = StorySupportService(transport: wire, currentUser: () => 'alice');
+    await t.pumpWidget(MaterialApp(home: Scaffold(body: StorySupportPanel(mode: 'derby_day', targetId: 'task-1',
+        legacy: const Text('Eski'), service: service))));
+    await t.pumpAndSettle();
+    expect(find.byType(PaidHintButton), findsNothing);
+    await t.widget<HintButton>(find.byType(HintButton)).onUse('gorev_ipucu', 'coins');
+    await t.pumpAndSettle();
+    final input = wire.calls.lastWhere((c) => c['name'] == 'useStorySupport');
+    expect(input['itemId'], 'gorev_ipucu');
+    expect(input['paymentSource'], 'coins');
+    expect(input['expectedPriceCoins'], 25);
+    expect(input['targetId'], 'task-1');
+    expect(input['mode'], 'derby_day');
   });
 }

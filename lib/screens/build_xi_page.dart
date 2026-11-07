@@ -13,6 +13,7 @@ import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/hint_panel.dart';
 import '../services/squad_challenge_progress_service.dart';
 import '../services/squad_challenge_service.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -377,7 +378,18 @@ class _BuildXiPageState extends State<BuildXiPage> {
       const Text('Kriter listesi: −10 puan. Tek aday: −20 puan. Yardımlı rekor ayrı kaydolur. Her ürün kadro başına bir kez.'),
       if (_supportError != null) ...[Text(_supportError!),
         TextButton(onPressed: _busy ? null : () => run(_loadSupport), child: const Text('Destek işlemini eşitle'))],
-      for (final sku in ['boost_basic', 'boost_strong']) ...[
+      if (hintEntry(session, disabled: _busy || _supportError != null || session['finished'] == true,
+          send: (p) => run(() async {
+            _supportData = await _support.use({..._supportContext, 'mode': 'squad_challenge',
+              'targetId': _supportTarget, 'sessionId': session['id'], 'revision': session['revision'],
+              'slot': slot, 'playerIds': _controller!.playerIds, ...p});
+          }),
+          watch: (id) => run(() async {
+            await _support.watch({'sessionId': session['id'], 'catalogVersion': widget.catalog.version, 'itemId': id});
+            await _loadSupport();
+          })) case final w?)
+        w
+      else for (final sku in ['boost_basic', 'boost_strong']) ...[
         PaidHintButton(session: session, sku: sku,
           label: sku == 'boost_basic' ? 'Kriterlere uygun aday listesi' : 'Bir aday öner',
           disabled: _busy || _supportError != null || hints[sku] != null || session['finished'] == true,

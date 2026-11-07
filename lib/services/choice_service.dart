@@ -114,10 +114,11 @@ class ChoiceService {
     return _flush(prefs, uid, mode);
   }
 
-  Future<void> watchHint(Map<String, dynamic> session, String boostId) async {
+  Future<void> watchHint(Map<String, dynamic> session, String boostId, {String? itemId}) async {
     final uid = await _identity();
     await transport.watch('choice_training_hint', pro: false, context: {
       'sessionId': session['id'], 'mode': session['mode'], 'boostId': boostId,
+      if (itemId != null) 'itemId': itemId,
     });
     _check(uid);
   }
