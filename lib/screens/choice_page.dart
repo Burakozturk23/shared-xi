@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import '../app/app_feedback.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -152,11 +153,18 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         ...extra,
       });
       if (!mounted) return;
+      final before = run;
       setState(() {
         data = result;
         previewSlot = null;
         configuring = false;
       });
+      // Higher or Lower reveals each guess; other actions fall back to the counters.
+      if (run['answered'] == true && before['answered'] != true) {
+        AppFeedback.answer(correct: run['correct'] == true);
+      } else {
+        AppFeedback.answerFrom(before, run);
+      }
     } catch (e) {
       if (mounted) setState(() => error = gameErrorMessage(e));
     } finally {

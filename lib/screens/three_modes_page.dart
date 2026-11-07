@@ -172,30 +172,36 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           _clearSearch();
         });
       });
-  Future<void> _act(String action, [Map<String, dynamic> extra = const {}]) =>
-      _run(() async {
-        final r = await _service.mutate('actThreeMode', {
-          'mode': widget.mode,
-          'version': _version,
-          'sessionId': _session['id'],
-          'revision': _session['revision'],
-          'action': action,
-          ...extra,
-        });
-        if (!mounted) return;
-        setState(() {
-          _session = rewardMap(r['session']);
-          _clearSearch();
-          if (!_vault && action == 'place') AppFeedback.sfx(Sfx.slotLock);
-          if (!_vault && action == 'place') {
-            final empty = _maps(
-              _session['slots'],
-            ).where((s) => s['player'] == null).toList();
-            if (empty.isNotEmpty) _slot = (empty.first['slot'] as num).toInt();
-          }
-          if (r.containsKey('linked')) _status['linked'] = r['linked'];
-        });
-      });
+  Future<void> _act(
+    String action, [
+    Map<String, dynamic> extra = const {},
+  ]) => _run(() async {
+    final r = await _service.mutate('actThreeMode', {
+      'mode': widget.mode,
+      'version': _version,
+      'sessionId': _session['id'],
+      'revision': _session['revision'],
+      'action': action,
+      ...extra,
+    });
+    if (!mounted) return;
+    final before = _session;
+    setState(() {
+      _session = rewardMap(r['session']);
+      _clearSearch();
+      // A wrong pick is felt; a placed Harf 11 player keeps its slot-lock cue.
+      if (!(!_vault && action == 'place'))
+        AppFeedback.answerFrom(before, _session);
+      if (!_vault && action == 'place') AppFeedback.sfx(Sfx.slotLock);
+      if (!_vault && action == 'place') {
+        final empty = _maps(
+          _session['slots'],
+        ).where((s) => s['player'] == null).toList();
+        if (empty.isNotEmpty) _slot = (empty.first['slot'] as num).toInt();
+      }
+      if (r.containsKey('linked')) _status['linked'] = r['linked'];
+    });
+  });
   void _search(String value) {
     _debounce?.cancel();
     final generation = ++_generation;

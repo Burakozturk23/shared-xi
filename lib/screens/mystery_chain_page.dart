@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../app/app_feedback.dart';
 import 'dart:async';
 import '../services/game_error.dart';
 import '../widgets/game_ui.dart';
@@ -184,8 +185,10 @@ class _MysteryChainPageState extends State<MysteryChainPage>
           ...extra,
         });
         if (!mounted || _accountChanged) return;
+        final before = _session;
         setState(() {
           _accept(rewardMap(r['session']));
+          AppFeedback.answerFrom(before, _session);
           _status['coins'] = r['coins'] ?? _status['coins'];
           _status['inventory'] = r['inventory'] ?? _status['inventory'];
         });

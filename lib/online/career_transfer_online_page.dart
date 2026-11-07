@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../app/app_feedback.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import '../app/game_audio.dart';
@@ -79,6 +80,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
         fakeClub: widget.mode == 'fake_club_duel',
       );
   Map<String, dynamic> _room = {}, _availability = {};
+  String? _revealFelt;
   String _version = '';
   String? _error, _feedback;
   bool _busy = false,
@@ -162,6 +164,12 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
         room['round'] != _room['round'] ||
         rewardMap(room['question'])['kind'] !=
             rewardMap(_room['question'])['kind'];
+    // The round's result is felt once, when its reveal first arrives (polls repeat it).
+    final reveal = '${room['id']}|${room['round']}';
+    if (room.containsKey('reveal') && _revealFelt != reveal) {
+      _revealFelt = reveal;
+      AppFeedback.answer(correct: room['correct'] == true);
+    }
     _room = room;
     _received = DateTime.now();
     if (changed) {

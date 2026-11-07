@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/energy_service.dart';
 import '../services/auth_service.dart';
@@ -320,6 +321,10 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                             'questionId': q['id'],
                             'option': choice,
                           });
+                          AppFeedback.answer(
+                            correct:
+                                rewardMap(data?['result'])['correct'] == true,
+                          );
                         }),
                   child: const Text('Cevabımı gönder'),
                 ),

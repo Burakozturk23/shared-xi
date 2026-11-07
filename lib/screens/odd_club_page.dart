@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../app/app_feedback.dart';
 import 'dart:async';
 import '../services/game_error.dart';
 import '../widgets/game_ui.dart';
@@ -94,7 +95,9 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
       'sessionId': _session['id'], 'revision': _session['revision'],
       'questionId': rewardMap(_session['question'])['questionId'], 'action': action, ...extra});
     if (!mounted || _accountChanged) return;
+    final before = _session;
     setState(() { _session = rewardMap(r['session']); _elapsed..reset()..start(); });
+    AppFeedback.answerFrom(before, _session);
     final status = await _service.load(_mode);
     if (mounted && !_accountChanged) setState(() => _accept(status));
     if (action == 'next' && _scroll.hasClients) _scroll.jumpTo(0);

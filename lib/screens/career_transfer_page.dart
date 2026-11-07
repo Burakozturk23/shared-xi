@@ -1,4 +1,5 @@
 import '../widgets/paid_hint_button.dart';
+import '../app/app_feedback.dart';
 import 'dart:async';
 import '../services/game_error.dart';
 import '../widgets/game_ui.dart';
@@ -160,13 +161,16 @@ class _CareerTransferPageState extends State<CareerTransferPage>
           'action': action,
           ...extra,
         });
-        if (mounted && !_accountChanged)
+        if (mounted && !_accountChanged) {
+          final before = _session;
           setState(() {
             _session = rewardMap(r['session']);
             _status['coins'] = r['coins'] ?? _status['coins'];
             _status['inventory'] = r['inventory'] ?? _status['inventory'];
             _clear();
           });
+          AppFeedback.answerFrom(before, _session);
+        }
       });
   Future<void> _skip() async {
     final ok = await showDialog<bool>(

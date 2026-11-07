@@ -126,8 +126,12 @@ void main() {
         await prefs.setHapticStrength(pair.$1);
         calls.clear();
         await AppFeedback.previewHaptics(prefs);
-        expect(calls.single.method, 'HapticFeedback.vibrate');
-        expect(calls.single.arguments, pair.$2);
+        // Right (one pulse) then wrong (two pulses), all at the chosen strength.
+        expect(
+          calls.map((c) => c.method),
+          List.filled(3, 'HapticFeedback.vibrate'),
+        );
+        expect(calls.map((c) => c.arguments), List.filled(3, pair.$2));
         expect((await AppPreferences.load()).hapticStrength, pair.$1);
       }
       await prefs.setHaptics(false);
@@ -178,8 +182,13 @@ void main() {
       final haptics = find.byKey(const ValueKey('preview-haptics'));
       await reveal(t, haptics);
       await t.tap(haptics);
-      await t.pumpAndSettle();
-      expect(calls.map((c) => c.method), ['HapticFeedback.vibrate']);
+      // Right pulse, a pause, then the wrong double.
+      await t.pump(const Duration(seconds: 1));
+      expect(
+        calls.map((c) => c.method),
+        List.filled(3, 'HapticFeedback.vibrate'),
+      );
+      expect(find.byKey(const ValueKey('haptics-system-note')), findsOneWidget);
       await reveal(t, find.text('Titreşim gücü'));
       await t.tap(find.text('Titreşim gücü'));
       await t.pumpAndSettle();

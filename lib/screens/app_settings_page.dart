@@ -233,9 +233,9 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                         description: c('Hissettiğin güç cihazına göre değişebilir.', 'The intensity you feel depends on your device.'),
                         selected: p.hapticStrength,
                         options: [
-                          (HapticStrength.gentle, _strengthName(HapticStrength.gentle), c('Kısa ve hafif dokunuş', 'A subtle tap'), Icons.touch_app_outlined),
-                          (HapticStrength.standard, _strengthName(HapticStrength.standard), c('Seçime ve cevaba göre', 'Varies with selections and answers'), Icons.vibration_rounded),
-                          (HapticStrength.strong, _strengthName(HapticStrength.strong), c('Daha belirgin geri bildirim', 'More pronounced feedback'), Icons.bolt_rounded),
+                          (HapticStrength.gentle, _strengthName(HapticStrength.gentle), c('Kısa ve hafif dokunuş; yanlışta çift', 'A subtle tap; double on a wrong answer'), Icons.touch_app_outlined),
+                          (HapticStrength.standard, _strengthName(HapticStrength.standard), c('Doğruda tek, yanlışta çift titreşim', 'One pulse when right, two when wrong'), Icons.vibration_rounded),
+                          (HapticStrength.strong, _strengthName(HapticStrength.strong), c('Daha belirgin; yanlışta çift', 'More pronounced; double on a wrong answer'), Icons.bolt_rounded),
                         ],
                         save: p.setHapticStrength,
                       ),
@@ -248,6 +248,15 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                         onPressed: !_saving && p.haptics ? () => AppFeedback.previewHaptics(p) : null,
                         icon: const Icon(Icons.touch_app_outlined),
                         label: Text(c('Titreşimi dene', 'Test vibration'), textAlign: TextAlign.center),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Text(
+                        c('Önce doğru (tek), sonra yanlış (çift) cevap titreşimi çalar. Hiçbir şey hissetmiyorsan telefonunun ayarlarında dokunma titreşimini aç.',
+                          'Plays the right (single) then the wrong (double) answer pulse. Feel nothing? Turn on touch vibration in your phone settings.'),
+                        key: const ValueKey('haptics-system-note'),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.muted),
                       ),
                     ),
                   ],

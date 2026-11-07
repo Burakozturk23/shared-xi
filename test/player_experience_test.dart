@@ -340,7 +340,11 @@ void main() {
       expect(calls, isEmpty);
       await p.setHaptics(true);
       await AppFeedback.answer(correct: false);
-      expect(calls.map((e) => e.method), ['HapticFeedback.vibrate']);
+      // A wrong answer is two short pulses.
+      expect(calls.map((e) => e.method), [
+        'HapticFeedback.vibrate',
+        'HapticFeedback.vibrate',
+      ]);
       calls.clear();
       await p.setHaptics(false);
       await p.setSound(true);

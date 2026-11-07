@@ -42,7 +42,6 @@ class _DailyWordsPageState extends State<DailyWordsPage>
       _records = false,
       _archive = false,
       _resumed = true;
-  bool _vibrate = false;
   String? _error, _owner, _lettersKey;
   List<String> _letters = [];
   final List<int> _chosen = [];
@@ -138,6 +137,26 @@ class _DailyWordsPageState extends State<DailyWordsPage>
       ..start();
   }
 
+  /// Right and wrong answers so far: anagram / passaparola rounds, or the
+  /// Lingo guesses (solved when the finished result says so).
+  static Map<String, int> _answerCounts(Map<String, dynamic> s) {
+    final rounds = _rows(s['rounds']);
+    if (rounds.isNotEmpty) {
+      return {
+        'correct': rounds.where((r) => r['status'] == 'correct').length,
+        'wrong': rounds
+            .where((r) => ['wrong', 'timeout', 'revealed'].contains(r['status']))
+            .length,
+      };
+    }
+    final guesses = _rows(s['guesses']).length;
+    final solved =
+        s['finished'] == true && (rewardMap(s['result'])['solved'] ?? 0) == 1
+        ? 1
+        : 0;
+    return {'correct': solved, 'wrong': guesses - solved};
+  }
+
   void _setSession(Map<String, dynamic> value) {
     final old = _session['questionId'];
     _session = value;
@@ -204,6 +223,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
             })
             .timeout(const Duration(seconds: 30));
         if (!mounted || _changedAccount) return;
+        final before = _session;
         setState(() {
           _setSession(rewardMap(response['session']));
           if (response['playStreak'] != null) {
@@ -215,7 +235,12 @@ class _DailyWordsPageState extends State<DailyWordsPage>
           _answer.clear();
           _chosen.clear();
         });
-        if (_vibrate) AppFeedback.selection();
+        if (action == 'guess' || action == 'pass') {
+          AppFeedback.answerFrom(
+            _answerCounts(before),
+            _answerCounts(_session),
+          );
+        }
         final status = await _service
             .load(widget.mode)
             .timeout(const Duration(seconds: 30));
@@ -1258,15 +1283,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
           ),
         ],
       ),
-      if (_weekly && !_finished) ...[
-        _clockBar(),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          value: _vibrate,
-          onChanged: (v) => setState(() => _vibrate = v),
-          title: const Text('Yanıtlarda titreşim'),
-        ),
-      ],
+      if (_weekly && !_finished) _clockBar(),
       const SizedBox(height: 10),
       Wrap(spacing: 4, runSpacing: 4, children: letters),
       if (!_finished) ...[

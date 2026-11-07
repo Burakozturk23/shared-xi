@@ -184,8 +184,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         ...more,
       });
       if (!mounted) return;
+      final before = run;
       setState(() {
         accept(value);
+        if (action == 'answer') AppFeedback.answerFrom(before, run);
         // Matching: the flip is confirmed by the server; a new pair is a combo.
         if (action == 'flip')
           AppFeedback.sfx(
