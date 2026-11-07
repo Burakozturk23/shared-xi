@@ -330,9 +330,10 @@ class _DailyQuestionPageState extends State<DailyQuestionPage> {
                   child: const Text('Cevabımı gönder'),
                 ),
                 if (rewardMap(
-                      rewardMap(data?['session'])['support'],
-                    )['version'] ==
-                    1)
+                          rewardMap(data?['session'])['support'],
+                        )['version'] ==
+                        1 ||
+                    rewardMap(data?['session'])['hintMenu'] != null)
                   hintEntry(rewardMap(data?['session']), disabled: busy || error != null || eliminated != null,
                     send: (p) => _run(() async {
                       final session = rewardMap(data?['session']);

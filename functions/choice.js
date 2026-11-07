@@ -260,7 +260,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       // Finished runs are archived; keep only the newest 30 full sessions.
       const done = Object.values(s.sessions).filter((x) => x.finished && !Object.values(s.active).includes(x.id))
           .sort((a, b) => (b.completedAt || b.createdAt) - (a.completedAt || a.createdAt));
-      for (const x of done.slice(30)) if (!(x.adCredits > 0)) delete s.sessions[x.id];
+      for (const x of done.slice(30)) if (!(x.adCredits > 0) && !H.pending(x)) delete s.sessions[x.id];
     });
     return result(uid, input);
   }

@@ -450,4 +450,9 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  test('v2 match hints go through the support route that adds a request id', () {
+    expect(FirebaseDailyMatchesGateway.supportRoute('play', {'itemId': 'milliyet'}), isTrue);
+    expect(FirebaseDailyMatchesGateway.supportRoute('play', {'boostId': 'boost_basic'}), isTrue);
+    expect(FirebaseDailyMatchesGateway.supportRoute('play', {'action': 'guess'}), isFalse);
+  });
 }

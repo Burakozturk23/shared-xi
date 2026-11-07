@@ -52,12 +52,16 @@ class FirebaseDailyMatchesGateway implements DailyMatchesGateway {
     return rewardMap(result.data);
   }
 
+  /// Paid hints (v1 `boostId`, v2 `itemId`) go through the support service, which adds a request id.
+  static bool supportRoute(String action, Map<String, dynamic> input) =>
+      action == 'status' || input['boostId'] != null || input['itemId'] != null;
+
   @override
   Future<Map<String, dynamic>> call(
     String action, [
     Map<String, dynamic> input = const {},
   ]) async {
-    if (action == 'status' || input['boostId'] != null) {
+    if (supportRoute(action, input)) {
       final user = await AuthService.ensureGuestSignedIn().timeout(const Duration(seconds: 20));
       if (_uid != null && _uid != user.uid) throw StateError('Hesap değişti. Ekranı yeniden aç.');
       _uid = user.uid;

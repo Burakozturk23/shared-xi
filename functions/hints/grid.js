@@ -37,8 +37,11 @@ function make({catalog, kind, answers, common, axisIds, matches, targetKey}) {
         .sort((a, b) => (clubOf(a).rank ?? 999) - (clubOf(b).rank ?? 999) || a.localeCompare(b));
   }
   const cellText = {
-    milliyet: (r, t, p) => `Seçtiğin kutu için bir adayın milliyeti: ${p.countries.join(" / ")}`,
-    mevki: (r, t, p) => POS[p.position] && `Seçtiğin kutu için bir adayın mevkisi: ${POS[p.position]}`,
+    // Not sold when the row or column already is that criterion.
+    milliyet: (r, t, p) => !criteriaOf(r, t).some((k) => k.startsWith("country:")) &&
+      `Seçtiğin kutu için bir adayın milliyeti: ${p.countries.join(" / ")}`,
+    mevki: (r, t, p) => !criteriaOf(r, t).some((k) => k.startsWith("position:")) && POS[p.position] &&
+      `Seçtiğin kutu için bir adayın mevkisi: ${POS[p.position]}`,
     lig: (r, t, p) => {
       const c = otherClubs(r, t, p).find((id) => clubOf(id).league) || p.clubs.find((id) => clubOf(id)?.league);
       return c && `Seçtiğin kutu için bir aday ${clubOf(c).league} liginde oynadı`;

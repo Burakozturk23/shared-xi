@@ -157,7 +157,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
         x.day === today).length >= 3) fail("Bugünkü 3 maç hakkını kullandın.");
       for (const [id, old] of Object.entries(state.sessions)) {
         if (old.day < previousDay(today,
-            14) && !(old.adCredits > 0)) delete state.sessions[id];
+            14) && !(old.adCredits > 0) && !H.pending(old)) delete state.sessions[id];
       }
       state.sessions[key] = {key, day: today, fixtureId, found: [], wrong: [], lives: 3, target: 3,
         answers: catalog.pairs[match.catalogKey], finished: false, reward: 0, doubled: false,

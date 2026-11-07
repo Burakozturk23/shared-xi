@@ -55,7 +55,9 @@ function story() {
     const label = (key) => options.find((o) => (o.id || o.key) === key)?.label;
     if (id === "gorev_ipucu") return typeof task.hint === "string" && task.hint.trim() ? task.hint : null;
     if (id === "bir_yanlis") {
-      const excluded = options.length > 2 && options.find((o) => !keys.includes(o.id || o.key));
+      // Only when at least two wrong options exist: removing the only one would show the answer.
+      const wrong = options.filter((o) => !keys.includes(o.id || o.key));
+      const excluded = wrong.length >= 2 && wrong[0];
       return excluded ? "Bu seçenek elenir: " + excluded.label : null;
     }
     if (typeof task.strongHint === "string" && task.strongHint.trim()) return task.strongHint;

@@ -56,7 +56,7 @@ class ThreeModesService {
     final status = await _transport.call('getRewardedAdStatus');
     await _transport.watch(
       {'letter11': 'letter11_hint', 'squad_vault': 'vault_hint'}[mode]!,
-      pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId, if (itemId != null) 'itemId': itemId},
+      pro: boostId == null && itemId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId, if (itemId != null) 'itemId': itemId},
     );
   }
 }

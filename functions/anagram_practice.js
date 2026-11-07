@@ -38,7 +38,8 @@ function reconcile(s, e, time) {
         return false;
       }
     });
-    if (id !== s.active && r.finished && r.startedAt < time - 2 * 86400000 && !(r.adCredits > 0)) delete s.sessions[id];
+    if (id !== s.active && r.finished && r.startedAt < time - 2 * 86400000 && !(r.adCredits > 0) &&
+        !H.pending(r)) delete s.sessions[id];
   }
 }
 function makePack(requestId, time) {

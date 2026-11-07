@@ -7249,7 +7249,7 @@ async function lbSettleDailySupport(db, uid, state, onlyMissing = false) {
   }
   let result = null; const live = await lbHintsLive(db, uid);
   const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-    const e = lbEconomyState(raw); if (live) e.hintsVersion = 2;
+    const e = lbEconomyState(raw); require("./hints").markWallet(e, live);
     result = dailyReturn.grantSupport(e, "daily_reward__" + claim.dateKey, claim.supportItemId, "daily_reward",
         claim.dateKey, Date.now());
     return e;
@@ -7267,7 +7267,7 @@ async function lbGrantAllMissionsBonus(db, uid, dayKey) {
   if (!policy.allMissionsBonus) return null;
   let result = null; const live = await lbHintsLive(db, uid);
   const tx = await db.ref("economyState/" + uid).transaction((raw) => {
-    const e = lbEconomyState(raw); if (live) e.hintsVersion = 2;
+    const e = lbEconomyState(raw); require("./hints").markWallet(e, live);
     result = dailyReturn.grantAllMissionsBonus(e, dayKey, Date.now(), policy);
     return e;
   });
@@ -9229,7 +9229,7 @@ function lbSeasonService() {
       const units = require("./hints/index").seasonSupports(items, live);
       return lbProDraw(db, uid, (e, now) => {
         if (e.storeUses[id]) return e.storeUses[id];
-        if (live) e.hintsVersion = 2;
+        require("./hints").markWallet(e, live);
         const supports = {}; let overflowCoins = 0;
         for (const [itemId, count] of Object.entries(units)) {
           for (let i = 1; i <= count; i++) {
@@ -9289,7 +9289,7 @@ exports.claimProCrate = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
   // Re-checked at commit time: a subscription ending in between does not open the Kasa.
   const result = await lbProDraw(db, uid, (e, now) => {
     if (status.proUntil && now >= status.proUntil) return null;
-    if (live) e.hintsVersion = 2;
+    require("./hints").markWallet(e, live);
     return require("./pro_crate").openCrate(e, day, uid, now);
   });
   if (!result) throw new httpsV2.HttpsError("permission-denied", "Etkin Pro üyeliği gerekli.");
@@ -10455,7 +10455,7 @@ function lbDailyStreakService() {
     const tx = await db.ref("economyState/" + uid).transaction((raw) => {
       const e = lbEconomyState(raw);
       if (e.storeUses[key]) return;
-      if (live) e.hintsVersion = 2;
+      require("./hints").markWallet(e, live);
       dailyReturn.grantSupport(e, key, "boost_basic", "daily_streak", id, now);
       return e;
     });

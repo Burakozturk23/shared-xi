@@ -71,7 +71,8 @@ function recover(e, now) {
   }
   if (s.active && s.runs?.[s.active.id]) s.active = s.runs[s.active.id];
   for (const [id, r] of Object.entries(s.practiceRuns || {})) {
-    if (r.status !== "active" && r.startedAt < now - 2 * 86400000 && !(r.adCredits > 0)) delete s.practiceRuns[id];
+    if (r.status !== "active" && r.startedAt < now - 2 * 86400000 && !(r.adCredits > 0) &&
+        !H.pending(r)) delete s.practiceRuns[id];
   }
 }
 function publicView(r) {
@@ -190,7 +191,8 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
       if (r.status !== "active" || r.expiresAt <= now()) {
         fail("failed-precondition", "Bu kadroda reklam desteği kullanılamaz.");
       }
-      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `squad_hint_${r.id}_${input.itemId}`,
+      return H.adBenefit(r, input.itemId, {amount: 0,
+        claimKey: `squad_hint_${r.id}_${input.itemId}_${r.adGranted || 0}`,
         context: {sessionId: r.id, catalogVersion: S.catalog.version}});
     }
     if (r.status !== "active" || r.expiresAt <= now() || input.boostId !== "boost_basic" ||

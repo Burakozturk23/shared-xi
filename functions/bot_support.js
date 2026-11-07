@@ -486,7 +486,7 @@ function reconcile(s, e, time) {
           wins: (old.wins || 0) + (r.winner === 1 ? 1 : 0)};
       }
     }
-    if (s.active[r.mode] !== id && r.finished && r.createdAt < time - 2 * 86400000 && !r.adCredits) {
+    if (s.active[r.mode] !== id && r.finished && r.createdAt < time - 2 * 86400000 && !r.adCredits && !H.pending(r)) {
       delete s.sessions[id];
     }
   }

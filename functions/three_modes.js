@@ -321,7 +321,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       // Collections/receipts are permanent; expired session bodies are bounded.
       const obsolete = Object.values(s.sessions).filter((x) => x.expiresAt < time)
           .sort((a, b) => b.startedAt - a.startedAt).slice(20);
-      for (const x of obsolete) if (!(x.adCredits > 0)) delete s.sessions[x.id];
+      for (const x of obsolete) if (!(x.adCredits > 0) && !H.pending(x)) delete s.sessions[x.id];
     });
     return {ok: true, version: catalog.version, session: sessionView(state.threeModes.sessions[input.requestId])};
   }

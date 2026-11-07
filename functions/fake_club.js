@@ -273,7 +273,8 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
       setup(r, q, time); s.sessions[r.id] = r; s.active[r.mode] = r.id;
       s.starts[r.id] = r.mode + (daily ? "__daily" : "");
       for (const [id, prior] of Object.entries(s.sessions)) {
-        if (prior.expiresAt < time && !(prior.adCredits > 0) && !Object.values(s.active).includes(id)) {
+        if (prior.expiresAt < time && !(prior.adCredits > 0) &&
+            !H.pending(prior) && !Object.values(s.active).includes(id)) {
           delete s.sessions[id];
         }
       }
@@ -319,6 +320,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
         if (r.mode !== "fake_endless") fail("failed-precondition", "Bu oyunda yardım kapalı.");
         H.use(e, r, adapter, input, time, {onHint: () => record(s, r).hintsUsed++});
       } else if (input.action === "fifty" || input.action === "trace") {
+        if (H.active(r)) fail("failed-precondition", "İpucu panelini kullan.");
         if (r.mode !== "fake_endless" || r.answered) fail("failed-precondition", "Bu oyunda yardım kapalı.");
         if (input.action === "fifty") {
           if (r.freeUsed) fail("resource-exhausted", "Oturumun ücretsiz 50/50 hakkı kullanıldı.");

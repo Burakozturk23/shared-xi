@@ -190,7 +190,7 @@ function createService({db, normalize, project, isLinked, grantCoins, grantXp,
         return {amount: 0, requireVerifiedAd: true, claimKey: "df_hint_" + r.id + "_extra",
           context: {day: r.day, sessionId: r.id, action, extraV2: true}};
       }
-      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `df_hint_${r.id}_${input.itemId}`,
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `df_hint_${r.id}_${input.itemId}_${r.adGranted || 0}`,
         context: {day: r.day, sessionId: r.id}});
     }
     if (!B.paid(r) || r.id !== input.sessionId || input.boostId !== "boost_basic" ||

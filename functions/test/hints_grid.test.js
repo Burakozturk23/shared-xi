@@ -44,11 +44,15 @@ test("classic and random: menu lists the spec items; reverse its own", async () 
 test("classic: each item describes one valid candidate of the selected cell", async () => {
   const h = setup({hint_milliyet: 1, hint_mevki: 1, hint_kulup: 2, hint_isim: 1});
   let r = await start(h, "solo_grid_classic");
-  const cell = openCell(r);
+  // A cell whose row/column is a country or position does not sell that item again.
+  const cell = Number(Object.entries(r.hintMenu.byTarget).find(([, ids]) => ids.length === 5)?.[0] ?? openCell(r));
+  const offered = r.hintMenu.byTarget[cell];
   const answers = G.answers(raw(h, r), cell).map((x) => G.catalog.players[x]);
-  for (const item of ["milliyet", "mevki", "lig", "baska_kulup", "ilk_harf"]) r = await hint(h, r, item, cell);
-  assert.ok(answers.some((p) => result(r, "milliyet").includes(p.countries.join(" / "))));
-  assert.ok(/Kaleci|Defans|Orta saha|Forvet/.test(result(r, "mevki")));
+  for (const item of offered) r = await hint(h, r, item, cell);
+  if (offered.includes("milliyet")) {
+    assert.ok(answers.some((p) => result(r, "milliyet").includes(p.countries.join(" / "))));
+  }
+  if (offered.includes("mevki")) assert.ok(/Kaleci|Defans|Orta saha|Forvet/.test(result(r, "mevki")));
   assert.ok(answers.some((p) => p.clubs.some((c) => result(r, "baska_kulup").includes(G.catalog.clubs[c].name))));
   assert.ok(answers.some((p) => p.clubs.some((c) => G.catalog.clubs[c].league &&
     result(r, "lig").includes(G.catalog.clubs[c].league))));
@@ -75,8 +79,11 @@ test("byTarget lists what each open cell can produce", async () => {
 
 test("once per board, not per cell", async () => {
   const h = setup({hint_milliyet: 2}); let r = await start(h, "solo_grid_classic");
-  r = await hint(h, r, "milliyet", openCell(r));
-  const other = [0, 1, 2, 3, 4, 5, 6, 7, 8].find((i) => !r.cells[i] && i !== openCell(r));
+  const cells = Object.entries(r.hintMenu.byTarget).filter(([, ids]) => ids.includes("milliyet"))
+      .map(([t]) => Number(t));
+  if (cells.length < 2) return;
+  r = await hint(h, r, "milliyet", cells[0]);
+  const other = cells[1];
   await assert.rejects(hint(h, r, "milliyet", other), {code: "already-exists"});
   assert.equal(qty(h, "hint_milliyet"), 1);
 });

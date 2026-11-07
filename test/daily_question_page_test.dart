@@ -1,3 +1,4 @@
+import 'package:shared_xi/widgets/hint_panel.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -274,4 +275,34 @@ void main() {
       await capture(t, key, 'energy-${light ? "light" : "dark"}');
     });
   }
+  testWidgets('v2 quiz shows the hint panel and sends the item', (t) async {
+    final value = {
+      ...sample(),
+      'session': {
+        'id': 'quiz-run',
+        'revision': 0,
+        'support': null,
+        'hintMenu': {'version': 2, 'board': 'quiz-run', 'items': [{'id': 'bir_yanlis', 'label': 'Bir yanlışı ele',
+          'type': 'ele', 'strong': false, 'price': 25, 'used': false}], 'suggested': ['bir_yanlis', null],
+          'ads': {'allowed': true, 'remaining': 1}, 'assisted': false},
+      },
+    };
+    Map<String, dynamic>? sent;
+    t.view.physicalSize = const Size(400, 2000);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    await t.pumpWidget(MaterialApp(home: DailyQuestionPage(initialData: value,
+        request: (name, input) async {
+          sent = input;
+          return value;
+        })));
+    await t.pumpAndSettle();
+    expect(find.text('Reklamla bir yanlışı ele'), findsNothing);
+    await t.widget<HintButton>(find.byType(HintButton)).onUse('bir_yanlis', 'stock');
+    await t.pumpAndSettle();
+    expect(sent?['itemId'], 'bir_yanlis');
+    expect(sent?['paymentSource'], 'stock');
+    expect(sent?['questionId'], 'q_test');
+  });
 }

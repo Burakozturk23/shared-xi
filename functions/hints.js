@@ -62,9 +62,30 @@ function addStock(e, type, count, sourceType, sourceId, time) {
   return take;
 }
 
+// Runs still on the old supports (v1) that can be played on: their bag must stay as it is.
+const SESSION_HOMES = ["careerTransfer", "mysteryChain", "threeModes", "gridSupport", "botSupport", "arcade",
+  "fakeClub", "choice", "anagramPractice"];
+function v1Open(e, time) {
+  const runs = [...SESSION_HOMES.flatMap((k) => Object.values(e[k]?.sessions || {})),
+    ...Object.values(e.dailyWords?.days || {}).flatMap((d) => Object.values(d || {})),
+    ...Object.values(e.dailyWords?.weeks || {}), ...Object.values(e.dailyFootballer?.days || {}),
+    ...Object.values(e.squadChallenge?.runs || {}), ...Object.values(e.squadChallenge?.practiceRuns || {})];
+  return runs.some((r) => r?.boostPolicy?.version === 1 && !r.finished && r.status !== "finished" &&
+    r.status !== "expired" && (r.expiresAt || 0) > time);
+}
+
+/** True while a run holds verified ad credit that has not become stock yet (pruning keeps it). */
+const pending = (r) => Object.values(r?.hintAdCredits || {}).some((c) => c?.n > 0);
+
+/** The wallet follows the live flag: rewards map into v2 types only while v2 is on (rollback safe). */
+function markWallet(e, live) {
+  if (live) e.hintsVersion = VERSION; else delete e.hintsVersion;
+}
+
 /** Old support stock into the new types, once per unit; what exceeds the 99 cap stays as it was. */
 function convertLegacy(e, time) {
   const result = {added: 0, converted: {}, gained: {}};
+  if (v1Open(e, time)) return result; // an open v1 run still spends the old stock
   for (const [from, type] of Object.entries(LEGACY)) {
     const item = e.inventory[from];
     if (!(item?.quantity > 0)) continue;
@@ -202,6 +223,11 @@ function adBenefit(run, itemId, benefit) {
   if ((run.adGranted || 0) >= adLimit(run)) fail("resource-exhausted", "Bu oyunun reklam hakkı doldu.");
   const item = (adapterOf(run)?.catalog?.[run.hintPolicy.modeId] || []).find((i) => i.id === itemId);
   if (!item) fail("failed-precondition", "Bu ipucu bu oyunda yok.");
+  // A strong item needs two ads: never start one the run's remaining ads cannot finish.
+  const credit = run.hintAdCredits?.[itemId]; const have = credit?.board === boardOf(run) ? credit.n : 0;
+  if (adLimit(run) - (run.adGranted || 0) + have < (TYPES[item.type].strong ? 2 : 1)) {
+    fail("resource-exhausted", "Bu ipucu için yeterli reklam hakkı yok; Coin ile alabilirsin.");
+  }
   return {...benefit, requireVerifiedAd: true, context: {...benefit.context, hintPolicyVersion: VERSION,
     itemId, type: item.type, board: boardOf(run), modeId: run.hintPolicy.modeId}};
 }
@@ -213,6 +239,8 @@ function grantAd(run, receipt) {
   }
   const credits = run.hintAdCredits ||= {};
   const old = credits[c.itemId];
+  // A credit for the same item on an older board is kept under its own key until recovered.
+  if (old && old.board !== c.board && old.n > 0) credits[`${c.itemId}@${old.board}`] = old;
   credits[c.itemId] = {type: c.type, board: c.board, n: (old?.board === c.board ? old.n : 0) + 1};
   run.adGranted = (run.adGranted || 0) + 1;
   (run.hintAdReceipts ||= {})[receipt.id] = true;
@@ -226,7 +254,14 @@ function recoverAd(e, run, receipt, time, canApply = true) {
   const key = "hint_ad_recovery__" + receipt.id;
   if (e.storeUses[key] || run?.hintAdReceipts?.[receipt.id]) return true;
   if (canApply && run && !run.finished && run.expiresAt > time) return false;
-  if (!addStock(e, c.type, 1, "verified_ad", receipt.id, time)) {
+  if (TYPES[c.type].strong) {
+    // Half a strong hint: two late ads make one unit.
+    const half = "hint_half__" + c.type; const n = (e.storeUses[half]?.n || 0) + 1;
+    if (n >= 2 && !addStock(e, c.type, 1, "verified_ad", receipt.id, time)) {
+      fail("resource-exhausted", "Çanta dolu; doğrulanmış reklam hakkı bekletiliyor.");
+    }
+    e.storeUses[half] = {n: n >= 2 ? 0 : n, usedAt: time};
+  } else if (!addStock(e, c.type, 1, "verified_ad", receipt.id, time)) {
     fail("resource-exhausted", "Çanta dolu; doğrulanmış reklam hakkı bekletiliyor.");
   }
   e.storeUses[key] = {itemId: TYPES[c.type].key, source: "verified_ad_recovery", usedAt: time};
@@ -242,9 +277,11 @@ function recoverUnused(e, run, time) {
   const board = boardOf(run); const over = run.finished || run.expiresAt <= time;
   for (const [id, c] of Object.entries(run.hintAdCredits || {})) {
     if (!(c?.n > 0) || !over && c.board === board) continue;
-    const take = addStock(e, c.type, c.n, "verified_ad", run.id, time);
+    // A strong unit costs two ads; an odd one stays pending, never a whole unit.
+    const per = TYPES[c.type]?.strong ? 2 : 1;
+    const take = addStock(e, c.type, Math.floor(c.n / per), "verified_ad", run.id, time);
     if (!take) continue;
-    c.n -= take;
+    c.n -= take * per;
     e.storeUses["hint_unused_ad__" + digest([run.id, id, c.board, time])] = {itemId: TYPES[c.type].key, units: take,
       source: "verified_unused_ad_recovery", runId: run.id, usedAt: time};
     if (!c.n) delete run.hintAdCredits[id];
@@ -252,4 +289,5 @@ function recoverUnused(e, run, time) {
 }
 
 module.exports = {VERSION, MAX_STOCK, TYPES, DEFAULT_PRICES, LEGACY, priceOf, register, active, pin, pinAny, view, use,
-  paymentFingerprint, adBenefit, grantAd, recoverAd, recoverUnused, convertLegacy, modeOf};
+  paymentFingerprint, adBenefit, grantAd, recoverAd, recoverUnused, convertLegacy, modeOf, v1Open, pending,
+  markWallet};

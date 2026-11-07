@@ -319,7 +319,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       H.pinAny(r, boostPolicy, e, time);
       s.sessions[r.id] = r; s.active[input.mode] = r.id; s.starts[r.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
-        if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
+        if (old.expiresAt < time && !(old.adCredits > 0) && !H.pending(old) && !Object.values(s.active).includes(id)) {
           delete s.sessions[id];
         }
       }

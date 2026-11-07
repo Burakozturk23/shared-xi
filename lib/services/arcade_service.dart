@@ -198,6 +198,6 @@ class ArcadeService {
   Future<void> watch(String sessionId, {String? boostId, String? itemId}) async {
     final uid = await _identity();
     final status = await transport.call('getRewardedAdStatus'); _check(uid);
-    await transport.watch('burst_survival_hint', pro: boostId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId, if (itemId != null) 'itemId': itemId}); _check(uid);
+    await transport.watch('burst_survival_hint', pro: boostId == null && itemId == null && status['pro'] == true, context: {'sessionId': sessionId, if (boostId != null) 'boostId': boostId, if (itemId != null) 'itemId': itemId}); _check(uid);
   }
 }
