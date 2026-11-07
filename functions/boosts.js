@@ -53,17 +53,20 @@ async function policyFor(db, uid, linked) {
   if (!linked) return null;
   const p = (await db.ref("runtimeConfig/boosts").get()).val();
   if (!enabled(p, uid)) return null;
-  let prices = null;
+  let prices = null; let hintPrices = null;
   try {
-    prices = require("./price_config").boostPrices(await priceSource());
+    const raw = await priceSource();
+    prices = require("./price_config").boostPrices(raw);
+    hintPrices = require("./price_config").hintPrices(raw);
   } catch (_) {
-    prices = null;
+    prices = null; hintPrices = null;
   }
-  return prices ? {...p, prices} : p;
+  return {...p, ...(prices ? {prices} : {}), ...(hintPrices ? {hintPrices} : {})};
 }
 function pin(run, policy) {
   const mode = modeOf(run);
-  if (!policy || !modes[mode] || policy.readyModes?.[mode] !== true) return;
+  // İpucu v2 (hints.js) owns runs pinned with a v2 policy.
+  if (!policy || policy.version === 2 || !modes[mode] || policy.readyModes?.[mode] !== true) return;
   run.boostPolicy = {version: VERSION, modeId: mode, daily: run.entry === "daily",
     products: Object.fromEntries(modes[mode].map((id) => {
       const p = products["boost_" + id]; const live = policy.prices?.[p.id];

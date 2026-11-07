@@ -93,6 +93,11 @@ function pin(run, policy, e = null, time = Date.now()) {
   return true;
 }
 
+/** Module entry point at run start: v2 hints when the policy says so, otherwise the v1 supports. */
+function pinAny(run, policy, e = null, time = Date.now()) {
+  if (!pin(run, policy, e, time)) require("./boosts").pin(run, policy);
+}
+
 function listed(run, adapter, ctx) {
   const board = String(adapter.board(run) ?? "");
   const uses = run.hintUses?.[board] || {};
@@ -244,5 +249,5 @@ function recoverUnused(e, run, time) {
   }
 }
 
-module.exports = {VERSION, MAX_STOCK, TYPES, DEFAULT_PRICES, LEGACY, priceOf, register, active, pin, view, use,
+module.exports = {VERSION, MAX_STOCK, TYPES, DEFAULT_PRICES, LEGACY, priceOf, register, active, pin, pinAny, view, use,
   paymentFingerprint, adBenefit, grantAd, recoverAd, recoverUnused, convertLegacy, modeOf};
