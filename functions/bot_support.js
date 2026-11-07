@@ -2,6 +2,7 @@
 const crypto = require("node:crypto");
 const P = require("./pvp_engine");
 const B = require("./boosts");
+const H = require("./hints");
 const {RewardError} = require("./rewarded_ads");
 // Four remaining Botla Oyna modes. Each keeps its legacy rules (Loto clocks and
 // +10 scoring, Team Race three round wins, Çinko connected cells with -1 wrong
@@ -451,6 +452,9 @@ function hint(r, target) {
   if (!id) fail("failed-precondition", "Bu turda kullanılabilir aday kalmadı.");
   return {key, text: `Kalan adaylardan biri beş kulübün ${matched(r, id).length} tanesine uyuyor; ${describe(id)}.`};
 }
+// İpucu v2 menus (hints/bot.js).
+const adapter = H.register(require("./hints/bot").make({catalog, kind, targetKey, answers, matches, remaining,
+  matched, byRank, playable}));
 function usable(r, scope) {
   if (!r || r.finished || r.version !== VERSION) return false;
   try {
@@ -472,6 +476,7 @@ function reconcile(s, e, time) {
     if (r.expiresAt <= time) finish(r, "expired", time);
     if (!r.finished) tick(r, time);
     B.recoverUnused(e, r, time, (_, scope) => usable(r, scope));
+    H.recoverUnused(e, r, time);
     if (r.finished && !r.recorded) {
       r.recorded = true;
       if (r.completed) {
@@ -494,7 +499,8 @@ function view(r, time) {
   const v = {id: r.id, mode: r.mode, version: r.version, revision: r.revision, difficulty: r.difficulty,
     turn: r.turn, finished: r.finished, completed: !!r.completed, reason: r.reason || null,
     userScore: r.userScore, botScore: r.botScore, winner: r.winner ?? null, feedback: r.feedback || null,
-    paused: !!r.pausedAt, hints: r.hints, support: B.view(r), assisted: r.assisted, adGranted: r.adGranted,
+    paused: !!r.pausedAt, hints: r.hints, support: B.view(r), hintMenu: H.view(r, adapter),
+    assisted: r.assisted, adGranted: r.adGranted,
     masteryEligible: false, leaderboardEligible: false, rewardCoins: 0, rewardXp: 0, serverNow: time};
   if (k === "loto") {
     // Placement correctness and the bot board stay hidden until both boards are complete.
@@ -704,7 +710,7 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
     const policy = await B.policyFor(db, uid, true); const seed = crypto.randomBytes(32).toString("hex");
     const fp = P.hash([m, input.action, input.sessionId, input.version, input.revision, input.target,
       input.playerId, input.cells, input.index, input.round, input.difficulty, input.clubId,
-      ...B.paymentFingerprint(input)]);
+      ...B.paymentFingerprint(input), input.itemId]);
     const s = await change(uid, (s, e) => {
       const time = now();
       if (input.action === "start") {
@@ -723,7 +729,8 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
         const r = {id, mode: m, version: VERSION, revision: 0, seed, difficulty, startFingerprint: fp,
           createdAt: time, expiresAt: time + 86400000, turn: "user", finished: false, actions: {}, hints: {},
           used: {}, userScore: 0, botScore: 0, adCredits: 0, adGranted: 0};
-        begin(r, input, time); B.pin(r, policy);
+        begin(r, input, time); H.pinAny(r, policy, e, time);
+        if (kind(r) === "loto" && H.active(r)) r.hintPolicy.ads = false;
         // Loto's per-player clock keeps running; an ad would cost the turn, so it is stock/Coin only.
         if (kind(r) === "loto" && r.boostPolicy) r.boostPolicy.products.boost_basic.ads = false;
         s.sessions[id] = r; s.active[m] = id; return;
@@ -741,6 +748,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
       else if (input.action === "hint") {
         if (r.pausedAt) fail("failed-precondition", "Oyun duraklatıldı. Devam et.");
         if (!realtime(r) && r.turn !== "user") fail("failed-precondition", "Sıra botta.");
+        if (H.active(r)) {
+          H.use(e, r, adapter, input, time, {target: input.target});
+          r.actions[input.requestId] = fp; r.revision++; return;
+        }
         const info = hint(r, input.target);
         if (input.paymentSource === "ad" && r.adScopes?.boost_basic?.targetKey !== info.key) {
           fail("failed-precondition", "Reklam hakkı başka bir hedefe ait.");
@@ -754,6 +765,13 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   async function prepareHint(uid, placement, input) {
     if (!await isLinked(uid) || placement !== "bot_support_hint") fail("permission-denied", "Hesap gerekli.");
     const s = await read(uid); const r = s.sessions[input.sessionId];
+    if (H.active(r)) {
+      if (r.finished || r.expiresAt <= now() || r.version !== VERSION || !realtime(r) && r.turn !== "user") {
+        fail("failed-precondition", "Bu ipucu şu anda reklamla alınamaz.");
+      }
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `bot_hint_${r.id}_${input.itemId}_${r.adGranted || 0}`,
+        context: {sessionId: r.id}});
+    }
     if (!B.paid(r) || r.finished || r.expiresAt <= now() || r.version !== VERSION || input.boostId !== "boost_basic" ||
       !r.boostPolicy.products.boost_basic.ads || !realtime(r) && r.turn !== "user") {
       fail("failed-precondition", "Bu destek şu anda reklamla alınamaz.");
@@ -768,6 +786,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   async function settleHint(uid, receipt) {
     await change(uid, (s, e) => {
       const r = s.sessions[receipt.context?.sessionId];
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, now(), !!r && H.active(r) && !r.finished)) H.grantAd(r, receipt);
+        return;
+      }
       if (!B.recoverAd(e, r, receipt, now(), "boost_basic", usable(r, receipt.context))) B.grantAd(r, receipt);
     });
   }
