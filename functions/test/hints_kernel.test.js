@@ -198,3 +198,10 @@ test("paymentFingerprint covers item, source and quote", () => {
       ["a", "coins", 25]);
   assert.deepEqual(H.paymentFingerprint({}), [null, null, null]);
 });
+
+test("a run stored without its empty maps still records hints", () => {
+  const e = wallet({hint_milliyet: 1}); const run = pinned();
+  delete run.hintUses; delete run.hintAdCredits; // RTDB drops empty objects
+  assert.equal(use(e, run, "a").text, "metin a b1");
+  assert.equal(run.hintUses.b1.a.source, "stock");
+});

@@ -183,7 +183,7 @@ function use(e, run, adapter, input, time, ctx = {}) {
       priceCoins: price, balanceBefore: before, balanceAfter: e.balances.coins, purchasedAt: time,
       economyConfigId: "hints-v2", consumed: true};
   }
-  (run.hintUses[board] ||= {})[id] = {type: item.type, label: item.label, text: result.text, source,
+  ((run.hintUses ||= {})[board] ||= {})[id] = {type: item.type, label: item.label, text: result.text, source,
     requestId: input.requestId ?? null, at: time};
   e.storeUses["hint__" + key] = {runId: run.id, modeId: run.hintPolicy.modeId, board, itemId: id, type: item.type,
     source, requestId: input.requestId ?? null, resultHash: digest(result.text), assistedImpact: true,

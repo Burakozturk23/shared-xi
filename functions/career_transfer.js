@@ -1,6 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {norm} = require("./three_modes");
@@ -69,13 +70,16 @@ function orderOf(run, cards) {
   return valid ? run.order : startOrder(cards, run.id);
 }
 const yearsOf = (c) => `${c.start.slice(0, 4)}–${c.end?.slice(0, 4) || "açık dönem"}`;
+// İpucu v2 menus (hints/career_transfer.js).
+const adapter = H.register(require("./hints/career_transfer").make({puzzleOf, players, cardsOf, orderOf,
+  clubOfCard, clubName: (id) => clubs.get(id)?.name, yearsOf, detailedPositions}));
 function sessionView(raw) {
   const s = runOf(raw); if (!s) return null;
   const p = puzzleOf(s); const player = players.get(p.playerId);
   const v = {id: s.id, mode: s.mode, difficulty: s.difficulty, version: s.version, revision: s.revision,
     phase: s.phase, finished: s.finished, expiresAt: s.expiresAt, wrong: s.wrong, guesses: s.guesses,
     checks: s.checks, score: s.score, found: s.found, hints: s.hints,
-    freeHint: !B.paid(s) && !s.freeUsed, support: B.view(s),
+    freeHint: !B.paid(s) && !H.active(s) && !s.freeUsed, support: B.view(s), hintMenu: H.view(s, adapter),
     adCredits: s.adCredits, adRemaining: Math.max(0, 2 - s.adGranted), feedback: s.feedback || "",
     energyCharged: s.energyCharged, masteryEligible: !s.assisted && s.first && s.difficulty !== "beginner",
     result: s.result || null, streak: s.streak || 0, ...(s.daily ? {daily: s.daily} : {})};
@@ -98,9 +102,11 @@ function sessionView(raw) {
     }
   } else {
     const first = [...player.name].findIndex((c) => /\p{L}/u.test(c));
-    const letter = s.hints.some((h) => h.kind === "letter");
+    const last = [...player.name].findLastIndex((c) => /\p{L}/u.test(c));
+    const letter = s.hints.some((h) => ["letter", "shape"].includes(h.kind));
+    const shape = s.hints.some((h) => h.kind === "shape");
     v.maskedName = [...player.name].map((c, i) => /\p{L}/u.test(c) ?
-      s.finished || letter && i === first ? c : "_" : c).join(" ");
+      s.finished || letter && i === first || shape && i === last ? c : "_" : c).join(" ");
     v.transfer = {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year};
     if (s.finished) {
       v.transfer = {...v.transfer, eventId: p.id, date: p.date, source: p.source,
@@ -127,6 +133,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         }
         fn(e.careerTransfer, e, time);
         for (const r of Object.values(e.careerTransfer.sessions)) {
+          H.recoverUnused(e, runOf(r), time);
           B.recoverUnused(e, r, time,
               (sku) => (r.hints?.length || 0) < 3 && sku === (r.mode === "transfer" &&
               (r.hints?.length || 0) === 2 ? "boost_first_letter" :
@@ -343,7 +350,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         energyCharged: charge, earned: 0, hints: [], guesses: [], actions: {}, freeUsed: false,
         adGranted: 0, adCredits: 0, adReceipts: {}, correctness: [],
         order: p.stops ? startOrder(cardsOf(p), seed) : [], ...(input.daily ? {daily: dayKey(time)} : {})};
-      B.pin(run, boostPolicy);
+      H.pinAny(run, boostPolicy, e, time);
       s.sessions[run.id] = run; s.active[input.mode] = run.id; s.starts[run.id] = fingerprint;
       for (const [id, old] of Object.entries(s.sessions)) {
         if (old.expiresAt < time && !(old.adCredits > 0) && !Object.values(s.active).includes(id)) {
@@ -404,7 +411,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const run = runOf(s.sessions[input.sessionId]);
       if (!run || run.mode !== input.mode || run.version !== catalog.version) fail("not-found", "Oturum bulunamadı.");
       const fingerprint = hash(JSON.stringify([input.action, input.playerId ?? null, input.answer ?? null,
-        input.order ?? null, input.hint ?? null, input.boost ?? null, ...B.paymentFingerprint(input)]));
+        input.order ?? null, input.hint ?? null, input.boost ?? null, ...B.paymentFingerprint(input),
+        input.itemId ?? null]));
       if (run.actions[input.requestId]) {
         if (run.actions[input.requestId] !== fingerprint) fail("invalid-argument", "İşlem başka cevaba ait.");
         return;
@@ -449,6 +457,8 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
             finish(s, run, time);
           } else run.feedback = `Doğru pozisyonlar işaretlendi: ${count}/${n}. ${left} kontrol hakkın kaldı.`;
         }
+      } else if (input.action === "hint" && H.active(run)) {
+        H.use(e, run, adapter, input, time);
       } else if (input.action === "hint") {
         if (run.hints.length >= 3) fail("resource-exhausted", "Bu bulmacanın üç ipucu kullanıldı.");
         const hint = hintFor(run, input);
@@ -486,6 +496,13 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   async function prepareHint(uid, placement, context) {
     const s = await read(uid); const run = runOf(s.sessions[context?.sessionId]);
+    if (H.active(run)) {
+      if (`${run.mode}_hint` !== placement || run.finished || run.expiresAt <= now()) {
+        fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
+      }
+      return H.adBenefit(run, context.itemId, {amount: 0, claimKey: `ct_hint_${run.id}_${run.adGranted}`,
+        context: {sessionId: run.id, mode: run.mode, credit: run.adGranted}});
+    }
     if (!run || `${run.mode}_hint` !== placement || run.finished || run.expiresAt <= now() ||
         run.adGranted >= 2 || run.hints.length + run.adCredits + (B.paid(run) || run.freeUsed ? 0 : 1) >= 3) {
       fail("failed-precondition", "Reklamlı ipucu hakkı yok.");
@@ -501,6 +518,14 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const run = runOf(s.sessions[receipt.context?.sessionId]);
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        const canApply = run && H.active(run) && run.mode === receipt.context.mode &&
+          run.adGranted === receipt.context.credit;
+        if (H.recoverAd(e, run, receipt, time, canApply)) {
+          if (run) s.sessions[run.id] = run; return;
+        }
+        H.grantAd(run, receipt); s.sessions[run.id] = run; return;
+      }
       const sku = run?.mode === "transfer" && run.hints.length === 2 ? "boost_first_letter" :
         run?.phase === "order" ? "boost_connection" : "boost_basic";
       const canApply = run && run.hints.length + run.adCredits < 3 && run.adGranted < 2 &&
