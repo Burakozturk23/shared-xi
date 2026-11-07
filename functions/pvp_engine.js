@@ -3,7 +3,11 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const zlib = require("node:zlib");
 const {RewardError} = require("./rewarded_ads");
-const catalog = JSON.parse(zlib.gunzipSync(fs.readFileSync(__dirname + "/config/pvp_catalog.json.gz")));
+// The catalog is about 110 MB in memory: it loads on first use, so callers that only
+// need MODES or RULE (profile and ranked stats) stay small.
+let loaded = null;
+const loadCatalog = () => loaded ||=
+  JSON.parse(zlib.gunzipSync(fs.readFileSync(__dirname + "/config/pvp_catalog.json.gz")));
 const MODES = ["club_club", "club_country", "grid_classic", "grid_random", "grid_reverse",
   "random_five", "cinko", "loto", "club_manager"];
 const RULE = "PVP_RULES_V1";
@@ -575,8 +579,9 @@ function view(c, r, uid, time) {
   }
   return v;
 }
-module.exports = {catalog, MODES, RULE, terminal, fail, hash, norm, list, shuffle, matches, player,
+module.exports = {MODES, RULE, terminal, fail, hash, norm, list, shuffle, matches, player,
   PENALTY, MIN_GAP_MS, FIVE_POINTS, GRID_RARE_BONUS, gridTieBreak,
   PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions,
   FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter,
   puzzle, hydrate, start, finish, advance, move, view, validateXi, power, simulate};
+Object.defineProperty(module.exports, "catalog", {enumerable: true, get: loadCatalog});

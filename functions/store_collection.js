@@ -7,6 +7,20 @@ const avatarIds = catalog.offers.filter((o) => o.itemType === "avatar").map((o) 
 const modes = new Set(["futbol_lingo", "mystery_player", "transfer_detective"]);
 const boosts = new Set(["boost_first_letter", "boost_last_letter", "boost_anagram"]);
 const MAX_STOCK = 99;
+// İlk Harf stays on sale with typed supports, but only for the games that take it
+// there (Transfer Dedektifi, the anagrams); the classic mode list would point the
+// player at games where it cannot be used. No open game: not on sale.
+function typedModes(itemId, policy) {
+  const id = itemId.replace(/^boost_/, "");
+  return Object.entries(B.modes).filter(([m, ids]) => ids.includes(id) && policy?.readyModes?.[m] === true)
+      .map(([m]) => m);
+}
+function typedOffer(offer, policy) {
+  if (offer.itemId !== "boost_first_letter") return offer;
+  const modes = typedModes(offer.itemId, policy);
+  return modes.length ? {...offer, modes,
+    subtitle: "Transfer Dedektifi'nde üçüncü ipucu, anagramlarda adın ilk harfi."} : null;
+}
 function validKey(key) {
   return typeof key === "string" && /^[a-zA-Z0-9_-]{16,80}$/.test(key);
 }
@@ -20,6 +34,12 @@ function createStore({db, normalize, project, HttpsError, now = Date.now, getPri
     // Letter packs (legacyOnly) are for accounts still on the classic letter supports.
     if (offer.legacyOnly && await B.policyFor(db, uid, true)) {
       error("failed-precondition", "Bu destek yeni destek sistemine çevrildi; Coin harcanmadı.");
+    }
+    if (offer.itemId === "boost_first_letter") {
+      const p = await B.policyFor(db, uid, true);
+      if (p && !typedModes(offer.itemId, p).length) {
+        error("failed-precondition", "Bu destek henüz açılmadı; Coin harcanmadı.");
+      }
     }
     if (B.offers.some((o) => o.offerId === offer.offerId)) {
       const p = await B.policyFor(db, uid, true);
@@ -148,4 +168,4 @@ function createStore({db, normalize, project, HttpsError, now = Date.now, getPri
   }
   return {purchase, consume, equip, convertLegacy};
 }
-module.exports = {catalog, offers, avatarIds, createStore, MAX_STOCK};
+module.exports = {catalog, offers, avatarIds, createStore, typedOffer, MAX_STOCK};

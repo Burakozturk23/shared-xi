@@ -6297,7 +6297,8 @@ exports.getStoreCatalog = lbGuardedOnCall(
       // Classic letter packs only for accounts outside typed supports; typed accounts
       // get their leftover letter stock converted on store open (same price, one to one).
       const offers = [...await lbStoreCatalog(db, config),
-        ...storeCollection.catalog.offers.filter((o) => o.enabled && (!o.legacyOnly || !boostPolicy))];
+        ...storeCollection.catalog.offers.filter((o) => o.enabled && (!o.legacyOnly || !boostPolicy))
+            .map((o) => boostPolicy ? storeCollection.typedOffer(o, boostPolicy) : o).filter(Boolean)];
       let legacyConverted = null;
       if (boostPolicy && ["boost_last_letter", "boost_anagram"].some((id) => state.inventory[id]?.quantity > 0)) {
         const converted = await lbStoreCollectionService().convertLegacy(uid);
@@ -10167,7 +10168,8 @@ function lbCareerTransferOnlineService() {
     settleRanked: lbSettleCareerTransferRanked});
 }
 function lbCareerTransferOnlineCallable(action) {
-  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
+    enforceAppCheck: true}, async (request) => {
     lbRequireGoogleLinked(request);
     try {
       return await lbCareerTransferOnlineService()[action](request.auth.uid, request.data || {});
@@ -10183,7 +10185,7 @@ exports.enterCareerTransferOnline = lbCareerTransferOnlineCallable("enter");
 exports.actCareerTransferOnline = lbCareerTransferOnlineCallable("act");
 
 exports.reconcileCareerTransferOnline = onSchedule({region: "europe-west1", schedule: "every 1 minutes",
-  timeZone: "Europe/Istanbul"}, async () => lbCareerTransferOnlineService().sweep());
+  timeZone: "Europe/Istanbul", memory: "512MiB"}, async () => lbCareerTransferOnlineService().sweep());
 
 function lbMysteryChainService() {
   const db = getDatabase();
@@ -10286,7 +10288,8 @@ function lbGridSupportService() {
     }});
 }
 function lbGridSupportCallable(action) {
-  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
+    enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
       return await lbGridSupportService()[action](request.auth.uid, request.data || {});
@@ -10311,7 +10314,8 @@ function lbBotSupportService() {
     }});
 }
 function lbBotSupportCallable(action) {
-  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
+    enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
       return await lbBotSupportService()[action](request.auth.uid, request.data || {});
@@ -10637,7 +10641,8 @@ function lbPvpService() {
     getPolicy: async () => (await db.ref("runtimeConfig/pvp").get()).val() || {}, settle: lbSettlePvp});
 }
 function lbPvpCallable(action) {
-  return httpsV2.onCall({region: "europe-west1", maxInstances: 20, enforceAppCheck: true}, async (request) => {
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 20, memory: "512MiB",
+    enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
       return await lbPvpService()[action](request.auth.uid, request.data || {});
@@ -10654,5 +10659,6 @@ exports.getPvp = lbPvpCallable("status");
 exports.enterPvp = lbPvpCallable("enter");
 exports.actPvp = lbPvpCallable("act");
 exports.searchPvp = lbPvpCallable("search");
-exports.reconcilePvp = onSchedule({region: "europe-west1", schedule: "every 1 minutes", maxInstances: 1},
-    async () => lbPvpService().sweep());
+exports.reconcilePvp = onSchedule({region: "europe-west1", schedule: "every 1 minutes", maxInstances: 1,
+  memory: "512MiB"},
+async () => lbPvpService().sweep());

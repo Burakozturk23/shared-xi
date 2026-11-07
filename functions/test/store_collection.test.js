@@ -176,3 +176,16 @@ test("legacy letter stock converts by price: Son harf to Temel, Harf karışım�
   assert.deepEqual({...capped.inventory},
       {boost_basic: 99, boost_strong: 99, boost_last_letter: 2, boost_anagram: 2});
 });
+test("İlk Harf with typed supports: listed only for the games that take it, refused when none is open", async () => {
+  const typed = (readyModes) => harness({runtimeConfig: {boosts: {enabled: true, betaUids: {alice: true}, readyModes}},
+    economyState: {alice: {balances: {coins: 1000}}}});
+  const none = typed({mystery: true, mastermind: true});
+  assert.ok(!(await none.call("getStoreCatalog")).offers.some((o) => o.itemId === "boost_first_letter"));
+  await assert.rejects(buy(none, "boost_first_letter_1", "first_request_1234567", 25), {code: "failed-precondition"});
+  assert.equal(none.read("economyState/alice/balances/coins"), 1000);
+  const open = typed({mystery: true, transfer: true, daily_anagram: true});
+  const offer = (await open.call("getStoreCatalog")).offers.find((o) => o.offerId === "boost_first_letter_1");
+  assert.deepEqual([...offer.modes], ["transfer", "daily_anagram"]);
+  await buy(open, "boost_first_letter_1", "first_request_7654321", 25);
+  assert.equal(open.read("economyState/alice/inventory/boost_first_letter/quantity"), 1);
+});
