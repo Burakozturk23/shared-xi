@@ -1,6 +1,8 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
+const {adapter} = require("./hints/daily");
 const {dayKey, RewardError} = require("./rewarded_ads");
 const catalog = require("./config/daily_catalog.json");
 const catalogVersion = crypto.createHash("sha256").update(JSON.stringify(catalog)).digest("hex");
@@ -47,6 +49,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
       try {
         fn(s, e);
         if (e) for (const r of Object.values(s.sessions)) B.recoverUnused(e, r, now(), () => !r.hintUsed);
+        if (e) for (const r of Object.values(s.sessions)) H.recoverUnused(e, r, now());
         return s;
       } catch (err) {
         error = err; return e ? undefined : raw;
@@ -74,8 +77,10 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
   function view(session) {
     if (!session) return null;
     const {answers, ...safe} = session;
-    for (const key of ["boostPolicy", "boostUses", "actions", "adReceipts", "adScopes"]) delete safe[key];
-    return {...safe, ...(B.paid(session) ? {support: B.view(session)} : {}), total: answers.length,
+    for (const key of ["boostPolicy", "boostUses", "actions", "adReceipts", "adScopes", "hintPolicy", "hintUses",
+      "hintAdCredits", "hintAdReceipts"]) delete safe[key];
+    return {...safe, ...(B.paid(session) ? {support: B.view(session)} : {}),
+      ...(H.active(session) ? {hintMenu: H.view(session, adapter)} : {}), total: answers.length,
       foundPlayers: session.found.map((id) => ({id, ...catalog.players[id]})),
       remainingPlayers: session.finished ? answers.filter((id) => !session.found.includes(id))
           .map((id) => ({id, ...catalog.players[id]})) : []};
@@ -163,7 +168,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
         Object.assign(r, {id: key, mode: "daily_match", entry: "daily", version: catalogVersion,
           revision: 0, expiresAt: Date.parse(today + "T00:00:00+03:00") + 86400000,
           adCredits: 0, adGranted: 0, adReceipts: {}, actions: {}});
-        B.pin(r, policy);
+        H.pinAny(r, policy, e, now());
       }
     });
     return {ok: true, session: view(s.sessions[key])};
@@ -208,6 +213,20 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
     const missed = await missedDays(before, dayKey(now()));
     const s = await change(uid, (state, e) => {
       const round = getSession(state, input.key);
+      if (input.action === "hint" && H.active(round)) {
+        if (!linked) fail("Hesabını bağla.");
+        if (!e || !/^[a-f0-9]{32}$/.test(input.requestId || "")) fail("Destek isteği geçersiz.");
+        const fp = crypto.createHash("sha256").update(JSON.stringify([input.key, input.revision,
+          ...H.paymentFingerprint(input)])).digest("hex");
+        round.actions ||= {};
+        if (round.actions[input.requestId]) {
+          if (round.actions[input.requestId] !== fp) fail("İstek değiştirilemez.");
+          return;
+        }
+        if (round.finished || round.revision !== input.revision) fail("Destek durumunu yenile.");
+        H.use(e, round, adapter, input, now());
+        round.actions[input.requestId] = fp; round.revision++; return;
+      }
       if (input.action === "hint" && B.paid(round)) {
         if (!linked) fail("Hesabını bağla.");
         if (!e || !/^[a-f0-9]{32}$/.test(input.requestId || "")) fail("Destek isteği geçersiz.");
@@ -224,7 +243,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
         round.hintUsed = true; round.hint = text; round.actions[input.requestId] = fp; round.revision++; return;
       }
       if (round.finished) return;
-      if (B.paid(round)) round.revision++;
+      if (B.paid(round) || H.active(round)) round.revision++;
       if (input.action === "finish") {
         finish(state, round, missed); return;
       }
@@ -264,7 +283,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
       if (!round.finished || !round.reward || round.doubled) fail("Bu maçın 2x ödülü alınamıyor.");
       return {amount: round.reward, claimKey: "daily_double_" + round.key, context: {key: round.key}};
     }
-    if (B.paid(round)) fail("Destek Çantası'nı kullan; uygulamayı güncelle.");
+    if (B.paid(round) || H.active(round)) fail("Destek Çantası'nı kullan; uygulamayı güncelle.");
     if (placement !== "daily_hint" || round.finished || round.adHint ||
         !round.hintUsed) fail("Önce ücretsiz ipucunu kullan.");
     return {amount: 0, claimKey: "daily_hint_" + round.key, context: {key: round.key}};
@@ -286,6 +305,10 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
   async function prepareHint(uid, placement, input) {
     if (!await isLinked(uid) || placement !== "daily_match_hint") fail("Hesabını bağla.");
     const s = initial((await ref(uid).get()).val()); const r = getSession(s, input.key);
+    if (H.active(r)) {
+      if (r.finished) fail("Destek kullanılamaz.");
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: "match_hint_" + r.key, context: {key: r.key}});
+    }
     if (!B.paid(r) || input.boostId !== "boost_basic" || r.hintUsed || r.finished) fail("Destek kullanılamaz.");
     return B.adBenefit(r, {amount: 0, claimKey: "match_hint_" + r.key,
       context: {key: r.key, sessionId: r.id}}, "boost_basic");
@@ -294,6 +317,10 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
     await change(uid, (s, e) => {
       if (!e) fail("Cüzdan hazır değil.");
       const r = s.sessions[receipt.context?.key];
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, now(), !!r && H.active(r) && !r.finished)) H.grantAd(r, receipt);
+        return;
+      }
       const usable = r?.id === receipt.context?.sessionId && !r.hintUsed;
       if (!B.recoverAd(e, r, receipt, now(), "boost_basic", usable)) B.grantAd(r, receipt);
     });

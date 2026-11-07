@@ -1,6 +1,8 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
+const {adapter} = require("./hints/daily");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const catalog = require("./config/daily_footballer_catalog.json");
 const fail = (code, message) => {
@@ -49,6 +51,7 @@ const canExtra = (r) => !r.finished && !r.extraUsed && r.guesses.length === 6;
 function reconcile(s, e, time) {
   for (const r of Object.values(s.days)) {
     B.recoverUnused(e, r, time, () => canHint(r));
+    H.recoverUnused(e, r, time);
     if (r.finished && r.won && !r.recorded) {
       r.recorded = true; (r.assisted ? s.assistedWins : s.wins)[r.day] = {at: time, guesses: r.guesses.length};
     }
@@ -61,7 +64,8 @@ function view(r, c) {
     clues: Object.fromEntries(r.guesses.map((id) => [id, clues(r.target, players.get(id), r.day)])),
     hintUsed: r.hintUsed, extraUsed: r.extraUsed, revealed: r.revealed, won: r.won, finished: r.finished,
     hint: r.hintUsed ? r.hint : null, target: r.finished ? r.target : null,
-    support: B.view(r), assisted: r.assisted, adCredits: r.adCredits, adGranted: r.adGranted,
+    support: B.view(r), hintMenu: H.view(r, adapter),
+    assisted: r.assisted, adCredits: r.adCredits, adGranted: r.adGranted,
     masteryEligible: !r.assisted, expiresAt: r.expiresAt, reward: r.reward ?? null};
 }
 // Reward design 2026-10-30: a solve pays 3 coin / 8 XP; an assisted solve
@@ -124,7 +128,7 @@ function createService({db, normalize, project, isLinked, grantCoins, grantXp,
         guesses: [], hintUsed: false, extraUsed: false, revealed: false, won: false, finished: false,
         actions: {}, createdAt: now(), expiresAt: Date.parse(day + "T00:00:00+03:00") + 86400000,
         adCredits: 0, adGranted: 0, adReceipts: {}};
-      B.pin(r, policy); s.days[day] = r;
+      H.pinAny(r, policy, null, now()); s.days[day] = r;
     });
     if (s.legacyDay === day) return {legacy: true, legacyDay: day};
     await settle(uid);
@@ -139,10 +143,10 @@ function createService({db, normalize, project, isLinked, grantCoins, grantXp,
     }
     const pack = await pinned(input.day); const policy = await getPolicy();
     const fp = hash([input.day, input.sessionId, input.revision, input.action, input.playerId ?? null,
-      ...B.paymentFingerprint(input)]);
+      ...B.paymentFingerprint(input), input.itemId ?? null]);
     await change(uid, (s, e) => {
       const r = s.days[input.day];
-      if (!B.paid(r) || r.id !== input.sessionId) fail("failed-precondition", "Oturum değişti.");
+      if (!(B.paid(r) || H.active(r)) || r.id !== input.sessionId) fail("failed-precondition", "Oturum değişti.");
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fp) fail("invalid-argument", "İstek değiştirilemez.");
         return;
@@ -155,6 +159,8 @@ function createService({db, normalize, project, isLinked, grantCoins, grantXp,
         if (!pack.catalog.players.some((p) => p.id === input.playerId)) fail("invalid-argument", "Oyuncu bulunamadı.");
         r.guesses.push(input.playerId); r.won = input.playerId === r.target.id;
         r.finished = r.won || r.extraUsed && r.guesses.length === 7;
+      } else if (input.action === "hint" && H.active(r)) {
+        H.use(e, r, adapter, input, now());
       } else if (input.action === "hint") {
         if (!canHint(r)) fail("failed-precondition", "İpucu ilk tahminden sonra açılır.");
         const words = r.target.name.trim().split(/\s+/);
@@ -177,6 +183,16 @@ function createService({db, normalize, project, isLinked, grantCoins, grantXp,
     if (!await isLinked(uid) || placement !== "daily_footballer_hint") fail("permission-denied", "Hesap gerekli.");
     const s = await read(uid); const r = s.days[dayKey(now())];
     const action = input.action;
+    if (H.active(r) && r.id === input.sessionId) {
+      if (action === "extra") {
+        // The verified-ad extra guess stays in v2; it marks the run Yardımlı.
+        if (!canExtra(r) || (r.adGranted || 0) >= 1) fail("failed-precondition", "Bu yardım şu anda kullanılamaz.");
+        return {amount: 0, requireVerifiedAd: true, claimKey: "df_hint_" + r.id + "_extra",
+          context: {day: r.day, sessionId: r.id, action, extraV2: true}};
+      }
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `df_hint_${r.id}_${input.itemId}`,
+        context: {day: r.day, sessionId: r.id}});
+    }
     if (!B.paid(r) || r.id !== input.sessionId || input.boostId !== "boost_basic" ||
       !["hint", "extra"].includes(action) ||
       !(action === "extra" ? canExtra(r) : canHint(r))) fail("failed-precondition", "Bu yardım şu anda kullanılamaz.");
@@ -186,6 +202,15 @@ function createService({db, normalize, project, isLinked, grantCoins, grantXp,
   async function settleHint(uid, receipt) {
     await change(uid, (s, e) => {
       const r = s.days[receipt.context?.day]; const extra = receipt.context?.action === "extra";
+      if (receipt.context?.extraV2) {
+        if (r?.id !== receipt.context.sessionId || !canExtra(r) || r.adReceipts?.[receipt.id]) return;
+        (r.adReceipts ||= {})[receipt.id] = true; r.adGranted = (r.adGranted || 0) + 1;
+        r.extraUsed = true; r.assisted = true; r.masteryEligible = false; r.revision++; return;
+      }
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, now(), !!r && H.active(r) && !r.finished)) H.grantAd(r, receipt);
+        return;
+      }
       const usable = r?.id === receipt.context?.sessionId && (extra ? canExtra(r) : canHint(r));
       if (B.recoverAd(e, r, receipt, now(), "boost_basic", usable)) return;
       B.grantAd(r, receipt);

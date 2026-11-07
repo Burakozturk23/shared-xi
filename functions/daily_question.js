@@ -1,6 +1,8 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
+const {adapter} = require("./hints/daily");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const bank = require("./config/daily_question_catalog.json");
 const categories = ["career", "ucl", "turkey", "transfer", "player", "international", "derby"];
@@ -53,6 +55,7 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
           for (const r of Object.values(s.boostRuns || {})) {
             if (s.answers[r.day]) r.finished = true;
             B.recoverUnused(e, r, now(), () => !s.hints[r.day]);
+            H.recoverUnused(e, r, now());
           }
         }
         return s;
@@ -89,7 +92,7 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
           day: q.day, questionId: q.id, version: q.version, revision: 0, createdAt: now(),
           expiresAt: Date.parse(q.day + "T00:00:00+03:00") + DAY, finished: false,
           adCredits: 0, adGranted: 0, adReceipts: {}, actions: {}};
-        B.pin(r, policy); s.boostRuns[q.day] = r;
+        H.pinAny(r, policy, e, now()); s.boostRuns[q.day] = r;
       });
     }
     const s = normalize((await ref(uid).get()).val());
@@ -100,8 +103,10 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
     // Answer/explanation/source URLs are only returned after this account submits.
     return {ok: true, question: safe, result: result ? {...result, answer: q.answer,
       explanation: q.explanation, sources: q.sources} : null,
-    ...(B.paid(s.boostRuns?.[q.day]) ? {session: {id: s.boostRuns[q.day].id, revision: s.boostRuns[q.day].revision,
-      support: B.view(s.boostRuns[q.day]), adCredits: s.boostRuns[q.day].adCredits,
+    ...(B.paid(s.boostRuns?.[q.day]) || H.active(s.boostRuns?.[q.day]) ? {session: {id: s.boostRuns[q.day].id,
+      revision: s.boostRuns[q.day].revision, support: B.view(s.boostRuns[q.day]),
+      hintMenu: H.view(s.boostRuns[q.day], adapter, {q, answered: !!result, eliminated: s.hints[q.day]?.eliminated}),
+      adCredits: s.boostRuns[q.day].adCredits,
       adGranted: s.boostRuns[q.day].adGranted}} : {}),
     eliminated: s.hints[q.day]?.eliminated ?? null, total: s.total,
     streak: [q.day, dayKey(now() - DAY)].includes(s.lastDay) ? s.streak : 0,
@@ -133,7 +138,7 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
       const bonus = ownBonus && s.streak % 7 === 0;
       const coins = (correct ? 8 : 2) + (bonus ? 20 : 0);
       const xp = (correct ? 10 : 5) + (bonus ? 30 : 0);
-      s.answers[q.day] = {...(B.paid(s.boostRuns?.[q.day]) ?
+      s.answers[q.day] = {...(B.paid(s.boostRuns?.[q.day]) || H.active(s.boostRuns?.[q.day]) ?
         {assisted: s.boostRuns[q.day].assisted === true, masteryEligible: !s.boostRuns[q.day].assisted} : {}),
       questionId: q.id, option: input.option, correct, coins, xp, bonus, at: now()};
       s.pending["daily_question__" + q.day] = {day: q.day, coins, xp};
@@ -163,10 +168,12 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
       fail("failed-precondition", "Soruyu yenile.");
     }
     const fp = crypto.createHash("sha256").update(JSON.stringify([input.day, input.questionId, input.sessionId,
-      input.revision, ...B.paymentFingerprint(input)])).digest("hex");
+      input.revision, ...B.paymentFingerprint(input), input.itemId])).digest("hex");
     await change(uid, (s, e) => {
       const r = s.boostRuns?.[q.day];
-      if (!e || !B.paid(r) || input.sessionId !== r.id) fail("failed-precondition", "Destek panelini yenile.");
+      if (!e || !(B.paid(r) || H.active(r)) || input.sessionId !== r.id) {
+        fail("failed-precondition", "Destek panelini yenile.");
+      }
       r.actions ||= {};
       if (r.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fp) fail("invalid-argument", "İstek değiştirilemez.");
@@ -174,6 +181,12 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
       }
       if (r.revision !== input.revision) fail("aborted", "Kayıt değişti. Yenile.");
       if (s.answers[q.day] || s.hints[q.day]) fail("failed-precondition", "Bugünkü yardım kullanılamaz.");
+      if (H.active(r)) {
+        H.use(e, r, adapter, input, now(), {q, onEliminate: (x) => {
+          s.hints[q.day] = {eliminated: x, requestId: input.requestId};
+        }});
+        r.actions[input.requestId] = fp; r.revision++; return;
+      }
       const eliminated = (q.answer + 1) % 3;
       B.consume(e, r, input, "boost_eliminate", q.id, {eliminated}, now());
       s.hints[q.day] = {eliminated, requestId: input.requestId}; r.actions[input.requestId] = fp; r.revision++;
@@ -183,6 +196,13 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
   async function prepareBoostHint(uid, placement, input) {
     if (!await isLinked(uid) || placement !== "daily_question_hint") fail("permission-denied", "Hesap gerekli.");
     const q = await current(); const s = normalize((await ref(uid).get()).val()); const r = s.boostRuns?.[q.day];
+    if (H.active(r)) {
+      if (input.sessionId !== r.id || s.hints[q.day] || s.answers[q.day]) {
+        fail("failed-precondition", "Bugünkü destek kullanılamaz.");
+      }
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: "quiz_boost_" + r.id,
+        context: {day: q.day, questionId: q.id, sessionId: r.id}});
+    }
     if (!B.paid(r) || input.sessionId !== r.id || input.boostId !== "boost_eliminate" ||
       s.hints[q.day] || s.answers[q.day]) fail("failed-precondition", "Bugünkü destek kullanılamaz.");
     return B.adBenefit(r, {amount: 0, claimKey: "quiz_boost_" + r.id,
@@ -193,6 +213,10 @@ function createService({db, documentRef, grantCoins, grantXp, projectBadges, isL
       const r = s.boostRuns?.[receipt.context?.day];
       if (!e) fail("failed-precondition", "Cüzdan hazır değil.");
       const canApply = r?.id === receipt.context?.sessionId && !s.hints[r.day] && !s.answers[r.day];
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, now(), canApply && H.active(r))) H.grantAd(r, receipt);
+        return;
+      }
       if (B.recoverAd(e, r, receipt, now(), "boost_eliminate", canApply)) return;
       if (!r.adReceipts?.[receipt.id]) B.grantAd(r, receipt);
     });
