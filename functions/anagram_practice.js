@@ -70,8 +70,7 @@ function createService({db, normalize, project, isLinked, getRollout = async () 
   }
   async function cost(uid) {
     const p = {...energy.policy.rollout, ...await getRollout()};
-    const bucket = parseInt(crypto.createHash("sha256").update(uid).digest("hex").slice(0, 8), 16) % 100;
-    return p.enabled === true && bucket < Math.max(0, Math.min(100, p.percent)) &&
+    return energy.inRollout(p, uid) &&
       Array.isArray(p.sessionModes) && p.sessionModes.includes("anagram") ? 1 : 0;
   }
   function response(s, active, charge) {

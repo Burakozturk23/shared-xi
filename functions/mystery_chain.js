@@ -262,7 +262,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const level = input.mode === "mystery" && LEVELS.includes(input.difficulty) ? input.difficulty : null;
     const fingerprint = hash(JSON.stringify([input.mode, input.target || null, daily, level]));
     const rollout = {...energy.policy.rollout, ...await getRollout()};
-    const charge = rollout.enabled === true && parseInt(hash(uid).slice(0, 8), 16) % 100 < rollout.percent &&
+    const charge = energy.inRollout(rollout, uid) &&
       (rollout.sessionModes || []).includes(input.mode === "mystery" ? "mystery" : "chain");
     const e = await change(uid, (s, e, time) => {
       applyPolicy(s, e, policy, time);

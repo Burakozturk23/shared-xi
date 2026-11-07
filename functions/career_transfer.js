@@ -291,7 +291,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       TRANSFER_LEVELS.includes(input.difficulty) ? input.difficulty : "normal";
     const fingerprint = hash(JSON.stringify([input.mode, difficulty, input.target || null, !!input.daily]));
     const seed = random(); const rollout = {...energy.policy.rollout, ...await getRollout()};
-    const charge = rollout.enabled === true && parseInt(hash(uid).slice(0, 8), 16) % 100 < rollout.percent &&
+    const charge = energy.inRollout(rollout, uid) &&
       (rollout.sessionModes || []).includes(input.mode);
     const e = await change(uid, (s, e, time) => {
       if (s.starts[input.requestId]) {

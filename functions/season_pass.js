@@ -83,7 +83,7 @@ function createService({db, isPro, grantCoins, now = Date.now, avatarsEnabled = 
     const time = now();
     const season = seasonAt(time);
     const [snapshot, pro, avatars] = await Promise.all([db.ref("economyState/" + uid).get(), isPro(uid),
-      grantAvatar && grantSupports ? avatarsEnabled() : false]);
+      grantAvatar && grantSupports ? avatarsEnabled(uid) : false]);
     const claims = snapshot.val()?.claims || {}; const uses = snapshot.val()?.storeUses || {};
     const score = points(claims, season, time);
     const level = Math.floor(score.sp / STEP_SP);

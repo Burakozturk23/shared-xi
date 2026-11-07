@@ -118,7 +118,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   async function cost(uid, mode) {
     if (!await isLinked(uid)) return 0;
     const p = {...energy.policy.rollout, ...await getRollout()};
-    return p.enabled && parseInt(hash(uid).slice(0, 8), 16) % 100 < p.percent && (p.sessionModes ||
+    return energy.inRollout(p, uid) && (p.sessionModes ||
       []).includes(mode) ? 1 : 0;
   }
   async function settle(uid) {

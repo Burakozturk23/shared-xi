@@ -67,7 +67,7 @@ test("classic: each item describes one valid candidate of the selected cell", as
 test("byTarget lists what each open cell can produce", async () => {
   const h = setup({hint_kulup: 1}); const r = await start(h, "solo_grid_classic");
   const cell = openCell(r);
-  assert.ok(r.hintMenu.byTarget[cell].includes("milliyet"));
+  assert.ok(r.hintMenu.byTarget[cell].includes("ilk_harf"));
   for (const [t, ids] of Object.entries(r.hintMenu.byTarget)) {
     if (!ids.includes("baska_kulup")) {
       await assert.rejects(hint(h, r, "baska_kulup", Number(t)), {code: "failed-precondition"});

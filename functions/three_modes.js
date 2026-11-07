@@ -227,8 +227,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     if (input.entry === "league" && input.mode !== "squad_vault") fail("invalid-argument", "Geçersiz lig oyunu.");
     const fixed = input.entry === "daily" ? await daily(input.mode) : null;
     const rollout = {...energy.policy.rollout, ...await getRollout()};
-    const bucket = indexFrom(uid, 100);
-    const charged = rollout.enabled === true && bucket < Math.min(100, Math.max(0, rollout.percent)) &&
+    const charged = energy.inRollout(rollout, uid) &&
       (rollout.sessionModes || []).includes(input.mode);
     const seed = random();
     const state = await change(uid, (s, e, time) => {

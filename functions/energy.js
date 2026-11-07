@@ -32,11 +32,17 @@ function refreshed(raw, time) {
   return e;
 }
 const held = (e) => Object.values(e.sessions).filter((s) => s.status === "reserved").length;
+/** In the energy rollout: a beta uid always, everyone else by the stable percent bucket. */
+function inRollout(r, uid) {
+  if (r?.enabled !== true) return false;
+  if (r.betaUids?.[uid] === true) return true;
+  const bucket = parseInt(crypto.createHash("sha256").update(String(uid)).digest("hex").slice(0, 8), 16) % 100;
+  return bucket < Math.min(100, Math.max(0, Number(r.percent) || 0));
+}
 function createService({db, normalize, project = async () => {}, isPro, getRollout, now = Date.now}) {
   async function enabled(uid) {
     const r = {...policy.rollout, ...await getRollout()};
-    const bucket = parseInt(crypto.createHash("sha256").update(uid).digest("hex").slice(0, 8), 16) % 100;
-    return {active: r.enabled === true && bucket < Math.min(100, Math.max(0, r.percent)),
+    return {active: inRollout(r, uid),
       minClientVersion: r.minClientVersion, depot: r.depot === true,
       sessionModes: Array.isArray(r.sessionModes) ? r.sessionModes.filter((m) => policy.sessionModes.includes(m)) : []};
   }
@@ -269,4 +275,4 @@ function createService({db, normalize, project = async () => {}, isPro, getRollo
   return {status, start, confirm, resume, cancel, purchase, proBonus, prepareReward, settleReward, requireStory,
     enabled};
 }
-module.exports = {DEPOT_CAP, createService, refreshed, held, policy};
+module.exports = {DEPOT_CAP, createService, refreshed, held, policy, inRollout};

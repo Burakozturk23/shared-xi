@@ -9220,7 +9220,11 @@ function lbSeasonService() {
   return require("./season_pass").createService({db, now: () => Date.now(),
     isPro: async (uid) => lbPremiumState((await db.ref("premiumState/" + uid).get()).val(), Date.now()).active,
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args),
-    avatarsEnabled: async () => (await db.ref("runtimeConfig/seasonAvatars/enabled").get()).val() === true,
+    avatarsEnabled: async (uid) => {
+      const raw = (await db.ref("runtimeConfig/seasonAvatars").get()).val() || {};
+      return raw.enabled === true && (raw.public === true || raw.betaUids?.[uid] === true ||
+        raw.public === undefined && raw.betaUids === undefined);
+    },
     grantAvatar: (uid, id, tier) => lbProDraw(db, uid, (e, now) =>
       require("./pro_crate").drawAvatar(e, id, uid, tier, "season_pass", now)),
     // Support steps: one receipt per unit; past the 99 cap they pay half the store price.

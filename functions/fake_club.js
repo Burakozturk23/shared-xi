@@ -214,7 +214,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
   }
   async function energyCost(uid) {
     const rollout = {...energy.policy.rollout, ...await getRollout()};
-    return rollout.enabled === true && parseInt(hash(uid).slice(0, 8), 16) % 100 < rollout.percent &&
+    return energy.inRollout(rollout, uid) &&
       (rollout.sessionModes || []).includes("fake_club") ? 1 : 0;
   }
   async function status(uid, input) {
