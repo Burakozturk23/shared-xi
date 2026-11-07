@@ -1,5 +1,7 @@
 "use strict";
 const {RewardError} = require("./rewarded_ads");
+// Per scenario route and per complete chapter (8 scenarios); the ad double is optional.
+const REWARDS = Object.freeze({scenario: {coins: 10, xp: 25}, chapter: {coins: 60, xp: 100}});
 const catalog = require("./config/what_if_catalog.json");
 const scenarios = Object.fromEntries(catalog.scenarios.map((s) => [s.id, s]));
 const fail = (code, message) => {
@@ -78,9 +80,9 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
     await change(uid, (s) => {
       const p = s.progress[scenario.id] ||= {ends: {}};
       p.ends[route.id] ||= now();
-      earned(s, "scenario__" + scenario.id, 10, 25);
+      earned(s, "scenario__" + scenario.id, REWARDS.scenario.coins, REWARDS.scenario.xp);
       counts(s).forEach((n, i) => {
-        if (n === 8) earned(s, "chapter__" + (i + 1), 60, 100);
+        if (n === 8) earned(s, "chapter__" + (i + 1), REWARDS.chapter.coins, REWARDS.chapter.xp);
       });
     });
     return status(uid);
@@ -145,4 +147,4 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
   }
   return {status, submit, favorites, hint, prepareReward, settleReward};
 }
-module.exports = {createService, catalog, scenarios, accepts};
+module.exports = {createService, catalog, scenarios, accepts, REWARDS};

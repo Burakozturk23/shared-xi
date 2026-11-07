@@ -1,4 +1,5 @@
 import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -141,7 +142,7 @@ class _DynastiesPageState extends State<DynastiesPage> {
     final visible=c.catalog.dynasties.where((d)=>_filter=='all'||d.chapterId.toString()==_filter);
     return [
       _hero('HANEDANLIKLAR ÇAĞI','Bir dönem.\nKalıcı bir iz.',
-        '19 hanedanlık. 38 görev. Kadroyu, kupaları ve oyun fikrini keşfet.',
+        '${c.catalog.dynasties.length} hanedanlık. ${c.catalog.tasks.length} görev. Kadroyu, kupaları ve oyun fikrini keşfet.',
         footer:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text('${c.sealCount} / ${c.catalog.dynasties.length} mühür  ·  ${c.count} / ${c.catalog.tasks.length} görev',style:const TextStyle(color:Colors.white,fontWeight:FontWeight.bold)),
           const SizedBox(height:12),LinearProgressIndicator(value:c.sealCount/c.catalog.dynasties.length,minHeight:6,
@@ -171,6 +172,12 @@ class _DynastiesPageState extends State<DynastiesPage> {
             Icon(c.catalog.dynasties.where((d) => c.seals.containsKey(d.id)).length >= dyMap(raw)['count'] ? Icons.verified : Icons.flag_outlined),const SizedBox(width:12),
             Expanded(child:Text('${dyMap(raw)['count']} mühür · +${dyMap(raw)['coins']} Coin / +${dyMap(raw)['xp']} XP\n${dyMap(c.rewards['milestone_${dyMap(raw)['count']}'])['settled']==true?'Ödül alındı':c.catalog.dynasties.where((d) => c.seals.containsKey(d.id)).length >= dyMap(raw)['count']?'Ödül eşitlemesi bekliyor':'Keşfetmeye devam et'}')),
           ]))),
+        PitchPanel(key:const ValueKey('dy-expansion-final'),child:Row(children:[
+          Icon(c.sealCount>=c.catalog.dynasties.length ? Icons.verified : Icons.flag_outlined),const SizedBox(width:12),
+          Expanded(child:Text('Tüm ${c.catalog.dynasties.length} mühür · +${storyFinals['dynasties']!.coins} Coin / +${storyFinals['dynasties']!.xp} XP\n'
+            '${c.rewards.containsKey('expansion_final') ? 'Ödül alındı' : 'Atlasın tamamı için bir kez'}')),
+        ])),
+        const SizedBox(height:8),
         PitchPanel(key:const ValueKey('dy-historian'),child:Text(c.catalog.dynasties.where((d) => d.data['expansion'] == null && c.seals.containsKey(d.id)).length==16?'Futbol Tarihçisi · 16/16 mühür tamamlandı':'Futbol Tarihçisi · ilk 16 dönemin mühürleriyle açılır')),
       ],
       for(final chapter in [1,2]) ...[

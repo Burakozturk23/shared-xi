@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/journey_v2_store.dart';
 import '../app/route_appearance.dart';
 import '../controllers/journey_rewards_controller.dart';
 import '../models/journey_task.dart';
@@ -42,7 +43,7 @@ class _JourneyProfileShowcaseState extends State<JourneyProfileShowcase> {
         else Wrap(spacing:14,runSpacing:12,children:[for(final j in favorites) SizedBox(width:80,child:Column(children:[
           PlayerAvatar(player:passportPlayer(j),size:64),const SizedBox(height:6),Text(j.name,textAlign:TextAlign.center,style:Theme.of(context).textTheme.bodySmall),
         ]))]),
-        const SizedBox(height:8),Text('${_rewards.completed.length} / 40 damga · Pasaportu aç'),
+        const SizedBox(height:8),Text('${_rewards.completed.length} / $journeyCareerCount damga · Pasaportu aç'),
       ]))));
   }
 }

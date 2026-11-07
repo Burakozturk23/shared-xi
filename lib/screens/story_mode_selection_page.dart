@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/story_counts.dart';
 import '../app/game_audio.dart';
 import '../app/game_catalog.dart';
 import '../app/game_launcher.dart';
@@ -101,6 +102,11 @@ class _StoryModeSelectionPageState extends State<StoryModeSelectionPage> {
 
   static const _featured = storyFeaturedIndex;
   final _search = TextEditingController();
+  StoryCounts _counts = StoryCounts.current;
+
+  /// The catalog-derived line, or the mode's own subtitle.
+  String _subtitle(int i) =>
+      _counts.subtitleFor(storySubModes[i].title) ?? storySubModes[i].subtitle;
 
   @override
   void dispose() {
@@ -112,7 +118,7 @@ class _StoryModeSelectionPageState extends State<StoryModeSelectionPage> {
     context,
     GameEntry(
       title: storySubModes[i].title,
-      subtitle: storySubModes[i].subtitle,
+      subtitle: _subtitle(i),
       icon: storySubModes[i].icon,
       page: _pages[i],
       // Story modes own their bundled catalogs; they need no player DB warm-up.
@@ -129,7 +135,7 @@ class _StoryModeSelectionPageState extends State<StoryModeSelectionPage> {
       child: PitchRow(
         key: ValueKey('story-mode-$i'),
         title: storySubModes[i].title,
-        subtitle: storySubModes[i].subtitle,
+        subtitle: _subtitle(i),
         icon: storySubModes[i].icon,
         leading: HubIconBox(
           storySubModes[i].icon,
@@ -242,7 +248,7 @@ class _StoryModeSelectionPageState extends State<StoryModeSelectionPage> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: HubPill(
-                          'ÖNE ÇIKAN • EFSANE',
+                          'ÖNE ÇIKAN',
                           color: amber,
                           background: amber.withValues(alpha: .12),
                           dot: true,
@@ -268,7 +274,7 @@ class _StoryModeSelectionPageState extends State<StoryModeSelectionPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        featured.subtitle,
+                        _subtitle(_featured),
                         style: text.bodyMedium?.copyWith(color: p.muted),
                       ),
                       const SizedBox(height: 16),

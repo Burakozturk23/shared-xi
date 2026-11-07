@@ -477,7 +477,8 @@ class GameCatalog {
     ),
     GameEntry(
       title: 'Story Mode',
-      subtitle: 'Oyuncu yolculuğu, UCL, nostalji',
+      subtitle:
+          '8 hikâye: kariyerler, UCL, derbiler, hanedanlar ve daha fazlası',
       icon: Icons.auto_stories_outlined,
       page: StoryModeSelectionPage(),
       category: 'Hikâye',

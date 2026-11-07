@@ -1,4 +1,5 @@
 import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 
@@ -257,11 +258,14 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
       label: const Text('Nostalji Albümü'),
     ),
     const SizedBox(height: 16),
-    const StoryArchiveRewards(storageId: 'nostalgia-rewards',
+    StoryArchiveRewards(storageId: 'nostalgia-rewards',
       summary: 'Her görev · 6 Coin + 15 XP', children: [
-        Text('Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
-        SizedBox(height: 8),
-        Text('İlk 12 bölümün albüm finali: 60 Coin + 120 XP. Ek bölümler de görev ve bölüm ödülleri kazandırır.'),
+        const Text('Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
+        const SizedBox(height: 8),
+        const Text('İlk 12 bölümün albüm finali: 60 Coin + 120 XP. Ek bölümler de görev ve bölüm ödülleri kazandırır.'),
+        const SizedBox(height: 8),
+        Text('Tüm ${c.catalog.chapters.length} bölüm: ${storyFinals['turkish_nostalgia']!.coins} Coin + '
+          '${storyFinals['turkish_nostalgia']!.xp} XP kapanış ödülü (bir kez).', key: const ValueKey('nostalgia-expansion-final')),
       ]),
     if (c.pending.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 12),
       child: Text('${c.pending.length} görev sunucu onayı bekliyor.')),

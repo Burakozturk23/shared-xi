@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/international_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, matches: [...baseCatalog.matches, ...expansion.international]};
 const matches = Object.fromEntries(catalog.matches.map((m) => [m.id, m]));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
@@ -30,6 +31,9 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     for (const milestone of catalog.economy.milestones) {
       if (count >= milestone.count) earn("milestone_" + milestone.count, milestone.coins, milestone.xp);
     }
+    // Whole catalog (base + expansion): its own receipt, old milestones untouched.
+    const final = Finals.FINALS.international_glory;
+    if (count === catalog.matches.length) earn(Finals.KEY, final.coins, final.xp);
     return s;
   }
   async function reconcile(uid) {
@@ -56,6 +60,7 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     const results = Object.fromEntries(Object.keys(s.completed).filter((id) => Object.hasOwn(matches, id))
         .map((id) => [id, matches[id].result]));
     return {version: catalog.version, completed: s.completed, rewards: s.rewards, results,
+      expansionFinal: Finals.view("international_glory", s.rewards),
       rewardEligible: eligible, pro: eligible && await isPro(uid), hints: Object.fromEntries(
           Object.keys(s.hints).filter((id) => Object.hasOwn(matches, id)).map((id) => [id, help(matches[id])]))};
   }

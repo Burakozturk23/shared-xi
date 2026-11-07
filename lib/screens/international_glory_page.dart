@@ -1,4 +1,5 @@
 import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -145,8 +146,10 @@ class _InternationalGloryPageState extends State<InternationalGloryPage> {
           const Text('Ödül ilk tamamlamada bir kez verilir. Tekrar oynamak ücretsiz.'),
           const SizedBox(height: 12),
           StoryArchiveStats(items: [
-            for (final (n, coin) in [(10,40),(20,70),(30,90),(40,120)])
-              (c.count >= n ? Icons.check_circle_outline : Icons.flag_outlined, '$n maç · +$coin Coin'),
+            for (final m in internationalMilestones)
+              (c.count >= m.count ? Icons.check_circle_outline : Icons.flag_outlined, '${m.count} maç · +${m.coins} Coin'),
+            (c.count >= c.catalog.matches.length ? Icons.check_circle_outline : Icons.emoji_events_outlined,
+              'Tüm ${c.catalog.matches.length} maç · +${storyFinals['international_glory']!.coins} Coin'),
           ]),
         ]),
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 12),

@@ -2,6 +2,10 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/journey_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
+// Per solved career, per complete chapter, and the original 32-career finale.
+const REWARDS = Object.freeze({player: {coins: 20, xp: 40}, chapter: {coins: 80, xp: 120},
+  final: {coins: 150, xp: 300}});
 const catalog = {...baseCatalog, chapters: [...baseCatalog.chapters, ...[expansion.journey]]};
 const chapters = catalog.chapters;
 const journeys = Object.fromEntries(chapters.flatMap((c) => c.journeys.map((j) => [j.id, j])));
@@ -71,14 +75,18 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
   function accrue(s) {
     for (const c of chapters) {
       for (const j of c.journeys) {
-        if (s.journeys[j.id]?.solved === 4) earned(s, "player__" + j.id, 20, 40);
+        if (s.journeys[j.id]?.solved === 4) earned(s, "player__" + j.id, REWARDS.player.coins, REWARDS.player.xp);
       }
       if (c.journeys.every((j) => s.journeys[j.id]?.solved === 4)) {
-        earned(s, "chapter__" + (chapters.indexOf(c) + 1), 80, 120);
+        earned(s, "chapter__" + (chapters.indexOf(c) + 1), REWARDS.chapter.coins, REWARDS.chapter.xp);
       }
     }
     // Original 32-career finale and badge requirements remain stable.
-    if (counts(s).every((n) => n === 8)) earned(s, "final", 150, 300);
+    if (counts(s).every((n) => n === 8)) earned(s, "final", REWARDS.final.coins, REWARDS.final.xp);
+    // All 40 careers (base + expansion): the expansion's own closing receipt.
+    if (Object.values(journeys).every((j) => s.journeys[j.id]?.solved === 4)) {
+      earned(s, Finals.KEY, Finals.FINALS.player_journey.coins, Finals.FINALS.player_journey.xp);
+    }
   }
   async function settle(uid) {
     const state = await get(uid);
@@ -104,7 +112,8 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
       assist: Object.fromEntries(Object.values(journeys).flatMap((j) => j.tasks
           .map((t) => [t.id, assistOf(t, s.hints[t.id])]).filter(([, v]) => v))),
       finalUnlocked: counts(s).every((n) => n === 8), hintPrice: 10,
-      playerReward: {coins: 20, xp: 40}, chapterReward: {coins: 80, xp: 120}, finalReward: {coins: 150, xp: 300}};
+      playerReward: REWARDS.player, chapterReward: REWARDS.chapter, finalReward: REWARDS.final,
+      expansionFinal: Finals.view("player_journey", s.rewards)};
   }
   async function submit(uid, input) {
     if (input.version !== catalog.version) fail("failed-precondition", "Uygulamanı güncelle.");
@@ -186,4 +195,4 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, projec
   }
   return {status, submit, favorites, hint, prepareReward, settleReward};
 }
-module.exports = {createService, catalog, accepts, journeys};
+module.exports = {createService, catalog, accepts, journeys, REWARDS};

@@ -53,7 +53,7 @@ void main() {
       await captureQa(t, _boundary, 'story-${light ? 'light' : 'dark'}');
       final pill = t.widget<HubPill>(
         find.ancestor(
-          of: find.text('ÖNE ÇIKAN • EFSANE'),
+          of: find.text('ÖNE ÇIKAN'),
           matching: find.byType(HubPill),
         ),
       );

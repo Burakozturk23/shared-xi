@@ -28,17 +28,31 @@ function measure() {
   const prices = require("../price_config");
   const coinPacks = require("../coin_purchases").PRODUCTS;
 
-  const story = {};
-  for (const [id, file, list] of [["derby_day", "derby_day", "tasks"], ["dynasties", "dynasties", "tasks"],
-    ["football_docu", "football_docu", "tasks"], ["international_glory", "international", "matches"],
-    ["ucl_moments", "ucl", "matches"]]) {
-    const c = json(`config/${file}_catalog.json`);
-    const each = (c.economy.task || c.economy.match).coins;
-    story[id] = c[list].length * each + sum(c.economy.milestones.map((m) => m.coins));
+  // Hikâye Modu, one-time: the catalogs the servers actually use (base + Ekim 2026
+  // expansion), coins and XP, with every story's closing rewards.
+  const story = {}; const storyXp = {};
+  const add = (id, coins, xp) => {
+    story[id] = (story[id] || 0) + coins; storyXp[id] = (storyXp[id] || 0) + xp;
+  };
+  for (const [id, list] of [["derby_day", "tasks"], ["dynasties", "tasks"], ["football_docu", "tasks"],
+    ["international_glory", "matches"], ["ucl_moments", "matches"]]) {
+    const c = require("../" + id).catalog; const each = c.economy.task || c.economy.match;
+    add(id, c[list].length * each.coins, c[list].length * each.xp);
+    for (const m of c.economy.milestones) add(id, m.coins, m.xp);
   }
-  const nostalgia = json("config/nostalgia_catalog.json");
-  story.turkish_nostalgia = sum(nostalgia.chapters.map((c) => c.tasks.length)) * nostalgia.economy.task.coins +
-    nostalgia.chapters.length * nostalgia.economy.chapter.coins + nostalgia.economy.final.coins;
+  const nostalgia = require("../nostalgia").catalog; const ne = nostalgia.economy;
+  const nostalgiaTasks = sum(nostalgia.chapters.map((c) => c.tasks.length));
+  add("turkish_nostalgia", nostalgiaTasks * ne.task.coins + nostalgia.chapters.length * ne.chapter.coins +
+    ne.final.coins, nostalgiaTasks * ne.task.xp + nostalgia.chapters.length * ne.chapter.xp + ne.final.xp);
+  const journey = require("../player_journey"); const jr = journey.REWARDS;
+  const careers = Object.keys(journey.journeys).length; const parts = journey.catalog.chapters.length;
+  add("player_journey", careers * jr.player.coins + parts * jr.chapter.coins + jr.final.coins,
+      careers * jr.player.xp + parts * jr.chapter.xp + jr.final.xp);
+  const whatIf = require("../what_if"); const wr = whatIf.REWARDS;
+  const routes = whatIf.catalog.scenarios.length; const books = whatIf.catalog.chapters.length;
+  add("what_if", routes * wr.scenario.coins + books * wr.chapter.coins,
+      routes * wr.scenario.xp + books * wr.chapter.xp);
+  for (const [id, f] of Object.entries(require("../story_finals").FINALS)) add(id, f.coins, f.xp);
 
   const measured = {
     daily_reward: {average: round(sum(s.daily_reward.coinsByDay) / s.daily_reward.coinsByDay.length),
@@ -63,7 +77,7 @@ function measure() {
     achievement: {total: sum(Object.values(economy.achievementRewards(economy.DEFAULT_CONFIG)))},
     general_mission: {total: sum(Object.values(s.general_mission.rewards))},
     missions_v3_career: {total: sum(Object.values(missions.career))},
-    story_modes: {total: sum(Object.values(story))},
+    story_modes: {total: sum(Object.values(story)), totalXp: sum(Object.values(storyXp))},
   };
 
   const byId = Object.fromEntries(budget.sources.map((x) => [x.id, x]));
@@ -171,7 +185,7 @@ function measure() {
   ];
 
   return {
-    budget, measured, story, sinks, coinPacks, supports, release, pro,
+    budget, measured, story, storyXp, sinks, coinPacks, supports, release, pro,
     totals: {routineAverage, routineAverageMissionsV3, fullPlayerAverage, fullPlayerAverageMissionsV3,
       dailyModeCeiling, oneTimeSupply, cosmeticCatalog,
       monthlySupportValue, proMonthlyValue, proRatio, proRatioMissionsV3, proMonthlyValueFlagOff,
@@ -211,8 +225,9 @@ function markdown(m = measure()) {
       `(bant ${b.band.routineMin}–${b.band.fullPlayerMax}).`,
     `- Tüm günlük kaynakların en dolu günü toplamı: **${m.totals.dailyModeCeiling}** coin.`,
     `- Tek seferlik arz (başarı + genel görev): **${m.totals.oneTimeSupply}** coin.`,
-    `- Hikâye modları tek seferlik: ${Object.entries(m.story).map(([k, n]) => `${k} ${n}`).join(", ")} ` +
-      `(toplam ${m.measured.story_modes.total}).`,
+    `- Hikâye modları tek seferlik (genişleme ve kapanış ödülleri dahil): ` +
+      `${Object.entries(m.story).map(([k, n]) => `${k} ${n} coin / ${m.storyXp[k]} XP`).join(", ")} ` +
+      `(toplam ${m.measured.story_modes.total} coin, ${m.measured.story_modes.totalXp} XP).`,
     `- Kozmetik katalog: **${m.totals.cosmeticCatalog}** coin; rutin gelirle bitirme süresi ` +
       `**${m.totals.catalogDays}** gün (sınır ${b.band.maxCatalogDays}).`,
     "", "## Güçlendirme kaynakları (Faz 2, coin eşdeğeri)", "",
@@ -287,7 +302,7 @@ function problems(m = measure(), code = readCode()) {
   const out = []; const b = m.budget; const t = m.totals;
   const near = (a, e) => Math.abs(a - e) < 0.01;
   for (const x of b.sources) {
-    for (const key of ["average", "max", "total"]) {
+    for (const key of ["average", "max", "total", "totalXp"]) {
       const got = m.measured[x.id]?.[key];
       if (got != null && !near(got, x[key])) out.push(`${x.id}.${key}: kayıt ${x[key]}, kod ${got}`);
     }

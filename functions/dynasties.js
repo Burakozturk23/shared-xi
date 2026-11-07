@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/dynasties_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, tasks: [...baseCatalog.tasks, ...expansion.dynastyTasks],
   dynasties: [...baseCatalog.dynasties, ...expansion.dynasties]};
 const tasks = Object.fromEntries(catalog.tasks.map((t) => [t.id, t]));
@@ -41,6 +42,8 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     for (const m of catalog.economy.milestones) {
       if (count >= m.count) earn("milestone_" + m.count, m.coins, m.xp);
     }
+    // Every dynasty of the full catalog (base + expansion): its own receipt.
+    if (count === catalog.dynasties.length) earn(Finals.KEY, Finals.FINALS.dynasties.coins, Finals.FINALS.dynasties.xp);
     return s;
   }
   async function reconcile(uid) {
@@ -74,7 +77,7 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     return {version: catalog.version, rewardEligible: eligible, pro: eligible && await isPro(uid),
       results: Object.fromEntries(Object.keys(s.completed).filter((id) => Object.hasOwn(tasks, id))
           .map((id) => [id, tasks[id].result])),
-      rewards: s.rewards,
+      rewards: s.rewards, expansionFinal: Finals.view("dynasties", s.rewards),
       seals: Object.fromEntries(seals.map((d) => [d.id, {story: d.story,
         earnedAt: Math.max(...d.taskIds.map((id) => s.completed[id]))}])),
       historian: baseCatalog.dynasties.every((d) => d.taskIds.every((id) => s.completed[id])),

@@ -1,4 +1,5 @@
 import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -142,12 +143,15 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
         ])),
       const SizedBox(height: 16),
       Text('Her ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 6), const Text('10, 20 ve 34 farklı maçta koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
+      const SizedBox(height: 6), Text('${milestoneCounts(uclMilestones)} farklı maçta koleksiyon bonusu; '
+        'tüm ${c.catalog.matches.length} gece için kapanış ödülü. Tekrar oynamak ücretsiz.'),
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 8),
         child: Text('Misafir olarak oynayabilirsin. Ödülleri almak için bu misafir hesabını Google’a bağla.')),
       const SizedBox(height: 12),
       Wrap(spacing: 8, runSpacing: 4, children: [
-        for (final (n, coin) in [(10,40),(20,70),(34,100)]) Chip(label: Text('${c.catalog.matches.where((m) => c.results.containsKey(m.id)).length >= n ? '✓ ' : ''}$n gece · +$coin coin')),
+        for (final m in uclMilestones) Chip(label: Text('${c.catalog.matches.where((x) => c.results.containsKey(x.id)).length >= m.count ? '✓ ' : ''}${m.count} gece · +${m.coins} coin')),
+        Chip(key: const ValueKey('ucl-expansion-final'), label: Text('${c.catalog.matches.every((x) => c.results.containsKey(x.id)) ? '✓ ' : ''}'
+          'Tüm ${c.catalog.matches.length} gece · +${storyFinals['ucl_moments']!.coins} coin')),
       ]),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
         child: PitchRow(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,

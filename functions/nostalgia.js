@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/nostalgia_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, chapters: [...baseCatalog.chapters, ...expansion.nostalgia]};
 const tasks = Object.fromEntries(catalog.chapters.flatMap((c) => c.tasks.map((t) => [t.id, t])));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
@@ -59,6 +60,10 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     if (baseCatalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
       earn("album", catalog.economy.final.coins, catalog.economy.final.xp);
     }
+    // All 15 periods (base + expansion): the expansion's own closing receipt.
+    if (catalog.chapters.every((c) => c.tasks.every((t) => s.completed[t.id]))) {
+      earn(Finals.KEY, Finals.FINALS.turkish_nostalgia.coins, Finals.FINALS.turkish_nostalgia.xp);
+    }
     return s;
   }
   async function reconcile(uid) {
@@ -82,6 +87,7 @@ function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro,
     if (eligible) await settle(uid);
     const s = await get(uid);
     return {version: catalog.version, completed: s.completed, hints: s.hints, rewards: s.rewards,
+      expansionFinal: Finals.view("turkish_nostalgia", s.rewards),
       // The app asset has no answers: every solved task's answer and story come from here.
       results: Object.fromEntries(Object.keys(s.completed).filter((id) => tasks[id])
           .map((id) => [id, tasks[id].result || {answer: tasks[id].answerKeys.map((k) =>

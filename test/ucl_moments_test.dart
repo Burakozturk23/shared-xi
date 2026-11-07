@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_xi/app/app_feedback.dart';
+import 'package:shared_xi/app/app_preferences.dart';
 import 'package:shared_xi/controllers/ucl_moments_controller.dart';
 import 'package:shared_xi/models/ucl_moment.dart';
 import 'package:shared_xi/services/ucl_moments_service.dart';
@@ -71,6 +74,43 @@ void selectCorrect(UclMomentsController c) {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('a story answer is felt: wrong is two pulses, right is one', () async {
+    SharedPreferences.setMockInitialValues({});
+    final pulses = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+          if (call.method == 'HapticFeedback.vibrate') pulses.add('pulse');
+          return null;
+        });
+    addTearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null);
+      AppFeedback.preferences = null;
+    });
+    final prefs = await AppPreferences.load();
+    await prefs.setSound(false);
+    await prefs.setHaptics(true);
+    AppFeedback.preferences = prefs;
+    final c = UclMomentsController(
+      catalog: uclPack(),
+      store: MemoryUclStore(),
+      gateway: FakeUclGateway(),
+    );
+    addTearDown(c.dispose);
+    await c.load();
+    final m = c.catalog.matches.firstWhere((m) => m.type != 'timeline');
+    c.open(m.id);
+    c.start();
+    final correct = uclStrings(uclPrivate(m.id)['answerKeys']);
+    c.choose(m.optionIds.firstWhere((id) => !correct.contains(id)));
+    await c.submit();
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    expect(pulses, ['pulse', 'pulse']);
+    pulses.clear();
+    selectCorrect(c);
+    await c.submit();
+    expect(pulses, ['pulse']);
+  });
   test(
     'All 34 tasks retry, complete and replay without client answer keys',
     () async {

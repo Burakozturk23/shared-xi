@@ -225,10 +225,10 @@ void main() {
         final favorite = find.widgetWithIcon(IconButton, Icons.star_rounded);
         for (
           var i = 0;
-          i < 25 && favorite.hitTestable().evaluate().isEmpty;
+          i < 50 && favorite.hitTestable().evaluate().isEmpty;
           i++
         ) {
-          await tester.drag(find.byType(ListView), const Offset(0, -180));
+          await tester.drag(find.byType(ListView), const Offset(0, -90));
           await tester.pumpAndSettle();
         }
         expect(favorite.hitTestable(), findsOneWidget);
