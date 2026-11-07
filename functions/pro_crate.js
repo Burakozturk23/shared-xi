@@ -102,6 +102,17 @@ function monthOf(dayKey) {
     daysLeft: last - Number(dayKey.slice(8)) + 1};
 }
 
+/** The calendar month before "YYYY-MM". */
+function previousMonth(month) {
+  const [y, m] = month.split("-").map(Number);
+  return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`;
+}
+
+/** Months until a Pro member who buys nothing else owns every avatar of a tier. */
+function depletionMonths(tier, perMonth) {
+  return perMonth > 0 ? Math.ceil(AVATARS.filter((a) => a.price === tier).length / perMonth) : Infinity;
+}
+
 /** When this Pro period's Kasa may be opened: 48 hours after the subscription started. */
 function openableAt(premium) {
   return premium.plan === "lifetime" || !premium.startedAt ? 0 : premium.startedAt + OPEN_AFTER_MS;
@@ -133,4 +144,4 @@ function expectedValue(mode, e = {inventory: {}}) {
 }
 
 module.exports = {AVATARS, KITS, CRATE, CRATE_TIER, SEASON_WEIGHTS, FALLBACK_COINS, OPEN_AFTER_MS, roll, pool, odds,
-  drawAvatar, monthOf, openableAt, openCrate, expectedValue};
+  drawAvatar, monthOf, openableAt, openCrate, expectedValue, previousMonth, depletionMonths};

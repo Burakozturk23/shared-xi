@@ -49,7 +49,8 @@ String crateOddsText(DrawOdds odds, int tier) {
   final t = odds.tier(tier);
   if (t != null) {
     return 'Avatar, sahip olmadığın ${t.count} özel ($tier coin) avatar arasından '
-        'eşit şansla çıkar: her biri ${_percent(t.each)}.';
+        'eşit şansla çıkar: her biri ${_percent(t.each)}.'
+        "${t.count <= 5 ? " Az kaldı: bu kademe bitince Kasa 300 coin'lik avatarlara geçer." : ''}";
   }
   return 'Özel avatarların hepsi sende; avatar, sahip olmadığın ${odds.count} '
       'avatar arasından eşit şansla çıkar.';

@@ -183,3 +183,23 @@ test("Pro depot: daily +2 outside the capacity, at most 20; play spends normal e
   h.setTime(h.now + 86400000);
   await assert.rejects(service.proBonus("alice"), /dolu \(20\)/);
 });
+
+test("wallet-writing Kasa and conversion callables require App Check", () => {
+  const h = harness();
+  for (const name of ["getProCrate", "claimProCrate", "convertLegacyBoosts"]) {
+    assert.equal(h.context.exports[name].options.enforceAppCheck, true, name);
+  }
+});
+
+test("48 h wait: a new purchase waits, a subscriber who opened last month's Kasa does not", async () => {
+  const h = harness({runtimeConfig: {proCrate: {enabled: true, public: true}}});
+  h.setTime("2026-12-01T09:00:00Z");
+  // Play reported the renewal as a fresh start an hour ago.
+  h.seed("premiumState/alice", pro(h.now - 3600000));
+  assert.equal((await h.call("getProCrate")).canOpen, false);
+  h.seed("economyState/alice/storeUses/pro_crate__2026-11", {month: "2026-11", openedAt: h.now - 20 * 86400000});
+  const s = await h.call("getProCrate");
+  assert.equal(s.canOpen, true); assert.equal(s.openableAt, 0);
+  assert.equal(C.previousMonth("2027-01"), "2026-12");
+});
+

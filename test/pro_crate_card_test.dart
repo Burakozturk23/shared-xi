@@ -90,6 +90,40 @@ Future<void> host(WidgetTester t, Widget child) async {
 }
 
 void main() {
+  test('crate odds warn when the 450 tier is nearly gone', () {
+    final odds = DrawOdds.from({
+      'count': 3,
+      'tiers': [
+        {'price': 450, 'count': 3, 'chance': 1, 'each': 0.333333},
+      ],
+    });
+    expect(crateOddsText(odds, 450), contains('Az kaldı'));
+    expect(
+      crateOddsText(
+        DrawOdds.from({
+          'count': 48,
+          'tiers': [
+            {'price': 450, 'count': 48, 'chance': 1, 'each': 0.02},
+          ],
+        }),
+        450,
+      ),
+      isNot(contains('Az kaldı')),
+    );
+  });
+
+  testWidgets('Sezon: a nearly empty pool says so', (t) async {
+    await host(
+      t,
+      SizedBox(
+        height: 900,
+        child: SeasonPassPage(gateway: _AvatarSeason(left450: 3)),
+      ),
+    );
+    expect(find.byKey(const ValueKey('season-pool-low-20')), findsOneWidget);
+    expect(find.byKey(const ValueKey('season-pool-low-10')), findsNothing);
+  });
+
   testWidgets(
     'Pro Kasası shows contents and odds, opens once and offers to use the avatar',
     (t) async {
@@ -174,6 +208,8 @@ void main() {
 }
 
 class _AvatarSeason extends SeasonGateway {
+  _AvatarSeason({this.left450 = 48});
+  final int left450;
   @override
   bool get connected => true;
   @override
@@ -193,7 +229,7 @@ class _AvatarSeason extends SeasonGateway {
     'supportSteps': [5, 15],
     'avatarPools': [
       {'step': 10, 'tier': 300, 'count': 116},
-      {'step': 20, 'tier': 450, 'count': 48},
+      {'step': 20, 'tier': 450, 'count': left450},
     ],
     'tiers': [
       for (var step = 1; step <= 20; step++)

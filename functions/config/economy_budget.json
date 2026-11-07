@@ -20,7 +20,11 @@
     "monthlySupportValue": 578.57,
     "proMonthlyValue": 2750,
     "proRatio": 1.44,
-    "proRatioMissionsV3": 1.35
+    "proRatioMissionsV3": 1.35,
+    "proMonthlyValueFlagOff": 2180,
+    "proRatioFlagOff": 1.35,
+    "avatarDepletionMonths450": 24,
+    "avatarDepletionMonths300": 116
   },
   "sources": [
     {"id": "daily_reward", "label": "Günlük giriş ödülü", "sourceTypes": ["daily_reward"], "cadence": "daily",
@@ -114,7 +118,9 @@
       "sourceTypes": ["arcade_achievement", "fake_club_achievement"], "cadence": "oneTime", "total": null,
       "where": "arcade.js, fake_club.js, choice.js, three_modes.js", "unmeasured": ["hepsi"]},
     {"id": "season_pass", "label": "Sezon Rotası (aylık)", "sourceTypes": ["season_pass"], "cadence": "season",
-      "total": 560, "proTotal": 1040, "where": "season_pass.js",
+      "total": 560, "proCoinsFlagOff": 1040, "proCoinsFlagOn": 640,
+      "note": "Pro şeridi coin toplamı: seasonAvatars kapalıyken 1040 (her durak coin); açıkken 640 + 220 destek + 2 avatar.",
+      "where": "season_pass.js",
       "pins": [{"file": "season_pass.js", "text": "freeTotal: 560, proTotal: avatars ? 640 : 1040,"},
         {"file": "season_pass.js", "text": "const AVATAR_TIERS = Object.freeze({10: 300, 20: 450});"}]},
     {"id": "support_overflow", "label": "Dolu çantada destek: mağaza fiyatının yarısı coin",

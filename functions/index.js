@@ -9083,7 +9083,9 @@ function lbStoreCollectionService() {
   return storeCollection.createStore({db: getDatabase(), normalize: lbEconomyState,
     project: lbEconomyProject, HttpsError: httpsV2.HttpsError, now: () => Date.now(), getPrices: lbGetPrices});
 }
-exports.convertLegacyBoosts = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+// Wallet-writing Kasa and conversion calls require App Check, like the Sezon callables.
+const LB_WALLET_APP_CHECK = {region: "europe-west1", maxInstances: 20, enforceAppCheck: true};
+exports.convertLegacyBoosts = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().convertLegacy(request.auth.uid);
 });
@@ -9190,17 +9192,19 @@ async function lbProCrateStatus(db, uid) {
   const e = lbEconomyState((await db.ref("economyState/" + uid).get()).val());
   const {month, endsOn, daysLeft} = crate.monthOf(day);
   const receipt = e.storeUses["pro_crate__" + month] || null;
-  const openAt = crate.openableAt(premium);
+  // The 48 h wait guards a new purchase; a continuing subscriber (last month's Kasa opened)
+  // is never delayed, even if Play reported the renewal date as the start.
+  const openAt = e.storeUses["pro_crate__" + crate.previousMonth(month)] ? 0 : crate.openableAt(premium);
   return {ok: true, enabled, pro: premium.active, proUntil: premium.expiresAt, month, endsOn, daysLeft,
     remind: !receipt && daysLeft <= 3,
     opened: !!receipt, receipt, openableAt: openAt, canOpen: enabled && premium.active && !receipt && now >= openAt,
     contents: {...crate.CRATE, avatarTier: crate.CRATE_TIER}, odds: crate.odds(e, "crate")};
 }
-exports.getProCrate = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.getProCrate = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
   lbRequireGoogleLinked(request);
   return lbProCrateStatus(getDatabase(), request.auth.uid);
 });
-exports.claimProCrate = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.claimProCrate = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request) => {
   lbRequireGoogleLinked(request);
   const db = getDatabase(); const uid = request.auth.uid;
   const status = await lbProCrateStatus(db, uid);

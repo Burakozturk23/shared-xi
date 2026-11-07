@@ -143,6 +143,13 @@ function measure() {
   const proRatio = round((freeMonthly(routineAverage) + proMonthlyValue) / freeMonthly(routineAverage));
   const proRatioMissionsV3 = round((freeMonthly(routineAverageMissionsV3) + proMonthlyValue) /
     freeMonthly(routineAverageMissionsV3));
+  // Before runtimeConfig/seasonAvatars is on, the Pro lane is coins only (every step).
+  const seasonCoinsFlagOff = Array.from({length: 20}, (_, i) => season.reward(i + 1, "pro")).reduce((a, b) => a + b, 0);
+  const proMonthlyValueFlagOff = round(seasonCoinsFlagOff + pro.crateSupports + pro.crateAvatar);
+  const proRatioFlagOff = round((freeMonthly(routineAverage) + proMonthlyValueFlagOff) / freeMonthly(routineAverage));
+  // A Pro member who buys nothing: 450 tier gets the Kasa avatar and Sezon step 20, 300 tier Sezon step 10.
+  const avatarDepletionMonths450 = crate.depletionMonths(450, 2);
+  const avatarDepletionMonths300 = crate.depletionMonths(300, 1);
 
   // Release checklist items the code can answer (the live value may differ).
   const index = read("index.js");
@@ -167,7 +174,8 @@ function measure() {
     budget, measured, story, sinks, coinPacks, supports, release, pro,
     totals: {routineAverage, routineAverageMissionsV3, fullPlayerAverage, fullPlayerAverageMissionsV3,
       dailyModeCeiling, oneTimeSupply, cosmeticCatalog,
-      monthlySupportValue, proMonthlyValue, proRatio, proRatioMissionsV3,
+      monthlySupportValue, proMonthlyValue, proRatio, proRatioMissionsV3, proMonthlyValueFlagOff,
+      proRatioFlagOff, avatarDepletionMonths450, avatarDepletionMonths300,
       catalogDays: round(cosmeticCatalog / routineAverage, 0)},
     prices: {parameter: prices.PARAMETER, enabled: prices.DEFAULT_PRICES.enabled,
       boosts: prices.DEFAULT_PRICES.boosts},
@@ -225,6 +233,13 @@ function markdown(m = measure()) {
     `| **Toplam** | **${m.totals.proMonthlyValue}** |`,
     "", `Pro / Ücretsiz değer oranı: **${m.totals.proRatio}** (Görevler v3 ile **${m.totals.proRatioMissionsV3}**; ` +
       `alt sınır ${b.band.minProRatio}). Enerji deposu ve ücretsiz hikâye ipucu dahil değil.`,
+    "", `seasonAvatars kapalıyken (Pro şeridi yalnız coin, 1040): Pro paketi **${m.totals.proMonthlyValueFlagOff}**, ` +
+      `oran **${m.totals.proRatioFlagOff}**.`,
+    "", "## Avatar havuzu", "",
+    `Hiç avatar satın almayan bir Pro üye, 450 kademesini (Kasa + Sezon 20. basamak, ayda 2) ` +
+      `**${m.totals.avatarDepletionMonths450}** ayda, 300 kademesini (Sezon 10. basamak, ayda 1) ` +
+      `**${m.totals.avatarDepletionMonths300}** ayda bitirir. Kademe bitince çekim diğer kademeye, sonra forma, ` +
+      "en son 300 coine geçer; o noktadan sonra Pro değeri bu rapordakinden düşüktür.",
     "", "## Yayın kontrol listesi (koddaki varsayılanlar)", "",
     "Canlı değerler Remote Config ve runtimeConfig'tedir; bu liste yalnız kodun varsayılanını gösterir.", "",
     ...m.release.map((r) => `- ${r.ok ? "[x]" : "[ ]"} ${r.label}: ${r.value}`),
@@ -294,10 +309,12 @@ function problems(m = measure(), code = readCode()) {
   }
   for (const key of ["routineAverage", "routineAverageMissionsV3", "fullPlayerAverage",
     "fullPlayerAverageMissionsV3", "oneTimeSupply", "cosmeticCatalog",
-    "dailyModeCeiling", "monthlySupportValue", "proMonthlyValue", "proRatio", "proRatioMissionsV3"]) {
+    "dailyModeCeiling", "monthlySupportValue", "proMonthlyValue", "proRatio", "proRatioMissionsV3",
+    "proMonthlyValueFlagOff", "proRatioFlagOff", "avatarDepletionMonths450", "avatarDepletionMonths300"]) {
     if (!near(t[key], b.expected[key])) out.push(`${key}: kayıt ${b.expected[key]}, ölçülen ${t[key]}`);
   }
-  for (const [label, value] of [["Pro/Ücretsiz", t.proRatio], ["v3 Pro/Ücretsiz", t.proRatioMissionsV3]]) {
+  for (const [label, value] of [["Pro/Ücretsiz", t.proRatio], ["v3 Pro/Ücretsiz", t.proRatioMissionsV3],
+    ["bayrak kapalı Pro/Ücretsiz", t.proRatioFlagOff]]) {
     if (value < b.band.minProRatio) out.push(`${label} oranı ${value}, alt sınır ${b.band.minProRatio}`);
   }
   for (const [label, value] of [["tam oyuncu", t.fullPlayerAverage],

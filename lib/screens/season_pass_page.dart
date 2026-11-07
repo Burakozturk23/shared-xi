@@ -402,7 +402,7 @@ class _SeasonPassPageState extends State<SeasonPassPage>
                         style: text.titleSmall,
                       ),
                       const SizedBox(height: 4),
-                      for (final pool in s.avatarPools)
+                      for (final pool in s.avatarPools) ...[
                         Text(
                           pool.count > 0
                               ? c(
@@ -419,6 +419,20 @@ class _SeasonPassPageState extends State<SeasonPassPage>
                                 ),
                           style: text.bodySmall,
                         ),
+                        // Few left: say it before the pool runs out.
+                        if (pool.count > 0 && pool.count <= 5)
+                          Text(
+                            c(
+                              "Az kaldı: ${pool.tier} coin'lik havuzda sende olmayan yalnız ${pool.count} avatar var.",
+                              'Running low: only ${pool.count} ${pool.tier}-coin avatars left for you.',
+                            ),
+                            key: ValueKey('season-pool-low-${pool.step}'),
+                            style: text.bodySmall?.copyWith(
+                              color: hubAmber(context),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                      ],
                       Text(
                         c(
                           'Sahip olduğun avatarlar çıkmaz.',

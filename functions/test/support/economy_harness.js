@@ -77,7 +77,8 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
       this.code = code;
     }
   }
-  const registration = (opts, fn) => fn;
+  // Keep the options on the handler so contract tests can check them (App Check, region…).
+  const registration = (opts, fn) => typeof fn === "function" ? Object.assign(fn, {options: opts}) : opts;
   const modules = {
     "firebase-functions": {setGlobalOptions: () => {}},
     "firebase-functions/v2/scheduler": {onSchedule: registration},
