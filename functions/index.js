@@ -13,6 +13,42 @@ const {initializeApp} = require("firebase-admin/app");
 const {getDatabase} = require("firebase-admin/database");
 const {getAuth} = require("firebase-admin/auth");
 const logger = require("firebase-functions/logger");
+
+// App Check, switchable without a deploy. Callables made with lbGuardedOnCall are
+// not enforced by the platform: they accept a missing token until
+// runtimeConfig/appCheck/enforce is true. Until then the gate only counts missing
+// tokens (logged at 1, 10, 100, 1000 and every 10 000 per instance) so the share of
+// unverified clients is known before switching. New callables should use
+// enforceAppCheck: true or lbGuardedOnCall (a contract test checks it).
+let lbAppCheckPolicy = {value: {}, expires: 0};
+let lbAppCheckMissing = 0;
+async function lbAppCheckGate(request) {
+  if (request.app) return; // verified App Check token
+  const now = Date.now();
+  if (now >= lbAppCheckPolicy.expires) {
+    try {
+      const value = (await getDatabase().ref("runtimeConfig/appCheck").get()).val() || {};
+      lbAppCheckPolicy = {value, expires: now + 60000};
+    } catch (error) {
+      lbAppCheckPolicy = {value: lbAppCheckPolicy.value, expires: now + 10000};
+    }
+  }
+  lbAppCheckMissing++;
+  const enforce = lbAppCheckPolicy.value.enforce === true;
+  if ([1, 10, 100, 1000].includes(lbAppCheckMissing) || lbAppCheckMissing % 10000 === 0) {
+    logger.warn("App Check token missing", {count: lbAppCheckMissing, enforce});
+  }
+  if (enforce) {
+    throw new httpsV2.HttpsError("failed-precondition",
+        "Uygulama doğrulanamadı. Linkball'u Play Store'dan güncelleyip yeniden dene.");
+  }
+}
+function lbGuardedOnCall(options, handler) {
+  return httpsV2.onCall(options, async (request) => {
+    await lbAppCheckGate(request);
+    return handler(request);
+  });
+}
 const httpsV2 = require("firebase-functions/v2/https");
 const {onValueWritten} = require("firebase-functions/v2/database");
 const crypto = require("node:crypto");
@@ -189,7 +225,7 @@ async function lbDailyPublicIdentity(uid) {
   }
 }
 
-exports.startDailyScoreSession = httpsV2.onCall(
+exports.startDailyScoreSession = lbGuardedOnCall(
     {region: "europe-west1", maxInstances: 30},
     async (request) => {
       if (!request.auth || !request.auth.uid) {
@@ -226,7 +262,7 @@ exports.startDailyScoreSession = httpsV2.onCall(
     },
 );
 
-exports.submitDailyScore = httpsV2.onCall(
+exports.submitDailyScore = lbGuardedOnCall(
     {region: "europe-west1", maxInstances: 30},
     async (request) => {
       if (!request.auth || !request.auth.uid) {
@@ -364,15 +400,8 @@ exports.submitDailyScore = httpsV2.onCall(
         lastSubmittedScore: Number(saved.score || score),
         lastSubmittedSecondsLeft: Number(saved.secondsLeft ?? secondsLeft),
       });
-      logger.info("Daily leaderboard submission", {
-        uid: uid,
-        dateKey: dateStr,
-        accepted: accepted,
-        score: Number(saved.score || score),
-        secondsLeft: Number(saved.secondsLeft ?? secondsLeft),
-        weekKey: weekKey,
-        weeklyScore: Number(weeklySaved.score || savedScore),
-      });
+      // No per-submission log: the result is stored above, and a log line per play
+      // (with the uid) only adds Cloud Logging volume.
       return {
         ok: true,
         accepted: accepted,
@@ -818,7 +847,7 @@ function lbRankedLeaderboardProjection(user, trusted, now) {
   };
 }
 
-exports.submitRankedResult = httpsV2.onCall(
+exports.submitRankedResult = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1565,7 +1594,7 @@ exports.syncPublicProfileProjection = onValueWritten(
     },
 );
 
-exports.syncMyPublicProfile = httpsV2.onCall(
+exports.syncMyPublicProfile = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -1591,7 +1620,7 @@ exports.syncMyPublicProfile = httpsV2.onCall(
     },
 );
 
-exports.searchFriendByNickname = httpsV2.onCall(
+exports.searchFriendByNickname = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1675,7 +1704,7 @@ exports.searchFriendByNickname = httpsV2.onCall(
     },
 );
 
-exports.sendFriendRequest = httpsV2.onCall(
+exports.sendFriendRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1820,7 +1849,7 @@ exports.sendFriendRequest = httpsV2.onCall(
     },
 );
 
-exports.respondFriendRequest = httpsV2.onCall(
+exports.respondFriendRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1928,7 +1957,7 @@ exports.respondFriendRequest = httpsV2.onCall(
     },
 );
 
-exports.cancelFriendRequest = httpsV2.onCall(
+exports.cancelFriendRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -1992,7 +2021,7 @@ exports.cancelFriendRequest = httpsV2.onCall(
     },
 );
 
-exports.removeFriend = httpsV2.onCall(
+exports.removeFriend = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2056,7 +2085,7 @@ exports.removeFriend = httpsV2.onCall(
     },
 );
 
-exports.blockUser = httpsV2.onCall(
+exports.blockUser = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2124,7 +2153,7 @@ exports.blockUser = httpsV2.onCall(
     },
 );
 
-exports.unblockUser = httpsV2.onCall(
+exports.unblockUser = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2451,7 +2480,7 @@ async function lbSocialLoadInvite(
   };
 }
 
-exports.sendFriendMatchInvite = httpsV2.onCall(
+exports.sendFriendMatchInvite = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2559,7 +2588,7 @@ exports.sendFriendMatchInvite = httpsV2.onCall(
     },
 );
 
-exports.acceptFriendMatchInvite = httpsV2.onCall(
+exports.acceptFriendMatchInvite = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -2654,7 +2683,7 @@ exports.acceptFriendMatchInvite = httpsV2.onCall(
     },
 );
 
-exports.declineFriendMatchInvite = httpsV2.onCall(
+exports.declineFriendMatchInvite = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3035,7 +3064,7 @@ function lbSafetyReportProjection(report) {
   };
 }
 
-exports.reportPlayer = httpsV2.onCall(
+exports.reportPlayer = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -3140,7 +3169,7 @@ exports.reportPlayer = httpsV2.onCall(
     },
 );
 
-exports.getMyPlayerReports = httpsV2.onCall(
+exports.getMyPlayerReports = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -3704,7 +3733,7 @@ async function lbNicknameSyncProfile(db, uid, profile, now) {
   };
 }
 
-exports.checkNicknameAvailability = httpsV2.onCall(
+exports.checkNicknameAvailability = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3727,7 +3756,7 @@ exports.checkNicknameAvailability = httpsV2.onCall(
     },
 );
 
-exports.syncMyNickname = httpsV2.onCall(
+exports.syncMyNickname = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -3767,7 +3796,7 @@ exports.syncMyNickname = httpsV2.onCall(
     },
 );
 
-exports.setMyNickname = httpsV2.onCall(
+exports.setMyNickname = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 30,
@@ -4818,7 +4847,7 @@ async function lbAchievementBackfillHistory(
   };
 }
 
-exports.syncMyAchievements = httpsV2.onCall(
+exports.syncMyAchievements = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -6167,12 +6196,12 @@ async function lbEconomyPurchaseOffer(db, uid, offer) {
 
 // LINKBALL_16_6C_ECONOMY_TRANSACTIONS_END
 
-exports.getEconomyContract = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.getEconomyContract = lbGuardedOnCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return {ok: true, economy: economyConfig.publicContract(await lbGetEconomyConfig())};
 });
 
-exports.syncMyWallet = httpsV2.onCall(
+exports.syncMyWallet = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6193,7 +6222,7 @@ exports.syncMyWallet = httpsV2.onCall(
     },
 );
 
-exports.claimAchievementReward = httpsV2.onCall(
+exports.claimAchievementReward = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6252,7 +6281,7 @@ exports.claimAchievementReward = httpsV2.onCall(
     },
 );
 
-exports.getStoreCatalog = httpsV2.onCall(
+exports.getStoreCatalog = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6301,7 +6330,7 @@ exports.getStoreCatalog = httpsV2.onCall(
     },
 );
 
-exports.purchaseEconomyOffer = httpsV2.onCall(
+exports.purchaseEconomyOffer = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -6571,7 +6600,7 @@ function lbCommunityProjection(record) {
   };
 }
 
-exports.submitCommunityRequest = httpsV2.onCall(
+exports.submitCommunityRequest = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -6652,7 +6681,7 @@ exports.submitCommunityRequest = httpsV2.onCall(
     },
 );
 
-exports.getMyCommunityRequests = httpsV2.onCall(
+exports.getMyCommunityRequests = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -7307,7 +7336,7 @@ async function lbProgressionClaimDaily(db, uid, benefits) {
   };
 }
 
-exports.getMyProgression = httpsV2.onCall(
+exports.getMyProgression = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -7337,7 +7366,7 @@ exports.getMyProgression = httpsV2.onCall(
     },
 );
 
-exports.claimDailyReward = httpsV2.onCall(
+exports.claimDailyReward = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -8065,7 +8094,7 @@ exports.syncDailyMissions = onValueWritten(
     },
 );
 
-exports.getMyMissions = httpsV2.onCall(
+exports.getMyMissions = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -8091,7 +8120,7 @@ exports.getMyMissions = httpsV2.onCall(
     },
 );
 
-exports.claimMissionReward = httpsV2.onCall(
+exports.claimMissionReward = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 20,
@@ -8698,7 +8727,7 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   };
 }
 
-exports.deleteMyAccount = httpsV2.onCall(
+exports.deleteMyAccount = lbGuardedOnCall(
     {
       region: "europe-west1",
       maxInstances: 10,
@@ -9089,11 +9118,11 @@ exports.convertLegacyBoosts = httpsV2.onCall(LB_WALLET_APP_CHECK, async (request
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().convertLegacy(request.auth.uid);
 });
-exports.consumeStoreBoost = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.consumeStoreBoost = lbGuardedOnCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().consume(request.auth.uid, request.data || {});
 });
-exports.equipStoreItem = httpsV2.onCall({region: "europe-west1", maxInstances: 20}, async (request) => {
+exports.equipStoreItem = lbGuardedOnCall({region: "europe-west1", maxInstances: 20}, async (request) => {
   lbRequireGoogleLinked(request);
   return lbStoreCollectionService().equip(request.auth.uid, request.data || {});
 });
