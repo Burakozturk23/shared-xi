@@ -15,6 +15,7 @@ import '../widgets/social_ui.dart';
 import '../widgets/user_avatar_badge.dart';
 import '../widgets/profile_kit.dart';
 import 'premium_page.dart';
+import '../models/hint_menu.dart';
 import 'coin_packs_page.dart';
 import 'progression_center_page.dart';
 
@@ -63,7 +64,11 @@ class _StorePageState extends State<StorePage> {
       final data = await widget.gateway.load();
       if (mounted) setState(() => _data = data);
       // Leftover letter stock was turned into typed supports on this open.
-      if (mounted && data.legacyConverted.isNotEmpty) {
+      if (mounted && data.legacyConverted.isNotEmpty && data.hintsVersion == 2) {
+        _notice('Desteklerin yeni ipuçlarına çevrildi: ${[
+          for (final e in data.legacyConverted.entries) '${e.value} ${hintTypeTitles[e.key.replaceFirst('hint_', '')] ?? e.key}',
+        ].join(', ')}.');
+      } else if (mounted && data.legacyConverted.isNotEmpty) {
         final parts = [
           for (final e in data.legacyConverted.entries)
             '${e.value} ${e.key == 'boost_strong' ? 'Güçlü bilgi' : 'Temel bilgi'}',
@@ -408,8 +413,15 @@ class _StorePageState extends State<StorePage> {
                   _guidePanel(guide, groups, group, selectedGuide),
                 ],
                 const SizedBox(height: 12),
+                if (d.hintsVersion == 2) ...[
+                  const SizedBox(height: 12),
+                  _jokerCard(d.inventory['hint_joker']?.quantity ?? 0),
+                ],
+                const SizedBox(height: 12),
                 Wrap(spacing: 8, runSpacing: 8, children: [
-                  for (final category in const [
+                  for (final category in d.hintsVersion == 2 ? const [
+                    ('all', 'Tümü'), ('Hafif', 'Hafif'), ('Güçlü', 'Güçlü'), ('packs', 'Paketler'),
+                  ] : const [
                     ('all', 'Tümü'), ('Temel', 'Temel'), ('Taktiksel', 'Taktiksel'),
                     ('Güçlü', 'Güçlü'), ('packs', 'Paketler'),
                   ]) ChoiceChip(label: Text(category.$2), selected: _boostCategory == category.$1,
@@ -539,6 +551,24 @@ class _StorePageState extends State<StorePage> {
       ],
     );
   }
+
+  /// İpucu v2: the Pro Joker is not sold; Pro players see their stock, others a way to Pro.
+  Widget _jokerCard(int joker) => PitchPanel(
+    key: ValueKey(joker > 0 ? 'store-joker' : 'store-joker-teaser'),
+    child: Row(children: [
+      const Icon(Icons.auto_awesome),
+      const SizedBox(width: 12),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(joker > 0 ? "Joker · Pro'ya özel · ×$joker" : "Joker İpucu · Pro'ya özel",
+            style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 4),
+        Text(joker > 0 ? 'Herhangi bir ipucunun yerine kullanılır; panelde seçersin.' :
+            'Her oyunda herhangi bir ipucunun yerine geçer. Pro sandığı ve sezon Pro şeridinden gelir.',
+            style: Theme.of(context).textTheme.bodySmall),
+      ])),
+      if (joker == 0) TextButton(onPressed: _busy ? null : () => _open(const PremiumPage()), child: const Text('Pro')),
+    ]),
+  );
 
   Widget _card(StoreOffer o) {
     final stock = _data!.inventory[o.itemId];

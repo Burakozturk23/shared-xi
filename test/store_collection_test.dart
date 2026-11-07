@@ -48,6 +48,7 @@ class ShopFake extends StoreGateway {
   List<StoreOffer>? catalogOverride;
   List<StoreBoostGuide> guide = const [];
   Map<String, int> converted = const {};
+  int hintsVersion = 0;
   int converts = 0;
   @override
   bool get connected => true;
@@ -70,6 +71,7 @@ class ShopFake extends StoreGateway {
     selectedKitId: selected,
     boostGuide: guide,
     legacyConverted: converted,
+    hintsVersion: hintsVersion,
   );
   @override
   Future<Map<String, int>> convertLegacy() async {
@@ -577,5 +579,40 @@ void main() {
       ),
     );
     expect(t.takeException(), isNull);
+  });
+  List<StoreOffer> hintOffers() => [
+    for (final (type, title, strong) in const [('milliyet', 'Milliyet', false), ('isim', 'İsim', true)])
+      for (final units in const [1, 3])
+        StoreOffer.fromMap({'offerId': 'hint_${type}_$units', 'itemId': 'hint_$type', 'itemType': 'boost',
+          'title': units == 3 ? '$title · 3 kullanım' : title, 'subtitle': 'Ör.', 'units': units,
+          'priceCoins': strong ? (units == 3 ? 130 : 50) : (units == 3 ? 65 : 25),
+          'category': strong ? 'Güçlü' : 'Hafif', 'modes': ['transfer', 'daily_anagram', 'mystery'],
+          'enabled': true, 'sortOrder': 300}),
+  ];
+  testWidgets('v2 store: Hafif and Güçlü filters, game lists on hint cards', (t) async {
+    final fake = ShopFake()..hintsVersion = 2..catalogOverride = hintOffers();
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
+    expect(find.widgetWithText(ChoiceChip, 'Hafif'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'Güçlü'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'Taktiksel'), findsNothing);
+    expect(find.textContaining('3 oyunda'), findsWidgets);
+    await t.tap(find.widgetWithText(ChoiceChip, 'Güçlü'));
+    await t.pumpAndSettle();
+    expect(find.text('Milliyet'), findsNothing);
+  });
+  testWidgets('v2 store: Joker shows the Pro stock or a Pro teaser', (t) async {
+    final pro = ShopFake()..hintsVersion = 2..catalogOverride = hintOffers()
+      ..items['hint_joker'] = item('hint_joker', 'boost', 4);
+    await mount(t, StorePage(gateway: pro, initialTab: 'boost'));
+    expect(find.text("Joker · Pro'ya özel · ×4"), findsOneWidget);
+    final free = ShopFake()..hintsVersion = 2..catalogOverride = hintOffers();
+    await mount(t, StorePage(gateway: free, initialTab: 'boost'));
+    expect(find.byKey(const ValueKey('store-joker-teaser')), findsOneWidget);
+  });
+  testWidgets('v2 store: converted stock says it became hints', (t) async {
+    final fake = ShopFake()..hintsVersion = 2..catalogOverride = hintOffers()
+      ..converted = const {'hint_milliyet': 2, 'hint_isim': 1};
+    await mount(t, StorePage(gateway: fake, initialTab: 'boost'));
+    expect(find.text('Desteklerin yeni ipuçlarına çevrildi: 2 Milliyet, 1 İsim.'), findsOneWidget);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'hint_menu.dart';
 
 import 'economy_models.dart';
 
@@ -31,7 +32,8 @@ const boostModeNames = <String, String>{
 /// Letter supports that are no longer sold; leftover stock converts to Temel bilgi.
 const legacyBoostIds = ['boost_last_letter', 'boost_anagram'];
 
-IconData storeBoostIcon(String itemId) => switch (itemId) {
+IconData storeBoostIcon(String itemId) => itemId.startsWith('hint_') ? hintTypeIcon(itemId.substring(5)) :
+    switch (itemId) {
   'boost_basic' => Icons.lightbulb_outline_rounded,
   'boost_eliminate' => Icons.filter_alt_off_outlined,
   'boost_connection' => Icons.link_rounded,
@@ -144,6 +146,9 @@ class StoreCatalogSnapshot {
   /// Supports added when this load converted leftover letter stock (item → count).
   final Map<String, int> legacyConverted;
 
+  /// 2 when the account is on İpucu v2 (typed hints and the Pro Joker).
+  final int hintsVersion;
+
   const StoreCatalogSnapshot({
     required this.catalogVersion,
     required this.wallet,
@@ -153,6 +158,7 @@ class StoreCatalogSnapshot {
     this.selectedKitId = '',
     this.boostGuide = const [],
     this.legacyConverted = const {},
+    this.hintsVersion = 0,
   });
 
   StoreCatalogSnapshot copyWith({
@@ -168,6 +174,7 @@ class StoreCatalogSnapshot {
     selectedAvatarId: selectedAvatarId ?? this.selectedAvatarId,
     selectedKitId: selectedKitId ?? this.selectedKitId,
     boostGuide: boostGuide,
+    hintsVersion: hintsVersion,
   );
 }
 

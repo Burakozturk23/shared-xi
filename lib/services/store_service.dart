@@ -80,6 +80,7 @@ class StoreService {
         for (final e in _map(data['legacyConverted']).entries)
           if (_int(e.value) > 0) e.key: _int(e.value),
       },
+      hintsVersion: _int(data['hintsVersion']),
     );
   }
 
