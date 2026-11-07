@@ -1,6 +1,7 @@
 "use strict";
 const crypto = require("node:crypto");
 const B = require("./boosts");
+const H = require("./hints");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const catalog = require("./config/daily_words_catalog.json");
 const MODES = ["daily_lingo", "passa_daily", "daily_anagram", "passa_weekly"];
@@ -17,6 +18,8 @@ const normalize = (raw) => String(raw || "").replace(/[ıİøØłŁßẞæÆœŒ
     .normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, "");
 const stateOf = (raw) => ({days: {}, weeks: {}, outbox: {}, paid: {}, ...raw});
 const endOfDay = (day) => Date.parse(day + "T00:00:00+03:00") + 86400000;
+// İpucu v2 menus (hints/words.js), shared with anagram_practice.js.
+const adapter = H.register(require("./hints/words").make({normalize, isAnagram}));
 function weekKey(time) {
   const day = dayKey(time); const d = new Date(day + "T12:00:00Z");
   d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return d.toISOString().slice(0, 10);
@@ -69,7 +72,7 @@ function newRun(mode, pack, time, boostPolicy) {
   if (practice) r.closesAt = time + 86400000;
   r.entry = practice ? "solo" : weekly ? "weekly" : "daily"; r.expiresAt = r.deadline || r.closesAt;
   r.adCredits = 0; r.adGranted = 0; r.adReceipts = {};
-  B.pin(r, boostPolicy);
+  H.pinAny(r, boostPolicy, null, time);
   return r;
 }
 function restored(r) {
@@ -131,7 +134,8 @@ function finish(s, r, reason, time, policy) {
   }
   const ledgerId = `dw__${r.mode}__${r.period}`;
   r.result = {solved, coins, xp, medal, reason, score: r.score,
-    ...(B.paid(r) ? {assisted: r.assisted, masteryEligible: !r.assisted, leaderboardEligible: !r.assisted} : {}),
+    ...(B.paid(r) || H.active(r) ? {assisted: r.assisted, masteryEligible: !r.assisted,
+      leaderboardEligible: !r.assisted} : {}),
     eligibleForDailyBonus: r.eligible && r.mode !== "passa_weekly",
     finishedAt: time, ledgerId, rewardEnabled: policy.rewardsEnabled === true};
   if (!policy.rewardsEnabled) {
@@ -169,9 +173,9 @@ function publicRun(raw, time, paid = {}) {
     revision: r.revision, serverNow: time, closesAt: r.closesAt, deadline: r.deadline, startedAt: r.startedAt,
     finished: r.finished, index: r.index, score: r.score, attempts: r.attempts, result: r.result,
     rewardPaid: !!paid[r.result?.ledgerId]};
-  if (B.paid(r)) {
-    Object.assign(out, {id: r.id, support: B.view(r), assisted: r.assisted,
-      adCredits: r.adCredits, adGranted: r.adGranted});
+  if (B.paid(r) || H.active(r)) {
+    Object.assign(out, {id: r.id, ...(B.paid(r) ? {support: B.view(r)} : {hintMenu: H.view(r, adapter)}),
+      assisted: r.assisted, adCredits: r.adCredits, adGranted: r.adGranted});
   }
   if (r.mode === "daily_lingo") {
     Object.assign(out, {category: r.puzzle.category, length: r.puzzle.answer.length, questionId: r.puzzle.id,
@@ -241,6 +245,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
         fn(s, time, e);
         const runs = [...Object.values(s.days || {}).flatMap((d) => Object.values(d)), ...Object.values(s.weeks || {})];
         for (const run of runs) {
+          H.recoverUnused(e, restored(run), time);
           B.recoverUnused(e, run, time, (sku, scope) => {
             try {
               const action = scope.action || (isAnagram(run.mode) ?
@@ -326,7 +331,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
     const policy = {...defaults, ...await getPolicy()};
     const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     const fingerprint = hash([mode, input.period, input.packId, input.contentVersion, input.revision,
-      input.questionId, input.action, input.answer, ...B.paymentFingerprint(input)]);
+      input.questionId, input.action, input.answer, ...B.paymentFingerprint(input), input.itemId]);
     const legacyFingerprint = hash([mode, input.period, input.packId, input.contentVersion, input.revision,
       input.questionId, input.action, input.answer]);
     const pack = await pinned(input.period, weekly, false);
@@ -337,7 +342,7 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
       // A lost success can be acknowledged after midnight, but can never mutate the old period.
       if (r?.actions[input.requestId]) {
         if (r.actions[input.requestId] !== fingerprint &&
-          (B.paid(r) || r.actions[input.requestId] !== legacyFingerprint)) {
+          (B.paid(r) || H.active(r) || r.actions[input.requestId] !== legacyFingerprint)) {
           fail("invalid-argument", "İstek içeriği değişti.");
         }
         return;
@@ -360,6 +365,12 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
       const q = r.puzzle || r.questions[r.index];
       if (input.questionId !== (q.questionId || q.id)) fail("failed-precondition", "Soru değişti. Yenile.");
       const word = normalize(input.answer);
+      if (H.active(r) && input.action === "hint") {
+        H.use(e, r, adapter, input, time);
+        r.revision++; r.actions[input.requestId] = fingerprint;
+        if (!weekly) trio(s, current, time, policy);
+        return;
+      }
       if (B.paid(r) && ["hint", "bio", "first"].includes(input.action)) {
         const info = help(r, input.action);
         B.consume(e, r, input, info.sku, (q.questionId || q.id) + ":" + input.action, {text: info.text}, time);
@@ -429,6 +440,11 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
     if (!policy.enabled) fail("failed-precondition", "Günlük oyunlar şu anda kapalı.");
     const state = await read(uid); refresh(state, now(), policy);
     const r = findRun(state, context);
+    if (H.active(r)) {
+      if (r.finished || r.expiresAt <= now()) fail("failed-precondition", "Aktif günlük oyun yok.");
+      return H.adBenefit(r, context.itemId, {amount: 0, claimKey: `dw_hint_${r.id}_${r.adGranted}`,
+        context: {sessionId: r.id, mode: r.mode, period: r.period}});
+    }
     if (!B.paid(r) || r.finished || r.expiresAt <= now()) fail("failed-precondition", "Aktif günlük oyun yok.");
     const action = isAnagram(r.mode) ? context.boostId === "boost_first_letter" ? "first" : "bio" : "hint";
     const info = help(r, action);
@@ -441,6 +457,10 @@ function createService({db, isLinked, grantCoins, grantXp, normalize: economy, p
     await change(uid, (s, time, e) => {
       refresh(s, time, policy);
       const r = findRun(s, receipt.context);
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (H.recoverAd(e, r, receipt, time, !!r && H.active(r))) return;
+        H.grantAd(r, receipt); return;
+      }
       let canApply = false;
       if (r && !r.finished && r.expiresAt > time) {
         try {
@@ -490,8 +510,8 @@ function anagramAction(s, r, input, word, time, policy) {
       if (round.guesses.includes(word)) fail("already-exists", "Bu cevabı zaten denedin. Hakkın azalmadı.");
       round.guesses.push(word); r.attempts++;
       if (q.aliases.includes(word)) {
-        round.status = "correct"; round.score = 100 - (round.guesses.length - 1) * 10 -
-                (round.bio ? 15 : 0) - (round.first ? 25 : 0); r.score += round.score;
+        round.status = "correct"; round.score = Math.max(0, 100 - (round.guesses.length - 1) * 10 -
+                (round.bio ? 15 : 0) - (round.first ? 25 : 0) - (round.extra || 0)); r.score += round.score;
       } else if (round.guesses.length === 3) round.status = "wrong";
     } else fail("invalid-argument", "Geçersiz Anagram işlemi.");
     if (r.rounds.every((x) => x.status !== "pending")) finish(s, r, "completed", time, policy);
@@ -515,5 +535,5 @@ function help(r, action) {
   }
   return {sku: "boost_basic", text: `Cevap ${normalize(q.answer).length} harften oluşur.`, questionId: q.id};
 }
-module.exports = {createService, catalog, compiled, normalize, feedback, weekKey,
+module.exports = {createService, catalog, compiled, normalize, feedback, weekKey, adapter,
   MODES, defaults, newRun, publicRun, help, finish, anagramAction};

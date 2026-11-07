@@ -2,6 +2,7 @@
 const crypto = require("node:crypto");
 const W = require("./daily_words");
 const B = require("./boosts");
+const H = require("./hints");
 const energy = require("./energy");
 const {RewardError, dayKey} = require("./rewarded_ads");
 const catalog = require("./config/anagram_practice_catalog.json");
@@ -29,6 +30,7 @@ function reconcile(s, e, time) {
   for (const [id, r] of Object.entries(s.sessions)) {
     if (!r.finished && r.expiresAt <= time) finalize(s, r, time, "expired");
     finalize(s, r, time);
+    H.recoverUnused(e, r, time);
     B.recoverUnused(e, r, time, (sku, scope) => {
       try {
         return W.help(r, sku === "boost_first_letter" ? "first" : "bio").questionId === scope.questionId;
@@ -89,7 +91,7 @@ function createService({db, normalize, project, isLinked, getRollout = async () 
     const policy = await B.policyFor(db, uid, true); const charge = await cost(uid);
     const pack = input.action === "start" ? makePack(input.requestId, now()) : null;
     const fingerprint = hash([input.action, input.packId, input.contentVersion, input.revision, input.questionId,
-      input.answer ?? null, ...B.paymentFingerprint(input)]);
+      input.answer ?? null, ...B.paymentFingerprint(input), input.itemId ?? null]);
     const s = await change(uid, (s, e, time) => {
       if (input.action === "start") {
         const id = "ap_" + input.requestId;
@@ -129,6 +131,10 @@ function createService({db, normalize, project, isLinked, getRollout = async () 
       if (input.answer != null && (typeof input.answer !== "string" || input.answer.length > 100)) {
         fail("invalid-argument", "Cevap geçersiz.");
       }
+      if (input.action === "hint" && H.active(r)) {
+        H.use(e, r, W.adapter, input, time);
+        r.actions[input.requestId] = fingerprint; r.revision++; return;
+      }
       if (["bio", "first"].includes(input.action)) {
         const info = W.help(r, input.action);
         B.consume(e, r, input, info.sku, info.questionId + ":" + input.action, {text: info.text}, time);
@@ -142,6 +148,11 @@ function createService({db, normalize, project, isLinked, getRollout = async () 
   async function prepareHint(uid, placement, input) {
     if (!await isLinked(uid) || placement !== "anagram_practice_hint") fail("permission-denied", "Hesap gerekli.");
     const s = await read(uid); const r = s.sessions[input.sessionId];
+    if (H.active(r)) {
+      if (r.finished || r.expiresAt <= now()) fail("failed-precondition", "Aktif seri bulunamadı.");
+      return H.adBenefit(r, input.itemId, {amount: 0, claimKey: `ap_hint_${r.id}_${r.adGranted || 0}`,
+        context: {sessionId: r.id}});
+    }
     if (!B.paid(r) || r.finished || r.expiresAt <= now()) fail("failed-precondition", "Aktif seri bulunamadı.");
     const action = input.boostId === "boost_first_letter" ? "first" : "bio";
     const info = W.help(r, action);
@@ -152,6 +163,10 @@ function createService({db, normalize, project, isLinked, getRollout = async () 
   async function settleHint(uid, receipt) {
     await change(uid, (s, e, time) => {
       const r = s.sessions[receipt.context?.sessionId]; let usable = false;
+      if (receipt.context?.hintPolicyVersion === H.VERSION) {
+        if (!H.recoverAd(e, r, receipt, time, !!r && H.active(r))) H.grantAd(r, receipt);
+        return;
+      }
       try {
         usable = W.help(r, receipt.context.action).questionId === receipt.context.questionId;
       } catch (_) {/* retired */}
