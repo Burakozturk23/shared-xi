@@ -25,7 +25,16 @@ const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 function matches(c, p, id) {
   const k = c.criteria[id]; if (!k || !p) return false;
   return k.type === "club" ? p.clubs.includes(k.value) : k.type === "country" ?
-    p.countryKeys.includes(k.value) : k.type === "league" && p.leagues.includes(k.value);
+    p.countryKeys.includes(k.value) : k.type === "coach" ? (p.coaches || []).includes(k.value) :
+    k.type === "league" && p.leagues.includes(k.value);
+}
+// Reverse Grid: every club, country and coach the given players all share (labels).
+function acceptedFor(c, ids) {
+  const first = c.players[ids[0]];
+  const keys = [...first.clubs.map((x) => "club:" + x), ...first.countryKeys.map((x) => "country:" + x),
+    ...(first.coaches || []).map((x) => "coach:" + x)];
+  return keys.filter((k) => c.criteria[k] && ids.every((id) => matches(c, c.players[id], k)))
+      .map((k) => c.criteria[k].label);
 }
 function player(c, id) {
   const p = c.players[String(id)]; return p ? {id: p.id, name: p.name, country: p.countries.join(" / "),
@@ -53,8 +62,17 @@ function managerPool(c, seed) {
 // Club-Club / Club-Country pairs need at least 6 shared players (Random Grid too).
 const PAIR_MIN_ANSWERS = 6;
 const POPULAR_RANK = 3000;
+// Coach x club pairs only serve Random Grid (never Club-Club, never friend choices).
+const coachPair = (p) => p.criteria[0].startsWith("coach:");
 const pairPool = (c, mode) => c.pairs.filter((p) => p.answers.length >= PAIR_MIN_ANSWERS &&
+  (mode === "grid_random" || !coachPair(p)) &&
   (mode === "club_country" ? p.criteria[1].startsWith("country:") : p.criteria[1].startsWith("club:")));
+// Random Grid coach rounds per board (owner): ~25% none, ~60% one, ~15% two.
+function withCoaches(pairs, seed) {
+  const roll = parseInt(hash([seed, "coach"]).slice(0, 8), 16) / 0x100000000;
+  const coaches = shuffle(pairs.filter(coachPair), seed).slice(0, roll < 0.25 ? 0 : roll < 0.85 ? 1 : 2);
+  return shuffle([...coaches, ...shuffle(pairs.filter((p) => !coachPair(p)), seed).slice(0, 5 - coaches.length)], seed);
+}
 const pairFits = (mode, p, left, right) => p.criteria[0] === left && p.criteria[1] === right ||
   mode === "club_club" && p.criteria[0] === right && p.criteria[1] === left;
 // Picks one country with weight sqrt(its pair count), then keeps that country's pairs.
@@ -91,7 +109,8 @@ function puzzle(c, mode, seed, choices = {}) {
       pairs = pairs.filter((p) => p.answers.filter((id) => c.players[id].rank <= POPULAR_RANK).length >= 3);
       if (mode === "club_country") pairs = balancedCountry(pairs, seed);
     }
-    const chosen = shuffle(pairs, seed).slice(0, mode === "grid_random" ? 5 : 1);
+    const chosen = mode === "grid_random" && !choices.left && !choices.right ? withCoaches(pairs, seed) :
+      shuffle(pairs, seed).slice(0, mode === "grid_random" ? 5 : 1);
     if (chosen.length !== (mode === "grid_random" ? 5 : 1)) {
       fail("failed-precondition",
           "Yeterli ortak futbolcu yok; seçimi değiştir.");
@@ -522,15 +541,12 @@ function view(c, r, uid, time) {
         v.rows = criteria(q.rows); v.cols = criteria(q.cols);
       }
       if (r.mode === "grid_reverse") v.players = q.witness.map((id) => player(c, id));
-      // After a reverse match: every club and country each axis accepted.
+      // After a reverse match: every club, country and coach each axis accepted.
       if (r.mode === "grid_reverse" && done) {
         v.accepted = Object.fromEntries(["r0", "r1", "r2", "c0", "c1", "c2"].map((axis) => {
           const n = Number(axis[1]); const ids = q.witness.filter((_, i) => axis[0] === "r" ?
             Math.floor(i / 3) === n : i % 3 === n);
-          const first = c.players[ids[0]];
-          const keys = [...first.clubs.map((x) => "club:" + x), ...first.countryKeys.map((x) => "country:" + x)];
-          return [axis, keys.filter((k) => c.criteria[k] && ids.every((id) => matches(c, c.players[id], k)))
-              .map((k) => c.criteria[k].label)];
+          return [axis, acceptedFor(c, ids)];
         }));
       }
     }
@@ -581,7 +597,7 @@ function view(c, r, uid, time) {
 }
 module.exports = {MODES, RULE, terminal, fail, hash, norm, list, shuffle, matches, player,
   PENALTY, MIN_GAP_MS, FIVE_POINTS, GRID_RARE_BONUS, gridTieBreak,
-  PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions,
+  PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions, acceptedFor,
   FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter,
   puzzle, hydrate, start, finish, advance, move, view, validateXi, power, simulate};
 Object.defineProperty(module.exports, "catalog", {enumerable: true, get: loadCatalog});
