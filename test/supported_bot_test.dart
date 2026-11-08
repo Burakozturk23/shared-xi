@@ -402,4 +402,28 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     });
   }
+  for (final kind in ['loto', 'team_race']) {
+    testWidgets('$kind: the background refresh never locks the screen or shows a loading bar', (t) async {
+      t.view.physicalSize = const Size(400, 1400);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      final wire = BotWire();
+      await t.pumpWidget(MaterialApp(home: SupportedBotPage(mode: 'bot_$kind', legacy: const Text('Eski oyun'),
+          service: _service(wire))));
+      await t.pump(const Duration(milliseconds: 50));
+      await t.pump();
+      // A slow network: the next poll hangs.
+      wire.pending = Completer<Map<String, dynamic>>();
+      await t.pump(const Duration(milliseconds: 1100));
+      await t.pump();
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+      if (kind == 'team_race') {
+        expect(t.widget<TextField>(find.byType(TextField).first).enabled, isNot(false));
+      }
+      wire.pending!.complete(await (BotWire().call('getBotSupport', {'mode': 'bot_$kind'})));
+      await t.pump();
+      await t.pumpWidget(const SizedBox.shrink());
+    });
+  }
 }

@@ -49,6 +49,11 @@ class _SupportedBotPageState extends State<SupportedBotPage>
   Timer? _poll, _search;
   StreamSubscription<dynamic>? _auth;
   int _searchEpoch = 0, _offset = 0;
+
+  /// Background refresh: never shows the loading bar or locks input. A refresh
+  /// that started before the player's own action never overwrites its result.
+  bool _polling = false;
+  int _actions = 0;
   String get _kind => widget.mode.substring(4);
   bool get _realtime => _kind == 'loto' || _kind == 'team_race';
   bool get _active => _run.isNotEmpty && _run['finished'] != true;
@@ -95,7 +100,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     _poll = Timer.periodic(Duration(milliseconds: _realtime ? 1000 : 750), (_) {
       if (_busy || _error != null || _accountChanged || !_active || _paused)
         return;
-      if (_realtime || _run['turn'] == 'bot') _load();
+      if (_realtime || _run['turn'] == 'bot') _refresh();
     });
   }
 
@@ -123,6 +128,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
       : 'İşlem tamamlanamadı. Yenile ile kaldığın yerden devam et.';
   Future<void> _work(Future<void> Function() task) async {
     if (_busy || _accountChanged) return;
+    _actions++;
     setState(() {
       _busy = true;
       _error = null;
@@ -216,6 +222,20 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         _hintCell = null;
       if (!_legacy) _sounds(previous, _run, action);
     });
+  }
+
+  Future<void> _refresh() async {
+    if (_polling || _busy || _accountChanged) return;
+    _polling = true;
+    final epoch = _actions;
+    try {
+      final data = await _service.load(widget.mode, widget.mode);
+      if (epoch == _actions && !_busy) _accept(data);
+    } catch (_) {
+      // The next poll retries; the player's own actions report errors.
+    } finally {
+      _polling = false;
+    }
   }
 
   Future<void> _load() => _work(() async {
