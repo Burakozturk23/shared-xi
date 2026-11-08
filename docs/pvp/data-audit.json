@@ -1,12 +1,19 @@
 {
-  "version": "pvp-v1-1ca734c8d1263c02",
+  "version": "pvp-v1-1616bdff0f9b73cd",
   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
   "players": 36391,
-  "pairs": 724,
+  "pairs": 1169,
   "grids": 300,
   "cinko": 200,
   "loto": 300,
   "five": 300,
+  "coaches": 50,
+  "coachPairs": 445,
+  "gridsByCoachCount": {
+    "0": 75,
+    "1": 180,
+    "2": 45
+  },
   "cinkoScarceCellsPerBoard": 4,
   "cinkoScarceKeys": 681,
   "lotoValidCellsPerPlayer": {

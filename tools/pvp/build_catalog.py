@@ -39,6 +39,26 @@ def position_group(pos,det):
     if any(k in raw for k in ['defen','centre-back','center-back','center back','centre back','full-back','fullback','full back','wing-back','wingback','wing back','stoper','bek','stopper']) or any(k in det for k in ['cb','lb','rb','lwb','rwb']) or pos in ['d','df','def']:return 'DEF'
     if 'back' in raw and 'mid' not in raw:return 'DEF'
     return 'MID'
+SNAPSHOT_DAY = '2026-11-08'  # "Still there" (open end) for spells and tenures; never the build clock.
+COACH_POOL = ROOT / 'tools/pvp/coach_pool.json'
+COACH_TENURES = ROOT / 'tools/pvp/coach_tenures.json'
+def coach_members(spells_by_player, tenures, twins, today=SNAPSHOT_DAY):
+    """{coachId: {playerId}}: a player spell at club C overlaps (>= 1 day) a tenure of the coach at C.
+
+    spells_by_player: {pid: [(clubId, start 'YYYY-MM-DD', end or None)]}; twins: {primary: [other ids]}."""
+    same = {o: k for k, v in twins.items() for o in v}
+    by_club = collections.defaultdict(list)
+    for pid, rows in spells_by_player.items():
+        for club, start, end in rows:
+            if start: by_club[same.get(club, club)].append((pid, start[:10], (end or today)[:10]))
+    out = {}
+    for coach, rows in tenures.items():
+        out[coach] = {pid for t in rows for pid, s, e in by_club.get(t['clubId'], ())
+                      if s <= (t['end'] or today) and t['start'] <= e}
+    return out
+def coach_axis(rng, n, coach_keys, club_keys):
+    # n coach criteria plus clubs on one axis; the other axis never holds a coach (no coach x coach cell).
+    return rng.sample(coach_keys, n) + rng.sample(club_keys, 3 - n)
 def build():
     c=sqlite3.connect(f'file:{DB}?mode=ro',uri=True);c.row_factory=sqlite3.Row
     clubs={str(r['id']):dict(id=str(r['id']),name=r['name'],league=r['competition'] or '',
@@ -48,7 +68,9 @@ def build():
     for r in c.execute('select * from player_clubs'): links[r['player_id']].add(str(r['club_id']))
     for r in c.execute('select * from player_countries order by player_id,ord'): countries[r['player_id']].append(r['country'])
     for r in c.execute('select * from player_aliases order by player_id,ord'): aliases[r['player_id']].append(r['alias'])
+    dated=collections.defaultdict(list)
     for r in c.execute('select * from career_spells order by player_id,sequence'):
+        dated[str(r['player_id'])].append((str(r['club_id']),r['start_date'] or '',r['end_date']))
         start=re.search(r'\d{4}',r['start_date'] or '');end=re.search(r'\d{4}',r['end_date'] or '')
         if start: spells[r['player_id']].append((str(r['club_id']),int(start[0]),int(end[0]) if end else YEAR))
     players={}
@@ -74,7 +96,22 @@ def build():
           'position':position_group(r['position'],r['detailed_position']),
           'rank':r['selection_rank'] or 999999,'rating':round(rating,1),'cost':18 if rating>=90 else 14 if rating>=80 else 10 if rating>=65 else 6,
           'linkClubs':sorted(all_ids),'linkLeagues':sorted(all_leagues)}
+    # Teknik direktor: Wikidata/Wikipedia tenures (tools/pvp/fetch_coach_tenures.py) x dated spells.
+    tenure_file=json.loads(COACH_TENURES.read_text(encoding='utf-8'))
+    pool=json.loads(COACH_POOL.read_text(encoding='utf-8'))
+    avatars={x['id']:x.get('avatarKey') for x in json.loads((ROOT/'assets/data/coaches_min.json').read_text(encoding='utf-8'))}
+    by_coach=coach_members({i:v for i,v in dated.items() if i in players},tenure_file['coaches'],tenure_file.get('clubTwins',{}))
+    for p in players.values(): p['coaches']=[]
+    for coach in sorted(by_coach):
+        for i in by_coach[coach]: players[i]['coaches'].append(coach)
+    for p in players.values(): p['coaches'].sort()
     criteria={};members=collections.defaultdict(set)
+    for coach in pool:
+        cid=coach['coachId'];k='coach:'+cid
+        if not by_coach.get(cid):continue
+        criteria[k]={'id':k,'type':'coach','value':cid,'label':coach['name']}
+        if avatars.get(cid):criteria[k]['avatarKey']=avatars[cid]
+        members[k]=set(by_coach[cid])
     for i,p in players.items():
         for x in p['clubs']:
             if x in clubs and clubs[x]['selectable']:
@@ -88,18 +125,25 @@ def build():
     club_keys=sorted((k for k in criteria if k.startswith('club:') and len(members[k])>=20),key=lambda k:(-clubs[k[5:]]['rank'],k))[:90]
     country_keys=sorted((k for k in criteria if k.startswith('country:') and len(members[k])>=40),key=lambda k:(-len(members[k]),k))[:45]
     league_keys=sorted((k for k in criteria if k.startswith('league:') and len(members[k])>=50),key=lambda k:(-len(members[k]),k))[:30]
+    # A coach is board-eligible with 15+ players and 5+ of them among the 3000 best known.
+    coach_keys=sorted(k for k in criteria if k.startswith('coach:') and len(members[k])>=15 and
+        sum(1 for i in members[k] if players[i]['rank']<=3000)>=5)
     pairs=[]
-    for a,b in list(itertools.combinations(club_keys,2))+list(itertools.product(club_keys,country_keys)):
+    for a,b in list(itertools.combinations(club_keys,2))+list(itertools.product(club_keys,country_keys))+list(itertools.product(coach_keys,club_keys)):
         ids=members[a]&members[b]
         if len(ids)>=6: pairs.append({'id':a+'|'+b,'criteria':[a,b],'answers':sorted(ids)})
     # Grid: 300 boards; every cell has 3+ answers and one of them among the 3000 best-known players.
+    # Coach criteria per board (owner): ~60% one, ~15% two, the rest none; coaches stay on one axis.
     rng=random.Random(191026);grids=[];seen=set()
+    plan=[0]*75+[1]*180+[2]*45;random.Random(81126).shuffle(plan)
     known=lambda ids:any(players[i]['rank']<=3000 for i in ids)
-    for attempt in range(200000):
-        rows=rng.sample(club_keys,3)
-        viable=[k for k in country_keys+club_keys if k not in rows and all(len(members[k]&members[a])>=3 for a in rows)]
+    for attempt in range(400000):
+        n=plan[len(grids)]
+        axis=coach_axis(rng,n,coach_keys,club_keys) if n else rng.sample(club_keys,3)
+        viable=[k for k in country_keys+club_keys if k not in axis and all(len(members[k]&members[a])>=3 for a in axis)]
         if len(viable)<3:continue
-        cols=rng.sample(viable,3)
+        other=rng.sample(viable,3)
+        rows,cols=(other,axis) if n and rng.random()<.5 else (axis,other)
         answers=[sorted(members[a]&members[b]) for a in rows for b in cols]
         if min(map(len,answers))<3 or not all(map(known,answers)):continue
         sig=(tuple(sorted(rows)),tuple(sorted(cols)))
@@ -124,7 +168,8 @@ def build():
     # ("la liga" and "laliga" share an id, but the engine checks one spelling).
     def fits(i,k):
         cr=criteria[k];p=players[i]
-        return cr['value'] in (p['clubs'] if cr['type']=='club' else p['countryKeys'] if cr['type']=='country' else p['leagues'])
+        return cr['value'] in (p['clubs'] if cr['type']=='club' else p['countryKeys'] if cr['type']=='country' else
+            p['coaches'] if cr['type']=='coach' else p['leagues'])
     # Futbol Çinko: 200 boards. Each has 1-2 well-known league cells, 5 country
     # cells, 4 scarce cells (clubs or countries with 20-60 players, at least 3 of
     # them among the 12000 best known) and well-known clubs for the rest. Every
@@ -194,6 +239,8 @@ def build():
     report={'version':data['version'],'databaseSha256':data['databaseSha256'],'players':len(players),
       'pairs':len(pairs),'grids':len(grids),'cinko':len(cinko),'loto':len(loto),
       'five':len(five),
+      'coaches':len(coach_keys),'coachPairs':sum(1 for x in pairs if x['criteria'][0].startswith('coach:')),
+      'gridsByCoachCount':{str(n):sum(1 for g in grids if sum(k.startswith('coach:') for k in g['rows']+g['cols'])==n) for n in range(3)},
       'cinkoScarceCellsPerBoard':4,'cinkoScarceKeys':len(scarce_keys),
       'lotoValidCellsPerPlayer':{t:round(sum(b['validCellsPerPlayer'] for b in loto if b['tier']==t)/100,2)
         for t in ['easy','medium','hard']},
