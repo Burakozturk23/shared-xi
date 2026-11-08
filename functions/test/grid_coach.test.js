@@ -78,3 +78,66 @@ test("grid_reverse accepted answers list a shared coach", () => {
   const ids = g.witness.filter((_, i) => Math.floor(i / 3) === r);
   assert(E.acceptedFor(c, ids).includes(c.criteria[g.rows[r]].label));
 });
+
+// Bot Grid (grid_support.js).
+const G = require("../grid_support");
+const HG = require("../hints/grid");
+const coachCount = (p) => [...p.rows, ...p.cols].filter(isCoach).length;
+
+test("bot classic boards carry at most 2 coaches and never coach x coach", () => {
+  const counts = [];
+  for (let n = 0; n < 200; n++) {
+    const p = G.makePuzzle({pool: [], seed: "coach" + n, minimumAnswers: 1, rules: 2});
+    assert(!(p.rows.some(isCoach) && p.cols.some(isCoach)), "coach on both axes");
+    counts.push(coachCount(p));
+    for (const a of p.answers) assert(a.length >= 3);
+  }
+  assert(Math.max(...counts) <= 2);
+  const share = counts.filter(Boolean).length / counts.length;
+  assert(share > 0.6 && share < 0.9, String(share));
+  assert(counts.includes(2));
+});
+
+test("restricted club pool keeps the coach rules and fairness", () => {
+  const pool = [141, 36, 114, 449].map((x) => "club:" + x).filter((x) => G.catalog.criteria[x]);
+  for (let n = 0; n < 40; n++) {
+    const p = G.makePuzzle({pool, seed: "tr" + n, minimumAnswers: 2, rules: 2});
+    assert(p.rows.every((x) => pool.includes(x)));
+    assert(coachCount(p) <= 2 && !p.rows.some(isCoach));
+    for (let i = 0; i < 9; i++) assert(p.answers[i].includes(p.witness[i]));
+  }
+});
+
+test("bot reverse accepts a shared coach by full name or surname", () => {
+  let p; let n = 0;
+  do p = G.makePuzzle({pool: [], seed: "rev" + n++, minimumAnswers: 1, rules: 2});
+  while (!p.cols.some(isCoach) && n < 300);
+  assert(p.cols.some(isCoach), "no bot board with a coach column");
+  const r = {puzzle: p, rules: 2};
+  const axis = 3 + p.cols.findIndex(isCoach);
+  const coach = G.common(r, axis).find((k) => k.type === "coach");
+  assert(coach, "common() lists the coach");
+  assert.equal(G.answerCriterion(G.common(r, axis), coach.label, 2)?.id, coach.id);
+  assert.equal(G.answerCriterion(G.common(r, axis), coach.label.split(" ").at(-1), 2)?.id, coach.id);
+});
+
+test("bot random can draw a coach pair, at most one per board", () => {
+  let withCoach = 0;
+  for (let n = 0; n < 60; n++) {
+    const r = {seed: "rnd" + n, revision: 0, pairNumber: 0, roundsUsed: 0, pending: null, rows: {}, cols: {},
+      pool: [], used: {}, rules: 2, minimumAnswers: 1};
+    let coaches = 0;
+    for (let k = 0; k < 3; k++) {
+      G.makePair(r);
+      if (r.pending.criteria.some(isCoach)) coaches++;
+      r.rows[k] = r.pending.criteria[0]; r.cols[k] = r.pending.criteria[1]; r.pending = null; r.roundsUsed++;
+    }
+    assert(coaches <= 1);
+    if (coaches) withCoach++;
+  }
+  assert(withCoach > 20 && withCoach < 55, String(withCoach));
+});
+
+test("Kriter türü hint can say Teknik direktör", () => {
+  assert.equal(HG.TYPE.coach, "Teknik direktör");
+});

@@ -3,7 +3,7 @@
 // Items target the selected cell (classic, random, "pending" pair) or axis (reverse);
 // the once-per-board rule is per item, not per cell.
 const POS = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", ATT: "Forvet"};
-const TYPE = {club: "Kulüp", country: "Milliyet", position: "Mevki"};
+const TYPE = {club: "Kulüp", country: "Milliyet", position: "Mevki", coach: "Teknik direktör"};
 const firstLetter = (s) => [...String(s)].find((c) => /\p{L}/u.test(c));
 
 const CELL = [
@@ -113,4 +113,4 @@ function make({catalog, kind, answers, common, axisIds, matches, targetKey}) {
 
 const CATALOG = Object.fromEntries(["classic", "reverse", "random"].flatMap((k) =>
   ["solo", "bot"].map((w) => [`${w}_grid_${k}`, k === "reverse" ? AXIS : CELL])));
-module.exports = {make, CATALOG};
+module.exports = {make, CATALOG, TYPE};
