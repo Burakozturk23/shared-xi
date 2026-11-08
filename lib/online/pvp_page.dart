@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../widgets/grid_criterion_label.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/hub_ui.dart';
@@ -1089,12 +1090,13 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           board(3, [
             for (final row in rows(room['rows']))
               for (final col in rows(room['cols']))
-                '${row['label']} × ${col['label']}',
+                '${GridCriterionLabel.text(row)} × ${GridCriterionLabel.text(col)}',
           ]),
           const SizedBox(height: 14),
           if (target != null)
             note(
-              'Seçilen hücre: ${rows(room['rows'])[int.parse(target!) ~/ 3]['label']} × ${rows(room['cols'])[int.parse(target!) % 3]['label']}',
+              'Seçilen hücre: ${GridCriterionLabel.text(rows(room['rows'])[int.parse(target!) ~/ 3])} × '
+              '${GridCriterionLabel.text(rows(room['cols'])[int.parse(target!) % 3])}',
             ),
         ] else if (mode == 'grid_reverse') ...[
           board(
@@ -1154,7 +1156,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        '${criteria[i]['label']}',
+                        GridCriterionLabel.text(criteria[i]),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),

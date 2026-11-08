@@ -10,6 +10,7 @@ import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../services/story_support_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/game_ui.dart';
+import '../widgets/grid_criterion_label.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
@@ -283,7 +284,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     });
   }
 
-  String _criterion(dynamic raw) => rewardMap(raw)['label']?.toString() ?? '—';
+  String _criterion(dynamic raw) => GridCriterionLabel.text(rewardMap(raw));
   List<dynamic> _list(String key) => _run[key] as List? ?? const [];
   String _cellCriteria(int i) {
     final rows = _list('rows'), cols = _list('cols');
@@ -489,7 +490,8 @@ class _SupportedGridPageState extends State<SupportedGridPage>
   );
 
   // Criterion header of the board: rows on the left, columns on top.
-  Widget _axis(String text, {bool top = false, bool done = false}) {
+  // [content] is a text, or a criterion map (a coach shows its "TD" tag).
+  Widget _axis(Object content, {bool top = false, bool done = false}) {
     final p = PitchColors.of(context);
     return Container(
       constraints: const BoxConstraints(minHeight: 56),
@@ -501,15 +503,23 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: done ? p.accent : p.border),
       ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        maxLines: top ? 3 : 4,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(
-          context,
-        ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
-      ),
+      child: content is Map
+          ? GridCriterionLabel(
+              criterion: content,
+              maxLines: top ? 3 : 4,
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+            )
+          : Text(
+              '$content',
+              textAlign: TextAlign.center,
+              maxLines: top ? 3 : 4,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
     );
   }
 
@@ -541,8 +551,8 @@ class _SupportedGridPageState extends State<SupportedGridPage>
 
   Widget _board() {
     final rows = _list('rows'), cols = _list('cols');
-    String label(List<dynamic> list, int i) =>
-        list.length > i && list[i] != null ? _criterion(list[i]) : '—';
+    Object label(List<dynamic> list, int i) =>
+        list.length > i && list[i] != null ? rewardMap(list[i]) : '—';
     return Semantics(
       container: true,
       label: 'Grid tahtası',

@@ -13,7 +13,7 @@ import 'package:shared_xi/widgets/hint_panel.dart';
 
 class GridWire extends EnergyService {
   final calls = <Map<String, dynamic>>[];
-  bool hinted = false, legacy = false, finished = false, v2 = false;
+  bool hinted = false, legacy = false, finished = false, v2 = false, coach = false;
   Completer<Map<String, dynamic>>? pending;
   @override
   Future<Map<String, dynamic>> call(
@@ -73,7 +73,12 @@ class GridWire extends EnergyService {
         ],
         'cols': [
           for (var i = 0; i < 3; i++)
-            if (random) null else {'id': 'country:$i', 'label': 'Milliyet $i'},
+            if (random)
+              null
+            else if (coach && i == 0)
+              {'id': 'coach:coach_171', 'type': 'coach', 'value': 'coach_171', 'label': 'Fatih Terim'}
+            else
+              {'id': 'country:$i', 'label': 'Milliyet $i'},
         ],
         'witnesses': [
           for (var i = 0; i < 9; i++) {'id': '$i', 'name': 'Futbolcu $i'},
@@ -186,12 +191,15 @@ void main() {
     WidgetTester t,
     String mode, {
     bool finished = false,
+    bool coach = false,
   }) async {
     t.view.physicalSize = const Size(320, 1400);
     t.view.devicePixelRatio = 1;
     addTearDown(t.view.resetPhysicalSize);
     addTearDown(t.view.resetDevicePixelRatio);
-    final wire = GridWire()..finished = finished;
+    final wire = GridWire()
+      ..finished = finished
+      ..coach = coach;
     await t.pumpWidget(
       MaterialApp(
         home: SupportedGridPage(
@@ -225,6 +233,13 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     },
   );
+  testWidgets('coach criterion shows the coach name and TD tag', (t) async {
+    await open(t, 'bot_grid_classic', coach: true);
+    expect(find.text('Fatih Terim'), findsOneWidget);
+    expect(find.text('TD'), findsOneWidget);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
   testWidgets('finished solo Grid lists an answer for each empty cell', (
     t,
   ) async {
