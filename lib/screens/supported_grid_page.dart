@@ -9,12 +9,11 @@ import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../services/story_support_service.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/bot_arena.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/grid_criterion_label.dart';
-import '../widgets/hub_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
-import '../widgets/pitch_ui.dart';
 
 /// Account-owned Grid session. Legacy route is selected only by the server's
 /// explicit rollout response; a network error never creates a second game.
@@ -57,12 +56,6 @@ class _SupportedGridPageState extends State<SupportedGridPage>
       !_accountChanged &&
       _error == null &&
       _run['turn'] == 'user';
-  String get _title =>
-      '${_bot ? 'Bot' : 'Solo'} · ${_reverse
-          ? 'Tersten'
-          : _random
-          ? 'Rastgele'
-          : 'Klasik'} Grid';
   @override
   void initState() {
     super.initState();
@@ -297,87 +290,126 @@ class _SupportedGridPageState extends State<SupportedGridPage>
       : _target == 'pending'
       ? 'pair_${_run['pairNumber']}'
       : 'cell_$_target';
+  PitchColors get _p => PitchColors.of(context);
+  TextTheme get _text => Theme.of(context).textTheme;
+  String get _kindTitle => _reverse
+      ? 'Tersten Grid'
+      : _random
+      ? 'Rastgele Grid'
+      : 'Klasik Grid';
+  String get _subtitle => _bot
+      ? 'Bot düellosu · ${const {'easy': 'Kolay', 'medium': 'Orta', 'hard': 'Zor'}['${_run['difficulty'] ?? widget.difficulty}'] ?? 'Orta'}'
+      : 'Solo antrenman · ${_reverse ? '6 eksen' : '9 kutu'}';
+
   @override
   Widget build(BuildContext context) {
     if (_legacy) return widget.legacy;
     return PopScope(
       canPop: !_busy,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(_title),
-          actions: [
-            IconButton(
-              tooltip: 'Yenile',
-              onPressed: _busy || _accountChanged ? null : _load,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
         body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
+          child: Column(
             children: [
-              if (_busy) const LinearProgressIndicator(),
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(_error!),
-                ),
-              if (_run.isEmpty && !_busy && !_accountChanged) ...[
-                const Text(
-                  'Her hamle hesabına kaydedilir. Oyun ödülsüzdür; yardımlı rekor ayrı tutulur.',
-                ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: _data['availability'] == true && _error == null
-                      ? () => _act('start')
-                      : null,
-                  child: const Text('Tahtayı hazırla'),
-                ),
-              ],
-              if (_run.isNotEmpty) ...[
-                _header(),
-                const SizedBox(height: 16),
-                if (_reverse) _reverseBoard() else _board(),
-                const SizedBox(height: 12),
-                if (_active && _random) ...[
-                  Text('Yerleştirilen çift: ${_run['roundsUsed']}/3'),
-                  if (_run['pending'] == null)
-                    FilledButton.tonal(
-                      onPressed:
-                          _canPlay && (_run['roundsUsed'] as num? ?? 0) < 3
-                          ? () => _act('generate')
-                          : null,
-                      child: const Text('Kulüp çifti üret'),
-                    ),
-                  if (_run['pending'] != null) _pending(),
-                ],
-                if (_canPlay &&
-                    _target != null &&
-                    !(_target == 'pending' &&
-                        rewardMap(_run['pending'])['player'] != null))
-                  _entry(),
-                if (_active)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: TextButton(
-                      onPressed: _busy ? null : () => _act('finish'),
-                      child: const Text('Bitir · Kısmi sonuç'),
-                    ),
-                  ),
-                if (!_active) ...[
-                  const SizedBox(height: 16),
-                  serverMatchResult(_run, bot: _bot),
-                  _summary(),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: _busy || _data['availability'] != true
-                        ? null
-                        : () => _act('start'),
-                    child: const Text('Yeni tahta'),
+              ArenaHeader(
+                title: _kindTitle,
+                subtitle: _subtitle,
+                tag: _bot ? 'VS BOT' : 'SOLO',
+                canPop: !_busy,
+                actions: [
+                  ArenaIconButton(
+                    tooltip: 'Yenile',
+                    icon: Icons.refresh_rounded,
+                    onPressed: _busy || _accountChanged ? null : _load,
                   ),
                 ],
-              ],
+              ),
+              Divider(height: 1, color: _p.border),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
+                  children: [
+                    if (_busy) const LinearProgressIndicator(),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: ArenaNote(
+                          text: _error!,
+                          icon: Icons.error_outline_rounded,
+                          color: _p.error,
+                        ),
+                      ),
+                    if (_run.isEmpty && !_busy && !_accountChanged) ...[
+                      ArenaCard(
+                        glow: _p.accent,
+                        child: Text(
+                          'Her hamle hesabına kaydedilir. Oyun ödülsüzdür; yardımlı rekor ayrı tutulur.',
+                          style: _text.bodyMedium,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ArenaPrimaryButton(
+                        label: 'Tahtayı hazırla',
+                        icon: Icons.grid_view_rounded,
+                        onPressed:
+                            _data['availability'] == true && _error == null
+                            ? () => _act('start')
+                            : null,
+                      ),
+                    ],
+                    if (_run.isNotEmpty) ...[
+                      _header(),
+                      const SizedBox(height: 16),
+                      if (_reverse) _reverseBoard() else _board(),
+                      const SizedBox(height: 12),
+                      if (_active && _random) ...[
+                        ArenaSection(
+                          'Kulüp çiftleri',
+                          icon: Icons.link_rounded,
+                          trailing: Text(
+                            'Yerleştirilen çift: ${_run['roundsUsed']}/3',
+                            style: _text.labelSmall?.copyWith(color: Arena.lime),
+                          ),
+                        ),
+                        if (_run['pending'] == null)
+                          ArenaPrimaryButton(
+                            icon: Icons.casino_outlined,
+                            label: 'Kulüp çifti üret',
+                            onPressed:
+                                _canPlay &&
+                                    (_run['roundsUsed'] as num? ?? 0) < 3
+                                ? () => _act('generate')
+                                : null,
+                          ),
+                        if (_run['pending'] != null) _pending(),
+                      ],
+                      if (_canPlay &&
+                          _target != null &&
+                          !(_target == 'pending' &&
+                              rewardMap(_run['pending'])['player'] != null))
+                        _entry(),
+                      if (_active) ...[
+                        const SizedBox(height: 12),
+                        ArenaFinishLink(
+                          onPressed: _busy ? null : () => _act('finish'),
+                        ),
+                      ],
+                      if (!_active) ...[
+                        const SizedBox(height: 16),
+                        serverMatchResult(_run, bot: _bot),
+                        _summary(),
+                        const SizedBox(height: 12),
+                        ArenaPrimaryButton(
+                          label: 'Yeni tahta',
+                          icon: Icons.replay_rounded,
+                          onPressed: _busy || _data['availability'] != true
+                              ? null
+                              : () => _act('start'),
+                        ),
+                      ],
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -387,14 +419,47 @@ class _SupportedGridPageState extends State<SupportedGridPage>
 
   // Score, record, turn and the last messages from the server.
   Widget _header() {
-    final p = PitchColors.of(context);
     final records = rewardMap(
       _data[_run['assisted'] == true ? 'assistedRecords' : 'records'],
     );
     final record = rewardMap(records['${widget.mode}:${_run['difficulty']}']);
     final feedback = _run['feedback']?.toString();
     final cost = (_run['wrongCost'] as num? ?? 0).toInt();
-    return PitchPanel(
+    final userTurn = _run['turn'] != 'bot';
+    Widget score(String label, String value, String note, Color color, bool lit) => Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: lit ? color.withValues(alpha: .08) : _p.background.withValues(alpha: .5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: lit ? color.withValues(alpha: .7) : _p.border, width: lit ? 1.6 : 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: _text.labelMedium?.copyWith(
+                color: _p.muted,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: _text.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: lit ? color : _p.text,
+              ),
+            ),
+            Text(note, style: _text.bodySmall?.copyWith(color: _p.muted)),
+          ],
+        ),
+      ),
+    );
+    return ArenaCard(
+      glow: _p.accent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -402,63 +467,78 @@ class _SupportedGridPageState extends State<SupportedGridPage>
             spacing: 8,
             runSpacing: 6,
             children: [
-              HubPill(
-                _run['assisted'] == true
-                    ? 'Yardımlı · Ayrı sonuç kaydı'
-                    : 'Yardımsız',
-                color: _run['assisted'] == true ? hubAmber(context) : p.accent,
-                background: p.background.withValues(alpha: .4),
+              ArenaPill(
+                dot: _run['assisted'] == true ? Arena.bot : Arena.lime,
+                child: Text(
+                  _run['assisted'] == true
+                      ? 'Yardımlı · Ayrı sonuç kaydı'
+                      : 'Yardımsız',
+                ),
               ),
               if (_active && _bot)
-                HubPill(
-                  _run['turn'] == 'bot' ? 'Bot oynuyor…' : 'Sıra sende',
-                  color: _run['turn'] == 'bot' ? hubAmber(context) : p.success,
-                  background: p.background.withValues(alpha: .4),
-                  dot: true,
+                ArenaPill(
+                  filled: true,
+                  color: userTurn ? Arena.lime : Arena.bot,
+                  dot: userTurn ? Arena.lime : Arena.bot,
+                  child: Text(userTurn ? 'Sıra sende' : 'Bot oynuyor…'),
                 ),
             ],
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: HubStatTile(
-                  label: 'Sen',
-                  value: '${_run['userScore'] ?? 0}',
-                  note: _bot ? 'kutu / eksen' : 'puan',
-                ),
+              score(
+                'Sen',
+                '${_run['userScore'] ?? 0}',
+                _bot ? 'kutu / eksen' : 'puan',
+                _p.accent,
+                _active && userTurn,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _bot
-                    ? HubStatTile(
-                        label: 'Bot',
-                        value: '${_run['botScore'] ?? 0}',
-                        note: '${_run['difficulty'] ?? widget.difficulty}',
-                      )
-                    : HubStatTile(
-                        label: 'Yanlış',
-                        value: '${_run['wrong'] ?? 0}',
-                        note: cost > 0 ? 'her biri −$cost puan' : 'cezasız',
-                      ),
-              ),
+              const SizedBox(width: 10),
+              _bot
+                  ? score(
+                      'Bot',
+                      '${_run['botScore'] ?? 0}',
+                      const {'easy': 'Kolay', 'medium': 'Orta', 'hard': 'Zor'}[
+                              '${_run['difficulty'] ?? widget.difficulty}'] ??
+                          'Orta',
+                      Arena.bot,
+                      _active && !userTurn,
+                    )
+                  : score(
+                      'Yanlış',
+                      '${_run['wrong'] ?? 0}',
+                      cost > 0 ? 'her biri −$cost puan' : 'cezasız',
+                      _p.error,
+                      false,
+                    ),
             ],
           ),
           if (record.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Rekor ${record['best'] ?? 0} · ${record['completed'] ?? 0} tamamlanan'
-              '${_bot ? ' · ${record['wins'] ?? 0} galibiyet' : ''}',
-              style: hubCaps(context),
+            const SizedBox(height: 10),
+            Divider(height: 1, color: _p.border),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(Icons.emoji_events_outlined, size: 18, color: Arena.bot),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Rekor ${record['best'] ?? 0} · ${record['completed'] ?? 0} tamamlanan'
+                    '${_bot ? ' · ${record['wins'] ?? 0} galibiyet' : ''}',
+                    style: _text.bodySmall?.copyWith(color: _p.muted),
+                  ),
+                ),
+              ],
             ),
           ],
           if (_bot && _run['botFirst'] == true && _active)
-            _line('Bu maçta bot önce başladı.', p.muted),
-          if (_run['botNote'] != null) _line('${_run['botNote']}', p.muted),
+            _line('Bu maçta bot önce başladı.', _p.muted),
+          if (_run['botNote'] != null) _line('${_run['botNote']}', Arena.bot, icon: Icons.smart_toy_outlined),
           if (feedback != null)
             _line(
               feedback,
-              feedback == 'Doğru.' ? p.success : p.error,
+              feedback == 'Doğru.' ? _p.success : _p.error,
               icon: feedback == 'Doğru.'
                   ? Icons.check_circle_rounded
                   : Icons.cancel_rounded,
@@ -478,50 +558,23 @@ class _SupportedGridPageState extends State<SupportedGridPage>
           const SizedBox(width: 6),
         ],
         Expanded(
-          child: Text(
-            text,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: color),
-          ),
+          child: Text(text, style: _text.bodyMedium?.copyWith(color: color)),
         ),
       ],
     ),
   );
 
-  // Criterion header of the board: rows on the left, columns on top.
-  // [content] is a text, or a criterion map (a coach shows its "TD" tag).
-  Widget _axis(Object content, {bool top = false, bool done = false}) {
-    final p = PitchColors.of(context);
-    return Container(
-      constraints: const BoxConstraints(minHeight: 56),
-      margin: const EdgeInsets.all(2),
-      padding: const EdgeInsets.all(6),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: done ? p.tint : p.background.withValues(alpha: .4),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: done ? p.accent : p.border),
-      ),
-      child: content is Map
-          ? GridCriterionLabel(
-              criterion: content,
-              maxLines: top ? 3 : 4,
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
-            )
-          : Text(
-              '$content',
-              textAlign: TextAlign.center,
-              maxLines: top ? 3 : 4,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-    );
-  }
+  // Criterion header of the board: a criterion map (badge, kind, name), or a text.
+  Widget _axis(Object content, {ArenaTileState state = ArenaTileState.idle, String? tag}) =>
+      ArenaTile(
+        compact: true,
+        minHeight: 74,
+        state: state,
+        tag: tag,
+        criterion: ArenaCriterion(
+          content is Map ? content : {'label': '$content', 'type': 'unknown'},
+        ),
+      );
 
   Widget _grid(
     Widget Function(int i) cell,
@@ -529,11 +582,26 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     List<Widget> left,
   ) => Column(
     children: [
-      Row(
-        children: [
-          const Expanded(child: SizedBox()),
-          for (final w in top) Expanded(flex: 2, child: w),
-        ],
+      IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: _p.limeTint,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Arena.lime.withValues(alpha: .3)),
+                  ),
+                  child: const Icon(Icons.grid_3x3_rounded, color: Arena.lime),
+                ),
+              ),
+            ),
+            for (final w in top) Expanded(child: w),
+          ],
+        ),
       ),
       for (var row = 0; row < 3; row++)
         IntrinsicHeight(
@@ -542,7 +610,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
             children: [
               Expanded(child: left[row]),
               for (var col = 0; col < 3; col++)
-                Expanded(flex: 2, child: cell(row * 3 + col)),
+                Expanded(child: cell(row * 3 + col)),
             ],
           ),
         ),
@@ -558,14 +626,13 @@ class _SupportedGridPageState extends State<SupportedGridPage>
       label: 'Grid tahtası',
       child: _grid(
         _cell,
-        [for (var i = 0; i < 3; i++) _axis(label(cols, i), top: true)],
+        [for (var i = 0; i < 3; i++) _axis(label(cols, i))],
         [for (var i = 0; i < 3; i++) _axis(label(rows, i))],
       ),
     );
   }
 
   Widget _cell(int i) {
-    final p = PitchColors.of(context);
     final cell = rewardMap(rewardMap(_run['cells'])['$i']);
     final mine = cell['owner'] == 1, selected = _target == i;
     final available =
@@ -573,131 +640,71 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         cell.isEmpty &&
         (!_random ||
             _list('rows')[i ~/ 3] != null && _list('cols')[i % 3] != null);
-    final color = cell.isEmpty
-        ? p.surface
-        : mine
-        ? p.tint
-        : hubAmber(context).withValues(alpha: .16);
-    return Semantics(
-      label: _cellCriteria(i),
-      selected: selected,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 92),
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: selected ? p.tint : color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected
-                ? p.accent
-                : cell.isEmpty
-                ? p.border
-                : mine
-                ? p.accent
-                : hubAmber(context),
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: TextButton(
-          key: ValueKey('grid-cell-$i'),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          onPressed: available ? () => _select(i) : null,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (cell.isEmpty)
-                Icon(
-                  available ? Icons.add_rounded : Icons.lock_outline_rounded,
-                  color: available ? p.accent : p.muted,
-                  size: 20,
-                )
-              else ...[
-                Text(
-                  '${rewardMap(cell['player'])['name']}',
-                  textAlign: TextAlign.center,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: p.text,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  _bot
-                      ? (mine ? 'Sen' : 'Bot')
-                      : (cell['bonus'] as num? ?? 0) > 0
-                      ? '+${20 + (cell['bonus'] as num).toInt()}'
-                      : '+20',
-                  style: hubCaps(
-                    context,
-                    color: mine ? p.accent : hubAmber(context),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
+    final player = rewardMap(cell['player']);
+    return ArenaTile(
+      key: ValueKey('grid-cell-$i'),
+      minHeight: 92,
+      emptyPlus: available || selected,
+      semantics: _cellCriteria(i),
+      player: cell.isEmpty ? null : player,
+      state: selected
+          ? ArenaTileState.selected
+          : cell.isEmpty
+          ? (available || !_active ? ArenaTileState.idle : ArenaTileState.locked)
+          : mine
+          ? ArenaTileState.mine
+          : ArenaTileState.bot,
+      tag: selected
+          ? 'SEÇİLİ'
+          : cell.isEmpty
+          ? null
+          : _bot
+          ? (mine ? 'SEN' : 'BOT')
+          : (cell['bonus'] as num? ?? 0) > 0
+          ? '+${20 + (cell['bonus'] as num).toInt()}'
+          : '+20',
+      onTap: available ? () => _select(i) : null,
     );
   }
 
   // Reverse: the nine players with each axis' found criterion around them.
   Widget _reverseBoard() {
-    final p = PitchColors.of(context);
     final axes = rewardMap(_run['axes']);
     final players = _list('witnesses');
-    String axis(int i) {
+    Widget axis(int i) {
       final a = rewardMap(axes['$i']);
-      return a.isEmpty
-          ? '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}\n?'
-          : '${a['label']}\n${a['owner'] == 1 ? 'Sen' : 'Bot'}';
+      if (a.isEmpty) {
+        return _axis(
+          '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1} ?',
+          state: _target == i ? ArenaTileState.selected : ArenaTileState.idle,
+        );
+      }
+      return _axis(
+        {'label': a['label'], 'type': 'unknown'},
+        state: a['owner'] == 1 ? ArenaTileState.mine : ArenaTileState.bot,
+        tag: a['owner'] == 1 ? 'SEN' : 'BOT',
+      );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _grid(
-          (i) => Container(
-            constraints: const BoxConstraints(minHeight: 72),
-            margin: const EdgeInsets.all(2),
-            padding: const EdgeInsets.all(6),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: p.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: p.border),
-            ),
-            child: Text(
-              players.length > i ? '${rewardMap(players[i])['name']}' : '—',
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
+          (i) => ArenaTile(
+            minHeight: 84,
+            player: players.length > i ? rewardMap(players[i]) : {'name': '—'},
           ),
-          [
-            for (var i = 3; i < 6; i++)
-              _axis(axis(i), top: true, done: axes.containsKey('$i')),
-          ],
-          [
-            for (var i = 0; i < 3; i++)
-              _axis(axis(i), done: axes.containsKey('$i')),
-          ],
+          [for (var i = 3; i < 6; i++) axis(i)],
+          [for (var i = 0; i < 3; i++) axis(i)],
         ),
         const SizedBox(height: 12),
-        Text(
-          'Bir satır ya da sütun seç; üç oyuncunun ortak kulübünü, '
-          'milliyetini veya mevkisini yaz.',
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: p.muted),
+        ArenaNote(
+          icon: Icons.touch_app_outlined,
+          text:
+              'Bir satır ya da sütun seç; üç oyuncunun ortak kulübünü, '
+              'milliyetini, mevkisini ya da teknik direktörünü yaz.',
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -725,7 +732,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     if (solutions.isEmpty && accepted.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 12),
-      child: PitchPanel(
+      child: ArenaCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -733,7 +740,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
               accepted.isNotEmpty
                   ? 'Kabul edilen kriterler'
                   : 'Boş kalan kutulara örnek cevaplar',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: _text.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             if (accepted.isNotEmpty)
@@ -764,21 +771,37 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     final pending = rewardMap(_run['pending']);
     final criteria = pending['criteria'] as List;
     final player = rewardMap(pending['player']);
-    return PitchPanel(
+    Widget side(dynamic raw) => Expanded(
+      child: ArenaTile(compact: true, minHeight: 70, criterion: ArenaCriterion(rewardMap(raw))),
+    );
+    return ArenaCard(
+      glow: Arena.lime,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '${_criterion(criteria[0])} × ${_criterion(criteria[1])}',
-            style: Theme.of(context).textTheme.titleMedium,
+          Row(
+            children: [
+              side(criteria[0]),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Icon(Icons.close_rounded, color: _p.muted, size: 18),
+              ),
+              side(criteria[1]),
+            ],
           ),
+          const SizedBox(height: 10),
           if (player.isEmpty)
-            FilledButton.tonal(
+            ArenaPrimaryButton(
+              icon: Icons.search_rounded,
+              label: 'Ortak oyuncuyu bul',
               onPressed: _canPlay ? () => _select('pending') : null,
-              child: const Text('Ortak oyuncuyu bul'),
             ),
           if (player.isNotEmpty) ...[
-            Text('${player['name']} doğrulandı. Boş çapaya yerleştir.'),
+            ArenaNote(
+              icon: Icons.verified_outlined,
+              color: _p.success,
+              text: '${player['name']} doğrulandı. Boş çapaya yerleştir.',
+            ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text('Satır: ${_criterion(criteria[_swap ? 1 : 0])}'),
@@ -788,12 +811,14 @@ class _SupportedGridPageState extends State<SupportedGridPage>
             ),
             for (final i in [2, 4, 6])
               if (!rewardMap(_run['cells']).containsKey('$i'))
-                OutlinedButton(
-                  onPressed: _canPlay
-                      ? () => _act('place', {'target': i, 'swap': _swap})
-                      : null,
-                  child: Text(
-                    '${i ~/ 3 + 1}. satır / ${i % 3 + 1}. sütuna yerleştir',
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ArenaSecondaryButton(
+                    icon: Icons.place_outlined,
+                    label: '${i ~/ 3 + 1}. satır / ${i % 3 + 1}. sütuna yerleştir',
+                    onPressed: _canPlay
+                        ? () => _act('place', {'target': i, 'swap': _swap})
+                        : null,
                   ),
                 ),
           ],
@@ -808,87 +833,138 @@ class _SupportedGridPageState extends State<SupportedGridPage>
 
   Widget _entry() {
     final text = rewardMap(_run['hints'])[_hintKey];
+    final title = _target == 'pending'
+        ? 'Bekleyen kulüp çifti'
+        : _reverse
+        ? '${(_target as int) < 3 ? 'Satır' : 'Sütun'} ${(_target as int) % 3 + 1}'
+        : _cellCriteria(_target as int);
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: PitchPanel(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              _target == 'pending'
-                  ? 'Bekleyen kulüp çifti'
-                  : _reverse
-                  ? '${(_target as int) < 3 ? 'Satır' : 'Sütun'} ${(_target as int) % 3 + 1}'
-                  : _cellCriteria(_target as int),
-            ),
-            TextField(
-              controller: _answer,
-              enabled: _canPlay,
-              onChanged: _find,
-              decoration: InputDecoration(
-                labelText: _reverse
-                    ? 'Ortak kriter ara · Kulüp, milliyet veya mevki'
-                    : 'Futbolcu ara · En az iki harf',
-              ),
-            ),
-            if (_reverse)
-              FilledButton(
-                onPressed: _canPlay
-                    ? () => _act('guess', {
-                        'target': _target,
-                        'answer': _answer.text,
-                      })
-                    : null,
-                child: const Text('Kriteri doğrula'),
-              ),
-            for (final p in _suggestions)
-              ListTile(
-                title: Text('${p[_reverse ? 'label' : 'name']}'),
-                subtitle: _reverse
-                    ? Text(
-                        const {
-                              'club': 'Kulüp',
-                              'country': 'Milliyet',
-                              'position': 'Mevki',
-                            }['${p['type']}'] ??
-                            '',
-                      )
-                    : null,
-                onTap: _canPlay
-                    ? () => _act('guess', {
-                        'target': _target,
-                        if (_reverse)
-                          'answer': p['id']
-                        else
-                          'playerId': p['id'],
-                      })
-                    : null,
-              ),
-            const SizedBox(height: 12),
-            if (text != null)
-              Text('$text')
-            else ...[
-              Text(
-                _reverse
-                    ? 'Temel destek ortak kriterin türünü daraltır.'
-                    : 'Temel destek geçerli bir adayın milliyet ve mevki grubunu verir.',
-              ),
-              const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
-              hintEntry(_run, target: _target, disabled: !_canPlay,
-                      send: (p) => _act('hint', {'target': _target, ...p}),
-                      watch: (id) => _watch(itemId: id)) ??
-                  PaidHintButton(
-                    session: _run,
-                    sku: 'boost_basic',
-                    label: 'Temel bilgi',
-                    disabled: !_canPlay,
-                    onUse: (payment) =>
-                        _act('hint', {'target': _target, ...payment}),
-                    onWatch: _watch,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ArenaCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Icon(Icons.adjust_rounded, color: Arena.lime, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: _text.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (!_reverse)
+                  ArenaSearch(
+                    controller: _answer,
+                    enabled: _canPlay,
+                    onChanged: _find,
+                    hint: 'Futbolcu ara · En az iki harf',
+                    suggestions: _suggestions,
+                    onPick: _canPlay
+                        ? (p) => _act('guess', {'target': _target, 'playerId': p['id']})
+                        : null,
+                  )
+                else ...[
+                  TextField(
+                    controller: _answer,
+                    enabled: _canPlay,
+                    onChanged: _find,
+                    decoration: InputDecoration(
+                      labelText: 'Ortak kriter ara · Kulüp, milliyet, mevki veya TD',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      filled: true,
+                      fillColor: _p.background,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
                   ),
+                  for (final p in _suggestions)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Material(
+                        color: _p.raised,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: BorderSide(color: _p.border),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: ListTile(
+                          dense: true,
+                          leading: CriterionMark(ArenaCriterion(p), size: 28),
+                          title: Text('${p['label']}'),
+                          subtitle: Text(
+                            const {
+                                  'club': 'Kulüp',
+                                  'country': 'Milliyet',
+                                  'position': 'Mevki',
+                                  'coach': 'Teknik direktör',
+                                }['${p['type']}'] ??
+                                '',
+                          ),
+                          onTap: _canPlay
+                              ? () => _act('guess', {'target': _target, 'answer': p['id']})
+                              : null,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  ArenaPrimaryButton(
+                    icon: Icons.fact_check_outlined,
+                    label: 'Kriteri doğrula',
+                    onPressed: _canPlay
+                        ? () => _act('guess', {
+                            'target': _target,
+                            'answer': _answer.text,
+                          })
+                        : null,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          ArenaHintCard(
+            children: [
+              if (text != null)
+                Text('$text', style: _text.bodyMedium)
+              else ...[
+                Text(
+                  _reverse
+                      ? 'Temel destek ortak kriterin türünü daraltır.'
+                      : 'Temel destek geçerli bir adayın milliyet ve mevki grubunu verir.',
+                ),
+                const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
+                const SizedBox(height: 10),
+                hintEntry(
+                      _run,
+                      target: _target,
+                      disabled: !_canPlay,
+                      send: (p) => _act('hint', {'target': _target, ...p}),
+                      watch: (id) => _watch(itemId: id),
+                    ) ??
+                    PaidHintButton(
+                      session: _run,
+                      sku: 'boost_basic',
+                      label: 'Temel bilgi',
+                      disabled: !_canPlay,
+                      onUse: (payment) =>
+                          _act('hint', {'target': _target, ...payment}),
+                      onWatch: _watch,
+                    ),
+              ],
             ],
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -6,10 +6,11 @@ import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/bot_arena.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
-import '../widgets/pitch_ui.dart';
 
 /// Account-owned Loto, Team Race, Çinko and Random Five sessions. The server
 /// owns the board, the answers, the bot and every clock; the legacy route is
@@ -311,94 +312,109 @@ class _SupportedBotPageState extends State<SupportedBotPage>
   int _seconds(String key) => _run[key] is num
       ? (((_run[key] as num).toInt() - _now) / 1000).ceil().clamp(0, 999)
       : 0;
+  String get _subtitle => switch (_kind) {
+    'loto' => 'Birebir kapışma · 16 kutu',
+    'team_race' =>
+      'Ortak oyuncu yarışı · ${((_run['round'] as num? ?? 0).toInt()) + 1}. tur',
+    'cinko' => 'Taktik tahta · 5×5 düello',
+    _ => 'Taktik düello · 5 kulüp',
+  };
+  PitchColors get _p => PitchColors.of(context);
+  TextTheme get _text => Theme.of(context).textTheme;
+
   @override
   Widget build(BuildContext context) {
     if (_legacy) return widget.legacy;
     return PopScope(
       canPop: !_busy,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(_title),
-          actions: [
-            if (_realtime && _active)
-              IconButton(
-                tooltip: _paused ? 'Devam et' : 'Duraklat',
-                onPressed: _busy
-                    ? null
-                    : () => _act(_paused ? 'resume' : 'pause'),
-                icon: Icon(
-                  _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-                ),
-              ),
-            IconButton(
-              tooltip: 'Yenile',
-              onPressed: _busy || _accountChanged ? null : _load,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
         body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
+          child: Column(
             children: [
-              if (_busy) const LinearProgressIndicator(),
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(_error!),
-                ),
-              if (_run.isEmpty && !_busy && !_accountChanged) ..._setup(),
-              if (_run.isNotEmpty) ...[
-                Text(
-                  _run['assisted'] == true
-                      ? 'Yardımlı · Ayrı sonuç kaydı'
-                      : 'Yardımsız',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _kind == 'team_race'
-                      ? 'Tur galibiyeti · Sen: ${_run['userScore'] ?? 0} · Bot: ${_run['botScore'] ?? 0}'
-                      : 'Sen: ${_run['userScore'] ?? 0} · Bot: ${_run['botScore'] ?? 0}',
-                ),
-                if (_run['feedback'] != null) Text('${_run['feedback']}'),
-                if (_paused)
-                  const Text(
-                    'Oyun duraklatıldı. Devam ettiğinde saat kaldığı yerden işler.',
-                  ),
-                if (_active && !_realtime)
-                  Text(
-                    _run['turn'] == 'bot'
-                        ? 'Bot oynuyor…'
-                        : _run['turn'] == 'result'
-                        ? 'Tur sonucu'
-                        : 'Sıra sende',
-                  ),
-                const SizedBox(height: 12),
-                if (_kind == 'loto') ..._loto(),
-                if (_kind == 'team_race') ..._race(),
-                if (_kind == 'cinko') ..._cinko(),
-                if (_kind == 'random_five') ..._five(),
-                if (_active)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: TextButton(
-                      onPressed: _busy ? null : () => _act('finish'),
-                      child: const Text('Bitir · Kısmi sonuç'),
+              ArenaHeader(
+                title: _title,
+                subtitle: _subtitle,
+                canPop: !_busy,
+                actions: [
+                  if (_realtime && _active)
+                    ArenaIconButton(
+                      tooltip: _paused ? 'Devam et' : 'Duraklat',
+                      icon: _paused
+                          ? Icons.play_arrow_rounded
+                          : Icons.pause_rounded,
+                      onPressed: _busy
+                          ? null
+                          : () => _act(_paused ? 'resume' : 'pause'),
                     ),
-                  ),
-                if (!_active) ...[
-                  const SizedBox(height: 16),
-                  serverMatchResult(_run, bot: true),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: _busy || _data['availability'] != true
-                        ? null
-                        : () => _act('start'),
-                    child: const Text('Yeni maç'),
+                  ArenaIconButton(
+                    tooltip: 'Yenile',
+                    icon: Icons.refresh_rounded,
+                    onPressed: _busy || _accountChanged ? null : _load,
                   ),
                 ],
-              ],
+              ),
+              Divider(height: 1, color: _p.border),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
+                  children: [
+                    if (_busy) const LinearProgressIndicator(),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: ArenaNote(
+                          text: _error!,
+                          icon: Icons.error_outline_rounded,
+                          color: _p.error,
+                        ),
+                      ),
+                    if (_run.isEmpty && !_busy && !_accountChanged) ..._setup(),
+                    if (_run.isNotEmpty) ...[
+                      ArenaScoreRow(
+                        assisted: _run['assisted'] == true,
+                        user: _run['userScore'] ?? 0,
+                        bot: _run['botScore'] ?? 0,
+                        scoreLabel: _kind == 'team_race' ? 'TUR' : 'SKOR',
+                      ),
+                      if (_run['feedback'] != null) ...[
+                        const SizedBox(height: 12),
+                        ArenaNote(text: '${_run['feedback']}'),
+                      ],
+                      if (_paused) ...[
+                        const SizedBox(height: 12),
+                        const ArenaNote(
+                          icon: Icons.pause_circle_outline_rounded,
+                          text:
+                              'Oyun duraklatıldı. Devam ettiğinde saat kaldığı yerden işler.',
+                        ),
+                      ],
+                      const SizedBox(height: 14),
+                      if (_kind == 'loto') ..._loto(),
+                      if (_kind == 'team_race') ..._race(),
+                      if (_kind == 'cinko') ..._cinko(),
+                      if (_kind == 'random_five') ..._five(),
+                      if (_active) ...[
+                        const SizedBox(height: 12),
+                        ArenaFinishLink(
+                          onPressed: _busy ? null : () => _act('finish'),
+                        ),
+                      ],
+                      if (!_active) ...[
+                        const SizedBox(height: 16),
+                        serverMatchResult(_run, bot: true),
+                        const SizedBox(height: 12),
+                        ArenaPrimaryButton(
+                          label: 'Yeni maç',
+                          icon: Icons.replay_rounded,
+                          onPressed: _busy || _data['availability'] != true
+                              ? null
+                              : () => _act('start'),
+                        ),
+                      ],
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -406,37 +422,104 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     );
   }
 
-  List<Widget> _setup() => [
-    Text(
-      widget.clubName == null
-          ? 'Her hamle hesabına kaydedilir. Maç ödülsüzdür; yardımlı sonuç ayrı tutulur.'
-          : '${widget.clubName} ile yarış. Her hamle hesabına kaydedilir; yardımlı sonuç ayrı tutulur.',
+  /// Turn line of the turn-based modes: "Sıra sende" / "Bot oynuyor…".
+  Widget _turn() {
+    final turn = _run['turn'];
+    final mine = turn == 'user';
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: mine ? Arena.lime : Arena.bot,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            turn == 'bot'
+                ? 'Bot oynuyor…'
+                : turn == 'result'
+                ? 'Tur sonucu'
+                : 'Sıra sende',
+            style: _text.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _clock(String text, {bool urgent = false}) => ArenaPill(
+    filled: true,
+    color: urgent ? _p.error : _p.accent,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.timer_outlined,
+          size: 16,
+          color: urgent ? _p.error : _p.accent,
+        ),
+        const SizedBox(width: 6),
+        Flexible(child: Text(text)),
+      ],
     ),
-    const SizedBox(height: 12),
-    if (widget.difficulty == null)
-      Wrap(
-        spacing: 8,
+  );
+
+  List<Widget> _setup() => [
+    ArenaCard(
+      glow: _p.accent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final (id, label) in const [
-            ('easy', 'Kolay'),
-            ('medium', 'Orta'),
-            ('hard', 'Zor'),
-          ])
-            ChoiceChip(
-              label: Text(label),
-              selected: _difficulty == id,
-              onSelected: (_) => setState(() => _difficulty = id),
+          Text(
+            widget.clubName == null
+                ? 'Her hamle hesabına kaydedilir. Maç ödülsüzdür; yardımlı sonuç ayrı tutulur.'
+                : '${widget.clubName} ile yarış. Her hamle hesabına kaydedilir; yardımlı sonuç ayrı tutulur.',
+            style: _text.bodyMedium,
+          ),
+          if (widget.difficulty == null) ...[
+            const SizedBox(height: 14),
+            Text(
+              'ZORLUK',
+              style: _text.labelSmall?.copyWith(
+                color: _p.muted,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w800,
+              ),
             ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final (id, label) in const [
+                  ('easy', 'Kolay'),
+                  ('medium', 'Orta'),
+                  ('hard', 'Zor'),
+                ])
+                  ChoiceChip(
+                    label: Text(label),
+                    selected: _difficulty == id,
+                    onSelected: (_) => setState(() => _difficulty = id),
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
-    const SizedBox(height: 12),
-    FilledButton(
+    ),
+    const SizedBox(height: 16),
+    ArenaPrimaryButton(
+      label: 'Maça başla',
+      icon: Icons.sports_soccer_rounded,
       onPressed: _data['availability'] == true && _error == null
           ? () => _act('start')
           : null,
-      child: const Text('Maça başla'),
     ),
   ];
+
   Widget _support(
     Object target,
     String key,
@@ -444,29 +527,32 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     bool enabled = true,
   }) {
     final text = rewardMap(_run['hints'])[key];
-    return PitchPanel(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (text != null)
-            Text('$text')
-          else ...[
-            Text(about),
-            const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
-            hintEntry(_run, target: target, disabled: !_canPlay || !enabled,
-                    send: (p) => _act('hint', {'target': target, ...p}),
-                    watch: (id) => _watch(target, itemId: id)) ??
-                PaidHintButton(
-                  session: _run,
-                  sku: 'boost_basic',
-                  label: 'Temel bilgi',
-                  disabled: !_canPlay || !enabled,
-                  onUse: (payment) => _act('hint', {'target': target, ...payment}),
-                  onWatch: () => _watch(target),
-                ),
-          ],
+    return ArenaHintCard(
+      children: [
+        if (text != null)
+          Text('$text', style: _text.bodyMedium)
+        else ...[
+          Text(about),
+          const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
+          const SizedBox(height: 10),
+          hintEntry(
+                _run,
+                target: target,
+                disabled: !_canPlay || !enabled,
+                send: (p) => _act('hint', {'target': target, ...p}),
+                watch: (id) => _watch(target, itemId: id),
+              ) ??
+              PaidHintButton(
+                session: _run,
+                sku: 'boost_basic',
+                label: 'Temel bilgi',
+                disabled: !_canPlay || !enabled,
+                onUse: (payment) =>
+                    _act('hint', {'target': target, ...payment}),
+                onWatch: () => _watch(target),
+              ),
         ],
-      ),
+      ],
     );
   }
 
@@ -479,97 +565,124 @@ class _SupportedBotPageState extends State<SupportedBotPage>
           children: [
             for (var col = 0; col < columns; col++)
               row * columns + col < count
-                  ? ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 72),
-                      child: cell(row * columns + col),
-                    )
+                  ? cell(row * columns + col)
                   : const SizedBox.shrink(),
           ],
         ),
     ],
   );
+
   Widget _picker(void Function(Map<String, dynamic>) onPick, String label) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
-            controller: _answer,
-            enabled: _canPlay,
-            onChanged: _find,
-            decoration: InputDecoration(labelText: label),
-          ),
-          for (final p in _suggestions)
-            ListTile(
-              title: Text('${p['name']}'),
-              onTap: _canPlay ? () => onPick(p) : null,
-            ),
-        ],
+      ArenaSearch(
+        controller: _answer,
+        enabled: _canPlay,
+        onChanged: _find,
+        hint: label,
+        suggestions: _suggestions,
+        onPick: _canPlay ? onPick : null,
       );
+
   List<Widget> _loto() {
     final placements = rewardMap(_run['placements']),
         bot = rewardMap(_run['botPlacements']);
     final current = rewardMap(_run['current']);
     final index = _run['index'] as num? ?? 16;
+    final seconds = _seconds('deadline');
+    ArenaTileState state(Map<dynamic, dynamic> placed) => placed.isEmpty
+        ? ArenaTileState.idle
+        : placed['correct'] == true
+        ? ArenaTileState.correct
+        : placed['correct'] == false
+        ? ArenaTileState.wrong
+        : ArenaTileState.mine;
+    String? tag(Map<dynamic, dynamic> placed) => placed.isEmpty
+        ? null
+        : placed['correct'] == true
+        ? '✓ DOĞRU'
+        : placed['correct'] == false
+        ? '✗ YANLIŞ'
+        : 'SEN';
     return [
-      if (_active && current.isNotEmpty) ...[
-        Text(
-          '${index.toInt() + 1}/16 · ${current['name']}',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        Text('Kalan süre: ${_seconds('deadline')} sn'),
-      ],
       if (_active)
-        Text('Bot ${_run['botIndex'] ?? 0}/16 oyuncuyu yerleştirdi.'),
-      const SizedBox(height: 8),
-      _board(
-        4,
-        16,
-        (i) => Semantics(
-          label: _label(_list('criteria')[i]),
-          child: Card(
-            child: InkWell(
-              key: ValueKey('loto-cell-$i'),
-              onTap:
-                  _canPlay &&
-                      current.isNotEmpty &&
-                      !placements.containsKey('$i')
-                  ? () => _act('place', {'index': index, 'target': i})
-                  : null,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        ArenaCard(
+          glow: _p.accent,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  ArenaPill(
+                    filled: true,
+                    child: Text('${(index.toInt() + 1).clamp(1, 16)} / 16 OYUNCU'),
+                  ),
+                  Text(
+                    'Bot ${_run['botIndex'] ?? 0}/16 oyuncuyu yerleştirdi.',
+                    style: _text.bodySmall?.copyWith(color: _p.muted),
+                  ),
+                  if (current.isNotEmpty)
+                    _clock('$seconds sn', urgent: seconds <= 5),
+                ],
+              ),
+              if (current.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                Row(
                   children: [
-                    Text(
-                      _label(_list('criteria')[i]),
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                    ArenaPlayerAvatar(
+                      id: current['id'],
+                      name: '${current['name']}',
+                      size: 64,
                     ),
-                    if (placements.containsKey('$i'))
-                      Text(
-                        '${rewardMap(placements['$i'])['name']}'
-                        '${rewardMap(placements['$i'])['correct'] == null
-                            ? ''
-                            : rewardMap(placements['$i'])['correct'] == true
-                            ? ' ✓'
-                            : ' ✗'}',
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${current['name']}',
+                            style: _text.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Uyduğu bir kutuya dokun; yanlış kutu puan getirmez.',
+                            style: _text.bodySmall?.copyWith(color: _p.muted),
+                          ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
-              ),
-            ),
+              ],
+            ],
           ),
         ),
-      ),
+      const SizedBox(height: 14),
+      _board(4, 16, (i) {
+        final placed = rewardMap(placements['$i']);
+        final c = ArenaCriterion(rewardMap(_list('criteria').length > i ? _list('criteria')[i] : null));
+        return ArenaTile(
+          key: ValueKey('loto-cell-$i'),
+          criterion: c,
+          state: state(placed),
+          player: placed.isEmpty ? null : placed,
+          tag: tag(placed),
+          semantics: c.label,
+          onTap: _canPlay && current.isNotEmpty && placed.isEmpty
+              ? () => _act('place', {'index': index, 'target': i})
+              : null,
+        );
+      }),
       if (_active && current.isNotEmpty) ...[
-        OutlinedButton(
+        const SizedBox(height: 12),
+        ArenaSecondaryButton(
+          label: 'Pas · 0 puan, kutu boş kalır',
           onPressed: _canPlay ? () => _act('pass', {'index': index}) : null,
-          child: const Text('Pas · 0 puan, kutu boş kalır'),
         ),
+        const SizedBox(height: 12),
         _support(
           index.toInt(),
           'player_$index',
@@ -578,15 +691,25 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         ),
       ],
       if (!_active && bot.isNotEmpty) ...[
-        const SizedBox(height: 12),
-        Text('Bot tahtası', style: Theme.of(context).textTheme.titleMedium),
-        for (final e in bot.entries)
-          Text(
-            '${_label(_list('criteria')[int.parse(e.key)])}: '
-            '${rewardMap(e.value)['name']} ${rewardMap(e.value)['correct'] == true ? '✓' : '✗'}',
-          ),
+        const ArenaSection('Bot tahtası', icon: Icons.smart_toy_outlined),
+        _board(4, 16, (i) {
+          final placed = rewardMap(bot['$i']);
+          return ArenaTile(
+            compact: true,
+            minHeight: 64,
+            criterion: ArenaCriterion(rewardMap(_list('criteria').length > i ? _list('criteria')[i] : null)),
+            state: placed.isEmpty
+                ? ArenaTileState.locked
+                : placed['correct'] == true
+                ? ArenaTileState.correct
+                : ArenaTileState.wrong,
+            player: placed.isEmpty ? null : placed,
+          );
+        }),
+        const SizedBox(height: 8),
         Text(
           'Pas: ${_run['passed'] ?? 0} · Süre aşımı: ${_run['timedOut'] ?? 0}',
+          style: _text.bodySmall?.copyWith(color: _p.muted),
         ),
       ],
     ];
@@ -595,49 +718,206 @@ class _SupportedBotPageState extends State<SupportedBotPage>
   List<Widget> _race() {
     final round = (_run['round'] as num? ?? 0).toInt();
     final countdown = _seconds('startsAt');
+    final total = (_run['total'] as num? ?? 0).toInt();
+    final user = (_run['userFound'] as num? ?? 0).toInt();
+    final bot = (_run['botFound'] as num? ?? 0).toInt();
+    Widget club(dynamic raw) {
+      final c = ArenaCriterion(rewardMap(raw));
+      return Expanded(
+        child: Column(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: _p.raised,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: _p.border),
+              ),
+              child: CriterionMark(c, size: 44),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              c.label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: _text.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget meter(String title, int value, Color color) => Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: .35)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$title · $value',
+              style: _text.labelLarge?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // A drawn bar: a LinearProgressIndicator here would read as "loading".
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: _p.border,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: total == 0 ? 0 : (value / total).clamp(0, 1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
     return [
-      Text(
-        '${round + 1}. tur · ${_label(_run['club'])} × ${_label(_run['opponent'])}',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      Text(
-        'Bu tur: Sen ${_run['userFound'] ?? 0} · Bot ${_run['botFound'] ?? 0}/${_run['total'] ?? 0} buldu · '
-        'Kalan ${_run['remaining'] ?? 0}',
-      ),
-      if (_active && _run['over'] != true && countdown > 0)
-        Text('Başlıyor: $countdown'),
-      if (_active &&
-          _run['over'] != true &&
-          countdown == 0 &&
-          _run['endsAt'] != null)
-        Text('Kalan süre: ${_seconds('endsAt')} sn'),
-      for (final f in _list('found'))
-        Text(
-          '${rewardMap(f)['name']} · ${rewardMap(f)['owner'] == 1 ? 'Sen' : 'Bot'}',
+      ArenaCard(
+        glow: _p.accent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.hub_outlined, color: _p.accent, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${round + 1}. TUR · ORTAK OYUNCU',
+                    style: _text.labelLarge?.copyWith(
+                      color: _p.accent,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_active && _run['over'] != true && countdown > 0) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _clock('Başlıyor: $countdown'),
+              ),
+            ],
+            if (_active &&
+                _run['over'] != true &&
+                countdown == 0 &&
+                _run['endsAt'] != null) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _clock(
+                  'Kalan süre: ${_seconds('endsAt')} sn',
+                  urgent: _seconds('endsAt') <= 10,
+                ),
+              ),
+            ],
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                club(_run['club']),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: _p.accent.withValues(alpha: .5)),
+                        ),
+                        child: Icon(Icons.bolt_rounded, color: _p.accent),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$total ortak',
+                        style: _text.labelSmall?.copyWith(color: _p.muted),
+                      ),
+                    ],
+                  ),
+                ),
+                club(_run['opponent']),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                meter('SEN', user, _p.accent),
+                const SizedBox(width: 10),
+                meter('BOT', bot, Arena.bot),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Bu tur: Sen $user · Bot $bot/$total buldu · Kalan ${_run['remaining'] ?? 0}',
+              style: _text.bodySmall?.copyWith(color: _p.muted),
+            ),
+          ],
         ),
-      if (_run['over'] == true && _list('missed').isNotEmpty) ...[
-        const SizedBox(height: 8),
-        Text(
-          'Kimsenin bulamadığı',
-          style: Theme.of(context).textTheme.titleSmall,
+      ),
+      if (_list('found').isNotEmpty) ...[
+        const ArenaSection('Bulunan oyuncular', icon: Icons.people_alt_outlined),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final f in _list('found').map(rewardMap))
+              _foundChip(f, f['owner'] == 1),
+          ],
         ),
-        Text(_list('missed').map((p) => '${rewardMap(p)['name']}').join(' · ')),
       ],
-      if (_active && _run['over'] == true)
-        FilledButton(
-          onPressed: _busy ? null : () => _act('next'),
-          child: const Text('Sonraki tur'),
+      if (_run['over'] == true && _list('missed').isNotEmpty) ...[
+        const ArenaSection('Kimsenin bulamadığı', icon: Icons.visibility_outlined),
+        Text(
+          _list('missed').map((p) => '${rewardMap(p)['name']}').join(' · '),
+          style: _text.bodySmall?.copyWith(color: _p.muted),
         ),
+      ],
+      if (_active && _run['over'] == true) ...[
+        const SizedBox(height: 14),
+        ArenaPrimaryButton(
+          label: 'Sonraki tur',
+          icon: Icons.arrow_forward_rounded,
+          onPressed: _busy ? null : () => _act('next'),
+        ),
+      ],
       if (_active && _run['over'] != true && countdown == 0) ...[
+        const SizedBox(height: 14),
         _picker(
           (p) => _act('guess', {'round': round, 'playerId': p['id']}),
           'İki kulüpte oynamış futbolcu',
         ),
-        TextButton(
+        const SizedBox(height: 10),
+        ArenaSecondaryButton(
+          icon: Icons.fast_forward_rounded,
+          label: 'Turu bitir · bot kalan sürede oynar',
           onPressed: _canPlay
               ? () => _act('end_round', {'round': round})
               : null,
-          child: const Text('Turu bitir · bot kalan sürede oynar'),
         ),
         const SizedBox(height: 12),
         _support(
@@ -649,32 +929,122 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     ];
   }
 
+  Widget _foundChip(Map<dynamic, dynamic> f, bool mine) {
+    final color = mine ? _p.accent : Arena.bot;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(6, 6, 12, 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .08),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: color.withValues(alpha: .45)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ArenaPlayerAvatar(id: f['id'], name: '${f['name']}', size: 28, ring: color),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              '${f['name']} · ${mine ? 'Sen' : 'Bot'}',
+              overflow: TextOverflow.ellipsis,
+              style: _text.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _cinko() {
     final current = rewardMap(_run['current']);
     final last = rewardMap(_run['last']);
-    return [
-      if (last.isNotEmpty)
-        Text(
-          '${last['owner'] == 1 ? 'Sen' : 'Bot'}: ${last['pass'] == true ? 'pas · 0' : '${rewardMap(last['player'])['name']} · ${(last['points'] as num? ?? 0) >= 0 ? '+' : ''}${last['points']}'}',
+    final lastText = last.isEmpty
+        ? null
+        : '${last['owner'] == 1 ? 'Sen' : 'Bot'}: ${last['pass'] == true ? 'pas · 0' : '${rewardMap(last['player'])['name']} · ${(last['points'] as num? ?? 0) >= 0 ? '+' : ''}${last['points']}'}';
+    Widget dot(Color c, String label) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: c, shape: BoxShape.circle),
         ),
-      _board(
-        5,
-        _list('cells').length,
-        (i) => _cinkoCell(i, current.isNotEmpty),
+        const SizedBox(width: 6),
+        Text(label, style: _text.labelSmall?.copyWith(color: c)),
+      ],
+    );
+    return [
+      ArenaCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_active) _turn(),
+            if (lastText != null) ...[
+              const SizedBox(height: 10),
+              ArenaNote(
+                text: lastText,
+                icon: last['owner'] == 1
+                    ? Icons.person_outline_rounded
+                    : Icons.smart_toy_outlined,
+                color: last['owner'] == 1 ? _p.accent : Arena.bot,
+              ),
+            ],
+          ],
+        ),
+      ),
+      const SizedBox(height: 14),
+      ArenaCard(
+        padding: const EdgeInsets.fromLTRB(8, 12, 8, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(6, 0, 6, 8),
+              child: Row(
+                children: [
+                  Icon(Icons.grid_on_rounded, size: 18, color: Arena.lime),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'TAKTİK ALAN (5×5)',
+                      style: _text.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  dot(_p.accent, 'Sen'),
+                  const SizedBox(width: 8),
+                  dot(Arena.bot, 'Bot'),
+                ],
+              ),
+            ),
+            _board(
+              5,
+              _list('cells').length,
+              (i) => _cinkoCell(i, current.isNotEmpty),
+            ),
+          ],
+        ),
       ),
       if (_active && _run['turn'] == 'user') ...[
+        const SizedBox(height: 14),
         if (current.isEmpty) ...[
           _picker(
             (p) => _act('choose', {'playerId': p['id']}),
             'Oyuncu seç · En az iki harf',
           ),
-          const Text(
+          const SizedBox(height: 8),
+          Text(
             'Her oyuncu maçta bir kez kullanılır; doğru kutu +1, yanlış kutu −1.',
+            style: _text.bodySmall?.copyWith(color: _p.muted),
           ),
-          OutlinedButton(
+          const SizedBox(height: 10),
+          ArenaSecondaryButton(
+            label: 'Pas · 0 puan',
             onPressed: _canPlay ? () => _act('pass') : null,
-            child: const Text('Pas · 0 puan'),
           ),
+          const SizedBox(height: 12),
           if (_hintCell != null)
             _support(
               _hintCell!,
@@ -682,25 +1052,58 @@ class _SupportedBotPageState extends State<SupportedBotPage>
               '${_label(_cellsOf(_hintCell!))} kutusu için kullanılmamış bir adayın bilgisi.',
             )
           else
-            const Text('Destek için tahtadan açık bir kutu seç.'),
+            const ArenaNote(
+              icon: Icons.lightbulb_outline_rounded,
+              text: 'Destek için tahtadan açık bir kutu seç.',
+            ),
         ] else ...[
-          Text(
-            '${current['name']} · bağlı kutuları seç',
-            style: Theme.of(context).textTheme.titleMedium,
+          ArenaCard(
+            glow: Arena.lime,
+            child: Row(
+              children: [
+                ArenaPlayerAvatar(
+                  id: current['id'],
+                  name: '${current['name']}',
+                  size: 48,
+                  ring: Arena.lime,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${current['name']} · bağlı kutuları seç',
+                    style: _text.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
           ),
-          FilledButton(
+          const SizedBox(height: 12),
+          ArenaPrimaryButton(
+            icon: Icons.format_paint_outlined,
+            label: 'Seçimi onayla · ${_cells.length} kutu',
             onPressed: _canPlay && _cells.isNotEmpty
                 ? () => _act('confirm', {'cells': _cells.toList()..sort()})
                 : null,
-            child: Text('Seçimi onayla · ${_cells.length} kutu'),
           ),
-          TextButton(
-            onPressed: _canPlay ? () => _act('cancel') : null,
-            child: const Text('Oyuncuyu değiştir'),
-          ),
-          OutlinedButton(
-            onPressed: _canPlay ? () => _act('pass') : null,
-            child: const Text('Pas · 0 puan'),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: ArenaSecondaryButton(
+                  icon: Icons.swap_horiz_rounded,
+                  label: 'Oyuncuyu değiştir',
+                  onPressed: _canPlay ? () => _act('cancel') : null,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ArenaSecondaryButton(
+                  label: 'Pas · 0 puan',
+                  color: _p.muted,
+                  onPressed: _canPlay ? () => _act('pass') : null,
+                ),
+              ),
+            ],
           ),
         ],
       ],
@@ -710,59 +1113,38 @@ class _SupportedBotPageState extends State<SupportedBotPage>
   Widget _cinkoCell(int i, bool selecting) {
     final cell = rewardMap(_cellsOf(i));
     final owner = cell['owner'] as num? ?? 0;
-    final scheme = Theme.of(context).colorScheme;
     final chosen = selecting ? _cells.contains(i) : _hintCell == i;
-    return Semantics(
-      label:
+    final player = rewardMap(cell['player']);
+    return ArenaTile(
+      key: ValueKey('cinko-cell-$i'),
+      compact: true,
+      minHeight: 66,
+      criterion: ArenaCriterion(cell),
+      player: player.isEmpty ? null : player,
+      state: owner == 1
+          ? ArenaTileState.mine
+          : owner == 2
+          ? ArenaTileState.bot
+          : chosen
+          ? ArenaTileState.selected
+          : cell['playable'] == true || !_active
+          ? ArenaTileState.idle
+          : ArenaTileState.locked,
+      semantics:
           '${_label(cell)}${owner == 1
               ? ', senin'
               : owner == 2
               ? ', botun'
               : ''}',
-      selected: chosen,
-      child: Card(
-        color: owner == 1
-            ? scheme.primaryContainer
-            : owner == 2
-            ? scheme.tertiaryContainer
-            : chosen
-            ? scheme.secondaryContainer
-            : null,
-        child: InkWell(
-          key: ValueKey('cinko-cell-$i'),
-          onTap: _canPlay && owner == 0 && cell['playable'] == true
-              ? () => setState(() {
-                  if (selecting) {
-                    _cells.contains(i) ? _cells.remove(i) : _cells.add(i);
-                  } else {
-                    _hintCell = _hintCell == i ? null : i;
-                  }
-                })
-              : null,
-          child: Padding(
-            padding: const EdgeInsets.all(3),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _label(cell),
-                  textAlign: TextAlign.center,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (cell['player'] != null)
-                  Text(
-                    '${rewardMap(cell['player'])['name']}',
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      onTap: _canPlay && owner == 0 && cell['playable'] == true
+          ? () => setState(() {
+              if (selecting) {
+                _cells.contains(i) ? _cells.remove(i) : _cells.add(i);
+              } else {
+                _hintCell = _hintCell == i ? null : i;
+              }
+            })
+          : null,
     );
   }
 
@@ -777,48 +1159,106 @@ class _SupportedBotPageState extends State<SupportedBotPage>
           : '${rewardMap(m['player'])['name']} · +${_list2(m['clubs']).length}';
     }
 
+    final clubs = _list('clubs');
+    Widget clubCard(int i) => Expanded(
+      child: ArenaTile(
+        criterion: ArenaCriterion(rewardMap(clubs.length > i ? clubs[i] : null)),
+        minHeight: 84,
+      ),
+    );
     return [
-      Text(
-        '${round + 1}/5. tur · ${_run['botFirst'] == true ? 'bu turda bot önce oynar' : 'bu turda sen önce oynarsın'}',
-        style: Theme.of(context).textTheme.titleMedium,
+      ArenaCard(
+        glow: _p.accent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ArenaPill(filled: true, child: Text('${round + 1}/5. TUR')),
+                Text(
+                  _run['botFirst'] == true
+                      ? 'bu turda bot önce oynar'
+                      : 'bu turda sen önce oynarsın',
+                  style: _text.bodySmall?.copyWith(color: _p.muted),
+                ),
+              ],
+            ),
+            if (_active) ...[const SizedBox(height: 12), _turn()],
+            if (_active && _run['turn'] == 'user') ...[
+              const SizedBox(height: 4),
+              Text(
+                '${_run['wrongLeft'] ?? 3} deneme hakkı',
+                style: _text.bodySmall?.copyWith(color: _p.muted),
+              ),
+            ],
+          ],
+        ),
       ),
-      Wrap(
-        spacing: 6,
-        runSpacing: 6,
-        children: [
-          for (final c in _list('clubs')) Chip(label: Text(_label(c))),
-        ],
+      ArenaSection(
+        'Aktif 5 kulüp',
+        icon: Icons.shield_outlined,
+        trailing: Text(
+          'En az 1 kulüp',
+          style: _text.labelSmall?.copyWith(color: Arena.lime),
+        ),
       ),
-      for (final h in _list('history')) ...[
-        if (rewardMap(h)['user'] != null || rewardMap(h)['bot'] != null)
-          Text(
-            '${(rewardMap(h)['round'] as num? ?? 0).toInt() + 1}. tur · Sen: ${move(rewardMap(h)['user'])} · '
-            'Bot: ${move(rewardMap(h)['bot'])}',
+      Row(children: [clubCard(0), clubCard(1)]),
+      Row(children: [clubCard(2), clubCard(3), clubCard(4)]),
+      for (final h in _list('history').map(rewardMap)) ...[
+        if (h['user'] != null || h['bot'] != null) ...[
+          const SizedBox(height: 10),
+          ArenaNote(
+            icon: Icons.history_rounded,
+            text:
+                '${(h['round'] as num? ?? 0).toInt() + 1}. tur · Sen: ${move(h['user'])} · '
+                'Bot: ${move(h['bot'])}',
           ),
+        ],
         // After both moves: the round's best answers (most clubs).
-        if (_list2(rewardMap(h)['best']).isNotEmpty)
-          Text(
-            'En iyi cevaplar: ${_list2(rewardMap(h)['best']).map((b) => '${rewardMap(b)['name']} (${rewardMap(b)['clubs']})').join(' · ')}',
-            style: Theme.of(context).textTheme.bodySmall,
+        if (_list2(h['best']).isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              'En iyi cevaplar: ${_list2(h['best']).map((b) => '${rewardMap(b)['name']} (${rewardMap(b)['clubs']})').join(' · ')}',
+              style: _text.bodySmall?.copyWith(color: _p.muted),
+            ),
           ),
       ],
-      if (_active && _run['turn'] == 'result')
-        FilledButton(
+      if (_active && _run['turn'] == 'result') ...[
+        const SizedBox(height: 14),
+        ArenaPrimaryButton(
+          label: 'Sonraki tur',
+          icon: Icons.arrow_forward_rounded,
           onPressed: _busy ? null : () => _act('next'),
-          child: const Text('Sonraki tur'),
         ),
+      ],
       if (_active && _run['turn'] == 'user') ...[
-        _picker(
-          (p) => _act('guess', {'playerId': p['id']}),
-          'Beş kulüpten en az birinde oynamış futbolcu',
-        ),
-        Text(
-          'Uymayan isim için ${_run['wrongLeft'] ?? 3} deneme hakkın var; üçü de uymazsa tur pas sayılır. '
-          'Her oyuncu maçta bir kez kullanılır.',
-        ),
-        OutlinedButton(
-          onPressed: _canPlay ? () => _act('pass') : null,
-          child: const Text('Pas · 0 puan'),
+        const SizedBox(height: 14),
+        ArenaCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _picker(
+                (p) => _act('guess', {'playerId': p['id']}),
+                'Beş kulüpten en az birinde oynamış futbolcu',
+              ),
+              const SizedBox(height: 10),
+              ArenaNote(
+                text:
+                    'Uymayan isim için ${_run['wrongLeft'] ?? 3} deneme hakkın var; üçü de uymazsa tur pas sayılır. '
+                    'Her oyuncu maçta bir kez kullanılır.',
+              ),
+              const SizedBox(height: 10),
+              ArenaSecondaryButton(
+                label: 'Pas · 0 puan',
+                color: _p.muted,
+                onPressed: _canPlay ? () => _act('pass') : null,
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         _support(

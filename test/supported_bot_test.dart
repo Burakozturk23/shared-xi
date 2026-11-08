@@ -301,6 +301,8 @@ void main() {
         ),
         true,
       );
+      await t.ensureVisible(find.text('Arda Turan'));
+      await t.pump();
       await t.tap(find.text('Arda Turan'));
       await t.pump();
       await t.pump();
