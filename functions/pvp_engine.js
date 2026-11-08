@@ -117,7 +117,12 @@ function puzzle(c, mode, seed, choices = {}) {
     }
     return {id: hash(chosen.map((p) => p.id)), rounds: chosen};
   }
-  if (["grid_classic", "grid_reverse"].includes(mode)) return structuredClone(shuffle(c.grids, seed)[0]);
+  if (mode === "grid_classic") return structuredClone(shuffle(c.grids, seed)[0]);
+  // Reverse answers come from the app picker (clubs and countries only), so no coach axes there.
+  if (mode === "grid_reverse") {
+    return structuredClone(shuffle(c.grids.filter((g) => ![...g.rows, ...g.cols].some((k) =>
+      k.startsWith("coach:"))), seed)[0]);
+  }
   if (mode === "cinko" || mode === "loto") return structuredClone(shuffle(c[mode], seed)[0]);
   // Random Five: a checked board (a 4-club player, 4+ with 3 clubs, 20+ with 2);
   // older catalogs fall back to five random clubs.

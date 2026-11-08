@@ -700,6 +700,11 @@
    {
     "clubId": "131"
    }
+  ],
+  "coach_52": [
+   {
+    "clubId": "6195"
+   }
   ]
  },
  "sources": {
@@ -714,6 +719,7 @@
   "wd_Q919026": "en.wikipedia managerial statistics table",
   "coach_portrait_aykut_kocaman": "en.wikipedia managerial statistics table",
   "coach_122": "en.wikipedia managerial statistics table",
-  "coach_301": "en.wikipedia managerial statistics table"
+  "coach_301": "en.wikipedia managerial statistics table",
+  "coach_52": "drop: Wikidata lists an open Napoli tenure from 2024 next to the open Atlético one"
  }
 }

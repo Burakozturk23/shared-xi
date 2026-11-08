@@ -148,6 +148,27 @@ def map_club(label, country, clubs, aliases, qid=None):
     return near.pop() if len(near) == 1 and not exact else None
 
 
+def season_bounds(start, end):
+    """Wikidata year-only dates (YYYY-01-01) as season bounds: start Jul 1, end Jun 30 (whole year if
+    that would end before it starts), the same convention as the manual tables."""
+    sc, ec = start.endswith('-01-01'), bool(end) and end.endswith('-01-01')
+    s = start[:4] + '-07-01' if sc else start
+    e = end[:4] + '-06-30' if ec else end
+    if e and e < s:
+        if sc and ec:
+            return start[:4] + '-01-01', end[:4] + '-12-31'
+        if ec:
+            e = end[:4] + '-12-31'
+        elif sc:
+            s = start[:4] + '-01-01'
+    return s, e
+
+
+def open_conflicts(coaches):
+    """Coaches with open-ended tenures at two or more clubs (one of them is wrong data)."""
+    return sorted(k for k, ts in coaches.items() if len({t['clubId'] for t in ts if not t['end']}) > 1)
+
+
 def dropped(drops, club, start):
     return any(d['clubId'] == club and d.get('start') in (None, start) for d in drops)
 
@@ -186,6 +207,8 @@ def build_one(coach_id, name, rows, clubs, aliases, manual=None):
     tenures = [t for t in tenures if not (t['start'].endswith('-01-01') and any(
         o is not t and o['clubId'] == t['clubId'] and o['start'][:4] == t['start'][:4] and
         not o['start'].endswith('-01-01') for o in tenures))]
+    for t in tenures:
+        t['start'], t['end'] = season_bounds(t['start'], t['end'])
     for t in manual.get('add', {}).get(coach_id, []):
         tenures.append({'clubId': str(t['clubId']), 'start': t['start'], 'end': t.get('end')})
         report.append(f'- {name}: kulüp {t["clubId"]} {t["start"]}..{t.get("end") or ""} elle eklendi')
@@ -296,6 +319,8 @@ def main():
         json.dump(pool, f, ensure_ascii=False, indent=1)
         f.write('\n')
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
+        for k in open_conflicts(out):
+            report.append(f'- UYARI {k}: birden çok kulüpte bitişi olmayan görev; elle kontrol et')
         used = {t['clubId'] for ts in out.values() for t in ts}
         # Same club recorded under several ids: membership must count spells at any of them.
         twins = {k: v for k, v in club_twins(clubs).items() if k in used}

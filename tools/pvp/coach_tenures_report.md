@@ -15,10 +15,10 @@
 - Jorge Jesus: "C.F. União" (Portugal, Q1762119) eşlenemedi
 - Jorge Jesus: "Amora F.C." (Portugal, Q2843873) eşlenemedi
 - Jorge Jesus: 21 görev
-- Mircea Lucescu: "FC Corvinul Hunedoara" (Romania, Q1135735) eşlenemedi
 - Mircea Lucescu: "FC Dinamo Bucharest" (Romania, Q204237) eşlenemedi
 - Mircea Lucescu: "FC Rapid București" (Romania, Q245162) eşlenemedi
 - Mircea Lucescu: "FC Rapid București" (Romania, Q245162) eşlenemedi
+- Mircea Lucescu: "FC Corvinul Hunedoara" (Romania, Q1135735) eşlenemedi
 - Mircea Lucescu: 12 görev
 - Ertuğrul Sağlam: görevler elle tablodan (11)
 - Ertuğrul Sağlam: 11 görev
@@ -66,26 +66,27 @@
 - Alex Ferguson: "East Stirlingshire F.C." (United Kingdom, Q1387066) eşlenemedi
 - Alex Ferguson: 3 görev
 - Arsène Wenger: 5 görev
-- Zinedine Zidane: "2019–20 Real Madrid CF season" (Spain, Q63036025) eşlenemedi
 - Zinedine Zidane: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
+- Zinedine Zidane: "2019–20 Real Madrid CF season" (Spain, Q63036025) eşlenemedi
 - Zinedine Zidane: 4 görev
-- Diego Simeone: 9 görev
+- Diego Simeone: "SSC Napoli" 2024-01-06 elle çıkarıldı
+- Diego Simeone: 8 görev
 - Antonio Conte: "Italy at the UEFA European Championship 2016" (Italy, Q22002167) eşlenemedi
 - Antonio Conte: 14 görev
 - Massimiliano Allegri: "Ars et Labor Ferrara Calcio" (Italy, Q13385) eşlenemedi
 - Massimiliano Allegri: 18 görev
+- Rafael Benítez: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
+- Rafael Benítez: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
 - Rafael Benítez: "Dalian Professional F.C." başlangıç tarihi yok, atlandı
 - Rafael Benítez: "2001–02 Valencia CF season" (Spain, Q4007629) eşlenemedi
 - Rafael Benítez: "Real Madrid Juvenil" (Spain, Q6101985) eşlenemedi
-- Rafael Benítez: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
-- Rafael Benítez: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
 - Rafael Benítez: 17 görev
 - Jupp Heynckes: "2012–13 FC Bayern Munich season" (Germany, Q3755332) eşlenemedi
 - Jupp Heynckes: "FC Bayern Munich squad" (, Q14736182) eşlenemedi
 - Jupp Heynckes: 14 görev
+- Louis van Gaal: "Royal Dutch Football Association" (Netherlands, Q213116) eşlenemedi
 - Louis van Gaal: "2002–03 FC Barcelona season" (Spain, Q2364922) eşlenemedi
 - Louis van Gaal: "1997–98 FC Barcelona season" (Spain, Q3755046) eşlenemedi
-- Louis van Gaal: "Royal Dutch Football Association" (Netherlands, Q213116) eşlenemedi
 - Louis van Gaal: "1998–99 FC Barcelona season" (Spain, Q3755048) eşlenemedi
 - Louis van Gaal: "1999–2000 FC Barcelona season" (Spain, Q3755049) eşlenemedi
 - Louis van Gaal: 7 görev

@@ -141,3 +141,11 @@ test("bot random can draw a coach pair, at most one per board", () => {
 test("Kriter türü hint can say Teknik direktör", () => {
   assert.equal(HG.TYPE.coach, "Teknik direktör");
 });
+
+test("online grid_reverse only draws boards without coaches (the app's picker lists clubs and countries)", () => {
+  for (let s = 0; s < 150; s++) {
+    const g = E.puzzle(c, "grid_reverse", "rv" + s);
+    assert(![...g.rows, ...g.cols].some(isCoach), g.id);
+  }
+  assert(E.puzzle(c, "grid_classic", "s1").rows.length === 3);
+});

@@ -101,6 +101,11 @@ class CatalogTests(unittest.TestCase):
         self.assertTrue(pairs)
         self.assertTrue(all(len(p['answers']) >= 6 for p in pairs))
 
+    def test_simeone_has_no_napoli_players(self):
+        napoli = [i for i, p in self.c['players'].items() if p['name'] == 'Kevin De Bruyne']
+        self.assertTrue(napoli)
+        self.assertNotIn('coach_52', self.c['players'][napoli[0]]['coaches'])
+
     def test_examples(self):
         players = self.c['players']
         def find(name):

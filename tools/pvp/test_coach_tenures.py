@@ -89,12 +89,27 @@ class TenureTests(unittest.TestCase):
         rows = [{'qid': 'Q1119', 'label': 'Galatasaray S.K.', 'country': 'Turkey', 'start': s, 'end': e}
                 for s, e in [('2009-01-01', '2010-01-01'), ('2009-07-01', '2010-10-19'), ('1996-01-01', None)]]
         tenures, _ = F.build_one('c', 'X', rows, CLUBS, {})
-        self.assertEqual([t['start'] for t in tenures], ['1996-01-01', '2009-07-01'])
+        self.assertEqual([t['start'] for t in tenures], ['1996-07-01', '2009-07-01'])  # year-only: season start
 
     def test_manual_replace_ignores_wikidata_rows(self):
         manual = {'replace': {'coach_171': [{'clubId': '114', 'start': '1990-01-01', 'end': '1991-01-01'}]}}
         tenures, _ = F.build_one('coach_171', 'Fatih Terim', F.parse_tenures(fixture()), CLUBS, {}, manual)
         self.assertEqual(tenures, [{'clubId': '114', 'start': '1990-01-01', 'end': '1991-01-01'}])
+
+    def test_open_tenures_at_two_clubs_are_flagged(self):
+        coaches = {'c': [{'clubId': '1', 'start': '2011-12-23', 'end': None},
+                         {'clubId': '2', 'start': '2024-01-06', 'end': None}],
+                   'd': [{'clubId': '3', 'start': '2025-09-13', 'end': None},
+                         {'clubId': '3', 'start': '2025-09-15', 'end': None}]}
+        self.assertEqual(F.open_conflicts(coaches), ['c'])
+
+    def test_year_only_dates_become_season_bounds(self):
+        self.assertEqual(F.season_bounds('1996-07-01', '2000-01-01'), ('1996-07-01', '2000-06-30'))
+        self.assertEqual(F.season_bounds('2008-01-01', '2009-01-01'), ('2008-07-01', '2009-06-30'))
+        self.assertEqual(F.season_bounds('2016-01-01', '2016-01-01'), ('2016-01-01', '2016-12-31'))
+        self.assertEqual(F.season_bounds('2015-10-01', '2016-01-01'), ('2015-10-01', '2016-06-30'))
+        self.assertEqual(F.season_bounds('2016-09-01', '2016-01-01'), ('2016-09-01', '2016-12-31'))
+        self.assertEqual(F.season_bounds('2019-01-01', None), ('2019-07-01', None))
 
 
 if __name__ == '__main__':
