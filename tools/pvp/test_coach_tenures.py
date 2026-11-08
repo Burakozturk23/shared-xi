@@ -53,6 +53,49 @@ class TenureTests(unittest.TestCase):
         self.assertEqual(F.map_club('Clube de Regatas do Flamengo', 'Brazil', CLUBS, {}), '614')
         self.assertEqual(F.map_club('Whatever', 'Turkey', CLUBS, {'Q1': '141'}, qid='Q1'), '141')
 
+    def test_youth_reserve_season_and_federation_items_never_map_to_the_senior_club(self):
+        clubs = dict(CLUBS, **{'418': {'id': '418', 'name': 'Real Madrid', 'country': 'Spain'},
+                               '131': {'id': '131', 'name': 'FC Barcelona', 'country': 'Spain'},
+                               '9': {'id': '9', 'name': 'L\\', 'country': 'Italy'}})
+        for label in ('Real Madrid Castilla', 'Real Madrid Juvenil', '2007–08 FC Barcelona season',
+                      'FC Barcelona B', 'Real Madrid under 19', 'FC Barcelona II'):
+            self.assertIsNone(F.map_club(label, 'Spain', clubs, {}), label)
+        self.assertIsNone(F.map_club('Italian Football Federation', 'Italy', clubs, {}))
+        self.assertIsNone(F.map_club('Vigor Lamezia', 'Italy', clubs, {}))
+        self.assertEqual(F.map_club('Real Madrid CF', 'Spain', clubs, {}), '418')
+
+    def test_manual_file_adds_and_drops_tenures(self):
+        manual = {'add': {'coach_171': [{'clubId': '430', 'start': '2000-07-01', 'end': '2001-02-26'}]},
+                  'drop': {'coach_171': [{'clubId': '141', 'start': '2011-06-08'}]}}
+        tenures, report = F.build_one('coach_171', 'Fatih Terim', F.parse_tenures(fixture()), CLUBS, {}, manual)
+        self.assertIn({'clubId': '430', 'start': '2000-07-01', 'end': '2001-02-26'}, tenures)
+        self.assertFalse(any(t['clubId'] == '141' and t['start'] == '2011-06-08' for t in tenures))
+        self.assertTrue(any('elle eklendi' in line for line in report))
+
+    def test_duplicate_club_records_collapse_to_one_primary_with_twins(self):
+        clubs = {
+            '6195': {'id': '6195', 'name': 'SSC Napoli', 'country': 'Italy', 'links': 212},
+            '15795': {'id': '15795', 'name': 'Napoli', 'country': 'Italy', 'links': 95},
+            '583': {'id': '583', 'name': 'Paris Saint-Germain', 'country': 'France', 'links': 179},
+            '1000000583': {'id': '1000000583', 'name': 'PSG', 'country': 'France', 'links': 90},
+        }
+        twins = F.club_twins(clubs)
+        self.assertEqual(twins['6195'], ['15795'])
+        self.assertEqual(twins['583'], ['1000000583'])
+        self.assertEqual(F.map_club('SSC Napoli', 'Italy', clubs, {}), '6195')
+        self.assertEqual(F.map_club('Paris Saint-Germain F.C.', 'France', clubs, {}), '583')
+
+    def test_year_only_row_is_dropped_when_a_precise_row_covers_the_same_spell(self):
+        rows = [{'qid': 'Q1119', 'label': 'Galatasaray S.K.', 'country': 'Turkey', 'start': s, 'end': e}
+                for s, e in [('2009-01-01', '2010-01-01'), ('2009-07-01', '2010-10-19'), ('1996-01-01', None)]]
+        tenures, _ = F.build_one('c', 'X', rows, CLUBS, {})
+        self.assertEqual([t['start'] for t in tenures], ['1996-01-01', '2009-07-01'])
+
+    def test_manual_replace_ignores_wikidata_rows(self):
+        manual = {'replace': {'coach_171': [{'clubId': '114', 'start': '1990-01-01', 'end': '1991-01-01'}]}}
+        tenures, _ = F.build_one('coach_171', 'Fatih Terim', F.parse_tenures(fixture()), CLUBS, {}, manual)
+        self.assertEqual(tenures, [{'clubId': '114', 'start': '1990-01-01', 'end': '1991-01-01'}])
+
 
 if __name__ == '__main__':
     unittest.main()

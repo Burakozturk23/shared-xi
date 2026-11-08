@@ -23,6 +23,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 DB = os.path.join(ROOT, 'assets', 'runtime', 'linkball_game_data_v4.sqlite')
 POOL = os.path.join(HERE, 'coach_pool.json')
 ALIASES = os.path.join(HERE, 'coach_club_aliases.json')
+MANUAL = os.path.join(HERE, 'coach_tenures_manual.json')
 OUT = os.path.join(HERE, 'coach_tenures.json')
 REPORT = os.path.join(HERE, 'coach_tenures_report.md')
 UA = 'LinkballDataTool/1.0 (https://github.com/Burakozturk23/shared-xi; one-off coach tenure import)'
@@ -72,26 +73,103 @@ def parse_tenures(sparql):
     return rows
 
 
+# Season items, youth/reserve sides and federations are not the senior club.
+NOT_SENIOR = re.compile(r'(\b(19|20)\d\d\s*[–-]|\bseason\b|\bcastilla\b|\bjuvenil\b|\byouth\b|\bunder\s*\d|'
+                        r'\bu\s?\d\d\b|\breserves?\b|\bacademy\b|\bprimavera\b|\bfederation\b|\bfederazione\b|'
+                        r' at the |\s(b|ii|iii)$)')
+
+
+OFFSET = 1_000_000_000  # The database repeats some clubs as OFFSET + id ("PSG" = "Paris Saint-Germain").
+_TWINS = {}
+
+
+def primaries(clubs):
+    """club id → the id of its twin group's primary (most player links, then lowest id)."""
+    cached = _TWINS.get(id(clubs))
+    if cached and cached[0] is clubs:
+        return cached[1]
+    parent = {i: i for i in clubs}
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(a, b):
+        parent[find(a)] = find(b)
+
+    by_name = {}
+    for i, c in clubs.items():
+        base = str(int(i) - OFFSET)
+        if int(i) >= OFFSET and base in clubs:
+            union(i, base)
+        k, ctry = club_key(c['name']), norm(c['country'])
+        if len(k) >= 3 and ctry:
+            if (k, ctry) in by_name:
+                union(i, by_name[(k, ctry)])
+            else:
+                by_name[(k, ctry)] = i
+    groups = {}
+    for i in clubs:
+        groups.setdefault(find(i), []).append(i)
+    out = {}
+    for members in groups.values():
+        best = min(members, key=lambda i: (-clubs[i].get('links', 0), int(i)))
+        for i in members:
+            out[i] = best
+    _TWINS[id(clubs)] = (clubs, out)
+    return out
+
+
+def club_twins(clubs):
+    """{primary id: [other ids of the same club]} for clubs recorded more than once."""
+    out = {}
+    for i, best in primaries(clubs).items():
+        if i != best:
+            out.setdefault(best, []).append(i)
+    return {k: sorted(v, key=int) for k, v in out.items()}
+
+
 def map_club(label, country, clubs, aliases, qid=None):
-    """Database club id for a Wikidata club, or None. Aliases (QID → club id) win."""
+    """Database club id (twin group primary) for a Wikidata club, or None. Aliases (QID → club id) win."""
     if qid and qid in aliases:
         return aliases[qid]
     key = club_key(label)
-    if not key:
+    if not key or NOT_SENIOR.search(fold(label).strip()):
         return None
-    local = [c for c in clubs.values() if same_country(country, c['country'])]
-    exact = [c for c in local if club_key(c['name']) == key]
+    prim = primaries(clubs)
+    # A database name that folds to 1–2 letters ("L\\") would substring-match anything.
+    local = [c for c in clubs.values() if same_country(country, c['country']) and len(club_key(c['name'])) >= 3]
+    exact = {prim[c['id']] for c in local if club_key(c['name']) == key}
     if len(exact) == 1:
-        return exact[0]['id']
-    near = [c for c in local if club_key(c['name']) and (club_key(c['name']) in key or key in club_key(c['name']))]
-    return near[0]['id'] if len(near) == 1 else None
+        return exact.pop()
+    near = {prim[c['id']] for c in local if key in club_key(c['name']) or club_key(c['name']) in key}
+    return near.pop() if len(near) == 1 and not exact else None
 
 
-def build_one(coach_id, name, rows, clubs, aliases):
-    """One coach's tenures and report lines. Never guesses: undated or unmapped rows are dropped."""
+def dropped(drops, club, start):
+    return any(d['clubId'] == club and d.get('start') in (None, start) for d in drops)
+
+
+def build_one(coach_id, name, rows, clubs, aliases, manual=None):
+    """One coach's tenures and report lines. Never guesses: undated or unmapped rows are dropped.
+
+    manual = {"add": {coachId: [tenure]}, "drop": {coachId: [{clubId, start?}]}} — owner-reviewed fixes
+    (a drop without start removes every Wikidata row at that club)."""
+    manual = manual or {}
+    if coach_id in manual.get('replace', {}):
+        # Owner-reviewed full career (Wikipedia statistics table) instead of Wikidata.
+        tenures = [{'clubId': str(t['clubId']), 'start': t['start'], 'end': t.get('end')}
+                   for t in manual['replace'][coach_id]]
+        return sorted(tenures, key=lambda t: t['start']), [f'- {name}: görevler elle tablodan ({len(tenures)})']
+    drops = manual.get('drop', {}).get(coach_id, [])
     tenures, report, seen = [], [], set()
     for r in rows:
         club = map_club(r['label'], r['country'], clubs, aliases, r['qid'])
+        if club is not None and dropped(drops, club, r['start']):
+            report.append(f'- {name}: "{r["label"]}" {r["start"]} elle çıkarıldı')
+            continue
         if club is None:
             report.append(f'- {name}: "{r["label"]}" ({r["country"]}, {r["qid"]}) eşlenemedi')
             continue
@@ -103,6 +181,14 @@ def build_one(coach_id, name, rows, clubs, aliases):
             continue
         seen.add(sig)
         tenures.append({'clubId': club, 'start': r['start'], 'end': r['end']})
+    # Wikidata stores year-precision dates as YYYY-01-01; drop such a row when the same club has a
+    # precise row starting that year (the coarse one would stretch the spell to January).
+    tenures = [t for t in tenures if not (t['start'].endswith('-01-01') and any(
+        o is not t and o['clubId'] == t['clubId'] and o['start'][:4] == t['start'][:4] and
+        not o['start'].endswith('-01-01') for o in tenures))]
+    for t in manual.get('add', {}).get(coach_id, []):
+        tenures.append({'clubId': str(t['clubId']), 'start': t['start'], 'end': t.get('end')})
+        report.append(f'- {name}: kulüp {t["clubId"]} {t["start"]}..{t.get("end") or ""} elle eklendi')
     tenures.sort(key=lambda t: t['start'])
     return tenures, report
 
@@ -173,7 +259,8 @@ def fetch_all(qids):
 
 def load_clubs():
     c = sqlite3.connect(f'file:{DB}?mode=ro', uri=True)
-    return {str(i): {'id': str(i), 'name': n, 'country': ctry or ''}
+    links = dict(c.execute('select club_id, count(*) from player_clubs group by club_id'))
+    return {str(i): {'id': str(i), 'name': n, 'country': ctry or '', 'links': links.get(i, 0)}
             for i, n, ctry, kind in c.execute('select id,name,country,entity_type from clubs') if kind == 'SENIOR'}
 
 
@@ -181,9 +268,10 @@ def main():
     with open(POOL, encoding='utf-8') as f:
         pool = json.load(f)
     aliases = json.load(open(ALIASES, encoding='utf-8')) if os.path.exists(ALIASES) else {}
+    manual = json.load(open(MANUAL, encoding='utf-8')) if os.path.exists(MANUAL) else {}
     clubs = load_clubs()
     out, report = {}, ['# Teknik direktör görev geçmişi raporu', '']
-    missing = [c['name'] for c in pool if not c.get('wikidata')]
+    missing = [c['name'] for c in pool if not c.get('wikidata') and not str(c.get('coachId')).startswith('manual_')]
     if missing:
         qids = find_qids(missing)
         for coach in pool:
@@ -192,19 +280,26 @@ def main():
     found = [c for c in pool if c['wikidata']]
     rows = fetch_all([c['wikidata'] for c in found])
     for coach in pool:
-        if not coach['wikidata']:
+        if not coach['wikidata'] and not coach.get('coachId'):
             report.append(f'- {coach["name"]}: Wikidata kaydı bulunamadı')
             continue
+        if not coach['wikidata']:
+            report.append(f'- {coach["name"]}: Wikidata kaydı yok, yalnız elle eklenenler')
         coach['coachId'] = coach.get('coachId') or 'wd_' + coach['wikidata']
-        tenures, lines = build_one(coach['coachId'], coach['name'], rows[coach['wikidata']], clubs, aliases)
-        out[coach['coachId']] = tenures
+        tenures, lines = build_one(coach['coachId'], coach['name'], rows.get(coach['wikidata'], []), clubs,
+                                 aliases, manual)
+        prim = primaries(clubs)
+        out[coach['coachId']] = [dict(t, clubId=prim.get(t['clubId'], t['clubId'])) for t in tenures]
         report += lines
         report.append(f'- {coach["name"]}: {len(tenures)} görev')
     with open(POOL, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(pool, f, ensure_ascii=False, indent=1)
         f.write('\n')
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump({'version': 1, 'coaches': out}, f, ensure_ascii=False, indent=1)
+        used = {t['clubId'] for ts in out.values() for t in ts}
+        # Same club recorded under several ids: membership must count spells at any of them.
+        twins = {k: v for k, v in club_twins(clubs).items() if k in used}
+        json.dump({'version': 1, 'coaches': out, 'clubTwins': twins}, f, ensure_ascii=False, indent=1)
         f.write('\n')
     with open(REPORT, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(report) + '\n')

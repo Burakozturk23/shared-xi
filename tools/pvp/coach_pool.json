@@ -75,34 +75,14 @@
   "wikidata": "Q8080212"
  },
  {
-  "name": "Gheorghe Hagi",
-  "coachId": "coach_1907",
-  "wikidata": "Q189892"
- },
- {
   "name": "Christoph Daum",
   "coachId": "wd_Q76651",
   "wikidata": "Q76651"
  },
  {
-  "name": "Luis Aragonés",
-  "coachId": null,
-  "wikidata": null
- },
- {
-  "name": "Frank Rijkaard",
-  "coachId": "coach_portrait_frank_rijkaard",
-  "wikidata": "Q169098"
- },
- {
   "name": "Guus Hiddink",
   "coachId": "wd_Q484534",
   "wikidata": "Q484534"
- },
- {
-  "name": "Zico",
-  "coachId": "wd_Q47526",
-  "wikidata": "Q47526"
  },
  {
   "name": "Vítor Pereira",
@@ -118,6 +98,26 @@
   "name": "Slaven Bilić",
   "coachId": "wd_Q489107",
   "wikidata": "Q489107"
+ },
+ {
+  "name": "Ole Gunnar Solskjær",
+  "coachId": "coach_170",
+  "wikidata": "Q18976"
+ },
+ {
+  "name": "Vincenzo Montella",
+  "coachId": "coach_100",
+  "wikidata": "Q297768"
+ },
+ {
+  "name": "Igor Tudor",
+  "coachId": "coach_101",
+  "wikidata": "Q276544"
+ },
+ {
+  "name": "Nuri Şahin",
+  "coachId": "coach_198",
+  "wikidata": "Q75857"
  },
  {
   "name": "José Mourinho",
@@ -180,24 +180,9 @@
   "wikidata": "Q152107"
  },
  {
-  "name": "Vicente del Bosque",
-  "coachId": "coach_portrait_vicente_del_bosque",
-  "wikidata": "Q657360"
- },
- {
   "name": "Louis van Gaal",
   "coachId": "wd_Q207431",
   "wikidata": "Q207431"
- },
- {
-  "name": "Fabio Capello",
-  "coachId": "wd_Q183108",
-  "wikidata": "Q183108"
- },
- {
-  "name": "Marcello Lippi",
-  "coachId": "wd_Q43304",
-  "wikidata": "Q43304"
  },
  {
   "name": "Thomas Tuchel",
@@ -248,5 +233,20 @@
   "name": "Mikel Arteta",
   "coachId": "coach_2",
   "wikidata": "Q185572"
+ },
+ {
+  "name": "Erik ten Hag",
+  "coachId": "coach_54",
+  "wikidata": "Q2844569"
+ },
+ {
+  "name": "Julian Nagelsmann",
+  "coachId": "coach_20",
+  "wikidata": "Q21226404"
+ },
+ {
+  "name": "Simone Inzaghi",
+  "coachId": "coach_4",
+  "wikidata": "Q314670"
  }
 ]
