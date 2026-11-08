@@ -15,7 +15,7 @@ const {norm, fixtureClub} = require("./fixture_clubs");
 function resolveFixture(m) {
   if (!m || typeof m !== "object" || m.stale === true) return null;
   if (!Number.isSafeInteger(m.fixtureId) || !Number.isFinite(Date.parse(m.kickoff)) ||
-      ![2, 3, 848, 203, 39, 40, 71, 140, 135, 78, 61, 88, 94, 179].includes(m.leagueId)) return null;
+      ![2, 3, 848, 203, 39, 40, 140, 135, 78, 61, 88, 94].includes(m.leagueId)) return null;
   if (!["NS", "1H", "HT", "2H", "ET", "P", "FT", "AET", "PEN", "LIVE"].includes(m.status)) return null;
   const homeClubId = fixtureClub(m, "home");
   const awayClubId = fixtureClub(m, "away");
@@ -100,7 +100,7 @@ function createService({db, documentRef, grantCoins, isLinked, recordWin = async
   async function fixtureFeed() {
     const today = dayKey(now());
     const raw = (await db.ref("daily_fixtures/" + today).get()).val();
-    const feed = require("./daily_fixture_feed").readDay(raw, today, now());
+    const feed = require("./daily_fixture_api").readDay(raw, today, now());
     const selected = feed.calendar.map(resolveFixture).filter(Boolean)
         .sort((a, b) => b.priority - a.priority || a.fixtureId - b.fixtureId).slice(0, 6);
     return {...feed, selected};

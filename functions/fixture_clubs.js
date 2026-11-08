@@ -14,9 +14,14 @@ const aliases = {"Manchester United": 985, "Manchester City": 281, "Atletico Mad
   "Villarreal": 1050, "Valencia": 1049, "Real Betis": 150, "Porto": 720};
 const clubNames = new Map(Object.entries(catalog.clubs).map(([id, name]) => [norm(name), Number(id)]));
 for (const [name, id] of Object.entries(aliases)) clubNames.set(norm(name), id);
+// Past days written by the old bundled calendar keep their football-data team ids.
 const sourceClubs = require("./config/football_data_clubs.json");
+// API-Football team id → database club id (reviewed; see daily_fixture_control/unmapped).
+const apiClubs = require("./config/api_football_teams.json");
 function fixtureClub(m, side) {
   if (m.source === "football-data-snapshot") return sourceClubs[String(m[side + "SourceId"])];
+  const byId = apiClubs[String(m[side + "ApiId"])];
+  if (byId) return byId;
   return clubNames.get(norm(m[side + "Name"]));
 }
 module.exports = {norm, fixtureClub};

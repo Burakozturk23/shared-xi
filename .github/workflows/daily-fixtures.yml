@@ -1,5 +1,6 @@
-# Manual supplemental league sync shares the Cloud Scheduler's three-request daily budget.
-name: Sync Daily Fixtures
+# Günün maçları artık yalnız Cloud Functions'tan API-Football ile çekilir (tek anahtar);
+# bu iş akışı yalnız incelenmiş oyuncu düzeltmelerini yayımlar.
+name: Publish Reviewed Player Data
 
 on:
   push:
@@ -8,50 +9,11 @@ on:
       - tools/data_platform_v4/apply_notable_players.py
       - tools/data_platform_v4/patches/notable-players-2026-09-30.json
   workflow_dispatch:
-    inputs:
-      task:
-        description: "fixtures: fikstür senkronizasyonu; data: oyuncu paketini yayımla"
-        type: choice
-        options: [fixtures, data]
-        default: fixtures
-      mode:
-        description: "baseline: bugün/yarın; refresh: yalnız bugün (mevcut bütçeden)"
-        type: choice
-        options: [baseline, refresh]
-        default: baseline
-      date:
-        description: "Bugün veya yarın YYYY-MM-DD (boş = seçilen moda göre); günlük bütçe uygulanır"
-        required: false
-        default: ""
 
 jobs:
-  sync:
-    if: github.event_name == 'workflow_dispatch' && inputs.task != 'data'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Install script deps
-        run: npm --prefix functions ci
-
-      - name: Run sync
-        env:
-          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
-          FIXTURE_SYNC_MODE: ${{ inputs.mode }}
-          FIXTURE_DATE: ${{ github.event.inputs.date }}
-        run: node scripts/sync-daily-fixtures.js
-
   roster_publish:
     name: Publish reviewed player corrections
-    if: (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.task == 'data')) && github.ref == 'refs/heads/codex/restore-pr13-complete'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/codex/restore-pr13-complete'
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -361,7 +361,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
           if (['error', 'unconfigured', 'pending'].contains(apiState)) ...[
             const SizedBox(height: 8),
             const Text(
-              'Süper Lig, Avrupa Ligi ve Konferans Ligi güncellemesi bekleniyor.',
+              'Fikstür güncellemesi bekleniyor.',
             ),
           ],
           if (_feed['competitions'] is List)
@@ -371,7 +371,7 @@ class _FootballCalendarPageState extends State<FootballCalendarPage>
               children: [
                 Text('${(_feed['competitions'] as List).join(', ')}.'),
                 const Text(
-                  'Süper Lig, Avrupa Ligi ve Konferans Ligi ayrı kaynaktan günlük güncellenir. Anlık skor sunulmaz.',
+                  'Fikstür her gün başında, skorlar maç saatlerinde yarım saatte bir güncellenir; anlık skor değildir.',
                 ),
               ],
             ),

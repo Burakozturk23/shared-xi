@@ -83,20 +83,27 @@ setGlobalOptions({maxInstances: 10});
 
 const apiKey = defineSecret("API_FOOTBALL_KEY");
 
-// Shared import + Süper Lig / Europa / Conference network feed; also used by the manual sync script.
+// Günün maçları: the only API-Football caller (one key, shared daily budget, no overlap).
+// Only today is requested: at 00:05, then every 30 minutes 13:00-23:30 while matches are open.
+async function lbFixtureSync(mode) {
+  const {runSync, failed} = require("./daily_fixture_api");
+  const result = await runSync({db: getDatabase(), apiKey: apiKey.value(), mode});
+  if (failed(result)) {
+    logger.warn("Daily fixture sync", mode, result);
+    // Red in Cloud Scheduler; retryCount 0, so a failure spends no further request.
+    throw new Error("Daily fixture sync failed: " + result.state);
+  }
+  logger.info("Daily fixture sync", mode, result);
+}
 exports.syncDailyFixtures = onSchedule(
-    {schedule: "15 6,14 * * *", timeZone: "Europe/Istanbul", secrets: [apiKey], memory: "256MiB",
+    {schedule: "5 0 * * *", timeZone: "Europe/Istanbul", secrets: [apiKey], memory: "256MiB",
       timeoutSeconds: 120, retryCount: 0},
-    async () => {
-      const {runSupplementalSync} = require("./daily_fixture_budget");
-      const now = Date.now();
-      const hour = Number(new Intl.DateTimeFormat("en-GB", {timeZone: "Europe/Istanbul", hour: "2-digit"})
-          .format(now));
-      const result = await runSupplementalSync({db: getDatabase(), apiKey: apiKey.value(), now,
-        mode: hour >= 14 ? "refresh" : "baseline"});
-      if (result.state === "error") logger.warn("Daily fixture sync", result);
-      else logger.info("Daily fixture sync", result);
-    },
+    () => lbFixtureSync("day"),
+);
+exports.syncLiveFixtures = onSchedule(
+    {schedule: "*/30 13-23 * * *", timeZone: "Europe/Istanbul", secrets: [apiKey], memory: "256MiB",
+      timeoutSeconds: 120, retryCount: 0},
+    () => lbFixtureSync("live"),
 );
 // LINKBALL_05B_DAILY_AUTHORITY_START
 
