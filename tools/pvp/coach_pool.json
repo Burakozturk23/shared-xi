@@ -1,0 +1,252 @@
+[
+ {
+  "name": "Fatih Terim",
+  "coachId": "coach_171",
+  "wikidata": "Q262203"
+ },
+ {
+  "name": "Şenol Güneş",
+  "coachId": "coach_269",
+  "wikidata": "Q388904"
+ },
+ {
+  "name": "Mustafa Denizli",
+  "coachId": "wd_Q738962",
+  "wikidata": "Q738962"
+ },
+ {
+  "name": "Abdullah Avcı",
+  "coachId": "coach_255",
+  "wikidata": "Q26532"
+ },
+ {
+  "name": "Ersun Yanal",
+  "coachId": "coach_1449",
+  "wikidata": "Q1362422"
+ },
+ {
+  "name": "Okan Buruk",
+  "coachId": "coach_47",
+  "wikidata": "Q444318"
+ },
+ {
+  "name": "Jorge Jesus",
+  "coachId": "coach_14",
+  "wikidata": "Q527550"
+ },
+ {
+  "name": "Mircea Lucescu",
+  "coachId": "coach_415",
+  "wikidata": "Q342698"
+ },
+ {
+  "name": "Ertuğrul Sağlam",
+  "coachId": "coach_783",
+  "wikidata": "Q250519"
+ },
+ {
+  "name": "Rıza Çalımbay",
+  "coachId": "coach_1282",
+  "wikidata": "Q378768"
+ },
+ {
+  "name": "Ünal Karaman",
+  "coachId": "wd_Q334927",
+  "wikidata": "Q334927"
+ },
+ {
+  "name": "Hamza Hamzaoğlu",
+  "coachId": "wd_Q919026",
+  "wikidata": "Q919026"
+ },
+ {
+  "name": "Aykut Kocaman",
+  "coachId": "coach_portrait_aykut_kocaman",
+  "wikidata": "Q793007"
+ },
+ {
+  "name": "Sergen Yalçın",
+  "coachId": "coach_122",
+  "wikidata": "Q1388570"
+ },
+ {
+  "name": "İsmail Kartal",
+  "coachId": "coach_301",
+  "wikidata": "Q8080212"
+ },
+ {
+  "name": "Gheorghe Hagi",
+  "coachId": "coach_1907",
+  "wikidata": "Q189892"
+ },
+ {
+  "name": "Christoph Daum",
+  "coachId": "wd_Q76651",
+  "wikidata": "Q76651"
+ },
+ {
+  "name": "Luis Aragonés",
+  "coachId": null,
+  "wikidata": null
+ },
+ {
+  "name": "Frank Rijkaard",
+  "coachId": "coach_portrait_frank_rijkaard",
+  "wikidata": "Q169098"
+ },
+ {
+  "name": "Guus Hiddink",
+  "coachId": "wd_Q484534",
+  "wikidata": "Q484534"
+ },
+ {
+  "name": "Zico",
+  "coachId": "wd_Q47526",
+  "wikidata": "Q47526"
+ },
+ {
+  "name": "Vítor Pereira",
+  "coachId": "coach_117",
+  "wikidata": "Q556610"
+ },
+ {
+  "name": "Phillip Cocu",
+  "coachId": "wd_Q11958",
+  "wikidata": "Q11958"
+ },
+ {
+  "name": "Slaven Bilić",
+  "coachId": "wd_Q489107",
+  "wikidata": "Q489107"
+ },
+ {
+  "name": "José Mourinho",
+  "coachId": "coach_27",
+  "wikidata": "Q79983"
+ },
+ {
+  "name": "Pep Guardiola",
+  "coachId": "coach_0",
+  "wikidata": "Q164038"
+ },
+ {
+  "name": "Carlo Ancelotti",
+  "coachId": "coach_8",
+  "wikidata": "Q174614"
+ },
+ {
+  "name": "Jürgen Klopp",
+  "coachId": "coach_portrait_jurgen_klopp",
+  "wikidata": "Q83106"
+ },
+ {
+  "name": "Alex Ferguson",
+  "coachId": "coach_portrait_alex_ferguson",
+  "wikidata": "Q44980"
+ },
+ {
+  "name": "Arsène Wenger",
+  "coachId": "coach_portrait_arsene_wenger",
+  "wikidata": "Q47576"
+ },
+ {
+  "name": "Zinedine Zidane",
+  "coachId": "coach_portrait_zinedine_zidane",
+  "wikidata": "Q1835"
+ },
+ {
+  "name": "Diego Simeone",
+  "coachId": "coach_52",
+  "wikidata": "Q258115"
+ },
+ {
+  "name": "Antonio Conte",
+  "coachId": "coach_30",
+  "wikidata": "Q26580"
+ },
+ {
+  "name": "Massimiliano Allegri",
+  "coachId": "coach_72",
+  "wikidata": "Q354529"
+ },
+ {
+  "name": "Rafael Benítez",
+  "coachId": "coach_180",
+  "wikidata": "Q144048"
+ },
+ {
+  "name": "Jupp Heynckes",
+  "coachId": "wd_Q152107",
+  "wikidata": "Q152107"
+ },
+ {
+  "name": "Vicente del Bosque",
+  "coachId": "coach_portrait_vicente_del_bosque",
+  "wikidata": "Q657360"
+ },
+ {
+  "name": "Louis van Gaal",
+  "coachId": "wd_Q207431",
+  "wikidata": "Q207431"
+ },
+ {
+  "name": "Fabio Capello",
+  "coachId": "wd_Q183108",
+  "wikidata": "Q183108"
+ },
+ {
+  "name": "Marcello Lippi",
+  "coachId": "wd_Q43304",
+  "wikidata": "Q43304"
+ },
+ {
+  "name": "Thomas Tuchel",
+  "coachId": "coach_15",
+  "wikidata": "Q702233"
+ },
+ {
+  "name": "Mauricio Pochettino",
+  "coachId": "coach_297",
+  "wikidata": "Q313000"
+ },
+ {
+  "name": "Luis Enrique",
+  "coachId": "coach_5",
+  "wikidata": "Q222789"
+ },
+ {
+  "name": "Claudio Ranieri",
+  "coachId": "coach_68",
+  "wikidata": "Q235068"
+ },
+ {
+  "name": "Roberto Mancini",
+  "coachId": "coach_152",
+  "wikidata": "Q48330"
+ },
+ {
+  "name": "Luciano Spalletti",
+  "coachId": "coach_58",
+  "wikidata": "Q310813"
+ },
+ {
+  "name": "Unai Emery",
+  "coachId": "coach_9",
+  "wikidata": "Q295610"
+ },
+ {
+  "name": "Hansi Flick",
+  "coachId": "coach_3",
+  "wikidata": "Q577384"
+ },
+ {
+  "name": "Xabi Alonso",
+  "coachId": "coach_7",
+  "wikidata": "Q208104"
+ },
+ {
+  "name": "Mikel Arteta",
+  "coachId": "coach_2",
+  "wikidata": "Q185572"
+ }
+]

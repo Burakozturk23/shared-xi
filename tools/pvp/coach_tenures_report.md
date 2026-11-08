@@ -1,0 +1,175 @@
+# Teknik direktör görev geçmişi raporu
+
+- Fatih Terim: "Al-Shabab Football Club" (Saudi Arabia, Q2636005) eşlenemedi
+- Fatih Terim: "Turkey at the UEFA European Championship 2016" (Turkey, Q22002178) eşlenemedi
+- Fatih Terim: 12 görev
+- Şenol Güneş: "Trabzonspor" başlangıç tarihi yok, atlandı
+- Şenol Güneş: "FC Seoul" (South Korea, Q482406) eşlenemedi
+- Şenol Güneş: "Turkish Football Federation" (Turkey, Q726183) eşlenemedi
+- Şenol Güneş: 3 görev
+- Mustafa Denizli: 5 görev
+- Abdullah Avcı: 4 görev
+- Ersun Yanal: 1 görev
+- Okan Buruk: 4 görev
+- Jorge Jesus: "Vitória F.C." (Portugal, Q208585) eşlenemedi
+- Jorge Jesus: "Vitória S.C." (Portugal, Q223450) eşlenemedi
+- Jorge Jesus: "Al-Nassr" (Saudi Arabia, Q482764) eşlenemedi
+- Jorge Jesus: "Al-Nassr" (Saudi Arabia, Q482764) eşlenemedi
+- Jorge Jesus: "C.F. União" (Portugal, Q1762119) eşlenemedi
+- Jorge Jesus: "Amora F.C." (Portugal, Q2843873) eşlenemedi
+- Jorge Jesus: "Al Hilal SFC" (Saudi Arabia, Q73965) eşlenemedi
+- Jorge Jesus: "Al Hilal SFC" (Saudi Arabia, Q73965) eşlenemedi
+- Jorge Jesus: "Al Hilal SFC" (Saudi Arabia, Q73965) eşlenemedi
+- Jorge Jesus: 15 görev
+- Mircea Lucescu: "FC Dinamo Bucharest" (Romania, Q204237) eşlenemedi
+- Mircea Lucescu: "FC Rapid București" (Romania, Q245162) eşlenemedi
+- Mircea Lucescu: "FC Rapid București" (Romania, Q245162) eşlenemedi
+- Mircea Lucescu: "Pisa SC" (Italy, Q289613) eşlenemedi
+- Mircea Lucescu: "FC Corvinul Hunedoara" (Romania, Q1135735) eşlenemedi
+- Mircea Lucescu: "Brescia Calcio" (Italy, Q6651) eşlenemedi
+- Mircea Lucescu: "Brescia Calcio" (Italy, Q6651) eşlenemedi
+- Mircea Lucescu: "FC Zenit Saint Petersburg" (Russia, Q29108) eşlenemedi
+- Mircea Lucescu: 8 görev
+- Ertuğrul Sağlam: "2023–24 Kocaelispor season" başlangıç tarihi yok, atlandı
+- Ertuğrul Sağlam: "2024–25 Kocaelispor season" başlangıç tarihi yok, atlandı
+- Ertuğrul Sağlam: 4 görev
+- Rıza Çalımbay: "Sivasspor" (Turkey, Q372599) eşlenemedi
+- Rıza Çalımbay: "Sivasspor" (Turkey, Q372599) eşlenemedi
+- Rıza Çalımbay: 4 görev
+- Ünal Karaman: 1 görev
+- Hamza Hamzaoğlu: "Gençlerbirliği S.K." (Turkey, Q641373) eşlenemedi
+- Hamza Hamzaoğlu: "Atlético Morelia" (Turkey, Q2426819) eşlenemedi
+- Hamza Hamzaoğlu: "Atlético Morelia" (Turkey, Q2426819) eşlenemedi
+- Hamza Hamzaoğlu: 2 görev
+- Aykut Kocaman: 1 görev
+- Sergen Yalçın: 3 görev
+- İsmail Kartal: "Persepolis F.C." (Iran, Q242260) eşlenemedi
+- İsmail Kartal: "Template:Fenerbahçe S.K. squad" (, Q12422076) eşlenemedi
+- İsmail Kartal: 5 görev
+- Gheorghe Hagi: "FC Viitorul Constanța" (Romania, Q533094) eşlenemedi
+- Gheorghe Hagi: "FC Viitorul Constanța" (Romania, Q533094) eşlenemedi
+- Gheorghe Hagi: "FC Viitorul Constanța" (Romania, Q533094) eşlenemedi
+- Gheorghe Hagi: "FC Viitorul Constanța" (Romania, Q533094) eşlenemedi
+- Gheorghe Hagi: "FC Politehnica Timișoara" (Romania, Q723542) eşlenemedi
+- Gheorghe Hagi: 6 görev
+- Christoph Daum: "1. FC Köln" (Germany, Q104770) eşlenemedi
+- Christoph Daum: "1. FC Köln" (Germany, Q104770) eşlenemedi
+- Christoph Daum: "FK Austria Wien" (Austria, Q131209) eşlenemedi
+- Christoph Daum: 10 görev
+- Luis Aragonés: Wikidata kaydı bulunamadı
+- Frank Rijkaard: "2005–06 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Frank Rijkaard: "2004–05 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Frank Rijkaard: "Lionel Messi" (, Q615) eşlenemedi
+- Frank Rijkaard: "2006–07 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Frank Rijkaard: "2007–08 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Frank Rijkaard: "2003–04 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Frank Rijkaard: 5 görev
+- Guus Hiddink: 10 görev
+- Zico: "FC Goa" (India, Q16839398) eşlenemedi
+- Zico: "FC Goa" (India, Q16839398) eşlenemedi
+- Zico: 6 görev
+- Vítor Pereira: "2012–13 F.C. Porto season" başlangıç tarihi yok, atlandı
+- Vítor Pereira: 5 görev
+- Phillip Cocu: "SBV Vitesse" (Netherlands, Q219233) eşlenemedi
+- Phillip Cocu: "SBV Vitesse" (Netherlands, Q219233) eşlenemedi
+- Phillip Cocu: 5 görev
+- Slaven Bilić: "Al Ittihad FC" (Saudi Arabia, Q309480) eşlenemedi
+- Slaven Bilić: "Al Fateh SC" başlangıç tarihi yok, atlandı
+- Slaven Bilić: 9 görev
+- José Mourinho: "Alianza Cristiana" (Peru, Q8347042) eşlenemedi
+- José Mourinho: 20 görev
+- Pep Guardiola: "2009–10 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Pep Guardiola: "2011–12 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Pep Guardiola: "2010–11 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Pep Guardiola: "2008–09 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Pep Guardiola: "Lionel Messi" (, Q615) eşlenemedi
+- Pep Guardiola: "2022–23 Manchester City F.C. season" (, Q111982593) eşlenemedi
+- Pep Guardiola: 8 görev
+- Carlo Ancelotti: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Carlo Ancelotti: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Carlo Ancelotti: "2003–04 A.C. Milan season" (Italy, Q3626095) eşlenemedi
+- Carlo Ancelotti: 18 görev
+- Jürgen Klopp: 5 görev
+- Alex Ferguson: "East Stirlingshire F.C." (United Kingdom, Q1387066) eşlenemedi
+- Alex Ferguson: "East Stirlingshire F.C." (United Kingdom, Q1387066) eşlenemedi
+- Alex Ferguson: 3 görev
+- Arsène Wenger: 5 görev
+- Zinedine Zidane: "2019–20 Real Madrid CF season" başlangıç tarihi yok, atlandı
+- Zinedine Zidane: 5 görev
+- Diego Simeone: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Diego Simeone: 8 görev
+- Antonio Conte: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Antonio Conte: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Antonio Conte: "Italy at the UEFA European Championship 2016" başlangıç tarihi yok, atlandı
+- Antonio Conte: 12 görev
+- Massimiliano Allegri: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Massimiliano Allegri: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Massimiliano Allegri: "Aglianese Calcio 1923" (Italy, Q3606594) eşlenemedi
+- Massimiliano Allegri: 16 görev
+- Rafael Benítez: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Rafael Benítez: "Dalian Professional F.C." başlangıç tarihi yok, atlandı
+- Rafael Benítez: "2001–02 Valencia CF season" başlangıç tarihi yok, atlandı
+- Rafael Benítez: 19 görev
+- Jupp Heynckes: "2012–13 FC Bayern Munich season" başlangıç tarihi yok, atlandı
+- Jupp Heynckes: "FC Bayern Munich squad" (, Q14736182) eşlenemedi
+- Jupp Heynckes: "Athletic Club" (Spain, Q8687) eşlenemedi
+- Jupp Heynckes: "Athletic Club" (Spain, Q8687) eşlenemedi
+- Jupp Heynckes: 12 görev
+- Vicente del Bosque: "Spain at the UEFA European Championship 2016" (Spain, Q22002176) eşlenemedi
+- Vicente del Bosque: 5 görev
+- Louis van Gaal: "AZ Alkmaar" (Netherlands, Q191264) eşlenemedi
+- Louis van Gaal: "Royal Dutch Football Association" (Netherlands, Q213116) eşlenemedi
+- Louis van Gaal: "2002–03 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Louis van Gaal: "1997–98 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Louis van Gaal: "1998–99 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Louis van Gaal: "1999–2000 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Louis van Gaal: 6 görev
+- Fabio Capello: "A.C. Milan Primavera" (Italy, Q3299830) eşlenemedi
+- Fabio Capello: "A.C. Milan Primavera" (Italy, Q3299830) eşlenemedi
+- Fabio Capello: 8 görev
+- Marcello Lippi: "Guangzhou F.C." (People's Republic of China, Q130521) eşlenemedi
+- Marcello Lippi: "Guangzhou F.C." (People's Republic of China, Q130521) eşlenemedi
+- Marcello Lippi: "Lucchese 1905" (Italy, Q298333) eşlenemedi
+- Marcello Lippi: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Marcello Lippi: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Marcello Lippi: "Lucchese 1905" (Italy, Q298333) eşlenemedi
+- Marcello Lippi: "U.C. Sampdoria under-19" (, Q62024581) eşlenemedi
+- Marcello Lippi: "U.C. Sampdoria under-19" (, Q62024581) eşlenemedi
+- Marcello Lippi: 9 görev
+- Thomas Tuchel: "FC Augsburg under-19" (, Q62018657) eşlenemedi
+- Thomas Tuchel: "FC Augsburg under-19" (, Q62018657) eşlenemedi
+- Thomas Tuchel: 10 görev
+- Mauricio Pochettino: "Lionel Messi" (, Q615) eşlenemedi
+- Mauricio Pochettino: 6 görev
+- Luis Enrique: "Lionel Messi" (, Q615) eşlenemedi
+- Luis Enrique: "2014–15 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Luis Enrique: "2015–16 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Luis Enrique: "2016–17 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Luis Enrique: 5 görev
+- Claudio Ranieri: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Claudio Ranieri: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Claudio Ranieri: "1998–99 Valencia CF season" başlangıç tarihi yok, atlandı
+- Claudio Ranieri: "S.S.D. Puteolana 1902 Internapoli" (Italy, Q15140971) eşlenemedi
+- Claudio Ranieri: "S.S.D. Puteolana 1902 Internapoli" (Italy, Q15140971) eşlenemedi
+- Claudio Ranieri: "S.S.D. Puteolana 1902 Internapoli" (Italy, Q15140971) eşlenemedi
+- Claudio Ranieri: "S.S.D. Puteolana 1902 Internapoli" (Italy, Q15140971) eşlenemedi
+- Claudio Ranieri: 24 görev
+- Roberto Mancini: "Italian Football Federation" başlangıç tarihi yok, atlandı
+- Roberto Mancini: "Italy at the UEFA European Championship 2020" başlangıç tarihi yok, atlandı
+- Roberto Mancini: "FC Zenit Saint Petersburg" (Russia, Q29108) eşlenemedi
+- Roberto Mancini: "FC Zenit Saint Petersburg" (Russia, Q29108) eşlenemedi
+- Roberto Mancini: 9 görev
+- Luciano Spalletti: "Italian Football Federation" başlangıç tarihi yok, atlandı
+- Luciano Spalletti: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Luciano Spalletti: "SSC Napoli" (Italy, Q2641) eşlenemedi
+- Luciano Spalletti: "Italy at the UEFA European Championship 2024" başlangıç tarihi yok, atlandı
+- Luciano Spalletti: "FC Zenit Saint Petersburg" (Russia, Q29108) eşlenemedi
+- Luciano Spalletti: "FC Zenit Saint Petersburg" (Russia, Q29108) eşlenemedi
+- Luciano Spalletti: 15 görev
+- Unai Emery: "Unión Deportiva Almería" (Spain, Q10407) eşlenemedi
+- Unai Emery: 11 görev
+- Hansi Flick: "2024–25 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Hansi Flick: "2025-26 FC Barcelona season" başlangıç tarihi yok, atlandı
+- Hansi Flick: 6 görev
+- Xabi Alonso: 6 görev
+- Mikel Arteta: 2 görev
