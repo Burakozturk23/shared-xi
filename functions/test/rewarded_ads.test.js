@@ -8,7 +8,7 @@ const {defaults, validateConfig} = require("../economy_config");
 const ssv = require("../admob_ssv");
 const unit = "ca-app-pub-1234567890123456/1234567890";
 const copy = (v) => JSON.parse(JSON.stringify(v));
-function setup() {
+function setup(extra = {}) {
   const h = harness();
   let linked = true;
   let pro = false;
@@ -20,6 +20,7 @@ function setup() {
     isLinked: async () => linked, isPro: async () => pro,
     grantCoins: (...args) => h.context.lbProgressionGrantCoins(h.db, ...args),
     randomId: () => (++sequence).toString(16).padStart(48, "0"),
+    ...extra,
   });
   let requests = 0;
   const prepare = (placement = "loto_result", uid = "alice", requestId = (++requests).toString(16).padStart(32, "0")) =>
@@ -266,4 +267,28 @@ test("every bot result screen can offer the coin bonus; unknown placements are r
   }
   await assert.rejects(harness().call("prepareRewardedAd", {platform: "android", placement: "nope_result",
     requestId: "c".repeat(32)}), {code: "invalid-argument"});
+});
+
+test("streak repair and ad hints keep their own count; only coin ads share the end-of-game bonus", async () => {
+  let claim = 0;
+  const s = setup({prepareDailyReward: async (_uid, placement) => ({amount: placement === "daily_double" ? 60 : 0,
+    claimKey: placement + "_" + ++claim, context: {}}), settleDailyReward: async () => {}});
+  const watch = async (placement) => {
+    const {ticket} = await s.prepare(placement);
+    await s.engine.accept(s.event(ticket));
+    s.h.setTime(s.h.now + 31000);
+  };
+  // Assistance first: it does not use up the coin bonus.
+  await watch("daily_streak");
+  await watch("daily_hint");
+  assert.equal((await s.engine.status("alice", "android")).remaining, 2);
+  await watch("loto_result");
+  await watch("grid_result");
+  assert.equal((await s.engine.status("alice", "android")).remaining, 0);
+  await assert.rejects(s.prepare("cinko_result"), {code: "resource-exhausted"});
+  await assert.rejects(s.prepare("daily_double"), {code: "resource-exhausted"}); // pays coins, shares the bonus
+  // The bonus being spent never blocks saving a streak.
+  await watch("daily_streak");
+  await watch("daily_hint");
+  await assert.rejects(s.prepare("daily_hint"), {code: "resource-exhausted"}); // its own limit still holds
 });

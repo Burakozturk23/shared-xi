@@ -218,6 +218,10 @@ void main() {
     ('random_five', 'random_five_result'),
   ]) {
     testWidgets('finished bot $kind offers the coin bonus', (t) async {
+      t.view.physicalSize = const Size(800, 3000);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
       final seen = <String>[];
       await t.pumpWidget(
         MaterialApp(
@@ -235,6 +239,10 @@ void main() {
       await t.pump(const Duration(milliseconds: 50));
       await t.pump();
       expect(seen.toSet(), {placement});
+      expect(
+        find.textContaining('isteğe bağlı bonus', skipOffstage: false),
+        findsOneWidget,
+      );
       expect(find.text('coin bonusu', skipOffstage: false), findsOneWidget);
       await t.pumpWidget(const SizedBox.shrink());
     });

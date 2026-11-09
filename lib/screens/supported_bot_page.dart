@@ -493,7 +493,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         children: [
           Text(
             widget.clubName == null
-                ? 'Her hamle hesabına kaydedilir. Maç ödülsüzdür; yardımlı sonuç ayrı tutulur.'
+                ? 'Her hamle hesabına kaydedilir. Maç Coin vermez, sonunda isteğe bağlı bonus olabilir; yardımlı sonuç ayrı tutulur.'
                 : '${widget.clubName} ile yarış. Her hamle hesabına kaydedilir; yardımlı sonuç ayrı tutulur.',
             style: _text.bodyMedium,
           ),

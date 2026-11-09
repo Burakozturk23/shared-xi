@@ -207,7 +207,10 @@ function createService({db, getConfig, units, grantCoins, isLinked, isPro, now =
     if (!policy.enabled) fail("failed-precondition", "Bonuslar şu anda kapalı.");
     if (!pro && !policy.unitId) fail("failed-precondition", "Reklam bağlantısı henüz hazır değil.");
     const key = dayKey(time);
-    const counterKey = THREE_HINTS.includes(placement) ? key + "__solo_hints" : special ? key + "__" + placement : key;
+    // Ads that pay coins share the end-of-game bonus; streak repair and hints pay none, so
+    // spending the bonus must never block them (nor they use it up).
+    const ownCount = special || placement === "daily_streak" || HINT_PLACEMENTS.has(placement);
+    const counterKey = THREE_HINTS.includes(placement) ? key + "__solo_hints" : ownCount ? key + "__" + placement : key;
     const id = randomId();
     const state = await transact(uid, (s) => {
       prune(s, time);

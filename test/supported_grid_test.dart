@@ -240,6 +240,10 @@ void main() {
     ('solo_grid_classic', false),
   ]) {
     testWidgets('finished $mode coin bonus: $offered', (t) async {
+      t.view.physicalSize = const Size(800, 3000);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
       final seen = <String>[];
       await t.pumpWidget(
         MaterialApp(
@@ -263,6 +267,10 @@ void main() {
       await t.pump(const Duration(milliseconds: 50));
       await t.pump();
       expect(seen.toSet(), offered ? {'grid_result'} : <String>{});
+      expect(
+        find.textContaining('isteğe bağlı bonus', skipOffstage: false),
+        offered ? findsOneWidget : findsNothing,
+      );
       await t.pumpWidget(const SizedBox.shrink());
     });
   }

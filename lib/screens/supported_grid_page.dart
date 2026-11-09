@@ -347,7 +347,9 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                       ArenaCard(
                         glow: _p.accent,
                         child: Text(
-                          'Her hamle hesabına kaydedilir. Oyun ödülsüzdür; yardımlı rekor ayrı tutulur.',
+                          _bot
+                              ? 'Her hamle hesabına kaydedilir. Maç Coin vermez, sonunda isteğe bağlı bonus olabilir; yardımlı rekor ayrı tutulur.'
+                              : 'Her hamle hesabına kaydedilir. Oyun ödülsüzdür; yardımlı rekor ayrı tutulur.',
                           style: _text.bodyMedium,
                         ),
                       ),

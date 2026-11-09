@@ -311,7 +311,7 @@ class GameCatalog {
     ),
     GameEntry(
       title: 'Squad Challenge',
-      subtitle: 'Günlük görev, kadro kur, coin kazan',
+      subtitle: 'Kadro kur, günlük görevde coin kazan',
       icon: Icons.groups_outlined,
       page: BuildXiThemeSelectionPage(),
       category: 'Kadro & Yönetim',

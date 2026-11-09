@@ -14,7 +14,7 @@ const CELL = [
   {id: "ilk_harf", label: "İlk harf", type: "isim", why: "Kutuyu neredeyse çözdürür."},
 ];
 const AXIS = [
-  {id: "kriter_turu", label: "Kriter türü", type: "kulup", why: "Kulüp mü, milliyet mi, mevki mi?"},
+  {id: "kriter_turu", label: "Kriter türü", type: "kulup", why: "Kulüp, milliyet, mevki, yoksa teknik direktör mü?"},
   {id: "yanlis_kriter", label: "Bir yanlış kriteri ele", type: "ele", why: "İkisine uyup üçüncüye uymayan."},
   {id: "kriter_harf", label: "Kriterin ilk harfi", type: "isim", why: "Ortak kriterin baş harfi."},
 ];

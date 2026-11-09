@@ -55,8 +55,8 @@ class GameIntro extends StatelessWidget {
   }
 }
 
-/// Result of a server-run bot match or solo board ([bot] false). These runs
-/// pay no Coin/XP, so the card carries the score and that rule only.
+/// Result of a server-run bot match or solo board ([bot] false). The runs pay no
+/// Coin/XP themselves; bot results may offer the optional ad bonus below the card.
 HubResultCard serverMatchResult(Map<String, dynamic> run, {required bool bot}) {
   final completed = run['completed'] == true;
   final winner = run['winner'];
@@ -88,8 +88,10 @@ HubResultCard serverMatchResult(Map<String, dynamic> run, {required bool bot}) {
         : 'Beraberlik',
     subtitle:
         'Sen ${run['userScore'] ?? 0}${bot ? ' · Bot ${run['botScore'] ?? 0}' : ''}',
-    notes: const [
-      'Coin/XP, sıralama veya ustalık ödülü yok. Yardımlı sonuçlar ayrı tutulur.',
+    notes: [
+      bot
+          ? 'Maçın kendisi Coin/XP, sıralama veya ustalık vermez; varsa isteğe bağlı bonus aşağıda. Yardımlı sonuçlar ayrı tutulur.'
+          : 'Coin/XP, sıralama veya ustalık ödülü yok. Yardımlı sonuçlar ayrı tutulur.',
     ],
   );
 }
