@@ -1,1 +1,122 @@
-{"metrics":{},"candidates":{},"formats":{}}
+{
+ "metrics": {
+  "peak_market_value": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30"
+   ],
+   "sampleNote": "20 tanıdık oyuncuda elle bakıldı, dış kaynakla otomatik karşılaştırılmadı."
+  },
+  "international_caps": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "41 oyuncu: 35 yakın, 6 güncel oyuncuda 3-6 maç eksik. Bu yüzden en az 8 maç fark sorulur."
+  },
+  "international_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "41 oyuncu: 39 yakın, 2 sapma. En az 3 gol fark sorulur."
+  },
+  "ucl_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "ucl_appearances": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "pl_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "laliga_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "seriea_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "bundesliga_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "ligue1_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "super_lig_goals": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "Wikipedia listeleriyle karşılaştırıldı: fark 2012 öncesi ve 2025/26 sonrası maçlardan geliyor; etiket bunu söyler."
+  },
+  "height_cm": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "41 oyuncu: 40 eşit veya en çok 2 cm fark. En az 3 cm fark sorulur."
+  },
+  "birth_year": {
+   "databaseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+   "sampleVerified": true,
+   "sources": [
+    "Linkball veritabanı v4-2026-10-30",
+    "Örnek kontrol: Wikipedia (9 Kasım 2026)"
+   ],
+   "sampleNote": "41 oyuncu: 41 tam eşleşti."
+  }
+ },
+ "candidates": {},
+ "formats": {}
+}

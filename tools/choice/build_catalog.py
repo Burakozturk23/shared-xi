@@ -24,37 +24,45 @@ def pid(name):
 public={i:{'id':i,'playerId':i,'name':p['name'],'country':p['country'] or '', 'position':p['position'] or ''} for i,p in players.items()}
 metrics={};audit={};dbhash=hashlib.sha256(DB.read_bytes()).hexdigest()
 reviews=json.loads((ROOT/'tools/choice/reviews.json').read_text())
-specs=[('peak_market_value','Zirve Piyasa Değeri','players','EUR'),('career_goals','Kariyer Golü','players','gol'),('international_caps','Millî Maç','profiles','maç'),('international_goals','Millî Takım Golü','profiles','gol'),('appearances','Kaydedilmiş Maç','player_stats','maç'),('assists','Kaydedilmiş Asist','player_stats','asist'),('ucl_appearances','Kaydedilmiş UCL Maçı','player_stats','maç'),('big5_appearances','Kaydedilmiş Big-5 Maçı','player_stats','maç')]
-for field,label,table,unit in specs:
- groups=collections.defaultdict(list);missing=invalid=total=0;values=[]
+# Statistics that passed the sample check in docs/choice/metric-review.md. Each row is filtered to
+# values the check trusts: zeros are unknowns in this database, never real values.
+KNOWN="(p.selection_rank<=3000 or p.peak_market_value>=15000000)"
+SINCE="2012'den beri · 2025/26 sonrası maçlar dahil değil"
+NATIONAL="Son veri 2025/26; güncel maçlar eksik olabilir"
+def comp(cid,col,least=1,known=KNOWN):
+ return f"select s.player_id id,s.{col} value from player_competition_stats s join players p on p.id=s.player_id where s.competition_id='{cid}' and s.{col}>={least} and {known}"
+def prof(col,where):
+ return f"select r.player_id id,r.{col} value from profiles r join players p on p.id=r.player_id where r.{col} is not null and {where} and {KNOWN}"
+TALL={'easy':[10,99],'normal':[6,15],'hard':[4,9],'master':[3,6]}
+AGE={'easy':[8,99],'normal':[4,12],'hard':[2,6],'master':[1,3]}
+MORE={'higherLabel':'Daha çok','lowerLabel':'Daha az'}
+specs=[
+ ('peak_market_value','En yüksek piyasa değeri','Piyasa','EUR',"select p.id id,p.peak_market_value value from players p join profiles r on r.player_id=p.id where p.peak_market_value>=1000000 and r.birth_year>=1983 and "+KNOWN,'1983 ve sonrası doğan oyuncular; önceki yılların değerleri eksik',{}),
+ ('international_caps','Millî maç','Millî takım','maç',prof('international_caps',"r.international_caps>=5 and r.identity_confidence='HIGH_EXACT_NORMALIZED_NAME'"),NATIONAL,{**MORE,'minGap':8}),
+ ('international_goals','Millî gol','Millî takım','gol',prof('international_goals',"r.international_goals>=1 and r.identity_confidence='HIGH_EXACT_NORMALIZED_NAME'"),NATIONAL,{**MORE,'minGap':3}),
+ ('ucl_goals','Şampiyonlar Ligi golü','Avrupa','gol',comp('CL','goals'),SINCE,MORE),
+ ('ucl_appearances','Şampiyonlar Ligi maçı','Avrupa','maç',comp('CL','appearances',5),SINCE,{**MORE,'minGap':4}),
+ ('pl_goals','Premier League golü','Ligler','gol',comp('GB1','goals'),SINCE,MORE),
+ ('laliga_goals','LaLiga golü','Ligler','gol',comp('ES1','goals'),SINCE,MORE),
+ ('seriea_goals','Serie A golü','Ligler','gol',comp('IT1','goals'),SINCE,MORE),
+ ('bundesliga_goals','Bundesliga golü','Ligler','gol',comp('L1','goals'),SINCE,MORE),
+ ('ligue1_goals','Ligue 1 golü','Ligler','gol',comp('FR1','goals'),SINCE,MORE),
+ ('super_lig_goals','Süper Lig golü','Ligler','gol',comp('TR1','goals',1,'p.selection_rank<=12000'),SINCE,MORE),
+ ('height_cm','Boy','Oyuncu','cm',prof('height_cm','r.height_cm between 150 and 210'),'Boy bilgisi kaynağa göre 1-2 cm değişebilir',{'higherLabel':'Daha uzun','lowerLabel':'Daha kısa','minGap':3,'absBands':TALL}),
+ ('birth_year','Doğum yılı','Oyuncu','',prof('birth_year','r.birth_year between 1950 and 2012'),'Aynı yıl doğanlar karşılaştırılmaz',{'higherLabel':'Daha genç','lowerLabel':'Daha yaşlı','minGap':1,'absBands':AGE}),
+]
+for field,label,group,unit,sql,scope_label,extra in specs:
  review=reviews.get('metrics',{}).get(field,{})
- for row in c.execute('select * from '+table):
-  r=dict(row);i=str(r['id'] if table=='players' else r['player_id'])
-  if i not in players:continue
-  total+=1;v=r[field]
-  if v is None:missing+=1;continue
-  if not isinstance(v,(int,float)) or not math.isfinite(v) or v<0:invalid+=1;continue
-  if v==0 and i not in review.get('verifiedZeroIds',[]):missing+=1;continue
-  if table=='player_stats':
-   if r['coverage_class']!='LIKELY_COMPLETE_MODERN_WINDOW' or not r['coverage_first_year'] or not r['coverage_last_year']:continue
-   scope=f"recorded:{r['coverage_first_year']}:{r['coverage_last_year']}:{r['coverage_class']}"
-  elif table=='profiles':
-   if r['identity_confidence']!='HIGH_EXACT_NORMALIZED_NAME' or not r['source_last_season']:continue
-   scope=f"senior-national:snapshot-season-{r['source_last_season']}"
-  else:scope='legacy-scope-unverified'
-  values.append(v);groups[scope].append({'id':i,'value':v})
- viable={scope:rows for scope,rows in groups.items() if len(rows)>=120 and len({r['value'] for r in rows})>=7}
- pairs=sum((len(rows)**2-sum(n*n for n in collections.Counter(r['value'] for r in rows).values()))//2 for rows in viable.values())
- reviewed=review.get('databaseSha256')==dbhash and review.get('sourceTable')==table and review.get('sourceColumn')==field and bool(review.get('sources')) and review.get('sampleVerified') is True and review.get('scopeVerified') is True
- gate=bool(viable) and pairs>=50 and reviewed
- reason='' if gate else ('Kaynak ve kapsam incelemesi bekleniyor.' if viable else 'Karşılaştırılabilir havuz yetersiz.')
- metrics[field]={'id':field,'label':label,'sourceTable':table,'sourceColumn':field,'unit':unit,'status':'ready' if gate else 'needs_review','gatePassed':gate,'reason':reason,'groups':viable if gate else {},'sources':review.get('sources',[])}
- audit[field]={'totalIdentities':total,'unknownCount':missing,'nullRate':round(missing/max(1,total),4),'invalidCount':invalid,'positiveCount':len(values),'distinctValues':len(set(values)),'comparableGroups':{k:len(v) for k,v in viable.items()},'eligibleCount':sum(map(len,viable.values())),'distinctPairs':pairs,'tieRate':round(sum(n*(n-1)//2 for n in collections.Counter(values).values())/max(1,len(values)*(len(values)-1)//2),4),'sourceReviewed':reviewed,'gatePassed':gate,'reason':reason}
-# Independent, source-attributed historical criteria. Original eight gates stay intact.
-from verified_snapshot import load_metrics
-verified_metrics, verified_audit, verified_entities = load_metrics(players, aliases)
-metrics.update(verified_metrics); audit.update(verified_audit)
-public.update(verified_entities)  # published UEFA clubs, used only by club criteria
+ rows=[]
+ for row in c.execute(sql):
+  i=str(row['id'])
+  if i in players and isinstance(row['value'],(int,float)) and math.isfinite(row['value']) and row['value']>0:rows.append({'id':i,'value':row['value']})
+ rows.sort(key=lambda r:int(r['id']))
+ viable=len(rows)>=120 and len({r['value'] for r in rows})>=7
+ reviewed=review.get('databaseSha256')==dbhash and bool(review.get('sources')) and review.get('sampleVerified') is True
+ assert viable and reviewed,(field,len(rows),reviewed)
+ metrics[field]={'id':field,'label':label,'group':group,'unit':unit,'status':'ready','gatePassed':True,'reason':'','groups':{'all':rows},'sources':review['sources'],'scopeLabel':scope_label,'poolLabel':f'{len(rows)} oyuncu',**extra}
+ audit[field]={'eligibleCount':len(rows),'distinctValues':len({r['value'] for r in rows}),'sampleNote':review.get('sampleNote','')}
 files=['prime_battles_32','era_clash_64','position_rivalry_64','super_lig_legends_64','ucl_dynasties_64','historical_season_kings_64','turkish_peak_squads_64','city_derby_rivalries_64']
 titles=['Zirve Sezonlar','Efsane vs Modern','Rol Kapışması','Süper Lig Efsaneleri','Avrupa Hanedanlıkları','Tarihsel Sezon Kralları','Türk Futbolunun Zirve Kadroları','Şehir ve Derbi Rekabetleri']
 themes={};candidates={};unresolved=[]

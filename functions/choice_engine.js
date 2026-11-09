@@ -67,16 +67,21 @@ function higherPair(c, r) {
   const metric = c.metrics[r.metricId];
   const counts = metric?.unit !== "EUR" && !isRatio(metric);
   const floor = counts ? {easy: 8, normal: 5, hard: 4, master: 3}[band] : 0;
+  // A metric's minGap is its data tolerance: closer values are never asked, in any pass.
+  const minGap = metric?.minGap || 0;
+  // Height and birth year have no meaningful ratio: their difficulty is an absolute gap.
+  const absolute = metric?.absBands?.[band];
   const shuffled = order(rows.map((x) => x.id), r.privateSeed + r.history.length);
   const values = Object.fromEntries(rows.map((x) => [x.id, x.value]));
   // With the floor first; only if no pair is left, without it (never end early).
-  for (const min of floor ? [floor, 1] : [0]) {
+  for (const min of absolute ? [absolute[0], minGap] : floor ? [Math.max(floor, minGap), minGap || 1] : [minGap]) {
     for (let i = 0; i < shuffled.length; i++) {
       for (let j = i + 1; j < shuffled.length; j++) {
         let a = shuffled[i]; let b = shuffled[j];
-        const gap = Math.abs(values[a] - values[b]) / Math.max(values[a], values[b]);
-        if (gap < limits[0] || gap > limits[1] || shownValue(metric, values[a]) === shownValue(metric, values[b]) ||
-          Math.abs(values[a] - values[b]) < min) continue;
+        const distance = Math.abs(values[a] - values[b]);
+        const gap = distance / Math.max(values[a], values[b]);
+        const inBand = absolute ? min !== absolute[0] || distance <= absolute[1] : gap >= limits[0] && gap <= limits[1];
+        if (!inBand || shownValue(metric, values[a]) === shownValue(metric, values[b]) || distance < min) continue;
         const higher = parseInt(hash(r.privateSeed + ":direction:" + r.history.length).slice(0, 2), 16) % 2 === 0;
         if ((values[b] > values[a]) !== higher) [a, b] = [b, a];
         r.usedIds.push(a, b);
@@ -139,14 +144,32 @@ function create(c, input, time) {
         // knowledge instead of only telling far-apart strata apart.
         const k = parseInt(hash(r.privateSeed + ":close:" + attempt).slice(0, 8), 16) % (r.size - 1);
         const base = values[chosen[k]];
-        const absolute = isRatio(c.metrics[r.metricId]) ? 0 : 3;
+        const metric = c.metrics[r.metricId];
+        const minGap = metric.minGap || 0;
+        const reach = metric.absBands ? minGap + 2 : Math.max(isRatio(metric) ? 0 : 3, minGap, base * 0.1);
         const near = order(rows.filter((x) => !chosen.includes(x.id) && x.value !== base &&
-          Math.abs(x.value - base) <= Math.max(absolute, base * 0.1)).map((x) => x.id),
+          Math.abs(x.value - base) >= minGap && Math.abs(x.value - base) <= reach).map((x) => x.id),
         r.privateSeed + ":near" + attempt)[0];
         if (near) chosen[k + 1] = near;
         if (new Set(chosen.map((i) => values[i])).size < (r.size === 5 ? 4 : 7)) continue;
+        // Nothing in a list may sit closer than the data can tell apart (ties are shared ranks).
+        const sorted = chosen.map((i) => values[i]).sort((a, b) => a - b);
+        if (minGap && sorted.some((v, i) => i && v !== sorted[i - 1] && v - sorted[i - 1] < minGap)) continue;
         r.orderedCandidateIds = order(chosen, r.privateSeed + "reveal");
         r.values = Object.fromEntries(chosen.map((i) => [i, values[i]])); break;
+      }
+      // Narrow metrics (height) rarely fit the strata with their gap: take spaced players instead.
+      const tolerance = c.metrics[r.metricId].minGap || 0;
+      if (!r.values && tolerance) {
+        const chosen = [];
+        for (const pick of order(rows.map((x) => x.id), r.privateSeed + ":spaced")) {
+          if (chosen.length === r.size) break;
+          if (chosen.every((i) => Math.abs(values[i] - values[pick]) >= tolerance)) chosen.push(pick);
+        }
+        if (chosen.length === r.size) {
+          r.orderedCandidateIds = order(chosen, r.privateSeed + "reveal");
+          r.values = Object.fromEntries(chosen.map((i) => [i, values[i]]));
+        }
       }
     }
     if (r.orderedCandidateIds.length !== r.size || new Set(r.orderedCandidateIds).size !== r.size) {
@@ -253,7 +276,8 @@ function publicRun(c, raw) {
   }
   if (r.metricId && c.metrics[r.metricId]) {
     const m = c.metrics[r.metricId];
-    out.metric = Object.fromEntries(["id", "label", "unit", "scopeLabel", "poolLabel", "edition", "sources"]
+    out.metric = Object.fromEntries(["id", "label", "unit", "scopeLabel", "poolLabel", "edition", "sources",
+      "higherLabel", "lowerLabel"]
         .filter((key) => m[key] != null).map((key) => [key, m[key]]));
   }
   return out;

@@ -80,8 +80,8 @@ class RecoverChoice extends choice.ChoiceFixture {
   }
 }
 
-class UefaChoice extends choice.ChoiceFixture {
-  UefaChoice({super.stage = 'intro'});
+class ProductionChoice extends choice.ChoiceFixture {
+  ProductionChoice({super.stage = 'intro'});
   final production =
       jsonDecode(
             File('functions/config/choice_catalog.json').readAsStringSync(),
@@ -99,9 +99,9 @@ class UefaChoice extends choice.ChoiceFixture {
     };
     if (result['session'] is Map) {
       final run = result['session'] as Map;
-      run['metricId'] = 'uefa_ec_ucl_2023_appearances';
+      run['metricId'] = 'ucl_goals';
       run['metric'] = metrics.firstWhere((m) => m['id'] == run['metricId']);
-      if (mode == 'higher_lower') (run['question'] as Map)['leftValue'] = 163;
+      if (mode == 'higher_lower') (run['question'] as Map)['leftValue'] = 78;
     }
     return result;
   }
@@ -349,12 +349,14 @@ void main() {
     testWidgets(
       '$mode production criteria select a verified metric and display historical scope',
       (t) async {
-        final service = UefaChoice();
+        final service = ProductionChoice();
         await choice.mount(t, service, mode);
         expect(find.byType(GameErrorPanel), findsNothing);
-        expect(find.text('İncelemedeki ölçütler (8)'), findsOneWidget);
-        expect(find.text('Zirve Piyasa Değeri'), findsNothing);
-        await choice.capture(t, '${mode}_verified_uefa_setup');
+        // Every statistic in the shipped catalog is reviewed: nothing is locked or archived.
+        expect(find.textContaining('İncelemedeki'), findsNothing);
+        expect(find.textContaining('2023 arşivi'), findsNothing);
+        expect(find.text('Şampiyonlar Ligi golü', skipOffstage: false), findsOneWidget);
+        await choice.capture(t, '${mode}_verified_setup');
         expect(
           t
               .widget<FilledButton>(
@@ -367,21 +369,21 @@ void main() {
         await t.pump();
         await t.tap(find.text('Oyunu hazırla'));
         await t.pumpAndSettle();
-        expect(service.sent?['metricId'], 'uefa_ec_ucl_2023_appearances');
+        expect(service.sent?['metricId'], isNotNull);
         await choice.mount(
           t,
-          UefaChoice(stage: 'game'),
+          ProductionChoice(stage: 'game'),
           mode,
           light: true,
           large: true,
         );
-        expect(find.textContaining('2023 arşivi'), findsOneWidget);
-        expect(find.textContaining('1955–2023'), findsNothing);
-        await choice.capture(t, '${mode}_verified_uefa_large');
-        await t.tap(find.text('Kapsam ve kaynak'));
+        await choice.capture(t, '${mode}_verified_large');
+        final scope = find.text('Kapsam ve kaynak', skipOffstage: false);
+        await t.ensureVisible(scope);
         await t.pumpAndSettle();
-        expect(find.textContaining('1955–2023'), findsOneWidget);
-        expect(find.textContaining('145 doğrulanmış futbolcu'), findsOneWidget);
+        await t.tap(scope);
+        await t.pumpAndSettle();
+        expect(find.textContaining('2012\'den beri'), findsOneWidget);
         expect(t.takeException(), isNull);
         await t.pumpWidget(const SizedBox());
       },

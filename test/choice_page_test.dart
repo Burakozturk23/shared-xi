@@ -20,8 +20,12 @@ class ChoiceFixture extends ChoiceService {
     this.training = false,
     this.community = false,
     this.joker = false,
+    this.extraMetrics = false,
+    this.metric = 'peak_market_value',
   });
   String stage, type;
+  final bool extraMetrics;
+  final String metric;
   int size;
   bool offline, gated, training, community, joker;
   Map<String, dynamic>? sent;
@@ -84,7 +88,7 @@ class ChoiceFixture extends ChoiceService {
             : [],
       },
       if (mode == 'higher_lower') ...{
-        'metricId': 'peak_market_value',
+        'metricId': metric,
         'streak': 10,
         'answered': result || stage == 'reveal',
         'correct': !result && !joker,
@@ -93,7 +97,7 @@ class ChoiceFixture extends ChoiceService {
           'id': 'q1',
           'left': player(0),
           'right': player(1),
-          'leftValue': 180000000,
+          'leftValue': metric == 'birth_year' ? 1987 : 180000000,
           if (result || stage == 'reveal') 'rightValue': 120000000,
           'knownSide': 0,
           'difficulty': 'hard',
@@ -167,6 +171,27 @@ class ChoiceFixture extends ChoiceService {
           'gatePassed': !gated,
           'reason': 'Kaynak incelemesi bekleniyor.',
         },
+        if (extraMetrics)
+          {
+            'id': 'international_caps',
+            'label': 'Millî maç',
+            'group': 'Millî takım',
+            'unit': 'maç',
+            'gatePassed': true,
+            'scopeLabel': 'Son veri 2025/26',
+            'higherLabel': 'Daha çok',
+            'lowerLabel': 'Daha az',
+          },
+        if (metric == 'birth_year')
+          {
+            'id': 'birth_year',
+            'label': 'Doğum yılı',
+            'group': 'Oyuncu',
+            'unit': '',
+            'gatePassed': true,
+            'higherLabel': 'Daha genç',
+            'lowerLabel': 'Daha yaşlı',
+          },
       ],
       'personal': [
         {'id': 'favorites', 'label': 'Genel Favoriler'},
@@ -401,14 +426,38 @@ void main() {
   ) async {
     final fixture = ChoiceFixture();
     await mount(t, fixture, 'higher_lower');
-    expect(find.text('€120.000.000'), findsNothing);
+    expect(find.text('€180M'), findsOneWidget);
+    expect(find.text('€120M'), findsNothing);
     await t.ensureVisible(find.text('Daha düşük'));
     await t.tap(find.text('Daha düşük'));
     await t.pumpAndSettle();
-    expect(find.text('€120.000.000'), findsOneWidget);
+    expect(find.text('€120M'), findsOneWidget);
     expect(find.text('Sonraki çift'), findsOneWidget);
     expect(find.text('Daha düşük'), findsNothing);
     await capture(t, 'higher_reveal');
+  });
+  testWidgets('statistics are chosen from grouped cards that state their scope', (
+    t,
+  ) async {
+    await mount(t, ChoiceFixture(stage: 'intro', extraMetrics: true), 'higher_lower');
+    expect(find.text('MİLLÎ TAKIM'), findsOneWidget);
+    await t.ensureVisible(find.text('Millî maç'));
+    await t.tap(find.text('Millî maç'));
+    await t.pumpAndSettle();
+    expect(
+      t.getSemantics(find.text('Millî maç')),
+      isSemantics(isSelected: true, isButton: true),
+    );
+    expect(find.text('Son veri 2025/26'), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
+  testWidgets('a statistic names its own answers: younger or older', (t) async {
+    await mount(t, ChoiceFixture(metric: 'birth_year'), 'higher_lower');
+    expect(find.text('Daha genç'), findsOneWidget);
+    expect(find.text('Daha yaşlı'), findsOneWidget);
+    expect(find.text('1987'), findsOneWidget); // a year has no thousands dot
+    expect(find.text('VEYA'), findsOneWidget);
+    expect(t.takeException(), isNull);
   });
   testWidgets('unreviewed metric cannot start', (t) async {
     await mount(t, ChoiceFixture(stage: 'intro', gated: true), 'higher_lower');

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/rewarded_ad_models.dart';
 import '../services/choice_service.dart';
+import '../widgets/bot_arena.dart';
+import '../widgets/higher_lower_board.dart';
 import '../widgets/player_portrait.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/game_ui.dart';
@@ -392,14 +394,14 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             tot
                 ? 'Favorini şampiyon yap'
                 : hl
-                ? 'Bir sonraki değer?'
+                ? 'Hangi istatistikte kapışalım?'
                 : 'Yerini seç. Kararını kilitle.',
           ),
           note(
             tot
                 ? 'Doğru cevap yok. İki adaydan favorini seç; tek şampiyona ulaş.'
                 : hl
-                ? 'Gizli değer daha yüksek mi, daha düşük mü? İlk yanlış seriyi bitirir. Süre sınırı yok.'
+                ? 'İki oyuncu karşılaşır: gizli değer, gösterilenden çok mu az mı? Bir joker hakkın var, ikinci yanlış seriyi bitirir. Süre sınırı yok.'
                 : 'Oyuncular birer birer açılır. Boş bir sıra seçip onayla. Kilitlenen sıra değişmez.',
           ),
           if (hl && !metrics.any((m) => m['gatePassed'] == true))
@@ -477,22 +479,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             ],
           ],
           if (hl || !tot && type == 'objective') ...[
-            ...metrics
-                .where((m) => m['gatePassed'] == true)
-                .map(
-                  (m) => RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    value: '${m['id']}',
-                    groupValue: metricId,
-                    title: Text('${m['label'] ?? m['id']}'),
-                    subtitle: Text(
-                      '${m['unit'] ?? ''} · ${m['edition'] ?? m['scope'] ?? ''}',
-                    ),
-                    onChanged: busy
-                        ? null
-                        : (v) => setState(() => metricId = v),
-                  ),
-                ),
+            ...metricPicker(),
             if (metrics.any((m) => m['gatePassed'] != true))
               ExpansionTile(
                 tilePadding: EdgeInsets.zero,
@@ -548,6 +535,54 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
         rewards(),
       ],
     );
+  }
+
+  // Statistic cards, grouped; the chosen one states its data scope right away.
+  List<Widget> metricPicker() {
+    final open = metrics.where((m) => m['gatePassed'] == true).toList();
+    final groups = <String>{for (final m in open) '${m['group'] ?? ''}'};
+    IconData icon(String group) => const {
+      'Piyasa': Icons.euro_rounded,
+      'Millî takım': Icons.flag_rounded,
+      'Avrupa': Icons.emoji_events_outlined,
+      'Ligler': Icons.sports_soccer_rounded,
+      'Oyuncu': Icons.person_outline_rounded,
+    }[group] ??
+        Icons.bar_chart_rounded;
+    final chosen = open.where((m) => m['id'] == metricId).firstOrNull;
+    return [
+      for (final group in groups) ...[
+        if (group.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            child: Text(
+              upperTr(group),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: palette.muted,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+        for (final m in open.where((m) => '${m['group'] ?? ''}' == group))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: MetricTile(
+              label: '${m['label'] ?? m['id']}',
+              icon: icon(group),
+              selected: metricId == m['id'],
+              onTap: busy
+                  ? null
+                  : () => setState(() => metricId = '${m['id']}'),
+            ),
+          ),
+      ],
+      if (chosen?['scopeLabel'] != null)
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: ArenaNote(text: '${chosen!['scopeLabel']}'),
+        ),
+    ];
   }
 
   Widget person(
@@ -658,16 +693,26 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
 
   String number(dynamic n, [String? metric]) {
     if (n == null) return '?';
+    final id = metric ?? metricId ?? '';
+    final known = metrics.where((m) => m['id'] == id).firstOrNull;
+    final v = n as num;
     // Goals per match is a ratio: two decimals, Turkish comma.
-    if ((metric ?? metricId ?? '').contains('per_match')) {
-      return (n as num).toStringAsFixed(2).replaceAll('.', ',');
+    if (id.contains('per_match')) {
+      return v.toStringAsFixed(2).replaceAll('.', ',');
     }
-    final value = (n as num)
+    if (id.contains('market_value')) {
+      final millions = v / 1000000;
+      final shown = millions == millions.roundToDouble()
+          ? millions.toStringAsFixed(0)
+          : millions.toStringAsFixed(1).replaceAll('.', ',');
+      return '€${shown}M';
+    }
+    if (id == 'birth_year') return v.toStringAsFixed(0);
+    final value = v
         .toStringAsFixed(0)
         .replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
-    return (metric ?? metricId ?? '').contains('market_value')
-        ? '€$value'
-        : value;
+    final unit = '${known?['unit'] ?? ''}';
+    return id == 'height_cm' && unit.isNotEmpty ? '$value $unit' : value;
   }
 
   List<Widget> metricContext(Map<String, dynamic> r) {
@@ -753,75 +798,118 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
     final metric = rewardMap(r['metric']).isNotEmpty
         ? rewardMap(r['metric'])
         : metrics.where((m) => m['id'] == r['metricId']).firstOrNull;
-    return panel([
-      heading('${r['streak'] ?? 0} doğru seri'),
-      note('${metric?['label'] ?? 'İstatistik karşılaştırması'}'),
-      // One joker per run: the first miss keeps the streak alive.
-      if (r['finished'] != true)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: HubPill(
-            r['jokerUsed'] == true ? 'Joker kullanıldı' : 'Joker hazır',
-            icon: r['jokerUsed'] == true
-                ? Icons.block_rounded
-                : Icons.favorite_rounded,
-            color: r['jokerUsed'] == true ? palette.muted : hubAmber(context),
-            background: r['jokerUsed'] == true
-                ? palette.raised
-                : hubAmber(context).withValues(alpha: .14),
-          ),
+    final metricId = '${r['metricId']}';
+    final label = '${metric?['label'] ?? 'İstatistik'}';
+    // The player with the visible value stays on top.
+    final knownFirst = q['knownSide'] != 1;
+    final known = knownFirst ? 'left' : 'right';
+    final hidden = knownFirst ? 'right' : 'left';
+    final answered = r['answered'] == true;
+    final offline = data['offline'] == true;
+    final hiddenColor = !answered
+        ? Arena.lime
+        : r['correct'] == true
+        ? palette.success
+        : palette.error;
+    void guess(String direction) => action('guess', {
+      'questionId': q['id'],
+      'direction': direction,
+    });
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            ArenaPill(
+              filled: true,
+              child: Text('${r['streak'] ?? 0} doğru seri'),
+            ),
+            // One joker per run: the first miss keeps the streak alive.
+            if (r['finished'] != true)
+              HubPill(
+                r['jokerUsed'] == true ? 'Joker kullanıldı' : 'Joker hazır',
+                icon: r['jokerUsed'] == true
+                    ? Icons.block_rounded
+                    : Icons.favorite_rounded,
+                color: r['jokerUsed'] == true
+                    ? palette.muted
+                    : hubAmber(context),
+                background: r['jokerUsed'] == true
+                    ? palette.raised
+                    : hubAmber(context).withValues(alpha: .14),
+              ),
+          ],
         ),
-      ...metricContext(r),
-      if (r['training'] == true) trainingSupport(r),
-      for (final side in ['left', 'right']) ...[
-        person(
-          rewardMap(q[side]),
-          caption: number(q['${side}Value'], '${r['metricId']}'),
-        ),
-        if (q['${side}Value'] == null)
-          Center(
-            child: Text('Gizli değer', style: TextStyle(color: accent)),
-          ),
         const SizedBox(height: 12),
-      ],
-      if (r['answered'] == true) ...[
-        heading(
-          r['correct'] == true
-              ? 'Doğru!'
-              : r['finished'] == true
-              ? 'Seri tamamlandı'
-              : 'Yanlış · joker devrede',
+        VersusCard(
+          player: rewardMap(q[known]),
+          color: palette.accent,
+          value: number(q['${known}Value'], metricId),
+          caption: label,
         ),
-        if (r['correct'] != true && r['finished'] != true)
-          note('Serin korunuyor. Bir sonraki yanlışta oyun biter.'),
-        if (r['finished'] != true)
-          button(
-            'Sonraki çift',
-            data['offline'] == true ? null : () => action('next'),
+        const VersusBadge(),
+        VersusCard(
+          player: rewardMap(q[hidden]),
+          color: hiddenColor,
+          value: q['${hidden}Value'] == null
+              ? null
+              : number(q['${hidden}Value'], metricId),
+          caption: label,
+          footer: answered || r['finished'] == true
+              ? null
+              : Row(
+                  children: [
+                    Expanded(
+                      child: ArenaSecondaryButton(
+                        icon: Icons.arrow_upward_rounded,
+                        color: Arena.lime,
+                        label: '${metric?['higherLabel'] ?? 'Daha yüksek'}',
+                        onPressed: busy || offline
+                            ? null
+                            : () => guess('higher'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ArenaSecondaryButton(
+                        icon: Icons.arrow_downward_rounded,
+                        color: Arena.lime,
+                        label: '${metric?['lowerLabel'] ?? 'Daha düşük'}',
+                        onPressed: busy || offline
+                            ? null
+                            : () => guess('lower'),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+        if (answered) ...[
+          const SizedBox(height: 12),
+          ArenaNote(
+            color: hiddenColor,
+            icon: r['correct'] == true
+                ? Icons.check_circle_rounded
+                : Icons.cancel_rounded,
+            text: r['correct'] == true
+                ? 'Doğru!'
+                : r['finished'] == true
+                ? 'Seri tamamlandı'
+                : 'Yanlış · joker devrede',
           ),
-      ] else if (r['finished'] != true) ...[
-        note('Gizli değer, gösterilen değerden…'),
-        button(
-          'Daha yüksek',
-          data['offline'] == true
-              ? null
-              : () => action('guess', {
-                  'questionId': q['id'],
-                  'direction': 'higher',
-                }),
-        ),
-        button(
-          'Daha düşük',
-          data['offline'] == true
-              ? null
-              : () => action('guess', {
-                  'questionId': q['id'],
-                  'direction': 'lower',
-                }),
-          secondary: true,
-        ),
+          if (r['correct'] != true && r['finished'] != true)
+            note('Serin korunuyor. Bir sonraki yanlışta oyun biter.'),
+          if (r['finished'] != true)
+            button('Sonraki çift', offline ? null : () => action('next')),
+        ],
+        const SizedBox(height: 8),
+        ...metricContext(r),
+        if (r['training'] == true) trainingSupport(r),
+        const SizedBox(height: 16),
       ],
-    ]);
+    );
   }
 
   Widget ranking(Map<String, dynamic> r, {bool result = false}) {
@@ -838,22 +926,41 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
       if (r['type'] == 'objective') ...metricContext(r),
       if (r['training'] == true) trainingSupport(r),
       if (!result) ...[
-        person(rewardMap(r['current'])),
+        VersusCard(
+          player: rewardMap(r['current']),
+          color: Arena.lime,
+          value: null,
+          caption: rewardMap(r['metric'])['label']?.toString(),
+        ),
         note('Bir boş sıra seç, ardından onayla. Sonraki oyuncu henüz gizli.'),
       ],
       for (var slot = 0; slot < count; slot++)
         Builder(
           builder: (context) {
             final p = placements.where((p) => p['slot'] == slot).firstOrNull;
+            final chosen = previewSlot == slot && !result;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: OutlinedButton(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(48, 56),
                   alignment: Alignment.centerLeft,
-                  backgroundColor: previewSlot == slot && !result
+                  backgroundColor: chosen
+                      ? palette.limeTint
+                      : p != null
                       ? palette.tint
                       : null,
+                  side: BorderSide(
+                    color: chosen
+                        ? Arena.lime
+                        : p != null
+                        ? palette.accent.withValues(alpha: .5)
+                        : palette.border,
+                    width: chosen ? 1.6 : 1,
+                  ),
                 ),
                 onPressed:
                     result || p != null || busy || data['offline'] == true
@@ -867,6 +974,24 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
                     style: TextStyle(color: p == null ? null : palette.text),
                   ),
                 ),
+              ),
+                  if (chosen) ...[
+                    button(
+                      '${slot + 1}. sıraya yerleştir',
+                      data['offline'] == true
+                          ? null
+                          : () => action('place', {
+                              'slot': slot,
+                              'candidateId': rewardMap(r['current'])['id'],
+                            }),
+                    ),
+                    button(
+                      'Seçimden vazgeç',
+                      () => setState(() => previewSlot = null),
+                      secondary: true,
+                    ),
+                  ],
+                ],
               ),
             );
           },
@@ -903,22 +1028,6 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
             ),
           ],
         ),
-      if (!result && previewSlot != null) ...[
-        button(
-          '${previewSlot! + 1}. sıraya yerleştir',
-          data['offline'] == true
-              ? null
-              : () => action('place', {
-                  'slot': previewSlot,
-                  'candidateId': rewardMap(r['current'])['id'],
-                }),
-        ),
-        button(
-          'Seçimden vazgeç',
-          () => setState(() => previewSlot = null),
-          secondary: true,
-        ),
-      ],
     ]);
   }
 

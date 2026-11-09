@@ -4,6 +4,7 @@ import '../models/coach.dart';
 import '../theme/ortak_saha_theme.dart';
 import 'club_identity_badge.dart';
 import 'coach_avatar.dart';
+import 'hub_ui.dart';
 import 'country_badge.dart';
 import 'league_badge.dart';
 import 'player_portrait.dart';
@@ -459,7 +460,7 @@ class ArenaSection extends StatelessWidget {
           ],
           Expanded(
             child: Text(
-              text.toUpperCase(),
+              upperTr(text),
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.1,

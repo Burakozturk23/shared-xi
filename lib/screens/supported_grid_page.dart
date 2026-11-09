@@ -15,6 +15,7 @@ import '../widgets/grid_criterion_label.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/rewarded_coin_card.dart';
 import '../widgets/hint_panel.dart';
+import '../widgets/hub_ui.dart' show upperTr;
 
 /// Account-owned Grid session. Legacy route is selected only by the server's
 /// explicit rollout response; a network error never creates a second game.
@@ -452,7 +453,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              label.toUpperCase(),
+              upperTr(label),
               style: _text.labelMedium?.copyWith(
                 color: _p.muted,
                 letterSpacing: 1.2,
