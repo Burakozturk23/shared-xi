@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../app/app_feedback.dart';
 import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
+import '../services/warm_up.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
 import '../theme/ortak_saha_theme.dart';
@@ -103,6 +104,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         }
       });
     _load();
+    if (widget.service == null) WarmUp.functions(['actBotSupport']);
     _poll = Timer.periodic(Duration(milliseconds: _realtime ? 1000 : 750), (_) {
       if (_busy || _error != null || _accountChanged || !_active || _paused)
         return;

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../app/app_feedback.dart';
 import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
+import '../services/warm_up.dart';
+import '../widgets/bot_arena.dart';
 import '../services/arcade_service.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/share_result.dart';
@@ -56,6 +58,12 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
   String difficulty = 'normal', style = 'speed', pairType = 'clubClub';
   String? slotId, error;
   bool busy = true, showRecords = false, background = false;
+
+  /// A local Burst clock save is in flight. It never sets [busy]: the save takes
+  /// milliseconds on the phone, and flagging the page busy every second flashed
+  /// the loading bar and locked the answer field mid-typing.
+  bool checkpointing = false;
+  Future<void>? _checkpointRun;
   int searchEpoch = 0;
   bool get offline =>
       data['offline'] == true && data['offlinePlayable'] != true;
@@ -80,6 +88,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     showRecords = widget.recordsInitially;
     WidgetsBinding.instance.addObserver(this);
     unawaited(load());
+    // Starting and playing use other functions than this screen's status call.
+    if (widget.service == null) WarmUp.functions(['prepareArcade', 'actArcade']);
     ticker = Timer.periodic(const Duration(milliseconds: 200), (_) {
       if (!mounted || !active) return;
       setState(() {});
@@ -168,6 +178,9 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       busy = true;
       error = null;
     });
+    // Both write the same local Burst journal: let a running clock save finish first.
+    final pending = _checkpointRun;
+    if (pending != null) await pending;
     final beforeQuestion = rewardMap(run['question'])['id'];
     int matched() => _rows(
       rewardMap(run['board'])['cards'],
@@ -215,9 +228,13 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       unawaited(act('pause'));
   }
 
-  Future<void> checkpoint() async {
-    if (busy || !running) return;
-    setState(() => busy = true);
+  Future<void> checkpoint() {
+    if (busy || checkpointing || !running) return Future.value();
+    return _checkpointRun = _checkpoint().whenComplete(() => _checkpointRun = null);
+  }
+
+  Future<void> _checkpoint() async {
+    checkpointing = true;
     try {
       final value = await service.checkpoint({
         'mode': 'burst',
@@ -227,11 +244,12 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         'questionId': rewardMap(run['question'])['id'],
         'elapsedMs': elapsed.elapsedMilliseconds,
       });
-      if (mounted) setState(() => accept(value));
+      // An answer or pass that started meanwhile has the newer state; keep it.
+      if (mounted && !busy) setState(() => accept(value));
     } catch (e) {
       if (mounted) setState(() => error = gameErrorMessage(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      checkpointing = false;
     }
     if (error == null && background && active && run['paused'] != true)
       unawaited(act('pause'));
@@ -336,36 +354,35 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         if (mounted && run['paused'] == true) Navigator.of(context).pop();
       },
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: MediaQuery.textScalerOf(context).scale(1) > 1.3
-              ? 144
-              : 64,
-          title: Text(
-            showRecords ? '$title Rekor Merkezi' : title,
-            maxLines: 3,
-          ),
-          actions: [
-            IconButton(
-              tooltip: 'Rekor Merkezi',
-              onPressed: busy
-                  ? null
-                  : () async {
-                      if (active && run['paused'] != true && !offline)
-                        await act('pause');
-                      if (mounted) setState(() => showRecords = !showRecords);
-                    },
-              icon: const Icon(Icons.emoji_events_outlined),
-            ),
-            IconButton(
-              tooltip: 'Yenile',
-              onPressed: busy ? null : load,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
         body: GameContent(
           child: Column(
             children: [
+              ArenaHeader(
+                title: showRecords ? '$title Rekor Merkezi' : title,
+                subtitle: subtitle,
+                tag: tag,
+                canPop: !active || error != null || offline,
+                actions: [
+                  ArenaIconButton(
+                    tooltip: 'Rekor Merkezi',
+                    icon: Icons.emoji_events_outlined,
+                    onPressed: busy
+                        ? null
+                        : () async {
+                            if (active && run['paused'] != true && !offline)
+                              await act('pause');
+                            if (mounted)
+                              setState(() => showRecords = !showRecords);
+                          },
+                  ),
+                  ArenaIconButton(
+                    tooltip: 'Yenile',
+                    icon: Icons.refresh_rounded,
+                    onPressed: busy ? null : load,
+                  ),
+                ],
+              ),
+              Divider(height: 1, color: palette.border),
               if (busy) const LinearProgressIndicator(minHeight: 2),
 
               Expanded(
@@ -425,6 +442,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
                         ],
                         if (run['phase'] == 'active')
                           Wrap(
+                            alignment: WrapAlignment.center,
                             spacing: 12,
                             children: [
                               TextButton(
@@ -600,34 +618,69 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     if ('${run['hint'] ?? ''}'.isNotEmpty) panel('İpucu', '${run['hint']}'),
   ];
   Widget input() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       TextField(
         controller: answer,
         maxLength: 120,
         enabled: !busy && !offline,
         onChanged: search,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           labelText: 'Ad yaz veya öneriden seç',
           hintText: 'En az 2 harf',
+          prefixIcon: const Icon(Icons.search_rounded),
+          filled: true,
+          fillColor: palette.background,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         ),
         textInputAction: TextInputAction.done,
         onSubmitted: (_) => submit(),
       ),
       for (final item in suggestions)
-        ListTile(
-          dense: true,
-          minVerticalPadding: 10,
-          title: Text('${item['name']}'),
-          subtitle: Text(
-            item['type'] == 'club'
-                ? 'Kulüp'
-                : item['type'] == 'country'
-                ? 'Ülke'
-                : '${item['country'] ?? 'Oyuncu'}',
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Material(
+            color: palette.raised,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(color: palette.border),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              dense: true,
+              minVerticalPadding: 10,
+              leading: item['type'] == 'club' || item['type'] == 'country'
+                  ? CriterionMark(
+                      ArenaCriterion({
+                        'label': '${item['name']}',
+                        'type': '${item['type']}',
+                      }),
+                      size: 28,
+                    )
+                  : ArenaPlayerAvatar(
+                      id: item['playerId'] ?? item['id'],
+                      name: '${item['name']}',
+                      size: 32,
+                    ),
+              title: Text('${item['name']}'),
+              subtitle: Text(
+                item['type'] == 'club'
+                    ? 'Kulüp'
+                    : item['type'] == 'country'
+                    ? 'Ülke'
+                    : '${item['country'] ?? 'Oyuncu'}',
+              ),
+              onTap: busy ? null : () => submit(entityId: '${item['id']}'),
+            ),
           ),
-          onTap: busy ? null : () => submit(entityId: '${item['id']}'),
         ),
-      button('Cevabı kontrol et', submit),
+      const SizedBox(height: 4),
+      ArenaPrimaryButton(
+        label: 'Cevabı kontrol et',
+        icon: Icons.bolt_rounded,
+        onPressed: busy || offline ? null : submit,
+      ),
+      const SizedBox(height: 12),
     ],
   );
   void submit({String? entityId}) {
@@ -644,77 +697,287 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     );
   }
 
+  String get subtitle => switch (widget.mode) {
+    'burst' => run['style'] == 'survival'
+        ? 'Dayanıklılık · ortak oyuncu serisi'
+        : 'Hız atağı · ortak oyuncu serisi',
+    'pyramid' => 'Zincir tırmanışı · zirveye bağla',
+    _ => 'Hafıza · oyuncuyu kulübüyle eşleştir',
+  };
+  String? get tag => run.isEmpty || run['finished'] == true
+      ? null
+      : upperTr(_difficulty('${run['difficulty'] ?? rewardMap(run['question'])['difficulty'] ?? ''}'));
+
+  Widget _stat(String label, Widget value) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: palette.muted,
+            letterSpacing: 1.1,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 4),
+        DefaultTextStyle.merge(
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+          child: value,
+        ),
+      ],
+    ),
+  );
+
   List<Widget> burst() {
     final speed = run['style'] == 'speed';
     final q = rewardMap(run['question']);
+    final text = Theme.of(context).textTheme;
+    final found = _rows(run['found']);
+    final country = '${run['pairType'] ?? q['id'] ?? ''}'.toLowerCase().contains('country');
     int seconds(String key) =>
         (math.max(0, _n(run[key]) - delta) / 1000).ceil();
-    return [
-      Wrap(
-        spacing: 12,
-        runSpacing: 8,
+    Widget side(String name, String type) => Expanded(
+      child: Column(
         children: [
-          Text(
-            '${run['score']} PUAN',
-            style: TextStyle(color: accent, fontWeight: FontWeight.bold),
-          ),
-          Text('${run['rounds']} tur'),
-          Text('Seri ${run['streak']}'),
-          if (speed)
-            Text(
-              'Toplam ${seconds('totalRemainingMs')} sn · Tur ${seconds('roundRemainingMs')} sn',
-            )
-          else
-            Text(
-              '♥ ${run['lives']} · Tur ${seconds('roundRemainingMs')} sn · Hedef 12 tur',
+          Container(
+            width: 64,
+            height: 64,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: palette.raised,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: palette.border),
             ),
+            child: CriterionMark(
+              ArenaCriterion({'label': name, 'type': type}),
+              size: 44,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: text.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
         ],
       ),
-      const SizedBox(height: 10),
-      // Round clock: turns amber in the last third.
-      Builder(
-        builder: (context) {
-          final left = math.max(0, _n(run['roundRemainingMs']) - delta);
-          final total = math.max(1, _n(run['roundMs'] ?? 30000));
-          final part = (left / total).clamp(0.0, 1.0);
-          return Semantics(
-            label: 'Tur süresi ${(left / 1000).ceil()} saniye',
-            excludeSemantics: true,
-            child: LinearProgressIndicator(
-              value: part,
-              minHeight: 6,
-              borderRadius: BorderRadius.circular(3),
-              color: part < 1 / 3 ? hubAmber(context) : accent,
+    );
+    Widget slot(Widget leading, String title, String body, Color color, {bool done = false}) => Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: done ? color.withValues(alpha: .08) : palette.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: done ? color.withValues(alpha: .5) : palette.border,
+          ),
+        ),
+        child: Row(
+          children: [
+            leading,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: text.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  Text(body, style: text.bodySmall?.copyWith(color: palette.muted)),
+                ],
+              ),
             ),
-          );
-        },
+            if (done) Icon(Icons.verified_rounded, color: color),
+          ],
+        ),
       ),
-      const SizedBox(height: 12),
-      panel(
-        '${q['left']} × ${q['right']}',
-        '${_rows(run['found']).length}/3 oyuncu · ${_difficulty('${q['difficulty']}')}',
-      ),
+    );
+    return [
       Wrap(
         spacing: 8,
-        children: _rows(run['found'])
-            .map(
-              (x) => Chip(
-                label: Text('${x['name']}'),
-                avatar: const Icon(Icons.check, size: 18),
-              ),
-            )
-            .toList(),
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          ArenaPill(
+            filled: true,
+            color: Arena.lime,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.local_fire_department_rounded, size: 16, color: Arena.lime),
+                const SizedBox(width: 4),
+                Text('SERİ ${run['streak']}'),
+              ],
+            ),
+          ),
+          ArenaPill(child: Text('${run['score']} PUAN')),
+          ArenaPill(child: Text('${run['rounds']} tur')),
+          if (!speed) ArenaPill(dot: hubAmber(context), child: Text('♥ ${run['lives']}')),
+        ],
       ),
+      const SizedBox(height: 12),
+      ArenaCard(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: 12,
+              runSpacing: 4,
+              children: [
+                Text(
+                  speed
+                      ? 'Toplam ${seconds('totalRemainingMs')} sn'
+                      : 'Hedef 12 tur',
+                  style: text.labelLarge?.copyWith(color: palette.muted),
+                ),
+                Text(
+                  'Tur ${seconds('roundRemainingMs')} sn',
+                  style: text.labelLarge?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // Round clock: turns amber in the last third.
+            Builder(
+              builder: (context) {
+                final left = math.max(0, _n(run['roundRemainingMs']) - delta);
+                final total = math.max(1, _n(run['roundMs'] ?? 30000));
+                final part = (left / total).clamp(0.0, 1.0);
+                return Semantics(
+                  label: 'Tur süresi ${(left / 1000).ceil()} saniye',
+                  excludeSemantics: true,
+                  child: LinearProgressIndicator(
+                    value: part,
+                    minHeight: 8,
+                    borderRadius: BorderRadius.circular(4),
+                    backgroundColor: palette.border,
+                    color: part < 1 / 3 ? hubAmber(context) : Arena.lime,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(height: 12),
+      ArenaCard(
+        glow: accent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'ORTAK OYUNCU',
+                    style: text.labelLarge?.copyWith(
+                      color: accent,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                ),
+                ArenaPill(
+                  filled: true,
+                  color: Arena.lime,
+                  child: Text('${found.length}/3 bulundu'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Semantics(
+              label: '${q['left']} × ${q['right']}',
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  side('${q['left'] ?? ''}', 'club'),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: accent.withValues(alpha: .5)),
+                          ),
+                          child: Icon(Icons.close_rounded, color: accent, size: 20),
+                        ),
+                        const SizedBox(height: 4),
+                        Text('ORTAK', style: text.labelSmall?.copyWith(color: palette.muted)),
+                      ],
+                    ),
+                  ),
+                  side('${q['right'] ?? ''}', country ? 'country' : 'club'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${found.length}/3 oyuncu · ${_difficulty('${q['difficulty']}')}',
+              textAlign: TextAlign.center,
+              style: text.bodySmall?.copyWith(color: palette.muted),
+            ),
+          ],
+        ),
+      ),
+      ArenaSection(
+        'Bulunacaklar (3)',
+        icon: Icons.people_alt_outlined,
+        trailing: Text(
+          '${math.max(0, 3 - found.length)} oyuncu kaldı',
+          style: text.labelSmall?.copyWith(color: accent),
+        ),
+      ),
+      for (final x in found)
+        slot(
+          ArenaPlayerAvatar(id: x['id'], name: '${x['name']}', size: 44, ring: palette.success),
+          '${x['name']}',
+          'Bulundu',
+          palette.success,
+          done: true,
+        ),
+      for (var i = found.length; i < 3; i++)
+        slot(
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: palette.raised,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.help_outline_rounded, color: palette.muted),
+          ),
+          '${i + 1}. oyuncu bekleniyor',
+          country
+              ? 'Kulüpte oynamış ve bu ülkeden bir futbolcu yaz'
+              : 'Her iki kulüpte oynamış bir futbolcu yaz',
+          accent,
+        ),
       ...message(),
       input(),
       Wrap(
         spacing: 10,
+        runSpacing: 8,
         children: [
-          OutlinedButton(
+          OutlinedButton.icon(
+            icon: const Icon(Icons.fast_forward_rounded, size: 18),
             onPressed: busy || offline || _n(run['passes']) >= 2
                 ? null
                 : () => act('pass'),
-            child: Text(
+            label: Text(
               'Pas (${2 - _n(run['passes'])})${speed ? ' · −5 sn' : ''}',
             ),
           ),
@@ -756,6 +1019,113 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
     ];
   }
 
+  /// One pyramid cell: a player (portrait), club (mark) or country (flag), or an
+  /// open, selectable or locked slot.
+  Widget _pyramidCell({
+    required String id,
+    required Map<String, dynamic> entity,
+    required bool start,
+    required bool top,
+    required bool selected,
+    required bool linked,
+    required bool available,
+    required VoidCallback? onTap,
+  }) {
+    final text = Theme.of(context).textTheme;
+    final solved = entity.isNotEmpty && !start;
+    final (Color edge, Color fill) = selected
+        ? (Arena.lime, palette.limeTint)
+        : top && entity.isNotEmpty
+        ? (accent, palette.tint)
+        : solved
+        ? (palette.success, palette.success.withValues(alpha: .1))
+        : linked
+        ? (accent, palette.surface)
+        : available
+        ? (accent.withValues(alpha: .6), palette.surface)
+        : (palette.border, entity.isEmpty ? palette.background : palette.surface);
+    final type = '${entity['type'] ?? ''}';
+    Widget mark() => type == 'player'
+        ? ArenaPlayerAvatar(
+            id: entity['playerId'],
+            name: '${entity['name']}',
+            size: 34,
+            ring: solved ? palette.success : accent,
+          )
+        : CriterionMark(
+            ArenaCriterion({
+              'label': '${entity['name']}',
+              'type': type == 'country' ? 'country' : 'club',
+            }),
+            size: 28,
+          );
+    final children = entity.isNotEmpty
+        ? <Widget>[
+            mark(),
+            const SizedBox(height: 4),
+            Text(
+              '${entity['name']}',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: text.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            if (solved)
+              Text(
+                'Çözüldü',
+                style: text.labelSmall?.copyWith(color: palette.success),
+              ),
+          ]
+        : <Widget>[
+            Icon(
+              selected
+                  ? Icons.edit_rounded
+                  : available
+                  ? Icons.add_rounded
+                  : Icons.lock_outline_rounded,
+              size: 20,
+              color: selected
+                  ? Arena.lime
+                  : available
+                  ? accent
+                  : palette.muted,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              selected
+                  ? 'Aktif seçim'
+                  : available
+                  ? 'Seç'
+                  : 'Kilitli',
+              style: text.labelSmall?.copyWith(
+                color: selected ? Arena.lime : palette.muted,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ];
+    return Material(
+      color: fill,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: edge, width: selected || linked ? 1.8 : 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 84, minWidth: 48),
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: children,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   List<Widget> pyramid() {
     final board = rewardMap(run['board']);
     final filled = rewardMap(run['filled']);
@@ -778,10 +1148,31 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
             2,
       ),
     );
+    final initial = (board['initial'] as List? ?? []).map((x) => '$x').toSet();
+    final cells = _n(board['cells'] ?? (_n(board['levels']) == 4 ? 5 : 9));
     return [
-      Text(
-        '♥ ${run['lives']} · ${run['correct']}/${_n(board['cells'] ?? (_n(board['levels']) == 4 ? 5 : 9))} hücre · ${run['score']} puan${run['daily'] != null ? ' · Günün piramidi' : ''}',
-        style: TextStyle(color: accent),
+      ArenaCard(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        child: Row(
+          children: [
+            _stat(
+              'CAN',
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.favorite_rounded, size: 18, color: palette.error),
+                  const SizedBox(width: 4),
+                  Text('${run['lives']}'),
+                ],
+              ),
+            ),
+            _stat('HÜCRE', Text('${run['correct']}/$cells')),
+            _stat(
+              'PUAN',
+              Text('${run['score'] ?? 0}', style: const TextStyle(color: Arena.lime)),
+            ),
+          ],
+        ),
       ),
       const SizedBox(height: 14),
       if (boardWidth > math.min(MediaQuery.sizeOf(context).width, 640.0) - 32)
@@ -822,44 +1213,20 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
                                   ? 'Boş hücre ${_n(s['id']) + 1}${available ? ', seçilebilir' : ', alt destekleri doldur'}'
                                   : '${entity['name']}',
                               button: available,
-                              child: OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  minimumSize: const Size(48, 72),
-                                  padding: const EdgeInsets.all(5),
-                                  foregroundColor: palette.text,
-                                  backgroundColor: id == slotId
-                                      ? palette.tint
-                                      : palette.surface,
-                                  side: BorderSide(
-                                    color:
-                                        highlighted.contains(id) || id == slotId
-                                        ? accent
-                                        : palette.border,
-                                  ),
-                                ),
-                                onPressed: !busy && !offline && available
+                              child: _pyramidCell(
+                                id: id,
+                                entity: entity,
+                                start: initial.contains(id),
+                                top: s['row'] == 0,
+                                selected: id == slotId,
+                                linked: highlighted.contains(id),
+                                available: available,
+                                onTap: !busy && !offline && available
                                     ? () => setState(() {
                                         slotId = id;
                                         error = null;
                                       })
                                     : null,
-                                child: Text(
-                                  entity.isEmpty
-                                      ? available
-                                            ? '+'
-                                            : '·'
-                                      : '${entity['name']}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: entity.isEmpty
-                                        ? accent
-                                        : palette.text,
-                                  ),
-                                ),
                               ),
                             ),
                           ),
@@ -875,8 +1242,10 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       if (selected != null)
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Text(
-            'Bağlanması gerekenler: ${highlighted.map((id) => rewardMap(filled[id])['name']).join(' • ')}',
+          child: ArenaNote(
+            icon: Icons.hub_outlined,
+            text:
+                'Aktif görev: ${highlighted.map((id) => rewardMap(filled[id])['name']).join(' & ')} bağlantısını bul',
           ),
         ),
       ...message(),

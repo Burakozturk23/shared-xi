@@ -7,6 +7,7 @@ import '../app/game_launcher.dart';
 import '../app/route_appearance.dart';
 import '../controllers/home_resources_controller.dart';
 import '../models/mission_models.dart';
+import '../services/warm_up.dart';
 import '../services/search_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/pitch_tile.dart';
@@ -28,6 +29,13 @@ class GamesCatalogPage extends StatefulWidget {
 
 class _GamesCatalogPageState extends State<GamesCatalogPage> {
   final _search = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Wake the game screens' first calls while the player is still choosing.
+    WarmUp.functions(WarmUp.menu);
+  }
 
   @override
   void dispose() {

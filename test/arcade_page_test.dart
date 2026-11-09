@@ -231,6 +231,23 @@ class ArcadeFixture extends ArcadeService {
 }
 
 final boundary = GlobalKey();
+// Burst with an offline kit: the page checkpoints the clock locally every second.
+class KitArcade extends ArcadeFixture {
+  int checkpoints = 0;
+  @override
+  Future<Map<String, dynamic>> load(String mode) async => {
+    ...await super.load(mode),
+    'burstKit': {'version': 'kit'},
+  };
+  @override
+  Future<Map<String, dynamic>> checkpoint(Map<String, dynamic> input) async {
+    checkpoints++;
+    // A slow phone write: long enough to be seen if it flagged the page busy.
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    return {...await super.load('burst'), 'burstKit': {'version': 'kit'}};
+  }
+}
+
 Future<void> mount(
   WidgetTester t,
   ArcadeFixture service,
@@ -285,6 +302,29 @@ void main() {
     ]) {
       await (FontLoader(e.$1)..addFont(rootBundle.load(e.$2))).load();
     }
+  });
+  testWidgets('Burst local checkpoints never show a loading bar or lock the answer', (
+    t,
+  ) async {
+    final service = KitArcade();
+    await mount(t, service, 'burst');
+    // The page clock is a real Stopwatch: let a real second pass, then tick.
+    await t.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 1100)));
+    await t.pump(const Duration(milliseconds: 200));
+    await t.pump(const Duration(milliseconds: 50));
+    expect(service.checkpoints, greaterThan(0));
+    expect(find.byType(LinearProgressIndicator), findsOneWidget); // only the round clock
+    expect(t.widget<TextField>(find.byType(TextField)).enabled, isNot(false));
+    // An answer sent during a clock save waits for it instead of racing the journal.
+    await t.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 1100)));
+    await t.pump(const Duration(milliseconds: 200));
+    final saving = service.checkpoints;
+    await t.enterText(find.byType(TextField), 'messi');
+    await t.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 400)));
+    await t.pumpAndSettle();
+    expect(service.checkpoints, greaterThanOrEqualTo(saving));
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
   });
   testWidgets('setup choices are segmented controls that update the rules', (
     t,

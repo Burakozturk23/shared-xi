@@ -273,7 +273,7 @@ void main() {
       await t.pump(const Duration(seconds: 3));
       expect(service.writes, 1);
       expect(find.byType(GameErrorPanel), findsOneWidget);
-      await t.tap(find.byType(BackButton));
+      await t.tap(find.byTooltip('Geri'));
       await t.pumpAndSettle();
       expect(find.byType(ArcadePage), findsNothing);
     },

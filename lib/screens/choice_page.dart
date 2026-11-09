@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/rewarded_ad_models.dart';
+import '../services/warm_up.dart';
 import '../services/choice_service.dart';
 import '../widgets/bot_arena.dart';
 import '../widgets/higher_lower_board.dart';
@@ -63,6 +64,7 @@ class _ChoicePageState extends State<ChoicePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     service = widget.service ?? ChoiceService();
+    if (widget.service == null) WarmUp.functions(['prepareChoice', 'actChoice']);
     records = widget.recordsInitially;
     category = widget.initialCategory;
     themeId = widget.initialTheme;

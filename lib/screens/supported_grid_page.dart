@@ -5,6 +5,7 @@ import '../models/grid_club_pool.dart';
 import '../app/app_feedback.dart';
 import '../app/game_audio.dart';
 import '../models/rewarded_ad_models.dart';
+import '../services/warm_up.dart';
 import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../services/story_support_service.dart';
@@ -73,6 +74,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
           loadCallable: 'getGridSupport',
           watchPlacement: 'grid_support_hint',
         );
+    if (widget.service == null) WarmUp.functions(['actGridSupport']);
     if (widget.service == null)
       _auth = AuthService.authStateChanges.listen((user) {
         if (_owner != null && user?.uid != _owner && mounted) {
