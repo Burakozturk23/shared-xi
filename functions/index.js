@@ -9027,7 +9027,9 @@ exports.admobRewardCallback = httpsV2.onRequest({
   try {
     lbAdmobKeys ||= ssv.createKeyProvider();
     const original = request.originalUrl || request.url || "";
-    const event = await ssv.verify(original.slice(original.indexOf("?") + 1), lbAdmobKeys);
+    const query = original.includes("?") ? original.slice(original.indexOf("?") + 1) : "";
+    if (ssv.isProbe(query)) return response.status(200).send("OK");
+    const event = await ssv.verify(query, lbAdmobKeys);
     const user = await getAuth().getUser(event.user_id);
     if (user.disabled) return response.status(403).send("Account unavailable");
     await lbRewardedService().accept(event);

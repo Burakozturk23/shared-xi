@@ -233,6 +233,39 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     },
   );
+  for (final (mode, offered) in const [
+    ('bot_grid_classic', true),
+    ('bot_grid_reverse', true),
+    ('bot_grid_random', true),
+    ('solo_grid_classic', false),
+  ]) {
+    testWidgets('finished $mode coin bonus: $offered', (t) async {
+      final seen = <String>[];
+      await t.pumpWidget(
+        MaterialApp(
+          home: SupportedGridPage(
+            mode: mode,
+            legacy: const Text('Eski oyun'),
+            service: StorySupportService(
+              transport: GridWire()..finished = true,
+              currentUser: () => 'alice',
+              useCallable: 'actGridSupport',
+              loadCallable: 'getGridSupport',
+              watchPlacement: 'grid_support_hint',
+            ),
+            rewardCard: (p) {
+              seen.add(p);
+              return const Text('coin bonusu');
+            },
+          ),
+        ),
+      );
+      await t.pump(const Duration(milliseconds: 50));
+      await t.pump();
+      expect(seen.toSet(), offered ? {'grid_result'} : <String>{});
+      await t.pumpWidget(const SizedBox.shrink());
+    });
+  }
   testWidgets('coach criterion shows the coach name and TD tag', (t) async {
     await open(t, 'bot_grid_classic', coach: true);
     expect(find.text('Fatih Terim'), findsOneWidget);

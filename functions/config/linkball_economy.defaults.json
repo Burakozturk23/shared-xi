@@ -84,7 +84,7 @@
       "dailyLimit": 3
     },
     "rewarded_coin": {
-      "enabled": false,
+      "enabled": true,
       "amount": 20,
       "dailyLimit": 2
     },

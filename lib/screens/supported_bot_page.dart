@@ -10,6 +10,7 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/bot_arena.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/rewarded_coin_card.dart';
 import '../widgets/hint_panel.dart';
 
 /// Account-owned Loto, Team Race, Çinko and Random Five sessions. The server
@@ -24,11 +25,15 @@ class SupportedBotPage extends StatefulWidget {
     this.clubId,
     this.clubName,
     this.service,
+    this.rewardCard,
   });
   final String mode;
   final String? difficulty, clubId, clubName;
   final Widget legacy;
   final StorySupportService? service;
+
+  /// End-of-match coin bonus; defaults to the real ad card outside tests.
+  final Widget Function(String placement)? rewardCard;
   @override
   State<SupportedBotPage> createState() => _SupportedBotPageState();
 }
@@ -402,6 +407,7 @@ class _SupportedBotPageState extends State<SupportedBotPage>
                       if (!_active) ...[
                         const SizedBox(height: 16),
                         serverMatchResult(_run, bot: true),
+                        ?_rewardCard(),
                         const SizedBox(height: 12),
                         ArenaPrimaryButton(
                           label: 'Yeni maç',
@@ -420,6 +426,17 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         ),
       ),
     );
+  }
+
+  Widget? _rewardCard() {
+    final placement = const {
+      'loto': 'loto_result',
+      'team_race': 'team_race_result',
+      'cinko': 'cinko_result',
+      'random_five': 'random_five_result',
+    }[_kind]!;
+    return widget.rewardCard?.call(placement) ??
+        (widget.service == null ? RewardedCoinCard(placement: placement) : null);
   }
 
   /// Turn line of the turn-based modes: "Sıra sende" / "Bot oynuyor…".

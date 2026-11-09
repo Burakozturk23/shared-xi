@@ -13,6 +13,7 @@ import '../widgets/bot_arena.dart';
 import '../widgets/game_ui.dart';
 import '../widgets/grid_criterion_label.dart';
 import '../widgets/paid_hint_button.dart';
+import '../widgets/rewarded_coin_card.dart';
 import '../widgets/hint_panel.dart';
 
 /// Account-owned Grid session. Legacy route is selected only by the server's
@@ -25,11 +26,15 @@ class SupportedGridPage extends StatefulWidget {
     this.difficulty = 'medium',
     this.service,
     this.poolInput,
+    this.rewardCard,
   });
   final String mode, difficulty;
   final Widget legacy;
   final StorySupportService? service;
   final Future<Map<String, dynamic>> Function()? poolInput;
+
+  /// End-of-match coin bonus (bot only); defaults to the real ad card outside tests.
+  final Widget Function(String placement)? rewardCard;
   @override
   State<SupportedGridPage> createState() => _SupportedGridPageState();
 }
@@ -396,6 +401,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                       if (!_active) ...[
                         const SizedBox(height: 16),
                         serverMatchResult(_run, bot: _bot),
+                        if (_bot) ?_rewardCard(),
                         _summary(),
                         const SizedBox(height: 12),
                         ArenaPrimaryButton(
@@ -416,6 +422,12 @@ class _SupportedGridPageState extends State<SupportedGridPage>
       ),
     );
   }
+
+  Widget? _rewardCard() =>
+      widget.rewardCard?.call('grid_result') ??
+      (widget.service == null
+          ? const RewardedCoinCard(placement: 'grid_result')
+          : null);
 
   // Score, record, turn and the last messages from the server.
   Widget _header() {

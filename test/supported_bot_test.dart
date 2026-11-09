@@ -211,6 +211,54 @@ void main() {
       },
     );
   }
+  for (final (kind, placement) in const [
+    ('loto', 'loto_result'),
+    ('team_race', 'team_race_result'),
+    ('cinko', 'cinko_result'),
+    ('random_five', 'random_five_result'),
+  ]) {
+    testWidgets('finished bot $kind offers the coin bonus', (t) async {
+      final seen = <String>[];
+      await t.pumpWidget(
+        MaterialApp(
+          home: SupportedBotPage(
+            mode: 'bot_$kind',
+            legacy: const Text('Eski'),
+            service: _service(BotWire()..finished = true),
+            rewardCard: (p) {
+              seen.add(p);
+              return const Text('coin bonusu');
+            },
+          ),
+        ),
+      );
+      await t.pump(const Duration(milliseconds: 50));
+      await t.pump();
+      expect(seen.toSet(), {placement});
+      expect(find.text('coin bonusu', skipOffstage: false), findsOneWidget);
+      await t.pumpWidget(const SizedBox.shrink());
+    });
+  }
+  testWidgets('an active bot match shows no coin bonus', (t) async {
+    final seen = <String>[];
+    await t.pumpWidget(
+      MaterialApp(
+        home: SupportedBotPage(
+          mode: 'bot_loto',
+          legacy: const Text('Eski'),
+          service: _service(BotWire()),
+          rewardCard: (p) {
+            seen.add(p);
+            return const Text('coin bonusu');
+          },
+        ),
+      ),
+    );
+    await t.pump(const Duration(milliseconds: 50));
+    await t.pump();
+    expect(seen, isEmpty);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
   testWidgets('a won bot match ends on a winning result card', (t) async {
     t.view.physicalSize = const Size(390, 2400);
     t.view.devicePixelRatio = 1;

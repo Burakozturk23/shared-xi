@@ -5,7 +5,8 @@ const THREE_HINTS = ["burst_survival_hint", "fake_club_hint", "mystery_hint", "c
   "squad_support_hint", "daily_match_hint", "anagram_practice_hint", "daily_footballer_hint", "grid_support_hint",
   "bot_support_hint",
   "letter11_hint", "vault_hint"];
-const PLACEMENTS = new Set(["loto_result", "cinko_result", "daily_hint", "daily_double", "daily_streak",
+const PLACEMENTS = new Set(["loto_result", "cinko_result", "team_race_result", "random_five_result",
+  "grid_result", "daily_hint", "daily_double", "daily_streak",
   "story_hint", "story_double", "what_if_hint", "what_if_double", "energy_refill", "quiz_hint", ...THREE_HINTS]);
 const HINT_PLACEMENTS = new Set([...THREE_HINTS, "daily_hint", "quiz_hint", "story_hint", "what_if_hint"]);
 // Retained legacy tickets count toward the same Istanbul-day assistance budget.
