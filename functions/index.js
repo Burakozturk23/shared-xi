@@ -10548,7 +10548,9 @@ function lbArcadeService() {
     grantCoins: (...args) => lbProgressionGrantCoins(db, ...args), grantXp: lbCareerTransferGrantXp});
 }
 function lbArcadeCallable(action) {
-  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
+  // 512MiB: the Arcade catalog is large; at 256MiB prepareArcade ran out of memory in production.
+  return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
+    enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);

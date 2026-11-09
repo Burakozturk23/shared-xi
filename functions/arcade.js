@@ -1,4 +1,5 @@
 "use strict";
+const {pinCatalog} = require("./catalog_pin");
 const crypto = require("node:crypto");
 const B = require("./boosts");
 const H = require("./hints");
@@ -200,7 +201,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     H.pinAny(draft, boostPolicy, null, now());
     // Pyramid and Matching are timed boards: their hints are stock, Joker or Coin, never an ad.
     if (H.active(draft) && ["pyramid", "matching"].includes(draft.mode)) draft.hintPolicy.ads = false;
-    await db.ref(`arcadeCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
+    await pinCatalog(db, `arcadeCatalogs/${catalog.version}`, catalog);
     await change(uid, (s, e, time) => {
       if (s.sessions[input.requestId]) {
         const r = s.sessions[input.requestId];

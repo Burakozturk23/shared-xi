@@ -1,4 +1,5 @@
 "use strict";
+const {pinCatalog} = require("./catalog_pin");
 const crypto = require("node:crypto");
 const B = require("./boosts");
 const H = require("./hints");
@@ -239,7 +240,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     if (!policy.dataEnabled || !policy.soloEnabled) {
       fail("failed-precondition", "Sahte Kulüp test aşamasında; henüz açılmadı.");
     }
-    await db.ref(`fakeClubCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
+    await pinCatalog(db, `fakeClubCatalogs/${catalog.version}`, catalog);
     const charge = await energyCost(uid) === 1;
     const e = await change(uid, (s, e, time) => {
       refresh(s, e, policy, time);

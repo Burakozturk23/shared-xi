@@ -455,3 +455,29 @@ test("Matching: a paused win sets moves but no time record; today's board is sha
   assert.deepEqual(raw(a, d1).board.pairs.map((p) => p.playerId), raw(b, d2).board.pairs.map((p) => p.playerId));
   assert.ok(d1.daily); assert.equal(d1.difficulty, "normal");
 });
+
+test("starting a game never loads the whole stored catalog again", async () => {
+  const h = setup(); let transactions = 0;
+  const ref = h.db.ref;
+  h.db.ref = (key = "") => {
+    const node = ref(key);
+    if (!key.startsWith("arcadeCatalogs/")) return node;
+    const transaction = node.transaction;
+    return {...node, transaction: (update) => {
+      transactions++; return transaction(update);
+    }};
+  };
+  await prepare(h, "pyramid", {difficulty: "normal"});
+  assert.equal(transactions, 1); // first game pins the catalog
+  assert.equal(h.read(`arcadeCatalogs/${version}/version`), version);
+  await prepare(h, "matching", {difficulty: "normal"});
+  assert.equal(transactions, 1);
+});
+
+test("no service re-reads a whole catalog to pin it", () => {
+  const fs = require("node:fs"); const path = require("node:path");
+  for (const file of ["arcade", "choice", "fake_club", "mystery_chain", "pvp"]) {
+    const source = fs.readFileSync(path.join(__dirname, "..", file + ".js"), "utf8");
+    assert.ok(!/Catalogs\/\$\{[^}]*\}`\)\.transaction/.test(source), file);
+  }
+});

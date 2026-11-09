@@ -1,4 +1,5 @@
 "use strict";
+const {pinCatalog} = require("./catalog_pin");
 const crypto = require("node:crypto");
 const zlib = require("node:zlib");
 const E = require("./pvp_engine");
@@ -107,8 +108,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     }));
     const fingerprint = hash([input.action, input.code || null, input.playKind, input.profile || "standard"]);
     if (input.action !== "resume") {
-      await db.ref(`pvpCatalogs/${catalog.version}`).transaction((raw) => raw ||
-        catalogArchive);
+      await pinCatalog(db, `pvpCatalogs/${catalog.version}`, catalogArchive, "hash");
     }
     const s = await change(input.mode, (s, time) => {
       const key = uid + "__" + input.actionId; const receipt = s.requests[key];

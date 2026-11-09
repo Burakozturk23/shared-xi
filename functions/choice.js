@@ -1,4 +1,5 @@
 "use strict";
+const {pinCatalog} = require("./catalog_pin");
 const E = require("./choice_engine");
 const B = require("./boosts");
 const H = require("./hints");
@@ -234,7 +235,7 @@ function createService({db, normalize, project, grantCoins, grantXp, dailyClaim,
     if (charge && (!Number.isSafeInteger(input.clientVersion) || input.clientVersion < rollout.minClientVersion)) {
       fail("failed-precondition", "Uygulamayı güncelle.");
     }
-    await db.ref(`choiceCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
+    await pinCatalog(db, `choiceCatalogs/${catalog.version}`, catalog);
     await change(uid, (s, e, t) => {
       const existing = s.sessions[draft.id];
       if (existing) {

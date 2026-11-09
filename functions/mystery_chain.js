@@ -1,4 +1,5 @@
 "use strict";
+const {pinCatalog} = require("./catalog_pin");
 const crypto = require("node:crypto");
 const B = require("./boosts");
 const H = require("./hints");
@@ -256,7 +257,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     const boostPolicy = await B.policyFor(db, uid, await isLinked(uid));
     check(input); if (!validId(input.requestId)) fail("invalid-argument", "Geçersiz istek.");
     // Immutable version archive keeps active paths, PAR and hints stable after deploy.
-    await db.ref(`mysteryChainCatalogs/${catalog.version}`).transaction((raw) => raw || catalog);
+    await pinCatalog(db, `mysteryChainCatalogs/${catalog.version}`, catalog);
     const policy = await getPolicy();
     const seed = random(); const daily = ["mystery", "mastermind"].includes(input.mode) && input.daily === true;
     const level = input.mode === "mystery" && LEVELS.includes(input.difficulty) ? input.difficulty : null;
