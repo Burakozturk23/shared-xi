@@ -10344,10 +10344,17 @@ function lbGridSupportService() {
       return !user.disabled && user.providerData.some((p) => p.providerId === "google.com");
     }});
 }
+// Isınma: the app wakes a cold game function ahead of play. Loading the service opens its
+// module and catalog; no account data is read or written.
+function lbWarm(request, load) {
+  if (request.data?.warm !== true) return false;
+  load(); return true;
+}
 function lbGridSupportCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
     enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbGridSupportService)) return {warm: true};
     try {
       return await lbGridSupportService()[action](request.auth.uid, request.data || {});
     } catch (e) {
@@ -10374,6 +10381,7 @@ function lbBotSupportCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
     enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbBotSupportService)) return {warm: true};
     try {
       return await lbBotSupportService()[action](request.auth.uid, request.data || {});
     } catch (e) {
@@ -10552,6 +10560,7 @@ function lbArcadeCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
     enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbArcadeService)) return {warm: true};
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);
       return await lbArcadeService()[action](request.auth.uid, request.data || {});
@@ -10585,6 +10594,7 @@ function lbChoiceService() {
 function lbChoiceCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbChoiceService)) return {warm: true};
     try {
       return await lbChoiceService()[action](request.auth.uid, request.data || {});
     } catch (error) {
