@@ -20,14 +20,16 @@ async function pair(h, ranked = false) {
 async function play(h, r, bobAnswers = true) {
   const bank = raw(h, r);
   for (let i = 0; i < 5; i++) {
-    const clock = timing(bank, i); h.setTime(clock.start + 1000);
+    // Read each round's clock: a round both players answered closes early.
+    const clock = timing(raw(h, r), i); h.setTime(clock.start + 1000);
     const a = await act(h, "alice", r); const b = await act(h, "bob", r);
     await act(h, "alice", r, "answer", {round: i, roundToken: a.roundToken, answer: bank.questions[i].answer});
     if (bobAnswers) {
       await act(h, "bob", r, "answer", {round: i, roundToken: b.roundToken,
         answer: b.question.options.find((x) => x.id !== bank.questions[i].answer).id});
     }
-    h.setTime(clock.end + 1); await act(h, "alice", r); r = await act(h, "bob", r);
+    h.setTime(Math.max(timing(raw(h, r), i).end, clock.start + 1000) + 1);
+    await act(h, "alice", r); r = await act(h, "bob", r);
   }
   return r;
 }
@@ -114,6 +116,20 @@ test("M14: the speed bonus starts at the first hint and the round end shows the 
   await act(h, "bob", r, "answer", {round: 0, roundToken: b.roundToken, answer: bank.questions[0].answer});
   assert.equal(raw(h, r).answers.alice[0].score, 150);
   assert.equal(raw(h, r).answers.bob[0].score, 100 + Math.floor(50 * 11000 / 22000));
-  h.setTime(bank.startedAt + 30500); const done = await act(h, "alice", r);
+  // Both answered: the round closes at the second answer and shows the explanation.
+  h.setTime(bank.startedAt + 19500); const done = await act(h, "alice", r);
   assert.equal(done.explanation, bank.questions[0].explanation);
+});
+test("M15: once both answered, the round closes and the next starts 2 s later", async () => {
+  const h = harness(); const r = await pair(h); const bank = raw(h, r); h.setTime(bank.startedAt + 3000);
+  const a = await act(h, "alice", r); const b = await act(h, "bob", r);
+  await act(h, "alice", r, "answer", {round: 0, roundToken: a.roundToken, answer: bank.questions[0].answer});
+  h.setTime(bank.startedAt + 5000); let v = await act(h, "alice", r);
+  assert.equal(v.reveal, undefined); assert.equal(v.deadline, bank.startedAt + 30000);
+  await act(h, "bob", r, "answer", {round: 0, roundToken: b.roundToken, answer: bank.questions[0].answer});
+  h.setTime(bank.startedAt + 6000); v = await act(h, "alice", r);
+  assert.equal(v.round, 0); assert.equal(v.reveal, bank.questions[0].answer);
+  h.setTime(bank.startedAt + 7100); v = await act(h, "alice", r);
+  assert.equal(v.round, 1); assert.equal(v.startsAt, bank.startedAt + 7000);
+  assert.equal(v.deadline, bank.startedAt + 37000);
 });

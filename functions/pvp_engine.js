@@ -137,10 +137,13 @@ function hydrate(raw) {
     moveStats: raw.moveStats || {}};
 }
 function start(r, c, time) {
-  r.puzzle = puzzle(c, r.mode, r.seed, r.choices);
+  // Grid Random (randomBoard 1): no fixed rounds; pairs are drawn on the board.
+  if (r.mode === "grid_random") r.randomBoard = 1;
+  r.puzzle = r.randomBoard ? {id: hash([r.seed, "board"])} : puzzle(c, r.mode, r.seed, r.choices);
   r.seedId = hash([r.seed, r.puzzle.id, r.dataRevision, r.ruleVersion]);
   r.status = "countdown"; r.startsAt = time + 5000;
-  const duration = r.mode === "loto" || r.mode === "club_manager" ? 180000 : r.mode === "grid_random" ? 160000 :
+  const duration = r.mode === "loto" || r.mode === "club_manager" ? 180000 :
+    r.mode === "grid_random" && !r.randomBoard ? 160000 :
     ["club_club", "club_country", "random_five"].includes(r.mode) ? 90000 : 30 * 45000;
   r.endsAt = r.startsAt + duration; r.turnUid = parseInt(hash(r.seed).slice(0, 8), 16) % 2 ? r.host : r.guest;
   r.turnDeadline = r.startsAt + 45000; r.scores = {[r.host]: 0, [r.guest]: 0};
@@ -148,6 +151,7 @@ function start(r, c, time) {
   if (r.mode === "random_five") r.fiveRules = 2;
   if (r.mode.startsWith("grid_")) r.gridRules = 2;
   if (r.mode === "club_manager") r.managerRules = 2;
+  if (r.mode === "loto") r.lotoRules = 2;
   if (r.mode === "cinko") {
     // Moving first is worth about a point in Çinko, so the second player starts with 1.
     r.cinkoRules = 2; r.scores[r.turnUid === r.host ? r.guest : r.host] = CINKO_SECOND_BONUS;
@@ -161,6 +165,7 @@ const PENALTY = {loto: {lockMs: 3000, maxWrong: 8}, club_club: {lockMs: 2000, ma
   club_country: {lockMs: 2000, maxWrong: 10}, random_five: {lockMs: 2000, maxWrong: 10}};
 // Random Five (rooms started with fiveRules 2): clubs matched -> points; 3+ clubs earn a bonus.
 const FIVE_POINTS = [0, 1, 2, 4, 6, 8];
+const LOTO_LINE_BONUS = 2;
 const MIN_GAP_MS = 400;
 function guard(r, uid, time) {
   const rule = PENALTY[r.mode]; const st = r.moveStats[uid] ||= {wrong: 0};
@@ -204,7 +209,7 @@ function finish(r, status, reason, time, winner) {
   r.status = status; r.reason = reason; r.finishedAt = time;
   r.winnerUid = winner === undefined ? r.scores[r.host] > r.scores[r.guest] ? r.host :
     r.scores[r.host] < r.scores[r.guest] ? r.guest : PENALTY[r.mode] ? raceTieBreak(r) :
-    r.gridRules === 2 && r.mode !== "grid_random" ? gridTieBreak(r) : null : winner;
+    r.gridRules === 2 && (r.mode !== "grid_random" || r.randomBoard) ? gridTieBreak(r) : null : winner;
   if (r.series && ["finished", "forfeit"].includes(status)) {
     r.series.wins ||= {};
     if (r.winnerUid) r.series.wins[r.winnerUid] = (r.series.wins[r.winnerUid] || 0) + 1;
@@ -243,7 +248,7 @@ function advance(r, time) {
     finish(r, absent.length === 2 ? "cancelled" : "forfeit", "30 saniyelik yeniden bağlanma süresi doldu.", end,
         absent.length === 1 ? [r.host, r.guest].find((u) => u !== absent[0]) : null); return;
   }
-  if (r.mode === "grid_random") revealRounds(r, time);
+  if (r.mode === "grid_random" && !r.randomBoard) revealRounds(r, time);
   if (time >= r.endsAt) {
     // Club Manager (managerRules 2): the side that locked its XI wins when the other did not.
     const locked = r.mode === "club_manager" && r.managerRules === 2 ?
@@ -254,9 +259,11 @@ function advance(r, time) {
     finish(r, r.mode === "club_manager" ? "cancelled" : "finished", "Süre tamamlandı.", r.endsAt,
         r.mode === "club_manager" ? null : undefined); return;
   }
-  if (["grid_classic", "grid_reverse", "cinko"].includes(r.mode)) {
+  if (["grid_classic", "grid_reverse", "cinko"].includes(r.mode) || r.randomBoard) {
     while (time >= r.turnDeadline && !terminal(r)) {
       if (r.cinkoRules === 2) cinkoPass(r, r.turnUid, r.turnDeadline, true);
+      // A pair drawn and left unplayed is gone with the turn.
+      if (r.randomBoard) r.pending = null;
       r.turnUid = r.turnUid === r.host ? r.guest : r.host; r.turnDeadline += 45000;
     }
   }
@@ -291,11 +298,15 @@ function connected(cells) {
   }
   return !left.size;
 }
+// The last five moves (passes and timeouts too) for the move list.
+function cinkoLog(r) {
+  r.log = [...list(r.log), r.last].slice(-5);
+}
 function cinkoTurn(r, uid, time) {
   r.turnUid = uid === r.host ? r.guest : r.host; r.turnDeadline = time + 45000;
 }
 function cinkoPass(r, uid, time, timeout = false) {
-  r.passes = (r.passes || 0) + 1; r.last = {uid, pass: true, timeout, points: 0};
+  r.passes = (r.passes || 0) + 1; r.last = {uid, pass: true, timeout, points: 0}; cinkoLog(r);
   if (r.passes >= CINKO_PASS_END) finish(r, "finished", "İki oyuncu da üst üste pas geçti.", time);
 }
 function cinkoMove(c, r, uid, input, time) {
@@ -316,7 +327,7 @@ function cinkoMove(c, r, uid, input, time) {
   const wrong = cells.filter((i) => !right.includes(i)); const points = right.length - wrong.length;
   for (const i of right) r.owners[i] = {uid, playerId: id};
   r.used[id] = {uid, points, playerId: id}; r.scores[uid] += points; r.passes = 0;
-  r.last = {uid, playerId: id, correct: right, wrong, points};
+  r.last = {uid, playerId: id, correct: right, wrong, points}; cinkoLog(r);
   if (!cinkoOpen(c, r).length) finish(r, "finished", "Tahtada açık kutu kalmadı.", time);
   else cinkoTurn(r, uid, time);
   return {accepted: true, correct: right.length > 0, points};
@@ -403,16 +414,96 @@ function simulate(c, r) {
     i]).slice(0, 8), 16) / 4294967296;
   return {powers, goals, xg, penalties: penalties(r, powers, shoot)};
 }
+// Grid Random board (randomBoard 1), as against the bot: an empty 3x3 board whose
+// three diagonal anchors each get a drawn club pair. The player to move either
+// draws a pair, names a shared player and puts it on a free anchor (the pair
+// becomes that anchor's row and column, swap flips them), or fills a cell whose
+// row and column are open. Every move passes the turn; a wrong answer or the
+// turn clock drops a drawn pair. Three in a line wins (the anchor diagonal too).
+const ANCHORS = [2, 4, 6];
+const BOARD_COACH_SHARE = 0.35;
+// Unused players fitting an open crossing; null while its row or column is unknown.
+function crossing(c, r, i) {
+  const row = r.boardRows?.[Math.floor(i / 3)]; const col = r.boardCols?.[i % 3];
+  if (!row || !col) return null;
+  const inCol = new Set(answersOf(c, col));
+  return answersOf(c, row).filter((id) => inCol.has(id) && !r.used[id]);
+}
+// Open crossings nobody can fill any more: locked, not waited for.
+function deadCells(c, r) {
+  return [0, 1, 3, 5, 7, 8].filter((i) => !r.owners[i] && crossing(c, r, i)?.length === 0);
+}
+// Fair pairs left to draw: no criterion already on the board, at most one coach
+// pair per board, three unused answers with a well-known one among them.
+function boardPairs(c, r) {
+  const axes = new Set([...Object.values(r.boardRows || {}), ...Object.values(r.boardCols || {})]);
+  const coach = [...axes].some((k) => k.startsWith("coach:"));
+  return pairPool(c, "grid_random").filter((p) => !p.criteria.some((k) => axes.has(k)) &&
+    (!coach || !coachPair(p)) && p.answers.filter((id) => !r.used[id]).length >= 3 &&
+    p.answers.some((id) => !r.used[id] && c.players[id].rank <= POPULAR_RANK));
+}
+function boardOpen(c, r) {
+  if (ANCHORS.some((i) => !r.owners[i]) && boardPairs(c, r).length) return true;
+  return [0, 1, 3, 5, 7, 8].some((i) => !r.owners[i] && crossing(c, r, i)?.length > 0);
+}
+// Loto: some unused board player still fits some empty cell.
+function lotoPlayable(c, r) {
+  const open = r.puzzle.criteria.map((k, i) => r.owners[i] ? null : k).filter(Boolean);
+  return r.puzzle.players.some((id) => !r.used[id] && open.some((k) => matches(c, c.players[id], k)));
+}
+function boardMove(c, r, uid, input, time) {
+  if (input.action === "draw") {
+    if (r.pending) fail("failed-precondition", "Önce çekilen ikiliyi oyna.");
+    if (!ANCHORS.some((i) => !r.owners[i])) fail("failed-precondition", "Boş çapa kalmadı.");
+    const pairs = boardPairs(c, r);
+    if (!pairs.length) fail("failed-precondition", "Yeni ikili kalmadı; açık bir hücre oyna.");
+    const n = r.pairNumber || 0; const roll = parseInt(hash([r.seed, "coach", n]).slice(0, 8), 16) / 0x100000000;
+    const coaches = pairs.filter(coachPair); const clubs = pairs.filter((p) => !coachPair(p));
+    const from = coaches.length && (roll < BOARD_COACH_SHARE || !clubs.length) ? coaches : clubs;
+    r.pending = {criteria: [...shuffle(from, hash([r.seed, "pair", n]))[0].criteria]}; r.pairNumber = n + 1;
+    return {accepted: true, drawn: true};
+  }
+  if (!/^[0-8]$/.test(String(input.targetId))) fail("invalid-argument", "Boş bir hücre seç.");
+  const i = Number(input.targetId); if (r.owners[i]) fail("invalid-argument", "Boş bir hücre seç.");
+  const id = c.shadowIds?.[String(input.playerId)] || String(input.playerId); const p = c.players[id];
+  if (!p) fail("invalid-argument", "Listeden tek bir futbolcu seç.");
+  if (r.used[id]) fail("already-exists", "Bu futbolcu zaten kullanıldı.");
+  let correct;
+  if (r.pending) {
+    if (!ANCHORS.includes(i)) fail("failed-precondition", "Çekilen ikiliyi boş bir çapaya yerleştir.");
+    const [a, b] = r.pending.criteria; correct = matches(c, p, a) && matches(c, p, b);
+    if (correct) {
+      const swap = input.swap === true;
+      (r.boardRows ||= {})[Math.floor(i / 3)] = swap ? b : a; (r.boardCols ||= {})[i % 3] = swap ? a : b;
+    }
+    r.pending = null;
+  } else {
+    if (ANCHORS.includes(i)) fail("failed-precondition", "Çapaya oynamak için önce ikili çek.");
+    const fit = crossing(c, r, i);
+    if (!fit) fail("failed-precondition", "Bu hücrenin satırı ya da sütunu henüz açılmadı.");
+    if (!fit.length) fail("failed-precondition", "Bu kesişimde oynanabilir futbolcu kalmadı.");
+    correct = fit.includes(id);
+  }
+  if (correct) {
+    r.owners[i] = {uid, playerId: id}; r.used[id] = {uid, points: 1, playerId: id}; r.scores[uid]++;
+  }
+  gridWrong(r, uid, correct);
+  if (lineWin(r.owners, uid, 3)) finish(r, "finished", "Çizgi tamamlandı.", time, uid);
+  else if (!boardOpen(c, r)) finish(r, "finished", "Tahtada oynanabilir hücre kalmadı.", time);
+  r.turnUid = uid === r.host ? r.guest : r.host; r.turnDeadline = time + 45000;
+  return {accepted: true, correct};
+}
 function move(c, r, uid, input, time) {
   if (r.status !== "playing" || time < r.startsAt || time >= r.endsAt) {
     fail("failed-precondition",
         "Maç şu an hamle kabul etmiyor.");
   }
-  if (["grid_classic", "grid_reverse", "cinko"].includes(r.mode) && r.turnUid !== uid) {
+  if ((["grid_classic", "grid_reverse", "cinko"].includes(r.mode) || r.randomBoard) && r.turnUid !== uid) {
     fail(
         "permission-denied", "Rakibinin sırası.");
   }
   if (r.mode === "cinko" && r.cinkoRules === 2) return cinkoMove(c, r, uid, input, time);
+  if (r.randomBoard) return boardMove(c, r, uid, input, time);
   if (r.mode === "club_manager") {
     if (input.action !== "squad" || r.squads[uid]) fail("failed-precondition", "Kadro zaten kilitlendi.");
     r.squads[uid] = validateXi(c, r, input);
@@ -487,8 +578,20 @@ function move(c, r, uid, input, time) {
     points = cells.length; correct = points > 0;
   }
   if (correct) {
-    r.used[id] = {uid, points, playerId: id}; r.scores[uid] += points;
+    r.used[id] = {uid, points, playerId: id,
+      ...["club_club", "club_country", "random_five"].includes(r.mode) ? {at: time} : {}};
+    r.scores[uid] += points;
     for (const i of cells) r.owners[i] = {uid, playerId: id};
+  }
+  // Loto bingo (lotoRules 2): the move that fills the last cell of a row or
+  // column earns LOTO_LINE_BONUS for each line it completes.
+  let lines = [];
+  if (r.mode === "loto" && correct && r.lotoRules === 2) {
+    const i = cells[0]; const row = Math.floor(i / 4); const col = i % 4;
+    lines = [["r" + row, [0, 1, 2, 3].map((k) => row * 4 + k)], ["c" + col, [0, 1, 2, 3].map((k) => k * 4 + col)]]
+        .filter(([key, line]) => !r.lotoLines?.[key] && line.every((k) => r.owners[k])).map(([key]) => key);
+    for (const key of lines) (r.lotoLines ||= {})[key] = uid;
+    points += lines.length * LOTO_LINE_BONUS; r.scores[uid] += lines.length * LOTO_LINE_BONUS;
   }
   if (["grid_classic", "cinko"].includes(r.mode)) {
     const n = r.mode === "cinko" ? 5 : 3;
@@ -497,7 +600,23 @@ function move(c, r, uid, input, time) {
     r.turnUid = uid === r.host ? r.guest : r.host; r.turnDeadline = time + 45000;
   }
   if (r.mode === "loto" && Object.keys(r.owners).length === 16) finish(r, "finished", "Tahta tamamlandı.", time);
-  return {accepted: true, correct, points};
+  // Loto: a player put in a right but different cell can leave the rest with
+  // no place; then nobody waits out the clock.
+  else if (r.mode === "loto" && correct && !lotoPlayable(c, r)) {
+    finish(r, "finished", "Kalan futbolcular boş hücrelere uymuyor.", time);
+  }
+  // Club-Club / Club-Country: nothing left to find, so nobody waits out the clock.
+  if (correct && ["club_club", "club_country"].includes(r.mode) &&
+    r.puzzle.rounds[0].answers.every((x) => r.used[x])) {
+    finish(r, "finished", "Tüm ortak futbolcular bulundu.", time);
+  }
+  return {accepted: true, correct, points, ...lines.length ? {lines} : {}};
+}
+// Board owners with what the board shows: the player of a cell, the criterion of an axis.
+function namedOwners(c, owners) {
+  return Object.fromEntries(Object.entries(owners || {}).map(([k, o]) => [k,
+    o?.playerId && c.players[o.playerId] ? {...o, player: player(c, o.playerId)} :
+    o?.criterionId && c.criteria[o.criterionId] ? {...o, criterion: c.criteria[o.criterionId]} : o]));
 }
 function view(c, r, uid, time) {
   const other = uid === r.host ? r.guest : r.host; const done = terminal(r);
@@ -506,7 +625,7 @@ function view(c, r, uid, time) {
     host: r.host, guest: r.guest || null, names: r.names, myUid: uid, serverNow: time,
     ready: r.ready, choices: r.status === "ready" || done ? r.choices : {}, scores: r.scores,
     startsAt: r.startsAt || null, endsAt: r.endsAt || null, turnUid: r.turnUid || null,
-    turnDeadline: r.turnDeadline || null, owners: r.owners, used: r.mode === "grid_random" ? {} :
+    turnDeadline: r.turnDeadline || null, owners: namedOwners(c, r.owners), used: r.mode === "grid_random" ? {} :
         r.used, otherLastSeen: r.presence[other] || null,
     profile: r.profile, series: r.series || null, nextRoom: r.nextRoom || null, rematch: r.rematch,
     rankedEligible: r.rankedEligible === true, reward: r.settlement?.[uid] || {status:
@@ -521,9 +640,13 @@ function view(c, r, uid, time) {
     const criteria = (ids) => ids.map((id) => c.criteria[id]);
     if (["club_club", "club_country"].includes(r.mode)) {
       v.criteria = criteria(q.rounds[0].criteria);
+      // Live: who found whom and how many shared players there are (never which).
+      v.answerCount = q.rounds[0].answers.length;
+      v.found = Object.values(r.used).sort((a, b) => (a.at || 0) - (b.at || 0)).map((u) => ({
+        ...player(c, u.playerId), uid: u.uid,
+        ...u.at ? {second: Math.max(0, Math.floor((u.at - r.startsAt) / 1000))} : {}}));
       // After the match: the shared players nobody found, best-known first.
       if (done) {
-        v.found = Object.values(r.used).map((u) => ({...player(c, u.playerId), uid: u.uid}));
         v.missed = q.rounds[0].answers.filter((id) => !r.used[id])
             .sort((a, b) => c.players[a].rank - c.players[b].rank).slice(0, 12).map((id) => player(c, id));
       }
@@ -531,10 +654,15 @@ function view(c, r, uid, time) {
     if (r.mode === "random_five") {
       v.criteria = criteria(q.clubs);
       if (r.fiveRules === 2) v.fivePoints = FIVE_POINTS;
+      const fit = (id) => q.clubs.filter((k) => matches(c, c.players[id], k)).length;
+      // Live: who found whom, the clubs each name covers, its points and second.
+      v.found = Object.values(r.used).sort((a, b) => (a.at || 0) - (b.at || 0)).map((u) => {
+        const clubIds = q.clubs.filter((k) => matches(c, c.players[u.playerId], k));
+        return {...player(c, u.playerId), uid: u.uid, clubs: clubIds.length, clubIds, points: u.points,
+          ...u.at ? {second: Math.max(0, Math.floor((u.at - r.startsAt) / 1000))} : {}};
+      });
       if (done) {
-        // Who found whom, and the best answers nobody gave (most clubs first).
-        const fit = (id) => q.clubs.filter((k) => matches(c, c.players[id], k)).length;
-        v.found = Object.values(r.used).map((u) => ({...player(c, u.playerId), uid: u.uid, clubs: fit(u.playerId)}));
+        // The best answers nobody gave (most clubs first).
         v.missed = [...new Set(q.clubs.flatMap((k) => answersOf(c, k)))].filter((id) => !r.used[id])
             .map((id) => [id, fit(id)]).filter(([, n]) => n >= 2)
             .sort((a, b) => b[1] - a[1] || c.players[a[0]].rank - c.players[b[0]].rank).slice(0, 10)
@@ -562,8 +690,13 @@ function view(c, r, uid, time) {
       if (r.cinkoRules === 2) v.open = cinkoOpen(c, r);
       // The last move of either player: who, which player, right and wrong cells.
       v.lastMove = r.last ? {...r.last, player: r.last.playerId ? player(c, r.last.playerId) : null} : null;
+      v.moves = list(r.log).slice().reverse().map((m) => ({...m, correct: list(m.correct), wrong: list(m.wrong),
+        player: m.playerId ? player(c, m.playerId) : null}));
     }
     if (r.mode === "loto") v.players = shuffle(q.players, r.seedId).map((id) => player(c, id));
+    if (r.mode === "loto" && r.lotoRules === 2) {
+      v.lotoLines = r.lotoLines || {}; v.lineBonus = LOTO_LINE_BONUS;
+    }
     if (PENALTY[r.mode]) {
       // Wrong moves of both players; the lock only for the viewer.
       v.wrongMoves = {[r.host]: r.moveStats[r.host]?.wrong || 0, [r.guest]: r.moveStats[r.guest]?.wrong || 0};
@@ -572,19 +705,29 @@ function view(c, r, uid, time) {
     if (r.gridRules === 2) {
       v.gridRules = 2; v.gridWrong = {[r.host]: r.moveStats[r.host]?.wrong || 0,
         [r.guest]: r.moveStats[r.guest]?.wrong || 0};
-      if (r.mode === "grid_random") v.rareBonus = GRID_RARE_BONUS;
+      if (r.mode === "grid_random" && !r.randomBoard) v.rareBonus = GRID_RARE_BONUS;
     }
-    if (r.mode === "grid_random") {
+    if (r.randomBoard) {
+      const axis = (k) => k ? c.criteria[k] : null;
+      v.randomBoard = 1; v.anchors = ANCHORS; v.dead = deadCells(c, r);
+      v.rows = [0, 1, 2].map((i) => axis(r.boardRows?.[i])); v.cols = [0, 1, 2].map((i) => axis(r.boardCols?.[i]));
+      v.pending = r.pending ? {criteria: r.pending.criteria.map((k) => c.criteria[k])} : null;
+    } else if (r.mode === "grid_random") {
       const index = randomRound(r, Math.max(time, r.startsAt)); v.round = index; v.totalRounds = 5;
       v.criteria = criteria(q.rounds[index].criteria); v.roundDeadline = r.startsAt + index * 32000 + 30000;
       v.submitted = !!r.answers[index]?.[uid];
-      v.rounds = Object.fromEntries(Object.entries(r.answers).filter(([, a]) => a.revealed));
+      // Closed rounds only, each answer with its player for the round list.
+      v.rounds = Object.fromEntries(Object.entries(r.answers).filter(([, a]) => a.revealed).map(([i, a]) =>
+        [i, Object.fromEntries(Object.entries(a).map(([k, x]) => [k, x?.playerId ?
+          {...x, player: player(c, x.playerId)} : x]))]));
     }
     if (r.mode === "club_manager") {
       v.budget = q.budget; v.managerRules = r.managerRules || 1;
       v.pool = q.pool.map((id) => ({...player(c, id), rating: c.players[id].rating,
         cost: c.players[id].cost}));
       v.submitted = !!r.squads[uid]; v.mySquad = r.squads[uid] || null;
+      // Whether the rival has locked an XI (not which XI) until both are in.
+      v.rivalLocked = !!r.squads[other];
       if (r.squads[r.host] && r.squads[r.guest]) {
         v.squads = r.squads; v.simulation = r.simulation;
       }
@@ -601,7 +744,7 @@ function view(c, r, uid, time) {
   return v;
 }
 module.exports = {MODES, RULE, terminal, fail, hash, norm, list, shuffle, matches, player,
-  PENALTY, MIN_GAP_MS, FIVE_POINTS, GRID_RARE_BONUS, gridTieBreak,
+  PENALTY, MIN_GAP_MS, FIVE_POINTS, GRID_RARE_BONUS, LOTO_LINE_BONUS, gridTieBreak,
   PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions, acceptedFor,
   FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter,
   puzzle, hydrate, start, finish, advance, move, view, validateXi, power, simulate};

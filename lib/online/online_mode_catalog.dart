@@ -70,7 +70,7 @@ extension OnlinePlayModeX on OnlinePlayMode {
       case OnlinePlayMode.gridClassic:
         return '3×3 kriter · üçlü';
       case OnlinePlayMode.gridRandom:
-        return 'Kulüp çifti · ortak oyuncu';
+        return 'Sırayla ikili çek · tahtayı kur';
       case OnlinePlayMode.gridReverse:
         return 'Oyuncular hazır · ortak nokta';
       case OnlinePlayMode.randomFive:

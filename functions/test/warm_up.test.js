@@ -5,7 +5,8 @@ const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
 
 const WARMABLE = ["getArcade", "prepareArcade", "actArcade", "getChoice", "prepareChoice", "actChoice",
-  "getBotSupport", "actBotSupport", "getGridSupport", "actGridSupport"];
+  "getBotSupport", "actBotSupport", "getGridSupport", "actGridSupport",
+  "getPvp", "enterPvp", "actPvp", "searchPvp", "enterCareerTransferOnline", "actCareerTransferOnline"];
 
 test("a warm-up call loads the game and writes nothing", async () => {
   const h = harness({runtimeConfig: {arcade: {enabled: true}}}, {omitEmptyObjects: true});

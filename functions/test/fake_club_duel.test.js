@@ -23,14 +23,16 @@ async function pair(h, ranked = false) {
 async function play(h, r, bobAnswers = true) {
   const bank = raw(h, r);
   for (let i = 0; i < 10; i++) {
-    const clock = timing(bank, i); h.setTime(clock.start + 1000);
+    // Read each round's clock: a round both players answered closes early.
+    const clock = timing(raw(h, r), i); h.setTime(clock.start + 1000);
     const a = await act(h, "alice", r); const b = await act(h, "bob", r);
     await act(h, "alice", r, "answer", {round: i, roundToken: a.roundToken, answer: bank.questions[i].answer});
     if (bobAnswers) {
       await act(h, "bob", r, "answer", {round: i, roundToken: b.roundToken,
         answer: b.question.options.find((x) => x.id !== bank.questions[i].answer).id});
     }
-    h.setTime(clock.end + 1); await act(h, "alice", r); r = await act(h, "bob", r);
+    h.setTime(Math.max(timing(raw(h, r), i).end, clock.start + 1000) + 1);
+    await act(h, "alice", r); r = await act(h, "bob", r);
   }
   return r;
 }
@@ -133,3 +135,15 @@ test("ON08: climbing difficulty with legend, no fake club or club twice, shuffle
       await act(h, "alice", r, "answer", {round: 9, roundToken: a.roundToken, answer: bank.questions[9].answer});
       assert.equal(raw(h, r).answers.alice[9].score, 2 * (100 + Math.floor(50 * 9000 / 10000)));
     });
+test("ON08: once both answered, the round closes and the next starts 2 s later", async () => {
+  const h = setup(); const r = await pair(h); const bank = raw(h, r); h.setTime(bank.startedAt + 1000);
+  const a = await act(h, "alice", r); const b = await act(h, "bob", r);
+  await act(h, "alice", r, "answer", {round: 0, roundToken: a.roundToken, answer: bank.questions[0].answer});
+  h.setTime(bank.startedAt + 2500);
+  await act(h, "bob", r, "answer", {round: 0, roundToken: b.roundToken, answer: bank.questions[0].answer});
+  h.setTime(bank.startedAt + 3000); let v = await act(h, "alice", r);
+  assert.equal(v.round, 0); assert.equal(v.reveal, bank.questions[0].answer);
+  h.setTime(bank.startedAt + 4600); v = await act(h, "alice", r);
+  assert.equal(v.round, 1); assert.equal(v.startsAt, bank.startedAt + 4500);
+  assert.equal(v.deadline, bank.startedAt + 14500);
+});

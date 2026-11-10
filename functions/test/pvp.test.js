@@ -16,6 +16,26 @@ const act = async (h, uid, r, action = "poll", extra = {}) => (await h.call("act
   roomId: r.id, action, revision: r.revision, ...(action === "poll" ? {} : {actionId: id()}), ...extra},
 auth(uid))).room;
 const raw = (h, r) => h.read(`pvpV1/${r.mode}/rooms/${r.id}`);
+// A Grid Random room as started before the board rules: five fixed rounds.
+function legacyRandom(h, r) {
+  const at = `pvpV1/grid_random/rooms/${r.id}`; const q = raw(h, r);
+  h.seed(`${at}/randomBoard`, null); h.seed(`${at}/puzzle`, E.puzzle(c, "grid_random", q.seed));
+  h.seed(`${at}/endsAt`, q.startsAt + 160000);
+}
+function legacyRoom(seed) {
+  const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed, dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; delete r.randomBoard;
+  r.puzzle = E.puzzle(c, "grid_random", seed); r.endsAt = r.startsAt + 160000; return r;
+}
+// Grid Random board rooms: who is to move, the other side, and a player fitting two criteria.
+const fits = (a, b, not = []) => Object.keys(c.players).find((id) => !not.includes(id) &&
+  E.matches(c, c.players[id], a) && E.matches(c, c.players[id], b));
+const misfit = (a, b) => Object.keys(c.players).find((id) => !E.matches(c, c.players[id], a) ||
+  !E.matches(c, c.players[id], b));
+function boardRoom(seed) {
+  const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed, dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; return r;
+}
 // One full correct placement of a Loto board (players are stored shuffled).
 function lotoSolution(board) {
   const cellOf = {};
@@ -94,7 +114,8 @@ test("GC02-06/SEC06: wrong type, wrong turn, invalid player and stale claims can
       g.witness[1]}), {code: "aborted"});
 });
 test("GR01-06: both players have five equal rounds; opponent answer/used ID hidden until closure", async () => {
-  const h = boot(); let r = await pair(h, "grid_random"); const q = raw(h, r); const used = new Set();
+  const h = boot(); let r = await pair(h, "grid_random"); legacyRandom(h, r); const q = raw(h, r);
+  const used = new Set();
   for (let i = 0; i < 5; i++) {
     for (const t of [q.startsAt + i * 32000 - 1000, q.startsAt + i * 32000 + 100]) {
       if (t < q.startsAt) continue; h.setTime(new Date(t).toISOString()); await act(h, "alice", r); r =
@@ -113,9 +134,189 @@ test("GR01-06: both players have five equal rounds; opponent answer/used ID hidd
   h.setTime(new Date(q.endsAt + 1).toISOString()); r = await act(h, "alice", r);
   assert.equal(r.status, "finished"); assert.equal(r.result, "draw"); assert.equal(h.read("rankedState"), null);
 });
+test("Grid Random board: only the player to move draws a pair, and both see it", () => {
+  const r = boardRoom("draw"); assert.equal(r.randomBoard, 1); assert.equal(r.endsAt - r.startsAt, 30 * 45000);
+  const t = r.turnUid; const o = t === "a" ? "b" : "a";
+  assert.throws(() => E.move(c, r, o, {action: "draw"}, 6000), {code: "permission-denied"});
+  assert.deepEqual(E.move(c, r, t, {action: "draw"}, 6000), {accepted: true, drawn: true});
+  const v = E.view(c, r, o, 6000);
+  assert.equal(v.randomBoard, 1); assert.deepEqual(v.anchors, [2, 4, 6]);
+  assert.equal(v.pending.criteria.length, 2); assert.ok(v.pending.criteria.every((k) => k.label));
+  assert.deepEqual(v.rows, [null, null, null]); assert.deepEqual(v.cols, [null, null, null]);
+  assert.throws(() => E.move(c, r, t, {action: "draw"}, 6100), {code: "failed-precondition"});
+  // A drawn pair binds the move: it goes on an anchor, not on another cell.
+  const [a, b] = r.pending.criteria;
+  assert.throws(() => E.move(c, r, t, {targetId: 0, playerId: fits(a, b)}, 6200), {code: "failed-precondition"});
+});
+test("Grid Random board: a right answer takes the anchor and opens its row and column", () => {
+  const r = boardRoom("anchor"); const t = r.turnUid; const o = t === "a" ? "b" : "a";
+  E.move(c, r, t, {action: "draw"}, 6000); const [a, b] = r.pending.criteria; const id = fits(a, b);
+  assert.deepEqual(E.move(c, r, t, {targetId: 4, playerId: id, swap: true}, 7000), {accepted: true, correct: true});
+  const v = E.view(c, r, o, 7000);
+  assert.equal(v.owners[4].uid, t); assert.equal(v.owners[4].player.id, E.player(c, id).id);
+  assert.equal(v.rows[1].id, b); assert.equal(v.cols[1].id, a); assert.equal(v.pending, null);
+  assert.equal(r.turnUid, o); assert.equal(r.scores[t], 1);
+  // The next pair never repeats a criterion already on the board.
+  E.move(c, r, o, {action: "draw"}, 8000);
+  assert.ok(!r.pending.criteria.some((k) => [a, b].includes(k)));
+});
+test("Grid Random board: a wrong answer or a timeout drops the pair and passes the turn", () => {
+  const r = boardRoom("wrong"); const t = r.turnUid; const o = t === "a" ? "b" : "a";
+  E.move(c, r, t, {action: "draw"}, 6000); const [a, b] = r.pending.criteria;
+  assert.deepEqual(E.move(c, r, t, {targetId: 2, playerId: misfit(a, b)}, 7000), {accepted: true, correct: false});
+  assert.equal(r.pending, null); assert.equal(r.turnUid, o); assert.equal(r.owners[2], undefined);
+  assert.equal(E.view(c, r, t, 7000).gridWrong[t], 1);
+  // Anchors need a drawn pair; other cells need both their axes.
+  assert.throws(() => E.move(c, r, o, {targetId: 2, playerId: fits(a, b)}, 7500), {code: "failed-precondition"});
+  assert.throws(() => E.move(c, r, o, {targetId: 0, playerId: fits(a, b)}, 7500), {code: "failed-precondition"});
+  E.move(c, r, o, {action: "draw"}, 8000);
+  r.presence = {a: 60000, b: 60000}; E.advance(r, 7000 + 45000 + 1);
+  assert.equal(r.pending, null); assert.equal(r.turnUid, t);
+});
+test("Grid Random board: three anchors on the diagonal win; open cells and dead crossings follow the axes", () => {
+  const r = boardRoom("diagonal"); const t = r.turnUid; const o = t === "a" ? "b" : "a";
+  let time = 6000;
+  for (const anchor of [2, 4, 6]) {
+    E.move(c, r, t, {action: "draw"}, time += 100); const [a, b] = r.pending.criteria;
+    E.move(c, r, t, {targetId: anchor, playerId: fits(a, b, Object.keys(r.used))}, time += 100);
+    if (anchor === 6) break;
+    // The rival lets it happen with a wrong pair answer.
+    E.move(c, r, o, {action: "draw"}, time += 100); const [x, y] = r.pending.criteria;
+    E.move(c, r, o, {targetId: [2, 4, 6].find((i) => !r.owners[i]), playerId: misfit(x, y)}, time += 100);
+    if (anchor === 4) {
+      // Rows 0-1 and columns 1-2 are open: each open crossing either has an unused answer or is dead.
+      const v = E.view(c, r, t, time);
+      for (const i of [1, 5]) {
+        const row = v.rows[Math.floor(i / 3)].id; const col = v.cols[i % 3].id;
+        const any = fits(row, col, Object.keys(r.used));
+        assert.equal(v.dead.includes(i), !any, `cell ${i}`);
+      }
+      assert.ok(!v.dead.includes(0) && !v.dead.includes(3), "cells without both axes are not dead");
+    }
+  }
+  assert.equal(r.status, "finished"); assert.equal(r.winnerUid, t); assert.equal(r.reason, "Çizgi tamamlandı.");
+});
+test("Grid Random board: drawing goes through the online move with the turn's revision", async () => {
+  const h = boot(); let r = await pair(h, "grid_random"); assert.equal(r.randomBoard, 1);
+  const t = r.turnUid; const o = t === "alice" ? "bob" : "alice";
+  await assert.rejects(act(h, o, r, "draw"), {code: "permission-denied"});
+  r = await act(h, t, r, "draw"); assert.equal(r.pending.criteria.length, 2);
+  const peer = await act(h, o, r); assert.deepEqual(peer.pending, r.pending);
+  const [a, b] = raw(h, r).pending.criteria;
+  r = await act(h, t, peer, "answer", {targetId: 6, playerId: fits(a, b), swap: false});
+  assert.equal(r.owners[6].uid, t); assert.equal(r.rows[2].id, a); assert.equal(r.cols[0].id, b);
+});
+test("Random Five lists found players live: which clubs, points and second", () => {
+  const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed: "five-live", dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing";
+  const clubs = r.puzzle.clubs;
+  const fit = (id) => clubs.filter((k) => E.matches(c, c.players[id], k));
+  // The best-covered player of the board.
+  const best = Object.keys(c.players).map((id) => [id, fit(id).length]).sort((x, y) => y[1] - x[1])[0][0];
+  const receipt = E.move(c, r, "a", {playerId: best}, 7000);
+  const v = E.view(c, r, "b", 7000);
+  assert.equal(v.status, "playing"); assert.equal(v.found.length, 1);
+  const f = v.found[0];
+  assert.equal(f.uid, "a"); assert.equal(f.second, 2); assert.equal(f.points, receipt.points);
+  assert.deepEqual(f.clubIds, fit(best)); assert.equal(f.clubs, fit(best).length);
+  assert.equal(receipt.points, E.FIVE_POINTS[fit(best).length]);
+});
+test("Çinko keeps the last five moves, newest first, with players and passes", () => {
+  const r = E.hydrate({mode: "cinko", host: "a", guest: "b", seed: "log", dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing";
+  const fit = (i) => Object.keys(c.players).find((id) => !r.used[id] &&
+    E.matches(c, c.players[id], r.puzzle.criteria[i]));
+  let time = 6000; const next = () => (time += 500);
+  for (let n = 0; n < 6; n++) {
+    const who = r.turnUid;
+    if (n === 2) E.move(c, r, who, {action: "pass"}, next());
+    else {
+      const i = E.view(c, r, who, time).open[0];
+      E.move(c, r, who, {playerId: fit(i), cells: [i]}, next());
+    }
+  }
+  const v = E.view(c, r, "a", time);
+  assert.equal(v.moves.length, 5);
+  assert.ok(v.moves[0].player.name); assert.equal(v.moves[0].points, 1);
+  assert.equal(v.moves[0].correct.length, 1);
+  assert.deepEqual(v.moves.map((m) => m.pass === true), [false, false, false, true, false]);
+  // A timed-out turn is logged as a pass too.
+  r.presence = {a: time + 46000, b: time + 46000}; E.advance(r, time + 45001);
+  assert.equal(E.view(c, r, "a", time + 45001).moves[0].timeout, true);
+});
+test("Loto bingo: filling the last cell of a row or column earns +2 for each line", () => {
+  const room = (seed) => {
+    const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed, dataRevision: c.version});
+    E.start(r, c, 0); r.status = "playing"; return r;
+  };
+  const r = room("bingo"); assert.equal(r.lotoRules, 2);
+  const {criteria, players} = r.puzzle;
+  const fitting = (i) => players.find((id) => !r.used[id] && E.matches(c, c.players[id], criteria[i]));
+  // Row 0 has cells 0-2 taken by the rival; the 4th completes it.
+  for (const k of [0, 1, 2]) r.owners[k] = {uid: "b", playerId: "x" + k};
+  const id = fitting(3); assert.ok(id);
+  const receipt = E.move(c, r, "a", {playerId: id, targetId: 3}, 6000);
+  assert.deepEqual(receipt, {accepted: true, correct: true, points: 1 + E.LOTO_LINE_BONUS, lines: ["r0"]});
+  assert.equal(r.scores.a, 3); assert.deepEqual(r.lotoLines, {r0: "a"});
+  const v = E.view(c, r, "b", 6000); assert.deepEqual(v.lotoLines, {r0: "a"}); assert.equal(v.lineBonus, 2);
+  // Row and column at once: +4.
+  const q = room("bingo-both"); const fit = (i) => q.puzzle.players.find((x) =>
+    E.matches(c, c.players[x], q.puzzle.criteria[i]));
+  for (const k of [12, 13, 14, 3, 7, 11]) q.owners[k] = {uid: "b", playerId: "y" + k};
+  const p = fit(15);
+  if (p) {
+    const both = E.move(c, q, "a", {playerId: p, targetId: 15}, 6000);
+    assert.deepEqual(both.lines, ["r3", "c3"]); assert.equal(q.scores.a, 5);
+  }
+  // A wrong move or a cell that completes nothing earns no bonus.
+  const w = room("bingo-none"); const lone = w.puzzle.players.find((x) =>
+    E.matches(c, c.players[x], w.puzzle.criteria[5]));
+  assert.deepEqual(E.move(c, w, "a", {playerId: lone, targetId: 5}, 6000), {accepted: true, correct: true, points: 1});
+  // Rooms started before the rule: no bonus.
+  const old = room("bingo-old"); delete old.lotoRules;
+  for (const k of [0, 1, 2]) old.owners[k] = {uid: "b", playerId: "x" + k};
+  const o = old.puzzle.players.find((x) => E.matches(c, c.players[x], old.puzzle.criteria[3]));
+  assert.equal(E.move(c, old, "a", {playerId: o, targetId: 3}, 6000).points, 1);
+});
+test("Loto ends as soon as no remaining player fits an empty cell", () => {
+  const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed: "stuck", dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing";
+  const {criteria, players} = r.puzzle;
+  const fit = (id, i) => E.matches(c, c.players[id], criteria[i]);
+  // Two open cells i, j; p fits j, and q (the last player left) fits neither.
+  let found = null;
+  for (const p of players) {
+    for (const q of players) {
+      if (p === q) continue;
+      for (let j = 0; j < 16 && !found; j++) {
+        for (let i = 0; i < 16 && !found; i++) {
+          if (i !== j && fit(p, j) && !fit(q, i) && !fit(q, j)) found = {p, q, i, j};
+        }
+      }
+    }
+  }
+  assert.ok(found, "a stuck ending exists on this board");
+  const {p, q, i, j} = found;
+  criteria.forEach((_, k) => {
+    if (k !== i && k !== j) r.owners[k] = {uid: "a", playerId: "x" + k};
+  });
+  for (const id of players) if (id !== p && id !== q) r.used[id] = {uid: "a", playerId: id};
+  const live = E.hydrate(structuredClone(r));
+  E.move(c, live, "b", {playerId: p, targetId: j}, 6000);
+  assert.equal(live.status, "finished"); assert.equal(live.reason, "Kalan futbolcular boş hücrelere uymuyor.");
+  // q fitting the other open cell keeps the match going.
+  const ok = players.flatMap((x) => players.map((y) => [x, y])).flatMap(([x, y]) =>
+    criteria.map((_, a) => [x, y, a])).flatMap(([x, y, a]) => criteria.map((_, b) => [x, y, a, b]))
+      .find(([x, y, a, b]) => x !== y && a !== b && fit(x, b) && fit(y, a));
+  const [x, y, a, b] = ok; const go = E.hydrate({...structuredClone(r), owners: {}, used: {}});
+  criteria.forEach((_, k) => {
+    if (k !== a && k !== b) go.owners[k] = {uid: "a", playerId: "x" + k};
+  });
+  for (const id of players) if (id !== x && id !== y) go.used[id] = {uid: "a", playerId: id};
+  E.move(c, go, "b", {playerId: x, targetId: b}, 6000); assert.equal(go.status, "playing");
+});
 test("GR07: a rare answer earns +1 in Grid Random; equal reverse scores go to fewer wrong answers", () => {
-  const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed: "rare", dataRevision: c.version});
-  E.start(r, c, 0); r.status = "playing"; assert.equal(r.gridRules, 2);
+  const r = legacyRoom("rare"); assert.equal(r.gridRules, 2);
   const all = [...r.puzzle.rounds[0].answers].sort((x, y) => c.players[x].rank - c.players[y].rank ||
     x.localeCompare(y));
   E.move(c, r, "a", {playerId: all[0], round: 0}, 6000);
@@ -212,6 +413,10 @@ test("CM08: binding budget, cyclic tactics, penalties on a draw, forfeit for a m
   const mine = Object.entries(E.FORMATIONS["433"]).flatMap(([pos, n]) => pool.map((id) => c.players[id])
       .filter((p) => p.position === pos).sort((a, b) => a.cost - b.cost).slice(0, n).map((p) => p.id));
   r = await act(h, "alice", r, "squad", {...squad, playerIds: mine});
+  // The rival sees that the XI is locked, never which XI.
+  const peer = await act(h, "bob", r);
+  assert.equal(peer.rivalLocked, true); assert.equal(peer.submitted, false); assert.equal(peer.squads, undefined);
+  assert.equal(r.rivalLocked, false);
   const end = raw(h, r).endsAt;
   for (let t = raw(h, r).startsAt + 20000; t < end; t += 20000) {
     h.setTime(new Date(t).toISOString()); await act(h, "alice", r); await act(h, "bob", r);
@@ -302,6 +507,56 @@ test("CORE06: autocomplete order is independent of room criteria and is drawn fr
   const a = await h.call("searchPvp", {...base(r.mode), query: "ronaldo"}, auth("alice"));
   const b = await h.call("searchPvp", {...base(r.mode), query: "ronaldo", roomId: r.id}, auth("alice"));
   assert.deepEqual(a, b); assert.ok(a.players.length > 0);
+});
+test("Club-Club shows the found players live and ends once every shared player is found", async () => {
+  const h = boot(); let r = await pair(h, "club_club"); const answers = raw(h, r).puzzle.rounds[0].answers;
+  assert.equal(r.answerCount, answers.length); assert.deepEqual(r.found, []);
+  let time = r.startsAt + 1000;
+  for (const [i, playerId] of answers.entries()) {
+    time += 500; h.setTime(new Date(time).toISOString());
+    r = await act(h, i % 2 ? "bob" : "alice", r, "answer", {playerId});
+    if (i === 0) {
+      assert.equal(r.status, "playing"); assert.equal(r.found.length, 1);
+      assert.equal(r.found[0].uid, "alice"); assert.ok(r.found[0].name);
+      assert.equal(r.found[0].second, 1);
+    }
+  }
+  assert.equal(r.status, "finished"); assert.equal(r.reason, "Tüm ortak futbolcular bulundu.");
+  assert.equal(r.found.length, answers.length);
+  // In the order found, each with its second of the match.
+  assert.deepEqual(r.found.map((p) => p.id), answers.map((x) => E.player(c, x).id));
+  assert.deepEqual(r.found.map((p) => p.second), answers.map((_, i) => Math.floor((1500 + i * 500) / 1000)));
+});
+test("Grid views name the players and criteria on the board", () => {
+  const room = (mode) => {
+    const r = E.hydrate({mode, host: "a", guest: "b", seed: "names-" + mode, dataRevision: c.version});
+    E.start(r, c, 0); r.status = "playing"; return r;
+  };
+  // Classic: a taken cell carries its player.
+  const g = room("grid_classic"); const t = g.turnUid;
+  const id = g.puzzle.witness[0];
+  E.move(c, g, t, {playerId: id, targetId: 0}, 6000);
+  assert.equal(E.view(c, g, "a", 6000).owners[0].player.name, c.players[id].name);
+  // Random: a closed round shows both answers by name.
+  const q = legacyRoom("names-grid_random"); const pick = q.puzzle.rounds[0].answers[0];
+  E.move(c, q, "a", {playerId: pick, round: 0}, 6000); E.move(c, q, "b", {playerId: pick, round: 0}, 6500);
+  const round = E.view(c, q, "a", 7000).rounds[0];
+  assert.equal(round.a.player.name, c.players[pick].name); assert.equal(round.b.player.name, c.players[pick].name);
+  // Reverse: a solved axis carries its criterion (label and type for the badge).
+  const v = room("grid_reverse"); const ids = v.puzzle.witness.slice(0, 3);
+  const k = Object.keys(c.criteria).find((x) => /^(club|country):/.test(x) &&
+    ids.every((p) => E.matches(c, c.players[p], x)));
+  E.move(c, v, v.turnUid, {targetId: "r0", criterionId: k}, 6000);
+  assert.deepEqual(E.view(c, v, "a", 6000).owners.r0.criterion, c.criteria[k]);
+});
+test("search matches each typed word, so a full first name finds a short one", async () => {
+  const h = boot(); const r = await pair(h, "club_club");
+  const names = async (query) => (await h.call("searchPvp", {...base(r.mode), query, roomId: r.id},
+      auth("alice"))).players.map((p) => p.name);
+  assert.ok((await names("Daniel alves")).includes("Dani Alves"));
+  assert.equal((await names("Jose sosa"))[0], "José Sosa");
+  assert.equal((await names("dani alves"))[0], "Dani Alves");
+  assert.deepEqual(await names("zz qq"), []);
 });
 test("CM: deterministic result is independent of squad submission order and list order", () => {
   const r = E.hydrate({mode: "club_manager", host: "a", guest: "b", seed: "manager", dataRevision: c.version});

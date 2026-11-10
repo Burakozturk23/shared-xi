@@ -257,14 +257,14 @@ void main() {
           t,
           'career_online_order_initial_${large ? 'large' : 'normal'}',
         );
-        await reveal(t, find.text('En eskiden en yeniye sırala'));
+        await reveal(t, find.text('ESKİDEN YENİYE SIRALA'));
         await tapVisible(t, find.byKey(const ValueKey('order-down-first')));
         expect(t.takeException(), isNull);
         await design.capture(
           t,
           'career_online_order_${large ? 'large' : 'normal'}',
         );
-        await tapVisible(t, find.text('Kesin cevabımı gönder'));
+        await tapVisible(t, find.text('Sıralamayı gönder'));
         expect(fixture.answer?['answer'], ['second', 'first', 'third']);
         expect(fixture.answer?['round'], 3);
         expect(t.takeException(), isNull);

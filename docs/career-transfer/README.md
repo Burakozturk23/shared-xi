@@ -35,7 +35,23 @@ doldurmaz). Mümkünse en bilinen 3000 futbolcudan gelir; maçta futbolcu ve kul
 yapan tüm futbolcular doğru sayılır (`accepted`). 10. saniyede milliyet, 20.
 saniyede mevki açılır; açık her ipucu doğru cevabın taban puanını 15 düşürür.
 Tur sonunda transfer tarihi ve yaş gösterilir. Transfer Düellosu cevapları da
-tur kimliği ister.
+tur kimliği ister. Bütün düellolarda (Kariyer Yarışı, Transfer, Gizem, Sahte
+Kulüp) iki oyuncu da cevaplayınca tur o an kapanır (`closedAt`) ve sıradaki 2
+sn sonra başlar. Düello ekranı açılınca `enterCareerTransferOnline` ve
+`actCareerTransferOnline` ısıtılır (`{warm: true}`), ilk istek soğuk başlamaz.
+
+Kariyer Yarışı da arena düzenindedir: eksik kulüp turunda yıllarıyla rota
+zaman çizgisi ve eksik durak, dört kulüp kartı (dokunmak gönderir);
+kronolojide yukarı/aşağı taşınan dönemler ve "Sıralamayı gönder"; gizemli
+kariyerde kulüp rotası ve dört futbolcu kartı. Soru, ekranda
+"Ağustos 2021 · Yaz transferi" gösterilsin diye transferin ayını (`month`)
+taşır. Online ekran arena düzenindedir: skor ve süre kartı, tur noktaları, iki
+kulübün rozetli transfer kartı, kapalı ipuçlarının açılma saniyesi ve "şimdi
+doğru bilirsen" puanı, klavyenin üstünde arama çubuğu (öneriye dokunmak cevabı
+gönderir).
+
+Oyuncu araması her kelimeyi isimde arar; isimdeki 3+ harfli bir kelimeyle
+başlayan yazım da eşleşir ("Daniel Alves" → "Dani Alves").
 
 Cevap anahtarı ve mevcut rakip cevabı tur sonuna kadar gönderilmez. Yeni RTDB ağacı tamamen özel; istemci yalnızca App Check'li callable kullanır. 60sn yokluk/çıkış hükmen sonuç, ödül/ELO yok. Arkadaş maçında Coin/XP/ELO yok. Dereceli sonuç mevcut rankedState profillerine tek işlemle yazılır; iki yeni mod ve eski geçerli dereceli settlement'lar ilk beş maç sınırında birlikte sayılır. Yeni modlar galibiyet 3C/8XP, beraberlik 2C/6XP, mağlubiyet 1C/4XP verir. Solo arşive online madalya yazılmaz.
 

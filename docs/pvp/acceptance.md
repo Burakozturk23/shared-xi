@@ -53,7 +53,7 @@ Otomatik kapsam bir yayın PASS kararı değildir. Her satır staging/iki hesap 
 | GC04 | P0 | Aynı hücre iki kullanıcıya verilmez. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | GC05 | P1 | Üçlü tamamlanması, skor ve süre bitişi doğru. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
 | GC06 | P1 | 45 sn sıra limiti sunucu saatinde çalışır. | Kod yolu mevcut; tam senaryo kabulü bekliyor |
-| GR01 | P0 | Grid Rastgele her iki oyuncuya aynı beş turu verir. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
+| GR01 | P0 | Grid Rastgele sırayla oynanır: ikiliyi yalnızca sırası olan çeker, ikisi de görür; ortak oyuncu çapaya konunca ikili satır/sütun başlığı olur. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | GR02 | P0 | Her oyuncu beşer yanıt fırsatına sahiptir; 3/2 tur asimetrisi yoktur. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | GR03 | P0 | Turdaki doğrulanmamış oyuncu skor kazanmaz. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |
 | GR04 | P0 | Rakibin cevabı her iki tur cevabı kapanmadan açıklanmaz. | Callable/hizmet/route otomatik testi; cihaz kabulü bekliyor |

@@ -289,6 +289,20 @@ void main() {
       await t.pumpWidget(const SizedBox());
     },
   );
+  testWidgets('ON: a club card sends the answer with one tap', (t) async {
+    final f = FakeClubTransport();
+    await mount(
+      t,
+      CareerTransferOnlinePage(mode: 'fake_club_duel', service: f),
+    );
+    await t.tap(find.text('Real Madrid'));
+    await t.pump();
+    expect(f.mutation?['action'], 'answer');
+    expect(f.mutation?['answer'], 418);
+    expect(f.mutation?['round'], 0);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
   testWidgets(
     'ON: four club cards, ten-second question, no help and stage gate in lobby',
     (t) async {
@@ -303,8 +317,21 @@ void main() {
         );
         expect(find.text('David Beckham'), findsOneWidget);
         expect(find.textContaining('Reklam izle'), findsNothing);
-        expect(find.textContaining('Tur 1 / 10'), findsOneWidget);
+        expect(find.text('CANLI 1v1'), findsOneWidget);
+        expect(find.text('TUR 1/10'), findsOneWidget);
         expect(find.text('Efsane'), findsOneWidget);
+        // Final round ×2: (100 + 45 for 9 s of 10 left) × 2.
+        // (A few ms pass while the screen builds: 288–290.)
+        expect(
+          find.byWidgetPredicate(
+            (w) =>
+                w is Text &&
+                RegExp(
+                  r'^Şimdi doğru bilirsen \+(28[89]|290) puan$',
+                ).hasMatch(w.data ?? ''),
+          ),
+          findsOneWidget,
+        );
         expect(find.text('Son tur · puan ×2'), findsOneWidget);
         expect(
           find.text('Futbolcu olarak hangi kulüpte hiç oynamadı?'),

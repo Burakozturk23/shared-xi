@@ -238,7 +238,7 @@ void main() {
           expectTheme(t, light);
           if (stage == 'waiting') expect(find.text('ABCD1234'), findsOneWidget);
           if (stage == 'playing')
-            expect(find.textContaining('Tur 1 /'), findsOneWidget);
+            expect(find.textContaining('TUR 1/'), findsOneWidget);
           if (stage == 'finished') {
             final card = find.byType(HubResultCard);
             expect(t.widget<HubResultCard>(card).tone, HubResultTone.win);
@@ -247,8 +247,15 @@ void main() {
               findsOneWidget,
             );
           }
-          if (stage == 'setup')
-            expect(find.text('Arkadaş odası oluştur'), findsOneWidget);
+          if (stage == 'setup') {
+            final create = find.text('Arkadaş odası oluştur');
+            await t.scrollUntilVisible(
+              create,
+              300,
+              scrollable: find.byType(Scrollable).first,
+            );
+            expect(create, findsOneWidget);
+          }
           await capture(t, '${mode}_${stage}_$light');
           final scrollable = find.byType(Scrollable).first;
           await t.drag(scrollable, const Offset(0, -650));

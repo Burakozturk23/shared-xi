@@ -156,7 +156,7 @@ function transferDuel(seed) {
         (accepted.length > 1 ? ` · aynı gün geçen ${accepted.slice(1).map((id) => players.get(id).name)
             .join(", ")} de doğru sayıldı` : ""),
       public: {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year,
-        difficulty: p.difficulty}};
+        month: p.date.slice(5, 7), difficulty: p.difficulty}};
   });
 }
 // Six careers: two of each difficulty; missing-club careers need a club that appears once.
@@ -221,9 +221,15 @@ function roomOf(raw) {
   if (!raw) return null;
   return {...raw, answers: raw.answers || {}, receipts: raw.receipts || {}, presence: raw.presence || {}};
 }
+// Rounds follow each other with 2 s between; a round both players
+// answered closes then (closedAt), so the next one starts 2 s after the second answer.
 function timing(room, index) {
-  const start = room.startedAt + room.questions.slice(0, index).reduce((n, q) => n + q.duration + 2000, 0);
-  return {start, end: start + room.questions[index].duration};
+  let start = room.startedAt;
+  for (let i = 0; ; i++) {
+    const end = room.closedAt?.[i] ?? start + room.questions[i].duration;
+    if (i === index) return {start, end};
+    start = end + 2000;
+  }
 }
 function totals(room, uid, time = Infinity) {
   let score = 0; let correct = 0; let elapsed = 0;
@@ -468,6 +474,11 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
         const bonus = elapsed < from ? 0 : Math.floor(50 * (q.duration - elapsed) / (q.duration - from));
         room.answers[uid][input.round] = {value: input.answer, correct, elapsed,
           score: correct ? (base + bonus) * (q.multiplier || 1) : 0};
+        const other = uid === room.host ? room.guest : room.host;
+        if (["transfer_duel", "mystery_duel", "fake_club_duel", "career_race"].includes(room.mode) &&
+          room.answers[other]?.[input.round]) {
+          (room.closedAt ||= {})[input.round] = time;
+        }
       }
       room.presence[uid] = time;
       if (room.status !== "waiting") delete s.queue[uid];

@@ -8,7 +8,21 @@ const {fail, hash, norm, catalog} = E;
 const catalogBody = JSON.stringify(catalog);
 const catalogArchive = {hash: hash(catalogBody), gzip: zlib.gzipSync(catalogBody).toString("base64")};
 const defaults = {friendEnabled: false, rankedEnabled: false, rewardsEnabled: false, eloEnabled: false};
-function createService({db, isLinked, blocked, profile, settle, getPolicy = async () => ({}),
+// Normalised names, built once per catalog: a search then scans prepared strings.
+const searchIndexes = new WeakMap();
+function searchIndex(c) {
+  let index = searchIndexes.get(c);
+  if (!index) {
+    index = Object.values(c.players).map((p) => {
+      const names = [p.name, ...(p.aliases || [])];
+      return {p, full: names.map(norm), words: names.flatMap((x) => String(x).toLowerCase()
+          .split(/[\s\-.']+/).map(norm).filter(Boolean))};
+    });
+    searchIndexes.set(c, index);
+  }
+  return index;
+}
+function createService({db, isLinked, searchLinked = isLinked, blocked, profile, settle, getPolicy = async () => ({}),
   now = Date.now, random = () => crypto.randomBytes(32).toString("hex")}) {
   const caches = new Map([[catalog.version, catalog]]);
   async function pinned(version) {
@@ -221,7 +235,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     if (event && !validId(input.actionId)) fail("invalid-argument", "Hamle kimliği gerekli.");
     const allowed = new Set(["mode", "schemaVersion", "ruleVersion", "dataRevision", "roomId",
       "actionId", "action", "revision",
-      "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice", "cells",
+      "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice", "cells", "swap",
       "clientVersion", "platform"]);
     if (Object.keys(input).some((k) => !allowed.has(k))) {
       fail("invalid-argument",
@@ -266,11 +280,13 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
           if (r.ready[r.host] && r.ready[r.guest]) E.start(r, c, time);
           receipt = {accepted: true};
         } else {
-          if (!["answer", "squad"].includes(input.action) && !(input.action === "pass" && r.mode === "cinko")) {
+          if (!["answer", "squad"].includes(input.action) && !(input.action === "pass" && r.mode === "cinko") &&
+            !(input.action === "draw" && r.randomBoard)) {
             fail("invalid-argument", "Bu aşamada geçersiz işlem.");
           }
           // Simultaneous races validate current target/round atomically; stale turn claims do not consume a new turn.
-          if (["grid_classic", "grid_reverse", "cinko"].includes(r.mode) && input.revision !== r.revision) {
+          if ((["grid_classic", "grid_reverse", "cinko"].includes(r.mode) || r.randomBoard) &&
+            input.revision !== r.revision) {
             fail("aborted", "Sıra değişti; güncel maçı yenile.");
           }
           receipt = E.move(c, r, uid, input, time);
@@ -313,7 +329,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     return {room: E.view(c, r, uid, now()), receipt: receipt || null};
   }
   async function search(uid, input) {
-    check(input); if (!await isLinked(uid)) fail("permission-denied", "Kalıcı hesap gerekli.");
+    check(input); if (!await searchLinked(uid)) fail("permission-denied", "Kalıcı hesap gerekli.");
     const q = norm(input.query).slice(0, 80); if (q.length < 2) return {players: []};
     // Full allowed snapshot, never the question's answer set or relevance to its criteria.
     let c = catalog;
@@ -322,8 +338,17 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
       if (!r || ![r.host, r.guest].includes(uid)) fail("permission-denied", "Maç yetkisi yok.");
       c = await pinned(r.dataRevision);
     }
-    return {players: Object.values(c.players).filter((p) => [p.name, ...p.aliases].some((x) => norm(x).includes(q)))
-        .sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id)).slice(0, 24).map((p) => E.player(c, p.id))};
+    const words = String(input.query).toLowerCase().split(/[\s\-.']+/).map(norm).filter(Boolean).slice(0, 6);
+    const hits = [];
+    for (const e of searchIndex(c)) {
+      const fit = e.full.some((x) => x === q) ? 0 : e.full.some((x) => x.startsWith(q)) ? 1 :
+        words.length && words.every((w) => e.words.some((x) => x.startsWith(w) ||
+          w.length >= 3 && x.length >= 3 && w.startsWith(x))) ? 2 : e.full.some((x) => x.includes(q)) ? 3 : -1;
+      if (fit >= 0) hits.push([fit, e.p]);
+    }
+    // Ordered by how well the typed text fits, then fame: never by the room's criteria.
+    return {players: hits.sort(([f, a], [g, b]) => f - g || a.rank - b.rank || a.id.localeCompare(b.id))
+        .slice(0, 24).map(([, p]) => E.player(c, p.id))};
   }
   async function sweep() {
     for (const mode of E.MODES) {
@@ -357,4 +382,6 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
   }
   return {status, enter, act, search, sweep};
 }
-module.exports = {createService, defaults};
+// Isınma: open the catalog and its search index before the first keystroke.
+const warm = () => searchIndex(catalog).length;
+module.exports = {createService, defaults, warm};

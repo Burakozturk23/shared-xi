@@ -32,7 +32,7 @@ function wrong(q) {
 async function play(h, r, aliceCorrect = true, bobAnswers = "wrong") {
   const raw = read(h, r);
   for (let i = 0; i < raw.questions.length; i++) {
-    const clock = timing(raw, i);
+    const clock = timing(read(h, r), i);
     h.setTime(new Date(clock.start + 1000).toISOString());
     await act(h, "alice", r); await act(h, "bob", r);
     if (aliceCorrect) await act(h, "alice", r, "answer", {round: i, answer: raw.questions[i].answer});
@@ -40,7 +40,7 @@ async function play(h, r, aliceCorrect = true, bobAnswers = "wrong") {
       await act(h, "bob", r, "answer", {round: i, answer: bobAnswers === "right" ? raw.questions[i].answer :
         wrong(raw.questions[i])});
     }
-    h.setTime(new Date(clock.end + 1).toISOString());
+    h.setTime(new Date(Math.max(timing(read(h, r), i).end, clock.start + 1000) + 1).toISOString());
     await act(h, "alice", r); r = await act(h, "bob", r);
   }
   return r;
@@ -114,16 +114,41 @@ test("Transfer Duel opens hints at 10 s and 20 s, each lowers the base; shared m
   const room = read(h, r);
   assert.equal(room.answers.alice[0].score, 100 - 15 + Math.floor(50 * 19000 / 30000));
   assert.equal(room.answers.bob[0].score, 100 - 30 + Math.floor(50 * 9000 / 30000));
-  r = await at(0, 30500); assert.match(r.explanation, /\d{4}-\d{2}-\d{2}/);
+  r = await at(0, 21500); assert.match(r.explanation, /\d{4}-\d{2}-\d{2}/);
   // A move several players made the same day accepts every one of them.
   const shared = catalog.transfers.find((p) => p.alsoPlayerIds);
   const key = `careerTransferOnline/transfer_duel/rooms/${r.id}`; const stored = read(h, r);
   stored.questions[1] = {...stored.questions[1], answer: shared.playerId,
     accepted: [shared.playerId, ...shared.alsoPlayerIds]};
   h.seed(key, stored);
-  r = await at(1, 1000);
+  h.setTime(new Date(timing(read(h, r), 1).start + 1000).toISOString());
+  await act(h, "alice", r); r = await act(h, "bob", r);
   await act(h, "alice", r, "answer", {round: 1, answer: shared.alsoPlayerIds[0]});
   assert.equal(read(h, r).answers.alice[1].correct, true);
+});
+test("Transfer Duel closes a round once both answered; the next starts 2 s later", async () => {
+  const h = harness({}, {omitEmptyObjects: true}); let r = await pair(h, "transfer_duel"); const raw = read(h, r);
+  const start = timing(raw, 0).start; const at = async (ms) => {
+    h.setTime(new Date(start + ms).toISOString()); await act(h, "alice", r); return act(h, "bob", r);
+  };
+  r = await at(1000); assert.equal(r.question.month, raw.questions[0].public.month);
+  assert.match(String(r.question.month), /^(0[1-9]|1[0-2])$/);
+  await act(h, "alice", r, "answer", {round: 0, answer: raw.questions[0].answer});
+  r = await at(4000); assert.equal(r.reveal, undefined); assert.equal(r.deadline, start + 30000);
+  await act(h, "bob", r, "answer", {round: 0, answer: wrong(raw.questions[0])});
+  r = await at(5500); assert.equal(r.round, 0); assert.equal(r.reveal, raw.questions[0].answer);
+  r = await at(7100); assert.equal(r.round, 1); assert.equal(r.startsAt, start + 6000);
+  assert.equal(r.deadline, start + 36000); assert.ok(r.question.from);
+  // Career Race moves on the same way.
+  const g = harness({}, {omitEmptyObjects: true}); let c = await pair(g, "career_race"); const cr = read(g, c);
+  g.setTime(new Date(timing(cr, 0).start + 1000).toISOString());
+  await act(g, "alice", c); c = await act(g, "bob", c);
+  await act(g, "alice", c, "answer", {round: 0, answer: cr.questions[0].answer});
+  await act(g, "bob", c, "answer", {round: 0, answer: wrong(cr.questions[0])});
+  g.setTime(new Date(timing(cr, 0).start + 1500).toISOString());
+  c = await act(g, "bob", c); assert.equal(c.reveal, cr.questions[0].answer);
+  g.setTime(new Date(timing(cr, 0).start + 3100).toISOString());
+  c = await act(g, "bob", c); assert.equal(c.round, 1);
 });
 test("friend match: same questions, no early keys/opponent answers and no rewards or energy", async () => {
   const h = harness({}, {omitEmptyObjects: true}); let r = await pair(h, "career_race");

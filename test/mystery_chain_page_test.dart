@@ -365,14 +365,37 @@ void main() {
           service: FakeMysteryChain('mystery'),
         ),
       );
-      expect(find.textContaining('8, 16, 24. saniyelerde'), findsOneWidget);
+      expect(find.text('CANLI 1v1'), findsOneWidget);
+      expect(find.text('TUR 1/5'), findsOneWidget);
+      expect(find.text('Portekiz · Forvet'), findsOneWidget);
       expect(find.text('1. Oynadığı kulüp: Manchester United'), findsOneWidget);
-      expect(find.textContaining('Sonraki bilgi'), findsOneWidget);
+      // The next clue says when it opens.
+      expect(find.text('2. bilgi · 15 sn sonra açılır'), findsOneWidget);
+      // Before the first clue a right answer earns the base only.
+      expect(find.text('Şimdi doğru bilirsen +100 puan'), findsOneWidget);
       expect(find.text('Kolay'), findsOneWidget);
+      final schedule = find.textContaining('8, 16, 24. saniyelerde');
+      await t.scrollUntilVisible(
+        schedule,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(schedule, findsOneWidget);
       expect(t.takeException(), isNull);
       await t.pumpWidget(const SizedBox());
     },
   );
+  testWidgets('Gizem Duellosu sends a choice with one tap', (t) async {
+    final f = FakeMysteryChain('mystery');
+    await mount(t, CareerTransferOnlinePage(mode: 'mystery_duel', service: f));
+    await t.tap(find.text('Nani'));
+    await t.pump();
+    expect(f.mutation?['action'], 'answer');
+    expect(f.mutation?['answer'], 2);
+    expect(f.mutation?['round'], 0);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
   testWidgets(
     'mystery home sends level and daily, and shows the streak rewards',
     (t) async {
@@ -529,7 +552,7 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('EN KISA ROTA'), findsOneWidget);
-    expect(find.text('Teslim oldun'), findsOneWidget);
+      expect(find.text('Teslim oldun'), findsOneWidget);
       expect(find.textContaining('3 farklı en kısa rota'), findsOneWidget);
       final text = chainShare(done.session);
       expect(text, contains('Günün zinciri · 31.10.2026'));

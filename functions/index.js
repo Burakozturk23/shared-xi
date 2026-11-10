@@ -1567,6 +1567,31 @@ async function lbSocialRequireBelowLimit(
  * @param {string} otherUid
  * @return {Promise<Object>}
  */
+/**
+ * Runs a social pair transaction. The RTDB SDK first calls the handler with
+ * the locally cached value, usually null on a server: returning undefined
+ * there aborts the whole transaction, so a request that exists could never be
+ * answered. A null is handed back unchanged instead, the server answers with
+ * its value and the handler runs again. `update` gets the stored pair and
+ * returns the new value (null deletes it) or undefined to leave it.
+ * @param {Object} ref
+ * @param {function(Object): (Object|null|undefined)} update
+ * @return {Promise<Object>} committed, snapshot and applied (update changed it).
+ */
+async function lbSocialPairTransaction(ref, update) {
+  let applied = false;
+  const tx = await ref.transaction((current) => {
+    applied = false;
+    if (current === null) return null;
+    if (typeof current !== "object") return;
+    const next = update(current);
+    if (next === undefined) return;
+    applied = true;
+    return next;
+  });
+  return {committed: tx.committed, snapshot: tx.snapshot, applied: tx.committed && applied};
+}
+
 async function lbSocialPairSnapshot(db, uid, otherUid) {
   const pairKey = lbSocialPairKey(uid, otherUid);
   const uids = lbSocialSortedUids(uid, otherUid);
@@ -1904,11 +1929,7 @@ exports.respondFriendRequest = lbGuardedOnCall(
       );
       const now = Date.now();
 
-      const tx = await pair.ref.transaction((current) => {
-        if (!current || typeof current !== "object") {
-          return;
-        }
-
+      const tx = await lbSocialPairTransaction(pair.ref, (current) => {
         const state = lbSocialPairState(
             current,
             pair.uidA,
@@ -1936,7 +1957,7 @@ exports.respondFriendRequest = lbGuardedOnCall(
         return state;
       });
 
-      if (!tx.committed) {
+      if (!tx.applied) {
         throw new httpsV2.HttpsError(
             "failed-precondition",
             "Friend request is no longer pending.",
@@ -1984,11 +2005,7 @@ exports.cancelFriendRequest = lbGuardedOnCall(
           targetUid,
       );
 
-      const tx = await pair.ref.transaction((current) => {
-        if (!current || typeof current !== "object") {
-          return;
-        }
-
+      const tx = await lbSocialPairTransaction(pair.ref, (current) => {
         const state = lbSocialPairState(
             current,
             pair.uidA,
@@ -2006,7 +2023,7 @@ exports.cancelFriendRequest = lbGuardedOnCall(
         return null;
       });
 
-      if (!tx.committed) {
+      if (!tx.applied) {
         throw new httpsV2.HttpsError(
             "failed-precondition",
             "Outgoing request is no longer pending.",
@@ -2048,11 +2065,7 @@ exports.removeFriend = lbGuardedOnCall(
           friendUid,
       );
 
-      const tx = await pair.ref.transaction((current) => {
-        if (!current || typeof current !== "object") {
-          return;
-        }
-
+      const tx = await lbSocialPairTransaction(pair.ref, (current) => {
         const state = lbSocialPairState(
             current,
             pair.uidA,
@@ -2070,7 +2083,7 @@ exports.removeFriend = lbGuardedOnCall(
         return null;
       });
 
-      if (!tx.committed) {
+      if (!tx.applied) {
         throw new httpsV2.HttpsError(
             "failed-precondition",
             "Friendship no longer exists.",
@@ -2180,11 +2193,7 @@ exports.unblockUser = lbGuardedOnCall(
           targetUid,
       );
 
-      const tx = await pair.ref.transaction((current) => {
-        if (!current || typeof current !== "object") {
-          return;
-        }
-
+      const tx = await lbSocialPairTransaction(pair.ref, (current) => {
         const state = lbSocialPairState(
             current,
             pair.uidA,
@@ -2206,7 +2215,7 @@ exports.unblockUser = lbGuardedOnCall(
         return null;
       });
 
-      if (!tx.committed) {
+      if (!tx.applied) {
         throw new httpsV2.HttpsError(
             "failed-precondition",
             "Block no longer exists.",
@@ -2812,7 +2821,7 @@ function lbSafetyOptionalText(
   const value = String((data || {})[field] || "").trim();
   if (!value) return null;
 
-  if (value.length > maxLength ||
+  if (lbTextLength(value) > maxLength ||
       lbSafetyHasControlChars(value, allowWhitespace)) {
     throw new httpsV2.HttpsError(
         "invalid-argument",
@@ -6529,10 +6538,25 @@ function lbCommunityHasDisallowedControlChars(
  * @param {number} maxLength
  * @return {string}
  */
+const lbGraphemes = typeof Intl !== "undefined" && Intl.Segmenter ?
+  new Intl.Segmenter("tr", {granularity: "grapheme"}) : null;
+/**
+ * Characters as the app's text fields count them: an emoji or a flag is one.
+ * @param {string} value
+ * @return {number}
+ */
+function lbTextLength(value) {
+  if (!lbGraphemes) return [...value].length;
+  let n = 0;
+  for (const _ of lbGraphemes.segment(value)) n++; // eslint-disable-line no-unused-vars
+  return n;
+}
+
 function lbCommunityRequiredText(data, field, minLength, maxLength) {
   const value = String((data || {})[field] || "").trim();
+  const length = lbTextLength(value);
 
-  if (value.length < minLength || value.length > maxLength) {
+  if (length < minLength || length > maxLength) {
     throw new httpsV2.HttpsError(
         "invalid-argument",
         "Invalid " + field + " length.",
@@ -6559,7 +6583,7 @@ function lbCommunityOptionalText(data, field, maxLength) {
   const value = String((data || {})[field] || "").trim();
   if (!value) return null;
 
-  if (value.length > maxLength ||
+  if (lbTextLength(value) > maxLength ||
       lbCommunityHasDisallowedControlChars(value, false)) {
     throw new httpsV2.HttpsError(
         "invalid-argument",
@@ -8563,8 +8587,13 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
   updates["friendRequestsIncoming/" + uid] = null;
   updates["friendRequestsOutgoing/" + uid] = null;
   updates["friends/" + uid] = null;
-  for (const mode of ["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"]) {
-    const root = `careerTransferOnline/${mode}`;
+  // Online rooms carry the player's nickname and history: the duels and the
+  // ten pvp modes alike lose every room, pointer, request and pair record.
+  const onlineRoots = [
+    ...["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"].map((m) => `careerTransferOnline/${m}`),
+    ...require("./pvp_engine").MODES.map((m) => `pvpV1/${m}`),
+  ];
+  for (const root of onlineRoots) {
     const online = (await db.ref(root).get()).val() || {};
     updates[`${root}/active/${uid}`] = null;
     updates[`${root}/queue/${uid}`] = null;
@@ -8579,6 +8608,10 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
     }
     for (const [other, id] of Object.entries(online.active || {})) {
       if (removed.has(id)) updates[`${root}/active/${other}`] = null;
+    }
+    if (online.rate?.[uid]) updates[`${root}/rate/${uid}`] = null;
+    for (const key of Object.keys(online.pairs || {})) {
+      if (key.split("__").includes(uid)) updates[`${root}/pairs/${key}`] = null;
     }
   }
   updates["blocks/" + uid] = null;
@@ -10228,6 +10261,7 @@ function lbCareerTransferOnlineCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
     enforceAppCheck: true}, async (request) => {
     lbRequireGoogleLinked(request);
+    if (lbWarm(request, lbCareerTransferOnlineService)) return {warm: true};
     try {
       return await lbCareerTransferOnlineService()[action](request.auth.uid, request.data || {});
     } catch (error) {
@@ -10699,13 +10733,19 @@ async function lbSettlePvp(room, policy) {
   }
   return result;
 }
+// Name search trusts a link for a minute (a search only lists names), so each
+// keystroke skips the Auth lookup; moves always check the link live.
+const lbPvpLinked = new Map();
+async function lbPvpIsLinked(uid) {
+  const u = await getAuth().getUser(uid);
+  const linked = !u.disabled && u.providerData.some((p) => p.providerId === "google.com");
+  if (linked) lbPvpLinked.set(uid, Date.now() + 60000); else lbPvpLinked.delete(uid);
+  return linked;
+}
 function lbPvpService() {
   const db = getDatabase();
-  return require("./pvp").createService({db, now: () => Date.now(),
-    isLinked: async (uid) => {
-      const u = await getAuth().getUser(uid); return !u.disabled && u.providerData.some((p) =>
-        p.providerId === "google.com");
-    },
+  return require("./pvp").createService({db, now: () => Date.now(), isLinked: lbPvpIsLinked,
+    searchLinked: async (uid) => (lbPvpLinked.get(uid) || 0) > Date.now() || lbPvpIsLinked(uid),
     blocked: async (uid) => new Set(Object.keys((await db.ref("blocks/" + uid).get()).val() || {})),
     profile: async (uid) => (await db.ref("users/" + uid).get()).val() || {},
     getPolicy: async () => (await db.ref("runtimeConfig/pvp").get()).val() || {}, settle: lbSettlePvp});
@@ -10714,6 +10754,7 @@ function lbPvpCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 20, memory: "512MiB",
     enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, () => require("./pvp").warm())) return {warm: true};
     try {
       return await lbPvpService()[action](request.auth.uid, request.data || {});
     } catch (error) {

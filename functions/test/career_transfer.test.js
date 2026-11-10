@@ -110,6 +110,15 @@ test("transfer: five first-play finds pay the streak badge once", async () => {
   s = await solve(h, await start(h, "transfer"));
   assert.equal(s.result.badge, undefined);
 });
+test("player search matches each word, so a full first name finds a short one", async () => {
+  const h = harness();
+  const names = async (query) => (await h.call("searchCareerTransfer", {mode: "transfer", version, query},
+      {uid: "alice"})).results.map((p) => p.name);
+  assert.ok((await names("Daniel alves")).includes("Dani Alves"));
+  assert.equal((await names("Cristiano Ronaldo"))[0], "Cristiano Ronaldo");
+  assert.equal((await names("jose sosa"))[0], "José Sosa");
+  assert.deepEqual(await names("zz qq"), []);
+});
 test("transfer: everyone who made the same move answers it, solo and in duels", async () => {
   const shared = catalog.transfers.find((p) => p.alsoPlayerIds?.some((id) => players.has(id)));
   assert.ok(catalog.transfers.filter((p) => p.alsoPlayerIds).length > 200);

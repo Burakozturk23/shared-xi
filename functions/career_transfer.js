@@ -490,7 +490,11 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   async function search(uid, input) {
     check(input); const q = norm(input.query).slice(0, 80);
     if (q.length < 2) return {results: []};
-    return {results: people.filter((p) => q.split(" ").every((t) => p.search.includes(t)))
+    // Every typed word appears in the name, or starts with one of its words of
+    // 3+ letters ("Daniel Alves" finds "Dani Alves").
+    const fits = (p, t) => p.search.includes(t) || t.length >= 4 &&
+      p.search.split(" ").some((w) => w.length >= 3 && t.startsWith(w));
+    return {results: people.filter((p) => q.split(" ").filter(Boolean).every((t) => fits(p, t)))
         .sort((a, b) => Number(norm(b.name) === q) - Number(norm(a.name) === q) || a.rank - b.rank)
         .slice(0, 30).map(playerView)};
   }

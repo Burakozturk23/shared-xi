@@ -16,9 +16,13 @@ class FakePuzzle extends CareerTransferService {
     this.phase = 'guess',
     this.active = true,
     this.extra = const {},
+    this.question,
   });
   final String mode;
   final Map<String, dynamic> extra;
+
+  /// Overrides the online round's question (Career Race order / mystery).
+  final Map<String, dynamic>? question;
   String phase;
   bool active;
   Map<String, dynamic>? mutation;
@@ -119,7 +123,9 @@ class FakePuzzle extends CareerTransferService {
         'correct': false,
         'explanation': 'Cristiano Ronaldo · 2021-08-31 · 36 yaşında',
       },
-      'question': mode == 'career_race'
+      'question': question != null
+          ? question!
+          : mode == 'career_race'
           ? {
               'kind': 'missing',
               'difficulty': 'normal',
@@ -139,6 +145,7 @@ class FakePuzzle extends CareerTransferService {
               'from': {'name': 'Juventus'},
               'to': {'name': 'Manchester United'},
               'year': 2021,
+              'month': '08',
               'hints': ['Milliyet: Portugal'],
             },
     },
@@ -466,8 +473,9 @@ void main() {
       );
       expect(find.text('Eksik kulüp'), findsOneWidget);
       expect(find.text('Orta'), findsOneWidget);
-      expect(find.text('Sporting · 2002'), findsOneWidget);
-      expect(find.text('? · eksik kulüp'), findsOneWidget);
+      expect(find.text('Sporting'), findsOneWidget);
+      expect(find.text('2002'), findsOneWidget);
+      expect(find.text('Eksik durak'), findsOneWidget);
       await t.pumpWidget(const SizedBox());
       await mount(
         t,
@@ -495,10 +503,17 @@ void main() {
           service: FakePuzzle('transfer_duel'),
         ),
       );
-      expect(find.text('Transfer'), findsOneWidget);
+      expect(find.text('CANLI 1v1'), findsOneWidget);
+      expect(find.text('TUR 1/5'), findsOneWidget);
       expect(find.text('Zor'), findsOneWidget);
+      expect(find.text('Ağustos 2021 · Yaz transferi'), findsOneWidget);
       expect(find.text('Juventus'), findsOneWidget);
+      expect(find.text('Manchester United'), findsOneWidget);
       expect(find.text('Milliyet: Portugal'), findsOneWidget);
+      // The second hint is still closed: when it opens and what it costs.
+      expect(find.text('Mevki · 19 sn sonra açılır · −15'), findsOneWidget);
+      // Answer now: 100 − 15 (one hint open) + speed bonus (20 s of 30 left).
+      expect(find.text('Şimdi doğru bilirsen +118 puan'), findsOneWidget);
       expect(find.textContaining('taban puanını 15 düşürür'), findsOneWidget);
       await t.pumpWidget(const SizedBox());
       await mount(
@@ -514,6 +529,116 @@ void main() {
       );
       await t.ensureVisible(details);
       expect(details, findsOneWidget);
+      expect(find.text('Rakip yanlış cevap verdi'), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('Transfer Duel sends a suggestion with one tap', (t) async {
+    final f = FakePuzzle('transfer_duel');
+    await mount(
+      t,
+      CareerTransferOnlinePage(mode: 'transfer_duel', ranked: true, service: f),
+    );
+    await t.enterText(find.widgetWithText(TextField, 'Futbolcu ara'), 'Cris');
+    await t.pump(const Duration(milliseconds: 300));
+    await t.pump();
+    await t.tap(find.text('Cristiano Ronaldo'));
+    await t.pump();
+    expect(f.mutation?['action'], 'answer');
+    expect(f.mutation?['answer'], 8198);
+    expect(f.mutation?['round'], 0);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets('Career Race: the route with its missing stop and club cards', (
+    t,
+  ) async {
+    final f = FakePuzzle('career_race');
+    await mount(
+      t,
+      CareerTransferOnlinePage(mode: 'career_race', ranked: true, service: f),
+    );
+    expect(find.text('Kariyer Yarışı'), findsOneWidget);
+    expect(find.text('CANLI 1v1'), findsOneWidget);
+    expect(find.text('TUR 1/6'), findsOneWidget);
+    expect(find.text('Eksik kulüp'), findsOneWidget);
+    expect(find.text('Cristiano Ronaldo'), findsOneWidget);
+    expect(find.text('Sporting'), findsOneWidget);
+    expect(find.text('Eksik durak'), findsOneWidget);
+    // 20 s round, 20 s left: 100 + 50 (a few ms pass while the screen builds).
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            RegExp(
+              r'^Şimdi doğru bilirsen \+(149|150) puan$',
+            ).hasMatch(w.data ?? ''),
+      ),
+      findsOneWidget,
+    );
+    await t.tap(find.text('Galatasaray'));
+    await t.pump();
+    expect(f.mutation?['action'], 'answer');
+    expect(f.mutation?['answer'], 2);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets('Career Race: order rounds move stops and send the order', (
+    t,
+  ) async {
+    final f = FakePuzzle(
+      'career_race',
+      question: {
+        'kind': 'order',
+        'difficulty': 'normal',
+        'player': {'name': 'Cristiano Ronaldo'},
+        'options': [
+          {'id': 'b', 'name': 'Real Madrid'},
+          {'id': 'a', 'name': 'Manchester United'},
+          {'id': 'c', 'name': 'Juventus'},
+        ],
+      },
+    );
+    await mount(
+      t,
+      CareerTransferOnlinePage(mode: 'career_race', ranked: true, service: f),
+    );
+    expect(find.text('Kronoloji'), findsOneWidget);
+    await t.tap(find.byKey(const ValueKey('order-down-b')));
+    await t.pump();
+    await t.tap(find.text('Sıralamayı gönder'));
+    await t.pump();
+    expect(f.mutation?['answer'], ['a', 'b', 'c']);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets(
+    'Career Race: the mystery career shows the route and four players',
+    (t) async {
+      final f = FakePuzzle(
+        'career_race',
+        question: {
+          'kind': 'mystery',
+          'difficulty': 'hard',
+          'route': ['Sporting', 'Manchester United', 'Real Madrid'],
+          'options': [
+            {'id': 8198, 'name': 'Cristiano Ronaldo'},
+            {'id': 2, 'name': 'Nani'},
+            {'id': 3, 'name': 'Quaresma'},
+            {'id': 4, 'name': 'Pepe'},
+          ],
+        },
+      );
+      await mount(
+        t,
+        CareerTransferOnlinePage(mode: 'career_race', ranked: true, service: f),
+      );
+      expect(find.text('Gizemli kariyer'), findsOneWidget);
+      expect(find.text('Bu kariyer kimin?'), findsOneWidget);
+      await t.tap(find.text('Nani'));
+      await t.pump();
+      expect(f.mutation?['answer'], 2);
       expect(t.takeException(), isNull);
       await t.pumpWidget(const SizedBox());
     },
