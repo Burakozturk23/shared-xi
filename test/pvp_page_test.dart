@@ -1,7 +1,10 @@
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -399,17 +402,22 @@ Future<void> capture(WidgetTester t, String name) async {
   });
 }
 
+/// Fails every image fetch at once, so flags fall back to their emoji.
+class OfflineImageCache extends Fake implements BaseCacheManager {
+  @override
+  Stream<FileResponse> getFileStream(
+    String url, {
+    String? key,
+    Map<String, String>? headers,
+    bool withProgress = false,
+  }) => Stream.error(StateError('No network images in tests'));
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  // Country flags on the arena boards load through the network image cache.
-  final cacheDir = Directory.systemTemp.createTempSync('flags').path;
-  setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-          const MethodChannel('plugins.flutter.io/path_provider'),
-          (_) async => cacheDir,
-        );
-  });
+  // Arena boards show country flags through CachedNetworkImage; keep its
+  // disk cache, plugin calls and cleanup timers out of widget tests.
+  CachedNetworkImageProvider.defaultCacheManager = OfflineImageCache();
   setUpAll(() async {
     for (final e in [
       ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
