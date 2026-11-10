@@ -121,6 +121,15 @@ void expectTheme(WidgetTester t, bool light) {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  // Country flags on the arena boards load through the network image cache.
+  final cacheDir = Directory.systemTemp.createTempSync('flags').path;
+  setUp(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (_) async => cacheDir,
+        );
+  });
   setUpAll(() async {
     for (final font in [
       ('Inter', 'assets/fonts/Inter-Body-Variable.ttf'),
