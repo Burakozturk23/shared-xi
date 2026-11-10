@@ -42,7 +42,11 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
       throw new Error("Simulated interrupted write: " + key);
     }
   }
+  let pushed = 0;
   const db = {ref: (key = "") => ({
+    key: key.split("/").filter(Boolean).at(-1) || null,
+    // RTDB push(): a new child with a unique, time-ordered key.
+    push: () => db.ref(key + "/-push" + String(++pushed).padStart(8, "0")),
     get: async () => snap(get(key)),
     set: async (v) => {
       maybeFail(key);
@@ -90,7 +94,9 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     "firebase-admin/database": {getDatabase: () => db},
     "firebase-admin/auth": {getAuth: () => ({getUser: async (uid) => ({
       providerData: linkedUsers[uid] === false ? [] : [{providerId: "google.com"}],
-    })})},
+    }), deleteUser: async (uid) => {
+      linkedUsers[uid] = false;
+    }})},
     "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async ({defaultConfig} = {}) => ({
       evaluate: () => ({getString: (key) => key === "linkball_prices_v1" ?
         (prices ? JSON.stringify(prices) : defaultConfig[key]) : JSON.stringify(remote)}),

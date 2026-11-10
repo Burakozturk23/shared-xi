@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import '../app/route_appearance.dart';
 import '../app/app_feedback.dart';
@@ -163,14 +164,18 @@ class _StorePageState extends State<StorePage> {
       );
     } catch (e) {
       final text = e.toString().toLowerCase();
+      // The server already explains these in Turkish ("…; Coin harcanmadı.").
+      final told = e is FirebaseFunctionsException && (e.message ?? '').contains('Coin harcanmadı')
+          ? e.message!
+          : null;
       _notice(
-        text.contains('fiyat')
+        told ?? (text.contains('fiyat')
             ? 'Fiyat değişti. Mağazayı yenileyip yeni fiyatı onayla.'
             : text.contains('insufficient')
             ? 'Yeterli Link Coin yok. Bakiyeni yenile.'
             : text.contains('stock')
             ? 'Bu destekten en fazla 99 adet biriktirebilirsin.'
-            : 'İşlem doğrulanamadı. Tekrar denediğinde aynı işlem kontrol edilir.',
+            : 'İşlem doğrulanamadı. Tekrar denediğinde aynı işlem kontrol edilir.'),
       );
     } finally {
       if (mounted) setState(() => _busy = false);

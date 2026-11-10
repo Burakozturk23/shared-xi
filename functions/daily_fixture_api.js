@@ -116,6 +116,8 @@ async function writeDay(db, date, matches, now) {
 }
 async function markError(db, date, now) {
   await db.ref("daily_fixtures/" + date).transaction((previous) => {
+    // A cold first run sees null: hand it back so the stored day comes in.
+    if (previous === null) return null;
     if (!previous) return; // never invent an empty day
     const meta = sourceMeta("error", now, rows(previous.matches).length, previous.sources?.api);
     return {...previous, sources: {...previous.sources, api: meta, supplemental: meta}};

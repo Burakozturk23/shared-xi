@@ -263,6 +263,29 @@ class _FriendsPageState extends State<FriendsPage>
     if (text.contains('Google')) {
       return 'Arkadaş sistemi için Google hesabına bağlı profil gerekli.';
     }
+    if (text.contains('no longer pending')) {
+      return 'Bu istek artık geçerli değil; listeyi yenile.';
+    }
+    if (text.contains("other player's friend list is full")) {
+      return 'Bu oyuncunun arkadaş listesi dolu.';
+    }
+    if (text.contains('Please wait before repeating')) {
+      return 'Biraz bekleyip tekrar dene.';
+    }
+    if (text.contains('player was not found')) {
+      return 'Oyuncu bulunamadı.';
+    }
+    if (text.contains('Friendship no longer exists') ||
+        text.contains('no longer friends')) {
+      return 'Bu oyuncuyla artık arkadaş değilsiniz.';
+    }
+    if (text.contains('Block no longer exists')) {
+      return 'Engel zaten kaldırılmış.';
+    }
+    if (text.contains('cannot add yourself') ||
+        text.contains('cannot block yourself')) {
+      return 'Bu işlemi kendi hesabına yapamazsın.';
+    }
 
     return 'İşlem tamamlanamadı. Tekrar dene.';
   }
