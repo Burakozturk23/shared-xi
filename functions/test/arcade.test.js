@@ -47,7 +47,7 @@ test("M: 300 generated boards are exact induced matchings; closed projection has
   for (const difficulty of ["easy", "normal", "hard"]) {
     for (let i = 0; i < 100; i++) {
       const b = E.matching(E.catalog, difficulty, "coverage" + i);
-      assert.equal(b.pairs.length, {easy: 6, normal: 8, hard: 12}[difficulty]);
+      assert.equal(b.pairs.length, 8); assert.equal(b.cards.length, 16);
       for (const p of b.pairs) {
         for (const q of b.pairs) {
           assert.equal(p.excluded.includes(q.clubId),
@@ -105,6 +105,38 @@ test("S: 3 correct complete round, scoring cap, unknown/duplicate free, speed wr
   assert.equal(s.streak, 0);
   s = await act(h, s, {action: "pass"}); assert.equal(s.totalRemainingMs, 112000); assert.equal(s.passes, 1);
 });
+// A right answer is judged by the player's own clubs (and country), not only by the
+// list stored with the question: a real answer left off that list never costs time.
+test("Burst: any player whose clubs fit the pair is right, listed or not", () => {
+  const c = E.catalog;
+  const q = c.burst.find((x) => x.pairType === "clubClub" && x.answers.length >= 7);
+  const [, a, b] = q.id.split(":");
+  const r = E.create(c, {mode: "burst", requestId: "fit", style: "speed", pairType: "clubClub"}, 0);
+  Object.assign(r, {question: {...q, answers: q.answers.slice(1)}, paused: false, phase: "active"});
+  const left = q.answers[0]; assert.ok(c.players[left].clubs.includes(a) && c.players[left].clubs.includes(b));
+  E.act(c, r, {action: "answer", questionId: q.id, entityId: left}, 1000);
+  assert.equal(r.wrong, 0); assert.ok(r.found.includes(left));
+  const stranger = Object.keys(c.players).find((id) => !c.players[id].clubs.includes(a));
+  E.act(c, r, {action: "answer", questionId: q.id, entityId: stranger}, 2000);
+  assert.equal(r.wrong, 1);
+});
+// Burst asks about known clubs only, never a youth side, and levels follow how known
+// the answers are.
+test("Burst: known clubs only, no youth sides, levels by how known the answers are", () => {
+  const pv = require("../pvp_engine").catalog;
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => k.slice(5)));
+  const third = (q) => q.answers.map((id) => pv.players[id]?.rating || 0).sort((x, y) => y - x)[2];
+  const mean = (t) => {
+    const qs = E.catalog.burst.filter((q) => q.difficulty === t);
+    return qs.reduce((n, q) => n + third(q), 0) / qs.length;
+  };
+  for (const q of E.catalog.burst) {
+    const [type, a, b] = q.id.split(":");
+    assert.ok(known.has(a) && (type === "clubCountry" || known.has(b)), q.left + " × " + q.right);
+    assert.doesNotMatch(q.left + " " + q.right, /\b(U1[5-9]|U2[0-3]|You|Youth|II|B)\b$/);
+  }
+  assert.ok(mean("easy") > mean("normal") && mean("normal") > mean("hard") && mean("hard") > mean("legend"));
+});
 test("S: authoritative total clock, round timeout, pause and 24h expiry", async () => {
   const h = setup(); let s = await start(h, "burst"); const old = s.question.id;
   h.setTime(h.now + 30000); s = await act(h, s, {action: "tick"}); assert.notEqual(s.question.id, old);
@@ -138,7 +170,7 @@ test("P: unknown/reused and repeated wrong are free, any solvable move, undo, hi
   await assert.rejects(act(h, s, {action: "hint", slotId: slot.id}), {code: "resource-exhausted"});
 });
 test("E: Matching medals once, shared logic daily once, payout retry and records", async () => {
-  const h = setup(); const a = await winMatching(h, "hard"); assert.equal(a.moves, 12); assert.equal(a.earnedCoins, 5);
+  const h = setup(); const a = await winMatching(h, "hard"); assert.equal(a.moves, 8); assert.equal(a.earnedCoins, 5);
   assert.equal(h.read("economyState/alice/balances/coins"), 7);
   const b = await winMatching(h, "hard"); assert.equal(b.earnedCoins, 0);
   assert.equal(h.read("economyState/alice/balances/coins"), 7);
@@ -384,24 +416,54 @@ test("Pyramid: win bonus rewards lives and no hints; undo costs bonus and hard m
   assert.equal(raw(h2, s2).bonus, 650);
   assert.equal(h2.read("economyState/alice/arcade/claims")["pyramid:v1:master"], undefined);
 });
-test("Pyramid: a dead-end candidate costs a life like any wrong one; hints come in two steps", async () => {
+test("Pyramid: an unlinked answer costs a life; hints come in two steps", async () => {
   const h = setup(); let s = await start(h, "pyramid", {difficulty: "normal"});
   const r = E.hydrate(raw(h, s)); const slot = fillable(r.board, r.filled);
   const used = new Set(Object.values(r.filled));
   const need = slot.supports.map((n) => r.filled[n]).concat(slot.row === 1 ? [r.filled["0"]] : []);
   const linked = Object.keys(E.catalog.entities).filter((id) => !used.has(id) &&
     need.every((n) => E.edge(E.catalog, id, n)));
-  const dead = linked.find((id) => !E.solve(E.catalog, r.board, {...r.filled, [slot.id]: id}));
   const unlinked = Object.keys(E.catalog.entities).find((id) => !used.has(id) && !linked.includes(id));
   s = await act(h, s, {action: "answer", slotId: slot.id, entityId: unlinked});
-  const message = s.message; assert.equal(s.lives, 4);
-  if (dead) {
-    s = await act(h, s, {action: "answer", slotId: slot.id, entityId: dead});
-    assert.equal(s.lives, 3); assert.equal(s.message, message);
-  }
+  assert.equal(s.lives, 4); assert.match(s.message, /uymuyor/);
   // \p{L}, not \w: \w misses "ü" in "Kulüp".
   s = await act(h, s, {action: "hint", slotId: slot.id}); assert.match(s.hint, /^Aday türü: \p{L}+\.$/u);
   s = await act(h, s, {action: "hint", slotId: slot.id}); assert.ok(s.hint.length > "Aday türü: Oyuncu.".length);
+});
+// A real link that leaves the pyramid unsolvable (Argentina under De Paul and
+// Maradona when nothing Argentine reaches the top) is a right answer for that
+// cell: it costs nothing and says why it cannot stay.
+test("Pyramid: a linked answer that cannot reach the top is free and says so", () => {
+  let found;
+  for (const b of E.catalog.pyramids) {
+    const slot = fillable(b, b.initial); const used = new Set(Object.values(b.initial));
+    const need = slot.supports.map((n) => b.initial[n]).concat(slot.row === 1 ? [b.initial["0"]] : []);
+    const dead = Object.keys(E.catalog.entities).find((id) => !used.has(id) &&
+      need.every((n) => E.edge(E.catalog, id, n)) && !E.solve(E.catalog, b, {...b.initial, [slot.id]: id}));
+    if (dead) {
+      found = {b, slot, dead}; break;
+    }
+  }
+  assert.ok(found, "some board has a linked dead end");
+  const r = E.create(E.catalog, {mode: "pyramid", requestId: "dead-end", difficulty: found.b.difficulty}, 0);
+  Object.assign(r, {board: structuredClone(found.b), filled: {...found.b.initial}, paused: false, phase: "active"});
+  E.act(E.catalog, r, {action: "answer", slotId: found.slot.id, entityId: found.dead}, 1000);
+  assert.equal(r.lives, 5); assert.equal(r.wrong, 0); assert.equal(r.filled[found.slot.id], undefined);
+  assert.match(r.message, /^Bağlantı doğru/);
+});
+test("Pyramid links come from the entities: shared club, a club he played for, his country", () => {
+  const c = E.catalog; const ents = Object.values(c.entities);
+  const players = ents.filter((x) => x.type === "player");
+  const country = ents.find((x) => x.type === "country");
+  const native = players.find((p) => p.countryId === country.countryId);
+  assert.deepEqual(E.edge(c, native.id, country.id), {type: "nationality", countryId: country.countryId});
+  assert.deepEqual(E.edge(c, country.id, native.id), {type: "nationality", countryId: country.countryId});
+  const club = c.entities["c" + native.clubs[0]];
+  assert.deepEqual(E.edge(c, native.id, club.id), {type: "seniorClub", clubId: native.clubs[0]});
+  const mate = players.find((p) => p.id !== native.id && p.clubs.includes(native.clubs[0]));
+  assert.equal(E.edge(c, native.id, mate.id).type, "sharedClub");
+  assert.equal(E.edge(c, club.id, country.id), null);
+  assert.equal(E.edge(c, native.id, native.id), null);
 });
 test("Pyramid: new boards come first; today's board is the same for everyone", async () => {
   const h = setup(); const seen = new Set();
@@ -414,17 +476,40 @@ test("Pyramid: new boards come first; today's board is the same for everyone", a
   assert.equal(d1.board.id, d2.board.id); assert.ok(d1.daily); assert.equal(d1.difficulty, "normal");
   await assert.rejects(prepare(a, "burst", {daily: true}), {code: "invalid-argument"});
 });
+// Sixteen cards at every level; the level is how known the names are. Normal no
+// longer deals Allegri with Pavia Calcio 1911.
+test("Matching: 16 cards at every level, known names by level, no card matches a second one", () => {
+  const pv = require("../pvp_engine").catalog;
+  const rating = (id) => pv.players[id]?.rating || 0;
+  const grid = new Set(pv.gridClubs.map((k) => k.slice(5)));
+  const known = new Set([...grid, ...pv.clubOptions.map((k) => k.slice(5))]);
+  const least = {easy: 80, normal: 76, hard: 72};
+  for (const difficulty of ["easy", "normal", "hard"]) {
+    for (let i = 0; i < 60; i++) {
+      const b = E.matching(E.catalog, difficulty, "known" + i);
+      for (const p of b.pairs) {
+        const name = E.catalog.players[p.playerId].name + " / " + E.catalog.clubs[p.clubId].name;
+        assert.ok(rating(p.playerId) >= least[difficulty], name);
+        assert.ok((difficulty === "easy" ? grid : known).has(p.clubId), name);
+        // Every club he ever played for is checked, not only the card's.
+        assert.deepEqual(p.excluded, E.catalog.matchingClubs[p.playerId]);
+        assert.ok(p.excluded.includes(p.clubId));
+      }
+    }
+  }
+  assert.ok(!E.catalog.matching.some((p) => E.catalog.players[p.playerId].name === "Massimiliano Allegri"));
+});
 test("Matching: card ids carry no pair; flipping ids in order is not a perfect game", async () => {
   for (let i = 0; i < 20; i++) {
     const b = E.matching(E.catalog, "hard", "ids" + i);
     assert.deepEqual(b.cards.map((x) => x.id), b.cards.map((_, k) => "k" + k));
   }
   const h = setup(); let s = await start(h, "matching", {difficulty: "hard"});
-  for (let i = 0; i < 24 && !s.finished; i++) {
+  for (let i = 0; i < 16 && !s.finished; i++) {
     h.setTime(h.now + 1100);
     s = await act(h, s, {action: "flip", cardId: s.board.cards[i].id});
   }
-  assert.ok(!(s.finished && s.moves === 12), "sequential ids must not solve the board");
+  assert.ok(!(s.finished && s.moves === 8), "sequential ids must not solve the board");
 });
 test("Matching: easy boards vary by seed; stars and hard mastery are tighter", async () => {
   const boards = new Set();
@@ -436,9 +521,9 @@ test("Matching: easy boards vary by seed; stars and hard mastery are tighter", a
   const s = {records: {}, claims: {}, pending: {}, daily: {}};
   const base = {mode: "matching", phase: "active", finished: true, won: true, difficulty: "hard", hints: 0,
     wrong: 0, dataVersion: version, rewardKeys: [], earnedCoins: 0, activeMs: 50000, stars: 3};
-  finalize(s, {...base, id: "a", moves: 20}, 1, true);
+  finalize(s, {...base, id: "a", moves: 13}, 1, true);
   assert.equal(s.claims["matching:v1:master"], undefined);
-  finalize(s, {...base, id: "b", moves: 18}, 1, true);
+  finalize(s, {...base, id: "b", moves: 12}, 1, true);
   assert.ok(s.claims["matching:v1:master"]);
   assert.equal(Object.values(s.records)[0].bestStars, 3);
 });

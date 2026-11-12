@@ -1,3 +1,4 @@
+import '../widgets/letter_slot_reveal.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
 import 'dart:async';
@@ -14,6 +15,7 @@ import '../theme/ortak_saha_theme.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/share_result.dart';
+import '../widgets/vault_open_reveal.dart';
 
 List<Map<String, dynamic>> _maps(dynamic v) =>
     (v is List ? v : const []).map(rewardMap).toList();
@@ -151,8 +153,9 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
     _searching = false;
   }
 
-  Future<void> _start(String entry, {String? target, String? league}) =>
-      _run(() async {
+  Future<void> _start(String entry, {String? target, String? league}) async {
+    var drawn = false;
+    await _run(() async {
         final r = await _service.mutate('startThreeMode', {
           'mode': widget.mode,
           'version': _version,
@@ -163,8 +166,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           if (league != null) 'league': league,
         });
         if (!mounted) return;
-        if (entry == 'random')
-          AppFeedback.sfx(_vault ? Sfx.cardFlip : Sfx.cardSwipe);
         setState(() {
           _session = rewardMap(r['session']);
           _archive = false;
@@ -172,7 +173,34 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
           _slot = 0;
           _clearSearch();
         });
+        drawn = _vault || entry == 'random' || entry == 'daily';
       });
+    // A drawn letter (roulette or today's) lands on a slot-machine reel, once the
+    // server has answered.
+    // A new vault opens: the door, then its first three flags.
+    if (drawn && _vault && mounted && _session['finished'] != true) {
+      await VaultOpenReveal.show(
+        context,
+        flags: [
+          for (final s in _maps(_session['slots']))
+            if ('${s['country'] ?? ''}'.isNotEmpty)
+              (country: '${s['country']}', position: _positions['${s['position']}'] ?? '${s['position']}'),
+        ],
+        guesses: (_session['remaining'] as num? ?? 5).toInt(),
+        difficulty: _session['difficulty'] as String?,
+        daily: entry == 'daily',
+      );
+      return;
+    }
+    if (drawn && mounted) {
+      await LetterSlotReveal.show(
+        context,
+        letter: '${_session['letter'] ?? '${_session['title'] ?? ''}'.split(' ').first}',
+        difficulty: _session['letterDifficulty'] as String?,
+        daily: entry == 'daily',
+      );
+    }
+  }
   Future<void> _act(
     String action, [
     Map<String, dynamic> extra = const {},

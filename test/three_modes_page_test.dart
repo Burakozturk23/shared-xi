@@ -415,6 +415,12 @@ void main() {
       await t.tap(daily);
       await t.pumpAndSettle();
       expect(fake.lastMutation!['entry'], 'daily');
+      // Today's letter lands on the slot-machine reel first.
+      expect(find.text('GÜNÜN HARFİ'), findsOneWidget);
+      expect(find.text('A harfi'), findsWidgets);
+      await t.tap(find.text('Kadroyu kur'));
+      await t.pumpAndSettle();
+      expect(find.text('GÜNÜN HARFİ'), findsNothing);
       await t.pumpWidget(const SizedBox());
       final vault = FakeModes('squad_vault', active: true);
       await open(t, vault);

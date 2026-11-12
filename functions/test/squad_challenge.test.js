@@ -36,6 +36,57 @@ test("The without-club placeholder is gone and no club dominates the catalog", (
   assert.ok(Math.max(...counts.values()) < engine.catalog.players.length * .1);
 });
 
+test("Squad pools hold known players, priced by how known; links count senior clubs under one id", () => {
+  const pv = require("../pvp_engine").catalog;
+  const rating = (id) => pv.players[String(id)]?.rating || 0;
+  const names = new Set();
+  // Offset ids that name a different club than the plain id (reviewed list).
+  const distinct = new Set(JSON.parse(fs.readFileSync(
+      path.join(__dirname, "../../tools/data_platform_v4/club_offset_mismatch.json"), "utf8")).ids.map((x) => x.id));
+  for (const p of engine.catalog.players) {
+    assert.ok(rating(p.id) >= 65, p.name);
+    assert.ok(!names.has(p.name.toLowerCase()), p.name); names.add(p.name.toLowerCase());
+    for (const club of p.clubIds) {
+      // No offset duplicate (PSG as 583 and 1000000583) and no youth or reserve side.
+      assert.ok(!(club >= 1e9 && !distinct.has(club) && p.clubIds.includes(club - 1e9)), p.name);
+      assert.doesNotMatch(engine.catalog.clubNames[club] || "", /\b(U1[5-9]|U2[0-3]|Yth\.?|Youth|Academy)$|\sII$|\sB$/,
+          p.name);
+    }
+  }
+  const byName = (n) => engine.catalog.players.find((p) => p.name === n);
+  const premier = engine.catalog.themes.find((t) => t.id === "premier_league");
+  // Stars are the dearest picks; the old rank list made Son one of the cheapest.
+  assert.equal(premier.costs[byName("Heung-min Son").id], 18);
+  for (const t of engine.catalog.themes) {
+    const known = t.players.filter((id) => rating(id) >= 72).length;
+    assert.ok(known / t.players.length >= .85, t.id);
+  }
+});
+
+test("Weekends from 14 November bring a Turkish derby as the big mission; weekdays rotate as before", () => {
+  const derbies = ["gs_fb", "bjk_gs", "bjk_fb", "ts_gs", "ts_fb", "ts_bjk"];
+  const day = (d) => new Date(Date.parse("2026-11-14T00:00:00Z") + d * 86400000).toISOString().slice(0, 10);
+  const seen = new Set();
+  for (let d = 0; d < 364; d++) {
+    const ms = engine.missions(day(d)); const weekend = d % 7 === 0 || d % 7 === 1;
+    assert.equal(new Set(ms.map((m) => m.themeId)).size, 3, day(d));
+    assert.equal(derbies.includes(ms[2].themeId) && ms[2].label === "Derbi günü", weekend, day(d));
+    if (weekend) seen.add(ms[2].themeId);
+    if (!weekend) assert.equal(ms[2].label, "Büyük görev");
+  }
+  // Three weekends play all six derbies.
+  assert.equal(new Set([0, 1, 7, 8, 14, 15].map((d) => engine.missions(day(d))[2].themeId)).size, 6);
+  assert.equal(seen.size, 6);
+  // Days before the start keep their missions (ids already started or rewarded).
+  const pool = engine.catalog.themes.filter((t) => t.dailyEligible);
+  for (const old of ["2026-11-07", "2026-11-08", "2026-11-13"]) {
+    const n = Math.floor(Date.parse(old + "T00:00:00Z") / 86400000);
+    assert.deepEqual(engine.missions(old).map((m) => m.themeId),
+        [0, 1, 2].map((i) => pool[(n + i * 11) % pool.length].id));
+    assert.equal(engine.missions(old)[2].label, "Büyük görev");
+  }
+});
+
 test("Detailed positions fit their slots; bare and prefixed names agree", () => {
   const slot = engine.catalog.formations[0].slots[1]; // LB: "Defender - Left-Back"
   assert.ok(engine.positionFits({position: "Defender", detailedPosition: "Left-Back"}, slot));
@@ -112,6 +163,19 @@ test("Repeated starts resume one active run and never double-charge", () => {
   assert.equal(state.balances.coins, 0);
   assert.equal(state.squadChallenge.paidUsed, 1);
   assert.throws(() => start(state, 6, false, daily[1], now, "coins"), /açık görevine/);
+});
+
+test("A stored run's star bonus comes back as an object after RTDB turns it into an array", () => {
+  // RTDB reads {2: 5, 3: 10} back as [null, null, 5, 10] (integer keys, max < 2 x count);
+  // the app reads it as a map, so the hub broke for anyone with an open mission.
+  const state = wallet(0); const run = start(state, 1).run;
+  const stored = JSON.parse(JSON.stringify(state));
+  stored.squadChallenge.active.mission.starBonus = [null, null, 5, 10];
+  stored.squadChallenge.runs[run.id].mission.starBonus = [null, null, 5, 10];
+  const hub = engine.apply(stored, "status", {}, now, false).hub;
+  assert.deepEqual(hub.active.mission.starBonus, engine.STAR_BONUS);
+  assert.deepEqual(start(stored, 1).run.mission.starBonus, engine.STAR_BONUS);
+  assert.deepEqual(JSON.parse(JSON.stringify(stored.squadChallenge.active.mission.starBonus)), [null, null, 5, 10]);
 });
 
 test("Win reward is server-computed once; retry returns the same result", () => {

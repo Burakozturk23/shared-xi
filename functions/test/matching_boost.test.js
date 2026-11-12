@@ -42,7 +42,7 @@ test("Matching suggestion charges once, preserves closed cards and survives reco
   const cards = raw(h, s).board.cards;
   const [player, club] = suggestion.map((c) => cards.find((x) => x.id === c.id));
   assert.equal(player.pair, club.pair);
-  assert.ok(E.catalog.careers.find((c) => c.playerId === player.entityId).clubs.includes(club.entityId));
+  assert.ok(E.catalog.matchingClubs[player.entityId].includes(club.entityId));
   suggestion.forEach((c) => assert.equal(cards[c.position - 1].id, c.id));
   assert.equal(helped.support.assisted, true); assert.equal(helped.support.products[0].ads, false);
   await assert.rejects(act(h, helped, hint), {code: "resource-exhausted"});
@@ -78,12 +78,12 @@ test("Matching assisted best moves cannot replace normal record or earn mastery 
   s = await act(h, s, hint); s = await finish(h, s);
   const record = `matching__hard__${E.catalog.version}`;
   assert.equal(h.read(`${root}/arcade/records/${record}`), null);
-  assert.equal(h.read(`${root}/arcade/records/${record}__assisted/bestMoves`), 12);
+  assert.equal(h.read(`${root}/arcade/records/${record}__assisted/bestMoves`), 8);
   assert.equal(h.read(`${root}/arcade/records/${record}__assisted/assisted`), true);
   assert.equal(h.read(`${root}/arcade/claims/matching:v1:master`), null);
   assert.equal(s.earnedCoins, 2);
   const next = await finish(h, await start(h, "hard"));
-  assert.equal(h.read(`${root}/arcade/records/${record}/bestMoves`), 12);
+  assert.equal(h.read(`${root}/arcade/records/${record}/bestMoves`), 8);
   assert.equal(h.read(`${root}/arcade/records/${record}/assisted`), false);
   assert.equal(next.earnedCoins, 3); // Only mastery: the hard first-clear receipt was already paid.
   const data = await h.call("getArcade", {mode: "matching"});

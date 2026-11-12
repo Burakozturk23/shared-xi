@@ -177,30 +177,66 @@ function mysteryDuel(seed) {
         options: shuffled([p.playerId, ...options], seed + i).map((id) => playerView(players.get(id)))}};
   });
 }
-// Transfer Duel: 2 easy, 2 medium, 1 hard; a player is drawn first and then one of their
+// Transfer Duel: 2 easy, 2 medium, 2 hard, the last round worth ×2; no loans or loan
+// returns (the catalog's loan flag); a player is drawn first and then one of their
 // moves, so players with many loans do not crowd the match; no player or club pair twice,
 // one move before 2015 when there is one. A move several players made the same day accepts
-// all of them. Country opens at 10 s, position at 20 s; each open hint lowers the base by 15.
-const TRANSFER_MIX = ["easy", "easy", "medium", "medium", "hard"];
+// all of them. A round is 45 s; four clues open at 8, 16, 24 and 34 s (nationality,
+// position and age, a club from his career, initials), each lowering the base by 12.
+// Rooms created before (no hintAt on the question) keep 30 s, two clues and 15.
+const TRANSFER_MIX = ["easy", "easy", "medium", "medium", "hard", "hard"];
+const TRANSFER_FINAL_MULTIPLIER = 2;
 const TRANSFER_HINT_MS = [10000, 20000];
 const TRANSFER_HINT_COST = 15;
+const TRANSFER_DURATION_MS = 45000;
+const TRANSFER_CLUE_MS = [8000, 16000, 24000, 34000];
+const TRANSFER_CLUE_COST = 12;
 const TRANSFER_KNOWN_RANK = 3000;
 const POSITIONS = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet", ATT: "Forvet"};
-// How well known a move is, by the player's rating and the two clubs (the catalog's own
-// difficulty put Middlesbrough -> Leicester among the easy ones):
-// easy: a star (82+) from a well-known club to one of the best-known clubs, 2005 or later;
-// medium: a known player (78+) between a best-known and a well-known club, 2000 or later;
-// hard: a known player (78+) with at least one well-known club.
-const TRANSFER_TIER = {easy: {rating: 82, year: 2005}, medium: {rating: 78, year: 2000}, hard: {rating: 78, year: 0}};
+const DETAILED_POSITIONS = {"Goalkeeper": "Kaleci", "Centre-Back": "Stoper", "Left-Back": "Sol bek",
+  "Right-Back": "Sağ bek", "Defensive Midfield": "Ön libero", "Central Midfield": "Merkez orta saha",
+  "Attacking Midfield": "On numara", "Left Midfield": "Sol orta saha", "Right Midfield": "Sağ orta saha",
+  "Left Winger": "Sol kanat", "Right Winger": "Sağ kanat", "Second Striker": "İkinci forvet",
+  "Centre-Forward": "Santrfor"};
+const {countryTr} = require("./countries_tr");
+// Initials of the shown name: "Youssef El-Arabi" -> "Y. E.".
+const initials = (name) => name.split(/\s+/).filter(Boolean).map((w) => w[0].toUpperCase() + ".").join(" ");
+// A club from his career besides the two in the move: the best known one.
+function careerClub(p) {
+  const ids = (pvpCatalog.players[String(p.playerId)]?.clubs || []).map(Number)
+      .filter((id) => id !== p.fromClubId && id !== p.toClubId && clubMeta[String(id)]);
+  ids.sort((a, b) => (knownClub.has(b) - knownClub.has(a)) ||
+    (clubMeta[String(b)].rank || 0) - (clubMeta[String(a)].rank || 0) || a - b);
+  return ids.length ? clubMeta[String(ids[0])].name : null;
+}
+function transferClues(p, who) {
+  const position = DETAILED_POSITIONS[p.detailedPosition] || POSITIONS[who.position] || p.detailedPosition ||
+    who.position || "bilinmiyor";
+  const club = careerClub(p);
+  return [`Milliyet: ${countryTr(who.country)}`,
+    `Mevki: ${position}${p.age ? ` · transferde ${p.age} yaşında` : ""}`,
+    club ? `Kariyerinde: ${club}` : `Transfer yılı: ${p.year}`,
+    `Baş harfler: ${initials(who.name)}`];
+}
+// How well known a move is, by how well known the player is (selection rank in the
+// PvP catalog: 1 = best known) and the two clubs. The first version went by a rating,
+// which put Kvaratskhelia's Napoli -> PSG among the hard ones and Granada -> Al-Duhail
+// of a little-known striker there too.
+// easy: a top-400 name between two of the best-known clubs, 2010 or later;
+// medium: a top-1200 name between a best-known and a well-known club, 2005 or later;
+// hard: a top-2000 name with both clubs well known (one exotic club, Granada -> Al-Duhail,
+// is out even for a top-800 name: the rank alone does not make a move known).
+const TRANSFER_TIER = {easy: {rank: 400, year: 2010}, medium: {rank: 1200, year: 2005}, hard: {rank: 2000}};
 function transferTier(p) {
-  const r = pvpCatalog.players[String(p.playerId)]?.rating || 0;
+  const rank = pvpCatalog.players[String(p.playerId)]?.rank || Infinity;
   const known = (id) => knownClub.has(id); const best = (id) => gridClub.has(id);
-  if (r >= TRANSFER_TIER.easy.rating && known(p.fromClubId) && best(p.toClubId) && p.year >= TRANSFER_TIER.easy.year) {
-    return "easy";
-  }
-  if (r >= TRANSFER_TIER.medium.rating && p.year >= TRANSFER_TIER.medium.year &&
+  const t = TRANSFER_TIER;
+  // A loan or its return (Werder -> Chelsea 2013) is not the move people remember.
+  if (p.loan) return null;
+  if (rank <= t.easy.rank && best(p.fromClubId) && best(p.toClubId) && p.year >= t.easy.year) return "easy";
+  if (rank <= t.medium.rank && p.year >= t.medium.year &&
     (best(p.toClubId) && known(p.fromClubId) || best(p.fromClubId) && known(p.toClubId))) return "medium";
-  if (r >= TRANSFER_TIER.hard.rating && (known(p.fromClubId) || known(p.toClubId))) return "hard";
+  if (rank <= t.hard.rank && known(p.fromClubId) && known(p.toClubId)) return "hard";
   return null;
 }
 const tierOf = new Map(catalog.transfers.map((p) => [p.id, transferTier(p)]));
@@ -225,20 +261,21 @@ function transferDuel(seed) {
     picked.push({...p, difficulty: level}); usedPairs.add(pair(p));
     for (const id of [p.playerId, ...p.alsoPlayerIds || []]) usedPlayers.add(id);
   }
-  return picked.map((p) => {
+  return picked.map((p, i) => {
     const who = players.get(p.playerId);
     const accepted = [p.playerId, ...p.alsoPlayerIds || []]; const season = p.precision === "season";
-    return {id: p.id, kind: "transfer", duration: 30000, answer: p.playerId, difficulty: p.difficulty,
-      ...accepted.length > 1 ? {accepted} : {},
-      timedHints: [`Milliyet: ${who.country || "bilinmiyor"}`, `Mevki: ${p.detailedPosition ||
-        POSITIONS[who.position] || who.position}`],
+    const last = i === TRANSFER_MIX.length - 1 ? {multiplier: TRANSFER_FINAL_MULTIPLIER} : {};
+    return {id: p.id, kind: "transfer", duration: TRANSFER_DURATION_MS, answer: p.playerId,
+      difficulty: p.difficulty, ...accepted.length > 1 ? {accepted} : {}, ...last,
+      timedHints: transferClues(p, who), hintAt: TRANSFER_CLUE_MS, hintCost: TRANSFER_CLUE_COST,
       // A season-precision move (summer 2026 from club rosters) has no day or month.
       explanation: `${who.name} · ${season ? `${p.year} yaz dönemi` : p.date}` +
         `${p.age ? ` · ${p.age} yaşında` : ""}` +
         (accepted.length > 1 ? ` · aynı ${season ? "dönemde" : "gün"} geçen ${accepted.slice(1)
             .map((id) => players.get(id).name).join(", ")} de doğru sayıldı` : ""),
       public: {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year,
-        ...season ? {season: "summer"} : {month: p.date.slice(5, 7)}, difficulty: p.difficulty}};
+        ...season ? {season: "summer"} : {month: p.date.slice(5, 7)}, difficulty: p.difficulty,
+        duration: TRANSFER_DURATION_MS, hintAt: TRANSFER_CLUE_MS, hintCost: TRANSFER_CLUE_COST, ...last}};
   });
 }
 // Six careers: two of each difficulty; missing-club careers need a club that appears once.
@@ -556,9 +593,10 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
         const elapsed = time - clock.start;
         // Transfer Duel: every hint already open lowers the base score.
         const base = 100 - (q.kind === "transfer" && q.timedHints ?
-          TRANSFER_HINT_MS.filter((ms) => elapsed >= ms).length * TRANSFER_HINT_COST : 0);
+          (q.hintAt || TRANSFER_HINT_MS).filter((ms) => elapsed >= ms).length *
+            (q.hintCost || TRANSFER_HINT_COST) : 0);
         // Mystery Duel: no speed bonus before the first hint; full bonus right when it opens.
-        const from = q.hintAt ? q.hintAt[0] : 0;
+        const from = q.kind === "mystery_duel" && q.hintAt ? q.hintAt[0] : 0;
         const bonus = elapsed < from ? 0 : Math.floor(50 * (q.duration - elapsed) / (q.duration - from));
         room.answers[uid][input.round] = {value: input.answer, correct, elapsed,
           score: correct ? (base + bonus) * (q.multiplier || 1) : 0};
@@ -609,5 +647,6 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
   return {enter, act, sweep};
 }
 module.exports = {createService, questions, timing, totals, outcome, advance, view, roundToken,
-  TRANSFER_MIX, TRANSFER_HINT_COST, TRANSFER_KNOWN_RANK, MYSTERY_MIX, MYSTERY_HINT_MS, hintClubs,
+  TRANSFER_MIX, TRANSFER_HINT_COST, TRANSFER_KNOWN_RANK, TRANSFER_CLUE_MS, TRANSFER_CLUE_COST,
+  TRANSFER_DURATION_MS, TRANSFER_FINAL_MULTIPLIER, transferTier, transferClues, MYSTERY_MIX, MYSTERY_HINT_MS, hintClubs,
   FAKE_MIX, FAKE_FINAL_MULTIPLIER};

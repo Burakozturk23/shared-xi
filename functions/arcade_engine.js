@@ -8,7 +8,58 @@ const fail = (code, message) => {
   throw new RewardError(code, message);
 };
 const list = (x) => Array.isArray(x) ? x : Object.values(x || {});
-const edge = (c, a, b) => c.edges[[a, b].sort().join("|")] || null;
+// Pyramid links come from the entities themselves: two players who shared a club,
+// a player and a club he played for, a player and his country. (Older pinned
+// catalogs also carry these as an `edges` map; the entities give the same links,
+// and computing them lets the answer pool hold every known player.)
+function edge(c, a, b) {
+  const x = c.entities[a]; const y = c.entities[b];
+  if (!x || !y || a === b) return null;
+  if (x.type === "player" && y.type === "player") {
+    const shared = x.clubs.filter((k) => y.clubs.includes(k)).sort();
+    return shared.length ? {type: "sharedClub", clubId: shared[0]} : null;
+  }
+  const [p, o] = y.type === "player" ? [y, x] : [x, y];
+  if (p.type !== "player") return null;
+  if (o.type === "club" && p.clubs.includes(o.clubs[0])) return {type: "seniorClub", clubId: o.clubs[0]};
+  if (o.type === "country" && p.countryId && p.countryId === o.countryId) {
+    return {type: "nationality", countryId: o.countryId};
+  }
+  return null;
+}
+// Everything linked to one entity, from club and country indexes built once per catalog.
+const graphs = new WeakMap();
+function near(c, id) {
+  let g = graphs.get(c.entities);
+  if (!g) {
+    g = {byClub: new Map(), byCountry: new Map(), club: new Map(), country: new Map(), near: new Map()};
+    const push = (map, k, v) => (map.get(k) || map.set(k, []).get(k)).push(v);
+    for (const e of Object.values(c.entities)) {
+      if (e.type === "player") {
+        for (const k of e.clubs) push(g.byClub, k, e.id);
+        if (e.countryId) push(g.byCountry, e.countryId, e.id);
+      } else if (e.type === "club") g.club.set(e.clubs[0], e.id);
+      else if (e.type === "country") g.country.set(e.countryId, e.id);
+    }
+    graphs.set(c.entities, g);
+  }
+  let found = g.near.get(id);
+  if (found) return found;
+  const e = c.entities[id]; found = new Set();
+  if (e?.type === "player") {
+    for (const k of e.clubs) {
+      for (const other of g.byClub.get(k) || []) found.add(other);
+      if (g.club.has(k)) found.add(g.club.get(k));
+    }
+    if (e.countryId && g.country.has(e.countryId)) found.add(g.country.get(e.countryId));
+  } else if (e?.type === "club") {
+    for (const other of g.byClub.get(e.clubs[0]) || []) found.add(other);
+  } else if (e?.type === "country") {
+    for (const other of g.byCountry.get(e.countryId) || []) found.add(other);
+  }
+  found.delete(id); g.near.set(id, found);
+  return found;
+}
 const label = (c, evidence) => evidence.type === "nationality" ? "Doğrulanmış milliyet" :
   `${evidence.type === "sharedClub" ? "Ortak kulüp" : "A takım kariyeri"}: ${c.clubs[evidence.clubId].name}`;
 function solve(c, board, input, budget = 18000) {
@@ -33,7 +84,8 @@ function solve(c, board, input, budget = 18000) {
     for (const slot of board.slots) {
       if (filled[slot.id]) continue;
       const known = neighbours[slot.id].filter((n) => filled[n]);
-      const domain = keys.filter((id) => !used.has(id) && known.every((n) => edge(c, id, filled[n])));
+      const pool = known.length ? near(c, filled[known[0]]) : keys;
+      const domain = [...pool].filter((id) => !used.has(id) && known.every((n) => edge(c, id, filled[n])));
       if (!domain.length) return null;
       if (!choices || domain.length < choices.length) {
         target = slot.id; choices = domain;
@@ -58,13 +110,21 @@ function solve(c, board, input, budget = 18000) {
 }
 function matching(c, difficulty, seed) {
   const count = c.policy.matchingPairs[difficulty];
-  const all = c.careers.flatMap((p) => p.clubs.map((clubId) => ({playerId: p.playerId, clubId,
-    excluded: p.excluded, sources: p.sources})));
-  // Recognisability combines player ranking, familiar club and readable labels.
-  // Easy draws from the 40 most recognisable links by seed, so easy boards vary.
-  const known = (p) => c.players[p.playerId].rank / 1000 - c.clubs[p.clubId].popularity / 10 +
-    c.clubs[p.clubId].name.length / 10;
-  const base = difficulty === "easy" ? [...all].sort((a, b) => known(a) - known(b)).slice(0, 40) : all;
+  let base;
+  if (c.matching) {
+    // Known players and clubs by level (easy: stars and the grid clubs). Every
+    // club he played for is excluded from the other pairs, so one club fits him.
+    const tiers = {easy: ["easy"], normal: ["easy", "normal"], hard: ["normal", "hard"]}[difficulty];
+    base = c.matching.filter((p) => tiers.includes(p.tier)).map((p) => ({playerId: p.playerId, clubId: p.clubId,
+      excluded: c.matchingClubs[p.playerId], sources: ["V4 player_clubs"]}));
+  } else {
+    // Older pinned catalogs: reviewed complete careers only.
+    const all = c.careers.flatMap((p) => p.clubs.map((clubId) => ({playerId: p.playerId, clubId,
+      excluded: p.excluded, sources: p.sources})));
+    const known = (p) => c.players[p.playerId].rank / 1000 - c.clubs[p.clubId].popularity / 10 +
+      c.clubs[p.clubId].name.length / 10;
+    base = difficulty === "easy" ? [...all].sort((a, b) => known(a) - known(b)).slice(0, 40) : all;
+  }
   for (let attempt = 0; attempt < 40; attempt++) {
     const choices = shuffled(base, seed + ":" + attempt);
     const pairs = []; const names = new Set();
@@ -103,6 +163,14 @@ function tierOrder(wanted) {
   const w = TIERS.indexOf(wanted);
   return [...TIERS].sort((a, b) => Math.abs(TIERS.indexOf(a) - w) - Math.abs(TIERS.indexOf(b) - w) ||
     TIERS.indexOf(a) - TIERS.indexOf(b));
+}
+// A Burst answer is right when the player's own clubs (and country) fit the pair,
+// whether or not the question's stored list names him.
+function fitsPair(c, q, id) {
+  const p = c.players[id]; const [type, a, b] = String(q.id).split(":");
+  if (!p || !a || !b) return false;
+  return p.clubs.includes(a) && (type === "clubClub" ? p.clubs.includes(b) : type === "clubCountry" &&
+    p.countryId === b);
 }
 function round(c, r) {
   const open = c.burst.filter((q) => q.pairType === r.pairType && !r.used.includes(q.id));
@@ -264,7 +332,7 @@ function act(c, r, input, time) {
       if (r.found.includes(id)) {
         r.message = "Bu oyuncuyu zaten buldun."; return;
       }
-      if (!r.question.answers.includes(id)) {
+      if (!r.question.answers.includes(id) && !fitsPair(c, r.question, id)) {
         r.wrong++; r.streak = 0;
         if (r.style === "speed") r.penaltyMs = (r.penaltyMs || 0) + 3000; else r.lives--;
         r.message = r.style === "speed" ? "Bu eşleşme doğru değil. −3 saniye." : "Bu eşleşme doğru değil. −1 can.";
@@ -313,9 +381,16 @@ function act(c, r, input, time) {
         r.message = "Belirsiz, bilinmeyen veya kullanılmış ad; can kaybı yok."; return;
       }
       const supports = slot.supports.map((s) => r.filled[s]); if (slot.row === 1) supports.push(r.filled["0"]);
-      // A linked candidate that leaves the board unsolvable is just as wrong:
-      // same message and cost, so a free rejection cannot reveal the links.
-      const solution = !supports.some((s) => !edge(c, id, s)) && solve(c, r.board, {...r.filled, [slot.id]: id});
+      const linked = supports.every((s) => edge(c, id, s));
+      const solution = linked && solve(c, r.board, {...r.filled, [slot.id]: id});
+      if (linked && !solution) {
+        // A real link is a right answer for this cell even when it leads nowhere
+        // (Argentina under De Paul and Maradona with nothing Argentine up top):
+        // no life lost, and the player learns why it cannot stay.
+        r.message = "Bağlantı doğru ama bu seçimle piramit zirveye bağlanamıyor. " +
+          "Başka bir bağlantı dene; can kaybı yok.";
+        return;
+      }
       if (!solution) {
         const k = slot.id + "__" + id;
         if (!r.wrongInputs[k]) {
@@ -344,8 +419,10 @@ function act(c, r, input, time) {
       if (r.hints >= 1) fail("resource-exhausted", "Bu oyunun çift önerisi kullanıldı.");
       const player = r.board.cards.find((x) => x.type === "player" && !r.matched.includes(x.pair));
       const club = player && r.board.cards.find((x) => x.type === "club" && x.pair === player.pair);
-      const career = player && c.careers.find((x) => x.playerId === player.entityId);
-      if (!club || !career?.clubs.includes(club.entityId) || !career.sources?.length) {
+      // The board keeps its own pairs (and their sources), whatever the catalog.
+      const career = player && r.board.pairs[player.pair];
+      if (!club || career?.playerId !== player.entityId || career.clubId !== club.entityId ||
+        !career.sources?.length) {
         fail("unavailable", "Doğrulanmış çift bulunamadı; destek harcanmadı.");
       }
       const cards = [player, club].map((x) => ({id: x.id, position: r.board.cards.indexOf(x) + 1,
@@ -428,5 +505,6 @@ function publicRun(c, raw, time) {
   }
   return v;
 }
-module.exports = {catalog, create, hydrate, tick, act, publicRun, solve, matching, edge, label, resolve, fail, list,
+module.exports = {catalog, create, hydrate, tick, act, publicRun, solve, matching, edge, near, label, resolve, fail,
+  list,
   effectiveElapsed, MIN_EVENT_MS, ROUND_MS};

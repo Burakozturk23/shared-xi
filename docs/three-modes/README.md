@@ -81,3 +81,16 @@ firebase deploy --only functions
 Tüm Functions birlikte dağıtılmalıdır: ortak `lbEconomyState` artık `threeModes` alanını korur. Eski ekonomi yazarlarıyla yalnızca yeni callable'ları dağıtmak ilerlemeyi silebilir. RTDB yeni alanları mevcut varsayılan deny kurallarıyla sunucuya özeldir. Reklam ödülleri gerçek AdMob birimlerinin ve SSV callback'inin önceden kurulmuş olmasını gerektirir; sahte/test reklam bonusu verilmez. Ortak enerji rollout'u bu PR tarafından kendiliğinden açılmaz.
 
 Yeni callable'lar: `getThreeMode`, `startThreeMode`, `resumeThreeMode`, `actThreeMode`, `searchThreeMode`, `claimCoachMastery`. Yeni reklam placement'ları: `coach11_hint`, `letter11_hint`, `vault_hint`. Sunucu kataloğu APK'ya eklenmez.
+
+## Harf ruleti: slot makinesi (12 Kasım 2026)
+
+- Ruletten ya da günün harfinden yeni bir Harf 11 oyunu başlayınca harf bir slot makinesinde gelir (`lib/widgets/letter_slot_reveal.dart`). Türk alfabesinin 29 harfi üç satırlık pencerede üç tur döner, yavaşlar, hedefi çeyrek harf geçip yerine oturur. Hızlıyken dikey hareket bulanıklığı vardır.
+- Dönüşün başında rulet sesi, geçen her harfte (en fazla 70 ms'de bir) hafif titreşim, oturunca kilit sesi ve orta titreşim. Harf büyüyüp yeşil parlar; altında zorluk etiketi, kural ve "Kadroyu kur" düğmesi.
+- Dokunmak dönüşü atlar; "animasyonları azalt" açıkken harf doğrudan görünür. Devam edilen oyunlarda makine açılmaz.
+- Harfi sunucu seçer; makine yalnızca onu gösterir. Oturum görünümü harfi ve zorluğunu `letter` ve `letterDifficulty` alanlarıyla verir; eski sunucuda uygulama harfi başlıktan ("K harfi") okur.
+- Makine, sunucunun cevabı geldikten sonra açılır; arkasında yükleniyor göstergesi kalmaz.
+
+## Kasa açılışı (12 Kasım 2026)
+
+- Yeni bir Kadro Kasası açılınca (rastgele, günün kasası, lig ya da arşiv) önce kasa açılır (`lib/widgets/vault_open_reveal.dart`): çelik kapağın kadranı iki buçuk tur döner (rulet sesi), dört sürgü geri çekilir (kilit sesi, orta titreşim), kapak sol menteşesinden açılır ve içerisi yeşil aydınlanır. Sonra ilk üç bayrak kartı (ülke ve mevki) tek tek, zıplayarak düşer (kart sesi, hafif titreşim). En sonda zorluk etiketi, kural ve "Kasayı çöz".
+- Dokunmak atlar; "animasyonları azalt" açıkken kasa açık gelir. Devam edilen ya da bitmiş kasada açılış oynamaz. Kulübü ve bayrakları sunucu seçer; animasyon yalnızca gösterir.

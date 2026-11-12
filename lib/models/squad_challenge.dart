@@ -175,9 +175,7 @@ class SquadMission {
     maxLinks: squadInt(j['maxLinks']),
     clubLinkCap: j['clubLinkCap'] == null ? 3 : squadInt(j['clubLinkCap']),
     extraPrice: squadInt(j['extraPrice']),
-    starBonus: (j['starBonus'] as Map? ?? {}).map(
-      (k, v) => MapEntry(int.parse(k.toString()), squadInt(v)),
-    ),
+    starBonus: squadIntMap(j['starBonus']),
   );
 }
 
@@ -305,3 +303,15 @@ class SquadResponse {
 }
 
 int squadInt(Object? n) => (n as num?)?.toInt() ?? 0;
+
+/// RTDB reads a map with small integer keys ({2: 5, 3: 10}) back as a list
+/// ([null, null, 5, 10]); accept both.
+Map<int, int> squadIntMap(Object? raw) => {
+  if (raw is Map)
+    for (final e in raw.entries)
+      if (int.tryParse(e.key.toString()) != null && e.value is num)
+        int.parse(e.key.toString()): squadInt(e.value),
+  if (raw is List)
+    for (final (i, v) in raw.indexed)
+      if (v is num) i: v.toInt(),
+};

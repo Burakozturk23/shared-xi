@@ -19,9 +19,9 @@ List<Map<String, dynamic>> _maps(dynamic v) =>
     (v is List ? v : const []).map(rewardMap).toList();
 const _medals = ['Henüz madalya yok', 'Bronz', 'Gümüş', 'Altın', 'Ustalık'];
 const _levels = {
-  'beginner': 'Başlangıç · 3–4 dönem',
-  'normal': 'Normal · 5–7 dönem',
-  'legend': 'Efsane · 8–12 dönem',
+  'beginner': 'Kolay · yıldızlar',
+  'normal': 'Normal · bilinenler',
+  'legend': 'Zor · zorlu kariyer',
 };
 // Transfer levels follow how well known the player is; "normal" is the mix.
 const _transferLevels = {
@@ -336,12 +336,13 @@ class _CareerTransferPageState extends State<CareerTransferPage>
       ),
       const SizedBox(height: 8),
       const Text(
-        'Zorluk, futbolcunun ne kadar tanındığına göre. Aynı futbolcu arka arkaya gelmez.',
+        'Kolay: yıldız oyuncu, iki büyük kulüp. Orta: bilinen oyuncu ve kulüpler. '
+        'Zor: daha az hatırlanan kulüpler ve dönemler. Aynı futbolcu arka arkaya gelmez.',
       ),
       const SizedBox(height: 16),
     ],
     if (_career) ...[
-      // "Başlangıç · 3–4 dönem" shows as name over range in the segment.
+      // "Kolay · yıldızlar" shows as name over what it holds in the segment.
       HubSegmented<String>(
         label: 'Zorluk',
         options: _levels.map(
@@ -349,6 +350,11 @@ class _CareerTransferPageState extends State<CareerTransferPage>
         ),
         value: _difficulty,
         onChanged: _busy ? null : (v) => setState(() => _difficulty = v),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Kolay: yıldız oyuncu, çoğu büyük kulüp. Normal: bilinen oyuncular. '
+        'Zor: daha az bilinen kulüplerle uzun kariyerler. Kiralıklar kariyerde gösterilmez.',
       ),
       const SizedBox(height: 16),
     ],
@@ -362,7 +368,7 @@ class _CareerTransferPageState extends State<CareerTransferPage>
           ),
           for (final rule in [
             _career
-                ? 'Futbolcu başına en fazla 12 Link Coin / 24 XP. Başlangıç seviyesinde ustalık yok.'
+                ? 'Futbolcu başına en fazla 12 Link Coin / 24 XP. Kolay seviyede ustalık yok.'
                 : 'Transfer başına ilk resmî denemede en fazla 6 Link Coin / 12 XP.',
             if (!_career)
               'Seri yalnızca ilk denemelerde ilerler. 5 seri: +10 Link Coin, 10 seri: +20 Link Coin (bir kez).',

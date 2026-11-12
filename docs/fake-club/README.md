@@ -11,6 +11,16 @@
 
 ## Veri kapsamı ve kanıt
 
+**Zorluk düzeni (12 Kasım 2026).** İlk sürümde soru havuzu yalnızca kariyeri bitmiş efsaneler ve teknik direktörlerdi; her turda bir efsane çıkıyordu. Artık iki havuz var:
+
+- **Aktif futbolcular** (`tools/fake_club/active_coverage.json`, `build_active_coverage.py`): seçim sırası ilk 2000'deki, en az üç bilinen kulübü olan 160 futbolcu. Kariyerleri İngilizce Wikipedia kutusuyla karşılaştırıldı (`wikipedia-active-2026-11-12.json`, sayfa ve revizyon numarasıyla). Bir kulüp ancak hem V4 kariyerinde hem Wikipedia'da varsa "gerçek" gösterilir. Wikipedia'da olup V4'ün bağlamadığı kulüpler ve yedek takım oynanan kulübün A takımı (Lewandowski: Legia II → Legia) hiçbir zaman sahte olmaz.
+- **Efsaneler ve teknik direktörler** (`coverage.json`, kapalı kariyer): yalnızca **efsane** kademesi.
+- **Kademe = tanınırlık.** Seçim sırası ilk 300 kolay, 300–800 orta, 800–2000 zor. Kolay/orta için gerçek üçlünün en az ikisi, zor için en az biri online kulüp listesinde olmalıdır; olmayan oyuncu bir kademe düşer, hiç yoksa havuza girmez. Kolay ve orta sorular futbolcunun en bilinen kulüplerini gösterir.
+- **Sahte kulüp hiçbir zaman** oyuncunun oynadığı bir kulüple ayırt edici adı paylaşan bir kulüp (aynı kulübün ikinci V4 kaydı, ör. AZ; ya da yedek takımı, ör. Juventus Next Gen) ya da bir yedek/altyapı takımı olmaz. Zor ve efsanede, kural gevşese bile, dört kulübün en az bilineni olamaz.
+- Sonuç: 190 kişi, 1393 soru (kolay 580, orta 306, zor 321, efsane 186). Online düello 2 kolay, 3 orta, 3 zor, 2 efsane sorduğu için efsaneler son iki turda çıkar. Sonsuz Seri'de efsaneler seri 20'den sonra gelir.
+
+Aşağıdaki maddeler ilk sürümü (efsane havuzu) anlatır.
+
 `tools/fake_club/coverage.json` açık bir tam kariyer izin listesidir. V4'teki `LIKELY_COMPLETE_MODERN_WINDOW` etiketi tek başına **tam kariyer kanıtı sayılmaz**. Kapsamı bilinmeyen aktif futbolcular soru havuzuna alınmaz.
 
 - İlk sürüm: **33 futbolcu, 768 soru**, her zorlukta 192 soru. Hiçbir kademede sahte kulüp gerçek üç kulübün ülkelerinin dışından gelmez: kolay aynı ülkeden, normal aynı ülke+ligden (lig adı ülkesiyle birlikte karşılaştırılır, ör. iki "Bundesliga"), zor ve efsane aynı ülke+ligden ve üçlünün ortalama tanınırlığına ±20 / ±10 yakın, en az bilinenden aşağı değil. Aday kalmazsa kural bir kademe gevşer. Bir sahte kulüp katalogda en fazla 5 kez kullanılır. 36 incelenmiş kariyerin 3'ünde en az üç gösterilebilir, tutarlı kulüp olmadığından soru yok.
@@ -67,3 +77,9 @@ Canlı deploy ve main merge bu çalışmanın parçası olarak yapılmadı. PDF'
 | ON-08 | Otomatik test cihaz kabulünün yerine geçmez | **İki farklı gerçek cihaz/hesap: bekliyor** |
 
 Flutter analiz/test/Android debug derleme sonucu PR'nin CI bölümünde izlenir. Tam V1 yayın PASS'i, fiziksel cihaz kapıları kapanmadan verilmez.
+
+## Sahte kulüp: taraftarın bildiği kulüp (13 Kasım 2026)
+
+- Sahte kulüp artık hep taraftarın bildiği bir kulüptür. Önceden adaylar veritabanının güvenilmez popülerlik puanından seçiliyordu; kolay soruların 580'inden 533'ünde sahte kulüp tanınmayan bir kulüptü (Lewandowski için UD Melilla, Alaba için Arzignano Valchiampo) ve soru "hangisini tanımıyorum"a dönüşüyordu.
+- Kolay ve normal sahteler online kulüp listelerinden (grid ve bilinen kulüpler), zor ve efsane sahteler bunlara ek olarak en az 10 yıldızın (78+) oynadığı kulüplerden gelir; kolayda gerçek kulüplerden biriyle aynı ülke, normal ve üstünde aynı lig. Örnekler: Lewandowski · sahte Werder Bremen, Mané · Lille, Coutinho · Southampton, Beckham · Leicester City.
+- Aktif oyuncuların seviyesi veritabanı sırası yerine online modların oyun puanına göredir: 84+ kolay, 80+ normal, kalan zor; efsaneler son turlarda kalır. Bir sahte kulüp katalogda en çok 14 kez görünür (bilinen kulüp havuzu daha küçük olduğu için 5'ten yükseltildi).

@@ -275,8 +275,10 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       }
       const old = runOf(s.sessions[s.active[input.mode]]);
       if (old && !old.finished) fail("already-exists", "Kayıtlı oyununa devam et.");
+      // A little-known mystery (`obscure`) stays in the archive but is never dealt.
       let candidates = pool(catalog, input.mode)
-          .filter((p) => !(policy.disabledFiles || []).includes(fileKey(input.mode, p)));
+          .filter((p) => !(policy.disabledFiles || []).includes(fileKey(input.mode, p)) &&
+            (input.target || !p.obscure));
       if (daily) {
         // Today's mystery or chain: the same file for everyone (chains up to PAR 3).
         const open = input.mode === "mastermind" ? candidates.filter((p) => p.par <= 3) :

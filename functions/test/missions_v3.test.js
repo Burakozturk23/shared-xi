@@ -196,3 +196,18 @@ test("career guess followed by skip cannot masquerade as a completed ordering pu
     assert.equal(h.read("missionState/alice/daily/counters/mode__career"), finish ? 1 : null);
   }
 });
+// RTDB never stores an empty object: a week with no claim yet is read back without
+// `weekly.claims`, and the first weekly reward of the week threw "Cannot set properties
+// of undefined" (the app said "Ödül alınamadı"). Same for a day read back without claims.
+test("the first weekly reward of a week is paid after an RTDB round trip drops the empty claims", () => {
+  const s = state(); M.assign(s, "a", ready, policy, now);
+  for (const [m] of M.soloModes) for (let n = 0; n < 10; n++) M.record(s, event(m + n, m), now);
+  // What RTDB returns: empty objects gone.
+  const stored = JSON.parse(JSON.stringify(s, (k, v) => v && typeof v === "object" && !Array.isArray(v) &&
+    !Object.keys(v).length ? undefined : v));
+  assert.equal(stored.weekly.claims, undefined);
+  const back = M.decorate({daily: {...stored.daily, claims: {}}, generalClaims: {}, updatedAt: now}, stored, now);
+  const w = M.weeklyCatalog[0];
+  const paid = M.claim(back, w.id, policy, now, "first");
+  assert.equal(paid.claim.rewardCoins, 40); assert.ok(back.weekly.claims[w.id]);
+});

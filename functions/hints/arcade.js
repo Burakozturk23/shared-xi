@@ -19,9 +19,11 @@ function arcade({E}) {
   function wrongPair(r, c) {
     const cards = r.board.cards; const matched = new Set(r.matched || []);
     for (const p of cards.filter((x) => x.type === "player" && !matched.has(x.pair))) {
-      const career = c.careers.find((x) => x.playerId === p.entityId);
+      // The board's own pair keeps every club he played for (excluded); older
+      // boards fall back to the reviewed careers.
+      const played = r.board.pairs?.[p.pair]?.excluded || c.careers.find((x) => x.playerId === p.entityId)?.clubs;
       const club = cards.find((x) => x.type === "club" && !matched.has(x.pair) && x.pair !== p.pair &&
-        career && !career.clubs.includes(x.entityId));
+        played && !played.includes(x.entityId));
       if (club) return `${cards.indexOf(p) + 1}. kart ile ${cards.indexOf(club) + 1}. kart eşleşmez`;
     }
     return null;

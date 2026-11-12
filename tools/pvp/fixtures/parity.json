@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "version": "pvp-v1-d0156b62b97ed7e1",
+  "version": "pvp-v1-929244ddea45fd2c",
   "clubs": [
     {
       "id": 2,
@@ -531,12 +531,6 @@
       "country": "Denmark"
     },
     {
-      "id": 208,
-      "name": "Haras El Hodood",
-      "league": "Egyptian Premier League",
-      "country": "Egypt"
-    },
-    {
       "id": 209,
       "name": "CA River Plate",
       "league": "Torneo Clausura",
@@ -547,12 +541,6 @@
       "name": "Grêmio Foot-Ball Porto Alegrense",
       "league": "Campeonato Brasileiro Série A",
       "country": "Brazil"
-    },
-    {
-      "id": 218,
-      "name": "San Jose Earthquakes",
-      "league": "Major League Soccer",
-      "country": "United States"
     },
     {
       "id": 221,
@@ -1371,6 +1359,12 @@
       "country": "Türkiye"
     },
     {
+      "id": 850,
+      "name": "FC Wil 1900",
+      "league": "Challenge League",
+      "country": "Switzerland"
+    },
+    {
       "id": 855,
       "name": "EA Guingamp",
       "league": "Ligue 2",
@@ -1429,24 +1423,6 @@
       "name": "Istanbulspor",
       "league": "1.Lig",
       "country": "Türkiye"
-    },
-    {
-      "id": 931,
-      "name": "Fulham FC",
-      "league": "Premier League",
-      "country": "England"
-    },
-    {
-      "id": 932,
-      "name": "Lokomotiv Moscow",
-      "league": "Premier Liga",
-      "country": "Russia"
-    },
-    {
-      "id": 937,
-      "name": "Júbilo Iwata",
-      "league": "J2 League",
-      "country": "Japan"
     },
     {
       "id": 940,
@@ -1687,12 +1663,6 @@
       "name": "SC Braga",
       "league": "Liga Portugal",
       "country": "Portugal"
-    },
-    {
-      "id": 1076,
-      "name": "Cardiff MET",
-      "league": "Wales Premier League",
-      "country": "Wales"
     },
     {
       "id": 1080,
@@ -2109,8 +2079,20 @@
       "country": "Argentina"
     },
     {
+      "id": 1467,
+      "name": "Göztepe",
+      "league": "Süper Lig",
+      "country": "Türkiye"
+    },
+    {
       "id": 1506,
       "name": "Kardemir Karabükspor",
+      "league": "",
+      "country": "Türkiye"
+    },
+    {
+      "id": 1518,
+      "name": "Türk Telekomspor",
       "league": "",
       "country": "Türkiye"
     },
@@ -2173,6 +2155,12 @@
       "name": "Erzurumspor",
       "league": "",
       "country": "Türkiye"
+    },
+    {
+      "id": 1771,
+      "name": "CSD Tristan Suarez",
+      "league": "Primera Nacional",
+      "country": "Argentina"
     },
     {
       "id": 1785,
@@ -2385,12 +2373,6 @@
       "country": "Portugal"
     },
     {
-      "id": 2440,
-      "name": "D.C. United",
-      "league": "Major League Soccer",
-      "country": "United States"
-    },
-    {
       "id": 2441,
       "name": "AEK Athens",
       "league": "Super League 1",
@@ -2439,22 +2421,10 @@
       "country": "Spain"
     },
     {
-      "id": 2524,
-      "name": "Universitatea Craiova",
-      "league": "Liga I",
-      "country": "Romania"
-    },
-    {
       "id": 2553,
       "name": "Kilmarnock FC",
       "league": "Scottish Premiership",
       "country": "Scotland"
-    },
-    {
-      "id": 2573,
-      "name": "Barau FC",
-      "league": "Nigeria NPFL",
-      "country": "Nigeria"
     },
     {
       "id": 2578,
@@ -2505,12 +2475,6 @@
       "country": "Russia"
     },
     {
-      "id": 2700,
-      "name": "Anzhi Makhachkala",
-      "league": "",
-      "country": "Russia"
-    },
-    {
       "id": 2721,
       "name": "Forza e Coraggio Alessandria",
       "league": "",
@@ -2521,6 +2485,12 @@
       "name": "SPAL",
       "league": "",
       "country": "Italy"
+    },
+    {
+      "id": 2740,
+      "name": "Vorskla Poltava",
+      "league": "Persha Liga",
+      "country": "Ukraine"
     },
     {
       "id": 2745,
@@ -2697,6 +2667,12 @@
       "country": "France"
     },
     {
+      "id": 3173,
+      "name": "Van Spor FK",
+      "league": "1.Lig",
+      "country": "Türkiye"
+    },
+    {
       "id": 3187,
       "name": "Tianjin Jinmen Tiger",
       "league": "Chinese Super League",
@@ -2709,12 +2685,6 @@
       "country": "Brazil"
     },
     {
-      "id": 3202,
-      "name": "Bakirköyspor",
-      "league": "",
-      "country": "Türkiye"
-    },
-    {
       "id": 3205,
       "name": "Kayserispor",
       "league": "Süper Lig",
@@ -2723,6 +2693,12 @@
     {
       "id": 3207,
       "name": "Boluspor",
+      "league": "1.Lig",
+      "country": "Türkiye"
+    },
+    {
+      "id": 3209,
+      "name": "Pendikspor",
       "league": "1.Lig",
       "country": "Türkiye"
     },
@@ -2805,12 +2781,6 @@
       "country": "Spain"
     },
     {
-      "id": 3385,
-      "name": "Panserraikos",
-      "league": "Super League 1",
-      "country": "Greece"
-    },
-    {
       "id": 3426,
       "name": "Esbjerg fB",
       "league": "1.Division",
@@ -2845,12 +2815,6 @@
       "name": "Rotor Volgograd",
       "league": "1.Division",
       "country": "Russia"
-    },
-    {
-      "id": 3610,
-      "name": "Seongnam FC",
-      "league": "K League 2",
-      "country": "Korea, South"
     },
     {
       "id": 3631,
@@ -2919,6 +2883,12 @@
       "country": "Türkiye"
     },
     {
+      "id": 3842,
+      "name": "Izmirspor",
+      "league": "",
+      "country": "Türkiye"
+    },
+    {
       "id": 3876,
       "name": "Mirassol Futebol Clube (SP)",
       "league": "Campeonato Brasileiro Série A",
@@ -2941,12 +2911,6 @@
       "name": "CA Talleres",
       "league": "Torneo Clausura",
       "country": "Argentina"
-    },
-    {
-      "id": 3958,
-      "name": "Vissel Kobe",
-      "league": "J1 League",
-      "country": "Japan"
     },
     {
       "id": 3973,
@@ -3207,6 +3171,12 @@
       "country": "Croatia"
     },
     {
+      "id": 5208,
+      "name": "CA Los Andes",
+      "league": "Primera Nacional",
+      "country": "Argentina"
+    },
+    {
       "id": 5358,
       "name": "SD Huesca",
       "league": "LaLiga2",
@@ -3423,6 +3393,12 @@
       "country": "Japan"
     },
     {
+      "id": 6642,
+      "name": "CD Chivas USA",
+      "league": "",
+      "country": "United States"
+    },
+    {
       "id": 6688,
       "name": "Bilbao Athletic",
       "league": "Primera Federación - Grupo I",
@@ -3555,12 +3531,6 @@
       "country": "Slovakia"
     },
     {
-      "id": 7452,
-      "name": "RB Omiya Ardija",
-      "league": "J2 League",
-      "country": "Japan"
-    },
-    {
       "id": 7468,
       "name": "Club Olimpo",
       "league": "Federal A - Fase Campeonato",
@@ -3631,6 +3601,12 @@
       "name": "US Vibonese",
       "league": "Serie D - Girone I",
       "country": "Italy"
+    },
+    {
+      "id": 8172,
+      "name": "Atlético Nacional",
+      "league": "England League One",
+      "country": ""
     },
     {
       "id": 8178,
@@ -3813,12 +3789,6 @@
       "country": "Italy"
     },
     {
-      "id": 10301,
-      "name": "Zimbru",
-      "league": "Moldova Super Liga",
-      "country": "Moldova"
-    },
-    {
       "id": 10492,
       "name": "Esporte Clube Juventude",
       "league": "Campeonato Brasileiro Série A",
@@ -3853,12 +3823,6 @@
       "name": "Zamora CF",
       "league": "Primera Federación - Grupo I",
       "country": "Spain"
-    },
-    {
-      "id": 10920,
-      "name": "Umm Salal SC",
-      "league": "Qatar Stars League",
-      "country": "Qatar"
     },
     {
       "id": 10997,
@@ -3897,12 +3861,6 @@
       "country": "Spain"
     },
     {
-      "id": 11449,
-      "name": "Clube de Regatas Brasil (AL)",
-      "league": "Campeonato Brasileiro Série B",
-      "country": "Brazil"
-    },
-    {
       "id": 11596,
       "name": "AD Alcorcón",
       "league": "Primera Federación - Grupo II",
@@ -3913,12 +3871,6 @@
       "name": "Giresunspor",
       "league": "3.Lig Grup 3",
       "country": "Türkiye"
-    },
-    {
-      "id": 11854,
-      "name": "Junior FC",
-      "league": "Spain Segunda Division",
-      "country": ""
     },
     {
       "id": 12005,
@@ -3978,6 +3930,12 @@
       "id": 12574,
       "name": "CD Godoy Cruz Antonio Tomba",
       "league": "Torneo Clausura",
+      "country": "Argentina"
+    },
+    {
+      "id": 12672,
+      "name": "Club Almirante Brown",
+      "league": "Primera Nacional",
       "country": "Argentina"
     },
     {
@@ -4057,12 +4015,6 @@
       "name": "Gimnasia y Esgrima de Mendoza",
       "league": "Primera Nacional",
       "country": "Argentina"
-    },
-    {
-      "id": 14933,
-      "name": "Beykoz Ishakli Spor",
-      "league": "3.Lig Grup 1",
-      "country": "Türkiye"
     },
     {
       "id": 15064,
@@ -4149,12 +4101,6 @@
       "country": "France"
     },
     {
-      "id": 17561,
-      "name": "Boa EC",
-      "league": "",
-      "country": "Brazil"
-    },
-    {
       "id": 17707,
       "name": "US Jeanne d\\",
       "league": "",
@@ -4201,12 +4147,6 @@
       "name": "Paganese Calcio 1926",
       "league": "Serie D - Girone H",
       "country": "Italy"
-    },
-    {
-      "id": 19585,
-      "name": "Al-Kharaitiyat SC",
-      "league": "Qatari Second Division",
-      "country": "Qatar"
     },
     {
       "id": 19723,
@@ -4455,6 +4395,12 @@
       "country": "United States"
     },
     {
+      "id": 33285,
+      "name": "Ventura County FC",
+      "league": "MLS Next Pro",
+      "country": "United States"
+    },
+    {
       "id": 33734,
       "name": "SS Monopoli 1966",
       "league": "Serie C - Girone C",
@@ -4509,12 +4455,6 @@
       "country": "United States"
     },
     {
-      "id": 39722,
-      "name": "Erzurumspor FK",
-      "league": "1.Lig",
-      "country": "Türkiye"
-    },
-    {
       "id": 41101,
       "name": "Juventus Next Gen",
       "league": "Serie C - Girone B",
@@ -4545,10 +4485,10 @@
       "country": "United States"
     },
     {
-      "id": 45457,
-      "name": "All Boys",
-      "league": "Argentine Primera Nacional",
-      "country": "Argentina"
+      "id": 44006,
+      "name": "Bodrum FK",
+      "league": "1.Lig",
+      "country": "Türkiye"
     },
     {
       "id": 45604,
@@ -4629,12 +4569,6 @@
       "country": "Ukraine"
     },
     {
-      "id": 62204,
-      "name": "Las Vegas Lights FC",
-      "league": "USL Championship",
-      "country": "United States"
-    },
-    {
       "id": 64480,
       "name": "Birmingham Legion FC",
       "league": "USL Championship",
@@ -4656,12 +4590,6 @@
       "id": 68495,
       "name": "Austin Bold FC",
       "league": "",
-      "country": "United States"
-    },
-    {
-      "id": 69044,
-      "name": "Oakland Roots SC",
-      "league": "USL Championship",
       "country": "United States"
     },
     {
@@ -4707,6 +4635,12 @@
       "country": "France"
     },
     {
+      "id": 1000000208,
+      "name": "CSKA-Sofia",
+      "league": "",
+      "country": ""
+    },
+    {
       "id": 1000000583,
       "name": "PSG",
       "league": "FR1",
@@ -4725,16 +4659,16 @@
       "country": ""
     },
     {
-      "id": 1000000932,
-      "name": "Loko Moscow",
-      "league": "RU1",
-      "country": "Russia"
-    },
-    {
       "id": 1000000964,
       "name": "Zenit S-Pb",
       "league": "RU1",
       "country": "Russia"
+    },
+    {
+      "id": 1000001037,
+      "name": "U. de Chile",
+      "league": "",
+      "country": ""
     },
     {
       "id": 1000001306,
@@ -4751,6 +4685,12 @@
     {
       "id": 1000002433,
       "name": "Colo-Colo",
+      "league": "",
+      "country": ""
+    },
+    {
+      "id": 1000002573,
+      "name": "Zeljeznicar",
       "league": "",
       "country": ""
     },
@@ -4781,6 +4721,18 @@
     {
       "id": 1000008519,
       "name": "Sevilla Atl.",
+      "league": "",
+      "country": ""
+    },
+    {
+      "id": 1000010301,
+      "name": "Pyunik Yerevan",
+      "league": "",
+      "country": ""
+    },
+    {
+      "id": 1000014933,
+      "name": "A. Üsküdar 1908",
       "league": "",
       "country": ""
     },
@@ -6448,7 +6400,6 @@
         ],
         "clubs": [
           199,
-          208,
           265,
           614,
           978,
@@ -6458,7 +6409,8 @@
           6347,
           6600,
           7178,
-          10010
+          10010,
+          1000000208
         ],
         "careerTimeline": [
           {
@@ -6522,12 +6474,12 @@
       "expected": {
         "id": "15037",
         "clubs": [
+          "1000000208",
           "10010",
           "114",
           "1301",
           "18487",
           "199",
-          "208",
           "210",
           "2125",
           "265",
@@ -6909,6 +6861,52 @@
     },
     {
       "raw": {
+        "id": 22403,
+        "name": "Laurent Courtois",
+        "position": "Midfield",
+        "detailedPosition": null,
+        "countries": [
+          "France"
+        ],
+        "clubs": [
+          379,
+          415,
+          1041,
+          1061,
+          1147,
+          1290,
+          2580,
+          3368,
+          6642,
+          33285
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 2000000.0
+      },
+      "expected": {
+        "id": "22403",
+        "clubs": [
+          "1041",
+          "1061",
+          "1147",
+          "1290",
+          "2580",
+          "33285",
+          "3368",
+          "379",
+          "415",
+          "6642"
+        ],
+        "countries": [
+          "France"
+        ],
+        "position": "MID",
+        "rating": 68.0,
+        "cost": 10
+      }
+    },
+    {
+      "raw": {
         "id": 22493,
         "name": "Thomas Lindrup",
         "position": "Midfield",
@@ -6987,80 +6985,6 @@
         ],
         "position": "DEF",
         "rating": 70.5,
-        "cost": 10
-      }
-    },
-    {
-      "raw": {
-        "id": 23914,
-        "name": "Lassana Diarra",
-        "position": "Midfield",
-        "detailedPosition": "Defensive Midfield",
-        "countries": [
-          "France"
-        ],
-        "clubs": [
-          11,
-          244,
-          418,
-          583,
-          631,
-          738,
-          932,
-          1020,
-          2524,
-          2700
-        ],
-        "careerTimeline": [
-          {
-            "clubId": 418,
-            "startYear": 2012,
-            "endYear": 2012
-          },
-          {
-            "clubId": 2700,
-            "startYear": 2012,
-            "endYear": 2013
-          },
-          {
-            "clubId": 1000000932,
-            "startYear": 2013,
-            "endYear": 2014
-          },
-          {
-            "clubId": 244,
-            "startYear": 2015,
-            "endYear": 2017
-          },
-          {
-            "clubId": 1000000583,
-            "startYear": 2018,
-            "endYear": 2018
-          }
-        ],
-        "peakMarketValue": 24000000.0
-      },
-      "expected": {
-        "id": "23914",
-        "clubs": [
-          "1000000583",
-          "1000000932",
-          "1020",
-          "11",
-          "244",
-          "2524",
-          "2700",
-          "418",
-          "583",
-          "631",
-          "738",
-          "932"
-        ],
-        "countries": [
-          "France"
-        ],
-        "position": "MID",
-        "rating": 74.7,
         "cost": 10
       }
     },
@@ -7181,44 +7105,6 @@
         ],
         "position": "GK",
         "rating": 52.5,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
-        "id": 25478,
-        "name": "Ferhat Yayla",
-        "position": "Defender",
-        "detailedPosition": null,
-        "countries": [
-          "Türkiye"
-        ],
-        "clubs": [
-          924,
-          2381,
-          3202,
-          7160,
-          14933,
-          39722
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 150000.0
-      },
-      "expected": {
-        "id": "25478",
-        "clubs": [
-          "14933",
-          "2381",
-          "3202",
-          "39722",
-          "7160",
-          "924"
-        ],
-        "countries": [
-          "Turkey"
-        ],
-        "position": "DEF",
-        "rating": 53.7,
         "cost": 6
       }
     },
@@ -7691,8 +7577,8 @@
           281,
           430,
           814,
-          2573,
-          6377
+          6377,
+          1000002573
         ],
         "careerTimeline": [
           {
@@ -7751,8 +7637,8 @@
       "expected": {
         "id": "28396",
         "clubs": [
+          "1000002573",
           "12",
-          "2573",
           "281",
           "33",
           "36",
@@ -8616,44 +8502,6 @@
         "position": "ATT",
         "rating": 84.9,
         "cost": 14
-      }
-    },
-    {
-      "raw": {
-        "id": 39938,
-        "name": "Andranik Teymourian",
-        "position": "Midfield",
-        "detailedPosition": null,
-        "countries": [
-          "Iran"
-        ],
-        "clubs": [
-          349,
-          355,
-          931,
-          1076,
-          10920,
-          19585
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 2000000.0
-      },
-      "expected": {
-        "id": "39938",
-        "clubs": [
-          "1076",
-          "10920",
-          "19585",
-          "349",
-          "355",
-          "931"
-        ],
-        "countries": [
-          "Iran"
-        ],
-        "position": "MID",
-        "rating": 62.6,
-        "cost": 6
       }
     },
     {
@@ -10099,60 +9947,6 @@
     },
     {
       "raw": {
-        "id": 55367,
-        "name": "Marcelo Macedo",
-        "position": "Attack",
-        "detailedPosition": null,
-        "countries": [
-          "Brazil"
-        ],
-        "clubs": [
-          614,
-          679,
-          1755,
-          2462,
-          3234,
-          3385,
-          3610,
-          4064,
-          8590,
-          9030,
-          10492,
-          11449,
-          11854,
-          17561
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 600000.0
-      },
-      "expected": {
-        "id": "55367",
-        "clubs": [
-          "10492",
-          "11449",
-          "11854",
-          "1755",
-          "17561",
-          "2462",
-          "3234",
-          "3385",
-          "3610",
-          "4064",
-          "614",
-          "679",
-          "8590",
-          "9030"
-        ],
-        "countries": [
-          "Brazil"
-        ],
-        "position": "ATT",
-        "rating": 61.8,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
         "id": 55735,
         "name": "Henrikh Mkhitaryan",
         "position": "Midfield",
@@ -10168,7 +9962,7 @@
           660,
           985,
           2783,
-          10301
+          1000010301
         ],
         "careerTimeline": [
           {
@@ -10217,7 +10011,7 @@
       "expected": {
         "id": "55735",
         "clubs": [
-          "10301",
+          "1000010301",
           "11",
           "12",
           "16",
@@ -10814,6 +10608,44 @@
         "position": "DEF",
         "rating": 69.2,
         "cost": 10
+      }
+    },
+    {
+      "raw": {
+        "id": 67203,
+        "name": "Francisco Arrué",
+        "position": "Midfield",
+        "detailedPosition": null,
+        "countries": [
+          "Chile",
+          "Brazil"
+        ],
+        "clubs": [
+          434,
+          1244,
+          5662,
+          8172,
+          1000001037
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 300000.0
+      },
+      "expected": {
+        "id": "67203",
+        "clubs": [
+          "1000001037",
+          "1244",
+          "434",
+          "5662",
+          "8172"
+        ],
+        "countries": [
+          "Chile",
+          "Brazil"
+        ],
+        "position": "MID",
+        "rating": 55.7,
+        "cost": 6
       }
     },
     {
@@ -11482,44 +11314,6 @@
     },
     {
       "raw": {
-        "id": 79709,
-        "name": "Naoya Saeki",
-        "position": "Midfield",
-        "detailedPosition": null,
-        "countries": [
-          "Japan"
-        ],
-        "clubs": [
-          672,
-          937,
-          3734,
-          3958,
-          7452,
-          9597
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 350000.0
-      },
-      "expected": {
-        "id": "79709",
-        "clubs": [
-          "3734",
-          "3958",
-          "672",
-          "7452",
-          "937",
-          "9597"
-        ],
-        "countries": [
-          "Japan"
-        ],
-        "position": "MID",
-        "rating": 53.1,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
         "id": 82442,
         "name": "Olivier Giroud",
         "position": "Attack",
@@ -11611,6 +11405,86 @@
         "position": "ATT",
         "rating": 85.4,
         "cost": 14
+      }
+    },
+    {
+      "raw": {
+        "id": 85663,
+        "name": "Anıl Dilaver",
+        "position": "Attack",
+        "detailedPosition": null,
+        "countries": [
+          "Türkiye"
+        ],
+        "clubs": [
+          141,
+          152,
+          833,
+          2750,
+          3173,
+          3842,
+          1000014933
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 400000.0
+      },
+      "expected": {
+        "id": "85663",
+        "clubs": [
+          "1000014933",
+          "141",
+          "152",
+          "2750",
+          "3173",
+          "3842",
+          "833"
+        ],
+        "countries": [
+          "Turkey"
+        ],
+        "position": "ATT",
+        "rating": 55.2,
+        "cost": 6
+      }
+    },
+    {
+      "raw": {
+        "id": 88056,
+        "name": "Marcos Brítez Ojeda",
+        "position": "Midfield",
+        "detailedPosition": null,
+        "countries": [
+          "Argentina"
+        ],
+        "clubs": [
+          1444,
+          1771,
+          2063,
+          3938,
+          5208,
+          12179,
+          12672
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 300000.0
+      },
+      "expected": {
+        "id": "88056",
+        "clubs": [
+          "12179",
+          "12672",
+          "1444",
+          "1771",
+          "2063",
+          "3938",
+          "5208"
+        ],
+        "countries": [
+          "Argentina"
+        ],
+        "position": "MID",
+        "rating": 55.3,
+        "cost": 6
       }
     },
     {
@@ -12082,6 +11956,86 @@
     },
     {
       "raw": {
+        "id": 98536,
+        "name": "Adis Jahovic",
+        "position": "Attack",
+        "detailedPosition": "Centre-Forward",
+        "countries": [
+          "North Macedonia"
+        ],
+        "clubs": [
+          144,
+          260,
+          589,
+          850,
+          1467,
+          2293,
+          2696,
+          2740,
+          19789,
+          44006,
+          1000002573
+        ],
+        "careerTimeline": [
+          {
+            "clubId": 2740,
+            "startYear": 2013,
+            "endYear": 2014
+          },
+          {
+            "clubId": 1000002696,
+            "startYear": 2015,
+            "endYear": 2016
+          },
+          {
+            "clubId": 1467,
+            "startYear": 2017,
+            "endYear": 2022
+          },
+          {
+            "clubId": 2293,
+            "startYear": 2018,
+            "endYear": 2019
+          },
+          {
+            "clubId": 19789,
+            "startYear": 2019,
+            "endYear": 2020
+          },
+          {
+            "clubId": 589,
+            "startYear": 2020,
+            "endYear": 2021
+          }
+        ],
+        "peakMarketValue": 1750000.0
+      },
+      "expected": {
+        "id": "98536",
+        "clubs": [
+          "1000002573",
+          "1000002696",
+          "144",
+          "1467",
+          "19789",
+          "2293",
+          "260",
+          "2696",
+          "2740",
+          "44006",
+          "589",
+          "850"
+        ],
+        "countries": [
+          "North Macedonia"
+        ],
+        "position": "ATT",
+        "rating": 62.5,
+        "cost": 6
+      }
+    },
+    {
+      "raw": {
         "id": 100216,
         "name": "Dariusz Szubert",
         "position": "Midfield",
@@ -12200,50 +12154,6 @@
     },
     {
       "raw": {
-        "id": 105973,
-        "name": "Quincy Amarikwa",
-        "position": "Attack",
-        "detailedPosition": null,
-        "countries": [
-          "United States",
-          "Nigeria"
-        ],
-        "clubs": [
-          218,
-          432,
-          1247,
-          2440,
-          4078,
-          11141,
-          62204,
-          69044
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 1000000.0
-      },
-      "expected": {
-        "id": "105973",
-        "clubs": [
-          "11141",
-          "1247",
-          "218",
-          "2440",
-          "4078",
-          "432",
-          "62204",
-          "69044"
-        ],
-        "countries": [
-          "USA",
-          "Nigeria"
-        ],
-        "position": "ATT",
-        "rating": 60.5,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
         "id": 109965,
         "name": "Pierre Gibaud",
         "position": "Defender",
@@ -12335,6 +12245,42 @@
         "position": "DEF",
         "rating": 70.7,
         "cost": 10
+      }
+    },
+    {
+      "raw": {
+        "id": 116644,
+        "name": "Hakan Akbaş",
+        "position": "Defender",
+        "detailedPosition": null,
+        "countries": [
+          "Türkiye"
+        ],
+        "clubs": [
+          126,
+          1518,
+          3209,
+          3840,
+          7160
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 50000.0
+      },
+      "expected": {
+        "id": "116644",
+        "clubs": [
+          "126",
+          "1518",
+          "3209",
+          "3840",
+          "7160"
+        ],
+        "countries": [
+          "Turkey"
+        ],
+        "position": "DEF",
+        "rating": 51.6,
+        "cost": 6
       }
     },
     {
@@ -14837,7 +14783,6 @@
           443,
           5724,
           5818,
-          45457,
           1000045457,
           1000048325
         ],
@@ -14886,7 +14831,6 @@
           "1000045457",
           "1000048325",
           "443",
-          "45457",
           "5724",
           "5818"
         ],
@@ -14894,7 +14838,7 @@
           "Armenia"
         ],
         "position": "ATT",
-        "rating": 60.2,
+        "rating": 58.2,
         "cost": 6
       }
     },
@@ -16731,9 +16675,9 @@
         "51358",
         "79416",
         "89272",
+        "98536",
         "227692",
-        "71580",
-        "55367"
+        "71580"
       ],
       "formation": "433",
       "tactics": {
@@ -16741,7 +16685,7 @@
         "tempo": 1,
         "width": 0.5
       },
-      "power": 53.74279227272726
+      "power": 53.215098068181796
     },
     {
       "playerIds": [
@@ -16752,7 +16696,7 @@
         "112062",
         "24143",
         "12650",
-        "79709",
+        "67203",
         "225161",
         "4603",
         "15381"
@@ -16763,7 +16707,7 @@
         "tempo": 0.8571428571428572,
         "width": 0.5
       },
-      "power": 54.765832987012985
+      "power": 55.19789668831169
     },
     {
       "playerIds": [
@@ -16773,8 +16717,8 @@
         "272803",
         "52590",
         "4818",
-        "39938",
         "463178",
+        "88056",
         "53219",
         "214100",
         "184346"
@@ -16785,7 +16729,7 @@
         "tempo": 0.7142857142857143,
         "width": 0.5
       },
-      "power": 58.85754977272728
+      "power": 58.377513149350655
     },
     {
       "playerIds": [
@@ -16841,7 +16785,7 @@
         "342825",
         "14870",
         "4640",
-        "23914",
+        "22403",
         "77199",
         "58756"
       ],
@@ -16851,7 +16795,7 @@
         "tempo": 0.2857142857142857,
         "width": 0.5
       },
-      "power": 58.22130285714286
+      "power": 57.78025142857142
     },
     {
       "playerIds": [
@@ -16863,9 +16807,9 @@
         "127799",
         "29613",
         "175951",
+        "85663",
         "269870",
-        "160882",
-        "105973"
+        "160882"
       ],
       "formation": "433",
       "tactics": {
@@ -16873,14 +16817,14 @@
         "tempo": 0.1428571428571429,
         "width": 0.5
       },
-      "power": 57.06132631493507
+      "power": 56.83683707792208
     },
     {
       "playerIds": [
         "696892",
         "3636",
-        "25478",
         "131066",
+        "116644",
         "9831",
         "98273",
         "737719",
@@ -16895,7 +16839,7 @@
         "tempo": 0,
         "width": 0.5
       },
-      "power": 54.20791659090909
+      "power": 54.38457431818181
     }
   ],
   "countryAliases": [

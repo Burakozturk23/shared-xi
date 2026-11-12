@@ -1,12 +1,23 @@
 """Compile reviewed V4 identities and 180 immutable daily / weekly packs.
 No runtime randomness, inferred aliases, live team claims or unreviewed fallback.
 
-Packs listed in frozen_packs.json (the first 90 days / 14 weeks that already shipped) are replayed
-verbatim and are never regenerated; only later dates are derived, so extending the calendar can
-never rewrite a pack a player may already have seen.
+Packs listed in frozen_packs.json (every day and week up to 12 November 2026, the ones a player may
+already have seen) are replayed verbatim and are never regenerated; only later dates are derived, so
+extending the calendar can never rewrite a pack a player may already have seen. (The server also pins
+a pack the first time anyone opens it.)
+
+From 13 November 2026 packs follow the gameplay rating of the online modes:
+- Passaparola asks clue questions only (generate_passaparola_clues.py: nationality, position, birth
+  year and longest clubs, then the surname), never the same player twice in a pack, and the player
+  least recently asked first. The older "Adının devamı 'Kimmich' …" questions stay only for the
+  frozen packs.
+- Anagram rounds: easy the most famous 4-6 letter names, hard the least known 7-10 letter ones,
+  normal 6-8 from the rest (nobody twice in the calendar); the round's level is stored in the pack.
+- Lingo player targets: rating 76+; country targets: football nations (two or more players 75+) until they run out. No target twice.
 """
 import argparse
 from collections import Counter, defaultdict
+import gzip
 from datetime import date, timedelta
 import hashlib
 import json
@@ -83,26 +94,36 @@ def build():
         collisions[normalize(overrides.get(p['id'], candidate))].add(p['id'])
     for p in players:
         assert collisions[p['answer']] == {p['id']}, (p['name'], collisions[p['answer']])
-    questions = read('passaparola.json')['questions'] + read('passaparola_generated.json')['questions']
+    clues = read('passaparola_clues.json')['questions']
+    questions = read('passaparola.json')['questions'] + read('passaparola_generated.json')['questions'] + clues
     assert len({q['id'] for q in questions}) == len(questions)
+    clue_ids = {q['id'] for q in clues}
     for q in questions:
         assert q['letter'] in ALPHABET and q['revision'] >= 1 and q['proof'] and q['prompt']
-        assert q['rule'] == ('contains' if q['letter'] == 'Ğ' else 'start_with')
+        # Clue questions also ask Ş inside a name (Yokuşlu), as few names start with it.
+        assert q['rule'] == ('contains' if q['letter'] == 'Ğ' else 'start_with') or \
+            q['id'] in clue_ids and q['letter'] == 'Ş' and q['rule'] == 'contains'
+
         assert normalize(q['answer']) in q['acceptedAnswers']
         for a in q['acceptedAnswers']:
             assert a == normalize(a)
             assert normalize(q['letter']) in a if q['rule'] == 'contains' else a.startswith(normalize(q['letter']))
         if q['rule'] == 'contains':
-            assert 'ğ' in q['answer'].lower()
+            assert q['letter'].lower() in q['answer'].lower()
         if q['proof']['kind'] == 'v4_identity':
             p = people[q['proof']['playerId']]
             assert p['country'] == q['proof']['country']
             if q['category'] == 'player':
                 assert p['name'] == q['proof']['name']
     assert min(Counter(q['letter'] for q in questions).values()) >= 6
-    # Every (letter, tier) slot a pack can request must have a question.
-    assert all(any(q['letter'] == l and q['difficulty'] == t for q in questions) for l in ALPHABET for t in (1, 2, 3))
+    # Every (letter, tier) slot a new pack can request must have a clue question.
+    assert all(any(q['letter'] == l and q['difficulty'] == t for q in clues) for l in ALPHABET for t in (1, 2, 3))
     assert set(q['letter'] for q in questions) == set(ALPHABET)
+    rating = {int(k): v['rating'] for k, v in json.loads(gzip.decompress(
+        (ROOT / 'functions/config/pvp_catalog.json.gz').read_bytes()))['players'].items()}
+    # A Lingo country is a football nation: two or more players rated 75+ (no Laos).
+    football_nations = Counter(r['country'] for r in con.execute('select id, country from players')
+                               if rating.get(r['id'], 0) >= 75)
     lingo = []
     for p in players:
         if len(p['answer']) <= 9:
@@ -130,15 +151,35 @@ def build():
                 dictionaries['player'].append(token)
     dictionaries = {k: sorted(set(v)) for k,v in dictionaries.items()}
     # Vocabulary is part of the pinned package, so a later release cannot reject yesterday's legal guess.
-    lingo_used = set()
+    lingo_used = {}  # target id -> day offset it was last asked
     frozen = read('frozen_packs.json')
     frozen_players = {a['playerId'] for d in frozen['daily'].values() for a in d['anagram']}
-    anagram_groups = {t: sorted([p for p in players if p['difficulty'] == t and p['id'] not in frozen_players],
-        key=lambda p: sha(['an',p['id']])) for t in [1,2,3]}
+    # Anagram levels: the reviewed players' word-length groups fill the calendar exactly,
+    # so levels start from them and then trade players: a better-known player moves to
+    # the easier level when both words fit the other level's length (easy 4-6, normal
+    # 6-8, hard 7-10). Easy ends with the most famous names it can hold, hard with the
+    # least known. Nobody appears twice in the calendar.
+    windows = {1: (4, 6), 2: (6, 8), 3: (7, 10)}
+    fits = lambda p, t: windows[t][0] <= len(p['answer']) <= windows[t][1]
+    level = {p['id']: p['difficulty'] for p in players if p['id'] not in frozen_players}
+    by_id = {p['id']: p for p in players}
+    r_of = lambda i: rating.get(i, 0)
+    changed = True
+    while changed:
+        changed = False
+        for easier, harder in [(1, 2), (2, 3), (1, 3)]:
+            low = sorted((i for i, t in level.items() if t == easier), key=lambda i: (r_of(i), i))
+            high = sorted((i for i, t in level.items() if t == harder), key=lambda i: (-r_of(i), i))
+            for a in low:
+                b = next((b for b in high if r_of(b) > r_of(a) and level[b] == harder and
+                          fits(by_id[b], easier) and fits(by_id[a], harder)), None)
+                if b is not None:
+                    level[a], level[b] = harder, easier; changed = True; break
+    anagram_groups = {t: sorted([by_id[i] for i, l in level.items() if l == t], key=lambda p: sha(['an', p['id']]))
+                      for t in [1, 2, 3]}
     fresh_days = DAYS - len(frozen['daily'])
-    for t,(lo,hi) in enumerate([(4,6),(6,8),(7,10)],1):
-        assert len(anagram_groups[t]) >= fresh_days
-        assert all(lo <= len(p['answer']) <= hi for p in anagram_groups[t])
+    for t in [1, 2, 3]:
+        assert len(anagram_groups[t]) >= fresh_days and all(fits(p, t) for p in anagram_groups[t])
     assert frozen_players <= {p['id'] for p in players}
     assert {d['lingoId'] for d in frozen['daily'].values()} <= {q['id'] for q in lingo}
     assert all(i in {q['id'] for q in questions} for d in frozen['daily'].values() for i in d['passaIds'])
@@ -146,12 +187,22 @@ def build():
     fresh_index = 0
     daily, weekly = {}, {}
     last_used = defaultdict(lambda: -10000)
+    player_used = defaultdict(lambda: -10000)
+    by_id = {q['id']: q for q in questions}
+    who = lambda q: q['proof'].get('playerId') or q['id']
+    def remember(ids, offset):
+        for i in ids:
+            last_used[i] = offset; player_used[who(by_id[i])] = offset
     def pack(letters, tiers, offset):
-        result = []
+        # Clue questions only; one player once per pack; the least recently asked
+        # question and player first.
+        result, players_in = [], set()
         for letter,tier in zip(letters,tiers):
-            choices = [q for q in questions if q['letter']==letter and q['difficulty']==tier]
-            q = min(choices,key=lambda q:(last_used[q['id']],sha([offset,q['id']])))
-            result.append(q['id']);last_used[q['id']] = offset
+            choices = [q for q in clues if q['letter']==letter and q['difficulty']==tier and who(q) not in players_in]
+            if not choices:
+                choices = [q for q in clues if q['letter']==letter and who(q) not in players_in]
+            q = min(choices,key=lambda q:(last_used[q['id']],player_used[who(q)],sha([offset,q['id']])))
+            result.append(q['id']); players_in.add(who(q)); remember([q['id']], offset)
         return result
     monday = START-timedelta(days=START.weekday())
     for offset in range(-START.weekday(),DAYS):
@@ -160,27 +211,33 @@ def build():
             n=(day-monday).days//7; letters=ALPHABET[n%29:]+ALPHABET[:n%29]
             if key in frozen['weekly']:
                 chosen=frozen['weekly'][key]['questionIds']
-                for i in chosen:last_used[i]=offset
+                remember(chosen, offset)
             else:
                 chosen=pack(letters,[1]*10+[2]*13+[3]*6,offset)
             weekly[key]=dict(questionIds=chosen)
         if offset<0:continue
         if key in frozen['daily']:
             daily[key]=frozen['daily'][key]
-            lingo_used.add(daily[key]['lingoId'])
-            for i in daily[key]['passaIds']:last_used[i]=offset
+            lingo_used[daily[key]['lingoId']] = offset
+            remember(daily[key]['passaIds'], offset)
             continue
         category=['player','club','country','player','club','country','player'][day.weekday()]
         tier=[1,2,1,2,3,1,2][day.weekday()]
         lo,hi={1:(4,6),2:(6,8),3:(7,9)}[tier]
-        candidates=[q for q in lingo if q['category']==category and q['id'] not in lingo_used and lo<=len(q['answer'])<=hi]
+        unused=[q for q in lingo if q['category']==category and q['id'] not in lingo_used]
+        fresh=[q for q in unused if lo<=len(q['answer'])<=hi]
+        known=lambda q: (category != 'player' or rating.get(q['proof']['id'], 0) >= 76) and             (category != 'country' or football_nations[q['proof']['key']] >= 2)
+        # Known players and football nations first, at the day's length, then at any
+        # length; the rest only once those run out.
+        candidates=[q for q in fresh if known(q)] or [q for q in unused if known(q)] or fresh
         assert candidates, ('Insufficient reviewed Lingo vocabulary',key,category,tier)
         q=min(candidates,key=lambda q:sha([key,q['id']]))
-        lingo_used.add(q['id'])
+        lingo_used[q['id']] = offset
         a=[anagram_groups[t][fresh_index] for t in [1,2,3]]; fresh_index+=1
         letters=[ALPHABET[(offset*7+i)%29] for i in range(7)]
         daily[key]=dict(lingoId=q['id'], lingoDifficulty=tier,
-            anagram=[dict(playerId=p['id'], scrambled=mix(p['answer'],key+'|'+str(p['id']))) for p in a],
+            anagram=[dict(playerId=p['id'], difficulty=t, scrambled=mix(p['answer'],key+'|'+str(p['id'])))
+                     for t, p in zip([1, 2, 3], a)],
             passaIds=pack(letters,[1,1,1,2,2,2,3],offset))
     data=dict(schema=1, starts=START.isoformat(), ends=(START+timedelta(days=DAYS-1)).isoformat(),
         databaseSha256=hashlib.sha256(DB.read_bytes()).hexdigest(), alphabet=ALPHABET, players=players,

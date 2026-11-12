@@ -222,7 +222,10 @@ void main() {
           expect(isPvp ? p.joins : d.joins, 1);
           p.failPoll = true;
           d.failPoll = true;
-          await t.pump(const Duration(seconds: 6));
+          // A lasting outage: three quiet retries (1 + 2 + 3 s), then the panel.
+          for (var i = 0; i < 16; i++) {
+            await t.pump(const Duration(seconds: 1));
+          }
           await t.pump();
           await reveal(t, find.byType(GameErrorPanel));
           expect(find.byType(GameErrorPanel), findsOneWidget);

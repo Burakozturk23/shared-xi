@@ -25,6 +25,19 @@ class TelemetryService {
     defaultValue: false,
   );
 
+  static bool _enabled = false;
+
+  /// Records an unexpected error that the app handled (non-fatal), so a
+  /// generic "İşlem tamamlanamadı" on screen still leaves a trace. Prints in
+  /// debug; sends nothing until telemetry is enabled.
+  static void recordNonFatal(Object error, StackTrace stack, {required String reason}) {
+    debugPrint('[Telemetry] $reason: $error');
+    if (!_enabled) return;
+    FirebaseCrashlytics.instance
+        .recordError(error, stack, reason: reason, fatal: false)
+        .catchError((Object _) {});
+  }
+
   static bool get _supportedPlatform =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
@@ -62,6 +75,7 @@ class TelemetryService {
       return true;
     };
 
+    _enabled = true;
     await FirebaseAnalytics.instance.logAppOpen();
 
     debugPrint(

@@ -40,6 +40,17 @@ function legacyManager(h, r) {
   h.seed(`${at}/managerRules`, 2); h.seed(`${at}/puzzle`, E.puzzle(c, "club_manager", q.seed));
   h.seed(`${at}/draft`, null); h.seed(`${at}/endsAt`, q.startsAt + 180000);
 }
+// A Loto room as started before the calls (lotoRules 2): one shared board, all 16 players
+// open, the first right cell wins, wrong moves lock.
+function legacyLotoRoom(r) {
+  r.lotoRules = 2; delete r.lotoCalls; delete r.lotoQueue; r.endsAt = r.startsAt + 180000; return r;
+}
+async function legacyLoto(h, r) {
+  const at = `pvpV1/loto/rooms/${r.id}`; const q = raw(h, r);
+  h.seed(`${at}/lotoRules`, 2); h.seed(`${at}/lotoCalls`, null); h.seed(`${at}/lotoQueue`, null);
+  h.seed(`${at}/endsAt`, q.startsAt + 180000);
+  return act(h, "alice", r, "poll");
+}
 function legacyRoom(seed) {
   const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed, dataRevision: c.version});
   E.start(r, c, 0); r.status = "playing"; delete r.randomBoard;
@@ -298,6 +309,15 @@ test("Random Five (single-board rooms) lists found players live: which clubs, po
   assert.deepEqual(f.clubIds, fit(best)); assert.equal(f.clubs, fit(best).length);
   assert.equal(receipt.points, E.FIVE_POINTS[fit(best).length]);
 });
+test("Çinko: the second player starts on 1 and the view says who (a 0-1 score before any move)", () => {
+  const r = E.hydrate({mode: "cinko", host: "a", guest: "b", seed: "bonus", dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing";
+  const second = r.turnUid === "a" ? "b" : "a";
+  assert.equal(r.scores[second], 1); assert.equal(r.scores[r.turnUid], 0);
+  for (const uid of ["a", "b"]) {
+    const v = E.view(c, r, uid, 6000); assert.equal(v.secondBonusUid, second); assert.equal(v.secondBonus, 1);
+  }
+});
 test("Çinko keeps the last five moves, newest first, with players and passes", () => {
   const r = E.hydrate({mode: "cinko", host: "a", guest: "b", seed: "log", dataRevision: c.version});
   E.start(r, c, 0); r.status = "playing";
@@ -321,10 +341,78 @@ test("Çinko keeps the last five moves, newest first, with players and passes", 
   r.presence = {a: time + 46000, b: time + 46000}; E.advance(r, time + 45001);
   assert.equal(E.view(c, r, "a", time + 45001).moves[0].timeout, true);
 });
+// ---- Loto calls (lotoRules 3): own cards, players called one by one ----
+function lotoRoom(seed) {
+  const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed, dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; return r;
+}
+const cellFor = (r, id) => Number(Object.entries(lotoSolution(r.puzzle)).find(([, p]) => p === id)[0]);
+const wrongFor = (r, uid, id) => r.puzzle.criteria.findIndex((k, i) => !E.matches(c, c.players[id], k) &&
+  !r.cards?.[uid]?.["c" + i]);
+test("Loto calls players one by one; the rival's move stays hidden until the call closes", () => {
+  const r = lotoRoom("calls"); const t0 = r.startsAt; assert.equal(r.lotoRules, 3);
+  assert.equal(r.endsAt - t0, 16 * E.LOTO_CALL_MS + 15 * E.LOTO_REVEAL_MS);
+  assert.equal(new Set(r.lotoQueue).size, 16); assert.deepEqual([...r.lotoQueue].sort(), [...r.puzzle.players].sort());
+  let v = E.view(c, r, "a", t0 + 100);
+  assert.equal(v.players, undefined); assert.equal(v.callPlayer.id, r.lotoQueue[0]); assert.equal(v.call, 0);
+  assert.equal(v.totalCalls, 16); assert.equal(v.callDeadline, t0 + E.LOTO_CALL_MS);
+  const id = r.lotoQueue[0]; const right = cellFor(r, id);
+  E.move(c, r, "a", {action: "answer", targetId: right, round: 0}, t0 + 1000);
+  v = E.view(c, r, "b", t0 + 1100);
+  assert.equal(v.rivalMoved, true); assert.equal(v.callClosed, false); assert.deepEqual(v.myCard, {});
+  assert.equal(JSON.stringify(v).includes(`"cell":${right}`), false);
+  assert.throws(() => E.move(c, r, "a", {action: "pass", round: 0}, t0 + 1200), {code: "already-exists"});
+  E.move(c, r, "b", {action: "pass", round: 0}, t0 + 2000);
+  v = E.view(c, r, "a", t0 + 2100);
+  assert.equal(v.callClosed, true); assert.equal(v.scores.a, 1); assert.equal(v.scores.b, 0);
+  assert.equal(v.myCard[right].player.id, id); assert.equal(v.myCard[right].correct, true);
+  assert.deepEqual(v.lastCall.mine, {cell: right, correct: true}); assert.deepEqual(v.lastCall.rival, {pass: true});
+  // The next player comes 2 s after the close.
+  r.presence = {a: t0 + 4100, b: t0 + 4100}; E.advance(r, t0 + 4100); v = E.view(c, r, "a", t0 + 4100);
+  assert.equal(v.call, 1); assert.equal(v.callPlayer.id, r.lotoQueue[1]); assert.equal(v.callStartsAt, t0 + 4000);
+  assert.throws(() => E.move(c, r, "a", {action: "answer", targetId: right, round: 1}, t0 + 4200),
+      {code: "invalid-argument"});
+});
+test("Loto calls: a timeout and a wrong cell; the wrong cell stays taken and counts", () => {
+  const r = lotoRoom("calls-wrong"); const t0 = r.startsAt; const id = r.lotoQueue[0];
+  const bad = wrongFor(r, "a", id);
+  E.move(c, r, "a", {action: "answer", targetId: bad, round: 0}, t0 + 1000);
+  r.presence = {a: t0 + 15000, b: t0 + 15000}; E.advance(r, t0 + E.LOTO_CALL_MS);
+  const v = E.view(c, r, "a", t0 + E.LOTO_CALL_MS);
+  assert.equal(v.callClosed, true); assert.deepEqual(v.lastCall.mine, {cell: bad, correct: false});
+  assert.deepEqual(v.lastCall.rival, {timeout: true}); assert.equal(v.myCard[bad].correct, false);
+  assert.equal(v.scores.a, 0); assert.equal(v.wrongCells.a, 1);
+});
+test("Loto calls: a row of right cells earns +2; sixteen calls end the match; fewer wrong cells win a tie", () => {
+  const r = lotoRoom("calls-line"); let t = r.startsAt; const sol = lotoSolution(r.puzzle);
+  for (let i = 0; i < 16; i++) {
+    const id = r.lotoQueue[i]; const cell = Number(Object.entries(sol).find(([, p]) => p === id)[0]);
+    E.move(c, r, "a", {action: "answer", targetId: cell, round: i}, t + 500);
+    // b passes the first one, then plays every right cell too.
+    if (i === 0) E.move(c, r, "b", {action: "pass", round: i}, t + 900);
+    else E.move(c, r, "b", {action: "answer", targetId: cell, round: i}, t + 900);
+    t += 900 + E.LOTO_REVEAL_MS; r.presence = {a: t, b: t}; E.advance(r, t);
+  }
+  assert.equal(r.status, "finished"); assert.equal(r.reason, "16 futbolcu çekildi.");
+  // 16 right cells and 8 lines of +2 for a; b missed one cell, so its row and column.
+  assert.equal(r.scores.a, 16 + 8 * E.LOTO_LINE_BONUS); assert.equal(r.scores.b, 15 + 6 * E.LOTO_LINE_BONUS);
+  assert.equal(r.winnerUid, "a");
+  const v = E.view(c, r, "b", t); assert.equal(Object.keys(v.rivalCard).length, 16);
+});
+test("Loto calls through the callable: place, pass, then the next player", async () => {
+  const h = boot(); let r = await pair(h, "loto"); const room = raw(h, r);
+  assert.equal(r.lotoRules, 3); assert.equal(r.callPlayer.id, room.lotoQueue[0]);
+  h.setTime(Math.max(h.now, r.startsAt) + 10);
+  const cell = Number(Object.entries(lotoSolution(room.puzzle)).find(([, p]) => p === room.lotoQueue[0])[0]);
+  r = await act(h, "alice", r, "answer", {targetId: cell, round: 0});
+  r = await act(h, "bob", r, "pass", {round: 0});
+  assert.equal(r.callClosed, true); assert.deepEqual(r.lastCall.mine, {pass: true});
+  assert.deepEqual(r.lastCall.rival, {cell, correct: true}); assert.equal(r.scores.alice, 1);
+});
 test("Loto bingo: filling the last cell of a row or column earns +2 for each line", () => {
   const room = (seed) => {
     const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed, dataRevision: c.version});
-    E.start(r, c, 0); r.status = "playing"; return r;
+    E.start(r, c, 0); r.status = "playing"; return legacyLotoRoom(r);
   };
   const r = room("bingo"); assert.equal(r.lotoRules, 2);
   const {criteria, players} = r.puzzle;
@@ -357,7 +445,7 @@ test("Loto bingo: filling the last cell of a row or column earns +2 for each lin
 });
 test("Loto ends as soon as no remaining player fits an empty cell", () => {
   const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed: "stuck", dataRevision: c.version});
-  E.start(r, c, 0); r.status = "playing";
+  E.start(r, c, 0); r.status = "playing"; legacyLotoRoom(r);
   const {criteria, players} = r.puzzle;
   const fit = (id, i) => E.matches(c, c.players[id], criteria[i]);
   // Two open cells i, j; p fits j, and q (the last player left) fits neither.
@@ -435,7 +523,7 @@ test("RF01-05/CI02-04: server computes club points and all eligible cells; index
 });
 test("Loto ends when both players used up their wrong moves", () => {
   const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed: "loto-wrong", dataRevision: c.version});
-  E.start(r, c, 0); r.status = "playing"; const q = r.puzzle;
+  E.start(r, c, 0); r.status = "playing"; legacyLotoRoom(r); const q = r.puzzle;
   // A board player on a cell it does not fit.
   const [id, cell] = q.players.flatMap((p) => q.criteria.map((k, i) => [p, i]))
       .find(([p, i]) => !E.matches(c, c.players[p], q.criteria[i]));
@@ -464,7 +552,7 @@ test("Loto boards: best-known clubs, football countries, top leagues and well-kn
   }
 });
 test("LO02-06: only pinned stone and correct cell accepted; 180s is server owned", async () => {
-  const h = boot(); let r = await pair(h, "loto"); const q = raw(h, r).puzzle;
+  const h = boot(); let r = await pair(h, "loto"); r = await legacyLoto(h, r); const q = raw(h, r).puzzle;
   assert.equal(r.endsAt - r.startsAt, 180000);
   const sol = lotoSolution(q); const cell = Object.keys(sol).find((k) => sol[k] === q.players[0]);
   r = await act(h, "alice", r, "answer", {targetId: Number(cell), playerId: q.players[0]});
@@ -780,7 +868,7 @@ for (const mode of E.MODES) {
   }
 }
 test("LO07: a wrong Loto move locks 3 s; eight wrong moves end that player's moves; 400 ms gap", async () => {
-  const h = boot(); let r = await pair(h, "loto"); const q = raw(h, r).puzzle;
+  const h = boot(); let r = await pair(h, "loto"); r = await legacyLoto(h, r); const q = raw(h, r).puzzle;
   h.setTime(Math.max(h.now, r.startsAt) + 10);
   const wrongCell = (p) => q.criteria.findIndex((k, i) => !E.matches(c, c.players[p], k) && !raw(h, r).owners?.[i]);
   const p0 = q.players[0];
@@ -962,6 +1050,19 @@ test("Random Five rounds: one hidden guess each per five, the reveal, then a new
     await assert.rejects(act(h, "alice", r, "answer", {playerId: best, round: 1}), {code: "already-exists"});
   }
 });
+test("Random Five: a closed round with an answer reports its second (no NaN in the response)", () => {
+  const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed: "five-second", dataRevision: c.version});
+  E.start(r, c, 0); const t0 = r.startsAt; r.presence = {a: t0, b: t0}; E.advance(r, t0);
+  const id = fiveBest(r.puzzle.boards[0]);
+  E.move(c, r, "a", {playerId: id, round: 0}, t0 + 3000);
+  E.move(c, r, "b", {playerId: fiveNone(r.puzzle.boards[0]), round: 0}, t0 + 7000);
+  const v = E.view(c, r, "a", t0 + 7000);
+  assert.equal(v.rounds[0].answers.a.second, 3); assert.equal(v.rounds[0].answers.b.second, 7);
+  // What the callable encodes: every number finite.
+  const finite = (x) => typeof x === "number" ? Number.isFinite(x) :
+    x && typeof x === "object" ? Object.values(x).every(finite) : true;
+  assert.ok(finite(v));
+});
 test("Random Five rounds close at 25 s without answers; five rounds end the match", () => {
   const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed: "five-clock", dataRevision: c.version});
   E.start(r, c, 0); const t0 = r.startsAt;
@@ -1010,6 +1111,45 @@ function playDraft(r, choose = {a: (L) => L[0], b: (L) => L[0]}) {
   }
   return t;
 }
+test("Club Manager 4-3-3: the keeper links his centre-backs only, never a striker", () => {
+  // Everyone shares a club; only neighbours count.
+  const ids = ["g", "d1", "d2", "d3", "d4", "m1", "m2", "m3", "a1", "a2", "a3"];
+  const pos = {g: "GK", d: "DEF", m: "MID", a: "ATT"};
+  const meta = Object.fromEntries(ids.map((id) => [id, {id, position: pos[id[0]], rating: 80}]));
+  const links = [];
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) links.push([ids[i], ids[j], 1, "club", "X"]);
+  }
+  const q = {meta, links, draftRules: 4};
+  const got = new Set(E.chemistry(q, ids).pairs.map(([x, y]) => x + "-" + y));
+  for (const p of ["g-d2", "g-d3", "d1-d2", "d2-d3", "d3-d4", "d1-m1", "d2-m1", "d2-m2", "d3-m2", "d3-m3", "d4-m3",
+    "m1-m2", "m2-m3", "m1-a1", "m2-a2", "m3-a3", "a1-a2", "a2-a3"]) assert.ok(got.has(p), p);
+  for (const p of ["g-d1", "g-d4", "g-m2", "g-a2", "d1-a1", "d1-d3", "d1-m2", "m1-m3", "a1-a3"]) {
+    assert.ok(!got.has(p), p);
+  }
+});
+test("Club Manager links only neighbours on the pitch; older pools keep every pair", () => {
+  const lines = {GK: 0, DEF: 1, MID: 2, ATT: 3};
+  let drawn = 0;
+  for (let i = 0; i < 20; i++) {
+    const r = draftRoom("near" + i); assert.equal(r.puzzle.draftRules, 4);
+    playDraft(r);
+    for (const uid of ["a", "b"]) {
+      const q = r.puzzle; const ids = E.list(r.draft.picks[uid]); const ch = E.chemistry(q, ids);
+      for (const [x, y] of ch.pairs) {
+        const gap = Math.abs(lines[q.meta[x].position] - lines[q.meta[y].position]);
+        assert.ok(gap <= 1, `${q.meta[x].position}-${q.meta[y].position}`); drawn++;
+      }
+      // The same XI on an old pool links every club or country pair.
+      const old = E.chemistry({...q, draftRules: 3}, ids);
+      assert.ok(old.pairs.length >= ch.pairs.length);
+    }
+    // The pool preview names only links the pick would really bring.
+    const v = E.view(c, draftRoom("near" + i), "a", r.startsAt);
+    if (v.linkPreview) for (const labels of Object.values(v.linkPreview)) assert.ok(Array.isArray(labels));
+  }
+  assert.ok(drawn > 0);
+});
 test("Club Manager draft pool: 36 known players, three anchor clubs, every position covered", () => {
   for (let i = 0; i < 15; i++) {
     const q = draftRoom("pool" + i).puzzle;

@@ -27,6 +27,17 @@ extension ManagerTierX on ManagerTier {
     }
   }
 
+  /// Solo pool prices. The solo pool deals known players only (gameplay rating
+  /// 72+), where the shared tiers below would leave no cheap card; inside it a
+  /// value card is 72-76, normal 76+, strong 80+, elite 85+ (about 130 players).
+  /// Ratings and the online costs keep [fromRating].
+  static ManagerTier soloFromRating(double rating) {
+    if (rating >= 85) return ManagerTier.elite;
+    if (rating >= 80) return ManagerTier.strong;
+    if (rating >= 76) return ManagerTier.normal;
+    return ManagerTier.value;
+  }
+
   static ManagerTier fromRating(double rating) {
     if (rating >= 90) return ManagerTier.elite;
     if (rating >= 80) return ManagerTier.strong;

@@ -92,6 +92,9 @@ test("energy charges once only after valid content, resumes free, daily first fr
 });
 test("known wrong letter costs one; unresolved identities do not", async () => {
   const h = harness(); let s = (await start(h, "letter11")).session;
+  // The app's slot-machine reel lands on the letter the server drew.
+  const drawn = catalog.letters.find((l) => l.id === s.targetId);
+  assert.equal(s.letter, drawn.letter); assert.equal(s.letterDifficulty, drawn.difficulty);
   await assert.rejects(act(h, s, {action: "place", slot: 0, playerId: -999999}), {code: "invalid-argument"});
   assert.equal(s.wrong, 0);
   const t = catalog.letters.find((t) => t.id === s.targetId);

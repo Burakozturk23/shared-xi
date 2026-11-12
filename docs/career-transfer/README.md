@@ -17,7 +17,7 @@
 
 ## Online
 
-Arkadaş odaları ve rastgele dereceli kuyruk: `career_race` 3×20sn eksik kulüp, 2×25sn kronoloji, 1×20sn gizemli kariyer; `transfer_duel` 5×30sn. Turlar arasında 2sn, başlangıçta 5sn hazırlık. Sunucuda seçilen aynı sıralı içerik, tek cevap/tur, server clock, 100+0–50 puan. Eşitlik: puan, doğru sayısı, doğru cevap toplam süresi, beraberlik.
+Arkadaş odaları ve rastgele dereceli kuyruk: `career_race` 3×20sn eksik kulüp, 2×25sn kronoloji, 1×20sn gizemli kariyer; `transfer_duel` 6×45sn (son tur ×2). Turlar arasında 2sn, başlangıçta 5sn hazırlık. Sunucuda seçilen aynı sıralı içerik, tek cevap/tur, server clock, 100+0–50 puan. Eşitlik: puan, doğru sayısı, doğru cevap toplam süresi, beraberlik.
 
 Kariyer Yarışı soruları: maçta 2 kolay, 2 orta, 2 zor kariyer (`difficulty`).
 Eksik kulüp yalnızca rotada bir kez geçen bir kulüptür, böylece cevap rotada
@@ -43,20 +43,33 @@ ekran onu sayı sanıp çöküyordu (beyaz ekran). Artık doğru sıra "A → B 
 olarak gösterilir ve rakibin sıralaması değer olarak karşılaştırılır. Tur
 noktaları yeni maçta sıfırlanır.
 
-Transfer Düellosu seviyeleri katalogdaki `difficulty` alanından değil, hamlenin
-bilinirliğinden gelir (`transferTier`): kolay = reytingi 82+ bir yıldızın online
-kulüp listesindeki bir kulüpten en bilinen 50 kulüpten birine 2005 ve sonrası
-transferi; orta = reytingi 78+ bir futbolcunun en bilinen 50 kulüpten biriyle
-bilinen bir kulüp arasındaki 2000 ve sonrası hamlesi; zor = reytingi 78+ bir
-futbolcunun en az bir bilinen kulüplü hamlesi. Katalogdaki eski seviye
-Middlesbrough → Leicester gibi hamleleri kolay sayıyordu.
+Transfer Düellosu seviyeleri katalogdaki `difficulty` alanından değil, futbolcunun
+ve hamlenin bilinirliğinden gelir (`transferTier`, 12 Kasım 2026): kolay = seçim
+sırası ilk 400'deki bir futbolcunun en bilinen 50 kulüpten ikisi arasındaki 2010 ve
+sonrası transferi; orta = ilk 1200'deki bir futbolcunun en bilinen 50 kulüpten biriyle
+bilinen bir kulüp arasındaki 2005 ve sonrası hamlesi; zor = ilk 2000'deki bir
+futbolcunun iki kulübü de online listede olan hamlesi. İlk sürüm reytinge bakıyordu:
+Kvaratskhelia Napoli → PSG zor, Granada → Al-Duhail (El Arabi) zor sayılıyordu; şimdi
+ilki kolay, ikincisi havuzda değil. Kiralıklar ve kiralıktan dönüşler sorulmaz: veritabanında
+kiralık işareti yok; katalog (`tools/career_transfer/build_catalog.py`) bir oyuncunun az önce
+ayrıldığı kulübe sezon sonu tarihiyle (30 Haziran, 31 Mayıs, 31 Aralık) üç yıl içinde dönüşünü
+kiralık bitişi, ondan önceki hamleyi kiralık sayar (`loan: true`; De Bruyne Chelsea → Werder ve
+geri, Courtois Atlético). Kiralık sonrası satın alma (Salah Chelsea → Roma 2016) ve sonradan
+kiralanan büyük transfer (Lukaku Inter → Chelsea 2021) transfer kalır; sezon ortasında erken
+biten kiralıklar (Coquelin, Charlton) yakalanmaz. Sonuç: 432 kolay, 390 orta, 151 zor transfer.
+Tek kişilik Transfer modu ve günün dosyası da yeni soru seçerken kiralıkları atlar; açık
+oturumdaki ya da arşivdeki eski bir kiralık sorusu açılmaya ve yeniden oynanmaya devam eder.
 
-Transfer Düellosu soruları: 2 kolay, 2 orta, 1 zor transfer; önce futbolcu,
+Transfer Düellosu soruları: 2 kolay, 2 orta, 2 zor transfer, son tur ×2 puan; önce futbolcu,
 sonra onun transferlerinden biri seçilir (çok transferli futbolcular maçı
 doldurmaz). Mümkünse en bilinen 3000 futbolcudan gelir; maçta futbolcu ve kulüp
 çifti tekrar etmez, en az bir transfer 2015 öncesidir. Aynı gün aynı geçişi
-yapan tüm futbolcular doğru sayılır (`accepted`). 10. saniyede milliyet, 20.
-saniyede mevki açılır; açık her ipucu doğru cevabın taban puanını 15 düşürür.
+yapan tüm futbolcular doğru sayılır (`accepted`). Tur 45 saniyedir; dört ipucu
+açılır: 8. saniyede milliyet, 16. saniyede mevki ve transferdeki yaş, 24. saniyede
+kariyerinden bir kulüp (en bilinen, transferin iki kulübü dışında), 34. saniyede baş
+harfler. Ülke ve mevki Türkçedir. Açık her ipucu taban puanı 12 düşürür; hız bonusu
+ilk saniyeden işler. Süre ve ipucu planı soruda saklanır (`duration`, `hintAt`,
+`hintCost`); önceki odalar 30 saniye, iki ipucu ve 15 puanla biter.
 Tur sonunda transfer tarihi ve yaş gösterilir. Transfer Düellosu cevapları da
 tur kimliği ister. Bütün düellolarda (Kariyer Yarışı, Transfer, Gizem, Sahte
 Kulüp) iki oyuncu da cevaplayınca tur o an kapanır (`closedAt`) ve sıradaki 2
@@ -110,3 +123,18 @@ Enerji rollout mevcut güvenlik bayraklarını korur. Bu iki modu ücretli açar
 `REVIEWED_SEASON` kariyer durakları ve transferleri (2026-07-01, sezon hassasiyeti) katalogda
 `precision: "season"` taşır. Transfer Düellosu bu sorularda ay göstermez, "2026 · Yaz transferi" yazar;
 açıklama "2026 yaz dönemi" der. Kaynak ve kurallar: `docs/data_platform_v4/current-clubs-2026.md`.
+
+## Solo Transfer Dedektifi seviyeleri (12 Kasım 2026)
+
+- Solo seviyeleri katalogda (`tools/career_transfer/build_catalog.py`) oyuncunun ve iki kulübün ne kadar bilindiğine göre belirlenir; veritabanı sırası (Son gibi yıldızları kaçıran) kullanılmaz. Oyuncu: online modların oyun puanı. Kulüp: 50 grid kulübü ("büyük") ve 90 bilinen kulüp.
+  - Kolay: 82+ oyuncu, iki büyük kulüp arasında, 2008 ve sonrası (Immobile Juventus → Torino, Jovetić Inter → Manchester City). 454 transfer.
+  - Orta: 78+ oyuncu, 2003 ve sonrası, bir büyük ve bir bilinen kulüp (Kubo Real Madrid → Mallorca). 604 transfer.
+  - Zor: 74+ oyuncu ve iki bilinen kulüp, ya da 80+ bir yıldız ve bir bilinen kulüp (Willian Fulham → Olympiacos). 851 transfer.
+- Bunlara uymayan transferler ve bir yedek/altyapı takımından A takıma geçiş (Barcelona Atlètic → Barcelona) `obscure` işaretlenir: arşivde kalır, solo hiç sormaz. Kiralıklar da sorulmaz.
+- Ülke ipucu Türkçedir ("Almanya"); Türkçe ülke adları `functions/countries_tr.js` dosyasında Transfer Düellosu ile ortaktır.
+
+## Kariyer Bulmacası: kiralıklar ve seviyeler (13 Kasım 2026)
+
+- Kiralıklar kariyer kartı değildir: bir kulübün iki dönemi arasında kalan, toplamı üç yıl ya da daha kısa dönem veya dönem zinciri çıkarılır. Emiliano Martínez'in 12 kartı "Arsenal → Aston Villa → Chelsea" oldu; Sirigu'nun Palermo → Cremonese → Ancona → Palermo zinciri tek Palermo kartı. Gerçek dönüşler kalır (Ronaldo'nun iki Manchester United dönemi).
+- Seviyeler kart sayısına değil, oyuncunun ve kulüplerinin ne kadar bilindiğine göre (online modların oyun puanı; 50 grid ve 90 bilinen kulüp): Kolay 82+, kartların en az %60'ı bilinen kulüp, en fazla 6 kart; Normal 77+, en az %40; Zor 72+. 72 altı kariyerler `obscure`: arşivde kalır, sorulmaz. Günlük kariyer Normal ve sorulan kariyerlerden seçilir.
+- Uygulamadaki adlar: "Kolay · yıldızlar", "Normal · bilinenler", "Zor · zorlu kariyer" (iç kimlikler beginner / normal / legend aynı kaldı; ustalık Kolay'da yok).

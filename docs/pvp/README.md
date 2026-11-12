@@ -113,6 +113,8 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 ## Football Loto
 
 - Katalog 300 tahta tutar, her zorlukta 100 (`loto-{easy|medium|hard}-{n}`).
+- Dereceli online Loto yalnız orta (`medium`) tahtalardan çeker (bot'un orta seviyesi gibi
+  çekiliş başına 15 sn); arkadaş maçları üç zorluğun hepsinden çeker.
   Zorluk 16 futbolcunun bilinirliğidir (oyuncu sırası: kolay ≤1500, orta
   ≤4000, zor ≤12000). Her tahta en bilinen 50 kulüpten (`gridClubs`) 8 kulüp,
   Çinko'daki 25 futbol ülkesinden 4 ülke ve 4 büyük lig hücresi (Premier
@@ -124,6 +126,19 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
   değildir. Her tahtanın tam bir doğru yerleşimi vardır (test eşleştirmeyle
   kanıtlar). Oyuncu başına ortalama uygun hücre `data-audit.json` içindeki
   `lotoValidCellsPerPlayer` alanındadır.
+- Çekilişli online Loto (`lotoRules: 3`, 12 Kasım 2026), bot maçı gibi: iki oyuncunun da
+  aynı 16 kutulu kendi kartı vardır; tahtanın 16 futbolcusu ikisine de aynı sırayla
+  (`lotoQueue`) tek tek çekilir, 16 futbolcu listesi önceden gösterilmez. Her çekiliş
+  15 sn'dir (`LOTO_CALL_MS`); ikisi de oynayınca hemen kapanır. Çekilen futbolcu kendi
+  kartında boş bir kutuya konur ya da pas geçilir. Çekiliş kapanınca iki sonuç birden
+  açılır (bot sonuçları maç sonunda açar; online'da skor canlı ilerlesin diye her
+  çekilişte): doğru kutu +1, kartında tamamen doğru doldurulmuş bir satır ya da sütun
+  bir kez +2; yanlış kutu dolu kalır ve yanlış sayılır (`wrongCells`). 2 sn sonra
+  sıradaki futbolcu gelir; 16. çekilişle maç biter ("16 futbolcu çekildi."). Eşitlikte
+  az yanlış kutu, o da eşitse doğruları daha kısa toplam sürede veren kazanır
+  (`lotoTieBreak`). Rakibin hamlesi çekiliş kapanana kadar gizlidir; rakibin kartı maç
+  sonunda gösterilir. Aşağıdaki kilit/yanlış hakkı kuralları yalnız daha önce başlamış
+  (`lotoRules: 2`, ortak tahta) odalar içindir.
 - Online maçta yanlış hamle oyuncuyu 3 sn kilitler, maçta en fazla 8 yanlış
   hamle yapılabilir ve hamleler arasında en az 400 ms olmalıdır. Eşit skorda
   az yanlış yapan, o da eşitse son doğru hamlesi daha erken olan kazanır.
@@ -255,6 +270,17 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 - Uyum (C): aynı kulüpte ve milli takımda 1,45, yalnız kulüpte 1, yalnız milli takımda
   0,55, aynı ligde 0,2 bağ; toplam × 0,35, en fazla 14 güç (0–100 olarak gösterilir).
   Sahada kulüp bağları yeşil, ülke bağları amber çizgi; havuzda "+2 bağ · Inter" yazar.
+- Komşu bağ (`draftRules: 4`, 12 Kasım 2026): bağ yalnız sahada komşu iki oyuncu arasında
+  sayılır ve çizilir. Oyuncular uygulamanın çizdiği gibi durur: her mevki bir sıra, seçim
+  sırasıyla soldan, dizilişin (ya da hâlâ olabileceği ilk dizilişin) kutularına yayılır.
+  Komşu: aynı sırada yan yana iki kutu, ya da ardışık sıralarda (kaleci–defans,
+  defans–orta saha, orta saha–forvet) yatay uzaklığı sahanın dörtte birini geçmeyen iki
+  oyuncu. Kaleci yalnız stoperlerine, tek forvet arkasındaki üç orta sahaya bağlanır;
+  kaleci–forvet ya da defans–forvet bağı yoktur. Daha az çift sayıldığından bağ katsayısı
+  0,35'ten 0,84'e çıktı (otomatik draft edilen 300 kadroda ortalama uyum aynı kalır;
+  çizilen bağ kadro başına 17,6'dan 7,4'e iner). Havuzdaki "+N bağ" önizlemesini sunucu
+  hesaplar (`linkPreview`): oyuncunun duracağı yerde gerçekten kuracağı bağlar. Daha önce
+  başlamış odalar (`draftRules: 3`) bütün çiftleri sayarak biter.
 - Draft bitince 25 sn içinde gizli oyun planı ve kaptan (F, G): Hücum Topa sahip olmayı,
   Topa sahip olma Kontrayı, Kontra Hücumu yener (+0,025 / −0,015 gol olasılığı); plan
   dayandığı hattın (Forvet / Defans / Orta saha) takım ortalamasından farkıyla küçük bir

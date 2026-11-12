@@ -10,7 +10,7 @@ class ManagerOpponentService {
 
   static const _names = [
     'Northgate FC',
-    'Valencia Youth',
+    'Westfield Youth',
     'Riverside United',
     'Atlas Rovers',
     'Metro Stars',

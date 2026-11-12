@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/screens/career_transfer_page.dart';
 import 'package:shared_xi/online/career_transfer_online_page.dart';
@@ -106,6 +107,22 @@ class FakePuzzle extends CareerTransferService {
       },
     ],
   };
+
+  /// Polls that fail like a dropped Android socket (`internal`).
+  int failPolls = 0, polls = 0;
+
+  /// The saved online room's status ('finished' for the last match's result).
+  String onlineStatus = 'playing';
+  @override
+  Future<Map<String, dynamic>> poll(Map<String, dynamic> input) async {
+    polls++;
+    if (failPolls > 0) {
+      failPolls--;
+      throw FirebaseFunctionsException(code: 'internal', message: 'INTERNAL');
+    }
+    return onlineLoad('${input['mode']}');
+  }
+
   @override
   Future<Map<String, dynamic>> onlineLoad(String mode) async => {
     'version': 'test',
@@ -113,7 +130,8 @@ class FakePuzzle extends CareerTransferService {
       'id': 'ABC12345',
       'mode': mode,
       'ranked': true,
-      'status': 'playing',
+      'status': onlineStatus,
+      'code': 'OLDROOM1',
       'round': 0,
       'totalRounds': mode == 'career_race' ? 6 : 5,
       'serverNow': 10000,
@@ -156,9 +174,6 @@ class FakePuzzle extends CareerTransferService {
             },
     },
   };
-  @override
-  Future<Map<String, dynamic>> poll(Map<String, dynamic> input) async =>
-      onlineLoad('${input['mode']}');
 }
 
 final boundary = GlobalKey();
@@ -228,8 +243,8 @@ void main() {
       find.textContaining('1 ücretsiz + 2 reklamlı ipucu'),
       findsOneWidget,
     );
-    await t.ensureVisible(find.text('Efsane\n8–12 dönem'));
-    await t.tap(find.text('Efsane\n8–12 dönem'));
+    await t.ensureVisible(find.text('Zor\nzorlu kariyer'));
+    await t.tap(find.text('Zor\nzorlu kariyer'));
     await t.pump();
     await t.ensureVisible(find.text('Yeni bulmaca'));
     await t.tap(find.text('Yeni bulmaca'));
@@ -385,7 +400,11 @@ void main() {
   ) async {
     final f = FakePuzzle('career', active: false);
     await mount(t, CareerTransferPage(mode: 'career', service: f));
-    await t.ensureVisible(find.text('Günün kariyeri'));
+    await t.scrollUntilVisible(
+      find.text('Günün kariyeri'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await t.tap(find.text('Günün kariyeri'));
     await t.pump();
     expect(f.mutation!['daily'], true);
@@ -540,6 +559,102 @@ void main() {
       await t.pumpWidget(const SizedBox());
     },
   );
+  testWidgets('a brief drop retries quietly; a lasting one shows the panel', (
+    t,
+  ) async {
+    final f = FakePuzzle('fake_club_duel')..failPolls = 2;
+    await mount(
+      t,
+      CareerTransferOnlinePage(mode: 'transfer_duel', ranked: true, service: f),
+    );
+    const weak = 'Bağlantı zayıf · yeniden deneniyor. Maç sunucuda sürüyor.';
+    await t.pump(const Duration(seconds: 2));
+    expect(f.polls, greaterThan(0));
+    expect(find.text('Oyunla bağlantı kurulamadı'), findsNothing);
+    expect(find.text(weak), findsOneWidget);
+    for (var i = 0; i < 4; i++) {
+      await t.pump(const Duration(seconds: 1));
+    }
+    expect(f.failPolls, 0);
+    expect(find.text(weak), findsNothing);
+    expect(find.text('Oyunla bağlantı kurulamadı'), findsNothing);
+    f.failPolls = 100;
+    for (var i = 0; i < 12; i++) {
+      await t.pump(const Duration(seconds: 1));
+    }
+    expect(find.text('Oyunla bağlantı kurulamadı'), findsOneWidget);
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets('an invite joins its room even with the last result on screen', (
+    t,
+  ) async {
+    final f = FakePuzzle('career_race')..onlineStatus = 'finished';
+    await mount(
+      t,
+      CareerTransferOnlinePage(
+        mode: 'career_race',
+        ranked: false,
+        service: f,
+        joinCode: 'ab12cd34',
+      ),
+    );
+    expect(f.mutation?['action'], 'join');
+    expect(f.mutation?['code'], 'AB12CD34');
+    await t.pumpWidget(const SizedBox());
+    // A match in progress is kept: no join.
+    final live = FakePuzzle('career_race');
+    await mount(
+      t,
+      CareerTransferOnlinePage(
+        mode: 'career_race',
+        ranked: false,
+        service: live,
+        joinCode: 'ab12cd34',
+      ),
+    );
+    expect(live.mutation, isNull);
+    await t.pumpWidget(const SizedBox());
+  });
+  testWidgets('Transfer Duel shows four clues and their cost', (t) async {
+    final f = FakePuzzle(
+      'transfer_duel',
+      question: {
+        'kind': 'transfer',
+        'difficulty': 'easy',
+        'from': {'name': 'Bayer 04 Leverkusen'},
+        'to': {'name': 'Chelsea FC'},
+        'year': 2020,
+        'month': '09',
+        'duration': 45000,
+        'hintAt': [8000, 16000, 24000, 34000],
+        'hintCost': 12,
+        'hints': ['Milliyet: Almanya'],
+      },
+    );
+    await mount(
+      t,
+      CareerTransferOnlinePage(mode: 'transfer_duel', ranked: true, service: f),
+    );
+    expect(find.text('Milliyet: Almanya'), findsOneWidget);
+    for (final name in [
+      'Mevki ve yaş',
+      'Kariyerinden bir kulüp',
+      'Baş harfler',
+    ]) {
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Text &&
+              (w.data ?? '').startsWith('$name · ') &&
+              (w.data ?? '').endsWith(' · −12'),
+        ),
+        findsOneWidget,
+        reason: name,
+      );
+    }
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
   testWidgets('Transfer Duel sends a suggestion with one tap', (t) async {
     final f = FakePuzzle('transfer_duel');
     await mount(

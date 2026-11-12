@@ -2,8 +2,8 @@
 const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
-const {catalog, players} = require("../career_transfer");
-const {questions, timing, outcome, roundToken} = require("../career_transfer_online");
+const {catalog, players, clubs} = require("../career_transfer");
+const {questions, timing, outcome, roundToken, transferTier} = require("../career_transfer_online");
 const version = catalog.version;
 let n = 5000;
 const id = () => (++n).toString(16).padStart(32, "0");
@@ -50,7 +50,9 @@ test("online banks have exact round mix, durations and unique server-only keys",
   assert.deepEqual(q.map((x) => x.kind), ["missing", "missing", "missing", "order", "order", "mystery"]);
   assert.equal(q.reduce((s, x) => s + x.duration, 0), 130000);
   assert.equal(new Set(q.map((x) => x.id.split("_")[0])).size, 6);
-  assert.equal(questions("transfer_duel", "test").length, 5);
+  const t = questions("transfer_duel", "test");
+  assert.equal(t.length, 6); assert.equal(t.at(-1).multiplier, 2); assert.equal(t.at(-1).public.multiplier, 2);
+  assert.ok(t.slice(0, -1).every((x) => x.multiplier === undefined));
   for (const x of q) assert.equal(x.public.answer, undefined);
 });
 test("Career Race: hidden club never shows in the route, real distractors, 2 careers per difficulty", () => {
@@ -98,18 +100,20 @@ test("Career Race: well-known careers, a well-known hidden club, order periods w
     }
   }
 });
-test("Transfer Duel: 2 easy, 2 medium, 1 hard, known players, no player or club pair twice", () => {
+test("Transfer Duel: 2 easy, 2 medium, 2 hard, no loans, known players, no player or club pair twice", () => {
   const byId = new Map(catalog.transfers.map((p) => [p.id, p]));
   let multi = 0;
   for (let i = 0; i < 80; i++) {
     const q = questions("transfer_duel", "duel" + i); const moves = q.map((x) => byId.get(x.id));
-    assert.deepEqual(q.map((x) => x.difficulty), ["easy", "easy", "medium", "medium", "hard"]);
-    assert.equal(new Set(moves.map((p) => p.playerId)).size, 5);
-    assert.equal(new Set(moves.map((p) => [p.fromClubId, p.toClubId].sort().join())).size, 5);
+    assert.deepEqual(q.map((x) => x.difficulty), ["easy", "easy", "medium", "medium", "hard", "hard"]);
+    assert.equal(new Set(moves.map((p) => p.playerId)).size, 6);
+    assert.equal(new Set(moves.map((p) => [p.fromClubId, p.toClubId].sort().join())).size, 6);
+    assert.ok(moves.every((p) => !p.loan));
     assert.ok(moves.some((p) => p.year < 2015));
     for (const [j, p] of moves.entries()) {
       assert.ok(players.get(p.playerId).rank <= 3000);
-      assert.equal(q[j].timedHints.length, 2);
+      assert.equal(q[j].timedHints.length, 4); assert.equal(q[j].duration, 45000);
+      assert.deepEqual(q[j].public.hintAt, [8000, 16000, 24000, 34000]);
       if (p.alsoPlayerIds) {
         multi++; assert.deepEqual(q[j].accepted, [p.playerId, ...p.alsoPlayerIds]);
       }
@@ -118,40 +122,65 @@ test("Transfer Duel: 2 easy, 2 medium, 1 hard, known players, no player or club 
   }
   assert.ok(multi > 0);
 });
-test("Transfer Duel levels follow how known the move is: stars between big clubs are easy", () => {
+test("catalog marks loans and their returns, not the buy after a loan", () => {
+  const move = (name, from, to, year) => catalog.transfers.find((t) => players.get(t.playerId).name === name &&
+    clubs.get(t.fromClubId).name === from && clubs.get(t.toClubId).name === to && t.year === year);
+  assert.equal(move("Kevin De Bruyne", "Chelsea FC", "SV Werder Bremen", 2012)?.loan, true);
+  assert.equal(move("Kevin De Bruyne", "SV Werder Bremen", "Chelsea FC", 2013)?.loan, true);
+  assert.equal(move("Thibaut Courtois", "Chelsea FC", "Atlético de Madrid", 2011)?.loan, true);
+  // A buy after a loan, and a big move later loaned back, stay transfers.
+  for (const kept of [move("Mohamed Salah", "Chelsea FC", "AS Roma", 2016),
+    move("Romelu Lukaku", "Inter Milan", "Chelsea FC", 2021)]) {
+    assert.ok(kept); assert.equal(kept.loan, undefined);
+  }
+});
+test("Transfer Duel levels follow how known the player and the move are: easy to hard", () => {
   const pv = require("../pvp_engine").catalog;
   const best = new Set(pv.gridClubs.map((k) => Number(k.slice(5))));
   const known = new Set(pv.clubOptions.map((k) => Number(k.slice(5))));
   const byId = new Map(catalog.transfers.map((t) => [t.id, t]));
+  const ranks = {easy: [], medium: [], hard: []};
   for (let i = 0; i < 60; i++) {
     for (const q of questions("transfer_duel", "known" + i)) {
-      const t = byId.get(q.id); const rating = pv.players[String(t.playerId)].rating;
-      assert.equal(q.public.difficulty, q.difficulty);
+      const t = byId.get(q.id); const rank = pv.players[String(t.playerId)].rank;
+      const name = players.get(t.playerId).name;
+      assert.equal(q.public.difficulty, q.difficulty); ranks[q.difficulty].push(rank);
       if (q.difficulty === "easy") {
-        assert.ok(rating >= 82 && known.has(t.fromClubId) && best.has(t.toClubId) && t.year >= 2005,
-            players.get(t.playerId).name);
+        assert.ok(rank <= 400 && best.has(t.fromClubId) && best.has(t.toClubId) && t.year >= 2010, name);
+      } else if (q.difficulty === "medium") {
+        assert.ok(rank <= 1200 && t.year >= 2005 && (best.has(t.fromClubId) || best.has(t.toClubId)), name);
       } else {
-        assert.ok(rating >= 78 && (known.has(t.fromClubId) || known.has(t.toClubId)), players.get(t.playerId).name);
+        assert.ok(rank <= 2000 && known.has(t.fromClubId) && known.has(t.toClubId), name);
       }
-      if (q.difficulty === "medium") assert.ok(best.has(t.fromClubId) || best.has(t.toClubId));
     }
   }
+  // On average the names get less known round by round.
+  const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+  assert.ok(mean(ranks.easy) < mean(ranks.medium) && mean(ranks.medium) < mean(ranks.hard));
+  // Granada -> Al-Duhail (El-Arabi) is too obscure even for the last round.
+  const elArabi = catalog.transfers.find((t) => clubs.get(t.fromClubId).name === "Granada CF" &&
+    clubs.get(t.toClubId).name === "Al-Duhail SC");
+  assert.ok(elArabi); assert.equal(transferTier(elArabi), null);
 });
-test("Transfer Duel opens hints at 10 s and 20 s, each lowers the base; shared moves accept all", async () => {
+test("Transfer Duel: four clues at 8, 16, 24 and 34 s, each -12; shared moves accept all", async () => {
   const h = harness({}, {omitEmptyObjects: true}); let r = await pair(h, "transfer_duel"); const raw = read(h, r);
   const at = async (i, ms) => {
     h.setTime(new Date(timing(raw, i).start + ms).toISOString());
     await act(h, "alice", r); return act(h, "bob", r);
   };
   r = await at(0, 1000); assert.deepEqual(r.question.hints, []);
-  r = await at(0, 11000); assert.equal(r.question.hints.length, 1); assert.match(r.question.hints[0], /^Milliyet/);
+  assert.deepEqual(r.question.hintAt, [8000, 16000, 24000, 34000]); assert.equal(r.question.hintCost, 12);
+  r = await at(0, 9000); assert.equal(r.question.hints.length, 1); assert.match(r.question.hints[0], /^Milliyet: /);
   await act(h, "alice", r, "answer", {round: 0, answer: raw.questions[0].answer});
-  r = await at(0, 21000); assert.equal(r.question.hints.length, 2); assert.match(r.question.hints[1], /^Mevki/);
+  r = await at(0, 17000); assert.equal(r.question.hints.length, 2); assert.match(r.question.hints[1], /^Mevki: /);
+  r = await at(0, 25000); assert.match(r.question.hints[2], /^(Kariyerinde|Transfer yılı): /);
+  r = await at(0, 35000); assert.match(r.question.hints[3], /^Baş harfler: (\S+\. ?)+$/u);
   await act(h, "bob", r, "answer", {round: 0, answer: raw.questions[0].answer});
   const room = read(h, r);
-  assert.equal(room.answers.alice[0].score, 100 - 15 + Math.floor(50 * 19000 / 30000));
-  assert.equal(room.answers.bob[0].score, 100 - 30 + Math.floor(50 * 9000 / 30000));
-  r = await at(0, 21500); assert.match(r.explanation, /\d{4}-\d{2}-\d{2}/);
+  // A speed bonus from the first second (unlike Mystery Duel), over the 45 s round.
+  assert.equal(room.answers.alice[0].score, 100 - 12 + Math.floor(50 * 36000 / 45000));
+  assert.equal(room.answers.bob[0].score, 100 - 48 + Math.floor(50 * 10000 / 45000));
+  r = await at(0, 35500); assert.match(r.explanation, /\d{4}-\d{2}-\d{2}/);
   // A move several players made the same day accepts every one of them.
   const shared = catalog.transfers.find((p) => p.alsoPlayerIds);
   const key = `careerTransferOnline/transfer_duel/rooms/${r.id}`; const stored = read(h, r);
@@ -171,11 +200,11 @@ test("Transfer Duel closes a round once both answered; the next starts 2 s later
   r = await at(1000); assert.equal(r.question.month, raw.questions[0].public.month);
   assert.match(String(r.question.month), /^(0[1-9]|1[0-2])$/);
   await act(h, "alice", r, "answer", {round: 0, answer: raw.questions[0].answer});
-  r = await at(4000); assert.equal(r.reveal, undefined); assert.equal(r.deadline, start + 30000);
+  r = await at(4000); assert.equal(r.reveal, undefined); assert.equal(r.deadline, start + 45000);
   await act(h, "bob", r, "answer", {round: 0, answer: wrong(raw.questions[0])});
   r = await at(5500); assert.equal(r.round, 0); assert.equal(r.reveal, raw.questions[0].answer);
   r = await at(7100); assert.equal(r.round, 1); assert.equal(r.startsAt, start + 6000);
-  assert.equal(r.deadline, start + 36000); assert.ok(r.question.from);
+  assert.equal(r.deadline, start + 51000); assert.ok(r.question.from);
   // Career Race moves on the same way.
   const g = harness({}, {omitEmptyObjects: true}); let c = await pair(g, "career_race"); const cr = read(g, c);
   g.setTime(new Date(timing(cr, 0).start + 1000).toISOString());
@@ -218,7 +247,7 @@ test("one final answer, retry fingerprint, late submissions and unauthorized pla
   await assert.rejects(act(h, "alice", r, "answer", {round: 0, answer: req.answer}), {code: "already-exists"});
   await assert.rejects(h.call("actCareerTransferOnline", {...req, answer: 1}, auth("alice")),
       {code: "invalid-argument"});
-  h.setTime(new Date(raw.startedAt + 30000).toISOString());
+  h.setTime(new Date(raw.startedAt + 45000).toISOString());
   await assert.rejects(act(h, "bob", r, "answer", {round: 0, answer: req.answer}), {code: "failed-precondition"});
 });
 test("ranked completion settles ELO and once-only Coin/XP, both modes share first five", async () => {

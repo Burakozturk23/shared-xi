@@ -185,7 +185,8 @@ function start(r, c, time) {
     puzzle(c, r.mode, r.seed, r.choices);
   r.seedId = hash([r.seed, r.puzzle.id, r.dataRevision, r.ruleVersion]);
   r.status = "countdown"; r.startsAt = time + 5000;
-  const duration = r.mode === "loto" || r.mode === "club_manager" ? 180000 :
+  const duration = r.mode === "loto" ? LOTO_CALLS * LOTO_CALL_MS + (LOTO_CALLS - 1) * LOTO_REVEAL_MS :
+    r.mode === "club_manager" ? 180000 :
     r.mode === "grid_random" && !r.randomBoard ? 160000 :
     r.mode === "random_five" ? FIVE_ROUNDS * FIVE_ANSWER_MS + (FIVE_ROUNDS - 1) * FIVE_REVEAL_MS :
     ["club_club", "club_country"].includes(r.mode) ? 90000 : 30 * 45000;
@@ -199,10 +200,13 @@ function start(r, c, time) {
   if (r.mode === "club_manager") {
     r.managerRules = 3; draftStart(r, time);
   }
-  if (r.mode === "loto") r.lotoRules = 2;
+  if (r.mode === "loto") {
+    r.lotoRules = 3; r.lotoCalls = [r.startsAt]; r.lotoQueue = shuffle(r.puzzle.players, hash([r.seed, "queue"]));
+  }
   if (r.mode === "cinko") {
     // Moving first is worth about a point in Çinko, so the second player starts with 1.
-    r.cinkoRules = 2; r.scores[r.turnUid === r.host ? r.guest : r.host] = CINKO_SECOND_BONUS;
+    r.cinkoRules = 2; r.cinkoBonusUid = r.turnUid === r.host ? r.guest : r.host;
+    r.scores[r.cinkoBonusUid] = CINKO_SECOND_BONUS;
   }
 }
 // Wrong guesses cost something in the free-for-all modes: a wrong move locks
@@ -220,6 +224,85 @@ const FIVE_ROUNDS = 5;
 const FIVE_ANSWER_MS = 25000;
 const FIVE_REVEAL_MS = 4000;
 const LOTO_LINE_BONUS = 2;
+// Loto (rooms started with lotoRules 3), as the bot plays it: each side has its own card of
+// the same 16 cells; the board's 16 players are called one by one, the same order for
+// both. A call lasts 15 s (sooner once both played): place the player on a cell of your
+// own card or pass. The call then closes and both results open: a right cell +1, a row or
+// column of your card all right +2 once; a wrong cell stays taken. Equal points go to fewer
+// wrong cells, then the faster right answers.
+const LOTO_CALLS = 16;
+const LOTO_CALL_MS = 15000;
+const LOTO_REVEAL_MS = 2000;
+const lotoLinesOf = (cell) => {
+  const row = Math.floor(cell / 4); const col = cell % 4;
+  return [["r" + row, [0, 1, 2, 3].map((k) => row * 4 + k)], ["c" + col, [0, 1, 2, 3].map((k) => k * 4 + col)]];
+};
+function lotoReveal(r, a) {
+  for (const uid of [r.host, r.guest]) {
+    const x = a[uid] ||= {timeout: true};
+    if (x.cell === undefined) continue;
+    const card = (r.cards ||= {})[uid] ||= {};
+    card["c" + x.cell] = {playerId: x.playerId, correct: !!x.correct};
+    const st = r.moveStats[uid] ||= {wrong: 0};
+    if (!x.correct) {
+      st.wrong = (st.wrong || 0) + 1; continue;
+    }
+    r.scores[uid] = (r.scores[uid] || 0) + 1;
+    const done = (r.lotoLines ||= {})[uid] ||= {};
+    for (const [key, line] of lotoLinesOf(x.cell)) {
+      if (!done[key] && line.every((k) => card["c" + k]?.correct)) {
+        done[key] = true; r.scores[uid] += LOTO_LINE_BONUS; x.lines = [...x.lines || [], key];
+      }
+    }
+  }
+}
+function lotoSync(r, time) {
+  if (r.lotoRules !== 3 || terminal(r) || r.status !== "playing") return;
+  r.lotoCalls = list(r.lotoCalls).length ? list(r.lotoCalls) : [r.startsAt];
+  for (;;) {
+    const i = r.lotoCalls.length - 1; const a = r.answers[i] || {};
+    if (!a.revealed) {
+      const deadline = r.lotoCalls[i] + LOTO_CALL_MS; const both = a[r.host] && a[r.guest];
+      if (!both && time < deadline) return;
+      a.revealed = true; a.closedAt = both ? Math.max(a[r.host].at, a[r.guest].at) : deadline;
+      lotoReveal(r, a); r.answers[i] = a;
+    }
+    if (i === LOTO_CALLS - 1) {
+      finish(r, "finished", "16 futbolcu çekildi.", a.closedAt); return;
+    }
+    const next = a.closedAt + LOTO_REVEAL_MS;
+    if (time < next) return;
+    r.lotoCalls.push(next);
+  }
+}
+function lotoMove(c, r, uid, input, time) {
+  lotoSync(r, time);
+  if (terminal(r)) fail("failed-precondition", "Maç bitti.");
+  const i = r.lotoCalls.length - 1; const a = r.answers[i] || {};
+  if (a.revealed || input.round !== undefined && Number(input.round) !== i) {
+    fail("failed-precondition", "Bu çekiliş kapandı; sıradaki futbolcu geliyor.");
+  }
+  if (a[uid]) fail("already-exists", "Bu futbolcu için hamleni yaptın; rakibini bekle.");
+  const id = r.lotoQueue[i];
+  if (input.action === "pass") {
+    a[uid] = {pass: true, at: time};
+  } else {
+    if (!/^(0|[1-9][0-9]?)$/.test(String(input.targetId))) fail("invalid-argument", "Boş bir kutu seç.");
+    const cell = Number(input.targetId);
+    if (cell >= 16 || r.cards?.[uid]?.["c" + cell]) fail("invalid-argument", "Bu kutu dolu; boş bir kutu seç.");
+    a[uid] = {cell, playerId: id, correct: matches(c, c.players[id], r.puzzle.criteria[cell]), at: time};
+  }
+  r.answers[i] = a; lotoSync(r, time);
+  return {accepted: true, submitted: true, round: i};
+}
+function lotoTieBreak(r) {
+  const wrong = (uid) => r.moveStats?.[uid]?.wrong || 0;
+  if (wrong(r.host) !== wrong(r.guest)) return wrong(r.host) < wrong(r.guest) ? r.host : r.guest;
+  const calls = list(r.lotoCalls);
+  const spent = (uid) => list(r.answers).reduce((sum, a, i) => sum + (a?.[uid]?.correct ? a[uid].at - calls[i] : 0), 0);
+  if (spent(r.host) !== spent(r.guest)) return spent(r.host) < spent(r.guest) ? r.host : r.guest;
+  return null;
+}
 const MIN_GAP_MS = 400;
 function guard(r, uid, time) {
   const rule = PENALTY[r.mode]; const st = r.moveStats[uid] ||= {wrong: 0};
@@ -317,6 +400,7 @@ function finish(r, status, reason, time, winner) {
   r.status = status; r.reason = reason; r.finishedAt = time;
   r.winnerUid = winner === undefined ? r.scores[r.host] > r.scores[r.guest] ? r.host :
     r.scores[r.host] < r.scores[r.guest] ? r.guest : r.fiveRules === 3 ? fiveTieBreak(r) :
+    r.lotoRules === 3 ? lotoTieBreak(r) :
     PENALTY[r.mode] ? raceTieBreak(r) :
     r.gridRules === 2 && (r.mode !== "grid_random" || r.randomBoard) ? gridTieBreak(r) : null : winner;
   if (r.series && ["finished", "forfeit"].includes(status)) {
@@ -372,6 +456,7 @@ function advance(r, time) {
   }
   if (r.mode === "grid_random" && !r.randomBoard) revealRounds(r, time);
   fiveSync(r, Math.min(time, r.endsAt));
+  lotoSync(r, Math.min(time, r.endsAt));
   managerSync(r, time);
   if (terminal(r)) return;
   if (time >= r.endsAt) {
@@ -605,7 +690,7 @@ function draftPool(c, seed) {
     }
   }
   return {id: hash([seed, "draft", pool]), pool, meta, links, anchors: anchors.map((k) => c.criteria[k]),
-    draftRules: 3};
+    draftRules: 4};
 }
 const counts = (q, ids) => {
   const n = {GK: 0, DEF: 0, MID: 0, ATT: 0};
@@ -630,14 +715,39 @@ function legalPicks(r, uid) {
   const q = r.puzzle; const mine = list(r.draft.picks[uid]); const gone = taken(r);
   return q.pool.filter((id) => !gone.has(id) && openFormations(q, [...mine, id]).length);
 }
+// Where a side's picks stand, as the app draws them: one row per line (GK, DEF, MID,
+// ATT), in pick order from the left, spread over the slots of the side's formation
+// (or the first one it can still become).
+const LINES = ["GK", "DEF", "MID", "ATT"];
+function draftSpots(q, ids) {
+  const f = FORMATIONS[formationOf(q, ids) || openFormations(q, ids)[0]] || {};
+  const n = counts(q, ids); const seen = {}; const at = {};
+  for (const id of ids) {
+    const pos = q.meta[id].position; const i = seen[pos] = (seen[pos] ?? -1) + 1;
+    at[id] = {line: LINES.indexOf(pos), index: i, x: (i + 1) / (Math.max(n[pos], f[pos] || 0) + 1)};
+  }
+  return at;
+}
+// Pools from draftRules 4 link only neighbours on the pitch: the next player in the
+// same line, or a player in the line in front or behind standing within a quarter of
+// the width (the keeper with his centre-backs, a lone striker with the three midfielders
+// behind him); never keeper and striker. Older pools (3) keep every pair.
+const NEIGHBOUR_X = .25;
+const neighbours = (a, b) => a.line === b.line ? Math.abs(a.index - b.index) === 1 :
+  Math.abs(a.line - b.line) === 1 && Math.abs(a.x - b.x) <= NEIGHBOUR_X + 1e-9;
+// Fewer pairs count once only neighbours link: each is worth more, so a well-linked XI
+// still reaches about the same chemistry (CHEM_PER_LINK, calibrated on drafted XIs).
+const CHEM_PER_LINK = {3: .35, 4: .84};
 function chemistry(q, ids) {
   const set = new Set(ids); let link = 0; const pairs = [];
+  const near = q.draftRules >= 4 ? draftSpots(q, ids) : null;
   for (const [a, b, w, type, label] of list(q.links)) {
-    if (set.has(a) && set.has(b)) {
+    if (set.has(a) && set.has(b) && (!near || neighbours(near[a], near[b]))) {
       link += w; if (type !== "league") pairs.push([a, b, type, label]);
     }
   }
-  return {value: clamp(link * .35, 0, 14), score: Math.round(clamp(link * .35, 0, 14) / 14 * 100), pairs};
+  const value = clamp(link * CHEM_PER_LINK[q.draftRules >= 4 ? 4 : 3], 0, 14);
+  return {value, score: Math.round(value / 14 * 100), pairs};
 }
 function draftStart(r, time) {
   r.draft = {first: r.turnUid, k: 0, picks: {[r.host]: [], [r.guest]: []}, deadline: r.startsAt + DRAFT_FIRST_PICK_MS};
@@ -889,6 +999,7 @@ function move(c, r, uid, input, time) {
         "permission-denied", "Rakibinin sırası.");
   }
   if (r.mode === "cinko" && r.cinkoRules === 2) return cinkoMove(c, r, uid, input, time);
+  if (r.lotoRules === 3) return lotoMove(c, r, uid, input, time);
   if (r.randomBoard) return boardMove(c, r, uid, input, time);
   if (r.managerRules === 3) return managerMove(r, uid, input, time);
   if (r.mode === "club_manager") {
@@ -1063,9 +1174,11 @@ function view(c, r, uid, time) {
         // Before the close: only the viewer's own answer, and whether the rival has one.
         myAnswer: a[uid] && !a.revealed ? answer(a[uid], q.boards[i], starts[i]) : null,
         rivalAnswered: !!a[other],
-        rounds: starts.map((start, n) => [n, r.answers[n]]).filter(([, x]) => x?.revealed).map(([n, x]) => ({
+        // starts[n], not `start`: that name is the module's start() function (x.at - start was NaN).
+        rounds: starts.map((_, n) => [n, r.answers[n]]).filter(([, x]) => x?.revealed).map(([n, x]) => ({
           round: n, clubs: criteria(q.boards[n]), best: best(q.boards[n]),
-          answers: {[r.host]: answer(x[r.host], q.boards[n], start), [r.guest]: answer(x[r.guest], q.boards[n], start)},
+          answers: {[r.host]: answer(x[r.host], q.boards[n], starts[n]),
+            [r.guest]: answer(x[r.guest], q.boards[n], starts[n])},
         }))});
     } else if (r.mode === "random_five") {
       v.criteria = criteria(q.clubs);
@@ -1103,17 +1216,42 @@ function view(c, r, uid, time) {
     if (r.mode === "cinko") {
       v.cinkoRules = r.cinkoRules || 1; v.passes = r.passes || 0;
       if (r.cinkoRules === 2) v.secondBonus = CINKO_SECOND_BONUS;
+      // Who starts with it, so the score card can say why the match is 0-1 before a move.
+      if (r.cinkoBonusUid) v.secondBonusUid = r.cinkoBonusUid;
       if (r.cinkoRules === 2) v.open = cinkoOpen(c, r);
       // The last move of either player: who, which player, right and wrong cells.
       v.lastMove = r.last ? {...r.last, player: r.last.playerId ? player(c, r.last.playerId) : null} : null;
       v.moves = list(r.log).slice().reverse().map((m) => ({...m, correct: list(m.correct), wrong: list(m.wrong),
         player: m.playerId ? player(c, m.playerId) : null}));
     }
-    if (r.mode === "loto") v.players = shuffle(q.players, r.seedId).map((id) => player(c, id));
+    if (r.mode === "loto" && r.lotoRules !== 3) v.players = shuffle(q.players, r.seedId).map((id) => player(c, id));
+    if (r.lotoRules === 3) {
+      const calls = list(r.lotoCalls).length ? list(r.lotoCalls) : [r.startsAt];
+      const i = calls.length - 1; const a = r.answers[i] || {};
+      const card = (side, all) => Object.fromEntries(Object.entries(r.cards?.[side] || {}).map(([k, x]) =>
+        [k.slice(1), {player: player(c, x.playerId), ...all ? {correct: x.correct} : {}}]));
+      const result = (x) => !x ? null : x.cell !== undefined ? {cell: x.cell, correct: !!x.correct,
+        ...x.lines ? {lines: x.lines} : {}} : x.pass ? {pass: true} : {timeout: true};
+      const last = [...list(r.answers).entries()].filter(([, x]) => x?.revealed).at(-1);
+      Object.assign(v, {lotoRules: 3, call: i, totalCalls: LOTO_CALLS, callMs: LOTO_CALL_MS,
+        callPlayer: r.status === "countdown" ? null : player(c, r.lotoQueue[i]),
+        callStartsAt: calls[i], callDeadline: calls[i] + LOTO_CALL_MS, callClosed: !!a.revealed,
+        nextCallAt: a.revealed && i < LOTO_CALLS - 1 ? a.closedAt + LOTO_REVEAL_MS : null,
+        // The viewer's own move on the open call (its result opens with the call's close).
+        myMove: a[uid] && !a.revealed ? (a[uid].pass ? {pass: true} : {cell: a[uid].cell}) : null,
+        rivalMoved: !!a[other],
+        myCard: card(uid, true), rivalPlaced: Object.keys(r.cards?.[other] || {}).length,
+        lastCall: last ? {round: last[0], player: player(c, r.lotoQueue[last[0]]),
+          mine: result(last[1][uid]), rival: result(last[1][other])} : null,
+        lotoLines: {[uid]: Object.keys(r.lotoLines?.[uid] || {}), [other]: Object.keys(r.lotoLines?.[other] || {})},
+        lineBonus: LOTO_LINE_BONUS, wrongCells: {[uid]: r.moveStats[uid]?.wrong || 0,
+          [other]: r.moveStats[other]?.wrong || 0},
+        ...done ? {rivalCard: card(other, true)} : {}});
+    }
     if (r.mode === "loto" && r.lotoRules === 2) {
       v.lotoLines = r.lotoLines || {}; v.lineBonus = LOTO_LINE_BONUS;
     }
-    if (PENALTY[r.mode] && r.fiveRules !== 3) {
+    if (PENALTY[r.mode] && r.fiveRules !== 3 && r.lotoRules !== 3) {
       // Wrong moves of both players; the lock only for the viewer.
       v.wrongMoves = {[r.host]: r.moveStats[r.host]?.wrong || 0, [r.guest]: r.moveStats[r.guest]?.wrong || 0};
       v.maxWrong = PENALTY[r.mode].maxWrong; v.lockUntil = r.moveStats[uid]?.lockUntil || null;
@@ -1150,6 +1288,11 @@ function view(c, r, uid, time) {
         formations: {[uid]: formationOf(q, mine) || openFormations(q, mine),
           [other]: formationOf(q, theirs) || openFormations(q, theirs)},
         chemistry: {[uid]: chemistry(q, mine), [other]: chemistry(q, theirs)},
+        // The links each free pool player would bring where he would stand ("+2 bağ").
+        ...q.draftRules >= 4 && phase === "draft" ? {linkPreview: Object.fromEntries(q.pool
+            .filter((id) => !taken(r).has(id) && openFormations(q, [...mine, id]).length).map((id) =>
+              [id, chemistry(q, [...mine, id]).pairs.filter((l) => l[0] === id || l[1] === id)
+                  .map((l) => l[3] || "ülke")]))} : {},
         planDeadline: r.plan?.deadline || null, plans: PLANS,
         myPlan: r.plan?.choices[uid] || null, rivalPlanned: !!r.plan?.choices[other]});
       if (done) v.planChoices = r.plan?.choices || null;
@@ -1178,7 +1321,7 @@ function view(c, r, uid, time) {
 }
 module.exports = {MODES, RULE, terminal, fail, hash, norm, list, shuffle, matches, player,
   PENALTY, MIN_GAP_MS, FIVE_POINTS, FIVE_ROUNDS, FIVE_ANSWER_MS, FIVE_REVEAL_MS, GRID_RARE_BONUS,
-  LOTO_LINE_BONUS, gridTieBreak,
+  LOTO_LINE_BONUS, LOTO_CALLS, LOTO_CALL_MS, LOTO_REVEAL_MS, gridTieBreak,
   PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions, autoChoice, acceptedFor,
   FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter, DRAFT_PICKS, DRAFT_PICK_MS, PLAN_MS, PLANS, PLAN_BEATS,
   draftPool, legalPicks, formationOf, chemistry, managerPlay, DRAFT_BASE, DRAFT_PER_POWER,

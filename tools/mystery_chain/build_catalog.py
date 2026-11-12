@@ -1,5 +1,6 @@
 """Conservative dated V4 clues and exact club graph; deterministic offline export."""
 import argparse
+import gzip
 from collections import Counter, defaultdict, deque
 import hashlib
 import json
@@ -64,12 +65,25 @@ def build():
     for p in people:
         if p['rank'] <= 5000: groups[(p['country'],p['position'])].append(p['id'])
         groups_all[(p['country'],p['position'])].append(p['id'])
+    # Levels as in the online duel: how known the player (the online modes' gameplay
+    # rating) and the hinted clubs (50 grid clubs, 90 known) are. easy: 82+ and a grid
+    # club among the clues; medium: 78+ and a grid club; hard: 75+ and a known club.
+    # Anything else is `obscure`: archived, never dealt. The clue clubs climb from less
+    # to better known: the first card is his third best-known club (not a youth side),
+    # the period the second, the third clue his best-known club.
+    pv = json.loads(gzip.decompress((ROOT / 'functions/config/pvp_catalog.json.gz').read_bytes()))
+    rating = {int(k): v['rating'] for k, v in pv['players'].items()}
+    grid = {int(k.split(':')[1]) for k in pv['gridClubs']}
+    known = grid | {int(k.split(':')[1]) for k in pv['clubOptions']}
+    fame = lambda s: (2 if s['clubId'] in grid else 1 if s['clubId'] in known else 0, seeds.get(s['clubId']) or 0)
     mystery = []
     for career in ct['careers']:
         p = players[career['playerId']]
         stops = list({s['clubId']: s for s in career['stops']}.values())
         if len(stops) < 3 or len(groups[(p['country'],p['position'])]) < 4: continue
-        a,b,c = stops[:3]
+        top = sorted(stops, key=fame, reverse=True)
+        c, b, a = top[0], top[1], top[2]
+        stops = [a, b, c] + [s for s in stops if s not in (a, b, c)]
         options = [p['id']] + [i for i in groups[(p['country'],p['position'])]
             if i != p['id'] and len(players[i]['clubs']) >= 2 and a['clubId'] not in players[i]['clubs']]
         if len(options) < 4: continue
@@ -114,18 +128,34 @@ def build():
         shown = {a['clubId'], b['clubId'], c['clubId']}
         also = sorted(i for i in groups_all[(p['country'], p['position'])]
                       if i != p['id'] and shown <= spells[i])
-        rank = p['rank']
+        r = rating.get(p['id'], 0); hinted = {a['clubId'], b['clubId'], c['clubId']}
+        level = 'easy' if r >= 82 and hinted & grid else 'medium' if r >= 78 and hinted & grid else \
+            'hard' if r >= 75 and hinted & known else None
         entry = dict(id=str(p['id']),playerId=p['id'],country=p['country'],
             countryLabel=COUNTRY_TR.get(p['country'], p['country']),position=positions[p['position']],
             hints=hints2,layout=2,optional=list(range(3, len(hints2))),
-            difficulty='easy' if rank <= 300 else 'medium' if rank <= 1500 else 'hard',
+            difficulty=level or 'hard', **({'obscure': True} if level is None else {}),
             options=options,onlineClubId=a['clubId'],source=career['source'])
         if also: entry['alsoPlayerIds'] = also
         mystery.append(entry)
-    memberships = []
+    # The chain graph: every reviewed career, and every known player (gameplay rating
+    # 72+) with his canonical senior clubs, so a real link a fan knows is a legal move.
+    # Before, only the ~700 career puzzles were in it.
+    EXTRA_RATING = 72  # every known player is in the graph
+    club_rows = defaultdict(set)
+    for pid, club in con.execute('select player_id, club_id from player_clubs'):
+        club_rows[pid].add(cid(club))
+    memberships = []; seen_players = set()
     for p in ct['careers']:
         ids = sorted({s['clubId'] for s in p['stops']} & popular)
-        if len(ids) >= 2: memberships.append(dict(id=p['playerId'],clubs=ids,player={k:players[p['playerId']][k] for k in ('id','name','country','position','rank','search')}))
+        if len(ids) >= 2:
+            seen_players.add(p['playerId'])
+            memberships.append(dict(id=p['playerId'],clubs=ids,player={k:players[p['playerId']][k] for k in ('id','name','country','position','rank','search')}))
+    for pid in sorted(club_rows):
+        if pid in seen_players or pid not in players or rating.get(pid, 0) < EXTRA_RATING: continue
+        ids = sorted(club_rows[pid] & popular)
+        if len(ids) >= 2:
+            memberships.append(dict(id=pid,clubs=ids,player={k:players[pid][k] for k in ('id','name','country','position','rank','search')}))
     adjacency = defaultdict(dict)
     for p in memberships:
         for a in p['clubs']:
@@ -163,18 +193,38 @@ def build():
         if p['par'] == 1: return len(by_club[p['start']] & by_club[p['target']]) >= 2
         if p['par'] == 2: return routes2(p['start'], p['target']) >= 2
         return True
-    def pick(k, n, salt):
+    # Pair ends a fan knows. The 90 known clubs sit at the centre of the graph (two
+    # steps from nearly every club), so a long PAR needs at least one end further out:
+    # a club ten or more stars (78+) played for (Boca Juniors, São Paulo, Leeds,
+    # Dinamo Zagreb), about 160 clubs in all. Both ends known first, then both among
+    # these (no Gil Vicente -> Standard Liège, no Flamengo -> Albirex Niigata). The
+    # database popularity seed is not used: it rates Albirex 72 and Flamengo 19.
+    stars = Counter(k for m in memberships if rating.get(m['id'], 0) >= 78 for k in m['clubs'])
+    fan = known | {k for k, n in stars.items() if n >= 10}
+    def ends(p, level):
+        a, b = p['start'], p['target']
+        if level == 2: return a in known and b in known
+        if level == 1: return a in fan and b in fan
+        # A longer chain: one end a fan's club, the other where three or more stars played.
+        return (a in fan and stars[b] >= 3) or (b in fan and stars[a] >= 3)
+    def pick(k, n, salt, levels=(2, 1, 0)):
         ordered = sorted(pairs.get(k, []), key=lambda p: hashlib.sha256((salt + p['id']).encode()).hexdigest())
-        for need in (3, 2):
-            chosen = [p for p in ordered if good(p, need)]
-            if len(chosen) >= n: return chosen[:n]
-        chosen = [p for p in ordered if good(p, 1)]
-        return (chosen + [p for p in ordered if p not in chosen])[:n]
+        chosen = []
+        for level in levels:
+            for need in (3, 2):
+                for p in ordered:
+                    if len(chosen) >= n: return chosen
+                    if p not in chosen and ends(p, level) and good(p, need): chosen.append(p)
+        return chosen
     # PAR 4 pairs sit between remote clubs by nature: keep only those whose
     # both ends have at least two connectors and give the rest to PAR 3.
     par4 = [p for p in sorted(pairs.get(4, []), key=lambda p: hashlib.sha256(p['id'].encode()).hexdigest())
-            if good(p, 2)][:300]
-    selected = {2: pick(2, 300, ''), 3: pick(3, 600 - len(par4), ''), 4: par4}
+            if good(p, 2) and ends(p, 0)][:300]
+    # With every known player in the graph the known clubs are two steps apart, so
+    # Mastery is mostly PAR 2 between known clubs; the few longer chains between clubs
+    # a fan knows stay. 900 pairs in all.
+    par3 = pick(3, 300, '', levels=(1,))
+    selected = {3: par3, 4: par4, 2: pick(2, 900 - len(par3) - len(par4), '')}
     sprint = pick(1, 200, 'sprint') + pick(2, 400, 'sprint')
     data = dict(schema=1,sourceVersion=ct['version'],databaseSha256=ct['databaseSha256'],mystery=mystery,
         clubs=[clubs[i] for i in sorted(adjacency)],graph=memberships,
@@ -184,10 +234,13 @@ def build():
             profileClues=sum(any(h['id']=='profile' for h in p['hints']) for p in mystery),
             sharedAnswers=sum('alsoPlayerIds' in p for p in mystery),
             untranslated=sorted({p['country'] for p in mystery if p['country'] not in COUNTRY_TR}),
-            levels=dict(Counter(p['difficulty'] for p in mystery)),
+            levels=dict(Counter(p['difficulty'] for p in mystery if not p.get('obscure'))),
+            obscure=sum(1 for p in mystery if p.get('obscure')),
             pairEnds={k: Counter(min(3, deg[p['start']], deg[p['target']]) for p in v) for k, v in
                       [('mastery', [p for k in (2,3,4) for p in selected[k]]), ('sprint', sprint)]},
-            graphPlayers=len(memberships),clubs=len(adjacency),availablePairs={k:len(v) for k,v in pairs.items()}))
+            graphPlayers=len(memberships),clubs=len(adjacency),availablePairs={k:len(v) for k,v in pairs.items()},
+            fanClubs=len(fan), knownEnds={k: Counter(int(p['start'] in known) + int(p['target'] in known) for p in v) for k, v in
+                       [('mastery', [p for k in (2,3,4) for p in selected[k]]), ('sprint', sprint)]}))
     data['version']='mc-v1-'+hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()[:16]
     assert len(mystery)>100 and len(data['mastery'])>=100 and len(data['sprint'])>=100
     return data

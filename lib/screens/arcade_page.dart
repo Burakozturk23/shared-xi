@@ -554,8 +554,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
       }, (v) => difficulty = v),
       HubSpecNote(
         widget.mode == 'pyramid'
-            ? '${difficulty == 'easy' ? '10 hücre · 5 boş' : '15 hücre · 9 boş'} · 5 can\n${difficulty == 'hard' ? 1 : 2} ipucu: ilki türü, aynı hücreye ikincisi bağı söyler · Süre sınırı yok\n${difficulty == 'hard' ? 'Zor tahtalarda her hücreye uyan aday daha az. ' : ''}Bağlı ama tahtayı çözümsüz bırakan aday da yanlış sayılır.\nZafer bonusu: kalan can × 100, ipucusuz +200, her geri alma −50'
-            : '${{'easy': 6, 'normal': 8, 'hard': 12}[difficulty]} çift · ${difficulty == 'easy' ? 3 : 4} sütun · Geri sayım yok\n3 yıldız: en fazla ${({'easy': 6, 'normal': 8, 'hard': 12}[difficulty]! * 1.75).floor()} hamle · 2 yıldız: en fazla ${({'easy': 6, 'normal': 8, 'hard': 12}[difficulty]! * 2.5).floor()}\nÜcretsiz ipucu yok; destek ürünün varsa oyun başına bir çift önerisi açılır.\nDuraklatılan oyun süre rekoru sayılmaz.',
+            ? '${difficulty == 'easy' ? '10 hücre · 5 boş' : '15 hücre · 9 boş'} · 5 can\n${difficulty == 'hard' ? 1 : 2} ipucu: ilki türü, aynı hücreye ikincisi bağı söyler · Süre sınırı yok\n${difficulty == 'hard' ? 'Zor tahtalarda her hücreye uyan aday daha az. ' : ''}Bağlı ama zirveye ulaşmayan aday can götürmez; başka bir bağlantı dene.\nZafer bonusu: kalan can × 100, ipucusuz +200, her geri alma −50'
+            : '8 çift · 16 kart · Geri sayım yok\n${{'easy': 'Yıldız oyuncular ve en çok bilindikleri büyük kulüpler.', 'normal': 'Bilinen oyuncular ve kulüpler.', 'hard': 'Daha az hatırlanan dönemler ve kulüpler.'}[difficulty]}\n3 yıldız: en fazla 14 hamle · 2 yıldız: en fazla 20\nÜcretsiz ipucu yok; destek ürünün varsa oyun başına bir çift önerisi açılır.\nDuraklatılan oyun süre rekoru sayılmaz.',
       ),
     ],
     const SizedBox(height: 12),
@@ -571,7 +571,7 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
                       : '3 / 6 / 9 tur: her derece 2 Coin + 4 XP. 12 turu ipucu ve pas olmadan, en az 3 canla bitir: Ustalık 3 Coin + 6 XP. Günde bir kez 3 tur: 2 Coin + 4 XP.'
                 : widget.mode == 'pyramid'
                 ? 'Kolay 2, Normal 2, Zor 3 Coin. Zor tahtayı yanlış, ipucu ve geri alma olmadan bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Matching ile ortak günde bir kez 2 Coin + 4 XP.'
-                : 'Kolay 1, Normal 2, Zor 2 Coin. Zor tahtayı en fazla 18 hamlede bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Pyramid ile ortak günde bir kez 2 Coin + 4 XP.',
+                : 'Kolay 1, Normal 2, Zor 2 Coin. Zor tahtayı en fazla 12 hamlede bitir: Ustalık 3 Coin. XP, Coin’in iki katıdır. Normal veya Zor zafer: Pyramid ile ortak günde bir kez 2 Coin + 4 XP.',
           ),
         ),
         const Padding(
@@ -1302,7 +1302,8 @@ class _ArcadePageState extends State<ArcadePage> with WidgetsBindingObserver {
         _n(run['lockUntil']) >
         _n(run['serverNow']) + elapsed.elapsedMilliseconds;
     final seconds = ((_n(run['activeMs']) + delta) / 1000).floor();
-    final columns = run['difficulty'] == 'easy' ? 3 : 4;
+    // Sixteen cards in four columns; older six-pair boards keep three.
+    final columns = _n(run['board']?['count']) == 6 ? 3 : 4;
     final scale = MediaQuery.textScalerOf(context).scale(1);
     final availableWidth =
         math.min(MediaQuery.sizeOf(context).width, 640.0) - 32;

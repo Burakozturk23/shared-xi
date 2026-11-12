@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/controllers/build_xi_controller.dart';
 import 'package:shared_xi/models/squad_challenge.dart';
+import 'package:shared_xi/services/squad_challenge_service.dart';
 
 import 'support/squad_fixture.dart';
 
@@ -18,6 +19,31 @@ void main() {
       draft: draft,
     );
   }
+
+  test('An unreadable server reply becomes a clear message, not a generic one', () {
+    expect(
+      () => parseSquadResponse({'ok': true, 'hub': {'missions': 'bad'}}),
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'message',
+          'Görev bilgisi okunamadı. Uygulamanı güncelleyip yeniden dene.',
+        ),
+      ),
+    );
+  });
+
+  test('A star bonus stored as an RTDB array still reads as a map', () {
+    final m = SquadMission.fromJson({
+      'id': '2026-11-12__0__x',
+      'day': '2026-11-12',
+      'themeId': 'x',
+      'formationId': '433',
+      'label': 'Isınma',
+      'starBonus': [null, null, 5, 10],
+    });
+    expect(m.starBonus, {2: 5, 3: 10});
+  });
 
   test('Strict positions, duplicates and replacement credit are enforced', () {
     final c = create();

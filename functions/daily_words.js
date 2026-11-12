@@ -43,7 +43,9 @@ function compiled(period, weekly) {
   const result = weekly ? {questions: entry.questionIds.map(question)} : {
     lingo: {...catalog.lingo.find((q) => q.id === entry.lingoId), difficulty: entry.lingoDifficulty},
     anagram: entry.anagram.map((a) => ({...catalog.players.find((p) => p.id === a.playerId),
-      questionId: "an-" + hash([period, a.playerId]).slice(0, 24), scrambled: a.scrambled})),
+      questionId: "an-" + hash([period, a.playerId]).slice(0, 24), scrambled: a.scrambled,
+      // Packs from 13 November 2026 store the round's level (easy, normal, hard).
+      ...a.difficulty ? {difficulty: a.difficulty} : {}})),
     questions: entry.passaIds.map(question),
   };
   result.period = period; result.contentVersion = catalog.version;

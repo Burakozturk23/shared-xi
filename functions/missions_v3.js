@@ -118,7 +118,8 @@ function decorate(state, raw, now) {
     wordModes: sameDay ? raw.daily.wordModes || {} : {}};
   state.previousDailyIds = sameDay ? raw?.previousDailyIds || [] :
     (raw?.daily?.assigned || []).map((x) => x.definitionId || x.id);
-  state.weekly = raw?.weekly?.weekKey === week ? {...emptyMetrics(), ...raw.weekly} :
+  // RTDB drops empty objects: a week with no claim yet comes back without `claims`.
+  state.weekly = raw?.weekly?.weekKey === week ? {...emptyMetrics(), claims: {}, ...raw.weekly} :
     {...emptyMetrics(), weekKey: week, claims: {}, assigned: weeklyCatalog};
   state.general = {...emptyMetrics(), ...raw?.general};
   return state;
@@ -297,8 +298,9 @@ function claim(state, missionId, policy, now, nonce) {
   if (!item && state.generalClaims[missionId] && extraChains.some((c) =>
     c.targets.some((n) => c.id + "_" + n === missionId))) item = {id: missionId, kind: "general"};
   if (!item) return null;
-  const bucket = item.kind === "daily" ? state.daily.claims :
-    item.kind === "weekly" ? state.weekly.claims : state.generalClaims;
+  // A period with no claim yet may come back from RTDB without its claims object.
+  const bucket = item.kind === "daily" ? state.daily.claims ||= {} :
+    item.kind === "weekly" ? state.weekly.claims ||= {} : state.generalClaims ||= {};
   const periodKey = item.kind === "daily" ? state.daily.dateKey :
     item.kind === "weekly" ? "weekly__" + state.weekly.weekKey : "general";
   if (!bucket[missionId] && !item.claimable) {

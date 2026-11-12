@@ -20,6 +20,12 @@ const stateOf = (raw) => ({sessions: {}, active: {}, starts: {}, collection: {},
   pending: {}, payments: {}, days: {}, streak: 0, longestStreak: 0, ...raw});
 const runOf = (r) => r && ({hints: [], guesses: [], actions: {}, adReceipts: {}, order: [], correctness: [], ...r});
 const pool = (mode) => mode === "career" ? catalog.careers : catalog.transfers;
+// New questions skip loans and loan returns (the catalog's loan flag): a session or an
+// archived puzzle that already holds one still resolves through pool().
+// Solo asks known moves only: no loan, no little-known or reserve-side move
+// (`obscure`, see tools/career_transfer/build_catalog.py); the archive keeps them all.
+const askable = (mode) => mode === "career" ? catalog.careers.filter((p) => !p.obscure) :
+  catalog.transfers.filter((p) => !p.loan && !p.obscure);
 const puzzleOf = (s) => pool(s.mode).find((p) => p.id === s.puzzle);
 const playerView = (p) => ({id: p.id, name: p.name, country: p.country, position: p.position});
 // Everyone who made the shown move in that year answers it; the screen only has clubs and year.
@@ -305,12 +311,12 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
         finish(s, active, time); s.sessions[active.id] = active;
       }
       // Transfer "normal" is the mixed pool.
-      let candidates = pool(input.mode).filter((p) => input.mode === "transfer" && difficulty === "normal" ||
-        p.difficulty === difficulty);
+      let candidates = (input.target ? pool : askable)(input.mode).filter((p) =>
+        input.mode === "transfer" && difficulty === "normal" || p.difficulty === difficulty);
       if (input.daily) {
         // Today's file: one well-known career or transfer for everyone.
-        const daily = input.mode === "career" ? catalog.careers.filter((p) => p.difficulty === "normal") :
-          catalog.transfers.filter((p) => p.difficulty !== "hard" && !p.alsoPlayerIds);
+        const daily = input.mode === "career" ? askable("career").filter((p) => p.difficulty === "normal") :
+          askable("transfer").filter((p) => p.difficulty !== "hard" && !p.alsoPlayerIds);
         candidates = [daily[parseInt(hash(input.mode + "__" + dayKey(time) + catalog.version).slice(0, 8), 16) %
           daily.length]];
       } else if (input.target) {
@@ -374,7 +380,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
     if (run.hints.some((h) => h.kind === kind)) fail("already-exists", "Bu ipucu zaten açık.");
     let text;
     if (run.phase === "guess") {
-      if (kind === "country") text = player.country;
+      if (kind === "country") text = require("./countries_tr").countryTr(player.country);
       if (kind === "position") {
         text = detailedPositions[p.detailedPosition] ||
           {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet"}[player.position];

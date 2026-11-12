@@ -150,7 +150,7 @@ test("ON08: once both answered, the round closes and the next starts 2 s later",
 test("Fake Club Duel: early rounds show known careers, people come up evenly, no coached club is the fake", () => {
   const P = require("../pvp_engine").catalog; const known = new Set(P.clubOptions.map((k) => Number(k.slice(5))));
   const byId = new Map(catalog.questions.map((q) => [q.questionId, q])); const seen = new Map();
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 1000; i++) {
     for (const x of questions(mode, "fair" + i, {dataEnabled: true})) {
       const q = byId.get(x.id); seen.set(q.playerId, (seen.get(q.playerId) || 0) + 1);
       const need = {easy: 2, normal: 2, hard: 1, legend: 0}[q.difficulty];

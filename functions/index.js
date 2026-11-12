@@ -8280,7 +8280,13 @@ async function lbMissionV3Claim(db, uid, missionId, config, periodKey) {
     }
     state.updatedAt = now; return state;
   });
-  if (failure) throw new httpsV2.HttpsError(failure.code, failure.message);
+  if (failure) {
+    // A coded rejection reaches the app as it is; anything else is a bug: logged with
+    // its stack, and answered with a readable message instead of "Unknown error code".
+    if (failure.code) throw new httpsV2.HttpsError(failure.code, failure.message);
+    logger.error("mission claim failed", {uid, missionId, error: String(failure?.stack || failure)});
+    throw new httpsV2.HttpsError("internal", "Görev ödülü şu anda alınamadı. Biraz sonra yeniden dene.");
+  }
   if (!outcome) throw new httpsV2.HttpsError("invalid-argument", "Bilinmeyen görev. Ekranı yenile.");
   // Mission XP: once per reward receipt, also when a retry finds the claim already made.
   if (outcome.claim.rewardXp > 0) {
@@ -10263,7 +10269,8 @@ function lbCareerTransferOnlineCallable(action) {
     lbRequireGoogleLinked(request);
     if (lbWarm(request, lbCareerTransferOnlineService)) return {warm: true};
     try {
-      return await lbCareerTransferOnlineService()[action](request.auth.uid, request.data || {});
+      return require("./finite_response").finiteResponse(
+          await lbCareerTransferOnlineService()[action](request.auth.uid, request.data || {}), "duel." + action);
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(error.code, error.message);
@@ -10756,7 +10763,8 @@ function lbPvpCallable(action) {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
     if (lbWarm(request, () => require("./pvp").warm())) return {warm: true};
     try {
-      return await lbPvpService()[action](request.auth.uid, request.data || {});
+      return require("./finite_response").finiteResponse(
+          await lbPvpService()[action](request.auth.uid, request.data || {}), "pvp." + action);
     } catch (error) {
       if (error instanceof require("./rewarded_ads").RewardError) {
         throw new httpsV2.HttpsError(

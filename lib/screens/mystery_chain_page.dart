@@ -490,7 +490,10 @@ class _MysteryChainPageState extends State<MysteryChainPage>
         onChanged: _busy ? null : (v) => setState(() => _level = v),
       ),
       const SizedBox(height: 6),
-      const Text('Zorluk, futbolcunun ne kadar tanındığına göre.'),
+      const Text(
+        'Zorluk, futbolcunun ve ipucu kulüplerinin ne kadar tanındığına göre. '
+        'İpuçları daha az bilinen kulüpten en bilinen kulübüne doğru açılır.',
+      ),
     ],
     const SizedBox(height: 16),
     FilledButton(

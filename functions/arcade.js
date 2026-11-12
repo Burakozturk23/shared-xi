@@ -15,8 +15,8 @@ const defaults = {enabled: false, rewardsEnabled: false};
 const hash = (s) => crypto.createHash("sha256").update(s).digest("hex");
 const state = (s) => ({sessions: {}, active: {}, records: {}, claims: {}, medals: {}, pending: {}, paid: {},
   daily: {}, ...s});
-// Hard Matching mastery: stricter than three stars (21 moves for 12 pairs).
-const MATCHING_MASTER_MOVES = 18;
+// Hard Matching mastery: stricter than three stars (14 moves for 8 pairs).
+const MATCHING_MASTER_MOVES = 12;
 const recordKey = (r) => r.mode === "burst" ? `burst__${r.style}__${r.pairType}` : r.mode + "__" + r.difficulty;
 function check(input) {
   if (!["burst", "pyramid", "matching"].includes(input.mode)) fail("invalid-argument", "Geçersiz mod.");

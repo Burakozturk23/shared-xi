@@ -21,7 +21,7 @@ class ManagerSeasonService {
     'Harbor Athletic',
     'Canark XI',
     'Portsmouth Lane',
-    'Valencia Youth',
+    'Westfield Youth',
     'Ironworks FC',
     'Crown Hill',
     'Blue Peak',

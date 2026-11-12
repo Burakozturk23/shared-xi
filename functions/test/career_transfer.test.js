@@ -78,6 +78,16 @@ test("energy is atomic with content and survives lost start response and other n
   for (let i = 0; i < 5; i++) await act(h, await start(h, "transfer"), {action: "skip"});
   await assert.rejects(start(h, "transfer"), {code: "resource-exhausted"});
 });
+test("solo transfer files never ask a loan or a loan return", async () => {
+  assert.ok(catalog.transfers.some((p) => p.loan));
+  for (let i = 0; i < 30; i++) {
+    const h = harness();
+    for (const difficulty of ["easy", "normal", "hard"]) {
+      const s = await start(h, "transfer", {difficulty}); assert.notEqual(puzzle(h, s).loan, true, difficulty);
+      await act(h, s, {action: "skip"});
+    }
+  }
+});
 test("transfer freezes first economic attempt and uses correct streak multiplier", async () => {
   const h = harness(); let s = await start(h, "transfer"); const p = puzzle(h, s);
   s = await act(h, s, {action: "skip"});
@@ -137,6 +147,86 @@ test("transfer: everyone who made the same move answers it, solo and in duels", 
       const move = catalog.transfers.find((p) => p.id === q.id);
       assert.deepEqual(q.accepted, move.alsoPlayerIds ? [move.playerId, ...move.alsoPlayerIds] : undefined);
     }
+  }
+});
+// Solo levels follow how known the player and both clubs are (the online modes'
+// gameplay rating and club lists), not the database rank that misses many stars.
+// Little-known moves and a reserve side's promotion (Barcelona Atlètic -> Barcelona)
+// stay in the archive but are never asked.
+test("transfer: levels by how known the player and clubs are; obscure and reserve moves are not asked", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const best = new Set(pv.gridClubs.map((k) => Number(k.slice(5))));
+  const known = new Set([...best, ...pv.clubOptions.map((k) => Number(k.slice(5)))]);
+  const rating = (p) => pv.players[String(p.playerId)]?.rating || 0;
+  const asked = catalog.transfers.filter((p) => !p.loan && !p.obscure);
+  for (const p of asked) {
+    const name = players.get(p.playerId).name;
+    if (p.difficulty === "easy") {
+      assert.ok(rating(p) >= 82 && best.has(p.fromClubId) && best.has(p.toClubId) && p.year >= 2008, name);
+    } else if (p.difficulty === "medium") {
+      assert.ok(rating(p) >= 78 && p.year >= 2003 && (best.has(p.fromClubId) || best.has(p.toClubId)) &&
+        known.has(p.fromClubId) && known.has(p.toClubId), name);
+    } else {
+      assert.ok(rating(p) >= 74 && known.has(p.fromClubId) && known.has(p.toClubId) ||
+        rating(p) >= 80 && (known.has(p.fromClubId) || known.has(p.toClubId)), name);
+    }
+  }
+  const mean = (d) => {
+    const xs = asked.filter((p) => p.difficulty === d).map(rating); return xs.reduce((a, b) => a + b, 0) / xs.length;
+  };
+  // Easy is the best known; hard is hard by its clubs or its era as much as by the player.
+  assert.ok(mean("easy") > mean("medium") && mean("easy") > mean("hard"));
+  for (const d of ["easy", "medium", "hard"]) assert.ok(asked.filter((p) => p.difficulty === d).length >= 100, d);
+  const cucurella = catalog.transfers.find((p) => players.get(p.playerId).name === "Marc Cucurella" &&
+    p.year === 2018 && p.toClubId === 131);
+  if (cucurella) assert.equal(cucurella.obscure, true);
+  for (let i = 0; i < 20; i++) {
+    const h = harness(); const s = await start(h, "transfer");
+    assert.notEqual(puzzle(h, s).obscure, true);
+  }
+});
+test("transfer: the nationality hint reads in Turkish", async () => {
+  const p = catalog.transfers.find((x) => !x.loan && !x.obscure && players.get(x.playerId).country === "Germany");
+  const h = harness(); let s = await start(h, "transfer", {difficulty: p.difficulty});
+  const run = privateRun(h, s); h.seed(`economyState/alice/careerTransfer/sessions/${s.id}`, {...run, puzzle: p.id});
+  s = await act(h, s, {action: "hint"});
+  assert.equal(s.hints[0].text, "Almanya");
+});
+// Loans are not career moves: a short spell between two spells at the same club is
+// left out (Emiliano Martínez: Arsenal -> Aston Villa -> Chelsea, not twelve cards of
+// loans), a real return stays (Ronaldo's two Manchester United spells). Levels follow how
+// known the player and his clubs are; little-known careers stay in the archive only.
+test("career: loans left out, levels by how known the player and clubs are", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => Number(k.slice(5))));
+  const rating = (p) => pv.players[String(p.playerId)]?.rating || 0;
+  const share = (p) => {
+    const c = cardsOf(p); return c.filter((x) => known.has(x.clubId)).length / c.length;
+  };
+  for (const p of catalog.careers) {
+    const c = cardsOf(p);
+    // No spell, or chain of spells, of three years or less between two spells at one club.
+    for (let i = 0; i < c.length; i++) {
+      const j = c.findIndex((x, k) => k > i + 1 && x.clubId === c[i].clubId);
+      if (j < 0) continue;
+      const away = c.slice(i + 1, j).reduce((n, x) => n + (Date.parse(x.end) - Date.parse(x.start)) / 86400000, 0);
+      assert.ok(away > 1100, players.get(p.playerId).name);
+    }
+  }
+  const asked = catalog.careers.filter((p) => !p.obscure);
+  for (const p of asked) {
+    const name = players.get(p.playerId).name;
+    if (p.difficulty === "beginner") {
+      assert.ok(rating(p) >= 82 && share(p) >= .6 && cardsOf(p).length <= 6, name);
+    } else if (p.difficulty === "normal") assert.ok(rating(p) >= 77 && share(p) >= .4, name);
+    else assert.ok(rating(p) >= 72, name);
+  }
+  for (const d of ["beginner", "normal", "legend"]) assert.ok(asked.filter((p) => p.difficulty === d).length >= 60, d);
+  const martinez = catalog.careers.find((p) => players.get(p.playerId).name === "Emiliano Martínez");
+  if (martinez) assert.ok(cardsOf(martinez).length <= 4);
+  for (let i = 0; i < 15; i++) {
+    const h = harness(); const s = await start(h, "career");
+    assert.notEqual(puzzle(h, s).obscure, true);
   }
 });
 test("transfer: level filter, one player per pick, detailed position and age hint", async () => {

@@ -30,7 +30,10 @@ test("SC01-04: every question excludes the entire reviewed V4 career and has exa
   const seen = new Set();
   for (const q of catalog.questions) {
     const c = catalog.careers.find((c) => c.playerId === q.playerId);
-    assert.equal(c.coverage, "REVIEWED_COMPLETE_RETIRED"); assert.ok(c.sources.length);
+    assert.ok(["REVIEWED_COMPLETE_RETIRED", "REVIEWED_WIKIPEDIA_CURRENT"].includes(c.coverage));
+    assert.ok(c.sources.length); assert.equal(q.trust, c.coverage);
+    // Legends (closed careers) only in the last tier; active players by how well known they are.
+    assert.equal(q.difficulty === "legend", c.coverage === "REVIEWED_COMPLETE_RETIRED", q.player.name);
     assert.equal(q.dataVersion, version); assert.ok(q.questionId.startsWith(version));
     assert.ok(!seen.has(q.questionId)); seen.add(q.questionId);
     assert.ok(!c.excludedClubIds.includes(q.fakeClubId));
@@ -62,10 +65,12 @@ test("SC05/12: rollout gate and empty valid pool never spend energy; one atomic 
 test("SC06/10: endless scoring, all difficulties, players unique first, then return with new trios", async () => {
   const h = setup(); let s = await start(h); const players = []; const questions = new Set();
   const tiers = new Set(); let expected = 0; const total = catalog.careers.length + 20;
+  // Streak 20 on is the legend tier: everyone seen once before a legend returns.
+  const fresh = 20 + catalog.careers.filter((c) => c.tier === "legend").length;
   for (let i = 1; i <= total; i++) {
     const pid = s.question.player.id; players.push(pid); tiers.add(s.question.difficulty);
     assert.ok(!questions.has(s.question.questionId)); questions.add(s.question.questionId);
-    if (i <= catalog.careers.length) assert.equal(new Set(players).size, i);
+    if (i <= fresh) assert.equal(new Set(players).size, i);
     else assert.ok(!players.slice(-6, -1).includes(pid));
     assert.equal(s.deadline, null); assert.equal(s.fakeClubId, undefined); assert.equal(s.explanation, undefined);
     s = await answer(h, s); expected += 50 * multiplier(i);
@@ -83,18 +88,22 @@ test("SC10: a used-up pool ends safely; an empty tier borrows the nearest", () =
   r.usedQuestions = ["a"]; assert.equal(pick(c, r, {}).questionId, "b");
   r.usedQuestions = ["a", "b"]; assert.equal(pick(c, r, {}), null);
 });
-test("catalog: no fake from a foreign country; from normal up never the least known; fakes capped", () => {
+// The fake is a club a fan knows: spotting it takes knowing the career, not noticing the
+// one unfamiliar name (UD Melilla next to Bayern, Barcelona and Dortmund for Lewandowski).
+test("catalog: no fake from a foreign country; every fake a club fans know; fakes capped", () => {
+  const P = require("../pvp_engine").catalog;
+  const lists = new Set([...P.gridClubs, ...P.clubOptions].map((k) => Number(k.slice(5))));
   const uses = {};
   for (const x of catalog.questions) {
     const real = x.options.filter((o) => x.realClubIds.includes(o.id));
     const fake = x.options.find((o) => o.id === x.fakeClubId);
     assert.ok(real.some((o) => o.country === fake.country), x.questionId);
-    if (["hard", "legend"].includes(x.difficulty)) {
-      assert.ok(fake.popularity >= Math.min(...real.map((o) => o.popularity)), x.questionId);
-    }
+    if (["easy", "normal"].includes(x.difficulty)) assert.ok(lists.has(fake.id), x.player.name + " " + fake.name);
     uses[fake.id] = (uses[fake.id] || 0) + 1;
   }
-  assert.ok(Math.max(...Object.values(uses)) <= 5);
+  assert.ok(Math.max(...Object.values(uses)) <= 14);
+  const melilla = catalog.questions.filter((x) => x.options.find((o) => o.id === x.fakeClubId).name === "UD Melilla");
+  assert.equal(melilla.length, 0);
 });
 test("medals are kept while rewards are off; today's speed run is the same for everyone", async () => {
   const closed = harness({runtimeConfig: {fakeClub: {...enabled, rewardsEnabled: false},

@@ -60,7 +60,11 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       foreground = true,
       joinedFromInvite = false,
       accountChanged = false;
-  Timer? poller, ticker, typing;
+  Timer? poller, ticker, typing, retryTimer;
+
+  /// Quiet retries after a brief connection drop; reset by any good reply.
+  int linkMisses = 0;
+  static const maxLinkMisses = 3;
   // A name search is in flight / the last finished search found nothing.
   bool searching = false, noMatch = false;
   final clock = Stopwatch();
@@ -82,6 +86,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
 
   /// Random Five in rounds: a new five each round, one guess per player.
   bool get fiveRounds => mode == 'random_five' && room['fiveRules'] == 3;
+
+  /// Loto as the bot plays it (lotoRules 3): own cards, players called one by one.
+  bool get lotoCalls => mode == 'loto' && room['lotoRules'] == 3;
   bool get cinkoV2 => mode == 'cinko' && room['cinkoRules'] == 2;
   bool get done =>
       ['finished', 'cancelled', 'forfeit', 'expired'].contains(room['status']);
@@ -175,6 +182,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     poller?.cancel();
     ticker?.cancel();
     typing?.cancel();
+    retryTimer?.cancel();
     code.dispose();
     query.dispose();
     super.dispose();
@@ -222,6 +230,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ];
       setState(() {
         connected = true;
+        linkMisses = 0;
         if (response.containsKey('availability')) data = response;
         if (response['room'] != null) {
           final next = rewardMap(response['room']);
@@ -314,6 +323,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               'Hamle tamam · ${(receipt['points'] as num? ?? 0) > 0 ? '+' : ''}${receipt['points'] ?? 0} puan',
             _ => feedback,
           };
+        if (lotoCalls && receipt['submitted'] == true)
+          feedback = 'Hamlen kaydedildi; çekiliş kapanınca sonuç açılır.';
         if (receipt['accepted'] == true && receipt['correct'] is bool) {
           AppFeedback.sfx(
             receipt['correct'] == true ? Sfx.answerCorrect : Sfx.answerWrong,
@@ -360,8 +371,27 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                 'aborted',
                 'resource-exhausted',
               ].contains(e.code);
+          // A brief drop (a lost socket, a slow reply) keeps the match on screen:
+          // up to three quiet retries before the room counts as disconnected.
+          final transient =
+              !business &&
+              !accountChanged &&
+              connected &&
+              room.isNotEmpty &&
+              !done &&
+              isTransientGameError(e) &&
+              linkMisses < maxLinkMisses;
           if (business) {
             feedback = gameErrorMessage(e);
+          } else if (transient) {
+            linkMisses++;
+            if (userAction)
+              feedback = 'Bağlantı dalgalandı; hamlen kontrol ediliyor.';
+            retryTimer?.cancel();
+            retryTimer = Timer(Duration(seconds: linkMisses), () {
+              if (mounted && connected && !busy && !accountChanged)
+                action('poll');
+            });
           } else {
             // Only a genuine loss of an active room plays the soft alert, once per drop.
             if (connected && room.isNotEmpty && !done && !accountChanged)
@@ -438,7 +468,11 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         !joinedFromInvite &&
         widget.joinCode != null &&
         data.isNotEmpty &&
-        room.isEmpty) {
+        // An invite joins its room even when the last match's result is still
+        // on screen; a match in progress is kept.
+        (room.isEmpty || done) &&
+        '${room['id'] ?? ''}'.toUpperCase() !=
+            widget.joinCode!.trim().toUpperCase()) {
       joinedFromInvite = true;
       await enter('join', roomCode: widget.joinCode);
     }
@@ -462,6 +496,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   }
 
   DateTime lastPoll = DateTime.fromMillisecondsSinceEpoch(0);
+  static const weakLinkText =
+      'Bağlantı zayıf · yeniden deneniyor. Maç sunucuda sürüyor.';
 
   /// Sooner than the 6 s poller when the screen is waiting on the server:
   /// a finished countdown or match clock (2 s), the rival's turn in a
@@ -490,6 +526,15 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ? const Duration(seconds: 1)
             : const Duration(days: 1);
       return seconds(room['roundDeadline']) == 0 || room['myAnswer'] != null
+          ? const Duration(seconds: 2)
+          : const Duration(seconds: 3);
+    }
+    if (lotoCalls) {
+      if (room['callClosed'] == true)
+        return seconds(room['nextCallAt']) == 0
+            ? const Duration(seconds: 1)
+            : const Duration(days: 1);
+      return seconds(room['callDeadline']) == 0 || room['myMove'] != null
           ? const Duration(seconds: 2)
           : const Duration(seconds: 3);
     }
@@ -1172,7 +1217,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       if (!connected)
         note(
           'Bağlantı kesildi. Sunucudaki süre devam eder. Yeniden dene ile maçını kontrol et.',
-        ),
+        )
+      else if (linkMisses > 0)
+        note(weakLinkText),
       if (series.active) note(seriesLine),
     ]);
   }
@@ -1782,7 +1829,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         const ArenaSection('Son tahta', icon: Icons.grid_3x3_rounded),
         reverseBoard(),
       ],
-      if (mode == 'loto' && room['criteria'] is List) ...[
+      if (lotoCalls && room['criteria'] is List) ...[
+        const ArenaSection('Senin kartın', icon: Icons.grid_4x4_rounded),
+        lotoCallBoard(rewardMap(room['myCard'])),
+        ...lotoCallLines(),
+        const SizedBox(height: 12),
+        const ArenaSection('Rakibin kartı', icon: Icons.grid_4x4_rounded),
+        lotoCallBoard(rewardMap(room['rivalCard'])),
+      ] else if (mode == 'loto' && room['criteria'] is List) ...[
         const ArenaSection('Son tahta', icon: Icons.grid_4x4_rounded),
         lotoBoard(),
       ],
@@ -2495,8 +2549,13 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     );
   }
 
-  /// Links a pool player would bring to this side ("Inter", "Fransa").
+  /// Links a pool player would bring to this side ("Inter", "Fransa"). Newer
+  /// rooms send them from the server: only neighbours on the pitch link.
   List<String> draftLinks(String id, String side) {
+    final preview = room['linkPreview'];
+    if (side == uid && preview is Map) {
+      return [for (final l in preview[id] as List? ?? const []) '$l'];
+    }
     final mine = {
       for (final x in rewardMap(room['picks'])[side] as List? ?? const []) '$x',
     };
@@ -3262,6 +3321,215 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     ];
   }
 
+  /// Loto calls: the called player, what to do, and how the last call went.
+  Widget lotoCallCard() {
+    final text = Theme.of(context).textTheme;
+    final p = rewardMap(room['callPlayer']);
+    final call = (room['call'] as num? ?? 0).toInt();
+    final closed = room['callClosed'] == true;
+    final move = rewardMap(room['myMove']);
+    final last = rewardMap(room['lastCall']);
+    String result(Object? raw) {
+      final x = rewardMap(raw);
+      if (x['pass'] == true) return 'pas';
+      if (x['timeout'] == true) return 'süre doldu';
+      if (x['correct'] != true) return 'yanlış kutu';
+      final lines = (x['lines'] as List? ?? const []).length;
+      return 'doğru +1${lines == 0 ? '' : ' · çizgi +${lines * ((room['lineBonus'] as num? ?? 2).toInt())}'}';
+    }
+
+    return ArenaCard(
+      glow: Arena.lime,
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              ArenaPill(
+                child: Text('${call + 1} / ${room['totalCalls'] ?? 16} OYUNCU'),
+              ),
+              ArenaPill(
+                child: Text('Rakip ${room['rivalPlaced'] ?? 0}/16 kutu'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (p.isNotEmpty)
+            Row(
+              children: [
+                ArenaPlayerAvatar(id: p['id'], name: '${p['name']}', size: 52),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${p['name']}',
+                        key: const ValueKey('online-loto-call'),
+                        style: text.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        closed
+                            ? 'Çekiliş kapandı · sıradaki futbolcu geliyor'
+                            : move['pass'] == true
+                            ? 'Pas geçtin · rakip bekleniyor'
+                            : move.isNotEmpty
+                            ? 'Kartına koydun · rakip bekleniyor'
+                            : 'Kartında uyduğu boş kutuya dokun ya da pas geç.',
+                        style: text.bodyMedium?.copyWith(color: palette.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          if (last.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ArenaNote(
+              icon: Icons.history_rounded,
+              text:
+                  'Son çekiliş · ${rewardMap(last['player'])['name'] ?? ''}: '
+                  'Sen ${result(last['mine'])} · Rakip ${result(last['rival'])}',
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Loto calls: a side's own card; the viewer's live card takes the called player.
+  Widget lotoCallBoard(Map<String, dynamic> card, {bool interactive = false}) {
+    final criteria = rows(room['criteria']);
+    final pending = rewardMap(room['myMove'])['cell'];
+    final can =
+        interactive &&
+        !done &&
+        connected &&
+        !busy &&
+        room['callClosed'] != true &&
+        room['myMove'] == null &&
+        room['callPlayer'] != null;
+    Widget cell(int i) {
+      final o = rewardMap(card['$i']);
+      final k = i < criteria.length ? criteria[i] : <String, dynamic>{};
+      final waiting = interactive && o.isEmpty && '$pending' == '$i';
+      return ArenaTile(
+        key: ValueKey('online-cell-$i'),
+        compact: true,
+        minHeight: 84,
+        criterion: ArenaCriterion({...k, 'label': GridCriterionLabel.text(k)}),
+        player: o.isNotEmpty
+            ? rewardMap(o['player'])
+            : waiting
+            ? rewardMap(room['callPlayer'])
+            : null,
+        state: o.isEmpty
+            ? (waiting ? ArenaTileState.selected : ArenaTileState.idle)
+            : o['correct'] == true
+            ? ArenaTileState.correct
+            : ArenaTileState.wrong,
+        tag: o.isEmpty
+            ? (waiting ? 'BEKLİYOR' : null)
+            : o['correct'] == true
+            ? 'DOĞRU'
+            : 'YANLIŞ',
+        onTap: o.isEmpty && can
+            ? () => action('answer', {'targetId': '$i', 'round': room['call']})
+            : null,
+      );
+    }
+
+    return Column(
+      children: [
+        for (var row = 0; row < 4; row++)
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var col = 0; col < 4; col++)
+                  Expanded(child: cell(row * 4 + col)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  /// Loto calls: the rows and columns each side completed with right cells.
+  List<Widget> lotoCallLines() {
+    final lines = rewardMap(room['lotoLines']);
+    final pills = [
+      for (final side in [uid, rivalUid])
+        for (final key in lines[side] as List? ?? const [])
+          ArenaPill(
+            color: side == uid ? palette.accent : hubAmber(context),
+            child: Text(
+              '${lineName('$key')} · ${side == uid ? 'Sen' : 'Rakip'} +${room['lineBonus'] ?? 2}',
+            ),
+          ),
+    ];
+    if (pills.isEmpty) return const [];
+    return [
+      const SizedBox(height: 10),
+      Wrap(spacing: 6, runSpacing: 6, children: pills),
+    ];
+  }
+
+  /// Loto calls: what to do with the called player, pinned above the system bar.
+  Widget lotoCallBar() {
+    final text = Theme.of(context).textTheme;
+    final closed = room['callClosed'] == true;
+    final moved = room['myMove'] != null;
+    final name = rewardMap(room['callPlayer'])['name'];
+    final (String label, Color tone) = closed
+        ? ('Çekiliş kapandı · sıradaki futbolcu geliyor', palette.muted)
+        : moved
+        ? ('Hamlen kaydedildi · rakip bekleniyor', palette.muted)
+        : ('${name ?? 'Futbolcu'} · kartında uyduğu kutuya dokun', Arena.lime);
+    return Material(
+      color: palette.surface,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: palette.border)),
+        ),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                label,
+                style: text.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: tone,
+                ),
+              ),
+            ),
+            if (!closed && !moved) ...[
+              const SizedBox(height: 8),
+              ArenaSecondaryButton(
+                key: const ValueKey('online-loto-pass'),
+                label: 'Pas geç',
+                icon: Icons.redo_rounded,
+                onPressed: busy || !connected
+                    ? null
+                    : () => action('pass', {'round': room['call']}),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Loto: place the picked player on the cell it fits; first come, first served.
   void lotoPlace(int i) {
     final p = selected;
@@ -3539,6 +3807,12 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           'uymayanlar açık kalır. Her futbolcu maçta bir kez kullanılır. '
           '${room['secondBonus'] == null ? '' : 'İlk başlamak avantaj olduğu için ikinci başlayan maça ${room['secondBonus']} puanla başlar. '}'
           'Dört pas üst üste gelirse ya da açık kutu kalmazsa maç biter; çok puan alan kazanır.',
+    'loto' when lotoCalls =>
+      'Bot maçındaki gibi: ikinizin de kendi kartı var, tahtanın 16 futbolcusu aynı sırayla tek tek gelir. '
+          'Her futbolcu için ${((room['callMs'] as num? ?? 15000) / 1000).round()} sn: kartında uyduğu boş kutuya koy ya da pas geç. '
+          'İkiniz de oynayınca çekiliş kapanır ve iki sonuç da açılır: doğru kutu +1, kartında tamamen doğru '
+          'bir satır ya da sütun +${room['lineBonus'] ?? 2}. Yanlış kutu dolu kalır. Eşitlikte az yanlış, '
+          'o da eşitse doğruları daha hızlı veren kazanır.',
     'loto' =>
       'Alttaki şeritten futbolcuyu seç, sonra uyduğu boş hücreye dokun: kulüp, milli takım ya da lig. '
           'İki oyuncu aynı anda oynar; hücreyi ilk dolduran alır. Yanlış hamle 3 sn kilitler, '
@@ -3560,7 +3834,13 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   /// score and clock, the board or pair, and an input bar over the keyboard.
   Widget liveArena() {
     final names = rewardMap(room['names']), scores = rewardMap(room['scores']);
-    final wrong = rewardMap(room[gridMode ? 'gridWrong' : 'wrongMoves']);
+    final wrong = rewardMap(
+      room[gridMode
+          ? 'gridWrong'
+          : lotoCalls
+          ? 'wrongCells'
+          : 'wrongMoves'],
+    );
     final rival = uid == '${room['host']}'
         ? '${room['guest']}'
         : '${room['host']}';
@@ -3585,6 +3865,11 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       'random_five' when fiveRounds => (
         'roundDeadline',
         ((room['answerMs'] as num? ?? 25000) / 1000).round(),
+      ),
+      'loto' when lotoCalls && room['callClosed'] == true => ('nextCallAt', 2),
+      'loto' when lotoCalls => (
+        'callDeadline',
+        ((room['callMs'] as num? ?? 15000) / 1000).round(),
       ),
       'grid_classic' ||
       'grid_reverse' ||
@@ -3612,8 +3897,17 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                       : room['rivalAnswered'] == true)
                 ? 'Tahmin yaptı'
                 : 'Düşünüyor')
+          : lotoCalls
+          ? (room['callClosed'] == true
+                ? 'Yanlış kutu ${(wrong[id] as num? ?? 0).toInt()}'
+                : (id == uid
+                      ? room['myMove'] != null
+                      : room['rivalMoved'] == true)
+                ? 'Oynadı'
+                : 'Düşünüyor')
           : cinkoV2
           ? 'Kutu ${rewardMap(room['owners']).values.where((o) => rewardMap(o)['uid'] == id).length}'
+                '${room['secondBonusUid'] == id ? ' · +${room['secondBonus'] ?? 1} ikinci başlama' : ''}'
           : manager
           ? ((id == uid
                     ? room['submitted'] == true
@@ -3680,7 +3974,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               ClubRaceScoreCard(
                 me: side(uid, 'Sen'),
                 rival: side(rival, 'Rakip'),
-                maxWrong: gridMode || cinkoV2 || manager || fiveRounds
+                maxWrong:
+                    gridMode || cinkoV2 || manager || fiveRounds || lotoCalls
                     ? null
                     : (room['maxWrong'] as num? ?? 10).toInt(),
                 secondsLeft: seconds(room[clockKey]),
@@ -3706,6 +4001,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                           : room['myAnswer'] != null
                           ? 'BEKLENİYOR'
                           : 'BEŞLİ ${(room['round'] as num? ?? 0).toInt() + 1}/${room['totalRounds'] ?? 5}')
+                    : lotoCalls
+                    ? (room['callClosed'] == true
+                          ? (room['nextCallAt'] == null
+                                ? 'SON OYUNCU'
+                                : 'SIRADAKİ')
+                          : room['myMove'] != null
+                          ? 'BEKLENİYOR'
+                          : 'OYUNCU ${(room['call'] as num? ?? 0).toInt() + 1}/${room['totalCalls'] ?? 16}')
                     : null,
                 myTurn: turnBased || draftMode && room['phase'] == 'draft'
                     ? myTurn
@@ -3719,6 +4022,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     color: palette.error,
                     text:
                         'Bağlantı kesildi. Sunucudaki süre devam eder; yenile ile maçını kontrol et.',
+                  ),
+                )
+              else if (linkMisses > 0)
+                const Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: ArenaNote(
+                    icon: Icons.network_check_rounded,
+                    text: weakLinkText,
                   ),
                 ),
               const SizedBox(height: 12),
@@ -3764,6 +4075,15 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                   ),
                 ],
                 ...cinkoMoves(),
+              ] else if (lotoCalls) ...[
+                lotoCallCard(),
+                const SizedBox(height: 12),
+                ArenaSection(
+                  'Senin kartın · ${rewardMap(room['myCard']).length}/16',
+                  icon: Icons.grid_4x4_rounded,
+                ),
+                lotoCallBoard(rewardMap(room['myCard']), interactive: true),
+                ...lotoCallLines(),
               ] else if (mode == 'loto') ...[
                 ArenaSection(
                   'Loto tahtası · ${rewardMap(room['owners']).length}/16',
@@ -3847,6 +4167,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           managerDraftBar()
         else if (!countdown && manager)
           managerBar()
+        else if (!countdown && lotoCalls)
+          lotoCallBar()
         else if (!countdown && mode == 'loto')
           lotoBar()
         else if (!countdown)

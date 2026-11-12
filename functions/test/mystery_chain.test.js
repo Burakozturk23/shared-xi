@@ -323,3 +323,50 @@ test("M08: concurrent answer retries pay once and reject changed payloads or sta
   s = await start(h, "mastermind"); await act(h, s, {action: "hint"});
   await assert.rejects(act(h, s, {action: "skip"}), {code: "aborted"});
 });
+
+// Solo levels follow how known the player and the hinted clubs are, as in the
+// online duel (the database rank put lesser names among the easy ones), and the
+// clue clubs go from less to better known: the first card is not a youth side,
+// the third is his best-known club.
+test("mystery: levels by how known the player and hinted clubs are; clues climb to the best-known club", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const best = new Set(pv.gridClubs.map((k) => k.slice(5)));
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => k.slice(5)));
+  const rating = (p) => pv.players[String(p.playerId)]?.rating || 0;
+  const hinted = (p) => p.hints.slice(0, 3).map((h) => h.id.match(/^club_(\d+)/)?.[1] ||
+    catalog.clubs.find((c) => h.text.includes(c.name + ","))?.id).filter(Boolean).map(String);
+  const asked = catalog.mystery.filter((p) => !p.obscure);
+  for (const p of asked) {
+    const clubs = hinted(p); const name = players.get(p.playerId).name;
+    if (p.difficulty === "easy") assert.ok(rating(p) >= 82 && clubs.some((c) => best.has(c)), name);
+    else if (p.difficulty === "medium") assert.ok(rating(p) >= 78 && clubs.some((c) => best.has(c)), name);
+    else assert.ok(rating(p) >= 75 && clubs.some((c) => known.has(c)), name);
+  }
+  for (const d of ["easy", "medium", "hard"]) assert.ok(asked.filter((p) => p.difficulty === d).length >= 40, d);
+  // The third clue club is at least as well known as the first.
+  const fame = (id) => best.has(id) ? 2 : known.has(id) ? 1 : 0;
+  for (const p of asked) {
+    const first = p.hints[0].id.slice(5); const third = p.hints[2].id.slice(5);
+    assert.ok(fame(third) >= fame(first), players.get(p.playerId).name);
+  }
+  for (let i = 0; i < 15; i++) {
+    const h = harness(); const r = await start(h, "mystery");
+    assert.notEqual(raw(h, r).puzzle.obscure, true);
+  }
+});
+
+// Every known player (rating 72+) is in the chain graph, not only the ~700 career
+// puzzles, so a real link a fan knows is a legal move; pair ends are clubs a fan knows.
+test("chain: known players are legal links and every pair joins two known clubs", () => {
+  const pv = require("../pvp_engine").catalog;
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => Number(k.slice(5))));
+  for (const p of [...catalog.mastery, ...catalog.sprint]) {
+    assert.ok(known.has(p.start) && known.has(p.target), p.id);
+  }
+  const careers = new Set(require("../config/career_transfer_catalog.json").careers.map((c) => c.playerId));
+  const extra = catalog.graph.filter((g) => !careers.has(g.id));
+  assert.ok(extra.length > 1000);
+  const g = extra.find((x) => x.clubs.length >= 2 && (pv.players[String(x.id)]?.rating || 0) >= 72);
+  const run = {puzzle: {start: g.clubs[0], target: -1}, path: []};
+  assert.ok(validMove(graph, run, g.id, g.clubs[1]));
+});

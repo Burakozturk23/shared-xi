@@ -65,3 +65,14 @@ cd functions
 npm run lint
 npm test
 ```
+
+## Solo Gizemli Futbolcu seviyeleri ve ipucu sırası (13 Kasım 2026)
+
+- Solo seviyeler de Gizem Düellosu gibi oyuncunun ve ipucu kulüplerinin bilinirliğinden gelir (`tools/mystery_chain/build_catalog.py`): kolay = 82+ ve ipuçlarında en bilinen 50 kulüpten biri, orta = 78+ ve en bilinen 50 kulüpten biri, zor = 75+ ve online kulüp listesinden bir kulüp. Bunlara uymayan 75 dosya `obscure`: arşivde kalır, yeni oyunda gelmez. Veritabanı sırası kullanılmaz.
+- İpucu kulüpleri daha az bilinenden en bilinene tırmanır: başlangıç kartı oyuncunun üçüncü en bilinen kulübü (altyapı ya da ilk kulübü değil), ilk yanlışta açılan dönem ikinci, ikinci yanlışta açılan kulüp en bilinen kulübü. Milner: Manchester City → Aston Villa dönemi → Liverpool. Kulüpler Kariyer Bulmacası'nın kiralıksız kariyerinden gelir.
+
+## Kariyer Zinciri: geniş graf ve tanınır uçlar (13 Kasım 2026)
+
+- Zincir grafı artık yalnızca Kariyer Bulmacası'nın yaklaşık 700 kariyeri değil, bilinen her oyuncuyu (online modların oyun puanı 72+) ve onun düzeltilmiş A takımı kulüplerini içerir: 3.138 oyuncu. Taraftarın bildiği gerçek bir bağlantı geçerli hamledir; önceden kariyer listesinde olmayan oyuncuyla yapılan doğru hamle reddediliyordu.
+- Çift uçları taraftarın bildiği kulüplerdir: Ustalık ve Sprint çiftlerinin hepsi 90 bilinen kulüp arasındadır (önceden 1.800 uçtan yalnızca 120'si büyük kulüptü: Werder Bremen → Grêmio, Gil Vicente → Standard Liège). Veritabanı popülerlik puanı kullanılmaz (Albirex Niigata 72, Flamengo 19).
+- Ürün kararı (sahibinin seçimi): geniş graf. Bilinen kulüpler grafın merkezinde birbirine iki adım uzaktadır; bu yüzden Ustalık 900 çiftin tamamı PAR 2'dir, uzun zincir için uçları az bilinen kulüplere taşımak yerine adil ve tanınır çiftler seçildi. Sprint 200 PAR 1 + 400 PAR 2.

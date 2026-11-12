@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/squad_challenge.dart';
 import 'auth_service.dart';
 import 'cloud_bootstrap.dart';
+import 'telemetry_service.dart';
 
 typedef SquadCatalogLoader = Future<SquadCatalog> Function();
 
@@ -27,6 +28,19 @@ class SquadCatalogService {
         )
         as Map<String, dynamic>,
   );
+}
+
+/// Reads a callable reply. A reply the app cannot read (an older app against a
+/// newer server, or stored data in an unexpected shape) is recorded and shown
+/// as such, instead of the generic "İşlem tamamlanamadı".
+SquadResponse parseSquadResponse(Map<String, dynamic> data) {
+  if (data['ok'] != true) throw StateError('İşlem tamamlanamadı.');
+  try {
+    return SquadResponse.fromJson(data);
+  } catch (e, s) {
+    TelemetryService.recordNonFatal(e, s, reason: 'squad_reply');
+    throw StateError('Görev bilgisi okunamadı. Uygulamanı güncelleyip yeniden dene.');
+  }
 }
 
 abstract class SquadGateway {
@@ -78,8 +92,7 @@ class FirebaseSquadGateway extends SquadGateway {
               )
               .call<Map<String, dynamic>>({'catalogVersion': version, ...data});
       if (owner != userId) throw StateError('Hesabın değişti. Görevlerine geri dön.');
-      if (response.data['ok'] != true) throw StateError('İşlem tamamlanamadı.');
-      return SquadResponse.fromJson(response.data);
+      return parseSquadResponse(response.data);
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'not-found' || e.code == 'unimplemented') {
         throw StateError(

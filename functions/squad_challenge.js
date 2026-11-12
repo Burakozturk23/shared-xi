@@ -23,6 +23,11 @@ const CLUB_LINK_CAP = 3;
 // Extra coins for a stronger winning XI, paid once with the mission reward.
 const STAR_BONUS = {2: 5, 3: 10};
 const formationIds = catalog.formations.map((f) => f.id);
+// From this Saturday on, the big mission of every Saturday and Sunday (Türkiye
+// time) is a Turkish derby, the six in turn; earlier days keep their missions,
+// so nothing started or rewarded changes.
+const DERBY_WEEKENDS_FROM = "2026-11-14";
+const TURKISH_DERBIES = ["gs_fb", "bjk_gs", "bjk_fb", "ts_gs", "ts_fb", "ts_bjk"];
 const edgeCount = (formation) => formation.adjacency.reduce((n, row) => n + row.length, 0) / 2;
 
 class SquadError extends Error {
@@ -45,8 +50,20 @@ function missions(day, policy = DEFAULT_POLICY) {
     throw new SquadError("invalid-argument", "Görev tarihi geçersiz.");
   }
   const pool = catalog.themes.filter((t) => t.dailyEligible);
+  const weekday = new Date(n * DAY).getUTCDay();
+  const derbyDay = day >= DERBY_WEEKENDS_FROM && (weekday === 6 || weekday === 0);
+  const picks = [0, 1, 2].map((i) => pool[((n + i * 11) % pool.length + pool.length) % pool.length]);
+  if (derbyDay) {
+    // Weeks count from Saturday; Saturday and Sunday take two derbies in turn.
+    const week = Math.floor((n - Math.floor(Date.parse(DERBY_WEEKENDS_FROM + "T00:00:00Z") / DAY)) / 7);
+    picks[2] = themes.get(TURKISH_DERBIES[(week * 2 + (weekday === 0 ? 1 : 0)) % TURKISH_DERBIES.length]);
+    for (const i of [0, 1]) {
+      let k = pool.indexOf(picks[i]);
+      while (picks.some((p, j) => j !== i && p.id === picks[i].id)) picks[i] = pool[++k % pool.length];
+    }
+  }
   return levels.map((level, i) => {
-    const theme = pool[((n + i * 11) % pool.length + pool.length) % pool.length];
+    const theme = picks[i];
     // Three different formations a day, rotating through all seven.
     const formationId = formationIds[((n + i * 2) % formationIds.length + formationIds.length) % formationIds.length];
     const edges = edgeCount(formations.get(formationId));
@@ -54,7 +71,7 @@ function missions(day, policy = DEFAULT_POLICY) {
     const twoStar = Math.ceil(edges * Math.min(level.share + .15, .8));
     const reward = policy.rewards[i];
     return {
-      label: level.label,
+      label: i === 2 && derbyDay ? "Derbi günü" : level.label,
       budget: level.budget,
       countries: level.countries,
       links: links,
@@ -201,6 +218,12 @@ function prepare(state, now) {
   return state.squadChallenge;
 }
 
+// RTDB reads a stored {2: 5, 3: 10} back as [null, null, 5, 10] (integer keys); the app
+// reads the star bonus as a map, so stored runs leave with the canonical object.
+function publicRun(run) {
+  return run && run.mission ? {...run, mission: {...run.mission, starBonus: STAR_BONUS}} : run;
+}
+
 function claimId(mission) {
   return "squad__" + mission.id;
 }
@@ -223,7 +246,7 @@ function status(state, now, premium, policy = DEFAULT_POLICY) {
     dailyMaxCoins: policy.enabled ? policy.rewards.reduce((sum, r) => sum + r + STAR_BONUS[3], 0) : 0,
     completedTotal: progress.completedTotal,
     bestByTheme: progress.bestByTheme,
-    active: progress.active,
+    active: publicRun(progress.active),
     missions: missions(progress.day, policy).map((m) => ({...m,
       reward: state.claims[claimId(m)]?.amount ?? m.reward, completed: !!state.claims[claimId(m)]})),
   };
@@ -360,7 +383,7 @@ function apply(state, action, input, now, premium, policy = DEFAULT_POLICY) {
   require("./squad_support").recover(state, now);
   state.createdAt = state.createdAt || now;
   state.updatedAt = now;
-  return {ok: true, run: run, hub: status(state, now, premium, policy)};
+  return {ok: true, run: publicRun(run), hub: status(state, now, premium, policy)};
 }
 
 module.exports = {apply, status, missions, missionFor, evaluate, positionFits, creditedLinks, starsFor, dayKey,

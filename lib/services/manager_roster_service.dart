@@ -16,6 +16,23 @@ class ManagerRoster {
   ManagerRoster(Iterable<ManagerPoolPlayer> players)
     : byId = Map.unmodifiable({for (final p in players) p.playerId: p});
   final Map<int, ManagerPoolPlayer> byId;
+
+  /// The pool and the scouts deal known players only (gameplay rating 72+, the
+  /// online modes' scale): before, a pool drew from all 30,000 database players
+  /// and the cheapest-first starter XI was nobody anyone knew. Every player stays
+  /// in [byId], so a career that owns a lesser-known player keeps him.
+  static const knownRating = 72.0;
+  late final List<ManagerPoolPlayer> known = [
+    for (final p in byId.values)
+      if (p.overall >= knownRating) p,
+  ];
+
+  /// Known players of a group, or everyone of it when too few are known to fill
+  /// [need] (never in the real database; a guard for small rosters).
+  List<ManagerPoolPlayer> _group(String group, int need) {
+    final mine = known.where((p) => p.positionGroup == group).toList();
+    return mine.length >= need ? mine : byId.values.where((p) => p.positionGroup == group).toList();
+  }
   static Future<ManagerRoster>? _pending;
 
   static Future<ManagerRoster> load() =>
@@ -30,12 +47,21 @@ class ManagerRoster {
     final result = <ManagerPoolPlayer>[];
     for (final (index, p) in repo.players.indexed) {
       if (p.name.trim().isNotEmpty) {
+        final rated = ManagerRatingService.instance.rate(p, repository: repo);
+        final tier = ManagerTierX.soloFromRating(rated.rating);
         result.add(
           ManagerPoolPlayer(
             playerId: p.id,
             name: p.name,
             positionGroup: ManagerPoolService.instance.positionGroup(p),
-            rating: ManagerRatingService.instance.rate(p, repository: repo),
+            // Solo prices inside the known pool; the rating itself is shared.
+            rating: ManagerPlayerRating(
+              playerId: rated.playerId,
+              rating: rated.rating,
+              tier: tier,
+              costLink: tier.costLink,
+              breakdown: rated.breakdown,
+            ),
             linkPotential: ManagerLinkService.instance.potentialFor(
               p,
               repository: repo,
@@ -61,8 +87,7 @@ class ManagerRoster {
     final picked = <int, ManagerPoolPlayer>{};
     for (final group in ManagerPoolService.posTargets.keys) {
       final candidates =
-          byId.values.where((p) => p.positionGroup == group).toList()
-            ..shuffle(random);
+          _group(group, ManagerPoolService.posTargets[group]!)..shuffle(random);
       int cost(ManagerPoolPlayer p) =>
           ownedIds.contains(p.playerId) ? 0 : p.costLink;
       candidates.sort((a, b) => cost(a).compareTo(cost(b)));
@@ -88,9 +113,7 @@ class ManagerRoster {
   List<ManagerTransferOffer> offers(String weekKey, Set<int> ownedIds) {
     final random = Random(seedFor(weekKey));
     final all =
-        byId.values
-            .where((p) => !ownedIds.contains(p.playerId) && p.overall >= 55)
-            .toList()
+        known.where((p) => !ownedIds.contains(p.playerId)).toList()
           ..shuffle(random);
     final picked = <ManagerPoolPlayer>[];
     for (final group in ['GK', 'DEF', 'MID', 'ATT']) {

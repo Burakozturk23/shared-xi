@@ -93,6 +93,8 @@ function sessionView(raw) {
     result: s.result || null};
   if (s.mode !== "squad_vault") {
     v.targetId = s.target; v.title = `${target.letter} harfi`; v.score = score(s);
+    // The app spins its letter reel onto these.
+    v.letter = target.letter; v.letterDifficulty = target.difficulty;
     v.slots = catalog.formations[s.formation].map((pos, slot) => {
       const p = players.get(s.picks[slot]);
       return {slot, position: pos, player: p ? publicPlayer(p) : null};

@@ -94,7 +94,39 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
       _canPop = false,
       _accountChanged = false;
   final _code = TextEditingController(), _query = TextEditingController();
-  Timer? _timer, _debounce;
+  Timer? _timer, _debounce, _retry;
+
+  /// Quiet retries after a brief connection drop; reset by any good reply.
+  int _linkMisses = 0;
+  static const _maxLinkMisses = 3;
+  static const _weakLink =
+      'Bağlantı zayıf · yeniden deneniyor. Maç sunucuda sürüyor.';
+
+  /// A lost socket or slow reply in a live room: keep the match on screen and
+  /// try [again] shortly instead of dropping to the error panel at once.
+  bool _quietRetry(Object e, Future<void> Function() again) {
+    if (_accountChanged ||
+        !_connected ||
+        _room.isEmpty ||
+        _finished ||
+        !isTransientGameError(e) ||
+        _linkMisses >= _maxLinkMisses)
+      return false;
+    _linkMisses++;
+    _feedback = _weakLink;
+    _retry?.cancel();
+    _retry = Timer(Duration(seconds: _linkMisses), () {
+      if (mounted && _connected && !_busy && !_polling && !_accountChanged)
+        again();
+    });
+    return true;
+  }
+
+  void _linkBack() {
+    _linkMisses = 0;
+    if (_feedback == _weakLink) _feedback = null;
+  }
+
   StreamSubscription<dynamic>? _auth;
   int _searchGeneration = 0, _mutationEpoch = 0, _pollTicks = 0;
   String? _observedUid;
@@ -157,6 +189,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     _auth?.cancel();
     _timer?.cancel();
     _debounce?.cancel();
+    _retry?.cancel();
     _code.dispose();
     _query.dispose();
     super.dispose();
@@ -206,7 +239,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     });
     try {
       await body();
-      if (mounted) setState(() => _connected = true);
+      if (mounted)
+        setState(() {
+          _connected = true;
+          _linkBack();
+        });
     } catch (e) {
       if (mounted)
         setState(() {
@@ -222,7 +259,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
               ].contains(e.code);
           if (business) {
             _feedback = gameErrorMessage(e);
-          } else {
+          } else if (!_quietRetry(e, _load)) {
             _error = gameErrorMessage(e);
             _connected = false;
           }
@@ -240,7 +277,21 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
       _availability = rewardMap(status['availability']);
       _accept(rewardMap(status['room']));
     });
-    if (_room.isEmpty && !_joinedFromInvite && widget.joinCode != null) {
+    // An invite joins its room even when the last match's result is still on
+    // screen (the saved room is finished); a match in progress is kept.
+    final invite = widget.joinCode?.trim().toUpperCase();
+    final over =
+        _room.isEmpty ||
+        [
+          'finished',
+          'forfeit',
+          'cancelled',
+          'expired',
+        ].contains(_room['status']);
+    if (over &&
+        !_joinedFromInvite &&
+        invite != null &&
+        '${_room['code'] ?? ''}'.toUpperCase() != invite) {
       _joinedFromInvite = true;
       await _enterImpl('join', code: widget.joinCode);
     }
@@ -273,12 +324,17 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
         'action': 'poll',
       });
       if (mounted && !_accountChanged && epoch == _mutationEpoch)
-        setState(() => _accept(rewardMap(r['room'])));
+        setState(() {
+          _linkBack();
+          _accept(rewardMap(r['room']));
+        });
     } catch (e) {
       if (mounted && !_accountChanged && epoch == _mutationEpoch)
         setState(() {
-          _error = gameErrorMessage(e);
-          _connected = false;
+          if (!_quietRetry(e, _poll)) {
+            _error = gameErrorMessage(e);
+            _connected = false;
+          }
         });
     } finally {
       _polling = false;
@@ -495,8 +551,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
       : _career
       ? '6 tur: üç eksik kulüp, iki kronoloji, bir gizemli kariyer. Doğru cevap 100 puan ve '
             'kalan süreye göre +50’ye kadar hız bonusu alır.'
-      : '5 transfer, her tur 30 saniye: iki kulüp arasındaki transferi yapan futbolcuyu yaz. '
-            '10. saniyede milliyet, 20. saniyede mevki açılır; açık her ipucu 15 puan düşürür.';
+      : '6 transfer, kolaydan zora; tur 45 sn, son tur ×2 puan. Transferi yapan futbolcuyu yaz; '
+            'dört ipucu sırayla açılır (milliyet, mevki, bir kulübü, baş harfler), her biri −12 puan.';
 
   /// Setup (no room) and, after a match, its result above a new start.
   List<Widget> _lobby() {
@@ -926,7 +982,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     final before = _now < (_room['startsAt'] as num? ?? 0);
     final seconds = (((_room['deadline'] as num? ?? _now) - _now) / 1000)
         .ceil()
-        .clamp(0, 30);
+        .clamp(0, 60);
     final locked =
         _busy ||
         !_connected ||
@@ -1672,9 +1728,16 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     );
   }
 
-  /// Transfer Duel hints open at 10 s and 20 s; each one costs 15 points.
+  /// Transfer Duel clues: the room's own schedule (45 s rounds, four clues at
+  /// 8/16/24/34 s, 12 points each); rooms from before: 10 s and 20 s, 15 points.
   static const _hintAt = [10000, 20000];
   static const _hintNames = ['Milliyet', 'Mevki'];
+  static const _clueNames = [
+    'Milliyet',
+    'Mevki ve yaş',
+    'Kariyerinden bir kulüp',
+    'Baş harfler',
+  ];
 
   /// The live Transfer Duel: score and clock, the move, the hints and what an
   /// answer is worth now, and the search bar over the keyboard (a tap sends).
@@ -1686,7 +1749,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     final deadline = (_room['deadline'] as num? ?? _now).toInt();
     final before = _now < start;
     final revealed = _room.containsKey('reveal');
-    final left = ((deadline - _now) / 1000).ceil().clamp(0, 30);
+    final left = ((deadline - _now) / 1000).ceil().clamp(0, 60);
     final round = (_room['round'] as num? ?? 0).toInt();
     final total = (_room['totalRounds'] as num? ?? 5).toInt();
     final hints = [for (final h in q['hints'] as List? ?? const []) '$h'];
@@ -1699,13 +1762,19 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
           ]
         : _fakeClub || _career
         ? const <int>[]
+        : q['hintAt'] is List
+        ? [for (final ms in q['hintAt'] as List) (ms as num).toInt()]
         : _hintAt;
+    final hintCost = (q['hintCost'] as num? ?? 15).toInt();
+    final hintNames = hintTimes.length == _clueNames.length
+        ? _clueNames
+        : _hintNames;
     // Round length: Fake Club 10 s, Career Race 20 / 25 s, Transfer and Mystery 30 s.
     final roundMs = _fakeClub
         ? 10000
         : _career
         ? (q['kind'] == 'order' ? 25000 : 20000)
-        : 30000;
+        : (q['duration'] as num? ?? 30000).toInt();
     final elapsed = _now - start;
     // What a right answer is worth now, by the server's formula.
     final worth = _career
@@ -1721,9 +1790,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
                             (30000 - elapsed).clamp(0, 30000) /
                             (30000 - hintTimes.first))
                         .floor())
-        : 100 -
-              15 * hints.length +
-              (50 * (deadline - _now).clamp(0, 30000) / 30000).floor();
+        : (100 -
+                  hintCost * hints.length +
+                  (50 * (deadline - _now).clamp(0, roundMs) / roundMs)
+                      .floor()) *
+              (q['multiplier'] as num? ?? 1).toInt();
     final blocked = before
         ? 'Tur başlıyor'
         : revealed
@@ -1908,6 +1979,14 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
                                 dot: hubAmber(context),
                                 child: Text(_levels[q['difficulty']]!),
                               ),
+                            if ((q['multiplier'] as num? ?? 1) > 1)
+                              ArenaPill(
+                                filled: true,
+                                color: Arena.lime,
+                                child: Text(
+                                  'Son tur · puan ×${q['multiplier']}',
+                                ),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 14),
@@ -1969,8 +2048,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
                                             ? '${i + 1}. ${hints[i]}'
                                             : hints[i])
                                       : _mystery
-                                      ? '${i + 1}. bilgi · ${((start + hintTimes[i] - _now) / 1000).ceil().clamp(0, 30)} sn sonra açılır'
-                                      : '${_hintNames[i]} · ${((start + hintTimes[i] - _now) / 1000).ceil().clamp(0, 30)} sn sonra açılır · −15',
+                                      ? '${i + 1}. bilgi · ${((start + hintTimes[i] - _now) / 1000).ceil().clamp(0, 60)} sn sonra açılır'
+                                      : '${hintNames[i]} · ${((start + hintTimes[i] - _now) / 1000).ceil().clamp(0, 60)} sn sonra açılır · −$hintCost',
                                   style: i < hints.length
                                       ? text.titleSmall?.copyWith(
                                           fontWeight: FontWeight.w800,

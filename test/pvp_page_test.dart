@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_xi/online/online_mode_catalog.dart';
 import 'package:shared_xi/online/online_mode_route.dart';
@@ -26,6 +27,12 @@ class PvpFixture extends PvpService {
   String turn;
   bool submitted, pending;
 
+  /// Polls that fail like a dropped Android socket (`internal`).
+  int failPolls = 0;
+
+  /// Loto as the bot plays it (lotoRules 3): own cards, one player called at a time.
+  bool lotoCalls = false;
+
   /// Random Five rounds (fiveRules 3): the five's number, and whether it closed.
   bool fiveRounds = false, fiveClosed = false;
 
@@ -39,6 +46,9 @@ class PvpFixture extends PvpService {
 
   /// Club Manager draft (managerRules 3): 'draft' or 'plan' while playing.
   bool draft = false;
+
+  /// Server preview of the links each pool player would bring (neighbours only).
+  Map<String, dynamic>? linkPreview;
   String draftPhase = 'draft';
 
   /// The 36-player draft pool: 4 GK, 11 DEF, 12 MID, 9 ATT.
@@ -166,6 +176,40 @@ class PvpFixture extends PvpService {
       },
       'lotoLines': {'c1': 'bob'},
       'lineBonus': 2,
+    },
+    if (mode == 'loto' && lotoCalls) ...{
+      'lotoRules': 3,
+      'owners': {},
+      'used': {},
+      'call': 2,
+      'totalCalls': 16,
+      'callMs': 15000,
+      'callPlayer': {'id': '200007', 'name': 'Lucas Torreira'},
+      'callStartsAt': 6000,
+      'callDeadline': 21000,
+      'callClosed': false,
+      'nextCallAt': null,
+      'myMove': null,
+      'rivalMoved': true,
+      'myCard': {
+        '0': {
+          'player': {'id': '200002', 'name': 'Cristiano Ronaldo'},
+          'correct': true,
+        },
+        '6': {
+          'player': {'id': '200004', 'name': 'Kevin De Bruyne'},
+          'correct': false,
+        },
+      },
+      'rivalPlaced': 2,
+      'lastCall': {
+        'round': 1,
+        'player': {'id': '200004', 'name': 'Kevin De Bruyne'},
+        'mine': {'cell': 6, 'correct': false},
+        'rival': {'cell': 3, 'correct': true},
+      },
+      'lotoLines': {'alice': [], 'bob': []},
+      'wrongCells': {'alice': 1, 'bob': 0},
     },
     'serverNow': 10000,
     'startsAt': 5000,
@@ -298,6 +342,7 @@ class PvpFixture extends PvpService {
     if (mode == 'cinko') ...{
       'cinkoRules': 2,
       'secondBonus': 1,
+      'secondBonusUid': 'bob',
       'lastMove': {
         'uid': 'bob',
         'player': {'id': '4', 'name': 'Rüştü Reçber'},
@@ -436,6 +481,7 @@ class PvpFixture extends PvpService {
         ['400000', '400006', 'club', 'Real Madrid'],
         ['400004', '400028', 'club', 'Liverpool FC'],
       ],
+      if (linkPreview != null) 'linkPreview': linkPreview,
       'myPlan': submitted ? {'plan': 'attack', 'captain': '400027'} : null,
       'rivalPlanned': true,
       if (stage == 'finished')
@@ -561,6 +607,10 @@ class PvpFixture extends PvpService {
     Map<String, dynamic> extra = const {},
   ]) async {
     if (action == 'poll') polls++;
+    if (action == 'poll' && failPolls > 0) {
+      failPolls--;
+      throw FirebaseFunctionsException(code: 'internal', message: 'INTERNAL');
+    }
     if (action != 'poll') actions.add(action);
     if (action == 'answer') answers.add('${extra['playerId']}');
     if (['answer', 'squad', 'choose', 'pick', 'plan'].contains(action))
@@ -797,6 +847,71 @@ void main() {
     await t.pumpWidget(const SizedBox.shrink());
     await t.pump();
   });
+  testWidgets('a brief drop retries quietly; a lasting one shows the panel', (
+    t,
+  ) async {
+    final f = PvpFixture();
+    await mount(t, OnlinePlayMode.randomFive, f);
+    const weak = 'Bağlantı zayıf · yeniden deneniyor. Maç sunucuda sürüyor.';
+    // Two lost replies: a note, no error panel, and the third poll brings the room back.
+    f.failPolls = 2;
+    await t.tap(find.byTooltip('Yenile'));
+    await t.pump();
+    expect(find.text('Oyunla bağlantı kurulamadı'), findsNothing);
+    expect(find.text(weak), findsOneWidget);
+    await t.pump(const Duration(seconds: 1));
+    await t.pump(const Duration(seconds: 2));
+    await t.pump();
+    expect(f.failPolls, 0);
+    expect(find.text(weak), findsNothing);
+    expect(find.text('Oyunla bağlantı kurulamadı'), findsNothing);
+    // A drop that lasts past three retries is shown.
+    f.failPolls = 100;
+    await t.tap(find.byTooltip('Yenile'));
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(seconds: 3));
+    }
+    expect(find.text('Oyunla bağlantı kurulamadı'), findsOneWidget);
+  });
+
+  testWidgets('online Loto calls one player at a time onto your own card', (
+    t,
+  ) async {
+    final f = PvpFixture(lock: 0)..lotoCalls = true;
+    await mount(t, OnlinePlayMode.loto, f);
+    expect(find.text('3 / 16 OYUNCU'), findsOneWidget);
+    expect(find.byKey(const ValueKey('online-loto-call')), findsOneWidget);
+    expect(find.text('Lucas Torreira'), findsWidgets);
+    // No strip of all 16 names any more.
+    expect(
+      find.byKey(const ValueKey('online-loto-player-200000')),
+      findsNothing,
+    );
+    expect(
+      find.textContaining('Sen yanlış kutu · Rakip doğru +1'),
+      findsOneWidget,
+    );
+    expect(find.text('DOĞRU'), findsOneWidget);
+    expect(find.text('YANLIŞ'), findsOneWidget);
+    await capture(t, 'loto_calls');
+    final cell = find.byKey(const ValueKey('online-cell-3'));
+    await t.scrollUntilVisible(
+      cell,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await t.tap(cell);
+    await t.pump();
+    expect(f.actions.last, 'answer');
+    expect(f.lastExtra, {'targetId': '3', 'round': 2});
+    await t.tap(find.byKey(const ValueKey('online-loto-pass')));
+    await t.pump();
+    expect(f.actions.last, 'pass');
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+    await t.pump();
+  });
+
   testWidgets('online Loto: pick a player, then a cell places it', (t) async {
     final f = PvpFixture(lock: 0)
       ..answerReceipt = {
@@ -1007,6 +1122,13 @@ void main() {
     await t.tap(pick);
     await t.pump();
     expect(find.text('Kadroya al: Wissam Ben Yedder'), findsOneWidget);
+    // Newer rooms: the server's preview (only links the pick would really bring).
+    f.linkPreview = {
+      '400033': ['Galatasaray'],
+    };
+    await t.tap(find.byTooltip('Yenile'));
+    await t.pump();
+    expect(find.text('+1 bağ · Galatasaray'), findsOneWidget);
     await t.tap(find.byKey(const ValueKey('draft-action')));
     await t.pump();
     expect(f.actions.last, 'pick');
@@ -1188,6 +1310,8 @@ void main() {
     final f = PvpFixture(lock: 0);
     await mount(t, OnlinePlayMode.cinko, f);
     expect(find.text('SIRA SENDE'), findsOneWidget);
+    // The rival moves second and starts on 1: the score card says so.
+    expect(find.textContaining('+1 ikinci başlama'), findsOneWidget);
     expect(find.text('Rüştü Reçber'), findsWidgets);
     expect(find.text('KAPALI'), findsOneWidget);
     expect(find.text('Önce bağlı kutuları seç'), findsOneWidget);

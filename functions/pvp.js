@@ -301,7 +301,8 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
           if (r.ready[r.host] && r.ready[r.guest]) E.start(r, c, time);
           receipt = {accepted: true};
         } else {
-          if (!["answer", "squad"].includes(input.action) && !(input.action === "pass" && r.mode === "cinko") &&
+          if (!["answer", "squad"].includes(input.action) &&
+            !(input.action === "pass" && (r.mode === "cinko" || r.lotoRules === 3)) &&
             !(input.action === "draw" && r.randomBoard) &&
             !(["pick", "plan"].includes(input.action) && r.managerRules === 3)) {
             fail("invalid-argument", "Bu aşamada geçersiz işlem.");
