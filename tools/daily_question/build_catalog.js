@@ -83,7 +83,8 @@ for (const [moduleName, tasks] of [["dynasties", load("dynasties").tasks], ["foo
 const fakeClub = JSON.parse(fs.readFileSync(path.join(root, "functions/config/fake_club_catalog.json"), "utf8"));
 const seenCareer = new Set();
 for (const fq of fakeClub.questions) {
-  if (fq.difficulty !== "normal" || seenCareer.has(fq.playerId)) continue;
+  // Retired careers are the Fake Club's legend tier now (they used to be normal).
+  if (!["normal", "legend"].includes(fq.difficulty) || seenCareer.has(fq.playerId)) continue;
   const sources = (fq.evidence?.sources || []).filter((u) => /^https:\/\//.test(u)).map((url) => ({url}));
   const fake = fq.options.find((o) => o.id === fq.fakeClubId);
   const real = fq.realClubIds.map((id) => fq.options.find((o) => o.id === id)).filter(Boolean).slice(0, 2);
