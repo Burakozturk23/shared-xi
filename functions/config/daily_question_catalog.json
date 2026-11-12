@@ -6616,11 +6616,11 @@
       "prompt": "Carlo Ancelotti · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "AC Milan",
-        "Napoli",
+        "SS Lazio",
         "AS Roma"
       ],
       "answer": 1,
-      "explanation": "Carlo Ancelotti’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve AS Roma vardır; Napoli yoktur.",
+      "explanation": "Carlo Ancelotti’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve AS Roma vardır; SS Lazio yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Carlo_Ancelotti"
@@ -6805,11 +6805,11 @@
       "prompt": "Vicente del Bosque · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "Real Madrid",
-        "CD Leganés",
+        "Villarreal CF",
         "Córdoba CF"
       ],
       "answer": 1,
-      "explanation": "Vicente del Bosque’in gözden geçirilmiş tam A takım kariyerinde Real Madrid ve Córdoba CF vardır; CD Leganés yoktur.",
+      "explanation": "Vicente del Bosque’in gözden geçirilmiş tam A takım kariyerinde Real Madrid ve Córdoba CF vardır; Villarreal CF yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Vicente_del_Bosque"
@@ -6890,10 +6890,10 @@
       "options": [
         "PSV Eindhoven",
         "FC Schalke 04",
-        "Karlsruher SC"
+        "FC Utrecht"
       ],
       "answer": 2,
-      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; Karlsruher SC yoktur.",
+      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; FC Utrecht yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Jefferson_Farf%C3%A1n"
@@ -6931,11 +6931,11 @@
       "prompt": "Cafu · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "AS Roma",
-        "Cultural Leonesa",
+        "Sporting Gijón",
         "Real Zaragoza"
       ],
       "answer": 1,
-      "explanation": "Cafu’in gözden geçirilmiş tam A takım kariyerinde AS Roma ve Real Zaragoza vardır; Cultural Leonesa yoktur.",
+      "explanation": "Cafu’in gözden geçirilmiş tam A takım kariyerinde AS Roma ve Real Zaragoza vardır; Sporting Gijón yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Cafu"
@@ -6953,10 +6953,10 @@
       "options": [
         "Galatasaray",
         "Besiktas JK",
-        "Fatih Karagümrük"
+        "Caykur Rizespor"
       ],
       "answer": 2,
-      "explanation": "Burak Yılmaz’in gözden geçirilmiş tam A takım kariyerinde Besiktas JK ve Galatasaray vardır; Fatih Karagümrük yoktur.",
+      "explanation": "Burak Yılmaz’in gözden geçirilmiş tam A takım kariyerinde Besiktas JK ve Galatasaray vardır; Caykur Rizespor yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Burak_Y%C4%B1lmaz"

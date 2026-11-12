@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "version": "pvp-v1-ed81a139496aee53",
+  "version": "pvp-v1-d0156b62b97ed7e1",
   "clubs": [
     {
       "id": 2,
@@ -4695,6 +4695,12 @@
       "country": "Portugal"
     },
     {
+      "id": 1000000161,
+      "name": "Al-Wahda",
+      "league": "",
+      "country": ""
+    },
+    {
       "id": 1000000162,
       "name": "Monaco",
       "league": "FR1",
@@ -8292,7 +8298,8 @@
           317,
           448,
           467,
-          610
+          610,
+          1000000161
         ],
         "careerTimeline": [
           {
@@ -8324,6 +8331,16 @@
             "clubId": 36,
             "startYear": 2023,
             "endYear": 2025
+          },
+          {
+            "clubId": 467,
+            "startYear": 2026,
+            "endYear": null
+          },
+          {
+            "clubId": 1000000161,
+            "startYear": 2025,
+            "endYear": 2026
           }
         ],
         "peakMarketValue": 25000000.0
@@ -8331,6 +8348,7 @@
       "expected": {
         "id": "36139",
         "clubs": [
+          "1000000161",
           "180",
           "202",
           "317",
@@ -8343,7 +8361,7 @@
           "Serbia"
         ],
         "position": "ATT",
-        "rating": 79.4,
+        "rating": 79.2,
         "cost": 10
       }
     },
@@ -8507,6 +8525,11 @@
             "clubId": 131,
             "startYear": 2022,
             "endYear": 2026
+          },
+          {
+            "clubId": 432,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 90000000.0
@@ -8524,8 +8547,8 @@
           "Poland"
         ],
         "position": "ATT",
-        "rating": 90.0,
-        "cost": 18
+        "rating": 89.3,
+        "cost": 14
       }
     },
     {
@@ -8855,6 +8878,11 @@
             "clubId": 368,
             "startYear": 2025,
             "endYear": 2026
+          },
+          {
+            "clubId": 4078,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 70000000.0
@@ -8877,7 +8905,7 @@
           "Chile"
         ],
         "position": "ATT",
-        "rating": 91.0,
+        "rating": 90.5,
         "cost": 18
       }
     },
@@ -10489,6 +10517,11 @@
             "clubId": 244,
             "startYear": 2025,
             "endYear": 2026
+          },
+          {
+            "clubId": 897,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 75000000.0
@@ -10603,6 +10636,11 @@
             "clubId": 418,
             "startYear": 2021,
             "endYear": 2026
+          },
+          {
+            "clubId": 410,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 65000000.0
@@ -11975,6 +12013,11 @@
             "clubId": 15795,
             "startYear": 2024,
             "endYear": 2026
+          },
+          {
+            "clubId": 36,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 100000000.0
@@ -11997,7 +12040,7 @@
           "Belgium"
         ],
         "position": "ATT",
-        "rating": 91.5,
+        "rating": 91.3,
         "cost": 18
       }
     },
@@ -12675,7 +12718,8 @@
           418,
           506,
           631,
-          1047
+          1047,
+          1244
         ],
         "careerTimeline": [
           {
@@ -12734,7 +12778,7 @@
             "endYear": 2026
           },
           {
-            "clubId": 5,
+            "clubId": 1244,
             "startYear": 2026,
             "endYear": null
           }
@@ -12745,6 +12789,7 @@
         "id": "128223",
         "clubs": [
           "1047",
+          "1244",
           "13",
           "141",
           "418",
@@ -13127,6 +13172,11 @@
             "clubId": 31,
             "startYear": 2017,
             "endYear": 2026
+          },
+          {
+            "clubId": 449,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 150000000.0
@@ -13146,7 +13196,7 @@
           "Egypt"
         ],
         "position": "ATT",
-        "rating": 90.5,
+        "rating": 90.2,
         "cost": 18
       }
     },
@@ -14562,6 +14612,11 @@
             "clubId": 281,
             "startYear": 2017,
             "endYear": 2026
+          },
+          {
+            "clubId": 418,
+            "startYear": 2026,
+            "endYear": null
           }
         ],
         "peakMarketValue": 100000000.0
