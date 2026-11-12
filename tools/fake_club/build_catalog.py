@@ -6,10 +6,17 @@ import itertools
 import json
 from pathlib import Path
 import sqlite3
+import unicodedata
 
 ROOT = Path(__file__).resolve().parents[2]
 DB = ROOT / 'assets/runtime/linkball_game_data_v4.sqlite'
 OUT = ROOT / 'functions/config/fake_club_catalog.json'
+
+
+def fold(name):
+    """The coach table's normalized_name: lower case without accents ("joachim low")."""
+    name = unicodedata.normalize('NFKD', name.replace('ı', 'i').replace('İ', 'I'))
+    return ' '.join(''.join(c for c in name if not unicodedata.combining(c)).casefold().split())
 
 
 def digest(value):
@@ -22,8 +29,11 @@ def build():
     review = json.loads((ROOT / 'tools/fake_club/coverage.json').read_text())
     rawclubs = {r['id']: dict(r) for r in con.execute('select * from clubs')}
 
+    # TM ids that collide with a different club keep their own id (reviewed list).
+    offset_mismatch = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
+
     def cid(i):
-        return i - 1000000000 if i >= 1000000000 and i - 1000000000 in rawclubs else i
+        return i - 1000000000 if i >= 1000000000 and i not in offset_mismatch and i - 1000000000 in rawclubs else i
 
     clubs = {cid(i): dict(id=cid(i), name=rawclubs[cid(i)]['name'],
         country=rawclubs[cid(i)]['country'], league=rawclubs[cid(i)]['competition'],
@@ -31,6 +41,15 @@ def build():
         for i in rawclubs if rawclubs[cid(i)]['entity_type'] == 'SENIOR'
         and rawclubs[cid(i)]['country'] and rawclubs[cid(i)]['competition']
         and rawclubs[cid(i)]['gameplay_eligible'] and '\\' not in rawclubs[cid(i)]['name']}
+    # Clubs a person coached: never a fake option ("Ancelotti never played for Napoli" is true
+    # but reads as a trap, he coached them). From the coach table and the reviewed tenures.
+    tenures = json.loads((ROOT / 'tools/pvp/coach_tenures.json').read_text(encoding='utf-8'))['coaches']
+    coached_by_name = {}
+    for r in con.execute('select normalized_name, payload_json from coaches'):
+        payload = json.loads(r['payload_json'] or '{}')
+        ids = {cid(int(x)) for x in payload.get('clubIds') or []}
+        ids |= {cid(int(t['clubId'])) for t in tenures.get(payload.get('id'), [])}
+        coached_by_name.setdefault(r['normalized_name'], set()).update(ids)
     questions, careers, rejected = [], [], Counter()
     # Each fake club appears at most this many times in the whole catalog.
     fake_uses, FAKE_CAP = Counter(), 5
@@ -49,6 +68,9 @@ def build():
         excluded |= {cid(r[0]) for r in con.execute('select club_id from career_spells where player_id=?', (pid,))}
         for r in con.execute('select from_club_id,to_club_id from transfers where player_id=?', (pid,)):
             excluded.update(map(cid, r))
+        coached = coached_by_name.get(fold(person['name']), set()) - real
+        if coached: rejected['coached_clubs_excluded'] += len(coached)
+        excluded |= coached
         displayed = sorted(real & clubs.keys())
         if len(displayed) < 3:
             rejected['fewer_than_three_displayable_clubs'] += 1

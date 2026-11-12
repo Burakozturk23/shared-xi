@@ -29,8 +29,7 @@ function availability(snapshot, runtime, time) {
   const pvp = runtime.pvp || {};
   const permits = (flag) => require("./missions_v3").onlineModes.slice(0, 9).some((mode) => {
     const policy = {...pvp, ...pvp.modes?.[mode]};
-    return policy[flag] === true && (flag !== "rankedEnabled" || mode !== "club_manager" ||
-      policy.managerRankedVerified === true);
+    return policy[flag] === true;
   });
   // Career Race / Transfer Duel have server-authoritative entry without a
   // separate rollout gate. Mystery/Fake policy cannot disable those two modes.

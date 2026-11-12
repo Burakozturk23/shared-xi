@@ -399,7 +399,8 @@ test("Pyramid: a dead-end candidate costs a life like any wrong one; hints come 
     s = await act(h, s, {action: "answer", slotId: slot.id, entityId: dead});
     assert.equal(s.lives, 3); assert.equal(s.message, message);
   }
-  s = await act(h, s, {action: "hint", slotId: slot.id}); assert.match(s.hint, /^Aday türü: \w+\.$/u);
+  // \p{L}, not \w: \w misses "ü" in "Kulüp".
+  s = await act(h, s, {action: "hint", slotId: slot.id}); assert.match(s.hint, /^Aday türü: \p{L}+\.$/u);
   s = await act(h, s, {action: "hint", slotId: slot.id}); assert.ok(s.hint.length > "Aday türü: Oyuncu.".length);
 });
 test("Pyramid: new boards come first; today's board is the same for everyone", async () => {

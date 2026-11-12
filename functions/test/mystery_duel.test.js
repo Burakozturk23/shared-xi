@@ -108,6 +108,37 @@ test("M13: 2/2/1 difficulty, no option fits a hinted club, one first club and tw
     }
   }
 });
+test("M16: levels follow how known the player is; the last hint is the best-known club of the career", () => {
+  const P = require("../pvp_engine").catalog; const {catalog, players} = require("../career_transfer");
+  const best = new Set(P.gridClubs.map((k) => k.slice(5))); const known = new Set(P.clubOptions.map((k) => k.slice(5)));
+  const fame = new Map(P.clubOptions.map((k, i) => [k.slice(5), i]));
+  const careers = new Map(catalog.careers.map((c) => [c.playerId, c]));
+  const {hintClubs} = require("../career_transfer_online");
+  const byId = new Map(require("../config/mystery_chain_catalog.json").mystery.map((p) => [p.id, p]));
+  for (let i = 0; i < 60; i++) {
+    for (const x of questions(mode, "m16-" + i)) {
+      const p = byId.get(x.id); const rating = P.players[String(p.playerId)].rating;
+      const hinted = [...hintClubs(p)];
+      assert.equal(x.public.difficulty, x.difficulty);
+      if (x.difficulty === "easy") assert.ok(rating >= 82 && hinted.some((c) => best.has(c)), x.id);
+      if (x.difficulty === "medium") assert.ok(rating >= 78 && hinted.some((c) => best.has(c)), x.id);
+      if (x.difficulty === "hard") assert.ok(rating >= 75 && hinted.some((c) => known.has(c)), x.id);
+      // The last hint names a club of the reviewed career, the best known one not hinted before.
+      const third = x.timedHints[2].replace(/^[^:]+:\s*/, "");
+      const stops = careers.get(p.playerId).stops.map((s) => String(s.clubId));
+      const named = stops.filter((c) => P.clubs[c]?.name === third);
+      if (fame.has(named[0])) {
+        assert.ok(named.length, players.get(p.playerId).name + " " + third);
+        const early = new Set([...hintClubs(p)].filter((c) => P.clubs[c]?.name !== third));
+        const better = stops.filter((c) => !early.has(c) && fame.has(c) && fame.get(c) < fame.get(named[0]));
+        assert.deepEqual(better, [], players.get(p.playerId).name);
+      }
+      // Wrong options: three well-known players when the entry has them.
+      const rated = x.public.options.filter((o) => o.id !== x.answer && P.players[String(o.id)].rating >= 75);
+      assert.ok(rated.length >= 2, x.id);
+    }
+  }
+});
 test("M14: the speed bonus starts at the first hint and the round end shows the explanation", async () => {
   const h = harness(); const r = await pair(h); const bank = raw(h, r); h.setTime(bank.startedAt + 8000);
   const a = await act(h, "alice", r); const b = await act(h, "bob", r);

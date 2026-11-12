@@ -170,6 +170,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
   }
 
   void _accept(Map<String, dynamic> room) {
+    // A new match starts its round dots afresh.
+    if (room['id'] != _room['id']) _roundResults.clear();
     final changed =
         room['id'] != _room['id'] ||
         room['round'] != _room['round'] ||
@@ -185,7 +187,6 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
     }
     _room = room;
     _received = DateTime.now();
-    if (room['id'] != _room['id']) _roundResults.clear();
     if (changed) {
       _order = _rows(rewardMap(room['question'])['options']);
       _selected = null;
@@ -1271,6 +1272,8 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
 
   /// "Ağustos 2021 · Yaz transferi": the month and its window, from the move's date.
   static String _window(Map<String, dynamic> q) {
+    // Summer-2026 moves known to the season only: no month to show.
+    if (q['season'] == 'summer') return '${q['year']} · Yaz transferi';
     final m = int.tryParse('${q['month'] ?? ''}');
     if (m == null || m < 1 || m > 12) return '${q['year'] ?? ''}';
     final window = m >= 6 && m <= 9
@@ -1764,8 +1767,12 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
         ],
       ),
     );
-    final reveal = (_room['reveal'] as num?)?.toInt();
+    final reveal = _room['reveal'] is num
+        ? (_room['reveal'] as num).toInt()
+        : null;
     final them = _room['opponentAnswer'];
+    // Order rounds reveal a list of periods; compare by value.
+    final rivalRight = them != null && '${_room['reveal']}' == '$them';
     return Column(
       children: [
         ArenaHeader(
@@ -2082,7 +2089,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
                               Text(
                                 them == null
                                     ? 'Rakip cevap vermedi'
-                                    : them == reveal
+                                    : rivalRight
                                     ? 'Rakip de bildi'
                                     : 'Rakip yanlış cevap verdi',
                                 style: text.bodySmall?.copyWith(color: p.muted),

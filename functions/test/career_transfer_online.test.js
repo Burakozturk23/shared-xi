@@ -80,6 +80,24 @@ test("Career Race: hidden club never shows in the route, real distractors, 2 car
     }
   }
 });
+test("Career Race: well-known careers, a well-known hidden club, order periods without dönem labels", () => {
+  const pv = require("../pvp_engine").catalog;
+  const grid = new Set(pv.gridClubs); const known = new Set(pv.clubOptions);
+  const byId = new Map(catalog.careers.map((p) => [p.id, p]));
+  for (let i = 0; i < 60; i++) {
+    for (const x of questions("career_race", "known" + i)) {
+      const p = byId.get(x.id.split("_")[0]);
+      assert.ok(pv.players[String(p.playerId)].rating >= 75 || p.stops.some((s) => grid.has("club:" + s.clubId)));
+      if (x.kind === "missing" && p.stops.some((s) => known.has("club:" + s.clubId) &&
+        p.stops.filter((y) => y.clubId === s.clubId).length === 1)) assert.ok(known.has("club:" + x.answer));
+      if (x.kind === "order") {
+        assert.ok(x.public.options.every((o) => !o.name.includes("dönem")));
+        assert.equal(new Set(x.public.options.map((o) => o.name)).size, 3);
+      }
+      if (x.kind === "mystery") assert.equal(new Set(x.public.options.map((o) => o.name)).size, 4);
+    }
+  }
+});
 test("Transfer Duel: 2 easy, 2 medium, 1 hard, known players, no player or club pair twice", () => {
   const byId = new Map(catalog.transfers.map((p) => [p.id, p]));
   let multi = 0;
@@ -99,6 +117,25 @@ test("Transfer Duel: 2 easy, 2 medium, 1 hard, known players, no player or club 
     }
   }
   assert.ok(multi > 0);
+});
+test("Transfer Duel levels follow how known the move is: stars between big clubs are easy", () => {
+  const pv = require("../pvp_engine").catalog;
+  const best = new Set(pv.gridClubs.map((k) => Number(k.slice(5))));
+  const known = new Set(pv.clubOptions.map((k) => Number(k.slice(5))));
+  const byId = new Map(catalog.transfers.map((t) => [t.id, t]));
+  for (let i = 0; i < 60; i++) {
+    for (const q of questions("transfer_duel", "known" + i)) {
+      const t = byId.get(q.id); const rating = pv.players[String(t.playerId)].rating;
+      assert.equal(q.public.difficulty, q.difficulty);
+      if (q.difficulty === "easy") {
+        assert.ok(rating >= 82 && known.has(t.fromClubId) && best.has(t.toClubId) && t.year >= 2005,
+            players.get(t.playerId).name);
+      } else {
+        assert.ok(rating >= 78 && (known.has(t.fromClubId) || known.has(t.toClubId)), players.get(t.playerId).name);
+      }
+      if (q.difficulty === "medium") assert.ok(best.has(t.fromClubId) || best.has(t.toClubId));
+    }
+  }
 });
 test("Transfer Duel opens hints at 10 s and 20 s, each lowers the base; shared moves accept all", async () => {
   const h = harness({}, {omitEmptyObjects: true}); let r = await pair(h, "transfer_duel"); const raw = read(h, r);
@@ -284,3 +321,15 @@ for (const mode of ["career_race", "transfer_duel", "mystery_duel", "fake_club_d
     assert.equal(h.read(`careerTransferOnline/${mode}/rooms/${room.id}/status`), "cancelled");
   });
 }
+test("Transfer Duel: a summer-2026 move known to the season shows the window, never a month", () => {
+  const season = catalog.transfers.filter((t) => t.precision === "season");
+  assert.ok(season.length >= 50);
+  assert.ok(season.some((t) => players.get(t.playerId).name === "Denzel Dumfries"));
+  let shown = null;
+  for (let i = 0; i < 400 && !shown; i++) {
+    shown = questions("transfer_duel", "season" + i).find((q) => q.public.season);
+  }
+  assert.ok(shown, "a season move reaches a duel");
+  assert.equal(shown.public.season, "summer"); assert.equal(shown.public.month, undefined);
+  assert.equal(shown.public.year, 2026); assert.match(shown.explanation, /2026 yaz dönemi/);
+});

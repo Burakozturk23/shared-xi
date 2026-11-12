@@ -9,9 +9,11 @@ def key(s):
 c=sqlite3.connect(DB);c.row_factory=sqlite3.Row
 players={str(r['id']):dict(r) for r in c.execute('select * from players where answer_eligible=1')}
 rawclubs={str(r['id']):dict(r) for r in c.execute("select * from clubs where entity_type='SENIOR' and gameplay_eligible=1")}
+# TM ids that collide with a different club keep their own id (reviewed list).
+OFFSET_MISMATCH = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
 def clubid(i):
  i=int(i)
- return str(i-1000000000) if i>=1000000000 and str(i-1000000000) in rawclubs else str(i)
+ return str(i-1000000000) if i>=1000000000 and i not in OFFSET_MISMATCH and str(i-1000000000) in rawclubs else str(i)
 clubs={i:p for i,p in rawclubs.items() if clubid(i)==i}
 aliases=collections.defaultdict(set)
 for i,p in players.items():aliases[key(p['name'])].add(i)

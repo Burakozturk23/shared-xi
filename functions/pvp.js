@@ -45,7 +45,6 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
   }
   async function policy(mode) {
     const p = await getPolicy(); const result = {...defaults, ...p, ...p.modes?.[mode]};
-    if (mode === "club_manager" && result.managerRankedVerified !== true) result.rankedEnabled = false;
     return result;
   }
   async function change(mode, fn) {
@@ -63,6 +62,15 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
     if (error) throw error;
     if (!tx.committed) fail("aborted", "İşlem çakıştı; aynı isteği yeniden dene.");
     return tx.snapshot.val();
+  }
+  // The rematch or next series game: roles swap so the other side starts.
+  function next(s, r, id, time, series, seed) {
+    s.rooms[id] = E.hydrate({id, mode: r.mode, playKind: "friend", host: r.guest, guest: r.host,
+      names: r.names, status: "ready", revision: 0, createdAt: time, seed: hash([seed, id]), schemaVersion: 1,
+      ruleVersion: E.RULE, dataRevision: catalog.version, profile: r.profile, series, rankedEligible: false,
+      rewardPolicy: {rewardsEnabled: false, eloEnabled: false}});
+    for (const u of [r.host, r.guest]) if (!s.active[u] || s.active[u] === r.id) s.active[u] = id;
+    r.nextRoom = id;
   }
   async function status(uid, input) {
     check(input);
@@ -236,6 +244,7 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
     const allowed = new Set(["mode", "schemaVersion", "ruleVersion", "dataRevision", "roomId",
       "actionId", "action", "revision",
       "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice", "cells", "swap",
+      "plan", "captain",
       "clientVersion", "platform"]);
     if (Object.keys(input).some((k) => !allowed.has(k))) {
       fail("invalid-argument",
@@ -251,16 +260,21 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
         if (r.receipts[key].fingerprint !== fp) fail("invalid-argument", "Aynı hamle kimliği değiştirilemez.");
         receipt = r.receipts[key].result; return;
       }
-      const was = hash([r.status, r.turnUid, r.turnDeadline, r.scores]); E.advance(r, time);
-      if (was !== hash([r.status, r.turnUid, r.turnDeadline, r.scores])) r.revision++;
+      const was = hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null]);
+      E.advance(r, time);
+      if (was !== hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null])) {
+        r.revision++;
+      }
       if (r.playKind === "ranked" && r.status === "waiting" && time >= r.createdAt + 30000) {
         E.finish(r, "expired", "Bu modda rakip bulunamadı. Yeniden arayabilirsin.", time, null); delete s.queue[uid];
       }
       if (event && !E.terminal(r)) {
         if (Object.keys(r.audit).length >= 600) fail("resource-exhausted", "Maç hamle sınırı doldu.");
         if (input.action === "leave") {
-          E.finish(r, r.status === "playing" ? "forfeit" : "cancelled", "Oyuncu maçtan ayrıldı.", time,
-              r.status === "playing" ? uid === r.host ? r.guest : r.host : null); delete s.queue[uid];
+          // Leaving between series games gives that game to the rival.
+          const lost = r.status === "playing" || r.status === "ready" && r.series?.limit > 1 && r.series.game > 1;
+          E.finish(r, lost ? "forfeit" : "cancelled", lost && r.status === "ready" ? "Oyuncu seriden çekildi." :
+            "Oyuncu maçtan ayrıldı.", time, lost ? uid === r.host ? r.guest : r.host : null); delete s.queue[uid];
           receipt = {accepted: true};
         } else if (input.action === "choose" && r.status === "ready" && r.playKind === "friend" &&
           ["club_club", "club_country"].includes(r.mode)) {
@@ -274,14 +288,22 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
           }
           r.choices[side] = input.choice; r.ready = {}; receipt = {accepted: true};
         } else if (input.action === "ready" && r.status === "ready") {
-          if (r.playKind === "friend" && ["club_club", "club_country"].includes(r.mode) &&
-            (!r.choices.left || !r.choices.right)) fail("failed-precondition", "İki oyuncu da seçimini tamamlamalı.");
+          // Friend Club modes: ready without a choice takes a playable one (players
+          // pressed ready, got a refusal they did not see, and the room expired).
+          if (r.playKind === "friend" && ["club_club", "club_country"].includes(r.mode)) {
+            const side = uid === r.host ? "left" : "right";
+            if (!r.choices[side]) {
+              r.choices[side] = E.autoChoice(c, r.mode, side, r.choices[side === "left" ? "right" : "left"],
+                  r.seed || r.id);
+            }
+          }
           r.ready[uid] = true;
           if (r.ready[r.host] && r.ready[r.guest]) E.start(r, c, time);
           receipt = {accepted: true};
         } else {
           if (!["answer", "squad"].includes(input.action) && !(input.action === "pass" && r.mode === "cinko") &&
-            !(input.action === "draw" && r.randomBoard)) {
+            !(input.action === "draw" && r.randomBoard) &&
+            !(["pick", "plan"].includes(input.action) && r.managerRules === 3)) {
             fail("invalid-argument", "Bu aşamada geçersiz işlem.");
           }
           // Simultaneous races validate current target/round atomically; stale turn claims do not consume a new turn.
@@ -301,18 +323,20 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
         if (r.rematch[r.host] && r.rematch[r.guest] && !r.nextRoom) {
           const id = hash([seed, r.id]).slice(0, 8).toUpperCase();
           if (s.rooms[id]) fail("already-exists", "Rövanşı tekrar dene.");
-          const series = structuredClone(r.series); series.wins ||= {};
-          if (series.game >= series.limit) {
-            series.id = id; series.game = 1; series.wins = {}; series.draws = 0;
-          } else series.game++;
-          const next = E.hydrate({id, mode: r.mode, playKind: "friend", host: r.guest, guest: r.host,
-            names: r.names, status: "ready", revision: 0, createdAt: time, seed, schemaVersion: 1,
-            ruleVersion: E.RULE, dataRevision: c.version, profile: r.profile, series, rankedEligible: false,
-            rewardPolicy: {rewardsEnabled: false, eloEnabled: false}});
-          s.rooms[id] = next; s.active[r.host] = id; s.active[r.guest] = id; r.nextRoom = id;
+          // A finished series (or a single game) starts a new series of the same length.
+          next(s, r, id, time, {id, game: 1, limit: r.series?.limit || 1, wins: {}}, seed);
         }
       } else if (event && !["leave"].includes(input.action)) {
         fail("failed-precondition", "Maç sona erdi.");
+      }
+      // A series continues on its own: the next game's room opens as soon as one ends.
+      if (r.playKind === "friend" && ["finished", "forfeit"].includes(r.status) && r.series?.limit > 1 &&
+        !r.series.over && !r.nextRoom && r.dataRevision === catalog.version) {
+        const id = hash([seed, r.id, "series"]).slice(0, 8).toUpperCase();
+        if (!s.rooms[id]) {
+          const series = structuredClone(r.series); series.game++;
+          next(s, r, id, time, series, seed);
+        }
       }
       if (!E.terminal(r)) r.presence[uid] = time;
       if (event) r.receipts[key] = {fingerprint: fp, result: receipt || {accepted: false}};

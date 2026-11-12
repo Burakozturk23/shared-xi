@@ -168,7 +168,7 @@ test("C04-C06: exact PAR earns mastery; undo keeps gold but removes mastery; hin
   // The hint names the next bridge player only, never the club.
   const hint = s.bridgeHint; const step = remaining(graph, raw(h, s))[0];
   assert.equal(hint.playerId, step.playerId); assert.equal(hint.clubId, undefined);
-  assert.match(hint.text, /^Sıradaki köprü futbolcusu: /); assert.ok(!hint.id.endsWith(String(step.clubId)));
+  assert.match(hint.text, /^Sıradaki köprü futbolcusu: /); assert.ok(hint.id.endsWith(`__${step.playerId}`));
   await assert.rejects(act(h, s, {action: "hint"}), {code: "failed-precondition"});
   s = await act(h, s, {action: "move", ...step}); assert.equal(s.bridgeHint, null);
   s = await act(h, s, {action: "undo"}); assert.equal(s.bridgeHint, null);

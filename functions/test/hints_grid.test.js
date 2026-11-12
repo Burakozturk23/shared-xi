@@ -93,7 +93,7 @@ test("reverse: criterion type, a wrong criterion and the first letter of a valid
   const axis = [0, 1, 2, 3, 4, 5].find((i) => !r.axes[i]);
   const valid = G.common(raw(h, r), axis);
   r = await hint(h, r, "kriter_turu", axis);
-  assert.match(result(r, "kriter_turu"), /Kulüp|Milliyet|Mevki/);
+  assert.match(result(r, "kriter_turu"), /Kulüp|Milliyet|Mevki|Teknik direktör/);
   r = await hint(h, r, "kriter_harf", axis);
   assert.ok(valid.some((k) => result(r, "kriter_harf").endsWith(": " + [...k.label].find((c) => /\p{L}/u.test(c)))));
   assert.deepEqual(Object.keys(r.hintMenu.byTarget).map(Number).sort(), [0, 1, 2, 3, 4, 5].filter((i) => !r.axes[i]));

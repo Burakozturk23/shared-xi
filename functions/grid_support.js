@@ -99,7 +99,8 @@ function fairColumns(ids) {
   return cols;
 }
 function makePuzzle(r) {
-  const clubs = r.pool.length ? r.pool : catalog.clubOptions;
+  // A broad pool (no league filter) uses the best-known clubs, as online Grid.
+  const clubs = r.pool.length ? r.pool : catalog.gridClubs || catalog.clubOptions;
   if (clubs.length < 3) fail("failed-precondition", "En az üç uygun kulüp gerekli.");
   const strict = r.rules >= 2;
   // Fair rows: clubs with at least six well-known players (when the pool has three of them).
@@ -283,7 +284,7 @@ function makePair(r) {
   if (r.roundsUsed >= 3 || r.pending) fail("failed-precondition", "Önce bekleyen çifti tamamla.");
   const used = new Set([...Object.values(r.rows), ...Object.values(r.cols)]);
   const pool = new Set(r.pool);
-  const clubs = P.shuffle(pool.size ? [...pool] : catalog.clubOptions, r.seed + r.pairNumber)
+  const clubs = P.shuffle(pool.size ? [...pool] : catalog.gridClubs || catalog.clubOptions, r.seed + r.pairNumber)
       .filter((id) => !used.has(id));
   const pairs = []; const fair = r.rules >= 2;
   // At most one coach pair per board (so never coach x coach); ~35% of draws while none is placed.

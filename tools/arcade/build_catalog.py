@@ -9,7 +9,9 @@ def key(s):
     return ''.join(x for x in unicodedata.normalize('NFKD', s.lower()) if x.isalnum())
 c = sqlite3.connect(DB); c.row_factory = sqlite3.Row
 rawclubs = {r['id']: dict(r) for r in c.execute('select * from clubs')}
-def cid(i): return i-1000000000 if i >= 1000000000 and i-1000000000 in rawclubs else i
+# TM ids that collide with a different club keep their own id (reviewed list).
+OFFSET_MISMATCH = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
+def cid(i): return i-1000000000 if i >= 1000000000 and i not in OFFSET_MISMATCH and i-1000000000 in rawclubs else i
 clubs = {str(cid(i)): {'id':str(cid(i)), 'name':r['name'], 'badgeKey':r['badge_key'], 'popularity':r['popularity_seed'] or 0} for i,r in rawclubs.items() if cid(i)==i and r['entity_type']=='SENIOR' and r['gameplay_eligible']}
 links = collections.defaultdict(set)
 for r in c.execute('select * from player_clubs where trust>=2'):

@@ -22,6 +22,24 @@ function legacyRandom(h, r) {
   h.seed(`${at}/randomBoard`, null); h.seed(`${at}/puzzle`, E.puzzle(c, "grid_random", q.seed));
   h.seed(`${at}/endsAt`, q.startsAt + 160000);
 }
+// A Random Five room as started before the rounds: one board for 90 s.
+function legacyFive(seed) {
+  const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed, dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; r.fiveRules = 2; delete r.fiveStarts;
+  r.puzzle = {id: "legacy", clubs: E.puzzle(c, "random_five", seed).boards[0]}; r.endsAt = r.startsAt + 90000;
+  return r;
+}
+// Random Five rounds: the best and a fitting-none player of a five.
+const fiveFit = (clubs, id) => clubs.filter((k) => E.matches(c, c.players[id], k)).length;
+const fiveBest = (clubs, not = []) => Object.keys(c.players).filter((id) => !not.includes(id))
+    .sort((x, y) => fiveFit(clubs, y) - fiveFit(clubs, x))[0];
+const fiveNone = (clubs) => Object.keys(c.players).find((id) => !fiveFit(clubs, id));
+// A Club Manager room as started before the draft: one budget pool, simultaneous XIs.
+function legacyManager(h, r) {
+  const at = `pvpV1/club_manager/rooms/${r.id}`; const q = raw(h, r);
+  h.seed(`${at}/managerRules`, 2); h.seed(`${at}/puzzle`, E.puzzle(c, "club_manager", q.seed));
+  h.seed(`${at}/draft`, null); h.seed(`${at}/endsAt`, q.startsAt + 180000);
+}
 function legacyRoom(seed) {
   const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed, dataRevision: c.version});
   E.start(r, c, 0); r.status = "playing"; delete r.randomBoard;
@@ -134,6 +152,66 @@ test("GR01-06: both players have five equal rounds; opponent answer/used ID hidd
   h.setTime(new Date(q.endsAt + 1).toISOString()); r = await act(h, "alice", r);
   assert.equal(r.status, "finished"); assert.equal(r.result, "draw"); assert.equal(h.read("rankedState"), null);
 });
+test("friend Club modes: readying without a choice picks a playable one, so the match starts", async () => {
+  for (const mode of ["club_club", "club_country"]) {
+    const h = boot();
+    let r = await enter(h, "alice", mode, "create");
+    r = await enter(h, "bob", mode, "join", {code: r.id});
+    assert.equal(r.status, "ready"); assert.ok(r.pairOptions.length > 0);
+    // Bob picks; Alice only presses ready: she gets a choice that pairs with his.
+    const pick = r.pairOptions[0];
+    r = await act(h, "bob", r, "choose", {choice: pick});
+    r = await act(h, "alice", r, "ready");
+    const room = raw(h, r);
+    assert.equal(room.choices.right, pick); assert.ok(room.choices.left);
+    assert.ok(E.pairOptions(c, mode, "left", pick).includes(room.choices.left));
+    r = await act(h, "bob", r, "ready");
+    assert.equal(r.status, "countdown", mode);
+    // Neither chooses: both still get a playable pair.
+    const h2 = boot();
+    let q = await enter(h2, "alice", mode, "create");
+    q = await enter(h2, "bob", mode, "join", {code: q.id});
+    q = await act(h2, "alice", q, "ready"); q = await act(h2, "bob", q, "ready");
+    assert.equal(q.status, "countdown", mode);
+    const both = raw(h2, q).choices;
+    assert.ok(E.pairOptions(c, mode, "right", both.left).includes(both.right));
+  }
+});
+test("Çinko and Random Five boards use only well-known clubs, countries and top leagues", () => {
+  const grid = new Set(c.gridClubs);
+  const top = ["Premier League", "LaLiga", "Serie A", "Bundesliga", "Ligue 1", "Süper Lig", "Eredivisie",
+    "Liga Portugal"];
+  for (const b of c.cinko) {
+    for (const k of b.criteria) {
+      const x = c.criteria[k];
+      if (x.type === "club") assert.ok(grid.has(k), x.label);
+      if (x.type === "country") assert.ok(c.countryOptions.slice(0, 45).includes(k), x.label);
+      if (x.type === "league") assert.ok(top.includes(x.label), x.label);
+    }
+  }
+  // No rare national team on a Çinko board.
+  const countries = new Set(c.cinko.flatMap((b) => b.criteria).filter((k) => k.startsWith("country:")));
+  for (const k of ["country:trinidadandtobago", "country:curacao", "country:moldova"]) assert.ok(!countries.has(k));
+  for (const b of c.five) assert.ok(b.clubs.every((k) => grid.has(k)));
+});
+test("Grid boards and Random Grid pairs use only the best-known clubs", () => {
+  const grid = new Set(c.gridClubs); assert.equal(grid.size, 50);
+  // The pool leads with the most famous clubs; no obscure league side.
+  for (const name of ["Real Madrid", "FC Barcelona", "Manchester United", "Bayern Munich", "Galatasaray"]) {
+    assert.ok(c.gridClubs.some((k) => c.criteria[k].label === name), name);
+  }
+  for (const name of ["Dundee United FC", "Zorya Lugansk", "Aberdeen FC"]) {
+    assert.ok(!c.clubOptions.some((k) => c.criteria[k].label === name), name);
+  }
+  const clubsOf = (ks) => ks.filter((k) => k.startsWith("club:"));
+  for (const g of c.grids) assert.ok(clubsOf([...g.rows, ...g.cols]).every((k) => grid.has(k)), g.id);
+  for (let i = 0; i < 40; i++) {
+    const r = E.hydrate({mode: "grid_random", host: "a", guest: "b", seed: "fame" + i, dataRevision: c.version});
+    E.start(r, c, 0); r.status = "playing";
+    E.move(c, r, r.turnUid, {action: "draw"}, 6000);
+    assert.ok(clubsOf(r.pending.criteria).every((k) => grid.has(k)), r.pending.criteria.join());
+  }
+});
 test("Grid Random board: only the player to move draws a pair, and both see it", () => {
   const r = boardRoom("draw"); assert.equal(r.randomBoard, 1); assert.equal(r.endsAt - r.startsAt, 30 * 45000);
   const t = r.turnUid; const o = t === "a" ? "b" : "a";
@@ -206,9 +284,8 @@ test("Grid Random board: drawing goes through the online move with the turn's re
   r = await act(h, t, peer, "answer", {targetId: 6, playerId: fits(a, b), swap: false});
   assert.equal(r.owners[6].uid, t); assert.equal(r.rows[2].id, a); assert.equal(r.cols[0].id, b);
 });
-test("Random Five lists found players live: which clubs, points and second", () => {
-  const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed: "five-live", dataRevision: c.version});
-  E.start(r, c, 0); r.status = "playing";
+test("Random Five (single-board rooms) lists found players live: which clubs, points and second", () => {
+  const r = legacyFive("five-live");
   const clubs = r.puzzle.clubs;
   const fit = (id) => clubs.filter((k) => E.matches(c, c.players[id], k));
   // The best-covered player of the board.
@@ -346,14 +423,45 @@ test("GT01-05: reverse axes require all three canonical relationships; 4 axes en
 test("RF01-05/CI02-04: server computes club points and all eligible cells; indexes are rejected", async () => {
   // This assertion needs a multi-club witness; an arbitrary random draw need not have one.
   const h = boot(); let r = await pair(h, "random_five", false, ["alice", "bob"], "multi-club-score");
-  const q = raw(h, r).puzzle;
-  const p = Object.values(c.players).find((p) => q.clubs.filter((k) => E.matches(c, p, k)).length >= 2);
-  r = await act(h, "alice", r, "answer", {playerId: p.id});
-  assert.equal(r.scores.alice, E.FIVE_POINTS[q.clubs.filter((k) => E.matches(c, p, k)).length]);
+  const q = raw(h, r).puzzle.boards[0];
+  const p = Object.values(c.players).find((p) => q.filter((k) => E.matches(c, p, k)).length >= 2);
+  r = await act(h, "alice", r, "answer", {playerId: p.id, round: 0});
+  r = await act(h, "bob", r, "answer", {playerId: fiveNone(q), round: 0});
+  assert.equal(r.scores.alice, E.FIVE_POINTS[q.filter((k) => E.matches(c, p, k)).length]);
   const cinko = await pair(boot(), "cinko"); assert.equal(cinko.criteria.length, 25);
   const h2 = boot(); const cr = await pair(h2, "cinko");
   await assert.rejects(act(h2, cr.turnUid, cr, "answer", {playerId: p.id, indexes: [0, 1, 2]}), {code:
       "invalid-argument"});
+});
+test("Loto ends when both players used up their wrong moves", () => {
+  const r = E.hydrate({mode: "loto", host: "a", guest: "b", seed: "loto-wrong", dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; const q = r.puzzle;
+  // A board player on a cell it does not fit.
+  const [id, cell] = q.players.flatMap((p) => q.criteria.map((k, i) => [p, i]))
+      .find(([p, i]) => !E.matches(c, c.players[p], q.criteria[i]));
+  let t = r.startsAt;
+  for (const u of ["a", "b"]) {
+    for (let n = 0; n < E.PENALTY.loto.maxWrong; n++) {
+      t += E.PENALTY.loto.lockMs + 1; E.move(c, r, u, {playerId: id, targetId: cell}, t);
+    }
+    if (u === "a") assert.equal(r.status, "playing");
+  }
+  assert.equal(r.status, "finished"); assert.equal(r.reason, "İki oyuncunun da yanlış hakkı bitti.");
+  assert.ok(r.finishedAt < r.endsAt);
+});
+test("Loto boards: best-known clubs, football countries, top leagues and well-known names", () => {
+  const grid = new Set(c.gridClubs);
+  const names = new Map(); for (const p of Object.values(c.players)) names.set(p.name, (names.get(p.name) || 0) + 1);
+  for (const b of c.loto) {
+    for (const k of b.criteria) {
+      const x = c.criteria[k];
+      if (x.type === "club") assert.ok(grid.has(k), x.label);
+      if (x.type === "league") assert.notEqual(x.label, "1. Lig");
+    }
+    for (const id of b.players) {
+      assert.ok(c.players[id].rating >= 75, c.players[id].name); assert.equal(names.get(c.players[id].name), 1);
+    }
+  }
 });
 test("LO02-06: only pinned stone and correct cell accepted; 180s is server owned", async () => {
   const h = boot(); let r = await pair(h, "loto"); const q = raw(h, r).puzzle;
@@ -366,7 +474,7 @@ test("LO02-06: only pinned stone and correct cell accepted; 180s is server owned
   await assert.rejects(act(h, "bob", r, "answer", {targetId: other, playerId: q.players[0]}), {code: "already-exists"});
 });
 test("CM01-06: budget, unique positions, secret XI, deterministic two-team referee", async () => {
-  const h = boot(); let r = await pair(h, "club_manager"); const q = raw(h, r);
+  const h = boot(); let r = await pair(h, "club_manager"); legacyManager(h, r); const q = raw(h, r);
   const ids = Object.entries(E.FORMATIONS["433"]).flatMap(([pos, count]) => q.puzzle.pool.map((id) => c.players[id])
       .filter((p) => p.position === pos).sort((a, b) => a.cost - b.cost).slice(0, count).map((p) => p.id));
   const input = {playerIds: ids, formation: "433", tactics: {press: .5, tempo: .5, width: .5}};
@@ -409,7 +517,7 @@ test("CM08: binding budget, cyclic tactics, penalties on a draw, forfeit for a m
   }
   assert.ok(pens > 0);
   // Only one side locked its XI: it wins by forfeit at the deadline.
-  const h = boot(); let r = await pair(h, "club_manager"); const pool = raw(h, r).puzzle.pool;
+  const h = boot(); let r = await pair(h, "club_manager"); legacyManager(h, r); const pool = raw(h, r).puzzle.pool;
   const mine = Object.entries(E.FORMATIONS["433"]).flatMap(([pos, n]) => pool.map((id) => c.players[id])
       .filter((p) => p.position === pos).sort((a, b) => a.cost - b.cost).slice(0, n).map((p) => p.id));
   r = await act(h, "alice", r, "squad", {...squad, playerIds: mine});
@@ -491,16 +599,65 @@ test("EC05/07: earlier ranked generation consumes shared caps and interrupted pa
   assert.equal(h.read("economyState/alice/balances/coins"), 3);
   assert.equal(h.read("progressionState/alice/lifetimeXp"), 2);
 });
-test("friend rematch requires both consents, swaps roles and preserves a three-game series", async () => {
+test("friend rematch requires both consents and swaps roles", async () => {
   const h = boot(); let r = await pair(h, "club_country");
-  h.seed(`pvpV1/club_country/rooms/${r.id}/series/limit`, 3);
   r = await act(h, "alice", r, "leave");
   r = await act(h, "alice", r, "rematch"); assert.equal(r.nextRoom, null);
   r = await act(h, "bob", r, "rematch"); assert.ok(r.nextRoom);
   const next = await enter(h, "alice", "club_country", "resume");
   assert.equal(next.host, "bob"); assert.equal(next.guest, "alice");
-  assert.equal(next.series.game, 2); assert.equal(next.series.wins.bob, 1);
+  assert.equal(next.series.game, 1); assert.equal(next.series.limit, 1);
   assert.deepEqual(next.ready, {}); assert.equal(h.read("rankedState"), null);
+});
+// A three-game series room: the first game is played with series3.
+async function seriesPair(h, mode) {
+  let r = await enter(h, "alice", mode, "create", {profile: "series3"});
+  r = await enter(h, "bob", mode, "join", {code: r.id});
+  r = await act(h, "alice", r, "ready"); r = await act(h, "bob", r, "ready");
+  h.setTime(new Date(r.startsAt + 100).toISOString());
+  await act(h, "alice", r); return act(h, "bob", r);
+}
+async function readyBoth(h, r) {
+  r = await act(h, r.host, r, "ready"); r = await act(h, r.guest, r, "ready");
+  h.setTime(new Date(r.startsAt + 100).toISOString());
+  return act(h, "alice", r);
+}
+test("SERIES: the next game opens by itself, roles swap, first to two wins ends the series", async () => {
+  const h = boot(); let r = await seriesPair(h, "grid_classic");
+  assert.equal(r.series.limit, 3); assert.equal(r.series.game, 1);
+  r = await act(h, "alice", r, "leave"); // Game 1 to bob.
+  assert.equal(r.series.over, false); assert.deepEqual(r.series.results, ["bob"]); assert.ok(r.nextRoom);
+  const seen = await act(h, "bob", r); assert.equal(seen.nextRoom, r.nextRoom);
+  let g2 = await enter(h, "alice", "grid_classic", "resume");
+  assert.equal(g2.id, r.nextRoom); assert.equal(g2.status, "ready");
+  assert.equal(g2.host, "bob"); assert.equal(g2.series.game, 2); assert.equal(g2.series.wins.bob, 1);
+  g2 = await readyBoth(h, g2); assert.equal(g2.status, "playing");
+  g2 = await act(h, "alice", g2, "leave"); // Game 2 to bob: 2-0.
+  assert.equal(g2.series.over, true); assert.equal(g2.series.winner, "bob");
+  assert.deepEqual(g2.series.results, ["bob", "bob"]); assert.equal(g2.nextRoom, null);
+  g2 = await act(h, "alice", g2, "rematch"); g2 = await act(h, "bob", g2, "rematch");
+  const fresh = await enter(h, "alice", "grid_classic", "resume");
+  assert.equal(fresh.series.game, 1); assert.equal(fresh.series.limit, 3);
+  assert.deepEqual(fresh.series.wins ?? {}, {});
+  assert.equal(fresh.series.over, undefined);
+});
+test("SERIES: 1-1 goes to a third game; leaving between games gives that game to the rival", async () => {
+  const h = boot(); const r = await seriesPair(h, "grid_classic");
+  await act(h, "alice", r, "leave"); // bob 1-0
+  let g2 = await enter(h, "alice", "grid_classic", "resume"); g2 = await readyBoth(h, g2);
+  g2 = await act(h, "bob", g2, "leave"); // alice 1-1
+  assert.equal(g2.series.over, false); assert.ok(g2.nextRoom);
+  const g3 = await enter(h, "bob", "grid_classic", "resume");
+  assert.equal(g3.series.game, 3); assert.equal(g3.host, "alice"); assert.equal(g3.status, "ready");
+  const end = await act(h, "bob", g3, "leave");
+  assert.equal(end.status, "forfeit"); assert.equal(end.winnerUid, "alice");
+  assert.equal(end.series.over, true); assert.equal(end.series.winner, "alice");
+  assert.deepEqual(end.series.results, ["bob", "alice", "alice"]); assert.equal(end.nextRoom, null);
+});
+test("SERIES: a single game never opens a next room on its own", async () => {
+  const h = boot(); let r = await pair(h, "grid_classic");
+  r = await act(h, "alice", r, "leave"); assert.equal(r.nextRoom, null);
+  assert.equal(r.series.results, undefined);
 });
 test("CORE06: autocomplete order is independent of room criteria and is drawn from the full snapshot", async () => {
   const h = boot(); const r = await pair(h, "club_country");
@@ -578,12 +735,12 @@ test("NET03: unavailable pinned catalog neutrally cancels without revealing answ
   assert.equal(r.reward.coins, 0); assert.equal(r.reward.eloDelta, 0);
   assert.equal(r.answers, undefined); assert.equal(h.read("rankedState"), null);
 });
-test("CM07: global ranked rollout alone cannot enable unverified Manager ranked", async () => {
+test("CM07: Manager ranked follows the same rollout flag as every other mode", async () => {
   const h = boot();
   const s = await h.call("getPvp", base("club_manager"), auth("alice"));
-  assert.equal(s.availability.friendEnabled, true); assert.equal(s.availability.rankedEnabled, false);
-  await assert.rejects(enter(h, "alice", "club_manager", "search", {playKind: "ranked"}),
-      {code: "failed-precondition"});
+  assert.equal(s.availability.friendEnabled, true); assert.equal(s.availability.rankedEnabled, true);
+  const r = await pair(h, "club_manager", true);
+  assert.equal(r.playKind, "ranked"); assert.equal(r.managerRules, 3);
 });
 
 test("new blocks and revoked links are respected even after a room/queue was created", async () => {
@@ -611,10 +768,6 @@ for (const mode of E.MODES) {
   for (const ranked of [false, true]) {
     test(`${mode}/${ranked ? "ranked" : "friend"}: enter, ready, resume and leave preserve the mode`, async () => {
       const h = boot();
-      if (mode === "club_manager" && ranked) {
-        await assert.rejects(enter(h, "alice", mode, "search", {playKind: "ranked"}), {code: "failed-precondition"});
-        return; // The production verification gate must never be bypassed by the menu.
-      }
       const r = await pair(h, mode, ranked);
       assert.equal(r.mode, mode); assert.equal(r.playKind, ranked ? "ranked" : "friend");
       assert.equal(r.status, "playing");
@@ -741,29 +894,229 @@ test("CI08: a timed-out Çinko turn counts as a pass", async () => {
   assert.equal(r.passes, 1); assert.equal(r.lastMove.timeout, true); assert.equal(r.lastMove.uid, u);
   assert.notEqual(r.turnUid, u);
 });
-test("RF07: Random Five boards are checked, 3+ clubs earn a bonus, wrong names cost, best answers shown", async () => {
-  const fit = (q, p) => q.clubs.filter((k) => E.matches(c, p, k)).length;
-  for (let i = 0; i < 50; i++) {
-    const q = E.puzzle(c, "random_five", "five" + i); const n = Object.values(c.players).map((p) => fit(q, p));
-    assert.ok(Math.max(...n) >= 4); assert.ok(n.filter((x) => x >= 3).length >= 4);
-    assert.ok(n.filter((x) => x >= 2).length >= 20);
+test("RF07: Random Five boards are checked and 3+ clubs earn a bonus; single-board rooms still finish", () => {
+  const fit = (clubs, p) => clubs.filter((k) => E.matches(c, p, k)).length;
+  for (let i = 0; i < 20; i++) {
+    const q = E.puzzle(c, "random_five", "five" + i);
+    assert.equal(q.boards.length, E.FIVE_ROUNDS);
+    // Every five is a checked board; the five boards share no club.
+    assert.equal(new Set(q.boards.flat()).size, 25);
+    for (const clubs of q.boards) {
+      const n = Object.values(c.players).map((p) => fit(clubs, p));
+      assert.ok(Math.max(...n) >= 4); assert.ok(n.filter((x) => x >= 3).length >= 4);
+      assert.ok(n.filter((x) => x >= 2).length >= 20);
+    }
   }
   assert.deepEqual(E.FIVE_POINTS, [0, 1, 2, 4, 6, 8]);
-  const h = boot(); let r = await pair(h, "random_five"); const q = raw(h, r).puzzle;
-  assert.deepEqual(r.fivePoints, E.FIVE_POINTS);
-  const four = Object.values(c.players).find((p) => fit(q, p) >= 4);
-  r = await act(h, "alice", r, "answer", {playerId: four.id});
-  assert.equal(r.scores.alice, E.FIVE_POINTS[fit(q, four)]);
-  const none = Object.values(c.players).find((p) => !fit(q, p));
-  r = await act(h, "bob", r, "answer", {playerId: none.id});
-  assert.equal(r.wrongMoves.bob, 1); assert.equal(r.scores.bob, 0);
-  await assert.rejects(act(h, "bob", r, "answer", {playerId: four.id}), {code: "resource-exhausted"});
-  for (let t = h.now + 20000; t < r.endsAt; t += 20000) {
-    h.setTime(t); await act(h, "alice", r); await act(h, "bob", r);
+  // A room started before the rounds keeps its single board and race rules.
+  const r = legacyFive("five-legacy"); const clubs = r.puzzle.clubs;
+  const four = Object.values(c.players).find((p) => fit(clubs, p) >= 4);
+  E.move(c, r, "a", {playerId: four.id}, 6000);
+  assert.equal(r.scores.a, E.FIVE_POINTS[fit(clubs, four)]);
+  const none = Object.values(c.players).find((p) => !fit(clubs, p));
+  E.move(c, r, "b", {playerId: none.id}, 6500);
+  assert.equal(E.view(c, r, "b", 6500).wrongMoves.b, 1);
+  assert.throws(() => E.move(c, r, "b", {playerId: four.id}, 7000), {code: "resource-exhausted"});
+  r.presence = {a: r.endsAt, b: r.endsAt}; E.advance(r, r.endsAt + 10);
+  const v = E.view(c, r, "b", r.endsAt + 10);
+  assert.equal(v.status, "finished"); assert.equal(v.winnerUid, "a");
+  assert.deepEqual(v.found.map((p) => [p.id, p.uid]), [[four.id, "a"]]);
+  assert.ok(v.missed.length > 0 && v.missed.every((p) => p.clubs >= 2 && p.id !== four.id));
+});
+test("Random Five rounds: one hidden guess each per five, the reveal, then a new five", async () => {
+  const h = boot(); let r = await pair(h, "random_five");
+  assert.equal(r.fiveRules, 3); assert.equal(r.totalRounds, 5);
+  h.setTime(r.startsAt + 3000); r = await act(h, "alice", r);
+  assert.equal(r.round, 0); assert.equal(r.criteria.length, 5);
+  const boards = raw(h, r).puzzle.boards;
+  assert.deepEqual(r.criteria.map((k) => k.id), boards[0]);
+  const best = fiveBest(boards[0]);
+  r = await act(h, "alice", r, "answer", {playerId: best, round: 0});
+  assert.equal(r.myAnswer.id, best); assert.equal(r.myAnswer.points, E.FIVE_POINTS[fiveFit(boards[0], best)]);
+  // One guess per five.
+  await assert.rejects(act(h, "alice", r, "answer", {playerId: fiveNone(boards[0]), round: 0}),
+      {code: "already-exists"});
+  // The rival sees that a guess is in, never which one or its points.
+  let b = await act(h, "bob", r);
+  assert.equal(b.rivalAnswered, true); assert.equal(b.myAnswer, null);
+  assert.deepEqual(b.scores, {alice: 0, bob: 0}); assert.deepEqual(b.used, {}); assert.deepEqual(b.rounds, []);
+  b = await act(h, "bob", b, "answer", {playerId: fiveNone(boards[0]), round: 0});
+  // Both answered: the round closes at once and both answers open.
+  assert.equal(b.roundClosed, true); assert.equal(b.nextRoundAt, h.now + E.FIVE_REVEAL_MS);
+  assert.equal(b.scores.alice, E.FIVE_POINTS[fiveFit(boards[0], best)]); assert.equal(b.scores.bob, 0);
+  const first = b.rounds[0];
+  assert.equal(first.answers.alice.id, best); assert.equal(first.answers.bob.points, 0);
+  assert.equal(first.answers.alice.clubIds.length, fiveFit(boards[0], best));
+  assert.equal(first.best.length, 3); assert.ok(first.best[0].clubs >= first.best[2].clubs);
+  await assert.rejects(act(h, "bob", b, "answer", {playerId: best, round: 0}), {code: "failed-precondition"});
+  // 4 s later the next five is in, sharing no club with the first.
+  h.setTime(b.nextRoundAt); r = await act(h, "alice", r);
+  assert.equal(r.round, 1); assert.deepEqual(r.criteria.map((k) => k.id), boards[1]);
+  assert.equal(r.roundClosed, false); assert.equal(r.rivalAnswered, false);
+  assert.ok(boards[1].every((k) => !boards[0].includes(k)));
+  // A stale round number (the previous five) is refused, not counted for the new one.
+  await assert.rejects(act(h, "alice", r, "answer", {playerId: fiveBest(boards[1], [best]), round: 0}),
+      {code: "failed-precondition"});
+  // A name is used once per player.
+  if (fiveFit(boards[1], best)) {
+    await assert.rejects(act(h, "alice", r, "answer", {playerId: best, round: 1}), {code: "already-exists"});
   }
-  h.setTime(r.endsAt + 10); r = await act(h, "bob", r);
-  assert.equal(r.status, "finished"); assert.equal(r.winnerUid, "alice");
-  assert.deepEqual(r.found.map((p) => [p.id, p.uid]), [[four.id, "alice"]]);
-  assert.ok(r.missed.length > 0 && r.missed.every((p) => p.clubs >= 2 && p.id !== four.id));
-  assert.ok(r.missed.every((p, i) => !i || r.missed[i - 1].clubs >= p.clubs));
+});
+test("Random Five rounds close at 25 s without answers; five rounds end the match", () => {
+  const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed: "five-clock", dataRevision: c.version});
+  E.start(r, c, 0); const t0 = r.startsAt;
+  assert.equal(r.endsAt - t0, 5 * E.FIVE_ANSWER_MS + 4 * E.FIVE_REVEAL_MS);
+  const at = (t) => {
+    r.presence = {a: t, b: t}; E.advance(r, t); return E.view(c, r, "a", t);
+  };
+  let v = at(t0 + E.FIVE_ANSWER_MS - 1); assert.equal(v.round, 0); assert.equal(v.roundClosed, false);
+  v = at(t0 + E.FIVE_ANSWER_MS); assert.equal(v.roundClosed, true); assert.equal(v.rounds[0].answers.a.timeout, true);
+  // a answers round 2 only; b never does.
+  const start2 = t0 + 2 * (E.FIVE_ANSWER_MS + E.FIVE_REVEAL_MS);
+  v = at(start2 + 1000); assert.equal(v.round, 2);
+  const id = fiveBest(r.puzzle.boards[2]); E.move(c, r, "a", {playerId: id, round: 2}, start2 + 2000);
+  v = at(r.endsAt - 1); assert.equal(v.status, "playing"); assert.equal(v.round, 4);
+  v = at(r.endsAt);
+  assert.equal(v.status, "finished"); assert.equal(v.reason, "Beş tur tamamlandı.");
+  assert.equal(v.rounds.length, 5); assert.equal(v.winnerUid, "a");
+  assert.equal(v.scores.a, E.FIVE_POINTS[fiveFit(r.puzzle.boards[2], id)]); assert.equal(v.scores.b, 0);
+});
+test("Random Five rounds: equal points go to more rounds scored, then the faster answers", () => {
+  const room = (seed) => {
+    const r = E.hydrate({mode: "random_five", host: "a", guest: "b", seed, dataRevision: c.version});
+    E.start(r, c, 0); r.status = "playing"; return r;
+  };
+  const r = room("five-tie"); let t = r.startsAt; const q = r.puzzle.boards;
+  // The same points in each round: a answers faster in every one.
+  for (let i = 0; i < 5; i++) {
+    const id = fiveBest(q[i]); const other = Object.keys(c.players).find((x) => x !== id &&
+      fiveFit(q[i], x) === fiveFit(q[i], id));
+    E.move(c, r, "a", {playerId: id, round: i}, t + 1000);
+    E.move(c, r, "b", {playerId: other || id, round: i}, t + 5000);
+    t += 5000 + E.FIVE_REVEAL_MS; r.presence = {a: t, b: t}; E.advance(r, t);
+  }
+  assert.equal(r.status, "finished"); assert.equal(r.scores.a, r.scores.b); assert.equal(r.winnerUid, "a");
+});
+// ---- Club Manager draft (managerRules 3) ----
+function draftRoom(seed) {
+  const r = E.hydrate({mode: "club_manager", host: "a", guest: "b", seed, dataRevision: c.version});
+  E.start(r, c, 0); r.status = "playing"; return r;
+}
+// Picks the whole draft: each side takes its chooser's pick from the legal ones.
+function playDraft(r, choose = {a: (L) => L[0], b: (L) => L[0]}) {
+  let t = r.startsAt;
+  while (r.draft.k < E.DRAFT_PICKS) {
+    t += 500; const u = r.turnUid; E.move(c, r, u, {action: "pick", playerId: choose[u](E.legalPicks(r, u), r)}, t);
+  }
+  return t;
+}
+test("Club Manager draft pool: 36 known players, three anchor clubs, every position covered", () => {
+  for (let i = 0; i < 15; i++) {
+    const q = draftRoom("pool" + i).puzzle;
+    assert.equal(q.pool.length, 36); assert.equal(new Set(q.pool).size, 36);
+    const n = {GK: 0, DEF: 0, MID: 0, ATT: 0};
+    for (const id of q.pool) {
+      n[q.meta[id].position]++; assert.ok(c.players[id].rating >= 76 && c.players[id].rank <= 5000);
+    }
+    assert.deepEqual(n, {GK: 4, DEF: 11, MID: 12, ATT: 9});
+    assert.equal(q.anchors.length, 3);
+    for (const a of q.anchors) {
+      assert.ok(q.pool.filter((id) => c.players[id].clubs.includes(a.id.slice(5))).length >= 3, a.label);
+    }
+    assert.ok(q.links.some(([, , , type]) => type === "club" || type === "both"));
+  }
+});
+test("Club Manager draft: snake order, one turn at a time, taken players and full positions refused", () => {
+  const r = draftRoom("snake"); const first = r.turnUid; const second = first === "a" ? "b" : "a";
+  const order = []; let t = r.startsAt;
+  assert.throws(() => E.move(c, r, second, {action: "pick", playerId: r.puzzle.pool[0]}, t + 100),
+      {code: "permission-denied"});
+  const gk = r.puzzle.pool.filter((id) => r.puzzle.meta[id].position === "GK");
+  E.move(c, r, first, {action: "pick", playerId: gk[0]}, t += 500); order.push(first);
+  assert.throws(() => E.move(c, r, second, {action: "pick", playerId: gk[0]}, t += 100), {code: "already-exists"});
+  E.move(c, r, second, {action: "pick", playerId: gk[1]}, t += 500); order.push(second);
+  // One goalkeeper per side: a second one is not a legal pick.
+  assert.throws(() => E.move(c, r, second, {action: "pick", playerId: gk[2]}, t += 500), {code: "failed-precondition"});
+  assert.ok(!E.legalPicks(r, second).includes(gk[2]));
+  while (r.draft.k < E.DRAFT_PICKS) {
+    order.push(r.turnUid); E.move(c, r, r.turnUid, {action: "pick", playerId: E.legalPicks(r, r.turnUid)[0]}, t += 500);
+  }
+  assert.deepEqual(order.slice(0, 6), [first, second, second, first, first, second]);
+  for (const u of ["a", "b"]) {
+    assert.equal(r.draft.picks[u].length, 11); assert.ok(E.FORMATIONS[E.formationOf(r.puzzle, r.draft.picks[u])]);
+  }
+  assert.ok(r.plan); assert.equal(r.turnUid, null);
+});
+test("Club Manager draft: a missed pick takes the best legal player; a missed plan keeps the best captain", () => {
+  const r = draftRoom("clock"); const u = r.turnUid;
+  const best = E.legalPicks(r, u).sort((x, y) => r.puzzle.meta[y].rating - r.puzzle.meta[x].rating)[0];
+  r.presence = {a: r.draft.deadline, b: r.draft.deadline}; E.advance(r, r.draft.deadline);
+  assert.deepEqual(r.draft.picks[u], [best]); assert.equal(r.draft.log[0].auto, true);
+  assert.notEqual(r.turnUid, u);
+  // Nobody picks again: the clock drafts both teams, then plays the match.
+  let t = r.draft.deadline;
+  while (r.status === "playing") {
+    t += 10000; r.presence = {a: t, b: t}; E.advance(r, t);
+  }
+  assert.equal(r.status, "finished"); assert.ok(r.finishedAt <= r.endsAt);
+  for (const side of ["a", "b"]) {
+    const ids = r.draft.picks[side]; assert.equal(ids.length, 11);
+    const top = [...ids].sort((x, y) => r.puzzle.meta[y].rating - r.puzzle.meta[x].rating)[0];
+    assert.equal(r.plan.choices[side].captain, top); assert.equal(r.plan.choices[side].plan, null);
+  }
+});
+test("Club Manager plan: hidden until both lock, own captain only, match events add up", () => {
+  const r = draftRoom("plan"); const t = playDraft(r);
+  assert.throws(() => E.move(c, r, "a", {action: "plan", plan: "attack", captain: r.draft.picks.b[0]}, t + 100),
+      {code: "invalid-argument"});
+  assert.throws(() => E.move(c, r, "a", {action: "plan", plan: "tiki", captain: r.draft.picks.a[0]}, t + 100),
+      {code: "invalid-argument"});
+  E.move(c, r, "a", {action: "plan", plan: "attack", captain: r.draft.picks.a[0]}, t + 200);
+  const peer = E.view(c, r, "b", t + 300);
+  assert.equal(peer.rivalPlanned, true); assert.equal(peer.myPlan, null); assert.equal(peer.planChoices, undefined);
+  assert.equal(peer.phase, "plan");
+  E.move(c, r, "b", {action: "plan", plan: "possession", captain: r.draft.picks.b[1]}, t + 400);
+  assert.equal(r.status, "finished");
+  const s = r.simulation; const v = E.view(c, r, "a", t + 500);
+  assert.equal(v.simulation.rules, 3); assert.equal(v.planChoices.b.plan, "possession");
+  for (const u of ["a", "b"]) {
+    assert.equal(s.events.filter((e) => e.type === "goal" && e.uid === u).length, s.goals[u]);
+    assert.equal(r.scores[u], s.goals[u]);
+    for (const e of s.events.filter((x) => x.uid === u)) {
+      assert.ok(r.draft.picks[u].includes(e.playerId)); assert.ok(e.minute >= 1 && e.minute <= 90);
+      if (e.assistId) assert.ok(r.draft.picks[u].includes(e.assistId) && e.assistId !== e.playerId);
+    }
+  }
+  // Attack beats possession.
+  assert.ok(s.edge.a > s.edge.b - .01);
+  assert.ok([...r.draft.picks.a, ...r.draft.picks.b].includes(s.mvp));
+  if (s.goals.a === s.goals.b) assert.notEqual(s.penalties.a, s.penalties.b);
+  // The same picks and plans always play the same match.
+  const again = draftRoom("plan"); playDraft(again);
+  E.move(c, again, "a", {action: "plan", plan: "attack", captain: again.draft.picks.a[0]}, t + 200);
+  E.move(c, again, "b", {action: "plan", plan: "possession", captain: again.draft.picks.b[1]}, t + 400);
+  assert.deepEqual(again.simulation, s);
+});
+test("Club Manager: the stronger draft wins most matches (power matters more than luck)", () => {
+  let wins = 0; const n = 60;
+  for (let i = 0; i < n; i++) {
+    const r = draftRoom("strength" + i); const m = r.puzzle.meta;
+    const t = playDraft(r, {a: (L) => [...L].sort((x, y) => m[y].rating - m[x].rating)[0],
+      b: (L) => [...L].sort((x, y) => m[x].rating - m[y].rating)[0]});
+    E.move(c, r, "a", {action: "plan", plan: "possession", captain: r.draft.picks.a[0]}, t + 100);
+    E.move(c, r, "b", {action: "plan", plan: "possession", captain: r.draft.picks.b[0]}, t + 200);
+    if (r.winnerUid === "a") wins++;
+  }
+  assert.ok(wins / n >= .65, `${wins}/${n}`);
+});
+test("Club Manager draft through the room API: pick and plan actions, view of both picks", async () => {
+  const h = boot(); let r = await pair(h, "club_manager");
+  assert.equal(r.managerRules, 3); assert.equal(r.phase, "draft"); assert.equal(r.pool.length, 36);
+  h.setTime(r.startsAt + 1000); r = await act(h, "alice", r);
+  const me = r.turnUid; const rival = me === "alice" ? "bob" : "alice";
+  let mine = await act(h, me, r); assert.ok(mine.legal.length > 0);
+  mine = await act(h, me, mine, "pick", {playerId: mine.legal[0]});
+  assert.deepEqual(mine.picks[me], [mine.lastPick.playerId]);
+  const theirs = await act(h, rival, mine); assert.equal(theirs.turnUid, rival);
+  assert.deepEqual(theirs.picks[me], mine.picks[me]);
 });

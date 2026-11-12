@@ -14,10 +14,24 @@ const clubMeta = require("./pvp_engine").catalog.clubs;
 const careerClubs = [...new Set(catalog.careers.flatMap((p) => p.stops.map((s) => s.clubId)))];
 const RACE_MIX = ["beginner", "normal", "legend"];
 const once = (p, clubId) => p.stops.filter((s) => s.clubId === clubId).length === 1;
+// Well-known clubs (the online club list) and careers: a player with a rating of 75+ or a
+// spell at one of the best-known clubs (no Russian or Ukrainian league journeymen).
+const pvpCatalog = require("./pvp_engine").catalog;
+const knownClub = new Set((pvpCatalog.clubOptions || []).map((k) => Number(k.slice(5))));
+const gridClub = new Set((pvpCatalog.gridClubs || pvpCatalog.clubOptions || []).map((k) => Number(k.slice(5))));
+const knownCareer = (p) => (pvpCatalog.players[String(p.playerId)]?.rating || 0) >= 75 ||
+  p.stops.some((s) => gridClub.has(s.clubId));
+const clubName = (id) => clubs.get(id).name;
+// Three stops in a row with three different club names (so no "1. dönem" label gives the order away).
+const cleanStarts = (p) => Array.from({length: Math.max(0, p.stops.length - 2)}, (_, i) => i)
+    .filter((i) => new Set(p.stops.slice(i, i + 3).map((s) => clubName(s.clubId))).size === 3);
 // Three wrong clubs close to the answer: same country first, then the nearest popularity.
 function clubDistractors(p, answer, rng) {
   const a = clubMeta[String(answer)] || {}; const names = new Set(p.stops.map((s) => clubs.get(s.clubId).name));
-  const near = careerClubs.filter((id) => id !== answer && !p.stops.some((s) => s.clubId === id) &&
+  // A well-known answer gets well-known wrong clubs, so the odd one out is not the famous one.
+  const pool = knownClub.has(answer) && careerClubs.filter((id) => knownClub.has(id)).length > 8 ?
+    careerClubs.filter((id) => knownClub.has(id)) : careerClubs;
+  const near = pool.filter((id) => id !== answer && !p.stops.some((s) => s.clubId === id) &&
     !names.has(clubs.get(id).name)).map((id) => {
     const m = clubMeta[String(id)] || {};
     return [id, (m.country === a.country ? 0 : m.league === a.league ? 500 : 1000) +
@@ -28,7 +42,7 @@ function clubDistractors(p, answer, rng) {
 // Order rounds: a random run of three stops with three different clubs when there is one.
 function orderWindow(p, rng) {
   const starts = Array.from({length: Math.max(0, p.stops.length - 2)}, (_, i) => i);
-  const clean = starts.filter((i) => new Set(p.stops.slice(i, i + 3).map((s) => s.clubId)).size === 3);
+  const clean = cleanStarts(p);
   const pool = clean.length ? clean : starts;
   const start = pool[parseInt(hash(rng + "window").slice(0, 8), 16) % pool.length];
   return p.stops.slice(start, start + 3);
@@ -39,6 +53,7 @@ function orderWindow(p, rng) {
 // shuffled per match, so the fake club's place carries no signal.
 const FAKE_MIX = ["easy", "easy", "normal", "normal", "normal", "hard", "hard", "hard", "legend", "legend"];
 const FAKE_FINAL_MULTIPLIER = 2;
+const FAKE_KNOWN = {easy: 2, normal: 2, hard: 1, legend: 0};
 function fakeClubDuel(seed, policy) {
   const bank = []; const people = new Set(); const shown = new Set(); const fakes = new Set();
   const off = new Set(policy.disabledQuestions || []);
@@ -47,7 +62,16 @@ function fakeClubDuel(seed, policy) {
       !people.has(q.playerId) && !shown.has(q.fakeClubId) && q.options.every((o) => !fakes.has(o.id)));
     const fresh = pool.filter((q) => q.options.every((o) => !shown.has(o.id)));
     if (fresh.length) pool = fresh;
-    const q = shuffled(pool, seed + "fake" + i)[0];
+    // Easy and normal rounds show careers people know (two of the three real clubs on the
+    // online club list), hard one, legend any: Ferguson's Dunfermline-Falkirk-Rangers
+    // playing days belong to the last rounds.
+    const need = FAKE_KNOWN[level];
+    const known = pool.filter((q) => q.realClubIds.filter((id) => knownClub.has(id)).length >= need);
+    if (known.length) pool = known;
+    // A person first, then one of their questions: some have 32 questions, some 8.
+    const persons = [...new Set(pool.map((q) => q.playerId))];
+    const who = shuffled(persons, seed + "person" + i)[0];
+    const q = shuffled(pool.filter((x) => x.playerId === who), seed + "fake" + i)[0];
     if (!q) fail("failed-precondition", "On farklı doğrulanmış futbolcu bulunamadı.");
     people.add(q.playerId); fakes.add(q.fakeClubId);
     for (const o of q.options) shown.add(o.id);
@@ -72,13 +96,46 @@ for (const [id, c] of Object.entries(pvpClubs.clubs)) {
   if (!clubIdsByName.has(c.name)) clubIdsByName.set(c.name, []);
   clubIdsByName.get(c.name).push(id);
 }
-// Club ids the shown hints name: the two club hints and the period's club.
-function hintClubs(p) {
-  const ids = new Set(p.hints.filter((h) => /^club_\d+$/.test(h.id)).map((h) => h.id.slice(5)));
-  const period = p.hints.find((h) => h.id === "period")?.text.match(/^[^:]+:\s*(.+),\s*\d{4}/)?.[1];
+// Club ids a list of hints names: the club hints and the period's club.
+function clubsIn(hints) {
+  const ids = new Set(hints.filter((h) => /^club_\d+$/.test(h.id)).map((h) => h.id.slice(5)));
+  const period = hints.find((h) => h.id === "period")?.text.match(/^[^:]+:\s*(.+),\s*\d{4}/)?.[1];
   for (const id of clubIdsByName.get(period) || []) ids.add(id);
   return ids;
 }
+// The three timed hints. The catalog's third hint is often another early club (Modrić:
+// Dinamo Zagreb, Zrinjski, Inker), so the last one names the player's best-known club
+// (online club list order) when it is better known: hard first, easier as time runs out.
+const careerOf = new Map(catalog.careers.map((c) => [c.playerId, c]));
+const fameOrder = new Map((pvpCatalog.clubOptions || []).map((k, i) => [k.slice(5), i]));
+const timedHintCache = new Map();
+function mysteryHints(p) {
+  if (!timedHintCache.has(p.id)) {
+    const early = clubsIn(p.hints.slice(0, 2));
+    // Clubs of the reviewed career only (a roster row can name a club with no spell).
+    const best = (careerOf.get(p.playerId)?.stops || []).map((x) => String(x.clubId))
+        .filter((c) => !early.has(c) && fameOrder.has(c)).sort((a, b) => fameOrder.get(a) - fameOrder.get(b))[0];
+    const third = p.hints[2]; const old = /^club_\d+$/.test(third.id) ? third.id.slice(5) : null;
+    const better = best && (!old || !fameOrder.has(old) || fameOrder.get(best) < fameOrder.get(old));
+    timedHintCache.set(p.id, [p.hints[0], p.hints[1],
+      better ? {id: "club_" + best, text: "Bir başka kulübü: " + pvpClubs.clubs[best].name} : third]);
+  }
+  return timedHintCache.get(p.id);
+}
+// Club ids the shown hints name.
+const hintClubs = (p) => clubsIn(mysteryHints(p));
+// Level by how known the player and the hinted clubs are (the catalog's level put Rúben
+// Vinagre among the easy ones): easy a star (82+) with one of the best-known clubs in the
+// hints, medium 78+ with one, hard 75+ with a well-known club.
+const ratingOf = (id) => pvpClubs.players[String(id)]?.rating || 0;
+function mysteryTier(p) {
+  const r = ratingOf(p.playerId); const hinted = [...hintClubs(p)].map(Number);
+  if (r >= 82 && hinted.some((c) => gridClub.has(c))) return "easy";
+  if (r >= 78 && hinted.some((c) => gridClub.has(c))) return "medium";
+  if (r >= 75 && hinted.some((c) => knownClub.has(c))) return "hard";
+  return null;
+}
+const mysteryTierOf = new Map(mysteryCatalog.mystery.map((p) => [p.id, mysteryTier(p)]));
 // Wrong options who never played for a hinted club.
 const cleanOptions = new Map();
 function clean(p) {
@@ -92,10 +149,12 @@ function clean(p) {
 function mysteryDuel(seed) {
   const picked = []; const firstClubs = new Set(); const positions = {};
   for (const [i, level] of MYSTERY_MIX.entries()) {
-    let pool = mysteryCatalog.mystery.filter((p) => p.difficulty === level && !picked.includes(p) &&
+    let pool = mysteryCatalog.mystery.filter((p) => mysteryTierOf.get(p.id) === level && !picked.includes(p) &&
       !firstClubs.has(p.hints[0].id) && (positions[p.position] || 0) < 2);
-    // Players with three unambiguous wrong options first, then the well-known ones.
-    for (const keep of [(p) => clean(p).length >= 3, (p) => players.get(p.playerId).rank <= TRANSFER_KNOWN_RANK]) {
+    // Players with three unambiguous wrong options first, then the well-known ones, then
+    // three well-known wrong options (a lone famous name would give the answer away).
+    for (const keep of [(p) => clean(p).length >= 3, (p) => players.get(p.playerId).rank <= TRANSFER_KNOWN_RANK,
+      (p) => clean(p).filter((id) => ratingOf(id) >= 75).length >= 3]) {
       if (pool.some(keep)) pool = pool.filter(keep);
     }
     const p = shuffled(pool, seed + "mystery" + i)[0];
@@ -104,13 +163,16 @@ function mysteryDuel(seed) {
   }
   return picked.map((p, i) => {
     const fine = clean(p); const rest = p.options.filter((id) => id !== p.playerId && !fine.includes(id));
-    const options = [...shuffled(fine, seed + i), ...shuffled(rest, seed + i)].slice(0, 3);
+    const known = fine.filter((id) => ratingOf(id) >= 75);
+    const options = [...shuffled(known, seed + i), ...shuffled(fine.filter((id) => !known.includes(id)), seed + i),
+      ...shuffled(rest, seed + i)].slice(0, 3);
+    const hints = mysteryHints(p);
     const teammate = p.hints.find((h) => h.id === "teammate");
-    return {id: p.id, kind: "mystery_duel", duration: 30000, answer: p.playerId, difficulty: p.difficulty,
-      timedHints: [p.hints[0].text, p.hints[1].text, p.hints[2].text], hintAt: MYSTERY_HINT_MS,
+    return {id: p.id, kind: "mystery_duel", duration: 30000, answer: p.playerId, difficulty: MYSTERY_MIX[i],
+      timedHints: hints.map((h) => h.text), hintAt: MYSTERY_HINT_MS,
       explanation: [players.get(p.playerId).name, p.hints[1].text.replace(/^[^:]+:\s*/, ""),
         teammate?.text].filter(Boolean).join(" · "),
-      public: {country: p.countryLabel || p.country, position: p.position, difficulty: p.difficulty,
+      public: {country: p.countryLabel || p.country, position: p.position, difficulty: MYSTERY_MIX[i],
         hintAt: MYSTERY_HINT_MS,
         options: shuffled([p.playerId, ...options], seed + i).map((id) => playerView(players.get(id)))}};
   });
@@ -124,16 +186,34 @@ const TRANSFER_HINT_MS = [10000, 20000];
 const TRANSFER_HINT_COST = 15;
 const TRANSFER_KNOWN_RANK = 3000;
 const POSITIONS = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", FWD: "Forvet", ATT: "Forvet"};
+// How well known a move is, by the player's rating and the two clubs (the catalog's own
+// difficulty put Middlesbrough -> Leicester among the easy ones):
+// easy: a star (82+) from a well-known club to one of the best-known clubs, 2005 or later;
+// medium: a known player (78+) between a best-known and a well-known club, 2000 or later;
+// hard: a known player (78+) with at least one well-known club.
+const TRANSFER_TIER = {easy: {rating: 82, year: 2005}, medium: {rating: 78, year: 2000}, hard: {rating: 78, year: 0}};
+function transferTier(p) {
+  const r = pvpCatalog.players[String(p.playerId)]?.rating || 0;
+  const known = (id) => knownClub.has(id); const best = (id) => gridClub.has(id);
+  if (r >= TRANSFER_TIER.easy.rating && known(p.fromClubId) && best(p.toClubId) && p.year >= TRANSFER_TIER.easy.year) {
+    return "easy";
+  }
+  if (r >= TRANSFER_TIER.medium.rating && p.year >= TRANSFER_TIER.medium.year &&
+    (best(p.toClubId) && known(p.fromClubId) || best(p.fromClubId) && known(p.toClubId))) return "medium";
+  if (r >= TRANSFER_TIER.hard.rating && (known(p.fromClubId) || known(p.toClubId))) return "hard";
+  return null;
+}
+const tierOf = new Map(catalog.transfers.map((p) => [p.id, transferTier(p)]));
 function transferDuel(seed) {
   const picked = []; const usedPlayers = new Set(); const usedPairs = new Set();
   const pair = (p) => [p.fromClubId, p.toClubId].sort((a, b) => a - b).join("-");
   for (const [i, level] of TRANSFER_MIX.entries()) {
-    const fits = (p) => p.difficulty === level && ![p.playerId, ...p.alsoPlayerIds || []]
+    const fits = (p) => tierOf.get(p.id) === level && ![p.playerId, ...p.alsoPlayerIds || []]
         .some((id) => usedPlayers.has(id)) && !usedPairs.has(pair(p)) &&
       (i !== 0 || p.year < 2015);
     let pool = catalog.transfers.filter(fits);
     if (!pool.length && i === 0) {
-      pool = catalog.transfers.filter((p) => p.difficulty === level && !usedPairs.has(pair(p)));
+      pool = catalog.transfers.filter((p) => tierOf.get(p.id) === level && !usedPairs.has(pair(p)));
     }
     // Well-known players first (the 3000 best known); the whole tier only when none is left.
     const known = pool.filter((p) => players.get(p.playerId).rank <= TRANSFER_KNOWN_RANK);
@@ -142,31 +222,34 @@ function transferDuel(seed) {
     if (!byPlayer.length) fail("failed-precondition", "Transfer düellosu için yeterli transfer yok.");
     const player = shuffled(byPlayer, seed + "player" + i)[0];
     const p = shuffled(pool.filter((x) => x.playerId === player), seed + "move" + i)[0];
-    picked.push(p); usedPairs.add(pair(p));
+    picked.push({...p, difficulty: level}); usedPairs.add(pair(p));
     for (const id of [p.playerId, ...p.alsoPlayerIds || []]) usedPlayers.add(id);
   }
   return picked.map((p) => {
     const who = players.get(p.playerId);
-    const accepted = [p.playerId, ...p.alsoPlayerIds || []];
+    const accepted = [p.playerId, ...p.alsoPlayerIds || []]; const season = p.precision === "season";
     return {id: p.id, kind: "transfer", duration: 30000, answer: p.playerId, difficulty: p.difficulty,
       ...accepted.length > 1 ? {accepted} : {},
       timedHints: [`Milliyet: ${who.country || "bilinmiyor"}`, `Mevki: ${p.detailedPosition ||
         POSITIONS[who.position] || who.position}`],
-      explanation: `${who.name} · ${p.date}${p.age ? ` · ${p.age} yaşında` : ""}` +
-        (accepted.length > 1 ? ` · aynı gün geçen ${accepted.slice(1).map((id) => players.get(id).name)
-            .join(", ")} de doğru sayıldı` : ""),
+      // A season-precision move (summer 2026 from club rosters) has no day or month.
+      explanation: `${who.name} · ${season ? `${p.year} yaz dönemi` : p.date}` +
+        `${p.age ? ` · ${p.age} yaşında` : ""}` +
+        (accepted.length > 1 ? ` · aynı ${season ? "dönemde" : "gün"} geçen ${accepted.slice(1)
+            .map((id) => players.get(id).name).join(", ")} de doğru sayıldı` : ""),
       public: {from: clubs.get(p.fromClubId), to: clubs.get(p.toClubId), year: p.year,
-        month: p.date.slice(5, 7), difficulty: p.difficulty}};
+        ...season ? {season: "summer"} : {month: p.date.slice(5, 7)}, difficulty: p.difficulty}};
   });
 }
 // Six careers: two of each difficulty; missing-club careers need a club that appears once.
 function raceCareers(seed) {
-  const picked = []; const fits = [(p) => p.stops.some((s) => once(p, s.clubId)), (p) => p.stops.length >= 3,
+  const picked = []; const fits = [(p) => p.stops.some((s) => once(p, s.clubId)), (p) => cleanStarts(p).length > 0,
     () => true];
   const plan = [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1], [1, 2]];
   for (const [d, kind] of plan) {
-    const p = shuffled(catalog.careers.filter((x) => x.difficulty === RACE_MIX[d] && fits[kind](x) &&
-      !picked.includes(x)), seed + "race" + picked.length)[0];
+    let pool = catalog.careers.filter((x) => x.difficulty === RACE_MIX[d] && fits[kind](x) && !picked.includes(x));
+    if (pool.some(knownCareer)) pool = pool.filter(knownCareer);
+    const p = shuffled(pool, seed + "race" + picked.length)[0];
     if (!p) fail("failed-precondition", "Kariyer yarışı için yeterli kariyer yok.");
     picked.push(p);
   }
@@ -185,7 +268,10 @@ function questions(mode, seed, policy = fakeClub.policyOf({})) {
   return chosen.map((p, i) => {
     const rng = seed + i;
     if (i < 3) {
-      const slots = p.stops.map((s, j) => j).filter((j) => once(p, p.stops[j].clubId));
+      // The hidden stop is a well-known club when the route has one.
+      let slots = p.stops.map((s, j) => j).filter((j) => once(p, p.stops[j].clubId));
+      const famous = slots.filter((j) => knownClub.has(p.stops[j].clubId));
+      if (famous.length) slots = famous;
       const slot = slots[parseInt(hash(rng).slice(0, 8), 16) % slots.length];
       const answer = p.stops[slot].clubId;
       return {id: p.id + "_missing", kind: "missing", duration: 20000, answer, difficulty: p.difficulty,
@@ -206,7 +292,9 @@ function questions(mode, seed, policy = fakeClub.policyOf({})) {
     }
     // Wrong players who share a club with this route, so the route alone does not give it away.
     const route = new Set(p.stops.map((s) => s.clubId));
-    const others = catalog.careers.filter((x) => x.playerId !== p.playerId);
+    const name = players.get(p.playerId).name;
+    let others = catalog.careers.filter((x) => x.playerId !== p.playerId && players.get(x.playerId).name !== name);
+    if (others.filter(knownCareer).length >= 3) others = others.filter(knownCareer);
     const close = shuffled(others.filter((x) => x.stops.some((s) => route.has(s.clubId))), rng);
     const distractors = [...close, ...shuffled(others.filter((x) => !close.includes(x)), rng)]
         .slice(0, 3).map((x) => x.playerId);

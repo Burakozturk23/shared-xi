@@ -47,7 +47,9 @@ def build():
     popular = {i for i, in con.execute('select id from clubs where popularity_seed >= 10 and entity_type="SENIOR" and gameplay_eligible=1')}
     positions = {'GK': 'Kaleci', 'DEF': 'Defans', 'MID': 'Orta saha', 'FWD': 'Forvet'}
     raw_ids = {i for i, in con.execute('select id from clubs')}
-    cid = lambda i: i - 1000000000 if i >= 1000000000 and i - 1000000000 in raw_ids else i
+    # TM ids that collide with a different club keep their own id (reviewed list).
+    offset_mismatch = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
+    cid = lambda i: i - 1000000000 if i >= 1000000000 and i not in offset_mismatch and i - 1000000000 in raw_ids else i
     # Every V4 club record of a player, dated or not: a looser match than the
     # puzzle data, so more possible answers are accepted rather than fewer.
     spells = defaultdict(set)

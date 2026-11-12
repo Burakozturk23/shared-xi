@@ -27,7 +27,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'Endpoint verification failed. No runtime flags were changed.' }
   if ($EnableOnlineModes) {
     # Patch the mode entry gates only. Preserve rewards, energy, per-mode overrides,
-    # disabled data and the managerRankedVerified acceptance gate.
+    # and disabled data.
     $policies = @{
       pvp = '{"friendEnabled":true,"rankedEnabled":true}'
       fakeClub = '{"dataEnabled":true,"friendsEnabled":true,"rankedEnabled":true}'
@@ -41,5 +41,5 @@ try {
       } finally { Remove-Item $temporaryPolicy.FullName -ErrorAction SilentlyContinue }
     }
   }
-  Write-Host 'Online functions deployed. Verify all 13 modes with two linked accounts. Manager ranked still requires its acceptance gate.'
+  Write-Host 'Online functions deployed. Verify all 13 modes with two linked accounts.'
 } finally { Pop-Location }

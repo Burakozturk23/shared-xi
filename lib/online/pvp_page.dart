@@ -19,6 +19,9 @@ import '../services/warm_up.dart';
 import '../widgets/player_portrait.dart';
 import '../widgets/bot_arena.dart';
 import '../widgets/club_race_arena.dart';
+import '../widgets/five_slot_reel.dart';
+import '../widgets/manager_draft.dart';
+import '../widgets/online_series.dart';
 import '../widgets/friend_match_invite_button.dart';
 import 'online_mode_catalog.dart';
 
@@ -68,9 +71,57 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   String get mode => widget.mode.wireName;
   String get uid => '${room['myUid']}';
   bool get clubRace => ['club_club', 'club_country'].contains(mode);
+
+  /// Club Manager draft (managerRules 3): snake picks, then plan and captain.
+  bool get draftMode => mode == 'club_manager' && room['managerRules'] == 3;
+  String? draftPick, draftPlan, draftCaptain;
+
+  /// Draft results whose match was watched (or skipped): the result shows.
+  final Set<String> playbackDone = {};
+  String draftFilter = 'ALL';
+
+  /// Random Five in rounds: a new five each round, one guess per player.
+  bool get fiveRounds => mode == 'random_five' && room['fiveRules'] == 3;
   bool get cinkoV2 => mode == 'cinko' && room['cinkoRules'] == 2;
   bool get done =>
       ['finished', 'cancelled', 'forfeit', 'expired'].contains(room['status']);
+
+  /// Friend rooms opened as a three-game series (first to two wins).
+  OnlineSeries get series => OnlineSeries(rewardMap(room['series']));
+  String get rivalUid =>
+      room['host'] == uid ? '${room['guest']}' : '${room['host']}';
+  String get seriesLine {
+    final s = series;
+    final rival = rewardMap(room['names'])[rivalUid] ?? 'Rakip';
+    return 'Üç maçlık seri · ${s.game}. maç · '
+        'Sen ${s.winsOf(uid)} – ${s.winsOf(rivalUid)} $rival';
+  }
+
+  /// A series game ended and the next one is open: the screen moves there by
+  /// itself after [seriesJumpLeft] ticks (a Club Manager match plays out
+  /// first).
+  int? seriesJumpLeft;
+  static const seriesJumpDelay = 10;
+  bool get seriesNext =>
+      done &&
+      series.active &&
+      !series.over &&
+      room['nextRoom'] != null &&
+      ['finished', 'forfeit'].contains(room['status']) &&
+      (rewardMap(room['simulation'])['rules'] != 3 ||
+          playbackDone.contains('${room['id']}'));
+  int get seriesJumpSeconds => seriesJumpLeft ?? seriesJumpDelay;
+  Future<void> nextSeriesGame() async {
+    seriesJumpLeft = null;
+    setState(() {
+      xi.clear();
+      target = null;
+      selected = null;
+      cinkoCells.clear();
+    });
+    await enter('resume');
+  }
+
   List<Map<String, dynamic>> rows(dynamic value) =>
       (value is List
               ? value
@@ -98,18 +149,22 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         action('poll');
     });
     ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && foreground && seriesNext) {
+        seriesJumpLeft = math.max(0, seriesJumpSeconds - 1);
+        if (!busy && connected && seriesJumpLeft == 0) {
+          nextSeriesGame();
+        } else {
+          setState(() {});
+        }
+      }
       if (mounted && foreground && room.isNotEmpty && !done) setState(() {});
-      // Turn-based Grids: while the rival plays, ask every 3 s instead of 6 s
-      // so the turn comes back without a wait.
       if (mounted &&
           foreground &&
           connected &&
           !busy &&
           !done &&
-          (gridMode || cinkoV2) &&
-          room['status'] == 'playing' &&
-          !myTurn &&
-          DateTime.now().difference(lastPoll) >= const Duration(seconds: 3))
+          room.isNotEmpty &&
+          DateTime.now().difference(lastPoll) >= fastPoll)
         action('poll');
     });
   }
@@ -182,6 +237,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                 : null;
           }
           if (next['id'] != room['id'] || next['round'] != room['round']) {
+            if (next['id'] == room['id'] && next['fiveRules'] == 3)
+              feedback = null;
             searchSerial++;
             typing?.cancel();
             searching = noMatch = false;
@@ -194,6 +251,22 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           }
           _sounds(room, next);
           room = next;
+          if (next['id'] != room['id']) {
+            draftPick = draftPlan = draftCaptain = null;
+            draftFilter = 'ALL';
+          }
+          // Draft: a selected player the rival just took drops.
+          if (next['managerRules'] == 3 &&
+              draftPick != null &&
+              rewardMap(
+                next['picks'],
+              ).values.any((v) => (v as List? ?? const []).contains(draftPick)))
+            draftPick = null;
+          // Loto: a player the rival just placed can no longer be picked.
+          if (mode == 'loto' &&
+              selected != null &&
+              rewardMap(room['used']).containsKey('${selected!['id']}'))
+            selected = null;
           final squad = rewardMap(room['mySquad']);
           if (squad.isNotEmpty) {
             xi
@@ -220,6 +293,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               'Bu kriter üç futbolcunun hepsine uymuyor. Sıra rakibe geçti.',
             'grid_classic' || 'grid_random' =>
               'Bu futbolcu iki kritere birden uymuyor. Sıra rakibe geçti.',
+            'random_five' when receipt['round'] != null =>
+              'Bu isim beş kulübün hiçbirine uymuyor · 0 puan. Beşli kapanınca yenisi gelir.',
             _ => 'Bu futbolcu kriteri karşılamıyor.',
           };
         if (receipt['correct'] == true)
@@ -227,7 +302,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             'club_club' ||
             'club_country' => 'Doğru! +${receipt['points'] ?? 1} puan',
             'random_five' =>
-              'Doğru! ${(room['fivePoints'] as List? ?? const []).indexOf(receipt['points'])} kulüp · +${receipt['points'] ?? 1} puan',
+              'Doğru! ${receipt['clubs'] ?? (room['fivePoints'] as List? ?? const []).indexOf(receipt['points'])} kulüp · +${receipt['points'] ?? 1} puan',
             'loto' => [
               'Doğru! +${receipt['points'] ?? 1} puan',
               for (final l in receipt['lines'] as List? ?? const [])
@@ -302,6 +377,10 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             searchSerial++;
           }
         });
+      if (mounted && feedback != null && !_arena && userAction)
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(feedback!)));
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -319,9 +398,25 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     }
     if (status == 'playing')
       AppFeedback.sfx(Sfx.matchStart, eventId: 'pvp:$id:start');
+    final pick = rewardMap(after['lastPick']);
+    if (after['managerRules'] == 3 &&
+        before['id'] == id &&
+        pick.isNotEmpty &&
+        '${rewardMap(before['lastPick'])['playerId']}' != '${pick['playerId']}')
+      AppFeedback.sfx(Sfx.cardFlip, eventId: 'pvp:$id:pick:${after['pick']}');
+    if (status == 'playing' &&
+        after['fiveRules'] == 3 &&
+        before['id'] == id &&
+        before['round'] != null &&
+        before['round'] != after['round'])
+      AppFeedback.sfx(
+        Sfx.coachRoulette,
+        eventId: 'pvp:$id:five:${after['round']}',
+      );
     if (['finished', 'forfeit'].contains(status) &&
         before['id'] == id &&
-        before['status'] != status) {
+        before['status'] != status &&
+        rewardMap(after['simulation'])['rules'] != 3) {
       AppFeedback.sfx(
         after['result'] == 'win' ? Sfx.champion : Sfx.whistle,
         eventId: 'pvp:$id:end',
@@ -367,6 +462,42 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   }
 
   DateTime lastPoll = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// Sooner than the 6 s poller when the screen is waiting on the server:
+  /// a finished countdown or match clock (2 s), the rival's turn in a
+  /// turn-based Grid or Çinko, or a simultaneous race whose rival finds should
+  /// show quickly (3 s). Otherwise effectively never (the 6 s poller runs).
+  Duration get fastPoll {
+    final status = room['status'];
+    if (status == 'countdown' && seconds(room['startsAt']) == 0 ||
+        status == 'playing' && seconds(room['endsAt']) == 0)
+      return const Duration(seconds: 2);
+    if (status != 'playing') return const Duration(days: 1);
+    if ((gridMode || cinkoV2) && !myTurn) return const Duration(seconds: 3);
+    if (draftMode) {
+      final deadline =
+          room[room['phase'] == 'plan' ? 'planDeadline' : 'turnDeadline'];
+      if (seconds(deadline) == 0) return const Duration(seconds: 1);
+      if (room['phase'] == 'draft' && !myTurn)
+        return const Duration(seconds: 2);
+      if (room['phase'] == 'plan' && room['myPlan'] != null)
+        return const Duration(seconds: 2);
+      return const Duration(seconds: 4);
+    }
+    if (fiveRounds) {
+      if (room['roundClosed'] == true)
+        return seconds(room['nextRoundAt']) == 0
+            ? const Duration(seconds: 1)
+            : const Duration(days: 1);
+      return seconds(room['roundDeadline']) == 0 || room['myAnswer'] != null
+          ? const Duration(seconds: 2)
+          : const Duration(seconds: 3);
+    }
+    if (clubRace || mode == 'random_five' || mode == 'loto')
+      return const Duration(seconds: 3);
+    return const Duration(days: 1);
+  }
+
   Future<void> action(String action, [Map<String, dynamic> extra = const {}]) {
     if (action == 'poll') lastPoll = DateTime.now();
     return run(
@@ -703,6 +834,13 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                 ),
             ],
           ),
+          note(
+            profile == 'series3'
+                ? 'İlk 2 galibiyeti alan seriyi kazanır. Bir maç bitince '
+                      'sıradaki maç kendiliğinden açılır; skor maçtan maça '
+                      'taşınır ve her maçta başlayan taraf değişir.'
+                : 'Tek maç oynanır; sonunda istersen rövanş isteyebilirsin.',
+          ),
           const SizedBox(height: 10),
           ArenaPrimaryButton(
             label: 'Oda oluştur',
@@ -774,6 +912,13 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     final choices = rewardMap(room['choices']);
     final names = rewardMap(room['names']);
     final waiting = room['status'] == 'waiting';
+    // Friend Club rooms: each side picks a club (Club-Country guest: a country).
+    final pairRoom = !ranked && ['club_club', 'club_country'].contains(mode);
+    final pickLabels = {
+      for (final k in [...rows(data['clubs']), ...rows(data['countries'])])
+        '${k['id']}': GridCriterionLabel.text(k),
+    };
+    final myPick = choices[host ? 'left' : 'right'];
     Widget seat(String? id, String fallback, {required bool mine}) {
       final tone = mine ? Arena.lime : hubAmber(context);
       final here = id != null && id != 'null';
@@ -818,6 +963,25 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     : 'Hazırlanıyor',
               ),
             ),
+            if (pairRoom && here) ...[
+              const SizedBox(height: 6),
+              Builder(
+                builder: (context) {
+                  final pick =
+                      choices[id == '${room['host']}' ? 'left' : 'right'];
+                  return Text(
+                    pick == null ? 'Seçim yok' : pickLabels['$pick'] ?? '$pick',
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.labelMedium?.copyWith(
+                      color: pick == null ? palette.muted : tone,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  );
+                },
+              ),
+            ],
           ],
         ),
       );
@@ -836,6 +1000,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     ? ranked
                           ? 'Rakip aranıyor'
                           : 'Arkadaşını bekliyorsun'
+                    : series.active && series.game > 1
+                    ? '${series.game}. maça hazırlan'
                     : 'Maça hazırlan',
                 style: text.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
@@ -879,6 +1045,15 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ],
           ),
         ),
+        if (series.active) ...[
+          const SizedBox(height: 12),
+          OnlineSeriesStrip(
+            series: series,
+            uid: uid,
+            rival: rivalId,
+            names: names,
+          ),
+        ],
         if (!ranked) ...[
           const SizedBox(height: 12),
           OnlineRoomCode(code: '${room['id']}'),
@@ -906,6 +1081,19 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     pairChoices(),
                     (v) => action('choose', {'choice': v}),
                   ),
+                  const SizedBox(height: 8),
+                  ArenaSecondaryButton(
+                    label: 'Rastgele seç',
+                    icon: Icons.casino_outlined,
+                    onPressed: busy || pairChoices().isEmpty
+                        ? null
+                        : () {
+                            final options = pairChoices();
+                            final pick =
+                                options[math.Random().nextInt(options.length)];
+                            action('choose', {'choice': pick['id']});
+                          },
+                  ),
                   note(
                     room['pairOptions'] is List &&
                             choices[host ? 'right' : 'left'] != null
@@ -919,7 +1107,11 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           ],
           const SizedBox(height: 12),
           ArenaPrimaryButton(
-            label: ready[uid] == true ? 'Rakibin hazırlanıyor' : 'Hazırım',
+            label: ready[uid] == true
+                ? 'Rakibin hazırlanıyor'
+                : pairRoom && myPick == null
+                ? 'Hazırım · ${host || mode == 'club_club' ? 'kulübün' : 'ülken'} rastgele seçilir'
+                : 'Hazırım',
             icon: Icons.check_rounded,
             onPressed: ready[uid] == true || busy
                 ? null
@@ -932,10 +1124,18 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         ],
         const SizedBox(height: 12),
         ArenaSecondaryButton(
-          label: ranked ? 'Aramayı iptal et' : 'Odayı kapat',
+          label: ranked
+              ? 'Aramayı iptal et'
+              : series.active && series.game > 1
+              ? 'Seriden çekil'
+              : 'Odayı kapat',
           icon: Icons.close_rounded,
           color: palette.error,
-          onPressed: busy ? null : () => action('leave'),
+          onPressed: busy
+              ? null
+              : series.active && series.game > 1 && !waiting
+              ? leave
+              : () => action('leave'),
         ),
       ],
     );
@@ -973,8 +1173,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         note(
           'Bağlantı kesildi. Sunucudaki süre devam eder. Yeniden dene ile maçını kontrol et.',
         ),
-      if (rewardMap(room['series'])['limit'] == 3)
-        note('Seri maçı ${rewardMap(room['series'])['game']} / 3'),
+      if (series.active) note(seriesLine),
     ]);
   }
 
@@ -1326,10 +1525,42 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   }
 
   Widget outcome() {
+    // A draft match plays first; the result card waits for the final whistle.
+    if (rewardMap(room['simulation'])['rules'] == 3 &&
+        !playbackDone.contains('${room['id']}')) {
+      final rival = room['host'] == uid
+          ? '${room['guest']}'
+          : '${room['host']}';
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const ArenaSection('Maç başladı', icon: Icons.stadium_outlined),
+          ManagerMatchPlayback(
+            key: ValueKey('playback-${room['id']}'),
+            simulation: rewardMap(room['simulation']),
+            pool: rows(room['pool']),
+            uid: uid,
+            rival: rival,
+            names: rewardMap(room['names']),
+            picks: rewardMap(room['picks']),
+            onFinished: () {
+              final id = '${room['id']}';
+              AppFeedback.sfx(
+                room['result'] == 'win' ? Sfx.champion : Sfx.whistle,
+                eventId: 'pvp:$id:end',
+              );
+              setState(() => playbackDone.add(id));
+            },
+          ),
+        ],
+      );
+    }
     final reward = rewardMap(room['reward']);
     final names = rewardMap(room['names']), scores = rewardMap(room['scores']);
     final rival = room['host'] == uid ? '${room['guest']}' : '${room['host']}';
     final won = room['status'] == 'finished' && room['result'] == 'win';
+    final set = series;
+    final setOver = set.active && set.over;
     final verified = ranked && reward['status'] != 'pending';
     final elo = (reward['eloDelta'] as num? ?? 0).toInt();
     return Column(
@@ -1338,14 +1569,26 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: HubResultCard(
-            tone: won ? HubResultTone.win : HubResultTone.neutral,
-            icon: won
+            tone: (setOver ? set.winner == uid : won)
+                ? HubResultTone.win
+                : HubResultTone.neutral,
+            icon: setOver && set.winner == uid || !setOver && won
                 ? Icons.emoji_events_rounded
                 : room['status'] == 'finished'
                 ? Icons.sports_score_rounded
                 : Icons.flag_rounded,
-            kicker: ranked ? 'Dereceli maç' : 'Dostluk maçı',
-            title: room['status'] == 'finished'
+            kicker: ranked
+                ? 'Dereceli maç'
+                : set.active
+                ? 'Üç maçlık seri · ${set.game}. maç'
+                : 'Dostluk maçı',
+            title: setOver
+                ? set.winner == uid
+                      ? 'Seriyi kazandın'
+                      : set.winner == rival
+                      ? 'Seriyi kaybettin'
+                      : 'Seri berabere'
+                : room['status'] == 'finished'
                 ? room['result'] == 'win'
                       ? 'Kazandın'
                       : room['result'] == 'loss'
@@ -1355,7 +1598,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                 ? 'Maç hükmen sonuçlandı'
                 : 'Maç iptal edildi',
             subtitle:
-                '${names[uid] ?? 'Sen'} ${scores[uid] ?? 0} – ${scores[rival] ?? 0} ${names[rival] ?? 'Rakip'}',
+                '${set.active ? '${set.game}. maç: ' : ''}${names[uid] ?? 'Sen'} ${scores[uid] ?? 0} – ${scores[rival] ?? 0} ${names[rival] ?? 'Rakip'}',
             coins: verified ? (reward['coins'] as num?)?.toInt() : null,
             xp: verified ? (reward['xp'] as num?)?.toInt() : null,
             notes: [
@@ -1363,19 +1606,46 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               if (verified) 'Elo ${elo > 0 ? '+' : ''}$elo',
               if (ranked && !verified) 'Sonuç ve ödül doğrulaması bekleniyor.',
               if (!ranked) 'Dostluk maçı · Elo ve ödül yok',
-              if (rewardMap(room['series'])['limit'] == 3)
-                'Seri galibiyetleri: ${rewardMap(rewardMap(room['series'])['wins']).entries.map((e) => '${names[e.key]} ${e.value}').join(' · ')}',
             ],
           ),
         ),
+        if (set.active) ...[
+          OnlineSeriesStrip(
+            series: set,
+            uid: uid,
+            rival: rival,
+            names: names,
+            finishedGame: true,
+          ),
+          const SizedBox(height: 12),
+          if (!setOver) ...[
+            ArenaPrimaryButton(
+              key: const ValueKey('series-next'),
+              label: room['nextRoom'] == null
+                  ? 'Sıradaki maç hazırlanıyor'
+                  : '${set.game + 1}. maça geç · $seriesJumpSeconds sn',
+              icon: Icons.skip_next_rounded,
+              onPressed: busy || room['nextRoom'] == null
+                  ? null
+                  : nextSeriesGame,
+            ),
+            const SizedBox(height: 16),
+          ],
+        ],
         ...outcomeRecap(rival),
         const SizedBox(height: 16),
-        if (!ranked && ['finished', 'forfeit'].contains(room['status'])) ...[
+        if (!ranked &&
+            !(set.active && !setOver) &&
+            ['finished', 'forfeit'].contains(room['status'])) ...[
           ArenaPrimaryButton(
             label: room['nextRoom'] != null
-                ? 'Rövanş odasına geç'
+                ? set.active
+                      ? 'Yeni seri odasına geç'
+                      : 'Rövanş odasına geç'
                 : rewardMap(room['rematch'])[uid] == true
-                ? 'Rövanş için rakip bekleniyor'
+                ? 'Rakibinin onayı bekleniyor'
+                : set.active
+                ? 'Yeni seri iste'
                 : 'Rövanş iste',
             icon: Icons.replay_rounded,
             onPressed:
@@ -1443,7 +1713,10 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     final sim = rewardMap(room['simulation']);
     final found = rows(room['found']);
     return [
-      if (sim.isNotEmpty) ...[
+      if (fiveRounds)
+        for (final r in rows(room['rounds'])) ...fiveRecap(r, rival),
+      if (sim['rules'] == 3) ...managerResult(rival),
+      if (sim.isNotEmpty && sim['rules'] != 3) ...[
         const ArenaSection('Maç simülasyonu', icon: Icons.stadium_outlined),
         ArenaCard(
           child: Column(
@@ -1587,7 +1860,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       builder: (_) => AlertDialog(
         title: const Text('Maçtan ayrıl?'),
         content: Text(
-          ['waiting', 'ready'].contains(room['status'])
+          room['status'] == 'ready' && series.active && series.game > 1
+              ? 'Seriden çekilirsen bu maç hükmen rakibine yazılır ve seri biter.'
+              : ['waiting', 'ready'].contains(room['status'])
               ? 'Oda veya eşleşme araman iptal edilir.'
               : 'Devam eden maçtan ayrılmak hükmen sonuca yol açar.',
         ),
@@ -1614,12 +1889,21 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   bool swapAxes = false;
 
   /// The race penalties (lock, wrong cap) belong to Club-Club / Club-Country.
-  bool get penaltyMode => clubRace || mode == 'loto' || mode == 'random_five';
+  bool get penaltyMode =>
+      clubRace || mode == 'loto' || mode == 'random_five' && !fiveRounds;
   int get raceLock => penaltyMode ? locked : 0;
   bool get raceOut => penaltyMode && outOfWrong;
 
   /// Why the arena cannot send now; null when a pick may go.
   String? get blockedReason {
+    if (fiveRounds) {
+      if (room['roundClosed'] == true) return 'Yeni beşli geliyor';
+      if (room['myAnswer'] != null)
+        return 'Tahminin kilitlendi · rakibini bekle';
+      if (seconds(room['roundDeadline']) == 0)
+        return 'Bu beşlinin süresi doldu';
+      return null;
+    }
     if (cinkoV2) {
       if (!myTurn) return 'Rakibin sırası';
       if (cinkoCells.isEmpty) return 'Önce bağlı kutuları seç';
@@ -1667,7 +1951,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       },
       'grid_reverse' => {'targetId': target, 'criterionId': p['id']},
       'cinko' => {'playerId': p['id'], 'cells': cinkoCells.toList()..sort()},
-      _ => {'playerId': p['id']},
+      _ => {'playerId': p['id'], if (fiveRounds) 'round': room['round']},
     });
   }
 
@@ -2176,6 +2460,352 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     ];
   }
 
+  /// Club Manager draft: this side's picks, links and possible formations.
+  ({
+    List<Map<String, dynamic>> players,
+    List<Object?> links,
+    Map<String, int>? slots,
+    String label,
+    int chemistry,
+  })
+  draftSide(String side) {
+    final meta = {for (final p in rows(room['pool'])) '${p['id']}': p};
+    final ids = [
+      for (final id in rewardMap(room['picks'])[side] as List? ?? const [])
+        '$id',
+    ];
+    final chem = rewardMap(rewardMap(room['chemistry'])[side]);
+    final f = rewardMap(room['formations'])[side];
+    final open = f is String
+        ? [f]
+        : [for (final x in f as List? ?? const []) '$x'];
+    return (
+      players: [
+        for (final id in ids)
+          if (meta[id] != null) meta[id]!,
+      ],
+      links: chem['pairs'] as List? ?? const [],
+      slots: open.isEmpty ? null : managerFormations[open.first],
+      label: f is String
+          ? managerFormationLabel(f)
+          : open.length == 4
+          ? 'Diziliş açık'
+          : open.map(managerFormationLabel).join(' / '),
+      chemistry: (chem['score'] as num? ?? 0).toInt(),
+    );
+  }
+
+  /// Links a pool player would bring to this side ("Inter", "Fransa").
+  List<String> draftLinks(String id, String side) {
+    final mine = {
+      for (final x in rewardMap(room['picks'])[side] as List? ?? const []) '$x',
+    };
+    return [
+      for (final l in room['poolLinks'] as List? ?? const [])
+        if (l is List &&
+            l.length >= 5 &&
+            l[3] != 'league' &&
+            ('${l[0]}' == id && mine.contains('${l[1]}') ||
+                '${l[1]}' == id && mine.contains('${l[0]}')))
+          '${l[4]}'.isEmpty ? 'ülke' : '${l[4]}',
+    ];
+  }
+
+  List<Widget> managerDraftArena(String rival) {
+    final text = Theme.of(context).textTheme;
+    final plan = room['phase'] == 'plan';
+    final me = draftSide(uid), them = draftSide(rival);
+    final picks = rewardMap(room['picks']);
+    final owner = <String, String>{
+      for (final side in [uid, rival])
+        for (final id in picks[side] as List? ?? const [])
+          '$id': side == uid ? 'me' : 'rival',
+    };
+    final legal = {for (final id in room['legal'] as List? ?? const []) '$id'};
+    final last = rewardMap(room['lastPick']);
+    final lastName = rows(
+      room['pool'],
+    ).where((p) => '${p['id']}' == '${last['playerId']}').firstOrNull?['name'];
+    final anchors = rows(room['anchors']).map((a) => '${a['label']}').toList();
+    final pool = [...rows(room['pool'])]
+      ..sort((a, b) {
+        final ga = owner.containsKey('${a['id']}') ? 1 : 0;
+        final gb = owner.containsKey('${b['id']}') ? 1 : 0;
+        if (ga != gb) return ga - gb;
+        return ((b['rating'] as num? ?? 0) - (a['rating'] as num? ?? 0)).sign
+            .toInt();
+      });
+    final shown = [
+      for (final p in pool)
+        if (draftFilter == 'ALL' || p['position'] == draftFilter) p,
+    ];
+    double unit(String pos) {
+      final xs = [
+        for (final p in me.players)
+          if (p['position'] == pos) (p['rating'] as num).toDouble(),
+      ];
+      return xs.isEmpty ? 0 : xs.reduce((a, b) => a + b) / xs.length;
+    }
+
+    final team = me.players.isEmpty
+        ? 0.0
+        : me.players
+                  .map((p) => (p['rating'] as num).toDouble())
+                  .reduce((a, b) => a + b) /
+              me.players.length;
+    final captain =
+        draftCaptain ??
+        '${rewardMap(room['myPlan'])['captain'] ?? ([...me.players]..sort((a, b) => ((b['rating'] as num) - (a['rating'] as num)).sign.toInt())).firstOrNull?['id'] ?? ''}';
+    final locked = room['myPlan'] != null;
+    return [
+      if (!plan)
+        ArenaNote(
+          icon: myTurn ? Icons.touch_app_rounded : Icons.hourglass_top_rounded,
+          color: myTurn ? Arena.lime : null,
+          text:
+              'Seçim ${(room['pick'] as num? ?? 0).toInt() + 1}/${room['totalPicks'] ?? 22} · '
+              '${myTurn ? 'Sıra sende: havuzdan bir futbolcuya dokun, sonra kadroya al.' : 'Rakip seçiyor…'}'
+              '${lastName == null ? '' : '\nSon seçim: ${last['uid'] == uid ? 'Sen' : 'Rakip'} · $lastName${last['auto'] == true ? ' (süre doldu, otomatik)' : ''}'}',
+        ),
+      if (!plan && anchors.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: ArenaNote(
+            icon: Icons.hub_rounded,
+            text:
+                'Çapa kulüpler: ${anchors.join(', ')}. Aynı kulüpten ya da ülkeden oyuncuları birlikte almak uyum kazandırır.',
+          ),
+        ),
+      const SizedBox(height: 10),
+      ArenaSection(
+        'Senin kadron · ${me.label}',
+        icon: Icons.sports_soccer_rounded,
+        trailing: Text(
+          '${me.players.length}/11',
+          textAlign: TextAlign.end,
+          style: text.labelMedium?.copyWith(
+            color: Arena.lime,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+      ManagerPitch(
+        key: const ValueKey('draft-pitch-me'),
+        players: me.players,
+        links: me.links,
+        slots: me.slots,
+        captain: plan ? captain : null,
+        highlight: last['uid'] == uid ? '${last['playerId']}' : null,
+      ),
+      const SizedBox(height: 8),
+      ManagerChemistryBar(
+        score: me.chemistry,
+        detail: '${me.links.length} bağ',
+      ),
+      ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        title: Text(
+          'Rakibin kadrosu · ${them.players.length}/11 · uyum ${them.chemistry}',
+          style: text.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        children: [
+          ManagerPitch(
+            players: them.players,
+            links: them.links,
+            slots: them.slots,
+            tone: hubAmber(context),
+            height: 240,
+            highlight: last['uid'] == rival ? '${last['playerId']}' : null,
+          ),
+        ],
+      ),
+      if (!plan) ...[
+        ArenaSection(
+          'Havuz · ${pool.where((p) => !owner.containsKey('${p['id']}')).length} kaldı',
+          icon: Icons.people_alt_outlined,
+        ),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final f in ['ALL', 'GK', 'DEF', 'MID', 'ATT'])
+              ChoiceChip(
+                key: ValueKey('draft-filter-$f'),
+                label: Text(f == 'ALL' ? 'Tümü' : managerPositionNames[f]!),
+                selected: draftFilter == f,
+                onSelected: (_) => setState(() => draftFilter = f),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        for (final p in shown)
+          ManagerPoolTile(
+            player: p,
+            owner: owner['${p['id']}'],
+            legal: !myTurn || legal.contains('${p['id']}'),
+            selected: draftPick == '${p['id']}',
+            links: draftLinks('${p['id']}', uid),
+            onTap: owner.containsKey('${p['id']}') || busy
+                ? null
+                : () => setState(
+                    () => draftPick = draftPick == '${p['id']}'
+                        ? null
+                        : '${p['id']}',
+                  ),
+          ),
+      ] else ...[
+        ArenaSection('Oyun planı', icon: Icons.tune_rounded),
+        for (final key in managerPlans.keys)
+          ManagerPlanCard(
+            plan: key,
+            selected: (rewardMap(room['myPlan'])['plan'] ?? draftPlan) == key,
+            unitRating: unit(managerPlans[key]!.unit),
+            teamRating: team,
+            onTap: locked || busy
+                ? null
+                : () => setState(() => draftPlan = key),
+          ),
+        ArenaSection('Kaptan · reytingi %10 artar', icon: Icons.star_rounded),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final p in me.players)
+              ChoiceChip(
+                key: ValueKey('captain-${p['id']}'),
+                label: Text(
+                  '${managerShortName(p['name'])} ${(p['rating'] as num).round()}',
+                ),
+                selected: captain == '${p['id']}',
+                onSelected: locked || busy
+                    ? null
+                    : (_) => setState(() => draftCaptain = '${p['id']}'),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ArenaNote(
+          icon: room['rivalPlanned'] == true
+              ? Icons.lock_rounded
+              : Icons.hourglass_top_rounded,
+          text: room['rivalPlanned'] == true
+              ? 'Rakip planını seçti; ikiniz de kilitleyince maç başlar.'
+              : 'Rakip planını seçiyor…',
+        ),
+      ],
+    ];
+  }
+
+  /// Draft: pick the selected player; plan: lock plan and captain.
+  Widget managerDraftBar() {
+    final plan = room['phase'] == 'plan';
+    final legal = {for (final id in room['legal'] as List? ?? const []) '$id'};
+    final name = rows(
+      room['pool'],
+    ).where((p) => '${p['id']}' == draftPick).firstOrNull?['name'];
+    final me = draftSide(uid);
+    final captain =
+        draftCaptain ??
+        '${([...me.players]..sort((a, b) => ((b['rating'] as num) - (a['rating'] as num)).sign.toInt())).firstOrNull?['id'] ?? ''}';
+    final locked = room['myPlan'] != null;
+    final (String label, VoidCallback? onPressed) = plan
+        ? locked
+              ? (
+                  room['rivalPlanned'] == true
+                      ? 'Plan kilitlendi · maç başlıyor'
+                      : 'Plan kilitlendi · rakip bekleniyor',
+                  null,
+                )
+              : draftPlan == null
+              ? ('Önce bir oyun planı seç', null)
+              : (
+                  'Planı kilitle · ${seconds(room['planDeadline'])} sn',
+                  busy || !connected
+                      ? null
+                      : () => action('plan', {
+                          'plan': draftPlan,
+                          'captain': captain,
+                        }),
+                )
+        : !myTurn
+        ? ('Rakip seçiyor · ${seconds(room['turnDeadline'])} sn', null)
+        : draftPick == null
+        ? (
+            'Havuzdan bir futbolcu seç · ${seconds(room['turnDeadline'])} sn',
+            null,
+          )
+        : !legal.contains(draftPick)
+        ? ('Bu mevkide yerin dolu; başka mevki seç', null)
+        : (
+            'Kadroya al: $name',
+            busy || !connected
+                ? null
+                : () => action('pick', {'playerId': draftPick}),
+          );
+    return Material(
+      color: palette.surface,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: palette.border)),
+        ),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+        child: ArenaPrimaryButton(
+          key: const ValueKey('draft-action'),
+          label: label,
+          icon: plan
+              ? Icons.lock_outline_rounded
+              : Icons.person_add_alt_1_rounded,
+          onPressed: onPressed,
+        ),
+      ),
+    );
+  }
+
+  /// Club Manager draft result: the match as it happened, then both XIs.
+  List<Widget> managerResult(String rival) {
+    final sim = rewardMap(room['simulation']);
+    final teams = rewardMap(sim['teams']);
+    final me = draftSide(uid), them = draftSide(rival);
+    return [
+      const ArenaSection('Maç', icon: Icons.stadium_outlined),
+      ManagerMatchPlayback(
+        key: ValueKey('playback-${room['id']}'),
+        simulation: sim,
+        pool: rows(room['pool']),
+        uid: uid,
+        rival: rival,
+        names: rewardMap(room['names']),
+        picks: rewardMap(room['picks']),
+        startFinished: true,
+      ),
+      const SizedBox(height: 12),
+      ArenaSection(
+        'Senin XI · ${managerFormationLabel(rewardMap(teams[uid])['formation'])}',
+        icon: Icons.sports_soccer_rounded,
+      ),
+      ManagerPitch(
+        players: me.players,
+        links: me.links,
+        slots: me.slots,
+        captain: '${rewardMap(teams[uid])['captain']}',
+        height: 260,
+      ),
+      const SizedBox(height: 12),
+      ArenaSection(
+        'Rakibin XI · ${managerFormationLabel(rewardMap(teams[rival])['formation'])}',
+        icon: Icons.sports_soccer_rounded,
+      ),
+      ManagerPitch(
+        players: them.players,
+        links: them.links,
+        slots: them.slots,
+        captain: '${rewardMap(teams[rival])['captain']}',
+        tone: hubAmber(context),
+        height: 260,
+      ),
+    ];
+  }
+
   /// Club Manager: the lock button, saying what is still missing.
   Widget managerBar() {
     final locked = room['submitted'] == true;
@@ -2212,6 +2842,208 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  /// One answer of a closed five: the player with the clubs it covers, or
+  /// a missing guess.
+  Widget fiveAnswer(
+    Map<String, dynamic> a,
+    List<Map<String, dynamic>> clubs, {
+    required bool mine,
+  }) {
+    if (a['id'] == null)
+      return ArenaNote(
+        icon: Icons.timer_off_outlined,
+        text: mine
+            ? 'Bu beşlide tahmin yapmadın · 0 puan'
+            : 'Rakip bu beşlide tahmin yapmadı · 0 puan',
+      );
+    final ids = {for (final id in a['clubIds'] as List? ?? const []) '$id'};
+    final names = [
+      for (final k in clubs)
+        if (ids.contains('${k['id']}')) GridCriterionLabel.text(k),
+    ];
+    return ClubRaceFoundTile(
+      player: a,
+      mine: mine,
+      points: (a['points'] as num? ?? 0).toInt(),
+      detail: names.isEmpty
+          ? 'Beş kulübün hiçbirine uymadı'
+          : '${names.length} kulüp · ${names.join(', ')}',
+    );
+  }
+
+  /// A closed five: both answers and its best names.
+  List<Widget> fiveRecap(Map<String, dynamic> r, String rival) {
+    final clubs = rows(r['clubs']);
+    final answers = rewardMap(r['answers']);
+    final best = rows(r['best']);
+    return [
+      ArenaSection(
+        'Beşli ${(r['round'] as num? ?? 0).toInt() + 1}',
+        icon: Icons.casino_outlined,
+        trailing: Text(
+          clubs.map(GridCriterionLabel.text).join(' · '),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.end,
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: palette.muted),
+        ),
+      ),
+      fiveAnswer(rewardMap(answers[uid]), clubs, mine: true),
+      fiveAnswer(rewardMap(answers[rival]), clubs, mine: false),
+      if (best.isNotEmpty)
+        ArenaNote(
+          icon: Icons.lightbulb_outline_rounded,
+          color: hubAmber(context),
+          text:
+              'En iyi cevaplar: ${best.map((p) => '${p['name']} (${p['clubs']} kulüp)').join(' · ')}',
+        ),
+    ];
+  }
+
+  /// Random Five rounds: the fives so far, the current five (a new one spins
+  /// in like a slot machine), this five's guesses and the earlier fives.
+  List<Widget> fiveRoundsBoard(String rival) {
+    final text = Theme.of(context).textTheme;
+    final round = (room['round'] as num? ?? 0).toInt();
+    final total = (room['totalRounds'] as num? ?? 5).toInt();
+    final closed = room['roundClosed'] == true;
+    final past = rows(room['rounds']);
+    final clubs = rows(room['criteria']);
+    final current = closed
+        ? past.where((r) => r['round'] == round).firstOrNull
+        : null;
+    final answers = rewardMap(current?['answers']);
+    final mine = closed ? rewardMap(answers[uid]) : rewardMap(room['myAnswer']);
+    final theirs = rewardMap(answers[rival]);
+    final rivalTone = hubAmber(context);
+    final marks = <String, List<Color>>{};
+    for (final (a, tone) in [(mine, Arena.lime), (theirs, rivalTone)])
+      for (final id in a['clubIds'] as List? ?? const [])
+        (marks['$id'] ??= []).add(tone);
+    int pointsOf(int n, String side) =>
+        (rewardMap(
+                  rewardMap(
+                    past.where((r) => r['round'] == n).firstOrNull?['answers'],
+                  )[side],
+                )['points']
+                as num?)
+            ?.toInt() ??
+        0;
+    Widget step(int n) {
+      final done = past.any((r) => r['round'] == n);
+      final now = n == round && !closed;
+      return Expanded(
+        child: Container(
+          margin: EdgeInsets.only(left: n == 0 ? 0 : 6),
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            color: now ? palette.limeTint : palette.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: now ? Arena.lime.withValues(alpha: .6) : palette.border,
+            ),
+          ),
+          child: Column(
+            children: [
+              Text(
+                '${n + 1}',
+                style: text.labelSmall?.copyWith(color: palette.muted),
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  done ? '+${pointsOf(n, uid)} · +${pointsOf(n, rival)}' : '–',
+                  style: text.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: done ? palette.text : palette.muted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return [
+      Row(children: [for (var n = 0; n < total; n++) step(n)]),
+      const SizedBox(height: 4),
+      Text(
+        'Kutularda: senin puanın · rakibin puanı',
+        textAlign: TextAlign.center,
+        style: text.labelSmall?.copyWith(color: palette.muted),
+      ),
+      ArenaSection(
+        'Beşli ${round + 1} / $total',
+        icon: Icons.casino_outlined,
+        trailing: Text(
+          closed
+              ? (room['nextRoundAt'] == null
+                    ? 'Maç bitiyor'
+                    : 'Yeni beşli ${seconds(room['nextRoundAt'])} sn')
+              : '${seconds(room['roundDeadline'])} sn',
+          textAlign: TextAlign.end,
+          style: text.labelMedium?.copyWith(
+            color: Arena.lime,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+      FiveSlotReel(
+        round: round,
+        clubs: clubs,
+        decoys: [
+          ...rows(data['clubs']),
+          for (final r in past) ...rows(r['clubs']),
+        ],
+        marks: marks,
+      ),
+      const SizedBox(height: 4),
+      Text(
+        'Puan: 1 kulüp +1 · 2 kulüp +2 · 3 kulüp +4 · 4 kulüp +6 · 5 kulüp +8',
+        textAlign: TextAlign.center,
+        style: text.labelSmall?.copyWith(color: palette.muted),
+      ),
+      const SizedBox(height: 8),
+      if (closed && current != null)
+        ...fiveRecap(current, rival).skip(1)
+      else ...[
+        if (mine.isEmpty)
+          const ArenaNote(
+            icon: Icons.bolt_rounded,
+            text:
+                'Bu beşli için tek tahmin hakkın var: en çok kulübünde oynamış futbolcuyu yaz.',
+          )
+        else
+          fiveAnswer(mine, clubs, mine: true),
+        ArenaNote(
+          icon: room['rivalAnswered'] == true
+              ? Icons.lock_rounded
+              : Icons.hourglass_top_rounded,
+          text: room['rivalAnswered'] == true
+              ? 'Rakip tahminini yaptı; beşli kapanınca açılır.'
+              : 'Rakip düşünüyor…',
+        ),
+      ],
+      if (past.any((r) => r['round'] != round)) ...[
+        const SizedBox(height: 4),
+        ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          title: Text(
+            'Önceki beşliler',
+            style: text.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          children: [
+            for (final r in past.reversed)
+              if (r['round'] != round) ...fiveRecap(r, rival),
+          ],
+        ),
+      ],
+    ];
   }
 
   /// Random Five: the points table, the five clubs (names found for each) and
@@ -2675,11 +3507,27 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     'grid_reverse' =>
       'Sırayla oynanır: bir satır ya da sütun seç, üç futbolcunun ortak kulübünü '
           'ya da milli takımını yaz. Her hamleden sonra sıra rakibe geçer; 4 ekseni ilk alan kazanır.',
+    'club_manager' when draftMode =>
+      'Draft: 36 kişilik havuzdan sırayla futbolcu seçersiniz (1-2-2-1 yılan sırası, '
+          'seçim başına 15 sn; süre dolarsa en iyi uygun oyuncu seçilir). Senin aldığını rakip '
+          'alamaz. Diziliş seçimlerinden çıkar: 4-3-3, 4-4-2, 3-5-2 ya da 4-5-1. Aynı kulüpte '
+          'ya da milli takımda oynamış oyuncular uyum kazandırır (sahadaki çizgiler); çapa '
+          'kulüplerin oyuncularını birlikte almak güçlüdür. Sonra 25 sn içinde gizli oyun '
+          'planını ve kaptanını seç: Hücum Topa sahip olmayı, Topa sahip olma Kontrayı, Kontra '
+          'Hücumu yener; kaptanın reytingi %10 artar. Maç dakika dakika oynanır; berabere '
+          'biterse penaltılar.',
     'club_manager' =>
       'İkiniz aynı havuzdan, aynı bütçeyle 11 kişilik kadro kurarsınız. Yıldızlar (★) '
           'bütçenin tamamına sığmaz; kimin için harcayacağını seç. İki taraf da kilitleyince '
           'maç oynanır; süre dolduğunda yalnız sen kilitlediysen hükmen kazanırsın. Kadro '
           'bütçesi oyun içindir, Coin harcanmaz.',
+    'random_five' when fiveRounds =>
+      'Her turda yeni bir beşli gelir; ikiniz aynı anda, beşli başına tek tahmin yaparsınız. '
+          'Beş kulüpten en çoğunda oynamış futbolcuyu yaz: 1 kulüp +1, 2 kulüp +2, 3 kulüp +4, '
+          '4 kulüp +6, 5 kulüp +8 puan; hiçbirine uymazsa 0. Tahminler beşli kapanınca açılır '
+          '(ikiniz de yazınca ya da ${((room['answerMs'] as num? ?? 25000) / 1000).round()} sn dolunca). '
+          'Bir futbolcuyu maçta bir kez yazabilirsin. ${room['totalRounds'] ?? 5} beşlinin sonunda '
+          'çok puan alan kazanır; eşitlikte daha çok beşlide puan alan, o da eşitse daha hızlı cevaplayan.',
     'random_five' =>
       'İkiniz aynı anda oynarsınız: bu beş kulüpten en çoğunda oynamış futbolcuları yaz. '
           'Her ismi ilk yazan alır; kaç kulübe uyarsa o kadar değerlidir (tablo yukarıda). '
@@ -2722,6 +3570,22 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     final countdown = room['status'] == 'countdown';
     final turnBased = gridMode || cinkoV2;
     final (clockKey, total) = switch (mode) {
+      'club_manager' when draftMode && room['phase'] == 'plan' => (
+        'planDeadline',
+        25,
+      ),
+      'club_manager' when draftMode => (
+        'turnDeadline',
+        room['pick'] == 0 ? 20 : 15,
+      ),
+      'random_five' when fiveRounds && room['roundClosed'] == true => (
+        'nextRoundAt',
+        ((room['revealMs'] as num? ?? 4000) / 1000).round(),
+      ),
+      'random_five' when fiveRounds => (
+        'roundDeadline',
+        ((room['answerMs'] as num? ?? 25000) / 1000).round(),
+      ),
       'grid_classic' ||
       'grid_reverse' ||
       'grid_random' ||
@@ -2738,7 +3602,17 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       name: '${names[id] ?? fallback}',
       score: (scores[id] as num? ?? 0).toInt(),
       wrong: (wrong[id] as num? ?? 0).toInt(),
-      caption: cinkoV2
+      caption: draftMode
+          ? 'Uyum ${rewardMap(rewardMap(room['chemistry'])[id])['score'] ?? 0}'
+          : fiveRounds
+          ? (room['roundClosed'] == true
+                ? 'Beşli açıldı'
+                : (id == uid
+                      ? room['myAnswer'] != null
+                      : room['rivalAnswered'] == true)
+                ? 'Tahmin yaptı'
+                : 'Düşünüyor')
+          : cinkoV2
           ? 'Kutu ${rewardMap(room['owners']).values.where((o) => rewardMap(o)['uid'] == id).length}'
           : manager
           ? ((id == uid
@@ -2749,6 +3623,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           : null,
       display: !manager
           ? null
+          : draftMode
+          ? '${(rewardMap(room['picks'])[id] as List? ?? const []).length}/11'
           : id == uid
           ? '${xi.length}/11'
           : room['rivalLocked'] == true
@@ -2762,6 +3638,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           title: widget.mode.title,
           subtitle: ranked
               ? 'Rastgele eşleşme'
+              : series.active
+              ? 'Seri ${series.game}. maç · Sen ${series.winsOf(uid)} – ${series.winsOf(rivalUid)}'
               : 'Arkadaş maçı · Oda ${room['id'] ?? ''}',
           tag: 'CANLI 1v1',
           actions: [
@@ -2802,7 +3680,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               ClubRaceScoreCard(
                 me: side(uid, 'Sen'),
                 rival: side(rival, 'Rakip'),
-                maxWrong: gridMode || cinkoV2 || manager
+                maxWrong: gridMode || cinkoV2 || manager || fiveRounds
                     ? null
                     : (room['maxWrong'] as num? ?? 10).toInt(),
                 secondsLeft: seconds(room[clockKey]),
@@ -2812,10 +3690,26 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                     ? null
                     : turnBased
                     ? (myTurn ? 'SIRA SENDE' : 'RAKİPTE')
+                    : draftMode
+                    ? (room['phase'] == 'plan'
+                          ? (room['myPlan'] != null ? 'BEKLENİYOR' : 'PLAN SEÇ')
+                          : myTurn
+                          ? 'SIRA SENDE'
+                          : 'RAKİP SEÇİYOR')
                     : manager
                     ? (room['submitted'] == true ? 'KİLİTLENDİ' : 'KADRO KUR')
+                    : fiveRounds
+                    ? (room['roundClosed'] == true
+                          ? (room['nextRoundAt'] == null
+                                ? 'SON BEŞLİ'
+                                : 'YENİ BEŞLİ')
+                          : room['myAnswer'] != null
+                          ? 'BEKLENİYOR'
+                          : 'BEŞLİ ${(room['round'] as num? ?? 0).toInt() + 1}/${room['totalRounds'] ?? 5}')
                     : null,
-                myTurn: turnBased ? myTurn : null,
+                myTurn: turnBased || draftMode && room['phase'] == 'draft'
+                    ? myTurn
+                    : null,
               ),
               if (!connected)
                 Padding(
@@ -2840,8 +3734,12 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               else if (mode == 'grid_random') ...[
                 ...randomPair(),
                 classicBoard(),
+              ] else if (draftMode) ...[
+                ...managerDraftArena(rival),
               ] else if (manager) ...[
                 ...managerArena(),
+              ] else if (fiveRounds) ...[
+                ...fiveRoundsBoard(rival),
               ] else if (mode == 'random_five') ...[
                 ...fiveBoard(),
               ] else if (cinkoV2) ...[
@@ -2924,14 +3822,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                 const SizedBox(height: 12),
                 ArenaNote(icon: Icons.rule_rounded, text: rules),
               ],
-              if (rewardMap(room['series'])['limit'] == 3)
+              if (series.active)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Center(
                     child: ArenaPill(
-                      child: Text(
-                        'Seri maçı ${rewardMap(room['series'])['game']} / 3',
-                      ),
+                      key: const ValueKey('series-pill'),
+                      dot: palette.accent,
+                      child: Text(seriesLine),
                     ),
                   ),
                 ),
@@ -2945,7 +3843,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             ],
           ),
         ),
-        if (!countdown && manager)
+        if (!countdown && draftMode)
+          managerDraftBar()
+        else if (!countdown && manager)
           managerBar()
         else if (!countdown && mode == 'loto')
           lotoBar()
@@ -3012,6 +3912,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
                             ? 'Maç sonucu · ${ranked ? 'Dereceli' : 'Arkadaş maçı'}'
                             : ranked
                             ? 'Rastgele eşleşme'
+                            : series.active
+                            ? 'Üç maçlık seri · ${series.game}. maç'
                             : 'Arkadaş maçı · Oda ${room['id'] ?? ''}',
                         tag: room.isEmpty
                             ? 'ONLINE'

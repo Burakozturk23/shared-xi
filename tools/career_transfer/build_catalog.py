@@ -17,10 +17,13 @@ def build():
     source = json.loads((ROOT/'functions/config/three_modes_catalog.json').read_text())
     players = {p['id']: p for p in source['players']}
     rawclubs = {r['id']: dict(r) for r in con.execute('select * from clubs')}
+    # TM ids that collide with a different club keep their own id (reviewed list).
+    OFFSET_MISMATCH = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
+
     def cid(i):
         # Exposed V4 TM identifiers use the same TM ID with a namespace offset.
         original = i - 1000000000
-        return original if i >= 1000000000 and original in rawclubs else i
+        return original if i >= 1000000000 and i not in OFFSET_MISMATCH and original in rawclubs else i
     clubs = {cid(i): dict(id=cid(i), name=rawclubs[cid(i)]['name'],
              badgeKey=rawclubs[cid(i)]['badge_key']) for i in rawclubs
              if rawclubs[cid(i)]['entity_type'] == 'SENIOR' and rawclubs[cid(i)]['gameplay_eligible']}
@@ -37,14 +40,14 @@ def build():
     for r in con.execute('select * from career_spells order by player_id,start_date,sequence'):
         club = cid(r['club_id'])
         if not eligible(r['player_id']) or club not in clubs: continue
-        if r['confidence'] not in ('HIGH', 'REVIEWED_YEAR') or not valid_date(r['start_date']):
+        if r['confidence'] not in ('HIGH', 'REVIEWED_YEAR', 'REVIEWED_SEASON') or not valid_date(r['start_date']):
             rejected['uncertain_career_period'] += 1; continue
         end = r['end_date'] or None
         if end and (not valid_date(end) or end < r['start_date']):
             rejected['invalid_career_end'] += 1; continue
         identity = hashlib.sha256(f"{r['player_id']}|{club}|{r['start_date']}|{end}".encode()).hexdigest()[:24]
         careers[r['player_id']].append(dict(id=identity, clubId=club, start=r['start_date'], end=end,
-            precision='year' if r['confidence'] == 'REVIEWED_YEAR' else 'date'))
+            precision={'REVIEWED_YEAR': 'year', 'REVIEWED_SEASON': 'season'}.get(r['confidence'], 'date')))
     puzzles = []
     for pid, stops in sorted(careers.items()):
         stops = list({s['id']: s for s in stops}.values())
@@ -54,17 +57,19 @@ def build():
         if len(stops) < 3: continue
         difficulty = 'beginner' if len(stops) < 5 else 'normal' if len(stops) < 8 else 'legend'
         puzzles.append(dict(id=str(pid), playerId=pid, difficulty=difficulty, stops=stops[:12],
-            source='V4 career_spells: HIGH / REVIEWED_YEAR; selected periods'))
+            source='V4 career_spells: HIGH / REVIEWED_YEAR / REVIEWED_SEASON; selected periods'))
     events = {}
     for r in con.execute('select * from transfers order by event_id'):
         a,b = cid(r['from_club_id']),cid(r['to_club_id'])
         if not eligible(r['player_id']) or a not in clubs or b not in clubs or a == b: continue
-        if r['trust'] != 'HIGH' or not valid_date(r['transfer_date']) or int(r['transfer_date'][:4]) != r['transfer_year']:
+        # REVIEWED_SEASON: a summer-2026 move known to the season, not the day.
+        if r['trust'] not in ('HIGH', 'REVIEWED_SEASON') or not valid_date(r['transfer_date']) or int(r['transfer_date'][:4]) != r['transfer_year']:
             rejected['invalid_transfer'] += 1; continue
         if max(rawclubs[a]['popularity_seed'],rawclubs[b]['popularity_seed']) < 10: continue
         key = hashlib.sha256(f"{r['player_id']}|{a}|{b}|{r['transfer_date']}".encode()).hexdigest()[:24]
         events[key] = dict(id=key, playerId=r['player_id'], fromClubId=a, toClubId=b,
-            date=r['transfer_date'], year=r['transfer_year'], source='V4 transfers / HIGH', sourceEventId=r['event_id'])
+            date=r['transfer_date'], year=r['transfer_year'], source='V4 transfers / ' + r['trust'], sourceEventId=r['event_id'],
+            **({'precision': 'season'} if r['trust'] == 'REVIEWED_SEASON' else {}))
     # Visible clues must have exactly one answer among catalog events.
     clue_counts = Counter((e['fromClubId'],e['toClubId'],e['year']) for e in events.values())
     events = [e for e in events.values() if clue_counts[(e['fromClubId'],e['toClubId'],e['year'])] == 1]

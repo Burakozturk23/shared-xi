@@ -17,6 +17,14 @@ Kariyer Yarışı, Transfer, Gizem ve Sahte Kulüp düellolarının oyun motorla
 - Manager'da ortak bütçe/havuz, 11 benzersiz ve pozisyona uygun oyuncu,
   kilitli XI/taktik ve sunucu tarafından deterministik iki takım simülasyonu.
 - Arkadaş maçında ödül/Elo yok; iki tarafın onayladığı rövanş ve üç maçlık seri.
+- Üç maçlık seri (`profile: series3`): ilk 2 galibiyeti alan kazanır, en fazla 3 maç;
+  beraberlik oynanmış maç sayılır. Bir maç bitince (`finished`/`forfeit`) sunucu
+  sıradaki maçın odasını kendisi açar (`nextRoom`, roller değişir, skor taşınır);
+  rövanş onayı gerekmez. `series.results` her maçın kazananını, `over`/`winner`
+  serinin sonucunu tutar. İkinci veya üçüncü maçın hazırlık odasından çıkmak o maçı
+  rakibe hükmen verir; oynanmayan (iptal/süresi dolan) maç seriyi bitirir. Seri
+  bitince rövanş aynı uzunlukta yeni bir seri açar. Uygulama sonuç ekranında seri
+  tablosunu gösterir ve 10 saniye sonra sıradaki maça kendisi geçer.
 - Ranked ödülleri 3/6, 1/3, 0/1; İstanbul günü ilk üç eligible sonuç,
   9 Coin/18 XP veya daha düşük ayarlı limit. Önceki sunucu ranked ödülleri
   yeni ödül limitinden düşülür. Mevcut K32 formülü ve profiller korunur.
@@ -66,7 +74,7 @@ ile iki gerçek hesapta yayın kabulü aynı şey değildir. Aşağıdakiler yay
 
 `runtimeConfig/pvp` ve `modes/<modeId>` altında `friendEnabled`,
 `rankedEnabled`, `rewardsEnabled`, `eloEnabled` varsayılan **false**.
-Manager ranked ayrıca `managerRankedVerified: true` gerektirir; genel ranked bayrağı tek başına açamaz.
+Club Manager ranked da diğer modlar gibi yalnız `rankedEnabled` ile açılır (draft kuralıyla ayrı onay kapısı kaldırıldı).
 Hiçbir canlı ayar bu değişiklikle açılmadı. Önce emülatör/staging arkadaş
 maçları; kabul kapıları geçince mod bazında kademeli ranked açılışı.
 Kapatma yeni odaları/rövanşı ve yeni ödül rezervasyonlarını engeller;
@@ -88,14 +96,30 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 - Düellolar (`career_transfer_online_page`) aynı düzende: kurulum, bekleme
   odası ve sonuçta her tur için doğru/yanlış, puan, rakip puanı ve cevap.
 
+## Kulüp × Kulüp / Kulüp × Ülke arkadaş odası
+
+- Rakip katılınca oda `ready` olur; iki taraf da kulübünü (Kulüp × Ülke
+  misafiri ülkesini) seçer. Seçim yapmadan "Hazırım"a basan oyuncuya sunucu,
+  rakibin seçimiyle en az 6 ortak futbolcusu olan (rakip henüz seçmediyse en
+  az bir oynanabilir eşleşmesi olan) rastgele bir seçenek atar
+  (`E.autoChoice`). Önceden seçim zorunluydu; reddi göremeyen oyuncular
+  "Hazırım"a basıp odanın süresinin dolmasını bekliyordu.
+- Bekleme ekranında iki tarafın seçimi koltuklarda görünür, "Rastgele seç"
+  vardır; kurulum ve lobide sunucu reddi alttan da gösterilir.
+- Uygulama, geri sayım ya da maç süresi dolunca 2 sn içinde, eş zamanlı
+  yarışlarda (Kulüp modları, Rastgele Beş, Loto) ve rakibin sırasındaki sıra
+  tabanlı modlarda 3 sn'de bir sorar; diğer durumlarda 6 sn.
+
 ## Football Loto
 
 - Katalog 300 tahta tutar, her zorlukta 100 (`loto-{easy|medium|hard}-{n}`).
   Zorluk 16 futbolcunun bilinirliğidir (oyuncu sırası: kolay ≤1500, orta
-  ≤4000, zor ≤12000). Her tahta 8 kulüp, 4 ülke ve 4 bilinen lig hücresi
-  taşır; lig hücreleri yalnızca büyük liglerden (Premier League, LaLiga,
-  Serie A, Bundesliga, Ligue 1, Süper Lig, Eredivisie, Liga Portugal, 1. Lig)
-  gelir.
+  ≤4000, zor ≤12000). Her tahta en bilinen 50 kulüpten (`gridClubs`) 8 kulüp,
+  Çinko'daki 25 futbol ülkesinden 4 ülke ve 4 büyük lig hücresi (Premier
+  League, LaLiga, Serie A, Bundesliga, Ligue 1, Süper Lig, Eredivisie, Liga
+  Portugal) taşır. Şeritteki futbolcular reytingi en az 75 olan
+  (`LOTO_MIN_RATING`; veritabanı sırası tek başına bilinirliği göstermiyor)
+  ve adı başka hiçbir futbolcuda olmayan isimlerdir ("Alex", "Diego" girmez).
 - Oyuncular katalogda karışık sırada saklanır; saklanan sıra cevap sırası
   değildir. Her tahtanın tam bir doğru yerleşimi vardır (test eşleştirmeyle
   kanıtlar). Oyuncu başına ortalama uygun hücre `data-audit.json` içindeki
@@ -108,6 +132,11 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
   tıkanabilir: doğru bir hamleden sonra kalan hiçbir futbolcu boş hiçbir
   hücreye uymuyorsa maç "Kalan futbolcular boş hücrelere uymuyor." diye hemen
   biter (`lotoPlayable`).
+- İki oyuncunun da yanlış hakkı biterse kimse hamle yapamaz; maç süreyi
+  beklemeden "İki oyuncunun da yanlış hakkı bitti." diye biter (Kulüp
+  modlarında da aynı).
+- Ekranda seçili tuttuğun futbolcuyu rakip yerleştirirse seçim kalkar (eski
+  seçimle hücreye dokunmak "zaten kullanıldı" hatası veriyordu).
 - Bingo (`lotoRules: 2` ile başlayan odalar): bir satırın ya da sütunun son boş
   hücresini dolduran, tamamladığı her çizgi için +2 alır (`LOTO_LINE_BONUS`;
   satır ve sütunu birden tamamlarsa +4). Çizgiyi kimin doldurduğu fark etmez,
@@ -123,11 +152,36 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 
 ## Rastgele Beşler
 
-- Online tahta katalogdaki 300 hazır tahtadan gelir (`five`): her tahtada 4
-  kulübünde oynamış bir futbolcu, 3+ kulüplü en az 4 ve 2+ kulüplü en az 20
-  futbolcu vardır. Eski kataloglarda 5 rastgele kulüp kullanılır.
-- Puan (`fiveRules: 2` ile başlayan odalar): 1 kulüp 1, 2 kulüp 2, 3 kulüp 4,
-  4 kulüp 6, 5 kulüp 8 (`FIVE_POINTS`).
+- Online maç 5 turdur (`fiveRules: 3`, `FIVE_ROUNDS`): her turda yeni bir
+  beşli gelir. Beşliler katalogdaki 300 hazır tahtadan (`five`) seçilir; her
+  tahtada 4 kulübünde oynamış bir futbolcu, 3+ kulüplü en az 4 ve 2+ kulüplü en
+  az 20 futbolcu vardır. Maçın beş beşlisi mümkünse hiç kulüp paylaşmaz
+  (`puzzle.boards`). Tahtalar yalnız en bilinen 50 kulüpten (`gridClubs`) kurulur;
+  bot da kendi popüler listesine bu 50 kulübü ekler. Eski kataloglarda rastgele kulüpler kullanılır.
+- Her oyuncu beşli başına tek tahmin yapar (`answer`, `round` ile; eski turun
+  numarası reddedilir). Tahmin beşli kapanana kadar gizlidir: rakip yalnız
+  tahmin yapıldığını görür (`rivalAnswered`), skor da kapanışta işlenir. Beşli
+  ikisi de yazınca hemen, yoksa 25 sn'de (`FIVE_ANSWER_MS`) kapanır; cevaplar
+  4 sn açık kalır (`FIVE_REVEAL_MS`, `nextRoundAt`), sonra yeni beşli gelir.
+  Beşinci beşli kapanınca maç biter (en uzun 141 sn).
+- Puan: 1 kulüp 1, 2 kulüp 2, 3 kulüp 4, 4 kulüp 6, 5 kulüp 8 (`FIVE_POINTS`);
+  uymayan isim ya da tahminsiz beşli 0. Bir futbolcuyu oyuncu maçta bir kez
+  yazar (iki oyuncu aynı beşlide aynı ismi yazabilir). Eşitlikte daha çok
+  beşlide puan alan, o da eşitse toplamda daha hızlı cevaplayan kazanır
+  (tahminsiz beşli 25 sn sayılır).
+- Görünüm: `round`, `totalRounds`, `criteria` (o anki beşli), `roundDeadline`,
+  `roundClosed`, `myAnswer` (kapanmadan önce yalnız kendi tahminin),
+  `rounds` (kapanan beşliler: iki cevap, uyduğu kulüpler, saniye ve beşlinin en
+  iyi 3 cevabı `best`). `used` bu odalarda boş gelir (gizli tahmini ele
+  vermesin).
+- Online ekran: yeni beşli slot makinesi gibi döner (makaralar başka kulüpler
+  arasından geçip yukarıdan aşağı sırayla durur; animasyon kapalıysa doğrudan
+  gelir), beş tur kutusu (senin · rakibin puanı), tahminin kilitlenince
+  "rakibini bekle", kapanışta iki cevap ve en iyi cevaplar, önceki beşliler
+  açılır listede; maç sonunda her beşlinin özeti. Rakip beklerken 2 sn'de bir,
+  yeni beşli zamanı gelince hemen sorulur.
+- Deploy sırasında açık olan tek tahtalı odalar (`fiveRules: 2`) eski kuralla
+  biter:
 - Uymayan isim 2 sn kilitler, maçta en fazla 10; hamleler arası en az 400 ms.
 - `found` maç boyunca canlı gelir: kimin bulduğu, uyduğu kulüpler (`clubIds`),
   puanı ve saniyesi. Maç sonunda kimsenin söylemediği en iyi 10 cevap
@@ -144,6 +198,15 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 
 ## Grid
 
+- Kulüp bilinirliği oyunculardan ölçülür: en bilinen 300 futbolcudan biri 4,
+  en bilinen 1000'den biri 1 puan; ikiz kayıtlar ("PSG" / "Paris
+  Saint-Germain") birinci kayıtta tek sayılır, yedek/genç takımlar
+  ("Atlètic", "Castilla", "II", "B") girmez. `clubOptions` en bilinen 90
+  kulüptür (Kulüp modları, Loto, Çinko, Rastgele Beş); eski popülerlik değeri
+  Real Madrid'i dışarıda bırakıp Zorya Lugansk, Dundee United gibi kulüpleri
+  alıyordu. Grid eksenleri ve Rastgele Grid ikilileri yalnızca bunların en
+  bilinen 50'sini (`gridClubs`) kullanır; Bot/Solo Grid'de lig seçilmemiş
+  geniş havuz da aynı 50 kulüptür.
 - Online klasik ve ters 300 hazır tahtadan gelir (`grids`): her kutuda en az 3
   cevap ve en bilinen 3000 futbolcudan en az biri vardır.
 - `gridRules: 2` ile başlayan odalarda yanlış cevaplar sayılır (`gridWrong`);
@@ -179,6 +242,40 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
 
 ## Club Manager
 
+### Draft (`managerRules: 3`, yeni odalar)
+
+- Havuz 36 bilinen futbolcu (`draftPool`: reyting 76+, en bilinen 5000): 4 kaleci, 11
+  defans, 12 orta saha, 9 forvet; mevki başına birkaç yıldız (85+). En bilinen 50
+  kulüpten üç "çapa kulüp" seçilir, her biri havuza 3–4 oyuncusunu getirir.
+- Draft yılan sırasıyla 22 seçimdir (A B B A A B …; ilk seçen rastgele). İlk seçim 20 sn,
+  sonrakiler 15 sn (`DRAFT_PICK_MS`). Süre dolunca sunucu o tarafa en yüksek reytingli
+  uygun oyuncuyu seçer (eşitlikte uyumu en çok artıran). Seçilen oyuncuyu rakip alamaz.
+  Seçimler bir dizilişe (4-3-3, 4-4-2, 3-5-2, 4-5-1) tamamlanabilir kalmalıdır; diziliş
+  seçimlerden çıkar (`legalPicks`, `formationOf`).
+- Uyum (C): aynı kulüpte ve milli takımda 1,45, yalnız kulüpte 1, yalnız milli takımda
+  0,55, aynı ligde 0,2 bağ; toplam × 0,35, en fazla 14 güç (0–100 olarak gösterilir).
+  Sahada kulüp bağları yeşil, ülke bağları amber çizgi; havuzda "+2 bağ · Inter" yazar.
+- Draft bitince 25 sn içinde gizli oyun planı ve kaptan (F, G): Hücum Topa sahip olmayı,
+  Topa sahip olma Kontrayı, Kontra Hücumu yener (+0,025 / −0,015 gol olasılığı); plan
+  dayandığı hattın (Forvet / Defans / Orta saha) takım ortalamasından farkıyla küçük bir
+  bonus alır. Kaptanın reytingi %10 artar. Süre dolunca plan "Dengeli" (etkisiz), kaptan
+  en yüksek reytingli oyuncu olur.
+- Güç: ortalama reyting × 0,72 + uyum + 12,8. Maç (D, E): her taraf 10–12 atak; gol
+  olasılığı 0,11 + güç farkı/2 × 0,012 + plan etkisi. 10 güç farkı yaklaşık %72 galibiyet
+  (eski kuralda %60). Golü atan forvet ağırlıklı (kaptan ×1,3), %75 asist; kurtarış,
+  dışarı şut ve sarı kartlar; beraberlikte penaltılar. Maçın oyuncusu: gol 3, asist 2,
+  kurtarış 1 puan, kazanan taraftan. Bütün veriler (reyting, mevki, bağlar) odada
+  saklanır; süre dolan seçim ve plan katalog yüklemeden işlenir (`managerSync`).
+- Ekran: draft sırasında sahada kadron (boş yerler, bağ çizgileri), uyum çubuğu, rakibin
+  kadrosu (açılır), mevki filtreli havuz; dokun ve "Kadroya al". Plan ekranında üç plan
+  kartı (kadrona uygunluğu) ve kaptan seçimi. Maç sonucu önce 24 sn'lik dakika dakika
+  oynatma olarak açılır (gol sesi, "Sonuca geç"); kazandın/kaybettin kartı ve bitiş sesi
+  düdükten sonra gelir. Sonra maçın oyuncusu, istatistikler (şut, xG, topla oynama, güç,
+  uyum, diziliş, plan), bir cümlelik analiz ve iki takımın sahadaki XI'i.
+- Arkadaş serisi (3 maç) yukarıdaki seri kurallarıyla oynanır.
+
+### Bütçe kuralı (`managerRules: 2`, deploy anında süren odalar)
+
 - Havuz her mevkide yıldız (maliyet 14+), orta (10) ve ucuz (6) oyuncu karışık
   gelir (`MANAGER_TIERS`: GK 1/1/1, DEF 2/2/3, MID 2/3/3, ATT 2/2/3). En yüksek
   puanlı 4-3-3 kadro 138–142 tutar, bütçe 120 kalır; her dizilişte bütçeye
@@ -189,7 +286,7 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
   gürültüsü yarıya indi; normal sürede beraberlik penaltılarla biter.
 - Süre dolduğunda yalnız bir taraf kadrosunu kilitlediyse o taraf hükmen
   kazanır; iki taraf da kilitlemediyse maç iptal olur.
-- Sıralı mod `managerRankedVerified` doğrulanana kadar kapalı kalır.
+- Sıralı mod artık diğer modlarla aynı `rankedEnabled` bayrağını kullanır; yeni sıralı odalar draft kuralıyla açılır.
 - Oda rakibin kadrosunu kilitleyip kilitlemediğini (`rivalLocked`) verir; hangi
   kadro olduğu iki taraf da kilitleyene kadar gizli kalır.
 - Online ekran arena düzenindedir: skor kartında kadro sayısı ve iki tarafın
@@ -213,6 +310,13 @@ Eski istemci score attestation yolu ödül vermez; eski ledger/geçmiş silinmez
   oyuncuyu, 2 kutu ilk oyuncuyu kayırdı.
 - Yeni kurallar `cinkoRules: 2` ile başlayan odalara uygulanır; daha önce
   başlamış oda eski kuralla biter.
+- Online tahtalar (`cinko`, 200 adet) yalnız bilinen kriterlerden üretilir:
+  1–2 büyük lig hücresi (Premier League, LaLiga, Serie A, Bundesliga, Ligue 1,
+  Süper Lig, Eredivisie, Liga Portugal), botla aynı 25 futbol ülkesinden 5
+  ülke hücresi ve kalanı en bilinen 50 kulüpten (`gridClubs`). Eskiden her
+  tahtaya 4 "az oyunculu" kulüp ya da ülke (Le Puy, Trinidad gibi) giriyordu.
+- Lig kriterlerinin görünen adı düzgün yazılır (`Serie A`); motor eşleşmesi
+  veritabanındaki küçük harfli değerle (`value`) yapılır.
 - Oda son beş hamleyi (pas ve süre aşımı dahil) `moves` olarak verir, en yenisi
   önce. Online ekran arena düzenindedir: 5×5 rozetli tahta (sahip rengi,
   seçili kutular, cevabı kalmamış kutular "KAPALI"), seçili kutu sayısı, pas

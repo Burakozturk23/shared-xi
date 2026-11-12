@@ -22,7 +22,7 @@ const POPULAR_CLUBS = [11, 631, 31, 281, 985, 148, 762, 405, 29, 379, 1003, 180,
   36, 114, 449, 610, 720, 294, 336, 465, 124, 383].map((id) => "club:" + id).filter((id) => catalog.criteria[id]);
 const POPULAR_LEAGUES = ["Premier League", "LaLiga", "Serie A", "Bundesliga", "Ligue 1", "Süper Lig", "Eredivisie",
   "Liga Portugal", "Primeira Liga", "Scottish Premiership", "Belgian Pro League"].map((label) =>
-  Object.values(catalog.criteria).find((k) => k.type === "league" && k.label === label.toLowerCase())?.id)
+  Object.values(catalog.criteria).find((k) => k.type === "league" && k.value === label.toLowerCase())?.id)
     .filter(Boolean);
 const POPULAR_COUNTRIES = ["Brazil", "Argentina", "France", "Germany", "Spain", "England", "Italy", "Portugal",
   "Netherlands", "Belgium", "Croatia", "Uruguay", "Colombia", "Turkey", "Poland", "Denmark", "Sweden",
@@ -320,8 +320,8 @@ const FIVE_LIMIT = {easy: 3, medium: 4, hard: 5};
 const FIVE_KNOWN = {easy: 2000, medium: 5000, hard: 12000};
 // After three names that fit none of the five clubs, the round is passed.
 const FIVE_MAX_WRONG = 3;
-// Popular clubs plus the online club list; no club repeats within a match.
-const FIVE_POOL = [...new Set([...POPULAR_CLUBS, ...catalog.clubOptions])];
+// Popular clubs plus the best-known online clubs; no club repeats within a match.
+const FIVE_POOL = [...new Set([...POPULAR_CLUBS, ...catalog.gridClubs || catalog.clubOptions])];
 let fiveSeeds = null;
 function fiveRound(r, previous, i) {
   const pool = FIVE_POOL.filter((id) => answers(id).size >= 2); const inPool = new Set(pool);

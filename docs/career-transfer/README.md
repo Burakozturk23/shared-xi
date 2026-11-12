@@ -28,6 +28,29 @@ kariyerde yanlış şıklar rotadaki bir kulüpte oynamış futbolculardır. Kar
 Yarışı cevapları da tur kimliği (`roundToken`) ister. Hiç cevap vermeyen
 oyuncu hiçbir düelloda dereceli ödül almaz (ELO yine işlenir).
 
+Kariyer Yarışı bilinirlik kuralları: kariyerler reytingi 75+ olan ya da en
+bilinen 50 kulüpten (`gridClubs`) birinde oynamış futbolculardan seçilir (Rus
+ve Ukrayna ligi ağırlıklı az bilinen kariyerler girmez; havuz yetmezse tüm
+seviye kullanılır). Eksik kulüp, rotada bir kez geçen bilinen bir kulüp (online
+kulüp listesi) varsa odur; cevap bilinen kulüpse yanlış şıklar da bilinen
+kulüplerden gelir. Kronoloji turları adları birbirinden farklı üç ardışık
+durağı olan kariyerlerden seçilir, böylece "1. dönem / 2. dönem" etiketi
+sırayı ele vermez. Gizemli kariyerde şıklar farklı isimli ve bilinen
+futbolculardır.
+
+Ekran: kronoloji turu kapanınca sunucu cevabı liste olarak gönderir; eski
+ekran onu sayı sanıp çöküyordu (beyaz ekran). Artık doğru sıra "A → B → C"
+olarak gösterilir ve rakibin sıralaması değer olarak karşılaştırılır. Tur
+noktaları yeni maçta sıfırlanır.
+
+Transfer Düellosu seviyeleri katalogdaki `difficulty` alanından değil, hamlenin
+bilinirliğinden gelir (`transferTier`): kolay = reytingi 82+ bir yıldızın online
+kulüp listesindeki bir kulüpten en bilinen 50 kulüpten birine 2005 ve sonrası
+transferi; orta = reytingi 78+ bir futbolcunun en bilinen 50 kulüpten biriyle
+bilinen bir kulüp arasındaki 2000 ve sonrası hamlesi; zor = reytingi 78+ bir
+futbolcunun en az bir bilinen kulüplü hamlesi. Katalogdaki eski seviye
+Middlesbrough → Leicester gibi hamleleri kolay sayıyordu.
+
 Transfer Düellosu soruları: 2 kolay, 2 orta, 1 zor transfer; önce futbolcu,
 sonra onun transferlerinden biri seçilir (çok transferli futbolcular maçı
 doldurmaz). Mümkünse en bilinen 3000 futbolcudan gelir; maçta futbolcu ve kulüp
@@ -81,3 +104,9 @@ flutter run
 Ekonomi normalizer'ı değiştiği için eski Functions'ın yeni alanları silmemesi adına **tüm Functions birlikte** dağıtılmalı; yalnızca yeni callable'ları dağıtmayın. `careerTransferOnline` istemci read/write kapalı kuralları da dağıtılır. Bu çalışma canlı deploy veya main merge yapmaz.
 
 Enerji rollout mevcut güvenlik bayraklarını korur. Bu iki modu ücretli açarken `runtimeConfig/energy/enabled=true`, `percent=100` ve mevcut `sessionModes` listesine `career`,`transfer` eklenir (diğer modları silmeyin). Reklamlar mevcut AdMob SSV/Pro ayarını kullanır; doğrulama olmadan kredi verilmez. Yeni uygulama Functions dağıtılmadan açılırsa hata/yenile ekranı gösterir; eski istemcideki yerel ekonomiyle sunucu ödülü taklit edilmez.
+
+## 2026 yazı taşınmaları
+
+`REVIEWED_SEASON` kariyer durakları ve transferleri (2026-07-01, sezon hassasiyeti) katalogda
+`precision: "season"` taşır. Transfer Düellosu bu sorularda ay göstermez, "2026 · Yaz transferi" yazar;
+açıklama "2026 yaz dönemi" der. Kaynak ve kurallar: `docs/data_platform_v4/current-clubs-2026.md`.

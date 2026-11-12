@@ -7,12 +7,30 @@ gameplay ratings (ManagerRatingService), not externally verified player statisti
 import collections, gzip, hashlib, itertools, json, math, pathlib, random, re, sqlite3, sys, unicodedata
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import fetch_coach_tenures as tenures  # noqa: E402  (club twin groups)
 DB = ROOT / 'assets/runtime/linkball_game_data_v4.sqlite'
 YEAR = 2026  # Versioned rating snapshot; never the client clock.
+CLUB_OPTIONS = 90  # Club choices of every mode, best known first.
+GRID_CLUBS = 50  # Grid axes, Random Grid pairs, Çinko and Random Five: the best known of them.
+LOTO_MIN_RATING = 75  # Loto strip players: known names only (see loto_ok).
+# Çinko country cells: football countries players know (as the bot board).
+CINKO_COUNTRIES = ['Brazil', 'Argentina', 'France', 'Germany', 'Spain', 'England', 'Italy', 'Portugal',
+    'Netherlands', 'Belgium', 'Croatia', 'Uruguay', 'Colombia', 'Turkey', 'Poland', 'Denmark', 'Sweden',
+    'Switzerland', 'Serbia', 'Morocco', 'Senegal', 'Nigeria', 'Mexico', 'Japan', 'Scotland']
 def key(s):
     s = str(s or '').lower().translate(str.maketrans({'ı':'i','ß':'ss','ø':'o','ł':'l','đ':'d'}))
     return ''.join(x for x in unicodedata.normalize('NFKD', s) if x.isalnum())
 def clamp(v,a,b): return min(b,max(a,v))
+# Shown names of league criteria; the value stays the database spelling the
+# engine matches.
+LEAGUE_LABELS = {'premier league': 'Premier League', 'laliga': 'LaLiga', 'la liga': 'LaLiga',
+    'serie a': 'Serie A', 'bundesliga': 'Bundesliga', 'ligue 1': 'Ligue 1', 'süper lig': 'Süper Lig',
+    'eredivisie': 'Eredivisie', 'liga portugal': 'Liga Portugal', '1.lig': '1. Lig'}
+def league_label(s):
+    s = s.strip()
+    return LEAGUE_LABELS.get(s.lower()) or ' '.join(w if any(ch.isupper() or ch.isdigit() for ch in w) else
+        w[:1].upper() + w[1:] for w in s.split())
 def league_score(s):
     s=s.lower()
     for words,score in [('premier league,la liga,laliga,serie a,bundesliga,ligue 1',95),
@@ -121,8 +139,22 @@ def build():
             if key(n) in ['unknown','na','none','']: continue
             members[k].add(i);criteria[k]={'id':k,'type':'country','value':key(n),'label':n}
         for league in p['leagues']:
-            k='league:'+key(league);members[k].add(i);criteria[k]={'id':k,'type':'league','value':league,'label':league}
-    club_keys=sorted((k for k in criteria if k.startswith('club:') and len(members[k])>=20),key=lambda k:(-clubs[k[5:]]['rank'],k))[:90]
+            k='league:'+key(league);members[k].add(i);criteria[k]={'id':k,'type':'league','value':league,'label':league_label(league)}
+    # Club fame from the players: 4 per star (rank <= 300) plus 1 per well-known
+    # player (rank <= 1000). The database's popularity seed left out Real Madrid
+    # and let in Zorya Lugansk or Dundee United. A twin record ("PSG" beside
+    # "Paris Saint-Germain") counts once, as its group's primary.
+    def fame(k):
+        ranks=[players[i]['rank'] for i in members[k]]
+        return 4*sum(r<=300 for r in ranks)+sum(r<=1000 for r in ranks)
+    primary=tenures.primaries({x:{**v,'links':len(members.get('club:'+x,()))} for x,v in clubs.items()})
+    # Reserve and youth sides ("FC Barcelona Atlètic", "Real Madrid Castilla") never count.
+    reserve=re.compile(r'\b(B|II|U\d{2})\b|Atl[eè]tic$|Castilla|Primavera|Reserves?\b|Juvenil|Jong ',re.I)
+    club_keys=sorted((k for k in criteria if k.startswith('club:') and len(members[k])>=20 and
+        primary.get(k[5:],k[5:])==k[5:] and not reserve.search(clubs[k[5:]]['name'])),
+        key=lambda k:(-fame(k),k))[:CLUB_OPTIONS]
+    # Grid boards (and Random Grid pairs) only use the best-known clubs.
+    grid_club_keys=club_keys[:GRID_CLUBS]
     country_keys=sorted((k for k in criteria if k.startswith('country:') and len(members[k])>=40),key=lambda k:(-len(members[k]),k))[:45]
     league_keys=sorted((k for k in criteria if k.startswith('league:') and len(members[k])>=50),key=lambda k:(-len(members[k]),k))[:30]
     # A coach is board-eligible with 15+ players and 5+ of them among the 3000 best known.
@@ -139,8 +171,8 @@ def build():
     known=lambda ids:any(players[i]['rank']<=3000 for i in ids)
     for attempt in range(400000):
         n=plan[len(grids)]
-        axis=coach_axis(rng,n,coach_keys,club_keys) if n else rng.sample(club_keys,3)
-        viable=[k for k in country_keys+club_keys if k not in axis and all(len(members[k]&members[a])>=3 for a in axis)]
+        axis=coach_axis(rng,n,coach_keys,grid_club_keys) if n else rng.sample(grid_club_keys,3)
+        viable=[k for k in country_keys+grid_club_keys if k not in axis and all(len(members[k]&members[a])>=3 for a in axis)]
         if len(viable)<3:continue
         other=rng.sample(viable,3)
         rows,cols=(other,axis) if n and rng.random()<.5 else (axis,other)
@@ -170,13 +202,13 @@ def build():
         cr=criteria[k];p=players[i]
         return cr['value'] in (p['clubs'] if cr['type']=='club' else p['countryKeys'] if cr['type']=='country' else
             p['coaches'] if cr['type']=='coach' else p['leagues'])
-    # Futbol Çinko: 200 boards. Each has 1-2 well-known league cells, 5 country
-    # cells, 4 scarce cells (clubs or countries with 20-60 players, at least 3 of
-    # them among the 12000 best known) and well-known clubs for the rest. Every
-    # cell can be filled with a different player, like the bot board.
-    known=lambda k:sum(1 for i in members[k] if players[i]['rank']<=12000)
-    scarce_keys=sorted(k for k in criteria if (k.startswith('club:') or k.startswith('country:')) and
-        20<=len(members[k])<=60 and known(k)>=3 and k not in club_keys)
+    # Futbol Çinko: 200 boards. Each has 1-2 top-league cells, 5 well-known
+    # country cells and the best-known (Grid) clubs for the rest; no small club
+    # or rare country (they read as unknown). Every cell can be filled with a
+    # different player, like the bot board.
+    cinko_leagues=[k for k in known_leagues if k!='league:'+key('1.lig')]
+    cinko_countries=[k for k in ('country:'+key(x) for x in CINKO_COUNTRIES) if k in country_keys]
+    assert len(cinko_countries)>=18,cinko_countries
     def distinct(ks):
         owner={}
         def place(cell,seen):
@@ -190,17 +222,23 @@ def build():
     crng=random.Random(311027);cinko=[]
     while len(cinko)<200:
         nl=crng.choice([1,2])
-        ks=crng.sample(known_leagues,nl)+crng.sample(country_keys,5)+crng.sample(scarce_keys,4)
-        ks+=crng.sample([k for k in club_keys if k not in ks],25-len(ks));crng.shuffle(ks)
+        ks=crng.sample(cinko_leagues,nl)+crng.sample(cinko_countries,5)
+        ks+=crng.sample([k for k in grid_club_keys if k not in ks],25-len(ks));crng.shuffle(ks)
         if len(set(ks))==25 and distinct(ks):cinko.append({'id':'cinko'+str(len(cinko)),'criteria':ks})
+    # Loto players are shown by name only: well known (rating, which the
+    # database rank alone does not say: Fabio Tricarico ranks above Bernd Leno)
+    # and with a name no other player carries ("Alex", "Diego").
+    name_count=collections.Counter(p['name'] for p in players.values())
+    loto_ok=lambda i:players[i]['rating']>=LOTO_MIN_RATING and name_count[players[i]['name']]==1
     lrng=random.Random(311026);loto=[]
     for tier,limit in [('easy',1500),('medium',4000),('hard',12000)]:
         made=0
         while made<100:
-            ks=lrng.sample(club_keys,8)+lrng.sample(country_keys,4)+lrng.sample(known_leagues,4);lrng.shuffle(ks)
+            # Like Çinko: the best-known clubs, football countries and top leagues only.
+            ks=lrng.sample(grid_club_keys,8)+lrng.sample(cinko_countries,4)+lrng.sample(cinko_leagues,4);lrng.shuffle(ks)
             ids=[]
             for k in ks:
-                opts=sorted(i for i in members[k]-set(ids) if players[i]['rank']<=limit and fits(i,k))
+                opts=sorted(i for i in members[k]-set(ids) if players[i]['rank']<=limit and loto_ok(i) and fits(i,k))
                 if not opts:break
                 ids.append(lrng.choice(opts))
             if len(ids)!=16:continue
@@ -209,10 +247,10 @@ def build():
                 'players':sorted(ids,key=lambda i:hashlib.sha256((tier+str(made)+i).encode()).hexdigest()),
                 'validCellsPerPlayer':round(sum(fit)/16,2)})
             made+=1
-    # Random Five: 300 checked boards of 5 clubs. Each has a player who played
-    # for 4 of them, at least 4 players with 3+ and 20 with 2+ (random sets of
-    # 5 clubs rarely have anyone above 2).
-    keyset=set(club_keys)
+    # Random Five: 300 checked boards of 5 of the best-known (Grid) clubs. Each
+    # has a player who played for 4 of them, at least 4 players with 3+ and 20
+    # with 2+ (random sets of 5 clubs rarely have anyone above 2).
+    keyset=set(grid_club_keys)
     seed_players=sorted(i for i,p in players.items() if len({'club:'+x for x in p['clubs']}&keyset)>=4)
     frng=random.Random(11126);five=[];seen=set()
     def five_counts(ks):
@@ -223,7 +261,7 @@ def build():
     while len(five)<300:
         own=sorted({'club:'+x for x in players[frng.choice(seed_players)]['clubs']}&keyset)
         ks=frng.sample(own,4);base=five_counts(ks)
-        gain=sorted(((sum(1 for i in members[k] if base[i]),k) for k in club_keys if k not in ks),reverse=True)[:5]
+        gain=sorted(((sum(1 for i in members[k] if base[i]),k) for k in grid_club_keys if k not in ks),reverse=True)[:5]
         ks.append(frng.choice(gain)[1]);frng.shuffle(ks)
         n=five_counts(ks);top=max(n.values())
         if tuple(sorted(ks)) in seen or top<4 or sum(v>=3 for v in n.values())<4 or sum(v>=2 for v in n.values())<20:
@@ -231,7 +269,7 @@ def build():
         seen.add(tuple(sorted(ks)));five.append({'id':'five'+str(len(five)),'clubs':ks})
     data={'schema':1,'databaseSha256':hashlib.sha256(DB.read_bytes()).hexdigest(),'ratingYear':YEAR,
       'players':players,'clubs':clubs,'criteria':criteria,'pairs':pairs,'grids':grids,'cinko':cinko,'loto':loto,'five':five,
-      'clubOptions':club_keys,'countryOptions':country_keys,'shadowIds':{'34601':'631002','111961':'1650'}}
+      'clubOptions':club_keys,'gridClubs':grid_club_keys,'countryOptions':country_keys,'shadowIds':{'34601':'631002','111961':'1650'}}
     body=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
     data['version']='pvp-v1-'+hashlib.sha256(body).hexdigest()[:16]
     body=json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
@@ -241,7 +279,7 @@ def build():
       'five':len(five),
       'coaches':len(coach_keys),'coachPairs':sum(1 for x in pairs if x['criteria'][0].startswith('coach:')),
       'gridsByCoachCount':{str(n):sum(1 for g in grids if sum(k.startswith('coach:') for k in g['rows']+g['cols'])==n) for n in range(3)},
-      'cinkoScarceCellsPerBoard':4,'cinkoScarceKeys':len(scarce_keys),
+      'cinkoLeagues':len(cinko_leagues),'cinkoCountries':len(cinko_countries),
       'lotoValidCellsPerPlayer':{t:round(sum(b['validCellsPerPlayer'] for b in loto if b['tier']==t)/100,2)
         for t in ['easy','medium','hard']},
       'relationPolicy':'Same player_clubs/countries as V4 solo bridge, no inferred negative careers',

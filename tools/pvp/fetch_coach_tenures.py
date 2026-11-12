@@ -80,6 +80,9 @@ NOT_SENIOR = re.compile(r'(\b(19|20)\d\d\s*[–-]|\bseason\b|\bcastilla\b|\bjuve
 
 
 OFFSET = 1_000_000_000  # The database repeats some clubs as OFFSET + id ("PSG" = "Paris Saint-Germain").
+# ...except these, which collide with a different club (reviewed list).
+OFFSET_MISMATCH = {x['id'] for x in json.load(open(os.path.join(HERE, '..', 'data_platform_v4',
+    'club_offset_mismatch.json'), encoding='utf-8'))['ids']}
 _TWINS = {}
 
 
@@ -102,7 +105,7 @@ def primaries(clubs):
     by_name = {}
     for i, c in clubs.items():
         base = str(int(i) - OFFSET)
-        if int(i) >= OFFSET and base in clubs:
+        if int(i) >= OFFSET and base in clubs and int(i) not in OFFSET_MISMATCH:
             union(i, base)
         k, ctry = club_key(c['name']), norm(c['country'])
         if len(k) >= 3 and ctry:

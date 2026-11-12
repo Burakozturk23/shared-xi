@@ -5,9 +5,9 @@
   "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
   "database": {
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
-    "bytes": 40415232,
-    "sizeMB": 38.54,
-    "sha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254"
+    "bytes": 41353216,
+    "sizeMB": 39.44,
+    "sha256": "6e62cb1c45f436fbc8b72167b1fdd1104d47ae29a19bea442909d626e48c258d"
   },
   "counts": {
     "players": 36391,
@@ -16,10 +16,10 @@
     "players_with_clubs": 36391,
     "clubs": 4335,
     "career_players": 7000,
-    "transfer_players": 4586,
+    "transfer_players": 4599,
     "search_players": 36391,
     "coaches": 5285,
-    "transfers": 33994
+    "transfers": 34453
   },
   "pruning": {
     "step": "08D.7O",
@@ -41,8 +41,8 @@
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
   },
-  "revision": "v4-2026-10-30.1",
-  "updatedUtc": "2026-10-30",
+  "revision": "v4-2026-11-12.1",
+  "updatedUtc": "2026-11-12T03:00:00+00:00",
   "patches": [
     {
       "id": "v4-2026-09-28.1",
@@ -110,6 +110,34 @@
       "newClubs": 24,
       "newCoaches": 10,
       "newCareerSpells": 200
+    },
+    {
+      "id": "v4-2026-11-11.1",
+      "baseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+      "outputSha256": "868d29f0e04d68df79f2edb45bae19bd8ff0646809966772c2ff10f43c55a6cb",
+      "evidenceSha256": "967953b9b7ed4231405480702e84e678f62f5a9eb62ddc51816bf78caead96a3",
+      "newCareerSpells": 492,
+      "closedLastStops": 33,
+      "newTransfers": 455
+    },
+    {
+      "id": "v4-2026-11-12.1",
+      "baseSha256": "868d29f0e04d68df79f2edb45bae19bd8ff0646809966772c2ff10f43c55a6cb",
+      "outputSha256": "6e62cb1c45f436fbc8b72167b1fdd1104d47ae29a19bea442909d626e48c258d",
+      "evidenceSha256": "9d2b6e6852f19e44dde7a1fc1943544f1b6d992a114b6c3a9c72ae369738eec3",
+      "operations": {
+        "addClub": 1,
+        "addPlayerClub": 28,
+        "addSpell": 36,
+        "addTransfer": 17,
+        "removePlayerClub": 16,
+        "removeSpell": 17,
+        "removeTransfer": 13,
+        "updateSpell": 9
+      },
+      "newClubs": 1,
+      "removedBaseLinks": 1,
+      "newCareerSpells": 19
     }
   ],
   "corrections": [

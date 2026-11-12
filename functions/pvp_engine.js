@@ -95,6 +95,20 @@ function pairOptions(c, mode, side, other) {
   return options.filter((id) => pool.some((p) => side === "left" ? pairFits(mode, p, id, other) :
     pairFits(mode, p, other, id)));
 }
+// Friend Club modes: a choice for a player who pressed ready without one. It
+// pairs with the other side's choice, or, while that is open, has at least
+// one playable pair, so the other side always keeps options.
+function autoChoice(c, mode, side, other, seed) {
+  let options = pairOptions(c, mode, side, other);
+  if (!other) {
+    const pool = pairPool(c, mode);
+    options = options.filter((id) => pool.some((p) => side === "left" ? p.criteria[0] === id ||
+      mode === "club_club" && p.criteria[1] === id : p.criteria[1] === id ||
+      mode === "club_club" && p.criteria[0] === id));
+  }
+  if (!options.length) fail("failed-precondition", "Bu seçimle oynanabilir eşleşme kalmadı; başka seçim yap.");
+  return shuffle(options, hash([seed, "auto", side]))[0];
+}
 function puzzle(c, mode, seed, choices = {}) {
   if (!MODES.includes(mode)) fail("invalid-argument", "Geçersiz mod.");
   if (mode === "club_manager") return managerPool(c, seed);
@@ -124,8 +138,33 @@ function puzzle(c, mode, seed, choices = {}) {
       k.startsWith("coach:"))), seed)[0]);
   }
   if (mode === "cinko" || mode === "loto") return structuredClone(shuffle(c[mode], seed)[0]);
-  // Random Five: a checked board (a 4-club player, 4+ with 3 clubs, 20+ with 2);
-  // older catalogs fall back to five random clubs.
+  // Random Five: one checked board per round (a 4-club player, 4+ with 3 clubs,
+  // 20+ with 2), each new five sharing as few clubs as possible with the earlier
+  // ones; older catalogs fall back to random clubs.
+  if (mode === "random_five") {
+    if (!c.five?.length) {
+      const clubs = shuffle(c.clubOptions, seed);
+      const boards = Array.from({length: FIVE_ROUNDS}, (_, i) => clubs.slice(i * 5 % (clubs.length - 4)).slice(0, 5));
+      return {id: hash(seed + "five"), boards};
+    }
+    const order = shuffle(c.five, seed);
+    // Depth-first in the shuffled order: the first five boards sharing no club
+    // (a bounded search; a greedy pass can paint itself into a corner).
+    let boards = []; let steps = 0;
+    const pick = (from, chosen, seen) => {
+      if (chosen.length === FIVE_ROUNDS) return chosen;
+      for (let i = from; i < order.length && steps < 20000; i++) {
+        steps++;
+        if (order[i].clubs.some((k) => seen.has(k))) continue;
+        const found = pick(i + 1, [...chosen, order[i]], new Set([...seen, ...order[i].clubs]));
+        if (found) return found;
+      }
+      return null;
+    };
+    boards = pick(0, [], new Set()) || [];
+    for (const b of order) if (boards.length < FIVE_ROUNDS && !boards.includes(b)) boards.push(b);
+    return {id: hash(boards.map((b) => b.id)), boards: boards.map((b) => [...b.clubs])};
+  }
   if (c.five?.length) return structuredClone(shuffle(c.five, seed)[0]);
   return {id: hash(seed + "five"), clubs: shuffle(c.clubOptions, seed).slice(0, 5)};
 }
@@ -134,23 +173,32 @@ function hydrate(raw) {
   return {...raw, ready: raw.ready || {}, choices: raw.choices || {}, presence: raw.presence || {},
     scores: raw.scores || {}, owners: raw.owners || {}, used: raw.used || {}, answers: raw.answers || {},
     squads: raw.squads || {}, receipts: raw.receipts || {}, audit: raw.audit || {}, rematch: raw.rematch || {},
-    moveStats: raw.moveStats || {}};
+    moveStats: raw.moveStats || {},
+    // RTDB drops empty lists and maps: the draft and plan keep their shape.
+    ...raw.draft ? {draft: {...raw.draft, picks: raw.draft.picks || {}}} : {},
+    ...raw.plan ? {plan: {...raw.plan, choices: raw.plan.choices || {}}} : {}};
 }
 function start(r, c, time) {
   // Grid Random (randomBoard 1): no fixed rounds; pairs are drawn on the board.
   if (r.mode === "grid_random") r.randomBoard = 1;
-  r.puzzle = r.randomBoard ? {id: hash([r.seed, "board"])} : puzzle(c, r.mode, r.seed, r.choices);
+  r.puzzle = r.randomBoard ? {id: hash([r.seed, "board"])} : r.mode === "club_manager" ? draftPool(c, r.seed) :
+    puzzle(c, r.mode, r.seed, r.choices);
   r.seedId = hash([r.seed, r.puzzle.id, r.dataRevision, r.ruleVersion]);
   r.status = "countdown"; r.startsAt = time + 5000;
   const duration = r.mode === "loto" || r.mode === "club_manager" ? 180000 :
     r.mode === "grid_random" && !r.randomBoard ? 160000 :
-    ["club_club", "club_country", "random_five"].includes(r.mode) ? 90000 : 30 * 45000;
+    r.mode === "random_five" ? FIVE_ROUNDS * FIVE_ANSWER_MS + (FIVE_ROUNDS - 1) * FIVE_REVEAL_MS :
+    ["club_club", "club_country"].includes(r.mode) ? 90000 : 30 * 45000;
   r.endsAt = r.startsAt + duration; r.turnUid = parseInt(hash(r.seed).slice(0, 8), 16) % 2 ? r.host : r.guest;
   r.turnDeadline = r.startsAt + 45000; r.scores = {[r.host]: 0, [r.guest]: 0};
   r.presence = {[r.host]: time, [r.guest]: time};
-  if (r.mode === "random_five") r.fiveRules = 2;
+  if (r.mode === "random_five") {
+    r.fiveRules = 3; r.fiveStarts = [r.startsAt];
+  }
   if (r.mode.startsWith("grid_")) r.gridRules = 2;
-  if (r.mode === "club_manager") r.managerRules = 2;
+  if (r.mode === "club_manager") {
+    r.managerRules = 3; draftStart(r, time);
+  }
   if (r.mode === "loto") r.lotoRules = 2;
   if (r.mode === "cinko") {
     // Moving first is worth about a point in Çinko, so the second player starts with 1.
@@ -165,6 +213,12 @@ const PENALTY = {loto: {lockMs: 3000, maxWrong: 8}, club_club: {lockMs: 2000, ma
   club_country: {lockMs: 2000, maxWrong: 10}, random_five: {lockMs: 2000, maxWrong: 10}};
 // Random Five (rooms started with fiveRules 2): clubs matched -> points; 3+ clubs earn a bonus.
 const FIVE_POINTS = [0, 1, 2, 4, 6, 8];
+// Random Five rounds (fiveRules 3): a new five each round; both players name one
+// player for it, hidden until the round closes (both answered or 25 s). The
+// answers stay open 4 s, then the next five comes in.
+const FIVE_ROUNDS = 5;
+const FIVE_ANSWER_MS = 25000;
+const FIVE_REVEAL_MS = 4000;
 const LOTO_LINE_BONUS = 2;
 const MIN_GAP_MS = 400;
 function guard(r, uid, time) {
@@ -204,18 +258,86 @@ function raceTieBreak(r) {
   }
   return null;
 }
+// Random Five rounds: equal points go to the player with more rounds scored,
+// then the faster answers in all (a timeout counts the full 25 s).
+function fiveTieBreak(r) {
+  const rounds = list(r.answers).filter((a) => a?.revealed);
+  const hits = (uid) => rounds.filter((a) => a[uid]?.points > 0).length;
+  const spent = (uid) => rounds.reduce((sum, a, i) => sum + (a[uid]?.at ? a[uid].at - r.fiveStarts[i] :
+    FIVE_ANSWER_MS), 0);
+  if (hits(r.host) !== hits(r.guest)) return hits(r.host) > hits(r.guest) ? r.host : r.guest;
+  if (spent(r.host) !== spent(r.guest)) return spent(r.host) < spent(r.guest) ? r.host : r.guest;
+  return null;
+}
+function fiveScores(r) {
+  for (const uid of [r.host, r.guest]) {
+    r.scores[uid] = list(r.answers).filter((a) => a?.revealed).reduce((sum, a) => sum + (a[uid]?.points || 0), 0);
+  }
+}
+// Closes the open round once both answered or its 25 s are up, and opens the
+// next five 4 s later; the last round's close ends the match.
+function fiveSync(r, time) {
+  if (r.fiveRules !== 3 || terminal(r) || r.status !== "playing") return;
+  r.fiveStarts = list(r.fiveStarts).length ? list(r.fiveStarts) : [r.startsAt];
+  for (;;) {
+    const i = r.fiveStarts.length - 1; const a = r.answers[i] || {};
+    if (!a.revealed) {
+      const deadline = r.fiveStarts[i] + FIVE_ANSWER_MS;
+      const both = a[r.host] && a[r.guest];
+      if (!both && time < deadline) return;
+      a.revealed = true; a.closedAt = both ? Math.max(a[r.host].at, a[r.guest].at) : deadline;
+      for (const uid of [r.host, r.guest]) a[uid] ||= {timeout: true, points: 0};
+      r.answers[i] = a; fiveScores(r);
+    }
+    if (i === FIVE_ROUNDS - 1) {
+      finish(r, "finished", "Beş tur tamamlandı.", a.closedAt); return;
+    }
+    const next = a.closedAt + FIVE_REVEAL_MS;
+    if (time < next) return;
+    r.fiveStarts.push(next);
+  }
+}
+function fiveMove(c, r, uid, id, input, time) {
+  fiveSync(r, time);
+  if (terminal(r)) fail("failed-precondition", "Maç bitti.");
+  const i = r.fiveStarts.length - 1; const a = r.answers[i] || {};
+  if (a.revealed || input.round !== undefined && Number(input.round) !== i) {
+    fail("failed-precondition", "Bu beşli kapandı; yeni beşli geliyor.");
+  }
+  if (a[uid]) fail("already-exists", "Bu beşli için tahminini yaptın; rakibini bekle.");
+  if (r.used[uid + "__" + id]) fail("already-exists", "Bu futbolcuyu bu maçta zaten yazdın.");
+  const clubs = r.puzzle.boards[i].filter((k) => matches(c, c.players[id], k)).length;
+  const points = FIVE_POINTS[clubs];
+  a[uid] = {playerId: id, clubs, points, at: time}; r.answers[i] = a; r.used[uid + "__" + id] = true;
+  fiveSync(r, time);
+  return {accepted: true, submitted: true, correct: points > 0, points, clubs, round: i};
+}
 function finish(r, status, reason, time, winner) {
   if (terminal(r)) return;
   r.status = status; r.reason = reason; r.finishedAt = time;
   r.winnerUid = winner === undefined ? r.scores[r.host] > r.scores[r.guest] ? r.host :
-    r.scores[r.host] < r.scores[r.guest] ? r.guest : PENALTY[r.mode] ? raceTieBreak(r) :
+    r.scores[r.host] < r.scores[r.guest] ? r.guest : r.fiveRules === 3 ? fiveTieBreak(r) :
+    PENALTY[r.mode] ? raceTieBreak(r) :
     r.gridRules === 2 && (r.mode !== "grid_random" || r.randomBoard) ? gridTieBreak(r) : null : winner;
   if (r.series && ["finished", "forfeit"].includes(status)) {
     r.series.wins ||= {};
     if (r.winnerUid) r.series.wins[r.winnerUid] = (r.series.wins[r.winnerUid] || 0) + 1;
     else r.series.draws = (r.series.draws || 0) + 1;
+    if (r.series.limit > 1) r.series.results = [...r.series.results || [], r.winnerUid || null];
   }
+  if (r.series?.limit > 1) seriesClose(r.series, status);
   r.resultHash = hash([r.seedId, r.scores, r.owners, r.answers, r.squads, r.status, r.reason, r.winnerUid]);
+}
+// Three-game series: the first to two wins takes it; at most three games, draws
+// count as played. A game that never got played (cancelled, expired) ends the series.
+function seriesClose(s, status) {
+  const wins = s.wins || {}; const need = Math.floor(s.limit / 2) + 1;
+  const best = Math.max(0, ...Object.values(wins));
+  s.need = need;
+  s.over = best >= need || s.game >= s.limit || !["finished", "forfeit"].includes(status);
+  if (!s.over) return;
+  const [a, b] = Object.entries(wins).sort(([, x], [, y]) => y - x);
+  s.winner = a && (!b || a[1] > b[1]) ? a[0] : null;
 }
 function randomRound(r, time) {
   return Math.min(4, Math.floor((time - r.startsAt) / 32000));
@@ -249,6 +371,9 @@ function advance(r, time) {
         absent.length === 1 ? [r.host, r.guest].find((u) => u !== absent[0]) : null); return;
   }
   if (r.mode === "grid_random" && !r.randomBoard) revealRounds(r, time);
+  fiveSync(r, Math.min(time, r.endsAt));
+  managerSync(r, time);
+  if (terminal(r)) return;
   if (time >= r.endsAt) {
     // Club Manager (managerRules 2): the side that locked its XI wins when the other did not.
     const locked = r.mode === "club_manager" && r.managerRules === 2 ?
@@ -414,6 +539,264 @@ function simulate(c, r) {
     i]).slice(0, 8), 16) / 4294967296;
   return {powers, goals, xg, penalties: penalties(r, powers, shoot)};
 }
+// ---- Club Manager draft (rooms started with managerRules 3) ----
+// A pool of 36 well-known players (rating 76+); three anchor clubs bring four players
+// each, so playing them together is worth chasing. The players pick in snake order
+// (A B B A A B ...), 15 s a pick; a missed pick takes the best legal player. A side's
+// picks must still fit one formation, which follows from its picks. Then each side
+// picks a game plan and a captain (25 s, hidden), and the server plays the match:
+// chances minute by minute, scorers and assists from the XIs, cards, and penalties
+// after a draw. Everything the clock needs (ratings, positions, links) is stored in
+// the room, so a missed pick or plan needs no catalog.
+const DRAFT_POOL = {GK: 4, DEF: 11, MID: 12, ATT: 9};
+const DRAFT_STARS = {GK: 1, DEF: 2, MID: 3, ATT: 3};
+const DRAFT_PICKS = 22;
+const DRAFT_PICK_MS = 15000;
+const DRAFT_FIRST_PICK_MS = 20000;
+const PLAN_MS = 25000;
+const PLANS = ["attack", "counter", "possession"];
+// Attack beats possession, possession beats counter, counter beats attack.
+const PLAN_BEATS = {attack: "possession", possession: "counter", counter: "attack"};
+// The unit each plan leans on.
+const PLAN_UNIT = {attack: "ATT", counter: "DEF", possession: "MID"};
+function draftLink(c, a, b) {
+  const shared = a.linkClubs.find((x) => b.linkClubs.includes(x));
+  const country = a.countryKeys.some((x) => b.countryKeys.includes(x));
+  const club = shared ? c.clubs[shared]?.name || "" : "";
+  if (shared && country) return [1.45, "both", club];
+  if (shared) return [1, "club", club];
+  if (country) return [.55, "country", a.countries.find((x) => b.countries.includes(x)) || ""];
+  if (a.linkLeagues.some((x) => b.linkLeagues.includes(x))) return [.2, "league", ""];
+  return null;
+}
+function draftPool(c, seed) {
+  const all = Object.values(c.players).filter((p) => p.rating >= 76 && p.rank <= 5000 && DRAFT_POOL[p.position]);
+  const chosen = []; const count = {GK: 0, DEF: 0, MID: 0, ATT: 0};
+  const take = (p) => {
+    if (chosen.includes(p.id) || count[p.position] >= DRAFT_POOL[p.position]) return false;
+    chosen.push(p.id); count[p.position]++; return true;
+  };
+  const anchors = [];
+  for (const k of shuffle(c.gridClubs || c.clubOptions, seed + "anchor")) {
+    if (anchors.length === 3) break;
+    const club = k.slice(5); const group = shuffle(all.filter((p) => p.clubs.includes(club)), seed + k);
+    if (group.length < 4) continue;
+    let n = 0;
+    for (const p of group) if (n < 4 && take(p)) n++;
+    if (n >= 3) anchors.push(k);
+  }
+  for (const pos of Object.keys(DRAFT_POOL)) {
+    const group = all.filter((p) => p.position === pos);
+    const stars = shuffle(group.filter((x) => x.rating >= 85), seed + "star" + pos).slice(0, DRAFT_STARS[pos]);
+    for (const p of stars) take(p);
+    for (const p of shuffle(group, seed + "fill" + pos)) take(p);
+  }
+  if (Object.keys(DRAFT_POOL).some((pos) => count[pos] !== DRAFT_POOL[pos])) {
+    fail("failed-precondition", "Draft havuzu hazırlanamadı.");
+  }
+  const pool = shuffle(chosen, seed + "order");
+  const meta = Object.fromEntries(pool.map((id) => [id, {...player(c, id),
+    rating: Math.round(c.players[id].rating * 10) / 10}]));
+  const links = [];
+  for (let i = 0; i < pool.length; i++) {
+    for (let j = i + 1; j < pool.length; j++) {
+      const l = draftLink(c, c.players[pool[i]], c.players[pool[j]]);
+      if (l) links.push([pool[i], pool[j], ...l]);
+    }
+  }
+  return {id: hash([seed, "draft", pool]), pool, meta, links, anchors: anchors.map((k) => c.criteria[k]),
+    draftRules: 3};
+}
+const counts = (q, ids) => {
+  const n = {GK: 0, DEF: 0, MID: 0, ATT: 0};
+  for (const id of ids) n[q.meta[id].position]++;
+  return n;
+};
+// The formations a set of picks can still become.
+function openFormations(q, ids) {
+  const n = counts(q, ids);
+  return Object.keys(FORMATIONS).filter((f) => Object.keys(n).every((pos) => n[pos] <= FORMATIONS[f][pos]));
+}
+function formationOf(q, ids) {
+  const n = counts(q, ids);
+  return Object.keys(FORMATIONS).find((f) => Object.keys(n).every((pos) => n[pos] === FORMATIONS[f][pos])) || null;
+}
+const draftPicker = (r, k) => {
+  const second = r.draft.first === r.host ? r.guest : r.host;
+  return Math.floor((k + 1) / 2) % 2 === 0 ? r.draft.first : second;
+};
+const taken = (r) => new Set([...list(r.draft.picks[r.host]), ...list(r.draft.picks[r.guest])]);
+function legalPicks(r, uid) {
+  const q = r.puzzle; const mine = list(r.draft.picks[uid]); const gone = taken(r);
+  return q.pool.filter((id) => !gone.has(id) && openFormations(q, [...mine, id]).length);
+}
+function chemistry(q, ids) {
+  const set = new Set(ids); let link = 0; const pairs = [];
+  for (const [a, b, w, type, label] of list(q.links)) {
+    if (set.has(a) && set.has(b)) {
+      link += w; if (type !== "league") pairs.push([a, b, type, label]);
+    }
+  }
+  return {value: clamp(link * .35, 0, 14), score: Math.round(clamp(link * .35, 0, 14) / 14 * 100), pairs};
+}
+function draftStart(r, time) {
+  r.draft = {first: r.turnUid, k: 0, picks: {[r.host]: [], [r.guest]: []}, deadline: r.startsAt + DRAFT_FIRST_PICK_MS};
+  r.turnUid = r.draft.first; r.turnDeadline = r.draft.deadline;
+  r.endsAt = r.startsAt + DRAFT_FIRST_PICK_MS + (DRAFT_PICKS - 1) * DRAFT_PICK_MS + PLAN_MS + 5000;
+}
+function draftPick(r, uid, id, time) {
+  const d = r.draft; d.picks[uid] = [...list(d.picks[uid]), id]; d.k++;
+  (d.log ||= []).push({uid, playerId: id, at: time});
+  if (d.k === DRAFT_PICKS) {
+    r.turnUid = null; r.turnDeadline = null; d.deadline = null;
+    r.plan = {deadline: time + PLAN_MS, choices: {}};
+  } else {
+    r.turnUid = draftPicker(r, d.k); d.deadline = time + DRAFT_PICK_MS; r.turnDeadline = d.deadline;
+  }
+}
+// A missed pick: the best-rated legal player (most links with the picks on a tie).
+function autoPick(r, uid) {
+  const q = r.puzzle; const mine = list(r.draft.picks[uid]);
+  const score = (id) => q.meta[id].rating * 10 + chemistry(q, [...mine, id]).value;
+  return legalPicks(r, uid).sort((a, b) => score(b) - score(a) || a.localeCompare(b))[0];
+}
+const defaultCaptain = (q, ids) => [...ids].sort((a, b) => q.meta[b].rating - q.meta[a].rating ||
+  a.localeCompare(b))[0];
+function managerSync(r, time) {
+  if (r.managerRules !== 3 || terminal(r) || r.status !== "playing") return;
+  while (r.draft && r.draft.k < DRAFT_PICKS && time >= r.draft.deadline) {
+    const uid = r.turnUid; draftPick(r, uid, autoPick(r, uid), r.draft.deadline);
+    r.draft.log[r.draft.log.length - 1].auto = true;
+  }
+  if (r.plan && time >= r.plan.deadline) {
+    for (const uid of [r.host, r.guest]) {
+      r.plan.choices[uid] ||= {plan: null, captain: defaultCaptain(r.puzzle, list(r.draft.picks[uid])), auto: true};
+    }
+    managerPlay(r, r.plan.deadline);
+  }
+}
+function managerMove(r, uid, input, time) {
+  managerSync(r, time);
+  if (terminal(r)) fail("failed-precondition", "Maç bitti.");
+  const q = r.puzzle;
+  if (input.action === "pick") {
+    if (!r.draft || r.draft.k >= DRAFT_PICKS) fail("failed-precondition", "Draft bitti; oyun planını seç.");
+    if (r.turnUid !== uid) fail("permission-denied", "Seçim sırası rakibinde.");
+    const id = String(input.playerId);
+    if (!q.meta[id]) fail("invalid-argument", "Havuzdan bir futbolcu seç.");
+    if (taken(r).has(id)) fail("already-exists", "Bu futbolcu seçildi.");
+    if (!legalPicks(r, uid).includes(id)) fail("failed-precondition", "Bu mevkide yerin kalmadı; başka mevkiden seç.");
+    draftPick(r, uid, id, time);
+    return {accepted: true, picked: id};
+  }
+  if (input.action === "plan") {
+    if (!r.plan) fail("failed-precondition", "Önce draft tamamlanmalı.");
+    if (r.plan.choices[uid]) fail("already-exists", "Planın kilitlendi.");
+    if (!PLANS.includes(input.plan)) fail("invalid-argument", "Bir oyun planı seç.");
+    const mine = list(r.draft.picks[uid]);
+    if (!mine.includes(String(input.captain))) fail("invalid-argument", "Kaptanı kendi kadrondan seç.");
+    r.plan.choices[uid] = {plan: input.plan, captain: String(input.captain)};
+    if (r.plan.choices[r.host] && r.plan.choices[r.guest]) managerPlay(r, time);
+    return {accepted: true};
+  }
+  fail("invalid-argument", "Bu aşamada geçersiz işlem.");
+}
+// Team power: average rating (the captain +10 %), links, then the plan edges as xG.
+function draftPower(q, ids, captain) {
+  const avg = ids.reduce((n, id) => n + q.meta[id].rating * (id === captain ? 1.1 : 1), 0) / ids.length;
+  const chem = chemistry(q, ids);
+  return {power: clamp(avg * .72 + chem.value + 12.8, 40, 98), rating: Math.round(avg * 10) / 10,
+    chem: Math.round(chem.value * 10) / 10, chemistry: chem.score};
+}
+const unitAvg = (q, ids, pos) => {
+  const xs = ids.filter((id) => q.meta[id].position === pos).map((id) => q.meta[id].rating);
+  return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
+};
+// Goal chance per attack: 0.11 plus 0.012 per power point of difference (10 points: about
+// 72 % wins), the plan edge (+0.025 against the plan it beats, -0.015 against the one that
+// beats it) and the plan's unit (+0.001 per rating point above the team average).
+const DRAFT_BASE = .11;
+const DRAFT_PER_POWER = .012;
+function managerPlay(r, time) {
+  const q = r.puzzle; const sides = [r.host, r.guest];
+  const rnd = (...k) => parseInt(hash([r.seed, "match", r.draft.picks, r.plan.choices, ...k]).slice(0, 8), 16) /
+    4294967296;
+  const team = {};
+  for (const uid of sides) {
+    const ids = list(r.draft.picks[uid]); const ch = r.plan.choices[uid];
+    team[uid] = {ids, plan: ch.plan, captain: ch.captain, formation: formationOf(q, ids),
+      ...draftPower(q, ids, ch.captain)};
+  }
+  const events = []; const goals = {}; const xg = {}; const shots = {}; const edge = {};
+  for (const uid of sides) {
+    const other = uid === r.host ? r.guest : r.host; const me = team[uid]; const them = team[other];
+    const planEdge = !me.plan || !them.plan ? 0 : PLAN_BEATS[me.plan] === them.plan ? .025 :
+      PLAN_BEATS[them.plan] === me.plan ? -.015 : 0;
+    const fit = me.plan ? (unitAvg(q, me.ids, PLAN_UNIT[me.plan]) - me.rating) * .001 : 0;
+    edge[uid] = Math.round((planEdge + fit) * 1000) / 1000;
+    const p = clamp(DRAFT_BASE + (me.power - them.power) / 2 * DRAFT_PER_POWER + planEdge + fit, .03, .4);
+    const n = 10 + Math.floor(rnd(uid, "n") * 3);
+    goals[uid] = 0; xg[uid] = Math.round(p * n * 100) / 100; shots[uid] = n;
+    const weight = (id, scoring) => {
+      const m = q.meta[id];
+      const w = scoring ? {GK: 0, DEF: .8, MID: 2.5, ATT: 5}[m.position] : {GK: .1, DEF: 1, MID: 3, ATT: 2}[m.position];
+      return w * (m.rating / 80) ** 2 * (id === me.captain ? 1.3 : 1);
+    };
+    const pick = (ids, x, scoring) => {
+      const ws = ids.map((id) => weight(id, scoring)); let t = x * ws.reduce((a, b) => a + b, 0);
+      for (let i = 0; i < ids.length; i++) if ((t -= ws[i]) <= 0) return ids[i];
+      return ids[ids.length - 1];
+    };
+    for (let i = 0; i < n; i++) {
+      const minute = 1 + Math.floor(rnd(uid, i, "min") * 90);
+      const shooter = pick(me.ids, rnd(uid, i, "who"), true);
+      if (rnd(uid, i, "goal") < p) {
+        goals[uid]++;
+        const helpers = me.ids.filter((id) => id !== shooter);
+        const assist = rnd(uid, i, "assist") < .75 ? pick(helpers, rnd(uid, i, "helper"), false) : null;
+        events.push({minute, uid, type: "goal", playerId: shooter, ...assist ? {assistId: assist} : {}});
+      } else {
+        const keeper = them.ids.find((id) => q.meta[id].position === "GK");
+        const save = rnd(uid, i, "save") < .45;
+        events.push({minute, uid, type: save ? "save" : "miss", playerId: shooter,
+          ...save && keeper ? {keeperId: keeper} : {}});
+      }
+    }
+    const cards = Math.floor(rnd(uid, "cards") * 3.2);
+    for (let i = 0; i < cards; i++) {
+      const outfield = me.ids.filter((id) => q.meta[id].position !== "GK");
+      events.push({minute: 1 + Math.floor(rnd(uid, i, "card") * 90), uid, type: "yellow",
+        playerId: outfield[Math.floor(rnd(uid, i, "booked") * outfield.length)]});
+    }
+  }
+  events.sort((a, b) => a.minute - b.minute || (a.uid === r.host ? -1 : 1));
+  // The score as it stood at the break.
+  const half = {[r.host]: 0, [r.guest]: 0};
+  for (const e of events) if (e.type === "goal" && e.minute <= 45) half[e.uid]++;
+  const mid = (uid) => unitAvg(q, team[uid].ids, "MID") +
+    (team[uid].plan === "possession" ? 4 : team[uid].plan === "counter" ? -4 : 0);
+  const possession = Math.round(clamp(50 + (mid(r.host) - mid(r.guest)) * 1.5, 30, 70));
+  const sim = {rules: 3, goals, xg, shots, half, events, edge,
+    possession: {[r.host]: possession, [r.guest]: 100 - possession},
+    teams: Object.fromEntries(sides.map((uid) => [uid, {formation: team[uid].formation, plan: team[uid].plan,
+      captain: team[uid].captain, power: Math.round(team[uid].power * 10) / 10, rating: team[uid].rating,
+      chem: team[uid].chem, chemistry: team[uid].chemistry}]))};
+  const powers = {[r.host]: team[r.host].power, [r.guest]: team[r.guest].power};
+  if (goals[r.host] === goals[r.guest]) sim.penalties = penalties(r, powers, (uid, i) => rnd("pen", uid, i));
+  // Player of the match: goals and assists, the winning side first, then rating.
+  const winner = sim.penalties ? (sim.penalties[r.host] > sim.penalties[r.guest] ? r.host : r.guest) :
+    goals[r.host] > goals[r.guest] ? r.host : r.guest;
+  const credit = {};
+  for (const e of events) {
+    if (e.type === "goal") credit[e.playerId] = (credit[e.playerId] || 0) + 3;
+    if (e.assistId) credit[e.assistId] = (credit[e.assistId] || 0) + 2;
+    if (e.type === "save") credit[e.keeperId] = (credit[e.keeperId] || 0) + 1;
+  }
+  sim.mvp = [...team[winner].ids].sort((a, b) => (credit[b] || 0) - (credit[a] || 0) ||
+    q.meta[b].rating - q.meta[a].rating || a.localeCompare(b))[0];
+  r.simulation = sim; r.scores = {...goals};
+  finish(r, "finished", sim.penalties ? "Beraberlik penaltılarla bitti." : "Maç tamamlandı.", time, winner);
+}
 // Grid Random board (randomBoard 1), as against the bot: an empty 3x3 board whose
 // three diagonal anchors each get a drawn club pair. The player to move either
 // draws a pair, names a shared player and puts it on a free anchor (the pair
@@ -437,8 +820,11 @@ function deadCells(c, r) {
 // pair per board, three unused answers with a well-known one among them.
 function boardPairs(c, r) {
   const axes = new Set([...Object.values(r.boardRows || {}), ...Object.values(r.boardCols || {})]);
+  // Only the best-known clubs (catalog gridClubs); older catalogs keep every club.
+  const known = c.gridClubs ? new Set(c.gridClubs) : null;
+  const famous = (p) => !known || p.criteria.every((k) => !k.startsWith("club:") || known.has(k));
   const coach = [...axes].some((k) => k.startsWith("coach:"));
-  return pairPool(c, "grid_random").filter((p) => !p.criteria.some((k) => axes.has(k)) &&
+  return pairPool(c, "grid_random").filter((p) => famous(p) && !p.criteria.some((k) => axes.has(k)) &&
     (!coach || !coachPair(p)) && p.answers.filter((id) => !r.used[id]).length >= 3 &&
     p.answers.some((id) => !r.used[id] && c.players[id].rank <= POPULAR_RANK));
 }
@@ -504,6 +890,7 @@ function move(c, r, uid, input, time) {
   }
   if (r.mode === "cinko" && r.cinkoRules === 2) return cinkoMove(c, r, uid, input, time);
   if (r.randomBoard) return boardMove(c, r, uid, input, time);
+  if (r.managerRules === 3) return managerMove(r, uid, input, time);
   if (r.mode === "club_manager") {
     if (input.action !== "squad" || r.squads[uid]) fail("failed-precondition", "Kadro zaten kilitlendi.");
     r.squads[uid] = validateXi(c, r, input);
@@ -533,6 +920,7 @@ function move(c, r, uid, input, time) {
   }
   const id = c.shadowIds?.[String(input.playerId)] || String(input.playerId); const p = c.players[id];
   if (!p) fail("invalid-argument", "Listeden tek bir futbolcu seç.");
+  if (r.fiveRules === 3) return fiveMove(c, r, uid, id, input, time);
   if (PENALTY[r.mode]) guard(r, uid, time);
   const usedKey = r.mode === "grid_random" ? uid + "__" + id : id;
   if (r.used[usedKey]) fail("already-exists", "Bu futbolcu zaten kullanıldı.");
@@ -610,6 +998,12 @@ function move(c, r, uid, input, time) {
     r.puzzle.rounds[0].answers.every((x) => r.used[x])) {
     finish(r, "finished", "Tüm ortak futbolcular bulundu.", time);
   }
+  // Races (Loto, Club modes): when both players used up their wrong moves nobody
+  // can move any more, so the match ends instead of waiting out the clock.
+  if (!correct && PENALTY[r.mode] && [r.host, r.guest].every((u) =>
+    (r.moveStats[u]?.wrong || 0) >= PENALTY[r.mode].maxWrong)) {
+    finish(r, "finished", "İki oyuncunun da yanlış hakkı bitti.", time);
+  }
   return {accepted: true, correct, points, ...lines.length ? {lines} : {}};
 }
 // Board owners with what the board shows: the player of a cell, the criterion of an axis.
@@ -625,8 +1019,8 @@ function view(c, r, uid, time) {
     host: r.host, guest: r.guest || null, names: r.names, myUid: uid, serverNow: time,
     ready: r.ready, choices: r.status === "ready" || done ? r.choices : {}, scores: r.scores,
     startsAt: r.startsAt || null, endsAt: r.endsAt || null, turnUid: r.turnUid || null,
-    turnDeadline: r.turnDeadline || null, owners: namedOwners(c, r.owners), used: r.mode === "grid_random" ? {} :
-        r.used, otherLastSeen: r.presence[other] || null,
+    turnDeadline: r.turnDeadline || null, owners: namedOwners(c, r.owners),
+    used: r.mode === "grid_random" || r.fiveRules === 3 ? {} : r.used, otherLastSeen: r.presence[other] || null,
     profile: r.profile, series: r.series || null, nextRoom: r.nextRoom || null, rematch: r.rematch,
     rankedEligible: r.rankedEligible === true, reward: r.settlement?.[uid] || {status:
         r.playKind === "friend" ? "none" : "pending"}};
@@ -651,7 +1045,29 @@ function view(c, r, uid, time) {
             .sort((a, b) => c.players[a].rank - c.players[b].rank).slice(0, 12).map((id) => player(c, id));
       }
     }
-    if (r.mode === "random_five") {
+    if (r.fiveRules === 3) {
+      const starts = list(r.fiveStarts).length ? list(r.fiveStarts) : [r.startsAt];
+      const i = starts.length - 1; const a = r.answers[i] || {};
+      const answer = (x, board, start) => x?.playerId ? {...player(c, x.playerId), points: x.points, clubs: x.clubs,
+        clubIds: board.filter((k) => matches(c, c.players[x.playerId], k)),
+        second: Math.max(0, Math.floor((x.at - start) / 1000))} : {timeout: true, points: 0, clubs: 0};
+      // The best names of a closed five: most clubs first, then the best known.
+      const best = (board) => [...new Set(board.flatMap((k) => answersOf(c, k)))]
+          .map((id) => [id, board.filter((k) => matches(c, c.players[id], k)).length])
+          .sort((x, y) => y[1] - x[1] || c.players[x[0]].rank - c.players[y[0]].rank).slice(0, 3)
+          .map(([id, n]) => ({...player(c, id), clubs: n, points: FIVE_POINTS[n]}));
+      Object.assign(v, {fiveRules: 3, fivePoints: FIVE_POINTS, round: i, totalRounds: FIVE_ROUNDS,
+        criteria: criteria(q.boards[i]), roundStartsAt: starts[i], roundDeadline: starts[i] + FIVE_ANSWER_MS,
+        roundClosed: !!a.revealed, nextRoundAt: a.revealed && i < FIVE_ROUNDS - 1 ? a.closedAt + FIVE_REVEAL_MS : null,
+        revealMs: FIVE_REVEAL_MS, answerMs: FIVE_ANSWER_MS,
+        // Before the close: only the viewer's own answer, and whether the rival has one.
+        myAnswer: a[uid] && !a.revealed ? answer(a[uid], q.boards[i], starts[i]) : null,
+        rivalAnswered: !!a[other],
+        rounds: starts.map((start, n) => [n, r.answers[n]]).filter(([, x]) => x?.revealed).map(([n, x]) => ({
+          round: n, clubs: criteria(q.boards[n]), best: best(q.boards[n]),
+          answers: {[r.host]: answer(x[r.host], q.boards[n], start), [r.guest]: answer(x[r.guest], q.boards[n], start)},
+        }))});
+    } else if (r.mode === "random_five") {
       v.criteria = criteria(q.clubs);
       if (r.fiveRules === 2) v.fivePoints = FIVE_POINTS;
       const fit = (id) => q.clubs.filter((k) => matches(c, c.players[id], k)).length;
@@ -697,7 +1113,7 @@ function view(c, r, uid, time) {
     if (r.mode === "loto" && r.lotoRules === 2) {
       v.lotoLines = r.lotoLines || {}; v.lineBonus = LOTO_LINE_BONUS;
     }
-    if (PENALTY[r.mode]) {
+    if (PENALTY[r.mode] && r.fiveRules !== 3) {
       // Wrong moves of both players; the lock only for the viewer.
       v.wrongMoves = {[r.host]: r.moveStats[r.host]?.wrong || 0, [r.guest]: r.moveStats[r.guest]?.wrong || 0};
       v.maxWrong = PENALTY[r.mode].maxWrong; v.lockUntil = r.moveStats[uid]?.lockUntil || null;
@@ -721,7 +1137,24 @@ function view(c, r, uid, time) {
         [i, Object.fromEntries(Object.entries(a).map(([k, x]) => [k, x?.playerId ?
           {...x, player: player(c, x.playerId)} : x]))]));
     }
-    if (r.mode === "club_manager") {
+    if (r.managerRules === 3) {
+      const picks = r.draft.picks; const mine = list(picks[uid]); const theirs = list(picks[other]);
+      const phase = r.plan ? "plan" : "draft";
+      Object.assign(v, {managerRules: 3, phase, pool: q.pool.map((id) => q.meta[id]), anchors: q.anchors,
+        // Club and country links of the pool, for "+2 bağ" on each player.
+        poolLinks: list(q.links).filter((l) => l[3] !== "league"),
+        picks: {[r.host]: list(picks[r.host]), [r.guest]: list(picks[r.guest])}, pick: r.draft.k,
+        totalPicks: DRAFT_PICKS, pickDeadline: r.draft.deadline || null, firstPicker: r.draft.first,
+        lastPick: list(r.draft.log).at(-1) || null,
+        legal: phase === "draft" && r.turnUid === uid ? legalPicks(r, uid) : [],
+        formations: {[uid]: formationOf(q, mine) || openFormations(q, mine),
+          [other]: formationOf(q, theirs) || openFormations(q, theirs)},
+        chemistry: {[uid]: chemistry(q, mine), [other]: chemistry(q, theirs)},
+        planDeadline: r.plan?.deadline || null, plans: PLANS,
+        myPlan: r.plan?.choices[uid] || null, rivalPlanned: !!r.plan?.choices[other]});
+      if (done) v.planChoices = r.plan?.choices || null;
+      if (r.simulation) v.simulation = r.simulation;
+    } else if (r.mode === "club_manager") {
       v.budget = q.budget; v.managerRules = r.managerRules || 1;
       v.pool = q.pool.map((id) => ({...player(c, id), rating: c.players[id].rating,
         cost: c.players[id].cost}));
@@ -744,8 +1177,10 @@ function view(c, r, uid, time) {
   return v;
 }
 module.exports = {MODES, RULE, terminal, fail, hash, norm, list, shuffle, matches, player,
-  PENALTY, MIN_GAP_MS, FIVE_POINTS, GRID_RARE_BONUS, LOTO_LINE_BONUS, gridTieBreak,
-  PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions, acceptedFor,
-  FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter,
-  puzzle, hydrate, start, finish, advance, move, view, validateXi, power, simulate};
+  PENALTY, MIN_GAP_MS, FIVE_POINTS, FIVE_ROUNDS, FIVE_ANSWER_MS, FIVE_REVEAL_MS, GRID_RARE_BONUS,
+  LOTO_LINE_BONUS, gridTieBreak,
+  PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions, autoChoice, acceptedFor,
+  FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter, DRAFT_PICKS, DRAFT_PICK_MS, PLAN_MS, PLANS, PLAN_BEATS,
+  draftPool, legalPicks, formationOf, chemistry, managerPlay, DRAFT_BASE, DRAFT_PER_POWER,
+  puzzle, hydrate, start, finish, seriesClose, advance, move, view, validateXi, power, simulate};
 Object.defineProperty(module.exports, "catalog", {enumerable: true, get: loadCatalog});

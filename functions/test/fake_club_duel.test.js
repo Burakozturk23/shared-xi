@@ -147,3 +147,30 @@ test("ON08: once both answered, the round closes and the next starts 2 s later",
   assert.equal(v.round, 1); assert.equal(v.startsAt, bank.startedAt + 4500);
   assert.equal(v.deadline, bank.startedAt + 14500);
 });
+test("Fake Club Duel: early rounds show known careers, people come up evenly, no coached club is the fake", () => {
+  const P = require("../pvp_engine").catalog; const known = new Set(P.clubOptions.map((k) => Number(k.slice(5))));
+  const byId = new Map(catalog.questions.map((q) => [q.questionId, q])); const seen = new Map();
+  for (let i = 0; i < 200; i++) {
+    for (const x of questions(mode, "fair" + i, {dataEnabled: true})) {
+      const q = byId.get(x.id); seen.set(q.playerId, (seen.get(q.playerId) || 0) + 1);
+      const need = {easy: 2, normal: 2, hard: 1, legend: 0}[q.difficulty];
+      assert.ok(q.realClubIds.filter((c) => known.has(c)).length >= need, q.player.name + " " + q.difficulty);
+    }
+  }
+  // Ferguson and Löw have four times the questions of most; they no longer come up four times as often.
+  // People with no club on the online list (Abdullah Avcı) only fit the last round and come up less
+  // by design; they are compared on their own, the rest among themselves.
+  const early = new Set(catalog.questions.filter((q) => q.difficulty === "easy" &&
+    q.realClubIds.filter((c) => known.has(c)).length >= 2).map((q) => q.playerId));
+  const counts = [...seen].filter(([id]) => early.has(id)).map(([, n]) => n).sort((a, b) => b - a);
+  assert.ok(counts.length >= 20 && counts[0] < counts[counts.length - 1] * 8, JSON.stringify(counts));
+  assert.ok(catalog.questions.every((q) => seen.has(q.playerId)), "everyone comes up");
+  // A club the person coached never is the fake ("Ancelotti never played for Napoli" reads as a trap).
+  const napoli = catalog.questions.filter((q) => q.player.name === "Carlo Ancelotti" &&
+    q.options.find((o) => o.id === q.fakeClubId).name === "Napoli");
+  assert.equal(napoli.length, 0);
+  // Club ids are real: Farfán never played for Universitatea Craiova (an id collision).
+  for (const q of catalog.questions.filter((x) => x.player.name === "Jefferson Farfán")) {
+    assert.ok(q.options.every((o) => o.name !== "Universitatea Craiova"));
+  }
+});

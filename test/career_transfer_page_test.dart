@@ -17,7 +17,12 @@ class FakePuzzle extends CareerTransferService {
     this.active = true,
     this.extra = const {},
     this.question,
+    this.revealAnswer,
+    this.rivalAnswer,
   });
+
+  /// The revealed answer and the rival's (an order round reveals a list).
+  final Object? revealAnswer, rivalAnswer;
   final String mode;
   final Map<String, dynamic> extra;
 
@@ -118,10 +123,11 @@ class FakePuzzle extends CareerTransferService {
       'theirs': {'score': 0},
       'submitted': false,
       if (phase == 'reveal') ...{
-        'reveal': 1,
-        'opponentAnswer': 2,
+        'reveal': revealAnswer ?? 1,
+        'opponentAnswer': rivalAnswer ?? 2,
         'correct': false,
-        'explanation': 'Cristiano Ronaldo · 2021-08-31 · 36 yaşında',
+        if (revealAnswer == null)
+          'explanation': 'Cristiano Ronaldo · 2021-08-31 · 36 yaşında',
       },
       'question': question != null
           ? question!
@@ -613,6 +619,45 @@ void main() {
     expect(t.takeException(), isNull);
     await t.pumpWidget(const SizedBox());
   });
+  testWidgets(
+    'Career Race: a closed order round shows the right order (no white screen)',
+    (t) async {
+      final f = FakePuzzle(
+        'career_race',
+        phase: 'reveal',
+        revealAnswer: ['a', 'b', 'c'],
+        rivalAnswer: ['a', 'b', 'c'],
+        question: {
+          'kind': 'order',
+          'difficulty': 'normal',
+          'player': {'name': 'Cristiano Ronaldo'},
+          'options': [
+            {'id': 'b', 'name': 'Real Madrid'},
+            {'id': 'a', 'name': 'Manchester United'},
+            {'id': 'c', 'name': 'Juventus'},
+          ],
+        },
+      );
+      await mount(
+        t,
+        CareerTransferOnlinePage(mode: 'career_race', ranked: true, service: f),
+      );
+      expect(t.takeException(), isNull);
+      expect(find.byType(ErrorWidget), findsNothing);
+      final rival = find.text('Rakip de bildi');
+      await t.scrollUntilVisible(
+        rival,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(rival, findsOneWidget);
+      expect(
+        find.textContaining('Manchester United → Real Madrid → Juventus'),
+        findsOneWidget,
+      );
+      await t.pumpWidget(const SizedBox());
+    },
+  );
   testWidgets(
     'Career Race: the mystery career shows the route and four players',
     (t) async {

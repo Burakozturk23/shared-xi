@@ -74,13 +74,13 @@ extension OnlinePlayModeX on OnlinePlayMode {
       case OnlinePlayMode.gridReverse:
         return 'Oyuncular hazır · ortak nokta';
       case OnlinePlayMode.randomFive:
-        return '5 kulüp · 90 sn puan yarışı';
+        return '5 tur · her turda yeni beşli, tek tahmin';
       case OnlinePlayMode.cinko:
         return '5×5 · satır/sütun çinko';
       case OnlinePlayMode.loto:
         return '4×4 kriter · 16 oyuncu · 3 dk maç';
       case OnlinePlayMode.clubManager:
-        return 'Bütçe · 11 kur · kafa kafaya simülasyon';
+        return 'Draft · 11 kur · canlı maç simülasyonu';
     }
   }
 
