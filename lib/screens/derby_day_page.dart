@@ -1,3 +1,4 @@
+import '../widgets/story_support_panel.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -192,7 +193,7 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
   List<Widget> _intro(DerbyDayController c) {
     final t=c.active!;
     return [_hero('${t.text('country')} · ${t.text('city')}',t.text('title'),t.text('intro')),
-      const SizedBox(height:20),PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(_icon(t.mechanic),size:32),const SizedBox(height:12),Text(t.label,style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:10),const Text('Bir görev, bir pasaport damgası. Ücretsiz ipucu ve sınırsız deneme. İlerleme ve ödül bağlantı olduğunda doğrulanır.')])),
+      const SizedBox(height:20),PitchPanel(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(_icon(t.mechanic),size:32),const SizedBox(height:12),Text(t.label,style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:10),const Text('Bir görev, bir pasaport damgası. İsteğe bağlı destek ve sınırsız deneme. İlerleme ve ödül bağlantı olduğunda doğrulanır.')])),
       const SizedBox(height:20),FilledButton.icon(key:const ValueKey('derby-start'),onPressed:c.busy?null:(){_startWithEnergy();_top();},icon:const Icon(Icons.play_arrow),label:const Text('Derbiye başla'))];
   }
   Widget _scene(DerbyDayController c) {
@@ -225,6 +226,9 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
         for(final o in t.options) Padding(padding:const EdgeInsets.only(bottom:10),child:Semantics(selected:c.answers.contains(o['id']),button:true,
           child:PitchRow(key:ValueKey('option-${o['id']}'),title:o['label'] as String,icon:c.answers.contains(o['id'])?Icons.radio_button_checked:Icons.radio_button_off,highlight:c.answers.contains(o['id']),trailing:const SizedBox.shrink(),onTap:c.busy?null:()=>c.choose(o['id'] as String)))),
       ],
+      StorySupportPanel(mode: 'derby_day', targetId: t.id, disabled: c.busy,
+        knownBasic: c.hintOpen ? t.text('hint') : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       const SizedBox(height:12),TextButton.icon(key:const ValueKey('derby-hint'),onPressed:c.hint,icon:const Icon(Icons.lightbulb_outline),label:const Text('Ücretsiz ipucu')),
       if(c.hintOpen) PitchPanel(child:Text(t.text('hint'))),
       if(c.hints.containsKey(t.id)) Padding(padding:const EdgeInsets.only(top:12),child:PitchPanel(child:Text(derbyMap(c.hints[t.id])['text']?.toString()??''))),
@@ -235,6 +239,7 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
           actions:[TextButton(onPressed:()=>Navigator.pop(dialog,false),child:const Text('Vazgeç')),FilledButton(onPressed:()=>Navigator.pop(dialog,true),child:const Text('Aç'))]));
         if(yes==true&&mounted&&identical(c,_c)&&c.activeId==taskId) await c.buyHint(maxPrice:price);
       },child:Text(c.pro?'Pro · Ek yardım':'Ek yardım · 6 Coin')),
+      ])),
       const SizedBox(height:14),FilledButton(key:const ValueKey('derby-submit'),onPressed:c.busy||!c.canSubmit?null:()async{await c.submit();if(mounted&&c.phase=='result')_top();},child:Text(c.busy?'Doğrulanıyor…':'Cevabı kontrol et')),
     ];
   }
@@ -260,7 +265,9 @@ class _DerbyDayPageState extends State<DerbyDayPage> {
   }
   List<Widget> _result(DerbyDayController c) {
     final t=c.active!,r=derbyMap(c.results[t.id]),reward=derbyMap(c.rewards[t.id]),stamp=derbyMap(c.stamps[t.id]);
-    return [_hero('PASAPORT DAMGASI AÇILDI',t.text('title'),'${t.text('country')} · ${t.text('city')}',footer:Text('${_date((stamp['earnedAt'] as num?)?.toInt()??0)} · ${c.stampCount}/48',style:const TextStyle(color:Color(0xFFBDEA84)))),
+    return [
+      StorySupportPanel(mode: 'derby_day', targetId: t.id, resultOnly: true, legacy: const SizedBox.shrink()),
+_hero('PASAPORT DAMGASI AÇILDI',t.text('title'),'${t.text('country')} · ${t.text('city')}',footer:Text('${_date((stamp['earnedAt'] as num?)?.toInt()??0)} · ${c.stampCount}/48',style:const TextStyle(color:Color(0xFFBDEA84)))),
       if(t.mechanic=='legend') ...[const SizedBox(height:16),Center(child:PlayerPortrait(playerId:(r['playerId'] as num?)?.toInt()??-1,size:88,fallback:CircleAvatar(radius:44,child:Text((r['answer']?.toString()??'?').split(' ').where((s)=>s.isNotEmpty).map((s)=>s.characters.first).take(2).join()))))],
       const SizedBox(height:20),PitchPanel(key:const ValueKey('derby-result'),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
         const Icon(Icons.verified_outlined,size:40),const SizedBox(height:12),Text(r['period']?.toString()??'',style:Theme.of(context).textTheme.labelLarge),const SizedBox(height:12),

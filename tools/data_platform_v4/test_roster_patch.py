@@ -21,7 +21,9 @@ class RosterPatchTests(unittest.TestCase):
     def test_all_accepted_links_exist_with_identity_evidence(self):
         evidence=load_snapshot(SNAPSHOT)
         with sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite') as c:
-            additions=[r for r in evidence['rows'] if r['status']=='add']
+            # Links the 2026-11-12 Wikipedia review showed to be another player with the same name.
+            removed={(x['playerId'],op['clubId']) for x in json.loads((ROOT/'tools/data_platform_v4/patches/wikipedia-moves-2026-11-12.json').read_text(encoding='utf-8'))['players'] for op in x['ops'] if op['op']=='removePlayerClub'}
+            additions=[r for r in evidence['rows'] if r['status']=='add' and (r['playerId'],r['clubId']) not in removed]
             self.assertGreater(len(additions),0)
             for r in additions:
                 self.assertEqual(c.execute('SELECT p.name,pr.birth_year FROM players p JOIN profiles pr ON pr.player_id=p.id WHERE p.id=?',(r['playerId'],)).fetchone(),(r['canonicalName'],r['birthYear']))
@@ -29,7 +31,7 @@ class RosterPatchTests(unittest.TestCase):
             # Only existing identities: no new entities or fabricated career events.
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE source = 'v4'").fetchone()[0],30135)
             self.assertEqual(c.execute('SELECT COUNT(*) FROM clubs').fetchone()[0],4311 + sum(r.get('newClubs', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0],33994)
+            self.assertEqual(c.execute("SELECT COUNT(*) FROM transfers WHERE trust!='REVIEWED_SEASON'").fetchone()[0],33992)  # 2 loan returns removed in v4-2026-11-12.1
             self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0],37966 + sum(r.get('newCareerSpells', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
             self.assertEqual(
                 c.execute(
@@ -39,10 +41,17 @@ class RosterPatchTests(unittest.TestCase):
                     "'reviewed:legend-portraits:2026-10-01',"
                     "'reviewed:season-portraits:2026-10-01',"
                     "'reviewed:portrait-audit:2026-10-04',"
-                    "'reviewed:avatar-careers:2026-10-05'"
+                    "'reviewed:avatar-careers:2026-10-05',"
+                    "'reviewed:summer-2026:2026-11-12'"
                     ")"
                 ).fetchone()[0],
-                165563 + len(additions),
+                165563 + len(additions)
+                # Placeholder clubs (Transfermarkt "without club") removed later.
+                - sum(c['removedLinks'] for c in json.loads(
+                    (ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('corrections', []))
+                # Base links a reviewed correction removed (Fekir's Al Jazira stored as Craiova).
+                - sum(r.get('removedBaseLinks', 0) for r in json.loads(
+                    (ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])),
             )
             for r in evidence['rows']:
                 if r['status'] in ('review','conflicting_rosters') and r.get('playerId'):

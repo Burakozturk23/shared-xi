@@ -1,4 +1,5 @@
 import 'journey_passport_page.dart';
+import '../services/journey_v2_store.dart';
 import 'package:flutter/material.dart';
 import '../app/route_appearance.dart';
 import '../data/player_journey_chapters.dart';
@@ -16,7 +17,7 @@ class PlayerJourneyChapterListPage extends StatelessWidget {
         const SizedBox(height: 8), const Text('Bir bölüm seç, futbolcuların yolculuklarını adım adım çöz.'),
       ])),
       const SizedBox(height: 16),
-      PitchRow(title: 'Kariyer Pasaportu', subtitle: '40 damga · 5 rozet · Profil vitrinin', icon: Icons.auto_awesome, highlight: true,
+      PitchRow(title: 'Kariyer Pasaportu', subtitle: '$journeyCareerCount damga · 5 rozet · Profil vitrinin', icon: Icons.auto_awesome, highlight: true,
         onTap: () => Navigator.of(context).push(LinkballRoute(builder: (_) => const JourneyPassportPage()))),
       const SizedBox(height: 20),
       for (final chapter in playerJourneyChapters) Padding(padding: const EdgeInsets.only(bottom: 12), child: PitchRow(

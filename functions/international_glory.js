@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/international_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, matches: [...baseCatalog.matches, ...expansion.international]};
 const matches = Object.fromEntries(catalog.matches.map((m) => [m.id, m]));
 const stateOf = (raw) => ({completed: {}, hints: {}, rewards: {}, ...raw});
@@ -15,8 +16,9 @@ function accepts(match, answers) {
   return Array.isArray(answers) && answers.length === match.answerKeys.length &&
     answers.every((id, i) => typeof id === "string" && id === match.answerKeys[i]);
 }
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("internationalGloryState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("internationalGloryState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function accrue(s) {
     const earn = (id, coins, xp) => {
@@ -29,6 +31,9 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     for (const milestone of catalog.economy.milestones) {
       if (count >= milestone.count) earn("milestone_" + milestone.count, milestone.coins, milestone.xp);
     }
+    // Whole catalog (base + expansion): its own receipt, old milestones untouched.
+    const final = Finals.FINALS.international_glory;
+    if (count === catalog.matches.length) earn(Finals.KEY, final.coins, final.xp);
     return s;
   }
   async function reconcile(uid) {
@@ -55,6 +60,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     const results = Object.fromEntries(Object.keys(s.completed).filter((id) => Object.hasOwn(matches, id))
         .map((id) => [id, matches[id].result]));
     return {version: catalog.version, completed: s.completed, rewards: s.rewards, results,
+      expansionFinal: Finals.view("international_glory", s.rewards),
       rewardEligible: eligible, pro: eligible && await isPro(uid), hints: Object.fromEntries(
           Object.keys(s.hints).filter((id) => Object.hasOwn(matches, id)).map((id) => [id, help(matches[id])]))};
   }
@@ -63,7 +69,12 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
       throw new RewardError("failed-precondition", "International Glory içeriğini güncelle.");
     }
     const match = matchOf(input.matchId);
-    if (!accepts(match, input.answers)) return {correct: false};
+    await attempts.before(uid, "international_glory", match.id);
+    if (!accepts(match, input.answers)) {
+      await attempts.wrong(uid, "international_glory", match.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "international_glory", match.id);
     await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       s.completed[match.id] ||= now();
@@ -82,6 +93,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   async function hint(uid, input, eligible = true) {
     if (input.version !== catalog.version) throw new RewardError("failed-precondition", "İçeriği güncelle.");
     const m = matchOf(input.matchId);
+    await documentRef?.guardHint?.(uid, m.id);
     if (!eligible) throw new RewardError("permission-denied", "Ek yardım için Google hesabına bağlan.");
     const s = await get(uid);
     if (!s.hints[m.id]) {

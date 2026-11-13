@@ -5,9 +5,9 @@
   "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
   "database": {
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
-    "bytes": 43065344,
-    "sizeMB": 41.07,
-    "sha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030"
+    "bytes": 40517632,
+    "sizeMB": 38.64,
+    "sha256": "901c0eeec0252e2a089b2c162c202862867aa7f640a9cc976561e706ba8c1141"
   },
   "counts": {
     "players": 36391,
@@ -16,10 +16,10 @@
     "players_with_clubs": 36391,
     "clubs": 4335,
     "career_players": 7000,
-    "transfer_players": 4586,
+    "transfer_players": 4599,
     "search_players": 36391,
     "coaches": 5285,
-    "transfers": 33994
+    "transfers": 34453
   },
   "pruning": {
     "step": "08D.7O",
@@ -41,8 +41,8 @@
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
   },
-  "revision": "v4-2026-10-05.1",
-  "updatedUtc": "2026-10-05",
+  "revision": "v4-2026-11-12.2",
+  "updatedUtc": "2026-11-12",
   "patches": [
     {
       "id": "v4-2026-09-28.1",
@@ -110,6 +110,92 @@
       "newClubs": 24,
       "newCoaches": 10,
       "newCareerSpells": 200
+    },
+    {
+      "id": "v4-2026-11-11.1",
+      "baseSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+      "outputSha256": "868d29f0e04d68df79f2edb45bae19bd8ff0646809966772c2ff10f43c55a6cb",
+      "evidenceSha256": "967953b9b7ed4231405480702e84e678f62f5a9eb62ddc51816bf78caead96a3",
+      "newCareerSpells": 492,
+      "closedLastStops": 33,
+      "newTransfers": 455
+    },
+    {
+      "id": "v4-2026-11-12.1",
+      "baseSha256": "868d29f0e04d68df79f2edb45bae19bd8ff0646809966772c2ff10f43c55a6cb",
+      "outputSha256": "6e62cb1c45f436fbc8b72167b1fdd1104d47ae29a19bea442909d626e48c258d",
+      "evidenceSha256": "9d2b6e6852f19e44dde7a1fc1943544f1b6d992a114b6c3a9c72ae369738eec3",
+      "operations": {
+        "addClub": 1,
+        "addPlayerClub": 28,
+        "addSpell": 36,
+        "addTransfer": 17,
+        "removePlayerClub": 16,
+        "removeSpell": 17,
+        "removeTransfer": 13,
+        "updateSpell": 9
+      },
+      "newClubs": 1,
+      "removedBaseLinks": 1,
+      "newCareerSpells": 19
+    }
+  ],
+  "corrections": [
+    {
+      "id": "v4-2026-10-30.1",
+      "baseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
+      "outputSha256": "ed0c4cf31e17402f0de324ad9dba461ed14d4cd2c077e147d4604e9c2a759254",
+      "policy": "placeholder_clubs_v1",
+      "clubs": [
+        515
+      ],
+      "removedLinks": 11135,
+      "players": 36391
+    },
+    {
+      "id": "v4-2026-11-12.2",
+      "baseSha256": "6e62cb1c45f436fbc8b72167b1fdd1104d47ae29a19bea442909d626e48c258d",
+      "outputSha256": "901c0eeec0252e2a089b2c162c202862867aa7f640a9cc976561e706ba8c1141",
+      "policy": "club_id_collisions_v1",
+      "movedLinks": 809,
+      "removedLinks": 70,
+      "byPlainClub": {
+        "119": 35,
+        "208": 58,
+        "663": 54,
+        "829": 52,
+        "1037": 30,
+        "1076": 19,
+        "1450": 21,
+        "2524": 30,
+        "2573": 32,
+        "2730": 16,
+        "3342": 21,
+        "3698": 37,
+        "4131": 12,
+        "4720": 15,
+        "4812": 7,
+        "5223": 19,
+        "6028": 10,
+        "6105": 14,
+        "6335": 22,
+        "6603": 26,
+        "10301": 18,
+        "10625": 21,
+        "13950": 12,
+        "14933": 37,
+        "17482": 13,
+        "17584": 14,
+        "21283": 17,
+        "22220": 22,
+        "24971": 15,
+        "33783": 13,
+        "39805": 47,
+        "45193": 5,
+        "45457": 38,
+        "49425": 6,
+        "118989": 1
+      }
     }
   ]
 }

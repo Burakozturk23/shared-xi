@@ -7,6 +7,7 @@ import '../models/manager_tactics.dart';
 import '../services/manager_career_store.dart';
 import '../services/manager_match_service.dart';
 import '../services/manager_opponent_service.dart';
+import '../widgets/club_badge.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -98,11 +99,30 @@ class _ClubManagerPrematchPageState extends State<ClubManagerPrematchPage> {
               ],
             ),
             const SizedBox(height: 16),
-            Text(
-              opponent.name,
-              style: Theme.of(context).textTheme.headlineMedium,
+            Row(
+              children: [
+                if (opponent.club case final club?) ...[
+                  ClubBadge(club: club.club, size: 44),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Text(
+                    opponent.name,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
+            // A real club: its league and the known players it is rated by.
+            if (opponent.club case final club?) ...[
+              Text(
+                '${club.league} · tüm zamanların yıldızları: '
+                '${club.forwards.take(3).join(', ')}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 6),
+            ],
             Text(opponent.style.blurb),
             const SizedBox(height: 14),
             ManagerMetrics(
@@ -195,12 +215,26 @@ class _ClubManagerPrematchPageState extends State<ClubManagerPrematchPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Rakibin tarzı: ${opponent.style.label}. '
-                    'Taktik, takım gücü ve şans birlikte sonucu belirler.',
+                    'Plan etkisi: ${_effect(matchup) >= 0 ? '+' : '−'}%${_effect(matchup).abs()} güç',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: matchup >= 1.02
+                          ? PitchColors.of(context).success
+                          : matchup <= .96
+                          ? PitchColors.of(context).error
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('${opponent.style.label}: ${opponent.style.advice}'),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Devre arasında ikinci yarı için bir karar daha vereceksin.',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Galibiyet primi +${widget.difficulty.winBonusLink} LINK',
+                    'Galibiyet +${widget.difficulty.winBonusLink} · '
+                    'beraberlik +${widget.difficulty.drawBonusLink} LINK',
                     style: TextStyle(color: PitchColors.of(context).accent),
                   ),
                 ],
@@ -221,6 +255,10 @@ class _ClubManagerPrematchPageState extends State<ClubManagerPrematchPage> {
       ),
     );
   }
+
+  /// Tactics and matchup against this opponent, as whole power percent.
+  int _effect(double matchup) =>
+      ((_tactics.powerMultiplier() * matchup - 1) * 100).round();
 
   Widget _slider(
     String label,

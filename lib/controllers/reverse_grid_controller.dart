@@ -7,7 +7,6 @@ import '../data/popular_clubs_pool.dart';
 import '../models/grid_club_pool.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../utils/country_names.dart';
-import '../data/grid_country_pool.dart';
 import '../models/club.dart';
 import '../models/grid_criterion.dart';
 import '../models/player.dart';

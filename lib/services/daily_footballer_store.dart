@@ -11,14 +11,33 @@ abstract interface class DailyFootballerStore {
 }
 
 class LocalDailyFootballerStore implements DailyFootballerStore {
+  LocalDailyFootballerStore({this.userId, this.currentUser});
+  final String? userId;
+  final String? Function()? currentUser;
+  String get scopedKey => userId == null ? key : '$key.user.$userId';
+  void _check() {
+    if (currentUser != null && userId != currentUser!()) throw StateError('Hesap değişti. Ekranı yeniden aç.');
+  }
   static const key = 'linkball.dailyFootballer.round.v1';
   @override
-  Future<String?> read() async => (await SharedPreferences.getInstance()).getString(key);
+  Future<String?> read() async {
+    final prefs = await SharedPreferences.getInstance(); _check();
+    final scoped = prefs.getString(scopedKey);
+    if (scoped != null || userId == null) return scoped;
+    final owner = prefs.getString('$key.migratedOwner'); final old = prefs.getString(key);
+    if (old == null || owner != null && owner != userId) return null;
+    if (!await prefs.setString('$key.migratedOwner', userId!)) throw StateError('Kayıt taşınamadı.');
+    _check();
+    if (!await prefs.setString(scopedKey, old)) throw StateError('Kayıt taşınamadı.');
+    _check(); return old;
+  }
   @override
   Future<void> write(String value) async {
-    if (!await (await SharedPreferences.getInstance()).setString(key, value)) {
+    final prefs = await SharedPreferences.getInstance(); _check();
+    if (!await prefs.setString(scopedKey, value)) {
       throw StateError('İlerlemen kaydedilemedi. Tekrar dene.');
     }
+    _check();
   }
 }
 

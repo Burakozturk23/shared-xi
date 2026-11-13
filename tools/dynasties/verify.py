@@ -43,6 +43,6 @@ e=private['economy']
 assert 32*e['task']['coins']+sum(m['coins'] for m in e['milestones'])==456
 assert 32*e['task']['xp']+sum(m['xp'] for m in e['milestones'])==1015
 assert [m['count'] for m in e['milestones']]==[4,8,12,16]
-# No old route can reach the stale named-answer pack.
-assert 'StoryJourneyPage' not in (ROOT/'lib/screens/dynasties_part_selection_page.dart').read_text()
+# No old route can reach the stale named-answer pack (the old part selection page is gone).
+assert not (ROOT/'lib/screens/dynasties_part_selection_page.dart').exists()
 print('Dynasties verified: 16 eras, 32 tasks, 5 mechanics, private answers, 456 Coin / 1015 XP.')

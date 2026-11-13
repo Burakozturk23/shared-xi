@@ -1,2 +1,0 @@
--r requirements.txt
-kagglehub==1.0.3

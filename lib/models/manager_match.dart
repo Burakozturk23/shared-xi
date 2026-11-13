@@ -1,3 +1,5 @@
+import 'manager_tactics.dart';
+
 class ManagerMatchEvent {
   final int minute;
   final String text;
@@ -62,6 +64,10 @@ class ManagerMatchResult {
   final String? opponentStyle;
   final String? tacticsSummary;
 
+  /// Half-time score from the user's side and the decision taken then.
+  final int halfTimeUser, halfTimeOpponent;
+  final ManagerHalftimePlan halftime;
+
   const ManagerMatchResult({
     this.userIsHome = true,
     required this.homeName,
@@ -77,6 +83,9 @@ class ManagerMatchResult {
     this.opponentLeague,
     this.opponentStyle,
     this.tacticsSummary,
+    this.halfTimeUser = 0,
+    this.halfTimeOpponent = 0,
+    this.halftime = ManagerHalftimePlan.keep,
   });
 
   int get userGoals => userIsHome ? stats.goalsHome : stats.goalsAway;

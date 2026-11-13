@@ -1,6 +1,5 @@
 import '../models/player_journey.dart';
 import '../utils/career_overlap.dart';
-import 'player_journeys.dart'; // henryJourney
 
 // ── Andrea Pirlo ─────────────────────────────────────────────
 

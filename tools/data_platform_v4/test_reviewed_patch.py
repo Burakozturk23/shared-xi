@@ -1,3 +1,4 @@
+from contextlib import closing
 import contextlib
 import io
 import json
@@ -10,7 +11,7 @@ from apply_reviewed_patch import ROOT, apply, digest
 
 class ReviewedPatchTests(unittest.TestCase):
     def test_bundled_vlahovic_relationships_and_history(self):
-        with sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite') as con:
+        with closing(sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')) as con, con:
             clubs = {r[0] for r in con.execute('SELECT club_id FROM player_clubs WHERE player_id=357498')}
             self.assertEqual(clubs, {114, 430, 506, 669})
             # Exercise the relational intersection used by discovery/Grid.
@@ -27,7 +28,7 @@ class ReviewedPatchTests(unittest.TestCase):
 
     def fixture(self, directory):
         db, manifest, patch = [Path(directory)/name for name in ('data.sqlite','manifest.json','patch.json')]
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(db)) as con, con:
             for table in ('players','clubs','transfers'):
                 con.execute('CREATE TABLE '+table+'(id INTEGER PRIMARY KEY)')
             con.execute('INSERT INTO players VALUES(1)')

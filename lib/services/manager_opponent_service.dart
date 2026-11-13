@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../data/manager_league_clubs.dart';
 import '../models/manager_rating.dart';
 import '../models/manager_tactics.dart';
 
@@ -7,32 +8,6 @@ class ManagerOpponentService {
   ManagerOpponentService._();
   static final ManagerOpponentService instance = ManagerOpponentService._();
   static final _rng = Random();
-
-  static const _names = [
-    'Northgate FC',
-    'Valencia Youth',
-    'Riverside United',
-    'Atlas Rovers',
-    'Metro Stars',
-    'Golden Harbor',
-    'Union Park',
-    'Canark XI',
-    'Eastbridge',
-    'Portsmouth Lane',
-    'Silver Oak',
-    'Harbor Athletic',
-  ];
-
-  static const _leagues = [
-    'Premier League tarzı',
-    'La Liga tarzı',
-    'Serie A tarzı',
-    'Bundesliga tarzı',
-    'Championship',
-    'Süper Lig temposu',
-    'Eredivisie',
-    'İkinci kademe Avrupa',
-  ];
 
   ManagerOpponent generate({
     required double homePower,
@@ -45,11 +20,14 @@ class ManagerOpponentService {
       ManagerDifficulty.hard => 5 + _rng.nextDouble() * 9,
     };
     final power = (homePower + offset).clamp(42.0, 96.0);
+    // A real popular club, as in the season league; the power follows the user's.
+    final club = managerLeagueClubs[_rng.nextInt(managerLeagueClubs.length)];
     return ManagerOpponent(
-      name: _names[_rng.nextInt(_names.length)],
-      leagueHint: _leagues[_rng.nextInt(_leagues.length)],
+      name: club.name,
+      leagueHint: club.league,
       style: style,
       basePower: double.parse(power.toStringAsFixed(0)),
+      club: club,
     );
   }
 

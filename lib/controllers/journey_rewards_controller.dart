@@ -10,9 +10,15 @@ import '../models/rewarded_ad_models.dart';
 
 class JourneyRewardsController extends ChangeNotifier {
   JourneyRewardsController({JourneyGateway? gateway, String? userId})
-    : gateway = gateway ?? FirebaseJourneyGateway(),
-      _injected = gateway != null,
-      uid = userId ?? (AuthService.isGoogleAccount ? AuthService.uid : null);
+    : gateway = gateway ?? debugGateway ?? FirebaseJourneyGateway(),
+      _injected = gateway != null || debugGateway != null,
+      uid = userId ?? debugUserId ?? (AuthService.isGoogleAccount ? AuthService.uid : null);
+  /// Widget tests that open journey pages through the app can answer server
+  /// validation with a fake; never set in production code.
+  @visibleForTesting
+  static JourneyGateway? debugGateway;
+  @visibleForTesting
+  static String? debugUserId;
   final JourneyGateway gateway;
   final String? uid;
   final bool _injected;
@@ -28,6 +34,10 @@ class JourneyRewardsController extends ChangeNotifier {
   bool get pro => data['pro'] == true;
   Map<String,dynamic> get rewards => rewardMap(data['rewards']);
   Map<String,dynamic> hints(String task) => rewardMap(rewardMap(data['hints'])[task]);
+  /// Coin/ad hint for a task without bundled answers, computed by the server.
+  Map<String,dynamic> assist(String task) => rewardMap(rewardMap(data['assist'])[task]);
+  /// Explanation of a task already solved on this account.
+  Map<String,dynamic> result(String task) => rewardMap(rewardMap(data['results'])[task]);
   void _notify() { if (!_disposed) notifyListeners(); }
   @override
   void dispose() { _disposed = true; super.dispose(); }

@@ -4,6 +4,7 @@
 No network access. Keep the asset and manifest in the same git commit.
 Re-running an applied patch is a no-op only when its recorded output hash matches.
 """
+from contextlib import closing
 import argparse
 import hashlib
 import json
@@ -37,7 +38,7 @@ def apply(database, manifest_path, patch_path):
     with tempfile.TemporaryDirectory(dir=database.parent) as directory:
         output = Path(directory) / database.name
         shutil.copy2(database, output)
-        with sqlite3.connect(output) as con:
+        with closing(sqlite3.connect(output)) as con, con:
             con.execute('PRAGMA foreign_keys=ON')
             for check in patch['preconditions']:
                 actual = [list(row) for row in con.execute(check['sql'], check.get('args', []))]
@@ -64,7 +65,7 @@ def apply(database, manifest_path, patch_path):
             'id': patch['id'], 'baseSha256': before, 'outputSha256': after,
             'definition': str(patch_path.relative_to(ROOT)) if patch_path.is_relative_to(ROOT) else patch_path.name,
         })
-        with sqlite3.connect(output) as con:
+        with closing(sqlite3.connect(output)) as con, con:
             for table in ('players', 'clubs', 'transfers'):
                 manifest['counts'][table] = con.execute('SELECT COUNT(*) FROM ' + table).fetchone()[0]
         next_manifest = Path(directory) / manifest_path.name

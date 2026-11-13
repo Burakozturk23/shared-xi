@@ -1,7 +1,19 @@
-enum MissionKind { daily, general }
+import 'progression_models.dart';
+
+enum MissionKind { daily, weekly, general }
 
 class MissionItem {
   final String id;
+  final String routeKey;
+  final String periodKey;
+  final String modeId;
+  final int rewardSp;
+  final int rewardXp;
+  /// Daily slot (knowledge, rivalry, discovery); empty for other missions.
+  final String slot;
+  /// Tüm Görevler Bonusu: opens when every mission of the period is claimed.
+  final bool bonus;
+  final bool unavailable;
   final MissionKind kind;
   final String title;
   final String description;
@@ -19,6 +31,14 @@ class MissionItem {
   final int stageCount;
 
   const MissionItem({
+    this.routeKey = '',
+    this.periodKey = '',
+    this.modeId = '',
+    this.rewardSp = 0,
+    this.rewardXp = 0,
+    this.slot = '',
+    this.bonus = false,
+    this.unavailable = false,
     this.enabled = true,
     this.limitReached = false,
     required this.id,
@@ -44,12 +64,20 @@ class MissionItem {
 
   factory MissionItem.fromMap(Map<String, dynamic> data) {
     return MissionItem(
+      routeKey: data['routeKey']?.toString() ?? '',
+      periodKey: data['periodKey']?.toString() ?? '',
+      modeId: data['modeId']?.toString() ?? '',
+      rewardSp: _missionInt(data['rewardSp']),
+      rewardXp: _missionInt(data['rewardXp']),
+      slot: data['slot']?.toString() ?? '',
+      bonus: data['bonus'] == true,
+      unavailable: data['unavailable'] == true,
       enabled: data['enabled'] != false,
       limitReached: data['limitReached'] == true,
       id: data['id']?.toString() ?? '',
       kind: data['kind']?.toString() == 'daily'
           ? MissionKind.daily
-          : MissionKind.general,
+          : data['kind']?.toString() == 'weekly' ? MissionKind.weekly : MissionKind.general,
       title: data['title']?.toString() ?? '',
       description: data['description']?.toString() ?? '',
       progress: _missionInt(data['progress']),
@@ -68,6 +96,10 @@ class MissionItem {
 
 class MissionProfile {
   final String dateKey;
+  final String weekKey, availabilityNotice;
+  final List<MissionItem> weekly;
+  final int weeklyClaimLimit, weeklyCompletedCount;
+  final bool weeklyEnabled;
   final List<MissionItem> daily;
   final List<MissionItem> general;
   final int dailyClaimLimit;
@@ -77,6 +109,9 @@ class MissionProfile {
   final int version;
 
   const MissionProfile({
+    this.weekKey = '', this.availabilityNotice = '',
+    this.weekly = const [], this.weeklyClaimLimit = 2,
+    this.weeklyCompletedCount = 0, this.weeklyEnabled = false,
     this.dailyClaimLimit = 3,
     required this.dateKey,
     required this.daily,
@@ -87,8 +122,19 @@ class MissionProfile {
     this.version = 1,
   });
 
+  /// Coins of daily missions that can be claimed right now.
+  int get readyDailyCoins => daily
+      .where((m) => m.enabled && m.claimable && !m.claimed && !m.limitReached)
+      .fold(0, (sum, m) => sum + m.rewardCoins);
+
   factory MissionProfile.fromMap(Map<String, dynamic> data) {
     return MissionProfile(
+      weekKey: data['weekKey']?.toString() ?? '',
+      availabilityNotice: data['availabilityNotice']?.toString() ?? '',
+      weekly: _missionList(data['weekly']),
+      weeklyClaimLimit: _missionInt(data['weeklyClaimLimit'], fallback: 2),
+      weeklyCompletedCount: _missionInt(data['weeklyCompletedCount']),
+      weeklyEnabled: data['weeklyEnabled'] == true,
       dailyClaimLimit: _missionInt(data['dailyClaimLimit'], fallback: 3),
       dateKey: data['dateKey']?.toString() ?? '',
       daily: _missionList(data['daily']),
@@ -109,6 +155,8 @@ class MissionClaimResult {
   final String missionId;
   final String periodKey;
   final MissionProfile profile;
+  /// Faz 2: the support the all-missions bonus added, if any.
+  final SupportReward? supportBonus;
 
   const MissionClaimResult({
     required this.granted,
@@ -118,6 +166,7 @@ class MissionClaimResult {
     required this.missionId,
     required this.periodKey,
     required this.profile,
+    this.supportBonus,
   });
 }
 

@@ -10,15 +10,19 @@ test("actual PvP settlement advances daily play and win missions exactly once wi
   const h = harness({users: {alice: {displayName: "Alice"}, bob: {displayName: "Bob"}}});
   await h.context.lbSettlePvp({id: "match", mode: "club_club", host: "alice", guest: "bob",
     status: "finished", rankedEligible: true, playKind: "ranked", ruleVersion: RULE,
-    winnerUid: "alice", finishedAt: h.now, rewardPolicy: {}, audit: {}, names: {}, scores: {}},
+    winnerUid: "alice", finishedAt: h.now, rewardPolicy: {}, audit: {a: {uid: "alice", input: {action: "answer"}},
+      b: {uid: "bob", input: {action: "answer"}}}, names: {}, scores: {}},
   {rankedEnabled: true, rewardsEnabled: false, eloEnabled: false});
   const settlement = h.read("rankedState/settlements/club_club/match");
   assert.equal(settlement.player1Result, "win");
   assert.equal(settlement.player2Result, "loss");
   await h.context.exports.syncRankedMissions(event(settlement));
   await h.context.exports.syncRankedMissions(event(settlement));
-  assert.deepEqual(h.read("missionState/alice/daily/counters"), {rankedPlayed: 1, rankedWins: 1, dailyChallenge: 0});
-  assert.deepEqual(h.read("missionState/bob/daily/counters"), {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0});
+  // The mode's own online mission advances too.
+  assert.deepEqual(h.read("missionState/alice/daily/counters"),
+      {rankedPlayed: 1, rankedWins: 1, dailyChallenge: 0, online__club_club: 1});
+  assert.deepEqual(h.read("missionState/bob/daily/counters"),
+      {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0, online__club_club: 1});
   assert.equal(settlement.rewards.alice.coins, 0);
   assert.equal(settlement.rewards.alice.eloDelta, 0);
 });
@@ -34,7 +38,8 @@ test("older PvP results work; invalid and update events are ignored", async () =
   assert.equal(h.read("missionState"), null);
   await h.context.exports.syncRankedMissions(event(settlement));
   for (const uid of ["alice", "bob"]) {
-    assert.deepEqual(h.read(`missionState/${uid}/daily/counters`), {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0});
+    assert.deepEqual(h.read(`missionState/${uid}/daily/counters`),
+        {rankedPlayed: 1, rankedWins: 0, dailyChallenge: 0, online__club_club: 1});
   }
 });
 
@@ -44,7 +49,9 @@ test("legacy duel results retain account eligibility and server-day boundaries",
   const settlement = {serverValidated: true, settledAt: h.now, player1Uid: "alice", player2Uid: "bob",
     player1Result: "win", player2Result: "loss"};
   await h.context.exports.syncRankedMissions(event({...settlement, settledAt: h.now - 86400000}));
-  assert.equal(h.read("missionState"), null);
+  assert.equal(h.read("missionState/alice/general/counters/rankedWins"), 1);
+  assert.equal(h.read("missionState/alice/daily/counters/rankedWins"), 0);
+  assert.equal(h.read("missionState/bob"), null);
   await h.context.exports.syncRankedMissions(event(settlement));
   assert.equal(h.read("missionState/alice/daily/counters/rankedWins"), 1);
   assert.equal(h.read("missionState/bob"), null);

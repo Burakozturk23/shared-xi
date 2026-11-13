@@ -36,12 +36,42 @@ function validMove(graph, run, playerId, clubId) {
   const current = path.length ? path[path.length - 1].clubId : run.puzzle.start;
   const ids = graph.players.get(playerId);
   return !!ids && ids.includes(current) && ids.includes(clubId) && clubId !== run.puzzle.start &&
-    !path.some((x) => x.clubId === clubId || x.playerId === playerId) && clubId !== current;
+    !path.some((x) => x.clubId === clubId || x.playerId === playerId) && clubId !== current &&
+    // Restricted chains: a banned club can never be a step of the route.
+    !(run.puzzle.banned || []).includes(clubId);
 }
 function remaining(graph, run) {
   const path = run.path || [];
   const current = path.length ? path[path.length - 1].clubId : run.puzzle.start;
-  return shortest(graph, current, run.puzzle.target, [run.puzzle.start, ...path.map((x) => x.clubId)],
+  const blocked = [run.puzzle.start, ...run.puzzle.banned || [], ...path.map((x) => x.clubId)];
+  return shortest(graph, current, run.puzzle.target, blocked,
       path.map((x) => x.playerId), run.maxMoves - path.length);
 }
-module.exports = {graphOf, shortest, validMove, remaining};
+// Number of distinct shortest routes (player, club steps). Layered BFS counts
+// each way once; shortest routes never reuse a player or club (see above).
+function countShortest(graph, start, target, banned = []) {
+  const skip = new Set(banned);
+  const dist = new Map([[start, 0]]); const ways = new Map([[start, 1]]); let layer = [start];
+  while (layer.length && !dist.has(target)) {
+    const next = new Set();
+    for (const club of layer) {
+      for (const pid of graph.byClub.get(club) || []) {
+        for (const to of graph.players.get(pid)) {
+          if (skip.has(to)) continue;
+          if (dist.has(to) && dist.get(to) <= dist.get(club)) continue;
+          if (!dist.has(to)) {
+            dist.set(to, dist.get(club) + 1); next.add(to);
+          }
+          ways.set(to, (ways.get(to) || 0) + ways.get(club));
+        }
+      }
+    }
+    layer = [...next];
+  }
+  return ways.get(target) || 0;
+}
+// A restricted file bans every club in the catalog's list except its own two ends.
+function bannedOf(catalog, p) {
+  return p.restricted ? catalog.restrictedClubs.filter((id) => id !== p.start && id !== p.target) : [];
+}
+module.exports = {graphOf, shortest, validMove, remaining, countShortest, bannedOf};

@@ -23,14 +23,16 @@ async function pair(h, ranked = false) {
 async function play(h, r, bobAnswers = true) {
   const bank = raw(h, r);
   for (let i = 0; i < 10; i++) {
-    const clock = timing(bank, i); h.setTime(clock.start + 1000);
+    // Read each round's clock: a round both players answered closes early.
+    const clock = timing(raw(h, r), i); h.setTime(clock.start + 1000);
     const a = await act(h, "alice", r); const b = await act(h, "bob", r);
     await act(h, "alice", r, "answer", {round: i, roundToken: a.roundToken, answer: bank.questions[i].answer});
     if (bobAnswers) {
       await act(h, "bob", r, "answer", {round: i, roundToken: b.roundToken,
         answer: b.question.options.find((x) => x.id !== bank.questions[i].answer).id});
     }
-    h.setTime(clock.end + 1); await act(h, "alice", r); r = await act(h, "bob", r);
+    h.setTime(Math.max(timing(raw(h, r), i).end, clock.start + 1000) + 1);
+    await act(h, "alice", r); r = await act(h, "bob", r);
   }
   return r;
 }
@@ -107,4 +109,68 @@ test("ON05-06: tie breakers and forfeits: Elo without payment", async () => {
   assert.equal(h.read("rankedState/profiles/alice/modeStats/fake_club_duel/losses"), 1);
   assert.equal(h.read("rankedState/profiles/bob/modeStats/fake_club_duel/wins"), 1);
   assert.equal(h.read("economyState/bob/balances/coins"), null);
+});
+test("ON08: climbing difficulty with legend, no fake club or club twice, shuffled options, double last round",
+    async () => {
+      const positions = [0, 0, 0, 0];
+      for (let i = 0; i < 80; i++) {
+        const bank = questions(mode, "on08-" + i);
+        assert.deepEqual(bank.map((q) => q.public.difficulty),
+            ["easy", "easy", "normal", "normal", "normal", "hard", "hard", "hard", "legend", "legend"]);
+        assert.equal(new Set(bank.map((q) => q.public.player.id)).size, 10);
+        const clubs = bank.flatMap((q) => q.public.options.map((o) => o.id));
+        assert.equal(new Set(clubs).size, clubs.length);
+        assert.equal(bank[9].public.multiplier, 2); assert.equal(bank[8].multiplier, undefined);
+        for (const q of bank) positions[q.public.options.findIndex((o) => o.id === q.answer)]++;
+      }
+      // 800 rounds: every place holds the fake club roughly a quarter of the time.
+      assert.ok(positions.every((n) => n > 150 && n < 250), String(positions));
+      // Both stay present through the first nine rounds, then the final round is answered.
+      const h = setup(); const r = await pair(h); const bank = raw(h, r);
+      for (let i = 0; i < 9; i++) {
+        h.setTime(timing(bank, i).start + 1000); await act(h, "alice", r); await act(h, "bob", r);
+      }
+      const clock = timing(bank, 9);
+      h.setTime(clock.start + 1000); const a = await act(h, "alice", r); await act(h, "bob", r);
+      await act(h, "alice", r, "answer", {round: 9, roundToken: a.roundToken, answer: bank.questions[9].answer});
+      assert.equal(raw(h, r).answers.alice[9].score, 2 * (100 + Math.floor(50 * 9000 / 10000)));
+    });
+test("ON08: once both answered, the round closes and the next starts 2 s later", async () => {
+  const h = setup(); const r = await pair(h); const bank = raw(h, r); h.setTime(bank.startedAt + 1000);
+  const a = await act(h, "alice", r); const b = await act(h, "bob", r);
+  await act(h, "alice", r, "answer", {round: 0, roundToken: a.roundToken, answer: bank.questions[0].answer});
+  h.setTime(bank.startedAt + 2500);
+  await act(h, "bob", r, "answer", {round: 0, roundToken: b.roundToken, answer: bank.questions[0].answer});
+  h.setTime(bank.startedAt + 3000); let v = await act(h, "alice", r);
+  assert.equal(v.round, 0); assert.equal(v.reveal, bank.questions[0].answer);
+  h.setTime(bank.startedAt + 4600); v = await act(h, "alice", r);
+  assert.equal(v.round, 1); assert.equal(v.startsAt, bank.startedAt + 4500);
+  assert.equal(v.deadline, bank.startedAt + 14500);
+});
+test("Fake Club Duel: early rounds show known careers, people come up evenly, no coached club is the fake", () => {
+  const P = require("../pvp_engine").catalog; const known = new Set(P.clubOptions.map((k) => Number(k.slice(5))));
+  const byId = new Map(catalog.questions.map((q) => [q.questionId, q])); const seen = new Map();
+  for (let i = 0; i < 1000; i++) {
+    for (const x of questions(mode, "fair" + i, {dataEnabled: true})) {
+      const q = byId.get(x.id); seen.set(q.playerId, (seen.get(q.playerId) || 0) + 1);
+      const need = {easy: 2, normal: 2, hard: 1, legend: 0}[q.difficulty];
+      assert.ok(q.realClubIds.filter((c) => known.has(c)).length >= need, q.player.name + " " + q.difficulty);
+    }
+  }
+  // Ferguson and Löw have four times the questions of most; they no longer come up four times as often.
+  // People with no club on the online list (Abdullah Avcı) only fit the last round and come up less
+  // by design; they are compared on their own, the rest among themselves.
+  const early = new Set(catalog.questions.filter((q) => q.difficulty === "easy" &&
+    q.realClubIds.filter((c) => known.has(c)).length >= 2).map((q) => q.playerId));
+  const counts = [...seen].filter(([id]) => early.has(id)).map(([, n]) => n).sort((a, b) => b - a);
+  assert.ok(counts.length >= 20 && counts[0] < counts[counts.length - 1] * 8, JSON.stringify(counts));
+  assert.ok(catalog.questions.every((q) => seen.has(q.playerId)), "everyone comes up");
+  // A club the person coached never is the fake ("Ancelotti never played for Napoli" reads as a trap).
+  const napoli = catalog.questions.filter((q) => q.player.name === "Carlo Ancelotti" &&
+    q.options.find((o) => o.id === q.fakeClubId).name === "Napoli");
+  assert.equal(napoli.length, 0);
+  // Club ids are real: Farfán never played for Universitatea Craiova (an id collision).
+  for (const q of catalog.questions.filter((x) => x.player.name === "Jefferson Farfán")) {
+    assert.ok(q.options.every((o) => o.name !== "Universitatea Craiova"));
+  }
 });

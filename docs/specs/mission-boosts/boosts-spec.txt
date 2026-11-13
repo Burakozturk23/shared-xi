@@ -1,0 +1,1145 @@
+LINKBALL / EKONOMİ & OYNANIŞ
+
+
+
+İPUÇLARI &
+GÜÇLENDİRMELER
+Tüm modlar için ortak mağaza, destek çantası ve doğrulanmış ödüllü
+reklam mimarisi
+
+
+
+V1 GELİŞTİRME ŞARTNAMESİ
+
+
+7 bot modu • 13 online modu • 8 hikâye alt bölümü • günlük oyunlar • solo alt türler
+
+
+Kod envanteri + kaçırılan alt akışlar + ekonomi fiyatları + güvenlik + test planı
+
+
+
+
+GELİŞTİRME ŞARTNAMESİ / 24 EKİM 2026
+LINKBALL                                                                                                   İpucu & Güçlendirme V1
+
+
+
+
+01 Karar özeti
+Ana karar: İsteğe bağlı hiçbir ipucu bedelsiz açılmayacak. Yardımlar, hesap envanterinden tüketim, Link Coin ile
+doğrudan alım veya kullanıcının seçtiği ve sunucuda doğrulanan ödüllü reklam üzerinden sağlanacak.
+Rekabetçi online maçlara oyun içi ücretli avantaj konulmayacak. Arkadaş maçında olası jokerli deneyim sonraki
+sürüm için ayrı, derecesiz ve iki tarafın açık onayına bağlı bir varyant olarak tutulacak. Bu prensip skorların,
+sıralamanın ve liderlik tablosunun güvenilirliği için sabittir.
+
+
+V1’in çıkış kapsamı
+
+  Alan                     Kesin karar                                      Neden
+
+  İpuçları                 0 bedelsiz isteğe bağlı yardım                   Ek bilgi bedeli her modda açık ve tutarlı
+
+
+  Satın alma               Mevcut Link Coin wallet + mağaza stoğu           Yeni para birimi gereksiz
+
+
+  Ödüllü reklam            1 doğrulanmış reklam = 1 temel yardım hakkı      Gerçek reklam izlemesi karşılığında net ödül
+
+
+  Ortak limit              4 reklamlı yardım/gün, 2/oturum                  Kontrolsüz reklam çiftliği önlenir
+
+
+  Günlük sabit oyun        1 reklamlı yardım/oyun                           Günlük karşılaştırma adaleti
+
+
+  Dereceli / Elo           Tüm oyun avantajları yasak                       Pay-to-win yok
+
+
+  Bot / solo skor          Yardımlı sonuçlar ayrılır                        Ustalık ve rekor saflığı korunur
+
+
+  Enerji                   V1 yayın sırasında mevcut rollout kapalı kalır   Otomatik enerji açılmaz
+
+
+
+   Fiyat ve limitler tasarım kararıdır; canlı yapılandırma değildir. Canlı reklam kimlikleri, Play Console ve
+   gerçek cihaz kabulü yapılmadan reklamın çalıştığı veya yayınlanabildiği söylenemez.
+
+
+
+
+02 Kaynak kapsamı ve son denetim
+İnceleme: GitHub Burakozturk23/shared-xi, codex/online-friends-review çalışma dalı (açık PR #70, üst üste bağlı
+PR zinciri). Kataloglar, ilgili Flutter ekranları, bazı oyun motorları, mağaza, reklam ve enerji yapılandırmaları
+incelendi. Bu belge uygulama çalıştırma veya üretim sunucusu denetimi sonucu değildir.
+
+
+Başlangıçtan sonra ayrıca yakalanan alt akışlar
+• Grid’in tek oyunculu Klasik, Tersten ve Rastgele Eşleşme seçenekleri: bot ve online Grid’den ayrı izlenecek.
+• Haftalık Passaparola (29 harf / 240 saniye): günlük Mini Passaparola ile aynı sınırı körü körüne paylaşmayacak.
+• Sahte Kulüp / Sonsuz Seri - Hız Serisi ve Kariyer Zinciri / standart - Sprint yardım farkları.
+• Burst / Hız Atağı - Dayanıklılık: Hız Atağı zaten ipucusuz, Dayanıklılık yardımı ayrı kural gerektiriyor.
+• What If, Nostalji ve diğer hikâye parçalarında Pro’nun ücretsiz güçlü yardım vaadi: yayın geçişinde mevcut
+haklar korunarak politika değişecek.
+• Günün Maçları, Günlük Mücadele, Günün Sorusu, Günün Futbolcusu, günlük kelime üçlemesi ve Ortak
+Oyuncu Keşfi ayrı girişler.
+• Kriter Kadro Kurma önceki tasarım aşamasında bulunmasına rağmen incelenen canlı oyun kataloğunda yer
+almıyor: gelecekte eklenecek, V1 için uygulanmış sayılmayacak.
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                          02
+LINKBALL                                                                                                          İpucu & Güçlendirme V1
+
+
+
+Bugünkü teknik altyapı - doğrulanmış statü
+
+  Bileşen                     Repo bulgusu / yapılacak
+
+  Mağaza                      3 yardım türü (İlk Harf, Son Harf, Harf Karışımı), tekli/üçlü paketler ve 99 stok üst sınırı mevcut.
+
+
+  Boost tüketimi              store_collection.js stok düşüyor; tüketim yalnızca üç modeId için açık. Tüm modlara ortak session
+                              bağlamı eklenmeli.
+
+
+  AdMob                       Ödüllü reklam Flutter katmanı ve SSV doğrulama mevcut. İstemci test birimi kullanıyor; sunucudaki
+                              gerçek reklam birimleri boş.
+
+
+  Solo reklam                 Belli yardım placement’ları var, toplam 4/gün ortak sınır izleniyor. Her mod eşdeğer sunucu denetimine
+                              bağlı değil.
+
+
+  Ücretsiz yardım             Three Modes, Career/Transfer, Mystery/Chain, Story, Anagram, Arcade vb. hâlâ bedelsiz ipuçları
+                              barındırabiliyor.
+
+
+  Enerji                      energy_v1.json rollout.enabled=false, yüzde=0. Bu belge açma talimatı vermez.
+
+
+  Görev ekonomi               Görev başına 20 Coin, günde en fazla 3 görev mevcut. Yardım harcamalarıyla denge testi gerekir.
+
+
+
+
+03 İşlev sınırları - ne gerçekten ipucu?
+
+Güçlendirme sayılan yardımlar
+• İlk/son harf; ülke, mevki, oyuncu veya kulüp hakkında isteğe bağlı ek bilgi; yanlış aday eleme.
+• Zorluk düşüren tek eşleşme açma, çözüm yolu gösterme, ekstra can veya ekstra süre verme.
+• Bir yanlış hamleyi bedelsiz silip sonucu değiştirme, skor/revize hakkı kazandırma.
+
+
+Ücretlenmeyecek zorunlu veya normal kontroller
+• Oyunun başlangıç kriterleri, standart soru metni, zorunlu başlangıç ipuçları ve erişilebilirlik açıklamaları.
+• Metni silme/düzeltme, henüz onaylanmamış tercihi geri alma, animasyon geçme, arayüz yeniden açma.
+• Anagram harflerini aynı kümeden tekrar karıştırma (yeni gizli bilgi açmıyorsa), çözülmesi mümkün olmayan hatalı
+içerik için kurtarma.
+• Oyunun normal pas hakkı: puan veya süre cezası varsa yardımcı hak değil, oyun kuralıdır.
+
+   Oyuncunun cevap hakkını koruyan mekanik kontrolü ücretlendirmek, "ücretsiz ipucu olmasın" hedefinden
+   farklıdır. Bazı modlarda normal Undo/Pas/Shuffle oyun tasarımının parçasıdır; yalnızca gerçek çözüm avantajı
+   sağlayan yeni hakları ücretlendirelim.
+
+
+
+
+04 Solo - Kadro, kariyer ve kelime modları
+
+  Mod / varyant                   Uygun güçlendirme                                  Kural
+
+  Club Manager                    Rakip analizi; transfer gözlemci raporu            Yalnız solo / rekora ve lige göre kontrollü
+
+
+  Squad Challenge                 Kriter uyum filtresi; 1 aday tavsiyesi             Ödüllü denemede puan azalt; sahte veri yok
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                                 03
+LINKBALL                                                                                                 İpucu & Güçlendirme V1
+
+
+
+
+ Mod / varyant                  Uygun güçlendirme                         Kural
+
+ Hoca 11                        Ülke/mevki; hoca-oyuncu kulüp izi         0 ücretsiz; mevcut 3 ipucu slotu korunur
+
+
+ Kadro Kasası                   Gizli oyuncunun ülkesi veya kariyer izi   0 ücretsiz; yıldız/ustalık ayrımı
+
+
+ Harf 11                        Uygun mevki için bir aday örneği; harf    0 ücretsiz; 11/11 ustalık ayrımı
+
+
+ Career Puzzle                  Eksik kulüp / dönem / sıra ipucu          0 ücretsiz; mevcut seri sınırlaması korunur
+
+
+ Transfer Detective             Mevki; yıl; ülke; ilk/son harf            0 ücretsiz; oturum bazlı hak
+
+
+ Gizemli Futbolcu               Ek kariyer bilgisi; harf; eleme           Otomatik cevap yardımını ayrı değerlendir
+
+
+ Kariyer Zinciri - Klasik       Geçerli köprü / ortak kulüp bilgisi       Yardımlı çözüm ve PAR ayrımı
+
+
+ Kariyer Zinciri - Sprint       Şimdilik ipucu yok                        Süre / skor adaleti; zorla reklam gösterme
+
+
+ Sahte Kulüp - Sonsuz Seri      Bir yanlış seçeneği ele                   Yardımlı seri ayrı
+
+
+ Sahte Kulüp - Hız Serisi       Başlangıç V1: ipucu yok                   Sıralama adaleti; reklamla duraklatma yok
+
+
+ Futbol Lingo                   İlk harf; son harf; harf karışımı         Mevcut SKU’ları yeniden kullan
+
+
+ Passaparola - Mini/Günlük      Bir soruda bağlam veya ilk harf           Günlük ortak 1 reklam / run
+
+
+ Passaparola - Haftalık         Bir soruda bağlam / harf ipucu            Ayrı hafta kilidi; süre canlı işler
+
+
+ Anagram - Günlük               Ülke + mevki; ilk harf                    Ücretsiz isteğe bağlı ipuçlarını kaldır
+
+
+ Anagram - 8’li Pratik          Ülke + mevki; ilk harf                    Skor cezası; 8 tur oturumu
+
+
+ Burst - Hız Atağı              Yok                                       Süreli skor: yardım kapalı
+
+
+ Burst - Dayanıklılık           Ek bilgi; +1 can (koşullu)                Yardımlı rekor; 2 pas kuralı ayrı
+
+
+ Pyramid                        Bağlantı / aday türü ipucu                Solvability sertifikası olmadan açma
+
+
+ Matching                       Tek çift önerisi                          Normal en iyi hamle rekorundan ayrı
+
+
+ This or That                   Kişisel tercihe yardımcı ürün yok         Bilgi panosu faydalı ama kilitlenmesin
+
+
+ Higher or Lower                İstatistik aralığı (antrenman)            Normal rekor ve ödül avantajı yok
+
+
+ Blind Ranking                  Sıra aralığı (antrenman)                  Normal 100 puan/ustalık için yasak
+
+
+ Ortak Oyuncu Keşfi             İsteğe bağlı bir kariyer bağlantısı       Keşif araması/temel sonuç ücretsiz
+
+
+ Grid - Solo Klasik             Satır/sütun aday ipucu                    Ayrı modId ve yardım bayrağı
+
+
+ Grid - Solo Tersten            Ortak kriter türü                         Gerçek kriter ID ile doğrulanır
+
+
+ Grid - Solo Rastgele           İki kulüp için örnek kariyer bağı         Doğrudan cevabı açmayan temel ipucu
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                        04
+LINKBALL                                                                                                  İpucu & Güçlendirme V1
+
+
+
+
+05 Günlük, keşif ve haftalık oyunlar
+
+ Giriş                             İsteğe bağlı destek                        Önemli sınır
+
+ Günün Sorusu                      1 yanlış seçeneği ele                      Ödüllü reklam veya Coin; günde tek hak
+
+
+ Günün Maçları / Takvim            İki kulüp için bir kariyer/ülke ipucu      Günlük sabit sorunun rekabet ödülü ayrılır
+
+
+ Günlük Mücadele                   Bir uygun ortak oyuncu ipucu               Liderlik tablosunda yardımlı bayrak
+
+
+ Günün Futbolcusu                  İlk tahminden sonra isim/ülke ipucu        Mevcut reklamlı yardım korunur; ortak limite
+                                                                              katılır
+
+
+ Günün Lingo’su                    3. tahminden sonra bağlam ya da harf       Ücretsiz bağlam ipucu kaldır
+
+
+ Mini Passaparola                  Bir harfin sorusunda ek bağlam             Haftalık ile farklı oturum ID
+
+
+ Günün Anagramı                    Ülke/mevki ya da ilk harf                  Cevabı açıp bitir = teslimiyet; ipucu sayılmaz
+
+
+ Passaparola Haftalık              Seçili soruda ek bağlam / ilk harf         240 sn saati reklam sırasında adil yönet
+
+
+ Ortak Oyuncu Keşfi                İsteğe bağlı bağlantı örneği               Bilgi taraması tamamen ücretli hâle gelmez
+
+
+
+
+Günlük sonuçların kayıt politikası
+Sabit gün/hafta içerikleri değiştirilmeyecek; kullanıcı iki cihazdan girse aynı kaynak kayıt kullanılacak. Güçlendirme
+kullanıldığı andan itibaren `assisted=true` tutulsun. Günlük sıralama, ilk bitiriş, yardımsız ustalık, paylaşım ve
+Coin/XP kazanımı bu bayrağı ayrı değerlendirir. Çalışan mevcut ödül hakları bozulmadan geçiş planı uygulanmalıdır.
+
+
+
+06 Hikâye - sekiz alt bölümün tamamı
+
+ Hikâye bölümü                  Önerilen destek                            Geçiş notu
+
+ Player Journey                 Ülke; mevki; baş harf                      3 aşamalı ücretsiz yardımın yerine ücretli hak
+
+
+ WHAT IF                        Tarihsel bağlam; güçlü bilgi               Ücretsiz + 10 Coin adımını aynı modele geçir
+
+
+ UCL Moments                    Sezon/maç bilgisi                          Bedelsiz buton kaldır; cevap değişmez
+
+
+ Türk Futbolu: Nostalji         Dönem ve güçlü oyuncu/kulüp ipucu          6 Coin güçlü yardım / Pro geçişi
+
+
+ International Glory            Ülke/tur/olay bilgisi                      Ücretsiz temel + Pro yardımı dönüştür
+
+
+ Dynasties                      Kulüp dönemi; TD/kupa bilgisi              Hikâye arşivi / geri dönme korunsun
+
+
+ Football Docu-Series           Belgesel bağlamı; tarihsel olay            Tekrar ödül yok, güçlü yardım farklı seviyede
+
+
+ Derby Day                      Rekabet dönemi; maç/oyuncu ipucu           Ücretsiz/Pro güçlü yardım dönüştür
+
+
+
+  V1’de daha önce Pro’ya "bedelsiz güçlü yardım" şeklinde açık vaat sunulduysa, mevcut dönemdeki
+  kazanılmış/aktif hak aniden iptal edilmeyecek. Yeni kullanıcı/yenileme koşulları açıkça duyurularak teklif
+  sürümü ayrılır. Kullanıcının isteği gereği yeni genel politika bedelsiz isteğe bağlı ipucu içermez.
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                           05
+LINKBALL                                                                                                 İpucu & Güçlendirme V1
+
+
+
+
+07 Botla Oyna - yedi ayrı mod
+
+ Bot modu                    Uygun destek                               Adalet kontrolü
+
+ Football Loto               Adayın mevki/ülke bilgisi                  Bot normal skorundan ayrı; süre adil
+
+
+ Takım Yarışı                Ortak oyuncuya ülke/mevki ipucu            Yardımlı sonuç normal zafer sayılmaz
+
+
+ Klasik Grid                 Doğrulanmış oyuncu bağlantısı              Tek kutuda oyuncu önerisi gerekiyorsa antrenman
+
+
+ Tersten Grid                Kriter türünü daraltma                     Alternatif doğru yanıtlar cezalandırılmamalı
+
+
+ Rastgele Grid               Kulüp bağlantı örneği                      Bot seviyeleri değişmeyecek
+
+
+ Futbol Çinko                Uygun bir kutu için bilgi                  Kural gereği pas sıfır puandır
+
+
+ Rastgele Beşler             Bir adayın beş kulüpten kaçına uyduğu      Pas ve edit düzeltmesi ücretsiz normal akış
+
+
+
+
+Yardımlı Bot modu
+Oyuncu, destek kullanacağı an sonucun "Yardımlı" olarak kaydedileceği konusunda bilgilendirilir. Yardımsız
+başarımlar, görevler ve bot rekorları etkilenmez. Coin/XP verilmesi gerekiyorsa yardım tüketimini hesaba katan ve
+tekrar çift ödeme yapmayan sunucu politikası kullanılır.
+
+
+
+08 Online ve arkadaş - 13 ayrı mod
+
+ 13 mod                           Sunucu wireName                    Dereceli oyun avantajı
+
+ Kulüp × Kulüp                    club_club                          YASAK - yalnızca kozmetik
+
+
+ Kulüp × Ülke                     club_country                       YASAK - yalnızca kozmetik
+
+
+ Grid - Klasik                    grid_classic                       YASAK - yalnızca kozmetik
+
+
+ Grid - Rastgele                  grid_random                        YASAK - yalnızca kozmetik
+
+
+ Grid - Ters                      grid_reverse                       YASAK - yalnızca kozmetik
+
+
+ Rastgele Beş                     random_five                        YASAK - yalnızca kozmetik
+
+
+ Çinko                            cinko                              YASAK - yalnızca kozmetik
+
+
+ Football Loto                    loto                               YASAK - yalnızca kozmetik
+
+
+ Club Manager                     club_manager                       YASAK - yalnızca kozmetik
+
+
+ Kariyer Yarışı                   career_race                        YASAK - yalnızca kozmetik
+
+
+ Transfer Düellosu                transfer_duel                      YASAK - yalnızca kozmetik
+
+
+ Gizem Düellosu                   mystery_duel                       YASAK - yalnızca kozmetik
+
+
+ Sahte Kulüp Düellosu             fake_club_duel                     YASAK - yalnızca kozmetik
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                        06
+LINKBALL                                                                                                            İpucu & Güçlendirme V1
+
+
+
+Arkadaş modu için opsiyonel V2 oyun varyantı
+V1: normal arkadaş maçı da ipucu satın alma kapalı. V2 araştırması: yalnızca iki tarafın eşit şartlarla kabul ettiği,
+Elo/normal Coin/XP/başarı üretmeyen ayrı bir "Jokerli Eğlence" lobisi. Karşılıklı kabul, joker kataloğu, iki taraf için
+simetrik limit ve ayrı sonuç sınıfı şarttır. V1 kapsamında uygulanmayacaktır.
+
+
+
+09 Destek kataloğu, fiyatlar ve görünürlük
+
+ SKU / ürün                              Tekli (Coin)       3’lü paket                  Mod kapısı
+
+ İlk harf                                25                 65 / 3                      İsim/kelime/oyuncu
+
+
+ Son harf                                25                 65 / 3                      İsim/kelime/oyuncu
+
+
+ Harf karışımı                           60                 150 / 3                     Uygun kelime modu
+
+
+ Temel bilgi                             25                 65 / 3                      Ülke/mevki/dönem
+
+
+ Tek seçenek ele                         35                 90 / 3                      Çoktan seçmeli
+
+
+ Bağlantı yardımı                        40                 105 / 3                     Zincir/kariyer/ortak oyuncu
+
+
+ +10 saniye                              30                 80 / 3                      Yalnız yardımlı, desteklenen oyunlar
+
+
+ +1 can                                  40                 105 / 3                     Yalnız yardımlı, desteklenen oyunlar
+
+
+ Güçlü bilgi / eşleşme                   60                 150 / 3                     Pyramid/Matching vb.
+
+
+Mevcut üç SKU ürününün kimliği korunacak; stoklar taşınacak. Yeni katalog sürümünde satış türü `boost`, fiyat
+`priceCoins`, `units`, desteklenen modlar, cooldown, kullanım üst sınırı, `assistedImpact` ve ads eligibility sunucudan
+yönetilecek. İstemci salt okur.
+
+
+Mağazanın kullanıcı deneyimi
+• Güçlendirmeler sekmesi: "Temel, Taktiksel, Güçlü, Paketler" filtreleri; kalan stok ve uyumlu modlar gösterilir.
+• Oyun içi destek paneli: "Çantamdan (1 adet)", "Coin ile al", "Reklam izle" - aktif olmayan seçeneklerin nedeni açıklanır.
+• Bir yardımı yeniden satın almak ile mevcut stoktan tüketmek birbirine karışmaz. Yanlış çift işlemde sunucu kaydı
+kullanılır.
+• Kullanıcı hangi bilgiyi alacağını açıklamada görür; ancak satın almadan önce gizli cevabın kendisi gönderilmez.
+
+
+
+10 Ödüllü reklam - bağlayıcı akış
+
+ #          Olay                                        Sunucunun kararı
+
+ 01         Oyuncu yardım panelini açar                 Mod, aktif tur, envanter, reklam kotası ve uygun haklar okunur.
+
+
+ 02         Yerleşim ve ödül açıklanır                  "Reklam tamamlanırsa 1 temel ipucu hakkı"; kullanıcı onaylar.
+
+
+ 03         Sunucu reklam bileti üretir                 Bilet userId, sessionId, modeId, skuId, placement, ttl ile sabitlenir.
+
+
+ 04         AdMob reklamı gösterilir                    İstemci onay/consent kurallarına uyar; açık test birimi prod’da kullanılmaz.
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                                   07
+LINKBALL                                                                                                       İpucu & Güçlendirme V1
+
+
+
+
+ #         Olay                                     Sunucunun kararı
+
+ 05        SSV doğrulaması gelir                    İmza, transaction_id, ad unit, zaman penceresi ve bilet eşleşmesi denetlenir.
+
+
+ 06        Hak sunucuya yazılır                     Aynı reward callback + aynı ticket iki kez kredi vermez.
+
+
+ 07        Yardım açılır                            Aynı run + hintId için yeniden denemede ücret ikinci kez düşmez.
+
+
+
+
+İzin verilen başlangıç limitleri
+
+ Limit                             Öneri                                     Not
+
+ Global reklamlı destek            4 / Europe-Istanbul günü                  Tüm solo modlarda ORTAK sayaç
+
+
+ Tek oturum                        2 reklamlı destek                         İpucu aşamaları ve zorlukla daralabilir
+
+
+ Günlük sabit içerik               1 destek / oyun günü                      Aynı gün/hafta sürüm kimliği
+
+
+ Güçlü destek reklamı              V1 için kapalı                            Başlangıçta yalnız Coin/çantadan
+
+
+ Reklam dolumu yok                 Reklam butonu pasif + açık sebep          Coin, stok veya oynayarak devam
+
+
+ Pro                               Reklamsız deneyim; bedelsiz ipucu         Geçerli eski haklar geçişte korunur
+                                   yok
+
+
+Genel reklamdan Coin kazanımının `rewarded_coin.enabled=false` olması, bu ayrı yardım placement’ının da
+otomatik olarak kapalı olduğu anlamına gelmez; ancak gerçek AdMob birim kimlikleri ve per-placement politika
+açılmadan canlı akışa geçilemez. V1 yeni yerleşimleri whitelist’e eklemeli.
+
+
+
+11 Güvenlik, oturum ve ödeme tutarlılığı
+
+Önerilen sunucu sözleşmeleri
+
+ Callable / olay                   Beklenen denetim
+
+ getBoostCatalog                   Sunucu katalog sürümü, uygun modlar, ilan fiyatları ve envanter.
+
+
+ purchaseBoost                     uid, offerId, expectedPrice, requestId; atomik Coin azalt + stok artır.
+
+
+ prepareBoostAd                    uid, runId, mode, sku, placement, kota ve lifecycle; bilet üret.
+
+
+ finalizeBoostAd                   SSV üzerinden server-only bilet tasdik; stok veya tüketilebilir hak.
+
+
+ useBoost                          uid, runId, puzzleVersion, sku, target; atomik hak düş + sunucuda ipucu üret.
+
+
+ getBoostRunStatus                 Kullanılmış yardımlar, aktif haklar, assisted bayrağı ve sonuç.
+
+
+ reconcilePendingBoosts            Yarım kalmış SSV / wallet işlemlerini idempotent tamamlama.
+
+
+
+
+Veri kayıtları - örnek şema
+BoostUse: `{uid, runId, modeId, puzzleVersion, boostId, targetId, source, requestId, resultHash, assistedImpact,
+createdAt}`
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                                08
+LINKBALL                                                                                                       İpucu & Güçlendirme V1
+
+
+
+AdTicket: `{ticketId, uid, placement, modeId, runId, boostId, status, transactionHash, createdAt, expiresAt}`
+Result: `{runId, completed, score, assisted, boostUses, leaderboardEligible, masteryEligible, rewardPolicyVersion}`
+
+   Gizli cevabı Flutter ekranının `answer` alanından türetmek veya yalnızca istemcinin "stok harcadım" beyanına
+   inanmak kabul edilmez. Gizli veri ifşasını önlemek için güçlendirme metni oyun otoritesi tarafından
+   doğrulanmalı ve erişilebilen cevap havuzu daraltılmalıdır.
+
+
+
+Hatalı / tekrar gelen istek
+• Tek tuşla aynı yardım iki kez talep edilirse aynı sonuç döner, ikinci Coin/stok tüketilmez.
+• AdMob callback birden fazla gelirse bir bilet tek kullanılır; sunucu yeniden başlarsa outbox uzlaştırır.
+• İnternet kesilince oyun/enerji durumu korunur; ödeme kesinleşmediyse yanlış pozitif "ipucu açıldı" gösterilmez.
+• Kullanıcı hesap değiştirirse eski hesabın stok/hakları yeni hesaba taşınmaz.
+• Paket fiyatı değişirse istemcinin eski teklifiyle alışveriş otomatik tamamlanmaz; kullanıcı güncel fiyatı görür.
+
+
+
+12 Rekabet, rekor ve ödül dengesi
+
+  Oyun / sonuç sınıfı             Yardım sonrası davranış
+
+  Solo normal tamamlanma          Oyun tamamlanır; kanıtlı tamamlama ödülü varsa ilgili ödül sürümüne göre.
+
+
+  Yardımsız rekor/ustalık         Yardım kullanılırsa katılım yok, ayrı kişisel yardımlı kayıt.
+
+
+  Zamanlı bulmacalar              Reklam açıldığı andaki zaman semantiği tanımlanır; skor manipülasyonu olmaz.
+
+
+  Günlük sıralama                 Yardımsız ana tablo korunur; yardımlı ayrı veya sıralamasız.
+
+
+  Bot sonuçları                   Yardımlı bot galibiyetleri dereceli başarı, Elo veya bot saf rekoruna yazılmaz.
+
+
+  Dereceli online                 Tüm avantaj boost ve reklam placement’ları kapalı.
+
+
+  Arkadaş maçı                    V1’de kapalı; yalnız kozmetik. V2 çift onaylı ayrı deneyim.
+
+
+  Story ödülleri                  İlk bitiriş/tekrar koruması; ipucu kullanımından yeni tekrar kazanç yok.
+
+
+  Görev Merkezi                   Yardım gerektirmeyen görevler tamamlanabilir; sırf ipucu alımı görev sayılmaz.
+
+
+Ekonomi hedefi: oyuncu 20 Coin görev ödülüyle anlamlı ilerleme kaydedebilmeli, ancak tek tıkla güçlü yardım satın
+alarak sınırsız üretim olmamalı. V1’de Coin üretimi artırılmıyor; güçlendirme yalnız yeni Coin çıkışı. Satın
+alma/reklam kullanımı XP veya SP otomatik üretmez.
+
+
+Ölçülecek canlı ekonomi metrikleri
+• Daily Active Users başına kazanılan/harcanan Coin; 7 ve 30 günlük bakiye dağılımı.
+• Boost fiyatına göre satın alma, kullanım, elde kalma oranı ve yanlış satın alma geri bildirimleri.
+• Reklam başlatma/tamamlama/SSV doğrulama oranı; No-fill oranı; yardım başına net değer.
+• Yardımlı/yardımsız tamamlama farkı, zorluk düşüşü ve etkinlik adaleti.
+• Düşük bakiyeli oyuncunun oyundan kopma ve reklama zorlanma oranı.
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                              09
+LINKBALL                                                                                                                İpucu & Güçlendirme V1
+
+
+
+
+13 Geçiş: ücretsiz ipuçlarını kaldırma
+
+Kod düzeyinde geçiş sırası
+
+  Adı      Uygulama alanı                                 Geçiş koşulu
+  m
+
+  C01      3 Modes / Career / Transfer / Mystery /        freeHint/freeUsed dalını kaldır; tamamlanan eski session arşivini koru.
+           Chain
+
+
+  C02      Arcade / Burst / Pyramid / Matching            freeUsed mantığı kaldır; mod-bazlı hint cap ve yarım kalmış run sözleşmesi.
+
+
+  C03      Anagram / Daily Words                          Ülke/mevki, ilk harf, bağlam yardımı için ortak hakkı tüket.
+
+
+  C04      Player Journey / Story sekizli                 Ücretsiz butonlar ve Pro güçlü yardım uyumsuzluğunu gider.
+
+
+  C05      Günlük Futbolcu / Günün Sorusu                 Eski özel reklamla hak akışlarını ortak sınıra bağla.
+
+
+  C06      Solo Grid / bot yedili                         Yardımlı sonuç sınıfı ve sunucu köprüleri aç.
+
+
+  C07      This or That / Higher-Lower / Blind            Kişisel tercih için ücretli öneri kapalı; antrenman ayrımı.
+           Ranking
+
+
+  C08      13 online/arkadaş modu                         Hint/Sku server whitelist negatif denetimi, sadece kozmetik.
+
+
+  C09      Kriter Kadro Kurma (planlı)                    Kataloğa eklenirse ayrı onay; V1’de aktif mod sayılmasın.
+
+
+
+
+Uyumluluk / rollback
+• Eski mağaza stoklarını ve satın alma geçmişini bozmadan yeni katalog sürümüne taşı.
+• Eski ödüllü reklam hakkı bekliyorsa doğrulanmış hakkı iptal etme; yeni limit muhasebesine taşı.
+• Önceden açılmış bir ipucu tekrar ücretlendirilmez; oyun içeriği ve eski run policy version sabitlenir.
+• Pro aboneliğinde daha önce açıkça kazanılmış hakların etkilenip etkilenmediği ürün koşullarıyla ayrıca denetlenir.
+• Feature flag: boosts.enabled=false başlangıç; beta yüzde dağıtımı ve gerektiğinde anında kapatılabilen kill switch.
+• Kapatma: yeni satın alımlar durabilir, mevcut yasal/vaat edilmiş stoklar silinmez; güvenli kullanım veya iade rotası
+gerekir.
+
+
+
+14 Kullanıcı akışı ve erişilebilirlik
+Görsel yön: Linkball koyu saha tasarımı (`#0F1715`), kireç yeşili (`#CCFF00`) vurgu, doğru buton hiyerarşisi. Yardım
+butonları mevcut oyun kartını örtmez; şeffaf satın alma bilgisi sunar.
+
+
+Örnek oyun içi Destek Çantası
+
+  Görünecek öğe                     Örnek durum                              Buton davranışı
+
+  Ülke ipucu                        25 Coin · Çantada 2 adet                 Çantadan kullan / Coin ile al / Reklam izle
+
+
+  Güçlü bağlantı                    60 Coin · Çantada 0                      Coin ile al, reklam yok
+
+
+  Günlük reklam hakkı               2/4 kullanıldı                           Kalan hak gün/sürüm bazlı
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                                       10
+LINKBALL                                                                                                            İpucu & Güçlendirme V1
+
+
+
+
+  Görünecek öğe                        Örnek durum                             Buton davranışı
+
+  Kullanım etkisi                      Yardımlı olarak kaydedilecek            Oyuncu onaylar, sonra harcama
+
+
+  Reklam yüklenemedi                   Şu anda reklam bulunamadı               Oyun devam eder; zorunlu bekleme yok
+
+
+
+
+Kabul UX şartları
+• Satın al veya izle işlevleri için çift tıklama kilidi; iptal edilebilir UI ancak kesinleşmiş sunucu hakkı korunur.
+• Bilgi metinleri TalkBack ile okunabilir; küçük ekranda (320 dp) ve büyük yazıda butonlar kaybolmaz.
+• Hangi modda neyin "yardım" olduğu açık anlatılır; gizli cevap satın almadan önce gösterilmez.
+• Reklam ve satın alma işlemi çocuklara veya mahremiyet/izin vermeyen oturumlara zorunlu engel oluşturmaz.
+• İnternet yoksa kullanıcı destek gerektirmeyen oyuna normal devam eder; reklam/online satın alım devre dışı kalır.
+
+
+
+15 Geliştirme yol haritası
+
+  Faz      İş                                        Teslim kriteri
+
+  A        Katalog ve mod ID denetimi                Tüm modlar için yetenek matrisi, ayrık pratik/sprint varyantları.
+
+
+  B        Ekonomi ve envanter sözleşmesi            Mevcut SKU/miras stok; atomik satın alma/tüketim.
+
+
+  C        Merkezi sunucu Hint/Boost API             Oturuma bağlama, kaynak doğrulama, sonuç sınıfı.
+
+
+  D        Ödüllü reklam / SSV                       Sınırlı bilet, consent, callback, kuyruk, no-fill.
+
+
+  E        Solo kadro, kariyer, kelime               Tüm ücretsiz isteğe bağlı ipuçlarının kaldırılması.
+
+
+  F        Daily / haftalık / hikâye                 Sabit içerik ve eski Pro/ödül haklarına geçiş.
+
+
+  G        Arcade, Grid, bot                         Yardımlı sonuçlar ve ayrı rekorlar.
+
+
+  H        Seçim/sıralama ve online                  No-pay-to-win negatif kapılar.
+
+
+  I        UI, mağaza ve satın alma analitiği        Tek ekran, hesap bazlı stok, anlaşılır hata.
+
+
+  J        Yerel/emülatör/gerçek cihaz               PASS raporu, beta rollout; sonrasında canlı ads.
+           doğrulaması
+
+
+Doğrulama basamakları: fonksiyon unit testleri RTDB emulator/security rules Flutter widget testleri Android
+emülatör smoke testleri gerçek cihaz AdMob test birimleri sınırlı üretim beta kullanıcı analitiği ve fiyat ince
+ayarı.
+
+
+
+16 PASS / FAIL kabul kriterleri
+Aşağıdaki kriterler kabul testidir, gerçekleştirilmiş PASS sonucu değildir. Her testte ortam, commit, test çıktısı, ekran
+görüntüsü/log ve beklenen sonuç kayıt altına alınacaktır.
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                                   11
+LINKBALL                                                                              İpucu & Güçlendirme V1
+
+
+
+Kapsam ve politika (12 test)
+
+ Kod         Kontrol                                                                   Durum
+
+ B001        Tüm ana solo kategorileri envanterde vardır.                              [ ] PASS [ ] FAIL
+
+
+ B002        Grid solo üç varyantı ayrı modId taşır.                                   [ ] PASS [ ] FAIL
+
+
+ B003        Passaparola haftalık/günlük ayrılır.                                      [ ] PASS [ ] FAIL
+
+
+ B004        Sahte Kulüp sonsuz/hız ve Zincir sprint ayrılır.                          [ ] PASS [ ] FAIL
+
+
+ B005        Burst hız/dayanıklılık iki ayrı yardım kuralına sahiptir.                 [ ] PASS [ ] FAIL
+
+
+ B006        Hikâye kataloğundaki sekiz bölümün tamamı kapsanır.                       [ ] PASS [ ] FAIL
+
+
+ B007        Bot katalogundaki yedi modun tamamı kapsanır.                             [ ] PASS [ ] FAIL
+
+
+ B008        Online katalogdaki 13 wireName listede tamdır.                            [ ] PASS [ ] FAIL
+
+
+ B009        Planlı Kriter Kadro Kurma canlı moda yanlışlıkla aktif yazılmaz.          [ ] PASS [ ] FAIL
+
+
+ B010        Bütün modlarda bedelsiz isteğe bağlı ipucu artık bulunmaz.                [ ] PASS [ ] FAIL
+
+
+ B011        Zorunlu başlangıç bilgi ve kuralları bedelsiz kalır.                      [ ] PASS [ ] FAIL
+
+
+ B012        Normal sil / pas / yalnız karıştır davranışı yanlışlıkla para istemez.    [ ] PASS [ ] FAIL
+
+
+
+
+Store / satın alma (12 test)
+
+ Kod         Kontrol                                                                   Durum
+
+ B013        Eski üç boost SKU ve envanter miktarı korunur.                            [ ] PASS [ ] FAIL
+
+
+ B014        Yalnız etkin ve moda uygun SKU satın alınabilir.                          [ ] PASS [ ] FAIL
+
+
+ B015        Sunucu fiyatı ve beklenen fiyat eşleşmedikçe Coin düşmez.                 [ ] PASS [ ] FAIL
+
+
+ B016        Bütçe yetersizse bakiye ve stok değişmez.                                 [ ] PASS [ ] FAIL
+
+
+ B017        Paket fiyatı × adet ve stok sınırı tutarlıdır.                            [ ] PASS [ ] FAIL
+
+
+ B018        Aynı purchase requestId ikinci kez Coin kesmez.                           [ ] PASS [ ] FAIL
+
+
+ B019        İki cihazdan eş zamanlı satın alım bakiyeyi eksiye düşürmez.              [ ] PASS [ ] FAIL
+
+
+ B020        Boş/iptal/expired öğenin tüketimine izin verilmez.                        [ ] PASS [ ] FAIL
+
+
+ B021        Satın alma sonrası UI envanteri sunucuya uygun günceller.                 [ ] PASS [ ] FAIL
+
+
+ B022        Geçersiz modeId ile boost tüketimi reddedilir.                            [ ] PASS [ ] FAIL
+
+
+ B023        Satın alınmış stok başka hesaba sızmaz.                                   [ ] PASS [ ] FAIL
+
+
+ B024        Boost disabled flag sırasında satış ve kullanım politikası açıktır.       [ ] PASS [ ] FAIL
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                       12
+LINKBALL                                                                          İpucu & Güçlendirme V1
+
+
+
+Reklam ve SSV (15 test)
+
+ Kod         Kontrol                                                               Durum
+
+ B025        Reklam öncesi ödül ve opt-in net gösterilir.                          [ ] PASS [ ] FAIL
+
+
+ B026        Yalnız desteklenen mod, geçerli session ve sku için bilet verilir.    [ ] PASS [ ] FAIL
+
+
+ B027        Bir ticket yalnız tek modeId/runId/skuId içerir.                      [ ] PASS [ ] FAIL
+
+
+ B028        Sunucu ad unit eşlemesi doğrulanır.                                   [ ] PASS [ ] FAIL
+
+
+ B029        Transaction id replay ikinci hak vermez.                              [ ] PASS [ ] FAIL
+
+
+ B030        Expired/iptal reklam biletleri hak vermez.                            [ ] PASS [ ] FAIL
+
+
+ B031        SSV yokken istemci kendi beyanıyla hak alamaz.                        [ ] PASS [ ] FAIL
+
+
+ B032        Başarıyla tamamlanan reklam hak üretir; bekleme durumunda korunur.    [ ] PASS [ ] FAIL
+
+
+ B033        Reklam yüklenmezse oyun kilitlenmez.                                  [ ] PASS [ ] FAIL
+
+
+ B034        Günlük 4 reklamlı destek sınırı tüm modlarda ortaktır.                [ ] PASS [ ] FAIL
+
+
+ B035        Bir oturumda 2 reklamlı destekten fazlası verilmez.                   [ ] PASS [ ] FAIL
+
+
+ B036        Günlük sabit bulmacada 1 sınırı çalışır.                              [ ] PASS [ ] FAIL
+
+
+ B037        Reklamı iki kez başlatıp eşzamanlı rezervasyon kotası aşılmaz.        [ ] PASS [ ] FAIL
+
+
+ B038        AdMob test ID ile üretim ID birbirine karışmaz.                       [ ] PASS [ ] FAIL
+
+
+ B039        Consent reddi sonrası yanlışlıkla reklam başlatılmaz.                 [ ] PASS [ ] FAIL
+
+
+
+
+İpucu ve oyun mantığı (16 test)
+
+ Kod         Kontrol                                                               Durum
+
+ B040        Boost anlamlı ve doğrulanmış bir ipucu döndürür.                      [ ] PASS [ ] FAIL
+
+
+ B041        İstemci önceden tam cevap metnini almaz.                              [ ] PASS [ ] FAIL
+
+
+ B042        İpucu zaten açılmışsa ikinci stok eksilmez.                           [ ] PASS [ ] FAIL
+
+
+ B043        İpucunun hedefi aktif puzzle ID ile eşleşir.                          [ ] PASS [ ] FAIL
+
+
+ B044        İpucu kaynak kayıt / versiyon değişiminde bozulmaz.                   [ ] PASS [ ] FAIL
+
+
+ B045        Gizli alternatif doğru cevaplar haksız kaybettirmez.                  [ ] PASS [ ] FAIL
+
+
+ B046        Pyramid çözümü doğrulanmadan bilgi açılmaz.                           [ ] PASS [ ] FAIL
+
+
+ B047        Matching gerçek tarihsel çiftler arasında tutarlıdır.                 [ ] PASS [ ] FAIL
+
+
+ B048        Higher/Lower yardımlı antrenman saf rekora yazılmaz.                  [ ] PASS [ ] FAIL
+
+
+ B049        Blind Ranking öznel sıralamaya ücretli yön verme sunulmaz.            [ ] PASS [ ] FAIL
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                   13
+LINKBALL                                                                            İpucu & Güçlendirme V1
+
+
+
+
+ Kod         Kontrol                                                                 Durum
+
+ B050        This or That öznel tercihte kazanma hilesi satılmaz.                    [ ] PASS [ ] FAIL
+
+
+ B051        Günlük sabit oyun, gün değişince eski bilet hakkıyla açılmaz.           [ ] PASS [ ] FAIL
+
+
+ B052        Yardım ile otomatik açılan zorunlu ipuçları ayrılır.                    [ ] PASS [ ] FAIL
+
+
+ B053        Yardımlı bot sonucu saf bot ödülünü tetiklemez.                         [ ] PASS [ ] FAIL
+
+
+ B054        Anagram ücretsiz ilk-harf/ülke yardım yolu kapanır.                     [ ] PASS [ ] FAIL
+
+
+ B055        Story Pro ve eski yardım hakları kayıp olmadan göç eder.                [ ] PASS [ ] FAIL
+
+
+
+
+PVP, skor ve ekonomi (12 test)
+
+ Kod         Kontrol                                                                 Durum
+
+ B056        13 ranked modunun tamamında avantaj SKU whitelist dışıdır.              [ ] PASS [ ] FAIL
+
+
+ B057        13 ranked modunun hiçbirinde reward ad hint açılamaz.                   [ ] PASS [ ] FAIL
+
+
+ B058        Normal arkadaş maçında hint SKU kapalıdır.                              [ ] PASS [ ] FAIL
+
+
+ B059        Online kozmetik oyun sonucunu değiştiremez.                             [ ] PASS [ ] FAIL
+
+
+ B060        Yardımlı seri yardımsız liderlik tablosuna girmez.                      [ ] PASS [ ] FAIL
+
+
+ B061        Yardımsız ustalık, yardım kullanılmış oturumda verilmez.                [ ] PASS [ ] FAIL
+
+
+ B062        Tek run için Coin/XP ödülü tekrar üretilmez.                            [ ] PASS [ ] FAIL
+
+
+ B063        Boost satın alma XP veya SP otomatik üretmez.                           [ ] PASS [ ] FAIL
+
+
+ B064        Daily mission Coin ödülü ile boost kullanımı ayrı ledger’da görünür.    [ ] PASS [ ] FAIL
+
+
+ B065        Enerji rollout kapalıyken boost geliştirimi enerji açmaz.               [ ] PASS [ ] FAIL
+
+
+ B066        Link Coin maliyeti/ödül tavanları maliyet analizine uyar.               [ ] PASS [ ] FAIL
+
+
+ B067        Profil ve görevler assisted bayrağını doğru okur.                       [ ] PASS [ ] FAIL
+
+
+
+
+Yaşam döngüsü ve arayüz (15 test)
+
+ Kod         Kontrol                                                                 Durum
+
+ B068        İnternet yokken normal oyun modu oynanabilir.                           [ ] PASS [ ] FAIL
+
+
+ B069        Uygulama arka plana geçince bilet/run yanlış kaybolmaz.                 [ ] PASS [ ] FAIL
+
+
+ B070        Store ve oyun aynı kullanıcı için stokları senkron görür.               [ ] PASS [ ] FAIL
+
+
+ B071        Google oturum değişiminde eski stok cache’i temizlenir.                 [ ] PASS [ ] FAIL
+
+
+ B072        Geri tuşu / döndürme sırasında double-submit oluşmaz.                   [ ] PASS [ ] FAIL
+
+
+ B073        Küçük ekran ve yüksek yazı ölçeğinde CTA kullanılabilir.                [ ] PASS [ ] FAIL
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                     14
+LINKBALL                                                                                                               İpucu & Güçlendirme V1
+
+
+
+
+  Kod           Kontrol                                                                                                 Durum
+
+  B074          TalkBack yardımın maliyetini ve sonucunu okur.                                                          [ ] PASS [ ] FAIL
+
+
+  B075          Satın alma iptal edilince tahsilat yapılmaz.                                                            [ ] PASS [ ] FAIL
+
+
+  B076          Yetersiz Coin ve reklam yok mesajları anlaşılırdır.                                                     [ ] PASS [ ] FAIL
+
+
+  B077          Pro üyelik geçişi kullanıcıya bildirilir; eski vaat kayıtları korunur.                                  [ ] PASS [ ] FAIL
+
+
+  B078          Geri alma (roll-back) stok ve satın alma geçmişini silmez.                                              [ ] PASS [ ] FAIL
+
+
+  B079          Android gerçek cihaz SSV callback ile test edilir.                                                      [ ] PASS [ ] FAIL
+
+
+  B080          Firebase Emulator ve rules izinlerindeki negatif testler geçer.                                         [ ] PASS [ ] FAIL
+
+
+  B081          Flutter analiz + widget/smoke testleri PASS raporlanır.                                                 [ ] PASS [ ] FAIL
+
+
+  B082          Ve son olarak özellik flag kapatıldığında oyunlar çökmemelidir.                                         [ ] PASS [ ] FAIL
+
+
+
+
+17 Çıkış kapıları ve nihai durum
+
+  Kapı                             Gerekli somut kanıt
+
+  K1 - Kapsam                      Tüm tablolardaki modId ve varyantlar kataloğa bağlı; eski ücretsiz isteğe bağlı ipucu kalmaz.
+
+
+  K2 - Ekonomi                     Store/Boost ledger pozitif-negatif ödeme testleri geçer; hiçbir double-debit yok.
+
+
+  K3 - Reklam                      Gerçek cihazda SSV doğrulanır; aynı transaction tekrar ödül üretmez.
+
+
+  K4 - Adalet                      Dereceli online whitelist/ban list ve yardımlı sonuç izolasyonu geçer.
+
+
+  K5 - Geçiş                       Mevcut stoklar, açık Pro hakları, kaydedilmiş run’lar korunur.
+
+
+  K6 - Üretim                      AdMob sunucu unit ID, consent ve Android/iOS release testleri tamamlanır.
+
+
+
+   Durum: Bu PDF yalnızca inceleme + tasarım paketidir. GitHub kodlarında değişiklik, Firebase dağıtımı, canlı
+   satın alma, gerçek reklam gösterimi veya tüm modlar için emülatör PASS yapıldığı iddia edilmez.
+
+
+
+Referans dosyalar / inceleme izleri
+lib/app/game_catalog.dart
+lib/app/bot_game_catalog.dart
+lib/online/online_mode_catalog.dart
+functions/config/store_collection.json
+functions/store_collection.js
+functions/rewarded_ads.js
+functions/config/energy_v1.json
+
+
+
+
+TEKNİK TASARIM · KOD DEĞİŞİKLİĞİ YOK                                                                                                        15
+

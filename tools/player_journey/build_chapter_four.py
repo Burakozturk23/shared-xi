@@ -93,6 +93,7 @@ for journey in journeys:
   journey['tasks'][3]['hint']='İlk katılmaları düşün; kiralık dönüşleri tekrar sayma.'
 
 enrich(journeys)
-out=ROOT/'assets/data/player_journey_chapter_four.json'
-out.write_text(json.dumps(dict(version=2,chapterId='chapter_4_icons',journeys=journeys),ensure_ascii=False,indent=2)+'\n')
+# Full chapter (with answers); build_catalog.py derives the server catalog and app asset.
+out=ROOT/'tools/player_journey/source/chapter_four.json'
+out.write_text(json.dumps(dict(version=2,chapterId='chapter_4_icons',journeys=journeys),ensure_ascii=False,indent=2)+'\n', encoding='utf-8', newline='\n')
 print(f'Wrote {len(journeys)} journeys / {sum(len(j["tasks"]) for j in journeys)} tasks')

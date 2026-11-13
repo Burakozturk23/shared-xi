@@ -200,31 +200,34 @@ void main() {
     },
   );
 
-  test('All formations have an affordable complete starter XI, including hard mode', () {
-    for (final f in ManagerFormations.all) {
-      final career = ManagerCareerState.fresh(ManagerDifficulty.hard);
-      final draft = ManagerSquadDraft(
-        career: career,
-        formation: f,
-        roster: roster,
-      );
-      final pool = roster.poolFor(
-        formation: f,
-        ownedIds: {},
-        weekKey: 'first-week',
-      );
-      draft.autoFill(pool);
-      expect(draft.complete, isTrue, reason: f.id);
-      expect(draft.selectedIds.length, 11);
-      expect(draft.cash, greaterThanOrEqualTo(0));
-      expect(
-        draft.assignments.entries.every(
-          (e) => ManagerFormation.groupOf(e.key) == e.value.positionGroup,
-        ),
-        isTrue,
-      );
-    }
-  });
+  test(
+    'All formations have an affordable complete starter XI, including hard mode',
+    () {
+      for (final f in ManagerFormations.all) {
+        final career = ManagerCareerState.fresh(ManagerDifficulty.hard);
+        final draft = ManagerSquadDraft(
+          career: career,
+          formation: f,
+          roster: roster,
+        );
+        final pool = roster.poolFor(
+          formation: f,
+          ownedIds: {},
+          weekKey: 'first-week',
+        );
+        draft.autoFill(pool);
+        expect(draft.complete, isTrue, reason: f.id);
+        expect(draft.selectedIds.length, 11);
+        expect(draft.cash, greaterThanOrEqualTo(0));
+        expect(
+          draft.assignments.entries.every(
+            (e) => ManagerFormation.groupOf(e.key) == e.value.positionGroup,
+          ),
+          isTrue,
+        );
+      }
+    },
+  );
 
   test(
     'Changing formation keeps unmatched owned players on the bench',
@@ -306,67 +309,70 @@ void main() {
     },
   );
 
-  test('Weekly offers survive reopen; transferred bench player costs zero to field', () async {
-    var career = await ready();
-    career = await store.prepareMarket(
-      difficulty: difficulty,
-      marketKey: career.currentMarketKey,
-      offers: [
-        ManagerTransferOffer(
-          player: roster.byId[1001]!,
-          askLink: 16,
-          note: 'A',
-        ),
-      ],
-    );
-    final reopened = await store.prepareMarket(
-      difficulty: difficulty,
-      marketKey: career.currentMarketKey,
-      offers: [
-        ManagerTransferOffer(
-          player: roster.byId[1002]!,
-          askLink: 20,
-          note: 'B',
-        ),
-      ],
-    );
-    expect(reopened.marketOffers.single.playerId, 1001);
-    career = await store.buy(difficulty, 1001);
-    final cash = career.budgetLink;
-    final draft = ManagerSquadDraft(
-      career: career,
-      formation: formation,
-      roster: roster,
-    );
-    final previous = draft.assignments['GK']!.playerId;
-    draft.place('GK', roster.byId[1001]!);
-    expect(draft.cash, cash);
-    career = await store.saveSquad(
-      difficulty: difficulty,
-      seasonId: career.season!.id,
-      formation: formation,
-      assignments: draft.assignments,
-    );
-    expect(career.budgetLink, cash);
-    expect(career.squadPlayerIds, contains(1001));
-    expect(career.benchPlayerIds, contains(previous));
-    expect(career.benchPlayerIds, isNot(contains(1001)));
-    await expectLater(
-      store.sellReserve(difficulty, roster.byId[1001]!),
-      throwsStateError,
-    );
-    final fixture = career.season!.nextFixture!;
-    career = await store.applyMatchResult(
-      difficulty: difficulty,
-      seasonId: career.season!.id,
-      week: fixture.week,
-      opponentId: fixture.opponentId,
-      userGoals: 0,
-      oppGoals: 0,
-    );
-    expect(career.marketKey, isNot(career.currentMarketKey));
-    await expectLater(store.buy(difficulty, 1002), throwsStateError);
-  });
+  test(
+    'Weekly offers survive reopen; transferred bench player costs zero to field',
+    () async {
+      var career = await ready();
+      career = await store.prepareMarket(
+        difficulty: difficulty,
+        marketKey: career.currentMarketKey,
+        offers: [
+          ManagerTransferOffer(
+            player: roster.byId[1001]!,
+            askLink: 16,
+            note: 'A',
+          ),
+        ],
+      );
+      final reopened = await store.prepareMarket(
+        difficulty: difficulty,
+        marketKey: career.currentMarketKey,
+        offers: [
+          ManagerTransferOffer(
+            player: roster.byId[1002]!,
+            askLink: 20,
+            note: 'B',
+          ),
+        ],
+      );
+      expect(reopened.marketOffers.single.playerId, 1001);
+      career = await store.buy(difficulty, 1001);
+      final cash = career.budgetLink;
+      final draft = ManagerSquadDraft(
+        career: career,
+        formation: formation,
+        roster: roster,
+      );
+      final previous = draft.assignments['GK']!.playerId;
+      draft.place('GK', roster.byId[1001]!);
+      expect(draft.cash, cash);
+      career = await store.saveSquad(
+        difficulty: difficulty,
+        seasonId: career.season!.id,
+        formation: formation,
+        assignments: draft.assignments,
+      );
+      expect(career.budgetLink, cash);
+      expect(career.squadPlayerIds, contains(1001));
+      expect(career.benchPlayerIds, contains(previous));
+      expect(career.benchPlayerIds, isNot(contains(1001)));
+      await expectLater(
+        store.sellReserve(difficulty, roster.byId[1001]!),
+        throwsStateError,
+      );
+      final fixture = career.season!.nextFixture!;
+      career = await store.applyMatchResult(
+        difficulty: difficulty,
+        seasonId: career.season!.id,
+        week: fixture.week,
+        opponentId: fixture.opponentId,
+        userGoals: 0,
+        oppGoals: 0,
+      );
+      expect(career.marketKey, isNot(career.currentMarketKey));
+      await expectLater(store.buy(difficulty, 1002), throwsStateError);
+    },
+  );
 
   test(
     'A concurrent result is credited exactly once, including its win bonus',
@@ -426,14 +432,21 @@ void main() {
       expect(career.season!.isComplete, isTrue);
       expect(
         career.budgetLink,
-        initial.budgetLink + career.wins * difficulty.winBonusLink,
+        initial.budgetLink +
+            career.wins * difficulty.winBonusLink +
+            career.draws * difficulty.drawBonusLink,
       );
       final next = await store.nextSeason(difficulty);
       expect(next.season!.id, isNot(career.season!.id));
       expect(next.season!.user.played, 0);
       expect(next.archivedSeasons.single.isComplete, isTrue);
       expect(next.archivedSeasons.single.fixtures.length, 38);
-      expect(next.budgetLink, career.budgetLink);
+      // The season-end reward is paid once, on rollover.
+      expect(
+        next.budgetLink,
+        career.budgetLink +
+            difficulty.seasonRewardLink(career.season!.userRank()),
+      );
       expect(next.squadPlayerIds, career.squadPlayerIds);
       expect(next.matchesPlayed, 38);
       expect(next.seasonNumber, 2);

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../app/game_audio.dart';
 import '../app/app_copy.dart';
 import '../app/app_feedback.dart';
 import '../models/achievement_catalog.dart';
 import '../models/achievement_models.dart';
 import '../services/experience/badges_gateway.dart';
+import '../theme/ortak_saha_theme.dart';
 import '../widgets/achievement_badge_emblem.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/social_ui.dart';
@@ -83,7 +85,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
       if (!mounted) return;
       if (r.granted || r.alreadyClaimed)
         setState(() => _acknowledged.add(d.id));
-      if (r.granted) AppFeedback.answer(correct: true);
+      if (r.granted) AppFeedback.reward(Sfx.coinReward);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -114,6 +116,61 @@ class _AchievementsPageState extends State<AchievementsPage> {
       if (mounted) setState(() => _claiming.remove(d.id));
     }
   }
+
+  /// Earned badges whose coin reward is still waiting.
+  List<AchievementDefinition> get _ready => AchievementCatalog.all
+      .map(_priced)
+      .where(
+        (d) =>
+            _data!.progress[d.id]?.unlocked == true &&
+            !_claimed(d.id) &&
+            d.coinReward > 0,
+      )
+      .toList();
+
+  bool _claimingAll = false;
+  Future<void> _claimAll() async {
+    if (_claimingAll || _loading) return;
+    setState(() => _claimingAll = true);
+    var total = 0;
+    var failed = false;
+    try {
+      for (final d in _ready) {
+        if (!mounted) return;
+        setState(() => _claiming.add(d.id));
+        try {
+          final r = await widget.gateway.claim(d.id);
+          if (r.granted || r.alreadyClaimed) _acknowledged.add(d.id);
+          if (r.granted) total += r.amount;
+        } catch (_) {
+          failed = true;
+        } finally {
+          if (mounted) setState(() => _claiming.remove(d.id));
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _claimingAll = false);
+    }
+    if (!mounted) return;
+    if (total > 0) AppFeedback.reward(Sfx.coinReward);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          failed
+              ? c(
+                  '+$total Link Coin alındı; bazı ödüller alınamadı, yeniden dene.',
+                  '+$total Link Coin claimed; some rewards failed, retry.',
+                )
+              : '+$total Link Coin',
+        ),
+      ),
+    );
+  }
+
+  /// Badges of the same goal, easiest first: the ladder this badge sits on.
+  List<AchievementDefinition> _ladder(AchievementDefinition d) =>
+      AchievementCatalog.all.where((x) => x.signal == d.signal).toList()
+        ..sort((a, b) => a.target.compareTo(b.target));
 
   void _details(AchievementDefinition d) {
     final p = _data!.progress[d.id];
@@ -161,6 +218,38 @@ class _AchievementsPageState extends State<AchievementsPage> {
                     socialDate(p!.unlockedAtMs),
                     textAlign: TextAlign.center,
                   ),
+                if (_ladder(d).length > 1) ...[
+                  const SizedBox(height: 20),
+                  Text(
+                    c('Bu hedefin basamakları', 'Steps of this goal'),
+                    style: Theme.of(sheet).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  for (final step in _ladder(d).map(_priced))
+                    ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        _data!.progress[step.id]?.unlocked == true
+                            ? Icons.check_circle_rounded
+                            : step.id == d.id
+                            ? Icons.radio_button_checked_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        color: _data!.progress[step.id]?.unlocked == true
+                            ? PitchColors.of(sheet).success
+                            : null,
+                      ),
+                      title: Text(
+                        '${step.title} · ${step.target}',
+                        style: step.id == d.id
+                            ? const TextStyle(fontWeight: FontWeight.w700)
+                            : null,
+                      ),
+                      trailing: step.coinReward > 0
+                          ? Text('+${step.coinReward}')
+                          : null,
+                    ),
+                ],
                 const SizedBox(height: 20),
                 // Claim on the live page, where pending/error state stays visible.
                 FilledButton(
@@ -260,7 +349,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
           eyebrow: c('SAHADAKİ İMZAN', 'YOUR MARK ON THE PITCH'),
           title: c('$unlocked rozet senin.', '$unlocked badges earned.'),
           message: c(
-            'Sezonlar değişir, başarımların kalır. 1’den 750 galibiyete kendi futbol hikâyeni yaz.',
+            'Sezonlar değişir, başarımların kalır. Her dereceli modun kendi rozet basamağı var; 1’den 750 galibiyete kendi futbol hikâyeni yaz.',
             'Every badge tells a story. Choose your next goal.',
           ),
           footer: Column(
@@ -272,6 +361,37 @@ class _AchievementsPageState extends State<AchievementsPage> {
               ),
               const SizedBox(height: 8),
               Text('$unlocked / ${AchievementCatalog.all.length}'),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  for (final tier in AchievementTier.values)
+                    Chip(
+                      visualDensity: VisualDensity.compact,
+                      label: Text(
+                        '${_tierLabel(tier)} '
+                        '${AchievementCatalog.all.where((d) => d.tier == tier && _data!.progress[d.id]?.unlocked == true).length}'
+                        '/${AchievementCatalog.all.where((d) => d.tier == tier).length}',
+                      ),
+                    ),
+                ],
+              ),
+              if (_ready.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                FilledButton.icon(
+                  onPressed: _claimingAll || _loading ? null : _claimAll,
+                  icon: const Icon(Icons.redeem_rounded),
+                  label: Text(
+                    _claimingAll
+                        ? c('Alınıyor…', 'Claiming…')
+                        : c(
+                            '${_ready.length} ödülü al · +${_ready.fold<int>(0, (n, d) => n + d.coinReward)} Link Coin',
+                            'Claim ${_ready.length} rewards · +${_ready.fold<int>(0, (n, d) => n + d.coinReward)} Link Coin',
+                          ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -329,9 +449,22 @@ class _AchievementsPageState extends State<AchievementsPage> {
               'Explore another category.',
             ),
           ),
-        if (_category == null && _filter == _BadgeFilter.all)
-          for (final track in _AchievementTrack.values) _trackSection(track)
-        else
+        if (_category == null && _filter == _BadgeFilter.all) ...[
+          if (_nextGoals.isNotEmpty) ...[
+            Text(
+              c('Sıradaki hedeflerin', 'Your next goals'),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 12),
+            for (final d in _nextGoals)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _tile(d),
+              ),
+            const SizedBox(height: 12),
+          ],
+          for (final track in _AchievementTrack.values) _trackSection(track),
+        ] else
           for (final d in visible)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -340,6 +473,28 @@ class _AchievementsPageState extends State<AchievementsPage> {
       ],
     );
   }
+
+  /// The three locked badges closest to done (some progress first).
+  List<AchievementDefinition> get _nextGoals {
+    final open =
+        AchievementCatalog.all
+            .where(
+              (d) =>
+                  _data!.progress[d.id]?.unlocked != true &&
+                  (_data!.progress[d.id]?.value ?? 0) > 0,
+            )
+            .map(_priced)
+            .toList()
+          ..sort((a, b) => _ratio(b).compareTo(_ratio(a)));
+    return open.take(3).toList();
+  }
+
+  String _tierLabel(AchievementTier t) => switch (t) {
+    AchievementTier.bronze => c('Bronz', 'Bronze'),
+    AchievementTier.silver => c('Gümüş', 'Silver'),
+    AchievementTier.gold => c('Altın', 'Gold'),
+    AchievementTier.platinum => c('Platin', 'Platinum'),
+  };
 
   _AchievementTrack _track(AchievementDefinition d) {
     if (d.signal == 'ranked_wins') return _AchievementTrack.victories;

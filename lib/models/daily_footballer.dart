@@ -1,4 +1,5 @@
 import '../services/search_service.dart';
+import 'rewarded_ad_models.dart';
 
 DateTime footballerDay(DateTime time) {
   final istanbul = time.toUtc().add(const Duration(hours: 3));
@@ -73,7 +74,8 @@ class DailyFootballerCatalog {
     if (normalized.length < 2) return [];
     final tokens = normalized.split(' ').where((t) => t.isNotEmpty);
     final used = round.guesses.map((p) => p.id).toSet();
-    final candidates = [round.target, ...players.where((p) => p.id != round.target.id)]
+    final known = round.knownTarget;
+    final candidates = [if (known != null) known, ...players.where((p) => p.id != known?.id)]
       ..sort((a, b) => a.name.compareTo(b.name));
     return candidates.where((p) => !used.contains(p.id) &&
       [p.name, ...p.aliases].any((label) {
@@ -97,20 +99,33 @@ class FootballerClue {
 
 class DailyFootballerRound {
   DailyFootballerRound({required this.dayKey, required this.catalogVersion, required this.asOf,
-    required this.target, List<DailyFootballer> guesses = const [], this.hintUsed = false,
-    this.extraUsed = false, this.revealed = false}) : guesses = List.unmodifiable(guesses);
+    required DailyFootballer? target, List<DailyFootballer> guesses = const [], this.hintUsed = false,
+    this.extraUsed = false, this.revealed = false, this.serverData})
+      : _target = target, guesses = List.unmodifiable(guesses);
   final String dayKey, catalogVersion, asOf;
-  final DailyFootballer target;
+  final DailyFootballer? _target;
+  final Map<String, dynamic>? serverData;
+  DailyFootballer? get knownTarget => _target;
+  DailyFootballer get target => _target ?? (throw StateError('Hedef henüz açılmadı.'));
+  bool get serverOwned => serverData != null;
+  bool get assisted => serverData?['assisted'] == true;
+  factory DailyFootballerRound.fromServer(Map<String, dynamic> j) => DailyFootballerRound(
+    dayKey: j['dayKey'] as String, catalogVersion: j['catalogVersion'] as String, asOf: j['asOf'] as String,
+    target: j['target'] == null ? null : DailyFootballer.fromJson(rewardMap(j['target'])),
+    guesses: (j['guesses'] as List? ?? const []).map((p) => DailyFootballer.fromJson(rewardMap(p))).toList(),
+    hintUsed: j['hintUsed'] == true, extraUsed: j['extraUsed'] == true, revealed: j['revealed'] == true,
+    serverData: j);
   final List<DailyFootballer> guesses;
   final bool hintUsed, extraUsed, revealed;
   int get limit => extraUsed ? 7 : 6;
-  bool get won => guesses.any((p) => p.id == target.id);
-  bool get finished => won || revealed || (extraUsed && guesses.length >= 7);
+  bool get won => serverOwned ? serverData!['won'] == true : guesses.any((p) => p.id == target.id);
+  bool get finished => serverOwned ? serverData!['finished'] == true : won || revealed || (extraUsed && guesses.length >= 7);
   bool get canGuess => !finished && guesses.length < limit;
   bool get canHint => canGuess && guesses.isNotEmpty && !hintUsed;
   bool get canExtra => !finished && !extraUsed && guesses.length == 6;
   int get remaining => (limit - guesses.length).clamp(0, 7).toInt();
   String get hint {
+    if (serverOwned) return serverData?['hint'] as String? ?? '';
     final parts = target.name.split(' ').where((p) => p.isNotEmpty).toList();
     return 'Adı ${parts.first[0].toUpperCase()} harfiyle başlıyor' +
         (parts.length > 1 ? ', son kelimesinin ilk harfi ${parts.last[0].toUpperCase()}.' : '.');
@@ -122,6 +137,12 @@ class DailyFootballerRound {
       extraUsed: extraUsed ?? this.extraUsed, revealed: revealed ?? this.revealed);
 
   List<FootballerClue> compare(DailyFootballer guess) {
+    if (serverOwned) {
+      return (rewardMap(serverData?['clues'])[guess.id] as List? ?? const []).map((raw) {
+        final c = rewardMap(raw);
+        return FootballerClue('${c['label']}', '${c['value']}', FootballerMatch.values.byName('${c['match']}'));
+      }).toList();
+    }
     FootballerMatch same(Object a, Object b) => a == b ? FootballerMatch.same : FootballerMatch.different;
     FootballerMatch number(int actual, int guessed) => actual == guessed ? FootballerMatch.same :
         actual > guessed ? FootballerMatch.higher : FootballerMatch.lower;

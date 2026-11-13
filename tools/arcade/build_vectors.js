@@ -11,7 +11,7 @@ for (const style of ["speed", "survival"]) {
   const scenario = {style, initial: E.publicRun(E.catalog, structuredClone(r), 100000), steps: []};
   function step(action, extra = {}, elapsedMs = 250) {
     const event = {mode: "burst", sessionId: r.id, revision: r.revision, action, questionId: r.question.id, elapsedMs, ...extra};
-    const time = r.lastAt + elapsedMs; E.tick(E.catalog, r, time);
+    const time = r.lastAt + E.effectiveElapsed(r, action, elapsedMs); E.tick(E.catalog, r, time);
     if (!r.finished) E.act(E.catalog, r, event, time); r.revision++;
     const view = E.publicRun(E.catalog, structuredClone(r), time);
     scenario.steps.push({event, expected: Object.fromEntries(fields.filter((k) => view[k] != null).map((k) => [k, view[k]])), questionId: view.question.id});

@@ -1,3 +1,5 @@
+import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 
@@ -256,11 +258,14 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
       label: const Text('Nostalji Albümü'),
     ),
     const SizedBox(height: 16),
-    const StoryArchiveRewards(storageId: 'nostalgia-rewards',
+    StoryArchiveRewards(storageId: 'nostalgia-rewards',
       summary: 'Her görev · 6 Coin + 15 XP', children: [
-        Text('Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
-        SizedBox(height: 8),
-        Text('İlk 12 bölümün albüm finali: 60 Coin + 120 XP. Ek bölümler de görev ve bölüm ödülleri kazandırır.'),
+        const Text('Her bölüm: 15 Coin + 30 XP. Ödüller ilk tamamlamada bir kez verilir.'),
+        const SizedBox(height: 8),
+        const Text('İlk 12 bölümün albüm finali: 60 Coin + 120 XP. Ek bölümler de görev ve bölüm ödülleri kazandırır.'),
+        const SizedBox(height: 8),
+        Text('Tüm ${c.catalog.chapters.length} bölüm: ${storyFinals['turkish_nostalgia']!.coins} Coin + '
+          '${storyFinals['turkish_nostalgia']!.xp} XP kapanış ödülü (bir kez).', key: const ValueKey('nostalgia-expansion-final')),
       ]),
     if (c.pending.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 12),
       child: Text('${c.pending.length} görev sunucu onayı bekliyor.')),
@@ -317,7 +322,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
     Text(c.active!.tasks.map((t) => t.mechanicLabel).join('  •  ')),
     const SizedBox(height: 20),
     const Text(
-      'Temel ipucu ücretsiz. Güçlü yardım görev başına bir kez 6 Coin; Pro’da ücretsiz. Tekrar oynama yeni ödül vermez.',
+      'Destek fiyatını kullanmadan önce görebilirsin. Önceden açtığın yardım hakların korunur. Tekrar oynama yeni ödül vermez.',
     ),
     const SizedBox(height: 20),
     FilledButton(
@@ -416,6 +421,9 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
         for (final option in t.options) _option(c, option),
       ],
       const SizedBox(height: 12),
+      StorySupportPanel(mode: 'nostalgia', targetId: t.id, disabled: c.busy,
+        knownBasic: c.hintOpen ? t.text('hint') : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       OutlinedButton.icon(
         onPressed: c.busy ? null : c.hint,
         icon: const Icon(Icons.lightbulb_outline),
@@ -426,11 +434,11 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(t.text('hint')),
         ),
-      if (!t.serverValidated && c.hints.contains(t.id))
+      if ((!t.serverValidated || t.legacyHints) && c.hints.contains(t.id))
         PitchPanel(child: Text(t.text('strongHint')))
-      else if (!t.serverValidated)
+      else if (!t.serverValidated || t.legacyHints)
         TextButton(
-          onPressed: c.task!.serverValidated || c.busy || c.syncing
+          onPressed: c.task!.serverValidated && !c.task!.legacyHints || c.busy || c.syncing
               ? null
               : () async {
                   final buy = await showDialog<bool>(
@@ -460,6 +468,7 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
             c.pro ? 'Pro: güçlü yardım ücretsiz' : 'Güçlü yardım · 6 Coin',
           ),
         ),
+      ])),
       const SizedBox(height: 16),
       FilledButton(
         onPressed: c.busy || !c.canSubmit
@@ -510,6 +519,8 @@ class _TurkishNostalgiaPageState extends State<TurkishNostalgiaPage> {
   }
 
   List<Widget> _result(TurkishNostalgiaController c) => [
+      StorySupportPanel(mode: 'nostalgia', targetId: c.task!.id, resultOnly: true, legacy: const SizedBox.shrink()),
+
     _paper(
       'TARİHİ GERÇEKLER',
       'Doğru izdesin',

@@ -1,3 +1,5 @@
+import 'manager_league_club.dart';
+
 /// Maç öncesi taktik (0.0 – 1.0 kaydırıcılar).
 class ManagerTactics {
   /// 0 = alçak blok, 1 = yüksek press
@@ -73,6 +75,22 @@ extension OpponentStyleX on OpponentStyle {
     }
   }
 
+  /// What beats this style, as matchupMultiplier scores it.
+  String get advice {
+    switch (this) {
+      case OpponentStyle.lowBlock:
+        return 'Geride kapanan rakibe geniş ve tempolu oyna; aşırı baskı boşa enerji harcatır.';
+      case OpponentStyle.balanced:
+        return 'Belirgin zayıfı yok; dengeli bir plan ve kadro gücü belirleyici.';
+      case OpponentStyle.highPress:
+        return 'Önde basan rakibe alçak blok ve kontrollü tempo, arkada boşluk bulur.';
+      case OpponentStyle.possession:
+        return 'Topu seven rakibi yüksek baskı ve tempo bozar; geride beklersen top hep onda kalır.';
+      case OpponentStyle.counter:
+        return 'Kontra oynayan rakibe dar ve kontrollü oyna; yüksek tempo arkada alan bırakır.';
+    }
+  }
+
   String get blurb {
     switch (this) {
       case OpponentStyle.lowBlock:
@@ -89,16 +107,45 @@ extension OpponentStyleX on OpponentStyle {
   }
 }
 
+/// The one in-match decision, taken at half-time.
+enum ManagerHalftimePlan { keep, push, protect }
+
+extension ManagerHalftimePlanX on ManagerHalftimePlan {
+  String get label => switch (this) {
+    ManagerHalftimePlan.keep => 'Planı koru',
+    ManagerHalftimePlan.push => 'Öne çık',
+    ManagerHalftimePlan.protect => 'Skoru koru',
+  };
+
+  String get detail => switch (this) {
+    ManagerHalftimePlan.keep => 'İkinci yarı aynı dengeyle sürer.',
+    ManagerHalftimePlan.push => 'Daha çok pozisyon bulursun ama arkada boşluk verirsin.',
+    ManagerHalftimePlan.protect => 'İki takım da az pozisyon bulur; skoru tutmak kolaylaşır.',
+  };
+
+  /// Second-half xG multipliers (yours, theirs).
+  (double, double) get xg => switch (this) {
+    ManagerHalftimePlan.keep => (1.0, 1.0),
+    ManagerHalftimePlan.push => (1.35, 1.25),
+    ManagerHalftimePlan.protect => (0.7, 0.65),
+  };
+}
+
 class ManagerOpponent {
   final String name;
   final String leagueHint;
   final OpponentStyle style;
   final double basePower; // 45-95
 
+  /// The real club: its badge and its scorers in the report. Null for a made-up
+  /// club of a season started before the league of real clubs.
+  final ManagerLeagueClub? club;
+
   const ManagerOpponent({
     required this.name,
     required this.leagueHint,
     required this.style,
     required this.basePower,
+    this.club,
   });
 }

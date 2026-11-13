@@ -3,7 +3,7 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
 const {catalog} = require("../mystery_chain");
-const {graphOf, shortest, validMove, remaining} = require("../mystery_chain_graph");
+const {graphOf, shortest, validMove, remaining, countShortest, bannedOf} = require("../mystery_chain_graph");
 const {players} = require("../career_transfer");
 const version = catalog.version;
 const graph = graphOf(catalog);
@@ -26,7 +26,11 @@ test("M01-M03: complete unique clues, plausible options and exact dated teammate
   const ct = require("../config/career_transfer_catalog.json");
   for (const p of catalog.mystery) {
     assert.ok(p.country && p.position && p.options.length >= 4);
-    assert.equal(new Set(p.hints.map((h) => h.id)).size, 5);
+    assert.equal(new Set(p.hints.map((h) => h.id)).size, p.hints.length);
+    assert.ok(p.hints.length >= 5 && p.layout === 2 && p.countryLabel);
+    assert.deepEqual(p.optional, Array.from({length: p.hints.length - 3}, (_, i) => i + 3));
+    // The period clue names its club; mastery-level clues read in Turkish.
+    assert.match(p.hints[1].text, /^Bir dönemi: .+, \d{4} – (\d{4}|devam)$/);
     assert.ok(p.hints.every((h) => h.text && !/Bilinmiyor|Piyasa değeri|veri dönemi sınırlı/.test(h.text)));
     for (const id of p.options) {
       assert.equal(players.get(id).country, p.country);
@@ -44,7 +48,7 @@ test("M01-M03: complete unique clues, plausible options and exact dated teammate
 });
 test("C01-C03: every catalog PAR is exact; every supplied route obeys unique players and clubs", () => {
   for (const p of [...catalog.mastery, ...catalog.sprint]) {
-    assert.equal(shortest(graph, p.start, p.target).length, p.par);
+    assert.equal(shortest(graph, p.start, p.target, bannedOf(catalog, p)).length, p.par);
     const r = {puzzle: p, path: []};
     for (const step of p.solution) {
       assert.ok(validMove(graph, r, step.playerId, step.clubId)); r.path.push(step);
@@ -58,7 +62,8 @@ test("C01-C03: every catalog PAR is exact; every supplied route obeys unique pla
 });
 test("M04-M06: automatic facts are distinct; invalid and repeated guesses do not consume attempts", async () => {
   const h = harness({}, {omitEmptyObjects: true}); let s = await start(h, "mystery");
-  assert.equal(s.initial.length, 2); assert.equal(s.player, undefined);
+  assert.equal(s.initial.length, 3); assert.equal(s.player, undefined);
+  assert.match(s.initial[2].text, /^Oynadığı kulüp: /);
   assert.equal((await h.call("getMysteryChain", {mode: "mystery"})).collection.length, 0);
   await assert.rejects(act(h, s, {action: "guess", answer: "unrecognized"}), {code: "invalid-argument"});
   const p = raw(h, s).puzzle;
@@ -69,6 +74,62 @@ test("M04-M06: automatic facts are distinct; invalid and repeated guesses do not
   s = await act(h, s, {action: "hint"}); s = await act(h, s, {action: "guess", playerId: wrong[1]});
   assert.equal(new Set(s.hints.map((x) => x.id)).size, 3); assert.equal(s.optionalHints, 1);
   s = await solve(h, s); assert.equal(s.result.coins, 2); assert.equal(s.result.medal, 1);
+});
+const seedFile = (h, p) => h.seed(`economyState/alice/mysteryChain/collection/mystery__${p.playerId}`,
+    {id: p.id, mode: "mystery", firstAt: 1, last: {medal: 0}});
+test("mystery: archive replays leave the streak alone; five first finds pay the streak reward once", async () => {
+  const h = harness({}, {omitEmptyObjects: true}); let s;
+  for (let i = 0; i < 5; i++) s = await solve(h, await start(h, "mystery"));
+  assert.equal(s.streak, 5); assert.equal(s.result.badge, "streak_5");
+  assert.equal(s.result.coins, 6 + 10);
+  let st = await h.call("getMysteryChain", {mode: "mystery"});
+  assert.equal(st.longestStreak, 5); assert.equal(st.streakRewards[0].earned, true);
+  const p = raw(h, s).puzzle;
+  for (let i = 0; i < 3; i++) {
+    s = await start(h, "mystery", {target: p.id}); s = await act(h, s, {action: "skip"});
+  }
+  s = await start(h, "mystery", {target: p.id}); s = await solve(h, s);
+  assert.equal(s.streak, 0); assert.equal(s.result.badge, undefined);
+  st = await h.call("getMysteryChain", {mode: "mystery"});
+  assert.equal(st.streak, 5); assert.equal(st.longestStreak, 5);
+});
+test("mystery: a player matching all shown clues is accepted and the reveal names the others", async () => {
+  const p = catalog.mystery.find((x) => x.alsoPlayerIds);
+  assert.ok(catalog.mystery.filter((x) => x.alsoPlayerIds).length >= 5);
+  const h = harness(); seedFile(h, p);
+  let s = await start(h, "mystery", {target: p.id});
+  s = await act(h, s, {action: "guess", playerId: p.alsoPlayerIds[0]});
+  assert.equal(s.found, true); assert.equal(s.answer.id, p.alsoPlayerIds[0]);
+  assert.ok(!s.alsoBy.includes(players.get(p.alsoPlayerIds[0]).name));
+});
+test("mystery: one optional clue keeps mastery; profile clue comes second; levels and daily", async () => {
+  const p = catalog.mystery.find((x) => x.hints[4]?.id === "profile");
+  const h = harness(); seedFile(h, p);
+  let s = await start(h, "mystery", {target: p.id});
+  h.seed(`economyState/alice/mysteryChain/sessions/${s.id}/adCredits`, 2);
+  s = await act(h, s, {action: "hint"}); assert.equal(s.optionalLeft, 2);
+  s = await act(h, s, {action: "hint"}); assert.match(s.hints.at(-1).text, /^Profil: /);
+  const h2 = harness(); let s2 = await start(h2, "mystery");
+  h2.seed(`economyState/alice/mysteryChain/sessions/${s2.id}/adCredits`, 1);
+  s2 = await act(h2, s2, {action: "hint"}); s2 = await solve(h2, s2);
+  assert.equal(s2.result.medal, 4);
+  for (const level of ["easy", "medium", "hard"]) {
+    const x = harness(); const r = await start(x, "mystery", {difficulty: level});
+    assert.equal(r.difficulty, level);
+  }
+  const a = harness(); const b = harness();
+  const d1 = await start(a, "mystery", {daily: true}); const d2 = await start(b, "mystery", {daily: true});
+  assert.equal(raw(a, d1).puzzle.id, raw(b, d2).puzzle.id); assert.ok(d1.daily);
+  assert.equal(raw(a, d1).puzzle.alsoPlayerIds, undefined);
+});
+test("mystery: a file that runs out of time says so and does not break the streak", async () => {
+  const h = harness({}, {omitEmptyObjects: true});
+  await solve(h, await start(h, "mystery"));
+  await start(h, "mystery");
+  h.setTime(h.now + 86400001);
+  const st = await h.call("getMysteryChain", {mode: "mystery"});
+  assert.equal(st.session.expired, true); assert.match(st.session.feedback, /24 saat/);
+  assert.equal(st.session.result.expired, true); assert.equal(st.streak, 1);
 });
 test("M07-M09: atomic energy, persisted account ownership, first failure freezes economy", async () => {
   const h = harness({runtimeConfig: {energy: {enabled: true, percent: 100, sessionModes: ["mystery", "chain"]}}},
@@ -104,10 +165,56 @@ test("C04-C06: exact PAR earns mastery; undo keeps gold but removes mastery; hin
   s = await act(h, s, {action: "undo"}); s = await solve(h, s);
   assert.equal(s.result.medal, 3); assert.equal(s.result.coins, 8);
   s = await start(h, "mastermind"); s = await act(h, s, {action: "hint"});
-  const hint = s.bridgeHint; assert.ok(validMove(graph, raw(h, s), hint.playerId, hint.clubId));
+  // The hint names the next bridge player only, never the club.
+  const hint = s.bridgeHint; const step = remaining(graph, raw(h, s))[0];
+  assert.equal(hint.playerId, step.playerId); assert.equal(hint.clubId, undefined);
+  assert.match(hint.text, /^Sıradaki köprü futbolcusu: /); assert.ok(hint.id.endsWith(`__${step.playerId}`));
   await assert.rejects(act(h, s, {action: "hint"}), {code: "failed-precondition"});
-  s = await act(h, s, {action: "move", playerId: hint.playerId, clubId: hint.clubId}); assert.equal(s.bridgeHint, null);
+  s = await act(h, s, {action: "move", ...step}); assert.equal(s.bridgeHint, null);
   s = await act(h, s, {action: "undo"}); assert.equal(s.bridgeHint, null);
+});
+test("chain pairs: both ends well connected, PAR-1 and PAR-2 pairs have more than one answer", () => {
+  const deg = (id) => graph.byClub.get(id)?.length || 0;
+  for (const p of [...catalog.mastery, ...catalog.sprint]) {
+    assert.ok(Math.min(deg(p.start), deg(p.target)) >= 2, p.id);
+    if (p.par <= 2) assert.ok(countShortest(graph, p.start, p.target) >= 2, p.id);
+  }
+  assert.ok(catalog.mastery.length >= 900 && catalog.sprint.length >= 600);
+  const names = catalog.clubs.map((c) => c.name);
+  assert.equal(new Set(names).size, names.length);
+  assert.equal(countShortest(graphOf({graph: [{id: 1, clubs: [1, 2]}, {id: 2, clubs: [1, 2]},
+    {id: 3, clubs: [2, 3]}]}), 1, 3), 2);
+});
+test("sprint pass never lands on one fixed pair", async () => {
+  const after = new Set();
+  for (let i = 0; i < 6; i++) {
+    const h = harness(); let s = await start(h, "blitz"); const before = raw(h, s).puzzle.id;
+    s = await act(h, s, {action: "skip"}); const next = raw(h, s).puzzle.id;
+    assert.notEqual(next, before); after.add(next);
+  }
+  assert.ok(after.size >= 4);
+});
+test("chain: giving up shows the shortest route; it stays hidden while playing; daily chain is shared", async () => {
+  const h = harness(); let s = await start(h, "mastermind");
+  assert.equal(s.solution, undefined); assert.equal(s.routeCount, undefined);
+  const p = raw(h, s).puzzle;
+  s = await act(h, s, {action: "skip"});
+  assert.equal(s.gaveUp, true); assert.equal(s.solution.length, p.par);
+  assert.ok(s.solution.every((x) => x.player.name && x.club.name));
+  assert.equal(s.routeCount, countShortest(graph, p.start, p.target, bannedOf(catalog, p)));
+  const a = harness(); const b = harness();
+  const d1 = await start(a, "mastermind", {daily: true}); const d2 = await start(b, "mastermind", {daily: true});
+  assert.equal(raw(a, d1).puzzle.id, raw(b, d2).puzzle.id); assert.ok(d1.daily); assert.ok(d1.par <= 3);
+});
+test("chain: two hints on a PAR route drop gold to silver", async () => {
+  const p = catalog.mastery.find((x) => x.par >= 2);
+  const h = harness({}, {omitEmptyObjects: true});
+  h.seed(`economyState/alice/mysteryChain/collection/chain__${p.id}`, {id: p.id, mode: "mastermind", last: {medal: 0}});
+  let s = await start(h, "mastermind", {target: p.id});
+  h.seed(`economyState/alice/mysteryChain/sessions/${s.id}/adCredits`, 2);
+  s = await act(h, s, {action: "hint"}); s = await act(h, s, {action: "move", ...remaining(graph, raw(h, s))[0]});
+  s = await act(h, s, {action: "hint"}); s = await solve(h, s);
+  assert.equal(s.result.medal, 2);
 });
 test("C05: every offered first bridge reaches the target within remaining legal moves", () => {
   for (const p of catalog.mastery) {
@@ -215,4 +322,88 @@ test("M08: concurrent answer retries pay once and reject changed payloads or sta
   await assert.rejects(h.call("actMysteryChain", {...req, action: "skip"}), {code: "invalid-argument"});
   s = await start(h, "mastermind"); await act(h, s, {action: "hint"});
   await assert.rejects(act(h, s, {action: "skip"}), {code: "aborted"});
+});
+
+// Solo levels follow how known the player and the hinted clubs are, as in the
+// online duel (the database rank put lesser names among the easy ones), and the
+// clue clubs go from less to better known: the first card is not a youth side,
+// the third is his best-known club.
+test("mystery: levels by how known the player and hinted clubs are; clues climb to the best-known club", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const best = new Set(pv.gridClubs.map((k) => k.slice(5)));
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => k.slice(5)));
+  const rating = (p) => pv.players[String(p.playerId)]?.rating || 0;
+  const hinted = (p) => p.hints.slice(0, 3).map((h) => h.id.match(/^club_(\d+)/)?.[1] ||
+    catalog.clubs.find((c) => h.text.includes(c.name + ","))?.id).filter(Boolean).map(String);
+  const asked = catalog.mystery.filter((p) => !p.obscure);
+  for (const p of asked) {
+    const clubs = hinted(p); const name = players.get(p.playerId).name;
+    if (p.difficulty === "easy") assert.ok(rating(p) >= 82 && clubs.some((c) => best.has(c)), name);
+    else if (p.difficulty === "medium") assert.ok(rating(p) >= 78 && clubs.some((c) => best.has(c)), name);
+    else assert.ok(rating(p) >= 75 && clubs.some((c) => known.has(c)), name);
+  }
+  for (const d of ["easy", "medium", "hard"]) assert.ok(asked.filter((p) => p.difficulty === d).length >= 40, d);
+  // The third clue club is at least as well known as the first.
+  const fame = (id) => best.has(id) ? 2 : known.has(id) ? 1 : 0;
+  for (const p of asked) {
+    const first = p.hints[0].id.slice(5); const third = p.hints[2].id.slice(5);
+    assert.ok(fame(third) >= fame(first), players.get(p.playerId).name);
+  }
+  for (let i = 0; i < 15; i++) {
+    const h = harness(); const r = await start(h, "mystery");
+    assert.notEqual(raw(h, r).puzzle.obscure, true);
+  }
+});
+
+// Every known player (rating 72+) is in the chain graph, not only the ~700 career
+// puzzles, so a real link a fan knows is a legal move; pair ends are clubs a fan knows.
+test("chain: known players are legal links and every pair joins two known clubs", () => {
+  const pv = require("../pvp_engine").catalog;
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => Number(k.slice(5))));
+  for (const p of [...catalog.mastery, ...catalog.sprint]) {
+    assert.ok(known.has(p.start) && known.has(p.target), p.id);
+  }
+  const careers = new Set(require("../config/career_transfer_catalog.json").careers.map((c) => c.playerId));
+  const extra = catalog.graph.filter((g) => !careers.has(g.id));
+  assert.ok(extra.length > 1000);
+  const g = extra.find((x) => x.clubs.length >= 2 && (pv.players[String(x.id)]?.rating || 0) >= 72);
+  const run = {puzzle: {start: g.clubs[0], target: -1}, path: []};
+  assert.ok(validMove(graph, run, g.id, g.clubs[1]));
+});
+test("restricted chain: no step on a club a fan knows; PAR and route count under the rule", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => Number(k.slice(5))));
+  const files = catalog.mastery.filter((p) => p.restricted);
+  assert.ok(files.length >= 50, String(files.length));
+  for (const p of files) {
+    // Every known club but the two ends is off limits; few shortest routes are left.
+    const banned = bannedOf(catalog, p);
+    for (const k of known) if (k !== p.start && k !== p.target) assert.ok(banned.includes(k), p.id);
+    const n = countShortest(graph, p.start, p.target, banned);
+    assert.ok(n >= 1 && n <= 10, p.id + ": " + n);
+    assert.ok(p.solution.every((x) => x.clubId === p.target || !banned.includes(x.clubId)), p.id);
+  }
+  assert.deepEqual(bannedOf(catalog, catalog.mastery.find((p) => !p.restricted)), []);
+  const p = {...files[0], banned: bannedOf(catalog, files[0])};
+  const h = harness({}, {omitEmptyObjects: true});
+  h.seed(`economyState/alice/mysteryChain/collection/chain__${p.id}`, {id: p.id, mode: "mastermind", last: {medal: 0}});
+  let s = await start(h, "mastermind", {target: p.id});
+  assert.match(s.rule.text, /Kısıtlı zincir/);
+  // A banned club is a legal link in the plain graph, yet the move is refused and never offered.
+  const pid = graph.byClub.get(p.start).find((x) => graph.players.get(x).some((c) => p.banned.includes(c)));
+  const club = graph.players.get(pid).find((c) => p.banned.includes(c));
+  assert.ok(validMove(graph, {puzzle: {start: p.start, target: p.target}, path: []}, pid, club));
+  await assert.rejects(act(h, s, {action: "move", playerId: pid, clubId: club}));
+  const offered = (await h.call("searchMysteryChain", {mode: "mastermind", version, sessionId: s.id,
+    playerId: pid, query: ""})).clubs.map((x) => x.id);
+  assert.ok(!offered.includes(club));
+  s = await act(h, s, {action: "skip"});
+  assert.equal(s.routeCount, countShortest(graph, p.start, p.target, p.banned));
+  s = await solve(h, await start(h, "mastermind", {target: p.id}));
+  assert.ok(s.finished);
+  // Today's chain is never a restricted file.
+  for (let d = 0; d < 20; d++) {
+    const x = harness(); x.setTime(x.now + d * 86400000);
+    const daily = await start(x, "mastermind", {daily: true}); assert.equal(daily.rule, undefined);
+  }
 });

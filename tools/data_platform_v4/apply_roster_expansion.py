@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Apply a reviewed roster expansion to a hash-pinned V4 package, offline."""
+from contextlib import closing
 import argparse
 from datetime import datetime
 import hashlib
@@ -55,7 +56,7 @@ def apply(database,manifest_path,review_path):
     if len(new_by_source)!=review['newPlayers']:raise ValueError('New-player count mismatch')
     with tempfile.TemporaryDirectory(dir=database.parent) as td:
         output=Path(td)/database.name;shutil.copy2(database,output)
-        with sqlite3.connect(output) as con:
+        with closing(sqlite3.connect(output)) as con, con:
             con.execute('PRAGMA foreign_keys=ON')
             old_counts={t:con.execute('SELECT COUNT(*) FROM '+t).fetchone()[0] for t in ['players','clubs','player_clubs','transfers','career_spells']}
             rank=con.execute('SELECT MAX(selection_rank) FROM players').fetchone()[0]

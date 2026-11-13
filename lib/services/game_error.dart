@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 
+import 'telemetry_service.dart';
+
 /// Only game-domain messages may reach the UI. SDK exceptions include native
 /// stack traces on Android, even when their message is just NOT_FOUND.
 String gameErrorMessage(Object error) {
@@ -19,18 +21,36 @@ String gameErrorMessage(Object error) {
       case 'cancelled':
         return _connection;
       case 'resource-exhausted':
-        return 'Çok fazla işlem yapıldı. Biraz bekleyip tekrar dene.';
+        // Domain limits (energy, hints, story cooldowns) say what to wait for.
+        return _safeMessage(error.message) ?? 'Çok fazla işlem yapıldı. Biraz bekleyip tekrar dene.';
       case 'failed-precondition':
       case 'invalid-argument':
       case 'already-exists':
       case 'aborted':
-        return _safeMessage(error.message) ?? _fallback;
+        return _safeMessage(error.message) ?? _unexpected(error, error.code);
     }
-    return _fallback;
+    return _unexpected(error, error.code);
   }
-  if (error is StateError) return _safeMessage('${error.message}') ?? _fallback;
-  return _fallback;
+  if (error is StateError) return _safeMessage('${error.message}') ?? _unexpected(error, 'state');
+  return _unexpected(error, '${error.runtimeType}');
 }
+
+/// The generic line, with a short code a player can report ("Kod: internal"), and
+/// a non-fatal record, so an unexplained "İşlem tamamlanamadı" can be traced.
+String _unexpected(Object error, String code) {
+  TelemetryService.recordNonFatal(error, StackTrace.current, reason: 'gameError:$code');
+  final safe = RegExp(r'^[A-Za-z_-]{1,40}$').hasMatch(code) ? code : 'other';
+  return '$_fallback (Kod: $safe)';
+}
+
+/// A dropped or slow connection, or a one-off server hiccup: the live room is
+/// still on the server and asking again shortly is the right answer. On Android
+/// a lost socket arrives as `internal`, so it counts here too.
+bool isTransientGameError(Object error) =>
+    error is TimeoutException ||
+    error is FirebaseFunctionsException &&
+        const {'unavailable', 'deadline-exceeded', 'internal', 'unknown', 'cancelled', 'aborted'}
+            .contains(error.code);
 
 const _connection = 'Bağlantı tamamlanamadı. İnternetini kontrol edip tekrar dene. '
     'Gönderilmiş bir yanıt varsa yeniden bağlanınca durumu kontrol edilir.';

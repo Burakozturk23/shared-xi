@@ -1,0 +1,902 @@
+{
+ "note": "Published packs. Immutable: the builder replays these verbatim and only generates dates not listed here.",
+ "source": "dw-v1-627236024ed1e784",
+ "daily": {
+  "2026-10-17": {
+   "lingoId": "ln-CUBA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 63463,
+     "scrambled": "SSAW"
+    },
+    {
+     "playerId": 401923,
+     "scrambled": "HENOSIM"
+    },
+    {
+     "playerId": 73491,
+     "scrambled": "RTDNWKIRAE"
+    }
+   ],
+   "passaIds": [
+    "pa-p40433-0",
+    "pa-p241641-1",
+    "pa-p69633-2",
+    "pa-p320141-3",
+    "pa-p59016-4",
+    "pa-p93935-5",
+    "pa-p161011-6"
+   ]
+  },
+  "2026-10-18": {
+   "lingoId": "lp-3127",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 230784,
+     "scrambled": "RAEPYT"
+    },
+    {
+     "playerId": 189441,
+     "scrambled": "PAMOOCS"
+    },
+    {
+     "playerId": 74857,
+     "scrambled": "TSGRTEENE"
+    }
+   ],
+   "passaIds": [
+    "pa-p125781-7",
+    "pa-p53622-8",
+    "pa-p55735-9",
+    "pa-p126665-10",
+    "pa-p6875-11",
+    "pa-p61651-12",
+    "pa-p51471-13"
+   ]
+  },
+  "2026-10-19": {
+   "lingoId": "lp-22068",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 39333,
+     "scrambled": "NKEIR"
+    },
+    {
+     "playerId": 316264,
+     "scrambled": "DAARDOGE"
+    },
+    {
+     "playerId": 57071,
+     "scrambled": "LGUASIC"
+    }
+   ],
+   "passaIds": [
+    "pa-p38253-14",
+    "pa-p28003-15",
+    "pa-p54781-16",
+    "pa-p288230-17",
+    "pa-p6933-18",
+    "pa-p181136-19",
+    "pa-p25557-20"
+   ]
+  },
+  "2026-10-20": {
+   "lingoId": "lc-23826",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 242086,
+     "scrambled": "CHSIKC"
+    },
+    {
+     "playerId": 3112,
+     "scrambled": "EITABET"
+    },
+    {
+     "playerId": 127048,
+     "scrambled": "KABBUMA"
+    }
+   ],
+   "passaIds": [
+    "pa-p40433-21",
+    "pa-p3363-22",
+    "pa-p36139-23",
+    "pa-p54402-24",
+    "pa-p4000000107-25",
+    "pa-p164770-26",
+    "pa-p146854-27"
+   ]
+  },
+  "2026-10-21": {
+   "lingoId": "ln-FRANCE",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 82442,
+     "scrambled": "OUGRDI"
+    },
+    {
+     "playerId": 50219,
+     "scrambled": "NITEMOGL"
+    },
+    {
+     "playerId": 146854,
+     "scrambled": "EENDYRDBE"
+    }
+   ],
+   "passaIds": [
+    "pa-p181136-28",
+    "pa-p125781-0",
+    "pa-p88755-1",
+    "pa-p48280-2",
+    "pa-p292199-3",
+    "pa-p56416-4",
+    "pa-p45660-5"
+   ]
+  },
+  "2026-10-22": {
+   "lingoId": "lp-9967",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 128223,
+     "scrambled": "RATMAO"
+    },
+    {
+     "playerId": 130365,
+     "scrambled": "RLOIENZF"
+    },
+    {
+     "playerId": 272855,
+     "scrambled": "NHOUCAU"
+    }
+   ],
+   "passaIds": [
+    "pa-p8806-6",
+    "pa-p125781-7",
+    "pa-p53622-8",
+    "pa-p39153-9",
+    "pa-p105521-10",
+    "pa-p6875-11",
+    "pa-p26485-12"
+   ]
+  },
+  "2026-10-23": {
+   "lingoId": "lc-16",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 96754,
+     "scrambled": "RNOIIB"
+    },
+    {
+     "playerId": 192735,
+     "scrambled": "OBATLOK"
+    },
+    {
+     "playerId": 82009,
+     "scrambled": "NDLOAVL"
+    }
+   ],
+   "passaIds": [
+    "pa-p88755-13",
+    "pa-p28003-14",
+    "pa-p148455-15",
+    "pa-p18644-16",
+    "pa-p121483-17",
+    "pa-p6933-18",
+    "pa-p34322-19"
+   ]
+  },
+  "2026-10-24": {
+   "lingoId": "ln-CHILE",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 48280,
+     "scrambled": "AIVCNA"
+    },
+    {
+     "playerId": 418560,
+     "scrambled": "HANDLAA"
+    },
+    {
+     "playerId": 195736,
+     "scrambled": "RGHLTISICL"
+    }
+   ],
+   "passaIds": [
+    "pa-p8198-20",
+    "pa-p148455-21",
+    "pa-p4000000014-22",
+    "pa-p60444-23",
+    "pa-p17323-24",
+    "pa-p3378-25",
+    "pa-p147487-26"
+   ]
+  },
+  "2026-10-25": {
+   "lingoId": "lp-22141",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 59016,
+     "scrambled": "AALAB"
+    },
+    {
+     "playerId": 32467,
+     "scrambled": "RKIATIC"
+    },
+    {
+     "playerId": 131225,
+     "scrambled": "ICOFGIALAT"
+    }
+   ],
+   "passaIds": [
+    "pa-p42205-27",
+    "pa-p217111-28",
+    "pa-country-28003",
+    "pa-p18922-1",
+    "pa-p91970-2",
+    "pa-p320141-3",
+    "pa-p44779-4"
+   ]
+  },
+  "2026-10-26": {
+   "lingoId": "lp-45121",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 109217,
+     "scrambled": "SACVI"
+    },
+    {
+     "playerId": 204069,
+     "scrambled": "IRRKNSAI"
+    },
+    {
+     "playerId": 165513,
+     "scrambled": "JTSIDIIM"
+    }
+   ],
+   "passaIds": [
+    "pa-p69633-5",
+    "pa-p8806-6",
+    "pa-p125781-7",
+    "pa-p382528-8",
+    "pa-p126414-9",
+    "pa-p126665-10",
+    "pa-p8707-11"
+   ]
+  },
+  "2026-10-27": {
+   "lingoId": "lc-27",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 34784,
+     "scrambled": "OCHENS"
+    },
+    {
+     "playerId": 28261,
+     "scrambled": "DUAORJ"
+    },
+    {
+     "playerId": 93720,
+     "scrambled": "ATCLZATEE"
+    }
+   ],
+   "passaIds": [
+    "pa-p29364-12",
+    "pa-review-2",
+    "pa-p38253-14",
+    "pa-p27992-15",
+    "pa-p18644-16",
+    "pa-p121483-17",
+    "pa-p244940-18"
+   ]
+  },
+  "2026-10-28": {
+   "lingoId": "ln-GHANA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 58576,
+     "scrambled": "LUAYN"
+    },
+    {
+     "playerId": 100986,
+     "scrambled": "ERNEMUI"
+    },
+    {
+     "playerId": 127189,
+     "scrambled": "NBKDOOGAI"
+    }
+   ],
+   "passaIds": [
+    "pa-review-4",
+    "pa-p38253-20",
+    "pa-league-seriea",
+    "pa-p4000000016-22",
+    "pa-p60444-23",
+    "pa-p17323-24",
+    "pa-p440653-25"
+   ]
+  },
+  "2026-10-29": {
+   "lingoId": "lp-54781",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 159471,
+     "scrambled": "NYGRAB"
+    },
+    {
+     "playerId": 182712,
+     "scrambled": "LEONACC"
+    },
+    {
+     "playerId": 79522,
+     "scrambled": "AMTGONAO"
+    }
+   ],
+   "passaIds": [
+    "pa-p139208-26",
+    "pa-p249565-27",
+    "pa-p181136-28",
+    "pa-p58864-0",
+    "pa-p39983-1",
+    "pa-p48280-2",
+    "pa-p29403-3"
+   ]
+  },
+  "2026-10-30": {
+   "lingoId": "lc-368",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 182913,
+     "scrambled": "TAORBI"
+    },
+    {
+     "playerId": 324503,
+     "scrambled": "SILDVPAI"
+    },
+    {
+     "playerId": 3507,
+     "scrambled": "ATAIBIB"
+    }
+   ],
+   "passaIds": [
+    "pa-p28396-4",
+    "pa-p28396-5",
+    "pa-p240306-6",
+    "pa-p53622-7",
+    "pa-p3703-8",
+    "pa-p39153-9",
+    "pa-p3979-10"
+   ]
+  },
+  "2026-10-31": {
+   "lingoId": "ln-SYRIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 38497,
+     "scrambled": "ENSL"
+    },
+    {
+     "playerId": 52769,
+     "scrambled": "NILLWIA"
+    },
+    {
+     "playerId": 318077,
+     "scrambled": "EITARROR"
+    }
+   ],
+   "passaIds": [
+    "pa-p216603-11",
+    "pa-p91970-12",
+    "pa-p132098-13",
+    "pa-p96341-14",
+    "pa-p45320-15",
+    "pa-p17259-16",
+    "pa-p193592-17"
+   ]
+  },
+  "2026-11-01": {
+   "lingoId": "lp-59631",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 4170,
+     "scrambled": "VAIODI"
+    },
+    {
+     "playerId": 309400,
+     "scrambled": "AZETHVR"
+    },
+    {
+     "playerId": 109256,
+     "scrambled": "FCOIERSVE"
+    }
+   ],
+   "passaIds": [
+    "pa-p43512-18",
+    "pa-p42460-19",
+    "pa-p8198-20",
+    "pa-p44352-21",
+    "pa-p169873-22",
+    "pa-p108390-23",
+    "pa-p344695-24"
+   ]
+  },
+  "2026-11-02": {
+   "lingoId": "lp-124502",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 31909,
+     "scrambled": "OSORK"
+    },
+    {
+     "playerId": 22141,
+     "scrambled": "AMTINER"
+    },
+    {
+     "playerId": 3272,
+     "scrambled": "SNHWORTU"
+    }
+   ],
+   "passaIds": [
+    "pa-p251106-25",
+    "pa-p37666-26",
+    "pa-p42205-27",
+    "pa-p73794-28",
+    "pa-p37666-0",
+    "pa-club-131",
+    "pa-p27511-2"
+   ]
+  },
+  "2026-11-03": {
+   "lingoId": "lc-35",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 19041,
+     "scrambled": "NLREI"
+    },
+    {
+     "playerId": 15799,
+     "scrambled": "OAZACLR"
+    },
+    {
+     "playerId": 136610,
+     "scrambled": "IBJOOJLIDD"
+    }
+   ],
+   "passaIds": [
+    "pa-p251075-3",
+    "pa-p28396-4",
+    "pa-p28396-5",
+    "pa-p22068-6",
+    "pa-p39153-7",
+    "pa-p382528-8",
+    "pa-p40204-9"
+   ]
+  },
+  "2026-11-04": {
+   "lingoId": "ln-OMAN",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 3333,
+     "scrambled": "INMRLE"
+    },
+    {
+     "playerId": 258923,
+     "scrambled": "FODSARHR"
+    },
+    {
+     "playerId": 94529,
+     "scrambled": "SAAWHREAYL"
+    }
+   ],
+   "passaIds": [
+    "pa-p32467-10",
+    "pa-p216603-11",
+    "pa-p91970-12",
+    "pa-p342229-13",
+    "pa-p96341-14",
+    "pa-p45320-15",
+    "pa-p255942-16"
+   ]
+  },
+  "2026-11-05": {
+   "lingoId": "lp-324503",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 353366,
+     "scrambled": "VDAPRA"
+    },
+    {
+     "playerId": 131978,
+     "scrambled": "EAKBYLR"
+    },
+    {
+     "playerId": 221958,
+     "scrambled": "EKCMYRAHU"
+    }
+   ],
+   "passaIds": [
+    "pa-p82442-17",
+    "pa-p35664-18",
+    "pa-p58864-19",
+    "pa-p96341-20",
+    "pa-p44352-21",
+    "pa-p169873-22",
+    "pa-p249565-23"
+   ]
+  },
+  "2026-11-06": {
+   "lingoId": "lc-29",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 148368,
+     "scrambled": "IOIGR"
+    },
+    {
+     "playerId": 223967,
+     "scrambled": "ALERMI"
+    },
+    {
+     "playerId": 33481,
+     "scrambled": "ENOIVGHR"
+    }
+   ],
+   "passaIds": [
+    "pa-p112935-24",
+    "pa-p341647-25",
+    "pa-p139208-26",
+    "pa-p118022-27",
+    "pa-p3455-28",
+    "pa-p58864-0",
+    "pa-p240306-1"
+   ]
+  },
+  "2026-11-07": {
+   "lingoId": "ln-TOGO",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 67082,
+     "scrambled": "TOVILO"
+    },
+    {
+     "playerId": 39728,
+     "scrambled": "USMLEHM"
+    },
+    {
+     "playerId": 5762,
+     "scrambled": "AMINRSAEOC"
+    }
+   ],
+   "passaIds": [
+    "pa-p69633-2",
+    "pa-p126414-3",
+    "pa-p36139-4",
+    "pa-p48280-5",
+    "pa-p7767-6",
+    "pa-p53622-7",
+    "pa-p4752-8"
+   ]
+  },
+  "2026-11-08": {
+   "lingoId": "lp-70934",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 143812,
+     "scrambled": "IVCNOE"
+    },
+    {
+     "playerId": 17396,
+     "scrambled": "FMNAILI"
+    },
+    {
+     "playerId": 344695,
+     "scrambled": "AMEUOAPCN"
+    }
+   ],
+   "passaIds": [
+    "pa-p55735-9",
+    "pa-p42460-10",
+    "pa-p53622-11",
+    "pa-p61651-12",
+    "pa-review-5",
+    "pa-p27992-14",
+    "pa-p128223-15"
+   ]
+  },
+  "2026-11-09": {
+   "lingoId": "lp-4257",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 12282,
+     "scrambled": "NIBDL"
+    },
+    {
+     "playerId": 161056,
+     "scrambled": "HMKCIIM"
+    },
+    {
+     "playerId": 93128,
+     "scrambled": "UBLIOYKAL"
+    }
+   ],
+   "passaIds": [
+    "pa-p73734-16",
+    "pa-p54781-17",
+    "pa-p43512-18",
+    "pa-p181136-19",
+    "pa-p96341-20",
+    "pa-p44352-21",
+    "pa-p330871-22"
+   ]
+  },
+  "2026-11-10": {
+   "lingoId": "lc-273",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 5797,
+     "scrambled": "IIRVE"
+    },
+    {
+     "playerId": 34870,
+     "scrambled": "DDASLOO"
+    },
+    {
+     "playerId": 19981,
+     "scrambled": "HARCMOSEAN"
+    }
+   ],
+   "passaIds": [
+    "pa-p58358-23",
+    "pa-p20586-24",
+    "pa-p251106-25",
+    "pa-p164770-26",
+    "pa-p433049-27",
+    "pa-p73794-28",
+    "pa-p59016-0"
+   ]
+  },
+  "2026-11-11": {
+   "lingoId": "ln-KOSOVO",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 242631,
+     "scrambled": "IOWBI"
+    },
+    {
+     "playerId": 57162,
+     "scrambled": "GILOFEUH"
+    },
+    {
+     "playerId": 157849,
+     "scrambled": "OCTOEKYZRD"
+    }
+   ],
+   "passaIds": [
+    "pa-p241641-1",
+    "pa-review-1",
+    "pa-p251075-3",
+    "pa-p59016-4",
+    "pa-p93935-5",
+    "pa-p22068-6",
+    "pa-p27511-7"
+   ]
+  },
+  "2026-11-12": {
+   "lingoId": "lp-39728",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 16135,
+     "scrambled": "ALBEB"
+    },
+    {
+     "playerId": 238407,
+     "scrambled": "TOLRSOH"
+    },
+    {
+     "playerId": 69015,
+     "scrambled": "EOMNKOALYR"
+    }
+   ],
+   "passaIds": [
+    "pa-p53622-8",
+    "pa-p55735-9",
+    "pa-p42460-10",
+    "pa-p613725-11",
+    "pa-p161056-12",
+    "pa-p161056-13",
+    "pa-p39983-14"
+   ]
+  }
+ },
+ "weekly": {
+  "2026-10-12": {
+   "questionIds": [
+    "pa-country-28003",
+    "pa-p88755-1",
+    "pa-p8198-2",
+    "pa-p251075-3",
+    "pa-p36139-4",
+    "pa-p28396-5",
+    "pa-p8806-6",
+    "pa-p82442-7",
+    "pa-p126414-8",
+    "pa-p132098-9",
+    "pa-p105521-10",
+    "pa-p613725-11",
+    "pa-club-506",
+    "pa-p161056-13",
+    "pa-p27992-14",
+    "pa-p45320-15",
+    "pa-p18644-16",
+    "pa-p288230-17",
+    "pa-p6933-18",
+    "pa-p181136-19",
+    "pa-p96341-20",
+    "pa-p134425-21",
+    "pa-p169873-22",
+    "pa-p29241-23",
+    "pa-p344695-24",
+    "pa-p8050-25",
+    "pa-p147487-26",
+    "pa-p146854-27",
+    "pa-p5757-28"
+   ]
+  },
+  "2026-10-19": {
+   "questionIds": [
+    "pa-country-68290",
+    "pa-review-1",
+    "pa-p126414-3",
+    "pa-p28396-4",
+    "pa-p69633-5",
+    "pa-p240306-6",
+    "pa-p82442-7",
+    "pa-p126414-8",
+    "pa-p132098-9",
+    "pa-p42460-10",
+    "pa-p613725-11",
+    "pa-p161056-12",
+    "pa-p342229-13",
+    "pa-p96341-14",
+    "pa-p27992-15",
+    "pa-p17259-16",
+    "pa-p121483-17",
+    "pa-p3504-18",
+    "pa-p44162-19",
+    "pa-p32467-20",
+    "pa-p44352-21",
+    "pa-p4000000016-22",
+    "pa-p108390-23",
+    "pa-p3272-24",
+    "pa-p440653-25",
+    "pa-p137576-26",
+    "pa-p140776-27",
+    "pa-p6036-28",
+    "pa-p59016-0"
+   ]
+  },
+  "2026-10-26": {
+   "questionIds": [
+    "pa-p8198-2",
+    "pa-p251075-3",
+    "pa-p36139-4",
+    "pa-p28396-5",
+    "pa-p240306-6",
+    "pa-p82442-7",
+    "pa-p126414-8",
+    "pa-p55735-9",
+    "pa-p32467-10",
+    "pa-p53622-11",
+    "pa-club-506",
+    "pa-review-5",
+    "pa-p27992-14",
+    "pa-p45320-15",
+    "pa-p17259-16",
+    "pa-p288230-17",
+    "pa-p3504-18",
+    "pa-p44162-19",
+    "pa-p96341-20",
+    "pa-p134425-21",
+    "pa-p169873-22",
+    "pa-p108390-23",
+    "pa-p54402-24",
+    "pa-p8050-25",
+    "pa-p137576-26",
+    "pa-p140776-27",
+    "pa-p5757-28",
+    "pa-p60444-0",
+    "pa-p240306-1"
+   ]
+  },
+  "2026-11-02": {
+   "questionIds": [
+    "pa-p126414-3",
+    "pa-p36139-4",
+    "pa-p69633-5",
+    "pa-p8806-6",
+    "pa-p125781-7",
+    "pa-p53622-8",
+    "pa-p132098-9",
+    "pa-p42460-10",
+    "pa-p53622-11",
+    "pa-p29364-12",
+    "pa-p161056-13",
+    "pa-p27992-14",
+    "pa-p27992-15",
+    "pa-p18644-16",
+    "pa-p288230-17",
+    "pa-p6933-18",
+    "pa-p181136-19",
+    "pa-p32467-20",
+    "pa-p134425-21",
+    "pa-p4000000016-22",
+    "pa-p60444-23",
+    "pa-p54402-24",
+    "pa-p4000000107-25",
+    "pa-p147487-26",
+    "pa-p146854-27",
+    "pa-p6036-28",
+    "pa-p59016-0",
+    "pa-p65230-1",
+    "pa-p44779-2"
+   ]
+  },
+  "2026-11-09": {
+   "questionIds": [
+    "pa-p28396-4",
+    "pa-p69633-5",
+    "pa-p240306-6",
+    "pa-p82442-7",
+    "pa-p126414-8",
+    "pa-p132098-9",
+    "pa-p32467-10",
+    "pa-p216603-11",
+    "pa-p29364-12",
+    "pa-p88755-13",
+    "pa-p96341-14",
+    "pa-p27992-15",
+    "pa-p17259-16",
+    "pa-p121483-17",
+    "pa-p3504-18",
+    "pa-p44162-19",
+    "pa-p32467-20",
+    "pa-p134425-21",
+    "pa-p4000000016-22",
+    "pa-p108390-23",
+    "pa-p17323-24",
+    "pa-p3378-25",
+    "pa-p43250-26",
+    "pa-p140776-27",
+    "pa-p5757-28",
+    "pa-p60444-0",
+    "pa-p65230-1",
+    "pa-p44779-2",
+    "pa-p21680-3"
+   ]
+  }
+ }
+}

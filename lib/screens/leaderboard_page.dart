@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/leaderboard_models.dart';
 import '../services/social/social_gateways.dart';
-import '../widgets/pitch_ui.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/social_ui.dart';
 import '../widgets/user_avatar_badge.dart';
 
@@ -90,7 +91,7 @@ class _LeaderboardPageState extends State<LeaderboardPage>
         tabs: const [
           Tab(text: 'Günlük'),
           Tab(text: 'Haftalık'),
-          Tab(text: 'Genel'),
+          Tab(text: 'Genel · Elo'),
         ],
       ),
     ),
@@ -227,42 +228,13 @@ class _Board extends StatelessWidget {
               icon: Icons.flag_outlined,
             )
           else ...[
-            PitchPanel(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Senin yerin',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  if (mine != null)
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 8,
-                      children: [
-                        Text(
-                          '#${mine.rank}',
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                        ),
-                        Text(
-                          _score(mine, scope),
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ],
-                    )
-                  else
-                    Text(
-                      'Gösterilen ilk 100 içinde görünmüyorsun. Bu, toplam sıralamanın olmadığı anlamına gelmez.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                ],
-              ),
+            _MyPlace(mine: mine, scope: scope),
+            HubSectionHeader(
+              'Zirvedeki oyuncular',
+              icon: Icons.military_tech_outlined,
+              iconColor: hubAmber(context),
+              trailing: Text('CANLI SIRALAMA', style: hubCaps(context)),
             ),
-            const PitchSectionTitle('Zirvedeki oyuncular'),
             LayoutBuilder(
               builder: (context, box) {
                 final compact =
@@ -283,16 +255,20 @@ class _Board extends StatelessWidget {
                         ),
                     ],
                   );
+                // Runner-up, champion, third: the winner stands in the middle.
+                final podium = first.length == 3
+                    ? [first[1], first[0], first[2]]
+                    : first;
                 return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    for (var i = 0; i < first.length; i++) ...[
+                    for (var i = 0; i < podium.length; i++) ...[
                       if (i > 0) const SizedBox(width: 8),
                       Expanded(
                         child: _PodiumCard(
-                          entry: first[i],
+                          entry: podium[i],
                           scope: scope,
-                          isMe: first[i].uid == myUid,
+                          isMe: podium[i].uid == myUid,
                         ),
                       ),
                     ],
@@ -301,7 +277,13 @@ class _Board extends StatelessWidget {
               },
             ),
             if (entries.length > 3) ...[
-              const PitchSectionTitle('Sıralama'),
+              HubSectionHeader(
+                'Sıralama',
+                trailing: Text(
+                  scope == LeaderboardScope.global ? 'ELO' : 'PUAN DURUMU',
+                  style: hubCaps(context),
+                ),
+              ),
               for (final entry in entries.skip(3))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -337,6 +319,70 @@ class _Board extends StatelessWidget {
   }
 }
 
+/// The player's own rank when it is in the shown top 100.
+class _MyPlace extends StatelessWidget {
+  const _MyPlace({required this.mine, required this.scope});
+  final LeaderboardEntry? mine;
+  final LeaderboardScope scope;
+  @override
+  Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final me = mine;
+    return Container(
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: p.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(width: 4, color: p.accent),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          'Senin yerin',
+                          style: text.labelLarge?.copyWith(color: p.accent),
+                        ),
+                        if (me != null)
+                          HubPill(
+                            '#${me.rank} SIRALAMA',
+                            color: p.accent,
+                            background: p.tint,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (me != null)
+                      Text(_score(me, scope), style: text.headlineSmall)
+                    else
+                      Text(
+                        'Gösterilen ilk 100 içinde görünmüyorsun. Bu, toplam sıralamanın olmadığı anlamına gelmez.',
+                        style: text.bodyMedium,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _PodiumCard extends StatelessWidget {
   const _PodiumCard({
     required this.entry,
@@ -347,38 +393,66 @@ class _PodiumCard extends StatelessWidget {
   final LeaderboardScope scope;
   final bool isMe;
   @override
-  Widget build(BuildContext context) => PitchPanel(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-    child: Column(
-      children: [
-        Icon(
-          Icons.emoji_events_rounded,
-          color: entry.rank == 1
-              ? const Color(0xFFB8892D)
-              : Theme.of(context).colorScheme.primary,
+  Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final gold = hubAmber(context);
+    final champion = entry.rank == 1;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: champion ? 20 : 16,
+      ),
+      decoration: BoxDecoration(
+        color: champion ? gold.withValues(alpha: .08) : p.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: champion ? gold : p.border,
+          width: champion ? 1.5 : 1,
         ),
-        const SizedBox(height: 8),
-        Text('#${entry.rank}', style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 10),
-        UserAvatarBadge(avatarId: entry.avatarId ?? 'starter_ball', radius: 24),
-        const SizedBox(height: 12),
-        Text(
-          entry.displayName,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          _score(entry, scope),
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-        if (isMe) ...[const SizedBox(height: 8), const SocialStatus('Sen')],
-      ],
-    ),
-  );
+      ),
+      child: Column(
+        children: [
+          Icon(
+            champion
+                ? Icons.workspace_premium_rounded
+                : Icons.emoji_events_rounded,
+            color: champion ? gold : p.accent,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '#${entry.rank}',
+            style: text.labelLarge?.copyWith(color: champion ? gold : null),
+          ),
+          if (champion) Text('ŞAMPİYON', style: hubCaps(context, color: gold)),
+          const SizedBox(height: 10),
+          UserAvatarBadge(
+            avatarId: entry.avatarId ?? 'starter_ball',
+            radius: champion ? 28 : 24,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            entry.displayName,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: text.titleSmall,
+          ),
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              groupedNumber(entry.value),
+              style: (champion ? text.headlineSmall : text.titleLarge)
+                  ?.copyWith(color: champion ? p.limeInk : p.accent),
+            ),
+          ),
+          Text(_unit(scope), style: text.labelSmall?.copyWith(color: p.muted)),
+          if (isMe) ...[const SizedBox(height: 8), const SocialStatus('Sen')],
+        ],
+      ),
+    );
+  }
 }
 
 class _RankRow extends StatelessWidget {
@@ -391,52 +465,84 @@ class _RankRow extends StatelessWidget {
   final LeaderboardScope scope;
   final bool isMe;
   @override
-  Widget build(BuildContext context) => PitchPanel(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            UserAvatarBadge(
-              avatarId: entry.avatarId ?? 'starter_ball',
-              radius: 22,
+  Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
+      decoration: BoxDecoration(
+        color: isMe ? p.tint : p.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isMe ? p.accent.withValues(alpha: .6) : p.border,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            constraints: const BoxConstraints(minWidth: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            decoration: BoxDecoration(
+              color: p.raised,
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                entry.displayName,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium,
+            child: Text(
+              '#${entry.rank}',
+              textAlign: TextAlign.center,
+              style: text.labelLarge?.copyWith(color: p.limeInk),
+            ),
+          ),
+          const SizedBox(width: 10),
+          UserAvatarBadge(
+            avatarId: entry.avatarId ?? 'starter_ball',
+            radius: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      entry.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: text.titleMedium,
+                    ),
+                    if (isMe) const SocialStatus('Sen'),
+                  ],
+                ),
+                if (scope == LeaderboardScope.weekly &&
+                    entry.daysPlayed != null)
+                  Text(
+                    '${entry.daysPlayed} gün oynadı',
+                    style: text.bodySmall?.copyWith(color: p.muted),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(groupedNumber(entry.value), style: text.titleMedium),
+              Text(
+                _unit(scope),
+                style: text.labelSmall?.copyWith(color: p.muted),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 10,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            SocialStatus('#${entry.rank}'),
-            if (isMe) const SocialStatus('Sen'),
-            Text(
-              _score(entry, scope),
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ],
-        ),
-        if (scope == LeaderboardScope.weekly && entry.daysPlayed != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            '${entry.daysPlayed} gün oynadı',
-            style: Theme.of(context).textTheme.bodySmall,
+            ],
           ),
         ],
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
 
+String _unit(LeaderboardScope scope) =>
+    scope == LeaderboardScope.global ? 'Elo' : 'puan';
+
 String _score(LeaderboardEntry entry, LeaderboardScope scope) =>
-    '${entry.value} ${scope == LeaderboardScope.global ? 'Elo' : 'puan'}';
+    '${groupedNumber(entry.value)} ${_unit(scope)}';

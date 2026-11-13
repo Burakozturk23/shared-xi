@@ -1,0 +1,321 @@
+"use strict";
+const crypto = require("node:crypto");
+const {dayKey, RewardError} = require("./rewarded_ads");
+const VERSION = 3;
+const hash = (s) => crypto.createHash("sha256").update(s).digest("hex");
+const number = (v) => Number.isSafeInteger(v) && v >= 0 ? v : 0;
+const onlineModes = ["club_club", "club_country", "grid_classic", "grid_random", "grid_reverse", "random_five",
+  "cinko", "loto", "club_manager", "career_race", "transfer_duel", "mystery_duel", "fake_club_duel"];
+const soloModes = [
+  ["matching", "Matching", "puzzle"], ["pyramid", "Pyramid", "puzzle"],
+  ["vault", "Kadro Kasası", "squad"], ["letter11", "Harf 11", "squad"],
+  ["career", "Kariyer Bulmacası", "puzzle"], ["transfer", "Transfer Dedektifi", "puzzle"],
+  ["mystery", "Gizemli Futbolcu", "puzzle"], ["chain", "Kariyer Zinciri", "puzzle"],
+  ["fake_endless", "Sahte Kulüp", "puzzle"], ["this_or_that", "This or That", "choice"],
+  ["blind_ranking", "Blind Ranking", "choice"], ["higher_lower", "Higher or Lower", "choice"],
+  ["burst_survival", "Burst Dayanıklılık", "arcade"], ["squad_challenge", "Kadro Mücadelesi", "squad"],
+  ["daily_lingo", "Günün Lingo’su", "word"], ["passa_daily", "Mini Passaparola", "word"],
+  ["daily_anagram", "Günün Anagramı", "word"], ["passa_weekly", "Haftalık Passaparola", "word"],
+  ...require("./mission_story_events").definitions.map(([, id, title]) => [id, title, "story"]),
+];
+const dailyModes = new Set(["daily_lingo", "passa_daily", "daily_anagram"]);
+const onlineNames = {club_club: "Kulüp × Kulüp", club_country: "Kulüp × Ülke", grid_classic: "Grid · Klasik",
+  grid_random: "Grid · Rastgele", grid_reverse: "Grid · Ters", random_five: "Rastgele Beş", cinko: "Çinko",
+  loto: "Football Loto", club_manager: "Club Manager", career_race: "Kariyer Yarışı",
+  transfer_duel: "Transfer Düellosu", mystery_duel: "Gizem Düellosu", fake_club_duel: "Sahte Kulüp Düellosu"};
+// Rewards by mission; runtimeConfig/missionsV3.rewards may override any value.
+// Online missions ask for a rival and a full match, so they pay more than a solo game.
+const REWARDS = Object.freeze({
+  // Days assigned before the three-slot route (five missions, three rewarded).
+  daily: {solo: {coins: 20, xp: 20}, online: {coins: 30, xp: 30}}, dailySp: 30, dailyLimit: 3,
+  // Three-slot days: knowledge is the easy one, rivalry the hard one (a solo stand-in pays like discovery).
+  slots: {knowledge: 15, discovery: 25, rivalry: 35, rivalrySolo: 25},
+  dailyBonus: {coins: 40, xp: 40},
+  weekly: {coins: 40, xp: 60}, weeklyLimit: 3, weeklyBonus: {coins: 100, xp: 100},
+  // Career stages: coins and XP grow with the stage; each claimed stage is worth 50 SP.
+  career: {solo_knowledge_10: 30, solo_knowledge_50: 75, solo_knowledge_100: 120, solo_knowledge_250: 200,
+    mode_collector_3: 30, mode_collector_8: 75, mode_collector_12: 150},
+  careerStages: [30, 75, 120, 200],
+  careerXpPerCoin: 1, careerSp: 50,
+});
+function rewards(policy = {}) {
+  const o = policy.rewards || {};
+  const n = (v, d) => Number.isSafeInteger(v) && v >= 0 ? v : d;
+  return {
+    daily: {solo: {coins: n(o.daily?.solo?.coins, REWARDS.daily.solo.coins), xp: n(o.daily?.solo?.xp,
+        REWARDS.daily.solo.xp)}, online: {coins: n(o.daily?.online?.coins, REWARDS.daily.online.coins),
+      xp: n(o.daily?.online?.xp, REWARDS.daily.online.xp)}},
+    dailySp: n(o.dailySp, REWARDS.dailySp), dailyLimit: n(o.dailyLimit, REWARDS.dailyLimit) || REWARDS.dailyLimit,
+    slots: Object.fromEntries(Object.entries(REWARDS.slots).map(([k, v]) => [k, n(o.slots?.[k], v)])),
+    dailyBonus: {coins: n(o.dailyBonus?.coins, REWARDS.dailyBonus.coins),
+      xp: n(o.dailyBonus?.xp, REWARDS.dailyBonus.xp)},
+    weekly: {coins: n(o.weekly?.coins, REWARDS.weekly.coins), xp: n(o.weekly?.xp, REWARDS.weekly.xp)},
+    weeklyLimit: n(o.weeklyLimit, REWARDS.weeklyLimit) || REWARDS.weeklyLimit,
+    weeklyBonus: {coins: n(o.weeklyBonus?.coins, REWARDS.weeklyBonus.coins),
+      xp: n(o.weeklyBonus?.xp, REWARDS.weeklyBonus.xp)},
+    careerStages: REWARDS.careerStages,
+    career: {...REWARDS.career, ...policy.careerRewards},
+    careerXpPerCoin: n(o.careerXpPerCoin, REWARDS.careerXpPerCoin), careerSp: n(o.careerSp, REWARDS.careerSp),
+  };
+}
+const catalog = soloModes.map(([modeId, name, family]) => ({id: "complete_" + modeId, modeId, family,
+  title: `${name} oyununu tamamla`, description: "Doğrulanmış bir oyunu tamamla.",
+  metric: "mode__" + modeId, target: 1, routeKey: modeId, solo: true, once: dailyModes.has(modeId)}));
+catalog.push(
+    {id: "discover_two", title: "İki farklı solo mod keşfet", description: "İki farklı modda oyun tamamla.",
+      metric: "uniqueSoloModes", target: 2, routeKey: "solo_catalog", solo: true, family: "discovery"},
+    {id: "discover_three", title: "Üç farklı modda oyna", description: "Bugün üç farklı modda oyun tamamla.",
+      metric: "uniqueModes", target: 3, routeKey: "solo_catalog", solo: true, family: "discovery"},
+    {id: "words_two", title: "İki kelime oyunu bitir", description: "İki farklı kelime modunda oyun tamamla.",
+      metric: "uniqueWordModes", target: 2, routeKey: "word_catalog", solo: true, family: "discovery"},
+    {id: "unassisted_two", title: "Yardımsız iki oyun bitir",
+      description: "İpucu ve destek kullanmadan iki oyun bitir.",
+      metric: "unassistedCompleted", target: 2, routeKey: "solo_catalog", solo: true, family: "knowledge"},
+    {id: "ranked_play_two", title: "İki sıralamalı maç tamamla", description: "İki normal bitiş yap; kaçış sayılmaz.",
+      metric: "rankedPlayed", target: 2, routeKey: "online_ranked", solo: false, family: "ranked"},
+    {id: "daily_ranked_win_1", title: "Bir sıralamalı maç kazan", description: "Doğrulanmış bir galibiyet kazan.",
+      metric: "rankedWins", target: 1, routeKey: "online_ranked", solo: false, family: "ranked"},
+    {id: "friend_complete_one", title: "Bir arkadaş maçı tamamla",
+      description: "Aktif katıldığın bir arkadaş maçını normal bitişle tamamla.",
+      metric: "friendPlayed", target: 1, routeKey: "online_friends", solo: false, family: "friend"},
+    // One mission per online mode: a ranked or friend match of that mode counts.
+    ...onlineModes.map((m) => ({id: "online_" + m, title: `${onlineNames[m]} maçı tamamla`,
+      description: "Dereceli ya da arkadaş maçını normal bitişle tamamla.", metric: "online__" + m, target: 1,
+      routeKey: "online_mode", onlineModeId: m, solo: false, family: "online"})),
+);
+const weeklyCatalog = [
+  {id: "weekly_explorer", title: "Linkball Kaşifi", description: "Beş farklı modda oyun tamamla.",
+    metric: "uniqueModes", target: 5, routeKey: "solo_catalog"},
+  {id: "weekly_puzzles", title: "Futbol Ansiklopedisi", description: "On doğrulanmış solo oyun tamamla.",
+    metric: "soloCompleted", target: 10, routeKey: "solo_catalog"},
+  {id: "weekly_words", title: "Kelime Avcısı", description: "Üç farklı kelime modunda oyun tamamla.",
+    metric: "uniqueWordModes", target: 3, routeKey: "word_catalog"},
+];
+const extraChains = [
+  {id: "solo_knowledge", metric: "soloCompleted", title: "Bilgi Ustası", targets: [10, 50, 100, 250]},
+  {id: "mode_collector", metric: "uniqueModes", title: "Koleksiyoncu", targets: [3, 8, 12]},
+  // Family chains: every verified game of the family counts.
+  {id: "puzzle_hunter", metric: "family__puzzle", title: "Bulmaca Avcısı", targets: [5, 25, 100, 250]},
+  {id: "squad_master", metric: "family__squad", title: "Kadro Ustası", targets: [5, 25, 100]},
+  {id: "word_master", metric: "family__word", title: "Kelime Ustası", targets: [5, 25, 100, 250]},
+  {id: "arena", metric: "rankedWins", title: "Arena", targets: [1, 10, 50, 100]},
+];
+function weekKey(time) {
+  const d = new Date(dayKey(time) + "T12:00:00Z");
+  d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7);
+  return d.toISOString().slice(0, 10);
+}
+const emptyMetrics = () => ({counters: {}, modes: {}, soloModes: {}, wordModes: {}, processed: {}});
+function decorate(state, raw, now) {
+  const sameDay = raw?.daily?.dateKey === state.daily.dateKey;
+  const week = weekKey(now);
+  state.schemaVersion = raw?.schemaVersion || 2;
+  state.migrationDay = raw?.migrationDay || "";
+  state.daily = {...state.daily, ...emptyMetrics(), ...state.daily,
+    counters: {...(sameDay ? raw.daily.counters : {}), ...state.daily.counters},
+    assigned: sameDay ? raw.daily.assigned || [] : [],
+    modes: sameDay ? raw.daily.modes || {} : {}, soloModes: sameDay ? raw.daily.soloModes || {} : {},
+    wordModes: sameDay ? raw.daily.wordModes || {} : {}};
+  state.previousDailyIds = sameDay ? raw?.previousDailyIds || [] :
+    (raw?.daily?.assigned || []).map((x) => x.definitionId || x.id);
+  // RTDB drops empty objects: a week with no claim yet comes back without `claims`.
+  state.weekly = raw?.weekly?.weekKey === week ? {...emptyMetrics(), claims: {}, ...raw.weekly} :
+    {...emptyMetrics(), weekKey: week, claims: {}, assigned: weeklyCatalog};
+  state.general = {...emptyMetrics(), ...raw?.general};
+  return state;
+}
+function value(bucket, definition) {
+  const metric = definition.metric;
+  if (metric === "uniqueModes") return Object.keys(bucket.modes || {}).length;
+  if (metric === "uniqueSoloModes") return Object.keys(bucket.soloModes || {}).length;
+  if (metric === "uniqueWordModes") return Object.keys(bucket.wordModes || {}).length;
+  return number(bucket.counters?.[metric]);
+}
+// A removed mode's mission is never available; assigned ones are swapped out.
+const soloIds = new Set(soloModes.map(([modeId]) => modeId));
+function available(d, ready, state) {
+  if (d.modeId && !soloIds.has(d.modeId)) return false;
+  if (d.routeKey === "online_ranked") return ready.online === true;
+  if (d.routeKey === "online_friends") return ready.friends === true;
+  if (d.routeKey === "online_mode") return ready.online === true || ready.friends === true;
+  if (d.metric === "uniqueSoloModes") return soloModes.filter(([m]) => ready[m] === true).length >= 2;
+  if (d.metric === "uniqueModes") return soloModes.filter(([m]) => ready[m] === true).length >= 3;
+  if (d.metric === "uniqueWordModes") {
+    return soloModes.filter(([m, , f]) => f === "word" && ready[m] === true).length >= 2;
+  }
+  if (d.metric === "unassistedCompleted") return soloModes.some(([m, , f]) => f !== "word" && ready[m] === true);
+  return ready[d.modeId] === true && (!d.once || !state.daily.modes[d.modeId]);
+}
+function assign(state, uid, ready, policy = {}, now = state.updatedAt) {
+  if (policy.enabled !== true && state.schemaVersion !== VERSION) return state;
+  const old = state.daily.assigned || [];
+  // Preserve the current legacy day's earned/claimable rights during migration.
+  if (!state.migrationDay) state.migrationDay = state.daily.dateKey;
+  if (!old.length && state.schemaVersion !== VERSION && state.migrationDay === state.daily.dateKey &&
+      (Object.keys(state.daily.claims).length || Object.values(state.daily.counters).some((n) => n > 0))) return state;
+  const eligible = catalog.filter((d) => available(d, ready, state));
+  // Never manufacture playable missions when rollout/data-health gates are not ready.
+  const knowledge = (d) => d.solo && (["puzzle", "squad", "choice", "arcade", "knowledge"].includes(d.family) ||
+    d.once);
+  const discovery = (d) => d.solo && ["discovery", "story"].includes(d.family);
+  if (!old.length && (!eligible.some(knowledge) || !eligible.some(discovery))) {
+    state.availabilityNotice = "Görev rotası hazırlanıyor. Doğrulanmış oyunlar açılınca yenile.";
+    return state;
+  }
+  state.schemaVersion = VERSION;
+  state.availabilityNotice = "";
+  const seed = `${uid}|${state.daily.dateKey}|${VERSION}`;
+  const ordered = [...eligible].sort((a, b) => hash(seed + a.id).localeCompare(hash(seed + b.id)));
+  if (!old.length) {
+    // Three slots: knowledge (one game), rivalry (online; a solo game when online is not ready)
+    // and discovery (variety). Yesterday's missions are avoided when another choice exists.
+    const prior = new Set(state.previousDailyIds);
+    const pick = (predicate, taken) => {
+      const fresh = ordered.find((x) => !taken.includes(x) && !prior.has(x.id) && predicate(x));
+      return fresh || ordered.find((x) => !taken.includes(x) && predicate(x));
+    };
+    const picks = [];
+    picks.push(["knowledge", pick(knowledge, picks.map((p) => p[1]))]);
+    const online = pick((x) => !x.solo, picks.map((p) => p[1]));
+    picks.push(["rivalry", online || pick((x) => x.solo && !discovery(x), picks.map((p) => p[1]))]);
+    picks.push(["discovery", pick(discovery, picks.map((p) => p[1]))]);
+    state.daily.assigned = picks.filter(([, d]) => d).map(([slot, d], i) => ({...d, slot,
+      definitionId: d.id, id: "daily_v3_slot_" + (i + 1), assignedAt: now, baseline: 0}));
+  } else {
+    const used = new Set(old.map((x) => x.definitionId));
+    state.daily.assigned = old.map((d) => {
+      const progress = Math.max(0, value(state.daily, d) - number(d.baseline));
+      if (state.daily.claims[d.id] || progress >= d.target) return d;
+      if (available(d, ready, state)) {
+        const rest = {...d}; delete rest.unavailable; return rest;
+      }
+      const replacement = ordered.find((x) => x.solo && !used.has(x.id));
+      if (!replacement) return {...d, unavailable: true};
+      used.add(replacement.id);
+      const remaining = Math.max(1, d.target - progress);
+      return {...replacement, ...d.slot ? {slot: d.slot} : {}, definitionId: replacement.id, id: d.id,
+        target: remaining,
+        title: `${replacement.title} (${remaining})`, baseline: value(state.daily, replacement),
+        replaced: [...d.replaced || [], {definitionId: d.definitionId, progress, target: d.target}],
+        carriedProgress: number(d.carriedProgress) + progress};
+    });
+  }
+  return state;
+}
+function record(state, event, now) {
+  const mode = soloModes.find(([id]) => id === event.modeId);
+  const ranked = event.source === "ranked_settlement";
+  const friend = event.source === "friend_settlement";
+  // Ranked fallback bot: an online game of its mode, never a ranked game or a ranked win.
+  const bot = event.source === "bot_settlement";
+  const time = event.serverFinishedAtMs;
+  if (event.serverValidated !== true || event.verificationVersion !== 1 ||
+      typeof event.eventId !== "string" || !event.eventId || !event.uid || typeof event.uid !== "string" ||
+      !Number.isSafeInteger(time) || time <= 0 || time > now || event.cancelled || event.forfeit ||
+      event.participated === false || event.assisted && (ranked || friend) ||
+      (ranked || friend || bot ? !onlineModes.includes(event.modeId) : !mode || event.source !== "solo_verified") ||
+      (ranked || friend || bot ? !["win", "draw", "loss"].includes(event.result) :
+        event.result !== "completed")) return false;
+  const key = hash(`${event.source}|${event.modeId}|${event.eventId}`);
+  let changed = false;
+  for (const [bucket, allowed] of [[state.daily, dayKey(time) === state.daily.dateKey],
+    [state.weekly, weekKey(time) === state.weekly.weekKey], [state.general, true]]) {
+    if (!allowed || bucket.processed[key]) continue;
+    bucket.processed[key] = true; changed = true;
+    bucket.modes[event.modeId] = true;
+    const add = (name) => bucket.counters[name] = number(bucket.counters[name]) + 1;
+    if (bot) {
+      add("online__" + event.modeId);
+    } else if (ranked) {
+      add("rankedPlayed"); if (event.result === "win") add("rankedWins"); add("online__" + event.modeId);
+    } else if (friend) {
+      add("friendPlayed"); add("online__" + event.modeId);
+    } else {
+      bucket.soloModes[event.modeId] = true;
+      if (mode[2] === "word") bucket.wordModes[event.modeId] = true;
+      add("soloCompleted"); add("mode__" + event.modeId); add("family__" + mode[2]);
+      if (!event.assisted && event.assistanceUnknown !== true) add("unassistedCompleted");
+    }
+  }
+  return changed;
+}
+function items(state, policy = {}) {
+  const r = rewards(policy);
+  // Slot missions pay by slot (XP equals coins); older five-mission days keep their rewards.
+  const slotCoins = (d) => !d.slot ? undefined : r.slots[d.slot === "rivalry" && d.solo ? "rivalrySolo" : d.slot];
+  // A bonus opens when every mission of its period has been claimed.
+  const bonus = (kind, missions, reward) => {
+    const bucket = kind === "daily" ? state.daily : state.weekly;
+    const id = kind + "_bonus"; const claim = bucket.claims?.[id];
+    const done = missions.filter((d) => bucket.claims?.[d.id]).length;
+    const enabled = kind === "daily" ? policy.enabled === true : policy.weeklyEnabled === true;
+    return {id, kind, bonus: true, title: "Tüm Görevler Bonusu",
+      description: kind === "daily" ? "Bugünün üç görevinin ödülünü al." : "Bu haftanın üç görevinin ödülünü al.",
+      target: missions.length, progress: Math.min(done, missions.length), rawProgress: done,
+      routeKey: "", periodKey: kind === "daily" ? state.daily.dateKey : "weekly__" + state.weekly.weekKey,
+      rewardCoins: claim?.rewardCoins ?? reward.coins, rewardXp: claim?.rewardXp ?? reward.xp, rewardSp: 0,
+      enabled, limitReached: false, claimed: !!claim, claimedAt: claim?.claimedAt || 0,
+      claimable: enabled && !claim && done >= missions.length};
+  };
+  const project = (d, kind) => {
+    const bucket = kind === "daily" ? state.daily : kind === "weekly" ? state.weekly : state.general;
+    const claim = (kind === "general" ? state.generalClaims : bucket.claims)?.[d.id];
+    const progress = Math.max(0, value(bucket, d) - number(d.baseline));
+    const limit = kind === "daily" ? r.dailyLimit : r.weeklyLimit;
+    const enabled = !d.unavailable && (kind === "daily" ? policy.enabled === true :
+      kind === "weekly" ? policy.weeklyEnabled === true : policy.careerEnabled === true && number(d.rewardCoins) > 0);
+    const taken = Object.keys(bucket.claims || {}).filter((id) => !id.endsWith("_bonus")).length;
+    const limitReached = kind !== "general" && !claim && taken >= limit;
+    return {...d, kind, periodKey: kind === "daily" ? state.daily.dateKey :
+      kind === "weekly" ? "weekly__" + state.weekly.weekKey : "general",
+    progress: Math.min(progress, d.target), rawProgress: progress,
+    rewardCoins: claim?.rewardCoins ?? (kind === "daily" ? slotCoins(d) ?? r.daily[d.solo ? "solo" : "online"].coins :
+      kind === "weekly" ? r.weekly.coins : number(d.rewardCoins)),
+    rewardXp: claim?.rewardXp ?? (kind === "daily" ? slotCoins(d) ?? r.daily[d.solo ? "solo" : "online"].xp :
+      kind === "weekly" ? r.weekly.xp : number(d.rewardCoins) * r.careerXpPerCoin),
+    // Season points only for rewards still inside the period's limit.
+    rewardSp: limitReached ? 0 : kind === "daily" ? r.dailySp : kind === "general" && number(d.rewardCoins) > 0 ?
+      r.careerSp : 0, enabled, limitReached,
+    claimed: !!claim, claimedAt: claim?.claimedAt || 0,
+    claimable: enabled && !claim && !limitReached && progress >= d.target};
+  };
+  const general = extraChains.map((chain) => {
+    const i = chain.targets.findIndex((n) => !state.generalClaims[chain.id + "_" + n]);
+    const index = i < 0 ? chain.targets.length - 1 : i;
+    const target = chain.targets[index];
+    return project({id: chain.id + "_" + target, metric: chain.metric, title: `${chain.title}: ${target}`,
+      description: "Doğrulanmış oyunlarla gelişim yolunu ilerlet.", target, routeKey: "solo_catalog",
+      chainId: chain.id, stage: index + 1, stageCount: chain.targets.length,
+      rewardCoins: number(r.career[chain.id + "_" + target] ?? r.careerStages[index])}, "general");
+  });
+  const daily = state.daily.assigned.map((d) => project(d, "daily"));
+  const slotted = state.daily.assigned.length > 0 && state.daily.assigned.every((d) => d.slot);
+  const weekly = weeklyCatalog.map((d) => project(d, "weekly"));
+  return {daily: slotted ? [...daily, bonus("daily", state.daily.assigned, r.dailyBonus)] : daily,
+    weekly: [...weekly, bonus("weekly", weeklyCatalog, r.weeklyBonus)], general,
+    weekKey: state.weekly.weekKey, weeklyClaimLimit: r.weeklyLimit, dailyClaimLimit: r.dailyLimit,
+    weeklyCompletedCount: Object.keys(state.weekly.claims || {}).filter((id) => !id.endsWith("_bonus")).length,
+    weeklyEnabled: policy.weeklyEnabled === true, availabilityNotice: state.availabilityNotice || ""};
+}
+function claim(state, missionId, policy, now, nonce) {
+  const p = items(state, policy);
+  let item = [...p.daily, ...p.weekly, ...p.general].find((x) => x.id === missionId);
+  if (!item && state.generalClaims[missionId] && extraChains.some((c) =>
+    c.targets.some((n) => c.id + "_" + n === missionId))) item = {id: missionId, kind: "general"};
+  if (!item) return null;
+  // A period with no claim yet may come back from RTDB without its claims object.
+  const bucket = item.kind === "daily" ? state.daily.claims ||= {} :
+    item.kind === "weekly" ? state.weekly.claims ||= {} : state.generalClaims ||= {};
+  const periodKey = item.kind === "daily" ? state.daily.dateKey :
+    item.kind === "weekly" ? "weekly__" + state.weekly.weekKey : "general";
+  if (!bucket[missionId] && !item.claimable) {
+    throw new RewardError("failed-precondition",
+        "Görev tamamlanmadı, ödül kapalı veya dönem limiti doldu.");
+  }
+  const sourceId = periodKey + "__" + missionId;
+  bucket[missionId] ||= {claimedAt: now, rewardCoins: item.rewardCoins, rewardXp: number(item.rewardXp), nonce,
+    economyConfigId: "missions-v3"};
+  return {item, claim: bucket[missionId], periodKey, sourceId};
+}
+module.exports = {VERSION, onlineModes, onlineNames, REWARDS, rewards, soloModes, catalog, weeklyCatalog, extraChains,
+  weekKey, decorate, assign, record, value, items, claim};

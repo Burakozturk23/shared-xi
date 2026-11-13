@@ -1,15 +1,30 @@
 {
-  "version": "pvp-v1-c82b87953cb5404a",
-  "databaseSha256": "3a575b35a384c4e2c4f56b64695b9e5069a3d91f44ff9942950036225bfe5030",
+  "version": "pvp-v1-929244ddea45fd2c",
+  "databaseSha256": "901c0eeec0252e2a089b2c162c202862867aa7f640a9cc976561e706ba8c1141",
   "players": 36391,
-  "pairs": 724,
-  "grids": 60,
-  "cinko": 40,
-  "loto": 40,
+  "pairs": 2156,
+  "grids": 300,
+  "cinko": 200,
+  "loto": 300,
+  "five": 300,
+  "coaches": 50,
+  "coachPairs": 786,
+  "gridsByCoachCount": {
+    "0": 75,
+    "1": 180,
+    "2": 45
+  },
+  "cinkoLeagues": 8,
+  "cinkoCountries": 25,
+  "lotoValidCellsPerPlayer": {
+    "easy": 2.78,
+    "medium": 2.74,
+    "hard": 2.58
+  },
   "relationPolicy": "Same player_clubs/countries as V4 solo bridge, no inferred negative careers",
   "trustCounts": {
-    "1": 142479,
-    "2": 30255
+    "1": 131275,
+    "2": 30266
   },
   "sourceReview": "Canonical snapshot parity is not an independent external source audit."
 }

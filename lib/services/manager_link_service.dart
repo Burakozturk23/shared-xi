@@ -1,5 +1,6 @@
 import '../models/player.dart';
 import '../repositories/repository.dart';
+import 'manager_rating_service.dart';
 
 enum PlayerBondKind { none, league, country, club, clubAndCountry }
 
@@ -59,11 +60,35 @@ class ManagerLinkService {
         .toSet();
   }
 
-  PlayerBond bondBetween(Player a, Player b, {Repository? repository}) {
+  /// Same club is a bond only when they could have been team-mates: when
+  /// both spells are dated they must overlap (same club, different years is
+  /// no proof). Undated club lists keep counting, the data cannot tell.
+  /// Solo career only: the online server catalog has no dated spells yet,
+  /// so online power keeps `sharedSpells: false` to match it.
+  static bool sharedSpell(Player a, Player b, int clubId) {
+    const now = ManagerRatingService.referenceYear;
+    final sa = a.careerTimeline.where((s) => s.clubId == clubId).toList();
+    final sb = b.careerTimeline.where((s) => s.clubId == clubId).toList();
+    if (sa.isEmpty || sb.isEmpty) return true;
+    return sa.any(
+      (x) => sb.any(
+        (y) => x.startYear <= (y.endYear ?? now) && y.startYear <= (x.endYear ?? now),
+      ),
+    );
+  }
+
+  PlayerBond bondBetween(
+    Player a,
+    Player b, {
+    Repository? repository,
+    bool sharedSpells = true,
+  }) {
     final repo = repository ?? Repository.instance;
 
     String? sharedClubName;
-    final commonClubs = clubIdsOf(a).intersection(clubIdsOf(b));
+    final commonClubs = clubIdsOf(a)
+        .intersection(clubIdsOf(b))
+        .where((id) => !sharedSpells || sharedSpell(a, b, id));
     for (final id in commonClubs) {
       final c = repo.clubById(id);
       if (c != null && c.name.trim().isNotEmpty) {
@@ -117,17 +142,36 @@ class ManagerLinkService {
     return (clubPart + leaguePart + natPart).clamp(5.0, 100.0);
   }
 
-  double pairLink(Player a, Player b, {Repository? repository}) {
-    return bondBetween(a, b, repository: repository).weight;
+  double pairLink(
+    Player a,
+    Player b, {
+    Repository? repository,
+    bool sharedSpells = true,
+  }) {
+    return bondBetween(
+      a,
+      b,
+      repository: repository,
+      sharedSpells: sharedSpells,
+    ).weight;
   }
 
-  double squadLink(List<Player> xi, {Repository? repository}) {
+  double squadLink(
+    List<Player> xi, {
+    Repository? repository,
+    bool sharedSpells = true,
+  }) {
     if (xi.length < 2) return 0;
     final repo = repository ?? Repository.instance;
     double total = 0;
     for (var i = 0; i < xi.length; i++) {
       for (var j = i + 1; j < xi.length; j++) {
-        total += pairLink(xi[i], xi[j], repository: repo);
+        total += pairLink(
+          xi[i],
+          xi[j],
+          repository: repo,
+          sharedSpells: sharedSpells,
+        );
       }
     }
     return total;

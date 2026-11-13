@@ -57,7 +57,8 @@ def render_avatars(catalog, current):
               "import 'user_avatar_catalog.dart';", '',
               'const collectionAvatars = <UserAvatarDefinition>[']
     for offer in catalog['offers']:
-        if offer['itemType'] != 'avatar' or not offer['enabled']:
+        # Classic avatars are drawn in code in user_avatar_catalog.dart.
+        if offer['itemType'] != 'avatar' or not offer['enabled'] or offer['category'] == 'classic':
             continue
         prefix += ['  UserAvatarDefinition(',
                    f"    id: {quoted(offer['itemId'])},",

@@ -162,8 +162,39 @@ class AchievementBadgeEmblem extends StatelessWidget {
       'team_spirit' => Icons.people_alt_rounded,
       'group_leader' => Icons.groups_2_rounded,
       'social_captain' => Icons.campaign_rounded,
-      _ => _categoryIcon(category),
+      _ => _familyIcon(key) ?? _categoryIcon(category),
     };
+  }
+
+  /// Newer badges share an icon per family: the mode for mode ladders, the
+  /// goal for wins, matches, streaks and the daily and story tracks.
+  static IconData? _familyIcon(String key) {
+    const modes = {
+      'shared_xi': Icons.groups_rounded,
+      'club_country': Icons.public_rounded,
+      'grid': Icons.grid_view_rounded,
+      'cinko': Icons.casino_rounded,
+      'five': Icons.looks_5_rounded,
+      'loto': Icons.confirmation_number_rounded,
+      'club_manager': Icons.badge_rounded,
+      'career_race': Icons.route_rounded,
+      'transfer_duel': Icons.swap_horiz_rounded,
+      'mystery_duel': Icons.person_search_rounded,
+      'fake_club_duel': Icons.policy_rounded,
+    };
+    for (final e in modes.entries) {
+      if (key.startsWith('${e.key}_wins')) return e.value;
+    }
+    if (key.startsWith('winner_')) return Icons.emoji_events_rounded;
+    if (key.startsWith('played_')) return Icons.sports_soccer_rounded;
+    if (key.startsWith('streak_')) return Icons.whatshot_rounded;
+    if (key.startsWith('daily_question')) return Icons.quiz_rounded;
+    if (key.startsWith('daily_perfect')) return Icons.diamond_rounded;
+    if (key.startsWith('daily_')) return Icons.calendar_month_rounded;
+    if (key.startsWith('friends_')) return Icons.groups_2_rounded;
+    if (key.startsWith('what_if')) return Icons.alt_route_rounded;
+    if (key == 'all_rounder') return Icons.hub_rounded;
+    return null;
   }
 }
 

@@ -35,18 +35,15 @@ void main() {
     );
     await analytics.premiumCancelled('linkball_pro_monthly');
 
-    expect(
-      events.map((event) => event.$1),
-      <String>[
-        'monetization_surface_view',
-        'purchase_started',
-        'purchase_completed',
-        'purchase_restored',
-        'store_offer_started',
-        'store_offer_completed',
-        'premium_cancelled',
-      ],
-    );
+    expect(events.map((event) => event.$1), <String>[
+      'monetization_surface_view',
+      'purchase_started',
+      'purchase_completed',
+      'purchase_restored',
+      'store_offer_started',
+      'store_offer_completed',
+      'premium_cancelled',
+    ]);
     expect(events[0].$2, <String, Object>{'surface': 'store'});
     expect(events[1].$2['flow'], 'coin_pack');
     expect(events[4].$2['coin_price'], 600);

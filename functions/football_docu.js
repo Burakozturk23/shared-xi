@@ -14,8 +14,9 @@ function accepts(t, answers) {
     answers.every((a, i) => a === t.answerKeys[i]);
 }
 const completedEpisodes = (s) => catalog.episodes.filter((d) => d.taskIds.every((id) => s.completed[id]));
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("footballDocuState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("footballDocuState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function check(input) {
     if (input.version !== catalog.version) {
@@ -66,7 +67,12 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   async function submit(uid, input, eligible = true) {
     const t = check(input);
     if (!available(await get(uid), t)) throw new RewardError("failed-precondition", "Önce ilk araştırmayı tamamla.");
-    if (!accepts(t, input.answers)) return {correct: false};
+    await attempts.before(uid, "football_docu", t.id);
+    if (!accepts(t, input.answers)) {
+      await attempts.wrong(uid, "football_docu", t.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "football_docu", t.id);
     const tx = await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       if (!available(s, t)) return raw; // A cold null snapshot must be retried by RTDB.
@@ -86,6 +92,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   }
   async function hint(uid, input, eligible = true) {
     const t = check(input);
+    await documentRef?.guardHint?.(uid, t.id);
     if (!eligible) throw new RewardError("permission-denied", "Ek yardım için Google hesabına bağlan.");
     const s = await get(uid);
     if (t.interaction === "boolean") {

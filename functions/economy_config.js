@@ -61,8 +61,9 @@ function validateConfig(input) {
 const DEFAULT_CONFIG = validateConfig(defaults);
 
 // No network at module initialization: Firebase discovery remains fast.
-function createProvider({fetch, now = Date.now, warn = () => {}, ttlMs = 300000, timeoutMs = 3000}) {
-  let cached = DEFAULT_CONFIG;
+function createProvider({fetch, now = Date.now, warn = () => {}, ttlMs = 300000, timeoutMs = 3000,
+  validate = validateConfig, initial = DEFAULT_CONFIG}) {
+  let cached = initial;
   let expires = 0;
   let pending;
   return async () => {
@@ -77,7 +78,7 @@ function createProvider({fetch, now = Date.now, warn = () => {}, ttlMs = 300000,
             timer = setTimeout(() => reject(new Error("Remote Config timeout")), timeoutMs);
           }),
         ]);
-        cached = validateConfig(raw);
+        cached = validate(raw);
         expires = now() + ttlMs;
       } catch (error) {
         expires = now() + 30000;

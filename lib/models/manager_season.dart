@@ -8,6 +8,10 @@ class SeasonClub {
   final double strength; // AI güç bandı
   final bool isUser;
 
+  /// The real club behind an opponent (lib/data/manager_league_clubs.dart);
+  /// null for the user and for the made-up clubs of seasons started earlier.
+  final int? clubId;
+
   int played;
   int won;
   int drawn;
@@ -23,6 +27,7 @@ class SeasonClub {
     required this.style,
     required this.strength,
     this.isUser = false,
+    this.clubId,
     this.played = 0,
     this.won = 0,
     this.drawn = 0,
@@ -41,6 +46,7 @@ class SeasonClub {
     'style': style.name,
     'strength': strength,
     'isUser': isUser,
+    if (clubId != null) 'clubId': clubId,
     'played': played,
     'won': won,
     'drawn': drawn,
@@ -63,6 +69,7 @@ class SeasonClub {
       style: style,
       strength: (j['strength'] as num?)?.toDouble() ?? 70,
       isUser: j['isUser'] as bool? ?? false,
+      clubId: (j['clubId'] as num?)?.toInt(),
       played: j['played'] as int? ?? 0,
       won: j['won'] as int? ?? 0,
       drawn: j['drawn'] as int? ?? 0,

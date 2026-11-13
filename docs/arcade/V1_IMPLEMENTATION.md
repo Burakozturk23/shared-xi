@@ -25,15 +25,15 @@ Matching uses the existing sourced complete-career review in `tools/fake_club/co
 
 Pyramid certificates satisfy every triangle edge and contain diverse witnesses; all interior cells cannot be one club clique. Normal/hard equal-size boards are ordered by structural complexity, with distinct hint budgets. The runtime accepts alternative identities only when a full remaining certificate is found within its bounded search. Inconclusive searches do not spend a life. Shared club is labelled as shared career club, never as simultaneous teammates. Country-country and unreviewed club-club links are absent.
 
-Burst suggestions use the entire frozen player universe, ranked only by normalized query/name. The current question does not affect search. The offline kit contains football facts needed for local play, stored once under the UID/version; the UI never renders future answers or missed names before the result.
+Burst suggestions use the entire frozen player universe, ranked by prefix match, then player fame (rank), then name; nothing question-specific is used. The current question does not affect search. The offline kit contains football facts needed for local play, stored once under the UID/version; the UI never renders future answers or missed names before the result.
 
 ## Offline/retry protocol
 
 The client uses `Stopwatch`, not the device wall clock, and persists clock checkpoints once per second. Adjacent unsent clock-only events coalesce, but never across question boundaries and never after a possibly accepted request. Offline reopening conservatively charges the one-second uncheckpointed margin. Resume cannot create a new 120-second budget.
 
-The server replays canonical actions against the frozen V4 bank and existing session revision. Elapsed values must be nonnegative integers and remain within the observed server wall-time envelope. This is bounded solo replay, not cryptographic attestation of device foreground time. Client scores, medals and currency claims are ignored. Wrong branches, impossible clocks and account/session mismatches reject the entire batch without partially committing earlier events. Original request IDs and fingerprints survive lost replies; two-device branches cannot overwrite one another.
+The server replays canonical actions against the frozen V4 bank and existing session revision. Elapsed values must be nonnegative integers and remain within the observed server wall-time envelope. Every answer, pass or hint costs at least 800 ms of active time, and online events use the server clock as a floor (at most 2 s of network/loading per event is not counted), so reporting `elapsedMs: 0` cannot stop the Speed clock. Offline, an answer for a round the clock already closed is dropped instead of rejecting the batch. This is bounded solo replay, not cryptographic attestation of device foreground time. Client scores, medals and currency claims are ignored. Wrong branches, impossible clocks and account/session mismatches reject the entire batch without partially committing earlier events. Original request IDs and fingerprints survive lost replies; two-device branches cannot overwrite one another.
 
-Rewards are a durable outbox. Coin and XP grants are independently idempotent; both must settle before the payment is marked complete. Burst and the shared Pyramid/Matching daily mission use the existing central daily-mission transaction/cap. Solo ad hints now share 4/day across eligible placements, including old per-placement counters during migration. Existing lower limits remain lower.
+Burst rounds: Speed climbs easy → normal → hard → legend every two rounds (nearest tier when one runs out); Survival has a 75 s round clock that costs a life. A paused run hides the pair. Survival hints are progressive per answer (nationality, then initials) and clear once that player is found. Medals are recorded even while rewards are off; records keep lives only for Survival and answer pace only for Speed. Pyramid: 150 boards (50 easy, 50 normal, 50 hard). New boards come first, and today's normal board is shared. A linked candidate that leaves the board unsolvable is a right answer for that cell: it costs no life and says "Bağlantı doğru ama bu seçimle piramit zirveye bağlanamıyor" (Argentina under De Paul and Maradona with nothing Argentine reaching Miami FC used to cost a life). The first hint on a cell names only the type, a second adds the link. A win adds 100 × lives left, +200 without hints and −50 per undo; hard mastery also requires no undo. Matching: card ids follow the shuffled layout (`k0…`), so no id reveals its pair; easy boards draw from the 40 most recognisable links by seed; three stars need at most 1.75 moves per pair and two stars 2.5 (tightened from 2 / 3, still to be calibrated with device telemetry); hard mastery needs at most 18 moves; a paused win can set a move record but not a time record; records keep the best stars; today's normal board is shared. Rewards are a durable outbox. Coin and XP grants are independently idempotent; both must settle before the payment is marked complete. Burst and the shared Pyramid/Matching daily mission use the existing central daily-mission transaction/cap. Solo ad hints now share 4/day across eligible placements, including old per-placement counters during migration. Existing lower limits remain lower.
 
 ## Verification and release gate
 
@@ -47,3 +47,43 @@ Rewards are a durable outbox. Coin and XP grants are independently idempotent; b
 Not claimed as completed: physical-device or Firebase emulator acceptance from the PDFs, two physical devices under poor networking, accessibility screen-reader checks, ad-provider live callbacks, production latency measurements or empirical Matching star calibration. The current star thresholds (3 stars <=2×pair count; 2 stars <=3×pair count) are explicit provisional configuration. These are release checks, not silently treated as PASS by unit tests.
 
 `runtimeConfig/arcade` defaults to `{enabled:false,rewardsEnabled:false}`. Deploy the new callables and private `arcadeCatalogs` rules before enabling a test cohort. Preserve historical catalog versions for active sessions. Enable production rewards only after the release checks above. No live flags were changed by this task.
+
+## Pyramid answers and difficulty (12 November 2026)
+
+- Answers are every known player (gameplay rating 68+ on the online modes' scale, plus the reviewed legends), every
+  senior first-team club they played for and their countries: 6,308 entities, up from 693. Club links use every
+  canonical senior `player_clubs` row (after the club-id collision fix), not only trust 2. Countries keep the English
+  name for the flag and accept the Turkish one ("Arjantin").
+- Links are no longer stored: the server computes them from the entities (shared club, a club he played for, his
+  country) with club and country indexes (`edge`, `near` in `arcade_engine.js`). Older pinned catalogs still carry
+  an `edges` map; the entities give the same links.
+- Boards are built from a smaller core per level: easy from rating 80+ players, the 50 grid clubs and countries, with
+  a club or country at the top (never a player, never a club like Miami FC); normal from 76+ and the 90 known clubs;
+  hard from 72+ and the same clubs, the tighter half (fewest answers per empty cell) of 100 boards.
+- With the wider pool, a right link that leads nowhere is rare: 97 of 7,944 linked first moves; the slowest check took
+  44 ms.
+
+## Matching cards (12 November 2026)
+
+- Every level deals 8 pairs, 16 cards in four columns (easy had 6, hard 12). Hard mastery: at most 12 moves (three
+  stars at most 14, two at most 20).
+- Pairs no longer come only from the 33 reviewed retired careers (which dealt Allegri with Pavia Calcio 1911 on
+  normal): a known player and a known club he played for. Easy: rating 80+ and one of the 50 grid clubs that is his
+  longest stay or three years; normal: rating 76+ and one of the 90 known clubs where he spent a year or that is one
+  of his two longest stays; hard adds the other known clubs and 72+ players. Open-ended spells count at most a year.
+- One club fits each player: every club he ever played for (all canonical senior `player_clubs` rows,
+  `matchingClubs`) is excluded from the other pairs. The pair hint and the "wrong pair" hint read the board's own
+  pairs; older pinned catalogs keep the reviewed-career path.
+
+## Burst questions and answers (12 November 2026)
+
+- Pairs come from the 90 known clubs only (the online modes' grid and club lists), so no youth side ("Valencia CF
+  You") and no Apollon Limassol × Olympiacos; club × country pairs use countries with two or more players rated 75+.
+  1,178 pairs.
+- Levels follow the gameplay rating of the third-best answer: 84+ easy, 81+ normal, 78+ hard, the rest legend
+  (the database selection rank, which misses many stars, is no longer used).
+- An answer is right when the player's own clubs (and country) fit the pair (`fitsPair` in `arcade_engine.js`),
+  whether or not the stored answer list names him; the list still feeds hints and the end-of-run "missed" names.
+  Players carry every canonical senior club (all trust levels, after the club-id collision fix), and the pool holds
+  every player rated 60+ besides those with reviewed links: 15,318 players.
+- A name is searchable only when no other player's name or alias reads the same.

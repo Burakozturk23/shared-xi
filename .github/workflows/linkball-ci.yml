@@ -81,12 +81,6 @@ jobs:
           python3 tools/uploaded_portraits/verify.py
           python3 -m unittest discover -s tools/data_platform_v4 -p 'test_portrait_audit_players.py'
 
-      - name: Verify imported daily fixture snapshot
-        run: |
-          python3 -m pip install -r tools/daily_fixtures/requirements.txt
-          python3 tools/daily_fixtures/build_snapshot.py --check
-          python3 -m unittest discover -s tools/daily_fixtures -p 'test_*.py'
-
       - name: Verify daily answer catalog matches the bundled database
         run: |
           python3 tools/data_platform_v4/export_daily_catalog.py
@@ -98,7 +92,14 @@ jobs:
           git diff --exit-code -- functions/config/daily_question_catalog.json
 
       - name: Verify daily word trio calendar and reviewed bank
-        run: python3 tools/daily_words/build_catalog.py --check
+        run: |
+          python3 tools/daily_words/generate_passaparola.py --check
+          python3 tools/daily_words/build_catalog.py --check
+          cmp assets/data/anagram_catalog.json functions/config/anagram_practice_catalog.json
+
+      # Warns 45 days and fails 14 days before the published calendar ends.
+      - name: Check daily word calendar runway
+        run: python3 tools/daily_words/check_runway.py
 
       - name: Verify multiplayer V1 canonical catalog
         run: |
@@ -509,7 +510,7 @@ jobs:
         run: |
           $parseTokens = $null
           $parseErrors = $null
-          foreach ($name in @('deploy-reviewed-games.ps1', 'deploy-online-games.ps1')) {
+          foreach ($name in @('deploy-reviewed-games.ps1', 'deploy-online-games.ps1', 'verify-missions-boosts.ps1')) {
             [System.Management.Automation.Language.Parser]::ParseFile("$env:GITHUB_WORKSPACE/scripts/$name", [ref]$parseTokens, [ref]$parseErrors) | Out-Null
             if ($parseErrors.Count -gt 0) { $parseErrors | Write-Error; exit 1 }
           }

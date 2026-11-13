@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../app/app_feedback.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../models/ucl_moment.dart';
 import '../services/ucl_moments_service.dart';
@@ -110,6 +111,7 @@ class UclMomentsController extends ChangeNotifier {
       await _save();
       final response = await gateway.call('submit', {'version': catalog.version, 'matchId': id, 'answers': pending[id]});
       if (_disposed) return;
+      AppFeedback.answer(correct: response['correct'] == true);
       if (response['correct'] == true) {
         _merge(response); phase = 'result';
         message = 'Hatıra kaydedildi. Tekrar oynamak ikinci bir ödül vermez.';

@@ -4,17 +4,20 @@ const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
 const extra = require("../config/five_mode_expansion.json");
 const publicPack = require("../../assets/data/five_mode_expansion.json");
+const Finals = require("../story_finals");
 const cases = [
-  ["ucl", "ucl_catalog", "submitUclMoment", "getUclMoments", "uclMomentsState", "matchId", 1, 506, 1065, 24, 60],
+  ["ucl", "ucl_catalog", "submitUclMoment", "getUclMoments", "uclMomentsState", "matchId", 1, 506 + 20, 1065 + 50,
+    24, 60, "ucl_moments"],
   ["international", "international_catalog", "submitInternationalGlory", "getInternationalGlory",
-    "internationalGloryState", "matchId", 2, 672, 1355, 32, 80],
+    "internationalGloryState", "matchId", 2, 672 + 20, 1355 + 50, 32, 80,
+    "international_glory"],
   ["dynastyTasks", "dynasties_catalog", "submitDynasties", "getDynasties",
-    "dynastiesState", "taskId", 2, 504, 1135, 48, 120],
+    "dynastiesState", "taskId", 2, 504 + 20, 1135 + 50, 48, 120, "dynasties"],
   ["nostalgia", "nostalgia_catalog", "submitTurkishNostalgia", "getTurkishNostalgia",
-    "nostalgiaState", "taskId", 2, 465, 1020, 81, 180],
+    "nostalgiaState", "taskId", 2, 465 + 20, 1020 + 50, 81, 180, "turkish_nostalgia"],
 ];
 const flattened = (data, key) => key === "nostalgia" ? data.flatMap((c) => c.tasks) : data;
-for (const [key, base, submit, status, path, idKey, version, coins, xp, newCoins, newXp] of cases) {
+for (const [key, base, submit, status, path, idKey, version, coins, xp, newCoins, newXp, story] of cases) {
   test(key + ": new tasks inherit mode rewards exactly once, with legacy receipts preserved", async () => {
     const h = harness();
     const tasks = flattened(extra[key], key);
@@ -33,6 +36,11 @@ for (const [key, base, submit, status, path, idKey, version, coins, xp, newCoins
     await Promise.all(tasks.map((t) => h.call(submit, input(t))));
     assert.equal(h.read("economyState/alice/balances/coins"), coins);
     assert.equal(h.read("progressionState/alice/lifetimeXp"), xp);
+    // The whole catalog pays its own closing receipt once; a replay changes nothing.
+    assert.equal(h.read(path + "/alice/rewards/" + Finals.KEY).coins, Finals.FINALS[story].coins);
+    const mine = await h.call(status);
+    assert.equal(mine.expansionFinal.earned, true);
+    assert.equal(h.read("economyState/alice/balances/coins"), coins);
     const other = await h.call(status, {}, {uid: "bob", token: {}});
     assert.equal(Object.keys(other.results || {}).length, 0);
     assert.equal(Object.keys(other.rewards || {}).length, 0);
@@ -109,8 +117,10 @@ test("eight new careers: ordered stages, replay, results, showcase and old final
   s = await h.call("getPlayerJourney");
   assert.equal(s.completed.length, 40);
   assert.equal(s.finalUnlocked, true);
-  assert.equal(h.read("economyState/alice/balances/coins"), 1350);
-  assert.equal(h.read("progressionState/alice/lifetimeXp"), 2500);
+  // 1.350 coins / 2.500 XP of the mode plus the 40-career closing reward.
+  assert.equal(h.read("economyState/alice/balances/coins"), 1350 + 40);
+  assert.equal(h.read("progressionState/alice/lifetimeXp"), 2500 + 100);
+  assert.equal(s.expansionFinal.earned, true);
 });
 test("expansion answers and source/explanation spoilers are absent from mobile assets", () => {
   const text = JSON.stringify(publicPack);

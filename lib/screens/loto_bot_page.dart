@@ -1,3 +1,4 @@
+import 'supported_bot_page.dart';
 import 'package:flutter/material.dart';
 
 import '../app/app_feedback.dart';
@@ -10,14 +11,14 @@ import '../widgets/pitch_ui.dart';
 import '../widgets/rewarded_coin_card.dart';
 import '../widgets/player_avatar.dart';
 
-class LotoBotPage extends StatefulWidget {
-  const LotoBotPage({super.key, this.controllerFactory});
+class _LegacyLotoBotPage extends StatefulWidget {
+  const _LegacyLotoBotPage({this.controllerFactory});
   final LotoBotController Function()? controllerFactory;
   @override
-  State<LotoBotPage> createState() => _LotoBotPageState();
+  State<_LegacyLotoBotPage> createState() => __LegacyLotoBotPageState();
 }
 
-class _LotoBotPageState extends State<LotoBotPage> with WidgetsBindingObserver {
+class __LegacyLotoBotPageState extends State<_LegacyLotoBotPage> with WidgetsBindingObserver {
   late final LotoBotController _c;
   String? _league;
   LotoDifficulty _difficulty = LotoDifficulty.medium;
@@ -411,5 +412,16 @@ class _LeaguePickerState extends State<_LeaguePicker> {
               child: Text('Bu aramayla eşleşen lig bulunamadı.')),
           ]),
       ));
+  }
+}
+
+class LotoBotPage extends StatelessWidget {
+  const LotoBotPage({super.key, this.controllerFactory});
+  final LotoBotController Function()? controllerFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyLotoBotPage(controllerFactory: controllerFactory);
+    return controllerFactory != null ? legacy : SupportedBotPage(mode: 'bot_loto', legacy: legacy);
   }
 }

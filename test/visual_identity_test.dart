@@ -130,8 +130,23 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.byType(PlayerAvatar), findsNWidgets(4));
+        // The analysis header leaves room for the first cards; the last
+        // player is still reachable with a kit and nothing overflows.
+        expect(find.byType(PlayerAvatar), findsWidgets);
+        await tester.scrollUntilVisible(
+          find.text('Oyuncu 4'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(PlayerAvatar), findsWidgets);
         expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(
+          find.text('Oyuncu 1'),
+          -200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
         await tester.runAsync(
           () => capture(key, dark ? 'shared-dark' : 'shared-light'),
         );

@@ -1,3 +1,5 @@
+> **Güncel kaynak düzeni:** fikstürler artık yalnız API-Football'dan, tek anahtarla gelir; bkz. `docs/daily-fixtures-api.md`. Aşağıdaki Kaggle/paket anlatımı eski düzendir.
+
 # Günün Maçları — yayın ve oyun kuralları
 
 ## Deneyim

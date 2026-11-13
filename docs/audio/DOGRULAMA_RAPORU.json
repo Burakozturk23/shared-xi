@@ -1,0 +1,348 @@
+{
+  "date": "2026-10-25",
+  "package_type": "AUDIO_ASSET_SPEC_ONLY",
+  "music_count": 5,
+  "sfx_count": 23,
+  "new_sfx_count": 5,
+  "solo_variants": 30,
+  "bot_modes": 7,
+  "online_modes": 9,
+  "story_modes": 8,
+  "audio_files_tested": 36,
+  "audio_tests": "PASS",
+  "music_loop_edge_summary": {
+    "M1": 0.00508,
+    "M2": 0.00116,
+    "M3": 0.00159,
+    "M4": 0.00086,
+    "M5": 0.00062
+  },
+  "in_app_emulator_test": "NOT_RUN",
+  "flutter_integration": "NOT_DONE",
+  "results": [
+    {
+      "file": "assets/audio/music/kupa_ani_v6_story.mp3",
+      "duration_s": 65.714,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.28643,
+      "rms": 0.05995,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/tactical_focus_v2_loop.ogg",
+      "duration_s": 23.218,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.26388,
+      "rms": 0.08225,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/kupa_ani_v6_story_loop.ogg",
+      "duration_s": 65.714,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.29565,
+      "rms": 0.06192,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/neon_tribun_v2_5_loop.ogg",
+      "duration_s": 50.729,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.26636,
+      "rms": 0.08225,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/neon_pas_v3_loop.ogg",
+      "duration_s": 34.856,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.37545,
+      "rms": 0.08212,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/neon_tribun_v2_5.mp3",
+      "duration_s": 51.429,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.37389,
+      "rms": 0.11584,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/neon_pas_v3.mp3",
+      "duration_s": 35.556,
+      "samplerate": 24000,
+      "channels": 2,
+      "peak": 0.8095,
+      "rms": 0.18396,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/final_whistle_rush_v2_loop.ogg",
+      "duration_s": 22.893,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.28488,
+      "rms": 0.08224,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/tactical_focus_v2.mp3",
+      "duration_s": 23.918,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.32655,
+      "rms": 0.1018,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/music/final_whistle_rush_v2.mp3",
+      "duration_s": 23.593,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.53709,
+      "rms": 0.1599,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/card_swipe.wav",
+      "duration_s": 0.45,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.25153,
+      "rms": 0.04017,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/hint_reveal_soft.wav",
+      "duration_s": 0.75,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.27521,
+      "rms": 0.06364,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/level_up.wav",
+      "duration_s": 1.36,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.31885,
+      "rms": 0.0816,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/online_opponent_join.wav",
+      "duration_s": 1.1,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.23764,
+      "rms": 0.05581,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/soft_confirm.wav",
+      "duration_s": 0.33,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.35443,
+      "rms": 0.11547,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/xp_reward.wav",
+      "duration_s": 0.84,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.41998,
+      "rms": 0.10454,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/goal.wav",
+      "duration_s": 2.0,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.50946,
+      "rms": 0.1017,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/slot_lock.wav",
+      "duration_s": 0.32,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.42001,
+      "rms": 0.07934,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/achievement.wav",
+      "duration_s": 1.4,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.42001,
+      "rms": 0.0929,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/round_transition.wav",
+      "duration_s": 0.95,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.22864,
+      "rms": 0.05597,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/countdown.wav",
+      "duration_s": 0.18,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.34998,
+      "rms": 0.09865,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/card_flip.wav",
+      "duration_s": 0.28,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.28003,
+      "rms": 0.03358,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/streak.wav",
+      "duration_s": 0.57,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.42001,
+      "rms": 0.1006,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/champion.wav",
+      "duration_s": 2.68,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.55002,
+      "rms": 0.12594,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/whistle.wav",
+      "duration_s": 0.53,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.34998,
+      "rms": 0.14049,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/coach_roulette_short.wav",
+      "duration_s": 1.35,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.30582,
+      "rms": 0.05037,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/coin_reward.wav",
+      "duration_s": 0.63,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.41998,
+      "rms": 0.08729,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/answer_wrong.wav",
+      "duration_s": 0.8,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.31354,
+      "rms": 0.08678,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/perfect_combo.wav",
+      "duration_s": 1.1,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.49292,
+      "rms": 0.14096,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/connection_alert_soft.wav",
+      "duration_s": 1.05,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.16693,
+      "rms": 0.05418,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/match_start.wav",
+      "duration_s": 1.2,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.41998,
+      "rms": 0.11164,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/answer_correct.wav",
+      "duration_s": 0.36,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.41998,
+      "rms": 0.09838,
+      "pass": true
+    },
+    {
+      "file": "assets/audio/sfx/ui_tap.wav",
+      "duration_s": 0.105,
+      "samplerate": 32000,
+      "channels": 1,
+      "peak": 0.28,
+      "rms": 0.0809,
+      "pass": true
+    },
+    {
+      "file": "onizleme/03_Tum_YirmiUc_Efekt_Demo.mp3",
+      "duration_s": 26.775,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.52297,
+      "rms": 0.07933,
+      "pass": true
+    },
+    {
+      "file": "onizleme/01_Bes_Ana_Muzik_Kisa_Demo.mp3",
+      "duration_s": 62.5,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.77089,
+      "rms": 0.12389,
+      "pass": true
+    },
+    {
+      "file": "onizleme/02_Yeni_Bes_Efekt_Demo.mp3",
+      "duration_s": 6.6,
+      "samplerate": 32000,
+      "channels": 2,
+      "peak": 0.29058,
+      "rms": 0.0467,
+      "pass": true
+    }
+  ]
+}

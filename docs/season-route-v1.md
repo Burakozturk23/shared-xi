@@ -7,7 +7,13 @@
 - Günlük buluşma ödülünü almak 10 SP; günlük görev ödülü 30 SP (en fazla üç); kariyer görevi ödülü 50 SP.
 - Günün Maçları’nda o günün ilk normal galibiyet coin ödülü 50 SP. 2× reklam bonusu ayrıca SP üretmez.
 - Günlük sınır üzerindeki SP sonraki güne taşınmaz. En hızlı tamamlama 14 oynanan gündür; bunun için yeterli görev/maç olması gerekir.
-- Normal duraklarda ücretsiz 20, Pro 40 coin; her beşinci durakta ücretsiz 60, Pro 100 coin. Toplam ücretsiz **560**, Pro yolunda **ek 1.040** Link Coin.
+- Ücretsiz yol: normal duraklarda 20, her beşinci durakta 60 coin; toplam **560** Link Coin.
+- Pro yolu, son hali (`runtimeConfig/seasonAvatars` açıkken): 16 normal durakta 40 coin (**640**); 5. durak 2 Güçlü bilgi;
+  15. durak 1 Bağlantı + 1 Tek seçenek ele + 1 Temel bilgi (destekler toplam 220 coin değerinde); 10. durak 300 coin'lik,
+  20. durak 450 coin'lik havuzdan rastgele bir avatar. Toplam değer yaklaşık **1.610** coin eşdeğeri.
+  Sahip olunan avatarlar çıkmaz; havuz bitince diğer havuz, sonra forma, en son 300 coin gelir. Stok 99'u aşan destek
+  yarı fiyatla coine döner. Bayrak açılmadan önce coin olarak alınmış duraklar alınmış sayılır.
+- Bayrak kapalıyken Pro yolu eski haliyle her durakta coin verir: normal 40, beşinci duraklar 100, toplam **1.040**.
 - Pro yolu mevcut doğrulanmış Linkball Pro üyeliğine dahildir; ayrı sezon kartı satın alımı yoktur.
 - Pro aynı hızda ilerler. Sezon içinde Pro olan oyuncu, ulaştığı durakların ikinci yol ödüllerini sezon sonuna kadar alabilir.
 - Pro biterse alınmış ödüller kalır; yeni Pro ödülleri için aktif üyelik gerekir.

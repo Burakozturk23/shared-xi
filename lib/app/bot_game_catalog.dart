@@ -8,6 +8,7 @@ import '../screens/vs_bot_club_selection_page.dart';
 import '../screens/vs_bot_random_five_page.dart';
 import '../screens/vs_bot_random_grid_page.dart';
 import '../screens/vs_bot_reverse_grid_page.dart';
+import 'game_audio.dart';
 import 'game_catalog.dart';
 
 /// Browsing needs no game data. Migrated modes prepare their own V4 session.
@@ -39,6 +40,7 @@ class BotGameCatalog {
       page: LotoBotPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.rush,
     ),
     tags: ['4×4 tahta', '16 oyuncu', 'Süreli'],
     goal: '16 oyuncuyu yerleştir, botun puanını geç.',
@@ -68,6 +70,7 @@ class BotGameCatalog {
       page: VsBotClubSelectionPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.rush,
     ),
     tags: ['Ortak oyuncu', '3 tur galibiyeti'],
     goal: 'Üç tur kazanan maçı alır.',
@@ -97,6 +100,7 @@ class BotGameCatalog {
       page: ClassicGridPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.competitive,
     ),
     tags: ['3×3 tahta', 'Sıra tabanlı'],
     goal: 'Üç kutuyu bir çizgide tamamla.',
@@ -121,6 +125,7 @@ class BotGameCatalog {
       icon: Icons.swap_horiz_rounded,
       page: VsBotReverseGridPage(),
       modern: true,
+      music: MusicTrack.competitive,
     ),
     tags: ['9 oyuncu', '6 ortak kriter'],
     goal: 'Altı satır ve sütundan daha fazlasını çöz.',
@@ -148,6 +153,7 @@ class BotGameCatalog {
       icon: Icons.shuffle_rounded,
       page: VsBotRandomGridPage(),
       modern: true,
+      music: MusicTrack.competitive,
     ),
     tags: ['3×3 tahta', 'Sıra tabanlı'],
     goal: 'Bağlantı kurarak üçlü oluştur.',
@@ -176,6 +182,7 @@ class BotGameCatalog {
       page: VsBotCinkoPage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.competitive,
     ),
     tags: ['5×5 tahta', 'Bağlı kutular', '3 bot seviyesi'],
     goal: 'Doğru kutuları birleştir, daha çok puan topla.',
@@ -204,6 +211,7 @@ class BotGameCatalog {
       page: VsBotRandomFivePage(),
       requiresRepository: false,
       modern: true,
+      music: MusicTrack.competitive,
     ),
     tags: ['5 tur', 'Yenilenen kulüpler', '3 bot seviyesi'],
     goal: 'Beş tur sonunda daha fazla bağlantı kur.',

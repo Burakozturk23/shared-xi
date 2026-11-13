@@ -1,5 +1,6 @@
 """Conservative dated V4 clues and exact club graph; deterministic offline export."""
 import argparse
+import gzip
 from collections import Counter, defaultdict, deque
 import hashlib
 import json
@@ -8,24 +9,81 @@ import sqlite3
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'functions/config/mystery_chain_catalog.json'
+# Shown on the card next to the Turkish position, so the clue reads in one language.
+COUNTRY_TR = {
+    'Algeria': 'Cezayir', 'Argentina': 'Arjantin', 'Austria': 'Avusturya', 'Belgium': 'Belçika',
+    'Brazil': 'Brezilya', 'Cameroon': 'Kamerun', 'Colombia': 'Kolombiya', "Cote d'Ivoire": 'Fildişi Sahili',
+    'Croatia': 'Hırvatistan', 'DR Congo': 'Kongo DC', 'Denmark': 'Danimarka', 'England': 'İngiltere',
+    'France': 'Fransa', 'Germany': 'Almanya', 'Ghana': 'Gana', 'Greece': 'Yunanistan', 'Italy': 'İtalya',
+    'Japan': 'Japonya', 'Mexico': 'Meksika', 'Morocco': 'Fas', 'Netherlands': 'Hollanda', 'Nigeria': 'Nijerya',
+    'Norway': 'Norveç', 'Poland': 'Polonya', 'Portugal': 'Portekiz', 'Russia': 'Rusya', 'Scotland': 'İskoçya',
+    'Senegal': 'Senegal', 'Serbia': 'Sırbistan', 'Slovakia': 'Slovakya', 'Spain': 'İspanya', 'Sweden': 'İsveç',
+    'Switzerland': 'İsviçre', 'Türkiye': 'Türkiye', 'Ukraine': 'Ukrayna', 'Uruguay': 'Uruguay',
+    'Wales': 'Galler', 'United States': 'ABD', 'Chile': 'Şili', 'Ireland': 'İrlanda', 'Egypt': 'Mısır',
+    'Czech Republic': 'Çekya', 'Mali': 'Mali', 'Ecuador': 'Ekvador', 'Paraguay': 'Paraguay',
+    'Peru': 'Peru', 'Venezuela': 'Venezuela', 'Korea, South': 'Güney Kore', 'Australia': 'Avustralya',
+    'Bosnia-Herzegovina': 'Bosna-Hersek', 'Slovenia': 'Slovenya', 'Hungary': 'Macaristan', 'Romania': 'Romanya',
+    'Bulgaria': 'Bulgaristan', 'Albania': 'Arnavutluk', 'Georgia': 'Gürcistan', 'Iceland': 'İzlanda',
+    'Finland': 'Finlandiya', 'Tunisia': 'Tunus', 'Gabon': 'Gabon', 'Guinea': 'Gine', 'Montenegro': 'Karadağ',
+    'North Macedonia': 'Kuzey Makedonya', 'Kosovo': 'Kosova', 'Israel': 'İsrail', 'Iran': 'İran',
+    'Canada': 'Kanada', 'Costa Rica': 'Kosta Rika', 'Jamaica': 'Jamaika', 'Burkina Faso': 'Burkina Faso',
+}
+FOOT_TR = {'right': 'sağ ayaklı', 'left': 'sol ayaklı', 'both': 'iki ayağını da kullanıyor'}
 
 def build():
     ct = json.loads((ROOT/'functions/config/career_transfer_catalog.json').read_text())
     people = json.loads((ROOT/'functions/config/three_modes_catalog.json').read_text())['players']
     players = {p['id']: p for p in people}
-    clubs = {c['id']: c for c in ct['clubs']}
+    clubs = {c['id']: dict(c) for c in ct['clubs']}
     con = sqlite3.connect(f"file:{ROOT/'assets/runtime/linkball_game_data_v4.sqlite'}?mode=ro", uri=True)
+    countries = dict(con.execute('select id, country from clubs'))
+    seeds = dict(con.execute('select id, popularity_seed from clubs'))
+    names = defaultdict(list)
+    for c in clubs.values(): names[c['name']].append(c['id'])
+    # The best-known club keeps its plain name; the others get their country.
+    plain = {max(ids, key=lambda i: (seeds.get(i) or 0, -i)) for ids in names.values()}
+    for c in clubs.values():
+        if len(names[c['name']]) > 1 and c['id'] not in plain and countries.get(c['id']):
+            c['name'] = f"{c['name']} ({COUNTRY_TR.get(countries[c['id']], countries[c['id']])})"
     popular = {i for i, in con.execute('select id from clubs where popularity_seed >= 10 and entity_type="SENIOR" and gameplay_eligible=1')}
     positions = {'GK': 'Kaleci', 'DEF': 'Defans', 'MID': 'Orta saha', 'FWD': 'Forvet'}
-    groups = defaultdict(list)
+    raw_ids = {i for i, in con.execute('select id from clubs')}
+    # TM ids that collide with a different club keep their own id (reviewed list).
+    offset_mismatch = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
+    cid = lambda i: i - 1000000000 if i >= 1000000000 and i not in offset_mismatch and i - 1000000000 in raw_ids else i
+    # Every V4 club record of a player, dated or not: a looser match than the
+    # puzzle data, so more possible answers are accepted rather than fewer.
+    spells = defaultdict(set)
+    for pid, club in con.execute('select player_id, club_id from career_spells'):
+        spells[pid].add(cid(club))
+    for pid, a, b in con.execute('select player_id, from_club_id, to_club_id from transfers'):
+        spells[pid].update((cid(a), cid(b)))
+    for p in people: spells[p['id']].update(p['clubs'])
+    profiles = {r[0]: r for r in con.execute(
+        "select player_id,height_cm,foot,international_caps from profiles where identity_confidence like 'HIGH%'")}
+    groups = defaultdict(list); groups_all = defaultdict(list)
     for p in people:
         if p['rank'] <= 5000: groups[(p['country'],p['position'])].append(p['id'])
+        groups_all[(p['country'],p['position'])].append(p['id'])
+    # Levels as in the online duel: how known the player (the online modes' gameplay
+    # rating) and the hinted clubs (50 grid clubs, 90 known) are. easy: 82+ and a grid
+    # club among the clues; medium: 78+ and a grid club; hard: 75+ and a known club.
+    # Anything else is `obscure`: archived, never dealt. The clue clubs climb from less
+    # to better known: the first card is his third best-known club (not a youth side),
+    # the period the second, the third clue his best-known club.
+    pv = json.loads(gzip.decompress((ROOT / 'functions/config/pvp_catalog.json.gz').read_bytes()))
+    rating = {int(k): v['rating'] for k, v in pv['players'].items()}
+    grid = {int(k.split(':')[1]) for k in pv['gridClubs']}
+    known = grid | {int(k.split(':')[1]) for k in pv['clubOptions']}
+    fame = lambda s: (2 if s['clubId'] in grid else 1 if s['clubId'] in known else 0, seeds.get(s['clubId']) or 0)
     mystery = []
     for career in ct['careers']:
         p = players[career['playerId']]
         stops = list({s['clubId']: s for s in career['stops']}.values())
         if len(stops) < 3 or len(groups[(p['country'],p['position'])]) < 4: continue
-        a,b,c = stops[:3]
+        top = sorted(stops, key=fame, reverse=True)
+        c, b, a = top[0], top[1], top[2]
+        stops = [a, b, c] + [s for s in stops if s not in (a, b, c)]
         options = [p['id']] + [i for i in groups[(p['country'],p['position'])]
             if i != p['id'] and len(players[i]['clubs']) >= 2 and a['clubId'] not in players[i]['clubs']]
         if len(options) < 4: continue
@@ -43,16 +101,61 @@ def build():
                 if teammate: break
             if teammate: break
         hints = [dict(id='club_'+str(a['clubId']),text='Oynadığı kulüp: '+clubs[a['clubId']]['name']),
-                 dict(id='period',text=f"Seçili kariyer dönemi: {b['start'][:4]} – {(b['end'] or 'devam')[:4]}"),
+                 dict(id='period',text=f"Seçili kariyer dönemi: {b['start'][:4]} – {b['end'][:4] if b['end'] else 'devam'}"),
                  dict(id='club_'+str(b['clubId']),text='Bir başka kulübü: '+clubs[b['clubId']]['name']),
                  teammate or dict(id='club_'+str(c['clubId']),text=f"{clubs[c['clubId']]['name']} kariyeri {c['start'][:4]} yılında başladı."),
                  dict(id='letter',text='Adının ilk harfi: '+next(ch for ch in p['name'] if ch.isalpha()))]
-        mystery.append(dict(id=str(p['id']),playerId=p['id'],country=p['country'],position=positions[p['position']],
-            hints=hints,options=options,onlineClubId=a['clubId'],source=career['source']))
-    memberships = []
+        # Layout 2: the first club is on the card from the start, the period
+        # names its club, and the profile is a third optional clue.
+        pr = profiles.get(p['id'])
+        bits = [f"{pr[1]} cm" if pr and pr[1] else None, FOOT_TR.get(pr[2]) if pr else None,
+                # V4 stores unknown caps as 0, so only a positive count is a clue.
+                f"{pr[3]} milli maç" if pr and pr[3] else None]
+        profile = dict(id='profile', text='Profil: ' + ' · '.join(b for b in bits if b)) if any(bits) else None
+        third = teammate
+        if not third and len(stops) > 3:
+            d = stops[3]
+            third = dict(id='club_'+str(d['clubId']), text='Bir başka kulübü daha: '+clubs[d['clubId']]['name'])
+        if not third:
+            third = dict(id='club_'+str(c['clubId'])+'_year',
+                         text=f"{clubs[c['clubId']]['name']} kariyeri {c['start'][:4]} yılında başladı.")
+        hints2 = [dict(id='club_'+str(a['clubId']), text='Oynadığı kulüp: '+clubs[a['clubId']]['name']),
+                  dict(id='period', text=f"Bir dönemi: {clubs[b['clubId']]['name']}, "
+                       f"{b['start'][:4]} – {b['end'][:4] if b['end'] else 'devam'}"),
+                  dict(id='club_'+str(c['clubId']), text='Bir başka kulübü: '+clubs[c['clubId']]['name']),
+                  third] + ([profile] if profile else []) + [hints[4]]
+        # Same nationality, position and these three clubs: also a right answer.
+        shown = {a['clubId'], b['clubId'], c['clubId']}
+        also = sorted(i for i in groups_all[(p['country'], p['position'])]
+                      if i != p['id'] and shown <= spells[i])
+        r = rating.get(p['id'], 0); hinted = {a['clubId'], b['clubId'], c['clubId']}
+        level = 'easy' if r >= 82 and hinted & grid else 'medium' if r >= 78 and hinted & grid else \
+            'hard' if r >= 75 and hinted & known else None
+        entry = dict(id=str(p['id']),playerId=p['id'],country=p['country'],
+            countryLabel=COUNTRY_TR.get(p['country'], p['country']),position=positions[p['position']],
+            hints=hints2,layout=2,optional=list(range(3, len(hints2))),
+            difficulty=level or 'hard', **({'obscure': True} if level is None else {}),
+            options=options,onlineClubId=a['clubId'],source=career['source'])
+        if also: entry['alsoPlayerIds'] = also
+        mystery.append(entry)
+    # The chain graph: every reviewed career, and every known player (gameplay rating
+    # 72+) with his canonical senior clubs, so a real link a fan knows is a legal move.
+    # Before, only the ~700 career puzzles were in it.
+    EXTRA_RATING = 72  # every known player is in the graph
+    club_rows = defaultdict(set)
+    for pid, club in con.execute('select player_id, club_id from player_clubs'):
+        club_rows[pid].add(cid(club))
+    memberships = []; seen_players = set()
     for p in ct['careers']:
         ids = sorted({s['clubId'] for s in p['stops']} & popular)
-        if len(ids) >= 2: memberships.append(dict(id=p['playerId'],clubs=ids,player={k:players[p['playerId']][k] for k in ('id','name','country','position','rank','search')}))
+        if len(ids) >= 2:
+            seen_players.add(p['playerId'])
+            memberships.append(dict(id=p['playerId'],clubs=ids,player={k:players[p['playerId']][k] for k in ('id','name','country','position','rank','search')}))
+    for pid in sorted(club_rows):
+        if pid in seen_players or pid not in players or rating.get(pid, 0) < EXTRA_RATING: continue
+        ids = sorted(club_rows[pid] & popular)
+        if len(ids) >= 2:
+            memberships.append(dict(id=pid,clubs=ids,player={k:players[pid][k] for k in ('id','name','country','position','rank','search')}))
     adjacency = defaultdict(dict)
     for p in memberships:
         for a in p['clubs']:
@@ -73,13 +176,119 @@ def build():
             assert len({x['playerId'] for x in path}) == len(path)
             pairs[len(path)].append(dict(id=f'{start}_{target}',start=start,target=target,par=len(path),solution=path))
     # Stable hash sampling avoids alphabetical/club-ID bias; all catalog paths retain exact PAR.
-    selected = {k: sorted(v,key=lambda p:hashlib.sha256(p['id'].encode()).hexdigest())[:300] for k,v in pairs.items()}
+    # Pair quality: both ends need several connecting players, a PAR-1 pair
+    # more than one shared player and a PAR-2 pair more than one route, so the
+    # puzzle tests football knowledge instead of one obscure link. The bar is
+    # lowered step by step only when a PAR level would otherwise run short.
+    deg = Counter(c for p in memberships for c in p['clubs'])
+    by_club = defaultdict(set)
+    for p in memberships:
+        for c in p['clubs']: by_club[c].add(p['id'])
+    clubs_of = {p['id']: set(p['clubs']) for p in memberships}
+    def routes2(a, b):
+        return sum(1 for x in by_club[a] for c in clubs_of[x] if c not in (a, b)
+                   for y in by_club[c] & by_club[b] if y != x)
+    def good(p, need):
+        if min(deg[p['start']], deg[p['target']]) < need: return False
+        if p['par'] == 1: return len(by_club[p['start']] & by_club[p['target']]) >= 2
+        if p['par'] == 2: return routes2(p['start'], p['target']) >= 2
+        return True
+    # Pair ends a fan knows. The 90 known clubs sit at the centre of the graph (two
+    # steps from nearly every club), so a long PAR needs at least one end further out:
+    # a club ten or more stars (78+) played for (Boca Juniors, São Paulo, Leeds,
+    # Dinamo Zagreb), about 160 clubs in all. Both ends known first, then both among
+    # these (no Gil Vicente -> Standard Liège, no Flamengo -> Albirex Niigata). The
+    # database popularity seed is not used: it rates Albirex 72 and Flamengo 19.
+    stars = Counter(k for m in memberships if rating.get(m['id'], 0) >= 78 for k in m['clubs'])
+    fan = known | {k for k, n in stars.items() if n >= 10}
+    def ends(p, level):
+        a, b = p['start'], p['target']
+        if level == 2: return a in known and b in known
+        if level == 1: return a in fan and b in fan
+        # A longer chain: one end a fan's club, the other where three or more stars played.
+        return (a in fan and stars[b] >= 3) or (b in fan and stars[a] >= 3)
+    def pick(k, n, salt, levels=(2, 1, 0)):
+        ordered = sorted(pairs.get(k, []), key=lambda p: hashlib.sha256((salt + p['id']).encode()).hexdigest())
+        chosen = []
+        for level in levels:
+            for need in (3, 2):
+                for p in ordered:
+                    if len(chosen) >= n: return chosen
+                    if p not in chosen and ends(p, level) and good(p, need): chosen.append(p)
+        return chosen
+    # PAR 4 pairs sit between remote clubs by nature: keep only those whose
+    # both ends have at least two connectors and give the rest to PAR 3.
+    par4 = [p for p in sorted(pairs.get(4, []), key=lambda p: hashlib.sha256(p['id'].encode()).hexdigest())
+            if good(p, 2) and ends(p, 0)][:300]
+    # With every known player in the graph the known clubs are two steps apart, so
+    # Mastery is mostly PAR 2 between known clubs; the few longer chains between clubs
+    # a fan knows stay. 900 pairs in all.
+    par3 = pick(3, 300, '', levels=(1,))
+    # Restricted chains (Kısıtlı zincir): the graph is so dense that banning a few hubs
+    # changes nothing (two known clubs share 20 to 130 clubs a step away; even with all
+    # 90 known clubs banned they stay two moves apart). The restriction that does bite:
+    # no step may land on one of the clubs a fan knows (`fan`, about 160: the known
+    # clubs and those ten or more stars played for). Both ends are known clubs; kept
+    # only when, under the rule, the shortest routes are few (one to ten), so the player
+    # must find a lesser club (Sivasspor between Santos and Sunderland). PAR, the route
+    # and the route count are computed with the bans; the server refuses a banned club.
+    def route(start, target, banned):
+        prev = {start: None}; queue = deque([start])
+        while queue:
+            at = queue.popleft()
+            for to, pid in sorted(adjacency[at].items()):
+                if to in prev or to in banned: continue
+                prev[to] = (at, pid)
+                if to == target:
+                    path = []; x = to
+                    while prev[x]: path.append(dict(playerId=prev[x][1], clubId=x)); x = prev[x][0]
+                    return path[::-1]
+                queue.append(to)
+        return None
+    def count_routes(start, target, banned):
+        # As countShortest in mystery_chain_graph.js: every (player, club) step counted.
+        dist = {start: 0}; ways = {start: 1}; layer = [start]
+        while layer and target not in dist:
+            nxt = []
+            for club in layer:
+                for pid in by_club[club]:
+                    for to in clubs_of[pid]:
+                        if to in banned or to == club: continue
+                        if to in dist and dist[to] <= dist[club]: continue
+                        if to not in dist: dist[to] = dist[club] + 1; nxt.append(to)
+                        ways[to] = ways.get(to, 0) + ways[club]
+            layer = nxt
+        return ways.get(target, 0)
+    restricted = []
+    pool = sorted([p for p in pairs.get(2, []) if ends(p, 2)],
+                  key=lambda p: hashlib.sha256(('rule' + p['id']).encode()).hexdigest())
+    for p in pool:
+        if len(restricted) >= 150: break
+        banned = fan - {p['start'], p['target']}
+        path = route(p['start'], p['target'], banned)
+        if not path or len(path) > 4: continue
+        if not 1 <= count_routes(p['start'], p['target'], banned) <= 10: continue
+        restricted.append(dict(id=p['id'] + '_r', start=p['start'], target=p['target'], par=len(path),
+            solution=path, restricted=True))
+    selected = {3: par3, 4: par4, 2: pick(2, 900 - len(par3) - len(par4) - len(restricted), '')}
+    sprint = pick(1, 200, 'sprint') + pick(2, 400, 'sprint')
     data = dict(schema=1,sourceVersion=ct['version'],databaseSha256=ct['databaseSha256'],mystery=mystery,
         clubs=[clubs[i] for i in sorted(adjacency)],graph=memberships,
-        mastery=[p for k in (2,3,4) for p in selected.get(k,[])],
-        sprint=[p for k in (1,2) for p in selected.get(k,[])],
+        mastery=[p for k in (2,3,4) for p in selected.get(k,[])] + restricted,
+        # One list for every restricted file: its banned clubs are these minus its two ends.
+        restrictedClubs=sorted(fan),
+        sprint=sprint,
         quality=dict(mystery=len(mystery),teammateClues=sum(p['hints'][3]['id']=='teammate' for p in mystery),
-            graphPlayers=len(memberships),clubs=len(adjacency),availablePairs={k:len(v) for k,v in pairs.items()}))
+            profileClues=sum(any(h['id']=='profile' for h in p['hints']) for p in mystery),
+            sharedAnswers=sum('alsoPlayerIds' in p for p in mystery),
+            untranslated=sorted({p['country'] for p in mystery if p['country'] not in COUNTRY_TR}),
+            levels=dict(Counter(p['difficulty'] for p in mystery if not p.get('obscure'))),
+            obscure=sum(1 for p in mystery if p.get('obscure')),
+            pairEnds={k: Counter(min(3, deg[p['start']], deg[p['target']]) for p in v) for k, v in
+                      [('mastery', [p for k in (2,3,4) for p in selected[k]]), ('sprint', sprint)]},
+            graphPlayers=len(memberships),clubs=len(adjacency),availablePairs={k:len(v) for k,v in pairs.items()},
+            fanClubs=len(fan), restricted=dict(Counter(p['par'] for p in restricted)), knownEnds={k: Counter(int(p['start'] in known) + int(p['target'] in known) for p in v) for k, v in
+                       [('mastery', [p for k in (2,3,4) for p in selected[k]]), ('sprint', sprint)]}))
     data['version']='mc-v1-'+hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()[:16]
     assert len(mystery)>100 and len(data['mastery'])>=100 and len(data['sprint'])>=100
     return data

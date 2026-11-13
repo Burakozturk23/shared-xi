@@ -37,12 +37,13 @@ test("choice catalog: eight distinct themes, exact formats, no 128-club option",
     }
   }
 });
-test("choice content gates never mark unreviewed statistics or cards as verified", () => {
-  const unreviewed = Object.values(E.catalog.metrics).filter((m) => !m.id.startsWith("uefa_ec_ucl_2023_"));
-  assert.equal(unreviewed.length, 8);
-  for (const m of unreviewed) {
-    assert.equal(m.gatePassed, false); assert.throws(() => E.create(E.catalog,
-        {mode: "higher_lower", metricId: m.id, requestId: id()}, 1));
+test("only reviewed statistics are playable; tournament cards stay unverified", () => {
+  const metrics = Object.values(E.catalog.metrics);
+  assert.deepEqual(metrics.map((m) => m.id).sort(), ["birth_year", "bundesliga_goals", "height_cm",
+    "international_caps", "international_goals", "laliga_goals", "ligue1_goals", "peak_market_value", "pl_goals",
+    "seriea_goals", "super_lig_goals", "ucl_appearances", "ucl_goals"]);
+  for (const m of metrics) {
+    assert.equal(m.gatePassed, true, m.id); assert.ok(m.scopeLabel, m.id); assert.ok(m.sources.length, m.id);
   }
   assert.ok(Object.values(E.catalog.candidates).every((p) => p.contentStatus === "needs_review"));
 });
@@ -60,12 +61,30 @@ test("tournament all sizes require N-1 decisions, undo crosses a round and corru
     assert.throws(() => E.bracket(r.orderedCandidateIds, bad));
   }
 });
-test("tournament projection strips private seeds, unsourced seasons and old claim strings", () => {
+test("tournament projection strips private seeds and old claim strings; seasons are labels only", () => {
   const r = engine("this_or_that", {bracketId: "prime_battles_32"}); const pub = E.publicRun(c, r);
   assert.equal(pub.privateSeed, undefined);
   for (const p of Object.values(pub.candidates)) {
-    assert.equal(p.legacyHighlight, undefined); assert.equal(p.seasonKey, undefined);
+    assert.equal(p.legacyHighlight, undefined); assert.deepEqual(p.verifiedFacts, []);
+    // Unverified seasons appear only as an identifying label, never as a sourced fact.
+    assert.ok(p.seasonKey); assert.equal(p.seasonLabelOnly, true);
   }
+});
+test("tournament draws differ per game; duplicate names stay apart by label; today's bracket is shared", () => {
+  const draws = new Set();
+  for (let i = 0; i < 10; i++) {
+    draws.add(engine("this_or_that", {bracketId: "prime_battles_32"}).orderedCandidateIds.join());
+  }
+  assert.ok(draws.size >= 9);
+  const r = engine("this_or_that", {bracketId: "turkish_peak_squads_64", size: 64});
+  const shown = Object.values(E.publicRun(c, r).candidates).map((p) => p.name + " " + p.seasonKey);
+  assert.equal(new Set(shown).size, shown.length);
+  const a = E.create(c, {mode: "this_or_that", daily: true, requestId: "a".repeat(32)}, 1700000000000);
+  const b = E.create(c, {mode: "this_or_that", daily: true, requestId: "b".repeat(32)}, 1700000000000);
+  assert.equal(a.bracketId, b.bracketId); assert.deepEqual(a.orderedCandidateIds, b.orderedCandidateIds);
+  assert.equal(a.size, 16); assert.ok(a.daily);
+  E.act(c, a, {action: "choose", candidateId: a.orderedCandidateIds[0]}); E.act(c, a, {action: "undo"});
+  assert.equal(a.undos, 1);
 });
 test("ranking pair score excludes ties and counts tie-group exact positions", () => {
   assert.deepEqual(E.score([5, 4, 3, 2, 1]), {score: 100, exactMatches: 5, comparable: 10, correct: 10});
@@ -126,10 +145,15 @@ test("higher/lower fresh identities, exact values, difficulty bands, answer lock
   }
   assert.ok(higher / total > .43 && higher / total < .57);
 });
-test("higher/lower first wrong ends zero streak and exhausted identities end safely", () => {
-  const r = engine("higher_lower"); const q = r.question;
-  const up = q.knownSide ? q.leftValue > q.rightValue : q.rightValue > q.leftValue;
-  E.act(c, r, {action: "guess", questionId: q.id, direction: up ? "lower" : "higher"});
+test("higher/lower: the first miss spends the joker, the second ends; exhausted identities end safely", () => {
+  const r = engine("higher_lower");
+  const miss = () => {
+    const q = r.question; const up = q.knownSide ? q.leftValue > q.rightValue : q.rightValue > q.leftValue;
+    E.act(c, r, {action: "guess", questionId: q.id, direction: up ? "lower" : "higher"});
+  };
+  assert.throws(() => E.act(c, r, {action: "next"}), /Önce soruyu cevapla/);
+  miss(); assert.equal(r.finished, false); assert.equal(r.jokerUsed, true); assert.equal(r.streak, 0);
+  E.act(c, r, {action: "next"}); miss();
   assert.equal(r.finished, true); assert.equal(r.streak, 0); assert.ok(E.publicRun(c, r).question.rightValue);
   r.usedIds = c.metrics.fixture.groups.test_scope.map((p) => p.id); assert.equal(E.higherPair(c, r), null);
 });
@@ -170,7 +194,7 @@ test("real callables validate gates before energy and unreviewed tournament is f
   await assert.rejects(prepare(harness(), "blind_ranking", {type: "personal", themeId: "favorites"}),
       {code: "failed-precondition"});
   const h = setup();
-  await assert.rejects(prepare(h, "higher_lower", {metricId: Object.keys(c.metrics)[0]}));
+  await assert.rejects(prepare(h, "higher_lower", {metricId: "not_a_metric"}));
   assert.equal(h.read("economyState/alice/energy"), null);
   const r = await start(h, "this_or_that", {bracketId: "prime_battles_32"});
   assert.equal(r.practice, true); assert.equal(h.read("economyState/alice/energy/balance"), 6);
@@ -233,48 +257,126 @@ test("interrupted XP projection repairs outbox, duplicate payload binding reject
   await assert.rejects(h.call("actChoice", {...event, slot: 3}), {code: "invalid-argument"});
 });
 
-test("UEFA historical metrics have verified identities, explicit scope, and playable production pools", () => {
-  const source = require("../../tools/choice/uefa_2023_snapshot.json");
-  const accepted = new Map(source.rows.map((r) => [r.playerId, r]));
-  assert.equal(accepted.size, 145);
-  assert.ok(source.excluded.some((r) =>
-    r.sourceName === "Deco" && r.reason === "nationality_mismatch"));
-  for (const field of ["appearances", "goals"]) {
-    const metricId = `uefa_ec_ucl_2023_${field}`; const m = E.catalog.metrics[metricId];
-    assert.equal(m.gatePassed, true); assert.ok(m.scopeLabel.includes("elemeler"));
-    assert.equal(m.sourceSha256, source.sourceSha256);
-    for (const row of m.groups[source.scopeId]) {
-      assert.equal(row.value, accepted.get(row.id)[field]); assert.ok(E.catalog.players[row.id]);
+test("a bracket rushed under 0.6 s per decision earns nothing; a paced one is paid", () => {
+  const s = state(); const candidate = Object.keys(c.candidates)[0];
+  const run = (startedAt) => complete("this_or_that", {bracketId: "theme", size: 16, type: "player",
+    contentVerified: true, orderedCandidateIds: [candidate], history: [], startedAt});
+  const rushed = run(1000); finalize(s, rushed, 1000 + 15 * 500, true, c);
+  assert.equal(rushed.earnedCoins, 0); assert.match(rushed.rewardReason, /çok hızlı/);
+  const paced = run(1000); paced.bracketId = "other"; finalize(s, paced, 1000 + 15 * 700, true, c);
+  assert.ok(paced.earnedCoins > 0);
+});
+test("completed brackets feed a shared champion count shown on the result", async () => {
+  const h = setup(); let s = await start(h, "this_or_that", {bracketId: "prime_battles_32"});
+  while (!s.finished) s = await act(h, s, {action: "choose", candidateId: s.leftId});
+  await h.call("getChoice", {mode: "this_or_that"});
+  const res = await h.call("getChoice", {mode: "this_or_that"});
+  // Counted once per bracket, however often the result is reloaded.
+  assert.equal(res.community.total, 1); assert.equal(res.community.championShare, 100);
+  assert.equal(res.community.top[0].id, s.championId);
+});
+test("higher/lower counts need an absolute gap per band; known side is not a fixed rhythm", () => {
+  const counts = structuredClone(c);
+  counts.metrics.fixture.unit = "gol";
+  const rows = [];
+  for (let i = 0; i < 240; i++) rows.push({id: "test" + (i + 1), value: Math.floor(i / 2)});
+  counts.metrics.fixture.groups.test_scope = rows;
+  const sides = new Set(); let close = 0; let total = 0;
+  for (let n = 0; n < 40; n++) {
+    const r = E.create(counts, {mode: "higher_lower", requestId: id(), metricId: "fixture"}, 1);
+    for (let k = 0; k < 6 && r.question; k++) {
+      const q = r.question; total++; sides.add(r.history.length % 2 === q.knownSide ? "a" : "b");
+      const floor = {easy: 8, normal: 5, hard: 4, master: 3}[q.difficulty];
+      if (Math.abs(q.leftValue - q.rightValue) < floor) close++;
+      const up = q.knownSide ? q.leftValue > q.rightValue : q.rightValue > q.leftValue;
+      E.act(counts, r, {action: "guess", questionId: q.id, direction: up ? "higher" : "lower"});
+      E.act(counts, r, {action: "next"});
     }
-    for (let i = 0; i < 20; i++) {
-      const r = E.create(E.catalog, {mode: "higher_lower", metricId, requestId: id()}, 1);
-      r.phase = "active";
-      for (let turn = 0; turn < 20; turn++) {
-        assert.equal(r.finished, false, "pool must support the twenty-streak tier");
-        const pub = E.publicRun(E.catalog, r);
-        assert.equal(pub.question[pub.question.knownSide === 0 ? "rightValue" : "leftValue"], undefined);
-        assert.equal(pub.metric.groups, undefined); assert.equal(pub.metric.sourceColumn, undefined);
-        assert.equal(pub.metric.edition, "2022/23 UEFA arşivi");
-        E.act(E.catalog, r, {action: "guess", questionId: r.question.id,
-          direction: r.question.knownSide === 0 ? (r.question.rightValue > r.question.leftValue ? "higher" : "lower") :
-            (r.question.leftValue > r.question.rightValue ? "higher" : "lower")});
-        assert.equal(r.correct, true);
-        if (turn < 19) E.act(E.catalog, r, {action: "next"});
+  }
+  assert.equal(close, 0); assert.ok(total > 100); assert.equal(sides.size, 2);
+});
+test("finished sessions are pruned to the newest 30 when a new game is prepared", async () => {
+  const h = setup(); const sessions = {};
+  for (let i = 0; i < 40; i++) {
+    const sid = (1000 + i).toString(16).padStart(32, "0");
+    sessions[sid] = {id: sid, mode: "this_or_that", finished: true, createdAt: i, completedAt: i};
+  }
+  h.seed("economyState/alice/choice/sessions", sessions);
+  await prepare(h, "this_or_that", {bracketId: "prime_battles_32"});
+  const kept = Object.values(h.read("economyState/alice/choice/sessions"));
+  assert.equal(kept.length, 31); assert.ok(kept.every((x) => !x.finished || x.completedAt >= 10));
+});
+test("ranking: a perfect five or 80+ on ten earns the 80 badge; only a perfect ten earns perfection", () => {
+  const run = (size, score) => complete("blind_ranking", {type: "objective", size, metricId: "fixture",
+    score, exactMatches: 0, comparable: 1, values: {}, placements: []});
+  const s = state();
+  finalize(s, run(5, 90), 1, true, c); assert.equal(s.claims.br__stat_80, undefined);
+  finalize(s, run(5, 100), 1, true, c); assert.ok(s.claims.br__stat_80);
+  assert.equal(s.claims.br__stat_perfect, undefined);
+  finalize(s, run(10, 100), 1, true, c); assert.ok(s.claims.br__stat_perfect);
+});
+test("ranking: only one personal list a day is paid; objective lists still are", () => {
+  const s = state();
+  const personal = () => complete("blind_ranking", {type: "personal", size: 5, themeId: "favorites", placements: []});
+  const a = personal(); finalize(s, a, 1, true, c); assert.equal(a.earnedCoins, 2 + 1 + 1);
+  const b = personal(); finalize(s, b, 1, true, c);
+  assert.equal(b.earnedCoins, 0); assert.match(b.rewardReason, /kişisel/);
+  const o = complete("blind_ranking", {type: "objective", size: 5, metricId: "fixture", score: 50, exactMatches: 0,
+    comparable: 1, values: {}, placements: []});
+  finalize(s, o, 1, true, c); assert.ok(o.earnedCoins >= 2);
+});
+test("ranking lists hold one close call and never sort the shared catalog", () => {
+  const before = c.metrics.fixture.groups.test_scope.map((x) => x.id).join();
+  let close = 0;
+  for (let i = 0; i < 40; i++) {
+    const r = engine("blind_ranking", {size: 10});
+    const v = Object.values(r.values).sort((a, b) => a - b);
+    if (v.some((x, k) => k && x - v[k - 1] <= Math.max(3, v[k - 1] * 0.1))) close++;
+  }
+  assert.ok(close >= 36); assert.equal(c.metrics.fixture.groups.test_scope.map((x) => x.id).join(), before);
+});
+
+// Reviewed statistics (docs/choice/metric-review.md).
+const inPool = (metricId, name) => E.list(E.catalog.metrics[metricId].groups.all)
+    .some((x) => E.catalog.players[x.id]?.name === name);
+const value = (metricId, name) => E.list(E.catalog.metrics[metricId].groups.all)
+    .find((x) => E.catalog.players[x.id]?.name === name)?.value;
+test("statistic pools hold real values only: wrong zeros and thin careers stay out", () => {
+  assert.equal(inPool("international_caps", "Zlatan Ibrahimović"), false); // the database says 0
+  assert.equal(value("international_caps", "Luka Modrić"), 202);
+  assert.equal(value("peak_market_value", "Kylian Mbappé"), 200000000);
+  assert.equal(inPool("peak_market_value", "Hakan Şükür"), false); // pre-2004 values are understated
+  assert.equal(value("ucl_goals", "Lionel Messi"), 78); // with the since-2012 label
+  assert.equal(value("pl_goals", "Harry Kane"), 213);
+  for (const m of Object.values(E.catalog.metrics)) {
+    assert.ok(E.list(m.groups.all).length >= 120, m.id);
+    assert.ok(E.list(m.groups.all).every((x) => x.value > 0), m.id);
+  }
+});
+test("close statistics are never asked: every pair keeps the metric's minimum gap at every streak", () => {
+  for (const m of Object.values(E.catalog.metrics)) {
+    for (const streak of [0, 5, 12, 25]) {
+      for (let n = 0; n < 15; n++) {
+        const r = E.create(E.catalog, {mode: "higher_lower", metricId: m.id, requestId: id()}, 1);
+        r.streak = streak; r.usedIds = [];
+        const q = E.higherPair(E.catalog, r);
+        assert.ok(q, m.id + " " + streak);
+        assert.ok(Math.abs(q.leftValue - q.rightValue) >= (m.minGap || 1), `${m.id} ${q.leftValue} ${q.rightValue}`);
       }
-      assert.equal(new Set(r.usedIds).size, r.usedIds.length);
-      for (const size of [5, 10]) {
-        const ranked = E.create(E.catalog,
-            {mode: "blind_ranking", type: "objective", size, metricId, requestId: id()}, 1);
-        ranked.phase = "active";
-        const pub = E.publicRun(E.catalog, ranked);
-        assert.equal(pub.values, undefined); assert.equal(pub.orderedCandidateIds, undefined);
-        assert.ok(pub.metric.scopeLabel.includes("1955–2023"));
-        for (let slot = 0; slot < size; slot++) {
-          E.act(E.catalog, ranked,
-              {action: "place", slot, candidateId: ranked.orderedCandidateIds[slot]});
-        }
-        assert.equal(ranked.finished, true); assert.ok(ranked.score >= 0 && ranked.score <= 100);
-      }
+    }
+  }
+  assert.equal(E.catalog.metrics.birth_year.higherLabel, "Daha genç");
+  assert.equal(E.catalog.metrics.height_cm.higherLabel, "Daha uzun");
+});
+test("ranking lists keep the minimum gap in their close call and work for every metric", () => {
+  for (const m of Object.values(E.catalog.metrics)) {
+    for (const size of [5, 10]) {
+      const r = E.create(E.catalog, {mode: "blind_ranking", type: "objective", size, metricId: m.id,
+        requestId: id()}, 1);
+      const values = Object.values(r.values).sort((a, b) => a - b);
+      assert.equal(values.length, size, m.id);
+      const gaps = values.slice(1).map((v, i) => v - values[i]).filter(Boolean);
+      assert.ok(gaps.every((g) => g >= (m.minGap || 1)), `${m.id} ${values}`);
     }
   }
 });
