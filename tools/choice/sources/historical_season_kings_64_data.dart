@@ -1,0 +1,87 @@
+import '../models/bracket_candidate.dart';
+
+/// Kulüp vs Kulüp — Bölüm 2
+/// Tarihsel Sezon Kralları — mucizeler, rekorlar, unutulmaz çıkışlar.
+class HistoricalSeasonKings64Data {
+  HistoricalSeasonKings64Data._();
+
+  static const String bracketId = 'historical_season_kings_64';
+
+  static const BracketDefinition definition = BracketDefinition(
+    id: bracketId,
+    title: 'Tarihsel Sezon Kralları',
+    subtitle: 'Season Kings 64',
+    description:
+        'Şampiyonluk mucizeleri, rekor kıranlar, tarihi çıkışlar. Hangi sezon daha efsane?',
+    meta: '64 aday · 63 karar · Mucize & rekor sezonlar',
+    emoji: '📜',
+    seeds: seeds,
+  );
+
+  static const List<BracketCandidate> seeds = [
+    BracketCandidate(id: 'arsenal_03_04_a1', name: 'Arsenal', badge: '03/04', highlight: 'Invincibles / Namaglup Premier Lig Şampiyonu'),
+    BracketCandidate(id: 'manchester_city_17_18_b1', name: 'Manchester City', badge: '17/18', highlight: 'Centurions / 100 Puanlı Premier Lig Şampiyonu'),
+    BracketCandidate(id: 'leicester_city_15_16_a2', name: 'Leicester City', badge: '15/16', highlight: '5000\'de 1 Oranlı Premier Lig Mucizesi'),
+    BracketCandidate(id: 'deportivo_la_coruna_99_00_b2', name: 'Deportivo La Coruña', badge: '99/00', highlight: 'Super Depor / Tarihi La Liga Krallığı'),
+    BracketCandidate(id: 'bayer_leverkusen_23_24_a3', name: 'Bayer Leverkusen', badge: '23/24', highlight: 'Xabi Alonso ile Yenilgisiz Bundesliga Şampiyonu'),
+    BracketCandidate(id: 'napoli_22_23_b3', name: 'Napoli', badge: '22/23', highlight: 'Spalletti ile 33 Yıl Sonra Gelen Scudetto'),
+    BracketCandidate(id: 'montpellier_11_12_a4', name: 'Montpellier', badge: '11/12', highlight: 'Giroud\'lu Ligue 1 Şampiyonluk Mucizesi'),
+    BracketCandidate(id: 'vfl_wolfsburg_08_09_b4', name: 'VfL Wolfsburg', badge: '08/09', highlight: 'Grafite & Džeko\'lu Bundesliga Krallığı'),
+    BracketCandidate(id: 'valencia_03_04_a5', name: 'Valencia', badge: '03/04', highlight: 'Rafa Benítez ile La Liga & UEFA Kupası Dublesi'),
+    BracketCandidate(id: 'lazio_99_00_b5', name: 'Lazio', badge: '99/00', highlight: 'Eriksson Yönetiminde İtalya Şampiyonu'),
+    BracketCandidate(id: 'monaco_16_17_a6', name: 'Monaco', badge: '16/17', highlight: 'Mbappé & Falcao ile PSG\'yi Yıkan Şampiyonluk'),
+    BracketCandidate(id: 'lille_20_21_b6', name: 'Lille', badge: '20/21', highlight: 'Galtier ile Ligue 1 Zaferi'),
+    BracketCandidate(id: 'stuttgart_06_07_a7', name: 'Stuttgart', badge: '06/07', highlight: 'Armin Veh ile Genç Bundesliga Şampiyonu'),
+    BracketCandidate(id: 'sampdoria_90_91_b7', name: 'Sampdoria', badge: '90/91', highlight: 'Vialli & Mancini\'li Tarihi Scudetto'),
+    BracketCandidate(id: 'parma_98_99_a8', name: 'Parma', badge: '98/99', highlight: 'Malesani ile UEFA Kupası & İtalya Kupası Zaferi'),
+    BracketCandidate(id: 'fiorentina_98_99_b8', name: 'Fiorentina', badge: '98/99', highlight: 'Batistuta & Trapattoni\'li Zirve Sezon'),
+    BracketCandidate(id: 'blackburn_rovers_94_95_a9', name: 'Blackburn Rovers', badge: '94/95', highlight: 'Alan Shearer ile Premier Lig Şampiyonluğu'),
+    BracketCandidate(id: 'leeds_united_00_01_b9', name: 'Leeds United', badge: '00/01', highlight: 'Genç Perilerle ŞL Yarı Finali'),
+    BracketCandidate(id: 'werder_bremen_03_04_a10', name: 'Werder Bremen', badge: '03/04', highlight: 'Thomas Schaaf ile Almanya Çifte Kupalı Sezon'),
+    BracketCandidate(id: 'schalke_04_00_01_b10', name: 'Schalke 04', badge: '00/01', highlight: '4 Dakikalık Şampiyon Kadro'),
+    BracketCandidate(id: 'az_alkmaar_08_09_a11', name: 'AZ Alkmaar', badge: '08/09', highlight: 'Louis van Gaal ile Hollanda Şampiyonluğu'),
+    BracketCandidate(id: 'twente_09_10_b11', name: 'Twente', badge: '09/10', highlight: 'Steve McClaren ile Tarihi Eredivisie Zaferi'),
+    BracketCandidate(id: 'feyenoord_01_02_a12', name: 'Feyenoord', badge: '01/02', highlight: 'Van Hooijdonk ile UEFA Kupası Şampiyonluğu'),
+    BracketCandidate(id: 'sporting_cp_20_21_b12', name: 'Sporting CP', badge: '20/21', highlight: 'Rúben Amorim ile 19 Yıl Sonra Zafer'),
+    BracketCandidate(id: 'bordeaux_08_09_a13', name: 'Bordeaux', badge: '08/09', highlight: 'Laurent Blanc ile Lyon Dominasyonunu Bitiren Kadro'),
+    BracketCandidate(id: 'real_sociedad_02_03_b13', name: 'Real Sociedad', badge: '02/03', highlight: 'Nihat Kahveci & Kovačević Zirvesi'),
+    BracketCandidate(id: 'newcastle_united_95_96_a14', name: 'Newcastle United', badge: '95/96', highlight: 'Kevin Keegan\'ın Entertainers Kadrosu'),
+    BracketCandidate(id: 'everton_84_85_b14', name: 'Everton', badge: '84/85', highlight: 'Howard Kendall Yönetiminde İngiltere Şampiyonu'),
+    BracketCandidate(id: 'athletic_bilbao_11_12_a15', name: 'Athletic Bilbao', badge: '11/12', highlight: 'Bielsa\'nın Old Trafford Baskını Kadrosu'),
+    BracketCandidate(id: 'celta_vigo_00_01_b15', name: 'Celta Vigo', badge: '00/01', highlight: 'Mostovoi\'li EuroCelta Dönemi'),
+    BracketCandidate(id: 'boavista_00_01_a16', name: 'Boavista', badge: '00/01', highlight: 'Portekiz Ligi Mucize Şampiyonu'),
+    BracketCandidate(id: 'bursaspor_09_10_b16', name: 'Bursaspor', badge: '09/10', highlight: 'Ertuğrul Sağlam ile Anadolu Devrimi'),
+    BracketCandidate(id: 'kaiserslautern_97_98_a17', name: 'Kaiserslautern', badge: '97/98', highlight: 'Otto Rehhagel ile İkinci Ligden Gelip Şampiyon'),
+    BracketCandidate(id: 'hellas_verona_84_85_b17', name: 'Hellas Verona', badge: '84/85', highlight: 'Osvaldo Bagnoli ile Mucize Scudetto'),
+    BracketCandidate(id: 'girona_23_24_a18', name: 'Girona', badge: '23/24', highlight: 'Míchel ile Şampiyonlar Ligi Biletli Mucize Sezon'),
+    BracketCandidate(id: 'getafe_07_08_b18', name: 'Getafe', badge: '07/08', highlight: 'Laudrup ile UEFA ÇF & Kral Kupası Finalisti'),
+    BracketCandidate(id: 'villarreal_04_05_a19', name: 'Villarreal', badge: '04/05', highlight: 'Forlán & Riquelme ile La Liga 3.\'sü'),
+    BracketCandidate(id: 'real_zaragoza_94_95_b19', name: 'Real Zaragoza', badge: '94/95', highlight: 'Nayim\'in Golüyle Kupa Galipleri Kupası'),
+    BracketCandidate(id: 'atalanta_19_20_a20', name: 'Atalanta', badge: '19/20', highlight: 'Gasperini 98 Gol & ŞL Çeyrek Finalisti'),
+    BracketCandidate(id: 'udinese_04_05_b20', name: 'Udinese', badge: '04/05', highlight: 'Spalletti ile İlk Kez ŞL Vizesi'),
+    BracketCandidate(id: 'middlesbrough_05_06_a21', name: 'Middlesbrough', badge: '05/06', highlight: 'McClaren ile Mucizevi Geri Dönüşlerle UEFA Finalisti'),
+    BracketCandidate(id: 'fulham_09_10_b21', name: 'Fulham', badge: '09/10', highlight: 'Roy Hodgson ile UEFA Ligi Finalisti'),
+    BracketCandidate(id: 'southampton_83_84_a22', name: 'Southampton', badge: '83/84', highlight: 'Kevin Keegan\'lı Lig 2.\'si Tarihi Sezon'),
+    BracketCandidate(id: 'west_ham_united_85_86_b22', name: 'West Ham United', badge: '85/86', highlight: 'Kulüp Tarihinin En Yüksek Ligi Bitişi - 3.'),
+    BracketCandidate(id: 'hoffenheim_08_09_a23', name: 'Hoffenheim', badge: '08/09', highlight: 'Rangnick ile 2. Ligden Gelip İlk Yarıyı Lider Bitiren'),
+    BracketCandidate(id: 'rb_leipzig_16_17_b23', name: 'RB Leipzig', badge: '16/17', highlight: 'Bundesliga\'ya Yükseldiği İlk Sezonda 2.'),
+    BracketCandidate(id: 'nice_16_17_a24', name: 'Nice', badge: '16/17', highlight: 'Favre & Balotelli ile Ligue 1 3.\'sü'),
+    BracketCandidate(id: 'lens_22_23_b24', name: 'Lens', badge: '22/23', highlight: 'PSG\'nin 1 Puan Arkasında Ligi 2. Bitiren'),
+    BracketCandidate(id: 'nantes_94_95_a25', name: 'Nantes', badge: '94/95', highlight: 'Suaudeau ile Tek Mağlubiyetli Fransa Şampiyonluğu'),
+    BracketCandidate(id: 'auxerre_95_96_b25', name: 'Auxerre', badge: '95/96', highlight: 'Guy Roux ile Ligue 1 Şampiyonu'),
+    BracketCandidate(id: 'braga_09_10_a26', name: 'Braga', badge: '09/10', highlight: 'Paciência ile Ligi 2. Bitirip ŞL Vizesi'),
+    BracketCandidate(id: 'boavista_96_97_b26', name: 'Boavista', badge: '96/97', highlight: 'Portekiz Kupası & Ligi Zirvede Zorlayan Kadro'),
+    BracketCandidate(id: 'heerenveen_99_00_a27', name: 'Heerenveen', badge: '99/00', highlight: 'Foppe de Haan ile Eredivisie 2.\'si ve ŞL Bileti'),
+    BracketCandidate(id: 'willem_ii_98_99_b27', name: 'Willem II', badge: '98/99', highlight: 'Co Adriaanse ile Sürpriz ŞL Biletli Kadro'),
+    BracketCandidate(id: 'standard_liege_07_08_a28', name: 'Standard Liège', badge: '07/08', highlight: 'Preud\'homme ile 25 Yıl Sonra Lig Şampiyonluğu'),
+    BracketCandidate(id: 'genk_98_99_b28', name: 'Genk', badge: '98/99', highlight: 'Kulüp Tarihinin İlk Belçika Ligi Şampiyonluğu'),
+    BracketCandidate(id: 'dnipro_14_15_a29', name: 'Dnipro', badge: '14/15', highlight: 'Savaş Gölgesinde UEFA Ligi Finalisti'),
+    BracketCandidate(id: 'metalist_kharkiv_12_13_b29', name: 'Metalist Kharkiv', badge: '12/13', highlight: 'Ukrayna Ligi 2.\'si Olarak ŞL Vizesi'),
+    BracketCandidate(id: 'espanyol_87_88_a30', name: 'Espanyol', badge: '87/88', highlight: 'Penaltılarla Kaybedilen UEFA Kupası Finalisti'),
+    BracketCandidate(id: 'mallorca_98_99_b30', name: 'Mallorca', badge: '98/99', highlight: 'Cúper ile Kupa Galipleri Finalisti & La Liga 3.'),
+    BracketCandidate(id: 'vicenza_96_97_a31', name: 'Vicenza', badge: '96/97', highlight: 'Guidolin ile İtalya Kupası Şampiyonu'),
+    BracketCandidate(id: 'chievo_verona_01_02_b31', name: 'Chievo Verona', badge: '01/02', highlight: 'Delneri ile Mucize Mussi Volanti Dönemi'),
+    BracketCandidate(id: 'sivasspor_08_09_a32', name: 'Sivasspor', badge: '08/09', highlight: 'Bülent Uygun ile Şampiyonluğu Son Hafta Kaçıran Lider'),
+    BracketCandidate(id: 'gaziantepspor_00_01_b32', name: 'Gaziantepspor', badge: '00/01', highlight: 'Sakıp Özberk ile 68 Puan Toplayan Efsane Kadro'),
+  ];
+}

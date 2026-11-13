@@ -1,0 +1,87 @@
+import '../models/bracket_candidate.dart';
+
+/// Kulüp vs Kulüp — Bölüm 4
+/// Şehir Rivalry & Derbi Atmosferleri
+class CityDerbyRivalries64Data {
+  CityDerbyRivalries64Data._();
+
+  static const String bracketId = 'city_derby_rivalries_64';
+
+  static const BracketDefinition definition = BracketDefinition(
+    id: bracketId,
+    title: 'Şehir Rivalry & Derbi Atmosferleri',
+    subtitle: 'Derby Atmosphere 64',
+    description:
+        'Şehir derbileri, sınıf savaşları, tribün tutkuları. Hangi taraf daha ateşli?',
+    meta: '64 aday · 63 karar · Derbi atmosferleri',
+    emoji: '🔥',
+    seeds: seeds,
+  );
+
+  static const List<BracketCandidate> seeds = [
+    BracketCandidate(id: 'boca_juniors_a1', name: 'Boca Juniors', badge: 'Arjantin', highlight: 'La Bombonera Tutkusu'),
+    BracketCandidate(id: 'river_plate_b1', name: 'River Plate', badge: 'Arjantin', highlight: 'El Monumental Ekolü'),
+    BracketCandidate(id: 'celtic_a2', name: 'Celtic', badge: 'İskoçya', highlight: 'Old Firm Katolik/Yeşil Taraf'),
+    BracketCandidate(id: 'rangers_b2', name: 'Rangers', badge: 'İskoçya', highlight: 'Old Firm Protestan/Mavi Taraf'),
+    BracketCandidate(id: 'borussia_dortmund_a3', name: 'Borussia Dortmund', badge: 'Almanya', highlight: 'Sarı Duvar Süper Gücü'),
+    BracketCandidate(id: 'schalke_04_b3', name: 'Schalke 04', badge: 'Almanya', highlight: 'Madenci Ruhlu Revierderby'),
+    BracketCandidate(id: 'ac_milan_a4', name: 'AC Milan', badge: 'İtalya', highlight: 'Kırmızı-Siyah İtalyan Asaleti'),
+    BracketCandidate(id: 'inter_b4', name: 'Inter', badge: 'İtalya', highlight: 'Mavi-Siyah Uluslararası Ekol'),
+    BracketCandidate(id: 'roma_a5', name: 'Roma', badge: 'İtalya', highlight: 'Derby della Capitale Kurtları'),
+    BracketCandidate(id: 'lazio_b5', name: 'Lazio', badge: 'İtalya', highlight: 'Başkent Kartalları'),
+    BracketCandidate(id: 'olympiacos_a6', name: 'Olympiacos', badge: 'Yunanistan', highlight: 'Pire Liman Gücü'),
+    BracketCandidate(id: 'panathinaikos_b6', name: 'Panathinaikos', badge: 'Yunanistan', highlight: 'Atina Yoncaları'),
+    BracketCandidate(id: 'partizan_a7', name: 'Partizan', badge: 'Sırbistan', highlight: 'Grobari Tribün Alevleri'),
+    BracketCandidate(id: 'red_star_belgrade_b7', name: 'Red Star Belgrade', badge: 'Sırbistan', highlight: 'Delije Çılgınlığı'),
+    BracketCandidate(id: 'sevilla_a8', name: 'Sevilla', badge: 'İspanya', highlight: 'Endülüs Kırmızı-Beyaz'),
+    BracketCandidate(id: 'real_betis_b8', name: 'Real Betis', badge: 'İspanya', highlight: 'El Gran Derbi Yeşil-Beyaz'),
+    BracketCandidate(id: 'feyenoord_a9', name: 'Feyenoord', badge: 'Hollanda', highlight: 'Rotterdam İşçi Limanı'),
+    BracketCandidate(id: 'ajax_b9', name: 'Ajax', badge: 'Hollanda', highlight: 'De Klassieker / Sanat & Akademi'),
+    BracketCandidate(id: 'flamengo_a10', name: 'Flamengo', badge: 'Brezilya', highlight: 'Maracanã Popüler Halk Dominasyonu'),
+    BracketCandidate(id: 'fluminense_b10', name: 'Fluminense', badge: 'Brezilya', highlight: 'Fla-Flu Asalet & Şov'),
+    BracketCandidate(id: 'gremio_a11', name: 'Grêmio', badge: 'Brezilya', highlight: 'Grenal Mavi Taraf'),
+    BracketCandidate(id: 'internacional_b11', name: 'Internacional', badge: 'Brezilya', highlight: 'Grenal Kırmızı Taraf'),
+    BracketCandidate(id: 'benfica_a12', name: 'Benfica', badge: 'Portekiz', highlight: 'Lizbon Kartalları'),
+    BracketCandidate(id: 'sporting_cp_b12', name: 'Sporting CP', badge: 'Portekiz', highlight: 'O Clássico de Lisboa'),
+    BracketCandidate(id: 'rosario_central_a13', name: 'Rosario Central', badge: 'Arjantin', highlight: 'Clásico Rosarino Mavi-Sarı'),
+    BracketCandidate(id: 'newell_s_old_boys_b13', name: 'Newell\'s Old Boys', badge: 'Arjantin', highlight: 'Bielsa Mirası Kırmızı-Siyah'),
+    BracketCandidate(id: 'marseille_a14', name: 'Marseille', badge: 'Fransa', highlight: 'Vélodrome Ateşi'),
+    BracketCandidate(id: 'paris_saint_germain_b14', name: 'Paris Saint-Germain', badge: 'Fransa', highlight: 'Le Classique Başkent Gücü'),
+    BracketCandidate(id: 'real_madrid_a15', name: 'Real Madrid', badge: 'İspanya', highlight: 'Kraliyet Devrimi'),
+    BracketCandidate(id: 'atletico_madrid_b15', name: 'Atlético Madrid', badge: 'İspanya', highlight: 'El Derbi Madrileño İşçi Ruhu'),
+    BracketCandidate(id: 'manchester_united_a16', name: 'Manchester United', badge: 'İngiltere', highlight: 'Kırmızı Şeytanlar'),
+    BracketCandidate(id: 'manchester_city_b16', name: 'Manchester City', badge: 'İngiltere', highlight: 'Manchester Derbisi Mavi Taraf'),
+    BracketCandidate(id: 'galatasaray_a17', name: 'Galatasaray', badge: 'Türkiye', highlight: 'Kıtalararası Derbi / Avrupa Yakası'),
+    BracketCandidate(id: 'fenerbahce_b17', name: 'Fenerbahçe', badge: 'Türkiye', highlight: 'Kıtalararası Derbi / Anadolu Yakası'),
+    BracketCandidate(id: 'goztepe_a18', name: 'Göztepe', badge: 'Türkiye', highlight: 'İzmir Derbisi Yalı İsyanı'),
+    BracketCandidate(id: 'kars_yaka_b18', name: 'Karşıyaka', badge: 'Türkiye', highlight: 'İzmir Derbisi Kaf-Kaf Tutkusu'),
+    BracketCandidate(id: 'liverpool_a19', name: 'Liverpool', badge: 'İngiltere', highlight: 'Merseyside Derbisi Kırmızı Taraf'),
+    BracketCandidate(id: 'everton_b19', name: 'Everton', badge: 'İngiltere', highlight: 'Merseyside Derbisi Mavi Taraf'),
+    BracketCandidate(id: 'arsenal_a20', name: 'Arsenal', badge: 'İngiltere', highlight: 'Kuzey Londra Kırmızı Taraf'),
+    BracketCandidate(id: 'tottenham_b20', name: 'Tottenham', badge: 'İngiltere', highlight: 'Kuzey Londra Mavi-Beyaz'),
+    BracketCandidate(id: 'adanaspor_a21', name: 'Adanaspor', badge: 'Türkiye', highlight: 'Çukurova Derbisi Turuncu-Beyaz'),
+    BracketCandidate(id: 'adana_demirspor_b21', name: 'Adana Demirspor', badge: 'Türkiye', highlight: 'Çukurova Derbisi Mavi Şimşekler'),
+    BracketCandidate(id: 'mke_ankaragucu_a22', name: 'MKE Ankaragücü', badge: 'Türkiye', highlight: 'Gecekondu Tribün Aklı'),
+    BracketCandidate(id: 'eskisehirspor_b22', name: 'Eskişehirspor', badge: 'Türkiye', highlight: 'Anadolu Bando & Tribün Kültürü'),
+    BracketCandidate(id: 'genoa_a23', name: 'Genoa', badge: 'İtalya', highlight: 'Derby della Lanterna En Eski Kulüp'),
+    BracketCandidate(id: 'sampdoria_b23', name: 'Sampdoria', badge: 'İtalya', highlight: 'Derby della Lanterna Renkli Tribün'),
+    BracketCandidate(id: 'st_pauli_a24', name: 'St. Pauli', badge: 'Almanya', highlight: 'Kült Tribün Kültürü & Sol Ruh'),
+    BracketCandidate(id: 'hamburger_sv_b24', name: 'Hamburger SV', badge: 'Almanya', highlight: 'Kuzey Derbisi Dev Şehir'),
+    BracketCandidate(id: 'racing_club_a25', name: 'Racing Club', badge: 'Arjantin', highlight: 'Avellaneda Derbisi Silindir'),
+    BracketCandidate(id: 'independiente_b25', name: 'Independiente', badge: 'Arjantin', highlight: 'Avellaneda Derbisi Kırmızı Şeytanlar'),
+    BracketCandidate(id: 'penarol_a26', name: 'Peñarol', badge: 'Uruguay', highlight: 'Montevideo Klasiği Sarı-Siyah'),
+    BracketCandidate(id: 'nacional_b26', name: 'Nacional', badge: 'Uruguay', highlight: 'Montevideo Klasiği Üç Renkliler'),
+    BracketCandidate(id: 'rapid_wien_a27', name: 'Rapid Wien', badge: 'Avusturya', highlight: 'Viyana Derbisi Yeşil-Beyaz'),
+    BracketCandidate(id: 'austria_wien_b27', name: 'Austria Wien', badge: 'Avusturya', highlight: 'Viyana Derbisi Mor-Beyaz'),
+    BracketCandidate(id: 'samsunspor_a28', name: 'Samsunspor', badge: 'Türkiye', highlight: 'Karadeniz Derbisi Kırmızı-Beyaz'),
+    BracketCandidate(id: 'trabzonspor_b28', name: 'Trabzonspor', badge: 'Türkiye', highlight: 'Karadeniz Fırtınası'),
+    BracketCandidate(id: 'kocaelispor_a29', name: 'Kocaelispor', badge: 'Türkiye', highlight: 'Marmara Derbisi Körfez'),
+    BracketCandidate(id: 'sakaryaspor_b29', name: 'Sakaryaspor', badge: 'Türkiye', highlight: 'Marmara Derbisi Tatangalar'),
+    BracketCandidate(id: 'nantes_a30', name: 'Nantes', badge: 'Fransa', highlight: 'Derby de la Bretagne Kanaryalar'),
+    BracketCandidate(id: 'rennes_b30', name: 'Rennes', badge: 'Fransa', highlight: 'Derby de la Bretagne Kırmızı-Siyah'),
+    BracketCandidate(id: 'aek_athens_a31', name: 'AEK Athens', badge: 'Yunanistan', highlight: 'Mülteci Mirası Çift Başlı Kartal'),
+    BracketCandidate(id: 'paok_b31', name: 'PAOK', badge: 'Yunanistan', highlight: 'Selanik Ateşi Toumba'),
+    BracketCandidate(id: 'america_a32', name: 'América', badge: 'Meksika', highlight: 'Clásico Nacional Başkent Dev'),
+    BracketCandidate(id: 'chivas_guadalajara_b32', name: 'Chivas Guadalajara', badge: 'Meksika', highlight: 'Clásico Nacional Sadece Meksikalılar'),
+  ];
+}

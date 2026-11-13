@@ -73,7 +73,7 @@ fields=re.compile(r'''(id|name|badge|highlight):\s*('(?:\\.|[^'])*'|"(?:\\.|[^"]
 clubnames=collections.defaultdict(set)
 for i,p in clubs.items():clubnames[key(p['name'])].add(i)
 for index,file in enumerate(files):
- text=(ROOT/f'lib/data/{file}_data.dart').read_text();rows=[];typ='player' if index<4 else 'club'
+ text=(ROOT/f'tools/choice/sources/{file}_data.dart').read_text();rows=[];typ='player' if index<4 else 'club'
  for raw in pattern.findall(text):
   f=dict(fields.findall(raw))
   if not all(k in f for k in ['id','name','badge','highlight']):continue

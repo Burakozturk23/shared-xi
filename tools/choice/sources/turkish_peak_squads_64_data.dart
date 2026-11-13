@@ -1,0 +1,87 @@
+import '../models/bracket_candidate.dart';
+
+/// Kulüp vs Kulüp — Bölüm 3
+/// Türk Futbolunun Zirve Kadroları
+class TurkishPeakSquads64Data {
+  TurkishPeakSquads64Data._();
+
+  static const String bracketId = 'turkish_peak_squads_64';
+
+  static const BracketDefinition definition = BracketDefinition(
+    id: bracketId,
+    title: 'Türk Futbolunun Zirve Kadroları',
+    subtitle: 'Turkish Peaks 64',
+    description:
+        'Şampiyonluk zirveleri, Avrupa destanları, unutulmaz Anadolu çıkışları. Hangi kadro daha büyük?',
+    meta: '64 aday · 63 karar · Türk futbolu zirveleri',
+    emoji: '🇹🇷',
+    seeds: seeds,
+  );
+
+  static const List<BracketCandidate> seeds = [
+    BracketCandidate(id: 'galatasaray_99_00_a1', name: 'Galatasaray', badge: '99/00', highlight: 'UEFA Kupası & Yenilgisiz Avrupa Şampiyonu'),
+    BracketCandidate(id: 'besiktas_02_03_b1', name: 'Beşiktaş', badge: '02/03', highlight: 'Lucescu ile 100. Yıl Şampiyonluğu'),
+    BracketCandidate(id: 'fenerbahce_07_08_a2', name: 'Fenerbahçe', badge: '07/08', highlight: 'Zico ile Şampiyonlar Ligi Çeyrek Finalisti'),
+    BracketCandidate(id: 'galatasaray_12_13_b2', name: 'Galatasaray', badge: '12/13', highlight: 'Drogba & Sneijder\'li ŞL Çeyrek Finalisti'),
+    BracketCandidate(id: 'besiktas_16_17_a3', name: 'Beşiktaş', badge: '16/17', highlight: 'Şenol Güneş ile Namaglup ŞL Grubu & Şampiyonluk'),
+    BracketCandidate(id: 'trabzonspor_78_79_b3', name: 'Trabzonspor', badge: '78/79', highlight: 'Anadolu İhtilali Zirve Kadrosu'),
+    BracketCandidate(id: 'fenerbahce_10_11_a4', name: 'Fenerbahçe', badge: '10/11', highlight: 'Aykut Kocaman ile 17\'de 16 Reaksiyon Şampiyonu'),
+    BracketCandidate(id: 'galatasaray_11_12_b4', name: 'Galatasaray', badge: '11/12', highlight: '9 Puan Fark & Kadıköy\'de Kupa Zaferi'),
+    BracketCandidate(id: 'basaksehir_19_20_a5', name: 'Başakşehir', badge: '19/20', highlight: 'Okan Buruk ile Tarihi Süper Lig Şampiyonluğu'),
+    BracketCandidate(id: 'bursaspor_09_10_b5', name: 'Bursaspor', badge: '09/10', highlight: 'Ertuğrul Sağlam ile 5. Şampiyon'),
+    BracketCandidate(id: 'trabzonspor_21_22_a6', name: 'Trabzonspor', badge: '21/22', highlight: 'Abdullah Avcı ile 38 Yıl Sonra Şampiyonluk'),
+    BracketCandidate(id: 'besiktas_15_16_b6', name: 'Beşiktaş', badge: '15/16', highlight: 'Gomez\'li Vodafone Park Şampiyonluğu'),
+    BracketCandidate(id: 'galatasaray_00_01_a7', name: 'Galatasaray', badge: '00/01', highlight: 'Lucescu ile Real Madrid\'i Deviren Süper Kupa Şampiyonu'),
+    BracketCandidate(id: 'fenerbahce_03_04_b7', name: 'Fenerbahçe', badge: '03/04', highlight: 'Daum & Van Hooijdonk Baharı'),
+    BracketCandidate(id: 'genclerbirligi_02_03_a8', name: 'Gençlerbirliği', badge: '02/03', highlight: 'Ersun Yanal ile UEFA Kupası Çeyrek Finalisti'),
+    BracketCandidate(id: 'gaziantepspor_03_04_b8', name: 'Gaziantepspor', badge: '03/04', highlight: 'Roma\'yı Deviren Nurullah Sağlam Kadrosu'),
+    BracketCandidate(id: 'sivasspor_08_09_a9', name: 'Sivasspor', badge: '08/09', highlight: 'Bülent Uygun ile Şampiyonluğu Son Hafta Kaçıran Kadro'),
+    BracketCandidate(id: 'eskisehirspor_11_12_b9', name: 'Eskişehirspor', badge: '11/12', highlight: 'Avrupa Biletli Skibbe Dönemi Kadrosu'),
+    BracketCandidate(id: 'besiktas_17_18_a10', name: 'Beşiktaş', badge: '17/18', highlight: 'Bayern Öncesi ŞL Grup Lideri & Rekortmen'),
+    BracketCandidate(id: 'fenerbahce_12_13_b10', name: 'Fenerbahçe', badge: '12/13', highlight: 'Aykut Kocaman ile UEFA Yarı Finalisti'),
+    BracketCandidate(id: 'denizlispor_02_03_a11', name: 'Denizlispor', badge: '02/03', highlight: 'Rıza Çalımbay ile Lyon & Lorient Zaferleri'),
+    BracketCandidate(id: 'goztepe_68_69_b11', name: 'Göztepe', badge: '68/69', highlight: 'Fuar Şehirleri Kupası Yarı Finalisti'),
+    BracketCandidate(id: 'kayserispor_07_08_a12', name: 'Kayserispor', badge: '07/08', highlight: 'Tolunay Kafkas ile Türkiye Kupası Şampiyonu'),
+    BracketCandidate(id: 'akhisarspor_17_18_b12', name: 'Akhisarspor', badge: '17/18', highlight: 'Okan Buruk ile Türkiye Kupası & Süper Kupa'),
+    BracketCandidate(id: 'galatasaray_98_99_a13', name: 'Galatasaray', badge: '98/99', highlight: 'Hakan Şükür & Hagi ile Ligi Silen Kadro'),
+    BracketCandidate(id: 'fenerbahce_95_96_b13', name: 'Fenerbahçe', badge: '95/96', highlight: 'Parreira ile Trabzon\'u Deplasmanda Yıkan Kadro'),
+    BracketCandidate(id: 'trabzonspor_10_11_a14', name: 'Trabzonspor', badge: '10/11', highlight: 'Şenol Güneş ile 82 Puan Toplayan Rekor Kadro'),
+    BracketCandidate(id: 'besiktas_20_21_b14', name: 'Beşiktaş', badge: '20/21', highlight: 'Sergen Yalçın ile Çifte Kupalı Dar Kadro'),
+    BracketCandidate(id: 'konyaspor_16_17_a15', name: 'Konyaspor', badge: '16/17', highlight: 'Aykut Kocaman ile Türkiye Kupası Zaferi'),
+    BracketCandidate(id: 'adana_demirspor_22_23_b15', name: 'Adana Demirspor', badge: '22/23', highlight: 'Montella ile Avrupa Bileti Alan Kadro'),
+    BracketCandidate(id: 'antalyaspor_15_16_a16', name: 'Antalyaspor', badge: '15/16', highlight: 'Eto\'o Şovlu Lig Çıkış Kadrosu'),
+    BracketCandidate(id: 'alanyaspor_19_20_b16', name: 'Alanyaspor', badge: '19/20', highlight: 'Erol Bulut ile Kupa Finalisti Kadro'),
+    BracketCandidate(id: 'besiktas_89_90_a17', name: 'Beşiktaş', badge: '89/90', highlight: 'Gordon Milne Kolej Takımı & Metin-Ali-Feyyaz Zirvesi'),
+    BracketCandidate(id: 'fenerbahce_88_89_b17', name: 'Fenerbahçe', badge: '88/89', highlight: 'Veselinović ile 103 Gol Atan Rekortmen Şampiyon'),
+    BracketCandidate(id: 'galatasaray_92_93_a18', name: 'Galatasaray', badge: '92/93', highlight: 'Feldkamp ile Gençlik Aşısı & Çifte Kupa'),
+    BracketCandidate(id: 'trabzonspor_95_96_b18', name: 'Trabzonspor', badge: '95/96', highlight: 'Şenol Güneş ile Fırtına Gibi Esen Efsane Kadro'),
+    BracketCandidate(id: 'fenerbahce_00_01_a19', name: 'Fenerbahçe', badge: '00/01', highlight: 'Mustafa Denizli ile Rekor Geri Dönüşlü Şampiyonluk'),
+    BracketCandidate(id: 'besiktas_08_09_b19', name: 'Beşiktaş', badge: '08/09', highlight: 'Mustafa Denizli ile Çifte Kupalı Sezon'),
+    BracketCandidate(id: 'galatasaray_17_18_a20', name: 'Galatasaray', badge: '17/18', highlight: 'Fatih Terim ile Tudor Sonrası İnanılmaz Şampiyonluk'),
+    BracketCandidate(id: 'fenerbahce_13_14_b20', name: 'Fenerbahçe', badge: '13/14', highlight: 'Ersun Yanal ile Nisan Ayında Şampiyon Olan Kadro'),
+    BracketCandidate(id: 'ankaragucu_80_81_a21', name: 'Ankaragücü', badge: '80/81', highlight: 'İkinci Ligdeyken Türkiye Kupası\'nı Alan Kadro'),
+    BracketCandidate(id: 'kayserispor_05_06_b21', name: 'Kayserispor', badge: '05/06', highlight: 'Ertuğrul Sağlam ile Intertoto Kupası Şampiyonu'),
+    BracketCandidate(id: 'gaziantepspor_00_01_a22', name: 'Gaziantepspor', badge: '00/01', highlight: 'Sakıp Özberk ile 68 Puan Toplayıp Ligi 3. Bitiren'),
+    BracketCandidate(id: 'istanbulspor_97_98_b22', name: 'İstanbulspor', badge: '97/98', highlight: 'Cem Uzan Dönemi Yıldızlar & UEFA Vizesi'),
+    BracketCandidate(id: 'samsunspor_93_94_a23', name: 'Samsunspor', badge: '93/94', highlight: 'Mulțescu ile Ligi 3. Bitiren Efsane Kadro'),
+    BracketCandidate(id: 'malatyaspor_87_88_b23', name: 'Malatyaspor', badge: '87/88', highlight: 'Ligi 3. Bitirip Balkan Kupası\'na Giden Kadro'),
+    BracketCandidate(id: 'kocaelispor_96_97_a24', name: 'Kocaelispor', badge: '96/97', highlight: 'Holger Osieck ile Türkiye Kupası Şampiyonu'),
+    BracketCandidate(id: 'sakaryaspor_87_88_b24', name: 'Sakaryaspor', badge: '87/88', highlight: 'Necdet Niş ile Türkiye Kupası Şampiyonu'),
+    BracketCandidate(id: 'altay_80_81_a25', name: 'Altay', badge: '80/81', highlight: 'Türkiye Kupası Şampiyonu & Avrupa Temsilcisi'),
+    BracketCandidate(id: 'bursaspor_85_86_b25', name: 'Bursaspor', badge: '85/86', highlight: 'Türkiye Kupası Şampiyonu Efsane Kadro'),
+    BracketCandidate(id: 'osmanl_spor_16_17_a26', name: 'Osmanlıspor', badge: '16/17', highlight: 'Akçay ile UEFA Ligi Grubundan Lider Çıkan Kadro'),
+    BracketCandidate(id: 'yeni_malatyaspor_18_19_b26', name: 'Yeni Malatyaspor', badge: '18/19', highlight: 'Erol Bulut ile Ligi 5. Bitirip Avrupa Vizesi'),
+    BracketCandidate(id: 'genclerbirligi_86_87_a27', name: 'Gençlerbirliği', badge: '86/87', highlight: 'Metin Türel ile Türkiye Kupası Şampiyonu'),
+    BracketCandidate(id: 'eskisehirspor_68_69_b27', name: 'Eskişehirspor', badge: '68/69', highlight: 'Anadolu Yıldızı Ligi 2. Bitiren Kadro'),
+    BracketCandidate(id: 'konyaspor_15_16_a28', name: 'Konyaspor', badge: '15/16', highlight: 'Aykut Kocaman ile İlk Kez Avrupa\'ya Giden Kadro'),
+    BracketCandidate(id: 'sivasspor_19_20_b28', name: 'Sivasspor', badge: '19/20', highlight: 'Rıza Çalımbay ile İlk Yarıyı Lider Bitiren Kadro'),
+    BracketCandidate(id: 'besiktas_91_92_a29', name: 'Beşiktaş', badge: '91/92', highlight: 'Gordon Milne ile Namaglup Lig Şampiyonu'),
+    BracketCandidate(id: 'galatasaray_97_98_b29', name: 'Galatasaray', badge: '97/98', highlight: 'Fatih Terim ile Lig & Kupa Dominasyonu'),
+    BracketCandidate(id: 'fenerbahce_97_98_a30', name: 'Fenerbahçe', badge: '97/98', highlight: 'Otto Barić ile Parma Zaferi Alan Kadro'),
+    BracketCandidate(id: 'trabzonspor_83_84_b30', name: 'Trabzonspor', badge: '83/84', highlight: 'Ahmet Suat Özyazıcı ile Son Klasik Şampiyonluk'),
+    BracketCandidate(id: 'vanspor_94_95_a31', name: 'Vanspor', badge: '94/95', highlight: 'Süper Lig\'e Yükselip Devleri Deviren Sürpriz Kadro'),
+    BracketCandidate(id: 'ayd_nspor_90_91_b31', name: 'Aydınspor', badge: '90/91', highlight: 'Fenerbahçe\'yi Deplasmanda 6-1 Yenen Kadro'),
+    BracketCandidate(id: 'adanaspor_80_81_a32', name: 'Adanaspor', badge: '80/81', highlight: 'Süper Lig 2.\'si Olarak UEFA Kupası\'na Giden Kadro'),
+    BracketCandidate(id: 'zonguldakspor_79_80_b32', name: 'Zonguldakspor', badge: '79/80', highlight: 'Ligi 3. Sırada Bitiren İşçi Takımı Efsanesi'),
+  ];
+}
