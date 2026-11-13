@@ -6,7 +6,9 @@ import '../models/manager_season.dart';
 import '../models/manager_tactics.dart';
 import '../services/manager_career_store.dart';
 import '../services/manager_roster_service.dart';
+import '../services/manager_season_service.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/club_badge.dart';
 import '../widgets/hub_ui.dart';
 import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -475,7 +477,20 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
                     : null,
                 cells: [
                   DataCell(Text('${index + 1}')),
-                  DataCell(SizedBox(width: 190, child: Text(c.name))),
+                  DataCell(
+                    SizedBox(
+                      width: 190,
+                      child: Row(
+                        children: [
+                          if (ManagerSeasonService.clubOf(c) case final club?) ...[
+                            ClubBadge(club: club.club, size: 22),
+                            const SizedBox(width: 8),
+                          ],
+                          Expanded(child: Text(c.name)),
+                        ],
+                      ),
+                    ),
+                  ),
                   for (final n in [
                     c.played,
                     c.won,

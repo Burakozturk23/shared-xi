@@ -7,6 +7,8 @@ import '../models/manager_tactics.dart';
 import '../services/manager_career_store.dart';
 import '../services/manager_match_service.dart';
 import '../services/manager_opponent_service.dart';
+import '../services/manager_season_service.dart';
+import '../widgets/club_badge.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
@@ -98,11 +100,31 @@ class _ClubManagerPrematchPageState extends State<ClubManagerPrematchPage> {
               ],
             ),
             const SizedBox(height: 16),
-            Text(
-              opponent.name,
-              style: Theme.of(context).textTheme.headlineMedium,
+            Row(
+              children: [
+                if (ManagerSeasonService.leagueClub(opponent.clubId)
+                    case final club?) ...[
+                  ClubBadge(club: club.club, size: 44),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Text(
+                    opponent.name,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
+            // A real club: its league and the known players it is rated by.
+            if (opponent.forwards.isNotEmpty) ...[
+              Text(
+                '${opponent.leagueHint} · tüm zamanların yıldızları: '
+                '${opponent.forwards.take(3).join(', ')}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 6),
+            ],
             Text(opponent.style.blurb),
             const SizedBox(height: 14),
             ManagerMetrics(

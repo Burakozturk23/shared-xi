@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import '../data/manager_league_clubs.dart';
+import '../models/manager_league_club.dart';
 import '../models/manager_rating.dart';
 import '../models/manager_season.dart';
 import '../models/manager_tactics.dart';
@@ -9,34 +11,29 @@ class ManagerSeasonService {
   static final instance = ManagerSeasonService();
   final Random _rng;
 
-  static const _names = [
-    'Northgate FC',
-    'Riverside United',
-    'Atlas Rovers',
-    'Metro Stars',
-    'Golden Harbor',
-    'Union Park',
-    'Eastbridge',
-    'Silver Oak',
-    'Harbor Athletic',
-    'Canark XI',
-    'Portsmouth Lane',
-    'Westfield Youth',
-    'Ironworks FC',
-    'Crown Hill',
-    'Blue Peak',
-    'Lakeview Town',
-    'Red Mill United',
-    'Cedar Athletic',
-    'Stormbridge',
-    'Old Dock FC',
-  ];
+  /// The league's opponents are real popular clubs, rated by their best known XI of
+  /// every era (as the player's own squad is drafted). Most ratings bunch between 84
+  /// and 89, so a club's strength is its rank spread evenly over the band the
+  /// made-up clubs used (55-85, average 70): the balance stays and the order is
+  /// real, Barcelona 85 and Rangers near 55. Equal ratings share a strength.
+  static double strengthOf(ManagerLeagueClub club) {
+    final rank = managerLeagueClubs.indexWhere((c) => c.rating == club.rating);
+    return 85 - rank * 30 / (managerLeagueClubs.length - 1);
+  }
+
+  static final Map<int, ManagerLeagueClub> _clubs = {
+    for (final c in managerLeagueClubs) c.id: c,
+  };
+  static ManagerLeagueClub? clubOf(SeasonClub c) => leagueClub(c.clubId);
+  static ManagerLeagueClub? leagueClub(int? id) =>
+      id == null ? null : _clubs[id];
 
   ManagerSeason createSeason({
     String userName = 'Senin XI',
     ManagerDifficulty difficulty = ManagerDifficulty.medium,
   }) {
-    final names = List<String>.from(_names)..shuffle(_rng);
+    final picks = List<ManagerLeagueClub>.from(managerLeagueClubs)
+      ..shuffle(_rng);
     final offset = switch (difficulty) {
       ManagerDifficulty.easy => -5.0,
       ManagerDifficulty.medium => 0.0,
@@ -54,11 +51,12 @@ class ManagerSeasonService {
       for (var i = 0; i < ManagerSeason.opponentCount; i++)
         SeasonClub(
           id: 'opp_$i',
-          name: names[i],
-          leagueHint: 'Ortak Saha Ligi',
+          name: picks[i].name,
+          leagueHint: picks[i].league,
+          clubId: picks[i].id,
           style:
               OpponentStyle.values[_rng.nextInt(OpponentStyle.values.length)],
-          strength: (55 + _rng.nextDouble() * 30 + offset).roundToDouble(),
+          strength: (strengthOf(picks[i]) + offset).roundToDouble(),
         ),
     ];
     // Circle method: 19 rounds, each unordered pair exactly once.
@@ -204,5 +202,8 @@ class ManagerSeasonService {
     leagueHint: c.leagueHint,
     style: c.style,
     basePower: c.strength,
+    forwards: clubOf(c)?.forwards ?? const [],
+    midfielders: clubOf(c)?.midfielders ?? const [],
+    clubId: clubOf(c)?.id,
   );
 }

@@ -132,6 +132,7 @@ class ManagerMatchService {
       secondHalf: (h2, a2),
       xi: xi,
       awayName: opp.name,
+      opponent: opp,
       tactics: tactics,
       style: opp.style,
       halftime: halftime,
@@ -220,6 +221,24 @@ class ManagerMatchService {
     return g;
   }
 
+  /// Forwards five times, midfielders twice as likely as weights; null for a club
+  /// without names (the made-up clubs of older seasons): no draw is spent then.
+  String? _awayScorer(ManagerOpponent? opp) {
+    if (opp == null || opp.forwards.isEmpty && opp.midfielders.isEmpty) {
+      return null;
+    }
+    final pool = [
+      for (final n in opp.forwards) (n, 5.0),
+      for (final n in opp.midfielders) (n, 2.2),
+    ];
+    var roll = _rng.nextDouble() * pool.fold<double>(0, (s, e) => s + e.$2);
+    for (final (name, w) in pool) {
+      roll -= w;
+      if (roll <= 0) return name;
+    }
+    return pool.last.$1;
+  }
+
   static const _scoreWeight = {'ATT': 5.0, 'MID': 2.2, 'DEF': 0.6, 'GK': 0.02};
   static const _assistWeight = {'ATT': 2.0, 'MID': 3.0, 'DEF': 1.0, 'GK': 0.1};
 
@@ -252,6 +271,7 @@ class ManagerMatchService {
     required (int, int) secondHalf,
     required List<ManagerPoolPlayer> xi,
     required String awayName,
+    ManagerOpponent? opponent,
     required ManagerTactics tactics,
     required OpponentStyle style,
     required ManagerHalftimePlan halftime,
@@ -287,10 +307,14 @@ class ManagerMatchService {
         );
       }
       for (var i = 0; i < away; i++) {
+        // A real club scores through its best known forwards and midfielders.
+        final who = _awayScorer(opponent);
         events.add(
           ManagerMatchEvent(
             minute: uniqueMinute(from, to),
-            text: 'GOL! $awayName hücumu skoru değiştirdi.',
+            text: who == null
+                ? 'GOL! $awayName hücumu skoru değiştirdi.'
+                : 'GOL! $awayName · $who bitirdi.',
             isGoal: true,
             isHome: false,
           ),

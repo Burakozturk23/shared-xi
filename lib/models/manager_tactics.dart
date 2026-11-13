@@ -135,10 +135,19 @@ class ManagerOpponent {
   final OpponentStyle style;
   final double basePower; // 45-95
 
+  /// A real club's best known forwards and midfielders: its goals in the report.
+  final List<String> forwards, midfielders;
+
+  /// The real club (its badge); null for a made-up club of an older season.
+  final int? clubId;
+
   const ManagerOpponent({
     required this.name,
     required this.leagueHint,
     required this.style,
     required this.basePower,
+    this.forwards = const [],
+    this.midfielders = const [],
+    this.clubId,
   });
 }
