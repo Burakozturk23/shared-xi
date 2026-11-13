@@ -630,6 +630,7 @@ test("NET01-05/CORE07: reconnect clock, 30s absence, simultaneous offline and qu
       r.status, "cancelled");
   // With the fallback bot switched off, an empty ranked search still expires at 30 s.
   const h3 = boot({botEnabled: false}); r = await enter(h3, "alice", "cinko", "search", {playKind: "ranked"});
+  assert.equal(r.botAt, undefined, "no bot promised when it is off");
   h3.setTime(new Date(r.serverNow + 31000).toISOString()); r = await act(h3, "alice", r); assert.equal(
       r.status, "expired");
   assert.equal(h3.read("pvpV1/cinko/queue/alice"), null);
@@ -1267,7 +1268,7 @@ test("ranked search alone: the bot joins at 20 s, plays, and settles without Elo
   const h = boot(); let paid = 0;
   for (let game = 0; game < 4; game++) {
     let r = await enter(h, "alice", "random_five", "search", {playKind: "ranked"});
-    assert.equal(r.status, "waiting"); const t0 = r.serverNow;
+    assert.equal(r.status, "waiting"); const t0 = r.serverNow; assert.equal(r.botAt, t0 + 20000);
     h.setTime(t0 + 19000); r = await act(h, "alice", r); assert.equal(r.status, "waiting");
     h.setTime(t0 + 20000); r = await act(h, "alice", r);
     assert.equal(r.status, "ready"); assert.equal(r.bot.name, "Linkball Botu");
@@ -1285,8 +1286,10 @@ test("ranked search alone: the bot joins at 20 s, plays, and settles without Elo
     assert.equal(r.status, "finished");
     const bot = raw(h, r).bot.uid;
     assert.ok(Object.values(raw(h, r).answers).some((a) => a?.[bot]), "the bot answered");
-    const s = h.read(`rankedState/settlements/random_five/${r.id}`);
+    const s = h.read(`rankedState/botSettlements/random_five/${r.id}`);
     assert.equal(s.bot, true); assert.equal(s.rewards.alice.eloDelta, 0);
+    // Ranked records stay games between people.
+    assert.equal(h.read(`rankedState/settlements/random_five/${r.id}`), null);
     assert.equal(h.read("rankedState/profiles/alice"), null, "no Elo from a bot match");
     const reward = s.rewards.alice;
     if (game < 3) {

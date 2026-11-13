@@ -1127,6 +1127,7 @@ function view(c, r, uid, time) {
   const other = uid === r.host ? r.guest : r.host; const done = terminal(r);
   const v = {id: r.id, mode: r.mode, playKind: r.playKind, schemaVersion: 1, ruleVersion: r.ruleVersion,
     ...r.bot ? {bot: {uid: r.bot.uid, name: r.names?.[r.bot.uid] || "Bot"}} : {},
+    ...r.status === "waiting" && r.botAt ? {botAt: r.botAt} : {},
     dataRevision: r.dataRevision, seedId: r.seedId || null, revision: r.revision, status: r.status,
     host: r.host, guest: r.guest || null, names: r.names, myUid: uid, serverNow: time,
     ready: r.ready, choices: r.status === "ready" || done ? r.choices : {}, scores: r.scores,

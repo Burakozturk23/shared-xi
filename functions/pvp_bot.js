@@ -5,7 +5,6 @@
 // fresh so the 60-second absence rule never fires, and is beatable: it thinks a few
 // seconds and answers right about six times in ten. Its moves are a pure function of
 // the room and the time, so a replayed poll makes the same move.
-const crypto = require("node:crypto");
 const E = require("./pvp_engine");
 
 const BOT_AFTER_MS = 20000;
@@ -15,9 +14,8 @@ const isBot = (uid) => typeof uid === "string" && uid.startsWith(BOT_PREFIX);
 const ACCURACY = 0.62;
 const KNOWN = 75;
 
-function roll(...key) {
-  return parseInt(crypto.createHash("sha256").update(JSON.stringify(key)).digest("hex").slice(0, 8), 16) / 0x100000000;
-}
+// A seeded number in [0, 1): the same key always gives the same roll.
+const roll = (...key) => parseInt(E.hash(key).slice(0, 8), 16) / 0x100000000;
 const pick = (list, ...key) => list.length ? list[Math.floor(roll(...key) * list.length)] : null;
 
 // Known players, best first, built once per catalog.
@@ -45,7 +43,7 @@ function wrongOf(c, fits, used, ...key) {
 function join(r, time) {
   const uid = BOT_PREFIX + r.id;
   r.guest = uid; r.names[uid] = BOT_NAME; r.status = "ready"; r.revision++;
-  r.bot = {uid, joinedAt: time, steps: 0};
+  r.bot = {uid, steps: 0};
   r.ready = {...r.ready, [uid]: true};
   r.presence = {[uid]: time, [r.host]: time};
   return uid;
@@ -60,6 +58,8 @@ function step(c, r, time) {
     r.ready[uid] = true; return null;
   }
   if (r.status !== "playing" || time < r.startsAt) return null;
+  // A turn whose move the rules refused is not tried again on every poll.
+  if (r.turnDeadline && r.bot.refused === r.turnDeadline) return null;
   const input = decide(c, r, uid, time);
   if (!input) return null;
   try {
@@ -69,6 +69,7 @@ function step(c, r, time) {
   } catch (error) {
     // A move the rules refuse (a lock, a closed round) is simply not made.
     r.bot.last = time;
+    if (r.turnDeadline) r.bot.refused = r.turnDeadline;
     return null;
   }
 }
@@ -78,26 +79,16 @@ const thought = (r, opened, key) => opened + 2500 + Math.floor(roll(r.id, "think
 const right = (r, key) => roll(r.id, "right", key) < ACCURACY;
 
 function decide(c, r, uid, time) {
-  const turnStart = r.turnDeadline ? r.turnDeadline - 45000 : r.startsAt;
-  const myTurn = r.turnUid === uid;
-  const mine = (key) => key + ":" + uid;
   if (r.managerRules === 3) return manager(c, r, uid, time);
   if (r.lotoRules === 3) return loto(c, r, uid, time);
   if (r.fiveRules === 3) return five(c, r, uid, time);
-  if (r.mode === "cinko") {
-    return myTurn && time >= thought(r, turnStart, mine("c" + r.turnDeadline)) ? cinko(c, r, uid) : null;
-  }
-  if (r.randomBoard) {
-    return myTurn && time >= thought(r, turnStart, mine("b" + r.turnDeadline)) ? board(c, r, uid) : null;
-  }
-  if (r.mode === "grid_reverse") {
-    return myTurn && time >= thought(r, turnStart, mine("v" + r.turnDeadline)) ? reverse(c, r) : null;
-  }
-  if (r.mode === "grid_classic") {
-    return myTurn && time >= thought(r, turnStart, mine("g" + r.turnDeadline)) ? grid(c, r) : null;
-  }
-  if (["club_club", "club_country"].includes(r.mode)) return race(c, r, uid, time);
-  return null;
+  if (["club_club", "club_country"].includes(r.mode)) return race(c, r, time);
+  // Turn modes: the bot's turn, a few seconds after it opened.
+  const [tag, turn] = r.mode === "cinko" ? ["c", cinko] : r.randomBoard ? ["b", board] :
+    r.mode === "grid_reverse" ? ["v", reverse] : r.mode === "grid_classic" ? ["g", grid] : [];
+  if (!turn || r.turnUid !== uid) return null;
+  const turnStart = r.turnDeadline ? r.turnDeadline - 45000 : r.startsAt;
+  return time >= thought(r, turnStart, tag + r.turnDeadline + ":" + uid) ? turn(c, r) : null;
 }
 
 function grid(c, r) {
@@ -137,14 +128,14 @@ function board(c, r) {
   }
   return E.ANCHORS.some((i) => !r.owners[i]) ? {action: "draw"} : null;
 }
-function cinko(c, r, uid) {
+function cinko(c, r) {
   const used = (id) => !!r.used[id]; const key = [r.id, "cinko", r.turnDeadline];
   const open = E.cinkoOpen(c, r);
   if (!open.length || !right(r, key)) return {action: "pass"};
   const i = pick(open, ...key); const id = rightOf(c, E.answersOf(c, r.puzzle.criteria[i]), used, ...key);
   return id ? {action: "answer", playerId: id, cells: [i]} : {action: "pass"};
 }
-function race(c, r, uid, time) {
+function race(c, r, time) {
   // A guess every 6-12 s; the rules' own wrong-answer locks still apply.
   const last = r.bot.last || r.startsAt;
   if (time < last + 6000 + Math.floor(roll(r.id, "race", r.bot.steps) * 6000)) return null;
@@ -202,4 +193,4 @@ function manager(c, r, uid, time) {
   return null;
 }
 
-module.exports = {BOT_AFTER_MS, BOT_NAME, BOT_PREFIX, isBot, join, step, decide};
+module.exports = {BOT_AFTER_MS, BOT_NAME, BOT_PREFIX, isBot, roll, join, step};

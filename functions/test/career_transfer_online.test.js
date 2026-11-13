@@ -325,7 +325,7 @@ for (const mode of ["career_race", "transfer_duel", "mystery_duel", "fake_club_d
       mode === "mystery_duel" ? require("../config/mystery_chain_catalog.json").version : version;
     const search = async () => (await h.call("enterCareerTransferOnline",
         {mode, version: v, action: "ranked", requestId: id()}, auth("alice"))).room;
-    const first = await search(); const began = h.now;
+    const first = await search(); const began = h.now; assert.equal(first.botAt, undefined);
     for (const offset of [10000, 20000, 29999, 30000]) {
       h.setTime(began + offset);
       const r = (await h.call("actCareerTransferOnline",
@@ -375,6 +375,7 @@ for (const mode of ["transfer_duel", "mystery_duel", "fake_club_duel"]) {
         auth("alice"))).room;
     const began = h.now; const poll = async () => (await h.call("actCareerTransferOnline",
         {mode, version: v, roomId: r.id, action: "poll"}, auth("alice"))).room;
+    assert.equal(r.botAt, began + 20000);
     h.setTime(began + 19000); r = await poll(); assert.equal(r.status, "waiting");
     h.setTime(began + 20000); r = await poll();
     assert.equal(r.status, "playing"); assert.equal(r.opponentBot, "Linkball Botu");
@@ -393,7 +394,7 @@ for (const mode of ["transfer_duel", "mystery_duel", "fake_club_duel"]) {
     const bot = read(h, r).bot.uid;
     assert.equal(Object.keys(read(h, r).answers[bot] || {}).length, room.questions.length,
         "the bot answers every round");
-    const s = h.read(`rankedState/settlements/${mode}/${r.id}`);
+    const s = h.read(`rankedState/botSettlements/${mode}/${r.id}`);
     assert.equal(s.bot, true); assert.equal(h.read("rankedState/profiles/alice"), null);
     const reward = s.rewards.alice;
     assert.deepEqual([reward.coins, reward.xp], {win: [2, 4], draw: [1, 3], loss: [0, 2]}[reward.result]);

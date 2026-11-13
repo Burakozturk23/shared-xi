@@ -194,6 +194,7 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
         room = E.hydrate({id: code, mode: input.mode, playKind: input.playKind, schemaVersion: 1, ruleVersion: E.RULE,
           dataRevision: catalog.version, seed, host: uid, guest: null, names: {[uid]: name}, blocked: [...denied],
           status: "waiting", revision: 0, createdAt: time, profile: input.profile || "standard",
+          ...input.playKind === "ranked" && p.botEnabled !== false ? {botAt: time + BOT.BOT_AFTER_MS} : {},
           rankedEligible: input.playKind === "ranked" && p.rankedEnabled, rewardPolicy: {rewardsEnabled:
               p.rewardsEnabled, eloEnabled: p.eloEnabled},
           series: {id: code, game: 1, limit: input.profile === "series3" ? 3 : 1, wins: {}}});
@@ -264,8 +265,7 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
       const was = hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null]);
       E.advance(r, time);
       // Ranked fallback: nobody came within 20 s, so the bot takes the second seat.
-      if (r.playKind === "ranked" && r.status === "waiting" && !r.guest && p.botEnabled !== false &&
-        time >= r.createdAt + BOT.BOT_AFTER_MS) {
+      if (r.botAt && r.status === "waiting" && !r.guest && p.botEnabled !== false && time >= r.botAt) {
         BOT.join(r, time); delete s.queue[uid];
       }
       // The bot moves on the player's polls, by the same rules and clocks.

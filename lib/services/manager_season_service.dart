@@ -202,8 +202,6 @@ class ManagerSeasonService {
     leagueHint: c.leagueHint,
     style: c.style,
     basePower: c.strength,
-    forwards: clubOf(c)?.forwards ?? const [],
-    midfielders: clubOf(c)?.midfielders ?? const [],
-    clubId: clubOf(c)?.id,
+    club: clubOf(c),
   );
 }

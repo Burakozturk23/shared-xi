@@ -84,7 +84,7 @@ void main() {
       final real = season.clubs.firstWhere((c) => !c.isUser);
       final opponent = ManagerSeasonService.instance.toOpponent(real);
       final club = ManagerSeasonService.clubOf(real)!;
-      expect(opponent.clubId, club.id);
+      expect(opponent.club, same(club));
       final names = {...club.forwards, ...club.midfielders};
       var goals = 0;
       for (var seed = 0; seed < 60; seed++) {
@@ -112,7 +112,7 @@ void main() {
       });
       expect(old.clubId, isNull);
       final made = ManagerSeasonService.instance.toOpponent(old);
-      expect(made.forwards, isEmpty);
+      expect(made.club, isNull);
       for (var seed = 0; seed < 30; seed++) {
         final r = ManagerMatchService.instance.simulate(
           xi: xi,

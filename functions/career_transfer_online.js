@@ -397,12 +397,12 @@ function record(room, uid, round, answer, time) {
 // Ranked fallback bot (as in the board modes, pvp_bot.js): after 20 s with nobody, it
 // takes the second seat, answers each round some seconds in, right about six times in
 // ten (more on easy rounds, less on hard ones), and keeps its presence fresh.
-const BOT_AFTER_MS = 20000;
+const {BOT_AFTER_MS, BOT_NAME, BOT_PREFIX, roll: botRoll} = require("./pvp_bot");
 const BOT_RIGHT = {easy: 0.78, medium: 0.6, hard: 0.45};
-const botRoll = (...key) => parseInt(hash(JSON.stringify(key)).slice(0, 8), 16) / 0x100000000;
+let playerIds = null; // every career player id, for a wrong transfer guess
 function botJoin(room, time) {
-  const uid = "bot:" + room.id;
-  room.guest = uid; room.bot = {uid, name: "Linkball Botu"}; room.status = "playing"; room.startedAt = time + 5000;
+  const uid = BOT_PREFIX + room.id;
+  room.guest = uid; room.bot = {uid, name: BOT_NAME}; room.status = "playing"; room.startedAt = time + 5000;
   room.presence = {[uid]: time, [room.host]: time};
 }
 function botStep(room, time) {
@@ -423,7 +423,8 @@ function botStep(room, time) {
       if (q.kind === "order") answer = [...truth].reverse();
       else if (options.length) answer = options[Math.floor(botRoll(room.id, "opt", i) * options.length)];
       else if (q.kind === "transfer") {
-        const ids = [...players.keys()]; answer = ids[Math.floor(botRoll(room.id, "who", i) * ids.length)];
+        const ids = playerIds ||= [...players.keys()];
+        answer = ids[Math.floor(botRoll(room.id, "who", i) * ids.length)];
         if (q.accepted?.includes(answer)) answer = ids[(ids.indexOf(answer) + 1) % ids.length];
       }
     }
@@ -452,6 +453,7 @@ function view(room, uid, time) {
   const v = {id: room.id, code: room.code, mode: room.mode, ranked: room.ranked, status: room.status,
     serverNow: time, expiresAt: expiresAt(room), host: uid === room.host,
     opponent: other || null, version: room.version, ...room.bot ? {opponentBot: room.bot.name} : {},
+    ...room.status === "waiting" && room.botAt ? {botAt: room.botAt} : {},
     totalRounds: room.questions.length, startedAt: room.startedAt || null,
     mine: totals(room, uid, time), theirs: other ? totals(room, other, time) : null};
   if (room.status === "playing") {
@@ -517,6 +519,7 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
     if (!validId(input.requestId) || !["create", "join", "ranked", "resume"].includes(input.action)) {
       fail("invalid-argument", "Geçersiz oda isteği.");
     }
+    const botOn = input.action === "ranked" && await getBotEnabled();
     if (input.action === "join" && !/^[A-F0-9]{8}$/.test(input.code || "")) {
       fail("invalid-argument", "Oda kodu 8 karakter.");
     }
@@ -594,7 +597,7 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
         if (s.rooms[code]) fail("already-exists", "Yeni oda isteği oluştur.");
         room = {id: code, code, host: uid, guest: null, ranked: input.action === "ranked", blocked: [...denied],
           status: "waiting", mode: input.mode, version: modeVersion(input.mode), questions: bank, createdAt: time,
-          answers: {}, receipts: {}, presence: {[uid]: time}};
+          answers: {}, receipts: {}, presence: {[uid]: time}, ...botOn ? {botAt: time + BOT_AFTER_MS} : {}};
         if (room.ranked) s.queue[uid] = {id: code, at: time};
       }
       s.rooms[room.id] = room; s.active[uid] = room.id; s.active[room.host] = room.id;
@@ -620,8 +623,7 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
         advance(room, time); s.rooms[room.id] = room; return;
       }
       advance(room, time);
-      if (room.ranked && room.status === "waiting" && !room.guest && botOn &&
-        time >= room.createdAt + BOT_AFTER_MS) {
+      if (room.botAt && room.status === "waiting" && !room.guest && botOn && time >= room.botAt) {
         botJoin(room, time); delete s.queue[uid];
       }
       botStep(room, time);

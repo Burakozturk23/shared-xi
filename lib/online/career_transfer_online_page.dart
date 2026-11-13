@@ -791,12 +791,12 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
   List<Widget> _waitingRoom() {
     final p = PitchColors.of(context);
     final text = Theme.of(context).textTheme;
-    // Ranked: the bot takes the seat 20 s in (10 s before the search would close).
-    final left = _room['expiresAt'] is num
-        ? (((_room['expiresAt'] as num) - (_ranked ? 10000 : 0) - _now) / 1000)
-              .ceil()
-              .clamp(0, 300)
-        : null;
+    // Ranked: the server says when the bot takes the seat (none when it is off).
+    final botAt = _room['botAt'] is num ? _room['botAt'] as num : null;
+    final until = botAt ?? (_room['expiresAt'] is num ? _room['expiresAt'] as num : null);
+    final left = until == null
+        ? null
+        : ((until - _now) / 1000).ceil().clamp(0, 300);
     Widget seat(String name, Color tone, bool here) => Expanded(
       child: Column(
         children: [
@@ -835,9 +835,11 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
             ),
             const SizedBox(height: 4),
             Text(
-              _ranked
+              botAt != null
                   ? '20 saniye içinde rakip bulunamazsa Linkball Botu ile oynarsın: '
                         'Elo değişmez, ödül yarı (günde 3 maç).'
+                  : _ranked
+                  ? '30 saniye içinde eşleşme olmazsa arama kapanır.'
                   : 'Oda 5 dakika açık kalır. Aynı modu seçip kodla katılın.',
               textAlign: TextAlign.center,
               style: text.bodySmall?.copyWith(color: p.muted),
@@ -861,7 +863,7 @@ class _CareerTransferOnlinePageState extends State<CareerTransferOnlinePage>
               const SizedBox(height: 12),
               ArenaPill(
                 child: Text(
-                  _ranked ? 'Bot rakibe: $left sn' : 'Kalan süre: $left sn',
+                  botAt != null ? 'Bot rakibe: $left sn' : 'Kalan süre: $left sn',
                 ),
               ),
             ],

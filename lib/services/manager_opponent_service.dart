@@ -27,9 +27,7 @@ class ManagerOpponentService {
       leagueHint: club.league,
       style: style,
       basePower: double.parse(power.toStringAsFixed(0)),
-      forwards: club.forwards,
-      midfielders: club.midfielders,
-      clubId: club.id,
+      club: club,
     );
   }
 

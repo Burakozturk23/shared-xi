@@ -8094,15 +8094,6 @@ exports.syncRankedMissions = onValueWritten(
 
       if (settlement.serverValidated !== true || settlement.forfeit === true ||
           settlement.rankedEligible === false) return;
-      if (settlement.bot === true) {
-        const uid = String(settlement.player1Uid || "");
-        const result = String(settlement.player1Result || "");
-        if (!uid || settlement.participants?.[uid] === false || !["win", "draw", "loss"].includes(result) ||
-            !await lbAchievementEligible(getDatabase(), uid)) return;
-        await lbMissionRecordRanked(getDatabase(), uid, String(event.params.mode || ""),
-            String(event.params.matchId || ""), result, lbProgressionNumber(settlement.settledAt), "bot_settlement");
-        return;
-      }
 
       const db = getDatabase();
       const mode = String(event.params.mode || "");
@@ -8732,6 +8723,15 @@ async function lbBuildAccountDeletionUpdates(db, uid) {
           ] = settlement;
         }
       }
+    }
+  }
+
+  // Ranked fallback bot: a bot match only ever has this person as its player.
+  updates["rankedState/botDaily/" + uid] = null;
+  const botSettlements = (await db.ref("rankedState/botSettlements").get()).val() || {};
+  for (const [mode, rows] of Object.entries(botSettlements)) {
+    for (const [matchId, row] of Object.entries(rows || {})) {
+      if (row?.player1Uid === uid) updates["rankedState/botSettlements/" + mode + "/" + matchId] = null;
     }
   }
 
@@ -10708,8 +10708,10 @@ function lbPvpDailyAwards(state, uid, day) {
 }
 // Multiplayer V1: server-only rooms; no legacy client attestation grants.
 // Ranked fallback bot match: no Elo; half the ranked reward, at most three rewarded bot
-// matches a day across every ranked mode, inside the usual daily ranked caps. It counts
-// for a mode's online missions, never for ranked games or wins (missions_v3 bot_settlement).
+// matches a day across every ranked mode (its own cap). It is kept in its own collection,
+// rankedState/botSettlements, so ranked history, streaks and daily ranked caps only ever
+// see games between people; it counts for a mode's online missions, never for ranked
+// games or wins (missions_v3 bot_settlement).
 const LB_BOT_REWARDS = {pvp: {win: [2, 3], draw: [1, 2], loss: [0, 1]},
   duel: {win: [2, 4], draw: [1, 3], loss: [0, 2]}};
 async function lbSettleBotMatch(room, kind, rewarded) {
@@ -10721,24 +10723,34 @@ async function lbSettleBotMatch(room, kind, rewarded) {
     Object.keys(room.answers?.[human] || {}).length > 0;
   const result = lbRankedResultName(human, winner || null);
   const day = require("./rewarded_ads").dayKey(room.finishedAt || Date.now());
+  let created = false;
   const tx = await db.ref("rankedState").transaction((raw) => {
-    const s = {...raw}; s.settlements ||= {}; s.settlements[mode] ||= {}; s.botDaily ||= {};
-    if (s.settlements[mode][room.id]) return s;
+    const s = {...raw}; s.botSettlements ||= {}; s.botSettlements[mode] ||= {}; s.botDaily ||= {};
+    created = false;
+    if (s.botSettlements[mode][room.id]) return s;
+    created = true;
     const d = (s.botDaily[human] ||= {})[day] ||= {count: 0};
     const pay = rewarded && finished && participated && d.count < 3;
     if (pay) d.count++;
     const [coins, xp] = pay ? LB_BOT_REWARDS[kind][result] : [0, 0];
-    s.settlements[mode][room.id] = {matchId: room.id, mode, bot: true, player1Uid: human,
+    s.botSettlements[mode][room.id] = {matchId: room.id, mode, bot: true, player1Uid: human,
       player2Uid: room.guest, winnerUid: winner || null, player1Result: result, serverValidated: finished,
       validationVersion: 1, settledAt: room.finishedAt || Date.now(), forfeit: room.status === "forfeit",
       participants: {[human]: participated}, rewards: {[human]: {status: pay ? "verified" : "none", coins, xp,
         eloDelta: 0, result, bot: true}}};
     return s;
   });
-  const reward = tx.snapshot.val().settlements[mode][room.id].rewards[human];
+  const settlement = tx.snapshot.val().botSettlements[mode][room.id];
+  const reward = settlement.rewards[human];
   const id = `bot__${mode}__${room.id}__${human}`;
-  if (reward.coins > 0) await lbProgressionGrantCoins(db, human, id, "ranked_match", room.id, reward.coins, "bot-v1");
-  if (reward.xp > 0) await lbCareerTransferGrantXp(human, id, reward.xp);
+  await Promise.all([
+    reward.coins > 0 && lbProgressionGrantCoins(db, human, id, "ranked_match", room.id, reward.coins, "bot-v1"),
+    reward.xp > 0 && lbCareerTransferGrantXp(human, id, reward.xp),
+  ]);
+  // The mode's online missions, once (the mission event key is the match id).
+  if (created && finished && participated && await lbAchievementEligible(db, human)) {
+    await lbMissionRecordRanked(db, human, mode, room.id, result, settlement.settledAt, "bot_settlement");
+  }
   return {[human]: reward, [room.guest]: {status: "none", coins: 0, xp: 0, eloDelta: 0, bot: true}};
 }
 async function lbSettlePvp(room, policy) {

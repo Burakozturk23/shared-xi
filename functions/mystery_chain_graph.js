@@ -35,10 +35,10 @@ function validMove(graph, run, playerId, clubId) {
   const path = run.path || [];
   const current = path.length ? path[path.length - 1].clubId : run.puzzle.start;
   const ids = graph.players.get(playerId);
-  // Restricted chains: a banned club can never be a step of the route.
-  if ((run.puzzle.banned || []).includes(clubId)) return false;
   return !!ids && ids.includes(current) && ids.includes(clubId) && clubId !== run.puzzle.start &&
-    !path.some((x) => x.clubId === clubId || x.playerId === playerId) && clubId !== current;
+    !path.some((x) => x.clubId === clubId || x.playerId === playerId) && clubId !== current &&
+    // Restricted chains: a banned club can never be a step of the route.
+    !(run.puzzle.banned || []).includes(clubId);
 }
 function remaining(graph, run) {
   const path = run.path || [];
@@ -70,4 +70,8 @@ function countShortest(graph, start, target, banned = []) {
   }
   return ways.get(target) || 0;
 }
-module.exports = {graphOf, shortest, validMove, remaining, countShortest};
+// A restricted file bans every club in the catalog's list except its own two ends.
+function bannedOf(catalog, p) {
+  return p.restricted ? catalog.restrictedClubs.filter((id) => id !== p.start && id !== p.target) : [];
+}
+module.exports = {graphOf, shortest, validMove, remaining, countShortest, bannedOf};

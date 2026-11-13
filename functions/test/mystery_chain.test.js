@@ -3,7 +3,7 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
 const {catalog} = require("../mystery_chain");
-const {graphOf, shortest, validMove, remaining, countShortest} = require("../mystery_chain_graph");
+const {graphOf, shortest, validMove, remaining, countShortest, bannedOf} = require("../mystery_chain_graph");
 const {players} = require("../career_transfer");
 const version = catalog.version;
 const graph = graphOf(catalog);
@@ -48,7 +48,7 @@ test("M01-M03: complete unique clues, plausible options and exact dated teammate
 });
 test("C01-C03: every catalog PAR is exact; every supplied route obeys unique players and clubs", () => {
   for (const p of [...catalog.mastery, ...catalog.sprint]) {
-    assert.equal(shortest(graph, p.start, p.target, p.banned || []).length, p.par);
+    assert.equal(shortest(graph, p.start, p.target, bannedOf(catalog, p)).length, p.par);
     const r = {puzzle: p, path: []};
     for (const step of p.solution) {
       assert.ok(validMove(graph, r, step.playerId, step.clubId)); r.path.push(step);
@@ -201,7 +201,7 @@ test("chain: giving up shows the shortest route; it stays hidden while playing; 
   s = await act(h, s, {action: "skip"});
   assert.equal(s.gaveUp, true); assert.equal(s.solution.length, p.par);
   assert.ok(s.solution.every((x) => x.player.name && x.club.name));
-  assert.equal(s.routeCount, countShortest(graph, p.start, p.target, p.banned || []));
+  assert.equal(s.routeCount, countShortest(graph, p.start, p.target, bannedOf(catalog, p)));
   const a = harness(); const b = harness();
   const d1 = await start(a, "mastermind", {daily: true}); const d2 = await start(b, "mastermind", {daily: true});
   assert.equal(raw(a, d1).puzzle.id, raw(b, d2).puzzle.id); assert.ok(d1.daily); assert.ok(d1.par <= 3);
@@ -377,16 +377,18 @@ test("restricted chain: no step on a club a fan knows; PAR and route count under
   assert.ok(files.length >= 50, String(files.length));
   for (const p of files) {
     // Every known club but the two ends is off limits; few shortest routes are left.
-    for (const k of known) if (k !== p.start && k !== p.target) assert.ok(p.banned.includes(k), p.id);
-    const n = countShortest(graph, p.start, p.target, p.banned);
+    const banned = bannedOf(catalog, p);
+    for (const k of known) if (k !== p.start && k !== p.target) assert.ok(banned.includes(k), p.id);
+    const n = countShortest(graph, p.start, p.target, banned);
     assert.ok(n >= 1 && n <= 10, p.id + ": " + n);
-    assert.ok(p.solution.every((x) => x.clubId === p.target || !p.banned.includes(x.clubId)), p.id);
+    assert.ok(p.solution.every((x) => x.clubId === p.target || !banned.includes(x.clubId)), p.id);
   }
-  const p = files[0];
+  assert.deepEqual(bannedOf(catalog, catalog.mastery.find((p) => !p.restricted)), []);
+  const p = {...files[0], banned: bannedOf(catalog, files[0])};
   const h = harness({}, {omitEmptyObjects: true});
   h.seed(`economyState/alice/mysteryChain/collection/chain__${p.id}`, {id: p.id, mode: "mastermind", last: {medal: 0}});
   let s = await start(h, "mastermind", {target: p.id});
-  assert.match(s.rule.text, /Kısıtlı zincir/); assert.equal(s.rule.banned, p.banned.length);
+  assert.match(s.rule.text, /Kısıtlı zincir/);
   // A banned club is a legal link in the plain graph, yet the move is refused and never offered.
   const pid = graph.byClub.get(p.start).find((x) => graph.players.get(x).some((c) => p.banned.includes(c)));
   const club = graph.players.get(pid).find((c) => p.banned.includes(c));

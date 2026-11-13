@@ -1,3 +1,5 @@
+import 'manager_league_club.dart';
+
 /// Maç öncesi taktik (0.0 – 1.0 kaydırıcılar).
 class ManagerTactics {
   /// 0 = alçak blok, 1 = yüksek press
@@ -135,19 +137,15 @@ class ManagerOpponent {
   final OpponentStyle style;
   final double basePower; // 45-95
 
-  /// A real club's best known forwards and midfielders: its goals in the report.
-  final List<String> forwards, midfielders;
-
-  /// The real club (its badge); null for a made-up club of an older season.
-  final int? clubId;
+  /// The real club: its badge and its scorers in the report. Null for a made-up
+  /// club of a season started before the league of real clubs.
+  final ManagerLeagueClub? club;
 
   const ManagerOpponent({
     required this.name,
     required this.leagueHint,
     required this.style,
     required this.basePower,
-    this.forwards = const [],
-    this.midfielders = const [],
-    this.clubId,
+    this.club,
   });
 }

@@ -269,12 +269,14 @@ def build():
         if not path or len(path) > 4: continue
         if not 1 <= count_routes(p['start'], p['target'], banned) <= 10: continue
         restricted.append(dict(id=p['id'] + '_r', start=p['start'], target=p['target'], par=len(path),
-            solution=path, banned=sorted(banned), restricted=True))
+            solution=path, restricted=True))
     selected = {3: par3, 4: par4, 2: pick(2, 900 - len(par3) - len(par4) - len(restricted), '')}
     sprint = pick(1, 200, 'sprint') + pick(2, 400, 'sprint')
     data = dict(schema=1,sourceVersion=ct['version'],databaseSha256=ct['databaseSha256'],mystery=mystery,
         clubs=[clubs[i] for i in sorted(adjacency)],graph=memberships,
         mastery=[p for k in (2,3,4) for p in selected.get(k,[])] + restricted,
+        # One list for every restricted file: its banned clubs are these minus its two ends.
+        restrictedClubs=sorted(fan),
         sprint=sprint,
         quality=dict(mystery=len(mystery),teammateClues=sum(p['hints'][3]['id']=='teammate' for p in mystery),
             profileClues=sum(any(h['id']=='profile' for h in p['hints']) for p in mystery),

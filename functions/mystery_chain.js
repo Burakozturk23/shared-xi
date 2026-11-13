@@ -7,7 +7,7 @@ const {RewardError, dayKey} = require("./rewarded_ads");
 const energy = require("./energy");
 const {norm} = require("./three_modes");
 const {players, playerView, validId} = require("./career_transfer");
-const {graphOf, validMove, remaining, countShortest} = require("./mystery_chain_graph");
+const {graphOf, validMove, remaining, countShortest, bannedOf} = require("./mystery_chain_graph");
 const catalog = require("./config/mystery_chain_catalog.json");
 const MODES = ["mystery", "mastermind", "blitz"];
 const boosts = ["boost_first_letter", "boost_last_letter", "boost_anagram"];
@@ -59,8 +59,7 @@ function view(raw, time) {
     // Restricted file: the club choices already leave the banned clubs out; the
     // player sees the rule.
     if (r.puzzle.restricted) {
-      v.rule = {id: "no_fan_clubs", banned: r.puzzle.banned.length,
-        text: "Kısıtlı zincir: ara adımlarda tanınmış büyük kulüpler kullanılamaz."};
+      v.rule = {text: "Kısıtlı zincir: ara adımlarda tanınmış büyük kulüpler kullanılamaz."};
     }
     v.bridgeHint = r.bridgeHint || null;
     if (r.finished) v.routes = r.routes;
@@ -221,14 +220,16 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
   }
   function setupChain(r, p, c) {
     const clubs = new Map(c.clubs.map((x) => [x.id, x]));
-    r.puzzle = p; r.start = clubs.get(p.start); r.target = clubs.get(p.target);
+    // A restricted file carries its banned clubs into the run (validMove, hints, routes).
+    r.puzzle = p.restricted ? {...p, banned: bannedOf(c, p)} : p;
+    r.start = clubs.get(p.start); r.target = clubs.get(p.target);
     r.path = []; r.maxMoves = Math.min(p.par + 3, 8); r.bridgeHint = null; r.deadEnd = false;
     if (r.mode === "mastermind") {
       // Kept private until the file ends: one shortest route and how many exist.
       const people = new Map(c.graph.map((x) => [x.id, x.player]));
       r.solutionView = p.solution.map((x) => ({playerId: x.playerId, clubId: x.clubId,
         player: playerView(people.get(x.playerId)), club: clubs.get(x.clubId)}));
-      r.routeCountView = countShortest(graphOf(c), p.start, p.target, p.banned || []);
+      r.routeCountView = countShortest(graphOf(c), p.start, p.target, r.puzzle.banned || []);
     }
   }
   // Next sprint pair: hashed among pairs not yet played in this sprint, so a

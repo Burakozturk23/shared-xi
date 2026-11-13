@@ -131,10 +131,8 @@ class ManagerMatchService {
       firstHalf: (h1, a1),
       secondHalf: (h2, a2),
       xi: xi,
-      awayName: opp.name,
       opponent: opp,
       tactics: tactics,
-      style: opp.style,
       halftime: halftime,
     );
 
@@ -221,22 +219,25 @@ class ManagerMatchService {
     return g;
   }
 
-  /// Forwards five times, midfielders twice as likely as weights; null for a club
-  /// without names (the made-up clubs of older seasons): no draw is spent then.
-  String? _awayScorer(ManagerOpponent? opp) {
-    if (opp == null || opp.forwards.isEmpty && opp.midfielders.isEmpty) {
-      return null;
-    }
-    final pool = [
-      for (final n in opp.forwards) (n, 5.0),
-      for (final n in opp.midfielders) (n, 2.2),
-    ];
+  /// One weighted draw (a single roll): the item whose weight band it falls in.
+  T _weighted<T>(List<(T, double)> pool) {
     var roll = _rng.nextDouble() * pool.fold<double>(0, (s, e) => s + e.$2);
-    for (final (name, w) in pool) {
+    for (final (item, w) in pool) {
       roll -= w;
-      if (roll <= 0) return name;
+      if (roll <= 0) return item;
     }
     return pool.last.$1;
+  }
+
+  /// A real club's scorer, weighted as the user's (forwards over midfielders);
+  /// null for a made-up club of an older season: no draw is spent then.
+  String? _awayScorer(ManagerOpponent opp) {
+    final club = opp.club;
+    if (club == null) return null;
+    return _weighted([
+      for (final n in club.forwards) (n, _scoreWeight['ATT']!),
+      for (final n in club.midfielders) (n, _scoreWeight['MID']!),
+    ]);
   }
 
   static const _scoreWeight = {'ATT': 5.0, 'MID': 2.2, 'DEF': 0.6, 'GK': 0.02};
@@ -245,20 +246,12 @@ class ManagerMatchService {
   /// Weighted by position and quality; always two draws so the sequence
   /// length does not depend on who is picked.
   (ManagerPoolPlayer, ManagerPoolPlayer?) _scorer(List<ManagerPoolPlayer> xi) {
-    ManagerPoolPlayer pick(Map<String, double> weights, ManagerPoolPlayer? not) {
-      final pool = [
-        for (final p in xi)
-          if (p.playerId != not?.playerId)
-            (p, (weights[p.positionGroup] ?? 1) * pow(p.overall / 100, 2)),
-      ];
-      final total = pool.fold<double>(0, (s, e) => s + e.$2);
-      var roll = _rng.nextDouble() * total;
-      for (final (player, w) in pool) {
-        roll -= w;
-        if (roll <= 0) return player;
-      }
-      return pool.last.$1;
-    }
+    ManagerPoolPlayer pick(Map<String, double> weights, ManagerPoolPlayer? not) =>
+        _weighted([
+          for (final p in xi)
+            if (p.playerId != not?.playerId)
+              (p, (weights[p.positionGroup] ?? 1) * pow(p.overall / 100, 2)),
+        ]);
 
     final scorer = pick(_scoreWeight, null);
     final assisted = _rng.nextDouble() < .72;
@@ -270,12 +263,12 @@ class ManagerMatchService {
     required (int, int) firstHalf,
     required (int, int) secondHalf,
     required List<ManagerPoolPlayer> xi,
-    required String awayName,
-    ManagerOpponent? opponent,
+    required ManagerOpponent opponent,
     required ManagerTactics tactics,
-    required OpponentStyle style,
     required ManagerHalftimePlan halftime,
   }) {
+    final awayName = opponent.name;
+    final style = opponent.style;
     final events = <ManagerMatchEvent>[];
     final minutes = <int>{};
     int uniqueMinute(int from, int to) {
