@@ -1,3 +1,4 @@
+import '../services/warm_up.dart';
 import '../widgets/letter_slot_reveal.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
@@ -107,6 +108,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.service == null) WarmUp.functions(const ['startThreeMode', 'actThreeMode']);
     _load();
   }
 

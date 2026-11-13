@@ -6,7 +6,13 @@ const {harness} = require("./support/economy_harness");
 
 const WARMABLE = ["getArcade", "prepareArcade", "actArcade", "getChoice", "prepareChoice", "actChoice",
   "getBotSupport", "actBotSupport", "getGridSupport", "actGridSupport",
-  "getPvp", "enterPvp", "actPvp", "searchPvp", "enterCareerTransferOnline", "actCareerTransferOnline"];
+  "getPvp", "enterPvp", "actPvp", "searchPvp", "enterCareerTransferOnline", "actCareerTransferOnline",
+  // Every solo mode's status, start and move functions wake too (Kariyer/Transfer, Gizemli
+  // Futbolcu/Zincir, Harf 11/Kasa, Sahte Kulüp, word games, Anagram practice, Squad Challenge).
+  "getCareerTransfer", "startCareerTransfer", "actCareerTransfer", "getMysteryChain", "startMysteryChain",
+  "actMysteryChain", "getThreeMode", "startThreeMode", "actThreeMode", "getFakeClub", "startFakeClub",
+  "actFakeClub", "getDailyWords", "actDailyWords", "getAnagramPractice", "actAnagramPractice",
+  "getMySquadChallenge", "startSquadChallenge", "finishSquadChallenge"];
 
 test("a warm-up call loads the game and writes nothing", async () => {
   const h = harness({runtimeConfig: {arcade: {enabled: true}}}, {omitEmptyObjects: true});

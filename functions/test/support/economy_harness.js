@@ -85,6 +85,7 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
   const registration = (opts, fn) => typeof fn === "function" ? Object.assign(fn, {options: opts}) : opts;
   const modules = {
     "firebase-functions": {setGlobalOptions: () => {}},
+    "firebase-functions/v2/options": {setGlobalOptions: () => {}},
     "firebase-functions/v2/scheduler": {onSchedule: registration},
     "firebase-functions/params": {defineSecret: () => ({value: () => "unused"})},
     "firebase-functions/logger": {warn: () => {}, info: () => {}, error: () => {}},

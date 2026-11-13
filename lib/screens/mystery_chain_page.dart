@@ -1,3 +1,4 @@
+import '../services/warm_up.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
 import '../app/app_feedback.dart';
@@ -76,6 +77,7 @@ class _MysteryChainPageState extends State<MysteryChainPage>
   @override
   void initState() {
     super.initState();
+    if (widget.service == null) WarmUp.functions(const ['startMysteryChain', 'actMysteryChain']);
     WidgetsBinding.instance.addObserver(this);
     _observedUid = AuthService.uid;
     _auth = AuthService.authStateChanges.listen((u) {

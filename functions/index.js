@@ -6,7 +6,9 @@
  *
  * RTDB: daily_fixtures/{YYYY-MM-DD}/ { updatedAt, matches[], topMatch }
  */
-const {setGlobalOptions} = require("firebase-functions");
+// The v2 options module, not the package root: the root loads every v1 provider too
+// (about 1.4 s of each cold start) for this one function.
+const {setGlobalOptions} = require("firebase-functions/v2/options");
 const {onSchedule} = require("firebase-functions/v2/scheduler");
 const {defineSecret} = require("firebase-functions/params");
 const {initializeApp} = require("firebase-admin/app");
@@ -8874,6 +8876,8 @@ function squadCallable(action) {
     // phase. It is loaded once, on the first Squad Challenge request.
     const engine = require("./squad_challenge");
     lbRequireGoogleLinked(request);
+    // Isınma: the catalog is loaded above; nothing is read or written.
+    if (request.data?.warm === true) return {warm: true};
     const input = request.data || {};
     if (input.catalogVersion !== engine.catalog.version) {
       throw new httpsV2.HttpsError("failed-precondition", "Görevler güncellendi. Uygulamanı güncelle.");
@@ -10118,6 +10122,7 @@ function lbThreeModesService() {
 function lbThreeModesCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbThreeModesService)) return {warm: true};
     try {
       if (["status", "resume"].includes(action)) await lbRewardedService().settle(request.auth.uid);
       return await lbThreeModesService()[action](request.auth.uid, request.data || {});
@@ -10163,6 +10168,7 @@ function lbCareerTransferService() {
 function lbCareerTransferCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbCareerTransferService)) return {warm: true};
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);
       return await lbCareerTransferService()[action](request.auth.uid, request.data || {});
@@ -10301,6 +10307,7 @@ function lbMysteryChainService() {
 function lbMysteryChainCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbMysteryChainService)) return {warm: true};
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);
       return await lbMysteryChainService()[action](request.auth.uid, request.data || {});
@@ -10361,6 +10368,7 @@ function lbFakeClubService() {
 function lbFakeClubCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbFakeClubService)) return {warm: true};
     try {
       if (action === "status") await lbRewardedService().settle(request.auth.uid);
       return await lbFakeClubService()[action](request.auth.uid, request.data || {});
@@ -10472,6 +10480,7 @@ function lbAnagramPracticeService() {
 function lbAnagramPracticeCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbAnagramPracticeService)) return {warm: true};
     try {
       return await lbAnagramPracticeService()[action](request.auth.uid, request.data || {});
     } catch (e) {
@@ -10537,6 +10546,7 @@ exports.getDailyStreak = httpsV2.onCall({region: "europe-west1", maxInstances: 1
 function lbDailyWordsCallable(action, mode) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
     if (!request.auth?.uid) throw new httpsV2.HttpsError("unauthenticated", "Giriş gerekli.");
+    if (lbWarm(request, lbDailyWordsService)) return {warm: true};
     try {
       const result = await lbDailyWordsService()[action](request.auth.uid,
           {...request.data, ...(mode ? {mode} : {})});

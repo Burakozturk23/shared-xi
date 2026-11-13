@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'daily_words_page.dart';
+import '../services/warm_up.dart';
 import '../controllers/anagram_controller.dart';
 import '../models/anagram.dart';
 import '../models/player.dart';
@@ -28,7 +29,7 @@ class _AnagramPageState extends State<AnagramPage> with WidgetsBindingObserver {
   bool _failed = false, _serverPractice = false;
   int? _shownPlayer;
   @override
-  void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); if (widget.practice || widget.controller != null) _boot(); }
+  void initState() { super.initState(); if (widget.controller == null) WarmUp.functions([widget.practice ? 'actAnagramPractice' : 'actDailyWords']); WidgetsBinding.instance.addObserver(this); if (widget.practice || widget.controller != null) _boot(); }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _game?.revalidate();

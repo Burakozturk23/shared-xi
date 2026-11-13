@@ -1,3 +1,4 @@
+import '../services/warm_up.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
 import '../app/app_feedback.dart';
@@ -48,6 +49,7 @@ class _OddClubPageState extends State<OddClubPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this);
+    if (widget.service == null) WarmUp.functions(const ['startFakeClub', 'actFakeClub']);
     _observedUid = AuthService.uid;
     _auth = AuthService.authStateChanges.listen((u) {
       if (_observedUid != null && u?.uid != _observedUid && mounted) {

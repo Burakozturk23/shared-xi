@@ -19,8 +19,11 @@ class WarmUp {
   static Future<void> Function(String name)? caller;
   static DateTime Function() now = DateTime.now;
 
-  /// Bot, Grid, Arcade and Choice screens: their first call (status).
-  static const menu = ['getBotSupport', 'getGridSupport', 'getArcade', 'getChoice'];
+  /// Every solo mode's first call (status), woken when the games catalog opens.
+  static const menu = [
+    'getBotSupport', 'getGridSupport', 'getArcade', 'getChoice', 'getCareerTransfer', 'getMysteryChain',
+    'getThreeMode', 'getFakeClub', 'getDailyWords', 'getMySquadChallenge',
+  ];
 
   static void functions(Iterable<String> names) {
     final time = now();

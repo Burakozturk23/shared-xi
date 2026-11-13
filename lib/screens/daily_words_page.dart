@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../services/warm_up.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/hint_panel.dart';
 import '../services/game_error.dart';
@@ -75,6 +76,7 @@ class _DailyWordsPageState extends State<DailyWordsPage>
   @override
   void initState() {
     super.initState();
+    if (widget.service == null) WarmUp.functions(const ['actDailyWords']);
     WidgetsBinding.instance.addObserver(this);
     _owner = AuthService.uid;
     _auth = AuthService.authStateChanges.listen((u) {
@@ -242,14 +244,24 @@ class _DailyWordsPageState extends State<DailyWordsPage>
             _answerCounts(_session),
           );
         }
-        final status = await _service
-            .load(widget.mode)
-            .timeout(const Duration(seconds: 30));
-        if (!mounted || _changedAccount) return;
-        setState(() => _accept(status));
         if (_scroll.hasClients && ['next', 'start'].contains(action))
           _scroll.jumpTo(0);
+        // The move's answer already holds the new session, so the board unlocks now;
+        // the rest of the status (streak, archive, today's trio) follows in the
+        // background instead of holding every guess for a second round trip.
+        unawaited(_refreshStatus());
       });
+  Future<void> _refreshStatus() async {
+    try {
+      final status = await _service
+          .load(widget.mode)
+          .timeout(const Duration(seconds: 30));
+      if (!mounted || _changedAccount || _busy) return;
+      setState(() => _accept(status));
+    } catch (_) {
+      // A failed background refresh changes nothing; the next move or Yenile retries.
+    }
+  }
   Widget _paidHint(
     String action,
     String sku,

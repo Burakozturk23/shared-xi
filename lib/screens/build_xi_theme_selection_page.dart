@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/warm_up.dart';
 import '../app/route_appearance.dart';
 
 import '../data/build_xi_formations.dart';
@@ -55,6 +56,7 @@ class _BuildXiThemeSelectionPageState extends State<BuildXiThemeSelectionPage>
   @override
   void initState() {
     super.initState();
+    if (widget.gateway == null) WarmUp.functions(const ['startSquadChallenge', 'finishSquadChallenge']);
     _load();
   }
 
