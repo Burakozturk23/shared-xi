@@ -1137,7 +1137,7 @@ function view(c, r, uid, time) {
     profile: r.profile, series: r.series || null, nextRoom: r.nextRoom || null, rematch: r.rematch,
     rankedEligible: r.rankedEligible === true, reward: r.settlement?.[uid] || {status:
         r.playKind === "friend" ? "none" : "pending"}};
-  if (r.status === "ready" && r.playKind === "friend" && ["club_club", "club_country"].includes(r.mode)) {
+  if (r.status === "ready" && ["club_club", "club_country"].includes(r.mode)) {
     // Only choices that make a playable pair with the other side's current choice.
     const side = uid === r.host ? "left" : "right";
     v.pairOptions = pairOptions(c, r.mode, side, r.choices[side === "left" ? "right" : "left"]);

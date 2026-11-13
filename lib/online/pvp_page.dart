@@ -957,8 +957,9 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     final choices = rewardMap(room['choices']);
     final names = rewardMap(room['names']);
     final waiting = room['status'] == 'waiting';
-    // Friend Club rooms: each side picks a club (Club-Country guest: a country).
-    final pairRoom = !ranked && ['club_club', 'club_country'].contains(mode);
+    // Club rooms, friend and ranked: each side picks a club (Club-Country guest:
+    // a country).
+    final pairRoom = ['club_club', 'club_country'].contains(mode);
     final pickLabels = {
       for (final k in [...rows(data['clubs']), ...rows(data['countries'])])
         '${k['id']}': GridCriterionLabel.text(k),
@@ -1116,7 +1117,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
           ],
         ],
         if (room['status'] == 'ready') ...[
-          if (!ranked && ['club_club', 'club_country'].contains(mode)) ...[
+          if (pairRoom) ...[
             const SizedBox(height: 12),
             ArenaCard(
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),

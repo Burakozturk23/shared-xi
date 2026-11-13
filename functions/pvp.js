@@ -284,8 +284,9 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
           E.finish(r, lost ? "forfeit" : "cancelled", lost && r.status === "ready" ? "Oyuncu seriden çekildi." :
             "Oyuncu maçtan ayrıldı.", time, lost ? uid === r.host ? r.guest : r.host : null); delete s.queue[uid];
           receipt = {accepted: true};
-        } else if (input.action === "choose" && r.status === "ready" && r.playKind === "friend" &&
+        } else if (input.action === "choose" && r.status === "ready" &&
           ["club_club", "club_country"].includes(r.mode)) {
+          // Club modes, friend and ranked: each side picks its club (Club-Country guest: a country).
           const side = uid === r.host ? "left" : "right";
           const options = r.mode === "club_country" && side === "right" ? c.countryOptions : c.clubOptions;
           if (!options.includes(input.choice)) fail("invalid-argument", "Geçersiz seçim.");
@@ -296,17 +297,20 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
           }
           r.choices[side] = input.choice; r.ready = {}; receipt = {accepted: true};
         } else if (input.action === "ready" && r.status === "ready") {
-          // Friend Club modes: ready without a choice takes a playable one (players
-          // pressed ready, got a refusal they did not see, and the room expired).
-          if (r.playKind === "friend" && ["club_club", "club_country"].includes(r.mode)) {
-            const side = uid === r.host ? "left" : "right";
-            if (!r.choices[side]) {
-              r.choices[side] = E.autoChoice(c, r.mode, side, r.choices[side === "left" ? "right" : "left"],
-                  r.seed || r.id);
-            }
-          }
+          // Club modes: ready without a choice takes a playable one (players pressed
+          // ready, got a refusal they did not see, and the room expired); at the start
+          // a side still without one (the ranked fallback bot) gets one the same way.
+          const pairMode = ["club_club", "club_country"].includes(r.mode);
+          const fill = (side) => {
+            r.choices[side] ||= E.autoChoice(c, r.mode, side, r.choices[side === "left" ? "right" : "left"],
+                r.seed || r.id);
+          };
+          if (pairMode) fill(uid === r.host ? "left" : "right");
           r.ready[uid] = true;
-          if (r.ready[r.host] && r.ready[r.guest]) E.start(r, c, time);
+          if (r.ready[r.host] && r.ready[r.guest]) {
+            if (pairMode) ["left", "right"].forEach(fill);
+            E.start(r, c, time);
+          }
           receipt = {accepted: true};
         } else {
           if (!["answer", "squad"].includes(input.action) &&

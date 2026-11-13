@@ -163,6 +163,34 @@ test("GR01-06: both players have five equal rounds; opponent answer/used ID hidd
   h.setTime(new Date(q.endsAt + 1).toISOString()); r = await act(h, "alice", r);
   assert.equal(r.status, "finished"); assert.equal(r.result, "draw"); assert.equal(h.read("rankedState"), null);
 });
+test("ranked Club modes: each side picks its club, the match is played on that pair", async () => {
+  for (const mode of ["club_club", "club_country"]) {
+    const h = boot();
+    let r = await enter(h, "alice", mode, "search", {playKind: "ranked"});
+    r = await enter(h, "bob", mode, "search", {playKind: "ranked"});
+    assert.equal(r.status, "ready"); assert.ok(r.pairOptions.length > 0, "ranked rooms list choices too");
+    const p = c.pairs.find((x) => x.answers.length >= 8 && x.criteria[1].startsWith(
+        mode === "club_club" ? "club:" : "country:"));
+    r = await act(h, "alice", r, "choose", {choice: p.criteria[0]});
+    r = await act(h, "bob", r, "choose", {choice: p.criteria[1]});
+    r = await act(h, "alice", r, "ready"); r = await act(h, "bob", r, "ready");
+    assert.equal(r.status, "countdown", mode);
+    assert.deepEqual(raw(h, r).puzzle.rounds[0].criteria, p.criteria);
+  }
+  // Against the fallback bot: the person's pick stands; the bot gets a club (or country) that pairs.
+  for (const mode of ["club_club", "club_country"]) {
+    const h = boot(); let r = await enter(h, "alice", mode, "search", {playKind: "ranked"});
+    h.setTime(new Date(r.serverNow + 20000).toISOString()); r = await act(h, "alice", r);
+    assert.equal(r.status, "ready"); assert.ok(r.bot);
+    const pick = r.pairOptions[0];
+    r = await act(h, "alice", r, "choose", {choice: pick}); r = await act(h, "alice", r, "ready");
+    assert.equal(r.status, "countdown", mode);
+    const room = raw(h, r);
+    assert.equal(room.choices.left, pick); assert.ok(room.choices.right);
+    if (mode === "club_country") assert.ok(room.choices.right.startsWith("country:"));
+    assert.ok(room.puzzle.rounds[0].criteria.includes(pick), mode);
+  }
+});
 test("friend Club modes: readying without a choice picks a playable one, so the match starts", async () => {
   for (const mode of ["club_club", "club_country"]) {
     const h = boot();
