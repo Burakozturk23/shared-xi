@@ -8,8 +8,8 @@ const base = (mode) => ({mode, schemaVersion: 1, ruleVersion: E.RULE, dataRevisi
 let serial = 0;
 const id = () => (++serial).toString(16).padStart(32, "0");
 const auth = (uid) => ({uid, token: {firebase: {identities: {"google.com": [uid]}}}});
-const boot = () => harness({runtimeConfig: {pvp: {friendEnabled: true, rankedEnabled: true,
-  rewardsEnabled: true, eloEnabled: true}}}, {omitEmptyObjects: true});
+const boot = (extra = {}) => harness({runtimeConfig: {pvp: {friendEnabled: true, rankedEnabled: true,
+  rewardsEnabled: true, eloEnabled: true, ...extra}}}, {omitEmptyObjects: true});
 const enter = async (h, uid, mode, action, extra = {}) => (await h.call("enterPvp", {...base(mode),
   action, actionId: id(), playKind: "friend", ...extra}, auth(uid))).room;
 const act = async (h, uid, r, action = "poll", extra = {}) => (await h.call("actPvp", {...base(r.mode),
@@ -628,7 +628,8 @@ test("NET01-05/CORE07: reconnect clock, 30s absence, simultaneous offline and qu
   const h2 = boot(); r = await pair(h2, "club_club");
   h2.setTime(new Date(r.startsAt + 31000).toISOString()); r = await act(h2, "alice", r); assert.equal(
       r.status, "cancelled");
-  const h3 = boot(); r = await enter(h3, "alice", "cinko", "search", {playKind: "ranked"});
+  // With the fallback bot switched off, an empty ranked search still expires at 30 s.
+  const h3 = boot({botEnabled: false}); r = await enter(h3, "alice", "cinko", "search", {playKind: "ranked"});
   h3.setTime(new Date(r.serverNow + 31000).toISOString()); r = await act(h3, "alice", r); assert.equal(
       r.status, "expired");
   assert.equal(h3.read("pvpV1/cinko/queue/alice"), null);
@@ -1259,4 +1260,41 @@ test("Club Manager draft through the room API: pick and plan actions, view of bo
   assert.deepEqual(mine.picks[me], [mine.lastPick.playerId]);
   const theirs = await act(h, rival, mine); assert.equal(theirs.turnUid, rival);
   assert.deepEqual(theirs.picks[me], mine.picks[me]);
+});
+// Ranked fallback bot: nobody in 20 s, so a labelled bot takes the seat; it plays by the
+// rules; Elo never moves; half the ranked reward, three rewarded bot matches a day.
+test("ranked search alone: the bot joins at 20 s, plays, and settles without Elo at half reward", async () => {
+  const h = boot(); let paid = 0;
+  for (let game = 0; game < 4; game++) {
+    let r = await enter(h, "alice", "random_five", "search", {playKind: "ranked"});
+    assert.equal(r.status, "waiting"); const t0 = r.serverNow;
+    h.setTime(t0 + 19000); r = await act(h, "alice", r); assert.equal(r.status, "waiting");
+    h.setTime(t0 + 20000); r = await act(h, "alice", r);
+    assert.equal(r.status, "ready"); assert.equal(r.bot.name, "Linkball Botu");
+    assert.equal(h.read("pvpV1/random_five/queue/alice"), null);
+    r = await act(h, "alice", r, "ready"); assert.equal(r.status, "countdown");
+    let t = h.now;
+    while (!["finished", "forfeit"].includes(r.status) && t < r.endsAt + 60000) {
+      t += 1000; h.setTime(t); r = await act(h, "alice", r);
+      const q = raw(h, r); const i = E.list(q.fiveStarts).length - 1;
+      if (q.status === "playing" && i >= 0 && !q.answers?.[i]?.alice && !q.answers?.[i]?.revealed) {
+        const pick = fiveBest(q.puzzle.boards[i], Object.keys(q.used || {}).map((k) => k.split("__")[1]));
+        r = await act(h, "alice", r, "answer", {playerId: pick, round: i});
+      }
+    }
+    assert.equal(r.status, "finished");
+    const bot = raw(h, r).bot.uid;
+    assert.ok(Object.values(raw(h, r).answers).some((a) => a?.[bot]), "the bot answered");
+    const s = h.read(`rankedState/settlements/random_five/${r.id}`);
+    assert.equal(s.bot, true); assert.equal(s.rewards.alice.eloDelta, 0);
+    assert.equal(h.read("rankedState/profiles/alice"), null, "no Elo from a bot match");
+    const reward = s.rewards.alice;
+    if (game < 3) {
+      assert.equal(reward.status, "verified");
+      assert.deepEqual([reward.coins, reward.xp], {win: [2, 3], draw: [1, 2], loss: [0, 1]}[reward.result]);
+      paid++;
+    } else assert.equal(reward.status, "none", "a fourth bot match that day pays nothing");
+    h.setTime(t + 60000);
+  }
+  assert.equal(paid, 3);
 });

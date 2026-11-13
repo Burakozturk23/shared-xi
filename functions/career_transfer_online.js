@@ -373,6 +373,64 @@ function outcome(room) {
   return delta > 0 ? room.host : delta < 0 ? room.guest : null;
 }
 const expiresAt = (room) => room.createdAt + (room.ranked ? 30000 : 300000);
+// Scores an answer already checked against the round's rules (a person's or the bot's).
+function record(room, uid, round, answer, time) {
+  const q = room.questions[round]; const clock = timing(room, round);
+  room.answers[uid] ||= {};
+  const correct = q.accepted ? q.accepted.includes(answer) : JSON.stringify(answer) === JSON.stringify(q.answer);
+  const elapsed = time - clock.start;
+  // Transfer Duel: every hint already open lowers the base score.
+  const base = 100 - (q.kind === "transfer" && q.timedHints ?
+    (q.hintAt || TRANSFER_HINT_MS).filter((ms) => elapsed >= ms).length *
+      (q.hintCost || TRANSFER_HINT_COST) : 0);
+  // Mystery Duel: no speed bonus before the first hint; full bonus right when it opens.
+  const from = q.kind === "mystery_duel" && q.hintAt ? q.hintAt[0] : 0;
+  const bonus = elapsed < from ? 0 : Math.floor(50 * (q.duration - elapsed) / (q.duration - from));
+  room.answers[uid][round] = {value: answer, correct, elapsed,
+    score: correct ? (base + bonus) * (q.multiplier || 1) : 0};
+  const other = uid === room.host ? room.guest : room.host;
+  if (["transfer_duel", "mystery_duel", "fake_club_duel", "career_race"].includes(room.mode) &&
+    room.answers[other]?.[round]) {
+    (room.closedAt ||= {})[round] = time;
+  }
+}
+// Ranked fallback bot (as in the board modes, pvp_bot.js): after 20 s with nobody, it
+// takes the second seat, answers each round some seconds in, right about six times in
+// ten (more on easy rounds, less on hard ones), and keeps its presence fresh.
+const BOT_AFTER_MS = 20000;
+const BOT_RIGHT = {easy: 0.78, medium: 0.6, hard: 0.45};
+const botRoll = (...key) => parseInt(hash(JSON.stringify(key)).slice(0, 8), 16) / 0x100000000;
+function botJoin(room, time) {
+  const uid = "bot:" + room.id;
+  room.guest = uid; room.bot = {uid, name: "Linkball Botu"}; room.status = "playing"; room.startedAt = time + 5000;
+  room.presence = {[uid]: time, [room.host]: time};
+}
+function botStep(room, time) {
+  const uid = room.bot?.uid; if (!uid || room.status !== "playing") return;
+  room.presence[uid] = time;
+  for (let i = 0; i < room.questions.length; i++) {
+    const clock = timing(room, i); if (time < clock.start || time >= clock.end) continue;
+    if (room.answers[uid]?.[i]) return;
+    const q = room.questions[i];
+    const at = clock.start + Math.floor(q.duration * (0.3 + 0.45 * botRoll(room.id, "at", i)));
+    if (time < at) return;
+    const right = botRoll(room.id, "right", i) < (BOT_RIGHT[q.difficulty] ?? 0.6);
+    const truth = q.accepted ? q.accepted[0] : q.answer;
+    let answer = truth;
+    if (!right) {
+      const options = (q.public?.options || []).map((o) => o.id)
+          .filter((id) => JSON.stringify(id) !== JSON.stringify(truth));
+      if (q.kind === "order") answer = [...truth].reverse();
+      else if (options.length) answer = options[Math.floor(botRoll(room.id, "opt", i) * options.length)];
+      else if (q.kind === "transfer") {
+        const ids = [...players.keys()]; answer = ids[Math.floor(botRoll(room.id, "who", i) * ids.length)];
+        if (q.accepted?.includes(answer)) answer = ids[(ids.indexOf(answer) + 1) % ids.length];
+      }
+    }
+    record(room, uid, i, answer, time);
+    return;
+  }
+}
 function advance(room, time) {
   if (room.status === "waiting" && time >= expiresAt(room)) {
     room.status = "cancelled"; room.finishedAt = expiresAt(room);
@@ -393,7 +451,7 @@ function view(room, uid, time) {
   const other = uid === room.host ? room.guest : room.host;
   const v = {id: room.id, code: room.code, mode: room.mode, ranked: room.ranked, status: room.status,
     serverNow: time, expiresAt: expiresAt(room), host: uid === room.host,
-    opponent: other || null, version: room.version,
+    opponent: other || null, version: room.version, ...room.bot ? {opponentBot: room.bot.name} : {},
     totalRounds: room.questions.length, startedAt: room.startedAt || null,
     mine: totals(room, uid, time), theirs: other ? totals(room, other, time) : null};
   if (room.status === "playing") {
@@ -431,7 +489,8 @@ function view(room, uid, time) {
   }
   return v;
 }
-function createService({db, isLinked, blocked, settleRanked, getFakePolicy = async () => ({}), now = Date.now,
+function createService({db, isLinked, blocked, settleRanked, getFakePolicy = async () => ({}),
+  getBotEnabled = async () => true, now = Date.now,
   random = () => crypto.randomBytes(16).toString("hex")}) {
   async function change(mode, fn) {
     let error; const time = now();
@@ -550,6 +609,7 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
       fail("invalid-argument", "Geçersiz maç işlemi.");
     }
     if (input.action !== "poll" && !validId(input.requestId)) fail("invalid-argument", "İşlem kimliği gerekli.");
+    const botOn = await getBotEnabled();
     const s = await change(input.mode, (s, time) => {
       const room = roomOf(s.rooms[input.roomId]);
       if (!room || ![room.host, room.guest].includes(uid)) fail("permission-denied", "Bu maçın oyuncusu değilsin.");
@@ -560,6 +620,11 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
         advance(room, time); s.rooms[room.id] = room; return;
       }
       advance(room, time);
+      if (room.ranked && room.status === "waiting" && !room.guest && botOn &&
+        time >= room.createdAt + BOT_AFTER_MS) {
+        botJoin(room, time); delete s.queue[uid];
+      }
+      botStep(room, time);
       if (input.action === "leave") {
         if (room.status === "waiting") room.status = "cancelled";
         else if (room.status === "playing") {
@@ -588,23 +653,7 @@ function createService({db, isLinked, blocked, settleRanked, getFakePolicy = asy
           }
         } else if (!Number.isSafeInteger(input.answer) || (q.kind === "transfer" ? !players.has(input.answer) :
           !q.public.options.some((o) => o.id === input.answer))) fail("invalid-argument", "Geçerli cevap seç.");
-        const correct = q.accepted ? q.accepted.includes(input.answer) :
-          JSON.stringify(input.answer) === JSON.stringify(q.answer);
-        const elapsed = time - clock.start;
-        // Transfer Duel: every hint already open lowers the base score.
-        const base = 100 - (q.kind === "transfer" && q.timedHints ?
-          (q.hintAt || TRANSFER_HINT_MS).filter((ms) => elapsed >= ms).length *
-            (q.hintCost || TRANSFER_HINT_COST) : 0);
-        // Mystery Duel: no speed bonus before the first hint; full bonus right when it opens.
-        const from = q.kind === "mystery_duel" && q.hintAt ? q.hintAt[0] : 0;
-        const bonus = elapsed < from ? 0 : Math.floor(50 * (q.duration - elapsed) / (q.duration - from));
-        room.answers[uid][input.round] = {value: input.answer, correct, elapsed,
-          score: correct ? (base + bonus) * (q.multiplier || 1) : 0};
-        const other = uid === room.host ? room.guest : room.host;
-        if (["transfer_duel", "mystery_duel", "fake_club_duel", "career_race"].includes(room.mode) &&
-          room.answers[other]?.[input.round]) {
-          (room.closedAt ||= {})[input.round] = time;
-        }
+        record(room, uid, input.round, input.answer, time);
       }
       room.presence[uid] = time;
       if (room.status !== "waiting") delete s.queue[uid];

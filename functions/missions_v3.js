@@ -206,13 +206,16 @@ function record(state, event, now) {
   const mode = soloModes.find(([id]) => id === event.modeId);
   const ranked = event.source === "ranked_settlement";
   const friend = event.source === "friend_settlement";
+  // Ranked fallback bot: an online game of its mode, never a ranked game or a ranked win.
+  const bot = event.source === "bot_settlement";
   const time = event.serverFinishedAtMs;
   if (event.serverValidated !== true || event.verificationVersion !== 1 ||
       typeof event.eventId !== "string" || !event.eventId || !event.uid || typeof event.uid !== "string" ||
       !Number.isSafeInteger(time) || time <= 0 || time > now || event.cancelled || event.forfeit ||
       event.participated === false || event.assisted && (ranked || friend) ||
-      (ranked || friend ? !onlineModes.includes(event.modeId) : !mode || event.source !== "solo_verified") ||
-      (ranked || friend ? !["win", "draw", "loss"].includes(event.result) : event.result !== "completed")) return false;
+      (ranked || friend || bot ? !onlineModes.includes(event.modeId) : !mode || event.source !== "solo_verified") ||
+      (ranked || friend || bot ? !["win", "draw", "loss"].includes(event.result) :
+        event.result !== "completed")) return false;
   const key = hash(`${event.source}|${event.modeId}|${event.eventId}`);
   let changed = false;
   for (const [bucket, allowed] of [[state.daily, dayKey(time) === state.daily.dateKey],
@@ -221,7 +224,9 @@ function record(state, event, now) {
     bucket.processed[key] = true; changed = true;
     bucket.modes[event.modeId] = true;
     const add = (name) => bucket.counters[name] = number(bucket.counters[name]) + 1;
-    if (ranked) {
+    if (bot) {
+      add("online__" + event.modeId);
+    } else if (ranked) {
       add("rankedPlayed"); if (event.result === "win") add("rankedWins"); add("online__" + event.modeId);
     } else if (friend) {
       add("friendPlayed"); add("online__" + event.modeId);

@@ -211,3 +211,12 @@ test("the first weekly reward of a week is paid after an RTDB round trip drops t
   const paid = M.claim(back, w.id, policy, now, "first");
   assert.equal(paid.claim.rewardCoins, 40); assert.ok(back.weekly.claims[w.id]);
 });
+// A ranked fallback bot match counts as an online game of its mode, never as a ranked
+// game or a ranked win.
+test("a bot match counts for the mode's online missions, never as ranked", () => {
+  const s = state();
+  assert.equal(M.record(s, {uid: "alice", eventId: "bot1", modeId: "random_five", source: "bot_settlement",
+    result: "win", serverValidated: true, verificationVersion: 1, serverFinishedAtMs: now}, now), true);
+  assert.equal(s.daily.counters["online__random_five"], 1);
+  assert.equal(s.daily.counters.rankedPlayed, undefined); assert.equal(s.daily.counters.rankedWins, undefined);
+});

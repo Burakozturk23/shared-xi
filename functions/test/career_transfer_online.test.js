@@ -318,7 +318,9 @@ test("scheduled reconcile closes silent matches and does not repeat settled proj
 
 for (const mode of ["career_race", "transfer_duel", "mystery_duel", "fake_club_duel"]) {
   test(`${mode}: ranked polling cannot prolong the queue; expiry permits a fresh search`, async () => {
-    const h = harness({runtimeConfig: {fakeClub: {dataEnabled: true, friendsEnabled: true, rankedEnabled: true}}});
+    // With the fallback bot switched off, an empty ranked search still ends at 30 s.
+    const h = harness({runtimeConfig: {fakeClub: {dataEnabled: true, friendsEnabled: true, rankedEnabled: true},
+      careerTransferOnline: {botEnabled: false}}});
     const v = mode === "fake_club_duel" ? require("../fake_club").catalog.version :
       mode === "mystery_duel" ? require("../config/mystery_chain_catalog.json").version : version;
     const search = async () => (await h.call("enterCareerTransferOnline",
@@ -362,3 +364,38 @@ test("Transfer Duel: a summer-2026 move known to the season shows the window, ne
   assert.equal(shown.public.season, "summer"); assert.equal(shown.public.month, undefined);
   assert.equal(shown.public.year, 2026); assert.match(shown.explanation, /2026 yaz dönemi/);
 });
+// Ranked fallback bot in the duels: nobody in 20 s, the bot plays every round,
+// Elo never moves and the reward is half the ranked one.
+for (const mode of ["transfer_duel", "mystery_duel", "fake_club_duel"]) {
+  test(`${mode}: ranked search alone gets the bot at 20 s; no Elo, half reward`, async () => {
+    const h = harness({runtimeConfig: {fakeClub: {dataEnabled: true, friendsEnabled: true, rankedEnabled: true}}});
+    const v = mode === "fake_club_duel" ? require("../fake_club").catalog.version :
+      mode === "mystery_duel" ? require("../config/mystery_chain_catalog.json").version : version;
+    let r = (await h.call("enterCareerTransferOnline", {mode, version: v, action: "ranked", requestId: id()},
+        auth("alice"))).room;
+    const began = h.now; const poll = async () => (await h.call("actCareerTransferOnline",
+        {mode, version: v, roomId: r.id, action: "poll"}, auth("alice"))).room;
+    h.setTime(began + 19000); r = await poll(); assert.equal(r.status, "waiting");
+    h.setTime(began + 20000); r = await poll();
+    assert.equal(r.status, "playing"); assert.equal(r.opponentBot, "Linkball Botu");
+    const room = read(h, r);
+    for (let i = 0; i < room.questions.length; i++) {
+      const clock = timing(read(h, r), i);
+      h.setTime(clock.start + 500); await poll();
+      await h.call("actCareerTransferOnline", {mode, version: v, roomId: r.id, action: "answer", requestId: id(),
+        round: i, answer: room.questions[i].answer, roundToken: roundToken(read(h, r), i)}, auth("alice"));
+      for (let t = clock.start + 1000; t < timing(read(h, r), i).end + 2000; t += 1000) {
+        h.setTime(t); await poll();
+      }
+    }
+    h.setTime(timing(read(h, r), room.questions.length - 1).end + 3000); r = await poll();
+    assert.equal(r.status, "finished");
+    const bot = read(h, r).bot.uid;
+    assert.equal(Object.keys(read(h, r).answers[bot] || {}).length, room.questions.length,
+        "the bot answers every round");
+    const s = h.read(`rankedState/settlements/${mode}/${r.id}`);
+    assert.equal(s.bot, true); assert.equal(h.read("rankedState/profiles/alice"), null);
+    const reward = s.rewards.alice;
+    assert.deepEqual([reward.coins, reward.xp], {win: [2, 4], draw: [1, 3], loss: [0, 2]}[reward.result]);
+  });
+}

@@ -3,6 +3,7 @@ const {pinCatalog} = require("./catalog_pin");
 const crypto = require("node:crypto");
 const zlib = require("node:zlib");
 const E = require("./pvp_engine");
+const BOT = require("./pvp_bot");
 const {validId} = require("./career_transfer");
 const {fail, hash, norm, catalog} = E;
 const catalogBody = JSON.stringify(catalog);
@@ -262,6 +263,13 @@ function createService({db, isLinked, searchLinked = isLinked, blocked, profile,
       }
       const was = hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null]);
       E.advance(r, time);
+      // Ranked fallback: nobody came within 20 s, so the bot takes the second seat.
+      if (r.playKind === "ranked" && r.status === "waiting" && !r.guest && p.botEnabled !== false &&
+        time >= r.createdAt + BOT.BOT_AFTER_MS) {
+        BOT.join(r, time); delete s.queue[uid];
+      }
+      // The bot moves on the player's polls, by the same rules and clocks.
+      if (r.bot && BOT.step(c, r, time)) r.revision++;
       if (was !== hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null])) {
         r.revision++;
       }

@@ -7870,6 +7870,7 @@ async function lbMissionRecordRanked(
     matchId,
     result,
     settledAt,
+    source = "ranked_settlement",
 ) {
   const now = Date.now();
   const currentDay = lbProgressionDateKey(now);
@@ -7885,7 +7886,7 @@ async function lbMissionRecordRanked(
     const modeId = ({shared_xi: "club_club", grid: "grid_classic", five: "random_five"})[mode] || mode;
     const changed = missionV3.record(state, {uid, modeId,
       eventId: matchId,
-      source: "ranked_settlement", result, serverFinishedAtMs: settledAt,
+      source, result, serverFinishedAtMs: settledAt,
       serverValidated: true, verificationVersion: 1}, now);
     if (!changed) return;
     if (eventDay === currentDay) state.daily.processed[eventKey] = true;
@@ -8093,6 +8094,15 @@ exports.syncRankedMissions = onValueWritten(
 
       if (settlement.serverValidated !== true || settlement.forfeit === true ||
           settlement.rankedEligible === false) return;
+      if (settlement.bot === true) {
+        const uid = String(settlement.player1Uid || "");
+        const result = String(settlement.player1Result || "");
+        if (!uid || settlement.participants?.[uid] === false || !["win", "draw", "loss"].includes(result) ||
+            !await lbAchievementEligible(getDatabase(), uid)) return;
+        await lbMissionRecordRanked(getDatabase(), uid, String(event.params.mode || ""),
+            String(event.params.matchId || ""), result, lbProgressionNumber(settlement.settledAt), "bot_settlement");
+        return;
+      }
 
       const db = getDatabase();
       const mode = String(event.params.mode || "");
@@ -10207,6 +10217,12 @@ async function lbCareerTransferGrantXp(uid, id, xp) {
       await lbProgressionPremiumBenefits(db, uid), time);
 }
 async function lbSettleCareerTransferRanked(room) {
+  if (room.bot) {
+    if (room.settled || !["finished", "forfeit"].includes(room.status)) return;
+    await lbSettleBotMatch(room, "duel", true);
+    await getDatabase().ref(`careerTransferOnline/${room.mode}/rooms/${room.id}/settled`).set(true);
+    return;
+  }
   if (room.settled || !(room.status === "finished" || room.mode === "fake_club_duel" && room.status === "forfeit") ||
     !room.ranked || !room.guest || room.host === room.guest) return;
   const db = getDatabase(); const time = Date.now(); const mode = room.mode;
@@ -10267,7 +10283,18 @@ function lbCareerTransferOnlineService() {
     },
     blocked: async (uid) => new Set(Object.keys((await db.ref("blocks/" + uid).get()).val() || {})),
     getFakePolicy: async () => (await db.ref("runtimeConfig/fakeClub").get()).val() || {},
-    settleRanked: lbSettleCareerTransferRanked});
+    settleRanked: lbSettleCareerTransferRanked,
+    getBotEnabled: lbDuelBotEnabled});
+}
+// Duel bot switch (runtimeConfig/careerTransferOnline/botEnabled), read at most once a
+// minute: every duel poll asks for it.
+let lbDuelBot = {at: 0, on: true};
+async function lbDuelBotEnabled() {
+  if (Date.now() - lbDuelBot.at > 60000) {
+    const on = (await getDatabase().ref("runtimeConfig/careerTransferOnline/botEnabled").get()).val() !== false;
+    lbDuelBot = {at: Date.now(), on};
+  }
+  return lbDuelBot.on;
 }
 function lbCareerTransferOnlineCallable(action) {
   return httpsV2.onCall({region: "europe-west1", maxInstances: 10, memory: "512MiB",
@@ -10680,7 +10707,45 @@ function lbPvpDailyAwards(state, uid, day) {
   return {coins, xp};
 }
 // Multiplayer V1: server-only rooms; no legacy client attestation grants.
+// Ranked fallback bot match: no Elo; half the ranked reward, at most three rewarded bot
+// matches a day across every ranked mode, inside the usual daily ranked caps. It counts
+// for a mode's online missions, never for ranked games or wins (missions_v3 bot_settlement).
+const LB_BOT_REWARDS = {pvp: {win: [2, 3], draw: [1, 2], loss: [0, 1]},
+  duel: {win: [2, 4], draw: [1, 3], loss: [0, 2]}};
+async function lbSettleBotMatch(room, kind, rewarded) {
+  const db = getDatabase(); const human = room.host; const mode = room.mode;
+  const winner = kind === "pvp" ? room.winnerUid : room.winner;
+  const finished = room.status === "finished";
+  const participated = kind === "pvp" ? Object.values(room.audit || {}).some((e) => e.uid === human &&
+    ["answer", "squad", "pick", "plan", "pass"].includes(e.input?.action)) :
+    Object.keys(room.answers?.[human] || {}).length > 0;
+  const result = lbRankedResultName(human, winner || null);
+  const day = require("./rewarded_ads").dayKey(room.finishedAt || Date.now());
+  const tx = await db.ref("rankedState").transaction((raw) => {
+    const s = {...raw}; s.settlements ||= {}; s.settlements[mode] ||= {}; s.botDaily ||= {};
+    if (s.settlements[mode][room.id]) return s;
+    const d = (s.botDaily[human] ||= {})[day] ||= {count: 0};
+    const pay = rewarded && finished && participated && d.count < 3;
+    if (pay) d.count++;
+    const [coins, xp] = pay ? LB_BOT_REWARDS[kind][result] : [0, 0];
+    s.settlements[mode][room.id] = {matchId: room.id, mode, bot: true, player1Uid: human,
+      player2Uid: room.guest, winnerUid: winner || null, player1Result: result, serverValidated: finished,
+      validationVersion: 1, settledAt: room.finishedAt || Date.now(), forfeit: room.status === "forfeit",
+      participants: {[human]: participated}, rewards: {[human]: {status: pay ? "verified" : "none", coins, xp,
+        eloDelta: 0, result, bot: true}}};
+    return s;
+  });
+  const reward = tx.snapshot.val().settlements[mode][room.id].rewards[human];
+  const id = `bot__${mode}__${room.id}__${human}`;
+  if (reward.coins > 0) await lbProgressionGrantCoins(db, human, id, "ranked_match", room.id, reward.coins, "bot-v1");
+  if (reward.xp > 0) await lbCareerTransferGrantXp(human, id, reward.xp);
+  return {[human]: reward, [room.guest]: {status: "none", coins: 0, xp: 0, eloDelta: 0, bot: true}};
+}
 async function lbSettlePvp(room, policy) {
+  if (room.bot) {
+    return lbSettleBotMatch(room, "pvp", policy.rankedEnabled === true && room.rewardPolicy?.rewardsEnabled === true &&
+      policy.rewardsEnabled === true);
+  }
   const db = getDatabase(); const time = Date.now(); const E = require("./pvp_engine");
   const users = [room.host, room.guest];
   const valid = room.status === "finished" && room.rankedEligible && room.playKind === "ranked" &&

@@ -1054,7 +1054,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
               Text(
                 waiting
                     ? ranked
-                          ? '30 saniye içinde rakip bulunamazsa arama kapanır.'
+                          ? '20 saniye içinde rakip bulunamazsa Linkball Botu ile oynarsın: '
+                                'Elo değişmez, ödül yarı (günde 3 maç).'
                           : 'Kodu paylaş; arkadaşın aynı modu seçip koda katılsın.'
                     : 'İki oyuncu da hazır olduğunda beş saniyelik geri sayım başlar.',
                 textAlign: TextAlign.center,

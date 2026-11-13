@@ -1126,6 +1126,7 @@ function namedOwners(c, owners) {
 function view(c, r, uid, time) {
   const other = uid === r.host ? r.guest : r.host; const done = terminal(r);
   const v = {id: r.id, mode: r.mode, playKind: r.playKind, schemaVersion: 1, ruleVersion: r.ruleVersion,
+    ...r.bot ? {bot: {uid: r.bot.uid, name: r.names?.[r.bot.uid] || "Bot"}} : {},
     dataRevision: r.dataRevision, seedId: r.seedId || null, revision: r.revision, status: r.status,
     host: r.host, guest: r.guest || null, names: r.names, myUid: uid, serverNow: time,
     ready: r.ready, choices: r.status === "ready" || done ? r.choices : {}, scores: r.scores,
@@ -1325,5 +1326,7 @@ module.exports = {MODES, RULE, terminal, fail, hash, norm, list, shuffle, matche
   PAIR_MIN_ANSWERS, POPULAR_RANK, raceTieBreak, pairOptions, autoChoice, acceptedFor,
   FORMATIONS, MANAGER_TIERS, MANAGER_BUDGET, counter, DRAFT_PICKS, DRAFT_PICK_MS, PLAN_MS, PLANS, PLAN_BEATS,
   draftPool, legalPicks, formationOf, chemistry, managerPlay, DRAFT_BASE, DRAFT_PER_POWER,
-  puzzle, hydrate, start, finish, seriesClose, advance, move, view, validateXi, power, simulate};
+  puzzle, hydrate, start, finish, seriesClose, advance, move, view, validateXi, power, simulate,
+  // For the ranked fallback bot (pvp_bot.js).
+  answersOf, cinkoOpen, crossing, ANCHORS};
 Object.defineProperty(module.exports, "catalog", {enumerable: true, get: loadCatalog});
