@@ -7,7 +7,7 @@ import '../widgets/grid_player_identity.dart';
 
 /// Bot'a karşı tersten grid — tahmin sayfa içinde (bottom sheet yok).
 class _LegacyVsBotReverseGridPage extends StatefulWidget {
-  const _LegacyVsBotReverseGridPage({super.key, this.controllerFactory});
+  const _LegacyVsBotReverseGridPage({this.controllerFactory});
   final VsBotReverseGridController Function()? controllerFactory;
 
   @override

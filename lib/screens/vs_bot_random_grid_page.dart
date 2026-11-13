@@ -8,7 +8,7 @@ import '../widgets/grid_player_identity.dart';
 
 /// Bot'a karşı rastgele grid — sheet yok, sayfa içi input.
 class _LegacyVsBotRandomGridPage extends StatefulWidget {
-  const _LegacyVsBotRandomGridPage({super.key, this.controllerFactory});
+  const _LegacyVsBotRandomGridPage({this.controllerFactory});
   final VsBotRandomGridController Function()? controllerFactory;
 
   @override

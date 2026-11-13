@@ -925,7 +925,7 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
             label: const Text('Seçili oyuncuyu kaldır'),
           ),
         const PitchSectionTitle('İpuçları'),
-        if (hintEntry(_session, target: _slot, disabled: _busy || (!_vault && _slot == null),
+        if (hintEntry(_session, target: _slot, disabled: _busy,
             send: (p) => _act('hint', {'slot': _slot, ...p}),
             watch: (id) => _watch(itemId: id)) case final w?)
           w
@@ -955,7 +955,6 @@ class _ThreeModesPageState extends State<ThreeModesPage> {
               disabled:
                   _busy ||
                   _maps(_session['hints']).length >= 3 ||
-                  (!_vault && _slot == null) ||
                   (_vault && h.key == 'league' && _session['league'] != null),
               onUse: (payment) =>
                   _act('hint', {'hint': h.key, 'slot': _slot, ...payment}),

@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import '../models/club.dart';
 import '../models/manager_rating.dart';
 import '../models/player.dart';
 import '../repositories/repository.dart';

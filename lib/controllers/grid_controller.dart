@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../data/popular_clubs_pool.dart';
-import '../data/grid_country_pool.dart';
 import '../models/club.dart';
 import '../models/grid_criterion.dart';
 import '../models/grid_state.dart';

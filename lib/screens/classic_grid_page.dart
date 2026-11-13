@@ -16,7 +16,6 @@ import '../widgets/player_avatar.dart';
 /// no legacy Repository initialization is needed for this mode.
 class _LegacyClassicGridPage extends StatefulWidget {
   const _LegacyClassicGridPage({
-    super.key,
     this.difficulty = VsBotDifficulty.medium,
     this.controllerFactory,
   });
