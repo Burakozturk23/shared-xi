@@ -224,11 +224,57 @@ def build():
     # Mastery is mostly PAR 2 between known clubs; the few longer chains between clubs
     # a fan knows stay. 900 pairs in all.
     par3 = pick(3, 300, '', levels=(1,))
-    selected = {3: par3, 4: par4, 2: pick(2, 900 - len(par3) - len(par4), '')}
+    # Restricted chains (Kısıtlı zincir): the graph is so dense that banning a few hubs
+    # changes nothing (two known clubs share 20 to 130 clubs a step away; even with all
+    # 90 known clubs banned they stay two moves apart). The restriction that does bite:
+    # no step may land on one of the clubs a fan knows (`fan`, about 160: the known
+    # clubs and those ten or more stars played for). Both ends are known clubs; kept
+    # only when, under the rule, the shortest routes are few (one to ten), so the player
+    # must find a lesser club (Sivasspor between Santos and Sunderland). PAR, the route
+    # and the route count are computed with the bans; the server refuses a banned club.
+    def route(start, target, banned):
+        prev = {start: None}; queue = deque([start])
+        while queue:
+            at = queue.popleft()
+            for to, pid in sorted(adjacency[at].items()):
+                if to in prev or to in banned: continue
+                prev[to] = (at, pid)
+                if to == target:
+                    path = []; x = to
+                    while prev[x]: path.append(dict(playerId=prev[x][1], clubId=x)); x = prev[x][0]
+                    return path[::-1]
+                queue.append(to)
+        return None
+    def count_routes(start, target, banned):
+        # As countShortest in mystery_chain_graph.js: every (player, club) step counted.
+        dist = {start: 0}; ways = {start: 1}; layer = [start]
+        while layer and target not in dist:
+            nxt = []
+            for club in layer:
+                for pid in by_club[club]:
+                    for to in clubs_of[pid]:
+                        if to in banned or to == club: continue
+                        if to in dist and dist[to] <= dist[club]: continue
+                        if to not in dist: dist[to] = dist[club] + 1; nxt.append(to)
+                        ways[to] = ways.get(to, 0) + ways[club]
+            layer = nxt
+        return ways.get(target, 0)
+    restricted = []
+    pool = sorted([p for p in pairs.get(2, []) if ends(p, 2)],
+                  key=lambda p: hashlib.sha256(('rule' + p['id']).encode()).hexdigest())
+    for p in pool:
+        if len(restricted) >= 150: break
+        banned = fan - {p['start'], p['target']}
+        path = route(p['start'], p['target'], banned)
+        if not path or len(path) > 4: continue
+        if not 1 <= count_routes(p['start'], p['target'], banned) <= 10: continue
+        restricted.append(dict(id=p['id'] + '_r', start=p['start'], target=p['target'], par=len(path),
+            solution=path, banned=sorted(banned), restricted=True))
+    selected = {3: par3, 4: par4, 2: pick(2, 900 - len(par3) - len(par4) - len(restricted), '')}
     sprint = pick(1, 200, 'sprint') + pick(2, 400, 'sprint')
     data = dict(schema=1,sourceVersion=ct['version'],databaseSha256=ct['databaseSha256'],mystery=mystery,
         clubs=[clubs[i] for i in sorted(adjacency)],graph=memberships,
-        mastery=[p for k in (2,3,4) for p in selected.get(k,[])],
+        mastery=[p for k in (2,3,4) for p in selected.get(k,[])] + restricted,
         sprint=sprint,
         quality=dict(mystery=len(mystery),teammateClues=sum(p['hints'][3]['id']=='teammate' for p in mystery),
             profileClues=sum(any(h['id']=='profile' for h in p['hints']) for p in mystery),
@@ -239,7 +285,7 @@ def build():
             pairEnds={k: Counter(min(3, deg[p['start']], deg[p['target']]) for p in v) for k, v in
                       [('mastery', [p for k in (2,3,4) for p in selected[k]]), ('sprint', sprint)]},
             graphPlayers=len(memberships),clubs=len(adjacency),availablePairs={k:len(v) for k,v in pairs.items()},
-            fanClubs=len(fan), knownEnds={k: Counter(int(p['start'] in known) + int(p['target'] in known) for p in v) for k, v in
+            fanClubs=len(fan), restricted=dict(Counter(p['par'] for p in restricted)), knownEnds={k: Counter(int(p['start'] in known) + int(p['target'] in known) for p in v) for k, v in
                        [('mastery', [p for k in (2,3,4) for p in selected[k]]), ('sprint', sprint)]}))
     data['version']='mc-v1-'+hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()[:16]
     assert len(mystery)>100 and len(data['mastery'])>=100 and len(data['sprint'])>=100

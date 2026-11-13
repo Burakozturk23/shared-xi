@@ -56,6 +56,12 @@ function view(raw, time) {
   } else {
     v.start = r.start; v.target = r.target; v.current = r.path.length ? r.path[r.path.length - 1].club : r.start;
     v.path = r.path; v.par = r.puzzle.par; v.maxMoves = r.maxMoves;
+    // Restricted file: the club choices already leave the banned clubs out; the
+    // player sees the rule.
+    if (r.puzzle.restricted) {
+      v.rule = {id: "no_fan_clubs", banned: r.puzzle.banned.length,
+        text: "Kısıtlı zincir: ara adımlarda tanınmış büyük kulüpler kullanılamaz."};
+    }
     v.bridgeHint = r.bridgeHint || null;
     if (r.finished) v.routes = r.routes;
     if (r.finished && r.mode === "mastermind" && r.solution) {
@@ -222,7 +228,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
       const people = new Map(c.graph.map((x) => [x.id, x.player]));
       r.solutionView = p.solution.map((x) => ({playerId: x.playerId, clubId: x.clubId,
         player: playerView(people.get(x.playerId)), club: clubs.get(x.clubId)}));
-      r.routeCountView = countShortest(graphOf(c), p.start, p.target);
+      r.routeCountView = countShortest(graphOf(c), p.start, p.target, p.banned || []);
     }
   }
   // Next sprint pair: hashed among pairs not yet played in this sprint, so a
@@ -281,7 +287,7 @@ function createService({db, normalize, project, grantCoins, grantXp, isLinked, g
             (input.target || !p.obscure));
       if (daily) {
         // Today's mystery or chain: the same file for everyone (chains up to PAR 3).
-        const open = input.mode === "mastermind" ? candidates.filter((p) => p.par <= 3) :
+        const open = input.mode === "mastermind" ? candidates.filter((p) => p.par <= 3 && !p.restricted) :
           candidates.filter((p) => p.layout === 2 && p.difficulty !== "hard" && !p.alsoPlayerIds);
         candidates = [open[parseInt(hash(input.mode + "__" + dayKey(time) + catalog.version).slice(0, 8), 16) %
           open.length]];

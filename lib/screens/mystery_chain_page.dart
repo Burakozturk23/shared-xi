@@ -600,6 +600,12 @@ class _MysteryChainPageState extends State<MysteryChainPage>
         ],
       ),
       const SizedBox(height: 16),
+      // Restricted file: the club list already leaves the banned clubs out.
+      if (!_mystery && _session['rule'] is Map)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: HubSpecNote('${rewardMap(_session['rule'])['text']}'),
+        ),
       if (_mystery && !_finished && _hoursLeft < 6)
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
