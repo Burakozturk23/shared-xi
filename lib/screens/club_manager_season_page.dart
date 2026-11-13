@@ -463,8 +463,12 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
         child: DataTable(
           columnSpacing: 16,
           horizontalMargin: 12,
+          // A DataTable cell always fills the max height: room for a two-line
+          // club name at the reader's text size, not a fixed 140 for every row.
           dataRowMinHeight: 56,
-          dataRowMaxHeight: 140,
+          dataRowMaxHeight: MediaQuery.textScalerOf(
+            context,
+          ).scale(64).clamp(56.0, 140.0),
           columns: [
             for (final title in ['#', 'Takım', 'O', 'G', 'B', 'M', 'AV', 'P'])
               DataColumn(label: Text(title), numeric: title != 'Takım'),
