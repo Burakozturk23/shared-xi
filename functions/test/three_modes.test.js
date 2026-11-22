@@ -22,7 +22,7 @@ async function fill(h, s, n = 11) {
   return s;
 }
 test("every published letter formation and vault is solvable with distinct known positions", () => {
-  assert.equal(catalog.players.length, 36391);
+  assert.equal(catalog.players.length, 36436); // v4-2026-11-22.1 adds 45 Turkish players
   for (const t of catalog.letters) {
     const pool = catalog.players.filter((p) => p.letters.includes(t.letter));
     for (const f of t.formations) {
