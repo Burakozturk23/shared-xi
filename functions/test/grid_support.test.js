@@ -312,7 +312,9 @@ test("rules 3 random bot misses by difficulty and completes its own line", () =>
     // The bot holds 0 and 4; 8 completes its diagonal.
     const id = G.answers(r, 0)[0]; if (!id || !G.answers(r, 8).length) continue;
     r.cells[0] = {playerId: id, owner: 2}; r.used[id] = true; r.cells[4].owner = 2; tries++;
-    if (!G.answers(r, 8).length) { tries--; continue; }
+    if (!G.answers(r, 8).length) {
+      tries--; continue;
+    }
     G.botMove(r, 1);
     if (r.lineWinner === 2) wins++;
   }

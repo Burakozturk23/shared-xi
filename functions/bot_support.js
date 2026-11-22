@@ -188,7 +188,8 @@ function partnerCounts(club, limit = Infinity) {
 const partners = (club) => partnerCounts(club).map(([id]) => id);
 // The level's rank limit, or the next wider one when the club has no partner within it.
 function raceLimit(club, difficulty) {
-  const tiers = [RACE_TIER[difficulty], ...Object.values(RACE_TIER), Infinity].filter((t) => t >= RACE_TIER[difficulty]);
+  const tiers = [RACE_TIER[difficulty], ...Object.values(RACE_TIER), Infinity]
+      .filter((t) => t >= RACE_TIER[difficulty]);
   return tiers.find((t) => partnerCounts(club, t).length) ?? Infinity;
 }
 // Every club a Team Race can start with (computed once).
@@ -237,7 +238,8 @@ function raceEnd(r, time, force = false) {
     finish(r, "completed", time);
     if (r.userScore === r.botScore) {
       r.winner = r.finds.user > r.finds.bot ? 1 : r.finds.user < r.finds.bot ? 2 : 0;
-      r.feedback = r.winner ? "Turlar eşit; toplamda daha çok futbolcu bulan kazandı." : "Turlar ve bulunan futbolcular eşit.";
+      r.feedback = r.winner ? "Turlar eşit; toplamda daha çok futbolcu bulan kazandı." :
+        "Turlar ve bulunan futbolcular eşit.";
     }
   }
 }
@@ -258,17 +260,17 @@ function raceTick(r, time) {
       race.botAt += between(r, gap, "delay" + race.round + ":" + tries);
     }
   } else {
-  while (!race.over && time >= race.botAt && race.botAt < (race.endsAt || Infinity)) {
-    const tries = ++r.botTries;
-    if (random(r, "accuracy" + race.round + ":" + tries) > RACE_BOT[r.difficulty][1]) r.feedback = "Bot pas geçti.";
-    else {
-      const id = pick(r, remaining(r).sort(byRank).slice(0, RACE_BOT_WINDOW[r.difficulty]),
-          "claim" + race.round + ":" + tries);
-      race.found[id] = 2; race.botFound++; r.feedback = "Bot buldu: " + catalog.players[id].name;
-      raceEnd(r, time);
+    while (!race.over && time >= race.botAt && race.botAt < (race.endsAt || Infinity)) {
+      const tries = ++r.botTries;
+      if (random(r, "accuracy" + race.round + ":" + tries) > RACE_BOT[r.difficulty][1]) r.feedback = "Bot pas geçti.";
+      else {
+        const id = pick(r, remaining(r).sort(byRank).slice(0, RACE_BOT_WINDOW[r.difficulty]),
+            "claim" + race.round + ":" + tries);
+        race.found[id] = 2; race.botFound++; r.feedback = "Bot buldu: " + catalog.players[id].name;
+        raceEnd(r, time);
+      }
+      race.botAt += between(r, RACE_BOT[r.difficulty][0], "delay" + race.round + ":" + tries);
     }
-    race.botAt += between(r, RACE_BOT[r.difficulty][0], "delay" + race.round + ":" + tries);
-  }
   }
   if (!race.over && race.endsAt && time >= race.endsAt) {
     r.feedback = "Süre doldu."; raceEnd(r, race.endsAt, true);
@@ -964,4 +966,5 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
 }
 module.exports = {createService, MODES, VERSION, catalog, answers, matches, hint, view, lotoTiers, cinkoBoard,
   fiveRound, fiveBot, component, partners, POPULAR_CLUBS, LOTO_PAUSES, CINKO_SECOND_BONUS, CINKO_MAX_PASSES,
-  cinkoBot, raceClubIds, raceLimit, RACE_TIER, RACE_BOT2, RACE_PAUSES, RACE_MAX_ROUNDS, FIVE_MAX_WRONG, FIVE_KNOWN, FIVE_POINTS, FIVE_BOT, fiveBotPick, RACE_ROUND_MS, RACE_MIN_SHARED};
+  cinkoBot, raceClubIds, raceLimit, RACE_TIER, RACE_BOT2, RACE_PAUSES, RACE_MAX_ROUNDS, FIVE_MAX_WRONG, FIVE_KNOWN,
+  FIVE_POINTS, FIVE_BOT, fiveBotPick, RACE_ROUND_MS, RACE_MIN_SHARED};
