@@ -14,6 +14,7 @@ import 'package:shared_xi/widgets/hint_panel.dart';
 class GridWire extends EnergyService {
   final calls = <Map<String, dynamic>>[];
   bool hinted = false, legacy = false, finished = false, v2 = false, coach = false;
+  bool botTurn = false, verified = false;
   Completer<Map<String, dynamic>>? pending;
   @override
   Future<Map<String, dynamic>> call(
@@ -37,6 +38,7 @@ class GridWire extends EnergyService {
       'legacy': legacy,
       'availability': true,
       'version': 'v',
+      'serverNow': 0,
       'records': {
         '$mode:medium': {'best': 160, 'completed': 3, 'wins': 0},
       },
@@ -47,7 +49,8 @@ class GridWire extends EnergyService {
         'revision': hinted ? 1 : 0,
         'finished': finished,
         'completed': finished,
-        'turn': 'user',
+        'turn': botTurn && !finished ? 'bot' : 'user',
+        'botAt': botTurn ? 1000 : null,
         'difficulty': 'medium',
         'wrong': 2,
         'wrongCost': 5,
@@ -98,7 +101,7 @@ class GridWire extends EnergyService {
                   {'label': 'Birinci kulüp'},
                   {'label': 'İkinci kulüp'},
                 ],
-                'player': null,
+                'player': verified ? {'id': '9', 'name': 'Hakan Şükür'} : null,
               }
             : null,
         if (v2) 'hintMenu': {'version': 2, 'board': 'run', 'items': [{'id': 'milliyet', 'label': 'Milliyet', 'type': 'milliyet',
@@ -151,7 +154,7 @@ void main() {
         final select = kind == 'classic'
             ? find.byKey(const ValueKey('grid-cell-0'))
             : kind == 'reverse'
-            ? find.widgetWithText(ChoiceChip, 'Satır 1')
+            ? find.byKey(const ValueKey('grid-axis-0'))
             : find.text('Ortak oyuncuyu bul');
         await t.scrollUntilVisible(
           select.hitTestable(),
@@ -181,6 +184,18 @@ void main() {
         expect(input['revision'], 0);
         expect(input['sessionId'], 'run');
         expect(input['requestId'], matches(RegExp(r'^[a-f0-9]{32}$')));
+        // The pinned input bar (180% type) leaves a short list; the card may sit below it.
+        t
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position
+            .jumpTo(0);
+        await t.pump();
+        await t.scrollUntilVisible(
+          find.text('Doğrulanmış bilgi'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+          maxScrolls: 60,
+        );
         expect(find.text('Doğrulanmış bilgi'), findsOneWidget);
         expect(t.takeException(), isNull);
         await t.pumpWidget(const SizedBox.shrink());
@@ -307,7 +322,7 @@ void main() {
     t,
   ) async {
     final wire = await open(t, 'solo_grid_reverse');
-    final chip = find.widgetWithText(ChoiceChip, 'Satır 1');
+    final chip = find.byKey(const ValueKey('grid-axis-0'));
     await t.scrollUntilVisible(
       chip.hitTestable(),
       200,
@@ -451,4 +466,142 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     });
   }
+  testWidgets('a finished bot Grid starts the next board at the picked level', (t) async {
+    t.view.physicalSize = const Size(320, 1400);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    final wire = GridWire()..finished = true;
+    await t.pumpWidget(
+      MaterialApp(
+        home: SupportedGridPage(
+          mode: 'bot_grid_classic',
+          legacy: const Text('Eski oyun'),
+          poolInput: () async => {'clubIds': <String>[], 'minimumAnswers': 1},
+          rewardCard: (_) => const SizedBox.shrink(),
+          service: StorySupportService(
+            transport: wire,
+            currentUser: () => 'alice',
+            useCallable: 'actGridSupport',
+            loadCallable: 'getGridSupport',
+            watchPlacement: 'grid_support_hint',
+          ),
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    final hard = find.byKey(const ValueKey('grid-level-hard'));
+    await t.scrollUntilVisible(hard.hitTestable(), 200, scrollable: find.byType(Scrollable).first);
+    expect(t.widget<ChoiceChip>(find.byKey(const ValueKey('grid-level-medium'))).selected, isTrue);
+    await t.tap(hard);
+    await t.pumpAndSettle();
+    expect(find.textContaining('her zaman engeller'), findsOneWidget);
+    wire.finished = false;
+    final again = find.text('Yeni tahta');
+    await t.scrollUntilVisible(again.hitTestable(), 200, scrollable: find.byType(Scrollable).first);
+    await t.tap(again);
+    await t.pumpAndSettle();
+    final start = wire.calls.lastWhere((c) => c['action'] == 'start');
+    expect(start['difficulty'], 'hard');
+    expect(find.byKey(const ValueKey('grid-level-hard')), findsNothing);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('solo Grid shows no bot level picker', (t) async {
+    await open(t, 'solo_grid_classic', finished: true);
+    expect(find.byKey(const ValueKey('grid-level-hard'), skipOffstage: false), findsNothing);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('bot turn loads once at the server deadline, not on a fixed poll', (t) async {
+    final wire = GridWire()..botTurn = true;
+    await t.pumpWidget(
+      MaterialApp(
+        home: SupportedGridPage(
+          mode: 'bot_grid_classic',
+          legacy: const Text('Eski oyun'),
+          service: StorySupportService(
+            transport: wire,
+            currentUser: () => 'alice',
+            useCallable: 'actGridSupport',
+            loadCallable: 'getGridSupport',
+            watchPlacement: 'grid_support_hint',
+          ),
+        ),
+      ),
+    );
+    await t.pump();
+    int loads() => wire.calls.where((c) => c['callable'] == 'getGridSupport').length;
+    final first = loads();
+    expect(first, 1);
+    // botAt − serverNow = 1000 ms: nothing before it (the old poll fired at 750 ms).
+    await t.pump(const Duration(milliseconds: 900));
+    expect(loads(), first);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    wire.botTurn = false;
+    await t.pump(const Duration(milliseconds: 400));
+    await t.pump();
+    expect(loads(), first + 1);
+    // The bot has moved: no further loads.
+    await t.pump(const Duration(seconds: 6));
+    expect(loads(), first + 1);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
+  Future<GridWire> openWith(WidgetTester t, String mode, GridWire wire) async {
+    t.view.physicalSize = const Size(360, 1600);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    addTearDown(t.view.resetDevicePixelRatio);
+    await t.pumpWidget(
+      MaterialApp(
+        home: SupportedGridPage(
+          mode: mode,
+          legacy: const Text('Eski oyun'),
+          service: StorySupportService(
+            transport: wire,
+            currentUser: () => 'alice',
+            useCallable: 'actGridSupport',
+            loadCallable: 'getGridSupport',
+            watchPlacement: 'grid_support_hint',
+          ),
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    return wire;
+  }
+  testWidgets('bot Grid uses the online scoreboard and the pinned input bar', (t) async {
+    await openWith(t, 'bot_grid_classic', GridWire());
+    expect(find.byKey(const ValueKey('grid-score')), findsOneWidget);
+    expect(find.text('VS'), findsOneWidget);
+    expect(find.text('SIRA SENDE'), findsOneWidget);
+    expect(find.text('BOT'), findsWidgets);
+    expect(find.byKey(const ValueKey('grid-input')), findsNothing);
+    await t.tap(find.byKey(const ValueKey('grid-cell-0')));
+    await t.pumpAndSettle();
+    expect(find.byKey(const ValueKey('grid-input')), findsOneWidget);
+    expect(find.text('Futbolcu ara'), findsOneWidget);
+    await t.tap(find.byTooltip('Seçimi kaldır'));
+    await t.pumpAndSettle();
+    expect(find.byKey(const ValueKey('grid-input')), findsNothing);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('a verified random pair is placed by tapping an anchor on the board', (t) async {
+    final wire = await openWith(t, 'bot_grid_random', GridWire()..verified = true);
+    expect(find.text('YERLEŞTİR'), findsNWidgets(3));
+    expect(find.byKey(const ValueKey('grid-input')), findsNothing);
+    final swap = find.byKey(const ValueKey('grid-swap'));
+    await t.scrollUntilVisible(swap.hitTestable(), 200, scrollable: find.byType(Scrollable).first);
+    await t.tap(swap);
+    await t.pumpAndSettle();
+    final anchor = find.byKey(const ValueKey('grid-cell-4'));
+    await t.scrollUntilVisible(anchor.hitTestable(), 200, scrollable: find.byType(Scrollable).first);
+    await t.tap(anchor);
+    await t.pumpAndSettle();
+    final place = wire.calls.lastWhere((c) => c['action'] == 'place');
+    expect(place['target'], 4);
+    expect(place['swap'], true);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
 }

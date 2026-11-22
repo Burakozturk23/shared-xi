@@ -15,6 +15,11 @@ const start = async (h, mode, extra = {}) => (await h.call("actBotSupport", {mod
 const input = (r, action, extra = {}) => ({mode: r.mode, sessionId: r.id, revision: r.revision,
   version: r.version, action, requestId: id(), ...extra});
 const act = async (h, r, action, extra) => (await h.call("actBotSupport", input(r, action, extra))).session;
+// Çinko picks its first mover at random: let the bot play its opening move.
+async function userTurn(h, r) {
+  if (r.turn !== "bot") return r;
+  h.setTime(h.now + 2500); return (await h.call("getBotSupport", {mode: r.mode})).session;
+}
 const raw = (h, r) => h.read(root + "/sessions/" + r.id);
 const pay = {boostId: "boost_basic", paymentSource: "coins", expectedPriceCoins: 25};
 const coins = (h) => h.read("economyState/alice/balances/coins");
@@ -128,37 +133,43 @@ test("Team Race rounds need every shared player, bot claims only at server deadl
 
 test("Çinko enforces connected cells, -1 wrong, 0 pass and capped bot groups", async () => {
   const h = setup();
-  let r = await start(h, "bot_cinko", {difficulty: "easy"});
+  let r = await userTurn(h, await start(h, "bot_cinko", {difficulty: "easy"}));
   assert.equal(r.cells.length, 25);
   const cells = raw(h, r).cells;
-  const answer = (i) => [...S.answers(cells[i])].sort()[0];
-  r = await act(h, r, "hint", {target: 0, ...pay});
-  assert.ok(r.hints.cell_0);
-  r = await act(h, r, "choose", {playerId: answer(0)});
-  assert.equal(r.current.id, answer(0));
-  await assert.rejects(act(h, r, "confirm", {cells: [0, 6]}));
-  const wrong = [1, 5].find((i) => !S.matches(answer(0), cells[i]));
+  // An open cell whose right and lower neighbours are open too (the bot may have opened).
+  const free = (i) => r.cells[i].owner === 0 && r.cells[i].playable;
+  const c0 = [...Array(19).keys()].find((i) => i % 5 < 4 && [i, i + 1, i + 5].every(free));
+  assert.notEqual(c0, undefined);
+  const base = r.userScore;
+  const answer = (i) => [...S.answers(cells[i])].filter((id) => !raw(h, r).used?.[id]).sort()[0];
+  r = await act(h, r, "hint", {target: c0, ...pay});
+  assert.ok(r.hints["cell_" + c0]);
+  r = await act(h, r, "choose", {playerId: answer(c0)});
+  assert.equal(r.current.id, answer(c0));
+  await assert.rejects(act(h, r, "confirm", {cells: [c0, c0 + 6]}));
+  const wrong = [c0 + 1, c0 + 5].find((i) => !S.matches(answer(c0), cells[i]));
   if (wrong !== undefined) {
-    r = await act(h, r, "confirm", {cells: [0, wrong]});
-    assert.equal(r.userScore, 0);
+    r = await act(h, r, "confirm", {cells: [c0, wrong]});
+    assert.equal(r.userScore, base);
     assert.deepEqual(r.last.wrong, [wrong]);
   } else {
-    r = await act(h, r, "confirm", {cells: [0]});
-    assert.equal(r.userScore, 1);
+    r = await act(h, r, "confirm", {cells: [c0]});
+    assert.equal(r.userScore, base + 1);
   }
-  assert.equal(r.cells[0].owner, 1);
+  assert.equal(r.cells[c0].owner, 1);
   assert.equal(r.turn, "bot");
   await assert.rejects(act(h, r, "pass"));
+  const botBefore = r.botScore; const ownedBefore = r.cells.filter((c) => c.owner === 2).length;
   h.setTime(h.now + 2500);
   r = await load(h, r.mode);
   assert.equal(r.turn, "user");
   // Easy bot: at most two cells, and a slipped wrong cell costs it a point.
-  const botCells = r.cells.filter((c) => c.owner === 2).length;
+  const botCells = r.cells.filter((c) => c.owner === 2).length - ownedBefore;
   assert.ok(botCells >= 1 && botCells <= 2);
-  assert.equal(r.botScore, botCells - r.last.wrong.length);
+  assert.equal(r.botScore - botBefore, botCells - r.last.wrong.length);
   assert.ok(raw(h, r).last.playerId && S.catalog.players[raw(h, r).last.playerId].rank <= 1500);
   r = await act(h, r, "pass");
-  assert.equal(r.userScore <= 1, true);
+  assert.equal(r.userScore <= base + 1, true);
   const before = r.userScore;
   h.setTime(h.now + 1400);
   r = await load(h, r.mode);
@@ -169,38 +180,45 @@ test("Çinko enforces connected cells, -1 wrong, 0 pass and capped bot groups", 
   assert.equal(h.read(root + "/assistedRecords/bot_cinko:easy"), null);
 });
 
-test("Random Five edits are free, passes score zero and five rounds finish once", async () => {
+test("Random Five: simultaneous rounds, the table pays rarer answers, five rounds finish once", async () => {
   const h = setup();
   let r = await start(h, "bot_random_five", {difficulty: "hard"});
-  assert.equal(r.clubs.length, 5);
+  assert.equal(r.clubs.length, 5); assert.equal(r.rules, 2); assert.equal(r.simultaneous, true);
+  assert.deepEqual(r.fivePoints, S.FIVE_POINTS);
+  // The bot has locked its answer but it stays hidden.
+  assert.equal(r.botReady, true); assert.equal(r.history[0].bot, null);
+  assert.equal(JSON.stringify(r).includes("botPick"), false);
   r = await act(h, r, "hint", {target: 0, ...pay});
   assert.match(r.hints.round_0, /beş kulübün \d tanesine uyuyor/);
   const nonMatch = Object.keys(S.catalog.players).find((p) => !r.clubs.some((c) => S.matches(p, c.id)));
   r = await act(h, r, "guess", {playerId: nonMatch});
   assert.equal(r.turn, "user");
   assert.match(r.feedback, /uymuyor/);
+  let user = 0; let bot = 0;
   for (let round = 0; round < 5; round++) {
-    // Rounds 2 and 4 open with the bot's move.
-    if (round % 2) {
-      assert.equal(r.turn, "bot"); assert.equal(r.botFirst, true);
-      h.setTime(h.now + 1500); r = await load(h, r.mode);
-      assert.equal(r.turn, "user"); assert.ok(r.history[round].bot.player);
-    }
+    assert.equal(r.turn, "user"); assert.equal(r.botFirst, false);
     if (round === 1) r = await act(h, r, "pass");
     else {
       const used = raw(h, r).used || {};
       const pid = [...S.answers(r.clubs[0].id)].sort().find((p) => !used[p]);
+      const n = r.clubs.filter((c) => S.matches(pid, c.id)).length;
       r = await act(h, r, "guess", {playerId: pid});
+      assert.equal(r.history[round].user.points, S.FIVE_POINTS[n]);
       await assert.rejects(act(h, r, "guess", {playerId: pid}));
     }
-    if (!(round % 2)) {
-      assert.equal(r.turn, "bot");
-      h.setTime(h.now + 1500);
-      r = await load(h, r.mode);
-    }
+    // Answering closes the round at once and opens the bot's answer.
+    if (round < 4) assert.equal(r.turn, "result");
+    const b = r.history[round].bot;
+    assert.ok(b.player); assert.equal(b.points, S.FIVE_POINTS[b.clubs.length]);
+    // Hard: the best answer among the players it knows and has not used yet.
+    const botUsed = raw(h, r).botUsed || {};
+    const ids = new Set(r.clubs.flatMap((c) => [...S.answers(c.id)]).filter((id) =>
+      S.catalog.players[id].rank <= S.FIVE_BOT.hard.known && (id === b.player.id || !botUsed[id])));
+    const top = Math.max(...[...ids].map((id) => r.clubs.filter((c) => S.matches(id, c.id)).length));
+    assert.equal(b.clubs.length, top);
+    user += r.history[round].user.points; bot += b.points;
+    assert.equal(r.userScore, user); assert.equal(r.botScore, bot);
     if (round < 4) {
-      assert.equal(r.turn, "result");
-      assert.ok(r.history[round].bot.player);
       assert.equal(r.history[round].best.length, 3);
       r = await act(h, r, "next");
     }
@@ -211,7 +229,6 @@ test("Random Five edits are free, passes score zero and five rounds finish once"
   assert.equal(h.read(root + "/assistedRecords/bot_random_five:hard/completed"), 1);
   await assert.rejects(act(h, r, "next"));
 });
-
 test("bot support replays survive lost projections; changed payloads and other accounts fail", async () => {
   const h = setup();
   let r = await start(h, "bot_random_five");
@@ -262,10 +279,15 @@ test("Team Race: 70 s rounds, early end, 6+ shared players, easy rounds use the 
   const race = raw(h, r).race;
   assert.equal(r.endsAt - r.startsAt, S.RACE_ROUND_MS);
   const [a, b] = [r.club.id, race.opponent].map((k) => k.slice(5));
+  // Rules 2: the round's players are well known (within the level's rank limit).
+  const limit = raw(h, r).raceLimit;
+  assert.equal(limit, S.RACE_TIER.easy);
   const shared = Object.values(c.players).filter((p) => p.clubs.map(String).includes(a) &&
-    p.clubs.map(String).includes(b)).sort((x, y) => x.rank - y.rank || x.id.localeCompare(y.id));
+    p.clubs.map(String).includes(b) && p.rank <= limit).sort((x, y) => x.rank - y.rank || x.id.localeCompare(y.id));
   assert.ok(shared.length >= S.RACE_MIN_SHARED);
-  assert.deepEqual([...race.players].sort(), shared.slice(0, 12).map((p) => p.id).sort());
+  const top = new Set(shared.slice(0, 16).map((p) => p.id));
+  assert.equal(race.players.length, Math.min(12, shared.length));
+  assert.ok(race.players.every((id) => top.has(id)));
   // Time runs out: the round closes and lists the players nobody found.
   h.setTime(r.endsAt + 1); r = await load(h, r.mode);
   assert.equal(r.over, true); assert.equal(r.missed.length, r.remaining);
@@ -276,13 +298,16 @@ test("Team Race: 70 s rounds, early end, 6+ shared players, easy rounds use the 
 });
 
 test("Çinko choose does not reveal whether the player fits an open cell", async () => {
-  const h = setup(); let r = await start(h, "bot_cinko", {difficulty: "medium"});
+  const h = setup(); let r = await userTurn(h, await start(h, "bot_cinko", {difficulty: "medium"}));
   const cells = raw(h, r).cells;
   const none = Object.keys(S.catalog.players).find((id) => !cells.some((k) => S.matches(id, k)));
+  const pair = [[0, 1], [5, 6], [10, 11], [15, 16], [20, 21]].find(([a, b]) => r.cells[a].playable &&
+    r.cells[b].playable && !r.cells[a].owner && !r.cells[b].owner);
+  const base = r.userScore;
   r = await act(h, r, "choose", {playerId: none});
   assert.equal(r.current.id, none); assert.equal(r.feedback, null);
-  r = await act(h, r, "confirm", {cells: [0, 1]});
-  assert.equal(r.userScore, -2); assert.equal(r.cells[0].owner, 0);
+  r = await act(h, r, "confirm", {cells: pair});
+  assert.equal(r.userScore, base - 2); assert.equal(r.cells[pair[0]].owner, 0);
 });
 
 test("Random Five: three wrong names pass the round; easy bot stays within its knowledge", async () => {
@@ -291,11 +316,148 @@ test("Random Five: three wrong names pass the round; easy bot stays within its k
   r = await act(h, r, "guess", {playerId: none[0]}); assert.equal(r.wrongLeft, 2);
   r = await act(h, r, "guess", {playerId: none[1]}); assert.equal(r.turn, "user");
   r = await act(h, r, "guess", {playerId: none[2]});
-  assert.equal(r.turn, "bot"); assert.equal(r.history[0].user.pass, true); assert.match(r.feedback, /pas sayıldı/);
-  h.setTime(h.now + 1500); r = await load(h, r.mode);
-  const bot = r.history[0].bot.player;
-  assert.ok(S.catalog.players[bot.id].rank <= S.FIVE_KNOWN.easy);
-  assert.ok(r.history[0].bot.clubs.length <= 3);
+  assert.equal(r.turn, "result"); assert.equal(r.history[0].user.pass, true); assert.match(r.feedback, /pas sayıldı/);
+  const bot = r.history[0].bot;
+  if (!bot.pass) {
+    assert.ok(S.catalog.players[bot.player.id].rank <= S.FIVE_BOT.easy.known);
+    assert.ok(bot.clubs.length <= 2);
+  }
   // No club repeats across the five rounds.
   const clubs = raw(h, r).rounds.flat(); assert.equal(new Set(clubs).size, 25);
+});
+test("Random Five bot levels: easy 1–2 clubs or a pass, medium mostly 3, hard the best it knows", () => {
+  const stats = {easy: [], medium: [], hard: []};
+  for (const d of Object.keys(stats)) {
+    for (let n = 0; n < 40; n++) {
+      const r = {seed: "lv" + d + n, difficulty: d, rounds: [], round: 0, botUsed: {}};
+      for (let i = 0; i < 5; i++) r.rounds.push(S.fiveRound(r, r.rounds.flat(), i));
+      for (; r.round < 5; r.round++) {
+        const m = S.fiveBotPick(r); if (m.playerId) r.botUsed[m.playerId] = true;
+        stats[d].push(m.pass ? 0 : m.clubs.length);
+      }
+    }
+  }
+  const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+  assert.ok(stats.easy.every((n) => n <= 2)); assert.ok(stats.easy.includes(0));
+  assert.ok(stats.medium.every((n) => n <= 4)); assert.ok(stats.medium.includes(4));
+  assert.ok(avg(stats.easy) < avg(stats.medium) && avg(stats.medium) < avg(stats.hard),
+      JSON.stringify([avg(stats.easy), avg(stats.medium), avg(stats.hard)]));
+});
+test("Loto allows a limited number of pauses per match and says when the bot plays next", async () => {
+  const h = setup();
+  let r = await start(h, "bot_loto", {difficulty: "medium"});
+  assert.equal(r.pausesLeft, S.LOTO_PAUSES);
+  assert.ok(r.botAt > h.now && r.botAt <= r.deadline + 15000);
+  for (let n = 0; n < S.LOTO_PAUSES; n++) {
+    r = await act(h, r, "pause");
+    assert.equal(r.paused, true); assert.equal(r.botAt, null); assert.equal(r.current, null);
+    // A second pause while paused costs nothing.
+    r = await act(h, r, "pause");
+    assert.equal(r.pausesLeft, S.LOTO_PAUSES - n - 1);
+    r = await act(h, r, "resume");
+  }
+  assert.equal(r.pausesLeft, 0);
+  await assert.rejects(act(h, r, "pause"), /duraklatma hakların bitti/);
+  // The clock keeps running without a pause.
+  h.setTime(h.now + 17000);
+  r = await load(h, r.mode);
+  assert.equal(r.paused, false);
+  assert.ok(r.index >= 1);
+});
+test("Çinko as online: random first mover, +1 for the second, moves list, player sent with the cells", async () => {
+  let botFirst = 0;
+  for (let n = 0; n < 24; n++) {
+    const h = setup(); const r = await start(h, "bot_cinko", {difficulty: "medium"});
+    assert.equal(r.rules, 2); assert.equal(r.secondBonus, S.CINKO_SECOND_BONUS);
+    if (r.botFirst) {
+      botFirst++; assert.equal(r.turn, "bot"); assert.ok(r.botAt > 0);
+      assert.equal(r.userScore, S.CINKO_SECOND_BONUS); assert.equal(r.botScore, 0);
+    } else {
+      assert.equal(r.turn, "user"); assert.equal(r.userScore, 0); assert.equal(r.botScore, S.CINKO_SECOND_BONUS);
+    }
+  }
+  assert.ok(botFirst >= 4 && botFirst <= 20, String(botFirst));
+  const h = setup(); let r = await userTurn(h, await start(h, "bot_cinko", {difficulty: "hard"}));
+  const cells = raw(h, r).cells; const used = raw(h, r).used || {};
+  const i = r.cells.findIndex((c) => c.owner === 0 && c.playable);
+  const id = [...S.answers(cells[i])].find((p) => !used[p]);
+  const base = r.userScore;
+  r = await act(h, r, "confirm", {cells: [i], playerId: id});
+  assert.equal(r.cells[i].owner, 1); assert.equal(r.userScore, base + 1);
+  assert.equal(r.moves[0].owner, 1); assert.equal(r.moves[0].player.id, id);
+  // A used player cannot be sent again.
+  r = await userTurn(h, r);
+  const j = r.cells.findIndex((c) => c.owner === 0 && c.playable);
+  await assert.rejects(act(h, r, "confirm", {cells: [j], playerId: id}), /kullanıldı/);
+});
+test("Çinko: a bot with nobody to play passes, and four passes in a row end the match", () => {
+  const r = {mode: "bot_cinko", difficulty: "easy", seed: "pass", revision: 0, used: {}, owners: {}, userScore: 0,
+    botScore: 1, turn: "bot", botAt: 0, finished: false, cinkoRules: 2, moves: [], passes: 0};
+  r.cells = S.cinkoBoard(r);
+  // Every player the easy bot knows is used: it must pass, not end the match.
+  for (const p of Object.values(S.catalog.players)) if (p.rank <= 1500) r.used[p.id] = true;
+  S.cinkoBot(r, 1);
+  assert.equal(r.finished, false); assert.equal(r.turn, "user"); assert.equal(r.moves[0].pass, true);
+  assert.equal(r.passes, 1);
+  for (let n = 0; n < 3 && !r.finished; n++) {
+    r.turn = "bot"; r.botAt = 0; S.cinkoBot(r, 1);
+  }
+  assert.equal(r.finished, true); assert.equal(r.completed, true); assert.match(r.feedback, /Dört pas/);
+});
+test("Team Race rules 2: the bot finds only players it knows, early end keeps the score, two pauses", async () => {
+  const h = setup();
+  let r = await start(h, "bot_team_race", {clubId: "club:418", difficulty: "easy"});
+  assert.equal(r.rules, 2); assert.equal(r.pausesLeft, S.RACE_PAUSES); assert.ok(r.botAt >= r.startsAt);
+  // Long enough for many bot tries: every bot find is a player the easy bot knows.
+  h.setTime(r.endsAt - 1); r = await load(h, r.mode);
+  const owners = raw(h, r).race.found || {};
+  for (const [id, owner] of Object.entries(owners)) {
+    if (owner === 2) assert.ok(S.catalog.players[id].rank <= S.RACE_BOT2.easy.known, id);
+  }
+  assert.equal(r.feedback === "Bot pas geçti.", false);
+  r = await act(h, r, "next").catch(() => r);
+  if (!r.over) {
+    h.setTime(r.endsAt + 1); r = await load(h, r.mode);
+  }
+  r = await act(h, r, "next"); h.setTime(r.startsAt + 1);
+  // Ending at once: the bot gets none of the time left.
+  const botBefore = (await load(h, r.mode)).botFound;
+  r = await act(h, r, "end_round", {round: r.round});
+  assert.equal(r.over, true); assert.equal(r.botFound, botBefore);
+  // Two pauses per match, then the clock keeps running.
+  r = await act(h, r, "next");
+  for (let n = 0; n < S.RACE_PAUSES; n++) {
+    r = await act(h, r, "pause"); assert.equal(r.botAt, null); r = await act(h, r, "resume");
+  }
+  assert.equal(r.pausesLeft, 0);
+  await assert.rejects(act(h, r, "pause"), /duraklatma hakların bitti/);
+});
+test("Team Race rules 2: at most five rounds; equal rounds go to more players found", async () => {
+  const h = setup();
+  let r = await start(h, "bot_team_race", {clubId: "club:418", difficulty: "easy"});
+  let rounds = 0;
+  // Let every round run out on the clock: tied or bot rounds, never past five.
+  while (!r.finished && rounds < 8) {
+    h.setTime(r.endsAt + 1); r = await load(h, r.mode); rounds++;
+    if (!r.finished) r = await act(h, r, "next");
+  }
+  assert.equal(r.finished, true); assert.ok(rounds <= S.RACE_MAX_ROUNDS, String(rounds));
+  assert.equal(r.maxRounds, S.RACE_MAX_ROUNDS);
+  if (r.userScore === r.botScore) {
+    assert.equal(r.winner, r.finds.user > r.finds.bot ? 1 : r.finds.user < r.finds.bot ? 2 : 0);
+  }
+});
+test("Team Race setup lists only clubs a match can start with", async () => {
+  const h = setup();
+  const before = await h.call("getBotSupport", {mode: "bot_team_race"});
+  assert.ok(before.raceClubIds.length > 1000);
+  assert.ok(before.raceClubIds.every((id) => S.partners(id).length));
+  const missing = Object.values(S.catalog.criteria).find((k) => k.type === "club" && !S.partners(k.id).length);
+  assert.equal(before.raceClubIds.includes(missing.id), false);
+  await assert.rejects(start(h, "bot_team_race", {clubId: missing.id}));
+  // While a match is open the list is not resent.
+  await start(h, "bot_team_race", {clubId: "club:418"});
+  assert.equal((await h.call("getBotSupport", {mode: "bot_team_race"})).raceClubIds, undefined);
+  // The other modes never carry it.
+  assert.equal((await h.call("getBotSupport", {mode: "bot_cinko"})).raceClubIds, undefined);
 });

@@ -264,3 +264,57 @@ test("hard bot blocks a user line, easy never does; the reverse bot misses by di
   assert.ok(easy <= 15, String(easy));
   assert.ok(misses >= 12 && misses <= 40, String(misses));
 });
+// A bare random run as the server stores it, for the pure helpers.
+const randomRun = (seed, extra = {}) => ({mode: "bot_grid_random", seed, revision: 0, pool: [], minimumAnswers: 1,
+  rules: G.RULES, difficulty: "medium", turn: "user", cells: {}, axes: {}, used: {}, rows: {}, cols: {},
+  roundsUsed: 0, pairNumber: 0, userScore: 0, botScore: 0, ...extra});
+function placePair(r, anchor, swap) {
+  G.makePair(r); const pair = r.pending; const playerId = G.answers(r, "pending")[0];
+  r.rows[anchor / 3 | 0] = pair.criteria[swap ? 1 : 0]; r.cols[anchor % 3] = pair.criteria[swap ? 0 : 1];
+  r.cells[anchor] = {playerId, owner: 1}; r.used[playerId] = true; r.pending = null; r.roundsUsed++; r.revision++;
+}
+test("rules 3 random pairs cross every placed criterion: no crossing is left without an answer", () => {
+  let dead = 0;
+  for (let n = 0; n < 40; n++) {
+    const r = randomRun("cross" + n);
+    [2, 4, 6].forEach((a, k) => placePair(r, a, (n + k) % 2 === 1));
+    dead += [0, 1, 3, 5, 7, 8].filter((i) => !G.answers(r, i).length).length;
+  }
+  assert.ok(dead <= 1, String(dead));
+});
+test("a board with no move left for anyone ends on the score as a completed game", async () => {
+  const r = randomRun("stuck", {roundsUsed: 3, rows: {0: "club:x", 1: "club:y", 2: "club:z"},
+    cols: {0: "club:x", 1: "club:y", 2: "club:z"}, cells: {2: {owner: 1}, 4: {owner: 2}, 6: {owner: 1}},
+    userScore: 2, botScore: 1, turn: "bot", botAt: 0});
+  assert.equal(G.stuck(r), true);
+  G.botMove(r, 1);
+  assert.equal(r.finished, true); assert.equal(r.completed, true); assert.equal(r.winner, 1);
+  assert.match(r.feedback, /oynanabilir hamle kalmadı/);
+  // A fresh random board is never stuck: a pair can still be drawn.
+  assert.equal(G.stuck(randomRun("fresh")), false);
+});
+test("rules 3 random bot misses by difficulty and completes its own line", () => {
+  const misses = {easy: 0, hard: 0};
+  for (const difficulty of ["easy", "hard"]) {
+    for (let n = 0; n < 60; n++) {
+      const r = randomRun("miss" + n, {difficulty, turn: "bot", botAt: 0});
+      placePair(r, 4, false); G.botMove(r, 1);
+      if (r.botScore === 0) misses[difficulty]++;
+    }
+  }
+  assert.ok(misses.easy >= 12, JSON.stringify(misses));
+  assert.ok(misses.hard <= 12, JSON.stringify(misses));
+  assert.ok(misses.easy > misses.hard, JSON.stringify(misses));
+  let wins = 0; let tries = 0;
+  for (let n = 0; n < 40; n++) {
+    const r = randomRun("line" + n, {difficulty: "hard", turn: "bot", botAt: 0});
+    [2, 4, 6].forEach((a) => placePair(r, a, false));
+    // The bot holds 0 and 4; 8 completes its diagonal.
+    const id = G.answers(r, 0)[0]; if (!id || !G.answers(r, 8).length) continue;
+    r.cells[0] = {playerId: id, owner: 2}; r.used[id] = true; r.cells[4].owner = 2; tries++;
+    if (!G.answers(r, 8).length) { tries--; continue; }
+    G.botMove(r, 1);
+    if (r.lineWinner === 2) wins++;
+  }
+  assert.ok(tries >= 10 && wins >= tries * 0.8, `${wins}/${tries}`);
+});

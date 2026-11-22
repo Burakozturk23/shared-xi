@@ -49,10 +49,16 @@ class ClubRaceScoreCard extends StatelessWidget {
     this.countdown,
     this.status,
     this.myTurn,
+    this.rivalTag = 'RAKİP',
   });
   final ClubRaceSide me, rival;
   final int? maxWrong;
-  final int secondsLeft, totalSeconds;
+
+  /// Null for an untimed match (the bot Grid): a VS badge stands in for the clock ring.
+  final int? secondsLeft, totalSeconds;
+
+  /// Label over the right side ("RAKİP", or "BOT" against the bot).
+  final String rivalTag;
 
   /// "SIRA SENDE", "RAKİPTE" or "TUR 2/5"; [myTurn] colours a turn line.
   final String? status;
@@ -65,11 +71,15 @@ class ClubRaceScoreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = PitchColors.of(context);
     final text = Theme.of(context).textTheme;
+    final timed = countdown != null || secondsLeft != null;
+    final left = secondsLeft ?? 0;
     final clock = countdown != null
         ? p.accent
-        : secondsLeft <= 5
+        : !timed
+        ? (myTurn == false ? hubAmber(context) : Arena.lime)
+        : left <= 5
         ? p.error
-        : secondsLeft <= 15
+        : left <= 15
         ? hubAmber(context)
         : Arena.lime;
     Widget side(ClubRaceSide s, {required bool mine}) {
@@ -81,7 +91,7 @@ class ClubRaceScoreCard extends StatelessWidget {
               : CrossAxisAlignment.end,
           children: [
             Text(
-              mine ? 'SEN' : 'RAKİP',
+              mine ? 'SEN' : rivalTag,
               style: text.labelSmall?.copyWith(
                 color: tone,
                 fontWeight: FontWeight.w900,
@@ -141,7 +151,7 @@ class ClubRaceScoreCard extends StatelessWidget {
       );
     }
 
-    final shown = countdown ?? secondsLeft;
+    final shown = countdown ?? left;
     return ArenaCard(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       child: Row(
@@ -152,52 +162,55 @@ class ClubRaceScoreCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Column(
               children: [
-                Semantics(
-                  label: countdown != null
-                      ? 'Başlamasına $shown saniye'
-                      : 'Kalan süre $shown saniye',
-                  excludeSemantics: true,
-                  child: SizedBox.square(
-                    dimension: 68,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CircularProgressIndicator(
-                          value: countdown != null
-                              ? 1
-                              : (secondsLeft / totalSeconds.clamp(1, 9999))
-                                    .clamp(0.0, 1.0),
-                          strokeWidth: 5,
-                          backgroundColor: p.border,
-                          color: clock,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: FittedBox(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '$shown',
-                                  style: text.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: clock,
+                if (!timed)
+                  _Versus(color: clock)
+                else
+                  Semantics(
+                    label: countdown != null
+                        ? 'Başlamasına $shown saniye'
+                        : 'Kalan süre $shown saniye',
+                    excludeSemantics: true,
+                    child: SizedBox.square(
+                      dimension: 68,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CircularProgressIndicator(
+                            value: countdown != null
+                                ? 1
+                                : (left / (totalSeconds ?? 1).clamp(1, 9999))
+                                      .clamp(0.0, 1.0),
+                            strokeWidth: 5,
+                            backgroundColor: p.border,
+                            color: clock,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: FittedBox(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '$shown',
+                                    style: text.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.w900,
+                                      color: clock,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  countdown != null ? 'BAŞLIYOR' : 'SN',
-                                  style: text.labelSmall?.copyWith(
-                                    color: p.muted,
+                                  Text(
+                                    countdown != null ? 'BAŞLIYOR' : 'SN',
+                                    style: text.labelSmall?.copyWith(
+                                      color: p.muted,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 if (status != null)
                   Container(
                     padding: const EdgeInsets.only(top: 6),
@@ -361,6 +374,7 @@ class ClubRaceFoundTile extends StatelessWidget {
     required this.mine,
     this.points = 1,
     this.detail,
+    this.rivalLabel = 'Rakip',
   });
   final Map<dynamic, dynamic> player;
   final bool mine;
@@ -368,6 +382,9 @@ class ClubRaceFoundTile extends StatelessWidget {
 
   /// Replaces the country · position line (Random Five: the clubs it covers).
   final String? detail;
+
+  /// Who the other side is ("Rakip", or "Bot" against the bot).
+  final String rivalLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -427,7 +444,7 @@ class ClubRaceFoundTile extends StatelessWidget {
               children: [
                 ArenaPill(
                   color: tone,
-                  child: Text('${mine ? 'Sen' : 'Rakip'} +$points'),
+                  child: Text('${mine ? 'Sen' : rivalLabel} +$points'),
                 ),
                 if (second is num)
                   Padding(
@@ -466,7 +483,12 @@ class ClubRaceInputBar extends StatelessWidget {
     this.blocked,
     this.hint = 'En az 2 harf; öneriye dokun, gitsin',
     this.label = 'Futbolcu ara',
+    this.showSend = true,
   });
+
+  /// False when a tap on a suggestion is the only way to answer (the bot Grid):
+  /// the always-disabled send button would only cover the board.
+  final bool showSend;
 
   /// Why nothing can be sent now ("Rakibin sırası"); null when open.
   final String? blocked;
@@ -482,7 +504,7 @@ class ClubRaceInputBar extends StatelessWidget {
 
   /// A club or country row (Grid Reverse) rather than a player.
   static bool _criterion(Map<String, dynamic> r) =>
-      '${r['id']}'.startsWith('club:') || '${r['id']}'.startsWith('country:');
+      ['club:', 'country:', 'coach:', 'position:'].any('${r['id']}'.startsWith);
 
   bool get _open =>
       !outOfWrong && lockSeconds == 0 && !sending && blocked == null;
@@ -538,9 +560,12 @@ class ClubRaceInputBar extends StatelessWidget {
                           ),
                           subtitle: Text(
                             _criterion(r)
-                                ? (ArenaCriterion(r).type == 'country'
-                                      ? 'Milli takım'
-                                      : 'Kulüp')
+                                ? (const {
+                                        'country': 'Milli takım',
+                                        'coach': 'Teknik direktör',
+                                        'position': 'Mevki',
+                                      }[ArenaCriterion(r).type] ??
+                                      'Kulüp')
                                 : [
                                     '${r['country'] ?? ''}',
                                     positionTr(r['position']),
@@ -603,20 +628,22 @@ class ClubRaceInputBar extends StatelessWidget {
                       ),
               ),
             ),
-            const SizedBox(height: 8),
-            ArenaPrimaryButton(
-              label: lockSeconds > 0
-                  ? '$lockSeconds sn bekle'
-                  : blocked != null
-                  ? blocked!
-                  : selected != null
-                  ? 'Gönder · ${selected!['name']}'
-                  : 'Öneriye dokun ve gönder',
-              icon: lockSeconds > 0 || blocked != null
-                  ? Icons.hourglass_top_rounded
-                  : Icons.send_rounded,
-              onPressed: selected != null && _open ? onSend : null,
-            ),
+            if (showSend) ...[
+              const SizedBox(height: 8),
+              ArenaPrimaryButton(
+                label: lockSeconds > 0
+                    ? '$lockSeconds sn bekle'
+                    : blocked != null
+                    ? blocked!
+                    : selected != null
+                    ? 'Gönder · ${selected!['name']}'
+                    : 'Öneriye dokun ve gönder',
+                icon: lockSeconds > 0 || blocked != null
+                    ? Icons.hourglass_top_rounded
+                    : Icons.send_rounded,
+                onPressed: selected != null && _open ? onSend : null,
+              ),
+            ],
           ],
         ),
       ),
@@ -679,6 +706,35 @@ class ArenaGrid extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Centre of an untimed scoreboard: a VS badge in the colour of whoever moves.
+class _Versus extends StatelessWidget {
+  const _Versus({required this.color});
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = PitchColors.of(context);
+    return Container(
+      width: 68,
+      height: 68,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color.withValues(alpha: .1),
+        border: Border.all(color: color, width: 2.5),
+      ),
+      child: Text(
+        'VS',
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w900,
+          color: p.text,
+          letterSpacing: 1,
+        ),
+      ),
     );
   }
 }

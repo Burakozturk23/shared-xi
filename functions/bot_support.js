@@ -67,6 +67,7 @@ function restored(raw) {
   const s = {sessions: {}, active: {}, records: {}, assistedRecords: {}, ...raw};
   for (const r of Object.values(s.sessions)) {
     r.actions ||= {}; r.hints ||= {}; r.used ||= {}; r.human ||= {}; r.bot ||= {}; r.skips ||= {};
+    if (r.fiveRules) r.botUsed ||= {};
     r.owners ||= {}; r.opponents ||= [];
     // RTDB drops empty objects; five history slots must stay addressable.
     if (r.rounds) r.history = Array.from({length: r.round + 1}, (_, i) => r.history?.[i] || {});
@@ -83,6 +84,9 @@ function finish(r, reason, time) {
 
 // ---- Football Loto: same 16 players, separate boards, per-player clock.
 const LOTO_SECONDS = {easy: 20, medium: 15, hard: 12};
+// Pauses per Loto match (leaving the app uses one too): a pause stops the clock, so an
+// unlimited supply would be unlimited thinking time for a player already shown.
+const LOTO_PAUSES = 2;
 // The bot thinks at a human pace (a full board takes it about 2–4 minutes).
 const LOTO_BOT = {easy: [[9000, 15000], .35], medium: [[7000, 12000], .55], hard: [[5000, 9000], .75]};
 const lotoTiers = (() => {
@@ -159,9 +163,20 @@ const RACE_PARTNERS = 40;
 // same spirit: easy only among the 3 best-known left, medium the 6, hard any.
 const RACE_POOL = {easy: 12, medium: 24, hard: Infinity};
 const RACE_BOT_WINDOW = {easy: 3, medium: 6, hard: Infinity};
-function partnerCounts(club) {
+// Rules 2: a round is drawn from well-known players only (rank limit by level, relaxed for a
+// club that has no such partner), and the bot only finds players it knows, at its own pace.
+const RACE_RULES = 2;
+const RACE_TIER = {easy: 2000, medium: 5000, hard: 10000};
+const RACE_BOT2 = {easy: {known: 1500, gap: [10000, 14000]}, medium: {known: 4000, gap: [6500, 9500]},
+  hard: {known: Infinity, gap: [4500, 6800]}};
+const RACE_PAUSES = 2;
+// Rules 2: tied rounds score nobody, so a match lasts at most five rounds; then more rounds
+// won decide, then more players found over the match.
+const RACE_MAX_ROUNDS = 5;
+function partnerCounts(club, limit = Infinity) {
   const counts = new Map();
   for (const id of answers(club)) {
+    if (catalog.players[id].rank > limit) continue;
     for (const v of catalog.players[id].clubs) {
       const other = "club:" + v;
       if (other !== club && catalog.criteria[other]) counts.set(other, (counts.get(other) || 0) + 1);
@@ -171,8 +186,21 @@ function partnerCounts(club) {
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, RACE_PARTNERS);
 }
 const partners = (club) => partnerCounts(club).map(([id]) => id);
+// The level's rank limit, or the next wider one when the club has no partner within it.
+function raceLimit(club, difficulty) {
+  const tiers = [RACE_TIER[difficulty], ...Object.values(RACE_TIER), Infinity].filter((t) => t >= RACE_TIER[difficulty]);
+  return tiers.find((t) => partnerCounts(club, t).length) ?? Infinity;
+}
+// Every club a Team Race can start with (computed once).
+let raceClubs = null;
+function raceClubIds() {
+  raceClubs ||= Object.values(catalog.criteria).filter((k) => k.type === "club" && partners(k.id).length)
+      .map((k) => k.id);
+  return raceClubs;
+}
 function raceRound(r, time) {
-  const pool = partnerCounts(r.club); const fresh = pool.filter(([id]) => !r.opponents.includes(id));
+  const limit = r.raceRules >= 2 ? r.raceLimit ?? Infinity : Infinity;
+  const pool = partnerCounts(r.club, limit); const fresh = pool.filter(([id]) => !r.opponents.includes(id));
   const options = fresh.length ? fresh : pool;
   const weights = options.map(([, n]) => Math.sqrt(n)); let roll = random(r, "opponent" + r.round) *
     weights.reduce((a, b) => a + b, 0);
@@ -183,12 +211,15 @@ function raceRound(r, time) {
       opponent = options[i][0]; break;
     }
   }
-  const left = answers(r.club); const shared = [...answers(opponent)].filter((id) => left.has(id)).sort(byRank);
+  const left = answers(r.club); const shared = [...answers(opponent)].filter((id) => left.has(id) &&
+    catalog.players[id].rank <= limit).sort(byRank);
   r.opponents.push(opponent);
-  const players = shuffled(shared.slice(0, RACE_POOL[r.difficulty]), r.seed + "round" + r.round).slice(0, 12);
+  const players = shuffled(shared.slice(0, r.raceRules >= 2 ? 16 : RACE_POOL[r.difficulty]),
+      r.seed + "round" + r.round).slice(0, 12);
   r.race = {round: r.round, opponent, players, found: {}, userFound: 0, botFound: 0, startsAt: time + 3000,
     endsAt: time + 3000 + RACE_ROUND_MS, over: false};
-  r.race.botAt = r.race.startsAt + between(r, RACE_BOT[r.difficulty][0], "delay" + r.round + ":0");
+  r.race.botAt = r.race.startsAt + between(r, r.raceRules >= 2 ? RACE_BOT2[r.difficulty].gap :
+    RACE_BOT[r.difficulty][0], "delay" + r.round + ":0");
   r.botTries = 0; r.feedback = null;
 }
 const remaining = (r) => r.race.players.filter((id) => !r.race.found[id]);
@@ -198,11 +229,35 @@ function raceEnd(r, time, force = false) {
   const race = r.race; race.over = true;
   if (race.userFound > race.botFound) r.userScore++;
   else if (race.botFound > race.userFound) r.botScore++;
+  if (r.raceRules >= 2) {
+    r.finds = {user: (r.finds?.user || 0) + race.userFound, bot: (r.finds?.bot || 0) + race.botFound};
+  }
   if (r.userScore >= 3 || r.botScore >= 3) finish(r, "completed", time);
+  else if (r.raceRules >= 2 && race.round + 1 >= RACE_MAX_ROUNDS) {
+    finish(r, "completed", time);
+    if (r.userScore === r.botScore) {
+      r.winner = r.finds.user > r.finds.bot ? 1 : r.finds.user < r.finds.bot ? 2 : 0;
+      r.feedback = r.winner ? "Turlar eşit; toplamda daha çok futbolcu bulan kazandı." : "Turlar ve bulunan futbolcular eşit.";
+    }
+  }
 }
 function raceTick(r, time) {
   const race = r.race;
   if (r.pausedAt || !race || race.over) return;
+  if (r.raceRules >= 2) {
+    const {known, gap} = RACE_BOT2[r.difficulty];
+    while (!race.over && time >= race.botAt && race.botAt < race.endsAt) {
+      const tries = ++r.botTries;
+      // Nobody left that the bot knows: it keeps thinking (no "pass" noise).
+      const mine = remaining(r).filter((id) => catalog.players[id].rank <= known).sort(byRank);
+      if (mine.length) {
+        const id = pick(r, mine, "claim" + race.round + ":" + tries);
+        race.found[id] = 2; race.botFound++; r.feedback = "Bot buldu: " + catalog.players[id].name;
+        raceEnd(r, race.botAt);
+      }
+      race.botAt += between(r, gap, "delay" + race.round + ":" + tries);
+    }
+  } else {
   while (!race.over && time >= race.botAt && race.botAt < (race.endsAt || Infinity)) {
     const tries = ++r.botTries;
     if (random(r, "accuracy" + race.round + ":" + tries) > RACE_BOT[r.difficulty][1]) r.feedback = "Bot pas geçti.";
@@ -213,6 +268,7 @@ function raceTick(r, time) {
       raceEnd(r, time);
     }
     race.botAt += between(r, RACE_BOT[r.difficulty][0], "delay" + race.round + ":" + tries);
+  }
   }
   if (!race.over && race.endsAt && time >= race.endsAt) {
     r.feedback = "Süre doldu."; raceEnd(r, race.endsAt, true);
@@ -271,13 +327,35 @@ function playable(r) {
   return r.cells.map((_, i) => i).filter((i) => !r.owners[i] &&
     [...answers(r.cells[i])].some((id) => !r.used[id]));
 }
+// Rules 2 (as online Çinko): a random first mover, +1 for the side that starts second, the
+// last moves on the board, and four passes in a row end the match.
+const CINKO_RULES = 2;
+const CINKO_SECOND_BONUS = 1;
+const CINKO_MAX_PASSES = 4;
+function cinkoStart(r, time) {
+  r.cells = cinkoBoard(r); r.cinkoRules = CINKO_RULES; r.moves = []; r.passes = 0;
+  r.botFirst = random(r, "first") < .5;
+  if (r.botFirst) {
+    r.userScore += CINKO_SECOND_BONUS; r.turn = "bot"; r.botAt = time + between(r, [1200, 1800], "bot-open");
+  } else r.botScore += CINKO_SECOND_BONUS;
+}
+function cinkoMove(r, move, time) {
+  r.last = move;
+  if (r.cinkoRules >= 2) {
+    r.moves = [move, ...r.moves || []].slice(0, 6);
+    r.passes = move.pass ? (r.passes || 0) + 1 : 0;
+    if (r.passes >= CINKO_MAX_PASSES) {
+      r.feedback = "Dört pas üst üste geldi; maç bitti."; finish(r, "completed", time);
+    }
+  }
+}
 function cinkoApply(r, id, cells, owner, time) {
   const correct = cells.filter((i) => matches(id, r.cells[i])); const wrong = cells.filter((i) => !correct.includes(i));
   for (const i of correct) r.owners[i] = {owner, playerId: id};
   r.used[id] = true; r.current = null;
-  r.last = {owner, playerId: id, correct, wrong, points: correct.length - wrong.length};
+  cinkoMove(r, {owner, playerId: id, correct, wrong, points: correct.length - wrong.length}, time);
   if (owner === 1) r.userScore += correct.length - wrong.length; else r.botScore += correct.length - wrong.length;
-  if (!playable(r).length) finish(r, "completed", time);
+  if (!r.finished && !playable(r).length) finish(r, "completed", time);
 }
 // Easy: well-known players, two cells, slips often; hard: wide knowledge, any group, rare slips.
 const CINKO_BOT = {easy: {known: 1500, cap: 2, slip: .25}, medium: {known: 4000, cap: 3, slip: .15},
@@ -310,6 +388,8 @@ function cinkoBot(r, time) {
     if (wrong.length) best = [...best, pick(r, wrong, "slipcell" + r.revision)];
   }
   if (chosen) cinkoApply(r, chosen, best, 2, time);
+  // Nobody the bot knows fits an open cell: it passes (older sessions ended the match here).
+  else if (r.cinkoRules >= 2) cinkoMove(r, {owner: 2, pass: true, points: 0}, time);
   else finish(r, "completed", time);
   r.revision++;
 }
@@ -380,11 +460,53 @@ function fiveAfter(r, side, time) {
   }
 }
 // The best answers of a round: most clubs first, then the best known.
-function fiveBest(clubs) {
+function fiveBest(clubs, rules = 1) {
   const all = new Set();
   for (const club of clubs) for (const id of answers(club)) all.add(id);
   return [...all].map((id) => [id, clubs.filter((club) => matches(id, club)).length])
-      .sort((a, b) => b[1] - a[1] || byRank(a[0], b[0])).slice(0, 3).map(([id, n]) => ({...name(id), clubs: n}));
+      .sort((a, b) => b[1] - a[1] || byRank(a[0], b[0])).slice(0, 3)
+      .map(([id, n]) => ({...name(id), clubs: n, points: fivePoints(n, rules)}));
+}
+
+// Rules 2 (as online Random Five): both sides answer each round at once, a rarer answer pays
+// more, and each side only repeats none of its own names.
+const FIVE_RULES = 2;
+const FIVE_POINTS = [0, 1, 2, 4, 6, 8];
+const fivePoints = (n, rules) => rules >= 2 ? FIVE_POINTS[n] : n;
+// Bot levels: how far its knowledge reaches, how often it has nothing, and the most clubs it
+// aims for (one cap drawn per round). Easy names 1–2 club answers, medium mostly 3 and now and
+// then 4, hard always the best it knows.
+const FIVE_BOT = {
+  easy: {known: 2000, pass: .2, caps: [1, 2, 2]},
+  medium: {known: 5000, pass: 0, caps: [2, 3, 3, 3, 3, 3, 4, 4, 4, 4]},
+  hard: {known: 12000, pass: 0, caps: [5]},
+};
+// The bot's answer, locked in when the round opens; shown once the player has answered.
+function fiveBotPick(r) {
+  const cfg = FIVE_BOT[r.difficulty]; const clubs = r.rounds[r.round];
+  if (random(r, "fivepass" + r.round) < cfg.pass) return {pass: true, points: 0};
+  const cap = pick(r, cfg.caps, "fivecap" + r.round);
+  const scored = new Map();
+  for (const club of clubs) {
+    for (const id of answers(club)) {
+      if (!r.botUsed[id] && catalog.players[id].rank <= cfg.known && !scored.has(id)) {
+        scored.set(id, clubs.filter((c) => matches(id, c)).length);
+      }
+    }
+  }
+  const within = [...scored].filter(([, n]) => n <= cap);
+  if (!within.length) return {pass: true, points: 0};
+  const best = Math.max(...within.map(([, n]) => n));
+  const id = pick(r, within.filter(([, n]) => n === best).map(([id]) => id).sort(), "fivebot" + r.round);
+  return {playerId: id, clubs: clubs.filter((c) => matches(id, c)), points: FIVE_POINTS[best]};
+}
+// Rules 2: the player has answered; the bot's locked answer opens and the round closes.
+function fiveReveal(r, time) {
+  const move = r.botPick || {pass: true, points: 0};
+  if (move.playerId) r.botUsed[move.playerId] = true;
+  r.history[r.round].bot = move; r.botScore += move.points || 0; r.botPick = null;
+  r.turn = "result"; r.revision++;
+  if (r.round === 4) finish(r, "completed", time);
 }
 function fiveBot(r, time) {
   if (r.turn !== "bot" || r.botAt > time || r.finished) return;
@@ -401,7 +523,7 @@ function fiveBot(r, time) {
     const scores = available.map((id) => matched(r, id).length);
     const target = preferred.length ? Math.max(...scores) : Math.min(...scores);
     const id = pick(r, available.filter((id) => matched(r, id).length === target), "five" + r.round);
-    r.used[id] = true; move = {playerId: id, clubs: matched(r, id)};
+    r.used[id] = true; move = {playerId: id, clubs: matched(r, id), points: matched(r, id).length};
   }
   r.history[r.round].bot = move; r.botScore += move.clubs?.length || 0; fiveAfter(r, "bot", time); r.revision++;
 }
@@ -492,7 +614,7 @@ function reconcile(s, e, time) {
   }
 }
 const side = (m) => m ? {pass: !m.playerId, player: m.playerId ? name(m.playerId) : null,
-  clubs: (m.clubs || []).map((id) => catalog.criteria[id])} : null;
+  clubs: (m.clubs || []).map((id) => catalog.criteria[id]), points: m.points ?? (m.clubs || []).length} : null;
 function view(r, time) {
   if (!r) return null;
   const k = kind(r); const label = (id) => catalog.criteria[id] || null; const done = r.finished;
@@ -506,6 +628,9 @@ function view(r, time) {
     // Placement correctness and the bot board stay hidden until both boards are complete.
     Object.assign(v, {criteria: r.board.criteria.map(label), index: r.humanIndex, botIndex: r.botIndex,
       seconds: LOTO_SECONDS[r.difficulty], deadline: r.humanIndex < 16 ? r.deadline : null,
+      // When the bot next places: the client asks again then instead of every second.
+      botAt: r.botIndex < 16 && !r.pausedAt && !done ? r.botAt : null,
+      pausesLeft: Math.max(0, LOTO_PAUSES - (r.pauses || 0)), pauses: LOTO_PAUSES,
       // A paused clock must not become free thinking time for the shown player.
       current: r.humanIndex < 16 && !r.pausedAt ? name(r.board.queue[r.humanIndex]) : null,
       placements: Object.fromEntries(Object.entries(r.human).map(([cell, id]) =>
@@ -523,12 +648,19 @@ function view(r, time) {
       remaining: remaining(r).length, userFound: race.userFound, botFound: race.botFound,
       found: Object.entries(race.found).map(([id, owner]) => ({...name(id), owner})),
       // Players nobody found, shown once the round is over.
-      missed: race.over ? remaining(r).sort(byRank).map(name) : []});
+      missed: race.over ? remaining(r).sort(byRank).map(name) : [],
+      rules: r.raceRules || 1, botAt: !race.over && !r.pausedAt ? race.botAt : null,
+      maxRounds: r.raceRules >= 2 ? RACE_MAX_ROUNDS : null, finds: r.finds || {user: 0, bot: 0},
+      ...r.raceRules >= 2 ? {pausesLeft: Math.max(0, RACE_PAUSES - (r.pauses || 0)), pauses: RACE_PAUSES} : {}});
   } else if (k === "cinko") {
     const open = playable(r);
     Object.assign(v, {cells: r.cells.map((id, i) => ({...label(id), owner: r.owners[i]?.owner || 0,
       player: r.owners[i] ? name(r.owners[i].playerId) : null, playable: open.includes(i)})),
     current: r.current ? name(r.current) : null, botAt: r.turn === "bot" ? r.botAt : null,
+    rules: r.cinkoRules || 1, botFirst: !!r.botFirst, passes: r.passes || 0, maxPasses: CINKO_MAX_PASSES,
+    secondBonus: r.cinkoRules >= 2 ? CINKO_SECOND_BONUS : 0,
+    moves: (r.moves || []).map((m) => ({owner: m.owner, pass: !!m.pass, points: m.points || 0,
+      correct: m.correct || [], wrong: m.wrong || [], player: m.playerId ? name(m.playerId) : null})),
     last: r.last ? {owner: r.last.owner, pass: !r.last.playerId, points: r.last.points || 0,
       correct: r.last.correct || [], wrong: r.last.wrong || [],
       player: r.last.playerId ? name(r.last.playerId) : null} : null});
@@ -536,8 +668,14 @@ function view(r, time) {
     Object.assign(v, {round: r.round, totalRounds: 5, clubs: r.rounds[r.round].map(label),
       botAt: r.turn === "bot" ? r.botAt : null,
       history: r.history.map((h, i) => ({round: i, clubs: r.rounds[i].map(label),
-        user: side(h.user), bot: side(h.bot), ...h.user && h.bot ? {best: fiveBest(r.rounds[i])} : {}})),
-      wrongLeft: FIVE_MAX_WRONG - (r.fiveWrong?.[r.round] || 0), botFirst: r.round % 2 === 1});
+        user: side(h.user), bot: side(h.bot),
+        ...h.user && h.bot ? {best: fiveBest(r.rounds[i], r.fiveRules || 1)} : {}})),
+      wrongLeft: FIVE_MAX_WRONG - (r.fiveWrong?.[r.round] || 0),
+      // Rules 2: answers are simultaneous; the bot's locked answer stays hidden until the player's.
+      rules: r.fiveRules || 1, simultaneous: r.fiveRules >= 2,
+      botReady: r.fiveRules >= 2 && r.turn === "user" && !r.finished,
+      fivePoints: r.fiveRules >= 2 ? FIVE_POINTS : null,
+      botFirst: r.fiveRules >= 2 ? false : r.round % 2 === 1});
   }
   return v;
 }
@@ -548,18 +686,30 @@ function begin(r, input, time) {
     if (catalog.criteria[input.clubId]?.type !== "club" || !partners(input.clubId).length) {
       fail("invalid-argument", "Bu kulüp için yeterli ortak oyuncu yok.");
     }
-    r.club = input.clubId; r.round = 0; r.opponents = []; raceRound(r, time);
-  } else if (k === "cinko") r.cells = cinkoBoard(r);
+    r.club = input.clubId; r.round = 0; r.opponents = [];
+    r.raceRules = RACE_RULES; r.raceLimit = raceLimit(input.clubId, r.difficulty); r.pauses = 0;
+    raceRound(r, time);
+  } else if (k === "cinko") cinkoStart(r, time);
   else {
     r.rounds = [];
     for (let i = 0; i < 5; i++) r.rounds.push(fiveRound(r, r.rounds.flat(), i));
     r.round = 0; r.history = [{}];
+    r.fiveRules = FIVE_RULES; r.botUsed = {}; r.botPick = fiveBotPick(r);
   }
 }
 function move(r, input, time) {
   const k = kind(r); const action = input.action;
   if (action === "pause" && realtime(r)) {
-    if (!r.pausedAt) r.pausedAt = time; return;
+    if (!r.pausedAt) {
+      if (k === "loto" || r.raceRules >= 2) {
+        if ((r.pauses || 0) >= (k === "loto" ? LOTO_PAUSES : RACE_PAUSES)) {
+          fail("failed-precondition", "Bu maçtaki duraklatma hakların bitti.");
+        }
+        r.pauses = (r.pauses || 0) + 1;
+      }
+      r.pausedAt = time;
+    }
+    return;
   }
   if (action === "resume" && realtime(r)) {
     if (r.pausedAt) {
@@ -595,8 +745,9 @@ function move(r, input, time) {
     if (action === "end_round") {
       if (race.over || Number(input.round) !== race.round) fail("failed-precondition", "Bu tur kapandı.");
       if (time < race.startsAt) fail("failed-precondition", "Geri sayım sürüyor.");
-      // Ending early lets the bot play out the rest of the round's time.
-      raceTick(r, race.endsAt); r.feedback = "Turu bitirdin.";
+      // Rules 2: the round closes on the current score (the bot's due finds count, no more).
+      // Older sessions let the bot play out the rest of the round's time.
+      raceTick(r, r.raceRules >= 2 ? time : race.endsAt); r.feedback = "Turu bitirdin.";
       if (!race.over) raceEnd(r, time, true);
       return;
     }
@@ -615,6 +766,9 @@ function move(r, input, time) {
   if (k === "random_five" && action === "next") {
     if (r.turn !== "result") fail("failed-precondition", "Tur sonucu henüz hazır değil.");
     r.round++; r.history.push({}); r.turn = "user";
+    if (r.fiveRules >= 2) {
+      r.botPick = fiveBotPick(r); return;
+    }
     if (r.round % 2) {
       r.turn = "bot"; r.botAt = time + between(r, [900, 1400], "bot" + r.round);
     }
@@ -632,6 +786,13 @@ function move(r, input, time) {
       r.current = null; return;
     }
     if (action === "confirm") {
+      // Rules 2 sends the player with the cells (online flow: cells first, then the name).
+      if (input.playerId !== undefined && r.cinkoRules >= 2) {
+        if (!catalog.players[input.playerId] || r.used[input.playerId]) {
+          fail("invalid-argument", "Bu oyuncu bu maçta kullanıldı.");
+        }
+        r.current = input.playerId;
+      }
       const cells = input.cells; const open = playable(r);
       if (!r.current || !Array.isArray(cells) || !cells.length || new Set(cells).size !== cells.length ||
         cells.some((i) => !open.includes(i))) fail("invalid-argument", "Önce oyuncu ve açık kutular seç.");
@@ -640,7 +801,7 @@ function move(r, input, time) {
       }
       cinkoApply(r, r.current, cells, 1, time);
     } else if (action === "pass") {
-      r.current = null; r.last = {owner: 1, pass: true, points: 0};
+      r.current = null; cinkoMove(r, {owner: 1, pass: true, points: 0}, time);
     } else fail("invalid-argument", "İşlem geçersiz.");
     if (!r.finished) {
       r.turn = "bot"; r.botAt = time + (action === "pass" ? 0 : 1100) + between(r, [850, 1300], "bot" + r.revision);
@@ -660,14 +821,17 @@ function move(r, input, time) {
         r.feedback = catalog.players[id].name + " bu beş kulübe uymuyor. " +
           (FIVE_MAX_WRONG - wrong[r.round]) + " deneme hakkın kaldı."; return;
       }
-      r.history[r.round].user = {pass: true, wrong: true}; fiveAfter(r, "user", time);
+      r.history[r.round].user = {pass: true, wrong: true, points: 0};
+      if (r.fiveRules >= 2) fiveReveal(r, time); else fiveAfter(r, "user", time);
       r.feedback = "Üç isim de uymadı; bu tur pas sayıldı."; return;
     }
-    r.used[id] = true; r.history[r.round].user = {playerId: id, clubs: matched(r, id)};
-    r.userScore += matched(r, id).length;
-  } else if (action === "pass") r.history[r.round].user = {pass: true};
+    const points = fivePoints(matched(r, id).length, r.fiveRules);
+    r.used[id] = true; r.history[r.round].user = {playerId: id, clubs: matched(r, id), points};
+    r.userScore += points;
+  } else if (action === "pass") r.history[r.round].user = {pass: true, points: 0};
   else fail("invalid-argument", "İşlem geçersiz.");
-  r.feedback = null; fiveAfter(r, "user", time);
+  r.feedback = null;
+  if (r.fiveRules >= 2) fiveReveal(r, time); else fiveAfter(r, "user", time);
 }
 function createService({db, normalize, project, isLinked, now = Date.now}) {
   const mode = (input) => {
@@ -685,7 +849,10 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   }
   const response = (s, m, enabled) => ({legacy: !enabled && !s.active[m], availability: enabled,
     session: view(s.sessions[s.active[m]], now()), records: s.records, assistedRecords: s.assistedRecords,
-    version: VERSION, serverNow: now(), clubIds: POPULAR_CLUBS});
+    version: VERSION, serverNow: now(), clubIds: POPULAR_CLUBS,
+    // Team Race setup: the clubs a match can start with (only while no match is open).
+    ...m === "bot_team_race" && !(s.sessions[s.active[m]] && !s.sessions[s.active[m]].finished) ?
+      {raceClubIds: raceClubIds()} : {}});
   async function status(uid, input) {
     const m = mode(input); const policy = await B.policyFor(db, uid, await isLinked(uid));
     const before = await read(uid); const s = before.active[m] ? await change(uid, () => {}) : before;
@@ -796,4 +963,5 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   return {status, search, act, prepareHint, settleHint};
 }
 module.exports = {createService, MODES, VERSION, catalog, answers, matches, hint, view, lotoTiers, cinkoBoard,
-  fiveRound, fiveBot, component, partners, POPULAR_CLUBS, FIVE_MAX_WRONG, FIVE_KNOWN, RACE_ROUND_MS, RACE_MIN_SHARED};
+  fiveRound, fiveBot, component, partners, POPULAR_CLUBS, LOTO_PAUSES, CINKO_SECOND_BONUS, CINKO_MAX_PASSES,
+  cinkoBot, raceClubIds, raceLimit, RACE_TIER, RACE_BOT2, RACE_PAUSES, RACE_MAX_ROUNDS, FIVE_MAX_WRONG, FIVE_KNOWN, FIVE_POINTS, FIVE_BOT, fiveBotPick, RACE_ROUND_MS, RACE_MIN_SHARED};

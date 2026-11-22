@@ -19,7 +19,9 @@ const pos = {GK: "Kaleci", DEF: "Defans", MID: "Orta saha", ATT: "Forvet"};
 const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 // Sessions started with rules 2: fair boards, a cost for wrong solo answers, a bot that
 // blocks and misses by difficulty, and a random first mover against the bot.
-const RULES = 2;
+// Rules 3: random pairs cross every placed criterion (no empty crossing), and the random bot
+// misses, completes and blocks lines by difficulty like the classic one.
+const RULES = 3;
 const POPULAR_RANK = 3000;
 const FAIR_MIN_ANSWERS = 3;
 const WRONG_COST = {classic: 5, random: 5, reverse: 10};
@@ -68,6 +70,7 @@ function intersection(a, b) {
   const left = criterionPlayers.get(a) || new Set(); const right = criterionPlayers.get(b) || new Set();
   return [...(left.size < right.size ? left : right)].filter((id) => (left.size < right.size ? right : left).has(id));
 }
+const byRank = (a, b) => catalog.players[a].rank - catalog.players[b].rank || a.localeCompare(b);
 function perfect(answers) {
   const owners = new Map(); const witness = [];
   function assign(cell, visited) {
@@ -176,8 +179,7 @@ function answers(r, target) {
   const i = Number(target); if (!Number.isInteger(i) || i < 0 || i >= 9 || r.cells[i]) return [];
   if (kind(r) === "classic") return r.puzzle.answers[i].filter((id) => !r.used?.[id]);
   if (kind(r) !== "random" || !r.rows[i / 3 | 0] || !r.cols[i % 3]) return [];
-  return Object.values(catalog.players).filter((p) => !r.used?.[p.id] &&
-    matches(p, r.rows[i / 3 | 0]) && matches(p, r.cols[i % 3])).map((p) => p.id);
+  return intersection(r.rows[i / 3 | 0], r.cols[i % 3]).filter((id) => !r.used?.[id]).sort(byRank);
 }
 function axisIds(r, i) {
   return Array.from({length: 3}, (_, j) => r.puzzle.witness[i < 3 ? i * 3 + j : j * 3 + i - 3]);
@@ -266,14 +268,30 @@ function check(r, time) {
     }
   }
   if (!open(r).length) finish(r, "completed", time);
+  else if (stuck(r)) {
+    // Nobody can move any more: end the game on the score instead of leaving it open forever.
+    r.feedback = "Tahtada oynanabilir hamle kalmadı; sonuç puana göre belirlendi.";
+    finish(r, "completed", time);
+  }
+}
+// No legal move is left for either side: every open cell is out of unused answers and, on a
+// random board, no further pair can be drawn and placed.
+function stuck(r) {
+  if (kind(r) === "reverse" || open(r).some((i) => answers(r, i).length)) return false;
+  if (kind(r) !== "random" || r.roundsUsed >= 3 || ![2, 4, 6].some((i) => !r.cells[i])) return true;
+  if (r.pending?.playerId || r.pending && answers(r, "pending").length) return false;
+  try {
+    makePair({...structuredClone(r), pending: null}); return false;
+  } catch (e) {
+    if (!(e instanceof RewardError)) throw e; return true;
+  }
 }
 function claim(r, i, id, owner, time) {
   const p = catalog.players[id]; let bonus = p.rank > 4500 ? 30 : p.rank > 2500 ? 15 : p.rank > 1000 ? 5 : 0;
   if (kind(r) === "random") {
     // Pair-relative rarity uses the complete canonical answer pool, not the question filter.
-    const all = Object.values(catalog.players).filter((p) => matches(p, r.rows[i / 3 | 0]) &&
-      matches(p, r.cols[i % 3])).sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id));
-    const pct = (all.findIndex((p) => p.id === id) + 1) / all.length;
+    const all = intersection(r.rows[i / 3 | 0], r.cols[i % 3]).sort(byRank);
+    const pct = (all.indexOf(id) + 1) / all.length;
     bonus = pct > .75 ? 30 : pct > .5 ? 15 : pct > .25 ? 5 : 0;
   }
   r.cells[i] = {playerId: id, owner, bonus}; r.used[id] = true;
@@ -284,35 +302,45 @@ function makePair(r) {
   if (r.roundsUsed >= 3 || r.pending) fail("failed-precondition", "Önce bekleyen çifti tamamla.");
   const used = new Set([...Object.values(r.rows), ...Object.values(r.cols)]);
   const pool = new Set(r.pool);
-  const clubs = P.shuffle(pool.size ? [...pool] : catalog.gridClubs || catalog.clubOptions, r.seed + r.pairNumber)
+  const all = P.shuffle(pool.size ? [...pool] : catalog.gridClubs || catalog.clubOptions, r.seed + r.pairNumber)
       .filter((id) => !used.has(id));
   const pairs = []; const fair = r.rules >= 2;
-  // At most one coach pair per board (so never coach x coach); ~35% of draws while none is placed.
-  if (fair && ![...used].some((id) => id.startsWith("coach:")) && random(r, "coach" + r.pairNumber) < 0.35) {
-    const floor = Math.max(FAIR_MIN_ANSWERS, r.minimumAnswers);
-    for (const coach of P.shuffle(COACHES, r.seed + "coach" + r.pairNumber).slice(0, 6)) {
-      for (const club of clubs) {
-        const ids = intersection(coach, club); const free = ids.filter((id) => !r.used[id]);
-        if (free.length >= floor && free.some((id) => catalog.players[id].rank <= POPULAR_RANK)) {
-          pairs.push({criteria: [coach, club], answers: ids});
+  const floor = fair ? Math.max(FAIR_MIN_ANSWERS, r.minimumAnswers) : r.minimumAnswers;
+  // Rules 3: each criterion of a new pair shares an unused player with every placed criterion, so
+  // whichever free anchor and orientation is chosen, every crossing of the board has an answer.
+  // Pools too narrow for that fall back to the rules 2 draw.
+  const crossesAll = (id) => [...used].every((e) => intersection(id, e).some((p) => !r.used[p]));
+  const tiers = r.rules >= 3 && used.size ? [all.filter(crossesAll), all] : [all];
+  for (const clubs of tiers) {
+    // At most one coach pair per board (so never coach x coach); ~35% of draws while none is placed.
+    if (fair && ![...used].some((id) => id.startsWith("coach:")) && random(r, "coach" + r.pairNumber) < 0.35) {
+      const coaches = P.shuffle(COACHES, r.seed + "coach" + r.pairNumber)
+          .filter((id) => clubs === all || crossesAll(id)).slice(0, 6);
+      for (const coach of coaches) {
+        for (const club of clubs) {
+          const ids = intersection(coach, club); const free = ids.filter((id) => !r.used[id]);
+          if (free.length >= floor && free.some((id) => catalog.players[id].rank <= POPULAR_RANK)) {
+            pairs.push({criteria: [coach, club], answers: ids});
+          }
+        }
+        if (pairs.length) break;
+      }
+    }
+    // Rules 2: 3+ unused answers with a well-known one, gathered from the first three clubs that
+    // have pairs (not only the first), so one club does not decide every pair.
+    for (let i = 0, from = 0; !pairs.length && i < clubs.length && from < (fair ? 3 : 1); i++) {
+      const before = pairs.length;
+      for (let j = i + 1; j < clubs.length; j++) {
+        const ids = intersection(clubs[i], clubs[j]); const free = ids.filter((id) => !r.used[id]);
+        if (free.length >= floor && (!fair || free.some((id) => catalog.players[id].rank <= POPULAR_RANK))) {
+          pairs.push({criteria: [clubs[i], clubs[j]], answers: ids});
         }
       }
-      if (pairs.length) break;
+      if (pairs.length > before) from++;
     }
+    if (pairs.length) break;
   }
-  // Rules 2: 3+ unused answers with a well-known one, gathered from the first three clubs that
-  // have pairs (not only the first), so one club does not decide every pair.
-  const floor = fair ? Math.max(FAIR_MIN_ANSWERS, r.minimumAnswers) : r.minimumAnswers;
-  for (let i = 0, from = 0; !pairs.length && i < clubs.length && from < (fair ? 3 : 1); i++) {
-    const before = pairs.length;
-    for (let j = i + 1; j < clubs.length; j++) {
-      const ids = intersection(clubs[i], clubs[j]); const free = ids.filter((id) => !r.used[id]);
-      if (free.length >= floor && (!fair || free.some((id) => catalog.players[id].rank <= POPULAR_RANK))) {
-        pairs.push({criteria: [clubs[i], clubs[j]], answers: ids});
-      }
-    }
-    if (pairs.length > before) from++;
-  }
+  const clubs = all;
   if (!pairs.length && fair) {
     // A narrow pool keeps the old floor rather than running out of pairs.
     for (let i = 0; i < clubs.length && !pairs.length; i++) {
@@ -362,28 +390,38 @@ function botMove(r, time) {
     } else if (k) r.botNote = `Bot ${i < 3 ? "satır" : "sütun"} ${i % 3 + 1} için yanlış kriter söyledi.`;
   } else if (kind(r) === "classic") {
     if (hit) {
-      const cells = open(r).filter((i) => answers(r, i).length);
-      // Complete a bot line; rules 2 then block a user line (hard always, medium half the time).
-      const winning = completing(r, cells, 2);
-      const blocking = r.rules >= 2 && random(r, "block") < BOT_BLOCK[r.difficulty] ? completing(r, cells, 1) : [];
-      const i = pick(r, winning.length ? winning : blocking.length ? blocking : cells, "cell");
+      const i = aim(r, open(r).filter((i) => answers(r, i).length), "cell");
       if (i !== undefined) claim(r, i, pick(r, answers(r, i), "player"), 2, time);
+      else if (r.rules >= 3) r.botNote = "Bot doldurabileceği kutu bulamadı; pas geçti.";
     } else if (r.rules >= 2) r.botNote = "Bot bu turda doğru oyuncuyu bulamadı.";
+  } else if (r.rules >= 3 && !hit) {
+    r.botNote = "Bot bu turda doğru oyuncuyu bulamadı.";
   } else {
-    const i = open(r).find((i) => answers(r, i).length);
+    const cells = open(r).filter((i) => answers(r, i).length);
+    // Rules 3: the random bot aims like the classic one; older sessions keep the first free cell.
+    const i = r.rules >= 3 ? aim(r, cells, "cell") : cells[0];
     if (i !== undefined) claim(r, i, pick(r, answers(r, i), "player"), 2, time);
     else if (r.roundsUsed < 3) {
       try {
         if (!r.pending) makePair(r);
         r.pending.playerId = pick(r, answers(r, "pending"), "pending");
-        const a = pick(r, [2, 4, 6].filter((i) => !r.cells[i]), "anchor");
+        const anchors = [2, 4, 6].filter((i) => !r.cells[i]);
+        const a = r.rules >= 3 ? aim(r, anchors, "anchor") : pick(r, anchors, "anchor");
         place(r, a, random(r, "swap") > .5, 2, time);
       } catch (e) {
         if (!(e instanceof RewardError)) throw e; r.pending = null;
+        if (r.rules >= 3) r.botNote = "Bot yeni kulüp çifti kuramadı; pas geçti.";
       }
-    }
+    } else if (r.rules >= 3) r.botNote = "Bot doldurabileceği kutu bulamadı; pas geçti.";
   }
   r.revision++; check(r, time);
+}
+// The bot's target: complete its own line, else block a user line (rules 2+: hard always,
+// medium half the time, easy never), else any of `cells`.
+function aim(r, cells, key) {
+  const winning = completing(r, cells, 2);
+  const blocking = r.rules >= 2 && random(r, "block") < BOT_BLOCK[r.difficulty] ? completing(r, cells, 1) : [];
+  return pick(r, winning.length ? winning : blocking.length ? blocking : cells, key);
 }
 function reconcile(s, e, time) {
   for (const [id, r] of Object.entries(s.sessions)) {
@@ -560,6 +598,8 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
             }
           }
         } else fail("invalid-argument", "İşlem geçersiz.");
+        // A move can leave nothing playable (also on solo boards, where no bot turn follows).
+        check(r, now());
       }
       r.actions[input.requestId] = fp; r.revision++;
     });
@@ -597,5 +637,5 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
   return {status, search, act, prepareHint, settleHint};
 }
 module.exports = {createService, MODES, catalog, hint, common, answers, view, makePuzzle, perfect, labelKey, botMove,
-  makePair, answerCriterion, COACHES,
+  makePair, answerCriterion, COACHES, stuck,
   RULES, POPULAR_RANK, WRONG_COST, BOT_ACCURACY, BOT_BLOCK};
