@@ -41,6 +41,20 @@ class CountryNames {
     return _aliases[_key(t)] ?? t;
   }
 
+  /// Every spelling that canonicalizes to [raw]'s canonical name, canonical
+  /// first. Raw data stores e.g. "Türkiye", so SQL lookups must match all of
+  /// them rather than the canonical display name alone.
+  static List<String> variants(String raw) {
+    final c = canonical(raw);
+    if (c.isEmpty) return const <String>[];
+    final out = <String>[c];
+    final seen = <String>{c.toLowerCase()};
+    _aliases.forEach((key, value) {
+      if (value == c && seen.add(key)) out.add(key);
+    });
+    return out;
+  }
+
   static List<String> canonicalList(Iterable<String> raw) {
     final out = <String>[];
     final seen = <String>{};
