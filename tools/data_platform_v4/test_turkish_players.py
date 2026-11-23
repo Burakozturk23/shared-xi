@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from apply_turkish_players import ROOT, REVIEW, REVISION, LINK_SOURCE, apply
+from apply_club_twins import canonical
 
 DB = ROOT / 'assets/runtime/linkball_game_data_v4.sqlite'
 MANIFEST = ROOT / 'assets/runtime/linkball_game_data_v4_manifest.json'
@@ -14,6 +15,7 @@ MANIFEST = ROOT / 'assets/runtime/linkball_game_data_v4_manifest.json'
 class TurkishPlayersTests(unittest.TestCase):
     def test_players_have_identity_links_and_ordered_careers(self):
         review = json.loads(REVIEW.read_text(encoding='utf-8'))
+        twin = canonical(DB)  # v4-2026-11-23.3 merged twin club rows: a reviewed twin id now lives on its primary row.
         self.assertEqual(len(review['players']), 45)
         with sqlite3.connect(DB) as con:
             for p in review['players']:
@@ -21,10 +23,10 @@ class TurkishPlayersTests(unittest.TestCase):
                                              (p['id'],)).fetchone(), (p['name'], 'Türkiye', 'reviewed-player', 1))
                 self.assertTrue(con.execute('SELECT 1 FROM player_search_terms WHERE player_id=?', (p['id'],)).fetchone())
                 self.assertEqual(set(con.execute('SELECT club_id FROM player_clubs WHERE player_id=? AND source=?',
-                                                 (p['id'], LINK_SOURCE))), {(c['id'],) for c in p['clubs']})
+                                                 (p['id'], LINK_SOURCE))), {(twin.get(c['id'], c['id']),) for c in p['clubs']})
                 spells = con.execute('SELECT club_id,start_date,end_date FROM career_spells WHERE player_id=? ORDER BY sequence',
                                      (p['id'],)).fetchall()
-                self.assertEqual(spells, [(s['id'], str(s['startYear']) if s['startYear'] else None,
+                self.assertEqual(spells, [(twin.get(s['id'], s['id']), str(s['startYear']) if s['startYear'] else None,
                                            str(s['endYear']) if s['endYear'] else None) for s in p['spells']])
 
     def test_club_country_discovery_finds_the_reported_players(self):

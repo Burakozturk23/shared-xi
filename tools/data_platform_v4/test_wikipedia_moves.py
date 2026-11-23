@@ -24,7 +24,7 @@ class WikipediaMovesTests(unittest.TestCase):
         with sqlite3.connect(DB) as con:
             # Kehrer: Monaco -> Ajax on loan; Doekhi: Union Berlin -> Lazio.
             self.assertEqual(career(con, 228948)[-1][:2], (610, '2026-07-01'))
-            self.assertTrue(moved(con, 228948, 1000000162, 610))
+            self.assertTrue(moved(con, 228948, 162, 610))  # Monaco's twin row merged into 162 (v4-2026-11-23.3)
             self.assertTrue(moved(con, 387047, 89, 398))
             # Morata: no loan return to Milan; Como -> Leganés.
             self.assertEqual([s[0] for s in career(con, 128223)[-2:]], [1047, 1244])

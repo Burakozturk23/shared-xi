@@ -5,6 +5,7 @@ import sqlite3
 import tempfile
 import unittest
 from apply_roster_expansion import ROOT,apply,digest,load_review,ID_OFFSET,norm
+from apply_club_twins import canonical
 
 class ExpansionTests(unittest.TestCase):
     def fixture(self, directory):
@@ -49,6 +50,7 @@ class ExpansionTests(unittest.TestCase):
         review=ROOT/'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
         if not review.exists():self.skipTest('Review has not been generated yet')
         evidence=load_review(review);m=json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text())
+        twin=canonical(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')  # v4-2026-11-23.3 merged twin club rows: a reviewed twin id now lives on its primary row.
         with closing(sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')) as c, c:
             self.assertEqual(c.execute('SELECT COUNT(*) FROM players').fetchone()[0],m['counts']['players'])
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE source='worldcup26-roster'").fetchone()[0],evidence['newPlayers'])
@@ -57,7 +59,7 @@ class ExpansionTests(unittest.TestCase):
                 pid=ID_OFFSET+int(r['sourcePlayerId'])
                 self.assertEqual(c.execute('SELECT answer_eligible FROM players WHERE id=?',(pid,)).fetchone(),(1,))
                 self.assertTrue(c.execute('SELECT 1 FROM player_search_terms WHERE player_id=?',(pid,)).fetchone())
-                self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?',(pid,r['clubId'])).fetchone())
+                self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?',(pid,twin.get(r['clubId'],r['clubId']))).fetchone())
                 self.assertFalse(c.execute('SELECT 1 FROM career_spells WHERE player_id=?',(pid,)).fetchone())
                 self.assertFalse(c.execute('SELECT 1 FROM transfers WHERE player_id=?',(pid,)).fetchone())
                 # Same predicate as the V4 per-club answer and player-search queries.

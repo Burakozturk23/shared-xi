@@ -6,6 +6,10 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
 SNAPSHOT=ROOT/'tools/data_platform_v4/patches/rosters-2026-09-29.json'
+# Sources the link count below leaves out (later reviews); their collapsed twin links too.
+IN_LATER_REVIEWS={'roster:worldcup26:2026-09-29.2','reviewed:notable:2026-09-30','reviewed:legend-portraits:2026-10-01',
+    'reviewed:season-portraits:2026-10-01','reviewed:portrait-audit:2026-10-04','reviewed:avatar-careers:2026-10-05',
+    'reviewed:summer-2026:2026-11-12','reviewed:turkish-players:2026-11-22','reviewed:famous-players:2026-11-23'}
 PATCH=ROOT/'tools/data_platform_v4/patches/v4-2026-09-29.1.json'
 
 class RosterPatchTests(unittest.TestCase):
@@ -42,7 +46,9 @@ class RosterPatchTests(unittest.TestCase):
                     "'reviewed:season-portraits:2026-10-01',"
                     "'reviewed:portrait-audit:2026-10-04',"
                     "'reviewed:avatar-careers:2026-10-05',"
-                    "'reviewed:summer-2026:2026-11-12'"
+                    "'reviewed:summer-2026:2026-11-12',"
+                    "'reviewed:turkish-players:2026-11-22',"
+                    "'reviewed:famous-players:2026-11-23'"
                     ")"
                 ).fetchone()[0],
                 165563 + len(additions)
@@ -51,7 +57,11 @@ class RosterPatchTests(unittest.TestCase):
                     (ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('corrections', []))
                 # Base links a reviewed correction removed (Fekir's Al Jazira stored as Craiova).
                 - sum(r.get('removedBaseLinks', 0) for r in json.loads(
-                    (ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])),
+                    (ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', []))
+                # Links of a player on both rows of a twin club, one remaining after the merge (v4-2026-11-23.3).
+                - sum(n for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text())
+                      .get('reviewedAdditions', []) for src, n in r.get('collapsedLinksBySource', {}).items()
+                      if src not in IN_LATER_REVIEWS),
             )
             for r in evidence['rows']:
                 if r['status'] in ('review','conflicting_rosters') and r.get('playerId'):

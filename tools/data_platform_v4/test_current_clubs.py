@@ -7,6 +7,7 @@ from pathlib import Path
 
 from apply_current_clubs import ROOT, REVIEW, REVISION, SEASON, apply
 from build_current_club_review import build
+from apply_club_twins import canonical
 
 DB = ROOT / 'assets/runtime/linkball_game_data_v4.sqlite'
 MANIFEST = ROOT / 'assets/runtime/linkball_game_data_v4_manifest.json'
@@ -22,15 +23,17 @@ class CurrentClubsTests(unittest.TestCase):
                                  .read_text(encoding='utf-8'))
         excluded |= {p['playerId'] for p in corrections['players']
                      if any(op['op'] in ('removeSpell', 'updateSpell') and op['start'] == '2026-07-01' for op in p['ops'])}
+        twin = canonical(DB)  # v4-2026-11-23.3 merged twin club rows: a reviewed twin id now lives on its primary row.
+        c = lambda i: twin.get(i, i)
         with sqlite3.connect(DB) as con:
             for r in review['players']:
                 if r['playerId'] in excluded:
                     continue
                 last = con.execute('''SELECT club_id,start_date,confidence FROM career_spells
-                    WHERE player_id=? AND start_date=? AND club_id=?''', (r['playerId'], '2026-07-01', r['toClubId'])).fetchone()
-                self.assertEqual(last, (r['toClubId'], '2026-07-01', SEASON), r['name'])
+                    WHERE player_id=? AND start_date=? AND club_id=?''', (r['playerId'], '2026-07-01', c(r['toClubId']))).fetchone()
+                self.assertEqual(last, (c(r['toClubId']), '2026-07-01', SEASON), r['name'])
                 moved = con.execute('SELECT 1 FROM transfers WHERE player_id=? AND from_club_id=? AND to_club_id=? '
-                                    'AND transfer_date=? AND trust=?', (r['playerId'], r['fromClubId'], r['toClubId'],
+                                    'AND transfer_date=? AND trust=?', (r['playerId'], c(r['fromClubId']), c(r['toClubId']),
                                                                         '2026-07-01', SEASON)).fetchone()
                 self.assertEqual(bool(moved), r['transfer'], r['name'])
             # Dumfries: Inter -> Real Madrid; Tadić's club left is uncertain (Al-Wahda in between).

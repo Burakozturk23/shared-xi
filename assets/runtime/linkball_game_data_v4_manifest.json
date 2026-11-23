@@ -5,19 +5,19 @@
   "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
   "database": {
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
-    "bytes": 41488384,
-    "sizeMB": 39.57,
-    "sha256": "ceec4481b4cd843f17a9b04eeed45dd0f5df635ad0ac2f71d368737212b4f307"
+    "bytes": 47165440,
+    "sizeMB": 44.98,
+    "sha256": "9ec484b50452ac3fb4b96a1872a9c2e225a0303e1ded24438feaf8a708fda4cb"
   },
   "counts": {
-    "players": 36436,
-    "unique_player_ids": 36436,
+    "players": 39600,
+    "unique_player_ids": 39600,
     "shadow_players": 0,
-    "players_with_clubs": 36436,
+    "players_with_clubs": 39600,
     "clubs": 4335,
-    "career_players": 7045,
+    "career_players": 10209,
     "transfer_players": 4599,
-    "search_players": 36436,
+    "search_players": 39600,
     "coaches": 5285,
     "transfers": 34453
   },
@@ -41,8 +41,8 @@
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
   },
-  "revision": "v4-2026-11-22.1",
-  "updatedUtc": "2026-11-22",
+  "revision": "v4-2026-11-23.3",
+  "updatedUtc": "2026-11-23",
   "patches": [
     {
       "id": "v4-2026-09-28.1",
@@ -147,6 +147,36 @@
       "newPlayers": 45,
       "newLinks": 287,
       "newCareerSpells": 309
+    },
+    {
+      "id": "v4-2026-11-23.1",
+      "baseSha256": "ceec4481b4cd843f17a9b04eeed45dd0f5df635ad0ac2f71d368737212b4f307",
+      "outputSha256": "9d11b0ed77c510596284c6ed089e20e8fc41b918ea5d3ee00b55ec7473e83029",
+      "evidenceSha256": "dfe184d1c43cc8a4b4f5702f28a5bdb102cfdada9cbb1cf0f4b4bad1ec74bc45",
+      "newPlayers": 3164,
+      "newLinks": 15203,
+      "newCareerSpells": 16926
+    },
+    {
+      "id": "v4-2026-11-23.2",
+      "baseSha256": "9d11b0ed77c510596284c6ed089e20e8fc41b918ea5d3ee00b55ec7473e83029",
+      "outputSha256": "b3ff47e58b604c1fd2473d54f53325eb22c988564fce9da30aaefba68cc8c94e",
+      "evidenceSha256": "e134e92a7110359e6a2724ea88d6504c5eba19df349d6c84b87736cb61761ed2",
+      "anchors": 2826,
+      "ranked": 3539,
+      "changed": 3539
+    },
+    {
+      "id": "v4-2026-11-23.3",
+      "baseSha256": "b3ff47e58b604c1fd2473d54f53325eb22c988564fce9da30aaefba68cc8c94e",
+      "outputSha256": "9ec484b50452ac3fb4b96a1872a9c2e225a0303e1ded24438feaf8a708fda4cb",
+      "twinGroups": 168,
+      "twins": 172,
+      "movedLinks": 1158,
+      "renamed": 1,
+      "collapsedLinksBySource": {
+        "v3": 918
+      }
     }
   ],
   "corrections": [
