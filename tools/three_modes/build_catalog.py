@@ -165,16 +165,17 @@ def build():
             clubs[cid]['search']=norm(' '.join([clubs[cid]['name']]+alias))
     # One club, several V4 rows (same name and country): every row answers for
     # the same club, and only the main row is offered in the search list.
+    # A twin row the database merged (v4-2026-11-23.3) left the gameplay pools but still answers.
     same=defaultdict(list)
     for club in clubs.values():
-        if club['searchable']: same[(norm(club['name']),norm(club['country']))].append(club['id'])
+        if (club['league'] or '').strip(): same[(norm(club['name']),norm(club['country']))].append(club['id'])
     for ids in same.values():
-        if len(ids)<2: continue
-        main=max(ids,key=lambda i:(i in active_clubs,clubs[i]['popularity'],-i))
+        if len(ids)<2 or not any(clubs[i]['searchable'] for i in ids): continue
+        main=max(ids,key=lambda i:(clubs[i]['searchable'],i in active_clubs,clubs[i]['popularity'],-i))
         for i in ids:
             if i!=main:
                 clubs[i]['canonicalId']=main; clubs[i]['searchable']=False
-    catalog=dict(schemaVersion=1,version='three-modes-2026-10-31.3',baseSha256=sha,
+    catalog=dict(schemaVersion=1,version='three-modes-2026-11-23.1',baseSha256=sha,
         formations=FORMATIONS,players=list(players.values()),clubs=list(clubs.values()),
         letters=letters,puzzles=puzzles,leagueSnapshot='v4-2026-10-05.1',vaultClubs=active_clubs,
         policy=dict(medals=[{'at':5,'coins':5,'xp':10},{'at':8,'coins':10,'xp':20},

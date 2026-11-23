@@ -1,5 +1,5 @@
 {
-  "version": "arcade-v1-4db4d38edcdbff98",
+  "version": "arcade-v1-c33586df706324ba",
   "scenarios": [
     {
       "style": "speed",
@@ -9,7 +9,7 @@
         "style": "speed",
         "pairType": "clubClub",
         "difficulty": "normal",
-        "dataVersion": "arcade-v1-4db4d38edcdbff98",
+        "dataVersion": "arcade-v1-c33586df706324ba",
         "revision": 0,
         "phase": "active",
         "createdAt": 100000,
@@ -46,13 +46,13 @@
         "roundRemainingMs": 30000,
         "roundMs": 30000,
         "roundIds": [
-          "clubClub:1049:3709"
+          "clubClub:162:985"
         ],
         "hintedIds": [],
         "question": {
-          "id": "clubClub:1049:3709",
-          "left": "Valencia CF",
-          "right": "Getafe CF",
+          "id": "clubClub:162:985",
+          "left": "AS Monaco",
+          "right": "Manchester United",
           "difficulty": "easy"
         }
       },
@@ -63,7 +63,7 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 0,
             "action": "answer",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 250,
             "query": "Definitely unknown xyz"
           },
@@ -84,7 +84,7 @@
             "won": false,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:1049:3709"
+              "clubClub:162:985"
             ],
             "hintedIds": [],
             "found": [],
@@ -93,7 +93,7 @@
             "revision": 1,
             "paused": false
           },
-          "questionId": "clubClub:1049:3709"
+          "questionId": "clubClub:162:985"
         },
         {
           "event": {
@@ -101,9 +101,9 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 1,
             "action": "answer",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 250,
-            "entityId": "126716"
+            "entityId": "122153"
           },
           "expected": {
             "activeMs": 1600,
@@ -122,13 +122,13 @@
             "won": false,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:1049:3709"
+              "clubClub:162:985"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126716",
-                "name": "Paco Alcácer"
+                "id": "122153",
+                "name": "Paul Pogba"
               }
             ],
             "totalRemainingMs": 118400,
@@ -136,7 +136,7 @@
             "revision": 2,
             "paused": false
           },
-          "questionId": "clubClub:1049:3709"
+          "questionId": "clubClub:162:985"
         },
         {
           "event": {
@@ -144,9 +144,9 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 2,
             "action": "answer",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 250,
-            "entityId": "126716"
+            "entityId": "122153"
           },
           "expected": {
             "activeMs": 2400,
@@ -165,13 +165,13 @@
             "won": false,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:1049:3709"
+              "clubClub:162:985"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126716",
-                "name": "Paco Alcácer"
+                "id": "122153",
+                "name": "Paul Pogba"
               }
             ],
             "totalRemainingMs": 117600,
@@ -179,7 +179,7 @@
             "revision": 3,
             "paused": false
           },
-          "questionId": "clubClub:1049:3709"
+          "questionId": "clubClub:162:985"
         },
         {
           "event": {
@@ -187,7 +187,7 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 3,
             "action": "answer",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 250,
             "entityId": "10"
           },
@@ -209,13 +209,13 @@
             "penaltyMs": 3000,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:1049:3709"
+              "clubClub:162:985"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126716",
-                "name": "Paco Alcácer"
+                "id": "122153",
+                "name": "Paul Pogba"
               }
             ],
             "totalRemainingMs": 113800,
@@ -223,7 +223,7 @@
             "revision": 4,
             "paused": false
           },
-          "questionId": "clubClub:1049:3709"
+          "questionId": "clubClub:162:985"
         },
         {
           "event": {
@@ -231,7 +231,7 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 4,
             "action": "pause",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 250
           },
           "expected": {
@@ -252,13 +252,13 @@
             "penaltyMs": 3000,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:1049:3709"
+              "clubClub:162:985"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126716",
-                "name": "Paco Alcácer"
+                "id": "122153",
+                "name": "Paul Pogba"
               }
             ],
             "totalRemainingMs": 113550,
@@ -266,7 +266,7 @@
             "revision": 5,
             "paused": true
           },
-          "questionId": "clubClub:1049:3709"
+          "questionId": "clubClub:162:985"
         },
         {
           "event": {
@@ -274,7 +274,7 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 5,
             "action": "resume",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 0
           },
           "expected": {
@@ -295,13 +295,13 @@
             "penaltyMs": 3000,
             "roundAt": 0,
             "roundIds": [
-              "clubClub:1049:3709"
+              "clubClub:162:985"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126716",
-                "name": "Paco Alcácer"
+                "id": "122153",
+                "name": "Paul Pogba"
               }
             ],
             "totalRemainingMs": 113550,
@@ -309,7 +309,7 @@
             "revision": 6,
             "paused": false
           },
-          "questionId": "clubClub:1049:3709"
+          "questionId": "clubClub:162:985"
         },
         {
           "event": {
@@ -317,7 +317,7 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 6,
             "action": "pass",
-            "questionId": "clubClub:1049:3709",
+            "questionId": "clubClub:162:985",
             "elapsedMs": 250
           },
           "expected": {
@@ -338,7 +338,7 @@
             "penaltyMs": 8000,
             "roundAt": 4250,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631"
             ],
             "hintedIds": [],
@@ -377,9 +377,9 @@
             "penaltyMs": 13000,
             "roundAt": 5050,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16"
+              "clubClub:162:631"
             ],
             "hintedIds": [],
             "found": [],
@@ -388,7 +388,7 @@
             "revision": 8,
             "paused": false
           },
-          "questionId": "clubClub:11:16"
+          "questionId": "clubClub:162:631"
         },
         {
           "event": {
@@ -396,9 +396,9 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 8,
             "action": "answer",
-            "questionId": "clubClub:11:16",
+            "questionId": "clubClub:162:631",
             "elapsedMs": 250,
-            "entityId": "1368"
+            "entityId": "182618"
           },
           "expected": {
             "activeMs": 5850,
@@ -418,15 +418,15 @@
             "penaltyMs": 13000,
             "roundAt": 5050,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16"
+              "clubClub:162:631"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "1368",
-                "name": "Guy Demel"
+                "id": "182618",
+                "name": "Tiemoué Bakayoko"
               }
             ],
             "totalRemainingMs": 101150,
@@ -434,7 +434,7 @@
             "revision": 9,
             "paused": false
           },
-          "questionId": "clubClub:11:16"
+          "questionId": "clubClub:162:631"
         },
         {
           "event": {
@@ -442,9 +442,9 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 9,
             "action": "answer",
-            "questionId": "clubClub:11:16",
+            "questionId": "clubClub:162:631",
             "elapsedMs": 250,
-            "entityId": "338424"
+            "entityId": "205938"
           },
           "expected": {
             "activeMs": 6650,
@@ -464,19 +464,19 @@
             "penaltyMs": 13000,
             "roundAt": 5050,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16"
+              "clubClub:162:631"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "1368",
-                "name": "Guy Demel"
+                "id": "182618",
+                "name": "Tiemoué Bakayoko"
               },
               {
-                "id": "338424",
-                "name": "Mikel Merino"
+                "id": "205938",
+                "name": "Mario Pašalić"
               }
             ],
             "totalRemainingMs": 100350,
@@ -484,7 +484,7 @@
             "revision": 10,
             "paused": false
           },
-          "questionId": "clubClub:11:16"
+          "questionId": "clubClub:162:631"
         },
         {
           "event": {
@@ -492,9 +492,9 @@
             "sessionId": "speed000000000000000000000000000",
             "revision": 10,
             "action": "answer",
-            "questionId": "clubClub:11:16",
+            "questionId": "clubClub:162:631",
             "elapsedMs": 250,
-            "entityId": "34322"
+            "entityId": "334526"
           },
           "expected": {
             "activeMs": 7450,
@@ -514,9 +514,9 @@
             "penaltyMs": 13000,
             "roundAt": 7450,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367"
             ],
             "hintedIds": [],
@@ -556,9 +556,9 @@
             "penaltyMs": 13000,
             "roundAt": 7450,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367"
             ],
             "hintedIds": [],
@@ -603,9 +603,9 @@
             "penaltyMs": 13000,
             "roundAt": 7450,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367"
             ],
             "hintedIds": [],
@@ -654,9 +654,9 @@
             "penaltyMs": 13000,
             "roundAt": 9850,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416"
             ],
@@ -697,9 +697,9 @@
             "penaltyMs": 13000,
             "roundAt": 9850,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416"
             ],
@@ -745,9 +745,9 @@
             "penaltyMs": 13000,
             "roundAt": 9850,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416"
             ],
@@ -797,9 +797,9 @@
             "penaltyMs": 13000,
             "roundAt": 12250,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416",
               "clubClub:11:281"
@@ -841,9 +841,9 @@
             "penaltyMs": 13000,
             "roundAt": 12250,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416",
               "clubClub:11:281"
@@ -890,9 +890,9 @@
             "penaltyMs": 13000,
             "roundAt": 12250,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416",
               "clubClub:11:281"
@@ -943,9 +943,9 @@
             "penaltyMs": 13000,
             "roundAt": 14650,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416",
               "clubClub:11:281",
@@ -987,9 +987,9 @@
             "penaltyMs": 13000,
             "roundAt": 45650,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416",
               "clubClub:11:281",
@@ -1032,9 +1032,9 @@
             "penaltyMs": 13000,
             "roundAt": 45650,
             "roundIds": [
-              "clubClub:1049:3709",
+              "clubClub:162:985",
               "clubClub:5:631",
-              "clubClub:11:16",
+              "clubClub:162:631",
               "clubClub:13:367",
               "clubClub:252:416",
               "clubClub:11:281",
@@ -1060,7 +1060,7 @@
         "style": "survival",
         "pairType": "clubClub",
         "difficulty": "normal",
-        "dataVersion": "arcade-v1-4db4d38edcdbff98",
+        "dataVersion": "arcade-v1-c33586df706324ba",
         "revision": 0,
         "phase": "active",
         "createdAt": 100000,
@@ -2118,7 +2118,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583"
+              "clubClub:1050:150"
             ],
             "hintedIds": [],
             "found": [],
@@ -2127,7 +2127,7 @@
             "revision": 23,
             "paused": false
           },
-          "questionId": "clubClub:27:583"
+          "questionId": "clubClub:1050:150"
         },
         {
           "event": {
@@ -2135,9 +2135,9 @@
             "sessionId": "survival000000000000000000000000",
             "revision": 23,
             "action": "answer",
-            "questionId": "clubClub:27:583",
+            "questionId": "clubClub:1050:150",
             "elapsedMs": 250,
-            "entityId": "126719"
+            "entityId": "127048"
           },
           "expected": {
             "activeMs": 17850,
@@ -2162,13 +2162,13 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583"
+              "clubClub:1050:150"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126719",
-                "name": "Juan Bernat"
+                "id": "127048",
+                "name": "Cédric Bakambu"
               }
             ],
             "totalRemainingMs": 102150,
@@ -2176,7 +2176,7 @@
             "revision": 24,
             "paused": false
           },
-          "questionId": "clubClub:27:583"
+          "questionId": "clubClub:1050:150"
         },
         {
           "event": {
@@ -2184,9 +2184,9 @@
             "sessionId": "survival000000000000000000000000",
             "revision": 24,
             "action": "answer",
-            "questionId": "clubClub:27:583",
+            "questionId": "clubClub:1050:150",
             "elapsedMs": 250,
-            "entityId": "243714"
+            "entityId": "131248"
           },
           "expected": {
             "activeMs": 18650,
@@ -2211,17 +2211,17 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583"
+              "clubClub:1050:150"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "126719",
-                "name": "Juan Bernat"
+                "id": "127048",
+                "name": "Cédric Bakambu"
               },
               {
-                "id": "243714",
-                "name": "Kingsley Coman"
+                "id": "131248",
+                "name": "Joel Campbell"
               }
             ],
             "totalRemainingMs": 101350,
@@ -2229,7 +2229,7 @@
             "revision": 25,
             "paused": false
           },
-          "questionId": "clubClub:27:583"
+          "questionId": "clubClub:1050:150"
         },
         {
           "event": {
@@ -2237,9 +2237,9 @@
             "sessionId": "survival000000000000000000000000",
             "revision": 25,
             "action": "answer",
-            "questionId": "clubClub:27:583",
+            "questionId": "clubClub:1050:150",
             "elapsedMs": 250,
-            "entityId": "258027"
+            "entityId": "221899"
           },
           "expected": {
             "activeMs": 19450,
@@ -2264,7 +2264,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252"
             ],
             "hintedIds": [],
@@ -2309,7 +2309,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252"
             ],
             "hintedIds": [],
@@ -2359,7 +2359,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252"
             ],
             "hintedIds": [],
@@ -2413,7 +2413,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410"
             ],
@@ -2459,7 +2459,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410"
             ],
@@ -2510,7 +2510,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410"
             ],
@@ -2565,7 +2565,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252"
@@ -2612,7 +2612,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252"
@@ -2664,7 +2664,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252"
@@ -2720,7 +2720,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -2768,7 +2768,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -2821,7 +2821,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -2878,7 +2878,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -2927,7 +2927,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -2981,7 +2981,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -3039,7 +3039,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -3089,7 +3089,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -3144,7 +3144,7 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
@@ -3203,14 +3203,14 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
               "clubClub:15:533",
               "clubClub:1050:720",
               "clubClub:289:405",
-              "clubClub:336:383"
+              "clubClub:12:607"
             ],
             "hintedIds": [],
             "found": [],
@@ -3219,7 +3219,7 @@
             "revision": 44,
             "paused": false
           },
-          "questionId": "clubClub:336:383"
+          "questionId": "clubClub:12:607"
         },
         {
           "event": {
@@ -3227,9 +3227,9 @@
             "sessionId": "survival000000000000000000000000",
             "revision": 44,
             "action": "answer",
-            "questionId": "clubClub:336:383",
+            "questionId": "clubClub:12:607",
             "elapsedMs": 250,
-            "entityId": "120443"
+            "entityId": "104332"
           },
           "expected": {
             "activeMs": 34650,
@@ -3254,20 +3254,20 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
               "clubClub:15:533",
               "clubClub:1050:720",
               "clubClub:289:405",
-              "clubClub:336:383"
+              "clubClub:12:607"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "120443",
-                "name": "Santiago Arias"
+                "id": "104332",
+                "name": "Alessandro Malomo"
               }
             ],
             "totalRemainingMs": 85350,
@@ -3275,7 +3275,7 @@
             "revision": 45,
             "paused": false
           },
-          "questionId": "clubClub:336:383"
+          "questionId": "clubClub:12:607"
         },
         {
           "event": {
@@ -3283,9 +3283,9 @@
             "sessionId": "survival000000000000000000000000",
             "revision": 45,
             "action": "answer",
-            "questionId": "clubClub:336:383",
+            "questionId": "clubClub:12:607",
             "elapsedMs": 250,
-            "entityId": "123349"
+            "entityId": "121985"
           },
           "expected": {
             "activeMs": 35450,
@@ -3310,24 +3310,24 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
               "clubClub:15:533",
               "clubClub:1050:720",
               "clubClub:289:405",
-              "clubClub:336:383"
+              "clubClub:12:607"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "120443",
-                "name": "Santiago Arias"
+                "id": "104332",
+                "name": "Alessandro Malomo"
               },
               {
-                "id": "123349",
-                "name": "Zakaria Labyad"
+                "id": "121985",
+                "name": "Juan Jesus"
               }
             ],
             "totalRemainingMs": 84550,
@@ -3335,7 +3335,7 @@
             "revision": 46,
             "paused": false
           },
-          "questionId": "clubClub:336:383"
+          "questionId": "clubClub:12:607"
         },
         {
           "event": {
@@ -3343,9 +3343,9 @@
             "sessionId": "survival000000000000000000000000",
             "revision": 46,
             "action": "answer",
-            "questionId": "clubClub:336:383",
+            "questionId": "clubClub:12:607",
             "elapsedMs": 250,
-            "entityId": "139396"
+            "entityId": "4100000951"
           },
           "expected": {
             "activeMs": 36250,
@@ -3370,28 +3370,28 @@
               "clubClub:46:506",
               "clubClub:12:631",
               "clubClub:1038:5",
-              "clubClub:27:583",
+              "clubClub:1050:150",
               "clubClub:148:252",
               "clubClub:16795:410",
               "clubClub:1025:252",
               "clubClub:15:533",
               "clubClub:1050:720",
               "clubClub:289:405",
-              "clubClub:336:383"
+              "clubClub:12:607"
             ],
             "hintedIds": [],
             "found": [
               {
-                "id": "120443",
-                "name": "Santiago Arias"
+                "id": "104332",
+                "name": "Alessandro Malomo"
               },
               {
-                "id": "123349",
-                "name": "Zakaria Labyad"
+                "id": "121985",
+                "name": "Juan Jesus"
               },
               {
-                "id": "139396",
-                "name": "Bruma"
+                "id": "4100000951",
+                "name": "Marco Delvecchio"
               }
             ],
             "totalRemainingMs": 83750,
@@ -3399,7 +3399,7 @@
             "revision": 47,
             "paused": false
           },
-          "questionId": "clubClub:336:383"
+          "questionId": "clubClub:12:607"
         }
       ]
     }

@@ -85,15 +85,21 @@ def build():
     # Whole V4 surname/mononym collision audit, with the reviewed legacy choices.
     old = read('practice_legacy.json')
     overrides = {p['id']: p['answer'] for p in old}
+    # A namesake only collides when the clue (country · position) cannot tell them apart: Taulant
+    # Xhaka (Albania) beside Granit (Switzerland) leaves XHAKA unambiguous; the guessed word is right
+    # either way, only the revealed name could be the wrong person.
     collisions = defaultdict(set)
     for p in people.values():
         if p['id'] >= 1000000000 and p['id'] - 1000000000 in people:
             continue
         parts = p['name'].split()
         candidate = ''.join(parts[-2:]) if len(parts) > 1 and parts[-2].lower() in ['de','van','di','ben','el','ter'] else parts[-1]
-        collisions[normalize(overrides.get(p['id'], candidate))].add(p['id'])
+        collisions[(normalize(overrides.get(p['id'], candidate)), p['country'], p['position'])].add(p['id'])
     for p in players:
-        assert collisions[p['answer']] == {p['id']}, (p['name'], collisions[p['answer']])
+        clue = (p['answer'], p['country'], people[p['id']]['position'])
+        # Relatives with the same clue (Felix beside Toni Kroos): the answer names the best known.
+        rank = lambda i: people[i]['selection_rank'] or 10**9
+        assert min(collisions[clue], key=rank) == p['id'], (p['name'], collisions[clue])
     clues = read('passaparola_clues.json')['questions']
     questions = read('passaparola.json')['questions'] + read('passaparola_generated.json')['questions'] + clues
     assert len({q['id'] for q in questions}) == len(questions)

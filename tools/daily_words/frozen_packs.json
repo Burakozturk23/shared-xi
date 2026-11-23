@@ -1,6 +1,6 @@
 {
  "note": "Published packs. Immutable: the builder replays these verbatim and only generates dates not listed here.",
- "source": "dw-v1-627236024ed1e784",
+ "source": "dw-v1-da736e454cd5f11d",
  "daily": {
   "2026-10-17": {
    "lingoId": "ln-CUBA",
@@ -730,6 +730,4596 @@
     "pa-p161056-13",
     "pa-p39983-14"
    ]
+  },
+  "2026-11-13": {
+   "lingoId": "lc-237",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 341647,
+     "difficulty": 1,
+     "scrambled": "ENURD"
+    },
+    {
+     "playerId": 1138758,
+     "difficulty": 2,
+     "scrambled": "EAUQND"
+    },
+    {
+     "playerId": 68864,
+     "difficulty": 3,
+     "scrambled": "ANTOTRMOS"
+    }
+   ],
+   "passaIds": [
+    "pa-c191891",
+    "pa-c344381",
+    "pa-c48002",
+    "pa-c159079",
+    "pa-c205938",
+    "pa-c357662",
+    "pa-c443710"
+   ]
+  },
+  "2026-11-14": {
+   "lingoId": "ln-CZECHREPUBLIC",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 486049,
+     "difficulty": 1,
+     "scrambled": "UKOD"
+    },
+    {
+     "playerId": 427568,
+     "difficulty": 2,
+     "scrambled": "SALDEMRA"
+    },
+    {
+     "playerId": 44716,
+     "difficulty": 3,
+     "scrambled": "HCIOARSIM"
+    }
+   ],
+   "passaIds": [
+    "pa-c91945",
+    "pa-c251664",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c99331",
+    "pa-c158946",
+    "pa-c118303"
+   ]
+  },
+  "2026-11-15": {
+   "lingoId": "lp-331560",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 361104,
+     "difficulty": 1,
+     "scrambled": "ESDT"
+    },
+    {
+     "playerId": 133964,
+     "difficulty": 2,
+     "scrambled": "GSENNII"
+    },
+    {
+     "playerId": 413112,
+     "difficulty": 3,
+     "scrambled": "UIMCNEOHAT"
+    }
+   ],
+   "passaIds": [
+    "pa-c42710",
+    "pa-c39381",
+    "pa-c284857",
+    "pa-c176354",
+    "pa-c99397",
+    "pa-c349599",
+    "pa-c489463"
+   ]
+  },
+  "2026-11-16": {
+   "lingoId": "lp-122153",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 129588,
+     "difficulty": 1,
+     "scrambled": "PRETA"
+    },
+    {
+     "playerId": 277179,
+     "difficulty": 2,
+     "scrambled": "GNANILOE"
+    },
+    {
+     "playerId": 451276,
+     "difficulty": 3,
+     "scrambled": "OSZBZILASO"
+    }
+   ],
+   "passaIds": [
+    "pa-c64399",
+    "pa-c239733",
+    "pa-c99343",
+    "pa-c59344",
+    "pa-c291760",
+    "pa-c776890",
+    "pa-c79110"
+   ]
+  },
+  "2026-11-17": {
+   "lingoId": "lc-1025",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 111196,
+     "difficulty": 1,
+     "scrambled": "DEJRVI"
+    },
+    {
+     "playerId": 293200,
+     "difficulty": 2,
+     "scrambled": "VCALIS"
+    },
+    {
+     "playerId": 540941,
+     "difficulty": 3,
+     "scrambled": "GDDASAAMR"
+    }
+   ],
+   "passaIds": [
+    "pa-c182904",
+    "pa-c119228",
+    "pa-c148367",
+    "pa-c57895",
+    "pa-c77966",
+    "pa-c257455",
+    "pa-c616631"
+   ]
+  },
+  "2026-11-18": {
+   "lingoId": "ln-PERU",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 487969,
+     "difficulty": 1,
+     "scrambled": "NUMIA"
+    },
+    {
+     "playerId": 325443,
+     "difficulty": 2,
+     "scrambled": "GOESERKY"
+    },
+    {
+     "playerId": 168157,
+     "difficulty": 3,
+     "scrambled": "RDEECKNNOD"
+    }
+   ],
+   "passaIds": [
+    "pa-c44058",
+    "pa-c204201",
+    "pa-c204103",
+    "pa-c40680",
+    "pa-c341647",
+    "pa-c41355",
+    "pa-c57480"
+   ]
+  },
+  "2026-11-19": {
+   "lingoId": "lp-182712",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 253677,
+     "difficulty": 1,
+     "scrambled": "MGNSI"
+    },
+    {
+     "playerId": 343537,
+     "difficulty": 2,
+     "scrambled": "OBKYVD"
+    },
+    {
+     "playerId": 502821,
+     "difficulty": 3,
+     "scrambled": "RILCFIAAO"
+    }
+   ],
+   "passaIds": [
+    "pa-c96828",
+    "pa-c177476",
+    "pa-c286384",
+    "pa-c128901",
+    "pa-c315208",
+    "pa-c191422",
+    "pa-c288318"
+   ]
+  },
+  "2026-11-20": {
+   "lingoId": "lc-1003",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 627207,
+     "difficulty": 1,
+     "scrambled": "PPEI"
+    },
+    {
+     "playerId": 580195,
+     "difficulty": 2,
+     "scrambled": "UAALISM"
+    },
+    {
+     "playerId": 810895,
+     "difficulty": 3,
+     "scrambled": "EIREBHSNG"
+    }
+   ],
+   "passaIds": [
+    "pa-c462250",
+    "pa-c54928",
+    "pa-c369316",
+    "pa-c71570",
+    "pa-c242631",
+    "pa-c291760",
+    "pa-c131758"
+   ]
+  },
+  "2026-11-21": {
+   "lingoId": "ln-ANGOLA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 420002,
+     "difficulty": 1,
+     "scrambled": "TTAMEA"
+    },
+    {
+     "playerId": 602105,
+     "difficulty": 2,
+     "scrambled": "NAYOTN"
+    },
+    {
+     "playerId": 340456,
+     "difficulty": 3,
+     "scrambled": "RIAMZOUA"
+    }
+   ],
+   "passaIds": [
+    "pa-c361260",
+    "pa-c141660",
+    "pa-c200512",
+    "pa-c291200",
+    "pa-c79642",
+    "pa-c271495",
+    "pa-c234029"
+   ]
+  },
+  "2026-11-22": {
+   "lingoId": "lp-69633",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 361260,
+     "difficulty": 1,
+     "scrambled": "ABAKK"
+    },
+    {
+     "playerId": 5588,
+     "difficulty": 2,
+     "scrambled": "SINSEE"
+    },
+    {
+     "playerId": 811779,
+     "difficulty": 3,
+     "scrambled": "CHGROAAN"
+    }
+   ],
+   "passaIds": [
+    "pa-c234803",
+    "pa-c90466",
+    "pa-c177031",
+    "pa-c391065",
+    "pa-c339314",
+    "pa-c341647",
+    "pa-c525287"
+   ]
+  },
+  "2026-11-23": {
+   "lingoId": "lp-404418",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 324690,
+     "difficulty": 1,
+     "scrambled": "OIKNE"
+    },
+    {
+     "playerId": 890290,
+     "difficulty": 2,
+     "scrambled": "HIENSJU"
+    },
+    {
+     "playerId": 532826,
+     "difficulty": 3,
+     "scrambled": "EORODNWEG"
+    }
+   ],
+   "passaIds": [
+    "pa-c14086",
+    "pa-c145988",
+    "pa-c207929",
+    "pa-c581678",
+    "pa-c341092",
+    "pa-c176354",
+    "pa-c337670"
+   ]
+  },
+  "2026-11-24": {
+   "lingoId": "lc-3057",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 314875,
+     "difficulty": 1,
+     "scrambled": "WNBEO"
+    },
+    {
+     "playerId": 281769,
+     "difficulty": 2,
+     "scrambled": "OEHORSM"
+    },
+    {
+     "playerId": 683571,
+     "difficulty": 3,
+     "scrambled": "ORDAERAKO"
+    }
+   ],
+   "passaIds": [
+    "pa-c84535",
+    "pa-c75489",
+    "pa-c74842",
+    "pa-c257785",
+    "pa-c890290",
+    "pa-c98888",
+    "pa-c613725"
+   ]
+  },
+  "2026-11-25": {
+   "lingoId": "ln-IRAN",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 81808,
+     "difficulty": 1,
+     "scrambled": "ONBY"
+    },
+    {
+     "playerId": 410425,
+     "difficulty": 2,
+     "scrambled": "MUBOSIAS"
+    },
+    {
+     "playerId": 335457,
+     "difficulty": 3,
+     "scrambled": "MOIIECVRD"
+    }
+   ],
+   "passaIds": [
+    "pa-c122155",
+    "pa-c94005",
+    "pa-c406040",
+    "pa-c294057",
+    "pa-c18935",
+    "pa-c280730",
+    "pa-c31867"
+   ]
+  },
+  "2026-11-26": {
+   "lingoId": "lp-73734",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 598577,
+     "difficulty": 1,
+     "scrambled": "WRTIZ"
+    },
+    {
+     "playerId": 485585,
+     "difficulty": 2,
+     "scrambled": "SENTMAA"
+    },
+    {
+     "playerId": 290249,
+     "difficulty": 3,
+     "scrambled": "AAIBRAMRR"
+    }
+   ],
+   "passaIds": [
+    "pa-c167329",
+    "pa-c88103",
+    "pa-c198008",
+    "pa-c330876",
+    "pa-c131996",
+    "pa-c170838",
+    "pa-c440653"
+   ]
+  },
+  "2026-11-27": {
+   "lingoId": "lc-24",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 894914,
+     "difficulty": 1,
+     "scrambled": "UANS"
+    },
+    {
+     "playerId": 346314,
+     "difficulty": 2,
+     "scrambled": "HLCBAHOA"
+    },
+    {
+     "playerId": 102558,
+     "difficulty": 3,
+     "scrambled": "RTIAETVR"
+    }
+   ],
+   "passaIds": [
+    "pa-c130360",
+    "pa-c69015",
+    "pa-c217111",
+    "pa-c131075",
+    "pa-c410425",
+    "pa-c319745",
+    "pa-c172163"
+   ]
+  },
+  "2026-11-28": {
+   "lingoId": "ln-CANADA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 80562,
+     "difficulty": 1,
+     "scrambled": "LUKH"
+    },
+    {
+     "playerId": 743591,
+     "difficulty": 2,
+     "scrambled": "HVOANIS"
+    },
+    {
+     "playerId": 443710,
+     "difficulty": 3,
+     "scrambled": "LLEISTR"
+    }
+   ],
+   "passaIds": [
+    "pa-c206050",
+    "pa-c39333",
+    "pa-c131789",
+    "pa-c124502",
+    "pa-c291758",
+    "pa-c275303",
+    "pa-c80351"
+   ]
+  },
+  "2026-11-29": {
+   "lingoId": "lp-206050",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 262749,
+     "difficulty": 1,
+     "scrambled": "RYAA"
+    },
+    {
+     "playerId": 538977,
+     "difficulty": 2,
+     "scrambled": "ERTTUR"
+    },
+    {
+     "playerId": 65,
+     "difficulty": 3,
+     "scrambled": "OVAEBBTR"
+    }
+   ],
+   "passaIds": [
+    "pa-c743091",
+    "pa-c340950",
+    "pa-c452084",
+    "pa-c21725",
+    "pa-c289446",
+    "pa-c257805",
+    "pa-c823231"
+   ]
+  },
+  "2026-11-30": {
+   "lingoId": "lp-31909",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 274839,
+     "difficulty": 1,
+     "scrambled": "DINID"
+    },
+    {
+     "playerId": 3163,
+     "difficulty": 2,
+     "scrambled": "DMAALRP"
+    },
+    {
+     "playerId": 729814,
+     "difficulty": 3,
+     "scrambled": "KIAUDTAMEZ"
+    }
+   ],
+   "passaIds": [
+    "pa-c615350",
+    "pa-c59561",
+    "pa-c355915",
+    "pa-c216179",
+    "pa-c306462",
+    "pa-c144028",
+    "pa-c214538"
+   ]
+  },
+  "2026-12-01": {
+   "lingoId": "lc-1132",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 167329,
+     "difficulty": 1,
+     "scrambled": "LEAP"
+    },
+    {
+     "playerId": 351816,
+     "difficulty": 2,
+     "scrambled": "NNERECBA"
+    },
+    {
+     "playerId": 423440,
+     "difficulty": 3,
+     "scrambled": "UMIBIDZNE"
+    }
+   ],
+   "passaIds": [
+    "pa-c251106",
+    "pa-c82009",
+    "pa-c386726",
+    "pa-c344598",
+    "pa-c51452",
+    "pa-c315853",
+    "pa-c156618"
+   ]
+  },
+  "2026-12-02": {
+   "lingoId": "ln-GABON",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 186590,
+     "difficulty": 1,
+     "scrambled": "ESTSON"
+    },
+    {
+     "playerId": 505219,
+     "difficulty": 2,
+     "scrambled": "RNAERG"
+    },
+    {
+     "playerId": 991268,
+     "difficulty": 3,
+     "scrambled": "AWAHEHOG"
+    }
+   ],
+   "passaIds": [
+    "pa-c110686",
+    "pa-c340879",
+    "pa-c69633",
+    "pa-c52570",
+    "pa-c486031",
+    "pa-c251345",
+    "pa-c79377"
+   ]
+  },
+  "2026-12-03": {
+   "lingoId": "lp-242086",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 648779,
+     "difficulty": 1,
+     "scrambled": "GNOSI"
+    },
+    {
+     "playerId": 182906,
+     "difficulty": 2,
+     "scrambled": "GANIMAN"
+    },
+    {
+     "playerId": 333647,
+     "difficulty": 3,
+     "scrambled": "TDAKURRB"
+    }
+   ],
+   "passaIds": [
+    "pa-c349066",
+    "pa-c743091",
+    "pa-c263727",
+    "pa-c356141",
+    "pa-c127108",
+    "pa-c171424",
+    "pa-c405397"
+   ]
+  },
+  "2026-12-04": {
+   "lingoId": "lc-148",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 318204,
+     "difficulty": 1,
+     "scrambled": "ARUM"
+    },
+    {
+     "playerId": 265078,
+     "difficulty": 2,
+     "scrambled": "COTRUEN"
+    },
+    {
+     "playerId": 515744,
+     "difficulty": 3,
+     "scrambled": "ESTRSYPNA"
+    }
+   ],
+   "passaIds": [
+    "pa-c189441",
+    "pa-c58855",
+    "pa-c149498",
+    "pa-c3332",
+    "pa-c85867",
+    "pa-c157993",
+    "pa-c158795"
+   ]
+  },
+  "2026-12-05": {
+   "lingoId": "ln-TUNISIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 221322,
+     "difficulty": 1,
+     "scrambled": "YAGA"
+    },
+    {
+     "playerId": 258889,
+     "difficulty": 2,
+     "scrambled": "OSNALEK"
+    },
+    {
+     "playerId": 29260,
+     "difficulty": 3,
+     "scrambled": "IHNLECLII"
+    }
+   ],
+   "passaIds": [
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c76163",
+    "pa-c158946",
+    "pa-c435648",
+    "pa-c127032",
+    "pa-c661053"
+   ]
+  },
+  "2026-12-06": {
+   "lingoId": "lp-15799",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 35664,
+     "difficulty": 1,
+     "scrambled": "OIZL"
+    },
+    {
+     "playerId": 554903,
+     "difficulty": 2,
+     "scrambled": "GTUIREE"
+    },
+    {
+     "playerId": 659813,
+     "difficulty": 3,
+     "scrambled": "CNIIHPAE"
+    }
+   ],
+   "passaIds": [
+    "pa-c517894",
+    "pa-c292199",
+    "pa-c54906",
+    "pa-c42412",
+    "pa-c148252",
+    "pa-c185077",
+    "pa-c295955"
+   ]
+  },
+  "2026-12-07": {
+   "lingoId": "lp-164770",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 346483,
+     "difficulty": 1,
+     "scrambled": "MNOUT"
+    },
+    {
+     "playerId": 361914,
+     "difficulty": 2,
+     "scrambled": "EADGRU"
+    },
+    {
+     "playerId": 405885,
+     "difficulty": 3,
+     "scrambled": "ARADOSRPI"
+    }
+   ],
+   "passaIds": [
+    "pa-c50202",
+    "pa-c105521",
+    "pa-c743091",
+    "pa-c207015",
+    "pa-c294808",
+    "pa-c69374",
+    "pa-c655488"
+   ]
+  },
+  "2026-12-08": {
+   "lingoId": "lc-416",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 571743,
+     "difficulty": 1,
+     "scrambled": "ORAJB"
+    },
+    {
+     "playerId": 331560,
+     "difficulty": 2,
+     "scrambled": "USIAOMTY"
+    },
+    {
+     "playerId": 465830,
+     "difficulty": 3,
+     "scrambled": "IUUDENOZG"
+    }
+   ],
+   "passaIds": [
+    "pa-c79422",
+    "pa-c143424",
+    "pa-c361256",
+    "pa-c73185",
+    "pa-c93176",
+    "pa-c174094",
+    "pa-c558727"
+   ]
+  },
+  "2026-12-09": {
+   "lingoId": "ln-EGYPT",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 469822,
+     "difficulty": 1,
+     "scrambled": "SENRE"
+    },
+    {
+     "playerId": 88755,
+     "difficulty": 2,
+     "scrambled": "BUEENDYR"
+    },
+    {
+     "playerId": 463603,
+     "difficulty": 3,
+     "scrambled": "AILIABSEDH"
+    }
+   ],
+   "passaIds": [
+    "pa-c30321",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c293200",
+    "pa-c81789",
+    "pa-c173859",
+    "pa-c256339"
+   ]
+  },
+  "2026-12-10": {
+   "lingoId": "lp-353366",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 344381,
+     "difficulty": 1,
+     "scrambled": "NNUKUK"
+    },
+    {
+     "playerId": 50201,
+     "difficulty": 2,
+     "scrambled": "BEEKNTE"
+    },
+    {
+     "playerId": 475959,
+     "difficulty": 3,
+     "scrambled": "DRGIAOLV"
+    }
+   ],
+   "passaIds": [
+    "pa-c156617",
+    "pa-c80444",
+    "pa-c251075",
+    "pa-c288255",
+    "pa-c121324",
+    "pa-c59340",
+    "pa-c196524"
+   ]
+  },
+  "2026-12-11": {
+   "lingoId": "lc-800",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 364135,
+     "difficulty": 1,
+     "scrambled": "KNEA"
+    },
+    {
+     "playerId": 401530,
+     "difficulty": 2,
+     "scrambled": "MAIIOLT"
+    },
+    {
+     "playerId": 369316,
+     "difficulty": 3,
+     "scrambled": "UDALOGIK"
+    }
+   ],
+   "passaIds": [
+    "pa-c239733",
+    "pa-c418560",
+    "pa-c134294",
+    "pa-c291760",
+    "pa-c319859",
+    "pa-c74297",
+    "pa-c39094"
+   ]
+  },
+  "2026-12-12": {
+   "lingoId": "ln-WALES",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 627442,
+     "difficulty": 1,
+     "scrambled": "SOKSE"
+    },
+    {
+     "playerId": 167799,
+     "difficulty": 2,
+     "scrambled": "RHGEJJBO"
+    },
+    {
+     "playerId": 640428,
+     "difficulty": 3,
+     "scrambled": "NICVAMAGA"
+    }
+   ],
+   "passaIds": [
+    "pa-c182877",
+    "pa-c148928",
+    "pa-c316264",
+    "pa-c77966",
+    "pa-c45026",
+    "pa-c18940",
+    "pa-c238055"
+   ]
+  },
+  "2026-12-13": {
+   "lingoId": "lp-3333",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 249126,
+     "difficulty": 1,
+     "scrambled": "NISKW"
+    },
+    {
+     "playerId": 95810,
+     "difficulty": 2,
+     "scrambled": "RIPTPEIR"
+    },
+    {
+     "playerId": 280730,
+     "difficulty": 3,
+     "scrambled": "DOOALORIZ"
+    }
+   ],
+   "passaIds": [
+    "pa-c341549",
+    "pa-c255755",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c7980",
+    "pa-c845654",
+    "pa-c496857"
+   ]
+  },
+  "2026-12-14": {
+   "lingoId": "lp-425918",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 538874,
+     "difficulty": 1,
+     "scrambled": "FOIMF"
+    },
+    {
+     "playerId": 104752,
+     "difficulty": 2,
+     "scrambled": "AMSAOLN"
+    },
+    {
+     "playerId": 565093,
+     "difficulty": 3,
+     "scrambled": "VRENGURBGE"
+    }
+   ],
+   "passaIds": [
+    "pa-c72047",
+    "pa-c119235",
+    "pa-c182712",
+    "pa-c315208",
+    "pa-c326031",
+    "pa-c709726",
+    "pa-c95755"
+   ]
+  },
+  "2026-12-15": {
+   "lingoId": "lc-1158",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 22068,
+     "difficulty": 1,
+     "scrambled": "RBYERI"
+    },
+    {
+     "playerId": 340324,
+     "difficulty": 2,
+     "scrambled": "EANHIKT"
+    },
+    {
+     "playerId": 473169,
+     "difficulty": 3,
+     "scrambled": "BOYRBEB"
+    }
+   ],
+   "passaIds": [
+    "pa-c46552",
+    "pa-c85291",
+    "pa-c281963",
+    "pa-c21175",
+    "pa-c291760",
+    "pa-c470607",
+    "pa-c279457"
+   ]
+  },
+  "2026-12-16": {
+   "lingoId": "ln-ITALY",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 434675,
+     "difficulty": 1,
+     "scrambled": "AOPKG"
+    },
+    {
+     "playerId": 176553,
+     "difficulty": 2,
+     "scrambled": "EPLTOAR"
+    },
+    {
+     "playerId": 343475,
+     "difficulty": 3,
+     "scrambled": "RENEYGDFBO"
+    }
+   ],
+   "passaIds": [
+    "pa-c246291",
+    "pa-c44068",
+    "pa-c73734",
+    "pa-c53437",
+    "pa-c271495",
+    "pa-c203394",
+    "pa-c81775"
+   ]
+  },
+  "2026-12-17": {
+   "lingoId": "lp-148252",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 205562,
+     "difficulty": 1,
+     "scrambled": "MLRAE"
+    },
+    {
+     "playerId": 182932,
+     "difficulty": 2,
+     "scrambled": "SSKEANLA"
+    },
+    {
+     "playerId": 16975,
+     "difficulty": 3,
+     "scrambled": "SEACTTSI"
+    }
+   ],
+   "passaIds": [
+    "pa-c192565",
+    "pa-c91945",
+    "pa-c45671",
+    "pa-c142281",
+    "pa-c341647",
+    "pa-c40687",
+    "pa-c169927"
+   ]
+  },
+  "2026-12-18": {
+   "lingoId": "lc-660",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 543499,
+     "difficulty": 1,
+     "scrambled": "UDKUS"
+    },
+    {
+     "playerId": 404418,
+     "difficulty": 2,
+     "scrambled": "CNOAHK"
+    },
+    {
+     "playerId": 477758,
+     "difficulty": 3,
+     "scrambled": "BAKASWNAIS"
+    }
+   ],
+   "passaIds": [
+    "pa-c181136",
+    "pa-c192279",
+    "pa-c16922",
+    "pa-c12907",
+    "pa-c176354",
+    "pa-c31067",
+    "pa-c193469"
+   ]
+  },
+  "2026-12-19": {
+   "lingoId": "ln-MALI",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 646740,
+     "difficulty": 1,
+     "scrambled": "GIAV"
+    },
+    {
+     "playerId": 425918,
+     "difficulty": 2,
+     "scrambled": "IRWKOI"
+    },
+    {
+     "playerId": 56360,
+     "difficulty": 3,
+     "scrambled": "SUENMKI"
+    }
+   ],
+   "passaIds": [
+    "pa-c130365",
+    "pa-c159471",
+    "pa-c369316",
+    "pa-c34130",
+    "pa-c81455",
+    "pa-c291760",
+    "pa-c362977"
+   ]
+  },
+  "2026-12-20": {
+   "lingoId": "lp-58205",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 126664,
+     "difficulty": 1,
+     "scrambled": "DNIGE"
+    },
+    {
+     "playerId": 291739,
+     "difficulty": 2,
+     "scrambled": "SAHCIRA"
+    },
+    {
+     "playerId": 3137,
+     "difficulty": 3,
+     "scrambled": "JRAKEOGNR"
+    }
+   ],
+   "passaIds": [
+    "pa-c93128",
+    "pa-c192735",
+    "pa-c23951",
+    "pa-c56831",
+    "pa-c56809",
+    "pa-c169873",
+    "pa-c552655"
+   ]
+  },
+  "2026-12-21": {
+   "lingoId": "lp-543499",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 454567,
+     "difficulty": 1,
+     "scrambled": "OKCUK"
+    },
+    {
+     "playerId": 74223,
+     "difficulty": 2,
+     "scrambled": "ESHIREWL"
+    },
+    {
+     "playerId": 455661,
+     "difficulty": 3,
+     "scrambled": "EDTOAMLEW"
+    }
+   ],
+   "passaIds": [
+    "pa-c182913",
+    "pa-c204069",
+    "pa-c204201",
+    "pa-c4276",
+    "pa-c339314",
+    "pa-c341647",
+    "pa-c124495"
+   ]
+  },
+  "2026-12-22": {
+   "lingoId": "lc-60",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 59631,
+     "difficulty": 1,
+     "scrambled": "HAIDLC"
+    },
+    {
+     "playerId": 283130,
+     "difficulty": 2,
+     "scrambled": "EGRAAM"
+    },
+    {
+     "playerId": 38410,
+     "difficulty": 3,
+     "scrambled": "UGIRACIIL"
+    }
+   ],
+   "passaIds": [
+    "pa-c137616",
+    "pa-c73794",
+    "pa-c159372",
+    "pa-c387626",
+    "pa-c182889",
+    "pa-c176354",
+    "pa-c93315"
+   ]
+  },
+  "2026-12-23": {
+   "lingoId": "ln-NORWAY",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 133179,
+     "difficulty": 1,
+     "scrambled": "NEDROO"
+    },
+    {
+     "playerId": 129476,
+     "difficulty": 2,
+     "scrambled": "EFEULOUD"
+    },
+    {
+     "playerId": 181579,
+     "difficulty": 3,
+     "scrambled": "RPWODSWREA"
+    }
+   ],
+   "passaIds": [
+    "pa-c94529",
+    "pa-c203496",
+    "pa-c27389",
+    "pa-c191391",
+    "pa-c200056",
+    "pa-c36827",
+    "pa-c613725"
+   ]
+  },
+  "2026-12-24": {
+   "lingoId": "lp-7451",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 85288,
+     "difficulty": 1,
+     "scrambled": "OSIC"
+    },
+    {
+     "playerId": 307058,
+     "difficulty": 2,
+     "scrambled": "IATERM"
+    },
+    {
+     "playerId": 670882,
+     "difficulty": 3,
+     "scrambled": "TNTESIG"
+    }
+   ],
+   "passaIds": [
+    "pa-c206040",
+    "pa-c53418",
+    "pa-c37838",
+    "pa-c362842",
+    "pa-c340325",
+    "pa-c566723",
+    "pa-c38195"
+   ]
+  },
+  "2026-12-25": {
+   "lingoId": "lc-33",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 4276,
+     "difficulty": 1,
+     "scrambled": "EVTZE"
+    },
+    {
+     "playerId": 284730,
+     "difficulty": 2,
+     "scrambled": "NAIKAJ"
+    },
+    {
+     "playerId": 44367,
+     "difficulty": 3,
+     "scrambled": "NORKEEEM"
+    }
+   ],
+   "passaIds": [
+    "pa-c353366",
+    "pa-c86784",
+    "pa-c186590",
+    "pa-c157993",
+    "pa-c173504",
+    "pa-c556385",
+    "pa-c440653"
+   ]
+  },
+  "2026-12-26": {
+   "lingoId": "ln-RUSSIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 200056,
+     "difficulty": 1,
+     "scrambled": "ASYJH"
+    },
+    {
+     "playerId": 4182,
+     "difficulty": 2,
+     "scrambled": "MALLEKEE"
+    },
+    {
+     "playerId": 495629,
+     "difficulty": 3,
+     "scrambled": "INAMLOGLU"
+    }
+   ],
+   "passaIds": [
+    "pa-c84435",
+    "pa-c14086",
+    "pa-c96828",
+    "pa-c108354",
+    "pa-c33873",
+    "pa-c40613",
+    "pa-c172163"
+   ]
+  },
+  "2026-12-27": {
+   "lingoId": "lp-51471",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 128901,
+     "difficulty": 1,
+     "scrambled": "DACOY"
+    },
+    {
+     "playerId": 67063,
+     "difficulty": 2,
+     "scrambled": "EELWBKC"
+    },
+    {
+     "playerId": 41384,
+     "difficulty": 3,
+     "scrambled": "TRNOVACUAI"
+    }
+   ],
+   "passaIds": [
+    "pa-c126664",
+    "pa-c84535",
+    "pa-c240306",
+    "pa-c195736",
+    "pa-c55524",
+    "pa-c378293",
+    "pa-c503638"
+   ]
+  },
+  "2026-12-28": {
+   "lingoId": "lp-556385",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 4171,
+     "difficulty": 1,
+     "scrambled": "ATESN"
+    },
+    {
+     "playerId": 20506,
+     "difficulty": 2,
+     "scrambled": "DADUARGO"
+    },
+    {
+     "playerId": 3852,
+     "difficulty": 3,
+     "scrambled": "NCGHAIEVA"
+    }
+   ],
+   "passaIds": [
+    "pa-c216603",
+    "pa-c46104",
+    "pa-c225083",
+    "pa-c170934",
+    "pa-c289592",
+    "pa-c60577",
+    "pa-c406634"
+   ]
+  },
+  "2026-12-29": {
+   "lingoId": "lc-506",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 612826,
+     "difficulty": 1,
+     "scrambled": "ISLAS"
+    },
+    {
+     "playerId": 88590,
+     "difficulty": 2,
+     "scrambled": "IAMTSFU"
+    },
+    {
+     "playerId": 632349,
+     "difficulty": 3,
+     "scrambled": "QUSNAAH"
+    }
+   ],
+   "passaIds": [
+    "pa-c615350",
+    "pa-c130164",
+    "pa-c197747",
+    "pa-c242086",
+    "pa-c134631",
+    "pa-c318077",
+    "pa-c344886"
+   ]
+  },
+  "2026-12-30": {
+   "lingoId": "ln-SWEDEN",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 284854,
+     "difficulty": 1,
+     "scrambled": "AAELN"
+    },
+    {
+     "playerId": 357498,
+     "difficulty": 2,
+     "scrambled": "LVAOCHVI"
+    },
+    {
+     "playerId": 420210,
+     "difficulty": 3,
+     "scrambled": "UEARGRDTIE"
+    }
+   ],
+   "passaIds": [
+    "pa-c251106",
+    "pa-c37666",
+    "pa-c69015",
+    "pa-c20007",
+    "pa-c232454",
+    "pa-c40423",
+    "pa-c357884"
+   ]
+  },
+  "2026-12-31": {
+   "lingoId": "lp-258889",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 44675,
+     "difficulty": 1,
+     "scrambled": "KKCRI"
+    },
+    {
+     "playerId": 61253,
+     "difficulty": 2,
+     "scrambled": "OLNCLAJE"
+    },
+    {
+     "playerId": 44624,
+     "difficulty": 3,
+     "scrambled": "INMKBAO"
+    }
+   ],
+   "passaIds": [
+    "pa-c110686",
+    "pa-c255901",
+    "pa-c39333",
+    "pa-c29692",
+    "pa-c43907",
+    "pa-c465606",
+    "pa-c59054"
+   ]
+  },
+  "2027-01-01": {
+   "lingoId": "lc-31",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 416108,
+     "difficulty": 1,
+     "scrambled": "ALAT"
+    },
+    {
+     "playerId": 411295,
+     "difficulty": 2,
+     "scrambled": "HIRAHNAP"
+    },
+    {
+     "playerId": 9487,
+     "difficulty": 3,
+     "scrambled": "VDLEAARZE"
+    }
+   ],
+   "passaIds": [
+    "pa-c349066",
+    "pa-c743091",
+    "pa-c122155",
+    "pa-c330659",
+    "pa-c43530",
+    "pa-c142031",
+    "pa-c7593"
+   ]
+  },
+  "2027-01-02": {
+   "lingoId": "ln-GUINEA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 566723,
+     "difficulty": 1,
+     "scrambled": "LSEOI"
+    },
+    {
+     "playerId": 156617,
+     "difficulty": 2,
+     "scrambled": "OOBZIRCV"
+    },
+    {
+     "playerId": 382528,
+     "difficulty": 3,
+     "scrambled": "TRGOUKAKUL"
+    }
+   ],
+   "passaIds": [
+    "pa-c48002",
+    "pa-c58855",
+    "pa-c230784",
+    "pa-c37934",
+    "pa-c118689",
+    "pa-c306462",
+    "pa-c226524"
+   ]
+  },
+  "2027-01-03": {
+   "lingoId": "lp-48002",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 126540,
+     "difficulty": 1,
+     "scrambled": "UITITM"
+    },
+    {
+     "playerId": 237662,
+     "difficulty": 2,
+     "scrambled": "BMOLOE"
+    },
+    {
+     "playerId": 9967,
+     "difficulty": 3,
+     "scrambled": "MEIILAZD"
+    }
+   ],
+   "passaIds": [
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c139208",
+    "pa-c845654",
+    "pa-c283735",
+    "pa-c534033",
+    "pa-c91931"
+   ]
+  },
+  "2027-01-04": {
+   "lingoId": "lp-398073",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 395693,
+     "difficulty": 1,
+     "scrambled": "OUARA"
+    },
+    {
+     "playerId": 413039,
+     "difficulty": 2,
+     "scrambled": "MBOMEU"
+    },
+    {
+     "playerId": 263918,
+     "difficulty": 3,
+     "scrambled": "VILONGO"
+    }
+   ],
+   "passaIds": [
+    "pa-c243714",
+    "pa-c292199",
+    "pa-c171679",
+    "pa-c479999",
+    "pa-c39679",
+    "pa-c429014",
+    "pa-c295955"
+   ]
+  },
+  "2027-01-05": {
+   "lingoId": "lc-317",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 476344,
+     "difficulty": 1,
+     "scrambled": "LROAY"
+    },
+    {
+     "playerId": 569366,
+     "difficulty": 2,
+     "scrambled": "ITLLOM"
+    },
+    {
+     "playerId": 412363,
+     "difficulty": 3,
+     "scrambled": "YGORDOR"
+    }
+   ],
+   "passaIds": [
+    "pa-c45494",
+    "pa-c19041",
+    "pa-c216603",
+    "pa-c380350",
+    "pa-c405398",
+    "pa-c183318",
+    "pa-c87856"
+   ]
+  },
+  "2027-01-06": {
+   "lingoId": "ln-POLAND",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 119228,
+     "difficulty": 1,
+     "scrambled": "MLIREU"
+    },
+    {
+     "playerId": 125858,
+     "difficulty": 2,
+     "scrambled": "YEDMRIAB"
+    },
+    {
+     "playerId": 6833,
+     "difficulty": 3,
+     "scrambled": "GRAEGYR"
+    }
+   ],
+   "passaIds": [
+    "pa-c143559",
+    "pa-c175446",
+    "pa-c249952",
+    "pa-c19447",
+    "pa-c460939",
+    "pa-c82048",
+    "pa-c422203"
+   ]
+  },
+  "2027-01-07": {
+   "lingoId": "lp-16306",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 683840,
+     "difficulty": 1,
+     "scrambled": "REIDP"
+    },
+    {
+     "playerId": 3509,
+     "difficulty": 2,
+     "scrambled": "ALLONK"
+    },
+    {
+     "playerId": 623325,
+     "difficulty": 3,
+     "scrambled": "KUAVOSD"
+    }
+   ],
+   "passaIds": [
+    "pa-c196357",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c42748",
+    "pa-c124422",
+    "pa-c334526",
+    "pa-c332705"
+   ]
+  },
+  "2027-01-08": {
+   "lingoId": "lc-11",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 111630,
+     "difficulty": 1,
+     "scrambled": "AMELLA"
+    },
+    {
+     "playerId": 148252,
+     "difficulty": 2,
+     "scrambled": "RREULFE"
+    },
+    {
+     "playerId": 512385,
+     "difficulty": 3,
+     "scrambled": "IITSARSREN"
+    }
+   ],
+   "passaIds": [
+    "pa-c99922",
+    "pa-c138927",
+    "pa-c251075",
+    "pa-c72522",
+    "pa-c344152",
+    "pa-c58884",
+    "pa-c115763"
+   ]
+  },
+  "2027-01-09": {
+   "lingoId": "ln-ENGLAND",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 27992,
+     "difficulty": 1,
+     "scrambled": "COMIDR"
+    },
+    {
+     "playerId": 81455,
+     "difficulty": 2,
+     "scrambled": "IRTUBE"
+    },
+    {
+     "playerId": 108830,
+     "difficulty": 3,
+     "scrambled": "ARBNEOUND"
+    }
+   ],
+   "passaIds": [
+    "pa-c382528",
+    "pa-c339808",
+    "pa-c105521",
+    "pa-c291760",
+    "pa-c121985",
+    "pa-c103565",
+    "pa-c131951"
+   ]
+  },
+  "2027-01-10": {
+   "lingoId": "lp-57162",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 904802,
+     "difficulty": 1,
+     "scrambled": "OATH"
+    },
+    {
+     "playerId": 7109,
+     "difficulty": 2,
+     "scrambled": "BIAZGRAL"
+    },
+    {
+     "playerId": 890719,
+     "difficulty": 3,
+     "scrambled": "RAWEINN"
+    }
+   ],
+   "passaIds": [
+    "pa-c56416",
+    "pa-c79422",
+    "pa-c143424",
+    "pa-c159079",
+    "pa-c356197",
+    "pa-c75942",
+    "pa-c234811"
+   ]
+  },
+  "2027-01-11": {
+   "lingoId": "lp-326029",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 398073,
+     "difficulty": 1,
+     "scrambled": "HKAIIM"
+    },
+    {
+     "playerId": 278332,
+     "difficulty": 2,
+     "scrambled": "NASEUHU"
+    },
+    {
+     "playerId": 45709,
+     "difficulty": 3,
+     "scrambled": "OIINADLHN"
+    }
+   ],
+   "passaIds": [
+    "pa-c341549",
+    "pa-c82130",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c153238",
+    "pa-c845654",
+    "pa-c171072"
+   ]
+  },
+  "2027-01-12": {
+   "lingoId": "lc-1010",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 18935,
+     "difficulty": 1,
+     "scrambled": "ANSIR"
+    },
+    {
+     "playerId": 69633,
+     "difficulty": 2,
+     "scrambled": "ESKREIN"
+    },
+    {
+     "playerId": 199248,
+     "difficulty": 3,
+     "scrambled": "CSATTNREI"
+    }
+   ],
+   "passaIds": [
+    "pa-c119031",
+    "pa-c61812",
+    "pa-c61253",
+    "pa-c176354",
+    "pa-c59032",
+    "pa-c559328",
+    "pa-c85475"
+   ]
+  },
+  "2027-01-13": {
+   "lingoId": "ln-SPAIN",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 388165,
+     "difficulty": 1,
+     "scrambled": "AWSSI"
+    },
+    {
+     "playerId": 451677,
+     "difficulty": 2,
+     "scrambled": "ZISTLO"
+    },
+    {
+     "playerId": 431755,
+     "difficulty": 3,
+     "scrambled": "VUSKILEKSU"
+    }
+   ],
+   "passaIds": [
+    "pa-c273132",
+    "pa-c126414",
+    "pa-c181375",
+    "pa-c295330",
+    "pa-c291760",
+    "pa-c213268",
+    "pa-c68410"
+   ]
+  },
+  "2027-01-14": {
+   "lingoId": "lp-129476",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 480763,
+     "difficulty": 1,
+     "scrambled": "HTFYO"
+    },
+    {
+     "playerId": 164771,
+     "difficulty": 2,
+     "scrambled": "ETTEROVU"
+    },
+    {
+     "playerId": 585959,
+     "difficulty": 3,
+     "scrambled": "LUODMEKNIA"
+    }
+   ],
+   "passaIds": [
+    "pa-c111630",
+    "pa-c128223",
+    "pa-c18644",
+    "pa-c73396",
+    "pa-c1043003",
+    "pa-c58489",
+    "pa-c51474"
+   ]
+  },
+  "2027-01-15": {
+   "lingoId": "lc-200",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 74229,
+     "difficulty": 1,
+     "scrambled": "KOEK"
+    },
+    {
+     "playerId": 144028,
+     "difficulty": 2,
+     "scrambled": "ROSDSATR"
+    },
+    {
+     "playerId": 711337,
+     "difficulty": 3,
+     "scrambled": "IONNSALVE"
+    }
+   ],
+   "passaIds": [
+    "pa-c79960",
+    "pa-c91945",
+    "pa-c131225",
+    "pa-c112935",
+    "pa-c341647",
+    "pa-c46083",
+    "pa-c221958"
+   ]
+  },
+  "2027-01-16": {
+   "lingoId": "ln-TURKIYE",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 937958,
+     "difficulty": 1,
+     "scrambled": "AAYLM"
+    },
+    {
+     "playerId": 473050,
+     "difficulty": 2,
+     "scrambled": "HCASED"
+    },
+    {
+     "playerId": 423436,
+     "difficulty": 3,
+     "scrambled": "ACRISACBA"
+    }
+   ],
+   "passaIds": [
+    "pa-c145988",
+    "pa-c15452",
+    "pa-c191217",
+    "pa-c227081",
+    "pa-c315208",
+    "pa-c229004",
+    "pa-c45662"
+   ]
+  },
+  "2027-01-17": {
+   "lingoId": "lp-164771",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 327757,
+     "difficulty": 1,
+     "scrambled": "KPTEIA"
+    },
+    {
+     "playerId": 48002,
+     "difficulty": 2,
+     "scrambled": "ANBNOOG"
+    },
+    {
+     "playerId": 282041,
+     "difficulty": 3,
+     "scrambled": "MPBKIMEE"
+    }
+   ],
+   "passaIds": [
+    "pa-c39152",
+    "pa-c20506",
+    "pa-c53622",
+    "pa-c282076",
+    "pa-c32113",
+    "pa-c291760",
+    "pa-c134277"
+   ]
+  },
+  "2027-01-18": {
+   "lingoId": "lp-338670",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 16136,
+     "difficulty": 1,
+     "scrambled": "ETDAN"
+    },
+    {
+     "playerId": 844637,
+     "difficulty": 2,
+     "scrambled": "PLLUIB"
+    },
+    {
+     "playerId": 58124,
+     "difficulty": 3,
+     "scrambled": "IERBHCSE"
+    }
+   ],
+   "passaIds": [
+    "pa-c51471",
+    "pa-c96341",
+    "pa-c29364",
+    "pa-c111508",
+    "pa-c234509",
+    "pa-c77966",
+    "pa-c627207"
+   ]
+  },
+  "2027-01-19": {
+   "lingoId": "lc-931",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 119235,
+     "difficulty": 1,
+     "scrambled": "CAABC"
+    },
+    {
+     "playerId": 335721,
+     "difficulty": 2,
+     "scrambled": "HTENEBIW"
+    },
+    {
+     "playerId": 125781,
+     "difficulty": 3,
+     "scrambled": "ANNZGEIRM"
+    }
+   ],
+   "passaIds": [
+    "pa-c50057",
+    "pa-c56818",
+    "pa-c341549",
+    "pa-c33210",
+    "pa-c40680",
+    "pa-c341647",
+    "pa-c4380"
+   ]
+  },
+  "2027-01-20": {
+   "lingoId": "ln-VENEZUELA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 578392,
+     "difficulty": 1,
+     "scrambled": "REEBI"
+    },
+    {
+     "playerId": 184573,
+     "difficulty": 2,
+     "scrambled": "EDFLINOL"
+    },
+    {
+     "playerId": 5379,
+     "difficulty": 3,
+     "scrambled": "NETISMR"
+    }
+   ],
+   "passaIds": [
+    "pa-c386726",
+    "pa-c217111",
+    "pa-c296622",
+    "pa-c152733",
+    "pa-c25732",
+    "pa-c315208",
+    "pa-c88684"
+   ]
+  },
+  "2027-01-21": {
+   "lingoId": "lp-217111",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 191614,
+     "difficulty": 1,
+     "scrambled": "DREF"
+    },
+    {
+     "playerId": 130164,
+     "difficulty": 2,
+     "scrambled": "FPRICKOD"
+    },
+    {
+     "playerId": 404842,
+     "difficulty": 3,
+     "scrambled": "LKNOEOKMY"
+    }
+   ],
+   "passaIds": [
+    "pa-c69633",
+    "pa-c462250",
+    "pa-c465830",
+    "pa-c257785",
+    "pa-c392768",
+    "pa-c130756",
+    "pa-c613725"
+   ]
+  },
+  "2027-01-22": {
+   "lingoId": "lc-232",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 59561,
+     "difficulty": 1,
+     "scrambled": "AREOJP"
+    },
+    {
+     "playerId": 3127,
+     "difficulty": 2,
+     "scrambled": "FOLESRSL"
+    },
+    {
+     "playerId": 351478,
+     "difficulty": 3,
+     "scrambled": "ZARYBALOA"
+    }
+   ],
+   "passaIds": [
+    "pa-c206040",
+    "pa-c132098",
+    "pa-c17965",
+    "pa-c291417",
+    "pa-c79522",
+    "pa-c29559",
+    "pa-c124891"
+   ]
+  },
+  "2027-01-23": {
+   "lingoId": "ln-JAPAN",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 15452,
+     "difficulty": 1,
+     "scrambled": "LILBOA"
+    },
+    {
+     "playerId": 39983,
+     "difficulty": 2,
+     "scrambled": "CBONICU"
+    },
+    {
+     "playerId": 3373,
+     "difficulty": 3,
+     "scrambled": "IDNRANLOHO"
+    }
+   ],
+   "passaIds": [
+    "pa-c56066",
+    "pa-c85370",
+    "pa-c107010",
+    "pa-c330876",
+    "pa-c45672",
+    "pa-c339314",
+    "pa-c440653"
+   ]
+  },
+  "2027-01-24": {
+   "lingoId": "lp-184573",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 124502,
+     "difficulty": 1,
+     "scrambled": "NIRGTE"
+    },
+    {
+     "playerId": 406040,
+     "difficulty": 2,
+     "scrambled": "AONLMOK"
+    },
+    {
+     "playerId": 333241,
+     "difficulty": 3,
+     "scrambled": "TNONJIOLE"
+    }
+   ],
+   "passaIds": [
+    "pa-c43250",
+    "pa-c137616",
+    "pa-c181136",
+    "pa-c193782",
+    "pa-c197300",
+    "pa-c27493",
+    "pa-c743376"
+   ]
+  },
+  "2027-01-25": {
+   "lingoId": "lp-262749",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 148153,
+     "difficulty": 1,
+     "scrambled": "UDNK"
+    },
+    {
+     "playerId": 105521,
+     "difficulty": 2,
+     "scrambled": "ELMIMBOI"
+    },
+    {
+     "playerId": 46635,
+     "difficulty": 3,
+     "scrambled": "NLSIOOMKV"
+    }
+   ],
+   "passaIds": [
+    "pa-c59377",
+    "pa-c94529",
+    "pa-c357885",
+    "pa-c270541",
+    "pa-c251345",
+    "pa-c610442",
+    "pa-c137648"
+   ]
+  },
+  "2027-01-26": {
+   "lingoId": "lc-873",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 391004,
+     "difficulty": 1,
+     "scrambled": "WIDN"
+    },
+    {
+     "playerId": 361093,
+     "difficulty": 2,
+     "scrambled": "TMOBNA"
+    },
+    {
+     "playerId": 938729,
+     "difficulty": 3,
+     "scrambled": "JGAEIZUARR"
+    }
+   ],
+   "passaIds": [
+    "pa-c743091",
+    "pa-c46104",
+    "pa-c161056",
+    "pa-c476352",
+    "pa-c442531",
+    "pa-c546543",
+    "pa-c272855"
+   ]
+  },
+  "2027-01-27": {
+   "lingoId": "ln-SERBIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 326029,
+     "difficulty": 1,
+     "scrambled": "ANMLE"
+    },
+    {
+     "playerId": 255942,
+     "difficulty": 2,
+     "scrambled": "RBLLAAE"
+    },
+    {
+     "playerId": 238266,
+     "difficulty": 3,
+     "scrambled": "TAAACECLR"
+    }
+   ],
+   "passaIds": [
+    "pa-c58855",
+    "pa-c15185",
+    "pa-c25557",
+    "pa-c20137",
+    "pa-c134631",
+    "pa-c190393",
+    "pa-c711999"
+   ]
+  },
+  "2027-01-28": {
+   "lingoId": "lp-191217",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 217111,
+     "difficulty": 1,
+     "scrambled": "CZIEHY"
+    },
+    {
+     "playerId": 65230,
+     "difficulty": 2,
+     "scrambled": "BTUUSEQS"
+    },
+    {
+     "playerId": 717411,
+     "difficulty": 3,
+     "scrambled": "UKMLORYAY"
+    }
+   ],
+   "passaIds": [
+    "pa-c251106",
+    "pa-c164770",
+    "pa-c14086",
+    "pa-c435648",
+    "pa-c241229",
+    "pa-c40633",
+    "pa-c395237"
+   ]
+  },
+  "2027-01-29": {
+   "lingoId": "lc-415",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 45121,
+     "difficulty": 1,
+     "scrambled": "MYER"
+    },
+    {
+     "playerId": 54781,
+     "difficulty": 2,
+     "scrambled": "TMOEAIDN"
+    },
+    {
+     "playerId": 935245,
+     "difficulty": 3,
+     "scrambled": "AOEICNS"
+    }
+   ],
+   "passaIds": [
+    "pa-c110686",
+    "pa-c175722",
+    "pa-c84535",
+    "pa-c111078",
+    "pa-c37920",
+    "pa-c191391",
+    "pa-c59238"
+   ]
+  },
+  "2027-01-30": {
+   "lingoId": "ln-IRELAND",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 257814,
+     "difficulty": 1,
+     "scrambled": "LOEBK"
+    },
+    {
+     "playerId": 315867,
+     "difficulty": 2,
+     "scrambled": "ACACMACS"
+    },
+    {
+     "playerId": 169880,
+     "difficulty": 3,
+     "scrambled": "IDZNROOEL"
+    }
+   ],
+   "passaIds": [
+    "pa-c134294",
+    "pa-c216603",
+    "pa-c263727",
+    "pa-c42735",
+    "pa-c357117",
+    "pa-c51152",
+    "pa-c184767"
+   ]
+  },
+  "2027-01-31": {
+   "lingoId": "lp-182381",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 5285,
+     "difficulty": 1,
+     "scrambled": "EAVR"
+    },
+    {
+     "playerId": 153084,
+     "difficulty": 2,
+     "scrambled": "TERKGAZO"
+    },
+    {
+     "playerId": 5017,
+     "difficulty": 3,
+     "scrambled": "AMEDORISN"
+    }
+   ],
+   "passaIds": [
+    "pa-c121483",
+    "pa-c361256",
+    "pa-c34322",
+    "pa-c80197",
+    "pa-c282388",
+    "pa-c306462",
+    "pa-c564545"
+   ]
+  },
+  "2027-02-01": {
+   "lingoId": "lp-67082",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 661207,
+     "difficulty": 1,
+     "scrambled": "BBOB"
+    },
+    {
+     "playerId": 394300,
+     "difficulty": 2,
+     "scrambled": "IAFTERTS"
+    },
+    {
+     "playerId": 708265,
+     "difficulty": 3,
+     "scrambled": "CBOLAAR"
+    }
+   ],
+   "passaIds": [
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c130360",
+    "pa-c845654",
+    "pa-c173859",
+    "pa-c89701",
+    "pa-c265127"
+   ]
+  },
+  "2027-02-02": {
+   "lingoId": "lc-410",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 349066,
+     "difficulty": 1,
+     "scrambled": "KSAI"
+    },
+    {
+     "playerId": 60577,
+     "difficulty": 2,
+     "scrambled": "UUKLONO"
+    },
+    {
+     "playerId": 284732,
+     "difficulty": 3,
+     "scrambled": "BIEENBAINS"
+    }
+   ],
+   "passaIds": [
+    "pa-c234781",
+    "pa-c292199",
+    "pa-c167850",
+    "pa-c5285",
+    "pa-c466810",
+    "pa-c532826",
+    "pa-c532905"
+   ]
+  },
+  "2027-02-03": {
+   "lingoId": "ln-URUGUAY",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 668951,
+     "difficulty": 1,
+     "scrambled": "SEOUL"
+    },
+    {
+     "playerId": 3924,
+     "difficulty": 2,
+     "scrambled": "BGOARD"
+    },
+    {
+     "playerId": 652275,
+     "difficulty": 3,
+     "scrambled": "HLRADSSNOA"
+    }
+   ],
+   "passaIds": [
+    "pa-c281769",
+    "pa-c68863",
+    "pa-c743091",
+    "pa-c177847",
+    "pa-c46156",
+    "pa-c174694",
+    "pa-c605268"
+   ]
+  },
+  "2027-02-04": {
+   "lingoId": "lp-130365",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 203496,
+     "difficulty": 1,
+     "scrambled": "EKRIF"
+    },
+    {
+     "playerId": 70934,
+     "difficulty": 2,
+     "scrambled": "OITONL"
+    },
+    {
+     "playerId": 94005,
+     "difficulty": 3,
+     "scrambled": "LOAKCSNIA"
+    }
+   ],
+   "passaIds": [
+    "pa-c450936",
+    "pa-c189441",
+    "pa-c244940",
+    "pa-c54984",
+    "pa-c350219",
+    "pa-c59323",
+    "pa-c330871"
+   ]
+  },
+  "2027-02-05": {
+   "lingoId": "lc-631",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 288255,
+     "difficulty": 1,
+     "scrambled": "DEEBKE"
+    },
+    {
+     "playerId": 445939,
+     "difficulty": 2,
+     "scrambled": "URAMOMHS"
+    },
+    {
+     "playerId": 644771,
+     "difficulty": 3,
+     "scrambled": "OSOOSUUNK"
+    }
+   ],
+   "passaIds": [
+    "pa-c95810",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c99331",
+    "pa-c158946",
+    "pa-c203853",
+    "pa-c167721"
+   ]
+  },
+  "2027-02-06": {
+   "lingoId": "ln-GEORGIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 413403,
+     "difficulty": 1,
+     "scrambled": "AOKSN"
+    },
+    {
+     "playerId": 354361,
+     "difficulty": 2,
+     "scrambled": "ANAGSSUI"
+    },
+    {
+     "playerId": 34572,
+     "difficulty": 3,
+     "scrambled": "MKNCZAUDI"
+    }
+   ],
+   "passaIds": [
+    "pa-c179184",
+    "pa-c329145",
+    "pa-c251075",
+    "pa-c263236",
+    "pa-c40888",
+    "pa-c45314",
+    "pa-c127837"
+   ]
+  },
+  "2027-02-07": {
+   "lingoId": "lp-15452",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 661171,
+     "difficulty": 1,
+     "scrambled": "APHCO"
+    },
+    {
+     "playerId": 578391,
+     "difficulty": 2,
+     "scrambled": "IRUTOIAN"
+    },
+    {
+     "playerId": 733576,
+     "difficulty": 3,
+     "scrambled": "RLOEOMI"
+    }
+   ],
+   "passaIds": [
+    "pa-c239733",
+    "pa-c167799",
+    "pa-c278359",
+    "pa-c291760",
+    "pa-c270171",
+    "pa-c257814",
+    "pa-c229970"
+   ]
+  },
+  "2027-02-08": {
+   "lingoId": "lp-661171",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 127032,
+     "difficulty": 1,
+     "scrambled": "IERAUR"
+    },
+    {
+     "playerId": 537860,
+     "difficulty": 2,
+     "scrambled": "DKYUMR"
+    },
+    {
+     "playerId": 656681,
+     "difficulty": 3,
+     "scrambled": "ENOFBAIC"
+    }
+   ],
+   "passaIds": [
+    "pa-c55735",
+    "pa-c143559",
+    "pa-c143424",
+    "pa-c271495",
+    "pa-c112302",
+    "pa-c249513",
+    "pa-c409344"
+   ]
+  },
+  "2027-02-09": {
+   "lingoId": "lc-40",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 358504,
+     "difficulty": 1,
+     "scrambled": "NODA"
+    },
+    {
+     "playerId": 16306,
+     "difficulty": 2,
+     "scrambled": "IERCSAOM"
+    },
+    {
+     "playerId": 42678,
+     "difficulty": 3,
+     "scrambled": "COTBTCEHI"
+    }
+   ],
+   "passaIds": [
+    "pa-c341549",
+    "pa-c43512",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c64000",
+    "pa-c845654",
+    "pa-c160963"
+   ]
+  },
+  "2027-02-10": {
+   "lingoId": "ln-GERMANY",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 5817,
+     "difficulty": 1,
+     "scrambled": "PROIL"
+    },
+    {
+     "playerId": 7451,
+     "difficulty": 2,
+     "scrambled": "AAERTT"
+    },
+    {
+     "playerId": 4362,
+     "difficulty": 3,
+     "scrambled": "SKLISEEHN"
+    }
+   ],
+   "passaIds": [
+    "pa-c45403",
+    "pa-c12282",
+    "pa-c85177",
+    "pa-c315208",
+    "pa-c122797",
+    "pa-c4257",
+    "pa-c555076"
+   ]
+  },
+  "2027-02-11": {
+   "lingoId": "lp-355861",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 620322,
+     "difficulty": 1,
+     "scrambled": "GUSOT"
+    },
+    {
+     "playerId": 730861,
+     "difficulty": 2,
+     "scrambled": "KERZKE"
+    },
+    {
+     "playerId": 47893,
+     "difficulty": 3,
+     "scrambled": "URUVNAIEQ"
+    }
+   ],
+   "passaIds": [
+    "pa-c153084",
+    "pa-c85291",
+    "pa-c40204",
+    "pa-c98249",
+    "pa-c291760",
+    "pa-c110864",
+    "pa-c184528"
+   ]
+  },
+  "2027-02-12": {
+   "lingoId": "lc-41",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 25508,
+     "difficulty": 1,
+     "scrambled": "ISURIG"
+    },
+    {
+     "playerId": 257455,
+     "difficulty": 2,
+     "scrambled": "LAPAHNIH"
+    },
+    {
+     "playerId": 4549,
+     "difficulty": 3,
+     "scrambled": "MORKAPMK"
+    }
+   ],
+   "passaIds": [
+    "pa-c182904",
+    "pa-c191891",
+    "pa-c79422",
+    "pa-c72768",
+    "pa-c169873",
+    "pa-c192080",
+    "pa-c217886"
+   ]
+  },
+  "2027-02-13": {
+   "lingoId": "ln-DENMARK",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 357147,
+     "difficulty": 1,
+     "scrambled": "LTADO"
+    },
+    {
+     "playerId": 334526,
+     "difficulty": 2,
+     "scrambled": "AKIZRAA"
+    },
+    {
+     "playerId": 45624,
+     "difficulty": 3,
+     "scrambled": "HEUDJOC"
+    }
+   ],
+   "passaIds": [
+    "pa-c40433",
+    "pa-c177031",
+    "pa-c251664",
+    "pa-c556385",
+    "pa-c341647",
+    "pa-c41355",
+    "pa-c98131"
+   ]
+  },
+  "2027-02-14": {
+   "lingoId": "lp-371149",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 148928,
+     "difficulty": 1,
+     "scrambled": "GIENUZ"
+    },
+    {
+     "playerId": 130756,
+     "difficulty": 2,
+     "scrambled": "UILMAB"
+    },
+    {
+     "playerId": 413507,
+     "difficulty": 3,
+     "scrambled": "KIVINMCELO"
+    }
+   ],
+   "passaIds": [
+    "pa-c73794",
+    "pa-c128220",
+    "pa-c45146",
+    "pa-c45660",
+    "pa-c176354",
+    "pa-c80059",
+    "pa-c266795"
+   ]
+  },
+  "2027-02-15": {
+   "lingoId": "lp-46552",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 730581,
+     "difficulty": 1,
+     "scrambled": "DABE"
+    },
+    {
+     "playerId": 105470,
+     "difficulty": 2,
+     "scrambled": "AOISLNS"
+    },
+    {
+     "playerId": 926694,
+     "difficulty": 3,
+     "scrambled": "EREEMNVER"
+    }
+   ],
+   "passaIds": [
+    "pa-c75489",
+    "pa-c221025",
+    "pa-c369316",
+    "pa-c122043",
+    "pa-c3455",
+    "pa-c291760",
+    "pa-c126321"
+   ]
+  },
+  "2027-02-16": {
+   "lingoId": "lc-1244",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 503075,
+     "difficulty": 1,
+     "scrambled": "EHIN"
+    },
+    {
+     "playerId": 193082,
+     "difficulty": 2,
+     "scrambled": "LGIAMORD"
+    },
+    {
+     "playerId": 724520,
+     "difficulty": 3,
+     "scrambled": "ZLULIOZEZA"
+    }
+   ],
+   "passaIds": [
+    "pa-c118534",
+    "pa-c141660",
+    "pa-c119228",
+    "pa-c46062",
+    "pa-c60890",
+    "pa-c159079",
+    "pa-c29594"
+   ]
+  },
+  "2027-02-17": {
+   "lingoId": "ln-COLOMBIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 5658,
+     "difficulty": 1,
+     "scrambled": "CEHC"
+    },
+    {
+     "playerId": 504849,
+     "difficulty": 2,
+     "scrambled": "IMTOMA"
+    },
+    {
+     "playerId": 401922,
+     "difficulty": 3,
+     "scrambled": "UHWKEECZU"
+    }
+   ],
+   "passaIds": [
+    "pa-c88103",
+    "pa-c320141",
+    "pa-c204201",
+    "pa-c7767",
+    "pa-c170838",
+    "pa-c341647",
+    "pa-c239962"
+   ]
+  },
+  "2027-02-18": {
+   "lingoId": "lp-228948",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 68290,
+     "difficulty": 1,
+     "scrambled": "AEMRNY"
+    },
+    {
+     "playerId": 321528,
+     "difficulty": 2,
+     "scrambled": "ERIDUFSM"
+    },
+    {
+     "playerId": 461496,
+     "difficulty": 3,
+     "scrambled": "JDHNUMAL"
+    }
+   ],
+   "passaIds": [
+    "pa-c386726",
+    "pa-c96828",
+    "pa-c57500",
+    "pa-c581678",
+    "pa-c128901",
+    "pa-c176354",
+    "pa-c236400"
+   ]
+  },
+  "2027-02-19": {
+   "lingoId": "lc-167",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 175722,
+     "difficulty": 1,
+     "scrambled": "DREI"
+    },
+    {
+     "playerId": 63531,
+     "difficulty": 2,
+     "scrambled": "AOMASAH"
+    },
+    {
+     "playerId": 43250,
+     "difficulty": 3,
+     "scrambled": "RVGTNONEHE"
+    }
+   ],
+   "passaIds": [
+    "pa-c39333",
+    "pa-c131789",
+    "pa-c20005",
+    "pa-c291758",
+    "pa-c149752",
+    "pa-c59344",
+    "pa-c613725"
+   ]
+  },
+  "2027-02-20": {
+   "lingoId": "ln-AUSTRIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 167850,
+     "difficulty": 1,
+     "scrambled": "EPAYD"
+    },
+    {
+     "playerId": 371149,
+     "difficulty": 2,
+     "scrambled": "DNACKI"
+    },
+    {
+     "playerId": 392768,
+     "difficulty": 3,
+     "scrambled": "USNDOHIODO"
+    }
+   ],
+   "passaIds": [
+    "pa-c122155",
+    "pa-c361260",
+    "pa-c176553",
+    "pa-c135617",
+    "pa-c152963",
+    "pa-c376514",
+    "pa-c483063"
+   ]
+  },
+  "2027-02-21": {
+   "lingoId": "lp-4182",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 216179,
+     "difficulty": 1,
+     "scrambled": "ESNSI"
+    },
+    {
+     "playerId": 191217,
+     "difficulty": 2,
+     "scrambled": "LREBINLE"
+    },
+    {
+     "playerId": 47082,
+     "difficulty": 3,
+     "scrambled": "EIGRUTDSR"
+    }
+   ],
+   "passaIds": [
+    "pa-c59561",
+    "pa-c355915",
+    "pa-c44352",
+    "pa-c157993",
+    "pa-c36139",
+    "pa-c816585",
+    "pa-c440653"
+   ]
+  },
+  "2027-02-22": {
+   "lingoId": "lp-82105",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 905011,
+     "difficulty": 1,
+     "scrambled": "MZAA"
+    },
+    {
+     "playerId": 709726,
+     "difficulty": 2,
+     "scrambled": "IIEKETK"
+    },
+    {
+     "playerId": 5757,
+     "difficulty": 3,
+     "scrambled": "OAMATBZTR"
+    }
+   ],
+   "passaIds": [
+    "pa-c37666",
+    "pa-c14086",
+    "pa-c217111",
+    "pa-c51452",
+    "pa-c315853",
+    "pa-c319745",
+    "pa-c172163"
+   ]
+  },
+  "2027-02-23": {
+   "lingoId": "lc-12321",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 374139,
+     "difficulty": 1,
+     "scrambled": "PRFIO"
+    },
+    {
+     "playerId": 141660,
+     "difficulty": 2,
+     "scrambled": "RGADINL"
+    },
+    {
+     "playerId": 59970,
+     "difficulty": 3,
+     "scrambled": "OTNSNEAPKE"
+    }
+   ],
+   "passaIds": [
+    "pa-c133179",
+    "pa-c69633",
+    "pa-c130365",
+    "pa-c520624",
+    "pa-c191391",
+    "pa-c417346",
+    "pa-c171362"
+   ]
+  },
+  "2027-02-24": {
+   "lingoId": "ln-SLOVENIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 121483,
+     "difficulty": 1,
+     "scrambled": "KOALB"
+    },
+    {
+     "playerId": 295313,
+     "difficulty": 2,
+     "scrambled": "IOYANIW"
+    },
+    {
+     "playerId": 1396,
+     "difficulty": 3,
+     "scrambled": "RETOHEWN"
+    }
+   ],
+   "passaIds": [
+    "pa-c216603",
+    "pa-c340950",
+    "pa-c302215",
+    "pa-c127181",
+    "pa-c177467",
+    "pa-c278332",
+    "pa-c1018259"
+   ]
+  },
+  "2027-02-25": {
+   "lingoId": "lp-602105",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 255901,
+     "difficulty": 1,
+     "scrambled": "EDAPLU"
+    },
+    {
+     "playerId": 85148,
+     "difficulty": 2,
+     "scrambled": "RRAELDX"
+    },
+    {
+     "playerId": 866246,
+     "difficulty": 3,
+     "scrambled": "GALLEBVR"
+    }
+   ],
+   "passaIds": [
+    "pa-c58855",
+    "pa-c165895",
+    "pa-c86784",
+    "pa-c261905",
+    "pa-c330876",
+    "pa-c605184",
+    "pa-c315289"
+   ]
+  },
+  "2027-02-26": {
+   "lingoId": "lc-1390",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 51118,
+     "difficulty": 1,
+     "scrambled": "MIRA"
+    },
+    {
+     "playerId": 556385,
+     "difficulty": 2,
+     "scrambled": "GEUDOI"
+    },
+    {
+     "playerId": 77760,
+     "difficulty": 3,
+     "scrambled": "ANYWMAA"
+    }
+   ],
+   "passaIds": [
+    "pa-c251106",
+    "pa-c139208",
+    "pa-c69015",
+    "pa-c20007",
+    "pa-c127032",
+    "pa-c46413",
+    "pa-c559263"
+   ]
+  },
+  "2027-02-27": {
+   "lingoId": "ln-JAMAICA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 46972,
+     "difficulty": 1,
+     "scrambled": "UKKIP"
+    },
+    {
+     "playerId": 126716,
+     "difficulty": 2,
+     "scrambled": "CECALAR"
+    },
+    {
+     "playerId": 16621,
+     "difficulty": 3,
+     "scrambled": "NLUAMIA"
+    }
+   ],
+   "passaIds": [
+    "pa-c110686",
+    "pa-c111196",
+    "pa-c94529",
+    "pa-c648195",
+    "pa-c325443",
+    "pa-c55524",
+    "pa-c65331"
+   ]
+  },
+  "2027-02-28": {
+   "lingoId": "lp-273132",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 2219,
+     "difficulty": 1,
+     "scrambled": "HLAM"
+    },
+    {
+     "playerId": 58088,
+     "difficulty": 2,
+     "scrambled": "RUESMLA"
+    },
+    {
+     "playerId": 33923,
+     "difficulty": 3,
+     "scrambled": "UDMATII"
+    }
+   ],
+   "passaIds": [
+    "pa-c349066",
+    "pa-c743091",
+    "pa-c206040",
+    "pa-c371371",
+    "pa-c184573",
+    "pa-c158863",
+    "pa-c189744"
+   ]
+  },
+  "2027-03-01": {
+   "lingoId": "lp-81808",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 171424,
+     "difficulty": 1,
+     "scrambled": "REAZHM"
+    },
+    {
+     "playerId": 182381,
+     "difficulty": 2,
+     "scrambled": "SMOPRE"
+    },
+    {
+     "playerId": 666234,
+     "difficulty": 3,
+     "scrambled": "MIKSNAA"
+    }
+   ],
+   "passaIds": [
+    "pa-c316264",
+    "pa-c361256",
+    "pa-c353366",
+    "pa-c127076",
+    "pa-c61841",
+    "pa-c134631",
+    "pa-c297070"
+   ]
+  },
+  "2027-03-02": {
+   "lingoId": "lc-1237",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 59377,
+     "difficulty": 1,
+     "scrambled": "GDEAE"
+    },
+    {
+     "playerId": 170934,
+     "difficulty": 2,
+     "scrambled": "ELIMNA"
+    },
+    {
+     "playerId": 129554,
+     "difficulty": 3,
+     "scrambled": "HRSIEUBG"
+    }
+   ],
+   "passaIds": [
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c164770",
+    "pa-c81789",
+    "pa-c283735",
+    "pa-c284730",
+    "pa-c412953"
+   ]
+  },
+  "2027-03-03": {
+   "lingoId": "ln-ROMANIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 605184,
+     "difficulty": 1,
+     "scrambled": "IODOTB"
+    },
+    {
+     "playerId": 320141,
+     "difficulty": 2,
+     "scrambled": "YOUNUSC"
+    },
+    {
+     "playerId": 745200,
+     "difficulty": 3,
+     "scrambled": "ECKOLHUAI"
+    }
+   ],
+   "passaIds": [
+    "pa-c195171",
+    "pa-c292199",
+    "pa-c82070",
+    "pa-c93935",
+    "pa-c146795",
+    "pa-c120565",
+    "pa-c295955"
+   ]
+  },
+  "2027-03-04": {
+   "lingoId": "lp-58088",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 191891,
+     "difficulty": 1,
+     "scrambled": "ILIMK"
+    },
+    {
+     "playerId": 5023,
+     "difficulty": 2,
+     "scrambled": "NBOUFF"
+    },
+    {
+     "playerId": 429014,
+     "difficulty": 3,
+     "scrambled": "GISHBWETBI"
+    }
+   ],
+   "passaIds": [
+    "pa-c39153",
+    "pa-c19041",
+    "pa-c216603",
+    "pa-c319301",
+    "pa-c215599",
+    "pa-c316889",
+    "pa-c127554"
+   ]
+  },
+  "2027-03-05": {
+   "lingoId": "lc-336",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 339314,
+     "difficulty": 1,
+     "scrambled": "NVADU"
+    },
+    {
+     "playerId": 44058,
+     "difficulty": 2,
+     "scrambled": "SSZCNEYZ"
+    },
+    {
+     "playerId": 162571,
+     "difficulty": 3,
+     "scrambled": "AKBSAATES"
+    }
+   ],
+   "passaIds": [
+    "pa-c148928",
+    "pa-c401923",
+    "pa-c249952",
+    "pa-c315779",
+    "pa-c7717",
+    "pa-c34870",
+    "pa-c558727"
+   ]
+  },
+  "2027-03-06": {
+   "lingoId": "ln-INDONESIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 72476,
+     "difficulty": 1,
+     "scrambled": "NOLE"
+    },
+    {
+     "playerId": 54906,
+     "difficulty": 2,
+     "scrambled": "AINMARD"
+    },
+    {
+     "playerId": 711999,
+     "difficulty": 3,
+     "scrambled": "UUWOCGHUK"
+    }
+   ],
+   "passaIds": [
+    "pa-c45671",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c76061",
+    "pa-c158946",
+    "pa-c34344",
+    "pa-c659543"
+   ]
+  },
+  "2027-03-07": {
+   "lingoId": "lp-538977",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 4192,
+     "difficulty": 1,
+     "scrambled": "TVAAR"
+    },
+    {
+     "playerId": 42460,
+     "difficulty": 2,
+     "scrambled": "PICIESR"
+    },
+    {
+     "playerId": 5947,
+     "difficulty": 3,
+     "scrambled": "EOISSDR"
+    }
+   ],
+   "passaIds": [
+    "pa-c216569",
+    "pa-c74869",
+    "pa-c251075",
+    "pa-c191422",
+    "pa-c349599",
+    "pa-c8806",
+    "pa-c362108"
+   ]
+  },
+  "2027-03-08": {
+   "lingoId": "lp-81455",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 17259,
+     "difficulty": 1,
+     "scrambled": "ERENU"
+    },
+    {
+     "playerId": 45320,
+     "difficulty": 2,
+     "scrambled": "IIADRMA"
+    },
+    {
+     "playerId": 962110,
+     "difficulty": 3,
+     "scrambled": "RICSUAB"
+    }
+   ],
+   "passaIds": [
+    "pa-c382528",
+    "pa-c61651",
+    "pa-c105521",
+    "pa-c291760",
+    "pa-c207015",
+    "pa-c48859",
+    "pa-c126516"
+   ]
+  },
+  "2027-03-09": {
+   "lingoId": "lc-16795",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 207929,
+     "difficulty": 1,
+     "scrambled": "LLAI"
+    },
+    {
+     "playerId": 571020,
+     "difficulty": 2,
+     "scrambled": "SCTENA"
+    },
+    {
+     "playerId": 249565,
+     "difficulty": 3,
+     "scrambled": "TELASIMEN"
+    }
+   ],
+   "passaIds": [
+    "pa-c200512",
+    "pa-c18644",
+    "pa-c54781",
+    "pa-c1043003",
+    "pa-c143891",
+    "pa-c50174",
+    "pa-c39106"
+   ]
+  },
+  "2027-03-10": {
+   "lingoId": "ln-NETHERLANDS",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 216569,
+     "difficulty": 1,
+     "scrambled": "AGBO"
+    },
+    {
+     "playerId": 283196,
+     "difficulty": 2,
+     "scrambled": "GORDBEL"
+    },
+    {
+     "playerId": 822959,
+     "difficulty": 3,
+     "scrambled": "FCHIBOS"
+    }
+   ],
+   "passaIds": [
+    "pa-c204201",
+    "pa-c82130",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c214316",
+    "pa-c124422",
+    "pa-c550108"
+   ]
+  },
+  "2027-03-11": {
+   "lingoId": "lp-340324",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 243714,
+     "difficulty": 1,
+     "scrambled": "ONCAM"
+    },
+    {
+     "playerId": 8806,
+     "difficulty": 2,
+     "scrambled": "SBEARAGF"
+    },
+    {
+     "playerId": 1667,
+     "difficulty": 3,
+     "scrambled": "NLAGEOIB"
+    }
+   ],
+   "passaIds": [
+    "pa-c126716",
+    "pa-c50201",
+    "pa-c66106",
+    "pa-c176354",
+    "pa-c326031",
+    "pa-c121324",
+    "pa-c192409"
+   ]
+  },
+  "2027-03-12": {
+   "lingoId": "lc-1467",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 39381,
+     "difficulty": 1,
+     "scrambled": "ELBA"
+    },
+    {
+     "playerId": 18922,
+     "difficulty": 2,
+     "scrambled": "ANMZBEE"
+    },
+    {
+     "playerId": 518505,
+     "difficulty": 3,
+     "scrambled": "LLEWIGEN"
+    }
+   ],
+   "passaIds": [
+    "pa-c10471",
+    "pa-c126414",
+    "pa-c309400",
+    "pa-c81455",
+    "pa-c291760",
+    "pa-c319859",
+    "pa-c261988"
+   ]
+  },
+  "2027-03-13": {
+   "lingoId": "ln-MONTENEGRO",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 37838,
+     "difficulty": 1,
+     "scrambled": "OELVRN"
+    },
+    {
+     "playerId": 283735,
+     "difficulty": 2,
+     "scrambled": "ACIANGCZ"
+    },
+    {
+     "playerId": 971570,
+     "difficulty": 3,
+     "scrambled": "ERKICND"
+    }
+   ],
+   "passaIds": [
+    "pa-c406040",
+    "pa-c74683",
+    "pa-c73734",
+    "pa-c112465",
+    "pa-c77966",
+    "pa-c157635",
+    "pa-c58115"
+   ]
+  },
+  "2027-03-14": {
+   "lingoId": "lp-88590",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 56331,
+     "difficulty": 1,
+     "scrambled": "TOSD"
+    },
+    {
+     "playerId": 435648,
+     "difficulty": 2,
+     "scrambled": "ERZEKIZ"
+    },
+    {
+     "playerId": 15904,
+     "difficulty": 3,
+     "scrambled": "NRLAEVEME"
+    }
+   ],
+   "passaIds": [
+    "pa-c198008",
+    "pa-c341549",
+    "pa-c131225",
+    "pa-c344695",
+    "pa-c341647",
+    "pa-c52119",
+    "pa-c672803"
+   ]
+  },
+  "2027-03-15": {
+   "lingoId": "lp-59597",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 466810,
+     "difficulty": 1,
+     "scrambled": "IAFT"
+    },
+    {
+     "playerId": 524000,
+     "difficulty": 2,
+     "scrambled": "ANIVIV"
+    },
+    {
+     "playerId": 50935,
+     "difficulty": 3,
+     "scrambled": "ACHTOIHRIC"
+    }
+   ],
+   "passaIds": [
+    "pa-c145988",
+    "pa-c354361",
+    "pa-c12249",
+    "pa-c48066",
+    "pa-c176354",
+    "pa-c326330",
+    "pa-c183720"
+   ]
+  },
+  "2027-03-16": {
+   "lingoId": "lc-749",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 333014,
+     "difficulty": 1,
+     "scrambled": "EGBRE"
+    },
+    {
+     "playerId": 58205,
+     "difficulty": 2,
+     "scrambled": "ESRHCULR"
+    },
+    {
+     "playerId": 188077,
+     "difficulty": 3,
+     "scrambled": "RTIIHCES"
+    }
+   ],
+   "passaIds": [
+    "pa-c203496",
+    "pa-c57071",
+    "pa-c53622",
+    "pa-c398073",
+    "pa-c295330",
+    "pa-c291760",
+    "pa-c179467"
+   ]
+  },
+  "2027-03-17": {
+   "lingoId": "ln-SLOVAKIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 145988,
+     "difficulty": 1,
+     "scrambled": "AAHZ"
+    },
+    {
+     "playerId": 386047,
+     "difficulty": 2,
+     "scrambled": "SAIISD"
+    },
+    {
+     "playerId": 284165,
+     "difficulty": 3,
+     "scrambled": "NWBGJIER"
+    }
+   ],
+   "passaIds": [
+    "pa-c94005",
+    "pa-c286415",
+    "pa-c338424",
+    "pa-c195778",
+    "pa-c148368",
+    "pa-c271495",
+    "pa-c79027"
+   ]
+  },
+  "2027-03-18": {
+   "lingoId": "lp-413039",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 59597,
+     "difficulty": 1,
+     "scrambled": "UYBSR"
+    },
+    {
+     "playerId": 418659,
+     "difficulty": 2,
+     "scrambled": "IGUIOR"
+    },
+    {
+     "playerId": 354362,
+     "difficulty": 3,
+     "scrambled": "NTNERCUAB"
+    }
+   ],
+   "passaIds": [
+    "pa-c197747",
+    "pa-c192565",
+    "pa-c91945",
+    "pa-c391065",
+    "pa-c112935",
+    "pa-c341647",
+    "pa-c30290"
+   ]
+  },
+  "2027-03-19": {
+   "lingoId": "lc-202",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 827734,
+     "difficulty": 1,
+     "scrambled": "NBNOY"
+    },
+    {
+     "playerId": 450936,
+     "difficulty": 2,
+     "scrambled": "BNLOEDEM"
+    },
+    {
+     "playerId": 19819,
+     "difficulty": 3,
+     "scrambled": "FFALREA"
+    }
+   ],
+   "passaIds": [
+    "pa-c69015",
+    "pa-c217111",
+    "pa-c58864",
+    "pa-c142310",
+    "pa-c182889",
+    "pa-c176354",
+    "pa-c143039"
+   ]
+  },
+  "2027-03-20": {
+   "lingoId": "ln-MEXICO",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 273132,
+     "difficulty": 1,
+     "scrambled": "NESGSO"
+    },
+    {
+     "playerId": 338670,
+     "difficulty": 2,
+     "scrambled": "SRALIV"
+    },
+    {
+     "playerId": 303259,
+     "difficulty": 3,
+     "scrambled": "KULEKBOAI"
+    }
+   ],
+   "passaIds": [
+    "pa-c84535",
+    "pa-c240306",
+    "pa-c126665",
+    "pa-c251345",
+    "pa-c71570",
+    "pa-c32113",
+    "pa-c613725"
+   ]
+  },
+  "2027-03-21": {
+   "lingoId": "lp-119228",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 4257,
+     "difficulty": 1,
+     "scrambled": "OOET"
+    },
+    {
+     "playerId": 228948,
+     "difficulty": 2,
+     "scrambled": "RRHEEK"
+    },
+    {
+     "playerId": 221899,
+     "difficulty": 3,
+     "scrambled": "ATIOPSTAB"
+    }
+   ],
+   "passaIds": [
+    "pa-c46104",
+    "pa-c452084",
+    "pa-c357164",
+    "pa-c82105",
+    "pa-c40478",
+    "pa-c485706",
+    "pa-c483063"
+   ]
+  },
+  "2027-03-22": {
+   "lingoId": "lp-148928",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 44162,
+     "difficulty": 1,
+     "scrambled": "JPICNA"
+    },
+    {
+     "playerId": 441986,
+     "difficulty": 2,
+     "scrambled": "SCBSIEK"
+    },
+    {
+     "playerId": 702869,
+     "difficulty": 3,
+     "scrambled": "RISIABA"
+    }
+   ],
+   "passaIds": [
+    "pa-c122153",
+    "pa-c187587",
+    "pa-c204069",
+    "pa-c306462",
+    "pa-c398184",
+    "pa-c142281",
+    "pa-c440653"
+   ]
+  },
+  "2027-03-23": {
+   "lingoId": "lc-1420",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 46552,
+     "difficulty": 1,
+     "scrambled": "LGIK"
+    },
+    {
+     "playerId": 33866,
+     "difficulty": 2,
+     "scrambled": "FEROUD"
+    },
+    {
+     "playerId": 4673,
+     "difficulty": 3,
+     "scrambled": "SIREJDEN"
+    }
+   ],
+   "passaIds": [
+    "pa-c37666",
+    "pa-c137616",
+    "pa-c73794",
+    "pa-c104124",
+    "pa-c387626",
+    "pa-c40613",
+    "pa-c743376"
+   ]
+  },
+  "2027-03-24": {
+   "lingoId": "ln-BELGIUM",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 425334,
+     "difficulty": 1,
+     "scrambled": "ASCH"
+    },
+    {
+     "playerId": 48015,
+     "difficulty": 2,
+     "scrambled": "HEDCRKYA"
+    },
+    {
+     "playerId": 265088,
+     "difficulty": 3,
+     "scrambled": "LOTALCILE"
+    }
+   ],
+   "passaIds": [
+    "pa-c91849",
+    "pa-c39333",
+    "pa-c39152",
+    "pa-c185077",
+    "pa-c55524",
+    "pa-c275303",
+    "pa-c524481"
+   ]
+  },
+  "2027-03-25": {
+   "lingoId": "lp-34784",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 187587,
+     "difficulty": 1,
+     "scrambled": "BCERI"
+    },
+    {
+     "playerId": 15185,
+     "difficulty": 2,
+     "scrambled": "LKSODPIO"
+    },
+    {
+     "playerId": 147487,
+     "difficulty": 3,
+     "scrambled": "AORBKAUAB"
+    }
+   ],
+   "passaIds": [
+    "pa-c743091",
+    "pa-c263727",
+    "pa-c31909",
+    "pa-c282411",
+    "pa-c182906",
+    "pa-c371149",
+    "pa-c216240"
+   ]
+  },
+  "2027-03-26": {
+   "lingoId": "lc-1049",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 73734,
+     "difficulty": 1,
+     "scrambled": "NZZONI"
+    },
+    {
+     "playerId": 118022,
+     "difficulty": 2,
+     "scrambled": "AHADNBEL"
+    },
+    {
+     "playerId": 45146,
+     "difficulty": 3,
+     "scrambled": "AEBLLILTO"
+    }
+   ],
+   "passaIds": [
+    "pa-c244940",
+    "pa-c130164",
+    "pa-c35207",
+    "pa-c42205",
+    "pa-c157993",
+    "pa-c131996",
+    "pa-c53696"
+   ]
+  },
+  "2027-03-27": {
+   "lingoId": "ln-PORTUGAL",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 251664,
+     "difficulty": 1,
+     "scrambled": "EONTY"
+    },
+    {
+     "playerId": 355861,
+     "difficulty": 2,
+     "scrambled": "ADNUJMA"
+    },
+    {
+     "playerId": 284857,
+     "difficulty": 3,
+     "scrambled": "UAERLCCLU"
+    }
+   ],
+   "passaIds": [
+    "pa-c251106",
+    "pa-c84435",
+    "pa-c14086",
+    "pa-c334526",
+    "pa-c331726",
+    "pa-c33873",
+    "pa-c284727"
+   ]
+  },
+  "2027-03-28": {
+   "lingoId": "lp-505219",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 240414,
+     "difficulty": 1,
+     "scrambled": "ERETM"
+    },
+    {
+     "playerId": 1012534,
+     "difficulty": 2,
+     "scrambled": "TEMNIH"
+    },
+    {
+     "playerId": 926993,
+     "difficulty": 3,
+     "scrambled": "DOOTHRLF"
+    }
+   ],
+   "passaIds": [
+    "pa-c292199",
+    "pa-c355861",
+    "pa-c69633",
+    "pa-c29692",
+    "pa-c195736",
+    "pa-c465606",
+    "pa-c113039"
+   ]
+  },
+  "2027-03-29": {
+   "lingoId": "lp-333014",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 122153,
+     "difficulty": 1,
+     "scrambled": "OGAPB"
+    },
+    {
+     "playerId": 746910,
+     "difficulty": 2,
+     "scrambled": "ARUOMA"
+    },
+    {
+     "playerId": 810092,
+     "difficulty": 3,
+     "scrambled": "IERMZYERAE"
+    }
+   ],
+   "passaIds": [
+    "pa-c134294",
+    "pa-c216603",
+    "pa-c122155",
+    "pa-c228948",
+    "pa-c135853",
+    "pa-c251878",
+    "pa-c2054"
+   ]
+  },
+  "2027-03-30": {
+   "lingoId": "lc-114",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 85314,
+     "difficulty": 1,
+     "scrambled": "ACSOR"
+    },
+    {
+     "playerId": 411975,
+     "difficulty": 2,
+     "scrambled": "EKNODU"
+    },
+    {
+     "playerId": 60890,
+     "difficulty": 3,
+     "scrambled": "ELLNROAA"
+    }
+   ],
+   "passaIds": [
+    "pa-c121483",
+    "pa-c35664",
+    "pa-c230784",
+    "pa-c22068",
+    "pa-c71292",
+    "pa-c330876",
+    "pa-c42942"
+   ]
+  },
+  "2027-03-31": {
+   "lingoId": "ln-ICELAND",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 111455,
+     "difficulty": 1,
+     "scrambled": "KAAXH"
+    },
+    {
+     "playerId": 583189,
+     "difficulty": 2,
+     "scrambled": "LAGNEA"
+    },
+    {
+     "playerId": 173504,
+     "difficulty": 3,
+     "scrambled": "TWORSKAIK"
+    }
+   ],
+   "passaIds": [
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c43250",
+    "pa-c845654",
+    "pa-c423440",
+    "pa-c108354",
+    "pa-c32522"
+   ]
+  },
+  "2027-04-01": {
+   "lingoId": "lp-63531",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 659542,
+     "difficulty": 1,
+     "scrambled": "WHIA"
+    },
+    {
+     "playerId": 96533,
+     "difficulty": 2,
+     "scrambled": "IEALRBA"
+    },
+    {
+     "playerId": 118689,
+     "difficulty": 3,
+     "scrambled": "IPASZLZNOA"
+    }
+   ],
+   "passaIds": [
+    "pa-c91970",
+    "pa-c110686",
+    "pa-c288230",
+    "pa-c344152",
+    "pa-c58884",
+    "pa-c429014",
+    "pa-c322873"
+   ]
+  },
+  "2027-04-02": {
+   "lingoId": "lc-244",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 221150,
+     "difficulty": 1,
+     "scrambled": "NEEJD"
+    },
+    {
+     "playerId": 203460,
+     "difficulty": 2,
+     "scrambled": "HRGEIASL"
+    },
+    {
+     "playerId": 583255,
+     "difficulty": 3,
+     "scrambled": "EYONESM"
+    }
+   ],
+   "passaIds": [
+    "pa-c99343",
+    "pa-c68863",
+    "pa-c743091",
+    "pa-c213268",
+    "pa-c85864",
+    "pa-c60561",
+    "pa-c227961"
+   ]
+  },
+  "2027-04-03": {
+   "lingoId": "ln-SWITZERLAND",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 54928,
+     "difficulty": 1,
+     "scrambled": "NDOGI"
+    },
+    {
+     "playerId": 332697,
+     "difficulty": 2,
+     "scrambled": "MICEKNEN"
+    },
+    {
+     "playerId": 315969,
+     "difficulty": 3,
+     "scrambled": "NCIYATOMM"
+    }
+   ],
+   "passaIds": [
+    "pa-c344381",
+    "pa-c48002",
+    "pa-c615350",
+    "pa-c129129",
+    "pa-c357662",
+    "pa-c258889",
+    "pa-c558727"
+   ]
+  },
+  "2027-04-04": {
+   "lingoId": "lp-321528",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 303254,
+     "difficulty": 1,
+     "scrambled": "MRTOIO"
+    },
+    {
+     "playerId": 184892,
+     "difficulty": 2,
+     "scrambled": "UAHIVNT"
+    },
+    {
+     "playerId": 503987,
+     "difficulty": 3,
+     "scrambled": "AUEDKEM"
+    }
+   ],
+   "passaIds": [
+    "pa-c184892",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c293200",
+    "pa-c81789",
+    "pa-c157509",
+    "pa-c111082"
+   ]
+  },
+  "2027-04-05": {
+   "lingoId": "lp-133179",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 28396,
+     "difficulty": 1,
+     "scrambled": "OEZKD"
+    },
+    {
+     "playerId": 228645,
+     "difficulty": 2,
+     "scrambled": "EHRWSOTG"
+    },
+    {
+     "playerId": 66058,
+     "difficulty": 3,
+     "scrambled": "EIHMDEM"
+    }
+   ],
+   "passaIds": [
+    "pa-c39983",
+    "pa-c108390",
+    "pa-c251075",
+    "pa-c72522",
+    "pa-c237662",
+    "pa-c33829",
+    "pa-c51894"
+   ]
+  },
+  "2027-04-06": {
+   "lingoId": "lc-995",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 131075,
+     "difficulty": 1,
+     "scrambled": "ABIERC"
+    },
+    {
+     "playerId": 46104,
+     "difficulty": 2,
+     "scrambled": "OECTIJV"
+    },
+    {
+     "playerId": 222209,
+     "difficulty": 3,
+     "scrambled": "HOKARSTAS"
+    }
+   ],
+   "passaIds": [
+    "pa-c239733",
+    "pa-c102226",
+    "pa-c278359",
+    "pa-c291760",
+    "pa-c270171",
+    "pa-c356141",
+    "pa-c480883"
+   ]
+  },
+  "2027-04-07": {
+   "lingoId": "ln-PARAGUAY",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 206050,
+     "difficulty": 1,
+     "scrambled": "AABYDL"
+    },
+    {
+     "playerId": 192635,
+     "difficulty": 2,
+     "scrambled": "EIDELV"
+    },
+    {
+     "playerId": 264372,
+     "difficulty": 3,
+     "scrambled": "KNAOSYGTV"
+    }
+   ],
+   "passaIds": [
+    "pa-c111873",
+    "pa-c148367",
+    "pa-c189441",
+    "pa-c159079",
+    "pa-c205938",
+    "pa-c4360",
+    "pa-c627442"
+   ]
+  },
+  "2027-04-08": {
+   "lingoId": "lp-61253",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 196792,
+     "difficulty": 1,
+     "scrambled": "LEWIG"
+    },
+    {
+     "playerId": 397033,
+     "difficulty": 2,
+     "scrambled": "OILNAT"
+    },
+    {
+     "playerId": 329517,
+     "difficulty": 3,
+     "scrambled": "OSRAAMUS"
+    }
+   ],
+   "passaIds": [
+    "pa-c204201",
+    "pa-c95810",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c7980",
+    "pa-c158946",
+    "pa-c271098"
+   ]
+  },
+  "2027-04-09": {
+   "lingoId": "lc-131",
+   "lingoDifficulty": 3,
+   "anagram": [
+    {
+     "playerId": 82105,
+     "difficulty": 1,
+     "scrambled": "TAPMI"
+    },
+    {
+     "playerId": 190393,
+     "difficulty": 2,
+     "scrambled": "TOSLOIS"
+    },
+    {
+     "playerId": 20586,
+     "difficulty": 3,
+     "scrambled": "LSUAMENNOE"
+    }
+   ],
+   "passaIds": [
+    "pa-c177476",
+    "pa-c39381",
+    "pa-c44779",
+    "pa-c315208",
+    "pa-c125858",
+    "pa-c559328",
+    "pa-c118284"
+   ]
+  },
+  "2027-04-10": {
+   "lingoId": "ln-CURACAO",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 404839,
+     "difficulty": 1,
+     "scrambled": "ILUNN"
+    },
+    {
+     "playerId": 433049,
+     "difficulty": 2,
+     "scrambled": "SNYIEREN"
+    },
+    {
+     "playerId": 55735,
+     "difficulty": 3,
+     "scrambled": "MNHKYARITA"
+    }
+   ],
+   "passaIds": [
+    "pa-c125781",
+    "pa-c85291",
+    "pa-c38593",
+    "pa-c324690",
+    "pa-c291760",
+    "pa-c110864",
+    "pa-c73092"
+   ]
+  },
+  "2027-04-11": {
+   "lingoId": "lp-85148",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 387106,
+     "difficulty": 1,
+     "scrambled": "MAREJ"
+    },
+    {
+     "playerId": 51471,
+     "difficulty": 2,
+     "scrambled": "VOCIACK"
+    },
+    {
+     "playerId": 45184,
+     "difficulty": 3,
+     "scrambled": "RIYOKKAHWC"
+    }
+   ],
+   "passaIds": [
+    "pa-c447661",
+    "pa-c182877",
+    "pa-c450936",
+    "pa-c368887",
+    "pa-c1043003",
+    "pa-c246968",
+    "pa-c550550"
+   ]
+  },
+  "2027-04-12": {
+   "lingoId": "lp-730581",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 164770,
+     "difficulty": 1,
+     "scrambled": "AEAVRN"
+    },
+    {
+     "playerId": 4176,
+     "difficulty": 2,
+     "scrambled": "ZOBVHNIO"
+    },
+    {
+     "playerId": 112343,
+     "difficulty": 3,
+     "scrambled": "BBIAGAIDNI"
+    }
+   ],
+   "passaIds": [
+    "pa-c186590",
+    "pa-c341549",
+    "pa-c249565",
+    "pa-c40680",
+    "pa-c341647",
+    "pa-c143812",
+    "pa-c157373"
+   ]
+  },
+  "2027-04-13": {
+   "lingoId": "lc-124",
+   "lingoDifficulty": 2,
+   "anagram": [
+    {
+     "playerId": 368887,
+     "difficulty": 1,
+     "scrambled": "NEOAPD"
+    },
+    {
+     "playerId": 86792,
+     "difficulty": 2,
+     "scrambled": "IRAISHQ"
+    },
+    {
+     "playerId": 203853,
+     "difficulty": 3,
+     "scrambled": "HCNNKIZOE"
+    }
+   ],
+   "passaIds": [
+    "pa-c181136",
+    "pa-c72047",
+    "pa-c156617",
+    "pa-c196948",
+    "pa-c176354",
+    "pa-c59032",
+    "pa-c5588"
+   ]
+  },
+  "2027-04-14": {
+   "lingoId": "ln-NIGERIA",
+   "lingoDifficulty": 1,
+   "anagram": [
+    {
+     "playerId": 38593,
+     "difficulty": 1,
+     "scrambled": "ASKIHM"
+    },
+    {
+     "playerId": 283628,
+     "difficulty": 2,
+     "scrambled": "USOKCE"
+    },
+    {
+     "playerId": 179184,
+     "difficulty": 3,
+     "scrambled": "YISBUAAHT"
+    }
+   ],
+   "passaIds": [
+    "pa-c357885",
+    "pa-c82442",
+    "pa-c369316",
+    "pa-c282076",
+    "pa-c59344",
+    "pa-c291760",
+    "pa-c196435"
+   ]
   }
  },
  "weekly": {
@@ -896,6 +5486,732 @@
     "pa-p65230-1",
     "pa-p44779-2",
     "pa-p21680-3"
+   ]
+  },
+  "2026-11-16": {
+   "questionIds": [
+    "pa-c94529",
+    "pa-c39152",
+    "pa-c170986",
+    "pa-c85291",
+    "pa-c309400",
+    "pa-c134294",
+    "pa-c743091",
+    "pa-c263727",
+    "pa-c118534",
+    "pa-c17965",
+    "pa-c77100",
+    "pa-c338285",
+    "pa-c368887",
+    "pa-c1043003",
+    "pa-c246968",
+    "pa-c4360",
+    "pa-c71292",
+    "pa-c306462",
+    "pa-c605184",
+    "pa-c142281",
+    "pa-c341647",
+    "pa-c64000",
+    "pa-c124422",
+    "pa-c491296",
+    "pa-c247250",
+    "pa-c575998",
+    "pa-c21748",
+    "pa-c172163",
+    "pa-c140579"
+   ]
+  },
+  "2026-11-23": {
+   "questionIds": [
+    "pa-c357885",
+    "pa-c203460",
+    "pa-c382528",
+    "pa-c102226",
+    "pa-c68863",
+    "pa-c216603",
+    "pa-c46104",
+    "pa-c302215",
+    "pa-c176553",
+    "pa-c74683",
+    "pa-c340324",
+    "pa-c346890",
+    "pa-c169873",
+    "pa-c351749",
+    "pa-c53360",
+    "pa-c258889",
+    "pa-c157993",
+    "pa-c398184",
+    "pa-c556385",
+    "pa-c341647",
+    "pa-c76061",
+    "pa-c81789",
+    "pa-c423440",
+    "pa-c103890",
+    "pa-c203938",
+    "pa-c263856",
+    "pa-c743376",
+    "pa-c519184",
+    "pa-c251303"
+   ]
+  },
+  "2026-11-30": {
+   "questionIds": [
+    "pa-c120205",
+    "pa-c126414",
+    "pa-c38593",
+    "pa-c278359",
+    "pa-c216603",
+    "pa-c206040",
+    "pa-c31909",
+    "pa-c286415",
+    "pa-c338424",
+    "pa-c450936",
+    "pa-c59641",
+    "pa-c159079",
+    "pa-c327757",
+    "pa-c73782",
+    "pa-c272642",
+    "pa-c134631",
+    "pa-c303254",
+    "pa-c816585",
+    "pa-c341647",
+    "pa-c214316",
+    "pa-c845654",
+    "pa-c157509",
+    "pa-c60410",
+    "pa-c571743",
+    "pa-c12149",
+    "pa-c743376",
+    "pa-c645774",
+    "pa-c126687",
+    "pa-c182936"
+   ]
+  },
+  "2026-12-07": {
+   "questionIds": [
+    "pa-c53622",
+    "pa-c39728",
+    "pa-c19041",
+    "pa-c216603",
+    "pa-c46104",
+    "pa-c91059",
+    "pa-c357164",
+    "pa-c111873",
+    "pa-c143559",
+    "pa-c175446",
+    "pa-c1043003",
+    "pa-c64793",
+    "pa-c162959",
+    "pa-c161869",
+    "pa-c330876",
+    "pa-c61842",
+    "pa-c344695",
+    "pa-c341647",
+    "pa-c52119",
+    "pa-c124422",
+    "pa-c53533",
+    "pa-c284730",
+    "pa-c46413",
+    "pa-c469050",
+    "pa-c172163",
+    "pa-c495667",
+    "pa-c724520",
+    "pa-c238537",
+    "pa-c127987"
+   ]
+  },
+  "2026-12-14": {
+   "questionIds": [
+    "pa-c55508",
+    "pa-c68863",
+    "pa-c743091",
+    "pa-c122155",
+    "pa-c127189",
+    "pa-c447661",
+    "pa-c90681",
+    "pa-c18644",
+    "pa-c401923",
+    "pa-c249952",
+    "pa-c129588",
+    "pa-c336869",
+    "pa-c50355",
+    "pa-c134631",
+    "pa-c399776",
+    "pa-c112935",
+    "pa-c341647",
+    "pa-c143812",
+    "pa-c158946",
+    "pa-c203853",
+    "pa-c104124",
+    "pa-c59027",
+    "pa-c59631",
+    "pa-c743376",
+    "pa-c448854",
+    "pa-c71559",
+    "pa-c56134",
+    "pa-c475959",
+    "pa-c182079"
+   ]
+  },
+  "2026-12-21": {
+   "questionIds": [
+    "pa-c278359",
+    "pa-c216603",
+    "pa-c340950",
+    "pa-c502670",
+    "pa-c129444",
+    "pa-c157495",
+    "pa-c344381",
+    "pa-c54781",
+    "pa-c244940",
+    "pa-c165895",
+    "pa-c282429",
+    "pa-c16911",
+    "pa-c306462",
+    "pa-c442891",
+    "pa-c40680",
+    "pa-c341647",
+    "pa-c251896",
+    "pa-c124422",
+    "pa-c606752",
+    "pa-c331726",
+    "pa-c142310",
+    "pa-c48066",
+    "pa-c315208",
+    "pa-c9967",
+    "pa-c538918",
+    "pa-c7512",
+    "pa-c215864",
+    "pa-c327402",
+    "pa-c206225"
+   ]
+  },
+  "2026-12-28": {
+   "questionIds": [
+    "pa-c743091",
+    "pa-c263727",
+    "pa-c81785",
+    "pa-c205562",
+    "pa-c85352",
+    "pa-c148367",
+    "pa-c121483",
+    "pa-c35664",
+    "pa-c122153",
+    "pa-c86202",
+    "pa-c103427",
+    "pa-c330876",
+    "pa-c47085",
+    "pa-c170838",
+    "pa-c341647",
+    "pa-c286047",
+    "pa-c81789",
+    "pa-c21327",
+    "pa-c160241",
+    "pa-c128899",
+    "pa-c196948",
+    "pa-c315208",
+    "pa-c326330",
+    "pa-c583189",
+    "pa-c432090",
+    "pa-c82873",
+    "pa-c532905",
+    "pa-c659813",
+    "pa-c147846"
+   ]
+  },
+  "2027-01-04": {
+   "questionIds": [
+    "pa-c340950",
+    "pa-c364135",
+    "pa-c72476",
+    "pa-c3333",
+    "pa-c450936",
+    "pa-c189441",
+    "pa-c361256",
+    "pa-c343052",
+    "pa-c187587",
+    "pa-c46001",
+    "pa-c157993",
+    "pa-c318528",
+    "pa-c816585",
+    "pa-c341647",
+    "pa-c221316",
+    "pa-c158946",
+    "pa-c34344",
+    "pa-c15951",
+    "pa-c433984",
+    "pa-c316125",
+    "pa-c176354",
+    "pa-c168157",
+    "pa-c251079",
+    "pa-c287700",
+    "pa-c119277",
+    "pa-c322873",
+    "pa-c284010",
+    "pa-c494237",
+    "pa-c613725"
+   ]
+  },
+  "2027-01-11": {
+   "questionIds": [
+    "pa-c161011",
+    "pa-c93720",
+    "pa-c28003",
+    "pa-c148928",
+    "pa-c316264",
+    "pa-c244940",
+    "pa-c166237",
+    "pa-c35207",
+    "pa-c68864",
+    "pa-c177031",
+    "pa-c413112",
+    "pa-c344695",
+    "pa-c341647",
+    "pa-c101500",
+    "pa-c81789",
+    "pa-c423440",
+    "pa-c272999",
+    "pa-c99227",
+    "pa-c401922",
+    "pa-c315208",
+    "pa-c125858",
+    "pa-c237662",
+    "pa-c57162",
+    "pa-c242940",
+    "pa-c182079",
+    "pa-c111811",
+    "pa-c7874",
+    "pa-c613725",
+    "pa-c472423"
+   ]
+  },
+  "2027-01-18": {
+   "questionIds": [
+    "pa-c38253",
+    "pa-c27992",
+    "pa-c73734",
+    "pa-c401923",
+    "pa-c35664",
+    "pa-c141050",
+    "pa-c258923",
+    "pa-c35518",
+    "pa-c204201",
+    "pa-c353948",
+    "pa-c142281",
+    "pa-c341647",
+    "pa-c40372",
+    "pa-c158946",
+    "pa-c157509",
+    "pa-c55619",
+    "pa-c182618",
+    "pa-c199248",
+    "pa-c176354",
+    "pa-c198116",
+    "pa-c146310",
+    "pa-c33829",
+    "pa-c225122",
+    "pa-c327402",
+    "pa-c261927",
+    "pa-c45599",
+    "pa-c613725",
+    "pa-c264140",
+    "pa-c76277"
+   ]
+  },
+  "2027-01-25": {
+   "questionIds": [
+    "pa-c58358",
+    "pa-c344381",
+    "pa-c54781",
+    "pa-c615350",
+    "pa-c37647",
+    "pa-c7825",
+    "pa-c401173",
+    "pa-c177031",
+    "pa-c74857",
+    "pa-c126540",
+    "pa-c341647",
+    "pa-c369081",
+    "pa-c124422",
+    "pa-c344598",
+    "pa-c63531",
+    "pa-c187492",
+    "pa-c238266",
+    "pa-c176354",
+    "pa-c142021",
+    "pa-c64598",
+    "pa-c24202",
+    "pa-c126656",
+    "pa-c291758",
+    "pa-c121385",
+    "pa-c355816",
+    "pa-c613725",
+    "pa-c58995",
+    "pa-c317740",
+    "pa-c636703"
+   ]
+  },
+  "2027-02-01": {
+   "questionIds": [
+    "pa-c148367",
+    "pa-c48002",
+    "pa-c249952",
+    "pa-c44162",
+    "pa-c8198",
+    "pa-c106987",
+    "pa-c91945",
+    "pa-c184892",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c357498",
+    "pa-c81789",
+    "pa-c53533",
+    "pa-c236490",
+    "pa-c730581",
+    "pa-c348795",
+    "pa-c315208",
+    "pa-c129476",
+    "pa-c96533",
+    "pa-c182893",
+    "pa-c98512",
+    "pa-c55524",
+    "pa-c7161",
+    "pa-c353892",
+    "pa-c613725",
+    "pa-c3881",
+    "pa-c78959",
+    "pa-c51604",
+    "pa-c381362"
+   ]
+  },
+  "2027-02-08": {
+   "questionIds": [
+    "pa-c175446",
+    "pa-c35664",
+    "pa-c42460",
+    "pa-c32467",
+    "pa-c29241",
+    "pa-c204201",
+    "pa-c249565",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c82009",
+    "pa-c124422",
+    "pa-c606752",
+    "pa-c147487",
+    "pa-c146854",
+    "pa-c146227",
+    "pa-c176354",
+    "pa-c127187",
+    "pa-c192635",
+    "pa-c394300",
+    "pa-c861410",
+    "pa-c465606",
+    "pa-c348623",
+    "pa-c65467",
+    "pa-c613725",
+    "pa-c125314",
+    "pa-c384060",
+    "pa-c343463",
+    "pa-c48164",
+    "pa-c274839"
+   ]
+  },
+  "2027-02-15": {
+   "questionIds": [
+    "pa-c615350",
+    "pa-c167329",
+    "pa-c234803",
+    "pa-c148455",
+    "pa-c91945",
+    "pa-c204103",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c76163",
+    "pa-c69015",
+    "pa-c21327",
+    "pa-c131075",
+    "pa-c118022",
+    "pa-c140776",
+    "pa-c315208",
+    "pa-c169880",
+    "pa-c315110",
+    "pa-c125714",
+    "pa-c503733",
+    "pa-c257785",
+    "pa-c187105",
+    "pa-c324690",
+    "pa-c291760",
+    "pa-c13520",
+    "pa-c74943",
+    "pa-c131275",
+    "pa-c12359",
+    "pa-c224088",
+    "pa-c368482"
+   ]
+  },
+  "2027-02-22": {
+   "questionIds": [
+    "pa-c149498",
+    "pa-c182913",
+    "pa-c241641",
+    "pa-c341549",
+    "pa-c30321",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c84435",
+    "pa-c137616",
+    "pa-c145988",
+    "pa-c60410",
+    "pa-c410425",
+    "pa-c341092",
+    "pa-c315208",
+    "pa-c162038",
+    "pa-c190284",
+    "pa-c170472",
+    "pa-c418659",
+    "pa-c251345",
+    "pa-c48015",
+    "pa-c242631",
+    "pa-c291760",
+    "pa-c257462",
+    "pa-c469787",
+    "pa-c159844",
+    "pa-c223029",
+    "pa-c122840",
+    "pa-c75458",
+    "pa-c138736"
+   ]
+  },
+  "2027-03-01": {
+   "questionIds": [
+    "pa-c86202",
+    "pa-c44058",
+    "pa-c177031",
+    "pa-c255755",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c43250",
+    "pa-c386726",
+    "pa-c181136",
+    "pa-c120443",
+    "pa-c59027",
+    "pa-c59631",
+    "pa-c176354",
+    "pa-c99397",
+    "pa-c433049",
+    "pa-c140191",
+    "pa-c60542",
+    "pa-c465606",
+    "pa-c404418",
+    "pa-c98888",
+    "pa-c291760",
+    "pa-c363205",
+    "pa-c357119",
+    "pa-c413565",
+    "pa-c72857",
+    "pa-c371141",
+    "pa-c358165",
+    "pa-c31867",
+    "pa-c89592"
+   ]
+  },
+  "2027-03-08": {
+   "questionIds": [
+    "pa-c90466",
+    "pa-c91945",
+    "pa-c196357",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c130360",
+    "pa-c137616",
+    "pa-c73794",
+    "pa-c41384",
+    "pa-c131978",
+    "pa-c12907",
+    "pa-c315208",
+    "pa-c288255",
+    "pa-c42412",
+    "pa-c52570",
+    "pa-c28140",
+    "pa-c257785",
+    "pa-c258919",
+    "pa-c21175",
+    "pa-c291760",
+    "pa-c776890",
+    "pa-c126710",
+    "pa-c303259",
+    "pa-c66058",
+    "pa-c623570",
+    "pa-c413605",
+    "pa-c38195",
+    "pa-c60957",
+    "pa-c245078"
+   ]
+  },
+  "2027-03-15": {
+   "questionIds": [
+    "pa-c177031",
+    "pa-c353948",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c82009",
+    "pa-c14086",
+    "pa-c96828",
+    "pa-c112515",
+    "pa-c75471",
+    "pa-c119296",
+    "pa-c315208",
+    "pa-c31067",
+    "pa-c709726",
+    "pa-c148252",
+    "pa-c124502",
+    "pa-c291758",
+    "pa-c58993",
+    "pa-c36827",
+    "pa-c291760",
+    "pa-c470607",
+    "pa-c89086",
+    "pa-c130394",
+    "pa-c266302",
+    "pa-c358032",
+    "pa-c432982",
+    "pa-c124891",
+    "pa-c177452",
+    "pa-c135490",
+    "pa-c358166"
+   ]
+  },
+  "2027-03-22": {
+   "questionIds": [
+    "pa-c74857",
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c76163",
+    "pa-c386726",
+    "pa-c181136",
+    "pa-c60444",
+    "pa-c127048",
+    "pa-c15799",
+    "pa-c110686",
+    "pa-c168157",
+    "pa-c479999",
+    "pa-c59340",
+    "pa-c486031",
+    "pa-c191391",
+    "pa-c890290",
+    "pa-c130756",
+    "pa-c291760",
+    "pa-c380350",
+    "pa-c160938",
+    "pa-c202886",
+    "pa-c487969",
+    "pa-c406640",
+    "pa-c314295",
+    "pa-c138736",
+    "pa-c401578",
+    "pa-c88706",
+    "pa-c122115",
+    "pa-c422203"
+   ]
+  },
+  "2027-03-29": {
+   "questionIds": [
+    "pa-c126540",
+    "pa-c251106",
+    "pa-c139208",
+    "pa-c69015",
+    "pa-c96828",
+    "pa-c59016",
+    "pa-c26485",
+    "pa-c120095",
+    "pa-c251075",
+    "pa-c56331",
+    "pa-c251079",
+    "pa-c39679",
+    "pa-c43907",
+    "pa-c257785",
+    "pa-c34130",
+    "pa-c65467",
+    "pa-c291760",
+    "pa-c121985",
+    "pa-c81512",
+    "pa-c35564",
+    "pa-c295183",
+    "pa-c225161",
+    "pa-c293385",
+    "pa-c31867",
+    "pa-c139895",
+    "pa-c160506",
+    "pa-c56810",
+    "pa-c330871",
+    "pa-c368891"
+   ]
+  },
+  "2027-04-05": {
+   "questionIds": [
+    "pa-c251106",
+    "pa-c164770",
+    "pa-c386726",
+    "pa-c145988",
+    "pa-c42710",
+    "pa-c18922",
+    "pa-c48280",
+    "pa-c292199",
+    "pa-c45320",
+    "pa-c94529",
+    "pa-c57162",
+    "pa-c225122",
+    "pa-c291758",
+    "pa-c200056",
+    "pa-c98249",
+    "pa-c291760",
+    "pa-c177847",
+    "pa-c29401",
+    "pa-c34370",
+    "pa-c207877",
+    "pa-c469822",
+    "pa-c139336",
+    "pa-c169873",
+    "pa-c176485",
+    "pa-c51118",
+    "pa-c40995",
+    "pa-c422203",
+    "pa-c739443",
+    "pa-c476701"
+   ]
+  },
+  "2027-04-12": {
+   "questionIds": [
+    "pa-c130360",
+    "pa-c137616",
+    "pa-c217111",
+    "pa-c207929",
+    "pa-c286384",
+    "pa-c284857",
+    "pa-c110686",
+    "pa-c28396",
+    "pa-c84535",
+    "pa-c462250",
+    "pa-c126656",
+    "pa-c251345",
+    "pa-c378293",
+    "pa-c3455",
+    "pa-c291760",
+    "pa-c257462",
+    "pa-c294808",
+    "pa-c21725",
+    "pa-c77100",
+    "pa-c338285",
+    "pa-c57895",
+    "pa-c77966",
+    "pa-c257455",
+    "pa-c279009",
+    "pa-c131506",
+    "pa-c330871",
+    "pa-c5513",
+    "pa-c589128",
+    "pa-c440653"
    ]
   }
  }
