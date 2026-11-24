@@ -9137,11 +9137,19 @@ function lbCoinService() {
 exports.getCoinPurchaseCatalog = httpsV2.onCall(
     {region: "europe-west1", maxInstances: 10, enforceAppCheck: true}, async (request) => {
       lbRequireGoogleLinked(request);
-      // Explicit launch switch; unavailable configuration keeps new purchases off.
-      const template = await getRemoteConfig().getServerTemplate({
-        defaultConfig: {linkball_coin_sales_enabled: "false"},
-      });
-      const enabled = template.evaluate().getString("linkball_coin_sales_enabled") === "true";
+      // Explicit launch switch; unavailable configuration keeps new purchases off
+      // (like Linkball Pro) instead of failing the store page.
+      let enabled = false;
+      try {
+        const template = await getRemoteConfig().getServerTemplate({
+          defaultConfig: {linkball_coin_sales_enabled: "false"},
+        });
+        enabled = template.evaluate().getString("linkball_coin_sales_enabled") === "true";
+      } catch (error) {
+        logger.warn("Coin sales config unavailable; keeping sales off", {
+          reason: String(error && error.message || error),
+        });
+      }
       return {ok: true, enabled, accountId: coinPurchases.accountId(request.auth.uid),
         products: Object.entries(coinPurchases.PRODUCTS).map(([productId, coins]) => ({productId, coins}))};
     });
@@ -9199,9 +9207,13 @@ exports.reconcileCoinPurchases = onSchedule({region: "europe-west1", schedule: "
   timeoutSeconds: 540, maxInstances: 1}, async () => {
   try {
     await lbReconcileCoinPurchases();
-  } catch (_) {
-    // Do not let transport errors log receipt-bearing URLs or request headers.
-    throw new Error("Coin reconciliation failed; check Play API access and worker health.");
+  } catch (error) {
+    // Do not let transport errors log receipt-bearing URLs or request headers:
+    // only the HTTP status (403 no Play Console access, 404 unknown app) and Play's reason word.
+    const status = Number(error?.response?.status) || 0;
+    const reason = String(error?.response?.data?.error?.status || "").replace(/[^A-Z_]/g, "").slice(0, 40);
+    logger.error("Coin reconciliation failed; check Play API access and worker health.", {status, reason});
+    throw new Error("Coin reconciliation failed (HTTP " + status + (reason ? " " + reason : "") + ").");
   }
 });
 // MONETIZATION_C_COIN_PURCHASES_END

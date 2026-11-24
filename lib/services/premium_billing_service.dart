@@ -209,7 +209,22 @@ class PremiumBillingService {
   }
 
 
+  // The Pro page and ProPurchaseListener can both see one purchase: they share
+  // a single server verification per purchase token.
+  static final Map<String, Future<PremiumEntitlement>> _verifying = {};
+
   static Future<PremiumEntitlement> verifyAndComplete(
+    PurchaseDetails purchase,
+  ) {
+    final token = purchase.verificationData.serverVerificationData.trim();
+    final running = _verifying[token];
+    if (running != null) return running;
+    final future = _verifyAndComplete(purchase);
+    _verifying[token] = future;
+    return future.whenComplete(() => _verifying.remove(token));
+  }
+
+  static Future<PremiumEntitlement> _verifyAndComplete(
     PurchaseDetails purchase,
   ) async {
     if (!requiresServerVerification(purchase)) {

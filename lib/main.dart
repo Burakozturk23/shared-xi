@@ -13,6 +13,7 @@ import 'app/route_appearance.dart';
 import 'services/cloud_bootstrap.dart';
 import 'services/ads_consent_service.dart';
 import 'services/coin_billing_service.dart';
+import 'services/pro_purchase_listener.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -33,6 +34,8 @@ Future<void> main() async {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     GameAudio.instance?.start();
     unawaited(AdsConsentService.refresh());
+    // Pro listens first: the coin service's restore redelivers Pro purchases too.
+    ProPurchaseListener.initialize();
     unawaited(CoinBillingService.initialize());
     debugPrint(
       '[Startup] Welcome first frame '
