@@ -6701,10 +6701,10 @@
       "options": [
         "Spezia Calcio",
         "FC Empoli",
-        "AC Monza"
+        "Delfino Pescara 1936"
       ],
       "answer": 2,
-      "explanation": "Luciano Spalletti’in gözden geçirilmiş tam A takım kariyerinde FC Empoli ve Spezia Calcio vardır; AC Monza yoktur.",
+      "explanation": "Luciano Spalletti’in gözden geçirilmiş tam A takım kariyerinde FC Empoli ve Spezia Calcio vardır; Delfino Pescara 1936 yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Luciano_Spalletti"
@@ -6742,11 +6742,11 @@
       "prompt": "Roberto Mancini · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "SS Lazio",
-        "Napoli",
+        "Juventus FC",
         "Bologna FC 1909"
       ],
       "answer": 1,
-      "explanation": "Roberto Mancini’in gözden geçirilmiş tam A takım kariyerinde SS Lazio ve Bologna FC 1909 vardır; Napoli yoktur.",
+      "explanation": "Roberto Mancini’in gözden geçirilmiş tam A takım kariyerinde SS Lazio ve Bologna FC 1909 vardır; Juventus FC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Roberto_Mancini"
@@ -6890,10 +6890,10 @@
       "options": [
         "PSV Eindhoven",
         "FC Schalke 04",
-        "VfL Bochum"
+        "Hertha BSC"
       ],
       "answer": 2,
-      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; VfL Bochum yoktur.",
+      "explanation": "Jefferson Farfán’in gözden geçirilmiş tam A takım kariyerinde FC Schalke 04 ve PSV Eindhoven vardır; Hertha BSC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Jefferson_Farf%C3%A1n"
@@ -7035,12 +7035,12 @@
       "category": "player",
       "prompt": "Kaká · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
-        "Los Angeles Galaxy",
+        "Como 1907",
         "AC Milan",
         "São Paulo Futebol Clube"
       ],
       "answer": 0,
-      "explanation": "Kaká’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve São Paulo Futebol Clube vardır; Los Angeles Galaxy yoktur.",
+      "explanation": "Kaká’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve São Paulo Futebol Clube vardır; Como 1907 yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Kak%C3%A1"
@@ -7183,11 +7183,11 @@
       "prompt": "Roberto Baggio · Profesyonel A takım kariyerinde hangi kulüpte hiç forma giymedi?",
       "options": [
         "AC Milan",
-        "Napoli",
+        "Genoa CFC",
         "Juventus FC"
       ],
       "answer": 1,
-      "explanation": "Roberto Baggio’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Juventus FC vardır; Napoli yoktur.",
+      "explanation": "Roberto Baggio’in gözden geçirilmiş tam A takım kariyerinde AC Milan ve Juventus FC vardır; Genoa CFC yoktur.",
       "sources": [
         {
           "url": "https://en.wikipedia.org/wiki/Roberto_Baggio"
