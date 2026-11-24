@@ -49,7 +49,7 @@ class RosterPatchTests(unittest.TestCase):
                     "'reviewed:summer-2026:2026-11-12',"
                     "'reviewed:turkish-players:2026-11-22',"
                     "'reviewed:famous-players:2026-11-23'"
-                    ")"
+                    ") AND source NOT LIKE 'reviewed:player-fixes:%'"
                 ).fetchone()[0],
                 165563 + len(additions)
                 # Placeholder clubs (Transfermarkt "without club") removed later.

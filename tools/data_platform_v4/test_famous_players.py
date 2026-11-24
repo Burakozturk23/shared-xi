@@ -66,7 +66,9 @@ class FamousPlayersTests(unittest.TestCase):
             self.assertEqual(con.execute('SELECT COUNT(*) FROM player_clubs WHERE club_id=15795').fetchone()[0], 0)
             self.assertEqual(con.execute('SELECT name FROM clubs WHERE id=4673').fetchone()[0], 'Arsenal de Sarandí')
         manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
-        self.assertEqual([r['id'] for r in manifest['reviewedAdditions'][-3:]], [REVISION, RANKS, TWINS])
+        ids = [r['id'] for r in manifest['reviewedAdditions']]
+        at = ids.index(REVISION)
+        self.assertEqual(ids[at:at + 3], [REVISION, RANKS, TWINS])
 
     def test_idempotency_and_evidence_guard(self):
         with tempfile.TemporaryDirectory() as td:

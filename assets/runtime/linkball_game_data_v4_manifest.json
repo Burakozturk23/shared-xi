@@ -7,7 +7,7 @@
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
     "bytes": 47165440,
     "sizeMB": 44.98,
-    "sha256": "9ec484b50452ac3fb4b96a1872a9c2e225a0303e1ded24438feaf8a708fda4cb"
+    "sha256": "34b1f5102127d926cdb50a4f87d2d053602b6dacd8f10fb3517b271a70419a3e"
   },
   "counts": {
     "players": 39600,
@@ -15,7 +15,7 @@
     "shadow_players": 0,
     "players_with_clubs": 39600,
     "clubs": 4335,
-    "career_players": 10209,
+    "career_players": 10210,
     "transfer_players": 4599,
     "search_players": 39600,
     "coaches": 5285,
@@ -41,8 +41,8 @@
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
   },
-  "revision": "v4-2026-11-23.3",
-  "updatedUtc": "2026-11-23",
+  "revision": "v4-2026-11-24.1",
+  "updatedUtc": "2026-11-24T15:00:00+00:00",
   "patches": [
     {
       "id": "v4-2026-09-28.1",
@@ -177,6 +177,19 @@
       "collapsedLinksBySource": {
         "v3": 918
       }
+    },
+    {
+      "id": "v4-2026-11-24.1",
+      "baseSha256": "9ec484b50452ac3fb4b96a1872a9c2e225a0303e1ded24438feaf8a708fda4cb",
+      "outputSha256": "34b1f5102127d926cdb50a4f87d2d053602b6dacd8f10fb3517b271a70419a3e",
+      "evidenceSha256": "95686be2580ba2527c591ff78400b3875b73a238c0f79b137506a0668e0e7988",
+      "operations": {
+        "addPlayerClub": 2,
+        "addSpell": 3
+      },
+      "newClubs": 0,
+      "removedBaseLinks": 0,
+      "newCareerSpells": 3
     }
   ],
   "corrections": [

@@ -50,6 +50,8 @@ class ExpansionTests(unittest.TestCase):
         review=ROOT/'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
         if not review.exists():self.skipTest('Review has not been generated yet')
         evidence=load_review(review);m=json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text())
+        fixed={x['playerId'] for f in (ROOT/'tools/data_platform_v4/patches').glob('player-fixes-*.json')
+               for x in json.loads(f.read_text(encoding='utf-8'))['players']}
         twin=canonical(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')  # v4-2026-11-23.3 merged twin club rows: a reviewed twin id now lives on its primary row.
         with closing(sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')) as c, c:
             self.assertEqual(c.execute('SELECT COUNT(*) FROM players').fetchone()[0],m['counts']['players'])
@@ -60,6 +62,7 @@ class ExpansionTests(unittest.TestCase):
                 self.assertEqual(c.execute('SELECT answer_eligible FROM players WHERE id=?',(pid,)).fetchone(),(1,))
                 self.assertTrue(c.execute('SELECT 1 FROM player_search_terms WHERE player_id=?',(pid,)).fetchone())
                 self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?',(pid,twin.get(r['clubId'],r['clubId']))).fetchone())
+                if pid in fixed: continue  # A later reported-player fix added his career.
                 self.assertFalse(c.execute('SELECT 1 FROM career_spells WHERE player_id=?',(pid,)).fetchone())
                 self.assertFalse(c.execute('SELECT 1 FROM transfers WHERE player_id=?',(pid,)).fetchone())
                 # Same predicate as the V4 per-club answer and player-search queries.
