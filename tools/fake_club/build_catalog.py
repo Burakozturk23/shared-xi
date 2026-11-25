@@ -74,7 +74,16 @@ def build():
     # TM ids that collide with a different club keep their own id (reviewed list).
     offset_mismatch = {x['id'] for x in __import__('json').loads((__import__('pathlib').Path(__file__).resolve().parents[2] / 'tools/data_platform_v4/club_offset_mismatch.json').read_text(encoding='utf-8'))['ids']}
 
+    # Rows later merged into another club (v4-2026-11-23.3 twins, v4-2026-11-26.1 cleanup):
+    # a reviewed career naming the old row (Baggio's Brescia) means the kept one.
+    sys.path.insert(0, str(ROOT / 'tools/data_platform_v4'))
+    from apply_club_twins import canonical
+    from apply_club_cleanup import DUPLICATES, SUCCESSORS
+    merged = canonical(DB)
+    merged.update({old: kept for (old, _), (kept, _) in DUPLICATES + SUCCESSORS})
+
     def cid(i):
+        i = merged.get(i, i)
         return i - 1000000000 if i >= 1000000000 and i not in offset_mismatch and i - 1000000000 in rawclubs else i
 
     clubs = {cid(i): dict(id=cid(i), name=rawclubs[cid(i)]['name'],

@@ -5,9 +5,9 @@
   "generatedUtc": "2026-08-31T23:35:30.578736+00:00",
   "database": {
     "asset": "assets/runtime/linkball_game_data_v4.sqlite",
-    "bytes": 47165440,
-    "sizeMB": 44.98,
-    "sha256": "34b1f5102127d926cdb50a4f87d2d053602b6dacd8f10fb3517b271a70419a3e"
+    "bytes": 47243264,
+    "sizeMB": 45.05,
+    "sha256": "75a4bf141075228c85e3516873983f955741873ad01e2d9400a1aff9770080d6"
   },
   "counts": {
     "players": 39600,
@@ -41,7 +41,7 @@
     "legacyPoolsCopied": false,
     "runtimeJsonRequired": false
   },
-  "revision": "v4-2026-11-24.1",
+  "revision": "v4-2026-11-26.1",
   "updatedUtc": "2026-11-24T15:00:00+00:00",
   "patches": [
     {
@@ -190,6 +190,20 @@
       "newClubs": 0,
       "removedBaseLinks": 0,
       "newCareerSpells": 3
+    },
+    {
+      "id": "v4-2026-11-26.1",
+      "baseSha256": "34b1f5102127d926cdb50a4f87d2d053602b6dacd8f10fb3517b271a70419a3e",
+      "outputSha256": "75a4bf141075228c85e3516873983f955741873ad01e2d9400a1aff9770080d6",
+      "duplicates": 8,
+      "successors": 21,
+      "reserves": 11,
+      "countries": 1,
+      "movedLinks": 1060,
+      "collapsedLinksBySource": {
+        "roster:worldcup26:2026-09-29.2": 2,
+        "v3": 135
+      }
     }
   ],
   "corrections": [

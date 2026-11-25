@@ -45,9 +45,13 @@ def groups(con):
 
 
 def canonical(database):
-    """{twin club id: primary id} of a database: older reviews name a twin row that now has no links."""
+    """{merged club id: kept id} of a database: older reviews name a row that now has no links.
+    Twin rows (this revision) and the reviewed cleanup merges (apply_club_cleanup.py)."""
+    from apply_club_cleanup import DUPLICATES, SUCCESSORS
     with closing(sqlite3.connect(Path(database).resolve().as_uri() + '?mode=ro', uri=True)) as con:
-        return {t: p for p, rows in groups(con).items() for t in rows}
+        out = {t: p for p, rows in groups(con).items() for t in rows}
+    out.update({old: kept for (old, _), (kept, _) in DUPLICATES + SUCCESSORS})
+    return out
 
 
 def merge(con, twin, primary, collapsed):

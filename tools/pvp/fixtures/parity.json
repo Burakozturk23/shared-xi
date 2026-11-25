@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "version": "pvp-v1-3c4c9139e249d1b3",
+  "version": "pvp-v1-a50359c8bc456375",
   "clubs": [
     {
       "id": 2,
@@ -79,12 +79,6 @@
       "name": "Borussia Mönchengladbach",
       "league": "Bundesliga",
       "country": "Germany"
-    },
-    {
-      "id": 19,
-      "name": "Brescia Calcio (- 2025)",
-      "league": "",
-      "country": "Italy"
     },
     {
       "id": 22,
@@ -249,12 +243,6 @@
       "country": "Germany"
     },
     {
-      "id": 88,
-      "name": "Widzew Lodz",
-      "league": "PKO BP Ekstraklasa",
-      "country": "Poland"
-    },
-    {
       "id": 89,
       "name": "1.FC Union Berlin",
       "league": "Bundesliga",
@@ -417,12 +405,6 @@
       "country": "England"
     },
     {
-      "id": 166,
-      "name": "VfB Oldenburg",
-      "league": "Regionalliga Nord",
-      "country": "Germany"
-    },
-    {
       "id": 167,
       "name": "FC Augsburg",
       "league": "Bundesliga",
@@ -493,12 +475,6 @@
       "name": "FC Groningen",
       "league": "Eredivisie",
       "country": "Netherlands"
-    },
-    {
-      "id": 204,
-      "name": "Lierse SK (-2018)",
-      "league": "",
-      "country": "Belgium"
     },
     {
       "id": 206,
@@ -591,12 +567,6 @@
       "country": "Poland"
     },
     {
-      "id": 260,
-      "name": "FC Zürich",
-      "league": "Super League",
-      "country": "Switzerland"
-    },
-    {
       "id": 265,
       "name": "Panathinaikos FC",
       "league": "Super League 1",
@@ -667,12 +637,6 @@
       "name": "Yverdon Sport FC",
       "league": "Challenge League",
       "country": "Switzerland"
-    },
-    {
-      "id": 324,
-      "name": "Pogon Szczecin",
-      "league": "PKO BP Ekstraklasa",
-      "country": "Poland"
     },
     {
       "id": 330,
@@ -1185,12 +1149,6 @@
       "country": "Spain"
     },
     {
-      "id": 718,
-      "name": "KFC Lommel SK (- 2003)",
-      "league": "",
-      "country": "Belgium"
-    },
-    {
       "id": 720,
       "name": "FC Porto",
       "league": "Liga Portugal",
@@ -1347,16 +1305,16 @@
       "country": "Russia"
     },
     {
+      "id": 937,
+      "name": "Júbilo Iwata",
+      "league": "J2 League",
+      "country": "Japan"
+    },
+    {
       "id": 940,
       "name": "Celta de Vigo",
       "league": "LaLiga",
       "country": "Spain"
-    },
-    {
-      "id": 964,
-      "name": "Zenit St. Petersburg",
-      "league": "Premier Liga",
-      "country": "Russia"
     },
     {
       "id": 969,
@@ -1929,12 +1887,6 @@
       "country": "Netherlands"
     },
     {
-      "id": 1390,
-      "name": "Cagliari Calcio",
-      "league": "Serie A",
-      "country": "Italy"
-    },
-    {
       "id": 1397,
       "name": "FC Gueugnon",
       "league": "",
@@ -2001,12 +1953,6 @@
       "country": "Netherlands"
     },
     {
-      "id": 1436,
-      "name": "SC Beira-Mar",
-      "league": "Campeonato de Portugal - Série B",
-      "country": "Portugal"
-    },
-    {
       "id": 1444,
       "name": "Racing Club",
       "league": "Torneo Clausura",
@@ -2023,6 +1969,12 @@
       "name": "Göztepe",
       "league": "Süper Lig",
       "country": "Türkiye"
+    },
+    {
+      "id": 1496,
+      "name": "FK Pardubice",
+      "league": "Chance Liga",
+      "country": "Czech Republic"
     },
     {
       "id": 1531,
@@ -2151,6 +2103,12 @@
       "country": "Brazil"
     },
     {
+      "id": 2227,
+      "name": "SC Tavriya Simferopol (-2022)",
+      "league": "",
+      "country": "Ukraine"
+    },
+    {
       "id": 2250,
       "name": "AC Prato",
       "league": "Serie D - Girone E",
@@ -2211,22 +2169,10 @@
       "country": "Türkiye"
     },
     {
-      "id": 2331,
-      "name": "US Avellino 1912",
-      "league": "Serie B",
-      "country": "Italy"
-    },
-    {
       "id": 2350,
       "name": "Millonarios FC",
       "league": "K League 1",
       "country": ""
-    },
-    {
-      "id": 2374,
-      "name": "Shinnik Yaroslavl",
-      "league": "1.Division",
-      "country": "Russia"
     },
     {
       "id": 2402,
@@ -2553,12 +2499,6 @@
       "country": "Portugal"
     },
     {
-      "id": 2995,
-      "name": "FC Paços de Ferreira",
-      "league": "Liga Portugal 2",
-      "country": "Portugal"
-    },
-    {
       "id": 3008,
       "name": "Hull City",
       "league": "Championship",
@@ -2575,6 +2515,12 @@
       "name": "Shrewsbury Town",
       "league": "League Two",
       "country": "England"
+    },
+    {
+      "id": 3057,
+      "name": "Standard Liège",
+      "league": "Jupiler Pro League",
+      "country": "Belgium"
     },
     {
       "id": 3060,
@@ -2599,12 +2545,6 @@
       "name": "Tours FC (- 2025)",
       "league": "",
       "country": "France"
-    },
-    {
-      "id": 3172,
-      "name": "CS Visé (-2015)",
-      "league": "",
-      "country": "Belgium"
     },
     {
       "id": 3173,
@@ -2907,6 +2847,12 @@
       "country": "Argentina"
     },
     {
+      "id": 3958,
+      "name": "Vissel Kobe",
+      "league": "J1 League",
+      "country": "Japan"
+    },
+    {
       "id": 3973,
       "name": "Brasiliense FC (DF)",
       "league": "",
@@ -3135,6 +3081,12 @@
       "country": "Sweden"
     },
     {
+      "id": 4482,
+      "name": "Volyn Lutsk",
+      "league": "",
+      "country": "Ukraine"
+    },
+    {
       "id": 4488,
       "name": "CD Irapuato",
       "league": "Liga de Expansión MX Clausura",
@@ -3151,6 +3103,12 @@
       "name": "Cultural Leonesa",
       "league": "LaLiga2",
       "country": "Spain"
+    },
+    {
+      "id": 4550,
+      "name": "Legnano AC",
+      "league": "",
+      "country": "Italy"
     },
     {
       "id": 4554,
@@ -3175,12 +3133,6 @@
       "name": "FK Novi Pazar",
       "league": "Belgium Challenger Pro League",
       "country": ""
-    },
-    {
-      "id": 4718,
-      "name": "SS Virtus Lanciano",
-      "league": "",
-      "country": "Italy"
     },
     {
       "id": 4750,
@@ -3213,6 +3165,12 @@
       "country": "Mexico"
     },
     {
+      "id": 5026,
+      "name": "Lommel SK",
+      "league": "Challenger Pro League",
+      "country": "Belgium"
+    },
+    {
       "id": 5107,
       "name": "NK Zagreb",
       "league": "",
@@ -3229,12 +3187,6 @@
       "name": "CA Los Andes",
       "league": "Primera Nacional",
       "country": "Argentina"
-    },
-    {
-      "id": 5227,
-      "name": "Atlético CP",
-      "league": "Liga 3",
-      "country": "Portugal"
     },
     {
       "id": 5358,
@@ -3369,22 +3321,10 @@
       "country": "Japan"
     },
     {
-      "id": 6414,
-      "name": "Metalist Kharkiv (- 2016)",
-      "league": "",
-      "country": "Ukraine"
-    },
-    {
       "id": 6418,
       "name": "Panetolikos GFS",
       "league": "Super League 1",
       "country": "Greece"
-    },
-    {
-      "id": 6464,
-      "name": "FK AS Pardubice (1919 - 2011)",
-      "league": "",
-      "country": "Czech Republic"
     },
     {
       "id": 6495,
@@ -3501,6 +3441,12 @@
       "country": "Colombia"
     },
     {
+      "id": 6996,
+      "name": "Goverla Uzhgorod (- 2016)",
+      "league": "",
+      "country": "Ukraine"
+    },
+    {
       "id": 7006,
       "name": "Melbourne Victory",
       "league": "A-League Men",
@@ -3559,6 +3505,12 @@
       "name": "Portimonense SAD",
       "league": "Liga Portugal 2",
       "country": "Portugal"
+    },
+    {
+      "id": 7452,
+      "name": "RB Omiya Ardija",
+      "league": "J2 League",
+      "country": "Japan"
     },
     {
       "id": 7468,
@@ -3697,6 +3649,12 @@
       "name": "Miedz Legnica",
       "league": "Betclic 1 Liga",
       "country": "Poland"
+    },
+    {
+      "id": 9007,
+      "name": "Arsenal Kyiv ( -2019)",
+      "league": "",
+      "country": "Ukraine"
     },
     {
       "id": 9010,
@@ -4179,6 +4137,18 @@
       "country": "Brazil"
     },
     {
+      "id": 18105,
+      "name": "PFC Lviv",
+      "league": "",
+      "country": "Ukraine"
+    },
+    {
+      "id": 18303,
+      "name": "FC Oleksandriya",
+      "league": "Premier Liga",
+      "country": "Ukraine"
+    },
+    {
       "id": 18487,
       "name": "Al-Ahli Saudi Football Club",
       "league": "",
@@ -4293,12 +4263,6 @@
       "country": "France"
     },
     {
-      "id": 23287,
-      "name": "Inter Miami",
-      "league": "MLS",
-      "country": "USA"
-    },
-    {
       "id": 23505,
       "name": "CD Leones Negros de la UdeG",
       "league": "Liga de Expansión MX Clausura",
@@ -4357,6 +4321,18 @@
       "name": "FC Ufa",
       "league": "1.Division",
       "country": "Russia"
+    },
+    {
+      "id": 28107,
+      "name": "K Lierse SK",
+      "league": "Challenger Pro League",
+      "country": "Belgium"
+    },
+    {
+      "id": 28643,
+      "name": "SK Beveren",
+      "league": "Challenger Pro League",
+      "country": "Belgium"
     },
     {
       "id": 30066,
@@ -4465,6 +4441,12 @@
       "name": "Oklahoma City Energy FC",
       "league": "",
       "country": "United States"
+    },
+    {
+      "id": 39097,
+      "name": "Obolon Kyiv",
+      "league": "Premier Liga",
+      "country": "Ukraine"
     },
     {
       "id": 39148,
@@ -4593,6 +4575,12 @@
       "country": "United States"
     },
     {
+      "id": 64501,
+      "name": "URSL Visé",
+      "league": "",
+      "country": "Belgium"
+    },
+    {
       "id": 67212,
       "name": "CF Intercity",
       "league": "Segunda Federación - Grupo V",
@@ -4641,6 +4629,12 @@
       "country": "United States"
     },
     {
+      "id": 85465,
+      "name": "Karpaty Lviv",
+      "league": "Premier Liga",
+      "country": "Ukraine"
+    },
+    {
       "id": 91831,
       "name": "Northern Colorado Hailstorm FC",
       "league": "",
@@ -4680,7 +4674,7 @@
       "id": 1000000866,
       "name": "Nacional",
       "league": "",
-      "country": ""
+      "country": "Uruguay"
     },
     {
       "id": 1000001037,
@@ -6545,6 +6539,50 @@
     },
     {
       "raw": {
+        "id": 18511,
+        "name": "Harvey Esajas",
+        "position": "Defender",
+        "detailedPosition": null,
+        "countries": [
+          "Netherlands",
+          "Suriname"
+        ],
+        "clubs": [
+          5,
+          133,
+          202,
+          234,
+          1455,
+          4550,
+          5514,
+          10907
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 300000.0
+      },
+      "expected": {
+        "id": "18511",
+        "clubs": [
+          "10907",
+          "133",
+          "1455",
+          "202",
+          "234",
+          "4550",
+          "5",
+          "5514"
+        ],
+        "countries": [
+          "Netherlands",
+          "Suriname"
+        ],
+        "position": "DEF",
+        "rating": 60.7,
+        "cost": 6
+      }
+    },
+    {
+      "raw": {
         "id": 18745,
         "name": "Rúben Vinagre",
         "position": "Defender",
@@ -6900,44 +6938,6 @@
         ],
         "position": "DEF",
         "rating": 62.3,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
-        "id": 24143,
-        "name": "Dmitriy Khomukha",
-        "position": "Midfield",
-        "detailedPosition": null,
-        "countries": [
-          "Turkmenistan",
-          "Russia"
-        ],
-        "clubs": [
-          964,
-          2374,
-          2410,
-          3725,
-          6414
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 0
-      },
-      "expected": {
-        "id": "24143",
-        "clubs": [
-          "2374",
-          "2410",
-          "3725",
-          "6414",
-          "964"
-        ],
-        "countries": [
-          "Turkmenistan",
-          "Russia"
-        ],
-        "position": "MID",
-        "rating": 37.1,
         "cost": 6
       }
     },
@@ -7368,6 +7368,42 @@
         "position": "ATT",
         "rating": 87.7,
         "cost": 14
+      }
+    },
+    {
+      "raw": {
+        "id": 28924,
+        "name": "Oleksiy Ivanov",
+        "position": "Midfield",
+        "detailedPosition": null,
+        "countries": [
+          "Ukraine"
+        ],
+        "clubs": [
+          2227,
+          6996,
+          9007,
+          18303,
+          85465
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 350000.0
+      },
+      "expected": {
+        "id": "28924",
+        "clubs": [
+          "18303",
+          "2227",
+          "6996",
+          "85465",
+          "9007"
+        ],
+        "countries": [
+          "Ukraine"
+        ],
+        "position": "MID",
+        "rating": 46.3,
+        "cost": 6
       }
     },
     {
@@ -10531,10 +10567,10 @@
           "Belgium"
         ],
         "clubs": [
-          204,
           1199,
           3728,
-          10107
+          10107,
+          28107
         ],
         "careerTimeline": [],
         "peakMarketValue": 250000.0
@@ -10544,14 +10580,14 @@
         "clubs": [
           "10107",
           "1199",
-          "204",
+          "28107",
           "3728"
         ],
         "countries": [
           "Belgium"
         ],
         "position": "DEF",
-        "rating": 44.1,
+        "rating": 46.4,
         "cost": 6
       }
     },
@@ -10788,9 +10824,9 @@
         ],
         "clubs": [
           479,
+          1496,
           2598,
           5544,
-          6464,
           13726
         ],
         "careerTimeline": [],
@@ -10800,16 +10836,16 @@
         "id": "70620",
         "clubs": [
           "13726",
+          "1496",
           "2598",
           "479",
-          "5544",
-          "6464"
+          "5544"
         ],
         "countries": [
           "Slovakia"
         ],
         "position": "MID",
-        "rating": 49.8,
+        "rating": 51.0,
         "cost": 6
       }
     },
@@ -10880,6 +10916,42 @@
         ],
         "position": "ATT",
         "rating": 54.3,
+        "cost": 6
+      }
+    },
+    {
+      "raw": {
+        "id": 71827,
+        "name": "Juan Carlos Rebollo",
+        "position": "Attack",
+        "detailedPosition": null,
+        "countries": [
+          "Spain"
+        ],
+        "clubs": [
+          1244,
+          1533,
+          3705,
+          3708,
+          13222
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 0
+      },
+      "expected": {
+        "id": "71827",
+        "clubs": [
+          "1244",
+          "13222",
+          "1533",
+          "3705",
+          "3708"
+        ],
+        "countries": [
+          "Spain"
+        ],
+        "position": "ATT",
+        "rating": 50.2,
         "cost": 6
       }
     },
@@ -11358,6 +11430,44 @@
     },
     {
       "raw": {
+        "id": 79709,
+        "name": "Naoya Saeki",
+        "position": "Midfield",
+        "detailedPosition": null,
+        "countries": [
+          "Japan"
+        ],
+        "clubs": [
+          672,
+          937,
+          3734,
+          3958,
+          7452,
+          9597
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 350000.0
+      },
+      "expected": {
+        "id": "79709",
+        "clubs": [
+          "3734",
+          "3958",
+          "672",
+          "7452",
+          "937",
+          "9597"
+        ],
+        "countries": [
+          "Japan"
+        ],
+        "position": "MID",
+        "rating": 53.1,
+        "cost": 6
+      }
+    },
+    {
+      "raw": {
         "id": 82442,
         "name": "Olivier Giroud",
         "position": "Attack",
@@ -11449,6 +11559,40 @@
         "position": "ATT",
         "rating": 85.4,
         "cost": 14
+      }
+    },
+    {
+      "raw": {
+        "id": 82620,
+        "name": "Vadym Panas",
+        "position": "Midfield",
+        "detailedPosition": null,
+        "countries": [
+          "Ukraine"
+        ],
+        "clubs": [
+          4482,
+          10690,
+          18105,
+          39097
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 500000.0
+      },
+      "expected": {
+        "id": "82620",
+        "clubs": [
+          "10690",
+          "18105",
+          "39097",
+          "4482"
+        ],
+        "countries": [
+          "Ukraine"
+        ],
+        "position": "MID",
+        "rating": 44.9,
+        "cost": 6
       }
     },
     {
@@ -11993,44 +12137,6 @@
         ],
         "position": "ATT",
         "rating": 54.0,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
-        "id": 100216,
-        "name": "Dariusz Szubert",
-        "position": "Midfield",
-        "detailedPosition": null,
-        "countries": [
-          "Poland"
-        ],
-        "clubs": [
-          35,
-          88,
-          166,
-          260,
-          324,
-          718
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 0
-      },
-      "expected": {
-        "id": "100216",
-        "clubs": [
-          "166",
-          "260",
-          "324",
-          "35",
-          "718",
-          "88"
-        ],
-        "countries": [
-          "Poland"
-        ],
-        "position": "MID",
-        "rating": 44.0,
         "cost": 6
       }
     },
@@ -12586,48 +12692,6 @@
         ],
         "position": "DEF",
         "rating": 62.4,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
-        "id": 127799,
-        "name": "Fabrizio Paghera",
-        "position": "Midfield",
-        "detailedPosition": null,
-        "countries": [
-          "Italy"
-        ],
-        "clubs": [
-          19,
-          276,
-          1103,
-          2331,
-          2722,
-          4103,
-          4718,
-          26789
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 1000000.0
-      },
-      "expected": {
-        "id": "127799",
-        "clubs": [
-          "1103",
-          "19",
-          "2331",
-          "26789",
-          "2722",
-          "276",
-          "4103",
-          "4718"
-        ],
-        "countries": [
-          "Italy"
-        ],
-        "position": "MID",
-        "rating": 58.0,
         "cost": 6
       }
     },
@@ -13219,46 +13283,6 @@
     },
     {
       "raw": {
-        "id": 166371,
-        "name": "Bacar Baldé",
-        "position": "Defender",
-        "detailedPosition": null,
-        "countries": [
-          "Guinea-Bissau"
-        ],
-        "clubs": [
-          1436,
-          2995,
-          5227,
-          7179,
-          8024,
-          23287,
-          1000010301
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 500000.0
-      },
-      "expected": {
-        "id": "166371",
-        "clubs": [
-          "1000010301",
-          "1436",
-          "23287",
-          "2995",
-          "5227",
-          "7179",
-          "8024"
-        ],
-        "countries": [
-          "Guinea-Bissau"
-        ],
-        "position": "DEF",
-        "rating": 60.3,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
         "id": 166680,
         "name": "Pol Roigé",
         "position": "Attack",
@@ -13298,6 +13322,42 @@
         ],
         "position": "ATT",
         "rating": 59.1,
+        "cost": 6
+      }
+    },
+    {
+      "raw": {
+        "id": 167745,
+        "name": "Peter Maes",
+        "position": "Goalkeeper",
+        "detailedPosition": null,
+        "countries": [
+          "Belgium"
+        ],
+        "clubs": [
+          58,
+          3057,
+          5026,
+          28643,
+          41274
+        ],
+        "careerTimeline": [],
+        "peakMarketValue": 0
+      },
+      "expected": {
+        "id": "167745",
+        "clubs": [
+          "28643",
+          "3057",
+          "41274",
+          "5026",
+          "58"
+        ],
+        "countries": [
+          "Belgium"
+        ],
+        "position": "GK",
+        "rating": 40.5,
         "cost": 6
       }
     },
@@ -14055,46 +14115,6 @@
         ],
         "position": "ATT",
         "rating": 48.4,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
-        "id": 227692,
-        "name": "Gianpiero Piovani",
-        "position": "Attack",
-        "detailedPosition": null,
-        "countries": [
-          "Italy"
-        ],
-        "clubs": [
-          19,
-          130,
-          1210,
-          1253,
-          1390,
-          1408,
-          4103
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 0
-      },
-      "expected": {
-        "id": "227692",
-        "clubs": [
-          "1210",
-          "1253",
-          "130",
-          "1390",
-          "1408",
-          "19",
-          "4103"
-        ],
-        "countries": [
-          "Italy"
-        ],
-        "position": "ATT",
-        "rating": 46.7,
         "cost": 6
       }
     },
@@ -14860,9 +14880,9 @@
           172,
           589,
           833,
-          3172,
           3315,
-          7773
+          7773,
+          64501
         ],
         "careerTimeline": [],
         "peakMarketValue": 0
@@ -14871,9 +14891,9 @@
         "id": "324021",
         "clubs": [
           "172",
-          "3172",
           "3315",
           "589",
+          "64501",
           "7773",
           "833"
         ],
@@ -16206,34 +16226,6 @@
     },
     {
       "raw": {
-        "id": 3000277234,
-        "name": "Ivor Pandur",
-        "position": "Goalkeeper",
-        "detailedPosition": null,
-        "countries": [
-          "Croatia"
-        ],
-        "clubs": [
-          124
-        ],
-        "careerTimeline": [],
-        "peakMarketValue": 0
-      },
-      "expected": {
-        "id": "3000277234",
-        "clubs": [
-          "124"
-        ],
-        "countries": [
-          "Croatia"
-        ],
-        "position": "GK",
-        "rating": 33.8,
-        "cost": 6
-      }
-    },
-    {
-      "raw": {
         "id": 3000290894,
         "name": "Sebastián Fierro",
         "position": "Midfield",
@@ -17338,17 +17330,17 @@
   "cases": [
     {
       "playerIds": [
-        "3000277234",
+        "167745",
         "43141",
         "4473",
-        "166371",
+        "18511",
         "59597",
         "51358",
         "79416",
         "89272",
-        "227692",
         "71580",
-        "55367"
+        "55367",
+        "71827"
       ],
       "formation": "433",
       "tactics": {
@@ -17356,7 +17348,7 @@
         "tempo": 1,
         "width": 0.5
       },
-      "power": 52.35654045454544
+      "power": 54.347811249999985
     },
     {
       "playerIds": [
@@ -17365,9 +17357,9 @@
         "127794",
         "542451",
         "112062",
-        "24143",
         "12650",
         "67203",
+        "79709",
         "225161",
         "4603",
         "6989"
@@ -17378,7 +17370,7 @@
         "tempo": 0.8571428571428572,
         "width": 0.5
       },
-      "power": 56.30957902597402
+      "power": 57.285455649350645
     },
     {
       "playerIds": [
@@ -17409,9 +17401,9 @@
         "197741",
         "8635",
         "3744",
+        "28924",
         "22493",
         "253214",
-        "100216",
         "386726",
         "16589",
         "35728"
@@ -17422,7 +17414,7 @@
         "tempo": 0.5714285714285714,
         "width": 0.5
       },
-      "power": 55.924337499999986
+      "power": 56.147245941558424
     },
     {
       "playerIds": [
@@ -17475,8 +17467,8 @@
         "35250",
         "140322",
         "13502",
-        "127799",
         "29613",
+        "82620",
         "4100000099",
         "85663",
         "4100000210",
@@ -17488,7 +17480,7 @@
         "tempo": 0.1428571428571429,
         "width": 0.5
       },
-      "power": 57.05568793831168
+      "power": 55.35762715909091
     },
     {
       "playerIds": [
