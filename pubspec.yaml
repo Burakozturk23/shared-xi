@@ -1,7 +1,7 @@
 name: shared_xi
 description: "A football connection game."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ">=3.12.0 <4.0.0"
